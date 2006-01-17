@@ -60,9 +60,20 @@ IntegerArg::IntegerArg(ArgsGroup * const group, const std::string& long_name,
 
 void EnumArg::set_argument(const std::string & arg)
 {
-	if(_allowed_args.find(arg) == _allowed_args.end())
-	{
-		throw(BadValue("--" + long_name(), arg));
-	}
-	_argument = arg;
+    if(_allowed_args.find(arg) == _allowed_args.end())
+    {
+    	throw(BadValue("--" + long_name(), arg));
+    }
+    _argument = arg;
+}
+
+EnumArg::EnumArgOptions::EnumArgOptions(std::string opt, std::string desc)
+{
+    _options.insert(std::make_pair(opt, desc));
+}
+
+EnumArg::EnumArgOptions & EnumArg::EnumArgOptions::operator() (std::string opt, std::string desc)
+{
+    _options.insert(std::make_pair(opt, desc));
+    return *this;
 }

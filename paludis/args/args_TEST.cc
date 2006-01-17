@@ -31,8 +31,6 @@ using namespace test;
 
 #ifndef DOXYGEN
 
-static const char * const arg_enum_args[3] = { "one", "two", "three" };
-
 struct CommandLine : public ArgsHandler
 {
     ArgsGroup group_one;
@@ -46,6 +44,7 @@ struct CommandLine : public ArgsHandler
     StringArg arg_something;
     IntegerArg arg_somenum;
     EnumArg arg_enum;
+    EnumArg arg_other_enum;
 
     CommandLine() :
         group_one(this, "Group one"),
@@ -58,7 +57,8 @@ struct CommandLine : public ArgsHandler
         arg_other_baz(&arg_baz, "other-baz"),
         arg_something(&group_two, "something", 's', "Value of something"),
         arg_somenum(&group_two, "num", 'n', "Some number"),
-        arg_enum(&group_two, "enum", 'e', "One of three", arg_enum_args)
+        arg_enum(&group_two, "enum", 'e', "One of three", EnumArg::EnumArgOptions("one", "Option one")("two", "option two")("three", "option three"), "two"),
+        arg_other_enum(&group_two, "something", '\0', "Blah.", EnumArg::EnumArgOptions("a", "A")("b", "B")("c", "C"), "b")
     {
     }
 };
@@ -91,6 +91,8 @@ namespace test_cases
             TEST_CHECK(c1.arg_enum.specified());
             TEST_CHECK(c1.arg_enum.argument() == "three");
             TEST_CHECK(! c1.arg_dummy.specified());
+            TEST_CHECK(! c1.arg_other_enum.specified());
+            TEST_CHECK(c1.arg_other_enum.argument() == "b");
 
             TEST_CHECK_EQUAL(std::distance(c1.begin_parameters(), c1.end_parameters()), 3);
             TEST_CHECK_EQUAL(*c1.begin_parameters(), "--dummy");

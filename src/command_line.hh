@@ -114,7 +114,7 @@ class CommandLine :
         paludis::args::ArgsGroup dl_args;
 
         /// --dl-rdepend-post
-        paludis::args::SwitchArg a_dl_rdepend_post;
+        paludis::args::EnumArg a_dl_rdepend_post;
 
         /// --dl-drop-self-circular
         paludis::args::SwitchArg a_dl_drop_self_circular;

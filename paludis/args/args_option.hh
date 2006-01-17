@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_ARGS_ARGS_OPTION_HH 1
 
 #include <string>
-#include <set>
+#include <map>
 #include "args_visitor.hh"
 
 /** \file
@@ -202,19 +202,43 @@ namespace paludis
         class EnumArg : public ArgsOption
         {
             private:
-                const std::set<std::string> _allowed_args;
+                const std::map<std::string, std::string> _allowed_args;
                 std::string _argument;
 
             public:
+
+                /**
+                 * Helper class for passing available options and associated descriptions
+                 * to the EnumArg constructor.
+                 *
+                 * \ingroup Args
+                 */
+                class EnumArgOptions
+                {
+                    private:
+                        friend class EnumArg;
+                        std::map<std::string, std::string> _options;
+
+                    public:
+                        /**
+                         * Constructor
+                         */
+                        EnumArgOptions(const std::string, const std::string);
+
+                        /**
+                         * Adds another (option, description) pair.
+                         */
+                        EnumArgOptions& operator() (const std::string, const std::string);
+                };
+
                 /**
                  * Constructor.
                  */
-                template <typename T_>
                 EnumArg(ArgsGroup * const group, const std::string & long_name,
                         const char short_name, const std::string & description,
-                        const T_ * allowed_args) :
+                        const EnumArgOptions & opts, const std::string & default_arg) :
                     ArgsOption(group, long_name, short_name, description),
-                    _allowed_args(&allowed_args[0], &allowed_args[sizeof(allowed_args)-1])
+                    _allowed_args(opts._options), _argument(default_arg)
                 {
                 }
 
@@ -228,6 +252,22 @@ namespace paludis
                  * it is one of the arguments allowed for this option.
                  */
                 void set_argument(const std::string & arg);
+
+                /**
+                 * Type used to iterate over valid arguments to this option
+                 */
+                typedef std::map<std::string, std::string>::const_iterator AllowedArgIterator;
+
+                /**
+                 * Returns an iterator pointing to a pair containing the first valid argument,
+                 * and its description.
+                 */
+                AllowedArgIterator begin_allowed_args() const { return _allowed_args.begin(); }
+
+                /**
+                 * Returns an iterator pointing just beyond the last valid argument.
+                 */
+                AllowedArgIterator end_allowed_args() const { return _allowed_args.end(); }
 
                 void accept(ArgsVisitor * const v)
                 {
