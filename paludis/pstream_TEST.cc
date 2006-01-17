@@ -45,7 +45,7 @@ namespace test_cases
         void run()
         {
             PStream * p;
-            TEST_CHECK(p = new PStream("echo hi"));
+            TEST_CHECK((p = new PStream("echo hi")));
             std::string line;
             TEST_CHECK(std::getline(*p, line));
             TEST_CHECK_EQUAL(line, "hi");
@@ -93,7 +93,7 @@ namespace test_cases
         void run()
         {
             PStream * p;
-            TEST_CHECK(p = new PStream("cat /doesnotexist 2>&1"));
+            TEST_CHECK((p = new PStream("cat /doesnotexist 2>&1")));
             std::string line;
             TEST_CHECK(std::getline(*p, line));
             TEST_CHECK(! line.empty());
