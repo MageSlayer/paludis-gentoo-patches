@@ -18,8 +18,8 @@ noinst_PROGRAMS = $(TESTS) $(XFAIL_TESTS)
 TESTS_ENVIRONMENT = $(SHELL) $(top_srcdir)/test/run_test.sh
 
 test_pass_TEST_SOURCES = test_pass_TEST.cc
-test_pass_TEST_LDADD = $(top_builddir)/test/libtest.a
+test_pass_TEST_LDADD = libtest.a
 
 test_fail_TEST_SOURCES = test_fail_TEST.cc
-test_fail_TEST_LDADD = $(top_builddir)/test/libtest.a
+test_fail_TEST_LDADD = libtest.a
 
