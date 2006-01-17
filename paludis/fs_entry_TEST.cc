@@ -37,9 +37,9 @@ namespace test_cases
     /**
      * \test Test FSEntry construction and manipulation.
      */
-    struct TestFSEntryManipulation : TestCase
+    struct FSEntryManipulationTest : TestCase
     {
-        TestFSEntryManipulation() : TestCase("construction and manipulation") { }
+        FSEntryManipulationTest() : TestCase("construction and manipulation") { }
 
         void run()
         {
@@ -58,4 +58,25 @@ namespace test_cases
             TEST_CHECK_EQUAL(c, FSEntry("/foo/bar/moo"));
         }
     } test_fs_entry_manipulation;
+
+    /**
+     * \test Test FSEntry realpath.
+     */
+    struct FSEntryRealpathTest : TestCase
+    {
+        FSEntryRealpathTest() : TestCase("realpath") { }
+
+        void run()
+        {
+            FSEntry d("fs_entry_TEST_dir");
+            TEST_CHECK(d.is_directory());
+
+            FSEntry f("fs_entry_TEST_dir/symlink_to_dir_a/file_in_a");
+            TEST_CHECK(f.is_regular_file());
+            FSEntry r(f.realpath());
+            TEST_CHECK(r.is_regular_file());
+            std::string e("fs_entry_TEST_dir/dir_a/file_in_a");
+            TEST_CHECK_EQUAL(std::string(r).substr(std::string(r).length() - e.length()), e);
+        }
+    } test_fs_entry_realpath;
 }

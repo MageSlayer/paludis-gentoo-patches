@@ -120,6 +120,11 @@ namespace paludis
              * Return the last part of our path (eg '/foo/bar' => 'bar').
              */
             std::string basename() const;
+
+            /**
+             * Return the canonicalised version of our path.
+             */
+            FSEntry realpath() const;
     };
 
     /**

@@ -26,6 +26,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include <limits.h>
+#include <cstring>
+#include <cstdlib>
 
 /** \file
  * Implementation of paludis::FSEntry.
@@ -166,6 +169,16 @@ std::string
 FSEntry::basename() const
 {
     return _path.substr(_path.rfind('/') + 1);
+}
+
+FSEntry
+FSEntry::realpath() const
+{
+    char r[PATH_MAX + 1];
+    std::memset(r, 0, PATH_MAX + 1);
+    if (! ::realpath(_path.c_str(), r))
+        throw FSError("Could not resolve path '" + _path + "'");
+    return FSEntry(r);
 }
 
 std::ostream &
