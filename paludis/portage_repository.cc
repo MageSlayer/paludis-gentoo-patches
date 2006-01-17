@@ -75,6 +75,11 @@ namespace paludis
         /// Have repository mask?
         mutable bool has_repo_mask;
 
+        /// Use mask.
+        mutable std::set<UseFlagName> use_mask;
+
+        mutable bool has_use_mask;
+
         /// Constructor.
         Implementation(const FSEntry & l, const FSEntry & p) :
             location(l),
@@ -83,7 +88,45 @@ namespace paludis
             has_repo_mask(false)
         {
         }
+
+        /// Add a use.mask file from a profile directory, recursive.
+        void add_use_mask(const FSEntry & f) const;
     };
+}
+
+void
+Implementation<PortageRepository>::add_use_mask(const FSEntry & f) const
+{
+    Context context("When reading profile directory '" + stringify(f) + "':");
+
+    if (! f.is_directory())
+        throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+
+    if ((f / "parent").exists())
+    {
+        std::ifstream parent_file(stringify(f / "parent").c_str());
+        if (! parent_file)
+            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+        LineConfigFile parent(&parent_file);
+        if (parent.begin() != parent.end())
+            add_use_mask((f / *parent.begin()).realpath());
+        else
+            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+    }
+
+    if ((f / "use.mask").exists())
+    {
+        std::ifstream use_mask_file(stringify(f / "use.mask").c_str());
+        if (! use_mask_file)
+            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+        LineConfigFile use_mask_f(&use_mask_file);
+        for (LineConfigFile::Iterator line(use_mask_f.begin()), line_end(use_mask_f.end()) ;
+                line != line_end ; ++line)
+            if ('-' == line->at(0))
+                use_mask.erase(UseFlagName(line->substr(1)));
+            else
+                use_mask.insert(UseFlagName(*line));
+    }
 }
 
 PortageRepository::PortageRepository(const FSEntry & location, const FSEntry & profile) :
@@ -412,9 +455,15 @@ PortageRepository::do_query_use(const UseFlagName &, const bool & d) const
 }
 
 bool
-PortageRepository::do_query_use_mask(const UseFlagName &) const
+PortageRepository::do_query_use_mask(const UseFlagName & u) const
 {
-    /// \todo;
-    return false;
+    if (! _implementation->has_use_mask)
+    {
+        Context context("When checking USE mask for '" + stringify(u) + "':");
+        _implementation->add_use_mask(_implementation->profile.realpath());
+        _implementation->has_use_mask = true;
+    }
+
+    return _implementation->use_mask.end() != _implementation->use_mask.find(u);
 }
 
