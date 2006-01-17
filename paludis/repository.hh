@@ -29,6 +29,7 @@
 #include <paludis/version_spec_collection.hh>
 #include <paludis/counted_ptr.hh>
 #include <paludis/version_metadata.hh>
+#include <paludis/use_flag_state.hh>
 #include <map>
 #include <string>
 
@@ -113,7 +114,7 @@ namespace paludis
             /**
              * Override in descendents: get use.
              */
-            virtual bool do_query_use(const UseFlagName &, const bool &) const = 0;
+            virtual UseFlagState do_query_use(const UseFlagName &) const = 0;
 
             /**
              * Override in descendents: get use mask.
@@ -275,12 +276,12 @@ namespace paludis
                 return _info.end();
             }
 
-            bool query_use(const UseFlagName & u, const bool & def) const
+            UseFlagState query_use(const UseFlagName & u) const
             {
                 if (do_query_use_mask(u))
-                    return false;
+                    return use_disabled;
                 else
-                    return do_query_use(u, def);
+                    return do_query_use(u);
             }
 
             bool query_use_mask(const UseFlagName & u) const

@@ -23,6 +23,7 @@
 #include "portage_repository.hh"
 #include "default_config.hh"
 #include "stringify.hh"
+#include "internal_error.hh"
 #include <list>
 #include <vector>
 
@@ -53,10 +54,68 @@ DefaultEnvironment::~DefaultEnvironment()
 }
 
 bool
-DefaultEnvironment::query_use(const UseFlagName &, const PackageDatabaseEntry * const) const
+DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry & e) const
 {
     /// \todo
-    return false;
+    /* prefer user masks, then profile, then disabled */
+    do
+    {
+#if 0
+        switch (DefaultConfig::get_instance()->query_use(f, e))
+        {
+            case use_enabled:
+                return true;
+
+            case use_disabled:
+                return false;
+
+            case use_unspecified:
+                continue;
+        }
+
+        throw InternalError(__PRETTY_FUNCTION__, "bad state");
+
+#endif
+    } while (false);
+
+
+    do
+    {
+        UseFlagState state(use_unspecified);
+
+        for (DefaultConfig::DefaultUseIterator
+                u(DefaultConfig::get_instance()->begin_default_use()),
+                u_end(DefaultConfig::get_instance()->end_default_use()) ;
+                u != u_end ; ++u)
+            if (f == u->first)
+                state = u->second;
+
+        switch (state)
+        {
+            case use_enabled:
+                return true;
+
+            case use_disabled:
+                return false;
+
+            case use_unspecified:
+                continue;
+        }
+
+        throw InternalError(__PRETTY_FUNCTION__, "bad state " + stringify(state));
+    } while (false);
+
+    switch (package_db()->fetch_repository(e.get<pde_repository>())->query_use(f))
+    {
+        case use_disabled:
+        case use_unspecified:
+            return false;
+
+        case use_enabled:
+            return true;
+    }
+
+    throw InternalError(__PRETTY_FUNCTION__, "bad state");
 }
 
 bool

@@ -27,6 +27,8 @@
 #include "filter_insert_iterator.hh"
 #include "translate_insert_iterator.hh"
 #include "line_config_file.hh"
+#include "key_value_config_file.hh"
+#include "tokeniser.hh"
 #include "indirect_iterator.hh"
 #include "package_dep_atom.hh"
 #include <map>
@@ -78,7 +80,11 @@ namespace paludis
         /// Use mask.
         mutable std::set<UseFlagName> use_mask;
 
-        mutable bool has_use_mask;
+        /// Use.
+        mutable std::map<UseFlagName, UseFlagState> use;
+
+        /// Have we loaded our profile yet?
+        mutable bool has_profile;
 
         /// Constructor.
         Implementation(const FSEntry & l, const FSEntry & p) :
@@ -89,13 +95,13 @@ namespace paludis
         {
         }
 
-        /// Add a use.mask file from a profile directory, recursive.
-        void add_use_mask(const FSEntry & f) const;
+        /// Add a use.mask, use from a profile directory, recursive.
+        void add_profile(const FSEntry & f) const;
     };
 }
 
 void
-Implementation<PortageRepository>::add_use_mask(const FSEntry & f) const
+Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 {
     Context context("When reading profile directory '" + stringify(f) + "':");
 
@@ -109,9 +115,29 @@ Implementation<PortageRepository>::add_use_mask(const FSEntry & f) const
             throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
         LineConfigFile parent(&parent_file);
         if (parent.begin() != parent.end())
-            add_use_mask((f / *parent.begin()).realpath());
+            add_profile((f / *parent.begin()).realpath());
         else
             throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+    }
+
+    if ((f / "make.defaults").exists())
+    {
+        static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+
+        std::ifstream make_defaults_file(stringify(f / "make.defaults").c_str());
+        if (! make_defaults_file)
+            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+        KeyValueConfigFile make_defaults_f(&make_defaults_file);
+        std::vector<std::string> uses;
+        tokeniser.tokenise(make_defaults_f.get("USE"), std::back_inserter(uses));
+        for (std::vector<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
+                u != u_end ; ++u)
+        {
+            if ('-' == u->at(0))
+                use[UseFlagName(u->substr(1))] = use_disabled;
+            else
+                use[UseFlagName(*u)] = use_enabled;
+        }
     }
 
     if ((f / "use.mask").exists())
@@ -447,21 +473,31 @@ PortageRepository::do_query_profile_masks(const CategoryNamePart &,
     return false;
 }
 
-bool
-PortageRepository::do_query_use(const UseFlagName &, const bool & d) const
+UseFlagState
+PortageRepository::do_query_use(const UseFlagName & f) const
 {
-    /// \todo;
-    return d;
+    if (! _implementation->has_profile)
+    {
+        Context context("When checking USE state for '" + stringify(f) + "':");
+        _implementation->add_profile(_implementation->profile.realpath());
+        _implementation->has_profile = true;
+    }
+
+    std::map<UseFlagName, UseFlagState>::const_iterator p;
+    if (_implementation->use.end() == ((p = _implementation->use.find(f))))
+        return use_unspecified;
+    else
+        return p->second;
 }
 
 bool
 PortageRepository::do_query_use_mask(const UseFlagName & u) const
 {
-    if (! _implementation->has_use_mask)
+    if (! _implementation->has_profile)
     {
         Context context("When checking USE mask for '" + stringify(u) + "':");
-        _implementation->add_use_mask(_implementation->profile.realpath());
-        _implementation->has_use_mask = true;
+        _implementation->add_profile(_implementation->profile.realpath());
+        _implementation->has_profile = true;
     }
 
     return _implementation->use_mask.end() != _implementation->use_mask.find(u);

@@ -180,11 +180,11 @@ FakeRepository::do_query_profile_masks(const CategoryNamePart &,
     return false;
 }
 
-bool
-FakeRepository::do_query_use(const UseFlagName &, const bool & d) const
+UseFlagState
+FakeRepository::do_query_use(const UseFlagName &) const
 {
     /// \todo?
-    return d;
+    return use_unspecified;
 }
 
 bool

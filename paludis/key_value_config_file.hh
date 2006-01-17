@@ -29,6 +29,10 @@ namespace paludis
         protected:
             void accept_line(const std::string &) const;
 
+            std::string replace_variables(const std::string &) const;
+
+            std::string strip_quotes(const std::string &) const;
+
         public:
             KeyValueConfigFile(std::istream * const);
 
@@ -44,7 +48,7 @@ namespace paludis
                 return _entries.end();
             }
 
-            std::string get(const std::string & key)
+            std::string get(const std::string & key) const
             {
                 return _entries[key];
             }

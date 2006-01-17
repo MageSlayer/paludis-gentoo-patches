@@ -306,8 +306,11 @@ DepList::visit(const PackageDepAtom * const p)
 void
 DepList::visit(const UseDepAtom * const u)
 {
+    if (! _implementation->current_package)
+        throw InternalError(__PRETTY_FUNCTION__, "current_package is 0");
+
     if (_implementation->environment->query_use(u->flag(),
-                _implementation->current_package) ^ u->inverse())
+                *_implementation->current_package) ^ u->inverse())
         std::for_each(u->begin(), u->end(), std::bind1st(std::mem_fun(&DepList::add), this));
 }
 
@@ -327,7 +330,7 @@ struct IsViable :
         const UseDepAtom * u(0);
         if (0 != ((u = dynamic_cast<const UseDepAtom *>(a.raw_pointer()))))
             return _impl.environment->query_use(u->flag(),
-                        _impl.current_package) ^ u->inverse();
+                        *_impl.current_package) ^ u->inverse();
         else
             return true;
     }
@@ -348,6 +351,8 @@ DepList::visit(const AnyDepAtom * const a)
      */
 
     std::list<DepAtom::ConstPointer> viable_children;
+    if (0 == _implementation->current_package)
+        throw InternalError(__PRETTY_FUNCTION__, "current_package is 0");
     std::copy(a->begin(), a->end(), filter_inserter(
                 std::back_inserter(viable_children), IsViable(*_implementation)));
 

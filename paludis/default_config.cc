@@ -108,11 +108,8 @@ DefaultConfig::DefaultConfig()
                 if (tokens.empty())
                     continue;
                 if ("*" == tokens.at(0))
-                {
-                    _default_keywords.clear();
                     std::copy(++(tokens.begin()), tokens.end(),
                             create_inserter<KeywordName>(std::back_inserter(_default_keywords)));
-                }
                 else
                 {
                     PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
@@ -194,6 +191,59 @@ DefaultConfig::DefaultConfig()
                 _user_unmasks[a->package()].push_back(a);
             }
         }
+    }
+
+    /* use */
+    {
+        std::list<FSEntry> files;
+        if (! getenv_with_default("PALUDIS_CONFIG_DIR", "").empty())
+            files.push_back(FSEntry(getenv_or_error("PALUDIS_CONFIG_DIR")) / "use.conf");
+        else
+        {
+            files.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
+                    / "paludis" / "use.conf");
+            files.push_back(FSEntry(getenv_or_error("HOME")) / ".paludis" / "use.conf");
+        }
+
+        for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
+                file != file_end ; ++file)
+        {
+            Context local_context("When reading use file '" + stringify(*file) + "':");
+
+            if (! file->is_regular_file())
+                continue;
+
+            std::ifstream kf(stringify(*file).c_str());
+            if (! kf)
+                throw DefaultConfigError("Couldn't open " + stringify(*file));
+
+            LineConfigFile f(&kf);
+            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+                    line != line_end ; ++line)
+            {
+                std::vector<std::string> tokens;
+                tokeniser.tokenise(*line, std::back_inserter(tokens));
+                if (tokens.empty())
+                    continue;
+
+                if ("*" == tokens.at(0))
+                    for (std::vector<std::string>::const_iterator t(++(tokens.begin())), t_end(tokens.end()) ;
+                            t != t_end ; ++t)
+                    {
+                        if ('-' == t->at(0))
+                            _default_use.push_back(std::make_pair(UseFlagName(t->substr(1)), use_disabled));
+                        else
+                            _default_use.push_back(std::make_pair(UseFlagName(*t), use_enabled));
+                    }
+                else
+                {
+                }
+            }
+        }
+
+        if (_default_keywords.empty())
+            throw DefaultConfigError("No default keywords specified (a keywords.conf file should "
+                    "contain an entry in the form '* keyword')");
     }
 }
 

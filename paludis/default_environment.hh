@@ -49,7 +49,7 @@ namespace paludis
             ~DefaultEnvironment();
 
         protected:
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry * const) const;
+            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const;
 
             virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
 

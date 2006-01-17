@@ -67,7 +67,7 @@ namespace paludis
             virtual bool do_query_profile_masks(const CategoryNamePart &,
                     const PackageNamePart &, const VersionSpec &) const;
 
-            virtual bool do_query_use(const UseFlagName &, const bool &) const;
+            virtual UseFlagState do_query_use(const UseFlagName &) const;
 
             virtual bool do_query_use_mask(const UseFlagName &) const;
 

@@ -28,6 +28,8 @@
 #include <paludis/package_dep_atom.hh>
 #include <paludis/keyword_name.hh>
 #include <paludis/indirect_iterator.hh>
+#include <paludis/use_flag_state.hh>
+#include <paludis/use_flag_name.hh>
 #include <map>
 #include <vector>
 
@@ -49,7 +51,25 @@ namespace paludis
     {
     };
 
+    enum UseConfigEntryKeys
+    {
+        uce_dep_atom,
+        uce_flag_name,
+        uce_flag_state
+    };
+
+    struct UseConfigEntryTag :
+        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
+        SmartRecordKeys<UseConfigEntryKeys, 3>,
+        SmartRecordKey<uce_dep_atom, DepAtom::ConstPointer>,
+        SmartRecordKey<uce_flag_name, UseFlagName>,
+        SmartRecordKey<uce_flag_state, UseFlagState>
+    {
+    };
+
     typedef MakeSmartRecord<RepositoryConfigEntryTag>::Type RepositoryConfigEntry;
+
+    typedef MakeSmartRecord<UseConfigEntryTag>::Type UseConfigEntry;
 
     class DefaultConfig :
         public InstantiationPolicy<DefaultConfig, instantiation_method::SingletonAsNeededTag>
@@ -73,6 +93,12 @@ namespace paludis
             std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > _user_unmasks;
 
             std::vector<PackageDepAtom::ConstPointer> _empty_masks;
+
+            std::map<QualifiedPackageName, std::vector<UseConfigEntry> > _use;
+
+            std::vector<UseConfigEntry> _empty_use;
+
+            std::vector<std::pair<UseFlagName, UseFlagState> > _default_use;
 
         public:
             typedef std::list<RepositoryConfigEntry>::const_iterator RepositoryIterator;
@@ -162,6 +188,38 @@ namespace paludis
                     return r->second.end();
                 else
                     return _empty_masks.end();
+            }
+
+            typedef std::vector<UseConfigEntry>::const_iterator UseConfigIterator;
+
+            UseConfigIterator begin_use_config(const QualifiedPackageName & q) const
+            {
+                std::map<QualifiedPackageName, std::vector<UseConfigEntry> >::const_iterator r;
+                if (_use.end() != ((r = _use.find(q))))
+                    return r->second.begin();
+                else
+                    return _empty_use.begin();
+            }
+
+            UseConfigIterator end_use_config(const QualifiedPackageName & q) const
+            {
+                std::map<QualifiedPackageName, std::vector<UseConfigEntry> >::const_iterator r;
+                if (_use.end() != ((r = _use.find(q))))
+                    return r->second.end();
+                else
+                    return _empty_use.end();
+            }
+
+            typedef std::vector<std::pair<UseFlagName, UseFlagState> >::const_iterator DefaultUseIterator;
+
+            DefaultUseIterator begin_default_use() const
+            {
+                return _default_use.begin();
+            }
+
+            DefaultUseIterator end_default_use() const
+            {
+                return _default_use.end();
             }
     };
 }
