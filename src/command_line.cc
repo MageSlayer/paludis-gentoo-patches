@@ -45,8 +45,11 @@ CommandLine::CommandLine() :
     a_pretend(&install_args, "pretend", 'p', "Pretend only"),
 
     dl_args(this, "DepList behaviour (use with caution)"),
-    a_dl_rdepend_post(&dl_args, "dl-rdepend-post", '\0', "Treat RDEPEND like PDEPEND where necessary", 
-        paludis::args::EnumArg::EnumArgOptions("always", "Always")("never", "Never")("as-needed", "Only where needed to resolve circular dependencies"), "as-needed"),
+    a_dl_rdepend_post(&dl_args, "dl-rdepend-post", '\0', "Treat RDEPEND like PDEPEND", 
+        paludis::args::EnumArg::EnumArgOptions("always", "Always")
+        ("never", "Never")
+        ("as-needed", "Only where needed to resolve circular dependencies (default)"),
+        "as-needed"),
     a_dl_drop_self_circular(&dl_args, "dl-drop-self-circular", '\0', "Drop self-circular dependencies"),
     a_dl_drop_circular(&dl_args, "dl-drop-circular", '\0', "Drop circular dependencies"),
     a_dl_ignore_installed(&dl_args, "dl-ignore-installed", '\0', "Ignore installed packages"),

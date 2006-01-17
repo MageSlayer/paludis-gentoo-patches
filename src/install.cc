@@ -136,35 +136,24 @@ do_install()
             << e.what() << ")" << endl;
         cerr << endl;
 
-//        dep_list.set_rdepend_post(true);
+        dep_list.set_drop_self_circular(true);
         try
         {
             dep_list.add(targets);
-            cerr << "Adding --dl-rdepend-post will resolve this." << endl << std::endl;
+            cerr << "Adding --dl-drop-self-circular will resolve this, but may omit some genuine"
+                << endl << "dependencies." << endl << endl;
         }
         catch (...)
         {
-            dep_list.set_drop_self_circular(true);
+            dep_list.set_drop_circular(true);
             try
             {
                 dep_list.add(targets);
-                cerr << "Adding --dl-rdepend-post --dl-drop-self-circular "
-                    << "will resolve this, but may" << endl
-                    << "omit some genuine dependencies." << endl << std::endl;
+                cerr << "Adding --dl-drop-circular will resolve this, but may omit some genuine" << endl
+                    << "dependencies." << endl << endl;
             }
             catch (...)
             {
-                dep_list.set_drop_circular(true);
-                try
-                {
-                    dep_list.add(targets);
-                    cerr << "Adding --dl-rdepend-post --dl-drop-circular "
-                        << "will resolve this, but may omit" << endl
-                        << "some genuine dependencies." << endl << std::endl;
-                }
-                catch (...)
-                {
-                }
             }
         }
 
