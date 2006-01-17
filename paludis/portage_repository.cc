@@ -222,7 +222,7 @@ PortageRepository::need_category_names() const
                 "profiles/categories").c_str());
 
     if (! cat_file)
-        throw "TODO"; /// \bug real exception needed
+        throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug real exception needed
 
     LineConfigFile cats(&cat_file);
 
@@ -317,7 +317,7 @@ PortageRepository::do_version_metadata(
         std::string line;
 
         if (! cache)
-            throw "TODO";
+            throw InternalError(__PRETTY_FUNCTION__, "todo");
 
         /// \bug this lot
         std::getline(cache, line); result->set(vmk_depend,      line);
@@ -360,7 +360,7 @@ PortageRepository::do_query_repository_masks(const CategoryNamePart & c,
 
         std::ifstream f(stringify(_implementation->location / "profiles" / "package.mask").c_str());
         if (! f)
-            throw "todo"; /// \bug exception
+            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
         LineConfigFile ff(&f);
         for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
                 line != line_end ; ++line)

@@ -56,7 +56,7 @@ VersionOperator::_decode(const std::string & v)
                 }
     }
 
-    throw "TODO"; /// \bug
+    throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug
 }
 
 std::ostream &
