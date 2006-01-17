@@ -17,6 +17,7 @@ libpaludisargs_a_SOURCES = \
 	args_visitor.hh args_visitor.cc \
 	bad_value.hh	bad_value.cc
 
+TESTS_ENVIRONMENT = env TEST_SCRIPT_DIR="$(srcdir)/" $(SHELL) $(top_srcdir)/test/run_test.sh
 noinst_LIBRARIES = libpaludisargs.a
 check_PROGRAMS = $(TESTS)
 

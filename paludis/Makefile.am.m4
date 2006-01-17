@@ -37,7 +37,7 @@ libpaludis_a_SOURCES = filelist
 
 TESTS = testlist
 
-TESTS_ENVIRONMENT = $(SHELL) $(top_srcdir)/test/run_test.sh
+TESTS_ENVIRONMENT = env TEST_SCRIPT_DIR="$(srcdir)/" $(SHELL) $(top_srcdir)/test/run_test.sh
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
 noinst_LIBRARIES = libpaludis.a
