@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et tw=80 :
+
+if test "xyes" = x"${BASH_VERSION}" ; then
+    echo "This is not bash!"
+    exit 127
+fi
+
+trap 'echo "exiting." ; exit 250' 15
+KILL_PID=$$
+
+run() {
+    echo ">>> $@" 1>&2
+    if ! $@ ; then
+        echo "oops!" 1>&2
+        exit 127
+    fi
+}
+
+make_from_m4() {
+    echo ">>> $(get_m4 ) -E ${1}.m4 > ${1}"
+    if ! $(get_m4 ) -E ${1}.m4 > ${1} ; then
+        echo "oops!" 1>&2
+        exit 127
+    fi
+}
+
+get() {
+    type ${1}-${2}    &>/dev/null && echo ${1}-${2}    && return
+    type ${1}${2//.}  &>/dev/null && echo ${1}${2//.}  && return
+    type ${1}         &>/dev/null && echo ${1}         && return
+    echo "Could not find ${1} ${2}" 1>&2
+    kill $KILL_PID
+}
+
+get_m4() {
+    type "gm4" &>/dev/null && echo gm4 && return
+    type "m4"  &>/dev/null && echo m4  && return
+    echo "Could not find m4" 1>&2
+    kill $KILL_PID
+}
+
+make_from_m4 paludis/Makefile.am
+make_from_m4 paludis/paludis.hh
+make_from_m4 paludis/smart_record.hh
+make_from_m4 paludis/comparison_policy.hh
+run mkdir -p config
+run $(get libtoolize 1.5 ) --copy --force --automake
+rm -f config.cache
+run $(get aclocal 1.9 )
+run $(get autoheader 2.59 )
+run $(get autoconf 2.59 )
+run $(get automake 1.9 ) -a --copy
+

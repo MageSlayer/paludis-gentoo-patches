@@ -1,0 +1,182 @@
+/* vim: set ft=cpp tw=80 sw=4 et : */
+
+/** \namespace test_cases
+ * Test cases.
+ *
+ * \ingroup Test
+ */
+
+/** \namespace test
+ * Test framework.
+ *
+ * \ingroup Test
+ */
+
+/** \namespace paludis::args
+ * Commandline argument handling.
+ *
+ * \ingroup Args
+ */
+
+/** \namespace paludis
+ * Paludis library code.
+ */
+
+/** \dir paludis
+ * Paludis library code.
+ */
+
+/** \defgroup DepResolver Dependency parsing and resolution
+ * Dependency parsing and resolution.
+ *
+ * Dependency resolution is handled in stages. We convert a dependency string
+ * into a tree structure, and then define a visitor over this structure.
+ *
+ * \section DepResolverImportant Important Classes
+ *
+ * - paludis::DepList creates and holds dependency lists
+ * - paludis::DepParser turns a dependency string into a paludis::DepAtom
+ *   heirarchy.
+ */
+
+/** \defgroup Environment Environment
+ * Environment.
+ *
+ * These classes represent the environment in which paludis is running.
+ *
+ * \section EnvironmentImportant Important Classes
+ *
+ * - paludis::Environment represents an environment.
+ * - paludis::DefaultEnvironment represents the usual environment that should
+ *   be used when writing normal programs (other paludis::Environment
+ *   descendents exist, e.g. for testing).
+ */
+
+/** \defgroup Database Package database functionality
+ * Package database functionality.
+ *
+ * These classes provide checked representations for common data types, as
+ * well as the core queryable package database functionality.
+ *
+ * \section DatabaseImportant Important Classes
+ *
+ * - paludis::PackageDatabase represents a package database, which
+ *   is queryable and holds zero or more paludis::Repository instances.
+ *
+ * \ingroup Environment
+ */
+
+
+/** \defgroup Utility Utilities
+ * Utilities.
+ *
+ * Various miscellaneous utilities.
+ */
+
+/** \defgroup Exception Exception handling
+ * Exception handling.
+ *
+ * All exceptions thrown from paludis should be a subclass of
+ * paludis::Exception, which provides a message and (via libebt) a backtrace
+ * giving details of the error. It is probably wise to also check for
+ * std::exception when writing error handling code.
+ *
+ * \section ExceptionImportant Important classes
+ *
+ * - paludis::Exception is the base exception class. All exceptions thrown
+ *   by paludis should be descended from this class (although it's best to
+ *   check for std::exception too just in case).
+ *
+ * \ingroup Utility
+ */
+
+/** \defgroup Args Command line argument handling
+ * Command line handling for a program.
+ *
+ * Command line handling for a program is done via a subclass of ArgsHandler.
+ * The class will have member variables of type ArgsGroup to handle groups of
+ * related arguments, and member variables of subtypes of ArgsOption to handle
+ * individual switches.
+ *
+ * \ingroup Utility
+ */
+
+/** \defgroup Pointer Pointers
+ * Pointers.
+ *
+ * We use shared pointers in various places. Different policies are available
+ * for different reference count models.
+ *
+ * \section PointerImportant Important Classes
+ *
+ * - paludis::CountedPtr is used for reference counted pointers.
+ *
+ * \ingroup Utility
+ */
+
+/** \defgroup Tokeniser Tokeniser
+ * Tokeniser.
+ *
+ * The paludis::Tokeniser class provides a way of splitting strings into
+ * smaller strings.
+ *
+ * \section TokeniserImportant Important Classes
+ *
+ * - paludis::Tokeniser is the main class.
+ *
+ * \ingroup Utility
+ */
+
+/** \defgroup Filesystem Filesystem wrapper utilities
+ * Filesystem wrapper utilities.
+ *
+ * The C++ standard library doesn't provide anything for working with
+ * filesystem entries or directories. Rather than repeatedly making calls
+ * to stat(2) and opendir(3) all over the place (or using the bloatware
+ * utilities from Boost), we provide a few lightweight wrapper classes.
+ *
+ * \section FilesystemImportant Important Classes
+ *
+ * - paludis::FSEntry represents a filesystem entry.
+ * - paludis::DirIterator is an iterator for directories.
+ *
+ * \ingroup Utility
+ */
+
+/** \defgroup PStream Process handling
+ * Process handling.
+ *
+ * The paludis::PStream class can be used to execute a process and get its
+ * standard output.
+ *
+ * \section PStreamImportant Important Classes
+ *
+ * - paludis::PStream is a front-end std::istream descendent for process
+ *   invokation.
+ *
+ * \ingroup Utility
+ */
+
+/** \defgroup ConfigFile Configuration handling
+ * Configuration handling.
+ *
+ * The paludis::ConfigFile class is a handler for generic configuration files
+ * using a general line-oriented, comments start with a # format. Various
+ * subclasses provide interfaces for different file formats.
+ *
+ * \section ConfigFileImportant Important Classes
+ *
+ * - paludis::KeyValueFile represents a configuration file containing
+ *   KEY="value" type statements.
+ * - paludis::LineConfigFile represents a configuration file containing
+ *   lines of text.
+ */
+
+/** \defgroup Test Test cases and framework
+ * Test cases and framework.
+ *
+ * Test cases are classes that are descended from TestCase. Declaring an
+ * instance of a TestCase subclass will register it with the test case
+ * list.
+ */
+

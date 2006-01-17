@@ -1,0 +1,141 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include "default_environment.hh"
+#include "default_config_error.hh"
+#include "package_database.hh"
+#include "portage_repository.hh"
+#include "default_config.hh"
+#include "stringify.hh"
+#include <list>
+#include <vector>
+
+using namespace paludis;
+
+DefaultEnvironment::DefaultEnvironment() :
+    Environment(PackageDatabase::Pointer(new PackageDatabase),
+            PackageDatabase::Pointer(new PackageDatabase))
+{
+    Context context("When loading default environment:");
+
+    for (DefaultConfig::RepositoryIterator r(DefaultConfig::get_instance()->begin_repositories()),
+            r_end(DefaultConfig::get_instance()->end_repositories()) ; r != r_end ; ++r)
+    {
+        /// \todo abstract factory
+        if (r->get<rce_format>() != "portage")
+            throw DefaultConfigError("Unknown repository format '" + r->get<rce_format>() + "'");
+        Repository::Pointer repo(new PortageRepository(r->get<rce_location>(),
+                    r->get<rce_profile>()));
+        package_db()->add_repository(repo);
+    }
+
+    /// \bug vdb
+}
+
+DefaultEnvironment::~DefaultEnvironment()
+{
+}
+
+bool
+DefaultEnvironment::query_use(const UseFlagName &, const PackageDatabaseEntry * const) const
+{
+    /// \todo
+    return false;
+}
+
+bool
+DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const d) const
+{
+    if (keyword == KeywordName("*"))
+        return true;
+
+    Context context("When checking accept_keyword of '" + stringify(keyword) +
+            (d ? "' for " + stringify(*d) : stringify("'")) + ":");
+
+    bool result(false);
+
+    if (d)
+        for (DefaultConfig::PackageKeywordsIterator
+                k(DefaultConfig::get_instance()->begin_package_keywords(d->get<pde_package>())),
+                k_end(DefaultConfig::get_instance()->end_package_keywords(d->get<pde_package>())) ;
+                k != k_end ; ++k)
+        {
+            if (k->first->package() != d->get<pde_package>())
+                continue;
+            if (k->first->version_spec_ptr() && ! (((d->get<pde_version>()).*
+                            (k->first->version_operator().as_version_spec_operator()))
+                        (*k->first->version_spec_ptr())))
+                continue;
+            /// \bug slot
+
+            result |= k->second == keyword;
+        }
+
+    result |= DefaultConfig::get_instance()->end_default_keywords() !=
+        std::find(DefaultConfig::get_instance()->begin_default_keywords(),
+                DefaultConfig::get_instance()->end_default_keywords(),
+                keyword);
+
+    return result;
+}
+
+bool
+DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
+{
+    for (DefaultConfig::UserMasksIterator
+            k(DefaultConfig::get_instance()->begin_user_masks(d.get<pde_package>())),
+            k_end(DefaultConfig::get_instance()->end_user_masks(d.get<pde_package>())) ;
+            k != k_end ; ++k)
+    {
+        if (k->package() != d.get<pde_package>())
+            continue;
+        if (k->version_spec_ptr() && ! (((d.get<pde_version>()).*
+                        (k->version_operator().as_version_spec_operator()))
+                    (*k->version_spec_ptr())))
+            continue;
+        /// \bug slot
+
+        return true;
+    }
+
+    return false;
+}
+
+bool
+DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
+{
+    for (DefaultConfig::UserMasksIterator
+            k(DefaultConfig::get_instance()->begin_user_unmasks(d.get<pde_package>())),
+            k_end(DefaultConfig::get_instance()->end_user_unmasks(d.get<pde_package>())) ;
+            k != k_end ; ++k)
+    {
+        if (k->package() != d.get<pde_package>())
+            continue;
+        if (k->version_spec_ptr() && ! (((d.get<pde_version>()).*
+                        (k->version_operator().as_version_spec_operator()))
+                    (*k->version_spec_ptr())))
+            continue;
+        /// \bug slot
+
+        return true;
+    }
+
+    return false;
+}
+

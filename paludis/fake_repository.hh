@@ -1,0 +1,109 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#ifndef PALUDIS_GUARD_PALUDIS_FAKE_REPOSITORY_HH
+#define PALUDIS_GUARD_PALUDIS_FAKE_REPOSITORY_HH 1
+
+#include <paludis/repository.hh>
+#include <paludis/private_implementation_pattern.hh>
+
+/** \file
+ * Declarations for the FakeRepository class.
+ *
+ * \ingroup Database
+ */
+
+namespace paludis
+{
+    /**
+     * A FakeRepository is a Repository subclass that is used for
+     * various test cases.
+     *
+     * \ingroup Database
+     */
+    class FakeRepository : public Repository,
+                           private PrivateImplementationPattern<FakeRepository>
+    {
+        protected:
+            virtual bool do_has_category_named(const CategoryNamePart &) const;
+
+            virtual bool do_has_package_named(const CategoryNamePart &,
+                    const PackageNamePart &) const;
+
+            virtual CategoryNamePartCollection::ConstPointer do_category_names() const;
+
+            virtual QualifiedPackageNameCollection::ConstPointer do_package_names(
+                    const CategoryNamePart &) const;
+
+            virtual VersionSpecCollection::ConstPointer do_version_specs(
+                    const QualifiedPackageName &) const;
+
+            virtual bool do_has_version(const CategoryNamePart &,
+                    const PackageNamePart &, const VersionSpec &) const;
+
+            virtual VersionMetadata::ConstPointer do_version_metadata(
+                    const CategoryNamePart &, const PackageNamePart &,
+                    const VersionSpec &) const;
+
+            virtual bool do_query_repository_masks(const CategoryNamePart &,
+                    const PackageNamePart &, const VersionSpec &) const;
+
+            virtual bool do_query_profile_masks(const CategoryNamePart &,
+                    const PackageNamePart &, const VersionSpec &) const;
+
+            virtual bool do_query_use(const UseFlagName &, const bool &) const;
+
+            virtual bool do_query_use_mask(const UseFlagName &) const;
+
+        public:
+            /**
+             * Constructor.
+             */
+            FakeRepository(const RepositoryName & name);
+
+            /**
+             * Destructor.
+             */
+
+            ~FakeRepository();
+
+            /**
+             * Add a category.
+             */
+            void add_category(const CategoryNamePart &);
+
+            /**
+             * Add a package, and a category if necessary.
+             */
+            void add_package(const CategoryNamePart &, const PackageNamePart &);
+
+            /**
+             * Add a version, and a package and category if necessary, and set some
+             * default values for its metadata, and return said metadata.
+             */
+            VersionMetadata::Pointer add_version(
+                    const CategoryNamePart &, const PackageNamePart &, const VersionSpec &);
+
+            typedef CountedPtr<FakeRepository, count_policy::InternalCountTag> Pointer;
+            typedef CountedPtr<const FakeRepository, count_policy::InternalCountTag> ConstPointer;
+    };
+}
+
+
+#endif

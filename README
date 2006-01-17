@@ -1,0 +1,14 @@
+README for Paludis
+==================
+
+Paludis is in the really early prototype not intended for real use stage. If you
+aren't comfortable with C++, ebuild internals and Gentoo in general then you
+shouldn't be touching it.
+
+Developer documentation is available via 'make doxygen' (you need Doxygen
+installed, and having GraphViz will help too). It will be created under
+'doc/html/'. User documentation is kept in the bottom of a locked filing cabinet
+stuck in a disused lavatory with a sign on the door saying 'Beware of the
+Leopard'.
+
+.. vim: set spell spelllang=en tw=80 : ..

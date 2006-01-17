@@ -1,0 +1,4 @@
+CLEANFILES = *~
+MAINTAINERCLEANFILES = Makefile.in svn-version-filter-data.bash
+EXTRA_DIST = generated-file.txt svn-version-filter-data.bash.in
+
