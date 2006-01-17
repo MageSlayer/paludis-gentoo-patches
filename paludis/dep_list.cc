@@ -62,7 +62,7 @@ namespace paludis
         const PackageDatabaseEntry * current_package;
         int stack_depth;
 
-        bool rdepend_post;
+        DepListRdependOption rdepend_post;
         bool drop_circular;
         bool drop_self_circular;
         bool ignore_installed;
@@ -76,7 +76,7 @@ namespace paludis
             match_found(false),
             current_package(0),
             stack_depth(0),
-            rdepend_post(false),
+            rdepend_post(dlro_as_needed),
             drop_circular(false),
             drop_self_circular(false),
             ignore_installed(false),
@@ -185,7 +185,7 @@ DepList::visit(const PackageDepAtom * const p)
     Context context("When resolving package dependency '" + stringify(*p) + "':");
 
     bool already_there = false;
-    bool do_rdepend_post = false;
+    bool do_rdepend_post = (_implementation->rdepend_post == dlro_always);
 
     /* are we already installed? */
     if ((! _implementation->ignore_installed) &&
@@ -274,16 +274,19 @@ DepList::visit(const PackageDepAtom * const p)
         /* merge dependencies */
         _add_in_role(DepParser::parse(metadata->get(vmk_depend)), "DEPEND");
 
-        try
+        if (_implementation->rdepend_post != dlro_always)
         {
-            _add_in_role(DepParser::parse(metadata->get(vmk_rdepend)), "RDEPEND");
-        }
-        catch (const CircularDependencyError &)
-        {
-            if (_implementation->rdepend_post)
-                do_rdepend_post = true;
-            else
-                throw;
+            try
+            {
+                 _add_in_role(DepParser::parse(metadata->get(vmk_rdepend)), "RDEPEND");
+            }
+            catch (const CircularDependencyError &)
+            {
+                if (_implementation->rdepend_post != dlro_never)
+                    do_rdepend_post = true;
+                else
+                    throw;
+            }
         }
     }
 
@@ -442,7 +445,7 @@ DepList::visit(const BlockDepAtom * const d)
 }
 
 void
-DepList::set_rdepend_post(const bool value)
+DepList::set_rdepend_post(const DepListRdependOption value)
 {
     _implementation->rdepend_post = value;
 }

@@ -31,6 +31,28 @@
 namespace paludis
 {
     /**
+     * Used in DepList::set_rdepend_post
+     */
+    enum DepListRdependOption 
+    { 
+        /**
+         * RDEPENDs are always merged before the package; abort if this fails.
+         */
+        dlro_never,
+
+        /**
+         * RDEPENDs can be merged after the package, just before PDEPEND, if this is
+         * necessary for correct resolution
+         */
+        dlro_as_needed,
+
+        /**
+         * RDEPENDs are always merged with PDEPENDs.
+         */
+        dlro_always
+    };
+
+    /**
      * Holds a list of dependencies in merge order.
      */
     class DepList :
@@ -86,10 +108,9 @@ namespace paludis
             Iterator end() const;
 
             /**
-             * Behaviour: if set, RDEPEND entries can be treated as PDEPEND
-             * where necessary.
+             * Behaviour: determines when RDEPEND entries can be treated as PDEPEND.
              */
-            void set_rdepend_post(const bool value);
+            void set_rdepend_post(const DepListRdependOption value);
 
             /**
              * Behaviour: if set, a package that depends directly upon itself

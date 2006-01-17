@@ -61,12 +61,19 @@ do_install()
     }
 
     p::DepList dep_list(env);
-    dep_list.set_rdepend_post(CommandLine::get_instance()->a_dl_rdepend_post.specified());
     dep_list.set_drop_self_circular(CommandLine::get_instance()->a_dl_drop_self_circular.specified());
     dep_list.set_drop_circular(CommandLine::get_instance()->a_dl_drop_circular.specified());
     dep_list.set_ignore_installed(CommandLine::get_instance()->a_dl_ignore_installed.specified());
     dep_list.set_recursive_deps(CommandLine::get_instance()->a_dl_recursive_deps.specified());
     dep_list.set_max_stack_depth(CommandLine::get_instance()->a_dl_max_stack_depth.argument());
+
+    if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "always")
+        dep_list.set_rdepend_post(p::dlro_always);
+    else if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "never")
+        dep_list.set_rdepend_post(p::dlro_never);
+    else
+        dep_list.set_rdepend_post(p::dlro_as_needed);
+
 
     try
     {
@@ -129,7 +136,7 @@ do_install()
             << e.what() << ")" << endl;
         cerr << endl;
 
-        dep_list.set_rdepend_post(true);
+//        dep_list.set_rdepend_post(true);
         try
         {
             dep_list.add(targets);
