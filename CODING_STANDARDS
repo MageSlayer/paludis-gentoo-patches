@@ -1,0 +1,53 @@
+Coding Standards for Paludis
+============================
+
+These are rough guidelines. You should stick to these unless there's a good
+reason to do otherwise. There are lots more standards that aren't documented
+here yet -- ask for clarification as necessary.
+
+Indenting, Spacing
+------------------
+
+Indents are four spaces. There are no tabs anywhere. Braces go on a line of
+their own, and may be omitted if the clarity of the code isn't affected.
+
+Function calls have no space before or after the parentheses. Most operators and
+built-in functions have spaces before the opening parenthesis but not inside.
+
+For example::
+
+    if (some_function("moo", 2))
+        do_stuff("moo");
+    else
+    {
+        /* this needs some explanation */
+        while (0 != do_other_stuff(foo))
+            ++foo;
+    }
+
+
+Naming
+------
+
+Types are named in MixedCaseNoUnderscores. Variables and functions are named in
+lower_case_with_underscores. Private member variables that aren't going to end
+up being used anywhere external are _prefixed_with_underscore. Template values
+are suffixed_with_underscore_, and template typenames are SuffixedAsWell_ (and
+use typename rather than class). The files for SomeClass (and any small related
+utilities) would be some_class.hh and some_class.cc . Macros are UPPER_CASE, but
+they're evil so don't use them.
+
+Namespaces
+----------
+
+Everything under paludis/ should be inside namespace paludis. Sometimes
+sub-namespaces are used where they look useful.
+
+Never use using namespace std.
+
+Include Guards
+--------------
+
+Include guards are #define PALUDIS_GUARD_FILE_NAME_HH 1 .
+
+.. vim: set spell spelllang=en tw=80 et sts=4 sw=4 :
