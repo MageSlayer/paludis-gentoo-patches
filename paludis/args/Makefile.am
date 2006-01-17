@@ -18,7 +18,7 @@ libpaludisargs_a_SOURCES = \
 	bad_value.hh	bad_value.cc
 
 noinst_LIBRARIES = libpaludisargs.a
-noinst_PROGRAMS = $(TESTS)
+check_PROGRAMS = $(TESTS)
 
 test_ldadd = \
 	libpaludisargs.a \

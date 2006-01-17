@@ -12,8 +12,8 @@ libtest_a_SOURCES = \
 XFAIL_TESTS = test_fail_TEST
 TESTS = test_pass_TEST $(XFAIL_TESTS)
 
-noinst_LIBRARIES = libtest.a
-noinst_PROGRAMS = $(TESTS) $(XFAIL_TESTS)
+check_LIBRARIES = libtest.a
+check_PROGRAMS = $(TESTS) $(XFAIL_TESTS)
 
 TESTS_ENVIRONMENT = $(SHELL) $(top_srcdir)/test/run_test.sh
 
