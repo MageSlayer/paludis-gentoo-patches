@@ -126,13 +126,14 @@ main(int argc, char *argv[])
             cout << "Usage: " << argv[0] << " [options]" << endl;
             cout << endl;
             cout << *CommandLine::get_instance();
+            return EXIT_SUCCESS;
         }
         else
         {
             cerr << "Usage error: " << h.message << endl;
             cerr << "Try " << argv[0] << " --help" << endl;
+            return EXIT_FAILURE;
         }
-        return EXIT_FAILURE;
     }
     catch (const p::Exception & e)
     {
