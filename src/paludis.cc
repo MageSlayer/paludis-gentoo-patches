@@ -119,6 +119,12 @@ main(int argc, char *argv[])
 
         return EXIT_SUCCESS;
     }
+    catch (const paludis::args::ArgsError & e)
+    {
+        cerr << "Usage error: " << e.message() << endl;
+        cerr << "Try " << argv[0] << " --help" << endl;
+        return EXIT_FAILURE;
+    }
     catch (const DoHelp & h)
     {
         if (h.message.empty())
