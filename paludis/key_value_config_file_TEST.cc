@@ -43,6 +43,7 @@ namespace test_cases
             s << "two = second" << std::endl;
             s << "three" << std::endl;
             s << "four = \"fourth\" " << std::endl;
+            s << "five = ''" << std::endl;
             KeyValueConfigFile ff(&s);
 
             TEST_CHECK_EQUAL(ff.get("one"), "first");
@@ -50,6 +51,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(ff.get("three"), "");
             TEST_CHECK_EQUAL(ff.get("four"), "fourth");
             TEST_CHECK_EQUAL(ff.get("five"), "");
+            TEST_CHECK_EQUAL(ff.get("six"), "");
         }
     } test_key_value_config_file;
 
