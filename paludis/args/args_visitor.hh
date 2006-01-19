@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ * Copyright (c) 2006 Stephen Bennett <spb@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +22,7 @@
 #define PALUDIS_GUARD_ARGS_ARGS_VISITOR_HH 1
 
 #include <list>
+#include <paludis/visitor.hh>
 
 /** \file
  * Declaration for ArgsVisitor
@@ -39,10 +41,13 @@ namespace paludis
         class IntegerArg;
         class EnumArg;
 
+        typedef VisitorTypes<ArgsOption *, StringArg *, AliasArg *, SwitchArg *,
+                IntegerArg *, EnumArg *> ArgsVisitorTypes;
+
         /**
          * Visitor class. Processes command-line options as they are found.
          */
-        class ArgsVisitor
+        class ArgsVisitor : public ArgsVisitorTypes::Visitor
         {
             private:
                 std::list<std::string>::iterator *_args_index;

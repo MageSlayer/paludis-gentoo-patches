@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ * Copyright (c) 2006 Stephen Bennett <spb@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,7 +42,7 @@ namespace paludis
          *
          * \ingroup Args
          */
-        class ArgsOption
+        class ArgsOption : public virtual VisitableInterface<ArgsVisitorTypes>
         {
             friend class ArgsHandler;
 
@@ -121,11 +122,6 @@ namespace paludis
                 virtual ~ArgsOption()
                 {
                 }
-
-                /**
-                 * Accept a visitor.
-                 */
-                virtual void accept(ArgsVisitor * const) = 0;
         };
 
         /**
@@ -133,7 +129,7 @@ namespace paludis
          *
          * \ingroup Args
          */
-        class StringArg : public ArgsOption
+        class StringArg : public ArgsOption, public Visitable<StringArg, ArgsVisitorTypes>
         {
             private:
                 std::string _argument;
@@ -155,11 +151,6 @@ namespace paludis
                  * Set the argument returned by argument().
                  */
                 void set_argument(const std::string& arg) { _argument = arg; }
-
-                void accept(ArgsVisitor * const v)
-                {
-                    v->visit(this);
-                }
         };
 
         /**
@@ -167,7 +158,7 @@ namespace paludis
          *
          * \ingroup Args
          */
-        class IntegerArg : public ArgsOption
+        class IntegerArg : public ArgsOption, public Visitable<IntegerArg, ArgsVisitorTypes>
         {
             private:
                 int _argument;
@@ -187,11 +178,6 @@ namespace paludis
                  * Set the argument returned by argument().
                  */
                 void set_argument(const int arg) { _argument = arg; }
-
-                void accept(ArgsVisitor * const v)
-                {
-                    v->visit(this);
-                }
         };
 
         /**
@@ -199,7 +185,7 @@ namespace paludis
          *
          * \ingroup Args
          */
-        class EnumArg : public ArgsOption
+        class EnumArg : public ArgsOption, public Visitable<EnumArg, ArgsVisitorTypes>
         {
             private:
                 const std::map<std::string, std::string> _allowed_args;
@@ -268,11 +254,6 @@ namespace paludis
                  * Returns an iterator pointing just beyond the last valid argument.
                  */
                 AllowedArgIterator end_allowed_args() const { return _allowed_args.end(); }
-
-                void accept(ArgsVisitor * const v)
-                {
-                    v->visit(this);
-                }
         };
     }
 }

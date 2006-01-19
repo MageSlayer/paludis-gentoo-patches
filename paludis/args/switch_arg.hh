@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ * Copyright (c) 2006 Stephen Bennett <spb@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +40,7 @@ namespace paludis
          *
          * \ingroup Args
          */
-        class SwitchArg : public ArgsOption
+        class SwitchArg : public ArgsOption, public Visitable<SwitchArg, ArgsVisitorTypes>
         {
             public:
                 /**
@@ -47,11 +48,6 @@ namespace paludis
                  */
                 SwitchArg(ArgsGroup * const group, std::string long_name, char short_name,
                         std::string description);
-
-                void accept(ArgsVisitor * const v)
-                {
-                    v->visit(this);
-                }
         };
     }
 }

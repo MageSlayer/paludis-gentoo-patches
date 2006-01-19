@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ * Copyright (c) 2006 Stephen Bennett <spb@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,7 +39,7 @@ namespace paludis
          *
          * \ingroup Args
          */
-        class AliasArg : public ArgsOption
+        class AliasArg : public ArgsOption, public Visitable<AliasArg, ArgsVisitorTypes>
         {
             private:
                 ArgsOption * const _other;
@@ -57,11 +58,6 @@ namespace paludis
                 virtual void set_specified(const bool value)
                 {
                     _other->set_specified(value);
-                }
-
-                void accept(ArgsVisitor * const v)
-                {
-                    v->visit(this);
                 }
         };
     }
