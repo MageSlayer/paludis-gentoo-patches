@@ -4,6 +4,7 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <set>
+#include <algorithm>
 
 using namespace test;
 using namespace paludis;

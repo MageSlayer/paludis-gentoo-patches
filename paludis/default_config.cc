@@ -12,6 +12,7 @@
 #include "tokeniser.hh"
 #include "line_config_file.hh"
 #include "create_insert_iterator.hh"
+#include "iterator_utilities.hh"
 #include <fstream>
 #include <algorithm>
 
@@ -108,12 +109,12 @@ DefaultConfig::DefaultConfig()
                 if (tokens.empty())
                     continue;
                 if ("*" == tokens.at(0))
-                    std::copy(++(tokens.begin()), tokens.end(),
+                    std::copy(next(tokens.begin()), tokens.end(),
                             create_inserter<KeywordName>(std::back_inserter(_default_keywords)));
                 else
                 {
                     PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
-                    for (std::vector<std::string>::const_iterator t(++(tokens.begin())), t_end(tokens.end()) ;
+                    for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                         _keywords[a->package()].push_back(std::make_pair(a, *t));
                 }
@@ -227,7 +228,7 @@ DefaultConfig::DefaultConfig()
                     continue;
 
                 if ("*" == tokens.at(0))
-                    for (std::vector<std::string>::const_iterator t(++(tokens.begin())), t_end(tokens.end()) ;
+                    for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                     {
                         if ('-' == t->at(0))
