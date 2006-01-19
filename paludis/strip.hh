@@ -21,7 +21,7 @@ namespace paludis
         public std::unary_function<std::string, const std::string>
     {
         private:
-            const std::string & _second;
+            const std::string _second;
 
         public:
             StripAdapter(const std::string & second) :
