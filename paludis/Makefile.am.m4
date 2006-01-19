@@ -1,7 +1,7 @@
 ifdef(`__gnu__',`',`errprint(`This is not GNU m4...
 ')m4exit(1)') include(`misc/generated-file.txt')
 
-dnl vim: set ft=m4 et :
+dnl vim: set ft=m4 noet :
 
 define(`filelist', `')dnl
 define(`testlist', `')dnl
@@ -43,3 +43,14 @@ check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
 noinst_LIBRARIES = libpaludis.a
 
+Makefile.am : Makefile.am.m4 files.m4
+	$(top_srcdir)/misc/do_m4.bash Makefile.am
+
+paludis.hh : paludis.hh.m4 files.m4
+	$(top_srcdir)/misc/do_m4.bash paludis.hh
+
+smart_record.hh : smart_record.hh.m4
+	$(top_srcdir)/misc/do_m4.bash smart_record.hh
+
+comparison_policy.hh : comparison_policy.hh.m4
+	$(top_srcdir)/misc/do_m4.bash comparison_policy.hh.m4

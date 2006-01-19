@@ -17,14 +17,6 @@ run() {
     fi
 }
 
-make_from_m4() {
-    echo ">>> $(get_m4 ) -E ${1}.m4 > ${1}"
-    if ! $(get_m4 ) -E ${1}.m4 > ${1} ; then
-        echo "oops!" 1>&2
-        exit 127
-    fi
-}
-
 get() {
     type ${1}-${2}    &>/dev/null && echo ${1}-${2}    && return
     type ${1}${2//.}  &>/dev/null && echo ${1}${2//.}  && return
@@ -33,17 +25,10 @@ get() {
     kill $KILL_PID
 }
 
-get_m4() {
-    type "gm4" &>/dev/null && echo gm4 && return
-    type "m4"  &>/dev/null && echo m4  && return
-    echo "Could not find m4" 1>&2
-    kill $KILL_PID
-}
-
-make_from_m4 paludis/Makefile.am
-make_from_m4 paludis/paludis.hh
-make_from_m4 paludis/smart_record.hh
-make_from_m4 paludis/comparison_policy.hh
+misc/do_m4.bash paludis/Makefile.am || exit $?
+misc/do_m4.bash paludis/paludis.hh || exit $?
+misc/do_m4.bash paludis/smart_record.hh || exit $?
+misc/do_m4.bash paludis/comparison_policy.hh || exit $?
 run mkdir -p config
 run $(get libtoolize 1.5 ) --copy --force --automake
 rm -f config.cache
