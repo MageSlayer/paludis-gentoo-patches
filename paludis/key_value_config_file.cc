@@ -39,7 +39,7 @@ KeyValueConfigFile::replace_variables(const std::string & s) const
         if ('\\' == s[p])
         {
             if (++p >= s.length())
-                throw InternalError(__PRETTY_FUNCTION__, "todo");
+                throw InternalError(PALUDIS_HERE, "todo");
             r += s[p++];
         }
         else if ('$' != s[p])
@@ -48,13 +48,13 @@ KeyValueConfigFile::replace_variables(const std::string & s) const
         {
             std::string name;
             if (++p >= s.length())
-                throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug
+                throw InternalError(PALUDIS_HERE, "todo"); /// \bug
 
             if ('{' == s[p])
             {
                 std::string::size_type q;
                 if (std::string::npos == ((q = s.find("}", p))))
-                    throw InternalError(__PRETTY_FUNCTION__, "todo");
+                    throw InternalError(PALUDIS_HERE, "todo");
 
                 name = s.substr(p + 1, q - p - 1);
                 p = q + 1;
@@ -68,17 +68,17 @@ KeyValueConfigFile::replace_variables(const std::string & s) const
                                     "_0123456789", p))))
                     q = s.length();
 
-                name = s.substr(p, q - p - 1);
-                if (name.empty())
-                    throw InternalError(__PRETTY_FUNCTION__, "todo");
+                name = s.substr(p, q - p);
                 p = q;
             }
 
+            if (name.empty())
+                throw InternalError(PALUDIS_HERE, "todo");
             r += get(name);
         }
 
         if (p <= old_p)
-            throw InternalError(__PRETTY_FUNCTION__, "Infinite loop");
+            throw InternalError(PALUDIS_HERE, "Infinite loop");
     }
 
     return r;
@@ -92,9 +92,9 @@ KeyValueConfigFile::strip_quotes(const std::string & s) const
     if (std::string::npos != std::string("'\"").find(s[0]))
     {
         if (s.length() < 2)
-            throw InternalError(__PRETTY_FUNCTION__, "todo");
+            throw InternalError(PALUDIS_HERE, "todo");
         if (s[s.length() - 1] != s[0])
-            throw InternalError(__PRETTY_FUNCTION__, "todo");
+            throw InternalError(PALUDIS_HERE, "todo");
         return s.substr(1, s.length() - 2);
     }
     else
