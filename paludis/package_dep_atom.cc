@@ -26,8 +26,6 @@
 #include "package_dep_atom.hh"
 #include "dep_atom_visitor.hh"
 
-#include "visitor_pattern-impl.hh"
-
 using namespace paludis;
 
 PackageDepAtom::PackageDepAtom(const QualifiedPackageName & package) :

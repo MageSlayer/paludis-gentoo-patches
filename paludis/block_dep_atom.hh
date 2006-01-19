@@ -22,6 +22,7 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/package_dep_atom.hh>
+#include <paludis/dep_atom_visitor.hh>
 
 /** \file
  * Declarations for the BlockDepAtom class.
@@ -38,8 +39,9 @@ namespace paludis
      *
      * \ingroup DepResolver
      */
-    class BlockDepAtom : public DepAtom,
-                         public Visitable<BlockDepAtom, DepAtomVisitor>
+    class BlockDepAtom :
+        public DepAtom,
+        public Visitable<BlockDepAtom, DepAtomVisitorTypes>
     {
         private:
             PackageDepAtom::ConstPointer _atom;

@@ -58,11 +58,8 @@ namespace paludis
     class DepList :
         private InstantiationPolicy<DepList, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<DepList>,
-        protected DepAtomVisitor,
-        protected VisitsComposite<DepList, AllDepAtom>
+        protected DepAtomVisitorTypes::ConstVisitor
     {
-        friend class VisitsComposite<DepList, AllDepAtom>;
-
         private:
             void _add_in_role(DepAtom::ConstPointer, const std::string & role);
 
@@ -71,9 +68,7 @@ namespace paludis
             void visit(const UseDepAtom * const);
             void visit(const AnyDepAtom * const);
             void visit(const BlockDepAtom * const);
-
-            void enter(const AllDepAtom * const);
-            void leave(const AllDepAtom * const);
+            void visit(const AllDepAtom * const);
 
         public:
             /**

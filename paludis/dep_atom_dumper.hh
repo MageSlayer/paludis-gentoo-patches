@@ -33,11 +33,9 @@ namespace paludis
     /**
      * Dump dependency atoms to a stream in pseudo-XML form, for testing.
      */
-    class DepAtomDumper : public DepAtomVisitor,
-                          public VisitsComposite<DepAtomDumper, AllDepAtom>,
-                          public VisitsComposite<DepAtomDumper, AnyDepAtom>,
-                          public VisitsComposite<DepAtomDumper, UseDepAtom>,
-                          private InstantiationPolicy<DepAtomDumper, instantiation_method::NonCopyableTag>
+    class DepAtomDumper :
+        public DepAtomVisitorTypes::ConstVisitor,
+        private InstantiationPolicy<DepAtomDumper, instantiation_method::NonCopyableTag>
     {
         private:
             std::ostream * const _o;
@@ -48,14 +46,11 @@ namespace paludis
              */
             DepAtomDumper(std::ostream * const o);
 
-            void enter(const AllDepAtom * const);
-            void leave(const AllDepAtom * const);
+            void visit(const AllDepAtom * const);
 
-            void enter(const AnyDepAtom * const);
-            void leave(const AnyDepAtom * const);
+            void visit(const AnyDepAtom * const);
 
-            void enter(const UseDepAtom * const);
-            void leave(const UseDepAtom * const);
+            void visit(const UseDepAtom * const);
 
             void visit(const PackageDepAtom * const);
 

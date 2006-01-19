@@ -1,0 +1,153 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation; either version
+ * 2 of the License, or (at your option) any later version.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include "visitor.hh"
+#include "deleter.hh"
+#include "indirect_iterator.hh"
+#include <test/test_framework.hh>
+#include <test/test_runner.hh>
+#include <vector>
+#include <algorithm>
+
+using namespace paludis;
+using namespace test;
+
+class Node;
+class FooNode;
+class BarNode;
+
+typedef VisitorTypes<FooNode *, BarNode *> NodeVisitorTypes;
+
+struct Node :
+    virtual VisitableInterface<NodeVisitorTypes>
+{
+};
+
+struct FooNode :
+    Node,
+    Visitable<FooNode, NodeVisitorTypes>
+{
+    std::string c_foo() const
+    {
+        return "c_foo";
+    }
+
+    std::string foo()
+    {
+        return "foo";
+    }
+};
+
+struct BarNode :
+    Node,
+    Visitable<BarNode, NodeVisitorTypes>
+{
+    std::string c_bar() const
+    {
+        return "c_bar";
+    }
+
+    std::string bar()
+    {
+        return "bar";
+    }
+};
+
+struct NodeCVisitor :
+    NodeVisitorTypes::ConstVisitor
+{
+    std::string r;
+
+    virtual void visit(const FooNode * const f)
+    {
+        r.append(f->c_foo());
+    }
+
+    virtual void visit(const BarNode * const b)
+    {
+        r.append(b->c_bar());
+    }
+};
+
+struct NodeVisitor :
+    NodeVisitorTypes::Visitor
+{
+    std::string r;
+
+    virtual void visit(FooNode * const f)
+    {
+        r.append(f->foo());
+    }
+
+    virtual void visit(BarNode * const b)
+    {
+        r.append(b->bar());
+    }
+};
+
+namespace test_cases
+{
+    struct ConstVisitorTest : TestCase
+    {
+        ConstVisitorTest() : TestCase("const visitor") { }
+
+        void run()
+        {
+            std::vector<Node *> v;
+
+            v.push_back(new FooNode);
+            v.push_back(new BarNode);
+            v.push_back(new FooNode);
+
+            NodeCVisitor c;
+            TEST_CHECK_EQUAL(c.r, "");
+            for (IndirectIterator<std::vector<Node *>::const_iterator, Node>
+                    i(v.begin()), i_end(v.end()) ; i != i_end ; ++i)
+                i->accept(&c);
+            TEST_CHECK_EQUAL(c.r, "c_fooc_barc_foo");
+
+            std::for_each(v.begin(), v.end(), Deleter());
+        }
+    } test_const_visitor;
+
+    struct VisitorTest : TestCase
+    {
+        VisitorTest() : TestCase("visitor") { }
+
+        void run()
+        {
+            std::vector<Node *> v;
+
+            v.push_back(new FooNode);
+            v.push_back(new BarNode);
+            v.push_back(new FooNode);
+
+            NodeVisitor c;
+            TEST_CHECK_EQUAL(c.r, "");
+            for (IndirectIterator<std::vector<Node *>::iterator, Node>
+                    i(v.begin()), i_end(v.end()) ; i != i_end ; ++i)
+                i->accept(&c);
+            TEST_CHECK_EQUAL(c.r, "foobarfoo");
+
+            std::for_each(v.begin(), v.end(), Deleter());
+        }
+    } test_visitor;
+}
+

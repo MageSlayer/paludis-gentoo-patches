@@ -20,7 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH 1
 
-#include <paludis/visitor_pattern.hh>
+#include <paludis/visitor.hh>
+#include <paludis/dep_atom_visitor.hh>
 #include <paludis/composite_pattern.hh>
 #include <paludis/instantiation_policy.hh>
 #include <paludis/counted_ptr.hh>
@@ -33,7 +34,6 @@
 
 namespace paludis
 {
-    class DepAtomVisitor;
     class CompositeDepAtom;
 
     /**
@@ -42,7 +42,7 @@ namespace paludis
      * \ingroup DepResolver
      */
     class DepAtom :
-        public virtual VisitableInterface<DepAtomVisitor>,
+        public virtual VisitableInterface<DepAtomVisitorTypes>,
         public virtual Composite<DepAtom, CompositeDepAtom>,
         private InstantiationPolicy<DepAtom, instantiation_method::NonCopyableTag>,
         public InternalCounted<DepAtom>

@@ -21,10 +21,3 @@
 
 using namespace paludis;
 
-DepAtomVisitor::DepAtomVisitor()
-{
-}
-
-DepAtomVisitor::~DepAtomVisitor()
-{
-}

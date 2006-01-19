@@ -25,6 +25,7 @@
 #include <paludis/version_operator.hh>
 #include <paludis/slot_name.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/dep_atom_visitor.hh>
 #include <ostream>
 
 /** \file
@@ -42,8 +43,9 @@ namespace paludis
      *
      * \ingroup DepResolver
      */
-    class PackageDepAtom : public DepAtom,
-                           public Visitable<PackageDepAtom, DepAtomVisitor>
+    class PackageDepAtom :
+        public DepAtom,
+        public Visitable<PackageDepAtom, DepAtomVisitorTypes>
     {
         private:
             QualifiedPackageName _package;

@@ -22,6 +22,7 @@
 
 #include <paludis/composite_dep_atom.hh>
 #include <paludis/use_flag_name.hh>
+#include <paludis/dep_atom_visitor.hh>
 
 /** \file
  * Declarations for the UseDepAtom class.
@@ -31,15 +32,14 @@
 
 namespace paludis
 {
-    class DepAtomVisitor;
-
     /**
      * Represents a use? ( ) dependency atom.
      *
      * \ingroup DepResolver
      */
-    class UseDepAtom : public CompositeDepAtom,
-                       public Visitable<UseDepAtom, DepAtomVisitor>
+    class UseDepAtom :
+        public CompositeDepAtom,
+        public Visitable<UseDepAtom, DepAtomVisitorTypes>
     {
         private:
             const UseFlagName _flag;

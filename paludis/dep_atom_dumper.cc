@@ -25,9 +25,6 @@
 #include "dep_atom_visitor.hh"
 #include "dep_atom_dumper.hh"
 
-#include "visitor_pattern-impl.hh"
-#include "composite_visitor_pattern-impl.hh"
-
 using namespace paludis;
 
 DepAtomDumper::DepAtomDumper(std::ostream * const o) :
@@ -36,39 +33,33 @@ DepAtomDumper::DepAtomDumper(std::ostream * const o) :
 }
 
 void
-DepAtomDumper::enter(const AllDepAtom * const)
+DepAtomDumper::visit(const AllDepAtom * const a)
 {
     *_o << "<all>";
-}
-
-void
-DepAtomDumper::leave(const AllDepAtom * const)
-{
+    for (CompositeDepAtom::Iterator i(a->begin()), i_end(a->end()) ;
+            i != i_end ; ++i)
+        (*i)->accept(this);
     *_o << "</all>";
 }
 
 void
-DepAtomDumper::enter(const AnyDepAtom * const)
+DepAtomDumper::visit(const AnyDepAtom * const a)
 {
     *_o << "<any>";
-}
-
-void
-DepAtomDumper::leave(const AnyDepAtom * const)
-{
+    for (CompositeDepAtom::Iterator i(a->begin()), i_end(a->end()) ;
+            i != i_end ; ++i)
+        (*i)->accept(this);
     *_o << "</any>";
 }
 
 void
-DepAtomDumper::enter(const UseDepAtom * const f)
+DepAtomDumper::visit(const UseDepAtom * const a)
 {
-    *_o << "<use flag=\"" << f->flag() << "\" inverse=\""
-        << (f->inverse() ? "true" : "false") << "\">";
-}
-
-void
-DepAtomDumper::leave(const UseDepAtom * const)
-{
+    *_o << "<use flag=\"" << a->flag() << "\" inverse=\""
+        << (a->inverse() ? "true" : "false") << "\">";
+    for (CompositeDepAtom::Iterator i(a->begin()), i_end(a->end()) ;
+            i != i_end ; ++i)
+        (*i)->accept(this);
     *_o << "</use>";
 }
 

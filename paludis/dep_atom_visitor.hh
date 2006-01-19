@@ -20,15 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_VISITOR_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_VISITOR_HH 1
 
-#include <paludis/dep_atom.hh>
-#include <paludis/visitor_pattern.hh>
-#include <paludis/composite_visitor_pattern.hh>
-
-/** \file
- * Declarations for the DepAtomVisitor base class.
- *
- * \ingroup DepResolver
- */
+#include <paludis/visitor.hh>
 
 namespace paludis
 {
@@ -38,28 +30,8 @@ namespace paludis
     class UseDepAtom;
     class BlockDepAtom;
 
-    /**
-     * A DepAtomVisitor is a generic base class for traversing a DepAtom
-     * collection.
-     */
-    class DepAtomVisitor : public virtual Visits<PackageDepAtom>,
-                           public virtual Visits<AllDepAtom>,
-                           public virtual Visits<AnyDepAtom>,
-                           public virtual Visits<UseDepAtom>,
-                           public virtual Visits<BlockDepAtom>
-    {
-        protected:
-            /**
-             * Constructor.
-             */
-            DepAtomVisitor();
-
-        public:
-            /**
-             * Destructor.
-             */
-            virtual ~DepAtomVisitor();
-    };
+    typedef VisitorTypes<PackageDepAtom *, AllDepAtom *, AnyDepAtom *,
+            UseDepAtom *, BlockDepAtom *> DepAtomVisitorTypes;
 }
 
 #endif

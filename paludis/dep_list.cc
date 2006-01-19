@@ -25,8 +25,6 @@
 #include "no_resolvable_option_error.hh"
 #include "circular_dependency_error.hh"
 #include "internal_error.hh"
-#include "visitor_pattern-impl.hh"
-#include "composite_visitor_pattern-impl.hh"
 #include "all_dep_atom.hh"
 #include "any_dep_atom.hh"
 #include "block_dep_atom.hh"
@@ -145,13 +143,11 @@ DepList::end() const
 }
 
 void
-DepList::enter(const AllDepAtom * const)
+DepList::visit(const AllDepAtom * const v)
 {
-}
-
-void
-DepList::leave(const AllDepAtom * const)
-{
+    for (CompositeDepAtom::Iterator i(v->begin()), i_end(v->end()) ;
+            i != i_end ; ++i)
+        (*i)->accept(this);
 }
 
 struct DepListEntryMatcher :

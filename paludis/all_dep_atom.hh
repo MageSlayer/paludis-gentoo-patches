@@ -37,8 +37,9 @@ namespace paludis
      *
      * \ingroup DepResolver
      */
-    class AllDepAtom : public CompositeDepAtom,
-                       public Visitable<AllDepAtom, DepAtomVisitor>
+    class AllDepAtom :
+        public CompositeDepAtom,
+        public Visitable<AllDepAtom, DepAtomVisitorTypes>
     {
         public:
             /**

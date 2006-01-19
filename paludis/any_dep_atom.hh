@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_ANY_DEP_ATOM_HH 1
 
 #include <paludis/composite_dep_atom.hh>
+#include <paludis/dep_atom_visitor.hh>
 
 /** \file
  * Declarations for AnyDepAtom.
@@ -30,15 +31,14 @@
 
 namespace paludis
 {
-    class DepAtomVisitor;
-
     /**
      * Represents a "|| ( )" dependency block.
      *
      * \ingroup DepResolver
      */
-    class AnyDepAtom : public CompositeDepAtom,
-                       public Visitable<AnyDepAtom, DepAtomVisitor>
+    class AnyDepAtom :
+        public CompositeDepAtom,
+        public Visitable<AnyDepAtom, DepAtomVisitorTypes>
     {
         public:
             /**
