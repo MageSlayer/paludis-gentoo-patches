@@ -136,7 +136,6 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wall])
 	CHECK_CXXFLAG([-Wextra])
 	CHECK_CXXFLAG([-Wold-style-cast])
-	CHECK_CXXFLAG([-Wno-overloaded-virtual])
 	CHECK_CXXFLAG([-Wredundant-decls])
 	CHECK_CXXFLAG([-pedantic])
 else
