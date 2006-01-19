@@ -7,8 +7,9 @@ define(`filelist', `')dnl
 define(`testlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
-$1_TEST_SOURCES = $1_TEST.cc
+$1_TEST_SOURCES = $1_TEST.cc exception_to_debug_string.hh exception_to_debug_string.cc
 $1_TEST_LDADD = $(top_builddir)/test/libtest.a libpaludis.a
+$1_TEST_CPPFLAGS = -DPALUDIS_TEST_CASE=1
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
 define(`addhh', `define(`filelist', filelist `$1.hh')')dnl

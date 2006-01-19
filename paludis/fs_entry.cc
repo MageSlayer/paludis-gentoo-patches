@@ -160,7 +160,7 @@ FSEntry::_normalise()
     catch (const std::exception & e)
     {
         Context c("When normalising FSEntry path '" + _path + "':");
-        throw InternalError(__PRETTY_FUNCTION__,
+        throw InternalError(PALUDIS_HERE,
                 "caught std::exception '" + stringify(e.what()) + "'");
     }
 }

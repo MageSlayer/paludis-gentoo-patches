@@ -73,7 +73,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
                 continue;
         }
 
-        throw InternalError(__PRETTY_FUNCTION__, "bad state");
+        throw InternalError(PALUDIS_HERE, "bad state");
 
 #endif
     } while (false);
@@ -102,7 +102,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
                 continue;
         }
 
-        throw InternalError(__PRETTY_FUNCTION__, "bad state " + stringify(state));
+        throw InternalError(PALUDIS_HERE, "bad state " + stringify(state));
     } while (false);
 
     switch (package_db()->fetch_repository(e.get<pde_repository>())->query_use(f))
@@ -115,7 +115,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
             return true;
     }
 
-    throw InternalError(__PRETTY_FUNCTION__, "bad state");
+    throw InternalError(PALUDIS_HERE, "bad state");
 }
 
 bool

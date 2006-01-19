@@ -303,7 +303,7 @@ void
 DepList::visit(const UseDepAtom * const u)
 {
     if (! _implementation->current_package)
-        throw InternalError(__PRETTY_FUNCTION__, "current_package is 0");
+        throw InternalError(PALUDIS_HERE, "current_package is 0");
 
     if (_implementation->environment->query_use(u->flag(),
                 *_implementation->current_package) ^ u->inverse())
@@ -348,7 +348,7 @@ DepList::visit(const AnyDepAtom * const a)
 
     std::list<DepAtom::ConstPointer> viable_children;
     if (0 == _implementation->current_package)
-        throw InternalError(__PRETTY_FUNCTION__, "current_package is 0");
+        throw InternalError(PALUDIS_HERE, "current_package is 0");
     std::copy(a->begin(), a->end(), filter_inserter(
                 std::back_inserter(viable_children), IsViable(*_implementation)));
 

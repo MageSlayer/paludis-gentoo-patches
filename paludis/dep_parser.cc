@@ -138,7 +138,7 @@ DepParser::parse(const std::string & s)
                                  continue;
 
                         }
-                        throw InternalError(__PRETTY_FUNCTION__,
+                        throw InternalError(PALUDIS_HERE,
                                 "dps_initial: i->first is " + stringify(i->first));
 
                     } while (0);
@@ -160,7 +160,7 @@ DepParser::parse(const std::string & s)
                             case dpl_close_paren:
                                 throw DepStringParseError(s, "Expected space after '||'");
                         }
-                        throw InternalError(__PRETTY_FUNCTION__,
+                        throw InternalError(PALUDIS_HERE,
                                 "dps_had_double_bar: i->first is " + stringify(i->first));
 
                     } while (0);
@@ -182,7 +182,7 @@ DepParser::parse(const std::string & s)
                             case dpl_close_paren:
                                 throw DepStringParseError(s, "Expected '(' after '|| '");
                         }
-                        throw InternalError(__PRETTY_FUNCTION__,
+                        throw InternalError(PALUDIS_HERE,
                                 "dps_had_double_bar_space: i->first is " + stringify(i->first));
                     } while (0);
                     continue;
@@ -203,7 +203,7 @@ DepParser::parse(const std::string & s)
                             case dpl_close_paren:
                                 throw DepStringParseError(s, "Expected space after '(' or ')'");
                         }
-                        throw InternalError(__PRETTY_FUNCTION__,
+                        throw InternalError(PALUDIS_HERE,
                                 "dps_had_paren: i->first is " + stringify(i->first));
                     } while (0);
                     continue;
@@ -224,7 +224,7 @@ DepParser::parse(const std::string & s)
                             case dpl_close_paren:
                                 throw DepStringParseError(s, "Expected space after use flag");
                         }
-                        throw InternalError(__PRETTY_FUNCTION__,
+                        throw InternalError(PALUDIS_HERE,
                                 "dps_had_use_flag: i->first is " + stringify(i->first));
                     } while (0);
                     continue;
@@ -245,12 +245,12 @@ DepParser::parse(const std::string & s)
                             case dpl_close_paren:
                                 throw DepStringParseError(s, "Expected '(' after use flag");
                         }
-                        throw InternalError(__PRETTY_FUNCTION__,
+                        throw InternalError(PALUDIS_HERE,
                                 "dps_had_use_flag_space: i->first is " + stringify(i->first));
                     } while (0);
                     continue;
             }
-            throw InternalError(__PRETTY_FUNCTION__,
+            throw InternalError(PALUDIS_HERE,
                     "state is " + stringify(state));
 
         } while (0);

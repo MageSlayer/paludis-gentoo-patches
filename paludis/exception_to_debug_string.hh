@@ -1,11 +1,12 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ * Copyright (c) 2006 Ciaran McCreesh <ciaranm@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
- * Public License version 2, as published by the Free Software Foundation.
+ * Public License as published by the Free Software Foundation; either version
+ * 2 of the License, or (at your option) any later version.
  *
  * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -17,17 +18,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "internal_error.hh"
+#ifndef PALUDIS_GUARD_PALUDIS_EXCEPTION_TO_DEBUG_STRING_HH
+#define PALUDIS_GUARD_PALUDIS_EXCEPTION_TO_DEBUG_STRING_HH 1
 
-using namespace paludis;
+#include <paludis/stringify.hh>
+#include <paludis/exception.hh>
+#include <exception>
 
-InternalError::InternalError(const std::string & where, const std::string & message) throw () :
-    Exception("Eek! Internal error at " + where + ": " + message)
-{
-}
+#ifdef PALUDIS_TEST_CASE
 
-InternalError::InternalError(const std::string & where) throw () :
-    Exception("Eek! Internal error at " + where)
-{
-}
+std::string exception_to_debug_string(const std::exception & e);
 
+#endif
+
+#endif

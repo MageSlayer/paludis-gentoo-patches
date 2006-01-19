@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_INTERNAL_ERROR_HH 1
 
 #include <paludis/exception.hh>
+#include <paludis/stringify.hh>
 
 /** \file
  * Declaration for the InternalError exception class.
@@ -38,24 +39,25 @@ namespace paludis
             /**
              * Constructor.
              *
-             * \param function Should be set to the __PRETTY_FUNCTION__ magic
-             * constant.
+             * \param function Should be set to the PALUDIS_HERE macro.
              *
              * \param message A short message.
              */
-            InternalError(const char * const function, const std::string & message) throw ();
+            InternalError(const std::string & where, const std::string & message) throw ();
 
             /**
              * Constructor, with no message (deprecated).
              *
-             * \param function Should be set to the __PRETTY_FUNCTION__ magic
-             * constant.
+             * \param function Should be set to the PALUDIS_HERE macro.
              *
              * \deprecated Use paludis::InternalError::InternalError(const char * const,
              * const std::string &) instead.
              */
-            InternalError(const char * const function) throw () PALUDIS_ATTRIBUTE((deprecated));
+            InternalError(const std::string & where) throw () PALUDIS_ATTRIBUTE((deprecated));
     };
 }
+
+#define PALUDIS_HERE (paludis::stringify(__PRETTY_FUNCTION__) + " at " + \
+        paludis::stringify(__FILE__) + ":" + paludis::stringify(__LINE__))
 
 #endif

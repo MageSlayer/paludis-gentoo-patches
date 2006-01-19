@@ -93,7 +93,7 @@ QualifiedPackageNameCollection::ConstPointer
 FakeRepository::do_package_names(const CategoryNamePart & c) const
 {
     if (! has_category_named(c))
-        throw InternalError(__PRETTY_FUNCTION__, "no category named " + stringify(c));
+        throw InternalError(PALUDIS_HERE, "no category named " + stringify(c));
     QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection);
     PackageNamePartCollection::Iterator p(_implementation->package_names.find(c)->second->begin()),
         p_end(_implementation->package_names.find(c)->second->end());
@@ -106,9 +106,9 @@ VersionSpecCollection::ConstPointer
 FakeRepository::do_version_specs(const QualifiedPackageName & n) const
 {
     if (! has_category_named(n.get<qpn_category>()))
-        throw InternalError(__PRETTY_FUNCTION__, "no category");
+        throw InternalError(PALUDIS_HERE, "no category");
     if (! has_package_named(n.get<qpn_category>(), n.get<qpn_package>()))
-        throw InternalError(__PRETTY_FUNCTION__, "no package");
+        throw InternalError(PALUDIS_HERE, "no package");
     return _implementation->versions.find(n)->second;
 }
 
@@ -117,9 +117,9 @@ FakeRepository::do_has_version(const CategoryNamePart & c,
         const PackageNamePart & p, const VersionSpec & v) const
 {
     if (! has_category_named(c))
-        throw InternalError(__PRETTY_FUNCTION__, "no category");
+        throw InternalError(PALUDIS_HERE, "no category");
     if (! has_package_named(c, p))
-        throw InternalError(__PRETTY_FUNCTION__, "no package");
+        throw InternalError(PALUDIS_HERE, "no package");
     return _implementation->versions.find(QualifiedPackageName(c, p))->second->find(v) !=
         _implementation->versions.find(QualifiedPackageName(c, p))->second->end();
 }
@@ -160,7 +160,7 @@ FakeRepository::do_version_metadata(
         const CategoryNamePart & c, const PackageNamePart & p, const VersionSpec & v) const
 {
     if (! has_version(c, p, v))
-        throw InternalError(__PRETTY_FUNCTION__, "no version");
+        throw InternalError(PALUDIS_HERE, "no version");
     return _implementation->metadata.find(stringify(c) + "/" + stringify(p) + "-" + stringify(v))->second;
 }
 

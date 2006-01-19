@@ -56,7 +56,7 @@ VersionOperator::_decode(const std::string & v)
                 }
     }
 
-    throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug
+    throw InternalError(PALUDIS_HERE, "todo"); /// \bug
 }
 
 std::ostream &
@@ -98,7 +98,7 @@ paludis::operator<< (std::ostream & s, const VersionOperator & v)
                 break;
         }
 
-        throw InternalError(__PRETTY_FUNCTION__, "v._v is " + stringify(v._v));
+        throw InternalError(PALUDIS_HERE, "v._v is " + stringify(v._v));
 
     } while (false);
 
@@ -129,6 +129,6 @@ bool (VersionSpec::* VersionOperator::as_version_spec_operator() const)(const Ve
             break;
     }
 
-    throw InternalError(__PRETTY_FUNCTION__, "_v is " + stringify(_v));
+    throw InternalError(PALUDIS_HERE, "_v is " + stringify(_v));
 }
 

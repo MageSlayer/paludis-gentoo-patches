@@ -106,18 +106,18 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
     Context context("When reading profile directory '" + stringify(f) + "':");
 
     if (! f.is_directory())
-        throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+        throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
 
     if ((f / "parent").exists())
     {
         std::ifstream parent_file(stringify(f / "parent").c_str());
         if (! parent_file)
-            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+            throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
         LineConfigFile parent(&parent_file);
         if (parent.begin() != parent.end())
             add_profile((f / *parent.begin()).realpath());
         else
-            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+            throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
     }
 
     if ((f / "make.defaults").exists())
@@ -126,7 +126,7 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 
         std::ifstream make_defaults_file(stringify(f / "make.defaults").c_str());
         if (! make_defaults_file)
-            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+            throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
         KeyValueConfigFile make_defaults_f(&make_defaults_file);
         std::vector<std::string> uses;
         tokeniser.tokenise(make_defaults_f.get("USE"), std::back_inserter(uses));
@@ -144,7 +144,7 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
     {
         std::ifstream use_mask_file(stringify(f / "use.mask").c_str());
         if (! use_mask_file)
-            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+            throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
         LineConfigFile use_mask_f(&use_mask_file);
         for (LineConfigFile::Iterator line(use_mask_f.begin()), line_end(use_mask_f.end()) ;
                 line != line_end ; ++line)
@@ -242,7 +242,7 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
 
     need_category_names();
     /// \todo
-    throw InternalError(__PRETTY_FUNCTION__, "not implemented");
+    throw InternalError(PALUDIS_HERE, "not implemented");
     return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection);
 }
 
@@ -291,7 +291,7 @@ PortageRepository::need_category_names() const
                 "profiles/categories").c_str());
 
     if (! cat_file)
-        throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug real exception needed
+        throw InternalError(PALUDIS_HERE, "todo"); /// \bug real exception needed
 
     LineConfigFile cats(&cat_file);
 
@@ -386,7 +386,7 @@ PortageRepository::do_version_metadata(
         std::string line;
 
         if (! cache)
-            throw InternalError(__PRETTY_FUNCTION__, "todo");
+            throw InternalError(PALUDIS_HERE, "todo");
 
         /// \bug this lot
         std::getline(cache, line); result->set(vmk_depend,      line);
@@ -412,7 +412,7 @@ PortageRepository::do_version_metadata(
         result->set(vmk_keywords, "*");
     }
     else
-        throw InternalError(__PRETTY_FUNCTION__, "not implemented"); /// \todo
+        throw InternalError(PALUDIS_HERE, "not implemented"); /// \todo
 
     _implementation->metadata.insert(std::make_pair(std::make_pair(QualifiedPackageName(c, p), v), result));
     return result;
@@ -429,7 +429,7 @@ PortageRepository::do_query_repository_masks(const CategoryNamePart & c,
 
         std::ifstream f(stringify(_implementation->location / "profiles" / "package.mask").c_str());
         if (! f)
-            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug exception
+            throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
         LineConfigFile ff(&f);
         for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
                 line != line_end ; ++line)

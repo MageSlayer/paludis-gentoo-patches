@@ -176,7 +176,7 @@ PackageDatabase::better_repository(const RepositoryName & r1,
             return r1;
     }
 
-    throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug
+    throw InternalError(PALUDIS_HERE, "todo"); /// \bug
 }
 
 RepositoryName

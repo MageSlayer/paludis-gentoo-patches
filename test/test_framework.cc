@@ -19,6 +19,7 @@
  */
 
 #include "test_framework.hh"
+#include <paludis/attributes.hh>
 #include <iostream>
 #include <algorithm>
 #include <unistd.h>
@@ -30,6 +31,13 @@
  */
 
 using namespace test;
+
+std::string exception_to_debug_string(const std::exception &) PALUDIS_ATTRIBUTE((weak));
+
+std::string exception_to_debug_string(const std::exception & e)
+{
+    return e.what();
+}
 
 #ifndef DOXYGEN
 
@@ -100,7 +108,7 @@ TestCase::call_run()
     catch (std::exception &e)
     {
         throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__,
-                "Test threw unexpected exception " + paludis::stringify(e.what()));
+                "Test threw unexpected exception " + exception_to_debug_string(e));
     }
     catch (...)
     {
@@ -165,7 +173,7 @@ class RunTest
                 }
                 catch (std::exception &e)
                 {
-                    std::cout << "!{" << e.what() << "} " << std::flush;
+                    std::cout << "!{" << exception_to_debug_string(e) << "} " << std::flush;
                     had_local_failure = true;
                     *_had_a_failure = true;
                 }

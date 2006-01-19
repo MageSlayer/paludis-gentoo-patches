@@ -59,7 +59,7 @@ PackageDepAtom::PackageDepAtom(const std::string & s) :
     try
     {
         if (s.empty())
-            throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug
+            throw InternalError(PALUDIS_HERE, "todo"); /// \bug
 
         if (std::string::npos != std::string("<>=~").find(s.at(0)))
         {
@@ -72,10 +72,10 @@ PackageDepAtom::PackageDepAtom(const std::string & s) :
             while (true)
             {
                 if (p >= s.length())
-                    throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug
+                    throw InternalError(PALUDIS_HERE, "todo"); /// \bug
                 q = s.find('-', q + 1);
                 if (++q >= s.length())
-                    throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug
+                    throw InternalError(PALUDIS_HERE, "todo"); /// \bug
                 if (s.at(q) >= '0' && s.at(q) <= '9')
                     break;
             }
@@ -84,7 +84,7 @@ PackageDepAtom::PackageDepAtom(const std::string & s) :
             if ('*' == s.at(s.length() - 1))
             {
                 if (_version_operator != vo_equal)
-                    throw InternalError(__PRETTY_FUNCTION__, "todo"); /// \bug
+                    throw InternalError(PALUDIS_HERE, "todo"); /// \bug
                 _version_operator = vo_equal_star;
                 _version_spec = CountedPtr<VersionSpec, count_policy::ExternalCountTag>(
                         new VersionSpec(s.substr(q, s.length() - q - 1)));
@@ -102,7 +102,7 @@ PackageDepAtom::PackageDepAtom(const std::string & s) :
     }
     catch (const std::exception & e)
     {
-        throw InternalError(__PRETTY_FUNCTION__, "caught std::exception '"
+        throw InternalError(PALUDIS_HERE, "caught std::exception '"
                 + stringify(e.what()) + "'");
     }
 }
