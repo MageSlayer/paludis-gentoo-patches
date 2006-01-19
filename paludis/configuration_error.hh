@@ -18,5 +18,18 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "iterator_utilities.hh"
+#ifndef PALUDIS_GUARD_PALUDIS_CONFIGURATION_ERROR_HH
+#define PALUDIS_GUARD_PALUDIS_CONFIGURATION_ERROR_HH 1
 
+#include <paludis/exception.hh>
+
+namespace paludis
+{
+    class ConfigurationError : public Exception
+    {
+        protected:
+            ConfigurationError(const std::string & msg) throw ();
+    };
+}
+
+#endif

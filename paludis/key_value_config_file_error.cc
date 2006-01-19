@@ -18,5 +18,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "iterator_utilities.hh"
+#include "key_value_config_file_error.hh"
+
+using namespace paludis;
+
+KeyValueConfigFileError::KeyValueConfigFileError(const std::string & msg) throw () :
+    ConfigurationError("Key/Value config file error: " + msg)
+{
+}
 

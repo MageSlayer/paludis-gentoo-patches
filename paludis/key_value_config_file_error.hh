@@ -18,5 +18,18 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "iterator_utilities.hh"
+#ifndef PALUDIS_GUARD_PALUDIS_KEY_VALUE_CONFIG_FILE_ERROR_HH
+#define PALUDIS_GUARD_PALUDIS_KEY_VALUE_CONFIG_FILE_ERROR_HH 1
 
+#include <paludis/configuration_error.hh>
+
+namespace paludis
+{
+    class KeyValueConfigFileError : public ConfigurationError
+    {
+        public:
+            KeyValueConfigFileError(const std::string & message) throw ();
+    };
+}
+
+#endif

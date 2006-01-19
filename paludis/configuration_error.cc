@@ -18,5 +18,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "iterator_utilities.hh"
+#include "configuration_error.hh"
+
+using namespace paludis;
+
+ConfigurationError::ConfigurationError(const std::string & msg) throw () :
+    Exception(msg)
+{
+}
 

@@ -21,6 +21,8 @@
 #include "config_file.hh"
 #include "config_file_error.hh"
 #include "strip.hh"
+#include "exception.hh"
+#include "stringify.hh"
 
 using namespace paludis;
 
@@ -37,8 +39,10 @@ ConfigFile::need_lines() const
         return;
 
     std::string line;
+    unsigned line_number(0);
     while (std::getline(*_stream, line))
     {
+        Context c("When handling line " + stringify(++line_number) + ":");
         normalise_line(line);
         if (skip_line(line))
             continue;
