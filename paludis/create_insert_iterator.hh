@@ -26,6 +26,12 @@
 
 namespace paludis
 {
+    /**
+     * A CreateInsertIterator is an insert iterator that creates an object of
+     * the specified type using the provided value.
+     *
+     * \ingroup Iterator
+     */
     template <typename Iter_, typename Type_>
     class CreateInsertIterator :
         public std::iterator<typename std::iterator_traits<Iter_>::iterator_category, void, void, void, void>
@@ -100,6 +106,8 @@ namespace paludis
 
     /**
      * Convenience function: make a TranslateInsertIterator.
+     *
+     * \ingroup Iterator
      */
     template <typename Type_, typename Iter_>
     CreateInsertIterator<Iter_, Type_> create_inserter(const Iter_ & i)

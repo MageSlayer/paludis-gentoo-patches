@@ -64,6 +64,8 @@ namespace paludis
     /**
      * An IndirectIterator is an iterator adapter that does one additional level
      * of dereferencing.
+     *
+     * \ingroup Iterator
      */
     template <typename Iter_, typename Value_>
     class IndirectIterator : public std::iterator<typename std::iterator_traits<Iter_>::iterator_category, Value_>,

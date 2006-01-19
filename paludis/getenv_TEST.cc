@@ -27,6 +27,12 @@ using namespace paludis;
 
 namespace test_cases
 {
+
+    /**
+     * \test Test getenv_with_default.
+     *
+     * \ingroup Test
+     */
     struct GetenvWithDefaultTest : TestCase
     {
         GetenvWithDefaultTest() : TestCase("getenv_with_default") { }
@@ -39,6 +45,11 @@ namespace test_cases
         }
     } test_getenv_with_default;
 
+    /**
+     * \test Test getenv_or_error.
+     *
+     * \ingroup Test
+     */
     struct GetenvOrErrorTest : TestCase
     {
         GetenvOrErrorTest() : TestCase("getenv_or_error") { }

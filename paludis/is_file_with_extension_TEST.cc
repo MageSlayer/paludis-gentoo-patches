@@ -29,6 +29,11 @@ using namespace test;
 
 namespace test_cases
 {
+    /**
+     * \test Test IsFileWithExtension.
+     *
+     * \ingroup Test
+     */
     struct IsFileWithExtensionTest : TestCase
     {
         IsFileWithExtensionTest() : TestCase("is file with extension") { }
@@ -51,6 +56,11 @@ namespace test_cases
         }
     } test_is_file_with_extension;
 
+    /**
+     * \test Test IsFileWithExtension with a prefix.
+     *
+     * \ingroup Test
+     */
     struct IsFileWithExtensionPrefixTest : TestCase
     {
         IsFileWithExtensionPrefixTest() : TestCase("is file with extension (with prefix)") { }

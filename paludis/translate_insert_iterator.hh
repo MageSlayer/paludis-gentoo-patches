@@ -26,6 +26,12 @@
 
 namespace paludis
 {
+    /**
+     * A TranslateInsertIterator is an insert iterator that calls some function
+     * upon an item before inserting it.
+     *
+     * \ingroup Iterator
+     */
     template <typename Iter_, typename Trans_>
     class TranslateInsertIterator :
         public std::iterator<typename std::iterator_traits<Iter_>::iterator_category, void, void, void, void>
@@ -35,6 +41,10 @@ namespace paludis
             Trans_ _t;
 
         public:
+            /**
+             * Fake a container_type entry to allow a TranslateInsertIterator to
+             * work with other iterator adapters.
+             */
             struct container_type
             {
                 typedef typename Trans_::argument_type value_type;
@@ -104,6 +114,8 @@ namespace paludis
 
     /**
      * Convenience function: make a TranslateInsertIterator.
+     *
+     * \ingroup Iterator
      */
     template <typename Iter_, typename Trans_>
     TranslateInsertIterator<Iter_, Trans_> translate_inserter(

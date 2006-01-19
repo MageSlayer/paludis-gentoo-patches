@@ -150,6 +150,7 @@ DepList::visit(const AllDepAtom * const v)
         (*i)->accept(this);
 }
 
+#ifndef DOXYGEN
 struct DepListEntryMatcher :
     public std::unary_function<bool, const DepListEntry &>
 {
@@ -174,6 +175,7 @@ struct DepListEntryMatcher :
         return true;
     }
 };
+#endif
 
 void
 DepList::visit(const PackageDepAtom * const p)

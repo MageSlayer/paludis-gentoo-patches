@@ -26,6 +26,13 @@
 
 namespace paludis
 {
+    /**
+     * A FilterInsertIterator is an insert iterator that only performs an insert
+     * if a particular predicate function returns true for the object to be
+     * inserted.
+     *
+     * \ingroup Iterator
+     */
     template <typename Iter_, typename Pred_>
     class FilterInsertIterator :
         public std::iterator<typename std::iterator_traits<Iter_>::iterator_category, void, void, void, void>
@@ -101,6 +108,8 @@ namespace paludis
 
     /**
      * Convenience function: make a FilterInsertIterator.
+     *
+     * \ingroup Iterator
      */
     template <typename Iter_, typename Pred_>
     FilterInsertIterator<Iter_, Pred_> filter_inserter(

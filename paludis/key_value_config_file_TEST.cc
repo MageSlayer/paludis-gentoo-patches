@@ -32,6 +32,11 @@ using namespace test;
 
 namespace test_cases
 {
+    /**
+     * \test Test KeyValueConfigFile basics.
+     *
+     * \ingroup Test
+     */
     struct KeyValueConfigFileTest : TestCase
     {
         KeyValueConfigFileTest() : TestCase("key value config file") { }
@@ -55,6 +60,11 @@ namespace test_cases
         }
     } test_key_value_config_file;
 
+    /**
+     * \test Test KeyValueConfigFile variables.
+     *
+     * \ingroup Test
+     */
     struct KeyValueConfigFileVarsTest : TestCase
     {
         KeyValueConfigFileVarsTest() : TestCase("key value config file with vars") { }
@@ -73,6 +83,11 @@ namespace test_cases
         }
     } test_key_value_config_file_vars;
 
+    /**
+     * \test Test KeyValueConfigFile errors.
+     *
+     * \ingroup Test
+     */
     struct KeyValueConfigFileErrorsTest : TestCase
     {
         KeyValueConfigFileErrorsTest() : TestCase("key value config file with errors") { }
