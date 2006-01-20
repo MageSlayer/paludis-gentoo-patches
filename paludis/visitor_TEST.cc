@@ -29,6 +29,15 @@
 using namespace paludis;
 using namespace test;
 
+/** \file
+ * Test cases for visitor.hh .
+ *
+ * \ingroup Test
+ * \ingroup Visitor
+ */
+
+#ifndef DOXYGEN
+
 class Node;
 class FooNode;
 class BarNode;
@@ -102,8 +111,15 @@ struct NodeVisitor :
     }
 };
 
+#endif
+
 namespace test_cases
 {
+    /**
+     * \test Test const visitors.
+     *
+     * \ingroup Test
+     */
     struct ConstVisitorTest : TestCase
     {
         ConstVisitorTest() : TestCase("const visitor") { }
@@ -127,6 +143,11 @@ namespace test_cases
         }
     } test_const_visitor;
 
+    /**
+     * \test Test non-const visitors.
+     *
+     * \ingroup Test
+     */
     struct VisitorTest : TestCase
     {
         VisitorTest() : TestCase("visitor") { }

@@ -20,3 +20,8 @@
 
 #include "visitor.hh"
 
+/** \file
+ * Definitions for paludis::Visitor and related classes.
+ *
+ * \ingroup Visitor
+ */

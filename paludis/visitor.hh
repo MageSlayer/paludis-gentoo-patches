@@ -43,6 +43,8 @@ namespace paludis
          * Used as a default parameter when no type is provided. The n_
          * parameter is used to avoid inheriting the same class more than once
          * from a single parent.
+         *
+         * \ingroup Visitor
          */
         template <unsigned n_>
         struct NoType
@@ -51,12 +53,16 @@ namespace paludis
 
         /**
          * Make a pointer to a const.
+         *
+         * \ingroup Visitor
          */
         template <typename>
         struct MakePointerToConst;
 
         /**
          * Make a pointer to a const (specialisation for non-const pointers).
+         *
+         * \ingroup Visitor
          */
         template <typename T_>
         struct MakePointerToConst<T_ *>
@@ -69,6 +75,8 @@ namespace paludis
 
         /**
          * Interface: visit a class of NodePtrType_.
+         *
+         * \ingroup Visitor
          */
         template <typename NodePtrType_>
         class Visits
@@ -84,6 +92,8 @@ namespace paludis
 
         /**
          * Interface: don't visit NoType things.
+         *
+         * \ingroup Visitor
          */
         template <unsigned n_>
         class Visits<const visitor_internals::NoType<n_> * >
@@ -96,6 +106,8 @@ namespace paludis
 
         /**
          * Interface: don't visit NoType things.
+         *
+         * \ingroup Visitor
          */
         template <unsigned n_>
         class Visits<visitor_internals::NoType<n_> * >
@@ -110,6 +122,8 @@ namespace paludis
     /**
      * A class that inherits virtually from VisitableInterface can accept a
      * visitor that is descended from one of the VisitorType_ subclasses.
+     *
+     * \ingroup Visitor
      */
     template <typename VisitorType_>
     class VisitableInterface
@@ -137,6 +151,8 @@ namespace paludis
     /**
      * A class that inherits (non-virtually) from Visitable provides an
      * implementation of VisitableInterface.
+     *
+     * \ingroup Visitor
      */
     template <typename OurType_, typename VisitorType_>
     class Visitable :
@@ -167,6 +183,8 @@ namespace paludis
     /**
      * Create the base classes for constant and non-constant visitors to the
      * specified node types.
+     *
+     * \ingroup Visitor
      */
     template <
         typename N1_,
