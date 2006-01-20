@@ -26,14 +26,35 @@
 
 namespace paludis
 {
+    /**
+     * Return a string equal to s minus any leading characters that are
+     * contained in prefix.
+     */
     std::string strip_leading_string(const std::string & s, const std::string & prefix);
 
+    /**
+     * Return a string equal to s, minus the string remove if remove occurs at
+     * the start of s.
+     */
     std::string strip_leading(const std::string & s, const std::string & remove);
 
+    /**
+     * Return a string equal to s minus any trailing characters that are
+     * contained in suffix.
+     */
     std::string strip_trailing_string(const std::string & s, const std::string & suffix);
 
+    /**
+     * Return a string equal to s, minus the string remove if remove occurs at
+     * the end of s.
+     */
     std::string strip_trailing(const std::string & s, const std::string & remove);
 
+    /**
+     * Adapt one of the strip_ functions for use as a std::unary_function by
+     * binding a value to the second parameter (avoids the reference to const
+     * issue with std::bind2nd).
+     */
     template <std::string (* f_)(const std::string &, const std::string &)>
     class StripAdapter :
         public std::unary_function<std::string, const std::string>
@@ -42,20 +63,41 @@ namespace paludis
             const std::string _second;
 
         public:
+            /**
+             * Constructor.
+             */
             StripAdapter(const std::string & second) :
                 _second(second)
             {
             }
 
+            /**
+             * Operation.
+             */
             std::string operator() (const std::string & first) const
             {
                 return (*f_)(first, _second);
             }
     };
 
+    /**
+     * Adapt strip_leading_string to a functor by binding its second argument.
+     */
     typedef StripAdapter<&strip_leading_string> StripLeadingString;
+
+    /**
+     * Adapt strip_leading to a functor by binding its second argument.
+     */
     typedef StripAdapter<&strip_leading> StripLeading;
+
+    /**
+     * Adapt strip_trailing_string to a functor by binding its second argument.
+     */
     typedef StripAdapter<&strip_trailing_string> StripTrailingString;
+
+    /**
+     * Adapt strip_trailing to a functor by binding its second argument.
+     */
     typedef StripAdapter<&strip_trailing> StripTrailing;
 }
 

@@ -27,6 +27,13 @@
 using namespace paludis;
 using namespace test;
 
+/** \file
+ * Test cases for CreateInsertIterator.
+ *
+ * \ingroup Test
+ * \ingroup Iterator
+ */
+
 #ifndef DOXYGEN
 struct C
 {
@@ -41,6 +48,11 @@ struct C
 
 namespace test_cases
 {
+    /**
+     * \test Test create_inserter.
+     *
+     * \ingroup Test
+     */
     struct CreateInsertIteratorTest : TestCase
     {
         CreateInsertIteratorTest() : TestCase("create insert iterator") { }

@@ -27,8 +27,19 @@
 using namespace paludis;
 using namespace test;
 
+/** \file
+ * Test cases for strip.hh.
+ *
+ * \ingroup Test
+ */
+
 namespace test_cases
 {
+    /**
+     * \test Test StripLeadingString.
+     *
+     * \ingroup Test
+     */
     struct StripLeadingStringTest : TestCase
     {
         StripLeadingStringTest() : TestCase("StripLeadingString") { }
@@ -45,6 +56,11 @@ namespace test_cases
         }
     } test_strip_leading_string;
 
+    /**
+     * \test Test StripLeading.
+     *
+     * \ingroup Test
+     */
     struct StripLeadingTest : TestCase
     {
         StripLeadingTest() : TestCase("StripLeading") {}
@@ -61,6 +77,11 @@ namespace test_cases
         }
     } test_strip_leading;
 
+    /**
+     * \test Test StripTrailingString.
+     *
+     * \ingroup Test
+     */
     struct StripTrailingStringTest : TestCase
     {
         StripTrailingStringTest() : TestCase("StripTrailingString") { }
@@ -77,6 +98,11 @@ namespace test_cases
         }
     } test_strip_trailing_string;
 
+    /**
+     * \test Test StripTrailing.
+     *
+     * \ingroup Test
+     */
     struct StripTrailingTest : TestCase
     {
         StripTrailingTest() : TestCase("StripTrailing") {}

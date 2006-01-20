@@ -23,11 +23,27 @@
 
 #include <paludis/exception.hh>
 
+/** \file
+ * Declarations for the ConfigurationError class.
+ *
+ * \ingroup Exception
+ * \ingroup ConfigFile
+ */
+
 namespace paludis
 {
+    /**
+     * A ConfigurationError is thrown when an invalid configuration occurs.
+     *
+     * \ingroup Exception
+     * \ingroup ConfigFile
+     */
     class ConfigurationError : public Exception
     {
         protected:
+            /**
+             * Constructor.
+             */
             ConfigurationError(const std::string & msg) throw ();
     };
 }

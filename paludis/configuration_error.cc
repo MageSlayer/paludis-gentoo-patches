@@ -22,6 +22,13 @@
 
 using namespace paludis;
 
+/** \file
+ * Implementation of ConfigurationError.
+ *
+ * \ingroup ConfigFile
+ * \ingroup Exception
+ */
+
 ConfigurationError::ConfigurationError(const std::string & msg) throw () :
     Exception(msg)
 {

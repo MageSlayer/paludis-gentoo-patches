@@ -24,6 +24,12 @@
 using namespace paludis;
 using namespace test;
 
+/** \file
+ * Test cases for smart_record.hh .
+ *
+ * \ingroup Test
+ */
+
 #ifndef DOXYGEN
 
 enum PersonKeys
@@ -51,6 +57,11 @@ typedef MakeSmartRecord<PersonRecordTag>::Type Person;
 
 namespace test_cases
 {
+    /**
+     * \test Test a simple SmartRecord.
+     *
+     * \ingroup Test
+     */
     struct SimpleRecordTest : TestCase
     {
         SimpleRecordTest() : TestCase("simple") { }
