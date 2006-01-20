@@ -21,6 +21,9 @@
  * The <a href="modules.html">Modules</a> link in the header bar will probably
  * be of more use than any of the full class lists.
  *
+ * You should also read \link CodingStandards the Coding Standards \endlink
+ * before tinkering.
+ *
  * \section userdocs For End Users
  *
  * You shouldn't be touching paludis at the moment. Go away.
