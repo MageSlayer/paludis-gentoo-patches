@@ -71,11 +71,11 @@ class CommandLine :
         /// General arguments.
         paludis::args::ArgsGroup general_args;
 
-        /// --no-color
-        paludis::args::SwitchArg a_no_color;
-
         /// --no-colour
-        paludis::args::AliasArg a_no_colour;
+        paludis::args::SwitchArg a_no_colour;
+
+        /// --no-color
+        paludis::args::AliasArg a_no_color;
 
         ///}
 

@@ -33,8 +33,8 @@ CommandLine::CommandLine() :
     a_help(&action_args,     "help",         'h', "Display program help"),
 
     general_args(this, "General options"),
-    a_no_color(&general_args, "no-color", 'c', "Do not use color"),
-    a_no_colour(&a_no_color, "no-colour"),
+    a_no_colour(&general_args, "no-colour", 'c', "Do not use colour"),
+    a_no_color(&a_no_colour, "no-color"),
 
     query_args(this, "Query options"),
     a_show_slot(&query_args,        "show-slot",    'S', "Show SLOTs"),
