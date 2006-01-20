@@ -125,8 +125,9 @@ TestCase::name() const
 
 TestFailedException::TestFailedException(const char * const function, const char * const file,
         const long line, const std::string & message) throw () :
-    _message(message + " (in " + function + " at " + file + " line " + paludis::stringify(line) + ")"
-            + (TestMessageSuffix::suffixes().empty() ? std::string("") : " [context: " +
+    _message(paludis::stringify(file) + ":" + paludis::stringify(line) + ": in " +
+            paludis::stringify(function) + ": " + message + (
+                TestMessageSuffix::suffixes().empty() ? std::string("") : " [context: " +
                 TestMessageSuffix::suffixes() + "]"))
 {
 }
@@ -173,7 +174,8 @@ class RunTest
                 }
                 catch (std::exception &e)
                 {
-                    std::cout << "!{" << exception_to_debug_string(e) << "} " << std::flush;
+                    std::cout << "!{" << std::endl << exception_to_debug_string(e) <<
+                        std::endl << "  } " << std::flush;
                     had_local_failure = true;
                     *_had_a_failure = true;
                 }
