@@ -20,7 +20,7 @@
 #include "version_metadata.hh"
 #include "create_insert_iterator.hh"
 #include "tokeniser.hh"
-#include "translate_insert_iterator.hh"
+#include "transform_insert_iterator.hh"
 #include <vector>
 
 using namespace paludis;
@@ -131,7 +131,7 @@ VersionMetadata::begin_provide() const
     {
         Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
         tokeniser.tokenise(get(vmk_provide),
-                translate_inserter(
+                transform_inserter(
                     std::inserter(_implementation->provide, _implementation->provide.begin()),
                     std::ptr_fun(&make_qualified_package_name)));
     }

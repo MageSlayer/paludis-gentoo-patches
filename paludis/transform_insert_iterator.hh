@@ -18,8 +18,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_TRANSLATE_INSERT_ITERATOR_HH
-#define PALUDIS_GUARD_PALUDIS_TRANSLATE_INSERT_ITERATOR_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_TRANSFORM_INSERT_ITERATOR_HH
+#define PALUDIS_GUARD_PALUDIS_TRANSFORM_INSERT_ITERATOR_HH 1
 
 #include <functional>
 #include <iterator>
@@ -27,13 +27,13 @@
 namespace paludis
 {
     /**
-     * A TranslateInsertIterator is an insert iterator that calls some function
+     * A TransformInsertIterator is an insert iterator that calls some function
      * upon an item before inserting it.
      *
      * \ingroup Iterator
      */
     template <typename Iter_, typename Trans_>
-    class TranslateInsertIterator :
+    class TransformInsertIterator :
         public std::iterator<typename std::iterator_traits<Iter_>::iterator_category, void, void, void, void>
     {
         private:
@@ -42,7 +42,7 @@ namespace paludis
 
         public:
             /**
-             * Fake a container_type entry to allow a TranslateInsertIterator to
+             * Fake a container_type entry to allow a TransformInsertIterator to
              * work with other iterator adapters.
              */
             struct container_type
@@ -53,7 +53,7 @@ namespace paludis
             /**
              * Constructor, from an iterator.
              */
-            TranslateInsertIterator(const Iter_ & i, const Trans_ & t) :
+            TransformInsertIterator(const Iter_ & i, const Trans_ & t) :
                 _i(i),
                 _t(t)
             {
@@ -62,7 +62,7 @@ namespace paludis
             /**
              * Copy constructor.
              */
-            TranslateInsertIterator(const TranslateInsertIterator & other) :
+            TransformInsertIterator(const TransformInsertIterator & other) :
                 _i(other._i),
                 _t(other._t)
             {
@@ -72,7 +72,7 @@ namespace paludis
              * Assignment.
              */
             template <typename T_>
-            const TranslateInsertIterator & operator= (const T_ value)
+            const TransformInsertIterator & operator= (const T_ value)
             {
                 *_i = _t(value);
                 return *this;
@@ -81,7 +81,7 @@ namespace paludis
             /**
              * Dereference.
              */
-            TranslateInsertIterator & operator* ()
+            TransformInsertIterator & operator* ()
             {
                 return *this;
             }
@@ -89,7 +89,7 @@ namespace paludis
             /**
              * Dereference arrow.
              */
-            TranslateInsertIterator * operator-> ()
+            TransformInsertIterator * operator-> ()
             {
                 return this;
             }
@@ -97,7 +97,7 @@ namespace paludis
             /**
              * Increment.
              */
-            TranslateInsertIterator & operator++ ()
+            TransformInsertIterator & operator++ ()
             {
                 return *this;
             }
@@ -105,7 +105,7 @@ namespace paludis
             /**
              * Increment.
              */
-            TranslateInsertIterator & operator++ (int)
+            TransformInsertIterator & operator++ (int)
             {
                 return *this;
             }
@@ -113,15 +113,15 @@ namespace paludis
     };
 
     /**
-     * Convenience function: make a TranslateInsertIterator.
+     * Convenience function: make a TransformInsertIterator.
      *
      * \ingroup Iterator
      */
     template <typename Iter_, typename Trans_>
-    TranslateInsertIterator<Iter_, Trans_> translate_inserter(
+    TransformInsertIterator<Iter_, Trans_> transform_inserter(
             const Iter_ & i, const Trans_ & t)
     {
-        return TranslateInsertIterator<Iter_, Trans_>(i, t);
+        return TransformInsertIterator<Iter_, Trans_>(i, t);
     }
 }
 

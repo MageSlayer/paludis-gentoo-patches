@@ -18,7 +18,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "translate_insert_iterator.hh"
+#include "transform_insert_iterator.hh"
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
@@ -51,14 +51,14 @@ int f(const int & v)
 
 namespace test_cases
 {
-    struct TranslateInsertIteratorTest : TestCase
+    struct TransformInsertIteratorTest : TestCase
     {
-        TranslateInsertIteratorTest() : TestCase("translate insert iterator") { }
+        TransformInsertIteratorTest() : TestCase("transform insert iterator") { }
 
         void run()
         {
             std::vector<int> v;
-            std::generate_n(translate_inserter(std::back_inserter(v), std::ptr_fun(&f)),
+            std::generate_n(transform_inserter(std::back_inserter(v), std::ptr_fun(&f)),
                     5, Counter());
             TEST_CHECK_EQUAL(v.size(), 5);
             for (int n = 0 ; n < 5 ; ++n)
@@ -67,6 +67,6 @@ namespace test_cases
                 TEST_CHECK_EQUAL(v.at(n), -n);
             }
         }
-    } test_translate_insert_iterator;
+    } test_transform_insert_iterator;
 }
 

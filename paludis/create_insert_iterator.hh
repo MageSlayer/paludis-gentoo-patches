@@ -105,7 +105,7 @@ namespace paludis
     };
 
     /**
-     * Convenience function: make a TranslateInsertIterator.
+     * Convenience function: make a CreateInsertIterator.
      *
      * \ingroup Iterator
      */

@@ -25,7 +25,7 @@
 #include "strip.hh"
 #include "is_file_with_extension.hh"
 #include "filter_insert_iterator.hh"
-#include "translate_insert_iterator.hh"
+#include "transform_insert_iterator.hh"
 #include "line_config_file.hh"
 #include "key_value_config_file.hh"
 #include "tokeniser.hh"
@@ -323,9 +323,9 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
     else
         std::copy(DirIterator(path), DirIterator(),
                 filter_inserter(
-                    translate_inserter(
-                        translate_inserter(
-                            translate_inserter(v->inserter(),
+                    transform_inserter(
+                        transform_inserter(
+                            transform_inserter(v->inserter(),
                                 StripTrailingString(".ebuild")),
                             StripLeadingString(stringify(n.get<qpn_package>()) + "-")),
                         std::mem_fun_ref(&FSEntry::basename)),

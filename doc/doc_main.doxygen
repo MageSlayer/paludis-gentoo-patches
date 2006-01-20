@@ -170,8 +170,8 @@
  *   paludis::create_inserter) uses the inserted value to create an object.
  * - paludis::FilterInsertIterator (which can be created via
  *   paludis::filter_inserter) only inserts the object if a predicate is true.
- * - paludis::TranslateInsertIterator (which can be created via
- *   paludis::translate_inserter) performs a transformation upon the object to
+ * - paludis::TransformInsertIterator (which can be created via
+ *   paludis::transform_inserter) performs a transformation upon the object to
  *   be inserted.
  *
  * Input iterator adapters:
