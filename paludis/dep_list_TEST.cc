@@ -440,7 +440,9 @@ namespace test_cases
         void run_n(int n)
         {
             TestEnvironment e;
+#if ((! defined(__GNUC__)) || ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)))
             TestMessageSuffix(stringify(n), true);
+#  endif
 
             /* t/one DEPENDs upon
              * || (
