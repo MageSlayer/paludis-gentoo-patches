@@ -25,8 +25,8 @@
  */
 
 /** \def PALUDIS_ATTRIBUTE
- * If we're using GCC, expands to __attribute__, otherwise discards its
- * arguments.
+ * If we're using a recent GCC or ICC, expands to __attribute__, otherwise
+ * discards its arguments.
  */
 
 #ifdef __GNUC__
@@ -36,7 +36,13 @@
 #    define PALUDIS_ATTRIBUTE(x)
 #  endif
 #else
-#  define PALUDIS_ATTRIBUTE(x)
+#  ifdef __ICC
+#    define PALUDIS_ATTRIBUTE(x) __attribute__(x)
+#    define nothrow
+#    define deprecated
+#  else
+#    define PALUDIS_ATTRIBUTE(x)
+#  endif
 #endif
 
 #endif
