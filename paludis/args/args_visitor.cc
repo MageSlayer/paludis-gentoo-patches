@@ -60,10 +60,8 @@ void ArgsVisitor::visit(IntegerArg * const arg)
     ss << param;
     int i;
     ss >> i;
-    if(!ss.eof() || ss.bad())
-    {
+    if (!ss.eof() || ss.bad())
         throw BadValue("--" + arg->long_name(), param);
-    }
     arg->set_argument(i);
 }
 

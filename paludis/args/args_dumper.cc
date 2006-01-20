@@ -56,7 +56,7 @@ VISIT(AliasArg)
 void ArgsDumper::visit(const EnumArg * const a)
 {
     visit(static_cast<const ArgsOption *>(a));
-    for(EnumArg::AllowedArgIterator it = a->begin_allowed_args(), it_end = a->end_allowed_args();
+    for (EnumArg::AllowedArgIterator it = a->begin_allowed_args(), it_end = a->end_allowed_args();
             it != it_end; ++it)
     {
         std::stringstream p;

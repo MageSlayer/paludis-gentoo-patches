@@ -67,19 +67,17 @@ ArgsHandler::run(const int argc, const char * const * const argv)
         {
             arg.erase(0, 2);
             std::map<std::string, ArgsOption*>::iterator it = _longopts.find(arg);
-            if(it == _longopts.end())
-            {
+            if (it == _longopts.end())
                 throw BadArgument("--" + arg);
-            }
             (*it).second->accept(&visitor);
         }
         else if (arg[0] == '-')
         {
             arg.erase(0, 1);
-            for(std::string::iterator c = arg.begin(); c != arg.end(); ++c)
+            for (std::string::iterator c = arg.begin(); c != arg.end(); ++c)
             {
                 std::map<char, ArgsOption*>::iterator it = _shortopts.find(*c);
-                if(it == _shortopts.end())
+                if (it == _shortopts.end())
                 {
                     throw BadArgument(std::string("-") + *c);
                 }

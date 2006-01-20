@@ -53,16 +53,16 @@ SwitchArg::SwitchArg(ArgsGroup * const group, std::string long_name, char short_
 }
 
 IntegerArg::IntegerArg(ArgsGroup * const group, const std::string& long_name, 
-		char short_name, const std::string& description) :
+                char short_name, const std::string& description) :
     ArgsOption(group, long_name, short_name, description)
 {
 }
 
 void EnumArg::set_argument(const std::string & arg)
 {
-    if(_allowed_args.find(arg) == _allowed_args.end())
+    if (_allowed_args.find(arg) == _allowed_args.end())
     {
-    	throw(BadValue("--" + long_name(), arg));
+        throw (BadValue("--" + long_name(), arg));
     }
     _argument = arg;
 }
