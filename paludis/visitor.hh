@@ -234,6 +234,46 @@ namespace paludis
             {
             };
     };
+
+    /**
+     * Functor: simplify calling accept on a visitor when we have a container of
+     * pointers to nodes.
+     *
+     * \ingroup Visitor
+     */
+    template <typename VisitorPointer_>
+    class AcceptVisitor
+    {
+        private:
+            VisitorPointer_ * const _p;
+
+        public:
+            /**
+             * Constructor.
+             */
+            AcceptVisitor(VisitorPointer_ * const p) :
+                _p(p)
+            {
+            }
+
+            /**
+             * Operator.
+             */
+            template <typename T_>
+            void operator() (T_ t) const
+            {
+                t->accept(_p);
+            }
+    };
+
+    /**
+     * Convenience function: create an AcceptVisitor.
+     */
+    template <typename VisitorPointer_>
+    AcceptVisitor<VisitorPointer_> accept_visitor(VisitorPointer_ * const p)
+    {
+        return AcceptVisitor<VisitorPointer_>(p);
+    }
 }
 
 #endif

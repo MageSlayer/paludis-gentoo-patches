@@ -19,6 +19,7 @@
 
 #include "args.hh"
 #include "args_dumper.hh"
+#include <algorithm>
 
 /** \file
  * Implementation for ArgsHandler.
@@ -103,12 +104,8 @@ ArgsHandler::dump_to_stream(std::ostream & s) const
     {
         s << (*g)->name() << ":" << std::endl;
 
-        std::list<ArgsOption *>::const_iterator a((*g)->_args_options.begin()),
-            a_end((*g)->_args_options.end());
-        for ( ; a != a_end ; ++a)
-        {
-            (*a)->accept(&dump);
-        }
+        std::for_each((*g)->_args_options.begin(), (*g)->_args_options.end(),
+                accept_visitor(&dump));
 
         s << std::endl;
     }

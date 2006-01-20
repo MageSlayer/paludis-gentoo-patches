@@ -145,9 +145,8 @@ DepList::end() const
 void
 DepList::visit(const AllDepAtom * const v)
 {
-    for (CompositeDepAtom::Iterator i(v->begin()), i_end(v->end()) ;
-            i != i_end ; ++i)
-        (*i)->accept(this);
+    std::for_each(v->begin(), v->end(), accept_visitor(
+                static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
 }
 
 #ifndef DOXYGEN

@@ -134,9 +134,7 @@ namespace test_cases
 
             NodeCVisitor c;
             TEST_CHECK_EQUAL(c.r, "");
-            for (IndirectIterator<std::vector<Node *>::const_iterator, Node>
-                    i(v.begin()), i_end(v.end()) ; i != i_end ; ++i)
-                i->accept(&c);
+            std::for_each(v.begin(), v.end(), accept_visitor(&c));
             TEST_CHECK_EQUAL(c.r, "c_fooc_barc_foo");
 
             std::for_each(v.begin(), v.end(), Deleter());
@@ -162,9 +160,7 @@ namespace test_cases
 
             NodeVisitor c;
             TEST_CHECK_EQUAL(c.r, "");
-            for (IndirectIterator<std::vector<Node *>::iterator, Node>
-                    i(v.begin()), i_end(v.end()) ; i != i_end ; ++i)
-                i->accept(&c);
+            std::for_each(v.begin(), v.end(), accept_visitor(&c));
             TEST_CHECK_EQUAL(c.r, "foobarfoo");
 
             std::for_each(v.begin(), v.end(), Deleter());

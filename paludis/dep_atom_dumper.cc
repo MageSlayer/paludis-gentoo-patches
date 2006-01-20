@@ -24,6 +24,7 @@
 #include "package_dep_atom.hh"
 #include "dep_atom_visitor.hh"
 #include "dep_atom_dumper.hh"
+#include <algorithm>
 
 using namespace paludis;
 
@@ -36,9 +37,7 @@ void
 DepAtomDumper::visit(const AllDepAtom * const a)
 {
     *_o << "<all>";
-    for (CompositeDepAtom::Iterator i(a->begin()), i_end(a->end()) ;
-            i != i_end ; ++i)
-        (*i)->accept(this);
+    std::for_each(a->begin(), a->end(), accept_visitor(this));
     *_o << "</all>";
 }
 
@@ -46,9 +45,7 @@ void
 DepAtomDumper::visit(const AnyDepAtom * const a)
 {
     *_o << "<any>";
-    for (CompositeDepAtom::Iterator i(a->begin()), i_end(a->end()) ;
-            i != i_end ; ++i)
-        (*i)->accept(this);
+    std::for_each(a->begin(), a->end(), accept_visitor(this));
     *_o << "</any>";
 }
 
@@ -57,9 +54,7 @@ DepAtomDumper::visit(const UseDepAtom * const a)
 {
     *_o << "<use flag=\"" << a->flag() << "\" inverse=\""
         << (a->inverse() ? "true" : "false") << "\">";
-    for (CompositeDepAtom::Iterator i(a->begin()), i_end(a->end()) ;
-            i != i_end ; ++i)
-        (*i)->accept(this);
+    std::for_each(a->begin(), a->end(), accept_visitor(this));
     *_o << "</use>";
 }
 
