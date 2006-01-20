@@ -99,13 +99,13 @@ namespace paludis
     class InstantiationPolicy<OurType_, instantiation_method::NonInstantiableTag>
     {
         private:
-            InstantiationPolicy();
-
             InstantiationPolicy(const InstantiationPolicy &);
 
             const InstantiationPolicy & operator= (const InstantiationPolicy &);
 
         protected:
+            InstantiationPolicy();
+
             ~InstantiationPolicy()
             {
             }

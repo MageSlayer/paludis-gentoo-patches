@@ -23,6 +23,7 @@
 using namespace paludis;
 
 #ifdef PALUDIS_TEST_CASE
+#ifdef PALUDIS_CAN_USE_ATTRIBUTE
 
 std::string exception_to_debug_string(const std::exception & e)
 {
@@ -34,5 +35,6 @@ std::string exception_to_debug_string(const std::exception & e)
         return e.what();
 }
 
+#endif
 #endif
 

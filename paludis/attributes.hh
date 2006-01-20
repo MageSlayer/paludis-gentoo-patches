@@ -29,15 +29,22 @@
  * discards its arguments.
  */
 
+/** \def PALUDIS_CAN_USE_ATTRIBUTE
+ * Defined if we can rely upon PALUDIS_ATTRIBUTE working (for example, for
+ * weak).
+ */
+
 #ifdef __GNUC__
 #  if ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
 #    define PALUDIS_ATTRIBUTE(x) __attribute__(x)
+#    define PALUDIS_CAN_USE_ATTRIBUTE 1
 #  else
 #    define PALUDIS_ATTRIBUTE(x)
 #  endif
 #else
 #  ifdef __ICC
 #    define PALUDIS_ATTRIBUTE(x) __attribute__(x)
+#    define PALUDIS_CAN_USE_ATTRIBUTE 1
 #    define nothrow
 #    define deprecated
 #  else

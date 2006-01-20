@@ -26,9 +26,11 @@
 #include <exception>
 
 #ifdef PALUDIS_TEST_CASE
+#ifdef PALUDIS_CAN_USE_ATTRIBUTE
 
 std::string exception_to_debug_string(const std::exception & e);
 
+#endif
 #endif
 
 #endif
