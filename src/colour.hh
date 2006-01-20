@@ -43,10 +43,12 @@ enum Colour
     cl_masked        = cl_flag_off
 };
 
+bool use_colour() PALUDIS_ATTRIBUTE((nothrow,pure));
+
 template <typename T_>
 std::string colour(Colour colour, const T_ & s)
 {
-    if (CommandLine::get_instance()->a_no_color.specified())
+    if (CommandLine::get_instance()->a_no_color.specified() || ! use_colour())
         return paludis::stringify(s);
     else
         return "\033[" + paludis::stringify(static_cast<unsigned>(colour) / 100) + ";"

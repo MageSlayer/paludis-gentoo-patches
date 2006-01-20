@@ -19,4 +19,14 @@
  */
 
 #include "colour.hh"
+#include <unistd.h>
+#include <paludis/getenv.hh>
 
+bool use_colour()
+{
+    static bool result(
+            (1 == isatty(1)) &&
+            (0 != paludis::getenv_with_default("TERM", "").compare(0, 4, "dumb")));
+
+    return result;
+}
