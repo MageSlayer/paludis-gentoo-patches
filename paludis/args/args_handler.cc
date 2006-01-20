@@ -18,6 +18,7 @@
  */
 
 #include "args.hh"
+#include "args_dumper.hh"
 
 /** \file
  * Implementation for ArgsHandler.
@@ -96,6 +97,7 @@ ArgsHandler::run(const int argc, const char * const * const argv)
 void
 ArgsHandler::dump_to_stream(std::ostream & s) const
 {
+    ArgsDumper dump(s);
     std::list<ArgsGroup *>::const_iterator g(_groups.begin()), g_end(_groups.end());
     for ( ; g != g_end ; ++g)
     {
@@ -105,14 +107,7 @@ ArgsHandler::dump_to_stream(std::ostream & s) const
             a_end((*g)->_args_options.end());
         for ( ; a != a_end ; ++a)
         {
-            std::stringstream p;
-            p << "  --" << (*a)->long_name();
-            if ((*a)->short_name())
-                p << ", -" << (*a)->short_name();
-            if (p.str().length() < 24)
-                p << std::string(24 - p.str().length(), ' ');
-            s << p.str();
-            s << " " << (*a)->description() << std::endl;
+            (*a)->accept(&dump);
         }
 
         s << std::endl;

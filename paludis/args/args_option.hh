@@ -189,7 +189,7 @@ namespace paludis
         {
             private:
                 const std::map<std::string, std::string> _allowed_args;
-                std::string _argument;
+                std::string _argument, _default_arg;
 
             public:
 
@@ -224,7 +224,8 @@ namespace paludis
                         const char short_name, const std::string & description,
                         const EnumArgOptions & opts, const std::string & default_arg) :
                     ArgsOption(group, long_name, short_name, description),
-                    _allowed_args(opts._options), _argument(default_arg)
+                    _allowed_args(opts._options), _argument(default_arg), 
+                    _default_arg(default_arg)
                 {
                 }
 
@@ -238,6 +239,11 @@ namespace paludis
                  * it is one of the arguments allowed for this option.
                  */
                 void set_argument(const std::string & arg);
+
+                /**
+                 * Fetch the default option, as specified to the constructor.
+                 */
+                const std::string & default_arg() const { return _default_arg; }
 
                 /**
                  * Type used to iterate over valid arguments to this option
