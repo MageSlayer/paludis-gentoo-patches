@@ -23,8 +23,20 @@
 
 #include <paludis/configuration_error.hh>
 
+/** \file
+ * Declarations for the DefaultConfigError class.
+ *
+ * \ingroup Exception
+ */
+
 namespace paludis
 {
+    /**
+     * A DefaultConfigError is thrown if a configuration error is encountered
+     * by DefaultConfig.
+     *
+     * \ingroup Exception
+     */
     class DefaultConfigError : public ConfigurationError
     {
         public:

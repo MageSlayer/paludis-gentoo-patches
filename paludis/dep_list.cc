@@ -311,6 +311,7 @@ DepList::visit(const UseDepAtom * const u)
         std::for_each(u->begin(), u->end(), std::bind1st(std::mem_fun(&DepList::add), this));
 }
 
+#ifndef DOXYGEN
 struct IsViable :
     public std::unary_function<bool, DepAtom::ConstPointer>
 {
@@ -332,6 +333,7 @@ struct IsViable :
             return true;
     }
 };
+#endif
 
 void
 DepList::visit(const AnyDepAtom * const a)

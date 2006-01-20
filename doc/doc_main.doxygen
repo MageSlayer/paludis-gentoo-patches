@@ -139,6 +139,8 @@
  *
  * - paludis::FSEntry represents a filesystem entry.
  * - paludis::DirIterator is an iterator for directories.
+ * - paludis::IsFileWithExtension can be used as a functor to determine
+ *   whether a paludis::FSEntry instance is a file with certain attributes.
  *
  * \ingroup Utility
  */

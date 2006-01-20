@@ -25,8 +25,21 @@
 #include <string>
 #include <functional>
 
+/** \file
+ * Declarations for the IsFileWithExtension class.
+ *
+ * \ingroup Filesystem
+ */
+
 namespace paludis
 {
+    /**
+     * The IsFileWithExtension class is a functor that determines whether an
+     * FSEntry instance is a file with a given extension and (optionally) a
+     * given filename prefix.
+     *
+     * \ingroup Filesystem
+     */
     class IsFileWithExtension :
         public std::unary_function<bool, FSEntry>
     {
@@ -35,18 +48,27 @@ namespace paludis
             const std::string _ext;
 
         public:
+            /**
+             * Constructor.
+             */
             IsFileWithExtension(const std::string & ext) :
                 _prefix(""),
                 _ext(ext)
             {
             }
 
+            /**
+             * Constructor.
+             */
             IsFileWithExtension(const std::string & prefix, const std::string & ext) :
                 _prefix(prefix),
                 _ext(ext)
             {
             }
 
+            /**
+             * Operator.
+             */
             bool operator() (const FSEntry & f) const;
     };
 }

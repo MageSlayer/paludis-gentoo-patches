@@ -40,6 +40,10 @@ namespace paludis
             Iter_ _i;
 
         public:
+            /**
+             * Fake a container_type to allow us to work with other iterator
+             * adapters.
+             */
             struct container_type
             {
                 typedef Type_ value_type;

@@ -22,6 +22,12 @@
 
 using namespace paludis;
 
+/** \file
+ * Implementation of IsFileWithExtension.
+ *
+ * \ingroup Filesystem
+ */
+
 bool
 IsFileWithExtension::operator() (const FSEntry & f) const
 {
