@@ -112,6 +112,8 @@ main(int argc, char *argv[])
         cout << "CXXFLAGS:    " << PALUDIS_BUILD_CXXFLAGS << endl;
         cout << "LDFLAGS:     " << PALUDIS_BUILD_LDFLAGS << endl;
         cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
+        cout << "libebt:      " << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR
+            << "." << LIBEBT_VERSION_MICRO << endl;
         cout << endl;
         cout << "Paludis comes with ABSOLUTELY NO WARRANTY. Paludis is free software, and you" << endl;
         cout << "are welcome to redistribute it under the terms of the GNU General Public" << endl;
