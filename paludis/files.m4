@@ -124,5 +124,6 @@ add(`version_metadata',                  `hh', `cc')
 add(`version_operator',                  `hh', `cc', `test')
 add(`version_spec',                      `hh', `cc', `test')
 add(`version_spec_collection',           `hh', `cc')
+add(`virtual_constructor',               `hh', `cc', `test')
 add(`visitor',                           `hh', `cc', `test')
 
