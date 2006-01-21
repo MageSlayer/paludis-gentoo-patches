@@ -21,17 +21,51 @@
 #define PALUDIS_GUARD_PALUDIS_USE_FLAG_NAME_HH 1
 
 #include <paludis/validated.hh>
-#include <paludis/use_flag_name_validator.hh>
+#include <paludis/name_error.hh>
+#include <paludis/instantiation_policy.hh>
 #include <string>
 
 /** \file
- * Declarations for the UseFlagName class.
+ * Declarations for UseFlagName and related classes.
  *
  * \ingroup Database
+ * \ingroup Exception
  */
 
 namespace paludis
 {
+    /**
+     * A UseFlagNameError is thrown if an invalid value is assigned to
+     * a UseFlagName.
+     *
+     * \ingroup Database
+     * \ingroup Exception
+     */
+    class UseFlagNameError : public NameError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            UseFlagNameError(const std::string & name) throw ();
+    };
+
+    /**
+     * A UseFlagNameValidator handles validation rules for the value of a
+     * UseFlagName.
+     *
+     * \ingroup Database
+     */
+    struct UseFlagNameValidator :
+        private InstantiationPolicy<UseFlagNameValidator, instantiation_method::NonInstantiableTag>
+    {
+        /**
+         * If the parameter is not a valid value for a UseFlagName,
+         * throw a UseFlagNameError.
+         */
+        static void validate(const std::string &);
+    };
+
     /**
      * A UseFlagName holds a std::string that is a valid name for a USE flag.
      *

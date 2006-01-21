@@ -19,3 +19,34 @@
 
 #include "use_flag_name.hh"
 
+using namespace paludis;
+
+void
+UseFlagNameValidator::validate(const std::string & s)
+{
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-+_:");
+
+    do
+    {
+        if (s.empty())
+            break;
+
+        if (std::string::npos != s.find_first_not_of(allowed_chars))
+            break;
+
+        return;
+
+    } while (false);
+
+    Context c("When validating use flag name '" + s + "':");
+
+    throw UseFlagNameError(s);
+}
+
+UseFlagNameError::UseFlagNameError(const std::string & name) throw () :
+    NameError(name, "use flag name")
+{
+}
