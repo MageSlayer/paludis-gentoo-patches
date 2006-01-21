@@ -155,49 +155,52 @@ class RunTest
         {
         }
 
-        void operator() (TestCase * test_case) const
-        {
-            bool had_local_failure(false);
-
-            std::cout << "* \"" << test_case->name() << "\": " << std::flush;
-
-            for (int repeat = 0 ; repeat < 2 ; ++repeat)
-            {
-                if (0 != repeat)
-                    std::cout << "  (repeat): " << std::flush;
-
-                try
-                {
-                    alarm(test_case->max_run_time());
-                    test_case->call_run();
-                    alarm(0);
-                }
-                catch (std::exception &e)
-                {
-                    std::cout << "!{" << std::endl << exception_to_debug_string(e) <<
-                        std::endl << "  } " << std::flush;
-                    had_local_failure = true;
-                    *_had_a_failure = true;
-                }
-                catch (...)
-                {
-                    std::cout << "!{Unknown exception type} ";
-                    had_local_failure = true;
-                    *_had_a_failure = true;
-                }
-
-                if (had_local_failure)
-                    std::cout << " NOT OK";
-                else
-                    std::cout << " OK";
-
-                std::cout << std::endl;
-
-                if (! test_case->repeatable())
-                    break;
-            }
-        }
+        void operator() (TestCase * test_case) const;
 };
+
+void
+RunTest::operator() (TestCase * test_case) const
+{
+    bool had_local_failure(false);
+
+    std::cout << "* \"" << test_case->name() << "\": " << std::flush;
+
+    for (int repeat = 0 ; repeat < 2 ; ++repeat)
+    {
+        if (0 != repeat)
+            std::cout << "  (repeat): " << std::flush;
+
+        try
+        {
+            alarm(test_case->max_run_time());
+            test_case->call_run();
+            alarm(0);
+        }
+        catch (std::exception &e)
+        {
+            std::cout << "!{" << std::endl << exception_to_debug_string(e) <<
+                std::endl << "  } " << std::flush;
+            had_local_failure = true;
+            *_had_a_failure = true;
+        }
+        catch (...)
+        {
+            std::cout << "!{Unknown exception type} ";
+            had_local_failure = true;
+            *_had_a_failure = true;
+        }
+
+        if (had_local_failure)
+            std::cout << " NOT OK";
+        else
+            std::cout << " OK";
+
+        std::cout << std::endl;
+
+        if (! test_case->repeatable())
+            break;
+    }
+}
 
 bool
 TestCaseList::run_tests()

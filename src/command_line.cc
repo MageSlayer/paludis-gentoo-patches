@@ -20,8 +20,6 @@
 
 #include "src/command_line.hh"
 
-#ifndef DOXYGEN
-
 CommandLine::CommandLine() :
     ArgsHandler(),
 
@@ -59,5 +57,7 @@ CommandLine::CommandLine() :
     a_dl_max_stack_depth.set_argument(100);
 }
 
-#endif
+CommandLine::~CommandLine()
+{
+}
 

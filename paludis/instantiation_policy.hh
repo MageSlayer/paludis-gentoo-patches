@@ -173,12 +173,16 @@ namespace paludis
             /**
              * Fetch our instance.
              */
-            static OurType_ * get_instance()
-            {
-                static OurType_ instance;
-                return &instance;
-            }
+            static OurType_ * get_instance();
     };
+
+    template<typename OurType_>
+    OurType_ *
+    InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>::get_instance()
+    {
+        static OurType_ instance;
+        return &instance;
+    }
 }
 
 #endif

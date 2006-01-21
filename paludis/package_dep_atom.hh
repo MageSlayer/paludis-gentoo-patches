@@ -73,6 +73,11 @@ namespace paludis
             PackageDepAtom(const std::string &);
 
             /**
+             * Destructor.
+             */
+            ~PackageDepAtom();
+
+            /**
              * Fetch the package name.
              */
             const QualifiedPackageName & package() const

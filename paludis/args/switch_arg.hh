@@ -48,6 +48,8 @@ namespace paludis
                  */
                 SwitchArg(ArgsGroup * const group, std::string long_name, char short_name,
                         std::string description);
+
+                ~SwitchArg();
         };
     }
 }

@@ -41,3 +41,7 @@ ArgsGroup::add(ArgsOption * const value)
     _args_options.push_back(value);
 }
 
+ArgsGroup::~ArgsGroup()
+{
+}
+

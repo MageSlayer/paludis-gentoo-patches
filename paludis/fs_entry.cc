@@ -73,6 +73,12 @@ FSEntry::operator/ (const FSEntry & rhs) const
     return FSEntry(_path + "/" + rhs._path);
 }
 
+FSEntry
+FSEntry::operator/ (const std::string & rhs) const
+{
+    return operator/ (FSEntry(rhs));
+}
+
 const FSEntry &
 FSEntry::operator/= (const FSEntry & rhs)
 {

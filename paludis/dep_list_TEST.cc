@@ -234,52 +234,7 @@ namespace test_cases
     {
         DepListDepFailureTest() : TestCase("dep failure") { }
 
-        void run_d(VersionMetadataKey dep_kind)
-        {
-            TestMessageSuffix suffix(stringify(dep_kind), true);
-            TestEnvironment e;
-
-            /* t/one DEPENDs upon t/two and t/three. t/three has unresolvable
-             * deps. */
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot1").
-                set(dep_kind, "t/two t/three");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot2");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot3").
-                set(dep_kind, "t/bad");
-
-            e.package_db()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_db()->add_repository(installed);
-
-            DepList d(&e);
-            TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), Exception);
-            TEST_CHECK(d.begin() == d.end());
-
-            /* try again, with some stuff already in the dep list. */
-            d.add(DepParser::parse("t/two"));
-            DepList::Iterator di(d.begin()), di_end(d.end());
-            TEST_CHECK(di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("two")),
-                        VersionSpec("1.0"), SlotName("slot2"), RepositoryName("repo")));
-            TEST_CHECK(++di == di_end);
-
-            TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), Exception);
-            di = d.begin();
-            TEST_CHECK(di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("two")),
-                        VersionSpec("1.0"), SlotName("slot2"), RepositoryName("repo")));
-            TEST_CHECK(++di == di_end);
-        }
+        void run_d(VersionMetadataKey dep_kind) PALUDIS_ATTRIBUTE((noinline));
 
         void run()
         {
@@ -288,6 +243,55 @@ namespace test_cases
             run_d(vmk_pdepend);
         }
     } test_dep_list_dep_failure;
+
+    void
+    DepListDepFailureTest::run_d(VersionMetadataKey dep_kind)
+    {
+        TestMessageSuffix suffix(stringify(dep_kind), true);
+        TestEnvironment e;
+
+        /* t/one DEPENDs upon t/two and t/three. t/three has unresolvable
+         * deps. */
+        FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+
+        repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
+            set(vmk_slot, "slot1").
+            set(dep_kind, "t/two t/three");
+
+        repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
+            set(vmk_slot, "slot2");
+
+        repo->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"))->
+            set(vmk_slot, "slot3").
+            set(dep_kind, "t/bad");
+
+        e.package_db()->add_repository(repo);
+
+        FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
+        e.installed_db()->add_repository(installed);
+
+        DepList d(&e);
+        TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), Exception);
+        TEST_CHECK(d.begin() == d.end());
+
+        /* try again, with some stuff already in the dep list. */
+        d.add(DepParser::parse("t/two"));
+        DepList::Iterator di(d.begin()), di_end(d.end());
+        TEST_CHECK(di != di_end);
+        TEST_CHECK_EQUAL(*di, DepListEntry(
+                    QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("two")),
+                    VersionSpec("1.0"), SlotName("slot2"), RepositoryName("repo")));
+        TEST_CHECK(++di == di_end);
+
+        TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), Exception);
+        di = d.begin();
+        TEST_CHECK(di != di_end);
+        TEST_CHECK_EQUAL(*di, DepListEntry(
+                    QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("two")),
+                    VersionSpec("1.0"), SlotName("slot2"), RepositoryName("repo")));
+        TEST_CHECK(++di == di_end);
+    }
+
 
     /**
      * \test Test dep list: indirect circular deps.
@@ -437,63 +441,7 @@ namespace test_cases
     {
         DepListComplexMetOrDepTest() : TestCase("complex met or dep") { }
 
-        void run_n(int n)
-        {
-            TestEnvironment e;
-#if ((! defined(__GNUC__)) || ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)))
-            TestMessageSuffix(stringify(n), true);
-#  endif
-
-            /* t/one DEPENDs upon
-             * || (
-             *     ( t/two t/three )
-             *     (
-             *         t/four
-             *         || (
-             *             t/five
-             *             ( t/six t/seven )
-             *         )
-             *      )
-             *  )
-             */
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "1").
-                set(vmk_depend, "|| ( ( t/two t/three ) ( t/four || ( t/five ( t/six t/seven ) ) ) )");
-
-            e.package_db()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-
-            if (n == 1)
-            {
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"));
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"));
-            }
-            else if (n == 2)
-            {
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("four"), VersionSpec("1.0"));
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("five"), VersionSpec("1.0"));
-            }
-            else if (n == 3)
-            {
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("four"), VersionSpec("1.0"));
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("six"), VersionSpec("1.0"));
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("seven"), VersionSpec("1.0"));
-            }
-
-            e.installed_db()->add_repository(installed);
-
-            DepList d(&e);
-            d.add(DepParser::parse("t/one"));
-            DepList::Iterator di(d.begin()), di_end(d.end());
-            TEST_CHECK(di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
-                        VersionSpec("1.0"), SlotName("1"), RepositoryName("repo")));
-            TEST_CHECK(++di == di_end);
-        }
+        void run_n(int n) PALUDIS_ATTRIBUTE((noinline));
 
         void run()
         {
@@ -501,6 +449,66 @@ namespace test_cases
                 run_n(n);
         }
     } test_dep_list_complex_met_or_dep;
+
+    void
+    DepListComplexMetOrDepTest::run_n(int n)
+    {
+        TestEnvironment e;
+#if ((! defined(__GNUC__)) || ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)))
+        TestMessageSuffix(stringify(n), true);
+#  endif
+
+        /* t/one DEPENDs upon
+         * || (
+         *     ( t/two t/three )
+         *     (
+         *         t/four
+         *         || (
+         *             t/five
+         *             ( t/six t/seven )
+         *         )
+         *      )
+         *  )
+         */
+        FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+
+        repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
+            set(vmk_slot, "1").
+            set(vmk_depend, "|| ( ( t/two t/three ) ( t/four || ( t/five ( t/six t/seven ) ) ) )");
+
+        e.package_db()->add_repository(repo);
+
+        FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
+
+        if (n == 1)
+        {
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"));
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"));
+        }
+        else if (n == 2)
+        {
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("four"), VersionSpec("1.0"));
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("five"), VersionSpec("1.0"));
+        }
+        else if (n == 3)
+        {
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("four"), VersionSpec("1.0"));
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("six"), VersionSpec("1.0"));
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("seven"), VersionSpec("1.0"));
+        }
+
+        e.installed_db()->add_repository(installed);
+
+        DepList d(&e);
+        d.add(DepParser::parse("t/one"));
+        DepList::Iterator di(d.begin()), di_end(d.end());
+        TEST_CHECK(di != di_end);
+        TEST_CHECK_EQUAL(*di, DepListEntry(
+                    QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
+                    VersionSpec("1.0"), SlotName("1"), RepositoryName("repo")));
+        TEST_CHECK(++di == di_end);
+    }
+
 
     /**
      * \test Test dep list: complex unmet or dep.
@@ -511,58 +519,7 @@ namespace test_cases
     {
         DepListComplexUnmetOrDepTest() : TestCase("complex unmet or dep") { }
 
-        void run_n(int n)
-        {
-            TestEnvironment e;
-            TestMessageSuffix suffix(stringify(n), true);
-
-            /* t/one DEPENDs upon
-             * || (
-             *     ( t/two t/three )
-             *     (
-             *         t/four
-             *         || (
-             *             t/five
-             *             ( t/six t/seven )
-             *         )
-             *      )
-             *  )
-             */
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "1").
-                set(vmk_depend, "|| ( ( t/two t/three ) ( t/four || ( t/five ( t/six t/seven ) ) ) )");
-
-            e.package_db()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-
-            if (n == 1)
-            {
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"));
-            }
-            else if (n == 2)
-            {
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"));
-            }
-            else if (n == 3)
-            {
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("five"), VersionSpec("1.0"));
-            }
-            else if (n == 4)
-            {
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("four"), VersionSpec("1.0"));
-                installed->add_version(CategoryNamePart("t"), PackageNamePart("seven"), VersionSpec("1.0"));
-            }
-
-            e.installed_db()->add_repository(installed);
-
-            DepList d(&e);
-            TEST_CHECK(d.begin() == d.end());
-            TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), DepListError);
-            TEST_CHECK(d.begin() == d.end());
-        }
+        void run_n(int n) PALUDIS_ATTRIBUTE((noinline));
 
         void run()
         {
@@ -570,6 +527,60 @@ namespace test_cases
                 run_n(n);
         }
     } test_dep_list_complex_unmet_or_dep;
+
+    void
+    DepListComplexUnmetOrDepTest::run_n(int n)
+    {
+        TestEnvironment e;
+        TestMessageSuffix suffix(stringify(n), true);
+
+        /* t/one DEPENDs upon
+         * || (
+         *     ( t/two t/three )
+         *     (
+         *         t/four
+         *         || (
+         *             t/five
+         *             ( t/six t/seven )
+         *         )
+         *      )
+         *  )
+         */
+        FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+
+        repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
+            set(vmk_slot, "1").
+            set(vmk_depend, "|| ( ( t/two t/three ) ( t/four || ( t/five ( t/six t/seven ) ) ) )");
+
+        e.package_db()->add_repository(repo);
+
+        FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
+
+        if (n == 1)
+        {
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"));
+        }
+        else if (n == 2)
+        {
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"));
+        }
+        else if (n == 3)
+        {
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("five"), VersionSpec("1.0"));
+        }
+        else if (n == 4)
+        {
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("four"), VersionSpec("1.0"));
+            installed->add_version(CategoryNamePart("t"), PackageNamePart("seven"), VersionSpec("1.0"));
+        }
+
+        e.installed_db()->add_repository(installed);
+
+        DepList d(&e);
+        TEST_CHECK(d.begin() == d.end());
+        TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), DepListError);
+        TEST_CHECK(d.begin() == d.end());
+    }
 
     /**
      * \test Test dep list: or all use dep.

@@ -54,6 +54,8 @@ namespace paludis
         public:
             KeyValueConfigFile(std::istream * const);
 
+            ~KeyValueConfigFile();
+
             typedef std::map<std::string, std::string>::const_iterator Iterator;
 
             Iterator begin() const

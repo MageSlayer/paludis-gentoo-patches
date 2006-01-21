@@ -41,6 +41,9 @@ class CommandLine :
         /// Constructor.
         CommandLine();
 
+        /// Destructor.
+        ~CommandLine();
+
     public:
         /// \name Action arguments
         ///{

@@ -72,6 +72,11 @@ namespace paludis
                 ArgsGroup(ArgsHandler * h, const std::string & name);
 
                 /**
+                 * Destructor.
+                 */
+                ~ArgsGroup();
+
+                /**
                  * Fetch our name.
                  */
                 const std::string & name() const

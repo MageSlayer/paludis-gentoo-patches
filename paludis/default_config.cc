@@ -266,3 +266,6 @@ DefaultConfig::DefaultConfig()
     }
 }
 
+DefaultConfig::~DefaultConfig()
+{
+}

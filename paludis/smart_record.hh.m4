@@ -402,6 +402,8 @@ forloop(`idy', `0', decr(`'idx`'), `
 ')
 
             public:
+                ~RecordBase();
+
                 RecordBase(
 ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
                         const typename Tag_::KeyType`'idy`' & p`'idy`',
@@ -439,6 +441,11 @@ forloop(`idy', `0', decr(idx), `
                     return RecordKeyGetter<Tag_, `'idx`', k_>::do_get(*this);
                 }
         };
+
+        template<typename Tag_>
+        RecordBase<Tag_, `'idx`'>::~RecordBase()
+        {
+        }
 ')
 
 forloop(`idx', `0', max_record_size, `

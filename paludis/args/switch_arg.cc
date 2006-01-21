@@ -33,3 +33,7 @@ SwitchArg::SwitchArg(ArgsGroup * const group, std::string long_name, char short_
 {
 }
 
+SwitchArg::~SwitchArg()
+{
+}
+

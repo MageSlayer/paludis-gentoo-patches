@@ -87,17 +87,26 @@ namespace paludis
         mutable bool has_profile;
 
         /// Constructor.
-        Implementation(const FSEntry & l, const FSEntry & p) :
-            location(l),
-            profile(p),
-            has_category_names(false),
-            has_repo_mask(false)
-        {
-        }
+        Implementation(const FSEntry & l, const FSEntry & p);
+
+        /// Destructor.
+        ~Implementation();
 
         /// Add a use.mask, use from a profile directory, recursive.
         void add_profile(const FSEntry & f) const;
     };
+}
+
+Implementation<PortageRepository>::Implementation(const FSEntry & l, const FSEntry & p) :
+    location(l),
+    profile(p),
+    has_category_names(false),
+    has_repo_mask(false)
+{
+}
+
+Implementation<PortageRepository>::~Implementation()
+{
 }
 
 void

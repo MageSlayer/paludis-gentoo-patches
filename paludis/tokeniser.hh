@@ -160,46 +160,52 @@ namespace paludis
             }
 
             template <typename Iter_>
-            void tokenise(const std::basic_string<Char_> & s, Iter_ iter) const
+            void tokenise(const std::basic_string<Char_> & s, Iter_ iter) const;
+    };
+
+    template <typename DelimMode_, typename Char_>
+    template <typename Iter_>
+    void
+    Tokeniser<delim_kind::AnyOfTag, DelimMode_, Char_>::tokenise(
+            const std::basic_string<Char_> & s, Iter_ iter) const
+    {
+        typename std::basic_string<Char_>::size_type p(0), old_p(0);
+        bool in_delim((! s.empty()) && std::basic_string<Char_>::npos != _delims.find(s[0]));
+
+        for ( ; p < s.length() ; ++p)
+        {
+            if (in_delim)
             {
-                typename std::basic_string<Char_>::size_type p(0), old_p(0);
-                bool in_delim((! s.empty()) && std::basic_string<Char_>::npos != _delims.find(s[0]));
-
-                for ( ; p < s.length() ; ++p)
+                if (std::basic_string<Char_>::npos == _delims.find(s[p]))
                 {
-                    if (in_delim)
-                    {
-                        if (std::basic_string<Char_>::npos == _delims.find(s[p]))
-                        {
-                            tokeniser_internals::Writer<DelimMode_, Char_, Iter_>::handle_delim(
-                                    s.substr(old_p, p - old_p), iter);
-                            in_delim = false;
-                            old_p = p;
-                        }
-                    }
-                    else
-                    {
-                        if (std::basic_string<Char_>::npos != _delims.find(s[p]))
-                        {
-                            tokeniser_internals::Writer<DelimMode_, Char_, Iter_>::handle_token(
-                                    s.substr(old_p, p - old_p), iter);
-                            in_delim = true;
-                            old_p = p;
-                        }
-                    }
-                }
-
-                if (old_p != p)
-                {
-                    if (in_delim)
-                        tokeniser_internals::Writer<DelimMode_, Char_, Iter_>::handle_delim(
-                                s.substr(old_p, p - old_p), iter);
-                    else
-                        tokeniser_internals::Writer<DelimMode_, Char_, Iter_>::handle_token(
-                                s.substr(old_p, p - old_p), iter);
+                    tokeniser_internals::Writer<DelimMode_, Char_, Iter_>::handle_delim(
+                            s.substr(old_p, p - old_p), iter);
+                    in_delim = false;
+                    old_p = p;
                 }
             }
-    };
+            else
+            {
+                if (std::basic_string<Char_>::npos != _delims.find(s[p]))
+                {
+                    tokeniser_internals::Writer<DelimMode_, Char_, Iter_>::handle_token(
+                            s.substr(old_p, p - old_p), iter);
+                    in_delim = true;
+                    old_p = p;
+                }
+            }
+        }
+
+        if (old_p != p)
+        {
+            if (in_delim)
+                tokeniser_internals::Writer<DelimMode_, Char_, Iter_>::handle_delim(
+                        s.substr(old_p, p - old_p), iter);
+            else
+                tokeniser_internals::Writer<DelimMode_, Char_, Iter_>::handle_token(
+                        s.substr(old_p, p - old_p), iter);
+        }
+    }
 
 }
 

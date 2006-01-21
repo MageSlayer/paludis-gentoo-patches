@@ -107,6 +107,10 @@ PackageDepAtom::PackageDepAtom(const std::string & s) :
     }
 }
 
+PackageDepAtom::~PackageDepAtom()
+{
+}
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
 {

@@ -81,10 +81,7 @@ namespace paludis
             /**
              * Join with another path.
              */
-            FSEntry operator/ (const std::string & rhs) const
-            {
-                return operator/ (FSEntry(rhs));
-            }
+            FSEntry operator/ (const std::string & rhs) const;
 
             /**
              * Append another path.

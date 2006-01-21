@@ -40,15 +40,13 @@ ArgsOption::ArgsOption(ArgsGroup * const g, const std::string & long_name,
     g->_handler->add_option(this, long_name, short_name);
 }
 
-StringArg::StringArg(ArgsGroup * const g, const std::string & long_name,
-        const char short_name, const std::string & description) :
-    ArgsOption(g, long_name, short_name, description)
+ArgsOption::~ArgsOption()
 {
 }
 
-SwitchArg::SwitchArg(ArgsGroup * const group, std::string long_name, char short_name,
-        std::string description) :
-    ArgsOption(group, long_name, short_name, description)
+StringArg::StringArg(ArgsGroup * const g, const std::string & long_name,
+        const char short_name, const std::string & description) :
+    ArgsOption(g, long_name, short_name, description)
 {
 }
 
@@ -67,6 +65,10 @@ void EnumArg::set_argument(const std::string & arg)
     _argument = arg;
 }
 
+EnumArg::~EnumArg()
+{
+}
+
 EnumArg::EnumArgOptions::EnumArgOptions(std::string opt, std::string desc)
 {
     _options.insert(std::make_pair(opt, desc));
@@ -76,4 +78,8 @@ EnumArg::EnumArgOptions & EnumArg::EnumArgOptions::operator() (std::string opt, 
 {
     _options.insert(std::make_pair(opt, desc));
     return *this;
+}
+
+EnumArg::EnumArgOptions::~EnumArgOptions()
+{
 }

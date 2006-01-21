@@ -83,6 +83,8 @@ namespace paludis
         private:
             DefaultConfig();
 
+            ~DefaultConfig();
+
             std::list<RepositoryConfigEntry> _repos;
 
             std::map<QualifiedPackageName, std::vector<

@@ -46,22 +46,29 @@ struct CommandLine : public ArgsHandler
     EnumArg arg_enum;
     EnumArg arg_other_enum;
 
-    CommandLine() :
-        group_one(this, "Group one"),
-        arg_foo(&group_one, "foo", 'f', "Enable foo"),
-        arg_bar(&group_one, "bar", 'b', "Enable bar"),
-        arg_dummy(&group_one, "dummy", 'd', "Enable something else"),
-
-        group_two(this, "Group two"),
-        arg_baz(&group_two, "baz", 'z', "Enable baz"),
-        arg_other_baz(&arg_baz, "other-baz"),
-        arg_something(&group_two, "something", 's', "Value of something"),
-        arg_somenum(&group_two, "num", 'n', "Some number"),
-        arg_enum(&group_two, "enum", 'e', "One of three", EnumArg::EnumArgOptions("one", "Option one")("two", "option two")("three", "option three"), "two"),
-        arg_other_enum(&group_two, "something", '\0', "Blah.", EnumArg::EnumArgOptions("a", "A")("b", "B")("c", "C"), "b")
-    {
-    }
+    CommandLine();
+    ~CommandLine();
 };
+
+CommandLine::CommandLine() :
+    group_one(this, "Group one"),
+    arg_foo(&group_one, "foo", 'f', "Enable foo"),
+    arg_bar(&group_one, "bar", 'b', "Enable bar"),
+    arg_dummy(&group_one, "dummy", 'd', "Enable something else"),
+
+    group_two(this, "Group two"),
+    arg_baz(&group_two, "baz", 'z', "Enable baz"),
+    arg_other_baz(&arg_baz, "other-baz"),
+    arg_something(&group_two, "something", 's', "Value of something"),
+    arg_somenum(&group_two, "num", 'n', "Some number"),
+    arg_enum(&group_two, "enum", 'e', "One of three", EnumArg::EnumArgOptions("one", "Option one")("two", "option two")("three", "option three"), "two"),
+    arg_other_enum(&group_two, "something", '\0', "Blah.", EnumArg::EnumArgOptions("a", "A")("b", "B")("c", "C"), "b")
+{
+}
+
+CommandLine::~CommandLine()
+{
+}
 
 #endif
 

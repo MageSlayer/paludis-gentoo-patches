@@ -74,6 +74,11 @@ namespace paludis
             }
 
             /**
+             * Destructor.
+             */
+            ~FilterInsertIterator();
+
+            /**
              * Dereference.
              */
             FilterInsertIterator & operator* ()
@@ -105,6 +110,11 @@ namespace paludis
                 return *this;
             }
     };
+
+    template <typename Iter_, typename Pred_>
+    FilterInsertIterator<Iter_, Pred_>::~FilterInsertIterator()
+    {
+    }
 
     /**
      * Convenience function: make a FilterInsertIterator.

@@ -66,6 +66,11 @@ namespace paludis
                 ArgsOption(ArgsGroup * const, const std::string & long_name,
                         const char short_name, const std::string & description);
 
+                /**
+                 * Destructor.
+                 */
+                ~ArgsOption();
+
             public:
                 /**
                  * Fetch our long name.
@@ -114,13 +119,6 @@ namespace paludis
                 ArgsGroup * group()
                 {
                     return _group;
-                }
-
-                /**
-                 * Destructor.
-                 */
-                virtual ~ArgsOption()
-                {
                 }
         };
 
@@ -213,6 +211,11 @@ namespace paludis
                         EnumArgOptions(const std::string, const std::string);
 
                         /**
+                         * Destructor.
+                         */
+                        ~EnumArgOptions();
+
+                        /**
                          * Adds another (option, description) pair.
                          */
                         EnumArgOptions& operator() (const std::string, const std::string);
@@ -229,6 +232,8 @@ namespace paludis
                     _default_arg(default_arg)
                 {
                 }
+
+                ~EnumArg();
 
                 /**
                  * Fetch the argument that was given to this option.

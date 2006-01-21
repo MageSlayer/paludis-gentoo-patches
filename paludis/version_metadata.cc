@@ -57,11 +57,13 @@ namespace paludis
         /**
          * Constructor.
          */
-        Implementation()
-        {
-            values.resize(static_cast<unsigned>(last_vmk));
-        }
+        Implementation();
     };
+}
+
+Implementation<VersionMetadata>::Implementation()
+{
+    values.resize(static_cast<unsigned>(last_vmk));
 }
 
 VersionMetadata::VersionMetadata() :

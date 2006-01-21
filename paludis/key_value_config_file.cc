@@ -30,6 +30,10 @@ KeyValueConfigFile::KeyValueConfigFile(std::istream * const s) :
     need_lines();
 }
 
+KeyValueConfigFile::~KeyValueConfigFile()
+{
+}
+
 void
 KeyValueConfigFile::accept_line(const std::string & line) const
 {
