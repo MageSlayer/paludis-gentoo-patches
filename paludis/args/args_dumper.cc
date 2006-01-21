@@ -20,8 +20,6 @@
 
 #include <paludis/args/args_dumper.hh>
 #include <paludis/args/args_option.hh>
-#include <paludis/args/switch_arg.hh>
-#include <paludis/args/alias_arg.hh>
 
 #include <sstream>
 

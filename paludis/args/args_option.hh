@@ -121,7 +121,25 @@ namespace paludis
                     return _group;
                 }
         };
+ 
+        /**
+         * A SwitchArg is an option that can either be specified or not
+         * specified, and that takes no value (for example, --help).
+         *
+         * \ingroup Args
+         */
+        class SwitchArg : public ArgsOption, public Visitable<SwitchArg, ArgsVisitorTypes>
+        {
+            public:
+                /**
+                 * Constructor.
+                 */
+                SwitchArg(ArgsGroup * const group, std::string long_name, char short_name,
+                        std::string description);
 
+                ~SwitchArg();
+        };
+ 
         /**
          * An option that takes a string argument.
          *
@@ -151,6 +169,33 @@ namespace paludis
                 void set_argument(const std::string& arg) { _argument = arg; }
         };
 
+        /**
+         * An AliasArg is an alias for another argument.
+         *
+         * \ingroup Args
+         */
+        class AliasArg : public ArgsOption, public Visitable<AliasArg, ArgsVisitorTypes>
+        {
+            private:
+                ArgsOption * const _other;
+
+            public:
+                /**
+                 * Constructor.
+                 */
+                AliasArg(ArgsOption * const other, const std::string & new_long_name);
+
+                virtual bool specified() const
+                {
+                    return _other->specified();
+                }
+
+                virtual void set_specified(const bool value)
+                {
+                    _other->set_specified(value);
+                }
+        };
+ 
         /**
          * An option that takes an integer argument.
          *

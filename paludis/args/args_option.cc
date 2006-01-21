@@ -44,6 +44,23 @@ ArgsOption::~ArgsOption()
 {
 }
 
+SwitchArg::SwitchArg(ArgsGroup * const group, std::string long_name, char short_name,
+        std::string description) :
+    ArgsOption(group, long_name, short_name, description)
+{
+}
+
+SwitchArg::~SwitchArg()
+{
+}
+
+AliasArg::AliasArg(ArgsOption * const other, const std::string & long_name) :
+    ArgsOption(other->group(), long_name, '\0', "Alias for --" + other->long_name()),
+    _other(other)
+{
+    other->group()->handler()->add_option(other, long_name);
+}
+
 StringArg::StringArg(ArgsGroup * const g, const std::string & long_name,
         const char short_name, const std::string & description) :
     ArgsOption(g, long_name, short_name, description)

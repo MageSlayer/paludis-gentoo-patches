@@ -1,7 +1,5 @@
 #include "args_visitor.hh"
 #include "args_option.hh"
-#include "alias_arg.hh"
-#include "switch_arg.hh"
 
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>

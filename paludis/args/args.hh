@@ -26,12 +26,10 @@
  * \ingroup Args
  */
 
-#include <paludis/args/alias_arg.hh>
 #include <paludis/args/args_error.hh>
 #include <paludis/args/args_group.hh>
 #include <paludis/args/args_handler.hh>
 #include <paludis/args/args_option.hh>
 #include <paludis/args/bad_argument.hh>
-#include <paludis/args/switch_arg.hh>
 
 #endif
