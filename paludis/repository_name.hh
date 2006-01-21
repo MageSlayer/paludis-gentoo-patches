@@ -21,17 +21,51 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_NAME_HH 1
 
 #include <paludis/validated.hh>
-#include <paludis/repository_name_validator.hh>
+#include <paludis/private_implementation_pattern.hh>
+#include <paludis/name_error.hh>
 #include <string>
 
 /** \file
- * Declaration for the RepositoryName class.
+ * Declaration for RepositoryName and related classes.
  *
  * \ingroup Database
+ * \ingroup Exception
  */
 
 namespace paludis
 {
+    /**
+     * A RepositoryNameError is thrown if an invalid value is assigned to
+     * a RepositoryName.
+     *
+     * \ingroup Exception
+     * \ingroup Database
+     */
+    class RepositoryNameError : public NameError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            RepositoryNameError(const std::string & name) throw ();
+    };
+
+    /**
+     * A RepositoryNameValidator handles validation rules for the value
+     * of a RepositoryName.
+     *
+     * \ingroup Database
+     */
+    struct RepositoryNameValidator :
+        private InstantiationPolicy<RepositoryNameValidator, instantiation_method::NonInstantiableTag>
+    {
+        /**
+         * If the parameter is not a valid value for a RepositoryName,
+         * throw a RepositoryNameError.
+         */
+        static void validate(const std::string &);
+    };
+
     /**
      * A RepositoryNamePart holds a std::string that is a valid name for a
      * Repository.

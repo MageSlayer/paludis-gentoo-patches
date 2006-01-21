@@ -19,3 +19,26 @@
 
 #include "repository_name.hh"
 
+using namespace paludis;
+
+void
+RepositoryNameValidator::validate(const std::string & s)
+{
+    do
+    {
+        if (s.empty())
+            break;
+
+        return;
+
+    } while (false);
+
+    Context c("When validating repository name '" + s + "':");
+    throw RepositoryNameError(s);
+}
+
+RepositoryNameError::RepositoryNameError(const std::string & name) throw () :
+    NameError(name, "repository")
+{
+}
+
