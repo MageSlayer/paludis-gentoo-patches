@@ -19,3 +19,36 @@
 
 #include "slot_name.hh"
 
+using namespace paludis;
+
+SlotNameError::SlotNameError(const std::string & name) throw () :
+    NameError(name, "slot name")
+{
+}
+
+void
+SlotNameValidator::validate(const std::string & s)
+{
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-+_.");
+
+    do
+    {
+        if (s.empty())
+            break;
+
+        if (std::string::npos != s.find_first_not_of(allowed_chars))
+            break;
+
+        return;
+
+    } while (false);
+
+    Context c("When validating slot name '" + s + "':");
+
+    throw SlotNameError(s);
+}
+
+

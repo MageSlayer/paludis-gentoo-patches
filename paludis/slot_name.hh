@@ -21,17 +21,51 @@
 #define PALUDIS_GUARD_PALUDIS_SLOT_NAME_HH 1
 
 #include <paludis/validated.hh>
-#include <paludis/slot_name_validator.hh>
+#include <paludis/name_error.hh>
+#include <paludis/instantiation_policy.hh>
 #include <string>
 
 /** \file
- * Declarations for the SlotName class.
+ * Declarations for SlotName and related classes.
  *
  * \ingroup Database
+ * \ingroup Exception
  */
 
 namespace paludis
 {
+    /**
+     * A SlotNameError is thrown if an invalid value is assigned to
+     * a SlotName.
+     *
+     * \ingroup Database
+     * \ingroup Exception
+     */
+    class SlotNameError : public NameError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            SlotNameError(const std::string & name) throw ();
+    };
+
+    /**
+     * A SlotNameValidator handles validation rules for the value of a
+     * SlotName.
+     *
+     * \ingroup Database
+     */
+    struct SlotNameValidator :
+        private InstantiationPolicy<SlotNameValidator, instantiation_method::NonInstantiableTag>
+    {
+        /**
+         * If the parameter is not a valid value for a SlotName,
+         * throw a SlotNameError.
+         */
+        static void validate(const std::string &);
+    };
+
     /**
      * A SlotName holds a std::string that is a valid name for a SLOT.
      *
