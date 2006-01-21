@@ -21,17 +21,51 @@
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_NAME_PART_HH 1
 
 #include <paludis/validated.hh>
-#include <paludis/package_name_part_validator.hh>
+#include <paludis/name_error.hh>
+#include <paludis/private_implementation_pattern.hh>
 #include <string>
 
 /** \file
- * Declarations for the PackageNamePart class.
+ * Declarations for PackageNamePart and related classes.
  *
  * \ingroup Database
+ * \ingroup Exception
  */
 
 namespace paludis
 {
+    /**
+     * A PackageNamePartError is thrown if an invalid value is assigned to
+     * a PackageNamePart.
+     *
+     * \ingroup Database
+     * \ingroup Exception
+     */
+    class PackageNamePartError : public NameError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            PackageNamePartError(const std::string & name) throw ();
+    };
+
+    /**
+     * A PackageNamePartValidator handles validation rules for the value
+     * of a PackageNamePart.
+     *
+     * \ingroup Database
+     */
+    struct PackageNamePartValidator :
+        private InstantiationPolicy<PackageNamePartValidator, instantiation_method::NonInstantiableTag>
+    {
+        /**
+         * If the parameter is not a valid value for a PackageNamePart,
+         * throw a PackageNamePartError.
+         */
+        static void validate(const std::string &);
+    };
+
     /**
      * A PackageNamePart holds a std::string that is a valid name for the
      * category part of a QualifiedPackageName.

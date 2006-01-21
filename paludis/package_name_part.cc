@@ -19,3 +19,53 @@
 
 #include "package_name_part.hh"
 
+using namespace paludis;
+
+PackageNamePartError::PackageNamePartError(const std::string & name) throw () :
+    NameError(name, "package name part")
+{
+}
+
+void
+PackageNamePartValidator::validate(const std::string & s)
+{
+    /* this gets called a lot, make it fast */
+
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-+_");
+
+    static const std::string number_chars(
+            "0123456789");
+
+    if (s.empty())
+    {
+        Context c("When validating package name part '" + s + "':");
+        throw PackageNamePartError(s);
+    }
+
+    /* we don't allow - followed by only numbers, because it could be
+     * a version spec. */
+    for (std::string::size_type p(0) ; p < s.length() ; ++p)
+    {
+        if (std::string::npos == allowed_chars.find(s[p]))
+        {
+            Context c("When validating package name part '" + s + "':");
+            throw PackageNamePartError(s);
+        }
+
+        if ('-' != s[p])
+            continue;
+        if (++p >= s.length())
+            break;
+        if ((std::string::npos != number_chars.find(s[p]) &&
+                std::string::npos == s.find_first_not_of(number_chars, p)) ||
+                (std::string::npos == allowed_chars.find(s[p])))
+        {
+            Context c("When validating package name part '" + s + "':");
+            throw PackageNamePartError(s);
+        }
+    }
+}
+

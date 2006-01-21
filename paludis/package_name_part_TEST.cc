@@ -18,7 +18,6 @@
  */
 
 #include "package_name_part.hh"
-#include "package_name_part_error.hh"
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>
