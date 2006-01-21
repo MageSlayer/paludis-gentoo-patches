@@ -20,3 +20,49 @@
 
 #include "keyword_name.hh"
 
+using namespace paludis;
+
+KeywordNameError::KeywordNameError(const std::string & name) throw () :
+    NameError(name, "keyword name")
+{
+}
+
+void
+KeywordNameValidator::validate(const std::string & s)
+{
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-+_");
+
+    do
+    {
+        switch (s.length())
+        {
+            case 0:
+                continue;
+
+            case 1:
+                if ("*" == s)
+                    return;
+                continue;
+
+            case 2:
+                if ("-*" == s)
+                    return;
+
+                /* fall throuth */
+            default:
+                if (std::string::npos != s.find_first_not_of(allowed_chars,
+                            ('~' == s.at(0) ? 1 : 0)))
+                    continue;
+        }
+
+        return;
+
+    } while (false);
+
+    Context c("When validating keyword name '" + s + "':");
+    throw KeywordNameError(s);
+}
+

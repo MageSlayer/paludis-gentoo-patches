@@ -21,16 +21,51 @@
 #define PALUDIS_GUARD_PALUDIS_KEYWORD_NAME_HH 1
 
 #include <paludis/validated.hh>
-#include <paludis/keyword_name_validator.hh>
+#include <paludis/instantiation_policy.hh>
+#include <paludis/name_error.hh>
 #include <string>
 
 /** \file
- * Declarations for the KeywordName class.
+ * Declarations for KeywordName and related classes.
  *
  * \ingroup Environment
+ * \ingroup Database
+ * \ingroup Exception
  */
 namespace paludis
 {
+    /**
+     * A KeywordNameValidator handles validation rules for the value of a
+     * UseFlagName.
+     *
+     * \ingroup Environment
+     */
+    struct KeywordNameValidator :
+        private InstantiationPolicy<KeywordNameValidator, instantiation_method::NonInstantiableTag>
+    {
+        /**
+         * If the parameter is not a valid value for a KeywordName,
+         * throw a KeywordNameError.
+         */
+        static void validate(const std::string &);
+    };
+
+    /**
+     * A KeywordNameError is thrown if an invalid value is assigned to
+     * a KeywordNameName.
+     *
+     * \ingroup Environment
+     * \ingroup Exception
+     */
+    class KeywordNameError : public NameError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            KeywordNameError(const std::string & name) throw ();
+    };
+
     /**
      * A KeywordName holds a std::string that is a valid name for a KEYWORD.
      *
