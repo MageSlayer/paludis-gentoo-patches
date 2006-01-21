@@ -19,3 +19,36 @@
 
 #include "category_name_part.hh"
 
+using namespace paludis;
+
+void
+CategoryNamePartValidator::validate(const std::string & s)
+{
+    /* this gets called a lot, make it fast */
+
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-+_");
+
+    do
+    {
+        if (s.empty())
+            break;
+
+        if (std::string::npos != s.find_first_not_of(allowed_chars))
+            break;
+
+        return;
+
+    } while (false);
+
+    Context c("When validating category name '" + s + "':");
+    throw CategoryNamePartError(s);
+}
+
+CategoryNamePartError::CategoryNamePartError(const std::string & name) throw () :
+    NameError(name, "category name part")
+{
+}
+
