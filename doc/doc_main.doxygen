@@ -193,6 +193,15 @@
  * \ingroup Utility
  */
 
+/** \defgroup VirtualConstructor Virtual constructors
+ * Visitor pattern.
+ *
+ * See the GoF book for how virtual constructors (called "Factory Methods" in
+ * GoF) work. See the test cases for how to use it.
+ *
+ * \ingroup Utility
+ */
+
 /** \defgroup ConfigFile Configuration handling
  * Configuration handling.
  *

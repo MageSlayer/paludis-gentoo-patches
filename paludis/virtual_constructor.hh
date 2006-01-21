@@ -52,6 +52,8 @@ namespace paludis
         {
             /**
              * Internal use: provide handle_not_found.
+             *
+             * \ingroup VirtualConstructor
              */
             template <typename KeyType_, typename ValueType_>
             struct Parent
@@ -167,6 +169,8 @@ namespace paludis
             /**
              * An instance of this class registers a new maker with the
              * specified key.
+             *
+             * \ingroup VirtualConstructor
              */
             struct RegisterMaker
             {
