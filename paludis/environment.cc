@@ -19,7 +19,6 @@
 
 #include "package_database.hh"
 #include "environment.hh"
-#include "internal_error.hh"
 
 using namespace paludis;
 

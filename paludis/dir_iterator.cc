@@ -19,7 +19,6 @@
 
 #include "dir_iterator.hh"
 #include "dir_open_error.hh"
-#include "internal_error.hh"
 #include "stringify.hh"
 #include <sys/types.h>
 #include <dirent.h>

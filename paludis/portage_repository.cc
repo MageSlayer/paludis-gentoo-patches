@@ -20,7 +20,6 @@
 #include "portage_repository.hh"
 #include "dir_iterator.hh"
 #include "stringify.hh"
-#include "internal_error.hh"
 #include "fs_entry.hh"
 #include "strip.hh"
 #include "is_file_with_extension.hh"

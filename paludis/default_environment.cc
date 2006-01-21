@@ -23,7 +23,6 @@
 #include "portage_repository.hh"
 #include "default_config.hh"
 #include "stringify.hh"
-#include "internal_error.hh"
 #include <list>
 #include <vector>
 

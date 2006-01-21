@@ -36,3 +36,13 @@ Exception::message() const throw ()
     return _message;
 }
 
+InternalError::InternalError(const std::string & where, const std::string & message) throw () :
+    Exception("Eek! Internal error at " + where + ": " + message)
+{
+}
+
+InternalError::InternalError(const std::string & where) throw () :
+    Exception("Eek! Internal error at " + where)
+{
+}
+

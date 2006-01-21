@@ -18,7 +18,6 @@
  */
 
 #include "exception.hh"
-#include "internal_error.hh"
 #include "stringify.hh"
 #include "dep_string_parse_error.hh"
 #include "dep_string_nesting_error.hh"

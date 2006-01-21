@@ -24,7 +24,6 @@
 #include "all_masked_error.hh"
 #include "no_resolvable_option_error.hh"
 #include "circular_dependency_error.hh"
-#include "internal_error.hh"
 #include "all_dep_atom.hh"
 #include "any_dep_atom.hh"
 #include "block_dep_atom.hh"

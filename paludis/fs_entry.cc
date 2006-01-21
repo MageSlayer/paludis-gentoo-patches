@@ -20,7 +20,6 @@
 #include "fs_entry.hh"
 #include "fs_error.hh"
 #include "exception.hh"
-#include "internal_error.hh"
 #include "stringify.hh"
 
 #include <sys/stat.h>

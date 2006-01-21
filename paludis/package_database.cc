@@ -21,7 +21,6 @@
 #include "no_such_package_error.hh"
 #include "no_such_repository_error.hh"
 #include "no_such_version_error.hh"
-#include "internal_error.hh"
 #include "duplicate_repository_error.hh"
 #include "ambiguous_package_name_error.hh"
 #include "package_dep_atom.hh"

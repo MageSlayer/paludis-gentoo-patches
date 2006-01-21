@@ -19,7 +19,6 @@
 
 #include "exception.hh"
 #include "stringify.hh"
-#include "internal_error.hh"
 #include "all_dep_atom.hh"
 #include "any_dep_atom.hh"
 #include "use_dep_atom.hh"

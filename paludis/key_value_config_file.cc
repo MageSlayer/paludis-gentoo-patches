@@ -20,7 +20,6 @@
 
 #include "key_value_config_file.hh"
 #include "key_value_config_file_error.hh"
-#include "internal_error.hh"
 
 using namespace paludis;
 

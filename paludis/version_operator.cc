@@ -18,7 +18,6 @@
  */
 
 #include "version_operator.hh"
-#include "internal_error.hh"
 #include "stringify.hh"
 
 using namespace paludis;
