@@ -189,7 +189,8 @@ namespace paludis
         {
             private:
                 const std::map<std::string, std::string> _allowed_args;
-                std::string _argument, _default_arg;
+                std::string _argument;
+                const std::string _default_arg;
 
             public:
 
