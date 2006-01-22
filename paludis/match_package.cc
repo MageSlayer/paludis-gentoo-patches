@@ -30,7 +30,7 @@ match_package_internals::do_match(
 
 bool
 match_package_internals::do_match(
-        const PackageDatabase * const db,
+        const PackageDatabase * const,
         const PackageDepAtom * const atom,
         const DepListEntry * const entry)
 {

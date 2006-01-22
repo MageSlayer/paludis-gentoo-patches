@@ -22,12 +22,14 @@ namespace paludis
         bool do_match(
                 const PackageDatabase * const db,
                 const PackageDepAtom * const atom,
-                const PackageDatabaseEntry * const entry);
+                const PackageDatabaseEntry * const entry)
+            PALUDIS_ATTRIBUTE((nonnull(1, 2, 3)));
 
         bool do_match(
                 const PackageDatabase * const db,
                 const PackageDepAtom * const atom,
-                const DepListEntry * const entry);
+                const DepListEntry * const entry)
+            PALUDIS_ATTRIBUTE((nonnull(2, 3)));
 
         inline const PackageDatabase * sanitise_db(const PackageDatabase * db)
         {
