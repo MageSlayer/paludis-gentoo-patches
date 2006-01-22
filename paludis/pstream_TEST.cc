@@ -19,7 +19,6 @@
  */
 
 #include "pstream.hh"
-#include "pstream_error.hh"
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
