@@ -44,7 +44,7 @@ namespace paludis
      */
     enum PackageDatabaseEntryKeys
     {
-        pde_package,           ///< Our package
+        pde_name,              ///< Our package
         pde_version,           ///< Our version
         pde_repository,        ///< Our repository
         last_pde               ///< Number of items
@@ -56,7 +56,7 @@ namespace paludis
     struct PackageDatabaseEntryTag :
         SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
         SmartRecordKeys<PackageDatabaseEntryKeys, last_pde>,
-        SmartRecordKey<pde_package, QualifiedPackageName>,
+        SmartRecordKey<pde_name, QualifiedPackageName>,
         SmartRecordKey<pde_version, VersionSpec>,
         SmartRecordKey<pde_repository, RepositoryName>
     {

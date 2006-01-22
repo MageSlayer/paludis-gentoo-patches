@@ -32,7 +32,7 @@ using namespace paludis;
 std::ostream &
 paludis::operator<< (std::ostream & s, const PackageDatabaseEntry & v)
 {
-    s << v.get<pde_package>() << "-" << v.get<pde_version>() << "::" << v.get<pde_repository>();
+    s << v.get<pde_name>() << "-" << v.get<pde_version>() << "::" << v.get<pde_repository>();
     return s;
 }
 
@@ -110,14 +110,14 @@ VersionMetadata::ConstPointer
 PackageDatabase::fetch_metadata(const PackageDatabaseEntry & e) const
 {
     const Repository::ConstPointer rr(fetch_repository(e.get<pde_repository>()));
-    if (! rr->has_category_named(e.get<pde_package>().get<qpn_category>()))
-        throw NoSuchPackageError(stringify(e.get<pde_package>()));
-    if (! rr->has_package_named(e.get<pde_package>()))
-        throw NoSuchPackageError(stringify(e.get<pde_package>()));
-    if (! rr->has_version(e.get<pde_package>(), e.get<pde_version>()))
-        throw NoSuchVersionError(stringify(e.get<pde_package>()), e.get<pde_version>());
-    return rr->version_metadata(e.get<pde_package>().get<qpn_category>(),
-            e.get<pde_package>().get<qpn_package>(), e.get<pde_version>());
+    if (! rr->has_category_named(e.get<pde_name>().get<qpn_category>()))
+        throw NoSuchPackageError(stringify(e.get<pde_name>()));
+    if (! rr->has_package_named(e.get<pde_name>()))
+        throw NoSuchPackageError(stringify(e.get<pde_name>()));
+    if (! rr->has_version(e.get<pde_name>(), e.get<pde_version>()))
+        throw NoSuchVersionError(stringify(e.get<pde_name>()), e.get<pde_version>());
+    return rr->version_metadata(e.get<pde_name>().get<qpn_category>(),
+            e.get<pde_name>().get<qpn_package>(), e.get<pde_version>());
 }
 
 Repository::ConstPointer

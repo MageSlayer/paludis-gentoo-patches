@@ -57,11 +57,11 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
             if (query_user_masks(e))
                 result.set(mr_user_mask);
 
-            if (package_db()->fetch_repository(e.get<pde_repository>())->query_profile_masks(e.get<pde_package>(),
+            if (package_db()->fetch_repository(e.get<pde_repository>())->query_profile_masks(e.get<pde_name>(),
                         e.get<pde_version>()))
                 result.set(mr_profile_mask);
 
-            if (package_db()->fetch_repository(e.get<pde_repository>())->query_repository_masks(e.get<pde_package>(),
+            if (package_db()->fetch_repository(e.get<pde_repository>())->query_repository_masks(e.get<pde_name>(),
                         e.get<pde_version>()))
                 result.set(mr_repository_mask);
         }

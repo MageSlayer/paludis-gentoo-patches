@@ -19,8 +19,6 @@
 
 #include "exception.hh"
 #include "stringify.hh"
-#include "dep_string_parse_error.hh"
-#include "dep_string_nesting_error.hh"
 #include "dep_parser.hh"
 #include "dep_lexer.hh"
 #include "all_dep_atom.hh"
@@ -32,6 +30,17 @@
 #include <stack>
 
 using namespace paludis;
+
+DepStringParseError::DepStringParseError(const std::string & d,
+        const std::string & m) throw () :
+    DepStringError(d, "in parse phase: " + m)
+{
+}
+
+DepStringNestingError::DepStringNestingError(const std::string & dep_string) throw () :
+    DepStringParseError(dep_string, "improperly balanced parentheses")
+{
+}
 
 enum DepParserState
 {

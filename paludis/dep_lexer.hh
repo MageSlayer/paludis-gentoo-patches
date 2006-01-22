@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_PARSER_LEXER_HH 1
 
 #include <paludis/instantiation_policy.hh>
+#include <paludis/exception.hh>
 #include <list>
 #include <string>
 
@@ -28,10 +29,45 @@
  * Declarations for the DepLexer class.
  *
  * \ingroup DepResolver
+ * \ingroup Exception
  */
 
 namespace paludis
 {
+    /**
+     * A DepStringError descendent is thrown if an invalid depend string is
+     * encountered.
+     *
+     * \ingroup Exception
+     * \ingroup DepResolver
+     */
+    class DepStringError : public Exception
+    {
+        protected:
+            /**
+             * Constructor.
+             */
+            DepStringError(const std::string & dep_string,
+                    const std::string & message) throw ();
+    };
+
+    /**
+     * A DepStringLexError is thrown if a lex-level error is encountered when
+     * parsing a dependency string.
+     *
+     * \ingroup Exception
+     * \ingroup DepResolver
+     */
+    class DepStringLexError : public DepStringError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            DepStringLexError(const std::string & dep_string,
+                    const std::string & message) throw ();
+    };
+
     /**
      * Lexemes used by DepLexer.
      */

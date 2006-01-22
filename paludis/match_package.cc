@@ -10,7 +10,7 @@ match_package_internals::do_match(
         const PackageDepAtom * const atom,
         const PackageDatabaseEntry * const entry)
 {
-    if (atom->package() != entry->get<pde_package>())
+    if (atom->package() != entry->get<pde_name>())
         return false;
 
     if (atom->version_spec_ptr() && ! (((entry->get<pde_version>()).*

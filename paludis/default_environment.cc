@@ -130,8 +130,8 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
 
     if (d)
         for (DefaultConfig::PackageKeywordsIterator
-                k(DefaultConfig::get_instance()->begin_package_keywords(d->get<pde_package>())),
-                k_end(DefaultConfig::get_instance()->end_package_keywords(d->get<pde_package>())) ;
+                k(DefaultConfig::get_instance()->begin_package_keywords(d->get<pde_name>())),
+                k_end(DefaultConfig::get_instance()->end_package_keywords(d->get<pde_name>())) ;
                 k != k_end ; ++k)
         {
             if (! match_package(package_db(), k->first, d))
@@ -152,8 +152,8 @@ bool
 DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
 {
     for (DefaultConfig::UserMasksIterator
-            k(DefaultConfig::get_instance()->begin_user_masks(d.get<pde_package>())),
-            k_end(DefaultConfig::get_instance()->end_user_masks(d.get<pde_package>())) ;
+            k(DefaultConfig::get_instance()->begin_user_masks(d.get<pde_name>())),
+            k_end(DefaultConfig::get_instance()->end_user_masks(d.get<pde_name>())) ;
             k != k_end ; ++k)
     {
         if (! match_package(package_db(), *k, d))
@@ -169,8 +169,8 @@ bool
 DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
 {
     for (DefaultConfig::UserMasksIterator
-            k(DefaultConfig::get_instance()->begin_user_unmasks(d.get<pde_package>())),
-            k_end(DefaultConfig::get_instance()->end_user_unmasks(d.get<pde_package>())) ;
+            k(DefaultConfig::get_instance()->begin_user_unmasks(d.get<pde_name>())),
+            k_end(DefaultConfig::get_instance()->end_user_unmasks(d.get<pde_name>())) ;
             k != k_end ; ++k)
     {
         if (! match_package(package_db(), *k, d))

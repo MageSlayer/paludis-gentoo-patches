@@ -281,7 +281,7 @@ DepList::visit(const PackageDepAtom * const p)
             "' -> '" + stringify(*match) + "':");
 
     /* make merge entry */
-    DepListEntry merge_entry(match->get<pde_package>(), match->get<pde_version>(),
+    DepListEntry merge_entry(match->get<pde_name>(), match->get<pde_version>(),
             SlotName(metadata->get(vmk_slot)), match->get<pde_repository>());
 
     {

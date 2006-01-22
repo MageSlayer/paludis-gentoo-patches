@@ -24,11 +24,21 @@
 #include "dep_atom_visitor.hh"
 #include "dep_lexer.hh"
 #include "exception.hh"
-#include "dep_string_lex_error.hh"
 #include "tokeniser.hh"
 #include <vector>
 
 using namespace paludis;
+
+DepStringLexError::DepStringLexError(const std::string & dep_string,
+        const std::string & message) throw () :
+    DepStringError(dep_string, "in lex phase: " + message)
+{
+}
+
+DepStringError::DepStringError(const std::string & d, const std::string & m) throw () :
+    Exception("Bad dependency string '" + d + "': " + m)
+{
+}
 
 DepLexer::DepLexer(const std::string & s)
 {

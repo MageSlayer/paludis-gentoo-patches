@@ -23,16 +23,49 @@
 #include <paludis/composite_dep_atom.hh>
 #include <paludis/counted_ptr.hh>
 #include <paludis/instantiation_policy.hh>
+#include <paludis/exception.hh>
+#include <paludis/dep_lexer.hh>
 #include <string>
 
 /** \file
  * Declarations for the DepParser class.
  *
  * \ingroup DepResolver
+ * \ingroup Exception
  */
 
 namespace paludis
 {
+    /**
+     * A DepStringParseError is thrown if an error is encountered when parsing
+     * a dependency string.
+     *
+     * \ingroup Exception
+     * \ingroup DepResolver
+     */
+    class DepStringParseError : public DepStringError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            DepStringParseError(const std::string & dep_string,
+                    const std::string & message) throw ();
+    };
+
+    /**
+     * A DepStringNestingError is thrown if a dependency string does not have
+     * properly balanced parentheses.
+     */
+    class DepStringNestingError : public DepStringParseError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            DepStringNestingError(const std::string & dep_string) throw ();
+    };
+
     /**
      * The DepParser converts string representations of a dependency
      * specification into a DepAtom instance.
