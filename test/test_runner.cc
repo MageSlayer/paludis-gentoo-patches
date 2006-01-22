@@ -19,12 +19,12 @@
  */
 
 #include "test_runner.hh"
-
-#include "test_runner.hh"
 #include "test_framework.hh"
+
 #include <iostream>
 #include <cstdlib>
 #include <signal.h>
+#include <execinfo.h>
 #include <unistd.h>
 
 /** \file
@@ -35,13 +35,33 @@
 
 using namespace test;
 
-/**
- * Called if we take too long.
- */
-void
-timeout_handler(int)
+namespace
 {
-    std::cerr << "Exiting due to timeout!" << std::endl;
+    void do_backtrace()
+    {
+        void * bt[50];
+        size_t sz = backtrace(bt, 50);
+        char * * symbols = backtrace_symbols(bt, sz);
+
+        std::cerr << "Stack dump:" << std::endl;
+        for (unsigned n(0) ; n < sz ; ++n)
+            std::cerr << "  * " << symbols[n] << std::endl;
+
+        std::free(symbols);
+    }
+}
+
+void timeout_handler(int)
+{
+    std::cerr << std::endl << "Test aborted due to timeout!" << std::endl;
+    do_backtrace();
+    std::exit(EXIT_FAILURE);
+}
+
+void segfault_handler(int)
+{
+    std::cerr << std::endl << "Test aborted due to segmentation fault!" << std::endl;
+    do_backtrace();
     std::exit(EXIT_FAILURE);
 }
 
@@ -49,6 +69,8 @@ int
 main(int, char * argv[])
 {
     signal(SIGALRM, &timeout_handler);
+    signal(SIGSEGV, &segfault_handler);
+
     std::cout << "Test program " << argv[0] << ":" << std::endl;
     return TestCaseList::run_tests() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

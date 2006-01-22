@@ -21,11 +21,19 @@
 #ifndef PALUDIS_GUARD_TEST_TEST_RUNNER_HH
 #define PALUDIS_GUARD_TEST_TEST_RUNNER_HH 1
 
+#include <paludis/attributes.hh>
+
 /** \file
  * Declarations for the default test runner.
  */
 
 /// Main program.
 int main(int, char *[]);
+
+/// Called if we take too long.
+void timeout_handler(int) PALUDIS_ATTRIBUTE((noreturn));
+
+/// Called if we get a segfault.
+void segfault_handler(int) PALUDIS_ATTRIBUTE((noreturn));
 
 #endif
