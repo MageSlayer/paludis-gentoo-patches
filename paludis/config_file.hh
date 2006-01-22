@@ -22,6 +22,7 @@
 #define PALUDIS_GUARD_PALUDIS_CONFIG_FILE_HH 1
 
 #include <paludis/instantiation_policy.hh>
+#include <paludis/configuration_error.hh>
 #include <istream>
 #include <list>
 #include <string>
@@ -41,7 +42,7 @@ namespace paludis
      * \ingroup Exception
      * \ingroup ConfigFile
      */
-    class ConfigFileError : public Exception
+    class ConfigFileError : public ConfigurationError
     {
         public:
             /**

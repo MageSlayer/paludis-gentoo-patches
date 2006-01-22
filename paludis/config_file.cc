@@ -27,7 +27,7 @@
 using namespace paludis;
 
 ConfigFileError::ConfigFileError(const std::string & message) throw () :
-    Exception("Config file error: " + message)
+    ConfigurationError("Config file error: " + message)
 {
 }
 

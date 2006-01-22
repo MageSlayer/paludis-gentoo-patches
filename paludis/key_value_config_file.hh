@@ -34,6 +34,20 @@
 namespace paludis
 {
     /**
+     * A KeyValueConfigFileError is thrown if bad data is encountered in
+     * a ConfigFile.
+     *
+     * \ingroup ConfigFile
+     * \ingroup Exception
+     */
+    class KeyValueConfigFileError : public ConfigurationError
+    {
+        public:
+            KeyValueConfigFileError(const std::string & message,
+                    const std::string & filename = "") throw ();
+    };
+
+    /**
      * A KeyValueConfigFile is a ConfigFile that provides access to the
      * normalised lines. Do not subclass.
      *

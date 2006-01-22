@@ -19,9 +19,15 @@
  */
 
 #include "key_value_config_file.hh"
-#include "key_value_config_file_error.hh"
 
 using namespace paludis;
+
+KeyValueConfigFileError::KeyValueConfigFileError(const std::string & msg,
+        const std::string & filename) throw () :
+    ConfigurationError("Key/Value config file error" +
+            (filename.empty() ? ": " : "in file '" + filename + "': ") + msg)
+{
+}
 
 KeyValueConfigFile::KeyValueConfigFile(std::istream * const s) :
     ConfigFile(s)
@@ -66,7 +72,7 @@ KeyValueConfigFile::replace_variables(const std::string & s) const
         if ('\\' == s[p])
         {
             if (++p >= s.length())
-                throw KeyValueConfigFileError("Backslash not followed by a character");
+                throw KeyValueConfigFileError("Backslash not followed by a character", filename());
             r += s[p++];
         }
         else if ('$' != s[p])
@@ -75,13 +81,13 @@ KeyValueConfigFile::replace_variables(const std::string & s) const
         {
             std::string name;
             if (++p >= s.length())
-                throw KeyValueConfigFileError("Dollar not followed by a character");
+                throw KeyValueConfigFileError("Dollar not followed by a character", filename());
 
             if ('{' == s[p])
             {
                 std::string::size_type q;
                 if (std::string::npos == ((q = s.find("}", p))))
-                    throw KeyValueConfigFileError("Closing } not found");
+                    throw KeyValueConfigFileError("Closing } not found", filename());
 
                 name = s.substr(p + 1, q - p - 1);
                 p = q + 1;
@@ -100,7 +106,7 @@ KeyValueConfigFile::replace_variables(const std::string & s) const
             }
 
             if (name.empty())
-                throw KeyValueConfigFileError("Empty variable name");
+                throw KeyValueConfigFileError("Empty variable name", filename());
             r += get(name);
         }
 
@@ -119,9 +125,9 @@ KeyValueConfigFile::strip_quotes(const std::string & s) const
     if (std::string::npos != std::string("'\"").find(s[0]))
     {
         if (s.length() < 2)
-            throw KeyValueConfigFileError("Unterminated quote");
+            throw KeyValueConfigFileError("Unterminated quote", filename());
         if (s[s.length() - 1] != s[0])
-            throw KeyValueConfigFileError("Mismatched quote");
+            throw KeyValueConfigFileError("Mismatched quote", filename());
         return s.substr(1, s.length() - 2);
     }
     else
