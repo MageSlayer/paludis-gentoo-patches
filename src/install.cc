@@ -54,7 +54,7 @@ do_install()
             targets->add_child(p::DepParser::parse(*q));
         else if (std::string::npos == q->find('/'))
             targets->add_child(p::DepAtom::Pointer(new p::PackageDepAtom(
-                            env->package_db()->fetch_unique_qualified_package_name(
+                            env->package_database()->fetch_unique_qualified_package_name(
                                 p::PackageNamePart(*q)))));
         else
             targets->add_child(p::DepAtom::Pointer(new p::PackageDepAtom(*q)));
@@ -91,7 +91,7 @@ do_install()
                 cout << "-" << dep->get<p::dle_version>();
 
             /* display repository, unless it's our main repository */
-            if (env->package_db()->favourite_repository() != dep->get<p::dle_repository>())
+            if (env->package_database()->favourite_repository() != dep->get<p::dle_repository>())
                 cout << "::" << dep->get<p::dle_repository>();
 
             /* display slot name, unless it's 0 */
@@ -101,7 +101,7 @@ do_install()
             /* fetch metadata */
             p::PackageDatabaseEntry p(p::PackageDatabaseEntry(dep->get<p::dle_name>(),
                         dep->get<p::dle_version>(), dep->get<p::dle_repository>()));
-            p::VersionMetadata::ConstPointer metadata(env->package_db()->fetch_metadata(p));
+            p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(p));
 
             /* display USE flags */
             for (p::VersionMetadata::IuseIterator i(metadata->begin_iuse()),
@@ -109,7 +109,7 @@ do_install()
             {
                 if (env->query_use(*i, p))
                     cout << " " << colour(cl_flag_on, *i);
-                else if (env->package_db()->fetch_repository(dep->get<p::dle_repository>())->query_use_mask(*i))
+                else if (env->package_database()->fetch_repository(dep->get<p::dle_repository>())->query_use_mask(*i))
                     cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");
                 else
                     cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));

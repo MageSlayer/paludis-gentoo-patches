@@ -206,13 +206,13 @@ DepList::visit(const PackageDepAtom * const p)
 
     /* are we already installed? */
     if ((! _implementation->ignore_installed) &&
-            (! _implementation->environment->installed_db()->query(p)->empty()))
+            (! _implementation->environment->installed_database()->query(p)->empty()))
         already_there = true;
 
     /* will we be installed by this point? */
     if ((! already_there) && (_implementation->merge_list.end() != std::find_if(
                 _implementation->merge_list.begin(), _implementation->merge_list.end(),
-                DepListEntryMatcher(_implementation->environment->package_db().raw_pointer(), *p))))
+                DepListEntryMatcher(_implementation->environment->package_database().raw_pointer(), *p))))
         return;
 
     if (already_there && ((! _implementation->recursive_deps) || (_implementation->check_existing_only)))
@@ -230,7 +230,7 @@ DepList::visit(const PackageDepAtom * const p)
         std::list<DepListEntry>::iterator i;
         if (_implementation->pending_list.end() != ((i = std::find_if(
                     _implementation->pending_list.begin(), _implementation->pending_list.end(),
-                    DepListEntryMatcher(_implementation->environment->package_db().raw_pointer(), *p)))))
+                    DepListEntryMatcher(_implementation->environment->package_database().raw_pointer(), *p)))))
         {
             std::list<std::string> entries;
             entries.push_front(stringify(*p));
@@ -256,7 +256,7 @@ DepList::visit(const PackageDepAtom * const p)
 
     /* find the matching package */
     PackageDatabaseEntryCollection::Pointer matches(
-            _implementation->environment->package_db()->query(p));
+            _implementation->environment->package_database()->query(p));
 
     const PackageDatabaseEntry * match(0);
     VersionMetadata::ConstPointer metadata(0);
@@ -267,7 +267,7 @@ DepList::visit(const PackageDepAtom * const p)
         if (_implementation->environment->mask_reasons(*e).any())
             continue;
 
-        metadata = _implementation->environment->package_db()->fetch_metadata(*e);
+        metadata = _implementation->environment->package_database()->fetch_metadata(*e);
         match = &*e;
         break;
     }
@@ -433,14 +433,14 @@ DepList::visit(const BlockDepAtom * const d)
     std::list<DepListEntry>::const_iterator m;
 
     /* are we already installed? */
-    if (! ((q = _implementation->environment->installed_db()->query(d->blocked_atom())))->empty())
+    if (! ((q = _implementation->environment->installed_database()->query(d->blocked_atom())))->empty())
     {
         if (! _implementation->current_package)
             throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by installed package '"
                     + stringify(*q->begin()) + "'");
 
         VersionMetadata::ConstPointer metadata(
-                _implementation->environment->installed_db()->fetch_metadata(
+                _implementation->environment->installed_database()->fetch_metadata(
                     *_implementation->current_package));
         if (metadata->end_provide() == std::find(
                     metadata->begin_provide(), metadata->end_provide(),
@@ -452,14 +452,14 @@ DepList::visit(const BlockDepAtom * const d)
     /* will we be installed by this point? */
     if (_implementation->merge_list.end() != ((m = std::find_if(
                 _implementation->merge_list.begin(), _implementation->merge_list.end(),
-                DepListEntryMatcher(_implementation->environment->package_db().raw_pointer(),
+                DepListEntryMatcher(_implementation->environment->package_database().raw_pointer(),
                     *(d->blocked_atom()))))))
     {
         if (! _implementation->current_package)
             throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
                     + stringify(*m));
 
-        VersionMetadata::ConstPointer metadata(_implementation->environment->package_db()->fetch_metadata(
+        VersionMetadata::ConstPointer metadata(_implementation->environment->package_database()->fetch_metadata(
                     *_implementation->current_package));
         if (metadata->end_provide() == std::find(
                     metadata->begin_provide(), metadata->end_provide(),

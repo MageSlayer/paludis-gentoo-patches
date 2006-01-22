@@ -46,8 +46,8 @@ namespace paludis
         private InstantiationPolicy<Environment, instantiation_method::NonCopyableTag>
     {
         private:
-            PackageDatabase::Pointer _package_db;
-            PackageDatabase::Pointer _installed_db;
+            PackageDatabase::Pointer _package_database;
+            PackageDatabase::Pointer _installed_database;
 
         protected:
             /**
@@ -85,17 +85,17 @@ namespace paludis
             /**
              * Fetch our package database.
              */
-            PackageDatabase::Pointer package_db() const
+            PackageDatabase::Pointer package_database() const
             {
-                return _package_db;
+                return _package_database;
             }
 
             /**
              * Fetch our installed database.
              */
-            PackageDatabase::Pointer installed_db() const
+            PackageDatabase::Pointer installed_database() const
             {
-                return _installed_db;
+                return _installed_database;
             }
 
             /**

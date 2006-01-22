@@ -41,16 +41,16 @@ void do_one_query(
     /* we might have a dep atom, but we might just have a simple package name
      * without a category. either should work. */
     p::PackageDepAtom::Pointer atom(std::string::npos == q.find('/') ?
-            new p::PackageDepAtom(env->package_db()->fetch_unique_qualified_package_name(
+            new p::PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
                     p::PackageNamePart(q))) :
             new p::PackageDepAtom(q));
 
-    p::PackageDatabaseEntryCollection::ConstPointer entries(env->package_db()->query(atom));
+    p::PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(atom));
     if (entries->empty())
         throw p::NoSuchPackageError(q);
 
     /* match! display it. */
-    std::cout << "* " << colour(cl_package_name, entries->begin()->get<p::pde_package>());
+    std::cout << "* " << colour(cl_package_name, entries->begin()->get<p::pde_name>());
     if (atom->version_spec_ptr())
         std::cout << " (" << atom->version_operator() << *atom->version_spec_ptr() << ")";
     std::cout << std::endl;
@@ -72,7 +72,7 @@ void do_one_query(
         for (e = entries->begin() ; e != e_end ; ++e)
             if (e->get<p::pde_repository>() == *r)
             {
-                p::VersionMetadata::ConstPointer metadata(env->package_db()->fetch_metadata(*e));
+                p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*e));
                 if (CommandLine::get_instance()->a_show_slot.specified())
                 {
                     /* show the slot, if we're about to move onto a new slot */
@@ -118,7 +118,7 @@ void do_one_query(
     }
 
     /* display metadata */
-    p::VersionMetadata::ConstPointer metadata(env->package_db()->fetch_metadata(*entries->last()));
+    p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*entries->last()));
     std::cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
         " " << metadata->get(p::vmk_homepage) << std::endl;
     std::cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<

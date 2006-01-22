@@ -35,7 +35,7 @@ do_list_repositories()
     p::Environment * const env(p::DefaultEnvironment::get_instance());
 
     for (p::IndirectIterator<p::PackageDatabase::RepositoryIterator, const p::Repository>
-            r(env->package_db()->begin_repositories()), r_end(env->package_db()->end_repositories()) ;
+            r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
         std::cout << "* " << colour(cl_package_name, r->name()) << std::endl;
@@ -59,7 +59,7 @@ do_list_categories()
     std::map<p::CategoryNamePart, std::list<p::RepositoryName> > cats;
 
     for (p::IndirectIterator<p::PackageDatabase::RepositoryIterator, const p::Repository>
-            r(env->package_db()->begin_repositories()), r_end(env->package_db()->end_repositories()) ;
+            r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
         p::CategoryNamePartCollection::ConstPointer cat_names(r->category_names());

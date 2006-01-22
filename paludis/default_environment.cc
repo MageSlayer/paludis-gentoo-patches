@@ -42,7 +42,7 @@ DefaultEnvironment::DefaultEnvironment() :
             throw DefaultConfigError("Unknown repository format '" + r->get<rce_format>() + "'");
         Repository::Pointer repo(new PortageRepository(r->get<rce_location>(),
                     r->get<rce_profile>()));
-        package_db()->add_repository(repo);
+        package_database()->add_repository(repo);
     }
 
     /// \bug vdb
@@ -104,7 +104,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         throw InternalError(PALUDIS_HERE, "bad state " + stringify(state));
     } while (false);
 
-    switch (package_db()->fetch_repository(e.get<pde_repository>())->query_use(f))
+    switch (package_database()->fetch_repository(e.get<pde_repository>())->query_use(f))
     {
         case use_disabled:
         case use_unspecified:
@@ -134,7 +134,7 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
                 k_end(DefaultConfig::get_instance()->end_package_keywords(d->get<pde_name>())) ;
                 k != k_end ; ++k)
         {
-            if (! match_package(package_db(), k->first, d))
+            if (! match_package(package_database(), k->first, d))
                 continue;
 
             result |= k->second == keyword;
@@ -156,7 +156,7 @@ DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_masks(d.get<pde_name>())) ;
             k != k_end ; ++k)
     {
-        if (! match_package(package_db(), *k, d))
+        if (! match_package(package_database(), *k, d))
             continue;
 
         return true;
@@ -173,7 +173,7 @@ DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_unmasks(d.get<pde_name>())) ;
             k != k_end ; ++k)
     {
-        if (! match_package(package_db(), *k, d))
+        if (! match_package(package_database(), *k, d))
             continue;
 
         return true;

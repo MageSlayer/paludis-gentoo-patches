@@ -23,8 +23,8 @@
 using namespace paludis;
 
 Environment::Environment(PackageDatabase::Pointer d, PackageDatabase::Pointer i) :
-    _package_db(d),
-    _installed_db(i)
+    _package_database(d),
+    _installed_database(i)
 {
 }
 
@@ -36,7 +36,7 @@ MaskReasons
 Environment::mask_reasons(const PackageDatabaseEntry & e) const
 {
     MaskReasons result;
-    VersionMetadata::ConstPointer metadata(package_db()->fetch_metadata(e));
+    VersionMetadata::ConstPointer metadata(package_database()->fetch_metadata(e));
 
     if (metadata->get(vmk_eapi) != "0" && metadata->get(vmk_eapi) != "")
         result.set(mr_eapi);
@@ -57,11 +57,11 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
             if (query_user_masks(e))
                 result.set(mr_user_mask);
 
-            if (package_db()->fetch_repository(e.get<pde_repository>())->query_profile_masks(e.get<pde_name>(),
+            if (package_database()->fetch_repository(e.get<pde_repository>())->query_profile_masks(e.get<pde_name>(),
                         e.get<pde_version>()))
                 result.set(mr_profile_mask);
 
-            if (package_db()->fetch_repository(e.get<pde_repository>())->query_repository_masks(e.get<pde_name>(),
+            if (package_database()->fetch_repository(e.get<pde_repository>())->query_repository_masks(e.get<pde_name>(),
                         e.get<pde_version>()))
                 result.set(mr_repository_mask);
         }

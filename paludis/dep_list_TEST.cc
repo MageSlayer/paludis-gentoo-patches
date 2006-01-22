@@ -43,10 +43,10 @@ namespace test_cases
             FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
             repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
                 set(vmk_slot, "slot1");
-            e.package_db()->add_repository(repo);
+            e.package_database()->add_repository(repo);
 
             FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_db()->add_repository(installed);
+            e.installed_database()->add_repository(installed);
 
             DepList d(&e);
             d.add(DepParser::parse("t/one"));
@@ -75,12 +75,12 @@ namespace test_cases
             FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
             repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
                 set(vmk_slot, "slot1");
-            e.package_db()->add_repository(repo);
+            e.package_database()->add_repository(repo);
 
             FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
             installed->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("0.9"))->
                 set(vmk_slot, "slot1");
-            e.installed_db()->add_repository(installed);
+            e.installed_database()->add_repository(installed);
 
             DepList d(&e);
             d.add(DepParser::parse("t/one"));
@@ -111,10 +111,10 @@ namespace test_cases
             repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
                 set(vmk_slot, "slot2");
 
-            e.package_db()->add_repository(repo);
+            e.package_database()->add_repository(repo);
 
             FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_db()->add_repository(installed);
+            e.installed_database()->add_repository(installed);
 
             DepList d(&e);
             d.add(DepParser::parse("t/one"));
@@ -154,10 +154,10 @@ namespace test_cases
             repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
                 set(vmk_slot, "slot2");
 
-            e.package_db()->add_repository(repo);
+            e.package_database()->add_repository(repo);
 
             FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_db()->add_repository(installed);
+            e.installed_database()->add_repository(installed);
 
             DepList d(&e);
             d.add(DepParser::parse("t/one"));
@@ -201,10 +201,10 @@ namespace test_cases
             repo->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"))->
                 set(vmk_slot, "slot3");
 
-            e.package_db()->add_repository(repo);
+            e.package_database()->add_repository(repo);
 
             FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_db()->add_repository(installed);
+            e.installed_database()->add_repository(installed);
 
             DepList d(&e);
             d.add(DepParser::parse("t/one"));
@@ -265,10 +265,10 @@ namespace test_cases
             set(vmk_slot, "slot3").
             set(dep_kind, "t/bad");
 
-        e.package_db()->add_repository(repo);
+        e.package_database()->add_repository(repo);
 
         FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-        e.installed_db()->add_repository(installed);
+        e.installed_database()->add_repository(installed);
 
         DepList d(&e);
         TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), Exception);
@@ -322,10 +322,10 @@ namespace test_cases
                 set(vmk_slot, "slot3").
                 set(vmk_depend, "t/two");
 
-            e.package_db()->add_repository(repo);
+            e.package_database()->add_repository(repo);
 
             FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_db()->add_repository(installed);
+            e.installed_database()->add_repository(installed);
 
             DepList d(&e);
             TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), CircularDependencyError);
@@ -371,10 +371,10 @@ namespace test_cases
                 set(vmk_slot, "slot2").
                 set(vmk_depend, "t/two");
 
-            e.package_db()->add_repository(repo);
+            e.package_database()->add_repository(repo);
 
             FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_db()->add_repository(installed);
+            e.installed_database()->add_repository(installed);
 
             DepList d(&e);
             TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), CircularDependencyError);
@@ -413,13 +413,13 @@ namespace test_cases
                 set(vmk_slot, "slot1").
                 set(vmk_depend, "|| ( t/two t/three )");
 
-            e.package_db()->add_repository(repo);
+            e.package_database()->add_repository(repo);
 
             FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
 
             installed->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"))->
                 set(vmk_slot, "slot2");
-            e.installed_db()->add_repository(installed);
+            e.installed_database()->add_repository(installed);
 
             DepList d(&e);
             d.add(DepParser::parse("t/one"));
@@ -476,7 +476,7 @@ namespace test_cases
             set(vmk_slot, "1").
             set(vmk_depend, "|| ( ( t/two t/three ) ( t/four || ( t/five ( t/six t/seven ) ) ) )");
 
-        e.package_db()->add_repository(repo);
+        e.package_database()->add_repository(repo);
 
         FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
 
@@ -497,7 +497,7 @@ namespace test_cases
             installed->add_version(CategoryNamePart("t"), PackageNamePart("seven"), VersionSpec("1.0"));
         }
 
-        e.installed_db()->add_repository(installed);
+        e.installed_database()->add_repository(installed);
 
         DepList d(&e);
         d.add(DepParser::parse("t/one"));
@@ -552,7 +552,7 @@ namespace test_cases
             set(vmk_slot, "1").
             set(vmk_depend, "|| ( ( t/two t/three ) ( t/four || ( t/five ( t/six t/seven ) ) ) )");
 
-        e.package_db()->add_repository(repo);
+        e.package_database()->add_repository(repo);
 
         FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
 
@@ -574,7 +574,7 @@ namespace test_cases
             installed->add_version(CategoryNamePart("t"), PackageNamePart("seven"), VersionSpec("1.0"));
         }
 
-        e.installed_db()->add_repository(installed);
+        e.installed_database()->add_repository(installed);
 
         DepList d(&e);
         TEST_CHECK(d.begin() == d.end());
@@ -607,10 +607,10 @@ namespace test_cases
             repo->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"))->
                 set(vmk_slot, "1");
 
-            e.package_db()->add_repository(repo);
+            e.package_database()->add_repository(repo);
 
             FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_db()->add_repository(installed);
+            e.installed_database()->add_repository(installed);
 
             DepList d(&e);
             d.add(DepParser::parse("t/one"));
