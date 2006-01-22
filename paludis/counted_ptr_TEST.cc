@@ -110,7 +110,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(*j, "moo");
             TEST_CHECK_EQUAL(j->length(), 3);
         }
-    } counted_ptr_dereference_tests;
+    } test_counted_ptr_dereference;
 
     /**
      * \test CountedPtr copy tests.
@@ -130,7 +130,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(*i, 10);
             TEST_CHECK_EQUAL(*i2, 10);
         }
-    } counted_ptr_copy_tests;
+    } test_counted_ptr_copy;
 
     /**
      * \test CountedPtr dereference-assign tests.
@@ -160,7 +160,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(*i, 40);
             TEST_CHECK_EQUAL(*i2, 40);
         }
-    } counted_ptr_dereference_assign_tests;
+    } test_counted_ptr_dereference_assign;
 
     /**
      * \test CountedPtr assign value tests.
@@ -183,7 +183,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(*i, 20);
             TEST_CHECK_EQUAL(*i2, 10);
         }
-    } counted_ptr_assign_value_tests;
+    } test_counted_ptr_assign_value;
 
     /**
      * \test CountedPtr assign pointer tests.
@@ -209,7 +209,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(*i2, 10);
             TEST_CHECK_EQUAL(*i3, 30);
         }
-    } counted_ptr_assign_pointer_tests;
+    } test_counted_ptr_assign_pointer;
 
     /**
      * \test CountedPtr internal creation tests.
@@ -243,7 +243,7 @@ namespace test_cases
             MyClass::Pointer j(new MyClass(20));
             TEST_CHECK_EQUAL(*j, 20);
         }
-    } counted_ptr_internal_dereference_tests;
+    } test_counted_ptr_internal_dereference;
 
     /**
      * \test CountedPtr internal copy tests.
@@ -263,7 +263,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(*i, 10);
             TEST_CHECK_EQUAL(*i2, 10);
         }
-    } counted_ptr_internal_copy_tests;
+    } test_counted_ptr_internal_copy;
 
     /**
      * \test CountedPtr internal dereference-assign tests.
@@ -294,7 +294,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(*i, 40);
             TEST_CHECK_EQUAL(*i2, 40);
         }
-    } counted_ptr_internal_dereference_assign_tests;
+    } test_counted_ptr_internal_dereference_assign;
 
     /**
      * \test CountedPtr internal assign value tests.
@@ -318,7 +318,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(*i, 20);
             TEST_CHECK_EQUAL(*i2, 10);
         }
-    } counted_ptr_internal_assign_value_tests;
+    } test_counted_ptr_internal_assign_value;
 
     /**
      * \test CountedPtr internal assign pointer tests.
@@ -345,6 +345,23 @@ namespace test_cases
             TEST_CHECK_EQUAL(*i2, 10);
             TEST_CHECK_EQUAL(*i3, 30);
         }
-    } counted_ptr_internal_assign_pointer_tests;
+    } test_counted_ptr_internal_assign_pointer;
+
+    /**
+     * \test CountedPtr zero dereferences.
+     *
+     * \ingroup Test
+     */
+    struct CountedPtrZeroDeferenceTests : TestCase
+    {
+        CountedPtrZeroDeferenceTests() :
+            TestCase("CountedPtr zero dereference tests") { }
+
+        void run()
+        {
+            CountedPtr<int, count_policy::ExternalCountTag, dereference_policy::CheckedDereferenceTag> i(0);
+            TEST_CHECK_THROWS(++*i, CountedPtrError);
+        }
+    } test_counted_ptr_zero_dereference;
 }
 
