@@ -31,6 +31,80 @@
 namespace paludis
 {
     /**
+     * Thrown if an error occurs whilst building a DepList.
+     */
+    class DepListError : public Exception
+    {
+        protected:
+            /**
+             * Constructor.
+             */
+            DepListError(const std::string &) throw ();
+    };
+
+    /**
+     * Thrown if a DepList's add stack gets too deep.
+     */
+    class DepListStackTooDeepError : public DepListError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            DepListStackTooDeepError(int level) throw ();
+    };
+
+    /**
+     * Thrown if no entry in a || ( ) block is resolvable.
+     */
+    class NoResolvableOptionError : public DepListError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            NoResolvableOptionError() throw ();
+    };
+
+    /**
+     * Thrown if all versions of a particular atom are masked.
+     */
+    class AllMaskedError : public DepListError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            AllMaskedError(const std::string & query) throw ();
+    };
+
+    /**
+     * Thrown if a block is encountered.
+     */
+    class BlockError : public DepListError
+    {
+        public:
+            BlockError(const std::string & msg) throw ();
+    };
+
+    /**
+     * Thrown if a circular dependency is encountered.
+     */
+    class CircularDependencyError : public DepListError
+    {
+        public:
+            /**
+             * Constructor, from a sequence of the items causing the circular
+             * dependency.
+             */
+            template <typename I_>
+            CircularDependencyError(I_ begin, const I_ end) throw () :
+                DepListError("Circular dependency: " + join(begin, end, " -> "))
+            {
+            }
+    };
+
+    /**
      * Used in DepList::set_rdepend_post
      */
     enum DepListRdependOption 

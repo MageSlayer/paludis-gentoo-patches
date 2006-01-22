@@ -18,12 +18,7 @@
  */
 
 #include "dep_list.hh"
-#include "dep_list_error.hh"
-#include "dep_list_stack_too_deep_error.hh"
 #include "dep_parser.hh"
-#include "all_masked_error.hh"
-#include "no_resolvable_option_error.hh"
-#include "circular_dependency_error.hh"
 #include "all_dep_atom.hh"
 #include "any_dep_atom.hh"
 #include "block_dep_atom.hh"
@@ -33,7 +28,6 @@
 #include "container_entry.hh"
 #include "save.hh"
 #include "indirect_iterator.hh"
-#include "block_error.hh"
 #include "join.hh"
 #include "filter_insert_iterator.hh"
 
@@ -41,6 +35,31 @@
 #include <functional>
 
 using namespace paludis;
+
+DepListError::DepListError(const std::string & m) throw () :
+    Exception(m)
+{
+}
+
+DepListStackTooDeepError::DepListStackTooDeepError(int level) throw () :
+    DepListError("DepList stack too deep (" + stringify(level) + " entries)")
+{
+}
+
+NoResolvableOptionError::NoResolvableOptionError() throw () :
+    DepListError("No resolvable || ( ) option")
+{
+}
+
+AllMaskedError::AllMaskedError(const std::string & query) throw () :
+    DepListError("Error searching for '" + query + "': no available versions")
+{
+}
+
+BlockError::BlockError(const std::string & msg) throw () :
+    DepListError("Block: " + msg)
+{
+}
 
 namespace paludis
 {
