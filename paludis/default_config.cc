@@ -70,11 +70,7 @@ DefaultConfig::DefaultConfig()
         {
             Context local_context("When reading repository file '" + stringify(*repo_file) + "':");
 
-            std::ifstream kf(stringify(*repo_file).c_str());
-            if (! kf)
-                throw DefaultConfigError("Couldn't open " + stringify(*repo_file));
-
-            KeyValueConfigFile k(&kf);
+            KeyValueConfigFile k(*repo_file);
 
             if (k.get("location").empty())
                 throw DefaultConfigError("Key 'location' empty or not specified in " +
@@ -114,11 +110,7 @@ DefaultConfig::DefaultConfig()
             if (! file->is_regular_file())
                 continue;
 
-            std::ifstream kf(stringify(*file).c_str());
-            if (! kf)
-                throw DefaultConfigError("Couldn't open " + stringify(*file));
-
-            LineConfigFile f(&kf);
+            LineConfigFile f(*file);
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
@@ -164,11 +156,7 @@ DefaultConfig::DefaultConfig()
             if (! file->is_regular_file())
                 continue;
 
-            std::ifstream kf(stringify(*file).c_str());
-            if (! kf)
-                throw DefaultConfigError("Couldn't open " + stringify(*file));
-
-            LineConfigFile f(&kf);
+            LineConfigFile f(*file);
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
@@ -198,11 +186,7 @@ DefaultConfig::DefaultConfig()
             if (! file->is_regular_file())
                 continue;
 
-            std::ifstream kf(stringify(*file).c_str());
-            if (! kf)
-                throw DefaultConfigError("Couldn't open " + stringify(*file));
-
-            LineConfigFile f(&kf);
+            LineConfigFile f(*file);
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
@@ -232,11 +216,7 @@ DefaultConfig::DefaultConfig()
             if (! file->is_regular_file())
                 continue;
 
-            std::ifstream kf(stringify(*file).c_str());
-            if (! kf)
-                throw DefaultConfigError("Couldn't open " + stringify(*file));
-
-            LineConfigFile f(&kf);
+            LineConfigFile f(*file);
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {

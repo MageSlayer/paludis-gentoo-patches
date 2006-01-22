@@ -118,10 +118,7 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 
     if ((f / "parent").exists())
     {
-        std::ifstream parent_file(stringify(f / "parent").c_str());
-        if (! parent_file)
-            throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
-        LineConfigFile parent(&parent_file);
+        LineConfigFile parent(f / "parent");
         if (parent.begin() != parent.end())
             add_profile((f / *parent.begin()).realpath());
         else
@@ -132,10 +129,7 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
     {
         static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
 
-        std::ifstream make_defaults_file(stringify(f / "make.defaults").c_str());
-        if (! make_defaults_file)
-            throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
-        KeyValueConfigFile make_defaults_f(&make_defaults_file);
+        KeyValueConfigFile make_defaults_f(f / "make.defaults");
         std::vector<std::string> uses;
         tokeniser.tokenise(make_defaults_f.get("USE"), std::back_inserter(uses));
         for (std::vector<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
@@ -150,10 +144,7 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 
     if ((f / "use.mask").exists())
     {
-        std::ifstream use_mask_file(stringify(f / "use.mask").c_str());
-        if (! use_mask_file)
-            throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
-        LineConfigFile use_mask_f(&use_mask_file);
+        LineConfigFile use_mask_f(f / "use.mask");
         for (LineConfigFile::Iterator line(use_mask_f.begin()), line_end(use_mask_f.end()) ;
                 line != line_end ; ++line)
             if ('-' == line->at(0))
@@ -295,13 +286,7 @@ PortageRepository::need_category_names() const
 
     Context context("When loading category names for " + stringify(name()) + ":");
 
-    std::ifstream cat_file(stringify(_implementation->location /
-                "profiles/categories").c_str());
-
-    if (! cat_file)
-        throw InternalError(PALUDIS_HERE, "todo"); /// \bug real exception needed
-
-    LineConfigFile cats(&cat_file);
+    LineConfigFile cats(_implementation->location / "profiles" / "categories");
 
     for (LineConfigFile::Iterator line(cats.begin()), line_end(cats.end()) ;
             line != line_end ; ++line)
@@ -358,8 +343,7 @@ PortageRepository::fetch_repo_name(const std::string & location)
             if (! name_file.is_regular_file())
                 break;
 
-            std::ifstream file(std::string(name_file).c_str());
-            LineConfigFile f(&file);
+            LineConfigFile f(name_file);
             if (f.begin() == f.end())
                 break;
             return RepositoryName(*f.begin());
@@ -435,10 +419,7 @@ PortageRepository::do_query_repository_masks(const CategoryNamePart & c,
         Context context("When querying repository mask for '" + stringify(c) + "/" + stringify(p) + "-"
                 + stringify(v) + "':");
 
-        std::ifstream f(stringify(_implementation->location / "profiles" / "package.mask").c_str());
-        if (! f)
-            throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
-        LineConfigFile ff(&f);
+        LineConfigFile ff(_implementation->location / "profiles" / "package.mask");
         for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
                 line != line_end ; ++line)
         {

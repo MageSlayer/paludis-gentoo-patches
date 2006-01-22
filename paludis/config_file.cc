@@ -19,17 +19,57 @@
  */
 
 #include "config_file.hh"
-#include "config_file_error.hh"
 #include "strip.hh"
 #include "exception.hh"
 #include "stringify.hh"
+#include <fstream>
 
 using namespace paludis;
 
+ConfigFileError::ConfigFileError(const std::string & message) throw () :
+    Exception("Config file error: " + message)
+{
+}
+
 ConfigFile::ConfigFile(std::istream * const stream) :
     _stream(stream),
-    _has_lines(false)
+    _has_lines(false),
+    _destroy_stream(false)
 {
+}
+
+ConfigFile::ConfigFile(const std::string & filename) try :
+    _stream(_make_stream(filename)),
+    _has_lines(false),
+    _filename(filename),
+    _destroy_stream(true)
+{
+}
+catch (...)
+{
+    _destroy_stream = false;
+    throw;
+}
+
+ConfigFile::~ConfigFile()
+{
+    if (_stream && _destroy_stream)
+        delete _stream;
+}
+
+std::istream *
+ConfigFile::_make_stream(const std::string & filename)
+{
+    Context context("When creating the filestream for a ConfigFile from file '" + filename + "':");
+
+    std::ifstream * result(new std::ifstream(filename.c_str()));
+    if (! *result)
+    {
+        delete result;
+        throw ConfigFileError("Could not open '" + filename + "'");
+    }
+
+    return result;
 }
 
 void
@@ -42,7 +82,8 @@ ConfigFile::need_lines() const
     unsigned line_number(0);
     while (std::getline(*_stream, line))
     {
-        Context c("When handling line " + stringify(++line_number) + ":");
+        Context c("When handling line " + stringify(++line_number) +
+                (_filename.empty() ? std::string(":") : " in file '" + _filename + "':"));
         normalise_line(line);
         if (skip_line(line))
             continue;

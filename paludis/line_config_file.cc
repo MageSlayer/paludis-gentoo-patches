@@ -28,6 +28,11 @@ LineConfigFile::LineConfigFile(std::istream * const s) :
     need_lines();
 }
 
+LineConfigFile::LineConfigFile(const std::string & filename) :
+    ConfigFile(filename)
+{
+}
+
 void
 LineConfigFile::accept_line(const std::string & s) const
 {

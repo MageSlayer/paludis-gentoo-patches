@@ -49,6 +49,8 @@ namespace paludis
         public:
             LineConfigFile(std::istream * const);
 
+            LineConfigFile(const std::string & filename);
+
             typedef std::list<std::string>::const_iterator Iterator;
 
             Iterator begin() const

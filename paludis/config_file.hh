@@ -30,10 +30,26 @@
  * Declarations for the ConfigFile class.
  *
  * \ingroup ConfigFile
+ * \ingroup Exception
  */
 
 namespace paludis
 {
+    /**
+     * Thrown if an error occurs when reading a ConfigFile.
+     *
+     * \ingroup Exception
+     * \ingroup ConfigFile
+     */
+    class ConfigFileError : public Exception
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            ConfigFileError(const std::string & message) throw ();
+    };
+
     /**
      * A ConfigFile is a file containing one entry per line, with lines
      * starting with a # being ignored and leading and trailing whitespace
@@ -48,6 +64,12 @@ namespace paludis
             std::istream * const _stream;
 
             mutable bool _has_lines;
+
+            std::string _filename;
+
+            bool _destroy_stream;
+
+            static std::istream * _make_stream(const std::string & filename);
 
         protected:
             /**
@@ -79,13 +101,24 @@ namespace paludis
              */
             ConfigFile(std::istream * const stream);
 
+            /**
+             * Constructor, from a file.
+             */
+            ConfigFile(const std::string & filename);
+
+            /**
+             * Our filename, or blank if unknown.
+             */
+            std::string filename() const
+            {
+                return _filename;
+            }
+
         public:
             /**
              * Destructor.
              */
-            virtual ~ConfigFile()
-            {
-            }
+            virtual ~ConfigFile();
     };
 }
 

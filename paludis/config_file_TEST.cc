@@ -20,6 +20,7 @@
 
 #include "stringify.hh"
 #include "config_file.hh"
+#include "fs_entry.hh"
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <sstream>
@@ -41,6 +42,12 @@ class TestFile : protected ConfigFile
     public:
         TestFile(std::istream * const stream) :
             ConfigFile(stream)
+        {
+            need_lines();
+        }
+
+        TestFile(const std::string & filename) :
+            ConfigFile(filename)
         {
             need_lines();
         }
@@ -87,5 +94,34 @@ namespace test_cases
             TEST_CHECK_EQUAL(f.lines.at(3), "four  four");
         }
     } test_config_file;
+
+    /**
+     * \test Test ConfigFile with file opening.
+     *
+     * \ingroup Test
+     */
+    struct ConfigFileOpenFileTest : TestCase
+    {
+        ConfigFileOpenFileTest() : TestCase("config file open file") { }
+
+        void run()
+        {
+            FSEntry ff("config_file_TEST_dir/config_file");
+            TEST_CHECK(ff.is_regular_file());
+            TestFile f(ff);
+            TEST_CHECK_EQUAL(f.lines.size(), 1);
+            TEST_CHECK_EQUAL(f.lines.at(0), "I am a fish.");
+
+            FSEntry ff2("config_file_TEST_dir/not_a_config_file");
+            TEST_CHECK(! ff2.exists());
+            TestFile * f2;
+            TEST_CHECK_THROWS(f2 = new TestFile(ff2), ConfigFileError);
+
+            FSEntry ff3("config_file_TEST_dir/unreadable_file");
+            TEST_CHECK(ff3.is_regular_file());
+            TestFile * f3;
+            TEST_CHECK_THROWS(f3 = new TestFile(ff3), ConfigFileError);
+        }
+    } test_config_file_open_file;
 }
 
