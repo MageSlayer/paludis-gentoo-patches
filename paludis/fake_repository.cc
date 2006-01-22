@@ -165,7 +165,6 @@ bool
 FakeRepository::do_query_repository_masks(const CategoryNamePart &,
         const PackageNamePart &, const VersionSpec &) const
 {
-    /// \todo?
     return false;
 }
 
@@ -173,21 +172,18 @@ bool
 FakeRepository::do_query_profile_masks(const CategoryNamePart &,
         const PackageNamePart &, const VersionSpec &) const
 {
-    /// \todo?
     return false;
 }
 
 UseFlagState
 FakeRepository::do_query_use(const UseFlagName &) const
 {
-    /// \todo?
     return use_unspecified;
 }
 
 bool
 FakeRepository::do_query_use_mask(const UseFlagName &) const
 {
-    /// \todo?
     return false;
 }
 

@@ -206,7 +206,7 @@ PackageDatabase::better_repository(const RepositoryName & r1,
             return r1;
     }
 
-    throw InternalError(PALUDIS_HERE, "todo"); /// \bug
+    throw InternalError(PALUDIS_HERE, "better_repository called on non-owned repositories");
 }
 
 RepositoryName
