@@ -18,11 +18,6 @@
  */
 
 #include "package_database.hh"
-#include "no_such_package_error.hh"
-#include "no_such_repository_error.hh"
-#include "no_such_version_error.hh"
-#include "duplicate_repository_error.hh"
-#include "ambiguous_package_name_error.hh"
 #include "package_dep_atom.hh"
 #include "indirect_iterator.hh"
 #include "stringify.hh"
@@ -32,6 +27,44 @@
 #include <set>
 
 using namespace paludis;
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const PackageDatabaseEntry & v)
+{
+    s << v.get<pde_package>() << "-" << v.get<pde_version>() << "::" << v.get<pde_repository>();
+    return s;
+}
+
+PackageDatabaseError::PackageDatabaseError(const std::string & message) throw () :
+    Exception(message)
+{
+}
+
+PackageDatabaseLookupError::PackageDatabaseLookupError(const std::string & message) throw () :
+    PackageDatabaseError(message)
+{
+}
+
+DuplicateRepositoryError::DuplicateRepositoryError(const std::string & name) throw () :
+    PackageDatabaseError("A repository named '" + name + "' already exists")
+{
+}
+
+NoSuchPackageError::NoSuchPackageError(const std::string & name) throw () :
+    PackageDatabaseLookupError("Could not find '" + name + "'")
+{
+}
+
+NoSuchRepositoryError::NoSuchRepositoryError(const std::string & name) throw () :
+    PackageDatabaseLookupError("Could not find repository '" + name + "'")
+{
+}
+
+NoSuchVersionError::NoSuchVersionError(const std::string & name,
+        const VersionSpec & version) throw () :
+    PackageDatabaseLookupError("No version of '" + name + "' named '" + stringify(version) + "'")
+{
+}
 
 namespace paludis
 {

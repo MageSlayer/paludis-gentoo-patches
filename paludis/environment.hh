@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENT_HH
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_HH 1
 
-#include <paludis/package_database_entry.hh>
 #include <paludis/package_database.hh>
 #include <paludis/use_flag_name.hh>
 #include <paludis/keyword_name.hh>
@@ -36,8 +35,6 @@
 
 namespace paludis
 {
-    class PackageDatabase;
-
     /**
      * Represents a working environment, which contains an available packages
      * database and an installed packages database and provides various methods

@@ -20,20 +20,168 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_HH
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_HH 1
 
-#include <paludis/instantiation_policy.hh>
-#include <paludis/private_implementation_pattern.hh>
 #include <paludis/counted_ptr.hh>
-#include <paludis/repository.hh>
-#include <paludis/version_metadata.hh>
-#include <paludis/package_database_entry.hh>
-#include <paludis/package_database_entry_collection.hh>
+#include <paludis/exception.hh>
+#include <paludis/instantiation_policy.hh>
 #include <paludis/package_dep_atom.hh>
+#include <paludis/private_implementation_pattern.hh>
+#include <paludis/qualified_package_name.hh>
 #include <paludis/repository.hh>
+#include <paludis/smart_record.hh>
+#include <paludis/sorted_collection.hh>
+#include <paludis/version_metadata.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/join.hh>
+
+#include <ostream>
 
 namespace paludis
 {
     class PackageDepAtom;
-    class PackageDatabase;
+
+    /**
+     * Keys in a PackageDatabaseEntry.
+     */
+    enum PackageDatabaseEntryKeys
+    {
+        pde_package,           ///< Our package
+        pde_version,           ///< Our version
+        pde_repository,        ///< Our repository
+        last_pde               ///< Number of items
+    };
+
+    /**
+     * Tag for a PackageDatabaseEntry.
+     */
+    struct PackageDatabaseEntryTag :
+        SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
+        SmartRecordKeys<PackageDatabaseEntryKeys, last_pde>,
+        SmartRecordKey<pde_package, QualifiedPackageName>,
+        SmartRecordKey<pde_version, VersionSpec>,
+        SmartRecordKey<pde_repository, RepositoryName>
+    {
+    };
+
+    /**
+     * A PackageDatabaseEntry holds a QualifiedPackageName, a VersionSpec and a
+     * RepositoryName, and is fully comparable.
+     */
+    typedef MakeSmartRecord<PackageDatabaseEntryTag>::Type PackageDatabaseEntry;
+
+    /**
+     * A collection of PackageDatabaseEntry instances.
+     */
+    typedef SortedCollection<PackageDatabaseEntry> PackageDatabaseEntryCollection;
+
+    /**
+     * A PackageDatabaseEntry can be written to a stream.
+     */
+    std::ostream & operator<< (std::ostream &, const PackageDatabaseEntry &);
+
+    /**
+     * A PackageDatabaseError is an error that occurs when performing some
+     * operation upon a PackageDatabase.
+     */
+    class PackageDatabaseError : public Exception
+    {
+        protected:
+            /**
+             * Constructor.
+             */
+            PackageDatabaseError(const std::string & message) throw ();
+    };
+
+    /**
+     * A PackageDatabaseLookupError descendent is thrown if an error occurs
+     * when looking for something in a PackageDatabase.
+     */
+    class PackageDatabaseLookupError : public PackageDatabaseError
+    {
+        protected:
+            /**
+             * Constructor.
+             */
+            PackageDatabaseLookupError(const std::string & message) throw ();
+    };
+
+    /**
+     * Thrown if a PackageDatabase query results in more than one matching
+     * Package.
+     *
+     * \ingroup Exception
+     * \ingroup Database
+     */
+    class AmbiguousPackageNameError : public PackageDatabaseLookupError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            template <typename I_>
+            AmbiguousPackageNameError(const std::string & name,
+                    I_ begin, const I_ end) throw ();
+    };
+
+    template <typename I_>
+    AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & name,
+            I_ begin, const I_ end) throw () :
+        PackageDatabaseLookupError("Ambiguous package name '" + name + "' (candidates are " +
+            join(begin, end, ", ") + ")")
+    {
+    }
+
+    /**
+     * Thrown if a Repository with the same name as an existing member is added
+     * to a PackageDatabase.
+     */
+    class DuplicateRepositoryError : public PackageDatabaseError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            DuplicateRepositoryError(const std::string & name) throw ();
+    };
+
+    /**
+     * Thrown if there is no Package in a PackageDatabase with the given
+     * name.
+     */
+    class NoSuchPackageError : public PackageDatabaseLookupError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            NoSuchPackageError(const std::string & name) throw ();
+    };
+
+    /**
+     * Thrown if there is no Repository in a RepositoryDatabase with the given
+     * name.
+     */
+    class NoSuchRepositoryError : public PackageDatabaseLookupError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            NoSuchRepositoryError(const std::string & name) throw ();
+    };
+
+    /**
+     * Thrown if there is no Version in a PackageDatabase with the given
+     * name.
+     */
+    class NoSuchVersionError : public PackageDatabaseLookupError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            NoSuchVersionError(const std::string & pkg_name,
+                    const VersionSpec & version) throw ();
+    };
 
     /**
      * A PackageDatabase can be queried for Package instances.
