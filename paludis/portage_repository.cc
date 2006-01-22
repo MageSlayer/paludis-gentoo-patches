@@ -404,7 +404,7 @@ PortageRepository::do_version_metadata(
         result->set(vmk_keywords, "*");
     }
     else
-        throw InternalError(PALUDIS_HERE, "not implemented"); /// \todo
+        throw InternalError(PALUDIS_HERE, "no cache handling not implemented"); /// \todo
 
     _implementation->metadata.insert(std::make_pair(std::make_pair(QualifiedPackageName(c, p), v), result));
     return result;

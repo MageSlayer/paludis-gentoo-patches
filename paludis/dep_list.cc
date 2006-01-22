@@ -17,19 +17,20 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "dep_list.hh"
-#include "dep_parser.hh"
 #include "all_dep_atom.hh"
 #include "any_dep_atom.hh"
 #include "block_dep_atom.hh"
-#include "use_dep_atom.hh"
-#include "package_dep_atom.hh"
-#include "stringify.hh"
 #include "container_entry.hh"
-#include "save.hh"
+#include "dep_list.hh"
+#include "dep_parser.hh"
+#include "filter_insert_iterator.hh"
 #include "indirect_iterator.hh"
 #include "join.hh"
-#include "filter_insert_iterator.hh"
+#include "match_package.hh"
+#include "package_dep_atom.hh"
+#include "save.hh"
+#include "stringify.hh"
+#include "use_dep_atom.hh"
 
 #include <algorithm>
 #include <functional>
@@ -179,25 +180,18 @@ DepList::visit(const AllDepAtom * const v)
 struct DepListEntryMatcher :
     public std::unary_function<bool, const DepListEntry &>
 {
+    const PackageDatabase * const db;
     const PackageDepAtom & atom;
 
-    DepListEntryMatcher(const PackageDepAtom & p) :
+    DepListEntryMatcher(const PackageDatabase * const d, const PackageDepAtom & p) :
+        db(d),
         atom(p)
     {
     }
 
     bool operator() (const DepListEntry & e) const
     {
-        if (e.get<dle_name>() != atom.package())
-            return false;
-        if (atom.slot_ptr())
-            if (e.get<dle_slot>() != *atom.slot_ptr())
-                return false;
-        if (atom.version_spec_ptr())
-            if (! (((e.get<dle_version>()).*(atom.version_operator().as_version_spec_operator()))(
-                        *atom.version_spec_ptr())))
-                return false;
-        return true;
+        return match_package(db, atom, e);
     }
 };
 #endif
@@ -218,7 +212,7 @@ DepList::visit(const PackageDepAtom * const p)
     /* will we be installed by this point? */
     if ((! already_there) && (_implementation->merge_list.end() != std::find_if(
                 _implementation->merge_list.begin(), _implementation->merge_list.end(),
-                DepListEntryMatcher(*p))))
+                DepListEntryMatcher(_implementation->environment->package_db().raw_pointer(), *p))))
         return;
 
     if (already_there && ((! _implementation->recursive_deps) || (_implementation->check_existing_only)))
@@ -236,7 +230,7 @@ DepList::visit(const PackageDepAtom * const p)
         std::list<DepListEntry>::iterator i;
         if (_implementation->pending_list.end() != ((i = std::find_if(
                     _implementation->pending_list.begin(), _implementation->pending_list.end(),
-                    DepListEntryMatcher(*p)))))
+                    DepListEntryMatcher(_implementation->environment->package_db().raw_pointer(), *p)))))
         {
             std::list<std::string> entries;
             entries.push_front(stringify(*p));
@@ -458,7 +452,8 @@ DepList::visit(const BlockDepAtom * const d)
     /* will we be installed by this point? */
     if (_implementation->merge_list.end() != ((m = std::find_if(
                 _implementation->merge_list.begin(), _implementation->merge_list.end(),
-                DepListEntryMatcher(*(d->blocked_atom()))))))
+                DepListEntryMatcher(_implementation->environment->package_db().raw_pointer(),
+                    *(d->blocked_atom()))))))
     {
         if (! _implementation->current_package)
             throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"

@@ -22,6 +22,7 @@
 #include "portage_repository.hh"
 #include "default_config.hh"
 #include "stringify.hh"
+#include "match_package.hh"
 #include <list>
 #include <vector>
 
@@ -36,7 +37,7 @@ DefaultEnvironment::DefaultEnvironment() :
     for (DefaultConfig::RepositoryIterator r(DefaultConfig::get_instance()->begin_repositories()),
             r_end(DefaultConfig::get_instance()->end_repositories()) ; r != r_end ; ++r)
     {
-        /// \todo abstract factory
+        /// \todo class factory
         if (r->get<rce_format>() != "portage")
             throw DefaultConfigError("Unknown repository format '" + r->get<rce_format>() + "'");
         Repository::Pointer repo(new PortageRepository(r->get<rce_location>(),
@@ -133,13 +134,8 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
                 k_end(DefaultConfig::get_instance()->end_package_keywords(d->get<pde_package>())) ;
                 k != k_end ; ++k)
         {
-            if (k->first->package() != d->get<pde_package>())
+            if (! match_package(package_db(), k->first, d))
                 continue;
-            if (k->first->version_spec_ptr() && ! (((d->get<pde_version>()).*
-                            (k->first->version_operator().as_version_spec_operator()))
-                        (*k->first->version_spec_ptr())))
-                continue;
-            /// \bug slot
 
             result |= k->second == keyword;
         }
@@ -160,13 +156,8 @@ DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_masks(d.get<pde_package>())) ;
             k != k_end ; ++k)
     {
-        if (k->package() != d.get<pde_package>())
+        if (! match_package(package_db(), *k, d))
             continue;
-        if (k->version_spec_ptr() && ! (((d.get<pde_version>()).*
-                        (k->version_operator().as_version_spec_operator()))
-                    (*k->version_spec_ptr())))
-            continue;
-        /// \bug slot
 
         return true;
     }
@@ -182,13 +173,8 @@ DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_unmasks(d.get<pde_package>())) ;
             k != k_end ; ++k)
     {
-        if (k->package() != d.get<pde_package>())
+        if (! match_package(package_db(), *k, d))
             continue;
-        if (k->version_spec_ptr() && ! (((d.get<pde_version>()).*
-                        (k->version_operator().as_version_spec_operator()))
-                    (*k->version_spec_ptr())))
-            continue;
-        /// \bug slot
 
         return true;
     }

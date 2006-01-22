@@ -21,6 +21,7 @@
 #include "package_dep_atom.hh"
 #include "indirect_iterator.hh"
 #include "stringify.hh"
+#include "match_package.hh"
 
 #include <list>
 #include <map>
@@ -178,14 +179,11 @@ PackageDatabase::query(const PackageDepAtom * const a) const
         VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end());
         for ( ; v != v_end ; ++v)
         {
-            if (a->version_spec_ptr())
-                if (! ((*v).*(a->version_operator().as_version_spec_operator()))(*a->version_spec_ptr()))
-                    continue;
+            PackageDatabaseEntry e(a->package(), *v, r->name());
+            if (! match_package(this, *a, e))
+                continue;
 
-            /// \bug SLOT etc
-
-            if (! result->insert(PackageDatabaseEntry(a->package(), *v, r->name())))
-                ; /// \bug exception
+            result->insert(e);
         }
     }
 
