@@ -31,6 +31,7 @@ LineConfigFile::LineConfigFile(std::istream * const s) :
 LineConfigFile::LineConfigFile(const std::string & filename) :
     ConfigFile(filename)
 {
+    need_lines();
 }
 
 void

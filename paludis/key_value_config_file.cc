@@ -38,6 +38,7 @@ KeyValueConfigFile::KeyValueConfigFile(std::istream * const s) :
 KeyValueConfigFile::KeyValueConfigFile(const std::string & filename) :
     ConfigFile(filename)
 {
+    need_lines();
 }
 
 KeyValueConfigFile::~KeyValueConfigFile()
