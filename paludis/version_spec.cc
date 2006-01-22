@@ -18,11 +18,15 @@
  */
 
 #include "version_spec.hh"
-#include "bad_version_spec_error.hh"
 #include "exception.hh"
 #include <algorithm>
 
 using namespace paludis;
+
+BadVersionSpecError::BadVersionSpecError(const std::string & name) throw () :
+    NameError(name, "version spec")
+{
+}
 
 enum SuffixPart
 {

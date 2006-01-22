@@ -26,9 +26,9 @@
 #include <paludis/package_name_part.hh>
 #include <paludis/category_name_part_collection.hh>
 #include <paludis/qualified_package_name_collection.hh>
-#include <paludis/version_spec_collection.hh>
 #include <paludis/counted_ptr.hh>
 #include <paludis/version_metadata.hh>
+#include <paludis/version_spec.hh>
 #include <paludis/use_flag_state.hh>
 #include <map>
 #include <string>

@@ -20,7 +20,6 @@
 #include "version_spec.hh"
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include "bad_version_spec_error.hh"
 
 using namespace test;
 using namespace paludis;
