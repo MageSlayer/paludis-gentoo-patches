@@ -52,15 +52,18 @@ namespace paludis
     {
         rce_location,
         rce_profile,
-        rce_format
+        rce_format,
+        rce_importance
     };
 
     struct RepositoryConfigEntryTag :
-        SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
-        SmartRecordKeys<RepositoryConfigEntryKeys, 3>,
+        SmartRecordTag<comparison_mode::FullComparisonTag,
+            comparison_method::SmartRecordCompareByKeyTag<rce_importance> >,
+        SmartRecordKeys<RepositoryConfigEntryKeys, 4>,
         SmartRecordKey<rce_location, FSEntry>,
         SmartRecordKey<rce_profile, FSEntry>,
-        SmartRecordKey<rce_format, std::string>
+        SmartRecordKey<rce_format, std::string>,
+        SmartRecordKey<rce_importance, unsigned>
     {
     };
 

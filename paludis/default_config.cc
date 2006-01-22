@@ -32,6 +32,7 @@
 #include "tokeniser.hh"
 #include <fstream>
 #include <algorithm>
+#include <sstream>
 
 using namespace paludis;
 
@@ -86,12 +87,24 @@ DefaultConfig::DefaultConfig()
                 throw DefaultConfigError("Key 'profile' empty or not specified in " +
                         stringify(*repo_file));
 
+            int importance(0);
+            if (! k.get("importance").empty())
+            {
+                std::stringstream s(k.get("importance"));
+                s >> importance;
+                if (! s.eof())
+                    throw DefaultConfigError("Key 'importance' should be a number in "
+                            + stringify(*repo_file));
+            }
+
             _repos.push_back(RepositoryConfigEntry(k.get("location"),
-                        k.get("profile"), k.get("format")));
+                        k.get("profile"), k.get("format"), importance));
         }
 
         if (_repos.empty())
             throw DefaultConfigError("No repositories specified");
+
+        _repos.sort();
     }
 
     /* keywords */
