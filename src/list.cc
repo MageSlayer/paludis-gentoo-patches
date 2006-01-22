@@ -73,10 +73,7 @@ do_list_categories()
     {
         std::cout << "* " << colour(cl_package_name, c->first) << std::endl;
         std::cout << "    " << std::setw(22) << std::left << "found in:" <<
-            std::setw(0) << " ";
-        std::copy(c->second.begin(), c->second.end(),
-                std::ostream_iterator<p::RepositoryName>(std::cout, " "));
-        std::cout << std::endl;
+            std::setw(0) << " " << p::join(c->second.begin(), c->second.end(), ", ") << std::endl;
         std::cout << std::endl;
     }
 
