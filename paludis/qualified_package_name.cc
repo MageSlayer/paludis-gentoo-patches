@@ -18,10 +18,14 @@
  */
 
 #include "qualified_package_name.hh"
-#include "qualified_package_name_error.hh"
 #include "stringify.hh"
 
 using namespace paludis;
+
+QualifiedPackageNameError::QualifiedPackageNameError(const std::string & s) throw () :
+    NameError(s, "qualified package name")
+{
+}
 
 std::string get_category_name(const std::string & s)
 {

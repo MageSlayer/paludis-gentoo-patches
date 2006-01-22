@@ -18,23 +18,27 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "create_insert_iterator.hh"
 #include "default_config.hh"
-#include "fs_entry.hh"
 #include "dir_iterator.hh"
-#include "getenv.hh"
-#include "key_value_config_file.hh"
-#include "default_config_error.hh"
 #include "filter_insert_iterator.hh"
+#include "fs_entry.hh"
+#include "getenv.hh"
 #include "is_file_with_extension.hh"
+#include "iterator_utilities.hh"
+#include "key_value_config_file.hh"
+#include "line_config_file.hh"
 #include "stringify.hh"
 #include "tokeniser.hh"
-#include "line_config_file.hh"
-#include "create_insert_iterator.hh"
-#include "iterator_utilities.hh"
 #include <fstream>
 #include <algorithm>
 
 using namespace paludis;
+
+DefaultConfigError::DefaultConfigError(const std::string & msg) throw () :
+    ConfigurationError("Default configuration error: " + msg)
+{
+}
 
 DefaultConfig::DefaultConfig()
 {

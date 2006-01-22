@@ -23,6 +23,7 @@
 #include <paludis/validated.hh>
 #include <paludis/name_error.hh>
 #include <paludis/private_implementation_pattern.hh>
+#include <paludis/sorted_collection.hh>
 #include <string>
 
 /** \file
@@ -73,6 +74,13 @@ namespace paludis
      * \ingroup Database
      */
     typedef Validated<std::string, CategoryNamePartValidator> CategoryNamePart;
+
+    /**
+     * Holds a set of CategoryNamePart instances.
+     *
+     * \ingroup Database
+     */
+    typedef SortedCollection<CategoryNamePart> CategoryNamePartCollection;
 }
 
 #endif

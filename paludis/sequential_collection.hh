@@ -39,7 +39,7 @@ namespace paludis
         private:
             std::list<T_> _items;
 
-        protected:
+        public:
             /**
              * Constructor.
              */
@@ -47,7 +47,6 @@ namespace paludis
             {
             }
 
-        public:
             /**
              * Destructor.
              */

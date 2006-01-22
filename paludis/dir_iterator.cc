@@ -18,7 +18,6 @@
  */
 
 #include "dir_iterator.hh"
-#include "dir_open_error.hh"
 #include "stringify.hh"
 #include <sys/types.h>
 #include <dirent.h>
@@ -31,6 +30,11 @@
  */
 
 using namespace paludis;
+
+DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) throw () :
+    FSError("Error opening directory '" + stringify(location) + "': " + strerror(errno_value))
+{
+}
 
 DirIterator::DirIterator(const FSEntry & base) :
     _base(base),

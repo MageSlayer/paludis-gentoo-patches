@@ -19,3 +19,10 @@
 
 #include "counted_ptr.hh"
 
+using namespace paludis;
+
+CountedPtrError::CountedPtrError() throw () :
+    Exception("CountedPtr dereference error")
+{
+}
+

@@ -20,16 +20,55 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_HH 1
 
+#include <paludis/dep_atom.hh>
+#include <paludis/dep_atom_visitor.hh>
+#include <paludis/environment.hh>
 #include <paludis/instantiation_policy.hh>
 #include <paludis/private_implementation_pattern.hh>
-#include <paludis/dep_atom.hh>
-#include <paludis/environment.hh>
-#include <paludis/dep_atom_visitor.hh>
-#include <paludis/dep_list_entry.hh>
+#include <paludis/qualified_package_name.hh>
+#include <paludis/repository_name.hh>
+#include <paludis/slot_name.hh>
+#include <paludis/smart_record.hh>
+#include <paludis/version_spec.hh>
+#include <ostream>
 #include <list>
 
 namespace paludis
 {
+    /**
+     * Keys for a DepListEntry.
+     */
+    enum DepListEntryKeys
+    {
+        dle_name,          ///< Package name
+        dle_version,       ///< Package version
+        dle_slot,          ///< Package SLOT
+        dle_repository     ///< Repository name
+    };
+
+    /**
+     * Tag for a DepListEntry.
+     */
+    struct DepListEntryTag :
+        SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
+        SmartRecordKeys<DepListEntryKeys, 4>,
+        SmartRecordKey<dle_name, QualifiedPackageName>,
+        SmartRecordKey<dle_version, VersionSpec>,
+        SmartRecordKey<dle_slot, SlotName>,
+        SmartRecordKey<dle_repository, RepositoryName>
+    {
+    };
+
+    /**
+     * A DepListEntry represents an entry in a DepList.
+     */
+    typedef MakeSmartRecord<DepListEntryTag>::Type DepListEntry;
+
+    /**
+     * A DepListEntry can be written to a stream.
+     */
+    std::ostream & operator<< (std::ostream &, const DepListEntry &);
+
     /**
      * Thrown if an error occurs whilst building a DepList.
      */

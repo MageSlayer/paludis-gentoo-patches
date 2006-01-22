@@ -18,7 +18,6 @@
  */
 
 #include "default_environment.hh"
-#include "default_config_error.hh"
 #include "package_database.hh"
 #include "portage_repository.hh"
 #include "default_config.hh"

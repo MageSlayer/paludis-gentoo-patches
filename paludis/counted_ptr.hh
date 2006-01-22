@@ -22,16 +22,32 @@
 
 #include <paludis/attributes.hh>
 #include <paludis/comparison_policy.hh>
-#include <paludis/counted_ptr_error.hh>
+#include <paludis/exception.hh>
 
 /** \file
  * Declaration for the CountedPtr template class.
  *
  * \ingroup Pointer
+ * \ingroup Exception
  */
 
 namespace paludis
 {
+    /**
+     * Thrown when a CountedPtr check fails.
+     *
+     * \ingroup Pointer
+     * \ingroup Exception
+     */
+    class CountedPtrError : public Exception
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            CountedPtrError() throw ();
+    };
+
     /**
      * Contains CountedPtr count policies.
      *

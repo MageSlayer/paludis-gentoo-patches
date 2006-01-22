@@ -36,6 +36,14 @@
 
 using namespace paludis;
 
+std::ostream &
+paludis::operator<< (std::ostream & s, const DepListEntry & e)
+{
+    s << e.get<dle_name>() << "-" << e.get<dle_version>() << ":"
+        << e.get<dle_slot>() << "::" << e.get<dle_repository>();
+    return s;
+}
+
 DepListError::DepListError(const std::string & m) throw () :
     Exception(m)
 {

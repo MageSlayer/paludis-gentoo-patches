@@ -23,6 +23,7 @@
 #include <paludis/validated.hh>
 #include <paludis/private_implementation_pattern.hh>
 #include <paludis/name_error.hh>
+#include <paludis/sequential_collection.hh>
 #include <string>
 
 /** \file
@@ -73,6 +74,11 @@ namespace paludis
      * \ingroup Database
      */
     typedef Validated<std::string, RepositoryNameValidator> RepositoryName;
+
+    /**
+     * Holds a collection of RepositoryName instances.
+     */
+    typedef SequentialCollection<RepositoryName> RepositoryNameCollection;
 }
 
 #endif

@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DIR_ITERATOR_HH 1
 
 #include <paludis/fs_entry.hh>
+#include <paludis/fs_error.hh>
 #include <paludis/counted_ptr.hh>
 #include <iterator>
 #include <set>
@@ -29,10 +30,25 @@
  * Declarations for paludis::DirIterator.
  *
  * \ingroup Filesystem
+ * \ingroup Exception
  */
 
 namespace paludis
 {
+    /**
+     * Raised when a directory open fails.
+     *
+     * \ingroup Exception
+     */
+    class DirOpenError : public FSError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            DirOpenError(const FSEntry & location, const int errno_value) throw ();
+    };
+
     /**
      * An iterator that iterates over the contents of a directory. At present,
      * we read in all the entries at creation time and maintain a CountedPtr

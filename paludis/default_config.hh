@@ -21,20 +21,33 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEFAULT_CONFIG_HH
 #define PALUDIS_GUARD_PALUDIS_DEFAULT_CONFIG_HH 1
 
-#include <paludis/instantiation_policy.hh>
-#include <paludis/smart_record.hh>
+#include <paludis/configuration_error.hh>
 #include <paludis/fs_entry.hh>
-#include <paludis/qualified_package_name.hh>
-#include <paludis/package_dep_atom.hh>
-#include <paludis/keyword_name.hh>
 #include <paludis/indirect_iterator.hh>
-#include <paludis/use_flag_state.hh>
+#include <paludis/instantiation_policy.hh>
+#include <paludis/keyword_name.hh>
+#include <paludis/package_dep_atom.hh>
+#include <paludis/qualified_package_name.hh>
+#include <paludis/smart_record.hh>
 #include <paludis/use_flag_name.hh>
+#include <paludis/use_flag_state.hh>
 #include <map>
 #include <vector>
 
 namespace paludis
 {
+    /**
+     * A DefaultConfigError is thrown if a configuration error is encountered
+     * by DefaultConfig.
+     *
+     * \ingroup Exception
+     */
+    class DefaultConfigError : public ConfigurationError
+    {
+        public:
+            DefaultConfigError(const std::string & msg) throw ();
+    };
+
     enum RepositoryConfigEntryKeys
     {
         rce_location,

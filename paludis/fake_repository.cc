@@ -18,7 +18,6 @@
  */
 
 #include "fake_repository.hh"
-#include "package_name_part_collection.hh"
 #include "version_metadata.hh"
 #include "stringify.hh"
 #include <map>

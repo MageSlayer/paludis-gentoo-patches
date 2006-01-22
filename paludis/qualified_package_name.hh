@@ -23,6 +23,8 @@
 #include <paludis/package_name_part.hh>
 #include <paludis/category_name_part.hh>
 #include <paludis/smart_record.hh>
+#include <paludis/sorted_collection.hh>
+#include <paludis/name_error.hh>
 #include <ostream>
 
 namespace paludis
@@ -63,6 +65,25 @@ namespace paludis
      * Create a QualifiedPackageName from a string.
      */
     QualifiedPackageName make_qualified_package_name(const std::string &);
+
+    /**
+     * Holds a collection of QualifiedPackageName instances.
+     */
+    typedef SortedCollection<QualifiedPackageName> QualifiedPackageNameCollection;
+
+    /**
+     * A QualifiedPackageNameError may be thrown if an invalid name is
+     * assigned to a QualifiedPackageName (alternatively, the exception
+     * raised may be a PackageNamePartError or a CategoryNamePartError).
+     */
+    class QualifiedPackageNameError : public NameError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            QualifiedPackageNameError(const std::string &) throw ();
+    };
 }
 
 #endif
