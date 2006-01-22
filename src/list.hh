@@ -22,10 +22,13 @@
 #define PALUDIS_GUARD_SRC_LIST_REPOSITORIES_HH 1
 
 /** \file
- * Declaration for the do_list_repositories function.
+ * Declaration for the do_list_repositories and do_list_categories functions.
  */
 
 /// Handle --list-repositories.
 int do_list_repositories();
+
+/// Handle --list-categories.
+int do_list_categories();
 
 #endif

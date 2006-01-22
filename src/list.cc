@@ -18,15 +18,18 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "list_repositories.hh"
+#include "list.hh"
 #include "colour.hh"
 #include <paludis/paludis.hh>
 #include <iostream>
 #include <iomanip>
+#include <map>
+#include <list>
 
 namespace p = paludis;
 
-int do_list_repositories()
+int
+do_list_repositories()
 {
     p::Context context("When performing list-repositories action from command line:");
     p::Environment * const env(p::DefaultEnvironment::get_instance());
@@ -47,3 +50,35 @@ int do_list_repositories()
     return 0;
 }
 
+int
+do_list_categories()
+{
+    p::Context context("When performing list-categories action from command line:");
+    p::Environment * const env(p::DefaultEnvironment::get_instance());
+
+    std::map<p::CategoryNamePart, std::list<p::RepositoryName> > cats;
+
+    for (p::IndirectIterator<p::PackageDatabase::RepositoryIterator, const p::Repository>
+            r(env->package_db()->begin_repositories()), r_end(env->package_db()->end_repositories()) ;
+            r != r_end ; ++r)
+    {
+        p::CategoryNamePartCollection::ConstPointer cat_names(r->category_names());
+        for (p::CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+                c != c_end ; ++c)
+            cats[*c].push_back(r->name());
+    }
+
+    for (std::map<p::CategoryNamePart, std::list<p::RepositoryName > >::const_iterator
+            c(cats.begin()), c_end(cats.end()) ; c != c_end ; ++c)
+    {
+        std::cout << "* " << colour(cl_package_name, c->first) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "found in:" <<
+            std::setw(0) << " ";
+        std::copy(c->second.begin(), c->second.end(),
+                std::ostream_iterator<p::RepositoryName>(std::cout, " "));
+        std::cout << std::endl;
+        std::cout << std::endl;
+    }
+
+    return 0;
+}

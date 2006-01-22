@@ -20,7 +20,7 @@
 #include <paludis/paludis.hh>
 #include "src/query.hh"
 #include "src/install.hh"
-#include "src/list_repositories.hh"
+#include "src/list.hh"
 #include "src/command_line.hh"
 
 #include <iostream>
@@ -67,7 +67,8 @@ main(int argc, char *argv[])
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +
                     CommandLine::get_instance()->a_install.specified() +
-                    CommandLine::get_instance()->a_list_repositories.specified()))
+                    CommandLine::get_instance()->a_list_repositories.specified() +
+                    CommandLine::get_instance()->a_list_categories.specified()))
             throw DoHelp("you should specify exactly one action");
 
         if (CommandLine::get_instance()->a_version.specified())
@@ -95,6 +96,14 @@ main(int argc, char *argv[])
                 throw DoHelp("list-repositories action takes no parameters");
 
             return do_list_repositories();
+        }
+
+        if (CommandLine::get_instance()->a_list_categories.specified())
+        {
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("list-categories action takes no parameters");
+
+            return do_list_categories();
         }
 
         throw p::InternalError(__PRETTY_FUNCTION__, "no action?");

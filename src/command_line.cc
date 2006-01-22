@@ -27,6 +27,7 @@ CommandLine::CommandLine() :
     a_query(&action_args,    "query",        'q', "Query for package information"),
     a_install(&action_args,  "install",      'i', "Install one or more packages"),
     a_list_repositories(&action_args, "list-repositories", '\0', "List available repositories"),
+    a_list_categories(&action_args, "list-categories", '\0', "List available categories"),
     a_version(&action_args,  "version",      'V', "Display program version"),
     a_help(&action_args,     "help",         'h', "Display program help"),
 

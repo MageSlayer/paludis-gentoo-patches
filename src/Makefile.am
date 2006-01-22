@@ -9,7 +9,7 @@ paludis_SOURCES = \
 	command_line.hh      command_line.cc      \
 	colour.hh            colour.cc            \
 	install.hh           install.cc           \
-	list_repositories.hh list_repositories.cc \
+	list.hh              list.cc              \
 	query.hh             query.cc             \
 	paludis.cc
 

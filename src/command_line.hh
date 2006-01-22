@@ -60,6 +60,9 @@ class CommandLine :
         /// --list-repositories
         paludis::args::SwitchArg a_list_repositories;
 
+        /// --list-categories
+        paludis::args::SwitchArg a_list_categories;
+
         /// --version
         paludis::args::SwitchArg a_version;
 
