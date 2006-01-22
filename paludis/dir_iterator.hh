@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_DIR_ITERATOR_HH 1
 
 #include <paludis/fs_entry.hh>
-#include <paludis/fs_error.hh>
 #include <paludis/counted_ptr.hh>
 #include <iterator>
 #include <set>

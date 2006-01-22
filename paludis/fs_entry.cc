@@ -18,7 +18,6 @@
  */
 
 #include "fs_entry.hh"
-#include "fs_error.hh"
 #include "exception.hh"
 #include "stringify.hh"
 
@@ -36,6 +35,11 @@
  */
 
 using namespace paludis;
+
+FSError::FSError(const std::string & message) throw () :
+    Exception(message)
+{
+}
 
 FSEntry::FSEntry(const std::string & path) :
     ComparisonPolicyType(&FSEntry::_path),

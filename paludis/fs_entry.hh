@@ -23,15 +23,31 @@
 #include <string>
 #include <ostream>
 #include <paludis/comparison_policy.hh>
+#include <paludis/exception.hh>
 
 /** \file
  * Declarations for paludis::Filesystem.
  *
  * \ingroup Filesystem
+ * \ingroup Exception
  */
 
 namespace paludis
 {
+    /**
+     * Generic filesystem error class.
+     *
+     * \ingroup Exception
+     */
+    class FSError : public Exception
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            FSError(const std::string & message) throw ();
+    };
+
     /**
      * Represents an entry (which may or may not exist) in the filesystem.
      *
