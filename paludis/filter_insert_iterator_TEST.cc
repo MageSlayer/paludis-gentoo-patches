@@ -52,6 +52,11 @@ int is_even(const int & v)
 
 namespace test_cases
 {
+    /**
+     * \test Test FilterInsertIterator.
+     *
+     * \ingroup Test
+     */
     struct FilterInsertIteratorTest : TestCase
     {
         FilterInsertIteratorTest() : TestCase("filter insert iterator") { }

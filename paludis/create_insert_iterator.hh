@@ -46,6 +46,7 @@ namespace paludis
              */
             struct container_type
             {
+                /// Our faked item type.
                 typedef Type_ value_type;
             };
 

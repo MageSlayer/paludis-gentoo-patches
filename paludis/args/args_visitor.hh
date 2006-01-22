@@ -41,6 +41,9 @@ namespace paludis
         class IntegerArg;
         class EnumArg;
 
+        /**
+         * Visitor types for visitors that can visit Args.
+         */
         typedef VisitorTypes<ArgsOption *, StringArg *, AliasArg *, SwitchArg *,
                 IntegerArg *, EnumArg *> ArgsVisitorTypes;
 

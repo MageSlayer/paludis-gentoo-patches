@@ -26,14 +26,27 @@
 
 namespace paludis
 {
+    /**
+     * Thrown if getenv_or_error fails.
+     *
+     * \ingroup Exception
+     */
     class GetenvError : public Exception
     {
         public:
             GetenvError(const std::string & key) throw ();
     };
 
+    /**
+     * Fetch the value of environment variable key, or def if the variable is
+     * not defined.
+     */
     std::string getenv_with_default(const std::string & key, const std::string & def);
 
+    /**
+     * Fetch the value of environment variable key, or throw a GetenvError if
+     * the variable is not defined.
+     */
     std::string getenv_or_error(const std::string & key);
 }
 

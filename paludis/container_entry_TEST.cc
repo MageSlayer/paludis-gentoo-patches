@@ -27,6 +27,11 @@ using namespace paludis;
 
 namespace test_cases
 {
+    /**
+     * \test Test ContainerEntry on a list.
+     *
+     * \ingroup Test
+     */
     struct ContainerEntryListTest : TestCase
     {
         ContainerEntryListTest() : TestCase("list") { }

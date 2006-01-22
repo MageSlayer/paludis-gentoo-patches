@@ -32,6 +32,12 @@
 
 using namespace test;
 
+/**
+ * Default implementation of exception_to_debug_string, that can be overridden
+ * by other libraries.
+ *
+ * \ingroup Test
+ */
 std::string exception_to_debug_string(const std::exception &) PALUDIS_ATTRIBUTE((weak));
 
 std::string exception_to_debug_string(const std::exception & e)

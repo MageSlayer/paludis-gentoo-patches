@@ -123,6 +123,9 @@ namespace paludis
     class BlockError : public DepListError
     {
         public:
+            /**
+             * Constructor.
+             */
             BlockError(const std::string & msg) throw ();
     };
 
@@ -177,11 +180,14 @@ namespace paludis
             void _add_in_role(DepAtom::ConstPointer, const std::string & role);
 
         protected:
+            ///\name Visit functions
+            ///{
             void visit(const PackageDepAtom * const);
             void visit(const UseDepAtom * const);
             void visit(const AnyDepAtom * const);
             void visit(const BlockDepAtom * const);
             void visit(const AllDepAtom * const);
+            ///}
 
         public:
             /**

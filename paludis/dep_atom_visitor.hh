@@ -30,6 +30,9 @@ namespace paludis
     class UseDepAtom;
     class BlockDepAtom;
 
+    /**
+     * Visitor types for a visitor that can visit a DepAtom heirarchy.
+     */
     typedef VisitorTypes<PackageDepAtom *, AllDepAtom *, AnyDepAtom *,
             UseDepAtom *, BlockDepAtom *> DepAtomVisitorTypes;
 }

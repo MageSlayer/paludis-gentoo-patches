@@ -23,6 +23,9 @@
 
 namespace paludis
 {
+    /**
+     * Return a new iterator pointing to the item after i.
+     */
     template <typename T_>
     T_ next(const T_ & i)
     {
@@ -30,6 +33,9 @@ namespace paludis
         return ++result;
     }
 
+    /**
+     * Return a new iterator pointing to the item before i.
+     */
     template <typename T_>
     T_ previous(const T_ & i)
     {

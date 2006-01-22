@@ -17,63 +17,99 @@
 
 namespace paludis
 {
+    /**
+     * For internal use by match_package.
+     */
     namespace match_package_internals
     {
+        /**
+         * Do the match on a PackageDatabaseEntry.
+         */
         bool do_match(
                 const PackageDatabase * const db,
                 const PackageDepAtom * const atom,
                 const PackageDatabaseEntry * const entry)
             PALUDIS_ATTRIBUTE((nonnull(1, 2, 3)));
 
+        /**
+         * Do the match on a DepListEntry.
+         */
         bool do_match(
                 const PackageDatabase * const db,
                 const PackageDepAtom * const atom,
                 const DepListEntry * const entry)
             PALUDIS_ATTRIBUTE((nonnull(2, 3)));
 
+        /**
+         * Normalise type.
+         */
         inline const PackageDatabase * sanitise_db(const PackageDatabase * db)
         {
             return db;
         }
 
+        /**
+         * Normalise type.
+         */
         inline const PackageDatabase * sanitise_db(const PackageDatabase & db)
         {
             return &db;
         }
 
+        /**
+         * Normalise type.
+         */
         template <typename P1_, typename P2_>
         inline const PackageDatabase * sanitise_db(const CountedPtr<const PackageDatabase, P1_, P2_> db)
         {
             return db.raw_pointer();
         }
 
+        /**
+         * Normalise type.
+         */
         inline const PackageDatabase * sanitise_db(const PackageDatabase::ConstPointer db)
         {
             return db.raw_pointer();
         }
 
+        /**
+         * Normalise type.
+         */
         inline const PackageDepAtom * sanitise_atom(const PackageDepAtom * atom)
         {
             return atom;
         }
 
+        /**
+         * Normalise type.
+         */
         inline const PackageDepAtom * sanitise_atom(const PackageDepAtom & atom)
         {
             return &atom;
         }
 
+        /**
+         * Normalise type.
+         */
         template <typename P1_, typename P2_>
         inline const PackageDepAtom * sanitise_atom(const CountedPtr<const PackageDepAtom, P1_, P2_> atom)
         {
             return atom.raw_pointer();
         }
 
+        /**
+         * Normalise type.
+         */
         template <typename T_>
         inline const T_ * sanitise_target(const T_ * e)
         {
             return e;
         }
 
+        /**
+         * Normalise type.
+         */
         template <typename T_>
         inline const T_ * sanitise_target(const T_ & e)
         {
@@ -81,6 +117,9 @@ namespace paludis
         }
     }
 
+    /**
+     * Does the specified atom match the specified target?
+     */
     template <typename DB_, typename Atom_, typename Target_>
     bool match_package(
             const DB_ & db,

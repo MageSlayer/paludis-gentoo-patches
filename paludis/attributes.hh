@@ -34,22 +34,20 @@
  * weak).
  */
 
-#ifdef __GNUC__
+#if (defined(__GNUC__) || defined(DOXYGEN))
 #  if ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
 #    define PALUDIS_ATTRIBUTE(x) __attribute__(x)
 #    define PALUDIS_CAN_USE_ATTRIBUTE 1
 #  else
 #    define PALUDIS_ATTRIBUTE(x)
 #  endif
+#elif (defined(__ICC))
+#  define PALUDIS_ATTRIBUTE(x) __attribute__(x)
+#  define PALUDIS_CAN_USE_ATTRIBUTE 1
+#  define nothrow
+#  define deprecated
 #else
-#  ifdef __ICC
-#    define PALUDIS_ATTRIBUTE(x) __attribute__(x)
-#    define PALUDIS_CAN_USE_ATTRIBUTE 1
-#    define nothrow
-#    define deprecated
-#  else
-#    define PALUDIS_ATTRIBUTE(x)
-#  endif
+#  define PALUDIS_ATTRIBUTE(x)
 #endif
 
 #endif

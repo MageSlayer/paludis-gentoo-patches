@@ -46,6 +46,8 @@ namespace paludis
              */
             DepAtomDumper(std::ostream * const o);
 
+            /// \name Visit functions
+            ///{
             void visit(const AllDepAtom * const);
 
             void visit(const AnyDepAtom * const);
@@ -55,6 +57,7 @@ namespace paludis
             void visit(const PackageDepAtom * const);
 
             void visit(const BlockDepAtom * const);
+            ///}
     };
 }
 

@@ -51,6 +51,11 @@ int f(const int & v)
 
 namespace test_cases
 {
+    /**
+     * \test Test TransformInsertIterator.
+     *
+     * \ingroup Test
+     */
     struct TransformInsertIteratorTest : TestCase
     {
         TransformInsertIteratorTest() : TestCase("transform insert iterator") { }

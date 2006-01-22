@@ -112,6 +112,11 @@ CookieMaker::RegisterMaker register_crunchy_ginger("crunchy ginger", &GingerCook
 
 namespace test_cases
 {
+    /**
+     * \test Test VirtualConstructor.
+     *
+     * \ingroup Test
+     */
     struct VirtualConstructorTest : TestCase
     {
         VirtualConstructorTest() : TestCase("virtual constructor") { }

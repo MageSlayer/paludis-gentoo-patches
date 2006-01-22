@@ -45,17 +45,26 @@ namespace paludis
     class DefaultConfigError : public ConfigurationError
     {
         public:
+            /**
+             * Constructor.
+             */
             DefaultConfigError(const std::string & msg) throw ();
     };
 
+    /**
+     * Keys for RepositoryConfigEntry.
+     */
     enum RepositoryConfigEntryKeys
     {
-        rce_location,
-        rce_profile,
-        rce_format,
-        rce_importance
+        rce_location,       ///< Our location, for example on disk
+        rce_profile,        ///< Our profile's location
+        rce_format,         ///< Our format, for example 'portage'
+        rce_importance      ///< Our importance, higher being more important
     };
 
+    /**
+     * Tag for RepositoryConfigEntry.
+     */
     struct RepositoryConfigEntryTag :
         SmartRecordTag<comparison_mode::FullComparisonTag,
             comparison_method::SmartRecordCompareByKeyTag<rce_importance> >,
@@ -67,13 +76,24 @@ namespace paludis
     {
     };
 
+    /**
+     * Holds an entry in a DefaultConfig's repository configuration data.
+     */
+    typedef MakeSmartRecord<RepositoryConfigEntryTag>::Type RepositoryConfigEntry;
+
+    /**
+     * Keys for UseConfigEntry.
+     */
     enum UseConfigEntryKeys
     {
-        uce_dep_atom,
-        uce_flag_name,
-        uce_flag_state
+        uce_dep_atom,       ///< A dependency atom
+        uce_flag_name,      ///< The use flag name
+        uce_flag_state      ///< The use flag state
     };
 
+    /**
+     * Tag for UseConfigEntry.
+     */
     struct UseConfigEntryTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<UseConfigEntryKeys, 3>,
@@ -83,8 +103,9 @@ namespace paludis
     {
     };
 
-    typedef MakeSmartRecord<RepositoryConfigEntryTag>::Type RepositoryConfigEntry;
-
+    /**
+     *  An entry in a DefaultConfig's use configuration data.
+     */
     typedef MakeSmartRecord<UseConfigEntryTag>::Type UseConfigEntry;
 
     /**
