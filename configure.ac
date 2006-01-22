@@ -89,10 +89,19 @@ AC_CHECK_FUNCS([popen],    [], [AC_MSG_ERROR([I need popen])])
 dnl }}}
 
 dnl {{{ check for cxxflags
+AC_MSG_CHECKING([whether our compiler is iccy])
+AC_COMPILE_IFELSE([
+#ifndef __ICC
+#error nope
+#endif
+],
+	[cxx_compiler_icc=yes],
+	[cxx_compiler_icc=no])
+AC_MSG_RESULT([${cxx_compiler_icc}])
+
 AC_DEFUN([CHECK_CXXFLAG], [
 	save_CXXFLAGS=$CXXFLAGS
 	CXXFLAGS="$CXXFLAGS $1 -Werror"
-	AC_MSG_CHECKING([for usable $1 flag])
 	AC_COMPILE_IFELSE([
 #include <string>
 #include <iostream>
@@ -104,23 +113,14 @@ int main(int, char **)
 	],
 	[cxxflag_success=yes],
 	[cxxflag_success=no])
-	AC_MSG_RESULT($cxxflag_success)
 	CXXFLAGS="$save_CXXFLAGS"
 	if test "x$cxxflag_success" = "xyes" ; then
 		CXXFLAGS="$CXXFLAGS $1"
+		cxxflags_message="${cxxflags_message} $1"
 	fi
 	])
 
-AC_MSG_CHECKING([whether our compiler is iccy])
-AC_COMPILE_IFELSE([
-#ifndef __ICC
-#error nope
-#endif
-],
-	[cxx_compiler_icc=yes],
-	[cxx_compiler_icc=no])
-AC_MSG_RESULT([${cxx_compiler_icc}])
-
+AC_MSG_CHECKING([for appropriate warning flags])
 if test "x${cxx_compiler_icc}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wall])
 	CHECK_CXXFLAG([-wd279])
@@ -145,6 +145,7 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 else
 	CHECK_CXXFLAG([-Wall])
 fi
+AC_MSG_RESULT([${cxxflags_message}])
 dnl }}}
 
 dnl {{{ doxygen, dot
