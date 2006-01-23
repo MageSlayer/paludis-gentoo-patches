@@ -82,11 +82,17 @@ namespace paludis
         class Visits
         {
             protected:
+                /**
+                 * Destructor.
+                 */
                 virtual ~Visits()
                 {
                 }
 
             public:
+                /**
+                 * Visit a node of the specified type.
+                 */
                 virtual void visit(NodePtrType_ const) = 0;
         };
 
@@ -99,6 +105,9 @@ namespace paludis
         class Visits<const visitor_internals::NoType<n_> * >
         {
             protected:
+                /**
+                 * Destructor.
+                 */
                 ~Visits()
                 {
                 }

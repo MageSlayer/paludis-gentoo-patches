@@ -253,10 +253,19 @@ namespace paludis
                     const RepositoryName &) const;
 
 
+            /**
+             * Iterate over all of our repositories.
+             */
             typedef std::list<Repository::ConstPointer>::const_iterator RepositoryIterator;
 
+            /**
+             * Iterator to the start of our repositories.
+             */
             RepositoryIterator begin_repositories() const;
 
+            /**
+             * Iterator to past the end of our repositories.
+             */
             RepositoryIterator end_repositories() const;
     };
 }

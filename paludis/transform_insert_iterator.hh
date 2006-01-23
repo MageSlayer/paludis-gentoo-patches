@@ -47,6 +47,7 @@ namespace paludis
              */
             struct container_type
             {
+                /// Our value type.
                 typedef typename Trans_::argument_type value_type;
             };
 

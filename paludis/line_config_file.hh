@@ -47,17 +47,32 @@ namespace paludis
             void accept_line(const std::string &) const;
 
         public:
+            /**
+             * Constructor, from a stream.
+             */
             LineConfigFile(std::istream * const);
 
+            /**
+             * Constructor, from a filename.
+             */
             LineConfigFile(const std::string & filename);
 
+            /**
+             * Iterator over our lines.
+             */
             typedef std::list<std::string>::const_iterator Iterator;
 
+            /**
+             * Iterator to the start of our lines.
+             */
             Iterator begin() const
             {
                 return _lines.begin();
             }
 
+            /**
+             * Iterator to past the end of our lines.
+             */
             Iterator end() const
             {
                 return _lines.end();

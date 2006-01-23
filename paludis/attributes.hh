@@ -35,7 +35,7 @@
  */
 
 #if (defined(__GNUC__) || defined(DOXYGEN))
-#  if ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
+#  if ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || defined(DOXYGEN))
 #    define PALUDIS_ATTRIBUTE(x) __attribute__(x)
 #    define PALUDIS_CAN_USE_ATTRIBUTE 1
 #  else

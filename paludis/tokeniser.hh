@@ -100,11 +100,17 @@ namespace paludis
         template <typename Char_, typename Iter_>
         struct Writer<delim_mode::DelimiterTag, Char_, Iter_>
         {
+            /**
+             * Handle a token.
+             */
             static void handle_token(const std::basic_string<Char_> & s, Iter_ & i)
             {
                 *i++ = s;
             }
 
+            /**
+             * Handle a delimiter.
+             */
             static void handle_delim(const std::basic_string<Char_> &, const Iter_ &)
             {
             }
@@ -119,11 +125,17 @@ namespace paludis
         template <typename Char_, typename Iter_>
         struct Writer<delim_mode::BoundaryTag, Char_, Iter_>
         {
+            /**
+             * Handle a token.
+             */
             static void handle_token(const std::basic_string<Char_> & s, Iter_ & i)
             {
                 *i++ = s;
             }
 
+            /**
+             * Handle a delimiter.
+             */
             static void handle_delim(const std::basic_string<Char_> & s, Iter_ & i)
             {
                 *i++ = s;
@@ -154,11 +166,17 @@ namespace paludis
             const std::basic_string<Char_> _delims;
 
         public:
+            /**
+             * Constructor.
+             */
             Tokeniser(const std::basic_string<Char_> & delims) :
                 _delims(delims)
             {
             }
 
+            /**
+             * Do the tokenisation.
+             */
             template <typename Iter_>
             void tokenise(const std::basic_string<Char_> & s, Iter_ iter) const;
     };

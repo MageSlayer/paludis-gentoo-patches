@@ -34,6 +34,9 @@ namespace paludis
     class GetenvError : public Exception
     {
         public:
+            /**
+             * Constructor.
+             */
             GetenvError(const std::string & key) throw ();
     };
 

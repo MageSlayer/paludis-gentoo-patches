@@ -43,6 +43,9 @@ namespace paludis
     class KeyValueConfigFileError : public ConfigurationError
     {
         public:
+            /**
+             * Constructor.
+             */
             KeyValueConfigFileError(const std::string & message,
                     const std::string & filename = "") throw ();
     };
@@ -61,29 +64,56 @@ namespace paludis
         protected:
             void accept_line(const std::string &) const;
 
+            /**
+             * Handle variable replacement.
+             */
             std::string replace_variables(const std::string &) const;
 
+            /**
+             * Handle quote removal.
+             */
             std::string strip_quotes(const std::string &) const;
 
         public:
+            /**
+             * Constructor, from a stream.
+             */
             KeyValueConfigFile(std::istream * const);
 
+            /**
+             * Constructor, from a filename.
+             */
             KeyValueConfigFile(const std::string & filename);
 
+            /**
+             * Destructor.
+             */
             ~KeyValueConfigFile();
 
+            /**
+             * Iterator over our key/values.
+             */
             typedef std::map<std::string, std::string>::const_iterator Iterator;
 
+            /**
+             * Start of our key/values.
+             */
             Iterator begin() const
             {
                 return _entries.begin();
             }
 
+            /**
+             * Past the end of our key/values.
+             */
             Iterator end() const
             {
                 return _entries.end();
             }
 
+            /**
+             * Fetch the specified key, or a blank string.
+             */
             std::string get(const std::string & key) const
             {
                 return _entries[key];

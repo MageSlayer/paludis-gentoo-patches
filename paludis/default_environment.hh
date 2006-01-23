@@ -48,14 +48,14 @@ namespace paludis
 
             ~DefaultEnvironment();
 
-        protected:
-            bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const;
+        public:
+            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const;
 
-            bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
+            virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
 
-            bool query_user_masks(const PackageDatabaseEntry &) const;
+            virtual bool query_user_masks(const PackageDatabaseEntry &) const;
 
-            bool query_user_unmasks(const PackageDatabaseEntry &) const;
+            virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
     };
 }
 #endif

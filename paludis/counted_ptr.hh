@@ -135,6 +135,9 @@ namespace paludis
                  */
                 T_ * _ptr;
 
+                /**
+                 * Constructor.
+                 */
                 CountedPtrBase(T_ * ptr) :
                     ComparisonPolicy<CountedPtrBase<T_, dereference_policy::UncheckedDereferenceTag>,
                         comparison_mode::EqualityComparisonTag,
@@ -144,6 +147,9 @@ namespace paludis
                 {
                 }
 
+                /**
+                 * Destructor.
+                 */
                 ~CountedPtrBase()
                 {
                 }
@@ -229,6 +235,9 @@ namespace paludis
                  */
                 T_ * _ptr;
 
+                /**
+                 * Constructor.
+                 */
                 CountedPtrBase(T_ * ptr) :
                     ComparisonPolicy<CountedPtrBase<T_, dereference_policy::CheckedDereferenceTag>,
                         comparison_mode::EqualityComparisonTag,
@@ -238,6 +247,9 @@ namespace paludis
                 {
                 }
 
+                /**
+                 * Destructor.
+                 */
                 ~CountedPtrBase()
                 {
                 }

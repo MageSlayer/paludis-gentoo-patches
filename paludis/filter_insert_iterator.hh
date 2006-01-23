@@ -42,6 +42,9 @@ namespace paludis
             Pred_ _p;
 
         public:
+            /**
+             * Fake a container_type for use with other iterator adapters.
+             */
             typedef typename Iter_::container_type container_type;
 
             /**

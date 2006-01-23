@@ -78,6 +78,8 @@ namespace paludis
              */
             const std::string & get(const VersionMetadataKey key) const;
 
+            /// \name Convenience iterators
+            ///{
             typedef std::set<UseFlagName>::const_iterator IuseIterator;
             IuseIterator begin_iuse() const;
             IuseIterator end_iuse() const;
@@ -89,6 +91,7 @@ namespace paludis
             typedef std::set<QualifiedPackageName>::const_iterator ProvideIterator;
             ProvideIterator begin_provide() const;
             ProvideIterator end_provide() const;
+            ///}
 
             /**
              * Set a key, return self.

@@ -48,6 +48,9 @@ namespace paludis
     class PStreamError : public Exception
     {
         public:
+            /**
+             * Constructor.
+             */
             PStreamError(const std::string & message) throw ();
     };
 
@@ -73,14 +76,29 @@ namespace paludis
             int _exit_status;
 
         protected:
+            /**
+             * Our file descriptor.
+             */
             FILE * fd;
 
+            /**
+             * At most how many characters can we put back?
+             */
             static const int putback_size = std::numeric_limits<unsigned>::digits >> 3;
 
+            /**
+             * How large is our internal buffer?
+             */
             static const int buffer_size = 3 * putback_size;
 
+            /**
+             * Internal buffer.
+             */
             char buffer[buffer_size];
 
+            /**
+             * Called when an underflow occurs.
+             */
             virtual int_type underflow();
 
         public:
@@ -112,17 +130,27 @@ namespace paludis
 
     /**
      * For internal use by PStream classes.
+     *
+     * \ingroup PStream
      */
     namespace pstream_internals
     {
         /**
          * Avoid base from member issues for PStream.
+         *
+         * \ingroup PStream
          */
         struct PStreamInBufBase :
             private paludis::InstantiationPolicy<PStreamInBufBase, instantiation_method::NonCopyableTag>
         {
+            /**
+             * Our buffer.
+             */
             PStreamInBuf buf;
 
+            /**
+             * Constructor.
+             */
             PStreamInBufBase(const std::string & command) :
                 buf(command)
             {

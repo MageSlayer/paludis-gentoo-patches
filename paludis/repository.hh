@@ -49,6 +49,9 @@ namespace paludis
             const RepositoryName _name;
 
         protected:
+            /**
+             * Our repository information.
+             */
             std::map<std::string, std::string> _info;
 
             /**
@@ -262,18 +265,30 @@ namespace paludis
                 return do_query_profile_masks(q.get<qpn_category>(), q.get<qpn_package>(), v);
             }
 
+            /**
+             * Iterator to information about our repository.
+             */
             typedef std::map<std::string, std::string>::const_iterator InfoIterator;
 
+            /**
+             * Start of repository information.
+             */
             InfoIterator begin_info() const
             {
                 return _info.begin();
             }
 
+            /**
+             * Past the end of repository information.
+             */
             InfoIterator end_info() const
             {
                 return _info.end();
             }
 
+            /**
+             * Query the state of the specified use flag.
+             */
             UseFlagState query_use(const UseFlagName & u) const
             {
                 if (do_query_use_mask(u))
@@ -282,6 +297,9 @@ namespace paludis
                     return do_query_use(u);
             }
 
+            /**
+             * Query whether the specified use flag is masked.
+             */
             bool query_use_mask(const UseFlagName & u) const
             {
                 return do_query_use_mask(u);
