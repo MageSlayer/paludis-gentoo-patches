@@ -63,6 +63,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(destringify<float>("0.0"),   0.f);
             TEST_CHECK_EQUAL(destringify<float>("0.1"),   0.1f);
             TEST_CHECK_EQUAL(destringify<float>("-1.54"), -1.54f);
+            TEST_CHECK_THROWS(destringify<float>("I am a fish"), DestringifyError);
         }
     } test_case_destringify_float;
 
@@ -89,6 +90,8 @@ namespace test_cases
             TEST_CHECK(!destringify<bool>("false"));
             TEST_CHECK(!destringify<bool>("0"));
             TEST_CHECK(!destringify<bool>("-1"));
+            TEST_CHECK_THROWS(destringify<bool>("flase"), DestringifyError);
+            TEST_CHECK_THROWS(destringify<bool>("432.2413"), DestringifyError);
         }
     } test_case_destringify_bool;
 }
