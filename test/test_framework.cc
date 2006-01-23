@@ -38,11 +38,11 @@ using namespace test;
  *
  * \ingroup Test
  */
-std::string exception_to_debug_string(const std::exception &) PALUDIS_ATTRIBUTE((weak));
+std::string exception_to_debug_string(const std::exception &) PALUDIS_ATTRIBUTE((weak,noinline));
 
 std::string exception_to_debug_string(const std::exception & e)
 {
-    return e.what();
+    return e.what() + std::string(" (no further information)");
 }
 
 #ifndef DOXYGEN

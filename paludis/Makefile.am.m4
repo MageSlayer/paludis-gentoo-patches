@@ -7,10 +7,10 @@ define(`filelist', `')dnl
 define(`testlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
-$1_TEST_SOURCES = $1_TEST.cc
-$1_TEST_LDADD = $(top_builddir)/test/libtest.a libpaludis.a libpaludistestextras.a
+$1_TEST_SOURCES = $1_TEST.cc exception_to_debug_string.cc exception_to_debug_string.hh
+$1_TEST_LDADD = $(top_builddir)/test/libtest.a libpaludis.a
+$1_TEST_CXXFLAGS = -I$(top_srcdir)
 $1_TEST_CPPFLAGS = -DPALUDIS_TEST_CASE=1
-$1_TEST_CXXFLAGS = -I$(top_srcdir) -g
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
 define(`addhh', `define(`filelist', filelist `$1.hh')')dnl
@@ -37,16 +37,12 @@ SUBDIRS = . args
 
 libpaludis_a_SOURCES = filelist
 
-libpaludistestextras_a_CPPFLAGS = -DPALUDIS_TEST_CASE=1
-libpaludistestextras_a_CXXFLAGS = -I$(top_srcdir) -g
-libpaludistestextras_a_SOURCES = exception_to_debug_string.hh exception_to_debug_string.cc
-
 TESTS = testlist
 
 TESTS_ENVIRONMENT = env TEST_SCRIPT_DIR="$(srcdir)/" $(SHELL) $(top_srcdir)/test/run_test.sh
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
-noinst_LIBRARIES = libpaludis.a libpaludistestextras.a
+noinst_LIBRARIES = libpaludis.a
 
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am

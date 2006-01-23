@@ -23,14 +23,17 @@
 
 #include <paludis/stringify.hh>
 #include <paludis/exception.hh>
+#include <paludis/attributes.hh>
 #include <exception>
 
 #ifdef PALUDIS_TEST_CASE
 #ifdef PALUDIS_CAN_USE_ATTRIBUTE
 
-std::string exception_to_debug_string(const std::exception & e);
+std::string exception_to_debug_string(const std::exception & e) PALUDIS_ATTRIBUTE((noinline));
 
 #endif
+#else
+#error Missing -DPALUDIS_TEST_CASE=1?
 #endif
 
 #endif
