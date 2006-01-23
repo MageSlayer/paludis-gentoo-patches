@@ -98,6 +98,9 @@ namespace paludis
     template <typename Type_, typename Exception_>
     Type_ destringify(const std::string & s)
     {
+        if (s == "")
+            throw Exception_("");
+
         return destringify_internals::Destringifier<Type_, Exception_>::do_destringify(s);
     }
 
