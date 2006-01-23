@@ -119,13 +119,17 @@ void do_one_query(
 
     /* display metadata */
     p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*entries->last()));
-    std::cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
-        " " << metadata->get(p::vmk_homepage) << std::endl;
-    std::cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
-        " " << metadata->get(p::vmk_description) << std::endl;
+
+    if (! metadata->get(p::vmk_homepage).empty())
+        std::cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_homepage) << std::endl;
+    if (! metadata->get(p::vmk_description).empty())
+        std::cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_description) << std::endl;
     if (CommandLine::get_instance()->a_show_license.specified())
-        std::cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_license) << std::endl;
+        if (! metadata->get(p::vmk_license).empty())
+            std::cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
+                " " << metadata->get(p::vmk_license) << std::endl;
 
     /* blank line */
     std::cout << std::endl;
