@@ -114,12 +114,12 @@ namespace test_cases
 
             FSEntry ff2("config_file_TEST_dir/not_a_config_file");
             TEST_CHECK(! ff2.exists());
-            TestFile * f2;
+            TestFile * f2(0);
             TEST_CHECK_THROWS(f2 = new TestFile(ff2), ConfigFileError);
 
             FSEntry ff3("config_file_TEST_dir/unreadable_file");
             TEST_CHECK(ff3.is_regular_file());
-            TestFile * f3;
+            TestFile * f3(0);
             TEST_CHECK_THROWS(f3 = new TestFile(ff3), ConfigFileError);
         }
     } test_config_file_open_file;

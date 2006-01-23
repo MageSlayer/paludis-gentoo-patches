@@ -46,6 +46,8 @@
 #  define PALUDIS_CAN_USE_ATTRIBUTE 1
 #  define nothrow
 #  define deprecated
+#  define noinline
+#  define nonnull(...)
 #else
 #  define PALUDIS_ATTRIBUTE(x)
 #endif

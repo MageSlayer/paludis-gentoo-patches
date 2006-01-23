@@ -43,7 +43,7 @@ enum Colour
     cl_masked        = cl_flag_off
 };
 
-bool use_colour() PALUDIS_ATTRIBUTE((nothrow,pure));
+bool use_colour() PALUDIS_ATTRIBUTE((pure));
 
 template <typename T_>
 std::string colour(Colour colour, const T_ & s)
