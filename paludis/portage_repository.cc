@@ -450,6 +450,7 @@ PortageRepository::do_version_metadata(
         std::getline(cache, line); result->set(vmk_pdepend,     line);
         std::getline(cache, line); result->set(vmk_provide,     line);
         std::getline(cache, line); result->set(vmk_eapi,        line);
+        result->set(vmk_virtual, "");
     }
     else if (_implementation->virtuals_map.end() != ((vi = _implementation->virtuals_map.find(
                 QualifiedPackageName(c, p)))))
@@ -458,6 +459,7 @@ PortageRepository::do_version_metadata(
         result->set(vmk_slot, m->get(vmk_slot));
         result->set(vmk_keywords, m->get(vmk_keywords));
         result->set(vmk_eapi, m->get(vmk_eapi));
+        result->set(vmk_virtual, stringify(vi->second->package()));
         result->set(vmk_depend, "=" + stringify(vi->second->package()) + "-" + stringify(v));
     }
     else

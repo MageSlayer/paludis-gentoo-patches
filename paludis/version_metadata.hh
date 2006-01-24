@@ -51,6 +51,7 @@ namespace paludis
         vmk_eapi,                   ///< EAPI
         vmk_homepage,               ///< HOMEPAGE
         vmk_description,            ///< DESCRIPTION
+        vmk_virtual,                ///< Are we a virtual for something (empty is no)?
         last_vmk                    ///< Number of items (keep at end!)
     };
 

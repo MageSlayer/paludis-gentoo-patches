@@ -52,6 +52,20 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
                 break;
             }
 
+        if (! metadata->get(vmk_virtual).empty())
+        {
+            QualifiedPackageName n(make_qualified_package_name(metadata->get(vmk_virtual)));
+
+            PackageDatabaseEntry ee(n, e.get<pde_version>(), e.get<pde_repository>());
+            for (VersionMetadata::KeywordIterator k(metadata->begin_keywords()),
+                    k_end(metadata->end_keywords()) ; k != k_end ; ++k)
+                if (accept_keyword(*k, &ee))
+                {
+                    result.reset(mr_keyword);
+                    break;
+                }
+        }
+
         if (! query_user_unmasks(e))
         {
             if (query_user_masks(e))
@@ -64,6 +78,19 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
             if (package_database()->fetch_repository(e.get<pde_repository>())->query_repository_masks(e.get<pde_name>(),
                         e.get<pde_version>()))
                 result.set(mr_repository_mask);
+
+            if (! metadata->get(vmk_virtual).empty())
+            {
+                QualifiedPackageName n(make_qualified_package_name(metadata->get(vmk_virtual)));
+
+                if (package_database()->fetch_repository(e.get<pde_repository>())->query_profile_masks(n,
+                            e.get<pde_version>()))
+                    result.set(mr_profile_mask);
+
+                if (package_database()->fetch_repository(e.get<pde_repository>())->query_repository_masks(n,
+                            e.get<pde_version>()))
+                    result.set(mr_repository_mask);
+            }
         }
     }
 
