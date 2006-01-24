@@ -130,6 +130,10 @@ void do_one_query(
         if (! metadata->get(p::vmk_license).empty())
             std::cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
                 " " << metadata->get(p::vmk_license) << std::endl;
+    if (! metadata->get(p::vmk_virtual).empty())
+        std::cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_virtual) << std::endl;
+
 
     /* blank line */
     std::cout << std::endl;
