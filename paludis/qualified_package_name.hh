@@ -54,17 +54,40 @@ namespace paludis
      * A QualifiedPackageName instance holds a CategoryNamePart and
      * a PackageNamePart.
      */
-    typedef MakeSmartRecord<QualifiedPackageNameTag>::Type QualifiedPackageName;
+    class QualifiedPackageName :
+        public MakeSmartRecord<QualifiedPackageNameTag>::Type
+    {
+        private:
+            static MakeSmartRecord<QualifiedPackageNameTag>::Type _make_parent(
+                    const std::string & s);
+
+        public:
+            QualifiedPackageName(const CategoryNamePart & c, const PackageNamePart & p) :
+                MakeSmartRecord<QualifiedPackageNameTag>::Type(c, p)
+            {
+            }
+
+            QualifiedPackageName(const QualifiedPackageName & other) :
+                MakeSmartRecord<QualifiedPackageNameTag>::Type(other)
+            {
+            }
+
+            explicit QualifiedPackageName(const std::string & s) :
+                MakeSmartRecord<QualifiedPackageNameTag>::Type(_make_parent(s))
+            {
+            }
+
+            const QualifiedPackageName & operator= (const QualifiedPackageName & other)
+            {
+                MakeSmartRecord<QualifiedPackageNameTag>::Type::operator= (other);
+                return *this;
+            }
+    };
 
     /**
      * Output a QualifiedPackageName to a stream.
      */
     std::ostream & operator<< (std::ostream &, const QualifiedPackageName &);
-
-    /**
-     * Create a QualifiedPackageName from a string.
-     */
-    QualifiedPackageName make_qualified_package_name(const std::string &);
 
     /**
      * Holds a collection of QualifiedPackageName instances.

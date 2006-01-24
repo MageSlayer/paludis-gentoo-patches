@@ -44,7 +44,7 @@ namespace test_cases
 
         void run()
         {
-            QualifiedPackageName a(make_qualified_package_name("foo/bar1"));
+            QualifiedPackageName a("foo/bar1");
             TEST_CHECK(true);
         }
     } test_qualified_package_name;
@@ -60,10 +60,10 @@ namespace test_cases
 
         void run()
         {
-            QualifiedPackageName a(make_qualified_package_name("foo/bar"));
-            TEST_CHECK_THROWS(a = QualifiedPackageName(make_qualified_package_name("moo")), NameError);
-            TEST_CHECK_THROWS(a = QualifiedPackageName(make_qualified_package_name("foo/bar!")), NameError);
-            TEST_CHECK_THROWS(a = QualifiedPackageName(make_qualified_package_name("foo/bar/baz")), NameError);
+            QualifiedPackageName a("foo/bar");
+            TEST_CHECK_THROWS(a = QualifiedPackageName("moo"), NameError);
+            TEST_CHECK_THROWS(a = QualifiedPackageName("foo/bar!"), NameError);
+            TEST_CHECK_THROWS(a = QualifiedPackageName("foo/bar/baz"), NameError);
         }
     } test_qualified_package_name_validate;
 
@@ -78,9 +78,9 @@ namespace test_cases
 
         void run()
         {
-            QualifiedPackageName foo1_bar1(make_qualified_package_name("foo1/bar1"));
-            QualifiedPackageName foo1_bar2(make_qualified_package_name("foo1/bar2"));
-            QualifiedPackageName foo2_bar1(make_qualified_package_name("foo2/bar1"));
+            QualifiedPackageName foo1_bar1("foo1/bar1");
+            QualifiedPackageName foo1_bar2("foo1/bar2");
+            QualifiedPackageName foo2_bar1("foo2/bar1");
 
             TEST_CHECK( (foo1_bar1 <  foo1_bar2));
             TEST_CHECK( (foo1_bar1 <= foo1_bar2));

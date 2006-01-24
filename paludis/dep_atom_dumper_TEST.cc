@@ -52,10 +52,10 @@ namespace test_cases
             std::stringstream s;
             DepAtomDumper d(&s);
             AllDepAtom::Pointer all(new AllDepAtom);
-            PackageDepAtom::Pointer p1(new PackageDepAtom(make_qualified_package_name("one/one")));
+            PackageDepAtom::Pointer p1(new PackageDepAtom("one/one"));
             AnyDepAtom::Pointer any(new AnyDepAtom);
-            PackageDepAtom::Pointer p2(new PackageDepAtom(make_qualified_package_name("two/two")));
-            PackageDepAtom::Pointer p3(new PackageDepAtom(make_qualified_package_name("three/three")));
+            PackageDepAtom::Pointer p2(new PackageDepAtom("two/two"));
+            PackageDepAtom::Pointer p3(new PackageDepAtom("three/three"));
             all->add_child(p1);
             all->add_child(any);
             any->add_child(p2);

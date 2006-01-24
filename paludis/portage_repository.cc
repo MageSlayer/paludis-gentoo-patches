@@ -188,8 +188,8 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
             tokeniser.tokenise(*line, std::back_inserter(tokens));
             if (tokens.size() < 2)
                 continue;
-            virtuals_map.erase(make_qualified_package_name(tokens[0]));
-            virtuals_map.insert(std::make_pair(make_qualified_package_name(tokens[0]),
+            virtuals_map.erase(QualifiedPackageName(tokens[0]));
+            virtuals_map.insert(std::make_pair(QualifiedPackageName(tokens[0]),
                         PackageDepAtom::Pointer(new PackageDepAtom(tokens[1]))));
         }
     }

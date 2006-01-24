@@ -78,7 +78,7 @@ PackageDepAtom::PackageDepAtom(const std::string & s) :
                 if (s.at(q) >= '0' && s.at(q) <= '9')
                     break;
             }
-            _package = QualifiedPackageName(make_qualified_package_name(s.substr(p, q - p - 1)));
+            _package = QualifiedPackageName(s.substr(p, q - p - 1));
 
             if ('*' == s.at(s.length() - 1))
             {
@@ -93,7 +93,7 @@ PackageDepAtom::PackageDepAtom(const std::string & s) :
                         new VersionSpec(s.substr(q)));
         }
         else
-            _package = make_qualified_package_name(s);
+            _package = QualifiedPackageName(s);
     }
     catch (Exception &)
     {

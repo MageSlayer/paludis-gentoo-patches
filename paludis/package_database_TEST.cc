@@ -180,10 +180,10 @@ namespace test_cases
             p.add_repository(r2);
             TEST_CHECK(true);
 
-            TEST_CHECK_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-one")),
-                    make_qualified_package_name("cat-one/pkg-one"));
-            TEST_CHECK_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-four")),
-                    make_qualified_package_name("cat-three/pkg-four"));
+            TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-one")),
+                    "cat-one/pkg-one");
+            TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-four")),
+                    "cat-three/pkg-four");
 
             TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-two")),
                     AmbiguousPackageNameError);

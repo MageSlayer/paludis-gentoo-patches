@@ -27,26 +27,6 @@ QualifiedPackageNameError::QualifiedPackageNameError(const std::string & s) thro
 {
 }
 
-std::string get_category_name(const std::string & s)
-{
-    Context c("When splitting out category name from '" + s + "':");
-
-    std::string::size_type p(s.find('/'));
-    if (std::string::npos == p)
-        throw QualifiedPackageNameError(s);
-    return s.substr(0, p);
-}
-
-std::string get_package_name(const std::string & s)
-{
-    Context c("When splitting out package name from '" + s + "':");
-
-    std::string::size_type p(s.find('/'));
-    if (std::string::npos == p)
-        throw QualifiedPackageNameError(s);
-    return s.substr(p + 1);
-}
-
 std::ostream &
 paludis::operator<< (std::ostream & s, const QualifiedPackageName & q)
 {
@@ -54,10 +34,18 @@ paludis::operator<< (std::ostream & s, const QualifiedPackageName & q)
     return s;
 }
 
-QualifiedPackageName
-paludis::make_qualified_package_name(const std::string & s)
+MakeSmartRecord<QualifiedPackageNameTag>::Type
+QualifiedPackageName::_make_parent(
+        const std::string & s)
 {
-    return QualifiedPackageName(CategoryNamePart(get_category_name(s)),
-            PackageNamePart(get_package_name(s)));
+    Context c("When splitting out category and package names from '" + s + "':");
+
+    std::string::size_type p(s.find('/'));
+    if (std::string::npos == p)
+        throw QualifiedPackageNameError(s);
+
+    return MakeSmartRecord<QualifiedPackageNameTag>::Type(
+            CategoryNamePart(s.substr(0, p)),
+            PackageNamePart(s.substr(p + 1)));
 }
 

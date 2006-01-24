@@ -54,7 +54,7 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
 
         if (! metadata->get(vmk_virtual).empty())
         {
-            QualifiedPackageName n(make_qualified_package_name(metadata->get(vmk_virtual)));
+            QualifiedPackageName n(metadata->get(vmk_virtual));
 
             PackageDatabaseEntry ee(n, e.get<pde_version>(), e.get<pde_repository>());
             for (VersionMetadata::KeywordIterator k(metadata->begin_keywords()),
@@ -81,7 +81,7 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
 
             if (! metadata->get(vmk_virtual).empty())
             {
-                QualifiedPackageName n(make_qualified_package_name(metadata->get(vmk_virtual)));
+                QualifiedPackageName n(metadata->get(vmk_virtual));
 
                 if (package_database()->fetch_repository(e.get<pde_repository>())->query_profile_masks(n,
                             e.get<pde_version>()))
