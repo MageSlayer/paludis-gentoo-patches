@@ -202,10 +202,10 @@ PortageRepository::PortageRepository(const PackageDatabase * const d,
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(
                 d, location, profile, cache))
 {
-    _info.insert(std::make_pair("location", location));
-    _info.insert(std::make_pair("profile", profile));
-    _info.insert(std::make_pair("cache", cache));
-    _info.insert(std::make_pair("format", "portage"));
+    _info.insert(std::make_pair(std::string("location"), location));
+    _info.insert(std::make_pair(std::string("profile"), profile));
+    _info.insert(std::make_pair(std::string("cache"), cache));
+    _info.insert(std::make_pair(std::string("format"), std::string("portage")));
 }
 
 PortageRepository::~PortageRepository()

@@ -58,7 +58,7 @@ FakeRepository::FakeRepository(const RepositoryName & name) :
     Repository(name),
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>)
 {
-    _info.insert(std::make_pair("format", "fake"));
+    _info.insert(std::make_pair(std::string("format"), std::string("fake")));
 }
 
 FakeRepository::~FakeRepository()
