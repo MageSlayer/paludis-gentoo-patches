@@ -118,17 +118,23 @@ main(int argc, char *argv[])
         cout << "Built by " << PALUDIS_BUILD_USER << "@" << PALUDIS_BUILD_HOST
             << " on " << PALUDIS_BUILD_DATE << endl;
         cout << "CXX:         " << PALUDIS_BUILD_CXX
-#ifdef __VERSION__
-            << " " << __VERSION__
-#else
-#  ifdef __ICC
+#if defined(__ICC)
             << " " << __ICC
-#  endif
+#elif defined(__VERSION__)
+            << " " << __VERSION__
 #endif
             << endl;
         cout << "CXXFLAGS:    " << PALUDIS_BUILD_CXXFLAGS << endl;
         cout << "LDFLAGS:     " << PALUDIS_BUILD_LDFLAGS << endl;
         cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
+        cout << "stdlib:      "
+#if defined(__GLIBCXX__)
+            << "GNU libstdc++" << __GLIBCXX__
+#elif defined(__GLIBCPP__)
+            << "GNU libstdc++" << __GLIBCPP__
+#endif
+            << endl;
+
         cout << "libebt:      " << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR
             << "." << LIBEBT_VERSION_MICRO << endl;
         cout << endl;
