@@ -11,6 +11,7 @@
  * possible.
  */
 
+#include <paludis/attributes.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_dep_atom.hh>
 #include <paludis/dep_list.hh>
@@ -50,7 +51,11 @@ namespace paludis
 
         /**
          * Normalise type.
+         *
+         * \deprecated Use sanitise_db(const PackageDatabase *) instead.
          */
+        inline const PackageDatabase * sanitise_db(const PackageDatabase & db) PALUDIS_ATTRIBUTE((deprecated));
+
         inline const PackageDatabase * sanitise_db(const PackageDatabase & db)
         {
             return &db;
