@@ -159,7 +159,7 @@ int main(int, char **)
 	fi
 	])
 
-AC_MSG_CHECKING([for appropriate warning flags])
+AC_MSG_CHECKING([for appropriate compiler flags])
 if test "x${cxx_compiler_icc}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wall])
 	CHECK_CXXFLAG([-wd279])
@@ -180,6 +180,7 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wredundant-decls])
 	CHECK_CXXFLAG([-Wstrict-null-sentinel])
 	CHECK_CXXFLAG([-Wmissing-noreturn])
+	CHECK_CXXFLAG([-Woverloaded-virtual])
 	CHECK_CXXFLAG([-pedantic])
 else
 	CHECK_CXXFLAG([-Wall])
