@@ -465,7 +465,7 @@ DepList::visit(const BlockDepAtom * const d)
                     metadata->begin_provide(), metadata->end_provide(),
                     d->blocked_atom()->package()))
             throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
-                    + stringify(*m) + "' ~ " + join(metadata->begin_provide(), metadata->end_provide(), " ~ "));
+                    + stringify(*m));
     }
 }
 
