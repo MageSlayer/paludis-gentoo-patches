@@ -53,31 +53,11 @@ DefaultEnvironment::~DefaultEnvironment()
 }
 
 bool
-DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry & e) const
+DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
-    /// \todo
+    /// \todo package use
+
     /* prefer user masks, then profile, then disabled */
-    do
-    {
-#if 0
-        switch (DefaultConfig::get_instance()->query_use(f, e))
-        {
-            case use_enabled:
-                return true;
-
-            case use_disabled:
-                return false;
-
-            case use_unspecified:
-                continue;
-        }
-
-        throw InternalError(PALUDIS_HERE, "bad state");
-
-#endif
-    } while (false);
-
-
     do
     {
         UseFlagState state(use_unspecified);
@@ -104,7 +84,8 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         throw InternalError(PALUDIS_HERE, "bad state " + stringify(state));
     } while (false);
 
-    switch (package_database()->fetch_repository(e.get<pde_repository>())->query_use(f))
+    switch (e ? package_database()->fetch_repository(e->get<pde_repository>())->query_use(f) :
+            package_database()->fetch_repository(package_database()->favourite_repository())->query_use(f))
     {
         case use_disabled:
         case use_unspecified:

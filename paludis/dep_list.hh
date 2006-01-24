@@ -103,6 +103,12 @@ namespace paludis
              * Constructor.
              */
             NoResolvableOptionError() throw ();
+
+            /**
+             * Constructor with failure reasons.
+             */
+            template <typename I_>
+            NoResolvableOptionError(I_ i, I_ end) throw ();
     };
 
     /**

@@ -60,6 +60,13 @@ NoResolvableOptionError::NoResolvableOptionError() throw () :
 {
 }
 
+template <typename I_>
+NoResolvableOptionError::NoResolvableOptionError(I_ i, I_ end) throw () :
+    DepListError("No resolvable || ( ) option." + (i == end ?
+                std::string("") :  " Failure messages are '" + join(i, end, "', '") + "'"))
+{
+}
+
 AllMaskedError::AllMaskedError(const std::string & query) throw () :
     DepListError("Error searching for '" + query + "': no available versions")
 {
@@ -327,7 +334,7 @@ DepList::visit(const UseDepAtom * const u)
         throw InternalError(PALUDIS_HERE, "current_package is 0");
 
     if (_implementation->environment->query_use(u->flag(),
-                *_implementation->current_package) ^ u->inverse())
+                _implementation->current_package) ^ u->inverse())
         std::for_each(u->begin(), u->end(), std::bind1st(std::mem_fun(&DepList::add), this));
 }
 
@@ -348,7 +355,7 @@ struct IsViable :
         const UseDepAtom * u(0);
         if (0 != ((u = dynamic_cast<const UseDepAtom *>(a.raw_pointer()))))
             return _impl.environment->query_use(u->flag(),
-                        *_impl.current_package) ^ u->inverse();
+                        _impl.current_package) ^ u->inverse();
         else
             return true;
     }
@@ -370,8 +377,6 @@ DepList::visit(const AnyDepAtom * const a)
      */
 
     std::list<DepAtom::ConstPointer> viable_children;
-    if (0 == _implementation->current_package)
-        throw InternalError(PALUDIS_HERE, "current_package is 0");
     std::copy(a->begin(), a->end(), filter_inserter(
                 std::back_inserter(viable_children), IsViable(*_implementation)));
 
@@ -398,6 +403,7 @@ DepList::visit(const AnyDepAtom * const a)
     }
 
     /* try to merge each of our viable children in turn. */
+    std::list<std::string> errors;
     for (CompositeDepAtom::Iterator i(viable_children.begin()), i_end(viable_children.end()) ;
             i != i_end ; ++i)
     {
@@ -412,13 +418,14 @@ DepList::visit(const AnyDepAtom * const a)
              * resolvable with a deeper stack. */
             throw;
         }
-        catch (const DepListError &)
+        catch (const DepListError & e)
         {
+            errors.push_back(e.message() + " (" + e.what() + ")");
         }
     }
 
     /* no match */
-    throw NoResolvableOptionError();
+    throw NoResolvableOptionError(errors.begin(), errors.end());
 }
 
 void

@@ -28,9 +28,8 @@ TestEnvironment::TestEnvironment() :
 }
 
 bool
-TestEnvironment::query_use(const UseFlagName &, const PackageDatabaseEntry &) const
+TestEnvironment::query_use(const UseFlagName &, const PackageDatabaseEntry *) const
 {
-    /// \todo
     return false;
 }
 

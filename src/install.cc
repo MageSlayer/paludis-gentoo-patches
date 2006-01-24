@@ -107,7 +107,7 @@ do_install()
             for (p::VersionMetadata::IuseIterator i(metadata->begin_iuse()),
                     i_end(metadata->end_iuse()) ; i != i_end ; ++i)
             {
-                if (env->query_use(*i, p))
+                if (env->query_use(*i, &p))
                     cout << " " << colour(cl_flag_on, *i);
                 else if (env->package_database()->fetch_repository(dep->get<p::dle_repository>())->query_use_mask(*i))
                     cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");

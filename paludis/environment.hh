@@ -60,7 +60,7 @@ namespace paludis
              * Does the user want the specified USE flag set for a
              * particular package?
              */
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry &) const = 0;
+            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
 
             /**
              * Is the specified KEYWORD accepted?
