@@ -559,12 +559,12 @@ PortageRepository::need_virtual_names() const
         Context context("When loading virtual names:");
         _implementation->add_profile(_implementation->profile.realpath());
         _implementation->has_profile = true;
-    }
 
-    for (std::map<QualifiedPackageName, PackageDepAtom::ConstPointer>::const_iterator
-            v(_implementation->virtuals_map.begin()), v_end(_implementation->virtuals_map.end()) ;
-            v != v_end ; ++v)
-        _implementation->package_names.insert(
-                std::make_pair(v->first, false));
+        for (std::map<QualifiedPackageName, PackageDepAtom::ConstPointer>::const_iterator
+                v(_implementation->virtuals_map.begin()), v_end(_implementation->virtuals_map.end()) ;
+                v != v_end ; ++v)
+            _implementation->package_names.insert(
+                    std::make_pair(v->first, false));
+    }
 }
 
