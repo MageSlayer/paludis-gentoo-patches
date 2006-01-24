@@ -352,9 +352,8 @@ struct IsViable :
 
     bool operator() (DepAtom::ConstPointer a)
     {
-        /// \todo don't use dynamic_cast<>, it sucks
-        const UseDepAtom * u(0);
-        if (0 != ((u = dynamic_cast<const UseDepAtom *>(a.raw_pointer()))))
+        const UseDepAtom * const u(a->as_use_dep_atom());
+        if (0 != u)
             return _impl.environment->query_use(u->flag(),
                         _impl.current_package) ^ u->inverse();
         else

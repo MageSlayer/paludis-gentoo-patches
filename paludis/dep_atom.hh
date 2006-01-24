@@ -20,11 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH 1
 
-#include <paludis/visitor.hh>
-#include <paludis/dep_atom_visitor.hh>
+#include <paludis/attributes.hh>
 #include <paludis/composite_pattern.hh>
-#include <paludis/instantiation_policy.hh>
 #include <paludis/counted_ptr.hh>
+#include <paludis/dep_atom_visitor.hh>
+#include <paludis/instantiation_policy.hh>
+#include <paludis/visitor.hh>
 
 /** \file
  * Declarations for the DepAtom class.
@@ -35,6 +36,7 @@
 namespace paludis
 {
     class CompositeDepAtom;
+    class UseDepAtom;
 
     /**
      * Base class for a dependency atom.
@@ -52,6 +54,12 @@ namespace paludis
 
         public:
             virtual ~DepAtom();
+
+            /**
+             * Return us as a UseDepAtom, or 0 if we are not a
+             * UseDepAtom.
+             */
+            virtual const UseDepAtom * as_use_dep_atom() const PALUDIS_ATTRIBUTE((pure));
     };
 }
 

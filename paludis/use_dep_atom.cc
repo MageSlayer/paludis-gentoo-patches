@@ -31,3 +31,9 @@ UseDepAtom::UseDepAtom(const UseFlagName & flag, bool inverse) :
 {
 }
 
+const UseDepAtom *
+UseDepAtom::as_use_dep_atom() const
+{
+    return this;
+}
+

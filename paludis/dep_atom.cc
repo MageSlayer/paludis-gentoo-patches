@@ -18,6 +18,7 @@
  */
 
 #include "dep_atom.hh"
+#include "use_dep_atom.hh"
 
 using namespace paludis;
 
@@ -27,5 +28,11 @@ DepAtom::DepAtom()
 
 DepAtom::~DepAtom()
 {
+}
+
+const UseDepAtom *
+DepAtom::as_use_dep_atom() const
+{
+    return 0;
 }
 

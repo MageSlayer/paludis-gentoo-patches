@@ -66,6 +66,8 @@ namespace paludis
             {
                 return _inverse;
             }
+
+            virtual const UseDepAtom * as_use_dep_atom() const PALUDIS_ATTRIBUTE((pure));
     };
 }
 
