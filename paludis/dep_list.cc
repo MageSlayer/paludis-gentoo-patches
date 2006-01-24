@@ -34,6 +34,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <deque>
 
 using namespace paludis;
 
@@ -239,7 +240,7 @@ DepList::visit(const PackageDepAtom * const p)
                     _implementation->pending_list.begin(), _implementation->pending_list.end(),
                     DepListEntryMatcher(_implementation->environment->package_database().raw_pointer(), *p)))))
         {
-            std::list<std::string> entries;
+            std::deque<std::string> entries;
             entries.push_front(stringify(*p));
             std::transform(_implementation->pending_list.begin(), ++i,
                     std::back_inserter(entries), &stringify<DepListEntry>);
@@ -376,7 +377,7 @@ DepList::visit(const AnyDepAtom * const a)
      * we handle this by keeping a list of 'viable children'.
      */
 
-    std::list<DepAtom::ConstPointer> viable_children;
+    std::deque<DepAtom::ConstPointer> viable_children;
     std::copy(a->begin(), a->end(), filter_inserter(
                 std::back_inserter(viable_children), IsViable(*_implementation)));
 
@@ -403,7 +404,7 @@ DepList::visit(const AnyDepAtom * const a)
     }
 
     /* try to merge each of our viable children in turn. */
-    std::list<std::string> errors;
+    std::deque<std::string> errors;
     for (CompositeDepAtom::Iterator i(viable_children.begin()), i_end(viable_children.end()) ;
             i != i_end ; ++i)
     {

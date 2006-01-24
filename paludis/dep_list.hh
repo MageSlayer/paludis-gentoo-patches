@@ -32,6 +32,7 @@
 #include <paludis/version_spec.hh>
 #include <ostream>
 #include <list>
+#include <deque>
 
 namespace paludis
 {

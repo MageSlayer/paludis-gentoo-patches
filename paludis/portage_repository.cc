@@ -37,6 +37,7 @@
 #include <functional>
 #include <algorithm>
 #include <vector>
+#include <deque>
 
 using namespace paludis;
 
@@ -79,7 +80,7 @@ namespace paludis
         mutable std::map<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer> metadata;
 
         /// Repository mask.
-        mutable std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > repo_mask;
+        mutable std::map<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> > repo_mask;
 
         /// Have repository mask?
         mutable bool has_repo_mask;
@@ -150,9 +151,9 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
         Context context_local("When reading make.defaults file:");
 
         KeyValueConfigFile make_defaults_f(f / "make.defaults");
-        std::vector<std::string> uses;
+        std::deque<std::string> uses;
         tokeniser.tokenise(make_defaults_f.get("USE"), std::back_inserter(uses));
-        for (std::vector<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
+        for (std::deque<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
         {
             if ('-' == u->at(0))
@@ -183,7 +184,7 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
         for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
                 line != line_end ; ++line)
         {
-            std::vector<std::string> tokens;
+            std::deque<std::string> tokens;
             tokeniser.tokenise(*line, std::back_inserter(tokens));
             if (tokens.size() < 2)
                 continue;
@@ -494,13 +495,13 @@ PortageRepository::do_query_repository_masks(const CategoryNamePart & c,
         _implementation->has_repo_mask = true;
     }
 
-    std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r(
+    std::map<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> >::const_iterator r(
             _implementation->repo_mask.find(QualifiedPackageName(c, p)));
     if (_implementation->repo_mask.end() == r)
         return false;
     else
     {
-        for (IndirectIterator<std::vector<PackageDepAtom::ConstPointer>::const_iterator, const PackageDepAtom>
+        for (IndirectIterator<std::deque<PackageDepAtom::ConstPointer>::const_iterator, const PackageDepAtom>
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
         {
             if (k->package() != QualifiedPackageName(c, p))

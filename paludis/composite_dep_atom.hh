@@ -22,7 +22,7 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/counted_ptr.hh>
-#include <list>
+#include <deque>
 
 /** \file
  * Declarations for the CompositeDepAtom class.
@@ -42,7 +42,7 @@ namespace paludis
                              public virtual Composite<DepAtom, CompositeDepAtom>
     {
         private:
-            std::list<DepAtom::ConstPointer> _children;
+            std::deque<DepAtom::ConstPointer> _children;
 
         protected:
             /**
@@ -59,7 +59,7 @@ namespace paludis
             /**
              * Iterator for iterating over our children.
              */
-            typedef std::list<DepAtom::ConstPointer>::const_iterator Iterator;
+            typedef std::deque<DepAtom::ConstPointer>::const_iterator Iterator;
 
             /**
              * Iterator to the start of our children.
