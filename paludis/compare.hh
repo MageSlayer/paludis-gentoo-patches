@@ -21,6 +21,42 @@ namespace paludis
             return 0;
     }
 
+    inline int compare(unsigned t1, unsigned t2) PALUDIS_ATTRIBUTE((always_inline));
+
+    inline int compare(unsigned t1, unsigned t2)
+    {
+        if (t1 < t2)
+            return -1;
+        else if (t2 > t1)
+            return 1;
+        else
+            return 0;
+    }
+
+    inline int long compare(unsigned long t1, unsigned long t2) PALUDIS_ATTRIBUTE((always_inline));
+
+    inline int long compare(unsigned long t1, unsigned long t2)
+    {
+        if (t1 < t2)
+            return -1;
+        else if (t2 > t1)
+            return 1;
+        else
+            return 0;
+    }
+
+    inline int compare(long t1, long t2) PALUDIS_ATTRIBUTE((always_inline));
+
+    inline int compare(long t1, long t2)
+    {
+        if (t1 < t2)
+            return -1;
+        else if (t2 > t1)
+            return 1;
+        else
+            return 0;
+    }
+
     template <typename T_>
     inline int compare(
             const std::basic_string<T_> & t1,
