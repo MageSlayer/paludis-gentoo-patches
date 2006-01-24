@@ -62,6 +62,45 @@ int main(int, char **)
 	])
 dnl }}}
 
+dnl {{{ check for broken std::set<>::const_reverse_iterator
+AC_MSG_CHECKING([for a usable std::set<>::const_reverse_iterator])
+AC_COMPILE_IFELSE([
+#include <set>
+int main(int, char **)
+{
+	std::set<int> s;
+	s.insert(1);
+	std::set<int>::const_reverse_iterator i;
+	return *i;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[
+	 AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your std::set<>::const_reverse_iterator is h0rked])
+	])
+
+dnl {{{ check for broken std::deque<NoDefaultConstructor>
+AC_MSG_CHECKING([for a usable std::deque<NoDefaultConstructor>])
+AC_COMPILE_IFELSE([
+#include <deque>
+struct NoDefaultConstructor
+{
+	NoDefaultConstructor(int);
+};
+int main(int, char **)
+{
+	std::deque<NoDefaultConstructor> d, e;
+	d = e;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[
+	 AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your std::deque doesn't work])
+	])
+dnl }}}
+
 dnl {{{ we need libebt.
 dnl don't use AC_CHECK_HEADER, it does silly things
 AC_MSG_CHECKING([for libebt])
