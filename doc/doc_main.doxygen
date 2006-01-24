@@ -1,31 +1,5 @@
 /* vim: set ft=cpp tw=80 sw=4 et : */
 
-/** \namespace test_cases
- * Test cases.
- *
- * \ingroup Test
- */
-
-/** \namespace test
- * Test framework.
- *
- * \ingroup Test
- */
-
-/** \namespace paludis::args
- * Commandline argument handling.
- *
- * \ingroup Args
- */
-
-/** \namespace paludis
- * Paludis library code.
- */
-
-/** \dir paludis
- * Paludis library code.
- */
-
 /** \defgroup DepResolver Dependency parsing and resolution
  * Dependency parsing and resolution.
  *

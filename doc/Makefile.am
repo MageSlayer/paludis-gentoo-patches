@@ -4,7 +4,9 @@ MAINTAINERCLEANFILES = Makefile.in
 docfiles = \
 	doc_main.doxygen \
 	doc_mainpage.doxygen \
-	doc_coding_standards.doxygen
+	doc_coding_standards.doxygen \
+	doc_namespaces.doxygen \
+	doc_directories.doxygen
 
 EXTRA_DIST = doxygen.conf.in $(docfiles)
 

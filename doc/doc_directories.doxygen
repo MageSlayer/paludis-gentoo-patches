@@ -1,0 +1,18 @@
+/* vim: set ft=cpp tw=80 sw=4 et : */
+
+/** \dir paludis
+ * Paludis library code.
+ */
+
+/** \dir src
+ * Paludis program source.
+ */
+
+/** \dir paludis/args
+ * Paludis commandline argument handling utilities.
+ */
+
+/** \dir test
+ * Test framework.
+ */
+
