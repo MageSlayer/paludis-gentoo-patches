@@ -40,8 +40,8 @@ DefaultEnvironment::DefaultEnvironment() :
         /// \todo class factory
         if (r->get<rce_format>() != "portage")
             throw DefaultConfigError("Unknown repository format '" + r->get<rce_format>() + "'");
-        Repository::Pointer repo(new PortageRepository(r->get<rce_location>(),
-                    r->get<rce_profile>()));
+        Repository::Pointer repo(new PortageRepository(package_database().raw_pointer(),
+                    r->get<rce_location>(), r->get<rce_profile>()));
         package_database()->add_repository(repo);
     }
 

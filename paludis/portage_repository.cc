@@ -17,19 +17,21 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "portage_repository.hh"
 #include "dir_iterator.hh"
-#include "stringify.hh"
-#include "fs_entry.hh"
-#include "strip.hh"
-#include "is_file_with_extension.hh"
 #include "filter_insert_iterator.hh"
-#include "transform_insert_iterator.hh"
-#include "line_config_file.hh"
-#include "key_value_config_file.hh"
-#include "tokeniser.hh"
+#include "fs_entry.hh"
 #include "indirect_iterator.hh"
+#include "is_file_with_extension.hh"
+#include "key_value_config_file.hh"
+#include "line_config_file.hh"
+#include "match_package.hh"
+#include "package_database.hh"
 #include "package_dep_atom.hh"
+#include "portage_repository.hh"
+#include "stringify.hh"
+#include "strip.hh"
+#include "tokeniser.hh"
+#include "transform_insert_iterator.hh"
 #include <map>
 #include <fstream>
 #include <functional>
@@ -47,6 +49,9 @@ namespace paludis
     struct Implementation<PortageRepository> :
         InternalCounted<Implementation<PortageRepository> >
     {
+        /// Our owning db.
+        const PackageDatabase * const db;
+
         /// Our base location.
         FSEntry location;
 
@@ -82,11 +87,14 @@ namespace paludis
         /// Use.
         mutable std::map<UseFlagName, UseFlagState> use;
 
+        /// Old style virtuals name mapping.
+        mutable std::map<QualifiedPackageName, PackageDepAtom::ConstPointer> virtuals_map;
+
         /// Have we loaded our profile yet?
         mutable bool has_profile;
 
         /// Constructor.
-        Implementation(const FSEntry & l, const FSEntry & p);
+        Implementation(const PackageDatabase * const d, const FSEntry & l, const FSEntry & p);
 
         /// Destructor.
         ~Implementation();
@@ -96,11 +104,14 @@ namespace paludis
     };
 }
 
-Implementation<PortageRepository>::Implementation(const FSEntry & l, const FSEntry & p) :
+Implementation<PortageRepository>::Implementation(const PackageDatabase * const d,
+        const FSEntry & l, const FSEntry & p) :
+    db(d),
     location(l),
     profile(p),
     has_category_names(false),
-    has_repo_mask(false)
+    has_repo_mask(false),
+    has_profile(false)
 {
 }
 
@@ -113,11 +124,15 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 {
     Context context("When reading profile directory '" + stringify(f) + "':");
 
+    static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+
     if (! f.is_directory())
         throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
 
     if ((f / "parent").exists())
     {
+        Context context_local("When reading parent file:");
+
         LineConfigFile parent(f / "parent");
         if (parent.begin() != parent.end())
             add_profile((f / *parent.begin()).realpath());
@@ -127,7 +142,7 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 
     if ((f / "make.defaults").exists())
     {
-        static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+        Context context_local("When reading make.defaults file:");
 
         KeyValueConfigFile make_defaults_f(f / "make.defaults");
         std::vector<std::string> uses;
@@ -144,6 +159,8 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 
     if ((f / "use.mask").exists())
     {
+        Context context_local("When reading use.mask file:");
+
         LineConfigFile use_mask_f(f / "use.mask");
         for (LineConfigFile::Iterator line(use_mask_f.begin()), line_end(use_mask_f.end()) ;
                 line != line_end ; ++line)
@@ -152,11 +169,31 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
             else
                 use_mask.insert(UseFlagName(*line));
     }
+
+    if ((f / "virtuals").exists())
+    {
+        Context context_local("When reading virtuals file:");
+
+        LineConfigFile virtuals_f(f / "virtuals");
+        for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
+                line != line_end ; ++line)
+        {
+            std::vector<std::string> tokens;
+            tokeniser.tokenise(*line, std::back_inserter(tokens));
+            if (tokens.size() < 2)
+                continue;
+            virtuals_map.erase(make_qualified_package_name(tokens[0]));
+            virtuals_map.insert(std::make_pair(make_qualified_package_name(tokens[0]),
+                        PackageDepAtom::Pointer(new PackageDepAtom(tokens[1]))));
+        }
+    }
 }
 
-PortageRepository::PortageRepository(const FSEntry & location, const FSEntry & profile) :
+PortageRepository::PortageRepository(const PackageDatabase * const d,
+        const FSEntry & location, const FSEntry & profile) :
     Repository(PortageRepository::fetch_repo_name(location)),
-    PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(location, profile))
+    PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(
+                d, location, profile))
 {
     _info.insert(std::make_pair("location", location));
     _info.insert(std::make_pair("profile", profile));
@@ -186,16 +223,13 @@ PortageRepository::do_has_package_named(const CategoryNamePart & c,
             + stringify(p) + "' in " + stringify(name()) + ":");
 
     need_category_names();
+    need_virtual_names();
 
     std::map<CategoryNamePart, bool>::const_iterator cat_iter(
             _implementation->category_names.find(c));
 
     if (_implementation->category_names.end() == cat_iter)
         return false;
-
-    /// \todo
-    if (c == CategoryNamePart("virtual"))
-        return true;
 
     const QualifiedPackageName n(c, p);
 
@@ -240,6 +274,8 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
             + "' in " + stringify(name()) + ":");
 
     need_category_names();
+    need_virtual_names();
+
     /// \todo
     throw InternalError(PALUDIS_HERE, "not implemented");
     return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection);
@@ -298,6 +334,8 @@ PortageRepository::need_category_names() const
 void
 PortageRepository::need_version_names(const QualifiedPackageName & n) const
 {
+    need_virtual_names();
+
     if (_implementation->package_names[n])
         return;
 
@@ -310,8 +348,20 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
             stringify(n.get<qpn_package>()));
     if (CategoryNamePart("virtual") == n.get<qpn_category>() && ! path.exists())
     {
-        /// \todo
-        v->insert(VersionSpec("0"));
+        std::map<QualifiedPackageName, PackageDepAtom::ConstPointer>::iterator i(
+                _implementation->virtuals_map.find(n));
+        need_version_names(i->second->package());
+
+        VersionSpecCollection::ConstPointer versions(version_specs(i->second->package()));
+        for (VersionSpecCollection::Iterator vv(versions->begin()), vv_end(versions->end()) ;
+                vv != vv_end ; ++vv)
+        {
+            PackageDatabaseEntry e(i->second->package(), *vv, name());
+            if (! match_package(_implementation->db, i->second, e))
+                continue;
+
+            v->insert(*vv);
+        }
     }
     else
         std::copy(DirIterator(path), DirIterator(),
@@ -364,6 +414,9 @@ PortageRepository::do_version_metadata(
                 std::make_pair(QualifiedPackageName(c, p), v)))
             return _implementation->metadata.find(std::make_pair(QualifiedPackageName(c, p), v))->second;
 
+    if (! has_version(c, p, v))
+        throw InternalError(PALUDIS_HERE, "todo: has_version failed for do_version_metadata"); /// \bug todo
+
     VersionMetadata::Pointer result(new VersionMetadata);
 
     FSEntry cache_file(_implementation->location);
@@ -372,6 +425,7 @@ PortageRepository::do_version_metadata(
     cache_file /= stringify(c);
     cache_file /= stringify(p) + "-" + stringify(v);
 
+    std::map<QualifiedPackageName, PackageDepAtom::ConstPointer>::iterator vi;
     if (cache_file.is_regular_file())
     {
         std::ifstream cache(std::string(cache_file).c_str());
@@ -397,11 +451,14 @@ PortageRepository::do_version_metadata(
         std::getline(cache, line); result->set(vmk_provide,     line);
         std::getline(cache, line); result->set(vmk_eapi,        line);
     }
-    else if (CategoryNamePart("virtual") == c)
+    else if (_implementation->virtuals_map.end() != ((vi = _implementation->virtuals_map.find(
+                QualifiedPackageName(c, p)))))
     {
-        /// \todo
-        result->set(vmk_slot, "0");
-        result->set(vmk_keywords, "*");
+        VersionMetadata::ConstPointer m(version_metadata(vi->second->package(), v));
+        result->set(vmk_slot, m->get(vmk_slot));
+        result->set(vmk_keywords, m->get(vmk_keywords));
+        result->set(vmk_eapi, m->get(vmk_eapi));
+        result->set(vmk_depend, "=" + stringify(vi->second->package()) + "-" + stringify(v));
     }
     else
         throw InternalError(PALUDIS_HERE, "no cache handling not implemented"); /// \todo
@@ -490,5 +547,22 @@ PortageRepository::do_query_use_mask(const UseFlagName & u) const
     }
 
     return _implementation->use_mask.end() != _implementation->use_mask.find(u);
+}
+
+void
+PortageRepository::need_virtual_names() const
+{
+    if (! _implementation->has_profile)
+    {
+        Context context("When loading virtual names:");
+        _implementation->add_profile(_implementation->profile.realpath());
+        _implementation->has_profile = true;
+    }
+
+    for (std::map<QualifiedPackageName, PackageDepAtom::ConstPointer>::const_iterator
+            v(_implementation->virtuals_map.begin()), v_end(_implementation->virtuals_map.end()) ;
+            v != v_end ; ++v)
+        _implementation->package_names.insert(
+                std::make_pair(v->first, false));
 }
 

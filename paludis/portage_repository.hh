@@ -30,6 +30,8 @@
 
 namespace paludis
 {
+    class PackageDatabase;
+
     /**
      * A PortageRepository is a Repository that handles the layout used by
      * Portage for the main Gentoo tree.
@@ -40,6 +42,7 @@ namespace paludis
         private:
             void need_category_names() const;
             void need_version_names(const QualifiedPackageName &) const;
+            void need_virtual_names() const;
 
         protected:
             /**
@@ -81,7 +84,8 @@ namespace paludis
             /**
              * Constructor.
              */
-            PortageRepository(const FSEntry & location, const FSEntry & profile);
+            PortageRepository(const PackageDatabase * const db,
+                    const FSEntry & location, const FSEntry & profile);
 
             /**
              * Destructor.
