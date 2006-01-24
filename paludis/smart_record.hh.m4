@@ -29,6 +29,8 @@ define(`_forloop', `$4`'ifelse($1, `$3', , `define(`$1', incr($1))_forloop(`$1',
 #define PALUDIS_GUARD_PALUDIS_SMART_RECORD_HH 1
 
 #include <paludis/comparison_policy.hh>
+#include <paludis/compare.hh>
+#include <paludis/exception.hh>
 
 namespace paludis
 {
@@ -518,12 +520,19 @@ forloop(`idx', `1', max_record_size, `
                     const RecordBase<Tag_, `'idx`'> * const b)
             {
 forloop(`idy', `0', decr(`'idx`'), `
-                if (RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*a) <
-                        RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*b))
-                    return -1;
-                if (RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*a) >
-                        RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*b))
-                    return 1;
+                switch (compare(
+                        RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*a),
+                        RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*b)))
+                {
+                    case -1:
+                        return -1;
+                    case 1:
+                        return 1;
+                    case 0:
+                        break;
+                    default:
+                        throw InternalError(PALUDIS_HERE, "Bad value from compare");
+                }
 ')
                 return 0;
             }
