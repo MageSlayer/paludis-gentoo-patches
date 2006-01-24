@@ -98,7 +98,12 @@ DefaultConfig::DefaultConfig()
             }
 
             _repos.push_back(RepositoryConfigEntry(k.get("location"),
-                        k.get("profile"), k.get("format"), importance));
+                        k.get("profile"),
+                        (k.get("cache").empty() ?
+                            FSEntry(k.get("location")) / "metadata" / "cache" :
+                            FSEntry(k.get("cache"))),
+                        k.get("format"),
+                        importance));
         }
 
         if (_repos.empty())

@@ -85,7 +85,8 @@ namespace paludis
              * Constructor.
              */
             PortageRepository(const PackageDatabase * const db,
-                    const FSEntry & location, const FSEntry & profile);
+                    const FSEntry & location, const FSEntry & profile,
+                    const FSEntry & cache);
 
             /**
              * Destructor.

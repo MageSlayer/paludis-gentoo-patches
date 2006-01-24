@@ -41,7 +41,7 @@ DefaultEnvironment::DefaultEnvironment() :
         if (r->get<rce_format>() != "portage")
             throw DefaultConfigError("Unknown repository format '" + r->get<rce_format>() + "'");
         Repository::Pointer repo(new PortageRepository(package_database().raw_pointer(),
-                    r->get<rce_location>(), r->get<rce_profile>()));
+                    r->get<rce_location>(), r->get<rce_profile>(), r->get<rce_cache>()));
         package_database()->add_repository(repo);
     }
 

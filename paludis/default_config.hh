@@ -58,6 +58,7 @@ namespace paludis
     {
         rce_location,       ///< Our location, for example on disk
         rce_profile,        ///< Our profile's location
+        rce_cache,          ///< Our cache location
         rce_format,         ///< Our format, for example 'portage'
         rce_importance      ///< Our importance, higher being more important
     };
@@ -68,9 +69,10 @@ namespace paludis
     struct RepositoryConfigEntryTag :
         SmartRecordTag<comparison_mode::FullComparisonTag,
             comparison_method::SmartRecordCompareByKeyTag<rce_importance> >,
-        SmartRecordKeys<RepositoryConfigEntryKeys, 4>,
+        SmartRecordKeys<RepositoryConfigEntryKeys, 5>,
         SmartRecordKey<rce_location, FSEntry>,
         SmartRecordKey<rce_profile, FSEntry>,
+        SmartRecordKey<rce_cache, FSEntry>,
         SmartRecordKey<rce_format, std::string>,
         SmartRecordKey<rce_importance, unsigned>
     {

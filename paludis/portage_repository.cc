@@ -58,6 +58,9 @@ namespace paludis
         /// Our profile.
         FSEntry profile;
 
+        /// Our cache.
+        FSEntry cache;
+
         /// Have we loaded our category names?
         mutable bool has_category_names;
 
@@ -94,7 +97,8 @@ namespace paludis
         mutable bool has_profile;
 
         /// Constructor.
-        Implementation(const PackageDatabase * const d, const FSEntry & l, const FSEntry & p);
+        Implementation(const PackageDatabase * const d, const FSEntry & l, const FSEntry & p,
+                const FSEntry & c);
 
         /// Destructor.
         ~Implementation();
@@ -105,10 +109,11 @@ namespace paludis
 }
 
 Implementation<PortageRepository>::Implementation(const PackageDatabase * const d,
-        const FSEntry & l, const FSEntry & p) :
+        const FSEntry & l, const FSEntry & p, const FSEntry & c) :
     db(d),
     location(l),
     profile(p),
+    cache(c),
     has_category_names(false),
     has_repo_mask(false),
     has_profile(false)
@@ -190,13 +195,15 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 }
 
 PortageRepository::PortageRepository(const PackageDatabase * const d,
-        const FSEntry & location, const FSEntry & profile) :
+        const FSEntry & location, const FSEntry & profile,
+        const FSEntry & cache) :
     Repository(PortageRepository::fetch_repo_name(location)),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(
-                d, location, profile))
+                d, location, profile, cache))
 {
     _info.insert(std::make_pair("location", location));
     _info.insert(std::make_pair("profile", profile));
+    _info.insert(std::make_pair("cache", cache));
     _info.insert(std::make_pair("format", "portage"));
 }
 
@@ -419,9 +426,7 @@ PortageRepository::do_version_metadata(
 
     VersionMetadata::Pointer result(new VersionMetadata);
 
-    FSEntry cache_file(_implementation->location);
-    cache_file /= "metadata";
-    cache_file /= "cache";
+    FSEntry cache_file(_implementation->cache);
     cache_file /= stringify(c);
     cache_file /= stringify(p) + "-" + stringify(v);
 
