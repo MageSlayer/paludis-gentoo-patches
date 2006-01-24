@@ -20,6 +20,7 @@
 
 #include "pstream.hh"
 #include <errno.h>
+#include <cstring>
 
 using namespace paludis;
 
