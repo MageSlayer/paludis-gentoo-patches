@@ -68,12 +68,12 @@ namespace test_cases
 
         void run()
         {
-            Person p1("blah", "first", 10);
+            const Person p1("blah", "first", 10);
             TEST_CHECK_EQUAL(p1.get<firstname>(), "blah");
             TEST_CHECK_EQUAL(p1.get<surname>(), "first");
             TEST_CHECK_EQUAL(p1.get<age>(), 10);
 
-            Person p2("blah", "second", 6);
+            const Person p2("blah", "second", 6);
             TEST_CHECK_EQUAL(p2.get<firstname>(), "blah");
             TEST_CHECK_EQUAL(p2.get<surname>(), "second");
             TEST_CHECK_EQUAL(p2.get<age>(), 6);
@@ -84,6 +84,12 @@ namespace test_cases
             TEST_CHECK( (p1 != p2));
             TEST_CHECK(!(p1 >= p2));
             TEST_CHECK(!(p1 >  p2));
+
+            Person p3("foo", "bar", 1);
+            TEST_CHECK_EQUAL(p3.get<age>(), 1);
+            p3.set<age>(2);
+            TEST_CHECK_EQUAL(p3.get<age>(), 2);
         }
     } test_simple_record;
 }
+

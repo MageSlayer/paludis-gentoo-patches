@@ -20,7 +20,7 @@ dnl vim: set ft=cpp et sw=4 sts=4 :
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-define(`max_record_size', `5')
+define(`max_record_size', `8')
 define(`forloop', `pushdef(`$1', `$2')_forloop(`$1', `$2', `$3', `$4')popdef(`$1')')
 define(`_forloop', `$4`'ifelse($1, `$3', , `define(`$1', incr($1))_forloop(`$1', `$2', `$3', `$4')')')
 #endif
@@ -195,6 +195,13 @@ forloop(`idx', `0', max_record_size, `
             do_get(const RecordBase<Tag_, key_count_> & r)
             {
                 return r._v`'idx`';
+            }
+
+            static void
+            do_set(RecordBase<Tag_, key_count_> & r,
+                const typename GetRecordKeyType<Tag_, `'idx`'>::Type & v)
+            {
+                r._v`'idx`' = v;
             }
         };
 ')
@@ -441,6 +448,12 @@ forloop(`idy', `0', decr(idx), `
                 const typename GetRecordKeyType<Tag_, k_>::Type & get() const
                 {
                     return RecordKeyGetter<Tag_, `'idx`', k_>::do_get(*this);
+                }
+
+                template <typename Tag_::Keys k_>
+                void set(const typename GetRecordKeyType<Tag_, k_>::Type & v)
+                {
+                    return RecordKeyGetter<Tag_, `'idx`', k_>::do_set(*this, v);
                 }
         };
 
