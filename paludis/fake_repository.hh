@@ -100,6 +100,17 @@ namespace paludis
             VersionMetadata::Pointer add_version(
                     const CategoryNamePart &, const PackageNamePart &, const VersionSpec &);
 
+            /**
+             * Add a version, and a package and category if necessary, and set some
+             * default values for its metadata, and return said metadata (convenience
+             * overload taking strings).
+             */
+            VersionMetadata::Pointer add_version(
+                    const std::string & c, const std::string & p, const std::string & v)
+            {
+                return add_version(CategoryNamePart(c), PackageNamePart(p), VersionSpec(v));
+            }
+
             typedef CountedPtr<FakeRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const FakeRepository, count_policy::InternalCountTag> ConstPointer;
     };
