@@ -70,6 +70,8 @@ namespace paludis
 
             void _normalise();
 
+            void _stat();
+
         public:
             /**
              * Constructor, from a path.

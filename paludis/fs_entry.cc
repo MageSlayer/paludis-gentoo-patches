@@ -45,19 +45,10 @@ FSError::FSError(const std::string & message) throw () :
 FSEntry::FSEntry(const std::string & path) :
     ComparisonPolicyType(&FSEntry::_path),
     _path(path),
-    _stat_info(new struct stat),
-    _exists(true)
+    _stat_info(new struct stat)
 {
     _normalise();
-
-    if (0 != stat(_path.c_str(), _stat_info.raw_pointer()))
-    {
-        if (errno != ENOENT)
-            throw FSError("Error running stat() on '" + stringify(_path) + "': "
-                    + strerror(errno));
-
-        _exists = false;
-    }
+    _stat();
 }
 
 FSEntry::FSEntry(const FSEntry & other) :
@@ -102,6 +93,8 @@ FSEntry::operator/= (const FSEntry & rhs)
     _path.append("/");
     _path.append(rhs._path);
     _normalise();
+    _stat();
+
     return *this;
 }
 
@@ -243,6 +236,21 @@ FSEntry::_normalise()
         throw InternalError(PALUDIS_HERE,
                 "caught std::exception '" + stringify(e.what()) + "'");
     }
+}
+
+void
+FSEntry::_stat()
+{
+    if (0 != stat(_path.c_str(), _stat_info.raw_pointer()))
+    {
+        if (errno != ENOENT)
+            throw FSError("Error running stat() on '" + stringify(_path) + "': "
+                    + strerror(errno));
+
+        _exists = false;
+    }
+    else
+        _exists = true;
 }
 
 std::string

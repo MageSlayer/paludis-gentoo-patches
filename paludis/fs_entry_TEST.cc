@@ -71,6 +71,8 @@ namespace test_cases
         {
             FSEntry d("fs_entry_TEST_dir");
             TEST_CHECK(d.is_directory());
+            d /= "all_perms";
+            TEST_CHECK(d.is_regular_file());
 
             FSEntry f("fs_entry_TEST_dir/symlink_to_dir_a/file_in_a");
             TEST_CHECK(f.is_regular_file());
