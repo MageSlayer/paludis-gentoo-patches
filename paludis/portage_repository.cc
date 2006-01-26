@@ -285,7 +285,8 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
     need_virtual_names();
 
     /// \todo
-    throw InternalError(PALUDIS_HERE, "not implemented");
+    if (! stringify(c).empty())
+        throw InternalError(PALUDIS_HERE, "not implemented");
     return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection);
 }
 
