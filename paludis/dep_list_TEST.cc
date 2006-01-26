@@ -264,24 +264,54 @@ namespace test_cases
             FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
-            repo->add_version("i", "one", "1")->set(vmk_depend, "i/two i/three");
-            repo->add_version("i", "two", "1")->set(vmk_depend, "i/four");
-            repo->add_version("i", "three", "1")->set(vmk_depend, "i/four i/two");
-            repo->add_version("i", "four", "1");
-            repo->add_version("i", "five", "1")->set(vmk_depend, "i/six i/seven");
-            repo->add_version("i", "six", "1");
-            repo->add_version("i", "seven", "1")->set(vmk_depend, "i/doesnotexist");
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "cat/two cat/three");
+            repo->add_version("cat", "two", "1")->set(vmk_depend, "cat/four");
+            repo->add_version("cat", "three", "1")->set(vmk_depend, "cat/four cat/two");
+            repo->add_version("cat", "four", "1");
+            repo->add_version("cat", "five", "1")->set(vmk_depend, "cat/six cat/seven");
+            repo->add_version("cat", "six", "1");
+            repo->add_version("cat", "seven", "1")->set(vmk_depend, "cat/doesnotexist");
 
             DepList d(&env);
-            d.add(DepParser::parse("i/one"));
+            d.add(DepParser::parse("cat/one"));
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
-                    "i/four-1:0::repo i/two-1:0::repo i/three-1:0::repo i/one-1:0::repo");
+                    "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
 
-            TEST_CHECK_THROWS(d.add(DepParser::parse("i/five")), DepListError);
+            TEST_CHECK_THROWS(d.add(DepParser::parse("cat/five")), DepListError);
 
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
-                    "i/four-1:0::repo i/two-1:0::repo i/three-1:0::repo i/one-1:0::repo");
+                    "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
         }
     } test_dep_list_transactional_add;
+
+    struct DepListTestCaseTransactionalAddPost : TestCase
+    {
+        DepListTestCaseTransactionalAddPost() : TestCase("dep list transactional add post") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            env.package_database()->add_repository(repo);
+
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "cat/two cat/three");
+            repo->add_version("cat", "two", "1")->set(vmk_depend, "cat/four");
+            repo->add_version("cat", "three", "1")->set(vmk_depend, "cat/four cat/two");
+            repo->add_version("cat", "four", "1");
+            repo->add_version("cat", "five", "1")->set(vmk_depend, "cat/six cat/seven");
+            repo->add_version("cat", "six", "1");
+            repo->add_version("cat", "seven", "1")->set(vmk_pdepend, "cat/doesnotexist");
+
+            DepList d(&env);
+            d.add(DepParser::parse("cat/one"));
+            TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
+                    "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
+
+            TEST_CHECK_THROWS(d.add(DepParser::parse("cat/five")), DepListError);
+
+            TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
+                    "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
+        }
+    } test_dep_list_transactional_add_post;
 }
 

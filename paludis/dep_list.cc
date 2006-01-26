@@ -146,37 +146,48 @@ DepList::~DepList()
 void
 DepList::add(DepAtom::ConstPointer atom)
 {
+    std::list<DepListEntry> save_merge_list(_implementation->merge_list.begin(),
+            _implementation->merge_list.end());
+
     _implementation->merge_list_insert_pos = _implementation->merge_list.end();
     _add(atom);
 
-    std::list<DepListEntry>::iterator i(_implementation->merge_list.begin());
-    _implementation->merge_list_insert_pos = _implementation->merge_list.end();
-    while (i != _implementation->merge_list.end())
+    try
     {
-        if (! i->get<dle_has_predeps>())
-            throw InternalError(PALUDIS_HERE, "dle_has_predeps not set for " + stringify(*i));
-
-        else if (! i->get<dle_has_trypredeps>())
+        std::list<DepListEntry>::iterator i(_implementation->merge_list.begin());
+        _implementation->merge_list_insert_pos = _implementation->merge_list.end();
+        while (i != _implementation->merge_list.end())
         {
-            _implementation->current_package = &*i;
-            _add_in_role(DepParser::parse(
-                        _implementation->environment->package_database()->fetch_metadata(
-                            PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
-                                i->get<dle_repository>()))->get(vmk_rdepend)), "RDEPEND");
-            i->set<dle_has_trypredeps>(true);
-        }
+            if (! i->get<dle_has_predeps>())
+                throw InternalError(PALUDIS_HERE, "dle_has_predeps not set for " + stringify(*i));
 
-        else if (! i->get<dle_has_postdeps>())
-        {
-            _implementation->current_package = &*i;
-            _add_in_role(DepParser::parse(
-                        _implementation->environment->package_database()->fetch_metadata(
-                            PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
-                                i->get<dle_repository>()))->get(vmk_pdepend)), "PDEPEND");
-            i->set<dle_has_postdeps>(true);
+            else if (! i->get<dle_has_trypredeps>())
+            {
+                _implementation->current_package = &*i;
+                _add_in_role(DepParser::parse(
+                            _implementation->environment->package_database()->fetch_metadata(
+                                PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
+                                    i->get<dle_repository>()))->get(vmk_rdepend)), "RDEPEND");
+                i->set<dle_has_trypredeps>(true);
+            }
+
+            else if (! i->get<dle_has_postdeps>())
+            {
+                _implementation->current_package = &*i;
+                _add_in_role(DepParser::parse(
+                            _implementation->environment->package_database()->fetch_metadata(
+                                PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
+                                    i->get<dle_repository>()))->get(vmk_pdepend)), "PDEPEND");
+                i->set<dle_has_postdeps>(true);
+            }
+            else
+                ++i;
         }
-        else
-            ++i;
+    }
+    catch (...)
+    {
+        _implementation->merge_list.swap(save_merge_list);
+        throw;
     }
 }
 
