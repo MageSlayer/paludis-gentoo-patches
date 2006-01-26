@@ -276,7 +276,7 @@ DepList::visit(const PackageDepAtom * const p)
         {
             if (_implementation->drop_circular)
                 return;
-            else if (_implementation->merge_list.begin() == i && _implementation->drop_self_circular)
+            else if (_implementation->merge_list_insert_pos == i && _implementation->drop_self_circular)
                 return;
             else
                 throw CircularDependencyError(_implementation->merge_list_insert_pos, next(i));
