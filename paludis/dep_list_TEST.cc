@@ -20,608 +20,268 @@
 #include "paludis.hh"
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <deque>
+#include <string>
 
 using namespace paludis;
 using namespace test;
 
 namespace test_cases
 {
-    /**
-     * \test Test dep list: one package.
-     *
-     * \ingroup Test
-     */
-    struct DepListOnePackageTest : TestCase
+    struct DepListTestCaseBase : TestCase
     {
-        DepListOnePackageTest() : TestCase("one package") { }
+        TestEnvironment env;
+        FakeRepository::Pointer repo;
+        std::deque<std::string> expected;
+        std::string merge_target;
+
+        DepListTestCaseBase(const char c) :
+            TestCase("dep list " + std::string(1, c)),
+            env(),
+            repo(new FakeRepository(RepositoryName("repo")))
+        {
+            env.package_database()->add_repository(repo);
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        virtual void populate_repo() = 0;
+
+        virtual void populate_expected() = 0;
 
         void run()
         {
-            TestEnvironment e;
+            populate_repo();
+            populate_expected();
+            check_lists();
+        }
 
-            /* t/one exists */
+        virtual void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env);
+            d.add(DepParser::parse(merge_target));
+            TEST_CHECK(true);
+
+            unsigned n(0);
+            std::deque<std::string>::const_iterator exp(expected.begin());
+            DepList::Iterator got(d.begin());
+            while (true)
+            {
+                TestMessageSuffix s(stringify(n++), true);
+
+                TEST_CHECK((exp == expected.end()) == (got == d.end()));
+                if (got == d.end())
+                    break;
+                TEST_CHECK_STRINGIFY_EQUAL(*got, *exp);
+                ++exp;
+                ++got;
+            }
+        }
+    };
+
+    template <char c_>
+    struct DepListTestCase : DepListTestCaseBase
+    {
+        DepListTestCase() :
+            DepListTestCaseBase(c_)
+        {
+        }
+    };
+
+    struct DepListTestCaseA : DepListTestCase<'a'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("a", "one", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "a/one";
+            expected.push_back("a/one-1:0::repo");
+        }
+    } test_dep_list_a;
+
+    struct DepListTestCaseB : DepListTestCase<'b'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("b", "one", "1")->set(vmk_depend, "b/two");
+            repo->add_version("b", "two", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "b/one";
+            expected.push_back("b/two-1:0::repo");
+            expected.push_back("b/one-1:0::repo");
+        }
+    } test_dep_list_b;
+
+    struct DepListTestCaseC : DepListTestCase<'c'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("c", "one", "1")->set(vmk_depend, "c/two");
+            repo->add_version("c", "two", "1")->set(vmk_depend, "c/three");
+            repo->add_version("c", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "c/one";
+            expected.push_back("c/three-1:0::repo");
+            expected.push_back("c/two-1:0::repo");
+            expected.push_back("c/one-1:0::repo");
+        }
+    } test_dep_list_c;
+
+    struct DepListTestCaseD : DepListTestCase<'d'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("d", "one", "1")->set(vmk_depend, "d/two d/three");
+            repo->add_version("d", "two", "1");
+            repo->add_version("d", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "d/one";
+            expected.push_back("d/two-1:0::repo");
+            expected.push_back("d/three-1:0::repo");
+            expected.push_back("d/one-1:0::repo");
+        }
+    } test_dep_list_d;
+
+    struct DepListTestCaseE : DepListTestCase<'e'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("e", "one", "1")->set(vmk_depend, "e/two e/three");
+            repo->add_version("e", "two", "1")->set(vmk_depend, "e/three");
+            repo->add_version("e", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "e/one";
+            expected.push_back("e/three-1:0::repo");
+            expected.push_back("e/two-1:0::repo");
+            expected.push_back("e/one-1:0::repo");
+        }
+    } test_dep_list_e;
+
+    struct DepListTestCaseF : DepListTestCase<'f'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("f", "one", "1")->set(vmk_depend, "f/two f/three");
+            repo->add_version("f", "two", "1");
+            repo->add_version("f", "three", "1")->set(vmk_depend, "f/two");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "f/one";
+            expected.push_back("f/two-1:0::repo");
+            expected.push_back("f/three-1:0::repo");
+            expected.push_back("f/one-1:0::repo");
+        }
+    } test_dep_list_f;
+
+    struct DepListTestCaseG : DepListTestCase<'g'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("g", "one", "1")->set(vmk_depend, "g/two g/three");
+            repo->add_version("g", "two", "1")->set(vmk_depend, "g/four");
+            repo->add_version("g", "three", "1")->set(vmk_depend, "g/four");
+            repo->add_version("g", "four", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "g/one";
+            expected.push_back("g/four-1:0::repo");
+            expected.push_back("g/two-1:0::repo");
+            expected.push_back("g/three-1:0::repo");
+            expected.push_back("g/one-1:0::repo");
+        }
+    } test_dep_list_g;
+
+    struct DepListTestCaseH : DepListTestCase<'h'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("h", "one", "1")->set(vmk_depend, "h/two h/three");
+            repo->add_version("h", "two", "1")->set(vmk_depend, "h/four h/three");
+            repo->add_version("h", "three", "1")->set(vmk_depend, "h/four");
+            repo->add_version("h", "four", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "h/one";
+            expected.push_back("h/four-1:0::repo");
+            expected.push_back("h/three-1:0::repo");
+            expected.push_back("h/two-1:0::repo");
+            expected.push_back("h/one-1:0::repo");
+        }
+    } test_dep_list_h;
+
+    struct DepListTestCaseI : DepListTestCase<'i'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("i", "one", "1")->set(vmk_depend, "i/two i/three");
+            repo->add_version("i", "two", "1")->set(vmk_depend, "i/four");
+            repo->add_version("i", "three", "1")->set(vmk_depend, "i/four i/two");
+            repo->add_version("i", "four", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "i/one";
+            expected.push_back("i/four-1:0::repo");
+            expected.push_back("i/two-1:0::repo");
+            expected.push_back("i/three-1:0::repo");
+            expected.push_back("i/one-1:0::repo");
+        }
+    } test_dep_list_i;
+
+    struct DepListTestCaseTransactionalAdd : TestCase
+    {
+        DepListTestCaseTransactionalAdd() : TestCase("dep list transactional add") { }
+
+        void run()
+        {
+            TestEnvironment env;
             FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot1");
-            e.package_database()->add_repository(repo);
+            env.package_database()->add_repository(repo);
 
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_database()->add_repository(installed);
+            repo->add_version("i", "one", "1")->set(vmk_depend, "i/two i/three");
+            repo->add_version("i", "two", "1")->set(vmk_depend, "i/four");
+            repo->add_version("i", "three", "1")->set(vmk_depend, "i/four i/two");
+            repo->add_version("i", "four", "1");
+            repo->add_version("i", "five", "1")->set(vmk_depend, "i/six i/seven");
+            repo->add_version("i", "six", "1");
+            repo->add_version("i", "seven", "1")->set(vmk_depend, "i/doesnotexist");
 
-            DepList d(&e);
-            d.add(DepParser::parse("t/one"));
-            TEST_CHECK(d.begin() != d.end());
-            TEST_CHECK_EQUAL(std::distance(d.begin(), d.end()), 1);
-            TEST_CHECK_EQUAL(*d.begin(), DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
-                        VersionSpec("1.0"), SlotName("slot1"), RepositoryName("repo")));
+            DepList d(&env);
+            d.add(DepParser::parse("i/one"));
+            TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
+                    "i/four-1:0::repo i/two-1:0::repo i/three-1:0::repo i/one-1:0::repo");
+
+            TEST_CHECK_THROWS(d.add(DepParser::parse("i/five")), DepListError);
+
+            TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
+                    "i/four-1:0::repo i/two-1:0::repo i/three-1:0::repo i/one-1:0::repo");
         }
-    } test_dep_list_one_package;
-
-    /**
-     * \test Test dep list: one installed package.
-     *
-     * \ingroup Test
-     */
-    struct DepListOneInstalledPackageTest : TestCase
-    {
-        DepListOneInstalledPackageTest() : TestCase("one installed package") { }
-
-        void run()
-        {
-            TestEnvironment e;
-
-            /* t/one exists and is already installed. */
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot1");
-            e.package_database()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("0.9"))->
-                set(vmk_slot, "slot1");
-            e.installed_database()->add_repository(installed);
-
-            DepList d(&e);
-            d.add(DepParser::parse("t/one"));
-            TEST_CHECK(d.begin() == d.end());
-        }
-    } test_dep_list_one_installed_package;
-
-    /**
-     * \test Test dep list: dep.
-     *
-     * \ingroup Test
-     */
-    struct DepListDepTest : TestCase
-    {
-        DepListDepTest() : TestCase("dep") { }
-
-        void run()
-        {
-            TestEnvironment e;
-
-            /* t/one DEPENDs upon t/two */
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot1").
-                set(vmk_depend, "t/two");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot2");
-
-            e.package_database()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_database()->add_repository(installed);
-
-            DepList d(&e);
-            d.add(DepParser::parse("t/one"));
-            DepList::Iterator di(d.begin()), di_end(d.end());
-            TEST_CHECK(di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("two")),
-                        VersionSpec("1.0"), SlotName("slot2"), RepositoryName("repo")));
-            TEST_CHECK(++di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
-                        VersionSpec("1.0"), SlotName("slot1"), RepositoryName("repo")));
-            TEST_CHECK(++di == di_end);
-        }
-    } test_dep_list_dep;
-
-    /**
-     * \test Test dep list: pdep.
-     *
-     * \ingroup Test
-     */
-    struct DepListPDepTest : TestCase
-    {
-        DepListPDepTest() : TestCase("pdep") { }
-
-        void run()
-        {
-            TestEnvironment e;
-
-            /* t/one PDEPENDs upon t/two */
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot1").
-                set(vmk_pdepend, "t/two");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot2");
-
-            e.package_database()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_database()->add_repository(installed);
-
-            DepList d(&e);
-            d.add(DepParser::parse("t/one"));
-            DepList::Iterator di(d.begin()), di_end(d.end());
-            TEST_CHECK(di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
-                        VersionSpec("1.0"), SlotName("slot1"), RepositoryName("repo")));
-            TEST_CHECK(++di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("two")),
-                        VersionSpec("1.0"), SlotName("slot2"), RepositoryName("repo")));
-            TEST_CHECK(++di == di_end);
-        }
-    } test_dep_list_pdep;
-
-    /**
-     * \test Test dep list: common deps.
-     *
-     * \ingroup Test
-     */
-    struct DepListCommonDepsTest : TestCase
-    {
-        DepListCommonDepsTest() : TestCase("common deps") { }
-
-        void run()
-        {
-            TestEnvironment e;
-
-            /* t/one DEPENDs upon ( t/two t/three ) ; t/two DEPENDs upon t/three */
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot1").
-                set(vmk_depend, "t/two t/three");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot2").
-                set(vmk_depend, "t/three");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot3");
-
-            e.package_database()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_database()->add_repository(installed);
-
-            DepList d(&e);
-            d.add(DepParser::parse("t/one"));
-            DepList::Iterator di(d.begin()), di_end(d.end());
-            TEST_CHECK(di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("three")),
-                        VersionSpec("1.0"), SlotName("slot3"), RepositoryName("repo")));
-            TEST_CHECK(++di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("two")),
-                        VersionSpec("1.0"), SlotName("slot2"), RepositoryName("repo")));
-            TEST_CHECK(++di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
-                        VersionSpec("1.0"), SlotName("slot1"), RepositoryName("repo")));
-            TEST_CHECK(++di == di_end);
-        }
-    } test_dep_list_common_deps;
-
-    /**
-     * \test Test dep list: dep failure.
-     *
-     * \ingroup Test
-     */
-    struct DepListDepFailureTest : TestCase
-    {
-        DepListDepFailureTest() : TestCase("dep failure") { }
-
-        void run_d(VersionMetadataKey dep_kind) PALUDIS_ATTRIBUTE((noinline));
-
-        void run()
-        {
-            run_d(vmk_depend);
-            run_d(vmk_rdepend);
-            run_d(vmk_pdepend);
-        }
-    } test_dep_list_dep_failure;
-
-    void
-    DepListDepFailureTest::run_d(VersionMetadataKey dep_kind)
-    {
-        TestMessageSuffix suffix(stringify(dep_kind), true);
-        TestEnvironment e;
-
-        /* t/one DEPENDs upon t/two and t/three. t/three has unresolvable
-         * deps. */
-        FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-        repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-            set(vmk_slot, "slot1").
-            set(dep_kind, "t/two t/three");
-
-        repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
-            set(vmk_slot, "slot2");
-
-        repo->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"))->
-            set(vmk_slot, "slot3").
-            set(dep_kind, "t/bad");
-
-        e.package_database()->add_repository(repo);
-
-        FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-        e.installed_database()->add_repository(installed);
-
-        DepList d(&e);
-        TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), Exception);
-        TEST_CHECK(d.begin() == d.end());
-
-        /* try again, with some stuff already in the dep list. */
-        d.add(DepParser::parse("t/two"));
-        DepList::Iterator di(d.begin()), di_end(d.end());
-        TEST_CHECK(di != di_end);
-        TEST_CHECK_EQUAL(*di, DepListEntry(
-                    QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("two")),
-                    VersionSpec("1.0"), SlotName("slot2"), RepositoryName("repo")));
-        TEST_CHECK(++di == di_end);
-
-        TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), Exception);
-        di = d.begin();
-        TEST_CHECK(di != di_end);
-        TEST_CHECK_EQUAL(*di, DepListEntry(
-                    QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("two")),
-                    VersionSpec("1.0"), SlotName("slot2"), RepositoryName("repo")));
-        TEST_CHECK(++di == di_end);
-    }
-
-
-    /**
-     * \test Test dep list: indirect circular deps.
-     *
-     * \ingroup Test
-     */
-    struct DepListIndirectCircularDepTest : TestCase
-    {
-        DepListIndirectCircularDepTest() : TestCase("indirect circular deps") { }
-
-        void run()
-        {
-            TestEnvironment e;
-
-            /* t/one DEPENDs upon t/two. t/two DEPENDs upon t/three. t/three DEPENDs
-             * upon t/two */
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot1").
-                set(vmk_depend, "t/two");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot2").
-                set(vmk_depend, "t/three");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot3").
-                set(vmk_depend, "t/two");
-
-            e.package_database()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_database()->add_repository(installed);
-
-            DepList d(&e);
-            TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), CircularDependencyError);
-            TEST_CHECK(d.begin() == d.end());
-
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"));
-            d.add(DepParser::parse("t/one"));
-
-            DepList::Iterator di(d.begin()), di_end(d.end());
-            TEST_CHECK(di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("two")),
-                        VersionSpec("1.0"), SlotName("slot2"), RepositoryName("repo")));
-            TEST_CHECK(++di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
-                        VersionSpec("1.0"), SlotName("slot1"), RepositoryName("repo")));
-            TEST_CHECK(++di == di_end);
-        }
-    } test_dep_list_indirect_circular_deps;
-
-    /**
-     * \test Test dep list: self circular deps.
-     *
-     * \ingroup Test
-     */
-    struct DepListSelfCircularDepTest : TestCase
-    {
-        DepListSelfCircularDepTest() : TestCase("self circular deps") { }
-
-        void run()
-        {
-            TestEnvironment e;
-
-            /* t/one DEPENDs upon t/two. t/two DEPENDs upon t/two. */
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot1").
-                set(vmk_depend, "t/two");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot2").
-                set(vmk_depend, "t/two");
-
-            e.package_database()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_database()->add_repository(installed);
-
-            DepList d(&e);
-            TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), CircularDependencyError);
-            TEST_CHECK(d.begin() == d.end());
-
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"));
-            d.add(DepParser::parse("t/one"));
-
-            DepList::Iterator di(d.begin()), di_end(d.end());
-            TEST_CHECK(di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
-                        VersionSpec("1.0"), SlotName("slot1"), RepositoryName("repo")));
-            TEST_CHECK(++di == di_end);
-        }
-    } test_dep_list_self_circular_deps;
-
-    /**
-     * \test Test dep list: met or dep.
-     *
-     * \ingroup Test
-     */
-    struct DepListMetOrDepTest : TestCase
-    {
-        DepListMetOrDepTest() : TestCase("met or dep") { }
-
-        void run()
-        {
-            TestEnvironment e;
-
-            /* t/one DEPENDs upon || ( t/two t/three ). t/three is already
-             * installed */
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot1").
-                set(vmk_depend, "|| ( t/two t/three )");
-
-            e.package_database()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"))->
-                set(vmk_slot, "slot2");
-            e.installed_database()->add_repository(installed);
-
-            DepList d(&e);
-            d.add(DepParser::parse("t/one"));
-            DepList::Iterator di(d.begin()), di_end(d.end());
-            TEST_CHECK(di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
-                        VersionSpec("1.0"), SlotName("slot1"), RepositoryName("repo")));
-            TEST_CHECK(++di == di_end);
-        }
-    } test_dep_list_met_or_dep;
-
-    /**
-     * \test Test dep list: complex met or dep.
-     *
-     * \ingroup Test
-     */
-    struct DepListComplexMetOrDepTest : TestCase
-    {
-        DepListComplexMetOrDepTest() : TestCase("complex met or dep") { }
-
-        void run_n(int n) PALUDIS_ATTRIBUTE((noinline));
-
-        void run()
-        {
-            for (int n = 1 ; n <= 3 ; ++n)
-                run_n(n);
-        }
-    } test_dep_list_complex_met_or_dep;
-
-    void
-    DepListComplexMetOrDepTest::run_n(int n)
-    {
-        TestEnvironment e;
-#if ((! defined(__GNUC__)) || ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)))
-        TestMessageSuffix(stringify(n), true);
-#  endif
-
-        /* t/one DEPENDs upon
-         * || (
-         *     ( t/two t/three )
-         *     (
-         *         t/four
-         *         || (
-         *             t/five
-         *             ( t/six t/seven )
-         *         )
-         *      )
-         *  )
-         */
-        FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-        repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-            set(vmk_slot, "1").
-            set(vmk_depend, "|| ( ( t/two t/three ) ( t/four || ( t/five ( t/six t/seven ) ) ) )");
-
-        e.package_database()->add_repository(repo);
-
-        FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-
-        if (n == 1)
-        {
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"));
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"));
-        }
-        else if (n == 2)
-        {
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("four"), VersionSpec("1.0"));
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("five"), VersionSpec("1.0"));
-        }
-        else if (n == 3)
-        {
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("four"), VersionSpec("1.0"));
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("six"), VersionSpec("1.0"));
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("seven"), VersionSpec("1.0"));
-        }
-
-        e.installed_database()->add_repository(installed);
-
-        DepList d(&e);
-        d.add(DepParser::parse("t/one"));
-        DepList::Iterator di(d.begin()), di_end(d.end());
-        TEST_CHECK(di != di_end);
-        TEST_CHECK_EQUAL(*di, DepListEntry(
-                    QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
-                    VersionSpec("1.0"), SlotName("1"), RepositoryName("repo")));
-        TEST_CHECK(++di == di_end);
-    }
-
-
-    /**
-     * \test Test dep list: complex unmet or dep.
-     *
-     * \ingroup Test
-     */
-    struct DepListComplexUnmetOrDepTest : TestCase
-    {
-        DepListComplexUnmetOrDepTest() : TestCase("complex unmet or dep") { }
-
-        void run_n(int n) PALUDIS_ATTRIBUTE((noinline));
-
-        void run()
-        {
-            for (int n = 1 ; n <= 4 ; ++n)
-                run_n(n);
-        }
-    } test_dep_list_complex_unmet_or_dep;
-
-    void
-    DepListComplexUnmetOrDepTest::run_n(int n)
-    {
-        TestEnvironment e;
-        TestMessageSuffix suffix(stringify(n), true);
-
-        /* t/one DEPENDs upon
-         * || (
-         *     ( t/two t/three )
-         *     (
-         *         t/four
-         *         || (
-         *             t/five
-         *             ( t/six t/seven )
-         *         )
-         *      )
-         *  )
-         */
-        FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-        repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-            set(vmk_slot, "1").
-            set(vmk_depend, "|| ( ( t/two t/three ) ( t/four || ( t/five ( t/six t/seven ) ) ) )");
-
-        e.package_database()->add_repository(repo);
-
-        FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-
-        if (n == 1)
-        {
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"));
-        }
-        else if (n == 2)
-        {
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"));
-        }
-        else if (n == 3)
-        {
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("five"), VersionSpec("1.0"));
-        }
-        else if (n == 4)
-        {
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("four"), VersionSpec("1.0"));
-            installed->add_version(CategoryNamePart("t"), PackageNamePart("seven"), VersionSpec("1.0"));
-        }
-
-        e.installed_database()->add_repository(installed);
-
-        DepList d(&e);
-        TEST_CHECK(d.begin() == d.end());
-        TEST_CHECK_THROWS(d.add(DepParser::parse("t/one")), DepListError);
-        TEST_CHECK(d.begin() == d.end());
-    }
-
-    /**
-     * \test Test dep list: or all use dep.
-     *
-     * \ingroup Test
-     */
-    struct DepListOrAllUseDepTest : TestCase
-    {
-        DepListOrAllUseDepTest() : TestCase("or all use dep") { }
-
-        void run()
-        {
-            TestEnvironment e;
-
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("one"), VersionSpec("1.0"))->
-                set(vmk_slot, "1").
-                set(vmk_depend, "|| ( t/two ( off? ( t/three ) ) )");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("two"), VersionSpec("1.0"))->
-                set(vmk_slot, "1");
-
-            repo->add_version(CategoryNamePart("t"), PackageNamePart("three"), VersionSpec("1.0"))->
-                set(vmk_slot, "1");
-
-            e.package_database()->add_repository(repo);
-
-            FakeRepository::Pointer installed(new FakeRepository(RepositoryName("installed")));
-            e.installed_database()->add_repository(installed);
-
-            DepList d(&e);
-            d.add(DepParser::parse("t/one"));
-            DepList::Iterator di(d.begin()), di_end(d.end());
-            TEST_CHECK(di != di_end);
-            TEST_CHECK_EQUAL(*di, DepListEntry(
-                        QualifiedPackageName(CategoryNamePart("t"), PackageNamePart("one")),
-                        VersionSpec("1.0"), SlotName("1"), RepositoryName("repo")));
-            TEST_CHECK(++di == di_end);
-        }
-    } test_dep_list_or_all_use;
-
+    } test_dep_list_transactional_add;
 }
 

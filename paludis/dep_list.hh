@@ -33,6 +33,8 @@
 #include <ostream>
 #include <list>
 #include <deque>
+#include <iterator>
+#include <algorithm>
 
 namespace paludis
 {
@@ -41,10 +43,14 @@ namespace paludis
      */
     enum DepListEntryKeys
     {
-        dle_name,          ///< Package name
-        dle_version,       ///< Package version
-        dle_slot,          ///< Package SLOT
-        dle_repository     ///< Repository name
+        dle_name,            ///< Package name
+        dle_version,         ///< Package version
+        dle_slot,            ///< Package SLOT
+        dle_repository,      ///< Repository name
+        dle_has_predeps,     ///< DEPEND (and RDEPEND if not rdepend_post) done?
+        dle_has_trypredeps,  ///< RDEPEND (if rdepend_post) done?
+        dle_has_postdeps,    ///< PDEPEND done?
+        last_dle             ///< Number of entries
     };
 
     /**
@@ -52,11 +58,14 @@ namespace paludis
      */
     struct DepListEntryTag :
         SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
-        SmartRecordKeys<DepListEntryKeys, 4>,
+        SmartRecordKeys<DepListEntryKeys, last_dle>,
         SmartRecordKey<dle_name, QualifiedPackageName>,
         SmartRecordKey<dle_version, VersionSpec>,
         SmartRecordKey<dle_slot, SlotName>,
-        SmartRecordKey<dle_repository, RepositoryName>
+        SmartRecordKey<dle_repository, RepositoryName>,
+        SmartRecordKey<dle_has_predeps, bool>,
+        SmartRecordKey<dle_has_trypredeps, bool>,
+        SmartRecordKey<dle_has_postdeps, bool>
     {
     };
 
@@ -141,6 +150,9 @@ namespace paludis
      */
     class CircularDependencyError : public DepListError
     {
+        private:
+            unsigned _cycle_size;
+
         public:
             /**
              * Constructor, from a sequence of the items causing the circular
@@ -148,8 +160,14 @@ namespace paludis
              */
             template <typename I_>
             CircularDependencyError(I_ begin, const I_ end) throw () :
-                DepListError("Circular dependency: " + join(begin, end, " -> "))
+                DepListError("Circular dependency: " + join(begin, end, " -> ")),
+                _cycle_size(std::distance(begin, end))
             {
+            }
+
+            unsigned cycle_size() const
+            {
+                return _cycle_size;
             }
     };
 
@@ -184,6 +202,7 @@ namespace paludis
         protected DepAtomVisitorTypes::ConstVisitor
     {
         private:
+            void _add(DepAtom::ConstPointer);
             void _add_in_role(DepAtom::ConstPointer, const std::string & role);
 
         protected:

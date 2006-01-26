@@ -25,6 +25,7 @@
 #include "dep_parser.hh"
 #include "filter_insert_iterator.hh"
 #include "indirect_iterator.hh"
+#include "iterator_utilities.hh"
 #include "join.hh"
 #include "match_package.hh"
 #include "package_dep_atom.hh"
@@ -35,6 +36,7 @@
 #include <algorithm>
 #include <functional>
 #include <deque>
+#include <vector>
 
 using namespace paludis;
 
@@ -85,35 +87,47 @@ namespace paludis
         InstantiationPolicy<Implementation<DepList>, instantiation_method::NonCopyableTag>,
         InternalCounted<Implementation<DepList> >
     {
+        ///\name Provided data
+        ///{
         const Environment * const environment;
+        ///}
 
+        ///\name Generated data
+        ///{
         std::list<DepListEntry> merge_list;
-        std::list<DepListEntry> pending_list;
+        std::list<DepListEntry>::iterator merge_list_insert_pos;
         bool check_existing_only;
-        bool in_pdepend;
         bool match_found;
-        const PackageDatabaseEntry * current_package;
-        int stack_depth;
+        const DepListEntry * current_package;
+        ///}
 
+        ///\name Settings
+        ///{
         DepListRdependOption rdepend_post;
+        bool recursive_deps;
         bool drop_circular;
         bool drop_self_circular;
         bool ignore_installed;
-        bool recursive_deps;
-        int max_stack_depth;
+        ///}
 
+        ///\name Stack
+        ///{
+        int stack_depth;
+        int max_stack_depth;
+        ///}
+
+        /// Constructor.
         Implementation(const Environment * const e) :
             environment(e),
             check_existing_only(false),
-            in_pdepend(false),
             match_found(false),
             current_package(0),
-            stack_depth(0),
             rdepend_post(dlro_as_needed),
+            recursive_deps(true),
             drop_circular(false),
             drop_self_circular(false),
             ignore_installed(false),
-            recursive_deps(false),
+            stack_depth(0),
             max_stack_depth(100)
         {
         }
@@ -132,6 +146,43 @@ DepList::~DepList()
 void
 DepList::add(DepAtom::ConstPointer atom)
 {
+    _implementation->merge_list_insert_pos = _implementation->merge_list.end();
+    _add(atom);
+
+    std::list<DepListEntry>::iterator i(_implementation->merge_list.begin());
+    _implementation->merge_list_insert_pos = _implementation->merge_list.end();
+    while (i != _implementation->merge_list.end())
+    {
+        if (! i->get<dle_has_predeps>())
+            throw InternalError(PALUDIS_HERE, "dle_has_predeps not set for " + stringify(*i));
+
+        else if (! i->get<dle_has_trypredeps>())
+        {
+            _implementation->current_package = &*i;
+            _add_in_role(DepParser::parse(
+                        _implementation->environment->package_database()->fetch_metadata(
+                            PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
+                                i->get<dle_repository>()))->get(vmk_rdepend)), "RDEPEND");
+            i->set<dle_has_trypredeps>(true);
+        }
+
+        else if (! i->get<dle_has_postdeps>())
+        {
+            _implementation->current_package = &*i;
+            _add_in_role(DepParser::parse(
+                        _implementation->environment->package_database()->fetch_metadata(
+                            PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
+                                i->get<dle_repository>()))->get(vmk_pdepend)), "PDEPEND");
+            i->set<dle_has_postdeps>(true);
+        }
+        else
+            ++i;
+    }
+}
+
+void
+DepList::_add(DepAtom::ConstPointer atom)
+{
     /* keep track of stack depth */
     Save<int> old_stack_depth(&_implementation->stack_depth,
             _implementation->stack_depth + 1);
@@ -141,8 +192,9 @@ DepList::add(DepAtom::ConstPointer atom)
     /* we need to make sure that merge_list doesn't get h0rked in the
      * event of a failure. */
     bool merge_list_was_empty(_implementation->merge_list.empty());
-    std::list<DepListEntry>::iterator m_save(merge_list_was_empty ?
-            _implementation->merge_list.end() : --(_implementation->merge_list.end()));
+    std::list<DepListEntry>::iterator save_end;
+    if (! merge_list_was_empty)
+        save_end = previous(_implementation->merge_list.end());
 
     try
     {
@@ -153,7 +205,7 @@ DepList::add(DepAtom::ConstPointer atom)
         if (merge_list_was_empty)
             _implementation->merge_list.clear();
         else
-            _implementation->merge_list.erase(++m_save, _implementation->merge_list.end());
+            _implementation->merge_list.erase(next(save_end), _implementation->merge_list.end());
         throw;
     }
 }
@@ -162,7 +214,7 @@ void
 DepList::_add_in_role(DepAtom::ConstPointer atom, const std::string & role)
 {
     Context context("When adding " + role + ":");
-    add(atom);
+    _add(atom);
 }
 
 DepList::Iterator
@@ -209,50 +261,28 @@ DepList::visit(const PackageDepAtom * const p)
 {
     Context context("When resolving package dependency '" + stringify(*p) + "':");
 
-    bool already_there = false;
-    bool do_rdepend_post = (_implementation->rdepend_post == dlro_always);
+    /// \todo check installed db
 
-    /* are we already installed? */
-    if ((! _implementation->ignore_installed) &&
-            (! _implementation->environment->installed_database()->query(p)->empty()))
-        already_there = true;
-
-    /* will we be installed by this point? */
-    if ((! already_there) && (_implementation->merge_list.end() != std::find_if(
-                _implementation->merge_list.begin(), _implementation->merge_list.end(),
-                DepListEntryMatcher(_implementation->environment->package_database().raw_pointer(), *p))))
-        return;
-
-    if (already_there && ((! _implementation->recursive_deps) || (_implementation->check_existing_only)))
-        return;
-
-    /* are we allowed to install things? */
-    if (_implementation->check_existing_only && ! _implementation->in_pdepend)
+    /* are we already there? */
+    std::list<DepListEntry>::iterator i;
+    if (_implementation->merge_list.end() != ((i = std::find_if(
+                        _implementation->merge_list.begin(),
+                        _implementation->merge_list.end(),
+                        DepListEntryMatcher(
+                            _implementation->environment->package_database().raw_pointer(), *p)))))
     {
-        _implementation->match_found = false;
-        return;
-    }
-
-    /* are we pending? (circular dep check) */
-    {
-        std::list<DepListEntry>::iterator i;
-        if (_implementation->pending_list.end() != ((i = std::find_if(
-                    _implementation->pending_list.begin(), _implementation->pending_list.end(),
-                    DepListEntryMatcher(_implementation->environment->package_database().raw_pointer(), *p)))))
+        /* what's our status? */
+        if (! i->get<dle_has_predeps>())
         {
-            std::deque<std::string> entries;
-            entries.push_front(stringify(*p));
-            std::transform(_implementation->pending_list.begin(), ++i,
-                    std::back_inserter(entries), &stringify<DepListEntry>);
-            if (_implementation->in_pdepend)
+            if (_implementation->drop_circular)
                 return;
-            else if (_implementation->drop_circular)
-                return;
-            else if (_implementation->drop_self_circular && entries.size() <= 2)
+            else if (_implementation->merge_list.begin() == i && _implementation->drop_self_circular)
                 return;
             else
-                throw CircularDependencyError(entries.begin(), entries.end());
+                throw CircularDependencyError(_implementation->merge_list_insert_pos, next(i));
         }
+
+        return;
     }
 
     /* are we allowed to install things? */
@@ -263,11 +293,11 @@ DepList::visit(const PackageDepAtom * const p)
     }
 
     /* find the matching package */
-    PackageDatabaseEntryCollection::Pointer matches(
-            _implementation->environment->package_database()->query(p));
-
     const PackageDatabaseEntry * match(0);
     VersionMetadata::ConstPointer metadata(0);
+    PackageDatabaseEntryCollection::Pointer matches(0);
+
+    matches = _implementation->environment->package_database()->query(p);
     for (PackageDatabaseEntryCollection::ReverseIterator e(matches->rbegin()),
             e_end(matches->rend()) ; e != e_end ; ++e)
     {
@@ -283,48 +313,43 @@ DepList::visit(const PackageDepAtom * const p)
     if (! match)
         throw AllMaskedError(stringify(*p));
 
-    Save<const PackageDatabaseEntry *> old_current_package(&_implementation->current_package, match);
+    /* make merge entry */
+    std::list<DepListEntry>::iterator merge_entry(
+            _implementation->merge_list.insert(_implementation->merge_list_insert_pos,
+                DepListEntry(match->get<pde_name>(), match->get<pde_version>(),
+                    SlotName(metadata->get(vmk_slot)), match->get<pde_repository>(),
+                    false, false, false)));
+
+    Save<std::list<DepListEntry>::iterator> old_merge_list_insert_pos(
+            &_implementation->merge_list_insert_pos, merge_entry);
 
     context.change_context("When resolving package dependency '" + stringify(*p) +
-            "' -> '" + stringify(*match) + "':");
+            "' -> '" + stringify(*merge_entry) + "':");
 
-    /* make merge entry */
-    DepListEntry merge_entry(match->get<pde_name>(), match->get<pde_version>(),
-            SlotName(metadata->get(vmk_slot)), match->get<pde_repository>());
+    /* new current package */
+    Save<const DepListEntry *> old_current_package(&_implementation->current_package,
+            &*merge_entry);
 
+    /* merge depends */
+    if (! merge_entry->get<dle_has_predeps>())
     {
-        /* pending */
-        ContainerEntry<std::list<DepListEntry> > pending(&_implementation->pending_list, merge_entry);
-
-        /* merge dependencies */
         _add_in_role(DepParser::parse(metadata->get(vmk_depend)), "DEPEND");
-
-        if (_implementation->rdepend_post != dlro_always)
-        {
-            try
-            {
-                 _add_in_role(DepParser::parse(metadata->get(vmk_rdepend)), "RDEPEND");
-            }
-            catch (const CircularDependencyError &)
-            {
-                if (_implementation->rdepend_post != dlro_never)
-                    do_rdepend_post = true;
-                else
-                    throw;
-            }
-        }
+        merge_entry->set<dle_has_predeps>(true);
     }
 
-    /* merge package */
-    if (! already_there)
-        _implementation->merge_list.push_back(merge_entry);
-
-    /* merge post dependencies */
+    /* merge rdepends */
+    if (! merge_entry->get<dle_has_trypredeps>() && dlro_always != _implementation->rdepend_post)
     {
-        Save<bool> save_ignore_cdep(&_implementation->in_pdepend, true);
-        if (do_rdepend_post)
-            _add_in_role(DepParser::parse(metadata->get(vmk_rdepend)), "RDEPEND (as PDEPEND)");
-        _add_in_role(DepParser::parse(metadata->get(vmk_pdepend)), "PDEPEND");
+        try
+        {
+            _add_in_role(DepParser::parse(metadata->get(vmk_rdepend)), "RDEPEND");
+            merge_entry->set<dle_has_trypredeps>(true);
+        }
+        catch (const CircularDependencyError &)
+        {
+            if (dlro_never == _implementation->rdepend_post)
+                throw;
+        }
     }
 }
 
@@ -334,9 +359,13 @@ DepList::visit(const UseDepAtom * const u)
     if (! _implementation->current_package)
         throw InternalError(PALUDIS_HERE, "current_package is 0");
 
-    if (_implementation->environment->query_use(u->flag(),
-                _implementation->current_package) ^ u->inverse())
-        std::for_each(u->begin(), u->end(), std::bind1st(std::mem_fun(&DepList::add), this));
+    PackageDatabaseEntry e(
+            _implementation->current_package->get<dle_name>(),
+            _implementation->current_package->get<dle_version>(),
+            _implementation->current_package->get<dle_repository>());
+
+    if (_implementation->environment->query_use(u->flag(), &e) ^ u->inverse())
+        std::for_each(u->begin(), u->end(), std::bind1st(std::mem_fun(&DepList::_add), this));
 }
 
 #ifndef DOXYGEN
@@ -352,10 +381,14 @@ struct IsViable :
 
     bool operator() (DepAtom::ConstPointer a)
     {
+        PackageDatabaseEntry e(
+                _impl.current_package->get<dle_name>(),
+                _impl.current_package->get<dle_version>(),
+                _impl.current_package->get<dle_repository>());
+
         const UseDepAtom * const u(a->as_use_dep_atom());
         if (0 != u)
-            return _impl.environment->query_use(u->flag(),
-                        _impl.current_package) ^ u->inverse();
+            return _impl.environment->query_use(u->flag(), &e) ^ u->inverse();
         else
             return true;
     }
@@ -389,7 +422,7 @@ DepList::visit(const AnyDepAtom * const a)
     {
         Save<bool> save_check(&_implementation->check_existing_only, true);
         Save<bool> save_match(&_implementation->match_found, true);
-        add(*i);
+        _add(*i);
         if ((found = _implementation->match_found))
             break;
     }
@@ -409,7 +442,7 @@ DepList::visit(const AnyDepAtom * const a)
     {
         try
         {
-            add(*i);
+            _add(*i);
             return;
         }
         catch (const DepListStackTooDeepError &)
@@ -439,7 +472,14 @@ DepList::visit(const BlockDepAtom * const d)
     PackageDatabaseEntryCollection::ConstPointer q(0);
     std::list<DepListEntry>::const_iterator m;
 
+    PackageDatabaseEntry e(
+            _implementation->current_package->get<dle_name>(),
+            _implementation->current_package->get<dle_version>(),
+            _implementation->current_package->get<dle_repository>());
+
     /* are we already installed? */
+    /// \todo installed_database
+#if 0
     if (! ((q = _implementation->environment->installed_database()->query(d->blocked_atom())))->empty())
     {
         if (! _implementation->current_package)
@@ -447,14 +487,14 @@ DepList::visit(const BlockDepAtom * const d)
                     + stringify(*q->begin()) + "'");
 
         VersionMetadata::ConstPointer metadata(
-                _implementation->environment->installed_database()->fetch_metadata(
-                    *_implementation->current_package));
+                _implementation->environment->installed_database()->fetch_metadata(&e));
         if (metadata->end_provide() == std::find(
                     metadata->begin_provide(), metadata->end_provide(),
                     d->blocked_atom()->package()))
             throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by installed package '"
                     + stringify(*q->begin()) + "'");
     }
+#endif
 
     /* will we be installed by this point? */
     if (_implementation->merge_list.end() != ((m = std::find_if(
@@ -466,13 +506,15 @@ DepList::visit(const BlockDepAtom * const d)
             throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
                     + stringify(*m));
 
-        VersionMetadata::ConstPointer metadata(_implementation->environment->package_database()->fetch_metadata(
-                    *_implementation->current_package));
+#if 0
+        VersionMetadata::ConstPointer metadata(
+                _implementation->environment->package_database()->fetch_metadata(e));
         if (metadata->end_provide() == std::find(
                     metadata->begin_provide(), metadata->end_provide(),
                     d->blocked_atom()->package()))
             throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
                     + stringify(*m));
+#endif
     }
 }
 

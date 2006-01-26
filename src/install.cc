@@ -136,27 +136,6 @@ do_install()
             << e.what() << ")" << endl;
         cerr << endl;
 
-        dep_list.set_drop_self_circular(true);
-        try
-        {
-            dep_list.add(targets);
-            cerr << "Adding --dl-drop-self-circular will resolve this, but may omit some genuine"
-                << endl << "dependencies." << endl << endl;
-        }
-        catch (...)
-        {
-            dep_list.set_drop_circular(true);
-            try
-            {
-                dep_list.add(targets);
-                cerr << "Adding --dl-drop-circular will resolve this, but may omit some genuine" << endl
-                    << "dependencies." << endl << endl;
-            }
-            catch (...)
-            {
-            }
-        }
-
         return_code |= 1;
     }
 
