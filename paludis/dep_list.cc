@@ -367,15 +367,16 @@ DepList::visit(const PackageDepAtom * const p)
 void
 DepList::visit(const UseDepAtom * const u)
 {
-    if (! _implementation->current_package)
-        throw InternalError(PALUDIS_HERE, "current_package is 0");
+    CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
-    PackageDatabaseEntry e(
-            _implementation->current_package->get<dle_name>(),
-            _implementation->current_package->get<dle_version>(),
-            _implementation->current_package->get<dle_repository>());
+    if (_implementation->current_package)
+        e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
+                new PackageDatabaseEntry(
+                    _implementation->current_package->get<dle_name>(),
+                    _implementation->current_package->get<dle_version>(),
+                    _implementation->current_package->get<dle_repository>()));
 
-    if (_implementation->environment->query_use(u->flag(), &e) ^ u->inverse())
+    if (_implementation->environment->query_use(u->flag(), e.raw_pointer()) ^ u->inverse())
         std::for_each(u->begin(), u->end(), std::bind1st(std::mem_fun(&DepList::_add), this));
 }
 
