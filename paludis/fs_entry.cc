@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ * Copyright (c) 2006 Mark Loeser <halcy0n@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,14 +44,27 @@ FSError::FSError(const std::string & message) throw () :
 
 FSEntry::FSEntry(const std::string & path) :
     ComparisonPolicyType(&FSEntry::_path),
-    _path(path)
+    _path(path),
+    _stat_info(new struct stat),
+    _exists(true)
 {
     _normalise();
+
+    if (0 != stat(_path.c_str(), _stat_info.raw_pointer()))
+    {
+        if (errno != ENOENT)
+            throw FSError("Error running stat() on '" + stringify(_path) + "': "
+                    + strerror(errno));
+
+        _exists = false;
+    }
 }
 
 FSEntry::FSEntry(const FSEntry & other) :
     ComparisonPolicyType(&FSEntry::_path),
-    _path(other._path)
+    _path(other._path),
+    _stat_info(other._stat_info),
+    _exists(other._exists)
 {
 }
 
@@ -94,49 +108,106 @@ FSEntry::operator/= (const FSEntry & rhs)
 bool
 FSEntry::exists() const
 {
-    struct stat s;
-
-    if (0 != stat(_path.c_str(), &s))
-    {
-        if (errno != ENOENT)
-            throw FSError("Error checking whether '" + stringify(_path) + "' exists: "
-                    + strerror(errno));
-        return false;
-    }
-
-    return true;
+    return _exists;
 }
 
 bool
 FSEntry::is_directory() const
 {
-    struct stat s;
+    if(_exists)
+        return S_ISDIR((*_stat_info).st_mode);
 
-    if (0 != stat(_path.c_str(), &s))
-    {
-        if (errno != ENOENT)
-            throw FSError("Error checking whether '" + stringify(_path) + "' is a directory: "
-                    + strerror(errno));
-        return false;
-    }
-
-    return S_ISDIR(s.st_mode);
+    return false;
 }
 
 bool
 FSEntry::is_regular_file() const
 {
-    struct stat s;
+    if(_exists)
+        return S_ISREG((*_stat_info).st_mode);
 
-    if (0 != stat(_path.c_str(), &s))
-    {
-        if (errno != ENOENT)
-            throw FSError("Error checking whether '" + stringify(_path) + "' is a regular file: "
-                    + strerror(errno));
-        return false;
-    }
+    return false;
+}
 
-    return S_ISREG(s.st_mode);
+bool
+FSEntry::owner_has_read() const
+{
+    if(_exists)
+        return (*_stat_info).st_mode & S_IRUSR;
+
+    return false;
+}
+
+bool
+FSEntry::owner_has_write() const
+{
+    if(_exists)
+        return (*_stat_info).st_mode & S_IWUSR;
+
+    return false;
+}
+
+bool
+FSEntry::owner_has_execute() const
+{
+    if(_exists)
+        return (*_stat_info).st_mode & S_IXUSR;
+
+    return false;
+}
+
+bool
+FSEntry::group_has_read() const
+{
+    if(_exists)
+        return (*_stat_info).st_mode & S_IRGRP;
+
+    return false;
+}
+
+bool
+FSEntry::group_has_write() const
+{
+    if(_exists)
+        return (*_stat_info).st_mode & S_IWGRP;
+
+    return false;
+}
+
+bool
+FSEntry::group_has_execute() const
+{
+    if(_exists)
+        return (*_stat_info).st_mode & S_IXGRP;
+
+    return false;
+}
+
+bool
+FSEntry::others_has_read() const
+{
+    if(_exists)
+        return (*_stat_info).st_mode & S_IROTH;
+
+    return false;
+}
+
+bool
+FSEntry::others_has_write() const
+{
+    if(_exists)
+        return (*_stat_info).st_mode & S_IWOTH;
+
+    return false;
+}
+
+bool
+FSEntry::others_has_execute() const
+{
+    if(_exists)
+        return (*_stat_info).st_mode & S_IXOTH;
+
+    return false;
 }
 
 void

@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ * Copyright (c) 2006 Mark Loeser <halcy0n@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +25,8 @@
 #include <ostream>
 #include <paludis/comparison_policy.hh>
 #include <paludis/exception.hh>
+#include <paludis/counted_ptr.hh>
+#include <sys/stat.h>
 
 /** \file
  * Declarations for paludis::Filesystem.
@@ -60,6 +63,10 @@ namespace paludis
     {
         private:
             std::string _path;
+
+            CountedPtr<struct stat, count_policy::ExternalCountTag> _stat_info;
+
+            bool _exists;
 
             void _normalise();
 
@@ -128,6 +135,51 @@ namespace paludis
              * is it a regular file?
              */
             bool is_regular_file() const;
+
+            /**
+             * Does the owner have read permission?
+             */
+            bool owner_has_read() const;
+
+            /**
+             * Does the owner have write permission?
+             */
+            bool owner_has_write() const;
+
+            /**
+             * Does the owner have execute permission?
+             */
+            bool owner_has_execute() const;
+
+            /**
+             * Does the group have read permission?
+             */
+            bool group_has_read() const;
+
+            /**
+             * Does the group have write permission?
+             */
+            bool group_has_write() const;
+
+            /**
+             * Does the group have execute permission?
+             */
+            bool group_has_execute() const;
+
+            /**
+             * Do the others have read permission?
+             */
+            bool others_has_read() const;
+
+            /**
+             * Do the others have write permission?
+             */
+            bool others_has_write() const;
+
+            /**
+             * Do the others have execute permission?
+             */
+            bool others_has_execute() const;
 
             /**
              * Return the last part of our path (eg '/foo/bar' => 'bar').

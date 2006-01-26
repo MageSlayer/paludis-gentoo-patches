@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ * Copyright (c) 2006 Mark Loeser <halcy0n@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -79,4 +80,38 @@ namespace test_cases
             TEST_CHECK_EQUAL(std::string(r).substr(std::string(r).length() - e.length()), e);
         }
     } test_fs_entry_realpath;
+
+    /**
+     * \test Test FSEntry has_permission methods.
+     */
+    struct FSEntryHasPermission: TestCase
+    {
+        FSEntryHasPermission() : TestCase("has_permission") {}
+
+        void run()
+        {
+            FSEntry a("fs_entry_TEST_dir/all_perms");
+            FSEntry b("fs_entry_TEST_dir/no_perms");
+
+            TEST_CHECK(a.owner_has_read());
+            TEST_CHECK(a.owner_has_write());
+            TEST_CHECK(a.owner_has_execute());
+            TEST_CHECK(a.group_has_read());
+            TEST_CHECK(a.group_has_write());
+            TEST_CHECK(a.group_has_execute());
+            TEST_CHECK(a.others_has_read());
+            TEST_CHECK(a.others_has_write());
+            TEST_CHECK(a.others_has_execute());
+
+            TEST_CHECK(!b.owner_has_read());
+            TEST_CHECK(!b.owner_has_write());
+            TEST_CHECK(!b.owner_has_execute());
+            TEST_CHECK(!b.group_has_read());
+            TEST_CHECK(!b.group_has_write());
+            TEST_CHECK(!b.group_has_execute());
+            TEST_CHECK(!b.others_has_read());
+            TEST_CHECK(!b.others_has_write());
+            TEST_CHECK(!b.others_has_execute());
+        }
+    } test_fs_entry_permission;
 }
