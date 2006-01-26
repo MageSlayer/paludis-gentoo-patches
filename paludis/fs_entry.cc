@@ -45,17 +45,18 @@ FSError::FSError(const std::string & message) throw () :
 FSEntry::FSEntry(const std::string & path) :
     ComparisonPolicyType(&FSEntry::_path),
     _path(path),
-    _stat_info(new struct stat)
+    _stat_info(new struct stat),
+    _checked(false)
 {
     _normalise();
-    _stat();
 }
 
 FSEntry::FSEntry(const FSEntry & other) :
     ComparisonPolicyType(&FSEntry::_path),
     _path(other._path),
     _stat_info(other._stat_info),
-    _exists(other._exists)
+    _exists(other._exists),
+    _checked(other._checked)
 {
 }
 
@@ -93,7 +94,7 @@ FSEntry::operator/= (const FSEntry & rhs)
     _path.append("/");
     _path.append(rhs._path);
     _normalise();
-    _stat();
+    _checked = false;
 
     return *this;
 }
@@ -101,12 +102,16 @@ FSEntry::operator/= (const FSEntry & rhs)
 bool
 FSEntry::exists() const
 {
+    _stat();
+
     return _exists;
 }
 
 bool
 FSEntry::is_directory() const
 {
+    _stat();
+
     if(_exists)
         return S_ISDIR((*_stat_info).st_mode);
 
@@ -116,6 +121,8 @@ FSEntry::is_directory() const
 bool
 FSEntry::is_regular_file() const
 {
+    _stat();
+
     if(_exists)
         return S_ISREG((*_stat_info).st_mode);
 
@@ -125,6 +132,8 @@ FSEntry::is_regular_file() const
 bool
 FSEntry::owner_has_read() const
 {
+    _stat();
+
     if(_exists)
         return (*_stat_info).st_mode & S_IRUSR;
 
@@ -134,6 +143,8 @@ FSEntry::owner_has_read() const
 bool
 FSEntry::owner_has_write() const
 {
+    _stat();
+
     if(_exists)
         return (*_stat_info).st_mode & S_IWUSR;
 
@@ -143,6 +154,8 @@ FSEntry::owner_has_write() const
 bool
 FSEntry::owner_has_execute() const
 {
+    _stat();
+
     if(_exists)
         return (*_stat_info).st_mode & S_IXUSR;
 
@@ -152,6 +165,8 @@ FSEntry::owner_has_execute() const
 bool
 FSEntry::group_has_read() const
 {
+    _stat();
+
     if(_exists)
         return (*_stat_info).st_mode & S_IRGRP;
 
@@ -161,6 +176,8 @@ FSEntry::group_has_read() const
 bool
 FSEntry::group_has_write() const
 {
+    _stat();
+
     if(_exists)
         return (*_stat_info).st_mode & S_IWGRP;
 
@@ -170,6 +187,8 @@ FSEntry::group_has_write() const
 bool
 FSEntry::group_has_execute() const
 {
+    _stat();
+
     if(_exists)
         return (*_stat_info).st_mode & S_IXGRP;
 
@@ -179,6 +198,8 @@ FSEntry::group_has_execute() const
 bool
 FSEntry::others_has_read() const
 {
+    _stat();
+
     if(_exists)
         return (*_stat_info).st_mode & S_IROTH;
 
@@ -188,6 +209,8 @@ FSEntry::others_has_read() const
 bool
 FSEntry::others_has_write() const
 {
+    _stat();
+
     if(_exists)
         return (*_stat_info).st_mode & S_IWOTH;
 
@@ -197,6 +220,8 @@ FSEntry::others_has_write() const
 bool
 FSEntry::others_has_execute() const
 {
+    _stat();
+
     if(_exists)
         return (*_stat_info).st_mode & S_IXOTH;
 
@@ -239,8 +264,11 @@ FSEntry::_normalise()
 }
 
 void
-FSEntry::_stat()
+FSEntry::_stat() const
 {
+    if(_checked == true)
+        return;
+
     if (0 != stat(_path.c_str(), _stat_info.raw_pointer()))
     {
         if (errno != ENOENT)
@@ -251,6 +279,8 @@ FSEntry::_stat()
     }
     else
         _exists = true;
+
+    _checked = true;
 }
 
 std::string

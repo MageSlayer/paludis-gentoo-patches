@@ -64,13 +64,18 @@ namespace paludis
         private:
             std::string _path;
 
-            CountedPtr<struct stat, count_policy::ExternalCountTag> _stat_info;
+            mutable CountedPtr<struct stat, count_policy::ExternalCountTag> _stat_info;
 
-            bool _exists;
+            mutable bool _exists;
+
+            /**
+             * Whether or not we have run _stat() on this location yet
+             */
+            mutable bool _checked;
 
             void _normalise();
 
-            void _stat();
+            void _stat() const;
 
         public:
             /**
