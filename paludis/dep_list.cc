@@ -163,7 +163,8 @@ DepList::add(DepAtom::ConstPointer atom)
 
             else if (! i->get<dle_has_trypredeps>())
             {
-                _implementation->current_package = &*i;
+                Save<const DepListEntry *> save_current_package(
+                        &_implementation->current_package, &*i);
                 _add_in_role(DepParser::parse(
                             _implementation->environment->package_database()->fetch_metadata(
                                 PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
@@ -173,7 +174,8 @@ DepList::add(DepAtom::ConstPointer atom)
 
             else if (! i->get<dle_has_postdeps>())
             {
-                _implementation->current_package = &*i;
+                Save<const DepListEntry *> save_current_package(
+                        &_implementation->current_package, &*i);
                 _add_in_role(DepParser::parse(
                             _implementation->environment->package_database()->fetch_metadata(
                                 PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
@@ -484,8 +486,8 @@ DepList::visit(const BlockDepAtom * const d)
     /* special case: the provider of virtual/blah can DEPEND upon !virtual/blah. */
     /// \bug This may have issues if a virtual is provided by a virtual...
 
+#if 0
     PackageDatabaseEntryCollection::ConstPointer q(0);
-    std::list<DepListEntry>::const_iterator m;
 
     PackageDatabaseEntry e(
             _implementation->current_package->get<dle_name>(),
@@ -494,7 +496,6 @@ DepList::visit(const BlockDepAtom * const d)
 
     /* are we already installed? */
     /// \todo installed_database
-#if 0
     if (! ((q = _implementation->environment->installed_database()->query(d->blocked_atom())))->empty())
     {
         if (! _implementation->current_package)
@@ -512,6 +513,7 @@ DepList::visit(const BlockDepAtom * const d)
 #endif
 
     /* will we be installed by this point? */
+    std::list<DepListEntry>::const_iterator m;
     if (_implementation->merge_list.end() != ((m = std::find_if(
                 _implementation->merge_list.begin(), _implementation->merge_list.end(),
                 DepListEntryMatcher(_implementation->environment->package_database().raw_pointer(),
