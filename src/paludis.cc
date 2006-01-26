@@ -129,7 +129,7 @@ main(int argc, char *argv[])
         cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
         cout << "stdlib:      "
 #if defined(__GLIBCXX__)
-            << "GNU libstdc++" << __GLIBCXX__
+            << "GNU libstdc++"
 #elif defined(__GLIBCPP__)
             << "GNU libstdc++" << __GLIBCPP__
 #endif
