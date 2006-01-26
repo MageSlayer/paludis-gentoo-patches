@@ -304,6 +304,13 @@ VersionSpec::equal_star_compare(const VersionSpec & other) const
     return true;
 }
 
+std::size_t
+VersionSpec::hash_value() const
+{
+    /// \todo Improve this;
+    return _implementation->version_parts[0];
+}
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const VersionSpec & v)
 {

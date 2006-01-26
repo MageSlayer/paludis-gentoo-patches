@@ -45,7 +45,7 @@ namespace paludis
     {
         dle_name,            ///< Package name
         dle_version,         ///< Package version
-        dle_slot,            ///< Package SLOT
+        dle_metadata,        ///< Package SLOT
         dle_repository,      ///< Repository name
         dle_has_predeps,     ///< DEPEND (and RDEPEND if not rdepend_post) done?
         dle_has_trypredeps,  ///< RDEPEND (if rdepend_post) done?
@@ -61,7 +61,7 @@ namespace paludis
         SmartRecordKeys<DepListEntryKeys, last_dle>,
         SmartRecordKey<dle_name, QualifiedPackageName>,
         SmartRecordKey<dle_version, VersionSpec>,
-        SmartRecordKey<dle_slot, SlotName>,
+        SmartRecordKey<dle_metadata, VersionMetadata::ConstPointer>,
         SmartRecordKey<dle_repository, RepositoryName>,
         SmartRecordKey<dle_has_predeps, bool>,
         SmartRecordKey<dle_has_trypredeps, bool>,

@@ -44,7 +44,7 @@ std::ostream &
 paludis::operator<< (std::ostream & s, const DepListEntry & e)
 {
     s << e.get<dle_name>() << "-" << e.get<dle_version>() << ":"
-        << e.get<dle_slot>() << "::" << e.get<dle_repository>();
+        << e.get<dle_metadata>()->get(vmk_slot) << "::" << e.get<dle_repository>();
     return s;
 }
 
@@ -328,7 +328,7 @@ DepList::visit(const PackageDepAtom * const p)
     std::list<DepListEntry>::iterator merge_entry(
             _implementation->merge_list.insert(_implementation->merge_list_insert_pos,
                 DepListEntry(match->get<pde_name>(), match->get<pde_version>(),
-                    SlotName(metadata->get(vmk_slot)), match->get<pde_repository>(),
+                    metadata, match->get<pde_repository>(),
                     false, false, false)));
 
     Save<std::list<DepListEntry>::iterator> old_merge_list_insert_pos(
@@ -385,22 +385,25 @@ struct IsViable :
     public std::unary_function<bool, DepAtom::ConstPointer>
 {
     const Implementation<DepList> & _impl;
+    CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e;
 
     IsViable(const Implementation<DepList> & impl) :
-        _impl(impl)
+        _impl(impl),
+        e(0)
     {
+        if (_impl.current_package)
+            e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
+                    new PackageDatabaseEntry(
+                        _impl.current_package->get<dle_name>(),
+                        _impl.current_package->get<dle_version>(),
+                        _impl.current_package->get<dle_repository>()));
     }
 
     bool operator() (DepAtom::ConstPointer a)
     {
-        PackageDatabaseEntry e(
-                _impl.current_package->get<dle_name>(),
-                _impl.current_package->get<dle_version>(),
-                _impl.current_package->get<dle_repository>());
-
         const UseDepAtom * const u(a->as_use_dep_atom());
         if (0 != u)
-            return _impl.environment->query_use(u->flag(), &e) ^ u->inverse();
+            return _impl.environment->query_use(u->flag(), e.raw_pointer()) ^ u->inverse();
         else
             return true;
     }

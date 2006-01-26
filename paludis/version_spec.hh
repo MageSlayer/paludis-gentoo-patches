@@ -95,6 +95,13 @@ namespace paludis
              * Comparison function for =* depend operator.
              */
             bool equal_star_compare(const VersionSpec & other) const;
+
+            /**
+             * Fetch a hash value, used to avoid exposing our internals to
+             * CRCHash.
+             */
+            std::size_t hash_value() const;
+
     };
 
     /**

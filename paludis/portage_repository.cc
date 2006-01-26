@@ -17,6 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include "dir_iterator.hh"
 #include "filter_insert_iterator.hh"
 #include "fs_entry.hh"
@@ -39,7 +41,197 @@
 #include <vector>
 #include <deque>
 
+#include <limits>
+
+#if HAVE_TR1_HASHES
+#  include <tr1/unordered_set>
+#  include <tr1/unordered_map>
+#elif HAVE_EXT_HASHES
+#  include <ext/hash_set>
+#  include <ext/hash_map>
+#else
+#  include <set>
+#  include <map>
+#endif
+
 using namespace paludis;
+
+#if HAVE_TR1_HASHES || HAVE_EXT_HASHES
+
+template <typename T_>
+struct CRCHash;
+
+template <>
+class CRCHash<QualifiedPackageName> :
+    std::unary_function<QualifiedPackageName, std::size_t>
+{
+    private:
+        static const std::size_t h_shift = std::numeric_limits<std::size_t>::digits - 5;
+        static const std::size_t h_mask = 0x1f << h_shift;
+
+    public:
+        std::size_t operator() (const QualifiedPackageName & val) const
+        {
+            const std::string & s1(val.get<qpn_category>().data()), s2(val.get<qpn_package>().data());
+            std::size_t h(0);
+
+            for (std::string::size_type t(0) ; t < s1.length() ; ++t)
+            {
+                std::size_t hh(h & h_mask);
+                h <<= 5;
+                h ^= (hh >> h_shift);
+                h ^= s1[t];
+            }
+
+            for (std::string::size_type t(0) ; t < s2.length() ; ++t)
+            {
+                std::size_t hh(h & h_mask);
+                h <<= 5;
+                h ^= (hh >> h_shift);
+                h ^= s2[t];
+            }
+
+            return h;
+        }
+};
+
+template <typename Validated_>
+class CRCHash<Validated<std::string, Validated_> > :
+    std::unary_function<Validated<std::string, Validated_>, std::size_t>
+{
+    private:
+        static const std::size_t h_shift = std::numeric_limits<std::size_t>::digits - 5;
+        static const std::size_t h_mask = 0x1f << h_shift;
+
+    public:
+        std::size_t operator() (const Validated<std::string, Validated_> & val) const
+        {
+            const std::string & s1(val.data());
+            std::size_t h(0);
+
+            for (std::string::size_type t(0) ; t < s1.length() ; ++t)
+            {
+                std::size_t hh(h & h_mask);
+                h <<= 5;
+                h ^= (hh >> h_shift);
+                h ^= s1[t];
+            }
+
+            return h;
+        }
+};
+
+template <>
+class CRCHash<std::pair<QualifiedPackageName, VersionSpec> > :
+    std::unary_function<std::pair<QualifiedPackageName, VersionSpec>, std::size_t>
+{
+    private:
+        static const std::size_t h_shift = std::numeric_limits<std::size_t>::digits - 5;
+        static const std::size_t h_mask = 0x1f << h_shift;
+
+    public:
+        std::size_t operator() (const std::pair<QualifiedPackageName, VersionSpec> & val) const
+        {
+            const std::string & s1(val.first.get<qpn_category>().data()),
+                  s2(val.first.get<qpn_package>().data());
+
+            std::size_t h(0);
+
+            for (std::string::size_type t(0) ; t < s1.length() ; ++t)
+            {
+                std::size_t hh(h & h_mask);
+                h <<= 5;
+                h ^= (hh >> h_shift);
+                h ^= s1[t];
+            }
+
+            for (std::string::size_type t(0) ; t < s2.length() ; ++t)
+            {
+                std::size_t hh(h & h_mask);
+                h <<= 5;
+                h ^= (hh >> h_shift);
+                h ^= s2[t];
+            }
+
+            h ^= val.second.hash_value();
+
+            return h;
+        }
+};
+
+#endif
+
+#if HAVE_TR1_HASHES
+
+typedef std::tr1::unordered_map<QualifiedPackageName, VersionSpecCollection::Pointer,
+        CRCHash<QualifiedPackageName> > VersionsMap;
+
+typedef std::tr1::unordered_map<QualifiedPackageName, PackageDepAtom::ConstPointer,
+        CRCHash<QualifiedPackageName> > VirtualsMap;
+
+typedef std::tr1::unordered_map<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer>,
+        CRCHash<QualifiedPackageName> > RepositoryMaskMap;
+
+typedef std::tr1::unordered_map<CategoryNamePart, bool,
+        CRCHash<CategoryNamePart> > CategoryMap;
+
+typedef std::tr1::unordered_map<QualifiedPackageName, bool,
+        CRCHash<QualifiedPackageName> > PackagesMap;
+
+typedef std::tr1::unordered_map<UseFlagName, UseFlagState,
+        CRCHash<UseFlagName> > UseMap;
+
+typedef std::tr1::unordered_set<UseFlagName,
+        CRCHash<UseFlagName> > UseMaskSet;
+
+typedef std::tr1::unordered_map<std::pair<QualifiedPackageName, VersionSpec>,
+        VersionMetadata::Pointer, CRCHash<std::pair<QualifiedPackageName, VersionSpec> > > MetadataMap;
+
+#elif HAVE_EXT_HASHES
+
+typedef __gnu_cxx::hash_map<QualifiedPackageName, VersionSpecCollection::Pointer,
+        CRCHash<QualifiedPackageName> > VersionsMap;
+
+typedef __gnu_cxx::hash_map<QualifiedPackageName, PackageDepAtom::ConstPointer,
+        CRCHash<QualifiedPackageName> > VirtualsMap;
+
+typedef __gnu_cxx::hash_map<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer>,
+        CRCHash<QualifiedPackageName> > RepositoryMaskMap;
+
+typedef __gnu_cxx::hash_map<CategoryNamePart, bool,
+        CRCHash<CategoryNamePart> > CategoryMap;
+
+typedef __gnu_cxx::hash_map<QualifiedPackageName, bool,
+        CRCHash<QualifiedPackageName> > PackagesMap;
+
+typedef __gnu_cxx::hash_map<UseFlagName, UseFlagState,
+        CRCHash<UseFlagName> > UseMap;
+
+typedef __gnu_cxx::hash_set<UseFlagName,
+        CRCHash<UseFlagName> > UseMaskSet;
+
+typedef __gnu_cxx::hash_map<std::pair<QualifiedPackageName, VersionSpec>,
+        VersionMetadata::Pointer, CRCHash<std::pair<QualifiedPackageName, VersionSpec> > > MetadataMap;
+
+#else
+
+typedef std::map<QualifiedPackageName, VersionSpecCollection::Pointer> VersionsMap;
+
+typedef std::map<QualifiedPackageName, PackageDepAtom::ConstPointer> VirtualsMap;
+
+typedef std::map<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> > RepositoryMaskMap;
+
+typedef std::map<CategoryNamePart, bool> CategoryMap;
+
+typedef std::map<QualifiedPackageName, bool> PackagesMap;
+
+typedef std::map<UseFlagName, UseFlagState> UseMap;
+
+typedef std::set<UseFlagName> UseMaskSet;
+
+typedef std::map<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer> MetadataMap;
+
+#endif
 
 namespace paludis
 {
@@ -67,32 +259,32 @@ namespace paludis
 
         /// Our category names, and whether we have a fully loaded list
         /// of package names for that category.
-        mutable std::map<CategoryNamePart, bool> category_names;
+        mutable CategoryMap category_names;
 
         /// Our package names, and whether we have a fully loaded list of
         /// version specs for that category.
-        mutable std::map<QualifiedPackageName, bool> package_names;
+        mutable PackagesMap package_names;
 
         /// Our version specs for each package.
-        mutable std::map<QualifiedPackageName, VersionSpecCollection::Pointer> version_specs;
+        mutable VersionsMap version_specs;
 
         /// Metadata cache.
-        mutable std::map<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer> metadata;
+        mutable MetadataMap metadata;
 
         /// Repository mask.
-        mutable std::map<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> > repo_mask;
+        mutable RepositoryMaskMap repo_mask;
 
         /// Have repository mask?
         mutable bool has_repo_mask;
 
         /// Use mask.
-        mutable std::set<UseFlagName> use_mask;
+        mutable UseMaskSet use_mask;
 
         /// Use.
-        mutable std::map<UseFlagName, UseFlagState> use;
+        mutable UseMap use;
 
         /// Old style virtuals name mapping.
-        mutable std::map<QualifiedPackageName, PackageDepAtom::ConstPointer> virtuals_map;
+        mutable VirtualsMap virtuals_map;
 
         /// Have we loaded our profile yet?
         mutable bool has_profile;
@@ -233,7 +425,7 @@ PortageRepository::do_has_package_named(const CategoryNamePart & c,
     need_category_names();
     need_virtual_names();
 
-    std::map<CategoryNamePart, bool>::const_iterator cat_iter(
+    CategoryMap::iterator cat_iter(
             _implementation->category_names.find(c));
 
     if (_implementation->category_names.end() == cat_iter)
@@ -268,7 +460,7 @@ PortageRepository::do_category_names() const
     need_category_names();
 
     CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection);
-    std::map<CategoryNamePart, bool>::const_iterator i(_implementation->category_names.begin()),
+    CategoryMap::const_iterator i(_implementation->category_names.begin()),
         i_end(_implementation->category_names.end());
     for ( ; i != i_end ; ++i)
         result->insert(i->first);
@@ -357,7 +549,7 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
             stringify(n.get<qpn_package>()));
     if (CategoryNamePart("virtual") == n.get<qpn_category>() && ! path.exists())
     {
-        std::map<QualifiedPackageName, PackageDepAtom::ConstPointer>::iterator i(
+        VirtualsMap::iterator i(
                 _implementation->virtuals_map.find(n));
         need_version_names(i->second->package());
 
@@ -432,7 +624,7 @@ PortageRepository::do_version_metadata(
     cache_file /= stringify(c);
     cache_file /= stringify(p) + "-" + stringify(v);
 
-    std::map<QualifiedPackageName, PackageDepAtom::ConstPointer>::iterator vi;
+    VirtualsMap::iterator vi(_implementation->virtuals_map.end());
     if (cache_file.is_regular_file())
     {
         std::ifstream cache(std::string(cache_file).c_str());
@@ -496,7 +688,7 @@ PortageRepository::do_query_repository_masks(const CategoryNamePart & c,
         _implementation->has_repo_mask = true;
     }
 
-    std::map<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> >::const_iterator r(
+    RepositoryMaskMap::iterator r(
             _implementation->repo_mask.find(QualifiedPackageName(c, p)));
     if (_implementation->repo_mask.end() == r)
         return false;
@@ -538,7 +730,7 @@ PortageRepository::do_query_use(const UseFlagName & f) const
         _implementation->has_profile = true;
     }
 
-    std::map<UseFlagName, UseFlagState>::const_iterator p;
+    UseMap::iterator p(_implementation->use.end());
     if (_implementation->use.end() == ((p = _implementation->use.find(f))))
         return use_unspecified;
     else
@@ -567,7 +759,7 @@ PortageRepository::need_virtual_names() const
         _implementation->add_profile(_implementation->profile.realpath());
         _implementation->has_profile = true;
 
-        for (std::map<QualifiedPackageName, PackageDepAtom::ConstPointer>::const_iterator
+        for (VirtualsMap::const_iterator
                 v(_implementation->virtuals_map.begin()), v_end(_implementation->virtuals_map.end()) ;
                 v != v_end ; ++v)
             _implementation->package_names.insert(

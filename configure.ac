@@ -101,6 +101,46 @@ int main(int, char **)
 	])
 dnl }}}
 
+dnl {{{ check for hashes
+have_tr1_hashes=0
+have_ext_hashes=0
+AC_MSG_CHECKING([for a usable std::tr1::unordered_map<>])
+AC_COMPILE_IFELSE([
+#include <tr1/unordered_map>
+int main(int, char **)
+{
+	std::tr1::unordered_map<int, int> m;
+	m.insert(std::make_pair(1, 2));
+}
+],
+	[
+	 AC_MSG_RESULT([yes])
+	 have_tr1_hashes=1
+	],
+	[
+	 AC_MSG_RESULT([no])
+	 AC_MSG_CHECKING([for a usable __gnu_cxx::hash_map<>])
+	 AC_COMPILE_IFELSE([
+#include <ext/hash_map>
+int main(int, char **)
+{
+	__gnu_cxx::hash_map<int, int> m;
+	m.insert(std::make_pair(1, 2));
+}
+],
+	 [
+	  AC_MSG_RESULT([yes])
+	  have_ext_hashes=1
+	 ],
+	 [
+	  AC_MSG_RESULT([no])
+	 ]
+	]))
+
+AC_DEFINE_UNQUOTED([HAVE_TR1_HASHES], $have_tr1_hashes, [Do we have std::tr1:: hashes?])
+AC_DEFINE_UNQUOTED([HAVE_EXT_HASHES], $have_ext_hashes, [Do we have __gnu_cxx hashes?])
+dnl }}}
+
 dnl {{{ we need libebt.
 dnl don't use AC_CHECK_HEADER, it does silly things
 AC_MSG_CHECKING([for libebt])

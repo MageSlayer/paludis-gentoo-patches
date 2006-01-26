@@ -95,17 +95,16 @@ do_install()
                 cout << "::" << dep->get<p::dle_repository>();
 
             /* display slot name, unless it's 0 */
-            if (p::SlotName("0") != dep->get<p::dle_slot>())
-                cout << colour(cl_slot, " {:" + stringify(dep->get<p::dle_slot>()) + "}");
+            if ("0" != dep->get<p::dle_metadata>()->get(p::vmk_slot))
+                cout << colour(cl_slot, " {:" + p::stringify(dep->get<p::dle_metadata>()->get(p::vmk_slot)) + "}");
 
-            /* fetch metadata */
+            /* fetch db entry */
             p::PackageDatabaseEntry p(p::PackageDatabaseEntry(dep->get<p::dle_name>(),
                         dep->get<p::dle_version>(), dep->get<p::dle_repository>()));
-            p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(p));
 
             /* display USE flags */
-            for (p::VersionMetadata::IuseIterator i(metadata->begin_iuse()),
-                    i_end(metadata->end_iuse()) ; i != i_end ; ++i)
+            for (p::VersionMetadata::IuseIterator i(dep->get<p::dle_metadata>()->begin_iuse()),
+                    i_end(dep->get<p::dle_metadata>()->end_iuse()) ; i != i_end ; ++i)
             {
                 if (env->query_use(*i, &p))
                     cout << " " << colour(cl_flag_on, *i);
