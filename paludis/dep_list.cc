@@ -292,7 +292,7 @@ DepList::visit(const PackageDepAtom * const p)
             else if (_implementation->merge_list_insert_pos == i && _implementation->drop_self_circular)
                 return;
             else
-                throw CircularDependencyError(_implementation->merge_list_insert_pos, next(i));
+                throw CircularDependencyError(i, next(i));
         }
 
         return;
