@@ -50,12 +50,8 @@ do_install()
         /* we might have a dep atom, but we might just have a simple package name
          * without a category. either should work. also allow full atoms, to make
          * it easy to test things like '|| ( foo/bar foo/baz )'. */
-        if (std::string::npos != q->find_first_of(" \t\n"))
+        if (std::string::npos != q->find('/'))
             targets->add_child(p::DepParser::parse(*q));
-        else if (std::string::npos == q->find('/'))
-            targets->add_child(p::DepAtom::Pointer(new p::PackageDepAtom(
-                            env->package_database()->fetch_unique_qualified_package_name(
-                                p::PackageNamePart(*q)))));
         else
             targets->add_child(p::DepAtom::Pointer(new p::PackageDepAtom(*q)));
     }
