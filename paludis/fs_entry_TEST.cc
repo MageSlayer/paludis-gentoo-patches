@@ -71,15 +71,27 @@ namespace test_cases
         {
             FSEntry d("fs_entry_TEST_dir");
             TEST_CHECK(d.is_directory());
+
             d /= "all_perms";
             TEST_CHECK(d.is_regular_file());
+
+            FSEntry e("fs_entry_TEST_dir/nosuchfile");
+            TEST_CHECK(! e.is_regular_file());
+            d = e;
+            TEST_CHECK(! d.is_regular_file());
+            TEST_CHECK(! d.exists());
+
+            d = FSEntry("fs_entry_TEST_dir/all_perms");
+            TEST_CHECK(! e.is_regular_file());
+            TEST_CHECK(d.is_regular_file());
+            TEST_CHECK(d.exists());
 
             FSEntry f("fs_entry_TEST_dir/symlink_to_dir_a/file_in_a");
             TEST_CHECK(f.is_regular_file());
             FSEntry r(f.realpath());
             TEST_CHECK(r.is_regular_file());
-            std::string e("fs_entry_TEST_dir/dir_a/file_in_a");
-            TEST_CHECK_EQUAL(std::string(r).substr(std::string(r).length() - e.length()), e);
+            std::string g("fs_entry_TEST_dir/dir_a/file_in_a");
+            TEST_CHECK_EQUAL(std::string(r).substr(std::string(r).length() - g.length()), g);
         }
     } test_fs_entry_realpath;
 

@@ -45,7 +45,8 @@ FSError::FSError(const std::string & message) throw () :
 FSEntry::FSEntry(const std::string & path) :
     ComparisonPolicyType(&FSEntry::_path),
     _path(path),
-    _stat_info(new struct stat),
+    _stat_info(0),
+    _exists(false),
     _checked(false)
 {
     _normalise();
@@ -68,6 +69,10 @@ const FSEntry &
 FSEntry::operator= (const FSEntry & other)
 {
     _path = other._path;
+    _stat_info = other._stat_info;
+    _exists = other._exists;
+    _checked = other._checked;
+
     return *this;
 }
 
@@ -94,7 +99,10 @@ FSEntry::operator/= (const FSEntry & rhs)
     _path.append("/");
     _path.append(rhs._path);
     _normalise();
+
     _checked = false;
+    _exists = false;
+    _stat_info = CountedPtr<struct stat, count_policy::ExternalCountTag>(0);
 
     return *this;
 }
@@ -112,7 +120,7 @@ FSEntry::is_directory() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return S_ISDIR((*_stat_info).st_mode);
 
     return false;
@@ -123,7 +131,7 @@ FSEntry::is_regular_file() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return S_ISREG((*_stat_info).st_mode);
 
     return false;
@@ -134,7 +142,7 @@ FSEntry::owner_has_read() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return (*_stat_info).st_mode & S_IRUSR;
 
     return false;
@@ -145,7 +153,7 @@ FSEntry::owner_has_write() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return (*_stat_info).st_mode & S_IWUSR;
 
     return false;
@@ -156,7 +164,7 @@ FSEntry::owner_has_execute() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return (*_stat_info).st_mode & S_IXUSR;
 
     return false;
@@ -167,7 +175,7 @@ FSEntry::group_has_read() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return (*_stat_info).st_mode & S_IRGRP;
 
     return false;
@@ -178,7 +186,7 @@ FSEntry::group_has_write() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return (*_stat_info).st_mode & S_IWGRP;
 
     return false;
@@ -189,7 +197,7 @@ FSEntry::group_has_execute() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return (*_stat_info).st_mode & S_IXGRP;
 
     return false;
@@ -200,7 +208,7 @@ FSEntry::others_has_read() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return (*_stat_info).st_mode & S_IROTH;
 
     return false;
@@ -211,7 +219,7 @@ FSEntry::others_has_write() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return (*_stat_info).st_mode & S_IWOTH;
 
     return false;
@@ -222,7 +230,7 @@ FSEntry::others_has_execute() const
 {
     _stat();
 
-    if(_exists)
+    if (_exists)
         return (*_stat_info).st_mode & S_IXOTH;
 
     return false;
@@ -266,9 +274,10 @@ FSEntry::_normalise()
 void
 FSEntry::_stat() const
 {
-    if(_checked == true)
+    if (_checked)
         return;
 
+    _stat_info = CountedPtr<struct stat, count_policy::ExternalCountTag>(new struct stat);
     if (0 != stat(_path.c_str(), _stat_info.raw_pointer()))
     {
         if (errno != ENOENT)
@@ -276,6 +285,7 @@ FSEntry::_stat() const
                     + strerror(errno));
 
         _exists = false;
+        _stat_info = CountedPtr<struct stat, count_policy::ExternalCountTag>(0);
     }
     else
         _exists = true;
