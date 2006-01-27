@@ -21,13 +21,16 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_HH 1
 
 #include <paludis/attributes.hh>
-#include <paludis/repository_name.hh>
 #include <paludis/category_name_part.hh>
-#include <paludis/package_name_part.hh>
 #include <paludis/counted_ptr.hh>
+#include <paludis/exception.hh>
+#include <paludis/package_name_part.hh>
+#include <paludis/repository_name.hh>
+#include <paludis/use_flag_state.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/use_flag_state.hh>
+#include <paludis/virtual_constructor.hh>
+
 #include <map>
 #include <string>
 
@@ -305,6 +308,23 @@ namespace paludis
                 return do_query_use_mask(u);
             }
     };
+
+    /**
+     * Thrown if a repository of the specified type does not exist.
+     *
+     * \ingroup Exception
+     */
+    class NoSuchRepositoryTypeError : public ConfigurationError
+    {
+        public:
+            NoSuchRepositoryTypeError(const std::string & format) throw ();
+    };
+
+    class PackageDatabase;
+
+    typedef VirtualConstructor<std::string,
+            CountedPtr<Repository> (*) (const PackageDatabase * const, const std::map<std::string, std::string> &),
+            virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> > RepositoryMaker;
 }
 
 #endif

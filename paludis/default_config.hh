@@ -34,6 +34,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 namespace paludis
 {
@@ -57,11 +58,10 @@ namespace paludis
      */
     enum RepositoryConfigEntryKeys
     {
-        rce_location,       ///< Our location, for example on disk
-        rce_profile,        ///< Our profile's location
-        rce_cache,          ///< Our cache location
-        rce_format,         ///< Our format, for example 'portage'
-        rce_importance      ///< Our importance, higher being more important
+        rce_format,         ///< Our format
+        rce_importance,     ///< Our importance, higher being more important
+        rce_keys,           ///< Our key/value data
+        last_rce            ///< Number of entries
     };
 
     /**
@@ -70,12 +70,10 @@ namespace paludis
     struct RepositoryConfigEntryTag :
         SmartRecordTag<comparison_mode::FullComparisonTag,
             comparison_method::SmartRecordCompareByKeyTag<rce_importance> >,
-        SmartRecordKeys<RepositoryConfigEntryKeys, 5>,
-        SmartRecordKey<rce_location, FSEntry>,
-        SmartRecordKey<rce_profile, FSEntry>,
-        SmartRecordKey<rce_cache, FSEntry>,
+        SmartRecordKeys<RepositoryConfigEntryKeys, last_rce>,
         SmartRecordKey<rce_format, std::string>,
-        SmartRecordKey<rce_importance, unsigned>
+        SmartRecordKey<rce_importance, unsigned>,
+        SmartRecordKey<rce_keys, std::map<std::string, std::string> >
     {
     };
 

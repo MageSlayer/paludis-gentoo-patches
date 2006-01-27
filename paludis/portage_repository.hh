@@ -23,6 +23,8 @@
 #include <paludis/repository.hh>
 #include <paludis/fs_entry.hh>
 #include <paludis/private_implementation_pattern.hh>
+#include <map>
+#include <string>
 
 /** \file
  * Declaration for the PortageRepository class.
@@ -89,10 +91,33 @@ namespace paludis
                     const FSEntry & cache);
 
             /**
+             * Virtual constructor.
+             */
+            static CountedPtr<Repository> make_portage_repository(
+                    const PackageDatabase * const db,
+                    const std::map<std::string, std::string> &);
+
+            /**
              * Destructor.
              */
             ~PortageRepository();
     };
+
+    /**
+     * Thrown if invalid parameters are provided for
+     * PortageRepository::make_portage_repository.
+     *
+     * \ingroup Exception
+     */
+    class PortageRepositoryConfigurationError : public ConfigurationError
+    {
+        public:
+            PortageRepositoryConfigurationError(const std::string & msg) throw ();
+    };
+
+    static const RepositoryMaker::RegisterMaker register_portage_repository(
+            "portage", &PortageRepository::make_portage_repository);
+
 }
 
 #endif

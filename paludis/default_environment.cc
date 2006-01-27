@@ -19,7 +19,7 @@
 
 #include "default_environment.hh"
 #include "package_database.hh"
-#include "portage_repository.hh"
+#include "repository.hh"
 #include "default_config.hh"
 #include "stringify.hh"
 #include "match_package.hh"
@@ -36,14 +36,9 @@ DefaultEnvironment::DefaultEnvironment() :
 
     for (DefaultConfig::RepositoryIterator r(DefaultConfig::get_instance()->begin_repositories()),
             r_end(DefaultConfig::get_instance()->end_repositories()) ; r != r_end ; ++r)
-    {
-        /// \todo class factory
-        if (r->get<rce_format>() != "portage")
-            throw DefaultConfigError("Unknown repository format '" + r->get<rce_format>() + "'");
-        Repository::Pointer repo(new PortageRepository(package_database().raw_pointer(),
-                    r->get<rce_location>(), r->get<rce_profile>(), r->get<rce_cache>()));
-        package_database()->add_repository(repo);
-    }
+        package_database()->add_repository(
+                RepositoryMaker::get_instance()->find_maker(r->get<rce_format>())(
+                    package_database().raw_pointer(), r->get<rce_keys>()));
 
     /// \bug vdb
 }

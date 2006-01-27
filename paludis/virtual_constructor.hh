@@ -21,9 +21,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VIRTUAL_CONSTRUCTOR_HH
 #define PALUDIS_GUARD_PALUDIS_VIRTUAL_CONSTRUCTOR_HH 1
 
-#include <vector>
-#include <algorithm>
+#include <paludis/exception.hh>
 #include <paludis/instantiation_policy.hh>
+#include <paludis/stringify.hh>
+
+#include <algorithm>
+#include <vector>
 
 /** \file
  * Declarations for VirtualConstructor and related classes.
@@ -101,6 +104,23 @@ namespace paludis
             }
         };
     }
+
+    /**
+     * Thrown if registering a key fails.
+     *
+     * \ingroup Exception
+     * \ingroup VirtualConstructor
+     */
+    class VirtualConstructorRegisterFailure : public Exception
+    {
+        public:
+            template <typename T_>
+            VirtualConstructorRegisterFailure(const T_ & k) throw () :
+                Exception("Virtual constructor registration failed on key '" +
+                        stringify(k) + "'")
+            {
+            }
+    };
 
     /**
      * A VirtualConstructor can be used where a mapping between the value of
@@ -206,9 +226,10 @@ namespace paludis
     VirtualConstructor<KeyType_, ValueType_, NotFoundBehaviour_>::register_maker(
             const KeyType_ & k, const ValueType_ & v)
     {
-        entries.insert(std::lower_bound(entries.begin(), entries.end(), k,
+        if (! entries.insert(std::lower_bound(entries.begin(), entries.end(), k,
                     virtual_constructor_internals::ComparePairByFirst<KeyType_, ValueType_>()),
-                std::make_pair(k, v));
+                std::make_pair(k, v))->second)
+            throw VirtualConstructorRegisterFailure(k);
     }
 }
 

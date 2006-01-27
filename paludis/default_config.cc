@@ -20,6 +20,7 @@
 
 #include "create_insert_iterator.hh"
 #include "default_config.hh"
+#include "destringify.hh"
 #include "dir_iterator.hh"
 #include "filter_insert_iterator.hh"
 #include "fs_entry.hh"
@@ -77,33 +78,16 @@ DefaultConfig::DefaultConfig()
 
             KeyValueConfigFile k(*repo_file);
 
-            if (k.get("location").empty())
-                throw DefaultConfigError("Key 'location' empty or not specified in " +
-                        stringify(*repo_file));
-            if (k.get("format").empty())
-                throw DefaultConfigError("Key 'format' empty or not specified in " +
-                        stringify(*repo_file));
-            if (k.get("profile").empty())
-                throw DefaultConfigError("Key 'profile' empty or not specified in " +
-                        stringify(*repo_file));
+            std::string format(k.get("format"));
+            if (format.empty())
+                throw DefaultConfigError("Key 'format' not specified or empty");
 
             int importance(0);
             if (! k.get("importance").empty())
-            {
-                std::stringstream s(k.get("importance"));
-                s >> importance;
-                if (! s.eof())
-                    throw DefaultConfigError("Key 'importance' should be a number in "
-                            + stringify(*repo_file));
-            }
+                importance = destringify<int>(k.get("importance"));
 
-            _repos.push_back(RepositoryConfigEntry(k.get("location"),
-                        k.get("profile"),
-                        (k.get("cache").empty() ?
-                            FSEntry(k.get("location")) / "metadata" / "cache" :
-                            FSEntry(k.get("cache"))),
-                        k.get("format"),
-                        importance));
+            std::map<std::string, std::string> keys(k.begin(), k.end());
+            _repos.push_back(RepositoryConfigEntry(format, importance, keys));
         }
 
         if (_repos.empty())

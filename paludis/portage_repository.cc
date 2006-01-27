@@ -767,3 +767,30 @@ PortageRepository::need_virtual_names() const
     }
 }
 
+CountedPtr<Repository>
+PortageRepository::make_portage_repository(
+        const PackageDatabase * const db,
+        const std::map<std::string, std::string> & m)
+{
+    std::string location;
+    if (m.end() == m.find("location") || ((location = m.find("location")->second)).empty())
+        throw PortageRepositoryConfigurationError("Key 'location' not specified or empty");
+
+    std::string profile;
+    if (m.end() == m.find("profile") || ((profile = m.find("profile")->second)).empty())
+        throw PortageRepositoryConfigurationError("Key 'profile' not specified or empty");
+
+    std::string cache;
+    if (m.end() == m.find("cache") || ((profile = m.find("cache")->second)).empty())
+        cache = location + "/metadata/cache";
+
+    return CountedPtr<Repository>(new PortageRepository(db, location, profile, cache));
+}
+
+PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
+        const std::string & msg) throw () :
+    ConfigurationError("Portage repository configuration error: " + msg)
+{
+}
+
+
