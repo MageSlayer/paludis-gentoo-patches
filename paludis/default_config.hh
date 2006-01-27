@@ -21,7 +21,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEFAULT_CONFIG_HH
 #define PALUDIS_GUARD_PALUDIS_DEFAULT_CONFIG_HH 1
 
-#include <paludis/configuration_error.hh>
+#include <paludis/exception.hh>
 #include <paludis/fs_entry.hh>
 #include <paludis/indirect_iterator.hh>
 #include <paludis/instantiation_policy.hh>
@@ -31,6 +31,7 @@
 #include <paludis/smart_record.hh>
 #include <paludis/use_flag_name.hh>
 #include <paludis/use_flag_state.hh>
+
 #include <map>
 #include <vector>
 

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_SLOT_NAME_HH 1
 
 #include <paludis/validated.hh>
-#include <paludis/name_error.hh>
+#include <paludis/exception.hh>
 #include <paludis/instantiation_policy.hh>
 #include <string>
 

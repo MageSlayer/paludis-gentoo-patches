@@ -24,7 +24,7 @@
 #include <paludis/category_name_part.hh>
 #include <paludis/smart_record.hh>
 #include <paludis/sorted_collection.hh>
-#include <paludis/name_error.hh>
+#include <paludis/exception.hh>
 #include <ostream>
 
 namespace paludis

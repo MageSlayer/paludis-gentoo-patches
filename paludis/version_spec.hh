@@ -23,7 +23,7 @@
 #include <paludis/private_implementation_pattern.hh>
 #include <paludis/comparison_policy.hh>
 #include <paludis/sorted_collection.hh>
-#include <paludis/name_error.hh>
+#include <paludis/exception.hh>
 #include <string>
 #include <ostream>
 

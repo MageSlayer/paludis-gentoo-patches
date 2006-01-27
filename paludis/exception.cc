@@ -46,3 +46,13 @@ InternalError::InternalError(const std::string & where) throw () :
 {
 }
 
+NameError::NameError(const std::string & name, const std::string & role) throw () :
+    Exception("Name '" + name + "' is not a valid " + role)
+{
+}
+
+ConfigurationError::ConfigurationError(const std::string & msg) throw () :
+    Exception(msg)
+{
+}
+

@@ -18,7 +18,7 @@
  */
 
 #include "qualified_package_name.hh"
-#include "name_error.hh"
+#include "exception.hh"
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 

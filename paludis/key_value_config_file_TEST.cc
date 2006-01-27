@@ -20,7 +20,7 @@
 
 #include "stringify.hh"
 #include "key_value_config_file.hh"
-#include "configuration_error.hh"
+#include "exception.hh"
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>

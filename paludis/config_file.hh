@@ -22,7 +22,7 @@
 #define PALUDIS_GUARD_PALUDIS_CONFIG_FILE_HH 1
 
 #include <paludis/instantiation_policy.hh>
-#include <paludis/configuration_error.hh>
+#include <paludis/exception.hh>
 #include <istream>
 #include <list>
 #include <string>

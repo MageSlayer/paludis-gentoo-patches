@@ -29,7 +29,7 @@
 
 /** \file
  * Declaration for the Exception base class, the InternalError exception
- * class and related utilities.
+ * class, the NameError class and related utilities.
  *
  * \ingroup Exception
  */
@@ -109,6 +109,40 @@ namespace paludis
              * const std::string &) instead.
              */
             InternalError(const std::string & where) throw () PALUDIS_ATTRIBUTE((deprecated));
+    };
+
+    /**
+     * A NameError is an Exception that is thrown when some kind of invalid
+     * name is encountered.
+     *
+     * \ingroup Exception
+     * \ingroup Database
+     */
+    class NameError : public Exception
+    {
+        protected:
+            /**
+             * Constructor.
+             *
+             * \param name The invalid name encountered.
+             * \param role The role for the name, for example "package name".
+             */
+            NameError(const std::string & name, const std::string & role) throw ();
+    };
+
+    /**
+     * A ConfigurationError is thrown when an invalid configuration occurs.
+     *
+     * \ingroup Exception
+     * \ingroup ConfigFile
+     */
+    class ConfigurationError : public Exception
+    {
+        protected:
+            /**
+             * Constructor.
+             */
+            ConfigurationError(const std::string & msg) throw ();
     };
 }
 
