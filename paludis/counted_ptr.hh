@@ -419,6 +419,22 @@ namespace paludis
             }
 
             /**
+             * Explicit assignment, from a raw pointer.
+             */
+            const CountedPtr & assign(T_ * const other)
+            {
+                return operator= (CountedPtr<T_, count_policy::ExternalCountTag>(other));
+            }
+
+            /**
+             * Explicit assignment to zero.
+             */
+            const CountedPtr & zero()
+            {
+                return operator= (CountedPtr<T_, count_policy::ExternalCountTag>(0));
+            }
+
+            /**
              * Fetch our reference count pointer.
              */
             unsigned * reference_count_pointer() const
@@ -495,6 +511,22 @@ namespace paludis
                         ++*this->_ptr->reference_count_pointer();
                 }
                 return *this;
+            }
+
+            /**
+             * Explicit assignment, from a raw pointer.
+             */
+            const CountedPtr & assign(T_ * const other)
+            {
+                return operator= (CountedPtr<T_, count_policy::InternalCountTag>(other));
+            }
+
+            /**
+             * Explicit assignment to zero.
+             */
+            const CountedPtr & zero()
+            {
+                return operator= (CountedPtr<T_, count_policy::InternalCountTag>(0));
             }
 
             /**

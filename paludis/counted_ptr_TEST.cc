@@ -208,6 +208,12 @@ namespace test_cases
             TEST_CHECK_EQUAL(*i, 30);
             TEST_CHECK_EQUAL(*i2, 10);
             TEST_CHECK_EQUAL(*i3, 30);
+
+            i.assign(new int(50));
+            TEST_CHECK_EQUAL(*i, 50);
+
+            i.zero();
+            TEST_CHECK(! i);
         }
     } test_counted_ptr_assign_pointer;
 
@@ -344,6 +350,12 @@ namespace test_cases
             TEST_CHECK_EQUAL(*i, 30);
             TEST_CHECK_EQUAL(*i2, 10);
             TEST_CHECK_EQUAL(*i3, 30);
+
+            i.assign(new MyClass(50));
+            TEST_CHECK_EQUAL(*i, 50);
+
+            i.zero();
+            TEST_CHECK(! i);
         }
     } test_counted_ptr_internal_assign_pointer;
 
