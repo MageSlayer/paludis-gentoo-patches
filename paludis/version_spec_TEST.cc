@@ -158,6 +158,10 @@ namespace test_cases
             TEST_CHECK(VersionSpec("1.2.1").equal_star_compare(VersionSpec("1.2")));
             TEST_CHECK(VersionSpec("2.2").equal_star_compare(VersionSpec("2")));
             TEST_CHECK(VersionSpec("2").equal_star_compare(VersionSpec("2")));
+            TEST_CHECK(VersionSpec("2.59").equal_star_compare(VersionSpec("2.5")));
+            TEST_CHECK(VersionSpec("2.59_alpha5-r1").equal_star_compare(VersionSpec("2.59_alpha")));
+            TEST_CHECK(! VersionSpec("2").equal_star_compare(VersionSpec("2.5")));
+            TEST_CHECK(! VersionSpec("2.59").equal_star_compare(VersionSpec("2.50")));
             TEST_CHECK(! VersionSpec("1").equal_star_compare(VersionSpec("2")));
 
         }
