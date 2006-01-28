@@ -41,13 +41,6 @@
 #  else
 #    define PALUDIS_ATTRIBUTE(x)
 #  endif
-#elif (defined(__ICC))
-#  define PALUDIS_ATTRIBUTE(x) __attribute__(x)
-#  define PALUDIS_CAN_USE_ATTRIBUTE 1
-#  define nothrow
-#  define deprecated
-#  define noinline
-#  define nonnull(...)
 #else
 #  define PALUDIS_ATTRIBUTE(x)
 #endif
