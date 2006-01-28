@@ -42,43 +42,58 @@ namespace paludis
     }
 
     /**
-     * Convert item to a string (specialisation for std::string).
+     * Convert item to a string (overload for std::string).
      */
-    template <>
     inline std::string
-    stringify<std::string>(const std::string & item)
+    stringify(const std::string & item)
     {
         return item;
     }
 
     /**
-     * Convert item to a string (specialisation for char).
+     * Convert item to a string (overload for char).
      */
-    template <>
     inline std::string
-    stringify<char>(const char & item)
+    stringify(const char & item)
     {
         return std::string(1, item);
     }
 
     /**
-     * Convert item to a string (specialisation for unsigned char).
+     * Convert item to a string (overload for unsigned char).
      */
-    template <>
     inline std::string
-    stringify<unsigned char>(const unsigned char & item)
+    stringify(const unsigned char & item)
     {
         return std::string(1, item);
     }
 
     /**
-     * Convert item to a string (specialisation for bool).
+     * Convert item to a string (overload for bool).
      */
-    template <>
     inline std::string
-    stringify<bool>(const bool & item)
+    stringify(const bool & item)
     {
         return item ? "true" : "false";
+    }
+
+    /**
+     * Convert item to a string (undefined overload for pointers, to
+     * catch screwups at compiletime rather than printing out addresses in
+     * weird places because of a missing *).
+     */
+    template <typename T_>
+    void
+    stringify(const T_ * const item);
+
+    /**
+     * Convert item to a string (overload for char *, which isn't a
+     * screwup like other pointers).
+     */
+    inline std::string
+    stringify(const char * const item)
+    {
+        return std::string(item);
     }
 }
 
