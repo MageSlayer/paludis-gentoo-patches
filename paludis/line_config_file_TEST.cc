@@ -60,8 +60,7 @@ namespace test_cases
             s << "  #  \t  " << std::endl;
             s << "four  four" << std::endl;
             LineConfigFile ff(&s);
-            std::vector<std::string> f;
-            std::copy(ff.begin(), ff.end(), std::back_inserter(f));
+            std::vector<std::string> f(ff.begin(), ff.end());
 
             TEST_CHECK_EQUAL(f.size(), 4);
             TEST_CHECK_EQUAL(f.at(0), "one");
