@@ -297,11 +297,7 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
 bool
 VersionSpec::equal_star_compare(const VersionSpec & other) const
 {
-    for (unsigned i(0) ; i < other._implementation->max_star_count ; ++i)
-        if (_implementation->version_parts[i] != other._implementation->version_parts[i])
-            return false;
-
-    return true;
+    return std::equal(other._implementation->text.begin(), other._implementation->text.end(), _implementation->text.begin());
 }
 
 std::size_t
