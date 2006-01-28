@@ -34,18 +34,15 @@ namespace test_cases
         FakeRepository::Pointer repo;
         std::deque<std::string> expected;
         std::string merge_target;
+        bool done_populate;
 
         DepListTestCaseBase(const char c) :
             TestCase("dep list " + std::string(1, c)),
             env(),
-            repo(new FakeRepository(RepositoryName("repo")))
+            repo(new FakeRepository(RepositoryName("repo"))),
+            done_populate(false)
         {
             env.package_database()->add_repository(repo);
-        }
-
-        bool repeatable() const
-        {
-            return false;
         }
 
         virtual void populate_repo() = 0;
@@ -54,8 +51,12 @@ namespace test_cases
 
         void run()
         {
-            populate_repo();
-            populate_expected();
+            if (! done_populate)
+            {
+                populate_repo();
+                populate_expected();
+                done_populate = true;
+            }
             check_lists();
         }
 
@@ -253,6 +254,114 @@ namespace test_cases
             expected.push_back("i/one-1:0::repo");
         }
     } test_dep_list_i;
+
+    struct DepListTestCaseJ : DepListTestCase<'j'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("j", "one", "1")->set(vmk_depend, "|| ( j/two j/three )");
+            repo->add_version("j", "two", "1");
+            repo->add_version("j", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "j/one";
+            expected.push_back("j/two-1:0::repo");
+            expected.push_back("j/one-1:0::repo");
+        }
+    } test_dep_list_j;
+
+    struct DepListTestCaseK : DepListTestCase<'k'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("k", "one", "1")->set(vmk_depend, "k/two k/three");
+            repo->add_version("k", "two", "1");
+            repo->add_version("k", "three", "1")->set(vmk_depend, "|| ( k/two k/four )");
+            repo->add_version("k", "four", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "k/one";
+            expected.push_back("k/two-1:0::repo");
+            expected.push_back("k/three-1:0::repo");
+            expected.push_back("k/one-1:0::repo");
+        }
+    } test_dep_list_k;
+
+    struct DepListTestCaseL : DepListTestCase<'l'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("l", "one", "1")->set(vmk_depend, "|| ( ( l/two l/three ) l/four )");
+            repo->add_version("l", "two", "1");
+            repo->add_version("l", "three", "1");
+            repo->add_version("l", "four", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "l/one";
+            expected.push_back("l/two-1:0::repo");
+            expected.push_back("l/three-1:0::repo");
+            expected.push_back("l/one-1:0::repo");
+        }
+    } test_dep_list_l;
+
+    struct DepListTestCaseM : DepListTestCase<'m'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("m", "one", "1")->set(vmk_depend, "m/two m/three m/four");
+            repo->add_version("m", "two", "1");
+            repo->add_version("m", "three", "1");
+            repo->add_version("m", "four", "1")->set(vmk_depend, "|| ( ( m/two m/three ) m/five )");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "m/one";
+            expected.push_back("m/two-1:0::repo");
+            expected.push_back("m/three-1:0::repo");
+            expected.push_back("m/four-1:0::repo");
+            expected.push_back("m/one-1:0::repo");
+        }
+    } test_dep_list_m;
+
+    struct DepListTestCaseN : DepListTestCase<'n'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("n", "one", "1")->set(vmk_depend, "|| ( n/two n/three )");
+            repo->add_version("n", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "n/one";
+            expected.push_back("n/three-1:0::repo");
+            expected.push_back("n/one-1:0::repo");
+        }
+    } test_dep_list_n;
+
+    struct DepListTestCaseO : DepListTestCase<'o'>
+    {
+        void populate_repo()
+        {
+            repo->add_version("o", "one", "1")->set(vmk_depend, "|| ( o/two o/three )");
+            repo->add_version("o", "two", "1")->set(vmk_depend, "o/four");
+            repo->add_version("o", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "o/one";
+            expected.push_back("o/three-1:0::repo");
+            expected.push_back("o/one-1:0::repo");
+        }
+    } test_dep_list_o;
 
     struct DepListTestCaseTransactionalAdd : TestCase
     {

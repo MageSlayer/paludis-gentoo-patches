@@ -208,9 +208,12 @@ DepList::_add_raw(const DepAtom * const atom)
     /* we need to make sure that merge_list doesn't get h0rked in the
      * event of a failure. */
     bool merge_list_was_empty(_implementation->merge_list.empty());
-    std::list<DepListEntry>::iterator save_end;
+    std::list<DepListEntry>::iterator save_end, save_first;
     if (! merge_list_was_empty)
+    {
+        save_first = _implementation->merge_list.begin();
         save_end = previous(_implementation->merge_list.end());
+    }
 
     try
     {
@@ -221,7 +224,10 @@ DepList::_add_raw(const DepAtom * const atom)
         if (merge_list_was_empty)
             _implementation->merge_list.clear();
         else
+        {
             _implementation->merge_list.erase(next(save_end), _implementation->merge_list.end());
+            _implementation->merge_list.erase(_implementation->merge_list.begin(), save_first);
+        }
         throw;
     }
 }
