@@ -357,11 +357,18 @@ DepList::visit(const PackageDepAtom * const p)
 
         for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
         {
-            Save<bool> save_check(&_implementation->drop_all, true);
-            Save<std::list<DepListEntry>::iterator> old_p(
-                    &_implementation->merge_list_insert_pos, next(merge_entry));
-            _add_in_role_raw(*p, "PROVIDE");
-            next(merge_entry)->set<dle_has_predeps>(true);
+            if (_implementation->merge_list.end() != std::find_if(
+                        _implementation->merge_list.begin(), _implementation->merge_list.end(),
+                        DepListEntryMatcher(
+                            _implementation->environment->package_database().raw_pointer(), **p)))
+                continue;
+
+            VersionMetadata::Pointer p_metadata(new VersionMetadata);
+            p_metadata->set(vmk_slot, merge_entry->get<dle_metadata>()->get(vmk_slot));
+            p_metadata->set(vmk_virtual, stringify(merge_entry->get<dle_name>()));
+            _implementation->merge_list.insert(next(merge_entry),
+                    DepListEntry((*p)->package(), merge_entry->get<dle_version>(),
+                        p_metadata, merge_entry->get<dle_repository>(), true, true, true));
         }
     }
 
