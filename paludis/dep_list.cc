@@ -21,6 +21,7 @@
 #include "any_dep_atom.hh"
 #include "block_dep_atom.hh"
 #include "container_entry.hh"
+#include "dep_atom_flattener.hh"
 #include "dep_list.hh"
 #include "dep_parser.hh"
 #include "filter_insert_iterator.hh"
@@ -107,6 +108,7 @@ namespace paludis
         bool recursive_deps;
         bool drop_circular;
         bool drop_self_circular;
+        bool drop_all;
         bool ignore_installed;
         ///}
 
@@ -126,6 +128,7 @@ namespace paludis
             recursive_deps(true),
             drop_circular(false),
             drop_self_circular(false),
+            drop_all(false),
             ignore_installed(false),
             stack_depth(0),
             max_stack_depth(100)
@@ -158,10 +161,10 @@ DepList::add(DepAtom::ConstPointer atom)
         _implementation->merge_list_insert_pos = _implementation->merge_list.end();
         while (i != _implementation->merge_list.end())
         {
-            if (! i->get<dle_has_predeps>())
+            if (! i->get<dle_has_predeps>() && ! _implementation->drop_all)
                 throw InternalError(PALUDIS_HERE, "dle_has_predeps not set for " + stringify(*i));
 
-            else if (! i->get<dle_has_trypredeps>())
+            else if (! i->get<dle_has_trypredeps>() && ! _implementation->drop_all)
             {
                 Save<const DepListEntry *> save_current_package(
                         &_implementation->current_package, &*i);
@@ -172,7 +175,7 @@ DepList::add(DepAtom::ConstPointer atom)
                 i->set<dle_has_trypredeps>(true);
             }
 
-            else if (! i->get<dle_has_postdeps>())
+            else if (! i->get<dle_has_postdeps>() && ! _implementation->drop_all)
             {
                 Save<const DepListEntry *> save_current_package(
                         &_implementation->current_package, &*i);
@@ -194,7 +197,7 @@ DepList::add(DepAtom::ConstPointer atom)
 }
 
 void
-DepList::_add(DepAtom::ConstPointer atom)
+DepList::_add_raw(const DepAtom * const atom)
 {
     /* keep track of stack depth */
     Save<int> old_stack_depth(&_implementation->stack_depth,
@@ -224,10 +227,10 @@ DepList::_add(DepAtom::ConstPointer atom)
 }
 
 void
-DepList::_add_in_role(DepAtom::ConstPointer atom, const std::string & role)
+DepList::_add_in_role_raw(const DepAtom * const atom, const std::string & role)
 {
     Context context("When adding " + role + ":");
-    _add(atom);
+    _add_raw(atom);
 }
 
 DepList::Iterator
@@ -333,6 +336,36 @@ DepList::visit(const PackageDepAtom * const p)
                     metadata, match->get<pde_repository>(),
                     false, false, false)));
 
+    /* if we provide things, also insert them. */
+    /// \bug PROVIDE can contain use? blocks.
+    if (! metadata->get(vmk_provide).empty())
+    {
+        DepParserOptions dep_parser_options;
+        dep_parser_options.set(dpo_qualified_package_names);
+        DepAtom::ConstPointer provide(DepParser::parse(metadata->get(vmk_provide), dep_parser_options));
+
+        CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
+
+        if (_implementation->current_package)
+            e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
+                    new PackageDatabaseEntry(
+                        _implementation->current_package->get<dle_name>(),
+                        _implementation->current_package->get<dle_version>(),
+                        _implementation->current_package->get<dle_repository>()));
+
+        DepAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
+
+        for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+        {
+            Save<bool> save_check(&_implementation->drop_all, true);
+            Save<std::list<DepListEntry>::iterator> old_p(
+                    &_implementation->merge_list_insert_pos, next(merge_entry));
+            _add_in_role_raw(*p, "PROVIDE");
+            next(merge_entry)->set<dle_has_predeps>(true);
+        }
+    }
+
+
     Save<std::list<DepListEntry>::iterator> old_merge_list_insert_pos(
             &_implementation->merge_list_insert_pos, merge_entry);
 
@@ -344,14 +377,15 @@ DepList::visit(const PackageDepAtom * const p)
             &*merge_entry);
 
     /* merge depends */
-    if (! merge_entry->get<dle_has_predeps>())
+    if ((! merge_entry->get<dle_has_predeps>()) && ! (_implementation->drop_all))
     {
         _add_in_role(DepParser::parse(metadata->get(vmk_depend)), "DEPEND");
         merge_entry->set<dle_has_predeps>(true);
     }
 
     /* merge rdepends */
-    if (! merge_entry->get<dle_has_trypredeps>() && dlro_always != _implementation->rdepend_post)
+    if (! merge_entry->get<dle_has_trypredeps>() && dlro_always != _implementation->rdepend_post
+            && ! _implementation->drop_all)
     {
         try
         {
@@ -551,6 +585,12 @@ void
 DepList::set_drop_self_circular(const bool value)
 {
     _implementation->drop_self_circular = value;
+}
+
+void
+DepList::set_drop_all(const bool value)
+{
+    _implementation->drop_all = value;
 }
 
 void

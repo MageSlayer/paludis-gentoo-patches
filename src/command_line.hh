@@ -128,6 +128,9 @@ class CommandLine :
         /// --dl-drop-circular
         paludis::args::SwitchArg a_dl_drop_circular;
 
+        /// --dl-drop-all
+        paludis::args::SwitchArg a_dl_drop_all;
+
         /// --dl-ignore-installed
         paludis::args::SwitchArg a_dl_ignore_installed;
 

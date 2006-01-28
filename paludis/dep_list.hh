@@ -202,8 +202,19 @@ namespace paludis
         protected DepAtomVisitorTypes::ConstVisitor
     {
         private:
-            void _add(DepAtom::ConstPointer);
-            void _add_in_role(DepAtom::ConstPointer, const std::string & role);
+            void _add_raw(const DepAtom * const);
+
+            void _add(DepAtom::ConstPointer a)
+            {
+                _add_raw(a.raw_pointer());
+            }
+
+            void _add_in_role_raw(const DepAtom * const, const std::string & role);
+
+            void _add_in_role(DepAtom::ConstPointer a, const std::string & role)
+            {
+                _add_in_role_raw(a.raw_pointer(), role);
+            }
 
         protected:
             ///\name Visit functions
@@ -263,6 +274,12 @@ namespace paludis
              * they do not exist.
              */
             void set_drop_circular(const bool value);
+
+            /**
+             * Behaviour: if set, any dependencies are treated as if
+             * they do not exist.
+             */
+            void set_drop_all(const bool value);
 
             /**
              * Behaviour: ignore installed packages.

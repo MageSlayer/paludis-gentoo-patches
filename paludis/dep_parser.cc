@@ -53,7 +53,7 @@ enum DepParserState
 };
 
 CompositeDepAtom::ConstPointer
-DepParser::parse(const std::string & s)
+DepParser::parse(const std::string & s, const DepParserOptions & opts)
 {
     Context context("When parsing dependency string '" + s + "':");
 
@@ -115,6 +115,10 @@ DepParser::parse(const std::string & s)
 
                             case dpl_double_bar:
                                  {
+                                     if (! opts[dpo_allow_any_blocks])
+                                         throw DepStringParseError(s,
+                                                 "|| () blocks are disallowed here");
+
                                      CompositeDepAtom::Pointer a(new AnyDepAtom);
                                      stack.top()->add_child(a);
                                      stack.push(a);
@@ -270,6 +274,15 @@ DepParser::parse(const std::string & s)
     stack.pop();
     if (! stack.empty())
         throw DepStringNestingError(s);
+    return result;
+}
+
+DepParserOptions
+DepParser::default_options()
+{
+    DepParserOptions result;
+    result.set(dpo_qualified_package_names);
+    result.set(dpo_allow_any_blocks);
     return result;
 }
 

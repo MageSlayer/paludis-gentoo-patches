@@ -126,23 +126,3 @@ VersionMetadata::end_keywords() const
     return _implementation->keywords.end();
 }
 
-VersionMetadata::ProvideIterator
-VersionMetadata::begin_provide() const
-{
-    if (_implementation->provide.empty())
-    {
-        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-        tokeniser.tokenise(get(vmk_provide),
-                create_inserter<QualifiedPackageName>(
-                    std::inserter(_implementation->provide, _implementation->provide.begin())));
-    }
-
-    return _implementation->provide.begin();
-}
-
-VersionMetadata::ProvideIterator
-VersionMetadata::end_provide() const
-{
-    return _implementation->provide.end();
-}
-

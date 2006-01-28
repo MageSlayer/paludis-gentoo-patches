@@ -88,10 +88,6 @@ namespace paludis
             typedef std::set<KeywordName>::const_iterator KeywordIterator;
             KeywordIterator begin_keywords() const;
             KeywordIterator end_keywords() const;
-
-            typedef std::set<QualifiedPackageName>::const_iterator ProvideIterator;
-            ProvideIterator begin_provide() const;
-            ProvideIterator end_provide() const;
             ///}
 
             /**

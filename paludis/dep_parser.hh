@@ -25,6 +25,7 @@
 #include <paludis/instantiation_policy.hh>
 #include <paludis/exception.hh>
 #include <paludis/dep_lexer.hh>
+#include <bitset>
 #include <string>
 
 /** \file
@@ -67,18 +68,37 @@ namespace paludis
     };
 
     /**
+     * Options for a DepParser.
+     */
+    enum DepParserOptionValues
+    {
+        dpo_qualified_package_names, ///< Tokens must be qualified package names
+        dpo_allow_any_blocks,        ///< Allow || () blocks?
+        last_dpo
+    };
+
+    /**
+     * A set of options for DepParser.
+     */
+    typedef std::bitset<last_dpo> DepParserOptions;
+
+    /**
      * The DepParser converts string representations of a dependency
      * specification into a DepAtom instance.
      */
     class DepParser :
         private InstantiationPolicy<DepParser, instantiation_method::NonInstantiableTag>
     {
+        protected:
+            static DepParserOptions default_options();
+
         public:
             /**
              * Parse a given dependency string, and return an appropriate
              * DepAtom tree.
              */
-            static CompositeDepAtom::ConstPointer parse(const std::string & s);
+            static CompositeDepAtom::ConstPointer parse(const std::string & s,
+                    const DepParserOptions & opts = default_options());
     };
 }
 
