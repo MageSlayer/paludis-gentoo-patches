@@ -9,6 +9,11 @@
 
 namespace paludis
 {
+    /**
+     * Compare t1 and t2.
+     *
+     * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
+     */
     inline int compare(int t1, int t2) PALUDIS_ATTRIBUTE((always_inline));
 
     inline int compare(int t1, int t2)
@@ -21,6 +26,11 @@ namespace paludis
             return 0;
     }
 
+    /**
+     * Compare t1 and t2.
+     *
+     * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
+     */
     inline int compare(unsigned t1, unsigned t2) PALUDIS_ATTRIBUTE((always_inline));
 
     inline int compare(unsigned t1, unsigned t2)
@@ -33,6 +43,11 @@ namespace paludis
             return 0;
     }
 
+    /**
+     * Compare t1 and t2.
+     *
+     * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
+     */
     inline int long compare(unsigned long t1, unsigned long t2) PALUDIS_ATTRIBUTE((always_inline));
 
     inline int long compare(unsigned long t1, unsigned long t2)
@@ -45,6 +60,11 @@ namespace paludis
             return 0;
     }
 
+    /**
+     * Compare t1 and t2.
+     *
+     * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
+     */
     inline int compare(long t1, long t2) PALUDIS_ATTRIBUTE((always_inline));
 
     inline int compare(long t1, long t2)
@@ -57,6 +77,11 @@ namespace paludis
             return 0;
     }
 
+    /**
+     * Compare t1 and t2.
+     *
+     * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
+     */
     template <typename T_>
     inline int compare(
             const std::basic_string<T_> & t1,
@@ -77,6 +102,11 @@ namespace paludis
             return 0;
     }
 
+    /**
+     * Compare t1 and t2.
+     *
+     * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
+     */
     template <typename T_, typename U_>
     inline int compare(
             const Validated<T_, U_> & t1,
@@ -85,6 +115,11 @@ namespace paludis
         return compare(t1.data(), t2.data());
     }
 
+    /**
+     * Compare t1 and t2.
+     *
+     * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
+     */
     template <typename T_>
     int compare(
             const T_ & t1,

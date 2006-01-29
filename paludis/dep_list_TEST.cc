@@ -28,71 +28,103 @@ using namespace test;
 
 namespace test_cases
 {
-    struct DepListTestCaseBase : TestCase
+    /**
+     * Convenience base class used by many of the DepList tests.
+     *
+     * \ingroup Test
+     */
+    class DepListTestCaseBase : TestCase
     {
-        TestEnvironment env;
-        FakeRepository::Pointer repo;
-        std::deque<std::string> expected;
-        std::string merge_target;
-        bool done_populate;
+        protected:
+            TestEnvironment env;
+            FakeRepository::Pointer repo;
+            std::deque<std::string> expected;
+            std::string merge_target;
+            bool done_populate;
 
-        DepListTestCaseBase(const int i) :
-            TestCase("dep list " + stringify(i)),
-            env(),
-            repo(new FakeRepository(RepositoryName("repo"))),
-            done_populate(false)
-        {
-            env.package_database()->add_repository(repo);
-        }
-
-        virtual void populate_repo() = 0;
-
-        virtual void populate_expected() = 0;
-
-        void run()
-        {
-            if (! done_populate)
+            /**
+             * Constructor.
+             */
+            DepListTestCaseBase(const int i) :
+                TestCase("dep list " + stringify(i)),
+                env(),
+                repo(new FakeRepository(RepositoryName("repo"))),
+                done_populate(false)
             {
-                populate_repo();
-                populate_expected();
-                done_populate = true;
+                env.package_database()->add_repository(repo);
             }
-            check_lists();
-        }
 
-        virtual void check_lists()
-        {
-            TEST_CHECK(true);
-            DepList d(&env);
-            d.add(DepParser::parse(merge_target));
-            TEST_CHECK(true);
+            /**
+             * Populate our repo member.
+             */
+            virtual void populate_repo() = 0;
 
-            unsigned n(0);
-            std::deque<std::string>::const_iterator exp(expected.begin());
-            DepList::Iterator got(d.begin());
-            while (true)
+            /**
+             * Populate our expected member.
+             */
+            virtual void populate_expected() = 0;
+
+            /**
+             * Check expected is what we got.
+             */
+            virtual void check_lists()
             {
-                TestMessageSuffix s(stringify(n++), true);
+                TEST_CHECK(true);
+                DepList d(&env);
+                d.add(DepParser::parse(merge_target));
+                TEST_CHECK(true);
 
-                TEST_CHECK((exp == expected.end()) == (got == d.end()));
-                if (got == d.end())
-                    break;
-                TEST_CHECK_STRINGIFY_EQUAL(*got, *exp);
-                ++exp;
-                ++got;
+                unsigned n(0);
+                std::deque<std::string>::const_iterator exp(expected.begin());
+                DepList::Iterator got(d.begin());
+                while (true)
+                {
+                    TestMessageSuffix s(stringify(n++), true);
+
+                    TEST_CHECK((exp == expected.end()) == (got == d.end()));
+                    if (got == d.end())
+                        break;
+                    TEST_CHECK_STRINGIFY_EQUAL(*got, *exp);
+                    ++exp;
+                    ++got;
+                }
             }
-        }
+
+        public:
+            void run()
+            {
+                if (! done_populate)
+                {
+                    populate_repo();
+                    populate_expected();
+                    done_populate = true;
+                }
+                check_lists();
+            }
     };
 
+    /**
+     * Convenience sub base class used by the numbered DepList tests.
+     *
+     * \ingroup Test
+     */
     template <int i_>
     struct DepListTestCase : DepListTestCaseBase
     {
+        /**
+         * Constructor.
+         */
         DepListTestCase() :
             DepListTestCaseBase(i_)
         {
         }
     };
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase1 : DepListTestCase<1>
     {
         void populate_repo()
@@ -107,6 +139,11 @@ namespace test_cases
         }
     } test_dep_list_1;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase2 : DepListTestCase<2>
     {
         void populate_repo()
@@ -123,6 +160,11 @@ namespace test_cases
         }
     } test_dep_list_2;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase3 : DepListTestCase<3>
     {
         void populate_repo()
@@ -141,6 +183,11 @@ namespace test_cases
         }
     } test_dep_list_3;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase4 : DepListTestCase<4>
     {
         void populate_repo()
@@ -159,6 +206,11 @@ namespace test_cases
         }
     } test_dep_list_4;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase5 : DepListTestCase<5>
     {
         void populate_repo()
@@ -177,6 +229,11 @@ namespace test_cases
         }
     } test_dep_list_5;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase6 : DepListTestCase<6>
     {
         void populate_repo()
@@ -195,6 +252,11 @@ namespace test_cases
         }
     } test_dep_list_6;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase7 : DepListTestCase<7>
     {
         void populate_repo()
@@ -215,6 +277,11 @@ namespace test_cases
         }
     } test_dep_list_7;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase8 : DepListTestCase<8>
     {
         void populate_repo()
@@ -235,6 +302,11 @@ namespace test_cases
         }
     } test_dep_list_8;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase9 : DepListTestCase<9>
     {
         void populate_repo()
@@ -255,6 +327,11 @@ namespace test_cases
         }
     } test_dep_list_9;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase10 : DepListTestCase<10>
     {
         void populate_repo()
@@ -272,6 +349,11 @@ namespace test_cases
         }
     } test_dep_list_10;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase11 : DepListTestCase<11>
     {
         void populate_repo()
@@ -291,6 +373,11 @@ namespace test_cases
         }
     } test_dep_list_11;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase12 : DepListTestCase<12>
     {
         void populate_repo()
@@ -310,6 +397,11 @@ namespace test_cases
         }
     } test_dep_list_12;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase13 : DepListTestCase<13>
     {
         void populate_repo()
@@ -330,6 +422,11 @@ namespace test_cases
         }
     } test_dep_list_13;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase14 : DepListTestCase<14>
     {
         void populate_repo()
@@ -346,6 +443,11 @@ namespace test_cases
         }
     } test_dep_list_14;
 
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCase15 : DepListTestCase<15>
     {
         void populate_repo()
@@ -363,6 +465,11 @@ namespace test_cases
         }
     } test_dep_list_15;
 
+    /**
+     * \test Test DepList transactional add behaviour.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCaseTransactionalAdd : TestCase
     {
         DepListTestCaseTransactionalAdd() : TestCase("dep list transactional add") { }
@@ -393,6 +500,11 @@ namespace test_cases
         }
     } test_dep_list_transactional_add;
 
+    /**
+     * \test Test DepList transactional add behaviour on PDEPENDs.
+     *
+     * \ingroup Test
+     */
     struct DepListTestCaseTransactionalAddPost : TestCase
     {
         DepListTestCaseTransactionalAddPost() : TestCase("dep list transactional add post") { }

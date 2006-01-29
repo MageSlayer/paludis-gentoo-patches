@@ -165,6 +165,9 @@ namespace paludis
             {
             }
 
+            /**
+             * How large is our circular dependency cycle?
+             */
             unsigned cycle_size() const
             {
                 return _cycle_size;

@@ -43,11 +43,20 @@ namespace paludis
             DestringifyError(const std::string & str) throw ();
     };
 
+    /**
+     * For internal use by destringify.
+     */
     namespace destringify_internals
     {
+        /**
+         * Basic destringifier.
+         */
         template <typename Type_, typename Exception_>
         struct Destringifier
         {
+            /**
+             * Do the destringification.
+             */
             static Type_ do_destringify(const std::string & s)
             {
                 std::istringstream ss(s);
@@ -59,18 +68,30 @@ namespace paludis
             }
         };
 
+        /**
+         * Specialised destringify for std::string.
+         */
         template <typename Exception_>
         struct Destringifier<std::string, Exception_>
         {
+            /**
+             * Do the destringification.
+             */
             static std::string do_destringify(const std::string & s)
             {
                 return s;
             }
         };
 
+        /**
+         * Specialised destringify for bool.
+         */
         template <typename Exception_>
         struct Destringifier<bool, Exception_>
         {
+            /**
+             * Do the destringification.
+             */
             static bool do_destringify(const std::string & s)
             {
                 int i;
@@ -79,12 +100,12 @@ namespace paludis
                     i = Destringifier<int, Exception_>::do_destringify(s);
                     return i > 0;
                 }
-                catch(DestringifyError &)
+                catch (DestringifyError &)
                 {
                     bool b;
                     std::istringstream ss(s);
                     ss >> std::boolalpha >> b;
-                    if(!ss.eof() || ss.bad())
+                    if (! ss.eof() || ss.bad())
                         throw Exception_(s);
                     return b;
                 }
@@ -104,6 +125,10 @@ namespace paludis
         return destringify_internals::Destringifier<Type_, Exception_>::do_destringify(s);
     }
 
+    /**
+     * Extract a value of some type from a string (overload with a default
+     * exception of DestringifyError).
+     */
     template <typename Type_>
     Type_ destringify(const std::string & s)
     {

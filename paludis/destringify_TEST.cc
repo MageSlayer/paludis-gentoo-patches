@@ -54,6 +54,11 @@ namespace test_cases
         }
     } test_case_destringify_int;
 
+    /** \test
+     * Test destringify for floats.
+     *
+     * \ingroup Test
+     */
     struct DestringifyFloatTests : TestCase
     {
         DestringifyFloatTests() : TestCase("destringify float") { }
@@ -68,6 +73,11 @@ namespace test_cases
         }
     } test_case_destringify_float;
 
+    /** \test
+     * Test destringify for strings.
+     *
+     * \ingroup Test
+     */
     struct DestringifyStringTests : TestCase
     {
         DestringifyStringTests() : TestCase("destringify string") { }
@@ -79,6 +89,11 @@ namespace test_cases
         }
     } test_case_destringify_string;
 
+    /** \test
+     * Test destringify for bool.
+     *
+     * \ingroup Test
+     */
     struct DestringifyBoolTests : TestCase
     {
         DestringifyBoolTests() : TestCase("destringify bool") { }

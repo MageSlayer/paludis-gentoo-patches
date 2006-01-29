@@ -83,6 +83,9 @@ BlockError::BlockError(const std::string & msg) throw () :
 
 namespace paludis
 {
+    /**
+     * Implementation data for DepList.
+     */
     template<>
     struct Implementation<DepList> :
         InstantiationPolicy<Implementation<DepList>, instantiation_method::NonCopyableTag>,

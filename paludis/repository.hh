@@ -322,8 +322,11 @@ namespace paludis
 
     class PackageDatabase;
 
+    /**
+     * Virtual constructor for repositories.
+     */
     typedef VirtualConstructor<std::string,
-            CountedPtr<Repository> (*) (const PackageDatabase * const, const std::map<std::string, std::string> &),
+            Repository::Pointer (*) (const PackageDatabase * const, const std::map<std::string, std::string> &),
             virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> > RepositoryMaker;
 }
 

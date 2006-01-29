@@ -31,6 +31,10 @@
 
 namespace paludis
 {
+    /**
+     * Extract the enabled components of a dep heirarchy for a particular
+     * package.
+     */
     class DepAtomFlattener :
         private InstantiationPolicy<DepAtomFlattener, instantiation_method::NonCopyableTag>,
         protected DepAtomVisitorTypes::ConstVisitor
@@ -47,23 +51,41 @@ namespace paludis
             mutable bool _done;
 
         protected:
+            ///\name Visit methods
+            ///{
             void visit(const AllDepAtom *);
             void visit(const AnyDepAtom *) PALUDIS_ATTRIBUTE((noreturn));
             void visit(const UseDepAtom *);
             void visit(const BlockDepAtom *) PALUDIS_ATTRIBUTE((noreturn));
             void visit(const PackageDepAtom *);
+            ///}
 
         public:
+            /**
+             * Constructor.
+             */
             DepAtomFlattener(const Environment * const,
                     const PackageDatabaseEntry * const,
                     const DepAtom::ConstPointer);
 
+            /**
+             * Destructor.
+             */
             ~DepAtomFlattener();
 
+            /**
+             * Iterate over our dep atoms.
+             */
             typedef std::list<const PackageDepAtom *>::const_iterator Iterator;
 
+            /**
+             * Iterator to the start of our dep atoms.
+             */
             Iterator begin();
 
+            /**
+             * Iterator to past the end of our dep atoms.
+             */
             Iterator end() const
             {
                 return _atoms.end();
