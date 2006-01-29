@@ -30,6 +30,7 @@ shopt -s expand_aliases
 EBUILD_KILL_PID=$$
 alias die='diefunc "$FUNCNAME" "$LINENO" "$@"'
 alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "$FUNCNAME" "$LINENO" "$_pipestatus"'
+trap 'echo "exiting." ; exit 250' 15
 
 diefunc()
 {
@@ -40,6 +41,9 @@ diefunc()
     echo "!!! $funcname at $lineno gave exit code $exitcode" 1>&2
     echo "!!! ${@:-(no message provided)}" 1>&2
     echo 1>&2
+
+    kill ${ESELECT_KILL_TARGET}
+    exit 249
 }
 
 umask 022
@@ -58,3 +62,4 @@ source portage_stubs.bash
 source list_functions.bash
 source echo_functions.bash
 source install_functions.bash
+source build_functions.bash
