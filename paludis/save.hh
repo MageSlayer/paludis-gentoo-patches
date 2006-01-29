@@ -32,7 +32,8 @@ namespace paludis
 {
     /**
      * Save the value of a particular variable and assign it a new value for the
-     * duration of the Save instance's lifetime (RAII).
+     * duration of the Save instance's lifetime (RAII, see \ref EffCpp item 13 or
+     * \ref TCppPL section 14.4).
      *
      * \ingroup Utility
      */

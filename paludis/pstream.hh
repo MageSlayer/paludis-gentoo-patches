@@ -60,9 +60,8 @@ namespace paludis
      * Bidirectional I/O isn't supported since we haven't needed it yet, and
      * because popen on Linux is unidirectional.
      *
-     * See Josuttis' "The C++ Standard Library" Ch. 13.13 for what we're doing
-     * here. The buffer code is based upon the "io/inbuf1.hpp" example in
-     * section 13.13.3.
+     * See \ref TCppSL Ch. 13.13 for what we're doing here. The buffer code is
+     * based upon the "io/inbuf1.hpp" example in section 13.13.3.
      *
      * \ingroup PStream
      */

@@ -1,201 +1,201 @@
 /* vim: set ft=cpp tw=80 sw=4 et : */
 
 /** \defgroup DepResolver Dependency parsing and resolution
- * Dependency parsing and resolution.
- *
- * Dependency resolution is handled in stages. We convert a dependency string
- * into a tree structure, and then define a visitor over this structure.
- *
- * \section DepResolverImportant Important Classes
- *
- * - paludis::DepList creates and holds dependency lists
- * - paludis::DepParser turns a dependency string into a paludis::DepAtom
- *   heirarchy.
- */
+Dependency parsing and resolution.
+
+Dependency resolution is handled in stages. We convert a dependency string
+into a tree structure, and then define a visitor over this structure.
+
+\section DepResolverImportant Important Classes
+
+- paludis::DepList creates and holds dependency lists
+- paludis::DepParser turns a dependency string into a paludis::DepAtom
+  heirarchy.
+*/
 
 /** \defgroup Environment Environment
- * Environment.
- *
- * These classes represent the environment in which paludis is running.
- *
- * \section EnvironmentImportant Important Classes
- *
- * - paludis::Environment represents an environment.
- * - paludis::DefaultEnvironment represents the usual environment that should
- *   be used when writing normal programs (other paludis::Environment
- *   descendents exist, e.g. for testing).
- */
+Environment.
+
+These classes represent the environment in which paludis is running.
+
+\section EnvironmentImportant Important Classes
+
+- paludis::Environment represents an environment.
+- paludis::DefaultEnvironment represents the usual environment that should
+  be used when writing normal programs (other paludis::Environment
+  descendents exist, e.g. for testing).
+*/
 
 /** \defgroup Database Package database functionality
- * Package database functionality.
- *
- * These classes provide checked representations for common data types, as
- * well as the core queryable package database functionality.
- *
- * \section DatabaseImportant Important Classes
- *
- * - paludis::PackageDatabase represents a package database, which
- *   is queryable and holds zero or more paludis::Repository instances.
- *
- * \ingroup Environment
- */
+Package database functionality.
+
+These classes provide checked representations for common data types, as
+well as the core queryable package database functionality.
+
+\section DatabaseImportant Important Classes
+
+- paludis::PackageDatabase represents a package database, which
+  is queryable and holds zero or more paludis::Repository instances.
+
+\ingroup Environment
+*/
 
 
 /** \defgroup Utility Utilities
- * Utilities.
- *
- * Various miscellaneous utilities.
- */
+Utilities.
+
+Various miscellaneous utilities.
+*/
 
 /** \defgroup Exception Exception handling
- * Exception handling.
- *
- * All exceptions thrown from paludis should be a subclass of
- * paludis::Exception, which provides a message and (via libebt) a backtrace
- * giving details of the error. It is probably wise to also check for
- * std::exception when writing error handling code.
- *
- * \section ExceptionImportant Important classes
- *
- * - paludis::Exception is the base exception class. All exceptions thrown
- *   by paludis should be descended from this class (although it's best to
- *   check for std::exception too just in case).
- *
- * \ingroup Utility
- */
+Exception handling.
+
+All exceptions thrown from paludis should be a subclass of
+paludis::Exception, which provides a message and (via libebt) a backtrace
+giving details of the error. It is probably wise to also check for
+std::exception when writing error handling code.
+
+\section ExceptionImportant Important classes
+
+- paludis::Exception is the base exception class. All exceptions thrown
+  by paludis should be descended from this class (although it's best to
+  check for std::exception too just in case).
+
+\ingroup Utility
+*/
 
 /** \defgroup Args Command line argument handling
- * Command line handling for a program.
- *
- * Command line handling for a program is done via a subclass of ArgsHandler.
- * The class will have member variables of type ArgsGroup to handle groups of
- * related arguments, and member variables of subtypes of ArgsOption to handle
- * individual switches.
- *
- * \ingroup Utility
- */
+Command line handling for a program.
+
+Command line handling for a program is done via a subclass of ArgsHandler.
+The class will have member variables of type ArgsGroup to handle groups of
+related arguments, and member variables of subtypes of ArgsOption to handle
+individual switches.
+
+\ingroup Utility
+*/
 
 /** \defgroup Pointer Pointers
- * Pointers.
- *
- * We use shared pointers in various places. Different policies are available
- * for different reference count models.
- *
- * \section PointerImportant Important Classes
- *
- * - paludis::CountedPtr is used for reference counted pointers.
- *
- * \ingroup Utility
- */
+Pointers.
+
+We use shared pointers in various places. Different policies are available
+for different reference count models.
+
+\section PointerImportant Important Classes
+
+- paludis::CountedPtr is used for reference counted pointers.
+
+\ingroup Utility
+*/
 
 /** \defgroup Tokeniser Tokeniser
- * Tokeniser.
- *
- * The paludis::Tokeniser class provides a way of splitting strings into
- * smaller strings.
- *
- * \section TokeniserImportant Important Classes
- *
- * - paludis::Tokeniser is the main class.
- *
- * \ingroup Utility
- */
+Tokeniser.
+
+The paludis::Tokeniser class provides a way of splitting strings into
+smaller strings.
+
+\section TokeniserImportant Important Classes
+
+- paludis::Tokeniser is the main class.
+
+\ingroup Utility
+*/
 
 /** \defgroup Filesystem Filesystem wrapper utilities
- * Filesystem wrapper utilities.
- *
- * The C++ standard library doesn't provide anything for working with
- * filesystem entries or directories. Rather than repeatedly making calls
- * to stat(2) and opendir(3) all over the place (or using the bloatware
- * utilities from Boost), we provide a few lightweight wrapper classes.
- *
- * \section FilesystemImportant Important Classes
- *
- * - paludis::FSEntry represents a filesystem entry.
- * - paludis::DirIterator is an iterator for directories.
- * - paludis::IsFileWithExtension can be used as a functor to determine
- *   whether a paludis::FSEntry instance is a file with certain attributes.
- *
- * \ingroup Utility
- */
+Filesystem wrapper utilities.
+
+The C++ standard library doesn't provide anything for working with
+filesystem entries or directories. Rather than repeatedly making calls
+to stat(2) and opendir(3) all over the place (or using the bloatware
+utilities from Boost), we provide a few lightweight wrapper classes.
+
+\section FilesystemImportant Important Classes
+
+- paludis::FSEntry represents a filesystem entry.
+- paludis::DirIterator is an iterator for directories.
+- paludis::IsFileWithExtension can be used as a functor to determine
+  whether a paludis::FSEntry instance is a file with certain attributes.
+
+\ingroup Utility
+*/
 
 /** \defgroup PStream Process handling
- * Process handling.
- *
- * The paludis::PStream class can be used to execute a process and get its
- * standard output.
- *
- * \section PStreamImportant Important Classes
- *
- * - paludis::PStream is a front-end std::istream descendent for process
- *   invokation.
- *
- * \ingroup Utility
- */
+Process handling.
+
+The paludis::PStream class can be used to execute a process and get its
+standard output.
+
+\section PStreamImportant Important Classes
+
+- paludis::PStream is a front-end std::istream descendent for process
+  invokation.
+
+\ingroup Utility
+*/
 
 /** \defgroup Iterator Iterator utilities
- * Iterator utilities.
- *
- * Various adapter classes for iterators are provided to simplify writing code.
- *
- * \section IteratorImportant Important Classes
- *
- * Insert iterator adapters:
- *
- * - paludis::CreateInsertIterator (which can be created via
- *   paludis::create_inserter) uses the inserted value to create an object.
- * - paludis::FilterInsertIterator (which can be created via
- *   paludis::filter_inserter) only inserts the object if a predicate is true.
- * - paludis::TransformInsertIterator (which can be created via
- *   paludis::transform_inserter) performs a transformation upon the object to
- *   be inserted.
- *
- * Input iterator adapters:
- *
- * - paludis::IndirectIterator removes one level of dereferencing when using a
- *   container of pointer-like objects.
- *
- * \ingroup Utility
- */
+Iterator utilities.
+
+Various adapter classes for iterators are provided to simplify writing code.
+
+\section IteratorImportant Important Classes
+
+Insert iterator adapters:
+
+- paludis::CreateInsertIterator (which can be created via
+  paludis::create_inserter) uses the inserted value to create an object.
+- paludis::FilterInsertIterator (which can be created via
+  paludis::filter_inserter) only inserts the object if a predicate is true.
+- paludis::TransformInsertIterator (which can be created via
+  paludis::transform_inserter) performs a transformation upon the object to
+  be inserted.
+
+Input iterator adapters:
+
+- paludis::IndirectIterator removes one level of dereferencing when using a
+  container of pointer-like objects.
+
+\ingroup Utility
+*/
 
 /** \defgroup Visitor Visitor pattern
- * Visitor pattern.
- *
- * See the GoF book for how visitors work. See the test cases for how to use
- * it.
- *
- * \ingroup Utility
- */
+Visitor pattern.
+
+See \ref GoF for how visitors work. See the test cases for how to use
+it.
+
+\ingroup Utility
+*/
 
 /** \defgroup VirtualConstructor Virtual constructors
- * Visitor pattern.
- *
- * See the GoF book for how virtual constructors (called "Factory Methods" in
- * GoF) work. See the test cases for how to use it.
- *
- * \ingroup Utility
- */
+Visitor pattern.
+
+See \ref GoF for how virtual constructors (called "Factory Methods" there)
+work. See the test cases for how to use it.
+
+\ingroup Utility
+*/
 
 /** \defgroup ConfigFile Configuration handling
- * Configuration handling.
- *
- * The paludis::ConfigFile class is a handler for generic configuration files
- * using a general line-oriented, comments start with a # format. Various
- * subclasses provide interfaces for different file formats.
- *
- * \section ConfigFileImportant Important Classes
- *
- * - paludis::KeyValueFile represents a configuration file containing
- *   KEY="value" type statements.
- * - paludis::LineConfigFile represents a configuration file containing
- *   lines of text.
- */
+Configuration handling.
+
+The paludis::ConfigFile class is a handler for generic configuration files
+using a general line-oriented, comments start with a # format. Various
+subclasses provide interfaces for different file formats.
+
+\section ConfigFileImportant Important Classes
+
+- paludis::KeyValueFile represents a configuration file containing
+  KEY="value" type statements.
+- paludis::LineConfigFile represents a configuration file containing
+  lines of text.
+*/
 
 /** \defgroup Test Test cases and framework
- * Test cases and framework.
- *
- * Test cases are classes that are descended from TestCase. Declaring an
- * instance of a TestCase subclass will register it with the test case
- * list.
- */
+Test cases and framework.
+
+Test cases are classes that are descended from TestCase. Declaring an
+instance of a TestCase subclass will register it with the test case
+list.
+*/
 

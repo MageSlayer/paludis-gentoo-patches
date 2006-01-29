@@ -1,31 +1,31 @@
 /* vim: set ft=cpp tw=80 sw=4 et : */
 
 /** \mainpage
- *
- * \section developerdocs For Developers
- *
- * It's best to start by skimming over the main program to get a feel for how
- * everything fits together. Useful files:
- *
- * - src/paludis.cc The main program.
- * - src/query.cc The --query action handler.
- * - src/install.cc The --install action handler.
- *
- * After that, the following classes are good places to begin:
- *
- * - paludis::DefaultEnvironment provides a representation of the default
- *   operating environment.
- * - paludis::PackageDatabase provides routines for querying packages. An
- *   instance can be obtained via paludis::DefaultEnvironment.
- *
- * The <a href="modules.html">Modules</a> link in the header bar will probably
- * be of more use than any of the full class lists.
- *
- * You should also read \link CodingStandards the Coding Standards \endlink
- * before tinkering.
- *
- * \section userdocs For End Users
- *
- * You shouldn't be touching paludis at the moment. Go away.
- *
- */
+
+\section developerdocs For Developers
+
+It's best to start by skimming over the main program to get a feel for how
+everything fits together. Useful files:
+
+- src/paludis.cc The main program.
+- src/query.cc The --query action handler.
+- src/install.cc The --install action handler.
+
+After that, the following classes are good places to begin:
+
+- paludis::DefaultEnvironment provides a representation of the default
+  operating environment.
+- paludis::PackageDatabase provides routines for querying packages. An
+  instance can be obtained via paludis::DefaultEnvironment.
+
+The <a href="modules.html">Modules</a> link in the header bar will probably
+be of more use than any of the full class lists.
+
+You should also read \link CodingStandards the Coding Standards \endlink
+before tinkering.
+
+\section userdocs For End Users
+
+You shouldn't be touching paludis at the moment. Go away.
+
+*/

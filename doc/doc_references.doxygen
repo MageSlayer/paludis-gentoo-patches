@@ -1,0 +1,32 @@
+/* vim: set ft=cpp tw=80 sw=4 et : */
+
+/**
+\page References References
+
+\paragraph EffCpp [EffC++]
+<strong>[EffC++]</strong> Effective C++ Third Edition / Scott Meyer /
+Addison-Wesley / ISBN 0-321-33487-6
+
+\paragraph EffSTL [EffSTL]
+<strong>[EffSTL]</strong> Effective STL / Scott Meyers / Addison-Wesley / ISBN
+0-201-74962-9
+
+\paragraph GoF [GoF]
+<strong>[GoF]</strong> Design Patterns: Elements of Reusable Object-Oriented
+Software / Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides /
+Addison-Wesley / ISBN 0-201-63361-2
+
+\paragraph MCppD [MCppD]
+<strong>[MCppD]</strong> Modern C++ Design: Generic Programming and Design
+Patterns Applied / Andrei Alexandrescu / Addison-Wesley / ISBN 0-201-70431-5
+
+\paragraph TCppSL [TC++SL]
+<strong>[TC++SL]</strong> The C++ Standard Library / Nicolai M. Josuttis /
+Addison-Wesley / ISBN 0-201-37926-0
+
+\paragraph TCppPL [TC++PL]
+<strong>[TC++PL]</strong> The C++ Programming Language Third Edition / Bjarne
+Stroustrup / Addison-Wesley / ISBN 0-201-88954-4
+
+*/
+

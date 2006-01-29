@@ -26,14 +26,15 @@ namespace paludis
 {
     /**
      * Hold an entry in a container for as long as our ContainerEntry instance
-     * is in scope (RAII).
+     * is in scope (RAII, see \ref EffCpp item 13 or \ref TCppPL section 14.4).
      */
     template <typename Container_>
     struct ContainerEntry;
 
     /**
      * Hold an entry in a container for as long as our ContainerEntry instance
-     * is in scope (RAII, partial specialisation for std::list).
+     * is in scope (RAII, see \ref EffCpp item 13 or \ref TCppPL section 14.4;
+     * partial specialisation for std::list).
      */
     template <typename Item_>
     class ContainerEntry<std::list<Item_> >
