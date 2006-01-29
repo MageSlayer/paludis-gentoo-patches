@@ -7,6 +7,24 @@ These are rough guidelines. You should stick to these unless there's a good
 reason to do otherwise. There are lots more standards that aren't documented
 here yet -- ask for clarification as necessary.
 
+\section CodingStandardsCopyrights Copyrights and Licence
+
+Paludis is licenced under the GPLv2. Any contributions must use this licence.
+You should copy the standard licence header from another source file when
+creating new source files.
+
+Copyright is handled on a per-file basis. If you are the primary author of
+a file, you should list yourself as the copyright holder. If you make a
+substantial contribution to a source file (for example, one or more
+non-trivial classes, functions or methods), you should add yourself as a
+copyright holder on that file. You should <em>not</em> add to the copyright for
+small changes or bug fixes.
+
+Copyright years are per contributor. See, for example, paludis/fs_entry.hh for
+a file that has multiple copyright holders with different years.
+
+Substantial contributors should also list themselves in the AUTHORS file.
+
 \section CodingStandardsIndentingAndSpacing Indenting and Spacing
 
 Indents are four spaces. There are no tabs anywhere. Braces go on a line of
@@ -74,7 +92,7 @@ external are <code>_prefixed_with_underscore</code>.
 
 Template values are <code>suffixed_with_underscore_</code>, and template
 typenames are <code>SuffixedAsWell_</code> (and use <code>typename</code> rather
-than <code>class</code>).
+than <code>class</code>, \ref EffCpp item 42).
 
 The files for <code>SomeClass</code> (and any small related utilities) would be
 <code>some_class.hh</code> and <code>some_class.cc</code>. We are somewhat
