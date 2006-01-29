@@ -1,0 +1,12 @@
+/* vim: set ft=cpp tw=80 sw=4 et : */
+
+/**
+\page Licence Licence
+
+Paludis is distributed under the terms of the GNU General Public Licence,
+version 2.
+
+\verbinclude COPYING
+
+*/
+
