@@ -50,6 +50,7 @@ CommandLine::CommandLine() :
         ("as-needed", "To resolve circular dependencies"),
         "as-needed"),
     a_dl_drop_self_circular(&dl_args, "dl-drop-self-circular", '\0', "Drop self-circular dependencies"),
+    a_dl_patch_dep(&dl_args, "dl-dont-ignore-the-frickin-patch-dep", '\0', "Don't ignore the stupid patch depend on itself"),
     a_dl_drop_circular(&dl_args, "dl-drop-circular", '\0', "Drop circular dependencies"),
     a_dl_drop_all(&dl_args, "dl-drop-all", '0', "Drop all dependencies"),
     a_dl_ignore_installed(&dl_args, "dl-ignore-installed", 'e', "Ignore installed packages"),

@@ -125,6 +125,9 @@ class CommandLine :
         /// --dl-drop-self-circular
         paludis::args::SwitchArg a_dl_drop_self_circular;
 
+        /// --dl-dont-ignore-the-frickin-patch-dep
+        paludis::args::SwitchArg a_dl_patch_dep;
+
         /// --dl-drop-circular
         paludis::args::SwitchArg a_dl_drop_circular;
 

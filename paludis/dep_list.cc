@@ -111,6 +111,7 @@ namespace paludis
         bool recursive_deps;
         bool drop_circular;
         bool drop_self_circular;
+        bool dont_ignore_patch_dep;
         bool drop_all;
         bool ignore_installed;
         ///}
@@ -131,6 +132,7 @@ namespace paludis
             recursive_deps(true),
             drop_circular(false),
             drop_self_circular(false),
+            dont_ignore_patch_dep(false),
             drop_all(false),
             ignore_installed(false),
             stack_depth(0),
@@ -301,7 +303,9 @@ DepList::visit(const PackageDepAtom * const p)
         {
             if (_implementation->drop_circular)
                 return;
-            else if (_implementation->merge_list_insert_pos == i && _implementation->drop_self_circular)
+            else if (_implementation->merge_list_insert_pos == i && 
+                    ( _implementation->drop_self_circular || 
+                      (! _implementation->dont_ignore_patch_dep && p->package() == QualifiedPackageName("sys-devel/patch"))))
                 return;
             else
                 throw CircularDependencyError(i, next(i));
@@ -601,6 +605,12 @@ void
 DepList::set_drop_self_circular(const bool value)
 {
     _implementation->drop_self_circular = value;
+}
+
+void
+DepList::set_dont_ignore_patch_dep(const bool value)
+{
+    _implementation->dont_ignore_patch_dep = value;
 }
 
 void
