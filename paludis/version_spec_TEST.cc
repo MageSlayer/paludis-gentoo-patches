@@ -183,5 +183,22 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r99").remove_revision(), "1.2");
         }
     } test_version_remove_revision;
+
+    /**
+     * \test VersionSpec revision only
+     *
+     * \ingroup Test
+     */
+    struct VersionRevisionOnlyTest : TestCase
+    {
+        VersionRevisionOnlyTest() : TestCase("version spec revision only") {}
+
+        void run()
+        {
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2").revision_only(), "r0");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r").revision_only(), "r0");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r99").revision_only(), "r99");
+        }
+    } test_version_revision_only;
 }
 

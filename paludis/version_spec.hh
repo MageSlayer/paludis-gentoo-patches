@@ -107,6 +107,11 @@ namespace paludis
              */
             VersionSpec remove_revision() const;
 
+            /**
+             * Revision part only (or "r0").
+             */
+            std::string revision_only() const;
+
     };
 
     /**

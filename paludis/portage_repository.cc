@@ -668,13 +668,23 @@ PortageRepository::do_version_metadata(
     else
     {
         std::string cmd(
-                "env PV='" + stringify(p) + "-" + stringify(v.remove_revision()) + "' " +
-                "PN='" + stringify(p) + "' "
-                "PVR='" + stringify(p) + "-" + stringify(v) + "' " +
+                "env P='" + stringify(p) + "-" + stringify(v.remove_revision()) + "' " +
+                "PV='" + stringify(v.remove_revision()) + "' " +
+                "PR='" + v.revision_only() + "' " +
+                "PN='" + stringify(p) + "' " +
+                "PVR='" + stringify(v.remove_revision()) + "-" + v.revision_only() + "' " +
+                "PF='" + stringify(p) + "-" + stringify(v) + "' " +
+                "A='' " +
                 "CATEGORY='" + stringify(c) + "' " +
+                "FILESDIR='" + stringify(_implementation->location) + "/" + stringify(c) + "/" +
+                    stringify(p) + "/files/' " +
                 "ECLASSDIR='" + stringify(_implementation->location) + "/eclass/' " +
                 "PORTDIR='" + stringify(_implementation->location) + "/' " +
                 "DISTDIR='" + stringify(_implementation->location) + "/distfiles/' " +
+                "WORKDIR='/dev/null' " +
+                "T='/dev/null' " +
+                "D='/dev/null' " +
+                "S='/dev/null' " +
                 "ebuild/ebuild.bash metadata '" +
                 stringify(_implementation->location) + "/" + stringify(c) + "/" + stringify(p) + "/" +
                 stringify(p) + "-" + stringify(v) + ".ebuild'");

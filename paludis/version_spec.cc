@@ -321,6 +321,12 @@ VersionSpec::remove_revision() const
     return result;
 }
 
+std::string
+VersionSpec::revision_only() const
+{
+    return "r" + stringify(_implementation->revision_part);
+}
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const VersionSpec & v)
 {
