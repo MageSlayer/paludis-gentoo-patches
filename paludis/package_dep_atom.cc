@@ -73,7 +73,7 @@ PackageDepAtom::PackageDepAtom(const std::string & s) :
                 if (p >= s.length())
                     throw InternalError(PALUDIS_HERE, "todo"); /// \bug
                 q = s.find('-', q + 1);
-                if (++q >= s.length())
+                if ((std::string::npos == q) || (++q >= s.length()))
                     throw InternalError(PALUDIS_HERE, "todo"); /// \bug
                 if (s.at(q) >= '0' && s.at(q) <= '9')
                     break;
