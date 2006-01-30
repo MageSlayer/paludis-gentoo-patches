@@ -1,7 +1,7 @@
 CLEANFILES = *~ version_TEST
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir)
-DEFS=-DSYSCONFDIR=\"$(sysconfdir)\"
+DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
 
 bin_PROGRAMS = paludis
 

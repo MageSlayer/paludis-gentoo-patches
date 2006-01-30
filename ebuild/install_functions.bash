@@ -36,59 +36,64 @@ keepdir()
     fi
 }
 
-unpack()
+into()
 {
-    [[ -z "$@" ]] && die "No arguments given to unpack"
-
-    for x in "$@" ; do
-        echo ">>> Unpacking ${x} to ${PWD}"
-        [[ "${x:0:2}" == "./" ]] || x="${DISTDIR}/${x}"
-        unpack_one "${x}"
-    done
+    if [[ "${1}" == "/" ]] ; then
+        export DESTTREE=
+    else
+        export DESTTREE="${1}"
+        [[ -d "${D}${DESTTREE}" ]] || install -d "${D}${DESTTREE}"
+    fi
 }
 
-unpack_one()
+insinto()
 {
-    [[ -z "$1" ]] && die "Bad argument for unpack_one"
-    [[ -e "$1" ]] || die "${1} doesn't exist"
+    if [[ "${1}" == "/" ]] ; then
+        export INSDESTTREE=
+    else
+        export INSDESTTREE="${1}"
+        [[ -d "${D}${INSDESTTREE}" ]] || install -d "${D}${INSDESTTREE}"
+    fi
+}
 
-    case "${x}" in
-        *.tar)
-            tar xf "${1}" || die "Couldn't unpack ${1}"
-            ;;
+exeinto()
+{
+    if [[ "${1}" == "/" ]] ; then
+        export EXEDESTTREE=
+    else
+        export EXEDESTTREE="${1}"
+        [[ -d "${D}${EXEDESTTREE}" ]] || install -d "${D}${EXEDESTTREE}"
+    fi
+}
 
-        *.tar.gz|*.tgz)
-            tar zxf "${1}" || die "Couldn't unpack ${1}"
-            ;;
+docinto()
+{
+    if [[ "${1}" == "/" ]] ; then
+        export DOCDESTTREE=
+    else
+        export DOCDESTTREE="${1}"
+        [[ -d "${D}usr/share/doc/${PF}/${DOCDESTTREE}" ]] || \
+            install -d "${D}usr/share/doc/${PF}/${DOCDESTTREE}"
+    fi
+}
 
-        *.tar.bz2|*.tbz2
-            tar jxf "${1}" || die "Couldn't unpack ${1}"
-            ;;
+insopts()
+{
+    export INSOPTIONS="$@"
+}
 
-        *.zip|*.ZIP|*.jar)
-            unzip -qo "${1}" || die "Couldn't unpack ${1}"
-            ;;
+diropts()
+{
+    export DIROPTIONS="$@"
+}
 
-        *.gz|*.Z|*.z)
-            gzip -dc "${1}" > "${1%.*}" || die "Couldn't unpack ${1}"
-            ;;
+exeopts()
+{
+    export EXEOPTIONS="$@"
+}
 
-        *.bz2)
-            bunzip2 -dc "${1}" > "${1%.*}" || die "Couldn't unpack ${1}"
-            ;;
-
-        *.rar|*.RAR)
-            unrar x -idq "${1}" || die "Couldn't unpack ${1}"
-            ;;
-
-        *.LHa|*.LHA|*.lha|*.lzh)
-            lha xqf "${1}" || die "Couldn't unpack ${1}"
-            ;;
-
-        *)
-            echo "Skipping unpack for ${1}"
-            ;;
-    esac
-
+libopts()
+{
+    export LIBOPTIONS="$@"
 }
 

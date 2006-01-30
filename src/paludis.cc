@@ -127,6 +127,7 @@ main(int argc, char *argv[])
         cout << "CXXFLAGS:    " << PALUDIS_BUILD_CXXFLAGS << endl;
         cout << "LDFLAGS:     " << PALUDIS_BUILD_LDFLAGS << endl;
         cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
+        cout << "LIBEXECDIR:  " << LIBEXECDIR << endl;
         cout << "stdlib:      "
 #if defined(__GLIBCXX__)
             << "GNU libstdc++"
