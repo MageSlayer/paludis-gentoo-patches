@@ -59,7 +59,7 @@ namespace paludis
     {
         try
         {
-            if (suffix.length() < s.length())
+            if (suffix.length() >= s.length())
                 return s;
             else if (0 == s.compare(s.length() - suffix.length(), suffix.length(), suffix))
                 return s.substr(0, s.length() - suffix.length());
