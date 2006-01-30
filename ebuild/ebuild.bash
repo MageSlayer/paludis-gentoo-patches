@@ -61,6 +61,7 @@ ebuild_load_module echo_functions
 ebuild_load_module install_functions
 ebuild_load_module build_functions
 ebuild_load_module unpack_functions
+ebuild_load_module eclass_functions
 
 ebuild_load_ebuild()
 {
@@ -69,10 +70,18 @@ ebuild_load_ebuild()
 }
 
 case ${1:x} in
+    metadata)
+        ebuild_load_ebuild "${2}"
+        ebuild_load_module depend
+        ebuild_f_depend
+        exit 0
+        ;;
+
     unpack)
         ebuild_load_ebuild "${2}"
         ebuild_load_module src_unpack
         ebuild_f_unpack
+        exit 0
     ;;
 
     *)

@@ -21,13 +21,26 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-src_unpack()
+EXPORT_FUNCTIONS()
 {
-    [[ -n "${A}" ]] && unpack ${A}
+    [[ -z "${ECLASS}" ]] && die "EXPORT_FUNCTIONS called but ECLASS undefined"
+
+    local e
+    for e in "$@" ; do
+        eval "$1() { ${ECLASS}_${e} \"\$@\" ; }"
+    done
 }
 
-ebuild_f_unpack()
+inherit()
 {
-    src_unpack
+    local e
+    for e in "$@" ; do
+        local location="${ECLASSDIR}/${e}.eclass"
+        local old_ECLASS="${ECLASS}"
+        export ECLASS="${e}"
+        source "${location}" || die "Error sourcing eclass ${e}"
+        hasq "${ECLASS}" ${INHERITED} || export INHERITED="${INHERITED} ${ECLASS}"
+        export ECLASS="${old_ECLASS}"
+    done
 }
 
