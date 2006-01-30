@@ -23,5 +23,11 @@
 
 src_install()
 {
+    :
+}
+
+ebuild_f_install()
+{
+    src_install
 }
 

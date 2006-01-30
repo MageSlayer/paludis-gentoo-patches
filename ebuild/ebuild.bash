@@ -28,7 +28,7 @@ eval unset LANG ${!LC_*}
 shopt -s expand_aliases
 
 EBUILD_KILL_PID=$$
-alias die='diefunc "$FUNCNAME" "$LINENO" "$@"'
+alias die='diefunc "$FUNCNAME" "$LINENO"'
 alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "$FUNCNAME" "$LINENO" "$_pipestatus"'
 trap 'echo "exiting with error." ; exit 250' 15
 
@@ -39,7 +39,7 @@ diefunc()
     echo 1>&2
     echo "ERROR in ${CATEGORY:-?}/${PF:-?}:" 1>&2
     echo "!!! In ${func:-?} at line ${line:-?}" 1>&2
-    echo "!!! ${@:-(no message provided)}" 1>&2
+    echo "!!! ${*:-(no message provided)}" 1>&2
     echo 1>&2
 
     kill ${EBUILD_KILL_PID}
@@ -77,10 +77,10 @@ case ${1:x} in
         exit 0
         ;;
 
-    unpack)
+    unpack|compile|install)
         ebuild_load_ebuild "${2}"
-        ebuild_load_module src_unpack
-        ebuild_f_unpack
+        ebuild_load_module src_${1}
+        ebuild_f_${1}
         exit 0
     ;;
 
