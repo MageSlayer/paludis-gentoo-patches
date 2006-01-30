@@ -18,41 +18,76 @@
  */
 
 #include "strip.hh"
+#include "exception.hh"
 
 namespace paludis
 {
     std::string strip_leading_string(const std::string & s, const std::string & prefix)
     {
-        if (0 == s.compare(0, prefix.length(), prefix))
-            return s.substr(prefix.length());
-        else
-            return s;
+        try
+        {
+            if (0 == s.compare(0, prefix.length(), prefix))
+                return s.substr(prefix.length());
+            else
+                return s;
+        }
+        catch (const std::exception & e)
+        {
+            throw InternalError(PALUDIS_HERE, "Caught unexpected exception " +
+                    stringify(e.what()));
+        }
     }
 
     std::string strip_leading(const std::string & s, const std::string & remove)
     {
-        std::string::size_type p(s.find_first_not_of(remove));
-        if (std::string::npos == p)
-            return std::string();
-        else
-            return s.substr(p);
+        try
+        {
+            std::string::size_type p(s.find_first_not_of(remove));
+            if (std::string::npos == p)
+                return std::string();
+            else
+                return s.substr(p);
+        }
+        catch (const std::exception & e)
+        {
+            throw InternalError(PALUDIS_HERE, "Caught unexpected exception " +
+                    stringify(e.what()));
+        }
     }
 
     std::string strip_trailing_string(const std::string & s, const std::string & suffix)
     {
-        if (0 == s.compare(s.length() - suffix.length(), suffix.length(), suffix))
-            return s.substr(0, s.length() - suffix.length());
-        else
-            return s;
+        try
+        {
+            if (suffix.length() < s.length())
+                return s;
+            else if (0 == s.compare(s.length() - suffix.length(), suffix.length(), suffix))
+                return s.substr(0, s.length() - suffix.length());
+            else
+                return s;
+        }
+        catch (const std::exception & e)
+        {
+            throw InternalError(PALUDIS_HERE, "Caught unexpected exception " +
+                    stringify(e.what()) + " with s='" + s + "', suffix='" + suffix + "'");
+        }
     }
 
     std::string strip_trailing(const std::string & s, const std::string & remove)
     {
-        std::string::size_type p(s.find_last_not_of(remove));
-        if (std::string::npos == p)
-            return std::string();
-        else
-            return s.substr(0, p + 1);
+        try
+        {
+            std::string::size_type p(s.find_last_not_of(remove));
+            if (std::string::npos == p)
+                return std::string();
+            else
+                return s.substr(0, p + 1);
+        }
+        catch (const std::exception & e)
+        {
+            throw InternalError(PALUDIS_HERE, "Caught unexpected exception " +
+                    stringify(e.what()));
+        }
     }
 }
 
