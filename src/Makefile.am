@@ -4,6 +4,7 @@ AM_CXXFLAGS = -I$(top_srcdir)
 DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
 
 bin_PROGRAMS = paludis
+noinst_PROGRAMS = check_deps_exist
 
 paludis_SOURCES = \
 	command_line.hh      command_line.cc      \
@@ -13,7 +14,14 @@ paludis_SOURCES = \
 	query.hh             query.cc             \
 	paludis.cc
 
+check_deps_exist_SOURCES = \
+	check_deps_exist.cc
+
 paludis_LDADD = \
+	$(top_builddir)/paludis/libpaludis.a \
+	$(top_builddir)/paludis/args/libpaludisargs.a
+
+check_deps_exist_LDADD = \
 	$(top_builddir)/paludis/libpaludis.a \
 	$(top_builddir)/paludis/args/libpaludisargs.a
 
