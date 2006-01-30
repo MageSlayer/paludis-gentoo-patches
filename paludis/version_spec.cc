@@ -307,6 +307,20 @@ VersionSpec::hash_value() const
     return _implementation->version_parts[0];
 }
 
+VersionSpec
+VersionSpec::remove_revision() const
+{
+    VersionSpec result(*this);
+    result._implementation->revision_part = 0;
+
+    std::string::size_type p;
+    if (std::string::npos != ((p = result._implementation->text.rfind("-r"))))
+        if (std::string::npos == result._implementation->text.find_first_not_of("0123456789", p + 2))
+            result._implementation->text.erase(p);
+
+    return result;
+}
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const VersionSpec & v)
 {

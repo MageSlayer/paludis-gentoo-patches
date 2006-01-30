@@ -668,8 +668,7 @@ PortageRepository::do_version_metadata(
     else
     {
         std::string cmd(
-                "env PV='" + stringify(p) + "-" + strip_trailing_string(
-                    strip_trailing(stringify(v), "0123456789"), "-r") + "' " +
+                "env PV='" + stringify(p) + "-" + stringify(v.remove_revision()) + "' " +
                 "PN='" + stringify(p) + "' "
                 "PVR='" + stringify(p) + "-" + stringify(v) + "' " +
                 "CATEGORY='" + stringify(c) + "' " +

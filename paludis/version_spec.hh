@@ -102,6 +102,11 @@ namespace paludis
              */
             std::size_t hash_value() const;
 
+            /**
+             * Remove the revision part.
+             */
+            VersionSpec remove_revision() const;
+
     };
 
     /**

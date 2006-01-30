@@ -166,5 +166,22 @@ namespace test_cases
 
         }
     } test_version_spec_star_compare;
+
+    /**
+     * \test VersionSpec remove revision
+     *
+     * \ingroup Test
+     */
+    struct VersionRemoveRevisionTest : TestCase
+    {
+        VersionRemoveRevisionTest() : TestCase("version spec remove revision") {}
+
+        void run()
+        {
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2").remove_revision(), "1.2");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r").remove_revision(), "1.2");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r99").remove_revision(), "1.2");
+        }
+    } test_version_remove_revision;
 }
 
