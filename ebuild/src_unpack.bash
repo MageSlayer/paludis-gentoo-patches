@@ -26,3 +26,8 @@ src_unpack()
     [[ -n "${A}" ]] && unpack ${A}
 }
 
+ebuild_f_unpack()
+{
+
+}
+

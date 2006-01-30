@@ -30,36 +30,55 @@ shopt -s expand_aliases
 EBUILD_KILL_PID=$$
 alias die='diefunc "$FUNCNAME" "$LINENO" "$@"'
 alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "$FUNCNAME" "$LINENO" "$_pipestatus"'
-trap 'echo "exiting." ; exit 250' 15
+trap 'echo "exiting with error." ; exit 250' 15
 
 diefunc()
 {
-    local func="$1" line="$2" exitcode="$3"
-    shift 3
+    local func="$1" line="$2"
+    shift 2
     echo 1>&2
-    echo "ERROR in ${CATEGORY}/${PF}:" 1>&2
-    echo "!!! $funcname at $lineno gave exit code $exitcode" 1>&2
+    echo "ERROR in ${CATEGORY:-?}/${PF:-?}:" 1>&2
+    echo "!!! In ${func:-?} at line ${line:-?}" 1>&2
     echo "!!! ${@:-(no message provided)}" 1>&2
     echo 1>&2
 
-    kill ${ESELECT_KILL_TARGET}
+    kill ${EBUILD_KILL_PID}
     exit 249
 }
 
-umask 022
-export DESTTREE="/usr"
-export INSDESTTREE=""
-export EXEDESTTREE=""
-export DOCDESTTREE=""
-export INSOPTIONS="-m0644"
-export EXEOPTIONS="-m0755"
-export LIBOPTIONS="-m0644"
-export DIROPTIONS="-m0755"
-export MOPREFIX="${PN}"
+EBUILD_MODULES_DIR=$(readlink -f $(dirname $0 ) )
+[[ -d ${EBUILD_MODULES_DIR} ]] || die "${EBUILD_MODULES_DIR} is not a directory"
 
-source sandbox_stubs.bash
-source portage_stubs.bash
-source list_functions.bash
-source echo_functions.bash
-source install_functions.bash
-source build_functions.bash
+ebuild_load_module()
+{
+    source "${EBUILD_MODULES_DIR}/${1}.bash" || die "Error loading module ${1}"
+}
+
+ebuild_load_module sandbox_stubs
+ebuild_load_module portage_stubs
+ebuild_load_module list_functions
+ebuild_load_module echo_functions
+ebuild_load_module install_functions
+ebuild_load_module build_functions
+ebuild_load_module unpack_functions
+
+ebuild_load_ebuild()
+{
+    [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
+    source ${1} || die "Error sourcing ebuild '${1}'"
+}
+
+case ${1:x} in
+    unpack)
+        ebuild_load_ebuild "${2}"
+        ebuild_load_module src_unpack
+        ebuild_f_unpack
+    ;;
+
+    *)
+        ebuild_load_module usage_error
+        ebuild_f_usage_error
+        exit 1
+    ;;
+esac
+

@@ -46,7 +46,7 @@ unpack_one()
             tar zxf "${1}" || die "Couldn't unpack ${1}"
             ;;
 
-        *.tar.bz2|*.tbz2
+        *.tar.bz2|*.tbz2)
             tar jxf "${1}" || die "Couldn't unpack ${1}"
             ;;
 
