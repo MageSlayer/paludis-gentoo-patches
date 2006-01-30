@@ -21,6 +21,9 @@
 #include <errno.h>
 #include <cstring>
 
+/// \bug VV debug log
+#include <iostream>
+
 using namespace paludis;
 
 PStreamError::PStreamError(const std::string & message) throw () :
@@ -57,6 +60,9 @@ PStreamInBuf::PStreamInBuf(const std::string & command) :
     _command(command),
     fd(popen(command.c_str(), "r"))
 {
+    /// \bug VV debug log
+    std::cerr << "DEBUG: popen " << command << std::endl;
+
     if (0 == fd)
         throw PStreamError("popen('" + _command + "', 'r') failed: " +
                 strerror(errno));
