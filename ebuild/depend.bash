@@ -24,8 +24,9 @@
 ebuild_f_depend()
 {
     local key
-    for key in DEPEND RDEPEND PDEPEND ; do
-        echo "${key}='" ${!key} "'"
+    for key in DEPEND RDEPEND PDEPEND IUSE SLOT SRC_URI RESTRICT LICENSE \
+            KEYWORDS INHERITED PROVIDE EAPI HOMEPAGE DESCRIPTION ; do
+        echo "${key}="${!key}""
     done
 }
 

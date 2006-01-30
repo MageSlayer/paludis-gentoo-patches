@@ -30,6 +30,7 @@
 #include "package_database.hh"
 #include "package_dep_atom.hh"
 #include "portage_repository.hh"
+#include "pstream.hh"
 #include "stringify.hh"
 #include "strip.hh"
 #include "tokeniser.hh"
@@ -615,6 +616,9 @@ PortageRepository::do_version_metadata(
                 std::make_pair(QualifiedPackageName(c, p), v)))
             return _implementation->metadata.find(std::make_pair(QualifiedPackageName(c, p), v))->second;
 
+    Context context("When fetching metadata for " + stringify(c) + "/" + stringify(p) +
+            "-" + stringify(v));
+
     if (! has_version(c, p, v))
         throw InternalError(PALUDIS_HERE, "todo: has_version failed for do_version_metadata"); /// \bug todo
 
@@ -662,7 +666,39 @@ PortageRepository::do_version_metadata(
         result->set(vmk_depend, "=" + stringify(vi->second->package()) + "-" + stringify(v));
     }
     else
-        throw InternalError(PALUDIS_HERE, "no cache handling not implemented"); /// \todo
+    {
+        std::string cmd(
+                "env PV='" + stringify(p) + "-" + strip_trailing_string(
+                    strip_trailing(stringify(v), "0123456789"), "-r") + "' " +
+                "PN='" + stringify(p) + "' "
+                "PVR='" + stringify(p) + "-" + stringify(v) + "' " +
+                "CATEGORY='" + stringify(c) + "' " +
+                "ECLASSDIR='" + stringify(_implementation->location) + "/eclass/' " +
+                "PORTDIR='" + stringify(_implementation->location) + "/' " +
+                "DISTDIR='" + stringify(_implementation->location) + "/distfiles/' " +
+                "ebuild/ebuild.bash metadata '" +
+                stringify(_implementation->location) + "/" + stringify(c) + "/" + stringify(p) + "/" +
+                stringify(p) + "-" + stringify(v) + ".ebuild'");
+
+        PStream p(cmd);
+        KeyValueConfigFile f(&p);
+
+        result->set(vmk_depend,      f.get("DEPEND"));
+        result->set(vmk_rdepend,     f.get("RDEPEND"));
+        result->set(vmk_slot,        f.get("SLOT"));
+        result->set(vmk_src_uri,     f.get("SRC_URI"));
+        result->set(vmk_restrict,    f.get("RESTRICT"));
+        result->set(vmk_homepage,    f.get("HOMEPAGE"));
+        result->set(vmk_license,     f.get("LICENSE"));
+        result->set(vmk_description, f.get("DESCRIPTION"));
+        result->set(vmk_keywords,    f.get("KEYWORDS"));
+        result->set(vmk_inherited,   f.get("INHERITED"));
+        result->set(vmk_iuse,        f.get("IUSE"));
+        result->set(vmk_pdepend,     f.get("PDEPEND"));
+        result->set(vmk_provide,     f.get("PROVIDE"));
+        result->set(vmk_eapi,        f.get("EAPI"));
+        result->set(vmk_virtual, "");
+    }
 
     _implementation->metadata.insert(std::make_pair(std::make_pair(QualifiedPackageName(c, p), v), result));
     return result;
@@ -677,12 +713,16 @@ PortageRepository::do_query_repository_masks(const CategoryNamePart & c,
         Context context("When querying repository mask for '" + stringify(c) + "/" + stringify(p) + "-"
                 + stringify(v) + "':");
 
-        LineConfigFile ff(_implementation->location / "profiles" / "package.mask");
-        for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
-                line != line_end ; ++line)
+        FSEntry fff(_implementation->location / "profiles" / "package.mask");
+        if (fff.exists())
         {
-            PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
-            _implementation->repo_mask[a->package()].push_back(a);
+            LineConfigFile ff(fff);
+            for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
+                    line != line_end ; ++line)
+            {
+                PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
+                _implementation->repo_mask[a->package()].push_back(a);
+            }
         }
 
         _implementation->has_repo_mask = true;

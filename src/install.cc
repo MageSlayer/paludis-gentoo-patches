@@ -52,7 +52,9 @@ do_install()
         if (std::string::npos != q->find('/'))
             targets->add_child(p::DepParser::parse(*q));
         else
-            targets->add_child(p::DepAtom::Pointer(new p::PackageDepAtom(*q)));
+            targets->add_child(p::DepAtom::Pointer(new p::PackageDepAtom(
+                            env->package_database()->fetch_unique_qualified_package_name(
+                                p::PackageNamePart(*q)))));
     }
 
     p::DepList dep_list(env);
