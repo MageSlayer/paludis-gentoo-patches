@@ -22,6 +22,7 @@
 #include "dir_iterator.hh"
 #include "filter_insert_iterator.hh"
 #include "fs_entry.hh"
+#include "hashed_containers.hh"
 #include "indirect_iterator.hh"
 #include "is_file_with_extension.hh"
 #include "key_value_config_file.hh"
@@ -35,204 +36,32 @@
 #include "strip.hh"
 #include "tokeniser.hh"
 #include "transform_insert_iterator.hh"
+
 #include <map>
 #include <fstream>
 #include <functional>
 #include <algorithm>
 #include <vector>
 #include <deque>
-
 #include <limits>
-
-#if HAVE_TR1_HASHES
-#  include <tr1/unordered_set>
-#  include <tr1/unordered_map>
-#elif HAVE_EXT_HASHES
-#  include <ext/hash_set>
-#  include <ext/hash_map>
-#else
-#  include <set>
-#  include <map>
-#endif
 
 using namespace paludis;
 
-#if HAVE_TR1_HASHES || HAVE_EXT_HASHES
+typedef MakeHashedMap<QualifiedPackageName, VersionSpecCollection::Pointer>::Type VersionsMap;
 
-template <typename T_>
-struct CRCHash;
+typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
 
-template <>
-class CRCHash<QualifiedPackageName> :
-    std::unary_function<QualifiedPackageName, std::size_t>
-{
-    private:
-        static const std::size_t h_shift = std::numeric_limits<std::size_t>::digits - 5;
-        static const std::size_t h_mask = 0x1f << h_shift;
+typedef MakeHashedMap<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> >::Type RepositoryMaskMap;
 
-    public:
-        std::size_t operator() (const QualifiedPackageName & val) const
-        {
-            const std::string & s1(val.get<qpn_category>().data()), s2(val.get<qpn_package>().data());
-            std::size_t h(0);
+typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
 
-            for (std::string::size_type t(0) ; t < s1.length() ; ++t)
-            {
-                std::size_t hh(h & h_mask);
-                h <<= 5;
-                h ^= (hh >> h_shift);
-                h ^= s1[t];
-            }
+typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
 
-            for (std::string::size_type t(0) ; t < s2.length() ; ++t)
-            {
-                std::size_t hh(h & h_mask);
-                h <<= 5;
-                h ^= (hh >> h_shift);
-                h ^= s2[t];
-            }
+typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseMap;
 
-            return h;
-        }
-};
+typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
 
-template <typename Validated_>
-class CRCHash<Validated<std::string, Validated_> > :
-    std::unary_function<Validated<std::string, Validated_>, std::size_t>
-{
-    private:
-        static const std::size_t h_shift = std::numeric_limits<std::size_t>::digits - 5;
-        static const std::size_t h_mask = 0x1f << h_shift;
-
-    public:
-        std::size_t operator() (const Validated<std::string, Validated_> & val) const
-        {
-            const std::string & s1(val.data());
-            std::size_t h(0);
-
-            for (std::string::size_type t(0) ; t < s1.length() ; ++t)
-            {
-                std::size_t hh(h & h_mask);
-                h <<= 5;
-                h ^= (hh >> h_shift);
-                h ^= s1[t];
-            }
-
-            return h;
-        }
-};
-
-template <>
-class CRCHash<std::pair<QualifiedPackageName, VersionSpec> > :
-    std::unary_function<std::pair<QualifiedPackageName, VersionSpec>, std::size_t>
-{
-    private:
-        static const std::size_t h_shift = std::numeric_limits<std::size_t>::digits - 5;
-        static const std::size_t h_mask = 0x1f << h_shift;
-
-    public:
-        std::size_t operator() (const std::pair<QualifiedPackageName, VersionSpec> & val) const
-        {
-            const std::string & s1(val.first.get<qpn_category>().data()),
-                  s2(val.first.get<qpn_package>().data());
-
-            std::size_t h(0);
-
-            for (std::string::size_type t(0) ; t < s1.length() ; ++t)
-            {
-                std::size_t hh(h & h_mask);
-                h <<= 5;
-                h ^= (hh >> h_shift);
-                h ^= s1[t];
-            }
-
-            for (std::string::size_type t(0) ; t < s2.length() ; ++t)
-            {
-                std::size_t hh(h & h_mask);
-                h <<= 5;
-                h ^= (hh >> h_shift);
-                h ^= s2[t];
-            }
-
-            h ^= val.second.hash_value();
-
-            return h;
-        }
-};
-
-#endif
-
-#if HAVE_TR1_HASHES
-
-typedef std::tr1::unordered_map<QualifiedPackageName, VersionSpecCollection::Pointer,
-        CRCHash<QualifiedPackageName> > VersionsMap;
-
-typedef std::tr1::unordered_map<QualifiedPackageName, PackageDepAtom::ConstPointer,
-        CRCHash<QualifiedPackageName> > VirtualsMap;
-
-typedef std::tr1::unordered_map<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer>,
-        CRCHash<QualifiedPackageName> > RepositoryMaskMap;
-
-typedef std::tr1::unordered_map<CategoryNamePart, bool,
-        CRCHash<CategoryNamePart> > CategoryMap;
-
-typedef std::tr1::unordered_map<QualifiedPackageName, bool,
-        CRCHash<QualifiedPackageName> > PackagesMap;
-
-typedef std::tr1::unordered_map<UseFlagName, UseFlagState,
-        CRCHash<UseFlagName> > UseMap;
-
-typedef std::tr1::unordered_set<UseFlagName,
-        CRCHash<UseFlagName> > UseMaskSet;
-
-typedef std::tr1::unordered_map<std::pair<QualifiedPackageName, VersionSpec>,
-        VersionMetadata::Pointer, CRCHash<std::pair<QualifiedPackageName, VersionSpec> > > MetadataMap;
-
-#elif HAVE_EXT_HASHES
-
-typedef __gnu_cxx::hash_map<QualifiedPackageName, VersionSpecCollection::Pointer,
-        CRCHash<QualifiedPackageName> > VersionsMap;
-
-typedef __gnu_cxx::hash_map<QualifiedPackageName, PackageDepAtom::ConstPointer,
-        CRCHash<QualifiedPackageName> > VirtualsMap;
-
-typedef __gnu_cxx::hash_map<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer>,
-        CRCHash<QualifiedPackageName> > RepositoryMaskMap;
-
-typedef __gnu_cxx::hash_map<CategoryNamePart, bool,
-        CRCHash<CategoryNamePart> > CategoryMap;
-
-typedef __gnu_cxx::hash_map<QualifiedPackageName, bool,
-        CRCHash<QualifiedPackageName> > PackagesMap;
-
-typedef __gnu_cxx::hash_map<UseFlagName, UseFlagState,
-        CRCHash<UseFlagName> > UseMap;
-
-typedef __gnu_cxx::hash_set<UseFlagName,
-        CRCHash<UseFlagName> > UseMaskSet;
-
-typedef __gnu_cxx::hash_map<std::pair<QualifiedPackageName, VersionSpec>,
-        VersionMetadata::Pointer, CRCHash<std::pair<QualifiedPackageName, VersionSpec> > > MetadataMap;
-
-#else
-
-typedef std::map<QualifiedPackageName, VersionSpecCollection::Pointer> VersionsMap;
-
-typedef std::map<QualifiedPackageName, PackageDepAtom::ConstPointer> VirtualsMap;
-
-typedef std::map<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> > RepositoryMaskMap;
-
-typedef std::map<CategoryNamePart, bool> CategoryMap;
-
-typedef std::map<QualifiedPackageName, bool> PackagesMap;
-
-typedef std::map<UseFlagName, UseFlagState> UseMap;
-
-typedef std::set<UseFlagName> UseMaskSet;
-
-typedef std::map<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer> MetadataMap;
-
-#endif
+typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
 
 namespace paludis
 {

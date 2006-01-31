@@ -137,8 +137,12 @@ int main(int, char **)
 	 ]
 	]))
 
+HAVE_TR1_HASHES=$have_tr1_hashes
 AC_DEFINE_UNQUOTED([HAVE_TR1_HASHES], $have_tr1_hashes, [Do we have std::tr1:: hashes?])
+AC_SUBST([HAVE_TR1_HASHES])
+HAVE_EXT_HASHES=$have_ext_hashes
 AC_DEFINE_UNQUOTED([HAVE_EXT_HASHES], $have_ext_hashes, [Do we have __gnu_cxx hashes?])
+AC_SUBST([HAVE_EXT_HASHES])
 dnl }}}
 
 dnl {{{ we need libebt.
@@ -278,6 +282,7 @@ AC_OUTPUT(
 	misc/svn-version-filter-data.bash
 	paludis/Makefile
 	paludis/about.hh
+	paludis/hashed_containers.hh
 	paludis/args/Makefile
 	src/Makefile
 	test/Makefile

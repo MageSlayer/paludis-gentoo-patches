@@ -28,11 +28,12 @@ addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 include(`paludis/files.m4')
 
 CLEANFILES = *~
-MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh smart_record.hh comparison_policy.hh
+MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh smart_record.hh \
+	hashed_containers.hh comparison_policy.hh
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
-EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 smart_record.hh.m4 comparison_policy.hh.m4 \
-        testscriptlist
+EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 smart_record.hh.m4 \
+	comparison_policy.hh.m4 hashed_containers.hh.in testscriptlist
 SUBDIRS = . args
 
 libpaludis_a_SOURCES = filelist
