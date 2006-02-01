@@ -38,6 +38,7 @@ CommandLine::CommandLine() :
     a_show_slot(&query_args,        "show-slot",    'S', "Show SLOTs"),
     a_show_license(&query_args,     "show-license", 'L', "Show licenses"),
     a_show_licence(&a_show_license, "show-licence"),
+    a_show_metadata(&query_args,    "show-metadata", 'M', "Show full metadata"),
 
     install_args(this, "Install options"),
     a_pretend(&install_args, "pretend", 'p', "Pretend only"),

@@ -24,9 +24,15 @@
 ebuild_f_depend()
 {
     local key
+
+    IUSE="${IUSE} ${E_IUSE}"
+    DEPEND="${DEPEND} ${E_DEPEND}"
+    RDEPEND="${RDEPEND} ${E_RDEPEND}"
+    PDEPEND="${PDEPEND} ${E_PDEPEND}"
+
     for key in DEPEND RDEPEND PDEPEND IUSE SLOT SRC_URI RESTRICT LICENSE \
             KEYWORDS INHERITED PROVIDE EAPI HOMEPAGE DESCRIPTION ; do
-        echo "${key}="${!key}""
+        echo "${key}="${!key}
     done
 }
 

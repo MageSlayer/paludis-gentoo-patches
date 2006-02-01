@@ -99,6 +99,9 @@ class CommandLine :
         /// --show-licence
         paludis::args::AliasArg a_show_licence;
 
+        /// --show-metadata
+        paludis::args::SwitchArg a_show_metadata;
+
         /// }
 
         /// \name Install arguments

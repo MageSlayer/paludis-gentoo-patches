@@ -119,19 +119,50 @@ void do_one_query(
     /* display metadata */
     p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*entries->last()));
 
-    if (! metadata->get(p::vmk_homepage).empty())
-        std::cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_homepage) << std::endl;
-    if (! metadata->get(p::vmk_description).empty())
-        std::cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
+    if (CommandLine::get_instance()->a_show_metadata.specified())
+    {
+        std::cout << "    " << std::setw(22) << std::left << "DEPEND:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_depend) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "DESCRIPTION:" << std::setw(0) <<
             " " << metadata->get(p::vmk_description) << std::endl;
-    if (CommandLine::get_instance()->a_show_license.specified())
-        if (! metadata->get(p::vmk_license).empty())
-            std::cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
-                " " << metadata->get(p::vmk_license) << std::endl;
-    if (! metadata->get(p::vmk_virtual).empty())
-        std::cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_virtual) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "HOMEPAGE:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_homepage) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "IUSE:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_iuse) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_keywords) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "LICENSE:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_license) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_pdepend) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "PROVIDE:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_provide) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "RDEPEND:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_rdepend) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "RESTRICT:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_restrict) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "VIRTUAL:" << std::setw(0) <<
+             " " << metadata->get(p::vmk_virtual) << std::endl;
+    }
+    else
+    {
+        if (! metadata->get(p::vmk_homepage).empty())
+            std::cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
+                " " << metadata->get(p::vmk_homepage) << std::endl;
+        if (! metadata->get(p::vmk_description).empty())
+            std::cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
+                " " << metadata->get(p::vmk_description) << std::endl;
+        if (CommandLine::get_instance()->a_show_license.specified())
+            if (! metadata->get(p::vmk_license).empty())
+                std::cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
+                    " " << metadata->get(p::vmk_license) << std::endl;
+        if (! metadata->get(p::vmk_virtual).empty())
+            std::cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
+                " " << metadata->get(p::vmk_virtual) << std::endl;
+        if (! metadata->get(p::vmk_provide).empty())
+            std::cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
+                " " << metadata->get(p::vmk_provide) << std::endl;
+    }
 
 
     /* blank line */

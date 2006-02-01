@@ -38,8 +38,23 @@ inherit()
         local location="${ECLASSDIR}/${e}.eclass"
         local old_ECLASS="${ECLASS}"
         export ECLASS="${e}"
+
+        local current_IUSE="${IUSE}" current_DEPEND="${DEPEND}"
+        local current_RDEPEND="${RDEPEND}" current_PDEPEND="${PDEPEND}"
+
+        unset IUSE DEPEND RDEPEND PDEPEND
+
+        echo "DEBUG: source eclass ${e}" 1>&2
         source "${location}" || die "Error sourcing eclass ${e}"
         hasq "${ECLASS}" ${INHERITED} || export INHERITED="${INHERITED} ${ECLASS}"
+
+        E_IUSE="${E_IUSE} ${IUSE}"
+        E_PDEPEND="${E_PDEPEND} ${PDEPEND}"
+        E_RDEPEND="${E_RDEPEND} ${RDEPEND}"
+        E_DEPEND="${E_DEPEND} ${DEPEND}"
+
+        unset IUSE DEPEND RDEPEND PDEPEND
+
         export ECLASS="${old_ECLASS}"
     done
 }
