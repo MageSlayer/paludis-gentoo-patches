@@ -659,7 +659,7 @@ PortageRepository::make_portage_repository(
         throw PortageRepositoryConfigurationError("Key 'profile' not specified or empty");
 
     std::string cache;
-    if (m.end() == m.find("cache") || ((profile = m.find("cache")->second)).empty())
+    if (m.end() == m.find("cache") || ((cache = m.find("cache")->second)).empty())
         cache = location + "/metadata/cache";
 
     return CountedPtr<Repository>(new PortageRepository(db, location, profile, cache));

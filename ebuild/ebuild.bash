@@ -67,6 +67,7 @@ ebuild_load_ebuild()
 {
     [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
     source ${1} || die "Error sourcing ebuild '${1}'"
+    [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"
 }
 
 case ${1:x} in

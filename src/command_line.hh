@@ -99,6 +99,9 @@ class CommandLine :
         /// --show-licence
         paludis::args::AliasArg a_show_licence;
 
+        /// --show-deps
+        paludis::args::SwitchArg a_show_deps;
+
         /// --show-metadata
         paludis::args::SwitchArg a_show_metadata;
 

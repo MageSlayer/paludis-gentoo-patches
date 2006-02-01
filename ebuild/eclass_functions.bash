@@ -44,7 +44,6 @@ inherit()
 
         unset IUSE DEPEND RDEPEND PDEPEND
 
-        echo "DEBUG: source eclass ${e}" 1>&2
         source "${location}" || die "Error sourcing eclass ${e}"
         hasq "${ECLASS}" ${INHERITED} || export INHERITED="${INHERITED} ${ECLASS}"
 

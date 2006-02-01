@@ -149,16 +149,47 @@ void do_one_query(
         if (! metadata->get(p::vmk_homepage).empty())
             std::cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
                 " " << metadata->get(p::vmk_homepage) << std::endl;
+
         if (! metadata->get(p::vmk_description).empty())
             std::cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
                 " " << metadata->get(p::vmk_description) << std::endl;
+
         if (CommandLine::get_instance()->a_show_license.specified())
             if (! metadata->get(p::vmk_license).empty())
                 std::cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
                     " " << metadata->get(p::vmk_license) << std::endl;
+
+        if (CommandLine::get_instance()->a_show_deps.specified())
+        {
+            if (! metadata->get(p::vmk_depend).empty())
+            {
+                p::DepAtomPrettyPrinter p_depend(12);
+                p::DepParser::parse(metadata->get(p::vmk_depend))->accept(&p_depend);
+                std::cout << "    " << std::setw(22) << std::left << "Build dependencies:" << std::setw(0)
+                    << std::endl << p_depend;
+            }
+
+            if (! metadata->get(p::vmk_rdepend).empty())
+            {
+                p::DepAtomPrettyPrinter p_rdepend(12);
+                p::DepParser::parse(metadata->get(p::vmk_rdepend))->accept(&p_rdepend);
+                std::cout << "    " << std::setw(22) << std::left << "Runtime dependencies:" << std::setw(0)
+                    << std::endl << p_rdepend;
+            }
+
+            if (! metadata->get(p::vmk_pdepend).empty())
+            {
+                p::DepAtomPrettyPrinter p_pdepend(12);
+                p::DepParser::parse(metadata->get(p::vmk_pdepend))->accept(&p_pdepend);
+                std::cout << "    " << std::setw(22) << std::left << "Post dependencies:" << std::setw(0)
+                    << std::endl << p_pdepend;
+            }
+        }
+
         if (! metadata->get(p::vmk_virtual).empty())
             std::cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
                 " " << metadata->get(p::vmk_virtual) << std::endl;
+
         if (! metadata->get(p::vmk_provide).empty())
             std::cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
                 " " << metadata->get(p::vmk_provide) << std::endl;
