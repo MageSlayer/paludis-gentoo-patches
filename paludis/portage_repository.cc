@@ -22,6 +22,7 @@
 #include "dir_iterator.hh"
 #include "filter_insert_iterator.hh"
 #include "fs_entry.hh"
+#include "getenv.hh"
 #include "hashed_containers.hh"
 #include "indirect_iterator.hh"
 #include "is_file_with_extension.hh"
@@ -514,7 +515,8 @@ PortageRepository::do_version_metadata(
                 "T='/dev/null' " +
                 "D='/dev/null' " +
                 "S='/dev/null' " +
-                "ebuild/ebuild.bash metadata '" +
+                getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+                "/ebuild.bash metadata '" +
                 stringify(_implementation->location) + "/" + stringify(c) + "/" + stringify(p) + "/" +
                 stringify(p) + "-" + stringify(v) + ".ebuild'");
 
