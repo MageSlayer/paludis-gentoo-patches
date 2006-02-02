@@ -19,6 +19,7 @@
 
 #include "args.hh"
 #include "args_dumper.hh"
+#include <paludis/getenv.hh>
 #include <algorithm>
 
 /** \file
@@ -40,16 +41,24 @@ ArgsHandler::add(ArgsGroup * const g)
     _groups.push_back(g);
 }
 
-#ifndef DOXYGEN
-struct Found
-{
-};
-#endif
-
 void
 ArgsHandler::run(const int argc, const char * const * const argv)
 {
-    std::list<std::string> args(argv + 1, &argv[argc]);
+    std::list<std::string> args;
+
+    std::string env_options = paludis::getenv_with_default("PALUDIS_OPTIONS", "");
+
+    std::istringstream iss(env_options);
+    std::string option;
+    while(iss.good())
+    {
+        iss >> option;
+        if(!option.empty())
+            args.push_back(option);
+    }
+
+    args.insert(args.end(), &argv[1], &argv[argc]);
+
     std::list<std::string>::iterator argit = args.begin(), arge = args.end();
 
     ArgsVisitor visitor(&argit);
