@@ -26,3 +26,6 @@ libexecprog_SCRIPTS = \
 	src_unpack.bash \
 	unpack_functions.bash \
 	usage_error.bash
+
+EXTRA_DIST = $(libexecprog_SCRIPTS)
+
