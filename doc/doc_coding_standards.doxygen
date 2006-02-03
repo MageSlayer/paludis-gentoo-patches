@@ -33,7 +33,7 @@ sure you don't include trailing whitespace.
 
 Function calls have no space before or after the parentheses. Most operators
 and built-in functions have spaces before the opening parenthesis but not
-inside.
+inside. The ! operator has a space after it.
 
 For example::
 \code
@@ -42,7 +42,7 @@ if (some_function("moo", 2))
 else
 {
     // this needs some explanation
-    while (0 != do_other_stuff(foo))
+    while (end != do_other_stuff(foo) || ! foo)
         ++foo;
 }
 \endcode
