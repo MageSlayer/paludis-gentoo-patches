@@ -78,3 +78,38 @@ do_list_categories()
 
     return 0;
 }
+
+int
+do_list_packages()
+{
+    p::Context context("When performing list-packages action from command line:");
+    p::Environment * const env(p::DefaultEnvironment::get_instance());
+
+    std::map<p::QualifiedPackageName, std::list<p::RepositoryName> > pkgs;
+
+    for (p::IndirectIterator<p::PackageDatabase::RepositoryIterator, const p::Repository>
+            r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+    {
+        p::CategoryNamePartCollection::ConstPointer cat_names(r->category_names());
+        for (p::CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
+                c != c_end ; ++c)
+        {
+            p::QualifiedPackageNameCollection::ConstPointer pkg_names(r->package_names(*c));
+            for (p::QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
+                    p != p_end ; ++p)
+                pkgs[*p].push_back(r->name());
+        }
+    }
+
+    for (std::map<p::QualifiedPackageName, std::list<p::RepositoryName > >::const_iterator
+            p(pkgs.begin()), p_end(pkgs.end()) ; p != p_end ; ++p)
+    {
+        std::cout << "* " << colour(cl_package_name, p->first) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "found in:" <<
+            std::setw(0) << " " << p::join(p->second.begin(), p->second.end(), ", ") << std::endl;
+        std::cout << std::endl;
+    }
+
+    return 0;
+}

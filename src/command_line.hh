@@ -62,6 +62,9 @@ class CommandLine :
         /// --list-categories
         paludis::args::SwitchArg a_list_categories;
 
+        /// --list-packages
+        paludis::args::SwitchArg a_list_packages;
+
         /// --version
         paludis::args::SwitchArg a_version;
 

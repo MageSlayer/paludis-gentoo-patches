@@ -30,4 +30,7 @@ int do_list_repositories();
 /// Handle --list-categories.
 int do_list_categories();
 
+/// Handle --list-packages.
+int do_list_packages();
+
 #endif

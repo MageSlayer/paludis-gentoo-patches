@@ -68,7 +68,8 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_version.specified() +
                     CommandLine::get_instance()->a_install.specified() +
                     CommandLine::get_instance()->a_list_repositories.specified() +
-                    CommandLine::get_instance()->a_list_categories.specified()))
+                    CommandLine::get_instance()->a_list_categories.specified() +
+                    CommandLine::get_instance()->a_list_packages.specified()))
             throw DoHelp("you should specify exactly one action");
 
         if (CommandLine::get_instance()->a_version.specified())
@@ -104,6 +105,14 @@ main(int argc, char *argv[])
                 throw DoHelp("list-categories action takes no parameters");
 
             return do_list_categories();
+        }
+
+        if (CommandLine::get_instance()->a_list_packages.specified())
+        {
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("list-packages action takes no parameters");
+
+            return do_list_packages();
         }
 
         throw p::InternalError(__PRETTY_FUNCTION__, "no action?");
