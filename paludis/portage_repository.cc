@@ -584,6 +584,9 @@ PortageRepository::do_version_metadata(
         result->set(vmk_provide,     f.get("PROVIDE"));
         result->set(vmk_eapi,        f.get("EAPI"));
         result->set(vmk_virtual, "");
+
+        if (p.exit_status())
+            throw InternalError(PALUDIS_HERE, "ebuild failed"); /// \todo
     }
 
     _implementation->metadata.insert(std::make_pair(std::make_pair(QualifiedPackageName(c, p), v), result));

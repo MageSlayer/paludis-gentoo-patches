@@ -18,11 +18,9 @@
  */
 
 #include "pstream.hh"
+#include "log.hh"
 #include <errno.h>
 #include <cstring>
-
-/// \bug VV debug log
-#include <iostream>
 
 using namespace paludis;
 
@@ -60,8 +58,7 @@ PStreamInBuf::PStreamInBuf(const std::string & command) :
     _command(command),
     fd(popen(command.c_str(), "r"))
 {
-    /// \bug VV debug log
-    std::cerr << "DEBUG: popen " << command << std::endl;
+    Log::get_instance()->message(ll_debug, "DEBUG: popen " + command);
 
     if (0 == fd)
         throw PStreamError("popen('" + _command + "', 'r') failed: " +
