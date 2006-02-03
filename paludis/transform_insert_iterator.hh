@@ -123,6 +123,20 @@ namespace paludis
     {
         return TransformInsertIterator<Iter_, Trans_>(i, t);
     }
+
+    /**
+     * Convenience class: select the first item of a pair.
+     */
+    template <typename A_, typename B_>
+    struct SelectFirst :
+        std::unary_function<A_, std::pair<A_, B_> >
+    {
+        A_ operator() (const std::pair<A_, B_> & p) const
+        {
+            return p.first;
+        }
+    };
+
 }
 
 #endif
