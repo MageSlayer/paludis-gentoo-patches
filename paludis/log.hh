@@ -22,6 +22,7 @@
 
 #include <paludis/instantiation_policy.hh>
 #include <paludis/private_implementation_pattern.hh>
+#include <iosfwd>
 
 namespace paludis
 {
@@ -51,6 +52,8 @@ namespace paludis
             void set_log_level(const LogLevel);
 
             void message(const LogLevel, const std::string &);
+
+            void set_log_stream(std::ostream * const);
     };
 }
 

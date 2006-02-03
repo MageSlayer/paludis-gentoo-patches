@@ -28,6 +28,7 @@
 #include "is_file_with_extension.hh"
 #include "key_value_config_file.hh"
 #include "line_config_file.hh"
+#include "log.hh"
 #include "match_package.hh"
 #include "package_database.hh"
 #include "package_dep_atom.hh"
@@ -543,6 +544,9 @@ PortageRepository::do_version_metadata(
     }
     else
     {
+        Log::get_instance()->message(ll_warning, "No cache entry for '" + stringify(c) + "/" +
+                stringify(p) + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
+
         std::string cmd(
                 "env P='" + stringify(p) + "-" + stringify(v.remove_revision()) + "' " +
                 "PV='" + stringify(v.remove_revision()) + "' " +

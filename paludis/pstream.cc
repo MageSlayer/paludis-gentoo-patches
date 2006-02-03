@@ -58,7 +58,7 @@ PStreamInBuf::PStreamInBuf(const std::string & command) :
     _command(command),
     fd(popen(command.c_str(), "r"))
 {
-    Log::get_instance()->message(ll_debug, "DEBUG: popen " + command);
+    Log::get_instance()->message(ll_debug, "popen " + command);
 
     if (0 == fd)
         throw PStreamError("popen('" + _command + "', 'r') failed: " +
