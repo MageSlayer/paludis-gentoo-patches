@@ -116,6 +116,9 @@ DirIterator::operator== (const DirIterator & other) const
     if (other._iter == other._items->end())
         return _iter == _items->end();
 
+    if (_iter == _items->end())
+        return other._iter == other._items->end();
+
     if (other._items != _items)
         throw InternalError(PALUDIS_HERE,
                 "comparing two different DirIterators.");

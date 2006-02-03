@@ -62,9 +62,13 @@ namespace test_cases
             DirIterator iter(FSEntry("dir_iterator_TEST_dir"));
             DirIterator iter1(FSEntry("dir_iterator_TEST_dir"));
 
+            TEST_CHECK(iter != DirIterator());
+            TEST_CHECK(DirIterator() != iter);
+
             TEST_CHECK(*iter == FSEntry("dir_iterator_TEST_dir/all_perms"));
             TEST_CHECK(*(iter++) == FSEntry("dir_iterator_TEST_dir/all_perms"));
             TEST_CHECK(iter == DirIterator());
+            TEST_CHECK(DirIterator() == iter);
 
             TEST_CHECK(++iter1 == DirIterator());
         }
