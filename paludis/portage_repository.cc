@@ -283,6 +283,22 @@ PortageRepository::do_has_package_named(const CategoryNamePart & c,
     }
 }
 
+struct CategoryFilter :
+    std::unary_function<bool, QualifiedPackageName>
+{
+    CategoryNamePart category;
+
+    CategoryFilter(const CategoryNamePart & c) :
+        category(c)
+    {
+    }
+
+    bool operator() (const QualifiedPackageName & a) const
+    {
+        return a.get<qpn_category>() == category;
+    }
+};
+
 CategoryNamePartCollection::ConstPointer
 PortageRepository::do_category_names() const
 {
@@ -301,16 +317,46 @@ PortageRepository::do_category_names() const
 QualifiedPackageNameCollection::ConstPointer
 PortageRepository::do_package_names(const CategoryNamePart & c) const
 {
+    /* this isn't particularly fast because it isn't called very often. avoid
+     * changing the data structures used to make this faster at the expense of
+     * slowing down single item queries. */
+
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
     need_category_names();
     need_virtual_names();
 
-    /// \todo
-    if (! stringify(c).empty())
-        throw InternalError(PALUDIS_HERE, "not implemented");
-    return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection);
+    if (_implementation->category_names.end() == _implementation->category_names.find(c))
+        return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection);
+
+    for (DirIterator d(_implementation->location / stringify(c)), d_end ; d != d_end ; ++d)
+    {
+        if (! d->is_directory())
+            continue;
+        if (DirIterator() == std::find_if(DirIterator(*d), DirIterator(),
+                    IsFileWithExtension(".ebuild")))
+            continue;
+
+        try
+        {
+            _implementation->package_names.insert(std::make_pair(
+                        QualifiedPackageName(c, PackageNamePart(d->basename())), false));
+        }
+        catch (const NameError &)
+        {
+        }
+    }
+
+    _implementation->category_names[c] = true;
+
+    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection);
+
+    std::copy(_implementation->package_names.begin(), _implementation->package_names.end(),
+            transform_inserter(filter_inserter(result->inserter(), CategoryFilter(c)),
+                    SelectFirst<QualifiedPackageName, bool>()));
+
+    return result;
 }
 
 VersionSpecCollection::ConstPointer
