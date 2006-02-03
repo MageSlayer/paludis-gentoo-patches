@@ -107,25 +107,25 @@ namespace test_cases
             FSEntry a("fs_entry_TEST_dir/all_perms");
             FSEntry b("fs_entry_TEST_dir/no_perms");
 
-            TEST_CHECK(a.owner_has_read());
-            TEST_CHECK(a.owner_has_write());
-            TEST_CHECK(a.owner_has_execute());
-            TEST_CHECK(a.group_has_read());
-            TEST_CHECK(a.group_has_write());
-            TEST_CHECK(a.group_has_execute());
-            TEST_CHECK(a.others_has_read());
-            TEST_CHECK(a.others_has_write());
-            TEST_CHECK(a.others_has_execute());
+            TEST_CHECK(a.has_permission(fs_ug_owner, fs_perm_read));
+            TEST_CHECK(a.has_permission(fs_ug_owner, fs_perm_write));
+            TEST_CHECK(a.has_permission(fs_ug_owner, fs_perm_execute));
+            TEST_CHECK(a.has_permission(fs_ug_group, fs_perm_read));
+            TEST_CHECK(a.has_permission(fs_ug_group, fs_perm_write));
+            TEST_CHECK(a.has_permission(fs_ug_group, fs_perm_execute));
+            TEST_CHECK(a.has_permission(fs_ug_others, fs_perm_read));
+            TEST_CHECK(a.has_permission(fs_ug_others, fs_perm_write));
+            TEST_CHECK(a.has_permission(fs_ug_others, fs_perm_execute));
 
-            TEST_CHECK(!b.owner_has_read());
-            TEST_CHECK(!b.owner_has_write());
-            TEST_CHECK(!b.owner_has_execute());
-            TEST_CHECK(!b.group_has_read());
-            TEST_CHECK(!b.group_has_write());
-            TEST_CHECK(!b.group_has_execute());
-            TEST_CHECK(!b.others_has_read());
-            TEST_CHECK(!b.others_has_write());
-            TEST_CHECK(!b.others_has_execute());
+            TEST_CHECK(!b.has_permission(fs_ug_owner, fs_perm_read));
+            TEST_CHECK(!b.has_permission(fs_ug_owner, fs_perm_write));
+            TEST_CHECK(!b.has_permission(fs_ug_owner, fs_perm_execute));
+            TEST_CHECK(!b.has_permission(fs_ug_group, fs_perm_read));
+            TEST_CHECK(!b.has_permission(fs_ug_group, fs_perm_write));
+            TEST_CHECK(!b.has_permission(fs_ug_group, fs_perm_execute));
+            TEST_CHECK(!b.has_permission(fs_ug_others, fs_perm_read));
+            TEST_CHECK(!b.has_permission(fs_ug_others, fs_perm_write));
+            TEST_CHECK(!b.has_permission(fs_ug_others, fs_perm_execute));
         }
     } test_fs_entry_permission;
 }

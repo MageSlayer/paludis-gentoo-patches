@@ -52,6 +52,26 @@ namespace paludis
     };
 
     /**
+     * File permissions used by FSEntry
+     */
+    enum FSPermission
+    {
+        fs_perm_read,       ///< read permission on file
+        fs_perm_write,      ///< write permission on file
+        fs_perm_execute     ///< execute permission on file
+    };
+
+    /**
+     * User classes used by FSEntry
+     */
+    enum FSUserGroup
+    {
+        fs_ug_owner,         ///< owner permission
+        fs_ug_group,        ///< group permission
+        fs_ug_others        ///< others permission
+    };
+
+    /**
      * Represents an entry (which may or may not exist) in the filesystem.
      *
      * \ingroup Filesystem
@@ -144,49 +164,9 @@ namespace paludis
             bool is_regular_file() const;
 
             /**
-             * Does the owner have read permission?
+             * Check if filesystem entry has `perm` for `user_group`
              */
-            bool owner_has_read() const;
-
-            /**
-             * Does the owner have write permission?
-             */
-            bool owner_has_write() const;
-
-            /**
-             * Does the owner have execute permission?
-             */
-            bool owner_has_execute() const;
-
-            /**
-             * Does the group have read permission?
-             */
-            bool group_has_read() const;
-
-            /**
-             * Does the group have write permission?
-             */
-            bool group_has_write() const;
-
-            /**
-             * Does the group have execute permission?
-             */
-            bool group_has_execute() const;
-
-            /**
-             * Do the others have read permission?
-             */
-            bool others_has_read() const;
-
-            /**
-             * Do the others have write permission?
-             */
-            bool others_has_write() const;
-
-            /**
-             * Do the others have execute permission?
-             */
-            bool others_has_execute() const;
+            bool has_permission(const FSUserGroup & user_group, const FSPermission & fs_perm) const;
 
             /**
              * Return the last part of our path (eg '/foo/bar' => 'bar').

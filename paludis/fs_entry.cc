@@ -138,100 +138,57 @@ FSEntry::is_regular_file() const
 }
 
 bool
-FSEntry::owner_has_read() const
+FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_perm) const
 {
     _stat();
 
     if (_exists)
-        return (*_stat_info).st_mode & S_IRUSR;
+    {
+        switch (user_group)
+        {
+            case fs_ug_owner:
+                {
+                    switch (fs_perm)
+                    {
+                        case fs_perm_read:
+                            return (*_stat_info).st_mode & S_IRUSR;
+                        case fs_perm_write:
+                            return (*_stat_info).st_mode & S_IWUSR;
+                        case fs_perm_execute:
+                            return (*_stat_info).st_mode & S_IXUSR;
+                    }
+                    throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
+                }
+            case fs_ug_group:
+                {
+                    switch (fs_perm)
+                    {
+                        case fs_perm_read:
+                            return (*_stat_info).st_mode & S_IRGRP;
+                        case fs_perm_write:
+                            return (*_stat_info).st_mode & S_IWGRP;
+                        case fs_perm_execute:
+                            return (*_stat_info).st_mode & S_IXGRP;
+                    }
+                    throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
+                }
+            case fs_ug_others:
+                {
+                    switch (fs_perm)
+                    {
+                        case fs_perm_read:
+                            return (*_stat_info).st_mode & S_IROTH;
+                        case fs_perm_write:
+                            return (*_stat_info).st_mode & S_IWOTH;
+                        case fs_perm_execute:
+                            return (*_stat_info).st_mode & S_IXOTH;
+                    }
+                    throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
+                }
+        }
 
-    return false;
-}
-
-bool
-FSEntry::owner_has_write() const
-{
-    _stat();
-
-    if (_exists)
-        return (*_stat_info).st_mode & S_IWUSR;
-
-    return false;
-}
-
-bool
-FSEntry::owner_has_execute() const
-{
-    _stat();
-
-    if (_exists)
-        return (*_stat_info).st_mode & S_IXUSR;
-
-    return false;
-}
-
-bool
-FSEntry::group_has_read() const
-{
-    _stat();
-
-    if (_exists)
-        return (*_stat_info).st_mode & S_IRGRP;
-
-    return false;
-}
-
-bool
-FSEntry::group_has_write() const
-{
-    _stat();
-
-    if (_exists)
-        return (*_stat_info).st_mode & S_IWGRP;
-
-    return false;
-}
-
-bool
-FSEntry::group_has_execute() const
-{
-    _stat();
-
-    if (_exists)
-        return (*_stat_info).st_mode & S_IXGRP;
-
-    return false;
-}
-
-bool
-FSEntry::others_has_read() const
-{
-    _stat();
-
-    if (_exists)
-        return (*_stat_info).st_mode & S_IROTH;
-
-    return false;
-}
-
-bool
-FSEntry::others_has_write() const
-{
-    _stat();
-
-    if (_exists)
-        return (*_stat_info).st_mode & S_IWOTH;
-
-    return false;
-}
-
-bool
-FSEntry::others_has_execute() const
-{
-    _stat();
-
-    if (_exists)
-        return (*_stat_info).st_mode & S_IXOTH;
+        throw InternalError(PALUDIS_HERE, "Unhandled FSUserGroup");
+    }
 
     return false;
 }
