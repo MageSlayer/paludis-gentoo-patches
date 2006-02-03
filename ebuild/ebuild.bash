@@ -58,6 +58,7 @@ ebuild_load_module sandbox_stubs
 ebuild_load_module portage_stubs
 ebuild_load_module list_functions
 ebuild_load_module echo_functions
+ebuild_load_module multilib_functions
 ebuild_load_module install_functions
 ebuild_load_module build_functions
 ebuild_load_module unpack_functions

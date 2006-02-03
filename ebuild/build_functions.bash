@@ -47,6 +47,10 @@ econf()
         cmd="${cmd} --datadir=/usr/share"
         cmd="${cmd} --sysconfdir=/etc"
         cmd="${cmd} --localstatedir=/var/lib"
+        # Check that this is actually what's wanted for multilib etc.
+        cmd="${cmd} --libdir=${PREFIX}/$(ebuild_get_libdir)"
+
+        cmd="${cmd} $@ ${LOCAL_EXTRA_ECONF}"
 
         echo "${cmd}"
         ${cmd} || die "econf failed"
