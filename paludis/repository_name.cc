@@ -24,9 +24,17 @@ using namespace paludis;
 void
 RepositoryNameValidator::validate(const std::string & s)
 {
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-+_/");
+
     do
     {
         if (s.empty())
+            break;
+
+        if (std::string::npos != s.find_first_not_of(allowed_chars))
             break;
 
         return;
