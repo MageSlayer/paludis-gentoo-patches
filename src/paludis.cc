@@ -139,9 +139,9 @@ main(int argc, char *argv[])
         cout << "LIBEXECDIR:  " << LIBEXECDIR << endl;
         cout << "stdlib:      "
 #if defined(__GLIBCXX__)
-            << "GNU libstdc++"
-#elif defined(__GLIBCPP__)
-            << "GNU libstdc++" << __GLIBCPP__
+#  define XSTRINGIFY(x) #x
+#  define STRINGIFY(x) XSTRINGIFY(x)
+            << "GNU libstdc++ " << STRINGIFY(__GLIBCXX__)
 #endif
             << endl;
 
