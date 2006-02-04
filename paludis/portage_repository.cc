@@ -618,6 +618,7 @@ PortageRepository::do_version_metadata(
             Log::get_instance()->message(ll_warning, "Could not generate cache for '"
                     + stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '"
                     + stringify(name()) + "'");
+            result->set(vmk_eapi, "UNKNOWN");
         }
         else
             ok = true;
