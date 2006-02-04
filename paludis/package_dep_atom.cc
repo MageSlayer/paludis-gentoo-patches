@@ -47,18 +47,27 @@ PackageDepAtom::PackageDepAtom(
 {
 }
 
-PackageDepAtom::PackageDepAtom(const std::string & s) :
+PackageDepAtom::PackageDepAtom(const std::string & ss) :
     _package(CategoryNamePart("later"), PackageNamePart("later")),
     _version_operator("="),
     _version_spec(0),
     _slot(0)
 {
-    Context context("When parsing package dep atom '" + s + "':");
+    Context context("When parsing package dep atom '" + ss + "':");
 
     try
     {
+        std::string s(ss);
+
         if (s.empty())
             throw InternalError(PALUDIS_HERE, "todo"); /// \bug
+
+        std::string::size_type slot_p;
+        if (std::string::npos != ((slot_p = s.rfind(':'))))
+        {
+            _slot.assign(new SlotName(s.substr(slot_p + 1)));
+            s.erase(slot_p);
+        }
 
         if (std::string::npos != std::string("<>=~").find(s.at(0)))
         {
