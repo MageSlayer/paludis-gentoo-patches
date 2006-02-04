@@ -273,4 +273,24 @@ paludis::operator<< (std::ostream & s, const FSEntry & f)
     return s;
 }
 
+time_t
+FSEntry::ctime() const
+{
+    _stat();
 
+    if (_exists)
+        return (*_stat_info).st_ctime;
+
+    return false;
+}
+
+time_t
+FSEntry::mtime() const
+{
+    _stat();
+
+    if (_exists)
+        return (*_stat_info).st_mtime;
+
+    return false;
+}

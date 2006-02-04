@@ -21,6 +21,7 @@
 #include "fs_entry.hh"
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <ctime>
 
 using namespace paludis;
 using namespace test;
@@ -128,4 +129,23 @@ namespace test_cases
             TEST_CHECK(!b.has_permission(fs_ug_others, fs_perm_execute));
         }
     } test_fs_entry_permission;
+
+    /**
+     * \test Test FSEntry ctime and mtime methods
+     */
+    struct FSEntryTime: TestCase
+    {
+        FSEntryTime() : TestCase("ctime and mtime") {}
+
+        void run()
+        {
+            FSEntry a("fs_entry_TEST_dir");
+            FSEntry b("fs_entry_TEST_dir/no_perms");
+
+            TEST_CHECK(a.ctime() <= std::time(NULL));
+            TEST_CHECK((a.mtime() >= a.ctime()) && (a.mtime() <= std::time(NULL)));
+            TEST_CHECK(b.ctime() <= std::time(NULL));
+            TEST_CHECK((b.mtime() >= b.ctime()) && (b.mtime() <= std::time(NULL)));
+        }
+    } test_fs_entry_time;
 }

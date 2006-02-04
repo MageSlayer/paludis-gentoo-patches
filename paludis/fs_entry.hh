@@ -177,6 +177,16 @@ namespace paludis
              * Return the canonicalised version of our path.
              */
             FSEntry realpath() const;
+
+            /**
+             * Return the time the filesystem entry was created
+             */
+            time_t ctime() const;
+
+            /**
+             * Return the time the filesystem entry was last modified
+             */
+            time_t mtime() const;
     };
 
     /**
