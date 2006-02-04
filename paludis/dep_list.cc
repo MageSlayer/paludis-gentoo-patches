@@ -28,6 +28,7 @@
 #include "indirect_iterator.hh"
 #include "iterator_utilities.hh"
 #include "join.hh"
+#include "log.hh"
 #include "match_package.hh"
 #include "package_dep_atom.hh"
 #include "save.hh"
@@ -204,6 +205,10 @@ DepList::add(DepAtom::ConstPointer atom)
 void
 DepList::_add_raw(const DepAtom * const atom)
 {
+    /// \bug VV this is debug code. remove it once we're sure this works
+    std::list<DepListEntry> backup_merge_list(_implementation->merge_list.begin(),
+            _implementation->merge_list.end());
+
     /* keep track of stack depth */
     Save<int> old_stack_depth(&_implementation->stack_depth,
             _implementation->stack_depth + 1);
@@ -212,17 +217,27 @@ DepList::_add_raw(const DepAtom * const atom)
 
     /* we need to make sure that merge_list doesn't get h0rked in the
      * event of a failure. */
-    bool merge_list_was_empty(_implementation->merge_list.empty());
-    std::list<DepListEntry>::iterator save_end, save_first;
+    bool merge_list_was_empty(_implementation->merge_list.empty()), irange_begin_is_begin(false);
+    std::list<DepListEntry>::iterator save_last, save_first, save_irange_begin, save_irange_end;
     if (! merge_list_was_empty)
     {
         save_first = _implementation->merge_list.begin();
-        save_end = previous(_implementation->merge_list.end());
+        save_last = previous(_implementation->merge_list.end());
+
+        save_irange_end = _implementation->merge_list_insert_pos;
+        if (_implementation->merge_list_insert_pos == _implementation->merge_list.begin())
+            irange_begin_is_begin = true;
+        else
+            save_irange_begin = previous(_implementation->merge_list_insert_pos);
     }
 
     try
     {
         atom->accept(this);
+    }
+    catch (const InternalError &)
+    {
+        throw;
     }
     catch (...)
     {
@@ -230,8 +245,21 @@ DepList::_add_raw(const DepAtom * const atom)
             _implementation->merge_list.clear();
         else
         {
-            _implementation->merge_list.erase(next(save_end), _implementation->merge_list.end());
+            _implementation->merge_list.erase(next(save_last), _implementation->merge_list.end());
             _implementation->merge_list.erase(_implementation->merge_list.begin(), save_first);
+            _implementation->merge_list.erase(
+                    irange_begin_is_begin ? _implementation->merge_list.begin() : next(save_irange_begin),
+                    save_irange_end);
+        }
+
+        /// \bug VV this is debug code. remove it once we're sure this works
+        if (backup_merge_list != _implementation->merge_list)
+        {
+            Log::get_instance()->message(ll_warning, "Old merge_list: " + join(backup_merge_list.begin(),
+                        backup_merge_list.end(), " -> "));
+            Log::get_instance()->message(ll_warning, "New merge_list: " + join(_implementation->merge_list.begin(),
+                        _implementation->merge_list.end(), " -> "));
+            throw InternalError(PALUDIS_HERE, "merge list restore failed");
         }
         throw;
     }
