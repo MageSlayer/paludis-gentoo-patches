@@ -7,10 +7,9 @@ define(`filelist', `')dnl
 define(`testlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
-$1_TEST_SOURCES = $1_TEST.cc exception_to_debug_string.cc exception_to_debug_string.hh
-$1_TEST_LDADD = $(top_builddir)/test/libtest.a libpaludis.a
+$1_TEST_SOURCES = $1_TEST.cc
+$1_TEST_LDADD = test_extras.o $(top_builddir)/test/libtest.a libpaludis.a
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
-$1_TEST_CPPFLAGS = -DPALUDIS_TEST_CASE=1
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
 define(`addhh', `define(`filelist', filelist `$1.hh')')dnl
@@ -33,7 +32,7 @@ MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh smart_record.
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 smart_record.hh.m4 \
-	comparison_policy.hh.m4 hashed_containers.hh.in testscriptlist
+	comparison_policy.hh.m4 hashed_containers.hh.in testscriptlist test_extras.cc
 SUBDIRS = . args
 
 libpaludis_a_SOURCES = filelist

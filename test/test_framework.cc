@@ -31,20 +31,49 @@
 
 using namespace test;
 
-/**
- * Default implementation of exception_to_debug_string, that can be overridden
- * by other libraries.
- *
- * \ingroup Test
- */
-std::string exception_to_debug_string(const std::exception &) PALUDIS_ATTRIBUTE((weak,noinline));
-
-std::string exception_to_debug_string(const std::exception & e)
+namespace
 {
-    return e.what() + std::string(" (no further information)");
+    std::string exception_to_debug_string(const std::exception & e)
+    {
+        return e.what() + std::string(" (no further information)");
+    }
+
+    class DebugStringHolder
+    {
+        private:
+            std::string (*_f) (const std::exception &);
+
+            DebugStringHolder() :
+                _f(&exception_to_debug_string)
+            {
+            }
+
+        public:
+            static DebugStringHolder * get_instance()
+            {
+                static DebugStringHolder _instance;
+                return &_instance;
+            }
+
+            void set(std::string (*f) (const std::exception &))
+            {
+                _f = f;
+            }
+
+            std::string (*get()) (const std::exception &) const
+            {
+                return _f;
+            }
+    };
 }
 
 #ifndef DOXYGEN
+
+void
+test::set_exception_to_debug_string(std::string (*f) (const std::exception &))
+{
+    DebugStringHolder::get_instance()->set(f);
+}
 
 std::list<std::string>
 TestMessageSuffix::_suffixes;
@@ -113,7 +142,7 @@ TestCase::call_run()
     catch (std::exception &e)
     {
         throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__,
-                "Test threw unexpected exception " + exception_to_debug_string(e));
+                "Test threw unexpected exception " + (DebugStringHolder::get_instance()->get())(e));
     }
     catch (...)
     {
@@ -183,7 +212,7 @@ RunTest::operator() (TestCase * test_case) const
         }
         catch (std::exception &e)
         {
-            std::cout << "!{" << std::endl << exception_to_debug_string(e) <<
+            std::cout << "!{" << std::endl << (DebugStringHolder::get_instance()->get())(e) <<
                 std::endl << "  } " << std::flush;
             had_local_failure = true;
             *_had_a_failure = true;

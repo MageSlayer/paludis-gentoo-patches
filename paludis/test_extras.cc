@@ -17,22 +17,42 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_EXCEPTION_TO_DEBUG_STRING_HH
-#define PALUDIS_GUARD_PALUDIS_EXCEPTION_TO_DEBUG_STRING_HH 1
-
+#include <test/test_framework.hh>
 #include <paludis/stringify.hh>
 #include <paludis/exception.hh>
 #include <paludis/attributes.hh>
+#include <paludis/log.hh>
 #include <exception>
+#include <sstream>
 
-#ifdef PALUDIS_TEST_CASE
-#ifdef PALUDIS_CAN_USE_ATTRIBUTE
+using namespace paludis;
 
-std::string exception_to_debug_string(const std::exception & e) PALUDIS_ATTRIBUTE((noinline));
+namespace
+{
+    std::string verbose_exception_to_debug_string(
+            const std::exception & e) PALUDIS_ATTRIBUTE((noinline));
 
-#endif
-#else
-#error Missing -DPALUDIS_TEST_CASE=1?
-#endif
+    struct C
+    {
+        std::stringstream s;
 
-#endif
+        C()
+        {
+            test::set_exception_to_debug_string(&verbose_exception_to_debug_string);
+            Log::get_instance()->set_log_stream(&s);
+        }
+    };
+
+    static const C my_c;
+
+    std::string verbose_exception_to_debug_string(const std::exception & e)
+    {
+        const paludis::Exception * ee;
+        if (0 != ((ee = dynamic_cast<const Exception *>(&e))))
+            return stringify(ee->what()) + " (message " + ee->message() +
+                (ee->empty() ? stringify("") : ", backtrace " + ee->backtrace(" -> ")) + ")";
+        else
+            return e.what();
+    }
+}
+

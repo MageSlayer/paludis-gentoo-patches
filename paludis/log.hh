@@ -43,10 +43,10 @@ namespace paludis
     };
 
     class Log :
-        public InstantiationPolicy<Log, instantiation_method::SingletonAtStartupTag>,
+        public InstantiationPolicy<Log, instantiation_method::SingletonAsNeededTag>,
         private PrivateImplementationPattern<Log>
     {
-        friend class InstantiationPolicy<Log, instantiation_method::SingletonAtStartupTag>;
+        friend class InstantiationPolicy<Log, instantiation_method::SingletonAsNeededTag>;
 
         private:
             Log();

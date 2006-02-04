@@ -188,6 +188,8 @@ namespace test
              */
             static bool run_tests();
     };
+
+    void set_exception_to_debug_string(std::string (*) (const std::exception &));
 }
 
 /**
