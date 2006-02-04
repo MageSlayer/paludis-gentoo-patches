@@ -28,10 +28,15 @@ namespace paludis
 {
     /**
      * Specifies the level of a log message.
+     *
+     * Keep this in order. When deciding whether to display a message, Log
+     * uses message log level >= current log level, so it's important that
+     * least critical levels have lower numeric values.
      */
     enum LogLevel
     {
         ll_debug,             ///< Debug message
+        ll_qa,                ///< QA messages
         ll_warning,           ///< Warning message
         last_ll,              ///< Number of items
         initial_ll = ll_debug ///< Initial value

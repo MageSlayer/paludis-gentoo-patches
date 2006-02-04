@@ -63,6 +63,10 @@ Log::message(const LogLevel l, const std::string & s)
                     *_implementation->stream << "[DEBUG] ";
                     continue;
 
+                case ll_qa:
+                    *_implementation->stream << "[QA] ";
+                    continue;
+
                 case ll_warning:
                     *_implementation->stream << "[WARNING] ";
                     continue;
