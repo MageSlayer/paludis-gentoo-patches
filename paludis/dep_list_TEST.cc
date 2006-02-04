@@ -466,6 +466,54 @@ namespace test_cases
     } test_dep_list_15;
 
     /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase16 : DepListTestCase<16>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "cat/two:slot2");
+            repo->add_version("cat", "two", "1.1")->set(vmk_slot, "slot1");
+            repo->add_version("cat", "two", "1.2")->set(vmk_slot, "slot2");
+            repo->add_version("cat", "two", "1.3")->set(vmk_slot, "slot3");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/two-1.2:slot2::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_16;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase17 : DepListTestCase<17>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "<cat/two-1.2-r2:slot2");
+            repo->add_version("cat", "two", "1.1")->set(vmk_slot, "slot1");
+            repo->add_version("cat", "two", "1.2")->set(vmk_slot, "slot2");
+            repo->add_version("cat", "two", "1.2-r1")->set(vmk_slot, "slot2");
+            repo->add_version("cat", "two", "1.2-r2")->set(vmk_slot, "slot2");
+            repo->add_version("cat", "two", "1.3")->set(vmk_slot, "slot3");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/two-1.2-r1:slot2::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_17;
+
+    /**
      * \test Test DepList transactional add behaviour.
      *
      * \ingroup Test
