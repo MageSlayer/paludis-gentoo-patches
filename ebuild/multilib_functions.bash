@@ -48,7 +48,7 @@ ebuild_get_abi_var() {
         abi=${2}
     elif [[ -n "${ABI}" ]]; then
         abi=${ABI}
-    elif [[ -n "${DEFAULT_ABI}" ]]l then
+    elif [[ -n "${DEFAULT_ABI}" ]]; then
         abi=${DEFAULT_ABI}
     else
         abi="default"
