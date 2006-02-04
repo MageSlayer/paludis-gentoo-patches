@@ -303,9 +303,10 @@ DepList::visit(const PackageDepAtom * const p)
         {
             if (_implementation->drop_circular)
                 return;
-            else if (_implementation->merge_list_insert_pos == i && 
-                    ( _implementation->drop_self_circular || 
-                      (! _implementation->dont_ignore_patch_dep && p->package() == QualifiedPackageName("sys-devel/patch"))))
+            else if (_implementation->merge_list_insert_pos == i && (
+                        _implementation->drop_self_circular || (
+                            ! _implementation->dont_ignore_patch_dep && p->package() ==
+                            QualifiedPackageName("sys-devel/patch"))))
                 return;
             else
                 throw CircularDependencyError(i, next(i));
