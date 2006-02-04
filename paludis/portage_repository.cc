@@ -157,7 +157,11 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
     static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
 
     if (! f.is_directory())
-        throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
+    {
+        Log::get_instance()->message(ll_warning, "Profile component '" + stringify(f) +
+                "' is not a directory");
+        return;
+    }
 
     if ((f / "parent").exists())
     {
@@ -167,7 +171,11 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
         if (parent.begin() != parent.end())
             add_profile((f / *parent.begin()).realpath());
         else
-            throw InternalError(PALUDIS_HERE, "todo"); /// \bug exception
+        {
+            Log::get_instance()->message(ll_warning, "Profile parent file in '" +
+                    stringify(f) + "' cannot be read");
+            return;
+        }
     }
 
     if ((f / "make.defaults").exists())
@@ -346,6 +354,9 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
         }
         catch (const NameError &)
         {
+            Log::get_instance()->message(ll_warning, "Skipping entry '" +
+                    d->basename() + "' in category '" + stringify(c) + "' in repository '"
+                    + stringify(name()) + "'");
         }
     }
 
@@ -497,7 +508,12 @@ PortageRepository::do_version_metadata(
             "-" + stringify(v));
 
     if (! has_version(c, p, v))
-        throw InternalError(PALUDIS_HERE, "todo: has_version failed for do_version_metadata"); /// \bug todo
+    {
+        Log::get_instance()->message(ll_warning, "has_version failed for request for '" +
+                stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '" +
+                stringify(name()) + "'");
+        return VersionMetadata::ConstPointer(new VersionMetadata);
+    }
 
     VersionMetadata::Pointer result(new VersionMetadata);
 
@@ -505,32 +521,38 @@ PortageRepository::do_version_metadata(
     cache_file /= stringify(c);
     cache_file /= stringify(p) + "-" + stringify(v);
 
+    bool ok(false);
     VirtualsMap::iterator vi(_implementation->virtuals_map.end());
     if (cache_file.is_regular_file())
     {
         std::ifstream cache(std::string(cache_file).c_str());
         std::string line;
 
-        if (! cache)
-            throw InternalError(PALUDIS_HERE, "todo");
+        if (cache)
+        {
+            /// \bug this lot
+            std::getline(cache, line); result->set(vmk_depend,      line);
+            std::getline(cache, line); result->set(vmk_rdepend,     line);
+            std::getline(cache, line); result->set(vmk_slot,        line);
+            std::getline(cache, line); result->set(vmk_src_uri,     line);
+            std::getline(cache, line); result->set(vmk_restrict,    line);
+            std::getline(cache, line); result->set(vmk_homepage,    line);
+            std::getline(cache, line); result->set(vmk_license,     line);
+            std::getline(cache, line); result->set(vmk_description, line);
+            std::getline(cache, line); result->set(vmk_keywords,    line);
+            std::getline(cache, line); result->set(vmk_inherited,   line);
+            std::getline(cache, line); result->set(vmk_iuse,        line);
+            std::getline(cache, line);
+            std::getline(cache, line); result->set(vmk_pdepend,     line);
+            std::getline(cache, line); result->set(vmk_provide,     line);
+            std::getline(cache, line); result->set(vmk_eapi,        line);
+            result->set(vmk_virtual, "");
 
-        /// \bug this lot
-        std::getline(cache, line); result->set(vmk_depend,      line);
-        std::getline(cache, line); result->set(vmk_rdepend,     line);
-        std::getline(cache, line); result->set(vmk_slot,        line);
-        std::getline(cache, line); result->set(vmk_src_uri,     line);
-        std::getline(cache, line); result->set(vmk_restrict,    line);
-        std::getline(cache, line); result->set(vmk_homepage,    line);
-        std::getline(cache, line); result->set(vmk_license,     line);
-        std::getline(cache, line); result->set(vmk_description, line);
-        std::getline(cache, line); result->set(vmk_keywords,    line);
-        std::getline(cache, line); result->set(vmk_inherited,   line);
-        std::getline(cache, line); result->set(vmk_iuse,        line);
-        std::getline(cache, line);
-        std::getline(cache, line); result->set(vmk_pdepend,     line);
-        std::getline(cache, line); result->set(vmk_provide,     line);
-        std::getline(cache, line); result->set(vmk_eapi,        line);
-        result->set(vmk_virtual, "");
+            ok = true;
+        }
+        else
+            Log::get_instance()->message(ll_warning, "Couldn't read the cache file at '"
+                    + stringify(cache_file) + "'");
     }
     else if (_implementation->virtuals_map.end() != ((vi = _implementation->virtuals_map.find(
                 QualifiedPackageName(c, p)))))
@@ -541,8 +563,10 @@ PortageRepository::do_version_metadata(
         result->set(vmk_eapi, m->get(vmk_eapi));
         result->set(vmk_virtual, stringify(vi->second->package()));
         result->set(vmk_depend, "=" + stringify(vi->second->package()) + "-" + stringify(v));
+        ok = true;
     }
-    else
+
+    if (! ok)
     {
         Log::get_instance()->message(ll_warning, "No cache entry for '" + stringify(c) + "/" +
                 stringify(p) + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
@@ -590,7 +614,13 @@ PortageRepository::do_version_metadata(
         result->set(vmk_virtual, "");
 
         if (p.exit_status())
-            throw InternalError(PALUDIS_HERE, "ebuild failed"); /// \todo
+        {
+            Log::get_instance()->message(ll_warning, "Could not generate cache for '"
+                    + stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '"
+                    + stringify(name()) + "'");
+        }
+        else
+            ok = true;
     }
 
     _implementation->metadata.insert(std::make_pair(std::make_pair(QualifiedPackageName(c, p), v), result));
@@ -626,21 +656,11 @@ PortageRepository::do_query_repository_masks(const CategoryNamePart & c,
     if (_implementation->repo_mask.end() == r)
         return false;
     else
-    {
         for (IndirectIterator<std::deque<PackageDepAtom::ConstPointer>::const_iterator, const PackageDepAtom>
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-        {
-            if (k->package() != QualifiedPackageName(c, p))
-                continue;
-            if (k->version_spec_ptr() && ! ((v.*
-                            (k->version_operator().as_version_spec_operator()))
-                        (*k->version_spec_ptr())))
-                continue;
-            /// \bug slot
-
-            return true;
-        }
-    }
+            if (match_package(_implementation->db, *k, PackageDatabaseEntry(
+                            QualifiedPackageName(c, p), v, name())))
+                return true;
 
     return false;
 }
