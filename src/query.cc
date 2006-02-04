@@ -52,6 +52,8 @@ void do_one_query(
     std::cout << "* " << colour(cl_package_name, entries->begin()->get<p::pde_name>());
     if (atom->version_spec_ptr())
         std::cout << " (" << atom->version_operator() << *atom->version_spec_ptr() << ")";
+    if (atom->slot_ptr())
+        std::cout << " (:" << *atom->slot_ptr() << ")";
     std::cout << std::endl;
 
     /* find all repository names. */
