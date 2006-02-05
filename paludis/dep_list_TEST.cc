@@ -795,6 +795,100 @@ namespace test_cases
     } test_dep_list_30;
 
     /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase31 : DepListTestCase<31>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(
+                    vmk_depend, "cat/three || ( enabled? ( cat/three ) cat/two )");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/three-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_31;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase32 : DepListTestCase<32>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(
+                    vmk_depend, "cat/three || ( !enabled? ( cat/three ) cat/two )");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/three-1:0::repo");
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_32;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase33 : DepListTestCase<33>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(
+                    vmk_depend, "cat/three || ( disabled? ( cat/three ) cat/two )");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/three-1:0::repo");
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_33;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase34 : DepListTestCase<34>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(
+                    vmk_depend, "cat/three || ( !disabled? ( cat/three ) cat/two )");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/three-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_34;
+
+    /**
      * \test Test DepList transactional add behaviour.
      *
      * \ingroup Test
