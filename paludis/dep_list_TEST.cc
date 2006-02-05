@@ -889,6 +889,74 @@ namespace test_cases
     } test_dep_list_34;
 
     /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase35 : DepListTestCase<35>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(
+                    vmk_depend, "|| ( enabled1? ( cat/two ) enabled2? ( cat/three ) )");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_35;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase36 : DepListTestCase<36>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(
+                    vmk_depend, "|| ( !enabled1? ( cat/two ) enabled2? ( cat/three ) )");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/three-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_36;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase37 : DepListTestCase<37>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(
+                    vmk_depend, "|| ( !enabled1? ( cat/two ) !enabled2? ( cat/three ) )");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_37;
+
+    /**
      * \test Test DepList transactional add behaviour.
      *
      * \ingroup Test
