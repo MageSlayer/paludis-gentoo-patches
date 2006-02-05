@@ -28,9 +28,9 @@ TestEnvironment::TestEnvironment() :
 }
 
 bool
-TestEnvironment::query_use(const UseFlagName &, const PackageDatabaseEntry *) const
+TestEnvironment::query_use(const UseFlagName & u, const PackageDatabaseEntry *) const
 {
-    return false;
+    return (std::string::npos != u.data().find("enabled"));
 }
 
 bool
