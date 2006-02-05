@@ -317,6 +317,9 @@ namespace paludis
     class NoSuchRepositoryTypeError : public ConfigurationError
     {
         public:
+            /**
+             * Constructor.
+             */
             NoSuchRepositoryTypeError(const std::string & format) throw ();
     };
 

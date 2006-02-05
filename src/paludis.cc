@@ -36,6 +36,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+#ifndef DOXYGEN
 struct DoHelp
 {
     const std::string message;
@@ -49,6 +50,7 @@ struct DoHelp
 struct DoVersion
 {
 };
+#endif
 
 int
 main(int argc, char *argv[])

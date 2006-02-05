@@ -31,6 +31,7 @@
 
 using namespace test;
 
+#ifndef DOXYGEN
 namespace
 {
     std::string exception_to_debug_string(const std::exception & e)
@@ -66,8 +67,6 @@ namespace
             }
     };
 }
-
-#ifndef DOXYGEN
 
 void
 test::set_exception_to_debug_string(std::string (*f) (const std::exception &))

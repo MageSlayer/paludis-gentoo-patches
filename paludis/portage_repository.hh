@@ -112,6 +112,9 @@ namespace paludis
     class PortageRepositoryConfigurationError : public ConfigurationError
     {
         public:
+            /**
+             * Constructor.
+             */
             PortageRepositoryConfigurationError(const std::string & msg) throw ();
     };
 

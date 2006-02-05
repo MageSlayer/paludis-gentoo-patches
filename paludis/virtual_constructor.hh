@@ -113,6 +113,9 @@ namespace paludis
     class VirtualConstructorRegisterFailure : public Exception
     {
         public:
+            /**
+             * Constructor.
+             */
             template <typename T_>
             VirtualConstructorRegisterFailure(const T_ & k) throw () :
                 Exception("Virtual constructor registration failed on key '" +

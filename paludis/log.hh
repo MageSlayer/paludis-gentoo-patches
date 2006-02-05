@@ -42,6 +42,9 @@ namespace paludis
         initial_ll = ll_debug ///< Initial value
     };
 
+    /**
+     * Singleton class that handles log messages.
+     */
     class Log :
         public InstantiationPolicy<Log, instantiation_method::SingletonAsNeededTag>,
         private PrivateImplementationPattern<Log>
@@ -52,12 +55,24 @@ namespace paludis
             Log();
 
         public:
+            /**
+             * Destructor, to be called only by our InstantiationPolicy.
+             */
             ~Log();
 
+            /**
+             * Only display messages of at least this level.
+             */
             void set_log_level(const LogLevel);
 
+            /**
+             * Log a message at the specified level.
+             */
             void message(const LogLevel, const std::string &);
 
+            /**
+             * Change the log stream.
+             */
             void set_log_stream(std::ostream * const);
     };
 }

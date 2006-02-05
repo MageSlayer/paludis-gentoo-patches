@@ -35,12 +35,14 @@ namespace test_cases
      */
     class DepListTestCaseBase : TestCase
     {
+#ifndef DOXYGEN
         protected:
             TestEnvironment env;
             FakeRepository::Pointer repo;
             std::deque<std::string> expected;
             std::string merge_target;
             bool done_populate;
+#endif
 
             /**
              * Constructor.

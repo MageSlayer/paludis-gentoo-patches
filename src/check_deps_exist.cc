@@ -28,6 +28,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+#ifndef DOXYGEN
 struct CheckDepsExistCommandline :
     args::ArgsHandler,
     InstantiationPolicy<CheckDepsExistCommandline, instantiation_method::SingletonAsNeededTag>
@@ -130,6 +131,7 @@ struct DoHelp
     {
     }
 };
+#endif
 
 int
 main(int argc, char *argv[])

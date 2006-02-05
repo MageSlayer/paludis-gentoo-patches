@@ -131,6 +131,7 @@ namespace paludis
     struct SelectFirst :
         std::unary_function<A_, std::pair<A_, B_> >
     {
+        /// Carry out the selection.
         A_ operator() (const std::pair<A_, B_> & p) const
         {
             return p.first;

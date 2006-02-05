@@ -24,11 +24,17 @@ using namespace paludis;
 
 namespace paludis
 {
+    /**
+     * Implementation data for Log.
+     */
     template<>
     struct Implementation<Log> :
         InternalCounted<Implementation<Log> >
     {
+        /// Current log level
         LogLevel log_level;
+
+        /// Current output stream
         std::ostream * stream;
     };
 }

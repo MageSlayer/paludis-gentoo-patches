@@ -189,6 +189,9 @@ namespace test
             static bool run_tests();
     };
 
+    /**
+     * Change the function used to get a string description of an exception.
+     */
     void set_exception_to_debug_string(std::string (*) (const std::exception &));
 }
 

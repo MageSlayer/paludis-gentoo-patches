@@ -90,6 +90,9 @@ namespace paludis
         private InstantiationPolicy<DepParser, instantiation_method::NonInstantiableTag>
     {
         protected:
+            /**
+             * Default options for parse.
+             */
             static DepParserOptions default_options();
 
         public:

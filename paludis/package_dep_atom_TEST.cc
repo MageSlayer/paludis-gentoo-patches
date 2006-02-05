@@ -26,6 +26,11 @@ using namespace test;
 
 namespace test_cases
 {
+    /**
+     * \test Test PackageDepAtom.
+     *
+     * \ingroup Test
+     */
     struct PackageDepAtomTest : TestCase
     {
         PackageDepAtomTest() : TestCase("package dep atom") { }

@@ -26,6 +26,11 @@ using namespace test;
 
 namespace test_cases
 {
+    /**
+     * \test Test HashSet.
+     *
+     * \ingroup Test
+     */
     struct HashSetTestQPN : TestCase
     {
         HashSetTestQPN() : TestCase("hash set qpn") { }

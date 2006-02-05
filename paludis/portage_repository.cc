@@ -292,6 +292,7 @@ PortageRepository::do_has_package_named(const CategoryNamePart & c,
     }
 }
 
+#ifndef DOXYGEN
 struct CategoryFilter :
     std::unary_function<bool, QualifiedPackageName>
 {
@@ -307,6 +308,7 @@ struct CategoryFilter :
         return a.get<qpn_category>() == category;
     }
 };
+#endif
 
 CategoryNamePartCollection::ConstPointer
 PortageRepository::do_category_names() const

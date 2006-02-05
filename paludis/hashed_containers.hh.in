@@ -49,26 +49,42 @@ namespace paludis
     template <typename T_>
     struct CRCHash;
 
+    /**
+     * Make a hashed map of some kind from Key_ to Value_.
+     */
     template <typename Key_, typename Value_>
     struct MakeHashedMap
     {
 #if PALUDIS_HAVE_TR1_HASHES
+        /// Our map type.
         typedef std::tr1::unordered_map<Key_, Value_, CRCHash<Key_> > Type;
+
 #elif PALUDIS_HAVE_EXT_HASHES
+        /// Our map type.
         typedef __gnu_cxx::hash_map<Key_, Value_, CRCHash<Key_> > Type;
+
 #else
+        /// Our map type.
         typedef std::map<Key_, Value_> Type;
 #endif
     };
 
+    /**
+     * Make a hashed set of some kind of Key_.
+     */
     template <typename Key_>
     struct MakeHashedSet
     {
 #if PALUDIS_HAVE_TR1_HASHES
+        /// Our set type.
         typedef std::tr1::unordered_set<Key_, CRCHash<Key_> > Type;
+
 #elif PALUDIS_HAVE_EXT_HASHES
+        /// Our set type.
         typedef __gnu_cxx::hash_set<Key_, CRCHash<Key_> > Type;
+
 #else
+        /// Our set type.
         typedef std::set<Key_> Type;
 #endif
     };
@@ -76,37 +92,55 @@ namespace paludis
 #if PALUDIS_HAVE_TR1_HASHES || PALUDIS_HAVE_EXT_HASHES
     namespace
     {
+        /**
+         * Base definitions for our CRCHash.
+         */
         struct CRCHashBase
         {
+            /// Shift value.
             static const std::size_t h_shift = std::numeric_limits<std::size_t>::digits - 5;
+
+            /// Mask value.
             static const std::size_t h_mask = 0x1f << h_shift;
         };
     }
 
+    /**
+     * Hash, for QualifiedPackageName.
+     */
     template <>
     class CRCHash<QualifiedPackageName> :
         public std::unary_function<QualifiedPackageName, std::size_t>,
         protected CRCHashBase
     {
         public:
+            /// Hash function.
             std::size_t operator() (const QualifiedPackageName & val) const;
     };
 
+    /**
+     * Hash, for a validated string type.
+     */
     template <typename Validated_>
     class CRCHash<Validated<std::string, Validated_> > :
         public std::unary_function<Validated<std::string, Validated_>, std::size_t>,
         protected CRCHashBase
     {
         public:
+            /// Hash function.
             std::size_t operator() (const Validated<std::string, Validated_> & val) const;
     };
 
+    /**
+     * Hash, for a QualifiedPackageName + VersionSpec pair.
+     */
     template <>
     class CRCHash<std::pair<QualifiedPackageName, VersionSpec> > :
         public std::unary_function<std::pair<QualifiedPackageName, VersionSpec>, std::size_t>,
         protected CRCHashBase
     {
         public:
+            /// Hash function.
             std::size_t operator() (const std::pair<QualifiedPackageName, VersionSpec> & val) const;
     };
 

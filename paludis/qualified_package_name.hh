@@ -62,21 +62,33 @@ namespace paludis
                     const std::string & s);
 
         public:
+            /**
+             * Constructor.
+             */
             QualifiedPackageName(const CategoryNamePart & c, const PackageNamePart & p) :
                 MakeSmartRecord<QualifiedPackageNameTag>::Type(c, p)
             {
             }
 
+            /**
+             * Copy constructor.
+             */
             QualifiedPackageName(const QualifiedPackageName & other) :
                 MakeSmartRecord<QualifiedPackageNameTag>::Type(other)
             {
             }
 
+            /**
+             * Constructor, from a raw string.
+             */
             explicit QualifiedPackageName(const std::string & s) :
                 MakeSmartRecord<QualifiedPackageNameTag>::Type(_make_parent(s))
             {
             }
 
+            /**
+             * Assignment.
+             */
             const QualifiedPackageName & operator= (const QualifiedPackageName & other)
             {
                 MakeSmartRecord<QualifiedPackageNameTag>::Type::operator= (other);
