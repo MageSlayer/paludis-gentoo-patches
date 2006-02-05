@@ -33,7 +33,8 @@ namespace test_cases
      *
      * \ingroup Test
      */
-    class DepListTestCaseBase : TestCase
+    class DepListTestCaseBase :
+        public TestCase
     {
 #ifndef DOXYGEN
         protected:
@@ -957,6 +958,104 @@ namespace test_cases
             expected.push_back("cat/one-1:0::repo");
         }
     } test_dep_list_37;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase38 : DepListTestCase<38>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "!cat/two");
+            repo->add_version("cat", "two", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_38;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase39 : DepListTestCase<39>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "cat/two !cat/two");
+            repo->add_version("cat", "two", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env);
+            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_39;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase40 : DepListTestCase<40>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "cat/two cat/three");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "1")->set(vmk_depend, "!cat/two");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env);
+            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_40;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase41 : DepListTestCase<41>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "cat/three cat/two");
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "1")->set(vmk_depend, "!cat/two");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+            expected.push_back("cat/three-1:0::repo");
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_41;
 
     /**
      * \test Test DepList transactional add behaviour.

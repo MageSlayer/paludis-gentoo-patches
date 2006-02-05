@@ -514,7 +514,12 @@ DepList::visit(const AnyDepAtom * const a)
                 std::back_inserter(viable_children), IsViable(*_implementation)));
 
     if (viable_children.empty())
+    {
+        if (_implementation->current_package)
+            Log::get_instance()->message(ll_qa, "Package '" + stringify(*_implementation->current_package)
+                    + "' has suspicious || ( ) block that resolves to empty");
         return;
+    }
 
     bool found(false);
     for (CompositeDepAtom::Iterator i(viable_children.begin()),
