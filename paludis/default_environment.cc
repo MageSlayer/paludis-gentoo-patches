@@ -50,9 +50,55 @@ DefaultEnvironment::~DefaultEnvironment()
 bool
 DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
-    /// \todo package use
+    if (e)
+    {
+        UseFlagState s(use_unspecified);
 
-    /* prefer user masks, then profile, then disabled */
+        for (DefaultConfig::UseConfigIterator
+                u(DefaultConfig::get_instance()->begin_use_config(e->get<pde_name>())),
+                u_end(DefaultConfig::get_instance()->end_use_config(e->get<pde_name>())) ;
+                u != u_end ; ++u)
+        {
+            if (f != u->get<uce_flag_name>())
+                continue;
+
+            if (! match_package(package_database(), *u->get<uce_dep_atom>(), *e))
+                continue;
+
+            switch (u->get<uce_flag_state>())
+            {
+                case use_enabled:
+                    s = use_enabled;
+                    continue;
+
+                case use_disabled:
+                    s = use_disabled;
+                    continue;
+
+                case use_unspecified:
+                    continue;
+            }
+
+            throw InternalError(PALUDIS_HERE, "Bad state");
+        }
+
+        do
+        {
+            switch (s)
+            {
+                case use_enabled:
+                    return true;
+
+                case use_disabled:
+                    return false;
+
+                case use_unspecified:
+                    continue;
+            }
+            throw InternalError(PALUDIS_HERE, "Bad state");
+        } while (false);
+    }
+
     do
     {
         UseFlagState state(use_unspecified);

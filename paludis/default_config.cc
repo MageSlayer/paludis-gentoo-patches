@@ -241,6 +241,17 @@ DefaultConfig::DefaultConfig()
                     }
                 else
                 {
+                    PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
+                    for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+                            t != t_end ; ++t)
+                    {
+                        if ('-' == t->at(0))
+                            _use[a->package()].push_back(UseConfigEntry(
+                                        a, UseFlagName(t->substr(1)), use_disabled));
+                        else
+                            _use[a->package()].push_back(UseConfigEntry(
+                                        a, UseFlagName(*t), use_enabled));
+                    }
                 }
             }
         }

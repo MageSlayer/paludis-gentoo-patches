@@ -97,7 +97,7 @@ namespace paludis
     struct UseConfigEntryTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<UseConfigEntryKeys, 3>,
-        SmartRecordKey<uce_dep_atom, DepAtom::ConstPointer>,
+        SmartRecordKey<uce_dep_atom, PackageDepAtom::ConstPointer>,
         SmartRecordKey<uce_flag_name, UseFlagName>,
         SmartRecordKey<uce_flag_state, UseFlagState>
     {
