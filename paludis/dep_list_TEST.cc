@@ -514,6 +514,25 @@ namespace test_cases
     } test_dep_list_17;
 
     /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase18 : DepListTestCase<18>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "|| ( )");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_18;
+
+    /**
      * \test Test DepList transactional add behaviour.
      *
      * \ingroup Test
