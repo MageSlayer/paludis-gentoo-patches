@@ -86,6 +86,18 @@ namespace paludis
     void
     stringify(const T_ * const item);
 
+    template <typename T_, typename U_, typename V_>
+    class CountedPtr;
+
+    /**
+     * Convert item to a string (undefined overload for counted
+     * pointers, to catch screwups at compiletime rather than printing
+     * out addresses in weird places because of a missing *).
+     */
+    template <typename T_, typename U_, typename V_>
+    void
+    stringify(const CountedPtr<T_, U_, V_> & item);
+
     /**
      * Convert item to a string (overload for char *, which isn't a
      * screwup like other pointers).
