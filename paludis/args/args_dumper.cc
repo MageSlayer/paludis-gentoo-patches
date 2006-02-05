@@ -39,6 +39,8 @@ void ArgsDumper::visit(const ArgsOption * const a)
         p << ", -" << a->short_name();
     if (p.str().length() < 24)
         p << std::string(24 - p.str().length(), ' ');
+    else
+        p << std::endl << std::string(24, ' ');
     _os << p.str();
     _os << " " << a->description() << std::endl;
 }
