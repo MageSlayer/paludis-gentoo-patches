@@ -91,7 +91,7 @@ struct SelfCircularDepFinder :
             status |= 1;
             if (is_block)
                 cout << "!";
-            cout << *a << " (" << role << ")";
+            cout << *a << " (" << role << ") ";
         }
     }
 };
