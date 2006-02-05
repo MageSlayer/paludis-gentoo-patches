@@ -118,13 +118,13 @@ check_one(const std::string & a)
         SelfCircularDepFinder checker(env, entry->get<pde_name>());
         VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*entry));
 
-        checker->role = "DEPEND";
+        checker.role = "DEPEND";
         DepParser::parse(metadata->get(vmk_depend))->accept(&checker);
 
-        checker->role = "RDEPEND";
+        checker.role = "RDEPEND";
         DepParser::parse(metadata->get(vmk_rdepend))->accept(&checker);
 
-        checker->role = "PDEPEND";
+        checker.role = "PDEPEND";
         DepParser::parse(metadata->get(vmk_pdepend))->accept(&checker);
 
         cout << (checker.status ? "BAD" : "OK") << endl;
