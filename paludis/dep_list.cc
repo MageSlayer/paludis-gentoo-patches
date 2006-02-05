@@ -568,6 +568,8 @@ DepList::visit(const BlockDepAtom * const d)
 
     /* special case: the provider of virtual/blah can DEPEND upon !virtual/blah. */
     /// \bug This may have issues if a virtual is provided by a virtual...
+    //
+    /* special case: foo/bar can DEPEND upon !foo/bar. */
 
     /* will we be installed by this point? */
     std::list<DepListEntry>::iterator m(_implementation->merge_list.begin());
@@ -580,6 +582,14 @@ DepList::visit(const BlockDepAtom * const d)
             if (! _implementation->current_package)
                 throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
                         + stringify(*m) + " (no current package)");
+
+            if (*_implementation->current_package == *m)
+            {
+                Log::get_instance()->message(ll_qa, "Package '" + stringify(*_implementation->current_package)
+                        + "' has suspicious block upon '!" + stringify(*d->blocked_atom()) + "'");
+                ++m;
+                continue;
+            }
 
             DepParserOptions dep_parser_options;
             dep_parser_options.set(dpo_qualified_package_names);
