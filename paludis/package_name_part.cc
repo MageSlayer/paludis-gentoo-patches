@@ -39,7 +39,7 @@ PackageNamePartValidator::validate(const std::string & s)
     static const std::string number_chars(
             "0123456789");
 
-    if (s.empty())
+    if (s.empty() || '-' == s.at(0))
     {
         Context c("When validating package name part '" + s + "':");
         throw PackageNamePartError(s);
