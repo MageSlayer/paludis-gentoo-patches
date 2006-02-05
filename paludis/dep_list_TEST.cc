@@ -1058,6 +1058,50 @@ namespace test_cases
     } test_dep_list_41;
 
     /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase42 : DepListTestCase<42>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "|| ( cat/two cat/three )");
+            repo->add_version("cat", "two", "1")->set(vmk_depend, "cat/one");
+            repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+            expected.push_back("cat/three-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_42;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase43 : DepListTestCase<43>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "|| ( cat/two cat/three )");
+            repo->add_version("cat", "two", "1")->set(vmk_rdepend, "cat/one");
+            repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_43;
+
+    /**
      * \test Test DepList transactional add behaviour.
      *
      * \ingroup Test
