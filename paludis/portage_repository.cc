@@ -596,8 +596,8 @@ PortageRepository::do_version_metadata(
                 stringify(_implementation->location) + "/" + stringify(c) + "/" + stringify(p) + "/" +
                 stringify(p) + "-" + stringify(v) + ".ebuild'");
 
-        PStream p(cmd);
-        KeyValueConfigFile f(&p);
+        PStream prog(cmd);
+        KeyValueConfigFile f(&prog);
 
         result->set(vmk_depend,      f.get("DEPEND"));
         result->set(vmk_rdepend,     f.get("RDEPEND"));
@@ -615,7 +615,7 @@ PortageRepository::do_version_metadata(
         result->set(vmk_eapi,        f.get("EAPI"));
         result->set(vmk_virtual, "");
 
-        if (p.exit_status())
+        if (prog.exit_status())
         {
             Log::get_instance()->message(ll_warning, "Could not generate cache for '"
                     + stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '"
