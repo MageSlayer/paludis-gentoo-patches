@@ -569,52 +569,51 @@ DepList::visit(const BlockDepAtom * const d)
     /* special case: the provider of virtual/blah can DEPEND upon !virtual/blah. */
     /// \bug This may have issues if a virtual is provided by a virtual...
 
-#if 0
-    PackageDatabaseEntryCollection::ConstPointer q(0);
-
-    PackageDatabaseEntry e(
-            _implementation->current_package->get<dle_name>(),
-            _implementation->current_package->get<dle_version>(),
-            _implementation->current_package->get<dle_repository>());
-
-    /* are we already installed? */
-    /// \todo installed_database
-    if (! ((q = _implementation->environment->installed_database()->query(d->blocked_atom())))->empty())
-    {
-        if (! _implementation->current_package)
-            throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by installed package '"
-                    + stringify(*q->begin()) + "'");
-
-        VersionMetadata::ConstPointer metadata(
-                _implementation->environment->installed_database()->fetch_metadata(&e));
-        if (metadata->end_provide() == std::find(
-                    metadata->begin_provide(), metadata->end_provide(),
-                    d->blocked_atom()->package()))
-            throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by installed package '"
-                    + stringify(*q->begin()) + "'");
-    }
-#endif
-
     /* will we be installed by this point? */
-    std::list<DepListEntry>::const_iterator m;
-    if (_implementation->merge_list.end() != ((m = std::find_if(
-                _implementation->merge_list.begin(), _implementation->merge_list.end(),
-                DepListEntryMatcher(_implementation->environment->package_database().raw_pointer(),
-                    *(d->blocked_atom()))))))
+    std::list<DepListEntry>::iterator m(_implementation->merge_list.begin());
+    while (m != _implementation->merge_list.end())
     {
-        if (! _implementation->current_package)
-            throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
-                    + stringify(*m));
+        if (_implementation->merge_list.end() != ((m = std::find_if(m, _implementation->merge_list.end(),
+                    DepListEntryMatcher(_implementation->environment->package_database().raw_pointer(),
+                        *(d->blocked_atom()))))))
+        {
+            if (! _implementation->current_package)
+                throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
+                        + stringify(*m) + " (no current package)");
 
-#if 0
-        VersionMetadata::ConstPointer metadata(
-                _implementation->environment->package_database()->fetch_metadata(e));
-        if (metadata->end_provide() == std::find(
-                    metadata->begin_provide(), metadata->end_provide(),
-                    d->blocked_atom()->package()))
-            throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
-                    + stringify(*m));
-#endif
+            DepParserOptions dep_parser_options;
+            dep_parser_options.set(dpo_qualified_package_names);
+
+            DepAtom::ConstPointer provide(DepParser::parse(
+                        _implementation->current_package->get<dle_metadata>()->get(vmk_provide),
+                        dep_parser_options));
+
+            CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
+
+            if (_implementation->current_package)
+                e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
+                        new PackageDatabaseEntry(
+                            _implementation->current_package->get<dle_name>(),
+                            _implementation->current_package->get<dle_version>(),
+                            _implementation->current_package->get<dle_repository>()));
+
+            DepAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
+
+            bool skip(false);
+            for (IndirectIterator<DepAtomFlattener::Iterator, const PackageDepAtom> i(f.begin()),
+                    i_end(f.end()) ; i != i_end ; ++i)
+                if (i->package() == d->blocked_atom()->package())
+                {
+                    skip = true;
+                    break;
+                }
+
+            if (! skip)
+                throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
+                        + stringify(*m));
+
+            ++m;
+        }
     }
 }
 
