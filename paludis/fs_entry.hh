@@ -165,6 +165,7 @@ namespace paludis
 
             /**
              * Check if filesystem entry has `perm` for `user_group`
+             * \exception FSError if there was a problem accessing the filesystem entry
              */
             bool has_permission(const FSUserGroup & user_group, const FSPermission & fs_perm) const;
 
@@ -180,11 +181,13 @@ namespace paludis
 
             /**
              * Return the time the filesystem entry was created
+             * \exception FSError if there was a problem accessing the filesystem entry
              */
             time_t ctime() const;
 
             /**
              * Return the time the filesystem entry was last modified
+             * \exception FSError if there was a problem accessing the filesystem entry
              */
             time_t mtime() const;
     };

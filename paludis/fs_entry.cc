@@ -142,55 +142,53 @@ FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_
 {
     _stat();
 
-    if (_exists)
-    {
-        switch (user_group)
-        {
-            case fs_ug_owner:
-                {
-                    switch (fs_perm)
-                    {
-                        case fs_perm_read:
-                            return (*_stat_info).st_mode & S_IRUSR;
-                        case fs_perm_write:
-                            return (*_stat_info).st_mode & S_IWUSR;
-                        case fs_perm_execute:
-                            return (*_stat_info).st_mode & S_IXUSR;
-                    }
-                    throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
-                }
-            case fs_ug_group:
-                {
-                    switch (fs_perm)
-                    {
-                        case fs_perm_read:
-                            return (*_stat_info).st_mode & S_IRGRP;
-                        case fs_perm_write:
-                            return (*_stat_info).st_mode & S_IWGRP;
-                        case fs_perm_execute:
-                            return (*_stat_info).st_mode & S_IXGRP;
-                    }
-                    throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
-                }
-            case fs_ug_others:
-                {
-                    switch (fs_perm)
-                    {
-                        case fs_perm_read:
-                            return (*_stat_info).st_mode & S_IROTH;
-                        case fs_perm_write:
-                            return (*_stat_info).st_mode & S_IWOTH;
-                        case fs_perm_execute:
-                            return (*_stat_info).st_mode & S_IXOTH;
-                    }
-                    throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
-                }
-        }
+    if (! _exists)
+        throw FSError("Filesystem entry does not exist");
 
-        throw InternalError(PALUDIS_HERE, "Unhandled FSUserGroup");
+    switch (user_group)
+    {
+        case fs_ug_owner:
+            {
+                switch (fs_perm)
+                {
+                    case fs_perm_read:
+                        return (*_stat_info).st_mode & S_IRUSR;
+                    case fs_perm_write:
+                        return (*_stat_info).st_mode & S_IWUSR;
+                    case fs_perm_execute:
+                        return (*_stat_info).st_mode & S_IXUSR;
+                }
+                throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
+            }
+        case fs_ug_group:
+            {
+                switch (fs_perm)
+                {
+                    case fs_perm_read:
+                        return (*_stat_info).st_mode & S_IRGRP;
+                    case fs_perm_write:
+                        return (*_stat_info).st_mode & S_IWGRP;
+                    case fs_perm_execute:
+                        return (*_stat_info).st_mode & S_IXGRP;
+                }
+                throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
+            }
+        case fs_ug_others:
+            {
+                switch (fs_perm)
+                {
+                    case fs_perm_read:
+                        return (*_stat_info).st_mode & S_IROTH;
+                    case fs_perm_write:
+                        return (*_stat_info).st_mode & S_IWOTH;
+                    case fs_perm_execute:
+                        return (*_stat_info).st_mode & S_IXOTH;
+                }
+                throw InternalError(PALUDIS_HERE, "Unhandled FSPermission");
+            }
     }
 
-    return false;
+    throw InternalError(PALUDIS_HERE, "Unhandled FSUserGroup");
 }
 
 void
@@ -278,10 +276,10 @@ FSEntry::ctime() const
 {
     _stat();
 
-    if (_exists)
-        return (*_stat_info).st_ctime;
+    if (! _exists)
+        throw FSError("Filesystem entry does not exist");
 
-    return false;
+    return (*_stat_info).st_ctime;
 }
 
 time_t
@@ -289,8 +287,8 @@ FSEntry::mtime() const
 {
     _stat();
 
-    if (_exists)
-        return (*_stat_info).st_mtime;
+    if (! _exists)
+        throw FSError("Filesystem entry does not exist");
 
-    return false;
+    return (*_stat_info).st_mtime;
 }
