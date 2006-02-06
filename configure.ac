@@ -286,6 +286,7 @@ AC_OUTPUT(
 	paludis/hashed_containers.hh
 	paludis/args/Makefile
 	src/Makefile
+	src/qualudis/Makefile
 	test/Makefile
 	)
 dnl }}}

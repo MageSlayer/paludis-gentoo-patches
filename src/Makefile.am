@@ -2,6 +2,7 @@ CLEANFILES = *~ version_TEST
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
+SUBDIRS = . qualudis
 
 bin_PROGRAMS = paludis
 noinst_PROGRAMS = check_deps_exist find_self_circular_dependencies
