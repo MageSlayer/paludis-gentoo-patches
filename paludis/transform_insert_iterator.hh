@@ -138,6 +138,20 @@ namespace paludis
         }
     };
 
+    /**
+     * Convenience class: select the second item of a pair.
+     */
+    template <typename A_, typename B_>
+    struct SelectSecond :
+        std::unary_function<A_, std::pair<A_, B_> >
+    {
+        /// Carry out the selection.
+        A_ operator() (const std::pair<A_, B_> & p) const
+        {
+            return p.second;
+        }
+    };
+
 }
 
 #endif
