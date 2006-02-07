@@ -61,7 +61,7 @@ namespace
                 _f = f;
             }
 
-            std::string (*get()) (const std::exception &) const
+            std::string (*get() const) (const std::exception &)
             {
                 return _f;
             }
