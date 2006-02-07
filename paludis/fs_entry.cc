@@ -269,13 +269,13 @@ FSEntry::basename() const
     return _path.substr(_path.rfind('/') + 1);
 }
 
-std::string
+FSEntry
 FSEntry::dirname() const
 {
     if (_path == "/")
-        return _path;
+        return FSEntry(_path);
 
-    return _path.substr(0, _path.rfind('/'));
+    return FSEntry(_path.substr(0, _path.rfind('/')));
 }
 
 FSEntry

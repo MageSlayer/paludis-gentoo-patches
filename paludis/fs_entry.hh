@@ -188,7 +188,7 @@ namespace paludis
             /**
              * Return the first part of our path (eg '/foo/bar' => '/foo').
              */
-            std::string dirname() const;
+            FSEntry dirname() const;
 
             /**
              * Return the canonicalised version of our path.

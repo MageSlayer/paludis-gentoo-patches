@@ -180,15 +180,15 @@ namespace test_cases
             FSEntry e("..");
 
             TEST_CHECK(a.basename() == "bar");
-            TEST_CHECK(a.dirname() == "/foo");
+            TEST_CHECK(std::string(a.dirname()) == "/foo");
             TEST_CHECK(b.basename() == "cow");
-            TEST_CHECK(b.dirname() == "/moo/went/the");
+            TEST_CHECK(std::string(b.dirname()) == "/moo/went/the");
             TEST_CHECK(c.basename() == "/");
-            TEST_CHECK(c.dirname() == "/");
+            TEST_CHECK(std::string(c.dirname()) == "/");
             TEST_CHECK(d.basename() == ".");
-            TEST_CHECK(d.dirname() == ".");
+            TEST_CHECK(std::string(d.dirname()) == ".");
             TEST_CHECK(e.basename() == "..");
-            TEST_CHECK(e.dirname() == "..");
+            TEST_CHECK(std::string(e.dirname()) == "..");
         }
     } test_fs_entry_dir_base_name;
 }
