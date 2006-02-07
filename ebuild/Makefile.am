@@ -11,6 +11,7 @@ libexecprog_SCRIPTS = \
 	eclass_functions.bash \
 	install_functions.bash \
 	list_functions.bash \
+	multilib_functions.bash \
 	pkg_config.bash \
 	pkg_nofetch.bash \
 	pkg_postinst.bash \
