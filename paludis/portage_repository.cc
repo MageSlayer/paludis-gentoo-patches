@@ -554,7 +554,7 @@ PortageRepository::do_version_metadata(
 
             ok = true;
         }
-        else
+        else if (_implementation->cache.basename() != "empty")
             Log::get_instance()->message(ll_warning, "Couldn't read the cache file at '"
                     + stringify(cache_file) + "'");
     }
