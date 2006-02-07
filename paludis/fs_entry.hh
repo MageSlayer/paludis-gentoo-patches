@@ -95,6 +95,11 @@ namespace paludis
 
             void _normalise();
 
+            /**
+             * Runs lstat() on the current path if we have not done so already
+             * Note: lstat() will give information on the symbolic link itself, and not what
+             * the link points to, which is how stat() works.
+             */
             void _stat() const;
 
         public:
@@ -164,6 +169,12 @@ namespace paludis
             bool is_regular_file() const;
 
             /**
+             * Does a filesystem entry exist at our location, and if it does,
+             * is it a symbolic link?
+             */
+            bool is_symbolic_link() const;
+
+            /**
              * Check if filesystem entry has `perm` for `user_group`
              * \exception FSError if there was a problem accessing the filesystem entry
              */
@@ -173,6 +184,11 @@ namespace paludis
              * Return the last part of our path (eg '/foo/bar' => 'bar').
              */
             std::string basename() const;
+
+            /**
+             * Return the first part of our path (eg '/foo/bar' => '/foo').
+             */
+            std::string dirname() const;
 
             /**
              * Return the canonicalised version of our path.
@@ -190,6 +206,11 @@ namespace paludis
              * \exception FSError if there was a problem accessing the filesystem entry
              */
             time_t mtime() const;
+
+            /**
+             * Return the current working directory
+             */
+            static FSEntry cwd();
     };
 
     /**

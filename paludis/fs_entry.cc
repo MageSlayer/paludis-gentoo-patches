@@ -138,6 +138,18 @@ FSEntry::is_regular_file() const
 }
 
 bool
+FSEntry::is_symbolic_link() const
+{
+    _stat();
+
+    if (_exists)
+        return S_ISLNK((*_stat_info).st_mode);
+
+    return false;
+}
+
+
+bool
 FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_perm) const
 {
     _stat();
@@ -233,7 +245,7 @@ FSEntry::_stat() const
         return;
 
     _stat_info = CountedPtr<struct stat, count_policy::ExternalCountTag>(new struct stat);
-    if (0 != stat(_path.c_str(), _stat_info.raw_pointer()))
+    if (0 != lstat(_path.c_str(), _stat_info.raw_pointer()))
     {
         if (errno != ENOENT)
             throw FSError("Error running stat() on '" + stringify(_path) + "': "
@@ -251,7 +263,19 @@ FSEntry::_stat() const
 std::string
 FSEntry::basename() const
 {
+    if (_path == "/")
+        return _path;
+
     return _path.substr(_path.rfind('/') + 1);
+}
+
+std::string
+FSEntry::dirname() const
+{
+    if (_path == "/")
+        return _path;
+
+    return _path.substr(0, _path.rfind('/'));
 }
 
 FSEntry
@@ -261,6 +285,16 @@ FSEntry::realpath() const
     std::memset(r, 0, PATH_MAX + 1);
     if (! ::realpath(_path.c_str(), r))
         throw FSError("Could not resolve path '" + _path + "'");
+    return FSEntry(r);
+}
+
+FSEntry
+FSEntry::cwd()
+{
+    char r[PATH_MAX + 1];
+    std::memset(r, 0, PATH_MAX + 1);
+    if (! ::getcwd(r, PATH_MAX))
+        throw FSError("Could not get current working directory");
     return FSEntry(r);
 }
 

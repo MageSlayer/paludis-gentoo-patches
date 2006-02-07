@@ -58,6 +58,8 @@ namespace test_cases
             f = c / f;
             TEST_CHECK_EQUAL(f, FSEntry("/foo/bar/moo/baz"));
             TEST_CHECK_EQUAL(c, FSEntry("/foo/bar/moo"));
+
+            f = FSEntry::cwd();
         }
     } test_fs_entry_manipulation;
 
@@ -87,8 +89,14 @@ namespace test_cases
             TEST_CHECK(d.is_regular_file());
             TEST_CHECK(d.exists());
 
+            d = FSEntry("fs_entry_TEST_dir/symlink_to_dir_a");
+            TEST_CHECK(d.is_symbolic_link());
+            TEST_CHECK(! d.is_directory());
+            TEST_CHECK(! d.is_regular_file());
+
             FSEntry f("fs_entry_TEST_dir/symlink_to_dir_a/file_in_a");
             TEST_CHECK(f.is_regular_file());
+            TEST_CHECK(! f.is_symbolic_link());
             FSEntry r(f.realpath());
             TEST_CHECK(r.is_regular_file());
             std::string g("fs_entry_TEST_dir/dir_a/file_in_a");
@@ -136,7 +144,7 @@ namespace test_cases
     /**
      * \test Test FSEntry ctime and mtime methods
      */
-    struct FSEntryTime: TestCase
+    struct FSEntryTime : TestCase
     {
         FSEntryTime() : TestCase("ctime and mtime") {}
 
@@ -155,4 +163,32 @@ namespace test_cases
             TEST_CHECK_THROWS(c.mtime(), FSError);
         }
     } test_fs_entry_time;
+
+    /**
+     * \test Test FSEntry basename and dirname methods
+     */
+    struct FSEntryBaseDirName : TestCase
+    {
+        FSEntryBaseDirName() : TestCase("basename and dirname") {}
+
+        void run()
+        {
+            FSEntry a("/foo/bar");
+            FSEntry b("/moo/went/the/cow");
+            FSEntry c("/");
+            FSEntry d(".");
+            FSEntry e("..");
+
+            TEST_CHECK(a.basename() == "bar");
+            TEST_CHECK(a.dirname() == "/foo");
+            TEST_CHECK(b.basename() == "cow");
+            TEST_CHECK(b.dirname() == "/moo/went/the");
+            TEST_CHECK(c.basename() == "/");
+            TEST_CHECK(c.dirname() == "/");
+            TEST_CHECK(d.basename() == ".");
+            TEST_CHECK(d.dirname() == ".");
+            TEST_CHECK(e.basename() == "..");
+            TEST_CHECK(e.dirname() == "..");
+        }
+    } test_fs_entry_dir_base_name;
 }
