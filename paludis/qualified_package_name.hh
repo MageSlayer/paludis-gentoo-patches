@@ -119,6 +119,16 @@ namespace paludis
              */
             QualifiedPackageNameError(const std::string &) throw ();
     };
+
+    /**
+     * Convenience operator to make a QualifiedPackageName from a
+     * PackageNamePart and a CategoryNamePart.
+     */
+    const QualifiedPackageName
+    inline operator+ (const CategoryNamePart & c, const PackageNamePart & p)
+    {
+        return QualifiedPackageName(c, p);
+    }
 }
 
 #endif
