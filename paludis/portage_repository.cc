@@ -554,7 +554,7 @@ PortageRepository::do_version_metadata(
 
             ok = true;
         }
-        else if (_implementation->cache.basename() != "empty")
+        else
             Log::get_instance()->message(ll_warning, "Couldn't read the cache file at '"
                     + stringify(cache_file) + "'");
     }
@@ -572,8 +572,9 @@ PortageRepository::do_version_metadata(
 
     if (! ok)
     {
-        Log::get_instance()->message(ll_warning, "No cache entry for '" + stringify(c) + "/" +
-                stringify(p) + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
+        if (_implementation->cache.basename() != "empty")
+            Log::get_instance()->message(ll_warning, "No cache entry for '" + stringify(c) + "/" +
+                    stringify(p) + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
 
         std::string cmd(
                 "env P='" + stringify(p) + "-" + stringify(v.remove_revision()) + "' " +
