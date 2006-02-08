@@ -7,6 +7,8 @@ SUBDIRS = .
 bin_PROGRAMS = qualudis
 
 qualudis_SOURCES = \
+	check_deps_exist.hh           check_deps_exist.cc           \
+	check_self_deps.hh            check_self_deps.cc            \
 	qualudis_command_line.hh      qualudis_command_line.cc      \
 	qualudis.cc
 

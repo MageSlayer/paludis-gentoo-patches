@@ -22,8 +22,11 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <algorithm>
 
 #include "qualudis_command_line.hh"
+#include "check_deps_exist.hh"
+#include "check_self_deps.hh"
 #include "config.h"
 
 using namespace paludis;
@@ -48,7 +51,61 @@ struct DoVersion
 int
 do_check()
 {
-    return EXIT_SUCCESS;
+    int ret_code(0);
+    FSEntry cwd(FSEntry::cwd());
+    QualifiedPackageName qpn("x/x");
+
+    try
+    {
+        PackageNamePart package(cwd.basename());
+        CategoryNamePart category(FSEntry(cwd.dirname()).basename());
+
+        qpn = category + package;
+    }
+    catch (const NameError & e)
+    {
+        cout << "[FATAL] Caught name error: '" << e.message() << "' (" <<
+            e.what() << "), skipping further tests";
+        return 1;
+    }
+
+    std::cout << "QA checks for " << qpn << ":" << std::endl;
+
+    if (! std::count_if(DirIterator(cwd), DirIterator(), IsFileWithExtension(".ebuild")))
+    {
+        cout << "[FATAL] No ebuilds found in '" << cwd << "', skipping further tests" << endl;
+        return 1;
+    }
+
+    QAEnvironment env(cwd.dirname().dirname());
+
+    for (DirIterator d(cwd), d_end ; d != d_end ; ++d)
+    {
+        if (IsFileWithExtension(stringify(qpn.get<qpn_package>()) + "-", ".ebuild")(d->basename()))
+        {
+            PackageDatabaseEntry e(qpn, VersionSpec(strip_leading_string(
+                            strip_trailing_string(d->basename(), ".ebuild"),
+                            stringify(qpn.get<qpn_package>()) + "-")),
+                    env.package_database()->favourite_repository());
+
+            ret_code |= check_deps_exist(&env, e);
+            ret_code |= check_self_deps(&env, e);
+        }
+        else if (d->basename() == "ChangeLog")
+        {
+
+        }
+        else if (d->basename() == "files")
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+
+    return ret_code;
 }
 
 int main(int argc, char *argv[])
