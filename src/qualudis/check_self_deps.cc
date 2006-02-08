@@ -18,63 +18,80 @@
  */
 
 #include <paludis/paludis.hh>
-#include <iostream>
 #include <algorithm>
 #include <list>
 
 #include "check_self_deps.hh"
+#include "qa_notice.hh"
 
 using namespace paludis;
-using std::cout;
-using std::cerr;
-using std::endl;
 
-struct SelfDepsChecker :
-    DepAtomVisitorTypes::ConstVisitor
+class SelfDepsChecker :
+    public DepAtomVisitorTypes::ConstVisitor
 {
-    const Environment * const env;
-    const QualifiedPackageName p;
-    std::list<std::string> bad_deps;
-    bool in_block;
+    private:
+        const Environment * const _env;
+        const QualifiedPackageName _p;
+        std::list<std::string> _bad_deps;
+        bool _in_block;
+        QANoticeLevel _level;
 
-    SelfDepsChecker(const Environment * const e, const QualifiedPackageName & pp) :
-        env(e),
-        p(pp),
-        in_block(false)
-    {
-    }
+    public:
+        const std::list<std::string> & bad_deps;
+        const QANoticeLevel & level;
 
-    void visit(const AllDepAtom * a)
-    {
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-    }
-
-    void visit(const AnyDepAtom * a)
-    {
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-    }
-
-    void visit(const UseDepAtom * a)
-    {
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-    }
-
-    void visit(const BlockDepAtom * a)
-    {
-        Save<bool> save_in_block(&in_block, true);
-        a->blocked_atom()->accept(this);
-    }
-
-    void visit(const PackageDepAtom * a)
-    {
-        if (a->package() == p)
+        SelfDepsChecker(const Environment * const e, const QualifiedPackageName & pp) :
+            _env(e),
+            _p(pp),
+            _in_block(false),
+            _level(qal_info),
+            bad_deps(_bad_deps),
+            level(_level)
         {
-            if (in_block)
-                bad_deps.push_back("!" + stringify(*a));
-            else
-                bad_deps.push_back(stringify(*a));
         }
-    }
+
+        void visit(const AllDepAtom * a)
+        {
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const AnyDepAtom * a)
+        {
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const UseDepAtom * a)
+        {
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const BlockDepAtom * a)
+        {
+            Save<bool> save_in_block(&_in_block, true);
+            a->blocked_atom()->accept(this);
+        }
+
+        void visit(const PackageDepAtom * a)
+        {
+            if (a->package() == _p)
+            {
+                if (_in_block)
+                    _bad_deps.push_back("!" + stringify(*a));
+                else
+                    _bad_deps.push_back(stringify(*a));
+
+                if (a->version_spec_ptr() || a->slot_ptr())
+                    _level = std::max(_level, qal_maybe);
+                else
+                    _level = std::max(_level, qal_major);
+            }
+        }
+
+        void clear()
+        {
+            _bad_deps.clear();
+            _level = qal_info;
+        }
 };
 
 int
@@ -87,27 +104,30 @@ check_self_deps(const Environment * const env, const PackageDatabaseEntry & e)
     DepParser::parse(metadata->get(vmk_depend))->accept(&checker);
     if (! checker.bad_deps.empty())
     {
-        cout << "[WARNING] In DEPEND for '" << e << "', self dependencies found: '"
-            << join(checker.bad_deps.begin(), checker.bad_deps.end(), "', '") << "'" << endl;
-        checker.bad_deps.clear();
+        *QANotices::get_instance() << QANotice(checker.level, stringify(e),
+                "DEPEND self circular: '" + join(checker.bad_deps.begin(),
+                    checker.bad_deps.end(), "', '") + "'");
+        checker.clear();
         ret_code |= 1;
     }
 
     DepParser::parse(metadata->get(vmk_rdepend))->accept(&checker);
     if (! checker.bad_deps.empty())
     {
-        cout << "[WARNING] In RDEPEND for '" << e << "', self dependencies found: '"
-            << join(checker.bad_deps.begin(), checker.bad_deps.end(), "', '") << "'" << endl;
-        checker.bad_deps.clear();
+        *QANotices::get_instance() << QANotice(checker.level, stringify(e),
+                "RDEPEND self circular: '" + join(checker.bad_deps.begin(),
+                    checker.bad_deps.end(), "', '") + "'");
+        checker.clear();
         ret_code |= 1;
     }
 
     DepParser::parse(metadata->get(vmk_pdepend))->accept(&checker);
     if (! checker.bad_deps.empty())
     {
-        cout << "[WARNING] In PDEPEND for '" << e << "', self dependencies found: '"
-            << join(checker.bad_deps.begin(), checker.bad_deps.end(), "', '") << "'" << endl;
-        checker.bad_deps.clear();
+        *QANotices::get_instance() << QANotice(checker.level, stringify(e),
+                "PDEPEND self circular: '" + join(checker.bad_deps.begin(),
+                    checker.bad_deps.end(), "', '") + "'");
+        checker.clear();
         ret_code |= 1;
     }
 

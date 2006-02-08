@@ -27,6 +27,7 @@
 #include "qualudis_command_line.hh"
 #include "check_deps_exist.hh"
 #include "check_self_deps.hh"
+#include "qa_notice.hh"
 #include "config.h"
 
 using namespace paludis;
@@ -55,55 +56,85 @@ do_check()
     FSEntry cwd(FSEntry::cwd());
     QualifiedPackageName qpn("x/x");
 
-    try
+    do
     {
-        PackageNamePart package(cwd.basename());
-        CategoryNamePart category(FSEntry(cwd.dirname()).basename());
-
-        qpn = category + package;
-    }
-    catch (const NameError & e)
-    {
-        cout << "[FATAL] Caught name error: '" << e.message() << "' (" <<
-            e.what() << "), skipping further tests";
-        return 1;
-    }
-
-    std::cout << "QA checks for " << qpn << ":" << std::endl;
-
-    if (! std::count_if(DirIterator(cwd), DirIterator(), IsFileWithExtension(".ebuild")))
-    {
-        cout << "[FATAL] No ebuilds found in '" << cwd << "', skipping further tests" << endl;
-        return 1;
-    }
-
-    QAEnvironment env(cwd.dirname().dirname());
-
-    for (DirIterator d(cwd), d_end ; d != d_end ; ++d)
-    {
-        if (IsFileWithExtension(stringify(qpn.get<qpn_package>()) + "-", ".ebuild")(d->basename()))
+        try
         {
-            PackageDatabaseEntry e(qpn, VersionSpec(strip_leading_string(
-                            strip_trailing_string(d->basename(), ".ebuild"),
-                            stringify(qpn.get<qpn_package>()) + "-")),
-                    env.package_database()->favourite_repository());
+            PackageNamePart package(cwd.basename());
+            CategoryNamePart category(FSEntry(cwd.dirname()).basename());
 
-            ret_code |= check_deps_exist(&env, e);
-            ret_code |= check_self_deps(&env, e);
+            qpn = category + package;
         }
-        else if (d->basename() == "ChangeLog")
+        catch (const NameError & e)
         {
-
+            *QANotices::get_instance() << QANotice(qal_fatal, stringify(cwd),
+                    "Bad category or package name: '" +
+                    stringify(e.message()) + "' (" + stringify(e.what()) + ")");
+            ret_code |= 1;
+            break;
         }
-        else if (d->basename() == "files")
+
+        std::cout << "QA checks for " << qpn << ":" << std::endl;
+
+        if (! std::count_if(DirIterator(cwd), DirIterator(), IsFileWithExtension(".ebuild")))
         {
-
+            *QANotices::get_instance() << QANotice(qal_fatal, stringify(cwd), "No ebuilds found");
+            ret_code |= 1;
+            break;
         }
-        else
+
+        QAEnvironment env(cwd.dirname().dirname());
+
+        for (DirIterator d(cwd), d_end ; d != d_end ; ++d)
         {
+            if (IsFileWithExtension(stringify(qpn.get<qpn_package>()) + "-", ".ebuild")(d->basename()))
+            {
+                PackageDatabaseEntry e(qpn, VersionSpec(strip_leading_string(
+                                strip_trailing_string(d->basename(), ".ebuild"),
+                                stringify(qpn.get<qpn_package>()) + "-")),
+                        env.package_database()->favourite_repository());
 
+                ret_code |= check_deps_exist(&env, e);
+                ret_code |= check_self_deps(&env, e);
+            }
+            else if (d->basename() == "ChangeLog" || d->basename() == "Manifest")
+            {
+                if (! d->is_regular_file())
+                {
+                    *QANotices::get_instance() << QANotice(qal_major, stringify(*d),
+                            "Not a regular file");
+                    ret_code |= 1;
+                }
+            }
+            else if (d->basename() == "metadata.xml")
+            {
+                if (! d->is_regular_file())
+                {
+                    *QANotices::get_instance() << QANotice(qal_major, stringify(*d),
+                            "Not a regular file");
+                    ret_code |= 1;
+                }
+            }
+            else if (d->basename() == "files" || d->basename() == "CVS")
+            {
+                if (! d->is_directory())
+                {
+                    *QANotices::get_instance() << QANotice(qal_major, stringify(*d),
+                            "Not a directory");
+                    ret_code |= 1;
+                }
+            }
+            else
+            {
+                *QANotices::get_instance() << QANotice(qal_minor, stringify(*d),
+                        "Not a recognised name");
+                ret_code |= 1;
+            }
         }
-    }
+
+    } while (false);
+
+    cout << *QANotices::get_instance() << endl;
 
     return ret_code;
 }
