@@ -25,6 +25,7 @@
 #include <signal.h>
 #include <execinfo.h>
 #include <unistd.h>
+#include <sys/ptrace.h>
 
 /** \file
  * Implementation of the default test runner.
@@ -67,8 +68,12 @@ void segfault_handler(int)
 int
 main(int, char * argv[])
 {
-    signal(SIGALRM, &timeout_handler);
-    signal(SIGSEGV, &segfault_handler);
+    // if ptrace returns < 0, then it is being traced
+    if (ptrace(PTRACE_TRACEME, 0, 1, 0) >= 0)
+    {
+        signal(SIGALRM, &timeout_handler);
+        signal(SIGSEGV, &segfault_handler);
+    }
 
     std::cout << "Test program " << argv[0] << ":" << std::endl;
     return TestCaseList::run_tests() ? EXIT_SUCCESS : EXIT_FAILURE;
