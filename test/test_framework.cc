@@ -205,9 +205,11 @@ RunTest::operator() (TestCase * test_case) const
 
         try
         {
-            alarm(test_case->max_run_time());
+            if (TestCaseList::use_alarm)
+                alarm(test_case->max_run_time());
             test_case->call_run();
-            alarm(0);
+            if (TestCaseList::use_alarm)
+                alarm(0);
         }
         catch (std::exception &e)
         {
@@ -247,6 +249,9 @@ TestCaseList::run_tests()
 
     return ! had_a_failure;
 }
+
+bool
+TestCaseList::use_alarm(true);
 
 #endif
 

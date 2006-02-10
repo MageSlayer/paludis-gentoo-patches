@@ -187,6 +187,11 @@ namespace test
              * Run all tests.
              */
             static bool run_tests();
+
+            /**
+             * Should we use alarm?
+             */
+            static bool use_alarm;
     };
 
     /**

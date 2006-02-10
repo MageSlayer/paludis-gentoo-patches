@@ -19,13 +19,15 @@
 
 #include "test_runner.hh"
 #include "test_framework.hh"
+#include <paludis/stringify.hh>
 
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <signal.h>
 #include <execinfo.h>
 #include <unistd.h>
-#include <sys/ptrace.h>
+#include <sys/types.h>
 
 /** \file
  * Implementation of the default test runner.
@@ -68,11 +70,24 @@ void segfault_handler(int)
 int
 main(int, char * argv[])
 {
-    // if ptrace returns < 0, then it is being traced
-    if (ptrace(PTRACE_TRACEME, 0, 1, 0) >= 0)
     {
-        signal(SIGALRM, &timeout_handler);
-        signal(SIGSEGV, &segfault_handler);
+        std::ifstream ppid(("/proc/" + paludis::stringify(getppid()) + "/cmdline").c_str());
+        if (ppid)
+        {
+            std::string cmd;
+            std::getline(ppid, cmd, '\0');
+            std::cerr << "cmd is " << cmd << std::endl;
+            std::string::size_type slash_pos(cmd.rfind('/'));
+            if (std::string::npos != slash_pos)
+                cmd.erase(0, slash_pos);
+            if (cmd != "gdb")
+            {
+                signal(SIGALRM, &timeout_handler);
+                signal(SIGSEGV, &segfault_handler);
+            }
+            else
+                TestCaseList::use_alarm = false;
+        }
     }
 
     std::cout << "Test program " << argv[0] << ":" << std::endl;
