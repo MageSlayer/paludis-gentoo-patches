@@ -25,8 +25,10 @@
 #include <algorithm>
 
 #include "qualudis_command_line.hh"
+#include "check_metadata.hh"
 #include "check_deps_exist.hh"
 #include "check_self_deps.hh"
+#include "check_visibility.hh"
 #include "qa_notice.hh"
 #include "config.h"
 
@@ -49,10 +51,10 @@ struct DoVersion
 {
 };
 
-int
+bool
 do_check()
 {
-    int ret_code(0);
+    bool ok(true);
     FSEntry cwd(FSEntry::cwd());
     QualifiedPackageName qpn("x/x");
 
@@ -70,7 +72,7 @@ do_check()
             *QANotices::get_instance() << QANotice(qal_fatal, stringify(cwd),
                     "Bad category or package name: '" +
                     stringify(e.message()) + "' (" + stringify(e.what()) + ")");
-            ret_code |= 1;
+            ok = false;
             break;
         }
 
@@ -79,7 +81,7 @@ do_check()
         if (! std::count_if(DirIterator(cwd), DirIterator(), IsFileWithExtension(".ebuild")))
         {
             *QANotices::get_instance() << QANotice(qal_fatal, stringify(cwd), "No ebuilds found");
-            ret_code |= 1;
+            ok = false;
             break;
         }
 
@@ -94,8 +96,12 @@ do_check()
                                 stringify(qpn.get<qpn_package>()) + "-")),
                         env.package_database()->favourite_repository());
 
-                ret_code |= check_deps_exist(&env, e);
-                ret_code |= check_self_deps(&env, e);
+                if (! ((ok &= check_metadata(&env, e))))
+                    break;
+
+                ok &= check_deps_exist(&env, e);
+                ok &= check_self_deps(&env, e);
+                ok &= check_visibility(&env, e);
             }
             else if (d->basename() == "ChangeLog" || d->basename() == "Manifest")
             {
@@ -103,7 +109,7 @@ do_check()
                 {
                     *QANotices::get_instance() << QANotice(qal_major, stringify(*d),
                             "Not a regular file");
-                    ret_code |= 1;
+                    ok = false;
                 }
             }
             else if (d->basename() == "metadata.xml")
@@ -112,7 +118,7 @@ do_check()
                 {
                     *QANotices::get_instance() << QANotice(qal_major, stringify(*d),
                             "Not a regular file");
-                    ret_code |= 1;
+                    ok = false;
                 }
             }
             else if (d->basename() == "files" || d->basename() == "CVS")
@@ -121,14 +127,14 @@ do_check()
                 {
                     *QANotices::get_instance() << QANotice(qal_major, stringify(*d),
                             "Not a directory");
-                    ret_code |= 1;
+                    ok = false;
                 }
             }
             else
             {
                 *QANotices::get_instance() << QANotice(qal_minor, stringify(*d),
                         "Not a recognised name");
-                ret_code |= 1;
+                ok = false;
             }
         }
 
@@ -136,7 +142,7 @@ do_check()
 
     cout << *QANotices::get_instance() << endl;
 
-    return ret_code;
+    return ok;
 }
 
 int main(int argc, char *argv[])
@@ -162,7 +168,7 @@ int main(int argc, char *argv[])
             if (! QualudisCommandLine::get_instance()->empty())
                 throw DoHelp("check action takes no parameters");
 
-            return do_check();
+            return do_check() ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         throw InternalError(__PRETTY_FUNCTION__, "no action?");

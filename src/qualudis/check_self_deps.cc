@@ -94,10 +94,10 @@ class SelfDepsChecker :
         }
 };
 
-int
+bool
 check_self_deps(const Environment * const env, const PackageDatabaseEntry & e)
 {
-    int ret_code(0);
+    bool ok(true);
     VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(e));
     SelfDepsChecker checker(env, e.get<pde_name>());
 
@@ -108,7 +108,7 @@ check_self_deps(const Environment * const env, const PackageDatabaseEntry & e)
                 "DEPEND self circular: '" + join(checker.bad_deps.begin(),
                     checker.bad_deps.end(), "', '") + "'");
         checker.clear();
-        ret_code |= 1;
+        ok = false;
     }
 
     DepParser::parse(metadata->get(vmk_rdepend))->accept(&checker);
@@ -118,7 +118,7 @@ check_self_deps(const Environment * const env, const PackageDatabaseEntry & e)
                 "RDEPEND self circular: '" + join(checker.bad_deps.begin(),
                     checker.bad_deps.end(), "', '") + "'");
         checker.clear();
-        ret_code |= 1;
+        ok = false;
     }
 
     DepParser::parse(metadata->get(vmk_pdepend))->accept(&checker);
@@ -128,9 +128,9 @@ check_self_deps(const Environment * const env, const PackageDatabaseEntry & e)
                 "PDEPEND self circular: '" + join(checker.bad_deps.begin(),
                     checker.bad_deps.end(), "', '") + "'");
         checker.clear();
-        ret_code |= 1;
+        ok = false;
     }
 
-    return ret_code;
+    return ok;
 }
 

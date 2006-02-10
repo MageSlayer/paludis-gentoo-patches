@@ -17,12 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_QUALUDIS_CHECK_DEPS_EXIST_HH
-#define PALUDIS_GUARD_SRC_QUALUDIS_CHECK_DEPS_EXIST_HH 1
+#ifndef PALUDIS_GUARD_SRC_QUALUDIS_CHECK_METADATA_HH
+#define PALUDIS_GUARD_SRC_QUALUDIS_CHECK_METADATA_HH 1
 
 #include <paludis/paludis.hh>
 
 bool
-check_deps_exist(const paludis::Environment * const env, const paludis::PackageDatabaseEntry & e);
+check_metadata(const paludis::Environment * const env, const paludis::PackageDatabaseEntry & e);
 
 #endif

@@ -33,6 +33,8 @@ class DepExistsChecker :
         const Environment * const _env;
         std::list<std::string> _bad_deps;
         bool _in_block;
+        bool _in_any_of;
+        bool _at_least_one_ok;
         QANoticeLevel _level;
 
     public:
@@ -55,7 +57,12 @@ class DepExistsChecker :
 
         void visit(const AnyDepAtom * a)
         {
+            Save<bool> save_in_any_of(&_in_any_of, true);
+            Save<bool> save_at_least_one_ok(&_at_least_one_ok, false);
             std::for_each(a->begin(), a->end(), accept_visitor(this));
+
+            if (a->begin() != a->end() && ! _at_least_one_ok)
+                _level = std::max(level, qal_major);
         }
 
         void visit(const UseDepAtom * a)
@@ -78,12 +85,19 @@ class DepExistsChecker :
                     _bad_deps.push_back("!" + stringify(*a));
                     _level = std::max(_level, qal_maybe);
                 }
+                else if (_in_any_of)
+                {
+                    _bad_deps.push_back(stringify(*a));
+                    _level = std::max(_level, qal_maybe);
+                }
                 else
                 {
                     _bad_deps.push_back(stringify(*a));
                     _level = std::max(_level, qal_major);
                 }
             }
+            else
+                _at_least_one_ok = true;
         }
 
         void clear()
@@ -93,10 +107,10 @@ class DepExistsChecker :
         }
 };
 
-int
+bool
 check_deps_exist(const Environment * const env, const PackageDatabaseEntry & e)
 {
-    int ret_code(0);
+    bool ok(true);
     VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(e));
     DepExistsChecker checker(env);
 
@@ -107,7 +121,7 @@ check_deps_exist(const Environment * const env, const PackageDatabaseEntry & e)
                 "Nonexistent DEPEND entries: " + join(checker.bad_deps.begin(),
                     checker.bad_deps.end(), "', '") + "'");
         checker.clear();
-        ret_code |= 1;
+        ok = false;
     }
 
     DepParser::parse(metadata->get(vmk_rdepend))->accept(&checker);
@@ -117,7 +131,7 @@ check_deps_exist(const Environment * const env, const PackageDatabaseEntry & e)
                 "Nonexistent RDEPEND entries: " + join(checker.bad_deps.begin(),
                     checker.bad_deps.end(), "', '") + "'");
         checker.clear();
-        ret_code |= 1;
+        ok = false;
     }
 
     DepParser::parse(metadata->get(vmk_pdepend))->accept(&checker);
@@ -127,9 +141,9 @@ check_deps_exist(const Environment * const env, const PackageDatabaseEntry & e)
                 "Nonexistent PDEPEND entries: " + join(checker.bad_deps.begin(),
                     checker.bad_deps.end(), "', '") + "'");
         checker.clear();
-        ret_code |= 1;
+        ok = false;
     }
 
-    return ret_code;
+    return ok;
 }
 

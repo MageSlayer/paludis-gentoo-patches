@@ -8,7 +8,9 @@ bin_PROGRAMS = qualudis
 
 qualudis_SOURCES = \
 	check_deps_exist.hh           check_deps_exist.cc           \
+	check_metadata.hh             check_metadata.cc             \
 	check_self_deps.hh            check_self_deps.cc            \
+	check_visibility.hh           check_visibility.cc           \
 	qa_notice.hh                  qa_notice.cc                  \
 	qualudis_command_line.hh      qualudis_command_line.cc      \
 	qualudis.cc

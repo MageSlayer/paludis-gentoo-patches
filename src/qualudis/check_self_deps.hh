@@ -22,7 +22,7 @@
 
 #include <paludis/paludis.hh>
 
-int
+bool
 check_self_deps(const paludis::Environment * const env, const paludis::PackageDatabaseEntry & e);
 
 #endif
