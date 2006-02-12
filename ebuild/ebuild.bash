@@ -79,9 +79,16 @@ case ${1:x} in
         exit 0
         ;;
 
-    unpack|compile|install)
+    unpack|compile|install|test)
         ebuild_load_ebuild "${2}"
         ebuild_load_module src_${1}
+        ebuild_f_${1}
+        exit 0
+    ;;
+
+    setup|config|nofetch|preinst|postinst|prerm|postrm)
+        ebuild_load_ebuild "${2}"
+        ebuild_load_module pkg_${1}
         ebuild_f_${1}
         exit 0
     ;;
