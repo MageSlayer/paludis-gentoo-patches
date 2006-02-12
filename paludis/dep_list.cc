@@ -205,9 +205,11 @@ DepList::add(DepAtom::ConstPointer atom)
 void
 DepList::_add_raw(const DepAtom * const atom)
 {
+#if 0
     /// \bug VV this is debug code. remove it once we're sure this works
     std::list<DepListEntry> backup_merge_list(_implementation->merge_list.begin(),
             _implementation->merge_list.end());
+#endif
 
     /* keep track of stack depth */
     Save<int> old_stack_depth(&_implementation->stack_depth,
@@ -252,6 +254,7 @@ DepList::_add_raw(const DepAtom * const atom)
                     save_irange_end);
         }
 
+#if 0
         /// \bug VV this is debug code. remove it once we're sure this works
         if (backup_merge_list != _implementation->merge_list)
         {
@@ -261,6 +264,7 @@ DepList::_add_raw(const DepAtom * const atom)
                         _implementation->merge_list.end(), " -> "));
             throw InternalError(PALUDIS_HERE, "merge list restore failed");
         }
+#endif
         throw;
     }
 }
