@@ -28,10 +28,6 @@ dnl vim: set ft=cpp et sw=4 sts=4 :
  * Master include file.
  */
 
-dnl vim: set ft=m4 et :
-dnl Run paludis.hh.m4 through GNU m4 to produce paludis.hh. You should
-dnl use the provided autogen.bash script to do all the hard work.
-
 define(`addhh', `dnl
 #include <paludis/$1.hh>
 ')dnl
