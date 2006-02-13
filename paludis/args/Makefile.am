@@ -21,8 +21,8 @@ noinst_LIBRARIES = libpaludisargs.a
 check_PROGRAMS = $(TESTS)
 
 test_ldadd = \
-	libpaludisargs.a \
 	$(top_builddir)/test/libtest.a \
+	libpaludisargs.a \
 	$(top_builddir)/paludis/libpaludis.a
 
 args_TEST_SOURCES = args_TEST.cc

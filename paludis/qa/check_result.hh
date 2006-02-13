@@ -82,6 +82,8 @@ namespace paludis
                 {
                     return _rule;
                 }
+
+                QALevel most_severe_level() const;
         };
     }
 }

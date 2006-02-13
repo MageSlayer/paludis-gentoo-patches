@@ -37,8 +37,15 @@ namespace test_cases
             TEST_CHECK_EQUAL(r.item(), "/");
             TEST_CHECK_EQUAL(r.rule(), "blah");
             TEST_CHECK(r.empty());
+            TEST_CHECK_EQUAL(r.most_severe_level(), qal_info);
             r << Message(qal_info, "moo");
             TEST_CHECK(! r.empty());
+            TEST_CHECK_EQUAL(r.most_severe_level(), qal_info);
+            r << Message(qal_minor, "moo");
+            TEST_CHECK_EQUAL(r.most_severe_level(), qal_minor);
+            r << Message(qal_major, "moo");
+            TEST_CHECK_EQUAL(r.most_severe_level(), qal_major);
+            TEST_CHECK_EQUAL(std::distance(r.begin(), r.end()), 3);
         }
     } test_check_result;
 }

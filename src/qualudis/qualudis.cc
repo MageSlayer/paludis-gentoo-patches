@@ -26,11 +26,6 @@
 #include <algorithm>
 
 #include "qualudis_command_line.hh"
-#include "check_metadata.hh"
-#include "check_deps_exist.hh"
-#include "check_self_deps.hh"
-#include "check_visibility.hh"
-#include "qa_notice.hh"
 #include "config.h"
 
 using namespace paludis;
@@ -52,96 +47,86 @@ struct DoVersion
 {
 };
 
+void
+display_errors(const qa::CheckResult & r)
+{
+    cout << r.item() << ": " << r.rule() << ":" << endl;
+
+    for (qa::CheckResult::Iterator i(r.begin()), i_end(r.end()) ; i != i_end ; ++i)
+    {
+        do
+        {
+            switch (i->get<qa::mk_level>())
+            {
+                case qa::qal_info:
+                    cout << "  info:   ";
+                    continue;
+
+                case qa::qal_minor:
+                    cout << "  minor:  ";
+                    continue;
+
+                case qa::qal_major:
+                    cout << "  major:  ";
+                    continue;
+
+                case qa::qal_fatal:
+                    cout << "  fatal:  ";
+                    continue;
+
+                case qa::qal_maybe:
+                    cout << "  maybe:  ";
+                    continue;
+            }
+
+            throw InternalError(PALUDIS_HERE, "Bad mk_level");
+        }
+        while (false);
+
+        cout << i->get<qa::mk_msg>() << endl;
+    }
+}
+
 bool
 do_check()
 {
     bool ok(true);
     FSEntry cwd(FSEntry::cwd());
-    QualifiedPackageName qpn("x/x");
 
-    do
+    std::list<std::string> package_dir_checks;
+    qa::PackageDirCheckMaker::get_instance()->copy_keys(std::back_inserter(package_dir_checks));
+    for (std::list<std::string>::const_iterator i(package_dir_checks.begin()),
+            i_end(package_dir_checks.end()) ; i != i_end ; ++i)
     {
-        try
+        qa::CheckResult r((*qa::PackageDirCheckMaker::get_instance()->find_maker(*i)())(cwd));
+
+        if (r.empty())
+            continue;
+
+        display_errors(r);
+
+        do
         {
-            PackageNamePart package(cwd.basename());
-            CategoryNamePart category(FSEntry(cwd.dirname()).basename());
-
-            qpn = category + package;
-        }
-        catch (const NameError & e)
-        {
-            *QANotices::get_instance() << QANotice(qal_fatal, stringify(cwd),
-                    "Bad category or package name: '" +
-                    stringify(e.message()) + "' (" + stringify(e.what()) + ")");
-            ok = false;
-            break;
-        }
-
-        std::cout << "QA checks for " << qpn << ":" << std::endl;
-
-        if (! std::count_if(DirIterator(cwd), DirIterator(), IsFileWithExtension(".ebuild")))
-        {
-            *QANotices::get_instance() << QANotice(qal_fatal, stringify(cwd), "No ebuilds found");
-            ok = false;
-            break;
-        }
-
-        qa::QAEnvironment env(cwd.dirname().dirname());
-
-        for (DirIterator d(cwd), d_end ; d != d_end ; ++d)
-        {
-            if (IsFileWithExtension(stringify(qpn.get<qpn_package>()) + "-", ".ebuild")(d->basename()))
+            switch (r.most_severe_level())
             {
-                PackageDatabaseEntry e(qpn, VersionSpec(strip_leading_string(
-                                strip_trailing_string(d->basename(), ".ebuild"),
-                                stringify(qpn.get<qpn_package>()) + "-")),
-                        env.package_database()->favourite_repository());
+                case qa::qal_info:
+                case qa::qal_maybe:
+                    continue;
 
-                if (! ((ok &= check_metadata(&env, e))))
-                    break;
-
-                ok &= check_deps_exist(&env, e);
-                ok &= check_self_deps(&env, e);
-                ok &= check_visibility(&env, e);
-            }
-            else if (d->basename() == "ChangeLog" || d->basename() == "Manifest")
-            {
-                if (! d->is_regular_file())
-                {
-                    *QANotices::get_instance() << QANotice(qal_major, stringify(*d),
-                            "Not a regular file");
+                case qa::qal_minor:
+                case qa::qal_major:
                     ok = false;
-                }
-            }
-            else if (d->basename() == "metadata.xml")
-            {
-                if (! d->is_regular_file())
-                {
-                    *QANotices::get_instance() << QANotice(qal_major, stringify(*d),
-                            "Not a regular file");
-                    ok = false;
-                }
-            }
-            else if (d->basename() == "files" || d->basename() == "CVS")
-            {
-                if (! d->is_directory())
-                {
-                    *QANotices::get_instance() << QANotice(qal_major, stringify(*d),
-                            "Not a directory");
-                    ok = false;
-                }
-            }
-            else
-            {
-                *QANotices::get_instance() << QANotice(qal_minor, stringify(*d),
-                        "Not a recognised name");
-                ok = false;
-            }
-        }
+                    continue;
 
-    } while (false);
+                case qa::qal_fatal:
+                    ok = false;
+                    return ok;
+            }
+            throw InternalError(PALUDIS_HERE, "Bad most_severe_level");
+        } while (0);
 
-    cout << *QANotices::get_instance() << endl;
+        ok = false;
+    }
 
     return ok;
 }
