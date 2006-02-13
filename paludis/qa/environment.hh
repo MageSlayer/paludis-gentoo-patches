@@ -28,32 +28,37 @@
  * Declarations for the QAEnvironment class.
  *
  * \ingroup Environment
+ * \ingroup QA
  */
 
 namespace paludis
 {
-    /**
-     * The QAEnvironment is an Environment that corresponds to the environment
-     * used by Qualudis for QA checks.
-     *
-     * \ingroup Environment
-     */
-    class QAEnvironment :
-        public Environment
+    namespace qa
     {
-        public:
-            QAEnvironment(const FSEntry & base);
+        /**
+         * The QAEnvironment is an Environment that corresponds to the environment
+         * used by Qualudis for QA checks.
+         *
+         * \ingroup Environment
+         * \ingroup QA
+         */
+        class QAEnvironment :
+            public Environment
+        {
+            public:
+                QAEnvironment(const FSEntry & base);
 
-            ~QAEnvironment();
+                ~QAEnvironment();
 
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
+                virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
 
-            virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
+                virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
 
-            virtual bool query_user_masks(const PackageDatabaseEntry &) const;
+                virtual bool query_user_masks(const PackageDatabaseEntry &) const;
 
-            virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
-    };
+                virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
+        };
+    }
 }
 
 #endif

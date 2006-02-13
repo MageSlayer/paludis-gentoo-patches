@@ -17,10 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "qa_environment.hh"
+#include "environment.hh"
 #include <map>
 
 using namespace paludis;
+using namespace paludis::qa;
 
 QAEnvironment::QAEnvironment(const FSEntry & base) :
     Environment(PackageDatabase::Pointer(new PackageDatabase),

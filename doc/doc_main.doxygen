@@ -199,3 +199,10 @@ instance of a TestCase subclass will register it with the test case
 list.
 */
 
+/** \defgroup QA QA Checks
+QA Checks.
+
+Various QA checks that can be applied to packages or ebuilds.
+*/
+
+

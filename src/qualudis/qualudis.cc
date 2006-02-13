@@ -19,6 +19,7 @@
 
 #include <paludis/paludis.hh>
 #include <paludis/args/args.hh>
+#include <paludis/qa/qa.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -85,7 +86,7 @@ do_check()
             break;
         }
 
-        QAEnvironment env(cwd.dirname().dirname());
+        qa::QAEnvironment env(cwd.dirname().dirname());
 
         for (DirIterator d(cwd), d_end ; d != d_end ; ++d)
         {

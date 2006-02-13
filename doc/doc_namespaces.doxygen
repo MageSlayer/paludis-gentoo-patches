@@ -18,6 +18,12 @@
  * \ingroup Args
  */
 
+/** \namespace paludis::qa
+ * QA checks.
+ *
+ * \ingroup Args
+ */
+
 /** \namespace paludis
  * Paludis library code.
  */

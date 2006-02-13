@@ -285,6 +285,7 @@ AC_OUTPUT(
 	paludis/about.hh
 	paludis/hashed_containers.hh
 	paludis/args/Makefile
+	paludis/qa/Makefile
 	src/Makefile
 	src/qualudis/Makefile
 	test/Makefile

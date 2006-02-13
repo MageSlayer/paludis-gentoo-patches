@@ -27,6 +27,8 @@ get() {
 
 misc/do_m4.bash paludis/Makefile.am || exit $?
 misc/do_m4.bash paludis/paludis.hh || exit $?
+misc/do_m4.bash paludis/qa/Makefile.am || exit $?
+misc/do_m4.bash paludis/qa/qa.hh || exit $?
 misc/do_m4.bash paludis/smart_record.hh || exit $?
 misc/do_m4.bash paludis/comparison_policy.hh || exit $?
 run mkdir -p config
