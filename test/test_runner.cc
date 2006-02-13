@@ -76,7 +76,6 @@ main(int, char * argv[])
         {
             std::string cmd;
             std::getline(ppid, cmd, '\0');
-            std::cerr << "cmd is " << cmd << std::endl;
             std::string::size_type slash_pos(cmd.rfind('/'));
             if (std::string::npos != slash_pos)
                 cmd.erase(0, slash_pos);
