@@ -31,7 +31,7 @@ CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in Makefile.am qa.hh
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
-EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4
+EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist
 
 libpaludisqa_a_SOURCES = filelist
 
