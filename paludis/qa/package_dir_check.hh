@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_QA_FILE_CHECK_HH
-#define PALUDIS_GUARD_PALUDIS_QA_FILE_CHECK_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_QA_PACKAGE_DIR_CHECK_HH
+#define PALUDIS_GUARD_PALUDIS_QA_PACKAGE_DIR_CHECK_HH 1
 
 #include <paludis/exception.hh>
 #include <paludis/fs_entry.hh>
@@ -28,7 +28,7 @@
 #include <paludis/qa/check_result.hh>
 
 /** \file
- * Declarations for the FileCheck class.
+ * Declarations for the PackageDirCheck class.
  *
  * \ingroup QA
  */
@@ -38,40 +38,39 @@ namespace paludis
     namespace qa
     {
         /**
-         * A QA check that operates upon a file.
+         * A QA check that operates upon a package directory.
          *
          * \ingroup QA
          */
-        class FileCheck :
+        class PackageDirCheck :
             public Check,
-            public InternalCounted<FileCheck>
+            public InternalCounted<PackageDirCheck>
         {
             protected:
-                FileCheck();
+                PackageDirCheck();
 
             public:
                 virtual CheckResult operator() (const FSEntry &) const = 0;
         };
 
-        class NoSuchFileCheckTypeError :
+        class NoSuchPackageDirCheckTypeError :
             public Exception
         {
             public:
-                NoSuchFileCheckTypeError(const std::string &) throw ();
+                NoSuchPackageDirCheckTypeError(const std::string &) throw ();
         };
 
         template <typename T_>
-        FileCheck::Pointer
-        make_file_check()
+        PackageDirCheck::Pointer
+        make_package_dir_check()
         {
-            return FileCheck::Pointer(new T_);
+            return PackageDirCheck::Pointer(new T_);
         }
 
         typedef VirtualConstructor<
             std::string,
-            FileCheck::Pointer (*) (),
-            virtual_constructor_not_found::ThrowException<NoSuchFileCheckTypeError> > FileCheckMaker;
+            PackageDirCheck::Pointer (*) (),
+            virtual_constructor_not_found::ThrowException<NoSuchPackageDirCheckTypeError> > PackageDirCheckMaker;
     }
 }
-
 #endif
