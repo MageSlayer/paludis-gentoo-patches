@@ -20,7 +20,6 @@
 #include "has_misc_files_check.hh"
 #include <paludis/is_file_with_extension.hh>
 #include <paludis/dir_iterator.hh>
-#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -29,37 +28,18 @@ HasMiscFilesCheck::HasMiscFilesCheck()
 {
 }
 
-struct IsNamed :
-    std::unary_function<bool, FSEntry>
-{
-    const std::string name;
-
-    IsNamed(const std::string & n) :
-        name(n)
-    {
-    }
-
-    bool operator() (const FSEntry & f) const
-    {
-        return f.basename() == name;
-    }
-};
-
 CheckResult
 HasMiscFilesCheck::operator() (const FSEntry & d) const
 {
     CheckResult result(d, identifier());
 
-    if (DirIterator() == std::find_if(DirIterator(d), DirIterator(),
-                IsNamed("ChangeLog")))
+    if (! (d / "ChangeLog").exists())
         result << Message(qal_major, "No ChangeLog found");
 
-    if (DirIterator() == std::find_if(DirIterator(d), DirIterator(),
-                IsNamed("files")))
+    if (! (d / "files").exists())
         result << Message(qal_major, "No files/ found");
 
-    if (DirIterator() == std::find_if(DirIterator(d), DirIterator(),
-                IsNamed("metadata.xml")))
+    if (! (d / "metadata.xml").exists())
         result << Message(qal_major, "No metadata.xml found");
 
     return result;
@@ -71,5 +51,4 @@ HasMiscFilesCheck::identifier()
     static const std::string id("has misc files");
     return id;
 }
-
 
