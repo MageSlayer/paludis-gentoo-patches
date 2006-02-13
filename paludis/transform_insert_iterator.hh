@@ -53,7 +53,7 @@ namespace paludis
             /**
              * Constructor, from an iterator.
              */
-            TransformInsertIterator(const Iter_ & i, const Trans_ & t) :
+            TransformInsertIterator(const Iter_ & i, const Trans_ & t = Trans_()) :
                 _i(i),
                 _t(t)
             {
