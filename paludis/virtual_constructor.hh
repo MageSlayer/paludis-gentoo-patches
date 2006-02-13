@@ -106,26 +106,6 @@ namespace paludis
     }
 
     /**
-     * Thrown if registering a key fails.
-     *
-     * \ingroup Exception
-     * \ingroup VirtualConstructor
-     */
-    class VirtualConstructorRegisterFailure : public Exception
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            template <typename T_>
-            VirtualConstructorRegisterFailure(const T_ & k) throw () :
-                Exception("Virtual constructor registration failed on key '" +
-                        stringify(k) + "'")
-            {
-            }
-    };
-
-    /**
      * A VirtualConstructor can be used where a mapping between the value of
      * some key type (often a string) to the construction of some kind of
      * class (possibly via a functor) is required.
@@ -235,10 +215,13 @@ namespace paludis
     VirtualConstructor<KeyType_, ValueType_, NotFoundBehaviour_>::register_maker(
             const KeyType_ & k, const ValueType_ & v)
     {
-        if (! entries.insert(std::lower_bound(entries.begin(), entries.end(), k,
-                    virtual_constructor_internals::ComparePairByFirst<KeyType_, ValueType_>()),
-                std::make_pair(k, v))->second)
-            throw VirtualConstructorRegisterFailure(k);
+        std::pair<
+            typename std::vector<std::pair<KeyType_, ValueType_> >::iterator,
+            typename std::vector<std::pair<KeyType_, ValueType_> >::iterator > m(
+                    std::equal_range(entries.begin(), entries.end(), k,
+                        virtual_constructor_internals::ComparePairByFirst<KeyType_, ValueType_>()));
+        if (m.first == m.second)
+            entries.insert(m.first, std::make_pair(k, v));
     }
 
     template <typename KeyType_, typename ValueType_, typename NotFoundBehaviour_>
