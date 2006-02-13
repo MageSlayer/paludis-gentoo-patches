@@ -8,5 +8,9 @@ dnl the base filename with no extension; later parameters can be `hh', `cc',
 dnl `test', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
+add(`check',                          `hh', `cc')
+add(`check_result',                   `hh', `cc', `test')
 add(`environment',                    `hh', `cc')
-
+add(`file_check',                     `hh', `cc')
+add(`file_permissions_check',         `hh', `cc', `test', `testscript')
+add(`message',                        `hh', `cc', `test')
