@@ -23,6 +23,7 @@
 #include <paludis/exception.hh>
 #include <paludis/instantiation_policy.hh>
 #include <paludis/stringify.hh>
+#include <paludis/transform_insert_iterator.hh>
 
 #include <algorithm>
 #include <vector>
@@ -189,6 +190,12 @@ namespace paludis
             void register_maker(const KeyType_ & k, const ValueType_ & v);
 
             /**
+             * Copy out our keys.
+             */
+            template <typename T_>
+            void copy_keys(T_ out_iter) const;
+
+            /**
              * An instance of this class registers a new maker with the
              * specified key.
              *
@@ -232,6 +239,15 @@ namespace paludis
                     virtual_constructor_internals::ComparePairByFirst<KeyType_, ValueType_>()),
                 std::make_pair(k, v))->second)
             throw VirtualConstructorRegisterFailure(k);
+    }
+
+    template <typename KeyType_, typename ValueType_, typename NotFoundBehaviour_>
+    template <typename T_>
+    void
+    VirtualConstructor<KeyType_, ValueType_, NotFoundBehaviour_>::copy_keys(T_ out_iter) const
+    {
+        std::copy(entries.begin(), entries.end(), TransformInsertIterator<
+                T_, SelectFirst<KeyType_, ValueType_> >(out_iter));
     }
 }
 

@@ -4,6 +4,7 @@
 #include "counted_ptr.hh"
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
+#include <set>
 
 using namespace test;
 using namespace paludis;
@@ -139,5 +140,28 @@ namespace test_cases
                         "gerbil")(cs_large)->flavour(), NoCookie);
         }
     } test_virtual_constructor;
+
+    /**
+     * \test Test VirtualConstructor keys
+     *
+     * \ingroup Test
+     */
+    struct VirtualConstructorKeysTest : TestCase
+    {
+        VirtualConstructorKeysTest() : TestCase("virtual constructor keys") { }
+
+        void run()
+        {
+            std::set<std::string> keys;
+
+            TEST_CHECK(keys.empty());
+            CookieMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
+            TEST_CHECK(! keys.empty());
+            TEST_CHECK(keys.end() != keys.find("crunchy ginger"));
+            TEST_CHECK(keys.end() != keys.find("ginger"));
+            TEST_CHECK(keys.end() != keys.find("chocolate chip"));
+            TEST_CHECK(keys.end() == keys.find("gerbil"));
+        }
+    } test_virtual_constructor_keys;
 }
 
