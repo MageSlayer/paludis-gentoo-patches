@@ -24,6 +24,7 @@ QualudisCommandLine::QualudisCommandLine() :
 
     action_args(this, "Actions (specify exactly one)"),
     a_check(&action_args,    "check",        'c', "Check the current directory"),
+    a_describe(&action_args, "describe",     'd', "Describe checks"),
     a_version(&action_args,  "version",      'V', "Display program version"),
     a_help(&action_args,     "help",         'h', "Display program help"),
 

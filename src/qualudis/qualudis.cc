@@ -270,7 +270,8 @@ int main(int argc, char *argv[])
             throw DoHelp();
 
         if (1 != (QualudisCommandLine::get_instance()->a_check.specified() +
-                    QualudisCommandLine::get_instance()->a_version.specified()))
+                    QualudisCommandLine::get_instance()->a_version.specified() +
+                    QualudisCommandLine::get_instance()->a_describe.specified()))
             throw DoHelp("you should specify exactly one action");
 
         if (QualudisCommandLine::get_instance()->a_version.specified())
@@ -283,6 +284,33 @@ int main(int argc, char *argv[])
 
             return do_check() ? EXIT_SUCCESS : EXIT_FAILURE;
         }
+
+        if (QualudisCommandLine::get_instance()->a_describe.specified())
+        {
+            if (! QualudisCommandLine::get_instance()->empty())
+                throw DoHelp("describe action takes no parameters");
+
+            cout << "Package directory checks:" << endl;
+            std::list<std::string> package_dir_checks;
+            qa::PackageDirCheckMaker::get_instance()->copy_keys(std::back_inserter(package_dir_checks));
+            for (std::list<std::string>::const_iterator i(package_dir_checks.begin()),
+                    i_end(package_dir_checks.end()) ; i != i_end ; ++i)
+                cout << "  " << *i << ":" << endl << "    " <<
+                    (*qa::PackageDirCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
+            cout << endl;
+
+            cout << "File checks:" << endl;
+            std::list<std::string> file_checks;
+            qa::FileCheckMaker::get_instance()->copy_keys(std::back_inserter(file_checks));
+            for (std::list<std::string>::const_iterator i(file_checks.begin()),
+                    i_end(file_checks.end()) ; i != i_end ; ++i)
+                cout << "  " << *i << ":" << endl << "    " <<
+                    (*qa::FileCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
+            cout << endl;
+
+            return EXIT_SUCCESS;
+        }
+
 
         throw InternalError(__PRETTY_FUNCTION__, "no action?");
     }

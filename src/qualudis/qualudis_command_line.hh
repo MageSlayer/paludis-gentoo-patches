@@ -29,6 +29,9 @@ class QualudisCommandLine :
         /// --check
         paludis::args::SwitchArg a_check;
 
+        /// --describe
+        paludis::args::SwitchArg a_describe;
+
         /// --version
         paludis::args::SwitchArg a_version;
 
