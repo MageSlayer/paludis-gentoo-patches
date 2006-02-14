@@ -66,6 +66,11 @@ namespace test_cases
             check_invalid("abc""\xf0""\x2a""\x2a""\x2a""de");
             check_invalid("abc""\xf0""\xaa""\x2a""\x2a""de");
             check_invalid("abc""\xf0""\xa1""\xa1""\x2a""de");
+
+            check_invalid("abc""\xc2");
+            check_invalid("abc""\xd7");
+            check_invalid("abc""\xe2""\x82");
+            check_invalid("abc""\xf0""\xa1""\xa1");
         }
     } test_utf8;
 }
