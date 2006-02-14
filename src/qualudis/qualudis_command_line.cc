@@ -25,7 +25,10 @@ QualudisCommandLine::QualudisCommandLine() :
     action_args(this, "Actions (specify exactly one)"),
     a_check(&action_args,    "check",        'c', "Check the current directory"),
     a_version(&action_args,  "version",      'V', "Display program version"),
-    a_help(&action_args,     "help",         'h', "Display program help")
+    a_help(&action_args,     "help",         'h', "Display program help"),
+
+    check_options(this, "Options for --check"),
+    a_verbose(&check_options, "verbose", 'v', "Be verbose")
 {
 }
 

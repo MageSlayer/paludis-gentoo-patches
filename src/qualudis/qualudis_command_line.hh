@@ -36,6 +36,17 @@ class QualudisCommandLine :
         paludis::args::SwitchArg a_help;
 
         ///}
+
+        /// \name Check options
+        ///{
+
+        /// Check options.
+        paludis::args::ArgsGroup check_options;
+
+        /// --verbose
+        paludis::args::SwitchArg a_verbose;
+
+        ///}
 };
 
 

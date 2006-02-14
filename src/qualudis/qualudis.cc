@@ -48,6 +48,13 @@ struct DoVersion
 };
 
 void
+display_no_errors(const qa::CheckResult & r)
+{
+    if (QualudisCommandLine::get_instance()->a_verbose.specified())
+        cout << r.item() << ": " << r.rule() << ":" << endl;
+}
+
+void
 display_errors(const qa::CheckResult & r)
 {
     cout << r.item() << ": " << r.rule() << ":" << endl;
@@ -101,7 +108,10 @@ do_check()
         qa::CheckResult r((*qa::PackageDirCheckMaker::get_instance()->find_maker(*i)())(cwd));
 
         if (r.empty())
+        {
+            display_no_errors(r);
             continue;
+        }
 
         display_errors(r);
 
