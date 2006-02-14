@@ -17,48 +17,29 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_QA_MESSAGE_HH
-#define PALUDIS_GUARD_PALUDIS_QA_MESSAGE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_QA_METADATA_CHECK_HH
+#define PALUDIS_GUARD_PALUDIS_QA_METADATA_CHECK_HH 1
 
-#include <paludis/smart_record.hh>
+#include <paludis/qa/file_check.hh>
 #include <string>
-
-/** \file
- * Declarations for the Message class.
- *
- * \ingroup QA
- */
 
 namespace paludis
 {
     namespace qa
     {
-        enum QALevel
+        class MetadataCheck :
+            public FileCheck
         {
-            qal_info,
-            qal_skip,
-            qal_maybe,
-            qal_minor,
-            qal_major,
-            qal_fatal
+            public:
+                MetadataCheck();
+
+                CheckResult operator() (const FSEntry &) const;
+
+                static const std::string & identifier();
         };
 
-        enum MessageKeys
-        {
-            mk_level,
-            mk_msg,
-            last_mk
-        };
-
-        struct MessageTag :
-            SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-            SmartRecordKeys<MessageKeys, last_mk>,
-            SmartRecordKey<mk_level, QALevel>,
-            SmartRecordKey<mk_msg, std::string>
-        {
-        };
-
-        typedef MakeSmartRecord<MessageTag>::Type Message;
+        static const FileCheckMaker::RegisterMaker register_metadata_check(
+                MetadataCheck::identifier(), &make_file_check<MetadataCheck>);
     }
 }
 

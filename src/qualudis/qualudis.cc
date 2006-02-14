@@ -33,112 +33,229 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-struct DoHelp
+namespace
 {
-    const std::string message;
-
-    DoHelp(const std::string & m = "") :
-        message(m)
+    struct DoHelp
     {
-    }
-};
+        const std::string message;
 
-struct DoVersion
-{
-};
+        DoHelp(const std::string & m = "") :
+            message(m)
+        {
+        }
+    };
 
-void
-display_no_errors(const qa::CheckResult & r)
-{
-    if (QualudisCommandLine::get_instance()->a_verbose.specified())
+    struct DoVersion
+    {
+    };
+
+    void
+    display_header(const qa::CheckResult & r)
+    {
         cout << r.item() << ": " << r.rule() << ":" << endl;
-}
-
-void
-display_errors(const qa::CheckResult & r)
-{
-    cout << r.item() << ": " << r.rule() << ":" << endl;
-
-    for (qa::CheckResult::Iterator i(r.begin()), i_end(r.end()) ; i != i_end ; ++i)
-    {
-        do
-        {
-            switch (i->get<qa::mk_level>())
-            {
-                case qa::qal_info:
-                    cout << "  info:   ";
-                    continue;
-
-                case qa::qal_minor:
-                    cout << "  minor:  ";
-                    continue;
-
-                case qa::qal_major:
-                    cout << "  major:  ";
-                    continue;
-
-                case qa::qal_fatal:
-                    cout << "  fatal:  ";
-                    continue;
-
-                case qa::qal_maybe:
-                    cout << "  maybe:  ";
-                    continue;
-            }
-
-            throw InternalError(PALUDIS_HERE, "Bad mk_level");
-        }
-        while (false);
-
-        cout << i->get<qa::mk_msg>() << endl;
-    }
-}
-
-bool
-do_check()
-{
-    bool ok(true);
-    FSEntry cwd(FSEntry::cwd());
-
-    std::list<std::string> package_dir_checks;
-    qa::PackageDirCheckMaker::get_instance()->copy_keys(std::back_inserter(package_dir_checks));
-    for (std::list<std::string>::const_iterator i(package_dir_checks.begin()),
-            i_end(package_dir_checks.end()) ; i != i_end ; ++i)
-    {
-        qa::CheckResult r((*qa::PackageDirCheckMaker::get_instance()->find_maker(*i)())(cwd));
-
-        if (r.empty())
-        {
-            display_no_errors(r);
-            continue;
-        }
-
-        display_errors(r);
-
-        do
-        {
-            switch (r.most_severe_level())
-            {
-                case qa::qal_info:
-                case qa::qal_maybe:
-                    continue;
-
-                case qa::qal_minor:
-                case qa::qal_major:
-                    ok = false;
-                    continue;
-
-                case qa::qal_fatal:
-                    ok = false;
-                    return ok;
-            }
-            throw InternalError(PALUDIS_HERE, "Bad most_severe_level");
-        } while (0);
-
-        ok = false;
     }
 
-    return ok;
+    void
+    display_header_once(bool * const once, const qa::CheckResult & r)
+    {
+        if (! *once)
+        {
+            display_header(r);
+            *once = true;
+        }
+    }
+
+    void
+    display_no_errors(const qa::CheckResult & r)
+    {
+        if (QualudisCommandLine::get_instance()->a_verbose.specified())
+            display_header(r);
+    }
+
+    void
+    display_errors(const qa::CheckResult & r)
+    {
+        bool done_out(false);
+
+        for (qa::CheckResult::Iterator i(r.begin()), i_end(r.end()) ; i != i_end ; ++i)
+        {
+            bool show(true);
+            do
+            {
+                switch (i->get<qa::mk_level>())
+                {
+                    case qa::qal_info:
+                        display_header_once(&done_out, r);
+                        cout << "  info:   ";
+                        continue;
+
+                    case qa::qal_skip:
+                        if (QualudisCommandLine::get_instance()->a_verbose.specified())
+                        {
+                            display_header_once(&done_out, r);
+                            cout << "  skip:   ";
+                        }
+                        else
+                            show = false;
+                        continue;
+
+                    case qa::qal_minor:
+                        display_header_once(&done_out, r);
+                        cout << "  minor:  ";
+                        continue;
+
+                    case qa::qal_major:
+                        display_header_once(&done_out, r);
+                        cout << "  major:  ";
+                        continue;
+
+                    case qa::qal_fatal:
+                        display_header_once(&done_out, r);
+                        cout << "  fatal:  ";
+                        continue;
+
+                    case qa::qal_maybe:
+                        display_header_once(&done_out, r);
+                        cout << "  maybe:  ";
+                        continue;
+                }
+
+                throw InternalError(PALUDIS_HERE, "Bad mk_level");
+            }
+            while (false);
+
+            if (show)
+                cout << i->get<qa::mk_msg>() << endl;
+        }
+    }
+
+    bool
+    do_check()
+    {
+        bool ok(true);
+        FSEntry cwd(FSEntry::cwd());
+
+        std::list<std::string> package_dir_checks;
+        qa::PackageDirCheckMaker::get_instance()->copy_keys(std::back_inserter(package_dir_checks));
+        for (std::list<std::string>::const_iterator i(package_dir_checks.begin()),
+                i_end(package_dir_checks.end()) ; i != i_end ; ++i)
+        {
+            try
+            {
+                qa::CheckResult r((*qa::PackageDirCheckMaker::get_instance()->find_maker(*i)())(cwd));
+
+                if (r.empty())
+                {
+                    display_no_errors(r);
+                    continue;
+                }
+
+                display_errors(r);
+
+                do
+                {
+                    switch (r.most_severe_level())
+                    {
+                        case qa::qal_info:
+                        case qa::qal_skip:
+                        case qa::qal_maybe:
+                            continue;
+
+                        case qa::qal_minor:
+                        case qa::qal_major:
+                            ok = false;
+                            continue;
+
+                        case qa::qal_fatal:
+                            ok = false;
+                            return ok;
+                    }
+                    throw InternalError(PALUDIS_HERE, "Bad most_severe_level");
+                } while (0);
+            }
+            catch (const InternalError &)
+            {
+                throw;
+            }
+            catch (const Exception & e)
+            {
+                std::cout << "Eek! Caught Exception '" << e.message() << "' (" << e.what()
+                    << ") when doing check '" << *i << "'" << endl;
+                ok = false;
+            }
+            catch (const std::exception & e)
+            {
+                std::cout << "Eek! Caught std::exception '" << e.what()
+                    << "' when doing check '" << *i << "'" << endl;
+                ok = false;
+            }
+        }
+
+        std::list<std::string> file_checks;
+        qa::FileCheckMaker::get_instance()->copy_keys(std::back_inserter(file_checks));
+        std::list<FSEntry> files((DirIterator(cwd)), DirIterator());
+        for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
+        {
+            for (std::list<std::string>::const_iterator i(file_checks.begin()),
+                    i_end(file_checks.end()) ; i != i_end ; ++i)
+            {
+                try
+                {
+                    qa::CheckResult r((*qa::FileCheckMaker::get_instance()->find_maker(*i)())(*f));
+
+                    if (r.empty())
+                    {
+                        display_no_errors(r);
+                        continue;
+                    }
+
+                    display_errors(r);
+
+                    do
+                    {
+                        switch (r.most_severe_level())
+                        {
+                            case qa::qal_info:
+                            case qa::qal_skip:
+                            case qa::qal_maybe:
+                                continue;
+
+                            case qa::qal_minor:
+                            case qa::qal_major:
+                                ok = false;
+                                continue;
+
+                            case qa::qal_fatal:
+                                ok = false;
+                                return ok;
+                        }
+                        throw InternalError(PALUDIS_HERE, "Bad most_severe_level");
+                    } while (0);
+                }
+                catch (const InternalError &)
+                {
+                    throw;
+                }
+                catch (const Exception & e)
+                {
+                    std::cout << "Eek! Caught Exception '" << e.message() << "' (" << e.what()
+                        << ") when doing check '" << *i << "'" << endl;
+                    ok = false;
+                }
+                catch (const std::exception & e)
+                {
+                    std::cout << "Eek! Caught std::exception '" << e.what()
+                        << "' when doing check '" << *i << "'" << endl;
+                    ok = false;
+                }
+
+                if (f->is_directory())
+                    files.insert(files.end(), DirIterator(*f), DirIterator());
+            }
+        }
+
+        return ok;
+    }
 }
 
 int main(int argc, char *argv[])
