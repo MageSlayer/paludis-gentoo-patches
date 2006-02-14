@@ -1,0 +1,87 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#ifndef PALUDIS_GUARD_PALUDIS_QA_EBUILD_CHECK_HH
+#define PALUDIS_GUARD_PALUDIS_QA_EBUILD_CHECK_HH 1
+
+#include <paludis/counted_ptr.hh>
+#include <paludis/qualified_package_name.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/virtual_constructor.hh>
+#include <paludis/smart_record.hh>
+#include <paludis/environment.hh>
+#include <paludis/qa/check.hh>
+#include <paludis/qa/check_result.hh>
+
+namespace paludis
+{
+    namespace qa
+    {
+        enum EbuildCheckDataKeys
+        {
+            ecd_name,
+            ecd_version,
+            ecd_environment,
+            last_ecd
+        };
+
+        struct EbuildCheckDataTag :
+            SmartRecordTag<comparison_mode::NoComparisonTag, void>,
+            SmartRecordKeys<EbuildCheckDataKeys, last_ecd>,
+            SmartRecordKey<ecd_name, QualifiedPackageName>,
+            SmartRecordKey<ecd_version, VersionSpec>,
+            SmartRecordKey<ecd_environment, const Environment *>
+        {
+        };
+
+        typedef MakeSmartRecord<EbuildCheckDataTag>::Type EbuildCheckData;
+
+        class EbuildCheck :
+            public Check,
+            public InternalCounted<EbuildCheck>
+        {
+            protected:
+                EbuildCheck();
+
+            public:
+                virtual CheckResult operator() (const EbuildCheckData &) const = 0;
+        };
+
+        class NoSuchEbuildCheckTypeError :
+            public Exception
+        {
+            public:
+                NoSuchEbuildCheckTypeError(const std::string &) throw ();
+        };
+
+        template <typename T_>
+        EbuildCheck::Pointer
+        make_ebuild_check()
+        {
+            return EbuildCheck::Pointer(new T_);
+        }
+
+        typedef VirtualConstructor<
+            std::string,
+            EbuildCheck::Pointer (*) (),
+            virtual_constructor_not_found::ThrowException<NoSuchEbuildCheckTypeError> > EbuildCheckMaker;
+    }
+}
+
+#endif

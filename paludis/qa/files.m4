@@ -11,6 +11,8 @@ dnl on this file at present...
 add(`changelog_check',                `hh', `cc')
 add(`check',                          `hh', `cc')
 add(`check_result',                   `hh', `cc', `test')
+add(`create_metadata_check',          `hh', `cc')
+add(`ebuild_check',                   `hh', `cc')
 add(`environment',                    `hh', `cc')
 add(`file_check',                     `hh', `cc')
 add(`file_name_check',                `hh', `cc')

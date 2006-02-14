@@ -227,6 +227,28 @@ namespace
             }
         }
 
+        if (! fatal)
+        {
+            qa::QAEnvironment env(cwd.dirname().dirname());
+            std::list<FSEntry> files((DirIterator(cwd)), DirIterator());
+            for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
+            {
+                if (! IsFileWithExtension(".ebuild")(*f))
+                    continue;
+
+                qa::EbuildCheckData d(
+                        QualifiedPackageName(CategoryNamePart(stringify(cwd.dirname().basename())),
+                                PackageNamePart(stringify(cwd.basename()))),
+                        VersionSpec(strip_leading_string(strip_trailing_string(f->basename(), ".ebuild"),
+                                    stringify(cwd.basename()) + "-")),
+                        &env);
+                do_check_kind<qa::EbuildCheckMaker>(ok, fatal, d);
+
+                if (fatal)
+                    break;
+            }
+        }
+
         return ok;
     }
 }
@@ -279,6 +301,15 @@ int main(int argc, char *argv[])
                     i_end(file_checks.end()) ; i != i_end ; ++i)
                 cout << "  " << *i << ":" << endl << "    " <<
                     (*qa::FileCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
+            cout << endl;
+
+            cout << "Ebuild checks:" << endl;
+            std::list<std::string> ebuild_checks;
+            qa::EbuildCheckMaker::get_instance()->copy_keys(std::back_inserter(ebuild_checks));
+            for (std::list<std::string>::const_iterator i(ebuild_checks.begin()),
+                    i_end(ebuild_checks.end()) ; i != i_end ; ++i)
+                cout << "  " << *i << ":" << endl << "    " <<
+                    (*qa::EbuildCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
             cout << endl;
 
             return EXIT_SUCCESS;
