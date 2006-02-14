@@ -17,28 +17,34 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "check_result.hh"
+#ifndef PALUDIS_GUARD_PALUDIS_QA_GLEP_31_CHECK_HH
+#define PALUDIS_GUARD_PALUDIS_QA_GLEP_31_CHECK_HH 1
 
-using namespace paludis;
-using namespace paludis::qa;
+#include <paludis/qa/file_check.hh>
+#include <string>
+#include <istream>
 
-CheckResult::CheckResult(const FSEntry & f, const std::string & r) :
-    _item(stringify(f)),
-    _rule(r)
+namespace paludis
 {
+    namespace qa
+    {
+        class Glep31Check :
+            public FileCheck
+        {
+            public:
+                Glep31Check();
+
+                CheckResult operator() (const FSEntry &) const;
+
+                static const std::string & identifier();
+
+                static void check_utf8(std::istream &, CheckResult &);
+        };
+
+        static const FileCheckMaker::RegisterMaker register_glep_31_check(
+                Glep31Check::identifier(), &make_file_check<Glep31Check>);
+    }
 }
 
-CheckResult::CheckResult(const std::string & f, const std::string & r) :
-    _item(f),
-    _rule(r)
-{
-}
 
-QALevel
-CheckResult::most_severe_level() const
-{
-    QALevel result(static_cast<QALevel>(0));
-    for (Iterator i(begin()), i_end(end()) ; i != i_end ; ++i)
-        result = std::max(result, i->get<mk_level>());
-    return result;
-}
+#endif

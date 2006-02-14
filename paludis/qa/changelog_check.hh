@@ -17,28 +17,30 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "check_result.hh"
+#ifndef PALUDIS_GUARD_PALUDIS_QA_CHANGELOG_CHECK_HH
+#define PALUDIS_GUARD_PALUDIS_QA_CHANGELOG_CHECK_HH 1
 
-using namespace paludis;
-using namespace paludis::qa;
+#include <paludis/qa/file_check.hh>
+#include <string>
 
-CheckResult::CheckResult(const FSEntry & f, const std::string & r) :
-    _item(stringify(f)),
-    _rule(r)
+namespace paludis
 {
+    namespace qa
+    {
+        class ChangeLogCheck :
+            public FileCheck
+        {
+            public:
+                ChangeLogCheck();
+
+                CheckResult operator() (const FSEntry &) const;
+
+                static const std::string & identifier();
+        };
+
+        static const FileCheckMaker::RegisterMaker register_changelog_check(
+                ChangeLogCheck::identifier(), &make_file_check<ChangeLogCheck>);
+    }
 }
 
-CheckResult::CheckResult(const std::string & f, const std::string & r) :
-    _item(f),
-    _rule(r)
-{
-}
-
-QALevel
-CheckResult::most_severe_level() const
-{
-    QALevel result(static_cast<QALevel>(0));
-    for (Iterator i(begin()), i_end(end()) ; i != i_end ; ++i)
-        result = std::max(result, i->get<mk_level>());
-    return result;
-}
+#endif

@@ -17,28 +17,37 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "check_result.hh"
+#include "file_name_check.hh"
 
 using namespace paludis;
 using namespace paludis::qa;
 
-CheckResult::CheckResult(const FSEntry & f, const std::string & r) :
-    _item(stringify(f)),
-    _rule(r)
+FileNameCheck::FileNameCheck()
 {
 }
 
-CheckResult::CheckResult(const std::string & f, const std::string & r) :
-    _item(f),
-    _rule(r)
+CheckResult
+FileNameCheck::operator() (const FSEntry & f) const
 {
-}
+    CheckResult result(f, identifier());
 
-QALevel
-CheckResult::most_severe_level() const
-{
-    QALevel result(static_cast<QALevel>(0));
-    for (Iterator i(begin()), i_end(end()) ; i != i_end ; ++i)
-        result = std::max(result, i->get<mk_level>());
+    static const std::string allowed(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789"
+            "+-_.:");
+
+    if (std::string::npos != f.basename().find_first_not_of(allowed))
+        result << Message(qal_major, "Illegal filename");
+
     return result;
 }
+
+const std::string &
+FileNameCheck::identifier()
+{
+    static const std::string id("file name");
+    return id;
+}
+
+

@@ -50,6 +50,8 @@ namespace paludis
             public:
                 CheckResult(const FSEntry &, const std::string &);
 
+                CheckResult(const std::string &, const std::string &);
+
                 bool empty() const
                 {
                     return _messages.empty();

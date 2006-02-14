@@ -17,28 +17,34 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "check_result.hh"
+#include "changelog_check.hh"
+#include <paludis/pstream.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
 
-CheckResult::CheckResult(const FSEntry & f, const std::string & r) :
-    _item(stringify(f)),
-    _rule(r)
+ChangeLogCheck::ChangeLogCheck()
 {
 }
 
-CheckResult::CheckResult(const std::string & f, const std::string & r) :
-    _item(f),
-    _rule(r)
+CheckResult
+ChangeLogCheck::operator() (const FSEntry & f) const
 {
-}
+    CheckResult result(f, identifier());
 
-QALevel
-CheckResult::most_severe_level() const
-{
-    QALevel result(static_cast<QALevel>(0));
-    for (Iterator i(begin()), i_end(end()) ; i != i_end ; ++i)
-        result = std::max(result, i->get<mk_level>());
+    if (f.basename() != "ChangeLog")
+        result << Message(qal_skip, "Not a ChangeLog");
+    else if (! f.is_regular_file())
+        result << Message(qal_major, "Not a regular file");
+
     return result;
 }
+
+const std::string &
+ChangeLogCheck::identifier()
+{
+    static const std::string id("changelog");
+    return id;
+}
+
+

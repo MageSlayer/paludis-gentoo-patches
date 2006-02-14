@@ -249,7 +249,7 @@ namespace
                     ok = false;
                 }
 
-                if (f->is_directory())
+                if (f->is_directory() && f->basename() != "CVS" && '.' != f->basename().at(0))
                     files.insert(files.end(), DirIterator(*f), DirIterator());
             }
         }
