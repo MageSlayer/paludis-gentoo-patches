@@ -48,6 +48,11 @@ namespace paludis
 
             public:
                 virtual std::string describe() const = 0;
+
+                virtual bool is_important() const
+                {
+                    return false;
+                }
         };
     }
 }

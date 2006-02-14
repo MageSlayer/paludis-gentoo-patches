@@ -41,6 +41,11 @@ namespace paludis
                 {
                     return "Checks that the file name is legal";
                 }
+
+                virtual bool is_important() const
+                {
+                    return true;
+                }
         };
 
         static const FileCheckMaker::RegisterMaker register_file_name_check(

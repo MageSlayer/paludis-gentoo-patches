@@ -41,6 +41,11 @@ namespace paludis
                 {
                     return "Checks that the category/package name is valid";
                 }
+
+                virtual bool is_important() const
+                {
+                    return true;
+                }
         };
 
         static const PackageDirCheckMaker::RegisterMaker register_package_name_check(

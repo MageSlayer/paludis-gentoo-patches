@@ -129,11 +129,25 @@ namespace
         }
     }
 
+    template <typename VC_>
+    struct IsImportant :
+        std::binary_function<bool, std::string, std::string>
+    {
+        bool operator() (const std::string & k1, const std::string & k2) const
+        {
+            return (*VC_::get_instance()->find_maker(k1))()->is_important() >
+                (*VC_::get_instance()->find_maker(k2))()->is_important();
+        }
+    };
+
     template <typename VC_, typename P_>
     void do_check_kind(bool & ok, bool & fatal, const P_ & value)
     {
         std::list<std::string> checks;
         VC_::get_instance()->copy_keys(std::back_inserter(checks));
+        checks.sort();
+        checks.sort(IsImportant<VC_>());
+
         for (std::list<std::string>::const_iterator i(checks.begin()),
                 i_end(checks.end()) ; i != i_end ; ++i)
         {
