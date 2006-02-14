@@ -129,20 +129,17 @@ namespace
         }
     }
 
-    bool
-    do_check()
+    template <typename VC_, typename P_>
+    void do_check_kind(bool & ok, bool & fatal, const P_ & value)
     {
-        bool ok(true);
-        FSEntry cwd(FSEntry::cwd());
-
-        std::list<std::string> package_dir_checks;
-        qa::PackageDirCheckMaker::get_instance()->copy_keys(std::back_inserter(package_dir_checks));
-        for (std::list<std::string>::const_iterator i(package_dir_checks.begin()),
-                i_end(package_dir_checks.end()) ; i != i_end ; ++i)
+        std::list<std::string> checks;
+        VC_::get_instance()->copy_keys(std::back_inserter(checks));
+        for (std::list<std::string>::const_iterator i(checks.begin()),
+                i_end(checks.end()) ; i != i_end ; ++i)
         {
             try
             {
-                qa::CheckResult r((*qa::PackageDirCheckMaker::get_instance()->find_maker(*i)())(cwd));
+                qa::CheckResult r((*VC_::get_instance()->find_maker(*i)())(value));
 
                 if (r.empty())
                 {
@@ -168,7 +165,8 @@ namespace
 
                         case qa::qal_fatal:
                             ok = false;
-                            return ok;
+                            fatal = true;
+                            return;
                     }
                     throw InternalError(PALUDIS_HERE, "Bad most_severe_level");
                 } while (0);
@@ -190,67 +188,31 @@ namespace
                 ok = false;
             }
         }
+    }
 
-        std::list<std::string> file_checks;
-        qa::FileCheckMaker::get_instance()->copy_keys(std::back_inserter(file_checks));
-        std::list<FSEntry> files((DirIterator(cwd)), DirIterator());
-        for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
+    bool
+    do_check()
+    {
+        bool ok(true), fatal(false);
+        FSEntry cwd(FSEntry::cwd());
+
+        if (! fatal)
+            do_check_kind<qa::PackageDirCheckMaker>(ok, fatal, cwd);
+
+        if (! fatal)
         {
-            for (std::list<std::string>::const_iterator i(file_checks.begin()),
-                    i_end(file_checks.end()) ; i != i_end ; ++i)
+            std::list<FSEntry> files((DirIterator(cwd)), DirIterator());
+            for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
             {
-                try
-                {
-                    qa::CheckResult r((*qa::FileCheckMaker::get_instance()->find_maker(*i)())(*f));
+                if (f->basename() == "CVS" || '.' == f->basename().at(0))
+                    continue;
+                if (fatal)
+                    break;
 
-                    if (r.empty())
-                    {
-                        display_no_errors(r);
-                        continue;
-                    }
-
-                    display_errors(r);
-
-                    do
-                    {
-                        switch (r.most_severe_level())
-                        {
-                            case qa::qal_info:
-                            case qa::qal_skip:
-                            case qa::qal_maybe:
-                                continue;
-
-                            case qa::qal_minor:
-                            case qa::qal_major:
-                                ok = false;
-                                continue;
-
-                            case qa::qal_fatal:
-                                ok = false;
-                                return ok;
-                        }
-                        throw InternalError(PALUDIS_HERE, "Bad most_severe_level");
-                    } while (0);
-                }
-                catch (const InternalError &)
-                {
-                    throw;
-                }
-                catch (const Exception & e)
-                {
-                    std::cout << "Eek! Caught Exception '" << e.message() << "' (" << e.what()
-                        << ") when doing check '" << *i << "'" << endl;
-                    ok = false;
-                }
-                catch (const std::exception & e)
-                {
-                    std::cout << "Eek! Caught std::exception '" << e.what()
-                        << "' when doing check '" << *i << "'" << endl;
-                    ok = false;
-                }
-
-                if (f->is_directory() && f->basename() != "CVS" && '.' != f->basename().at(0))
+                if (f->is_directory())
                     files.insert(files.end(), DirIterator(*f), DirIterator());
+
+                do_check_kind<qa::FileCheckMaker>(ok, fatal, *f);
             }
         }
 
