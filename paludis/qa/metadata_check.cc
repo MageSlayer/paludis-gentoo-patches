@@ -38,7 +38,14 @@ MetadataCheck::operator() (const FSEntry & f) const
         result << Message(qal_major, "Not a regular file");
     else
     {
-        PStream xmllint("xmllint --noout --valid '" + stringify(f) + "'");
+        PStream xmllint("xmllint --noout --nonet --dtdvalid "
+                "/usr/portage/metadata/dtd/metadata.dtd " /// \bug << todo
+                "'" + stringify(f) + "' 2>&1");
+
+        std::string s;
+        while (std::getline(xmllint, s))
+            ;
+
         if (0 != xmllint.exit_status())
             result << Message(qal_major, "XML validation failed");
     }
