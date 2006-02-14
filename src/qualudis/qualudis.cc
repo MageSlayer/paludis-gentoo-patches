@@ -209,9 +209,6 @@ namespace
                 if (fatal)
                     break;
 
-                if (f->is_directory())
-                    files.insert(files.end(), DirIterator(*f), DirIterator());
-
                 do_check_kind<qa::FileCheckMaker>(ok, fatal, *f);
             }
         }
