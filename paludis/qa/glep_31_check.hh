@@ -39,6 +39,11 @@ namespace paludis
                 static const std::string & identifier();
 
                 static void check_utf8(std::istream &, CheckResult &);
+
+                virtual std::string describe() const
+                {
+                    return "Checks that files conform to GLEP 31";
+                }
         };
 
         static const FileCheckMaker::RegisterMaker register_glep_31_check(

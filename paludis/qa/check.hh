@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_QA_CHECK_HH 1
 
 #include <paludis/instantiation_policy.hh>
+#include <string>
 
 /** \file
  * Declarations for the paludis::qa::Check class.
@@ -44,6 +45,9 @@ namespace paludis
                 Check();
 
                 virtual ~Check();
+
+            public:
+                virtual std::string describe() const = 0;
         };
     }
 }

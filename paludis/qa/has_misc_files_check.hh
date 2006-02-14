@@ -36,6 +36,11 @@ namespace paludis
                 CheckResult operator() (const FSEntry &) const;
 
                 static const std::string & identifier();
+
+                virtual std::string describe() const
+                {
+                    return "Checks that ChangeLog, metadata.xml, files/ exist";
+                }
         };
 
         static const PackageDirCheckMaker::RegisterMaker register_misc_files_check(

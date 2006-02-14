@@ -36,6 +36,11 @@ namespace paludis
                 CheckResult operator() (const FSEntry &) const;
 
                 static const std::string & identifier();
+
+                virtual std::string describe() const
+                {
+                    return "Checks that the category/package name is valid";
+                }
         };
 
         static const PackageDirCheckMaker::RegisterMaker register_package_name_check(

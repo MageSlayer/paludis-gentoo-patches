@@ -36,6 +36,11 @@ namespace paludis
                 CheckResult operator() (const FSEntry &) const;
 
                 static const std::string & identifier();
+
+                virtual std::string describe() const
+                {
+                    return "Checks that the ChangeLog is a regular file";
+                }
         };
 
         static const FileCheckMaker::RegisterMaker register_changelog_check(

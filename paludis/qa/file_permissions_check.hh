@@ -36,6 +36,11 @@ namespace paludis
                 CheckResult operator() (const FSEntry &) const;
 
                 static const std::string & identifier();
+
+                virtual std::string describe() const
+                {
+                    return "Checks that file and directory permissions are sane";
+                }
         };
 
         static const FileCheckMaker::RegisterMaker register_file_permissions_check(

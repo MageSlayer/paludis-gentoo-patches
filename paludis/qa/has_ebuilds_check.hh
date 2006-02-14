@@ -36,6 +36,11 @@ namespace paludis
                 CheckResult operator() (const FSEntry &) const;
 
                 static const std::string & identifier();
+
+                virtual std::string describe() const
+                {
+                    return "Checks that there are ebuilds present";
+                }
         };
 
         static const PackageDirCheckMaker::RegisterMaker register_has_ebuilds_check(
