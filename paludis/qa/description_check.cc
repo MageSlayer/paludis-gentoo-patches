@@ -43,7 +43,7 @@ DescriptionCheck::operator() (const EbuildCheckData & e) const
             result << Message(qal_major, "DESCRIPTION unset or empty");
         else if (metadata->get(vmk_description).length() < 10)
             result << Message(qal_minor, "DESCRIPTION suspiciously short");
-        else if (metadata->get(vmk_description).length() > 80)
+        else if (metadata->get(vmk_description).length() > 120)
             result << Message(qal_minor, "DESCRIPTION too long");
 
     }
