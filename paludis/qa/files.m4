@@ -26,6 +26,7 @@ add(`message',                        `hh', `cc', `test')
 add(`metadata_check',                 `hh', `cc')
 add(`package_dir_check',              `hh', `cc')
 add(`package_name_check',             `hh', `cc', `test', `testscript')
+add(`parse_deps_check',               `hh', `cc')
 add(`qa',                             `hh', `cc')
 add(`slot_check',                     `hh', `cc')
 
