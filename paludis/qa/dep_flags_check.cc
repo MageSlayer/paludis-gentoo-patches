@@ -36,11 +36,14 @@ namespace
     {
         CheckResult & result;
         const std::string role;
+        const Environment * const env;
         const std::set<UseFlagName> & iuse;
 
-        Checker(CheckResult & rr, const std::string & r, const std::set<UseFlagName> & i) :
+        Checker(CheckResult & rr, const std::string & r,
+                const Environment * const e, const std::set<UseFlagName> & i) :
             result(rr),
             role(r),
+            env(e),
             iuse(i)
         {
         }
@@ -61,8 +64,14 @@ namespace
 
         void visit(const UseDepAtom * const u)
         {
-            /// \bug VV arch flags should be qal_maybe and a different message
-            if (iuse.end() == iuse.find(u->flag()))
+            if (env->package_database()->fetch_repository(env->package_database()->
+                        favourite_repository())->is_arch_flag(u->flag()))
+            {
+                if (u->inverse())
+                    result << Message(qal_maybe, "Inverse arch flag '" + stringify(u->flag()) +
+                            "' in " + role);
+            }
+            else if (iuse.end() == iuse.find(u->flag()))
                 result << Message(qal_major, "Conditional flag '" + stringify(u->flag()) +
                         "' in " + role + " not in IUSE");
 
@@ -101,15 +110,15 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
         iuse.insert(UseFlagName("userland_bsd"));
         iuse.insert(UseFlagName("userland_GNU"));
 
-        Checker depend_checker(result, "DEPEND", iuse);
+        Checker depend_checker(result, "DEPEND", e.get<ecd_environment>(), iuse);
         std::string depend(metadata->get(vmk_depend));
         DepParser::parse(depend)->accept(&depend_checker);
 
-        Checker rdepend_checker(result, "RDEPEND", iuse);
+        Checker rdepend_checker(result, "RDEPEND", e.get<ecd_environment>(), iuse);
         std::string rdepend(metadata->get(vmk_rdepend));
         DepParser::parse(rdepend)->accept(&rdepend_checker);
 
-        Checker pdepend_checker(result, "PDEPEND", iuse);
+        Checker pdepend_checker(result, "PDEPEND", e.get<ecd_environment>(), iuse);
         std::string pdepend(metadata->get(vmk_pdepend));
         DepParser::parse(pdepend)->accept(&pdepend_checker);
     }
@@ -132,5 +141,4 @@ DepFlagsCheck::identifier()
     static const std::string id("dep flags");
     return id;
 }
-
 
