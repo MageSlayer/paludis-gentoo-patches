@@ -210,6 +210,8 @@ namespace
         bool ok(true), fatal(false);
         FSEntry cwd(FSEntry::cwd());
 
+        cout << "QA checks for " << cwd << ":" << endl;
+
         if (! fatal)
             do_check_kind<qa::PackageDirCheckMaker>(ok, fatal, cwd);
 
@@ -248,6 +250,8 @@ namespace
                     break;
             }
         }
+
+        cout << endl;
 
         return ok;
     }
