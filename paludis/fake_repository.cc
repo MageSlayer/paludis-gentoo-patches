@@ -187,3 +187,9 @@ FakeRepository::do_query_use_mask(const UseFlagName &) const
     return false;
 }
 
+bool
+FakeRepository::do_is_arch_flag(const UseFlagName &) const
+{
+    return false;
+}
+

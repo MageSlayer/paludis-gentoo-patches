@@ -19,6 +19,7 @@
 
 #include "config.h"
 
+#include "create_insert_iterator.hh"
 #include "dir_iterator.hh"
 #include "filter_insert_iterator.hh"
 #include "fs_entry.hh"
@@ -62,6 +63,8 @@ typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
 typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseMap;
 
 typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
+
+typedef MakeHashedSet<UseFlagName>::Type ArchListSet;
 
 typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
 
@@ -121,6 +124,12 @@ namespace paludis
         /// Have we loaded our profile yet?
         mutable bool has_profile;
 
+        /// Arch flags
+        mutable ArchListSet arch_list;
+
+        /// Do we have arch_list?
+        mutable bool has_arch_list;
+
         /// Constructor.
         Implementation(const PackageDatabase * const d, const FSEntry & l, const FSEntry & p,
                 const FSEntry & c);
@@ -141,7 +150,8 @@ Implementation<PortageRepository>::Implementation(const PackageDatabase * const 
     cache(c),
     has_category_names(false),
     has_repo_mask(false),
-    has_profile(false)
+    has_profile(false),
+    has_arch_list(false)
 {
 }
 
@@ -752,4 +762,21 @@ PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
 {
 }
 
+
+bool
+PortageRepository::do_is_arch_flag(const UseFlagName & u) const
+{
+    if (! _implementation->has_arch_list)
+    {
+        Context context("When checking arch list for '" + stringify(u) + "':");
+
+        LineConfigFile archs(_implementation->location / "profiles" / "arch.list");
+        std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(
+                    std::inserter(_implementation->arch_list, _implementation->arch_list.begin())));
+
+        _implementation->has_arch_list = true;
+    }
+
+    return _implementation->arch_list.end() != _implementation->arch_list.find(u);
+}
 

@@ -43,6 +43,9 @@ namespace paludis
     /**
      * A Repository provides a representation of a physical repository to a
      * PackageDatabase.
+     *
+     * We make pretty heavy use of the non-virtual interface idiom here. See
+     * \ref EffCpp items 35 and 37.
      */
     class Repository :
         private InstantiationPolicy<Repository, instantiation_method::NonCopyableTag>,
@@ -124,6 +127,11 @@ namespace paludis
              * Override in descendents: get use mask.
              */
             virtual bool do_query_use_mask(const UseFlagName &) const = 0;
+
+            /**
+             * Override in descendents: is this an arch flag?
+             */
+            virtual bool do_is_arch_flag(const UseFlagName &) const = 0;
 
         public:
             /**
@@ -306,6 +314,14 @@ namespace paludis
             bool query_use_mask(const UseFlagName & u) const
             {
                 return do_query_use_mask(u);
+            }
+
+            /**
+             * Query whether the specified use flag is an arch flag.
+             */
+            bool is_arch_flag(const UseFlagName & u) const
+            {
+                return do_is_arch_flag(u);
             }
     };
 
