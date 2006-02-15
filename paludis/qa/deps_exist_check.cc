@@ -25,6 +25,7 @@
 #include <paludis/package_dep_atom.hh>
 #include <paludis/block_dep_atom.hh>
 #include <paludis/use_dep_atom.hh>
+#include <paludis/save.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -37,19 +38,27 @@ namespace
         CheckResult & result;
         const std::string role;
         const Environment * env;
+        bool in_any;
 
         Checker(CheckResult & rr, const std::string & r, const Environment * e) :
             result(rr),
             role(r),
-            env(e)
+            env(e),
+            in_any(false)
         {
         }
 
         void visit(const PackageDepAtom * const p)
         {
             if (env->package_database()->query(p)->empty())
-                result << Message(qal_major, "No match for " + role + " entry '"
-                        + stringify(*p) + "'");
+            {
+                if (in_any)
+                    result << Message(qal_maybe, "No match for " + role + " entry '"
+                            + stringify(*p) + "' inside || ( ) block");
+                else
+                    result << Message(qal_major, "No match for " + role + " entry '"
+                            + stringify(*p) + "'");
+            }
         }
 
         void visit(const AllDepAtom * const a)
@@ -60,6 +69,7 @@ namespace
         void visit(const AnyDepAtom * const a)
         {
             /// \todo VV make this smarter
+            Save<bool> save_in_any(&in_any, true);
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
