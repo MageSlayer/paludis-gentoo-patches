@@ -59,6 +59,7 @@ namespace
 
         void visit(const AnyDepAtom * const a)
         {
+            /// \todo VV make this smarter
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
