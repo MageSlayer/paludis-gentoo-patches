@@ -27,3 +27,5 @@ add(`metadata_check',                 `hh', `cc')
 add(`package_dir_check',              `hh', `cc')
 add(`package_name_check',             `hh', `cc', `test', `testscript')
 add(`qa',                             `hh', `cc')
+add(`slot_check',                     `hh', `cc')
+
