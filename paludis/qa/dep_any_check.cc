@@ -26,6 +26,7 @@
 #include <paludis/package_dep_atom.hh>
 #include <paludis/block_dep_atom.hh>
 #include <paludis/use_dep_atom.hh>
+#include <paludis/iterator_utilities.hh>
 #include <paludis/save.hh>
 
 using namespace paludis;
@@ -64,7 +65,12 @@ namespace
             if (a->begin() == a->end())
                 result << Message(qal_minor, "Empty || ( ) block in " + role);
             else
+            {
+                if (a->end() == next(a->begin()))
+                    result << Message(qal_minor, "One item in || ( ) block in " + role);
+
                 std::for_each(a->begin(), a->end(), accept_visitor(this));
+            }
         }
 
         void visit(const UseDepAtom * const u)

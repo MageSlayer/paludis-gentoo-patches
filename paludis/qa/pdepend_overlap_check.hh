@@ -27,11 +27,11 @@ namespace paludis
 {
     namespace qa
     {
-        class RdependPdependOverlapCheck :
+        class PdependOverlapCheck :
             public EbuildCheck
         {
             public:
-                RdependPdependOverlapCheck();
+                PdependOverlapCheck();
 
                 CheckResult operator() (const EbuildCheckData &) const;
 
@@ -39,12 +39,12 @@ namespace paludis
 
                 virtual std::string describe() const
                 {
-                    return "Checks for RDEPEND/PDEPEND overlap";
+                    return "Checks for PDEPEND overlap";
                 }
         };
 
-        static const EbuildCheckMaker::RegisterMaker register_rdepend_pdepend_overlap_check(
-                RdependPdependOverlapCheck::identifier(), &make_ebuild_check<RdependPdependOverlapCheck>);
+        static const EbuildCheckMaker::RegisterMaker register_pdepend_overlap_check(
+                PdependOverlapCheck::identifier(), &make_ebuild_check<PdependOverlapCheck>);
     }
 }
 

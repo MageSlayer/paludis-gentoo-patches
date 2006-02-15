@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "rdepend_pdepend_overlap_check.hh"
+#include "pdepend_overlap_check.hh"
 #include <paludis/dep_parser.hh>
 #include <paludis/dep_atom_visitor.hh>
 #include <paludis/any_dep_atom.hh>
@@ -67,12 +67,12 @@ namespace
     };
 }
 
-RdependPdependOverlapCheck::RdependPdependOverlapCheck()
+PdependOverlapCheck::PdependOverlapCheck()
 {
 }
 
 CheckResult
-RdependPdependOverlapCheck::operator() (const EbuildCheckData & e) const
+PdependOverlapCheck::operator() (const EbuildCheckData & e) const
 {
     CheckResult result(stringify(e.get<ecd_name>()) + "-" + stringify(e.get<ecd_version>()),
             identifier());
@@ -84,22 +84,40 @@ RdependPdependOverlapCheck::operator() (const EbuildCheckData & e) const
         VersionMetadata::ConstPointer metadata(
                 e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
 
-        Collector rdepend_collector;
-        std::string rdepend(metadata->get(vmk_rdepend));
-        DepParser::parse(rdepend)->accept(&rdepend_collector);
-
         Collector pdepend_collector;
         std::string pdepend(metadata->get(vmk_pdepend));
         DepParser::parse(pdepend)->accept(&pdepend_collector);
 
-        std::set<QualifiedPackageName> overlap;
-        std::set_intersection(rdepend_collector.result.begin(), rdepend_collector.result.end(),
-                pdepend_collector.result.begin(), pdepend_collector.result.end(),
-                std::inserter(overlap, overlap.begin()));
+        {
+            Collector depend_collector;
+            std::string depend(metadata->get(vmk_depend));
+            DepParser::parse(depend)->accept(&depend_collector);
 
-        if (! overlap.empty())
-            result << Message(qal_major, "Overlap between RDEPEND and PDEPEND: '" +
-                    join(overlap.begin(), overlap.end(), "', ") + "'");
+            std::set<QualifiedPackageName> overlap;
+            std::set_intersection(depend_collector.result.begin(), depend_collector.result.end(),
+                    pdepend_collector.result.begin(), pdepend_collector.result.end(),
+                    std::inserter(overlap, overlap.begin()));
+
+            if (! overlap.empty())
+                result << Message(qal_major, "Overlap between DEPEND and PDEPEND: '" +
+                        join(overlap.begin(), overlap.end(), "', ") + "'");
+        }
+
+        {
+            Collector rdepend_collector;
+            std::string rdepend(metadata->get(vmk_rdepend));
+            DepParser::parse(rdepend)->accept(&rdepend_collector);
+
+            std::set<QualifiedPackageName> overlap;
+            std::set_intersection(rdepend_collector.result.begin(), rdepend_collector.result.end(),
+                    pdepend_collector.result.begin(), pdepend_collector.result.end(),
+                    std::inserter(overlap, overlap.begin()));
+
+            if (! overlap.empty())
+                result << Message(qal_major, "Overlap between RDEPEND and PDEPEND: '" +
+                        join(overlap.begin(), overlap.end(), "', ") + "'");
+        }
+
     }
     catch (const InternalError &)
     {
@@ -115,9 +133,9 @@ RdependPdependOverlapCheck::operator() (const EbuildCheckData & e) const
 }
 
 const std::string &
-RdependPdependOverlapCheck::identifier()
+PdependOverlapCheck::identifier()
 {
-    static const std::string id("rdepend pdepend overlap");
+    static const std::string id("pdepend overlap");
     return id;
 }
 
