@@ -113,6 +113,13 @@ namespace paludis
             typedef CountedPtr<const PackageDepAtom, count_policy::InternalCountTag> ConstPointer;
     };
 
+    class PackageDepAtomError :
+        public Exception
+    {
+        public:
+            PackageDepAtomError(const std::string & msg) throw ();
+    };
+
     /**
      * A PackageDepAtom can be written to an ostream.
      */

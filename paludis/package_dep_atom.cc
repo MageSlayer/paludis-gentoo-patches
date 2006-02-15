@@ -60,7 +60,7 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
         std::string s(ss);
 
         if (s.empty())
-            throw InternalError(PALUDIS_HERE, "todo"); /// \bug
+            throw PackageDepAtomError("Got empty dep atom");
 
         std::string::size_type slot_p;
         if (std::string::npos != ((slot_p = s.rfind(':'))))
@@ -80,10 +80,10 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
             while (true)
             {
                 if (p >= s.length())
-                    throw InternalError(PALUDIS_HERE, "todo"); /// \bug
+                    throw PackageDepAtomError("Couldn't parse dep atom '" + ss + "'");
                 q = s.find('-', q + 1);
                 if ((std::string::npos == q) || (++q >= s.length()))
-                    throw InternalError(PALUDIS_HERE, "todo"); /// \bug
+                    throw PackageDepAtomError("Couldn't parse dep atom '" + ss + "'");
                 if (s.at(q) >= '0' && s.at(q) <= '9')
                     break;
             }
@@ -92,7 +92,7 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
             if ('*' == s.at(s.length() - 1))
             {
                 if (_version_operator != vo_equal)
-                    throw InternalError(PALUDIS_HERE, "todo"); /// \bug
+                    throw PackageDepAtomError("Package dep atom '" + ss + "' uses * but not equals operator");
                 _version_operator = vo_equal_star;
                 _version_spec = CountedPtr<VersionSpec, count_policy::ExternalCountTag>(
                         new VersionSpec(s.substr(q, s.length() - q - 1)));
@@ -143,5 +143,10 @@ paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
     if (a.slot_ptr())
         s << *a.slot_ptr();
     return s;
+}
+
+PackageDepAtomError::PackageDepAtomError(const std::string & msg) throw () :
+    Exception(msg)
+{
 }
 
