@@ -52,7 +52,10 @@ inherit()
         E_RDEPEND="${E_RDEPEND} ${RDEPEND}"
         E_DEPEND="${E_DEPEND} ${DEPEND}"
 
-        unset IUSE DEPEND RDEPEND PDEPEND
+        IUSE="${current_IUSE}"
+        DEPEND="${current_DEPEND}"
+        RDEPEND="${current_RDEPEND}"
+        PDEPEND="${current_PDEPEND}"
 
         export ECLASS="${old_ECLASS}"
     done
