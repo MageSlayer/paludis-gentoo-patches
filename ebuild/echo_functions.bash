@@ -30,7 +30,7 @@ use_with()
     fi
 }
 
-use_with()
+use_enable()
 {
     if useq "${1}" ; then
         echo "--enable-${2:1}${3+=${3}}"
