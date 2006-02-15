@@ -39,12 +39,13 @@ DescriptionCheck::operator() (const EbuildCheckData & e) const
         VersionMetadata::ConstPointer metadata(
                 e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
 
-        if (0 == metadata->get(vmk_description).length())
+        const std::string::size_type length(metadata->get(vmk_description).length());
+        if (0 == length)
             result << Message(qal_major, "DESCRIPTION unset or empty");
-        else if (metadata->get(vmk_description).length() < 10)
-            result << Message(qal_minor, "DESCRIPTION suspiciously short");
-        else if (metadata->get(vmk_description).length() > 120)
-            result << Message(qal_minor, "DESCRIPTION too long");
+        else if (length < 10)
+            result << Message(qal_minor, "DESCRIPTION suspiciously short (" + stringify(length) + ")");
+        else if (length > 120)
+            result << Message(qal_minor, "DESCRIPTION too long (" + stringify(length) + ")");
 
     }
     catch (const InternalError &)
