@@ -38,6 +38,9 @@ CreateMetadataCheck::operator() (const EbuildCheckData & e) const
                 e.get<ecd_environment>()->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
                 e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+
+        if ("UNKNOWN" == metadata->get(vmk_eapi))
+            result << Message(qal_fatal, "Couldn't generate metadata");
     }
     catch (const InternalError &)
     {
