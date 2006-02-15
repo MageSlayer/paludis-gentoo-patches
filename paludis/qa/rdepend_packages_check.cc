@@ -93,6 +93,8 @@ RdependPackagesCheck::operator() (const EbuildCheckData & e) const
         static std::set<QualifiedPackageName> suspicious;
         if (suspicious.empty())
         {
+            suspicious.insert(QualifiedPackageName("app-arch/rpm2targz"));
+            suspicious.insert(QualifiedPackageName("app-arch/unzip"));
             suspicious.insert(QualifiedPackageName("dev-util/pkgconfig"));
             suspicious.insert(QualifiedPackageName("sys-devel/autoconf"));
             suspicious.insert(QualifiedPackageName("sys-devel/automake"));
