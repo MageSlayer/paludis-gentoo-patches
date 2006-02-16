@@ -224,6 +224,10 @@ namespace paludis
                 public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N8_>::Type>,
                 public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N9_>::Type>
             {
+                protected:
+                    ~ConstVisitor()
+                    {
+                    }
             };
 
             /**
@@ -240,6 +244,10 @@ namespace paludis
                 public visitor_internals::Visits<N8_>,
                 public visitor_internals::Visits<N9_>
             {
+                protected:
+                    ~Visitor()
+                    {
+                    }
             };
     };
 

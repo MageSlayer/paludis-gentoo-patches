@@ -24,6 +24,7 @@
 
 #define PALUDIS_HAVE_TR1_HASHES @HAVE_TR1_HASHES@
 #define PALUDIS_HAVE_EXT_HASHES @HAVE_EXT_HASHES@
+#define PALUDIS_HAVE_STD_HASHES @HAVE_STD_HASHES@
 
 #include <paludis/qualified_package_name.hh>
 #include <paludis/version_spec.hh>
@@ -35,6 +36,9 @@
 #elif PALUDIS_HAVE_EXT_HASHES
 #  include <ext/hash_set>
 #  include <ext/hash_map>
+#elif PALUDIS_HAVE_STD_HASHES
+#  include <hash_set>
+#  include <hash_map>
 #else
 #  include <set>
 #  include <map>
@@ -63,6 +67,10 @@ namespace paludis
         /// Our map type.
         typedef __gnu_cxx::hash_map<Key_, Value_, CRCHash<Key_> > Type;
 
+#elif PALUDIS_HAVE_STD_HASHES
+        /// Our map type.
+        typedef std::hash_map<Key_, Value_, CRCHash<Key_> > Type;
+
 #else
         /// Our map type.
         typedef std::map<Key_, Value_> Type;
@@ -83,13 +91,17 @@ namespace paludis
         /// Our set type.
         typedef __gnu_cxx::hash_set<Key_, CRCHash<Key_> > Type;
 
+#elif PALUDIS_HAVE_STD_HASHES
+        /// Our set type.
+        typedef std::hash_set<Key_, CRCHash<Key_> > Type;
+
 #else
         /// Our set type.
         typedef std::set<Key_> Type;
 #endif
     };
 
-#if PALUDIS_HAVE_TR1_HASHES || PALUDIS_HAVE_EXT_HASHES
+#if PALUDIS_HAVE_TR1_HASHES || PALUDIS_HAVE_EXT_HASHES || PALUDIS_HAVE_STD_HASHES
     namespace
     {
         /**
@@ -116,6 +128,19 @@ namespace paludis
         public:
             /// Hash function.
             std::size_t operator() (const QualifiedPackageName & val) const;
+
+#if (! PALUDIS_HAVE_TR1_HASHES) && (! PALUDIS_HAVE_EXT_HASHES)
+            enum
+            {
+                min_buckets = 32,
+                bucket_size = 4
+            };
+
+            bool operator() (const QualifiedPackageName & i1, const QualifiedPackageName & i2) const
+            {
+                return i1 < i2;
+            }
+#endif
     };
 
     /**
@@ -129,6 +154,20 @@ namespace paludis
         public:
             /// Hash function.
             std::size_t operator() (const Validated<std::string, Validated_> & val) const;
+
+#if (! PALUDIS_HAVE_TR1_HASHES) && (! PALUDIS_HAVE_EXT_HASHES)
+            enum
+            {
+                min_buckets = 32,
+                bucket_size = 4
+            };
+
+            bool operator() (const Validated<std::string, Validated_> i1,
+                    const Validated<std::string, Validated_> & i2) const
+            {
+                return i1 < i2;
+            }
+#endif
     };
 
     /**
@@ -142,6 +181,20 @@ namespace paludis
         public:
             /// Hash function.
             std::size_t operator() (const std::pair<QualifiedPackageName, VersionSpec> & val) const;
+
+#if (! PALUDIS_HAVE_TR1_HASHES) && (! PALUDIS_HAVE_EXT_HASHES)
+            enum
+            {
+                min_buckets = 32,
+                bucket_size = 4
+            };
+
+            bool operator() (const std::pair<QualifiedPackageName, VersionSpec> & i1,
+                    const std::pair<QualifiedPackageName, VersionSpec> & i2) const
+            {
+                return i1 < i2;
+            }
+#endif
     };
 
     template <typename Validated_>

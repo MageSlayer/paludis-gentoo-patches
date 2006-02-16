@@ -28,6 +28,38 @@ AC_PROG_RANLIB
 AC_PROG_MAKE_SET
 dnl }}}
 
+dnl {{{ check for partial specialisation of template classes
+AC_MSG_CHECKING([for compiler support for partial specialisation of template classes])
+AC_COMPILE_IFELSE([
+template <typename T_>
+struct S
+{
+    static const int s = 0;
+};
+
+template <typename T_>
+struct S<const T_>
+{
+};
+
+template <typename T_>
+struct S<const T_ &>
+{
+    static const int t = 0;
+};
+
+int main(int, char *[])
+{
+    return S<int &>::s + S<const int &>::t;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[
+	 AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your C++ compiler doesn't compile C++ code])
+	])
+dnl }}}
+
 dnl {{{ check for basic_string and string::find_last_not_of
 AC_MSG_CHECKING([for a sufficiently standard std::basic_string<>])
 AC_COMPILE_IFELSE([
@@ -79,6 +111,7 @@ int main(int, char **)
 	 AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your std::set<>::const_reverse_iterator is h0rked])
 	])
+dnl }}}
 
 dnl {{{ check for broken std::deque<NoDefaultConstructor>
 AC_MSG_CHECKING([for a usable std::deque<NoDefaultConstructor>])
@@ -104,7 +137,8 @@ dnl }}}
 dnl {{{ check for hashes
 have_tr1_hashes=0
 have_ext_hashes=0
-AC_MSG_CHECKING([for a usable std::tr1::unordered_map<>])
+have_std_hashes=0
+AC_MSG_CHECKING([for hashed associative containers])
 AC_COMPILE_IFELSE([
 #include <tr1/unordered_map>
 int main(int, char **)
@@ -114,12 +148,10 @@ int main(int, char **)
 }
 ],
 	[
-	 AC_MSG_RESULT([yes])
+	 AC_MSG_RESULT([std::tr1::unordered_map])
 	 have_tr1_hashes=1
 	],
 	[
-	 AC_MSG_RESULT([no])
-	 AC_MSG_CHECKING([for a usable __gnu_cxx::hash_map<>])
 	 AC_COMPILE_IFELSE([
 #include <ext/hash_map>
 int main(int, char **)
@@ -129,20 +161,35 @@ int main(int, char **)
 }
 ],
 	 [
-	  AC_MSG_RESULT([yes])
+	  AC_MSG_RESULT([__gnu_cxx::hash_map])
 	  have_ext_hashes=1
 	 ],
 	 [
-	  AC_MSG_RESULT([no])
-	 ]
-	]))
+	  AC_COMPILE_IFELSE([
+#include <hash_map>
+int main(int, char **)
+{
+	std::hash_map<int, int> m;
+	m.insert(std::make_pair(1, 2));
+}
+],
+	  [
+	   AC_MSG_RESULT([std::hash_map])
+	   have_std_hashes=1
+	  ],
+	  [
+	   AC_MSG_RESULT([no, falling back to std::map (slower)])
+	  ])])])
 
 HAVE_TR1_HASHES=$have_tr1_hashes
 AC_DEFINE_UNQUOTED([HAVE_TR1_HASHES], $have_tr1_hashes, [Do we have std::tr1:: hashes?])
 AC_SUBST([HAVE_TR1_HASHES])
 HAVE_EXT_HASHES=$have_ext_hashes
-AC_DEFINE_UNQUOTED([HAVE_EXT_HASHES], $have_ext_hashes, [Do we have __gnu_cxx hashes?])
+AC_DEFINE_UNQUOTED([HAVE_EXT_HASHES], $have_ext_hashes, [Do we have __gnu_cxx:: hashes?])
 AC_SUBST([HAVE_EXT_HASHES])
+HAVE_STD_HASHES=$have_std_hashes
+AC_DEFINE_UNQUOTED([HAVE_STD_HASHES], $have_std_hashes, [Do we have std:: hashes?])
+AC_SUBST([HAVE_STD_HASHES])
 dnl }}}
 
 dnl {{{ we need libebt.

@@ -21,7 +21,7 @@
 
 using namespace paludis;
 
-#if PALUDIS_HAVE_TR1_HASHES || PALUDIS_HAVE_EXT_HASHES
+#if PALUDIS_HAVE_TR1_HASHES || PALUDIS_HAVE_EXT_HASHES || PALUDIS_HAVE_STD_HASHES
 
 std::size_t
 CRCHash<QualifiedPackageName>::operator() (const QualifiedPackageName & val) const

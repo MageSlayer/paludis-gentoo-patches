@@ -124,8 +124,8 @@ namespace paludis
      * Convenience operator to make a QualifiedPackageName from a
      * PackageNamePart and a CategoryNamePart.
      */
-    const QualifiedPackageName
-    inline operator+ (const CategoryNamePart & c, const PackageNamePart & p)
+    inline const QualifiedPackageName
+    operator+ (const CategoryNamePart & c, const PackageNamePart & p)
     {
         return QualifiedPackageName(c, p);
     }
