@@ -311,6 +311,8 @@ namespace
         {
             if (d->basename() == "CVS" || '.' == d->basename().at(0))
                 continue;
+            if (! d->is_directory())
+                continue;
             if (env.package_database()->fetch_repository(
                         env.package_database()->favourite_repository())->
                     has_category_named(CategoryNamePart(d->basename())))
