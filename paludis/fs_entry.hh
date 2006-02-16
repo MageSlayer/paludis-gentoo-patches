@@ -208,6 +208,13 @@ namespace paludis
             time_t mtime() const;
 
             /**
+             * Return the size of our file, in bytes.
+             *
+             * \exception FSError if we don't have a size.
+             */
+            off_t file_size() const;
+
+            /**
              * Return the current working directory
              */
             static FSEntry cwd();

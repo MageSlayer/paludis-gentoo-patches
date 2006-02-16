@@ -165,6 +165,25 @@ namespace test_cases
     } test_fs_entry_time;
 
     /**
+     * \test Test FSEntry file_size
+     */
+    struct FSEntryFileSize : TestCase
+    {
+        FSEntryFileSize() : TestCase("file size") {}
+
+        void run()
+        {
+            FSEntry f("fs_entry_TEST_dir/ten_bytes");
+            FSEntry d("fs_entry_TEST_dir/dir_a");
+            FSEntry e("fs_entry_TEST_dir/no_such_file");
+
+            TEST_CHECK_EQUAL(f.file_size(), 10);
+            TEST_CHECK_THROWS(d.file_size(), FSError);
+            TEST_CHECK_THROWS(e.file_size(), FSError);
+        }
+    } test_fs_entry_size;
+
+    /**
      * \test Test FSEntry basename and dirname methods
      */
     struct FSEntryBaseDirName : TestCase

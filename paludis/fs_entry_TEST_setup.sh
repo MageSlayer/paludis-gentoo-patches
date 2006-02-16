@@ -10,3 +10,5 @@ touch all_perms || exit 7
 chmod 777 all_perms || exit 8
 touch no_perms || exit 9
 chmod 000 no_perms || exit 10
+echo -n '0123456789' > ten_bytes || exit 11
+

@@ -326,3 +326,18 @@ FSEntry::mtime() const
 
     return (*_stat_info).st_mtime;
 }
+
+off_t
+FSEntry::file_size() const
+{
+    _stat();
+
+    if (! _exists)
+        throw FSError("Filesystem entry does not exist");
+
+    if (! is_regular_file())
+        throw FSError("file_size called on a non-regular file");
+
+    return _stat_info->st_size;
+}
+
