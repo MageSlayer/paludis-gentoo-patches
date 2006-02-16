@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const EbuildCheckMaker::RegisterMaker register_dep_any_check(
-                DepAnyCheck::identifier(), &make_ebuild_check<DepAnyCheck>);
+                DepAnyCheck::identifier(), &MakeEbuildCheck<DepAnyCheck>::make_ebuild_check);
     }
 }
 

@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const EbuildCheckMaker::RegisterMaker register_deps_visible_check(
-                DepsVisibleCheck::identifier(), &make_ebuild_check<DepsVisibleCheck>);
+                DepsVisibleCheck::identifier(), &MakeEbuildCheck<DepsVisibleCheck>::make_ebuild_check);
     }
 }
 

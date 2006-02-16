@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const EbuildCheckMaker::RegisterMaker register_keywords_check(
-                KeywordsCheck::identifier(), &make_ebuild_check<KeywordsCheck>);
+                KeywordsCheck::identifier(), &MakeEbuildCheck<KeywordsCheck>::make_ebuild_check);
     }
 }
 

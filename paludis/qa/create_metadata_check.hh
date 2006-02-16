@@ -49,7 +49,7 @@ namespace paludis
         };
 
         static const EbuildCheckMaker::RegisterMaker register_create_metadata_check(
-                CreateMetadataCheck::identifier(), &make_ebuild_check<CreateMetadataCheck>);
+                CreateMetadataCheck::identifier(), &MakeEbuildCheck<CreateMetadataCheck>::make_ebuild_check);
     }
 }
 

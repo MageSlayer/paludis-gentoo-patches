@@ -49,7 +49,7 @@ namespace paludis
         };
 
         static const FileCheckMaker::RegisterMaker register_file_name_check(
-                FileNameCheck::identifier(), &make_file_check<FileNameCheck>);
+                FileNameCheck::identifier(), &MakeFileCheck<FileNameCheck>::make_file_check);
     }
 }
 

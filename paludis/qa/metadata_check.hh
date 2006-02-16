@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const FileCheckMaker::RegisterMaker register_metadata_check(
-                MetadataCheck::identifier(), &make_file_check<MetadataCheck>);
+                MetadataCheck::identifier(), &MakeFileCheck<MetadataCheck>::make_file_check);
     }
 }
 

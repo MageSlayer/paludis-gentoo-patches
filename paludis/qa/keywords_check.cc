@@ -47,7 +47,7 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
                     keywords.size() == 1)
                 result << Message(qal_major, "-* abuse");
         }
-        catch (const NameError & e)
+        catch (const NameError &)
         {
             result << Message(qal_major, "Bad entries in KEYWORDS");
         }

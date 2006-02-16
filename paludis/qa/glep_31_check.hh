@@ -47,7 +47,7 @@ namespace paludis
         };
 
         static const FileCheckMaker::RegisterMaker register_glep_31_check(
-                Glep31Check::identifier(), &make_file_check<Glep31Check>);
+                Glep31Check::identifier(), &MakeFileCheck<Glep31Check>::make_file_check);
     }
 }
 

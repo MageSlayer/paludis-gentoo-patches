@@ -49,7 +49,7 @@ namespace paludis
         };
 
         static const PackageDirCheckMaker::RegisterMaker register_package_name_check(
-                PackageNameCheck::identifier(), &make_package_dir_check<PackageNameCheck>);
+                PackageNameCheck::identifier(), &MakePackageDirCheck<PackageNameCheck>::make_package_dir_check);
     }
 }
 

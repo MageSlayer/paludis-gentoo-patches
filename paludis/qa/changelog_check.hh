@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const FileCheckMaker::RegisterMaker register_changelog_check(
-                ChangeLogCheck::identifier(), &make_file_check<ChangeLogCheck>);
+                ChangeLogCheck::identifier(), &MakeFileCheck<ChangeLogCheck>::make_file_check);
     }
 }
 

@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const EbuildCheckMaker::RegisterMaker register_pdepend_overlap_check(
-                PdependOverlapCheck::identifier(), &make_ebuild_check<PdependOverlapCheck>);
+                PdependOverlapCheck::identifier(), &MakeEbuildCheck<PdependOverlapCheck>::make_ebuild_check);
     }
 }
 

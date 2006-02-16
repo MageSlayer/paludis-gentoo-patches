@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const EbuildCheckMaker::RegisterMaker register_slot_check(
-                SlotCheck::identifier(), &make_ebuild_check<SlotCheck>);
+                SlotCheck::identifier(), &MakeEbuildCheck<SlotCheck>::make_ebuild_check);
     }
 }
 

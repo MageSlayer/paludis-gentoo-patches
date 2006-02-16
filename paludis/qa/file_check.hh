@@ -60,18 +60,27 @@ namespace paludis
                 NoSuchFileCheckTypeError(const std::string &) throw ();
         };
 
+        /* Do not turn this into a straight function. It makes icc cry. */
         template <typename T_>
-        FileCheck::Pointer
-        make_file_check()
+        struct MakeFileCheck
         {
-            return FileCheck::Pointer(new T_);
-        }
+            static FileCheck::Pointer make_file_check();
+        };
 
         typedef VirtualConstructor<
             std::string,
             FileCheck::Pointer (*) (),
             virtual_constructor_not_found::ThrowException<NoSuchFileCheckTypeError> > FileCheckMaker;
     }
+
 }
+
+template <typename T_>
+paludis::qa::FileCheck::Pointer
+paludis::qa::MakeFileCheck<T_>::make_file_check()
+{
+    return paludis::qa::FileCheck::Pointer(new T_);
+}
+
 
 #endif

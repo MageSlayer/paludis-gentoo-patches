@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const EbuildCheckMaker::RegisterMaker register_rdepend_packages_check(
-                RdependPackagesCheck::identifier(), &make_ebuild_check<RdependPackagesCheck>);
+                RdependPackagesCheck::identifier(), &MakeEbuildCheck<RdependPackagesCheck>::make_ebuild_check);
     }
 }
 

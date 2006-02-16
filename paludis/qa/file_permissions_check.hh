@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const FileCheckMaker::RegisterMaker register_file_permissions_check(
-                FilePermissionsCheck::identifier(), &make_file_check<FilePermissionsCheck>);
+                FilePermissionsCheck::identifier(), &MakeFileCheck<FilePermissionsCheck>::make_file_check);
     }
 }
 

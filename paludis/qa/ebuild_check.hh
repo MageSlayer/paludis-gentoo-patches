@@ -70,12 +70,16 @@ namespace paludis
                 NoSuchEbuildCheckTypeError(const std::string &) throw ();
         };
 
+        /* icc stupidity workaround */
         template <typename T_>
-        EbuildCheck::Pointer
-        make_ebuild_check()
+        struct MakeEbuildCheck
         {
-            return EbuildCheck::Pointer(new T_);
-        }
+            static EbuildCheck::Pointer
+            make_ebuild_check()
+            {
+                return EbuildCheck::Pointer(new T_);
+            }
+        };
 
         typedef VirtualConstructor<
             std::string,

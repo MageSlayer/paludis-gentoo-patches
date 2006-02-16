@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const PackageDirCheckMaker::RegisterMaker register_files_dir_size_check(
-                FilesDirSizeCheck::identifier(), &make_package_dir_check<FilesDirSizeCheck>);
+                FilesDirSizeCheck::identifier(), &MakePackageDirCheck<FilesDirSizeCheck>::make_package_dir_check);
     }
 }
 

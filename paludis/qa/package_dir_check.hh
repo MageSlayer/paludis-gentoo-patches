@@ -60,12 +60,16 @@ namespace paludis
                 NoSuchPackageDirCheckTypeError(const std::string &) throw ();
         };
 
+        /* icc is dumb */
         template <typename T_>
-        PackageDirCheck::Pointer
-        make_package_dir_check()
+        struct MakePackageDirCheck
         {
-            return PackageDirCheck::Pointer(new T_);
-        }
+            static PackageDirCheck::Pointer
+            make_package_dir_check()
+            {
+                return PackageDirCheck::Pointer(new T_);
+            }
+        };
 
         typedef VirtualConstructor<
             std::string,

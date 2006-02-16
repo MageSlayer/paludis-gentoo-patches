@@ -44,7 +44,7 @@ namespace paludis
         };
 
         static const PackageDirCheckMaker::RegisterMaker register_misc_files_check(
-                HasMiscFilesCheck::identifier(), &make_package_dir_check<HasMiscFilesCheck>);
+                HasMiscFilesCheck::identifier(), &MakePackageDirCheck<HasMiscFilesCheck>::make_package_dir_check);
     }
 }
 
