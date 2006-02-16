@@ -32,10 +32,12 @@ ebuild_f_depend()
 
     for key in DEPEND RDEPEND PDEPEND IUSE SLOT SRC_URI RESTRICT LICENSE \
             KEYWORDS INHERITED PROVIDE EAPI HOMEPAGE DESCRIPTION ; do
+        set -o noglob
         local k=${!key}
         k=${k/\\/\\\\}
         k=${k/\"/\\\"}
         echo "${key}=\""${k}"\""
+        set +o noglob
     done
 }
 
