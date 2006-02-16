@@ -273,6 +273,17 @@ int main(int argc, char *argv[])
                     QualudisCommandLine::get_instance()->a_describe.specified()))
             throw DoHelp("you should specify exactly one action");
 
+        if (! QualudisCommandLine::get_instance()->a_log_level.specified())
+            Log::get_instance()->set_log_level(ll_warning);
+        else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "debug")
+            Log::get_instance()->set_log_level(ll_debug);
+        else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "warning")
+            Log::get_instance()->set_log_level(ll_warning);
+        else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "silent")
+            Log::get_instance()->set_log_level(ll_silent);
+        else
+            throw DoHelp("bad value for --log-level");
+
         if (QualudisCommandLine::get_instance()->a_version.specified())
             throw DoVersion();
 

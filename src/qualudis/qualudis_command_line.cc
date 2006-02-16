@@ -29,7 +29,12 @@ QualudisCommandLine::QualudisCommandLine() :
     a_help(&action_args,     "help",         'h', "Display program help"),
 
     check_options(this, "Options for --check"),
-    a_verbose(&check_options, "verbose", 'v', "Be verbose")
+    a_verbose(&check_options, "verbose", 'v', "Be verbose"),
+    a_log_level(&check_options, "log-level", 'L', "Specify the log level",
+            paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
+            ("warning", "Show warnings only")
+            ("silent", "Suppress all log messages"),
+            "warning")
 {
 }
 

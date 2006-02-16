@@ -49,6 +49,9 @@ class QualudisCommandLine :
         /// --verbose
         paludis::args::SwitchArg a_verbose;
 
+        /// --log-level
+        paludis::args::EnumArg a_log_level;
+
         ///}
 };
 
