@@ -208,19 +208,18 @@ namespace
     }
 
     bool
-    do_check()
+    do_check_package_dir(const FSEntry & dir)
     {
         bool ok(true), fatal(false);
-        FSEntry cwd(FSEntry::cwd());
 
-        cout << "QA checks for " << cwd << ":" << endl;
+        cout << "QA checks for package directory " << dir << ":" << endl;
 
         if (! fatal)
-            do_check_kind<qa::PackageDirCheckMaker>(ok, fatal, cwd);
+            do_check_kind<qa::PackageDirCheckMaker>(ok, fatal, dir);
 
         if (! fatal)
         {
-            std::list<FSEntry> files((DirIterator(cwd)), DirIterator());
+            std::list<FSEntry> files((DirIterator(dir)), DirIterator());
             for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
             {
                 if (f->basename() == "CVS" || '.' == f->basename().at(0))
@@ -234,18 +233,18 @@ namespace
 
         if (! fatal)
         {
-            qa::QAEnvironment env(cwd.dirname().dirname());
-            std::list<FSEntry> files((DirIterator(cwd)), DirIterator());
+            qa::QAEnvironment env(dir.dirname().dirname());
+            std::list<FSEntry> files((DirIterator(dir)), DirIterator());
             for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
             {
                 if (! IsFileWithExtension(".ebuild")(*f))
                     continue;
 
                 qa::EbuildCheckData d(
-                        QualifiedPackageName(CategoryNamePart(stringify(cwd.dirname().basename())),
-                                PackageNamePart(stringify(cwd.basename()))),
+                        QualifiedPackageName(CategoryNamePart(stringify(dir.dirname().basename())),
+                                PackageNamePart(stringify(dir.basename()))),
                         VersionSpec(strip_leading_string(strip_trailing_string(f->basename(), ".ebuild"),
-                                    stringify(cwd.basename()) + "-")),
+                                    stringify(dir.basename()) + "-")),
                         &env);
                 do_check_kind<qa::EbuildCheckMaker>(ok, fatal, d);
 
@@ -257,6 +256,39 @@ namespace
         cout << endl;
 
         return ok;
+    }
+
+    bool
+    do_check_top_level(const FSEntry & dir)
+    {
+        cout << "QA checks for top level directory " << dir << ":" << endl;
+
+        throw DoHelp("qualudis cannot currently be run at the repository level");
+    }
+
+    bool
+    do_check_category_dir(const FSEntry & dir)
+    {
+        cout << "QA checks for category directory " << dir << ":" << endl;
+
+        throw DoHelp("qualudis cannot currently be run at the category level");
+    }
+
+    bool
+    do_check(const FSEntry & dir)
+    {
+        if (std::count_if(DirIterator(dir), DirIterator(), IsFileWithExtension(
+                        dir.basename() + "-", ".ebuild")))
+            return do_check_package_dir(dir);
+
+        else if ((dir / "profiles").is_directory())
+            return do_check_top_level(dir);
+
+        else if ((dir.dirname() / "profiles").is_directory())
+            return do_check_category_dir(dir);
+
+        else
+            throw DoHelp("qualudis should be run inside a repository");
     }
 }
 
@@ -308,7 +340,7 @@ int main(int argc, char *argv[])
             if (! QualudisCommandLine::get_instance()->empty())
                 throw DoHelp("check action takes no parameters");
 
-            return do_check() ? EXIT_SUCCESS : EXIT_FAILURE;
+            return do_check(FSEntry::cwd()) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (QualudisCommandLine::get_instance()->a_describe.specified())
