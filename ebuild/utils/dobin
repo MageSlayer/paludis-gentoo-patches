@@ -1,0 +1,48 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+# Copyright (c) 2006 Stephen Bennett <spb@gentoo.org>
+#
+# Based in part upon dobin from Portage, which is Copyright 1995-2005
+# Gentoo Foundation and distributed under the terms of the GNU General
+# Public License v2.
+#
+# This file is part of the Paludis package manager. Paludis is free software;
+# you can redistribute it and/or modify it under the terms of the GNU General
+# Public License as published by the Free Software Foundation; either version
+# 2 of the License, or (at your option) any later version.
+#
+# Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA  02111-1307  USA
+
+if [[ ! -d ${D} ]]; then
+    echo "${0}: \${D} not valid; aborting" >&2
+    exit 247
+fi
+
+if [[ ${#} -lt 1 ]]; then
+    echo "${0}: at least one argument needed" >&2
+    exit 1
+fi
+
+if [[ ! -d "${D}${DESTTREE}/bin" ]]; then
+    install -d "${D}${DESTTREE}/bin" || exit 3
+fi
+
+ret=0
+for x in "$@" ; do
+    if [[ -x "${x}" ]]; then
+        install "${x}" "${D}${DESTTREE}/bin" || ret=2
+    else
+        echo ">>> ${0}: making ${x} executable..."
+        install -m0755 -o root -g 0 "${x}" "${D}${DESTTREE}/bin" || ret=2
+    fi
+done
+
+exit ${ret}
