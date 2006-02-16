@@ -133,6 +133,11 @@ namespace paludis
              */
             virtual bool do_is_arch_flag(const UseFlagName &) const = 0;
 
+            /**
+             * Override in descendents: is this an expand flag?
+             */
+            virtual bool do_is_expand_flag(const UseFlagName &) const = 0;
+
         public:
             /**
              * Destructor.
@@ -322,6 +327,14 @@ namespace paludis
             bool is_arch_flag(const UseFlagName & u) const
             {
                 return do_is_arch_flag(u);
+            }
+
+            /**
+             * Query whether the specified use flag is an expand flag.
+             */
+            bool is_expand_flag(const UseFlagName & u) const
+            {
+                return do_is_expand_flag(u);
             }
     };
 

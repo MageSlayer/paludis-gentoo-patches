@@ -47,6 +47,7 @@
 #include <vector>
 #include <deque>
 #include <limits>
+#include <strings.h>
 
 using namespace paludis;
 
@@ -64,7 +65,7 @@ typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseMap;
 
 typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
 
-typedef MakeHashedSet<UseFlagName>::Type ArchListSet;
+typedef std::set<UseFlagName> UseFlagSet;
 
 typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
 
@@ -125,7 +126,10 @@ namespace paludis
         mutable bool has_profile;
 
         /// Arch flags
-        mutable ArchListSet arch_list;
+        mutable UseFlagSet arch_list;
+
+        /// Arch flags
+        mutable UseFlagSet expand_list;
 
         /// Do we have arch_list?
         mutable bool has_arch_list;
@@ -203,6 +207,9 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
             else
                 use[UseFlagName(*u)] = use_enabled;
         }
+
+        tokeniser.tokenise(make_defaults_f.get("USE_EXPAND"), create_inserter<UseFlagName>(
+                    std::inserter(expand_list, expand_list.begin())));
     }
 
     if ((f / "use.mask").exists())
@@ -762,7 +769,6 @@ PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
 {
 }
 
-
 bool
 PortageRepository::do_is_arch_flag(const UseFlagName & u) const
 {
@@ -778,5 +784,27 @@ PortageRepository::do_is_arch_flag(const UseFlagName & u) const
     }
 
     return _implementation->arch_list.end() != _implementation->arch_list.find(u);
+}
+
+bool
+PortageRepository::do_is_expand_flag(const UseFlagName & u) const
+{
+    if (! _implementation->has_profile)
+    {
+        Context context("When checking USE_EXPAND list for '" + stringify(u) + "':");
+        _implementation->add_profile(_implementation->profile.realpath());
+        _implementation->has_profile = true;
+    }
+
+    /// \todo VV no need for this to be linear
+    for (UseFlagSet::const_iterator i(_implementation->expand_list.begin()),
+            i_end(_implementation->expand_list.end()) ; i != i_end ; ++i)
+        if (0 == strncasecmp(
+                    stringify(u).c_str(),
+                    (stringify(*i) + "_").c_str(),
+                    stringify(*i).length() + 1))
+            return true;
+
+    return false;
 }
 

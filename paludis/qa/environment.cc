@@ -33,7 +33,7 @@ QAEnvironment::QAEnvironment(const FSEntry & base) :
     keys.insert(std::make_pair(std::string("importace"), "1"));
     keys.insert(std::make_pair(std::string("location"), stringify(base)));
     keys.insert(std::make_pair(std::string("cache"), "/var/empty"));
-    keys.insert(std::make_pair(std::string("profile"), "/etc/make.profile"));
+    keys.insert(std::make_pair(std::string("profile"), stringify(base / "profiles" / "base")));
 
     package_database()->add_repository(
             RepositoryMaker::get_instance()->find_maker("portage")(

@@ -71,6 +71,10 @@ namespace
                     result << Message(qal_maybe, "Inverse arch flag '" + stringify(u->flag()) +
                             "' in " + role);
             }
+            if (env->package_database()->fetch_repository(env->package_database()->
+                        favourite_repository())->is_expand_flag(u->flag()))
+            {
+            }
             else if (iuse.end() == iuse.find(u->flag()))
                 result << Message(qal_major, "Conditional flag '" + stringify(u->flag()) +
                         "' in " + role + " not in IUSE");
@@ -102,13 +106,8 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
                 e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
 
         std::set<UseFlagName> iuse(metadata->begin_iuse(), metadata->end_iuse());
-        /// \todo VV need a more elegant way of doing this
         iuse.insert(UseFlagName("bootstrap"));
         iuse.insert(UseFlagName("build"));
-        iuse.insert(UseFlagName("elibc_glibc"));
-        iuse.insert(UseFlagName("userland_Darwin"));
-        iuse.insert(UseFlagName("userland_bsd"));
-        iuse.insert(UseFlagName("userland_GNU"));
 
         Checker depend_checker(result, "DEPEND", e.get<ecd_environment>(), iuse);
         std::string depend(metadata->get(vmk_depend));
