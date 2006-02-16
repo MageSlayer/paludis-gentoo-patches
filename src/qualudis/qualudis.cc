@@ -270,8 +270,34 @@ namespace
     do_check_category_dir(const FSEntry & dir)
     {
         cout << "QA checks for category directory " << dir << ":" << endl;
+        cout << endl;
 
-        throw DoHelp("qualudis cannot currently be run at the category level");
+        bool ok(true);
+
+        for (DirIterator d(dir) ; d != DirIterator() ; ++d)
+        {
+            if ("CVS" == d->basename())
+                continue;
+            else if ('.' == d->basename().at(0))
+                continue;
+            else if (d->is_directory())
+                ok &= do_check_package_dir(*d);
+            else if ("metadata.xml" == d->basename())
+            {
+                bool fatal(false);
+
+                cout << "QA checks for category file " << *d << ":" << endl;
+
+                do_check_kind<qa::FileCheckMaker>(ok, fatal, *d);
+
+                cout << endl;
+
+                if (fatal)
+                    break;
+            }
+        }
+
+        return ok;
     }
 
     bool
