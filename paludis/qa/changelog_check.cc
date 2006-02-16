@@ -19,6 +19,7 @@
 
 #include "changelog_check.hh"
 #include <paludis/pstream.hh>
+#include <fstream>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -36,6 +37,30 @@ ChangeLogCheck::operator() (const FSEntry & f) const
         result << Message(qal_skip, "Not a ChangeLog");
     else if (! f.is_regular_file())
         result << Message(qal_major, "Not a regular file");
+    else
+    {
+        std::ifstream ff(stringify(f).c_str());
+        do
+        {
+            if (! ff)
+            {
+                result << Message(qal_major, "Can't read ChangeLog");
+                continue;
+            }
+
+            std::string s;
+            if (! std::getline(ff, s))
+            {
+                result << Message(qal_major, "Can't read ChangeLog header");
+                continue;
+            }
+
+            if (s != "# ChangeLog for " + stringify(f.dirname().dirname().basename())
+                    + "/" + stringify(f.dirname().basename()))
+                result << Message(qal_minor, "ChangeLog header is incorrect");
+        }
+        while (false);
+    }
 
     return result;
 }
