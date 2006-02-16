@@ -102,6 +102,7 @@ RdependPackagesCheck::operator() (const EbuildCheckData & e) const
             suspicious.insert(QualifiedPackageName("sys-devel/gettext"));
             suspicious.insert(QualifiedPackageName("sys-devel/libtool"));
             suspicious.insert(QualifiedPackageName("sys-devel/patch"));
+            suspicious.insert(QuanifiedPackageName("app-doc/doxygen"));
         }
 
         Checker rdepend_checker(result, "RDEPEND", suspicious);
