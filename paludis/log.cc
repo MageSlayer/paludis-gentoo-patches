@@ -77,6 +77,9 @@ Log::message(const LogLevel l, const std::string & s)
                     *_implementation->stream << "[WARNING] ";
                     continue;
 
+                case ll_silent:
+                    throw InternalError(PALUDIS_HERE, "ll_silent used for a message");
+
                 case last_ll:
                     break;
             }
