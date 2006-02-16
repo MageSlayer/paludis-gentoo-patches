@@ -23,6 +23,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include "args_visitor.hh"
 
 /** \file
@@ -231,7 +232,7 @@ namespace paludis
         class EnumArg : public ArgsOption, public Visitable<EnumArg, ArgsVisitorTypes>
         {
             private:
-                const std::map<std::string, std::string> _allowed_args;
+                const std::vector<std::pair<std::string, std::string> > _allowed_args;
                 std::string _argument;
                 const std::string _default_arg;
 
@@ -247,7 +248,7 @@ namespace paludis
                 {
                     private:
                         friend class EnumArg;
-                        std::map<std::string, std::string> _options;
+                        std::vector<std::pair<std::string, std::string> > _options;
 
                     public:
                         /**
@@ -299,7 +300,7 @@ namespace paludis
                 /**
                  * Type used to iterate over valid arguments to this option
                  */
-                typedef std::map<std::string, std::string>::const_iterator AllowedArgIterator;
+                typedef std::vector<std::pair<std::string, std::string> >::const_iterator AllowedArgIterator;
 
                 /**
                  * Returns an iterator pointing to a pair containing the first valid argument,

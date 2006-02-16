@@ -73,12 +73,30 @@ IntegerArg::IntegerArg(ArgsGroup * const group, const std::string& long_name,
 {
 }
 
+namespace
+{
+    struct ArgIs
+    {
+        const std::string & arg;
+
+        ArgIs(const std::string & a) :
+            arg(a)
+        {
+        }
+
+        bool operator() (const std::pair<std::string, std::string> & p) const
+        {
+            return p.first == arg;
+        }
+    };
+}
+
 void EnumArg::set_argument(const std::string & arg)
 {
-    if (_allowed_args.find(arg) == _allowed_args.end())
-    {
+    if (_allowed_args.end() == std::find_if(_allowed_args.begin(),
+                _allowed_args.end(), ArgIs(arg)))
         throw (BadValue("--" + long_name(), arg));
-    }
+
     _argument = arg;
 }
 
@@ -88,12 +106,12 @@ EnumArg::~EnumArg()
 
 EnumArg::EnumArgOptions::EnumArgOptions(std::string opt, std::string desc)
 {
-    _options.insert(std::make_pair(opt, desc));
+    _options.push_back(std::make_pair(opt, desc));
 }
 
 EnumArg::EnumArgOptions & EnumArg::EnumArgOptions::operator() (std::string opt, std::string desc)
 {
-    _options.insert(std::make_pair(opt, desc));
+    _options.push_back(std::make_pair(opt, desc));
     return *this;
 }
 
