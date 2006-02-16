@@ -19,6 +19,9 @@
 
 #include "metadata_check.hh"
 #include <paludis/pstream.hh>
+#include <paludis/getenv.hh>
+#include <ctime>
+#include <fstream>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -38,9 +41,36 @@ MetadataCheck::operator() (const FSEntry & f) const
         result << Message(qal_major, "Not a regular file");
     else
     {
-        PStream xmllint("xmllint --noout --nonet --dtdvalid "
-                "/usr/portage/metadata/dtd/metadata.dtd " /// \bug << todo
-                "'" + stringify(f) + "' 2>&1");
+        FSEntry dtd(FSEntry(getenv_or_error("HOME")) / ".paludis");
+        if (! dtd.exists())
+            throw ConfigurationError("~/.paludis/ does not exist, please create it");
+
+        dtd /= "cache";
+        if (! dtd.exists())
+            if (0 != mkdir(stringify(dtd).c_str(), 0755))
+                throw ConfigurationError("~/.paludis/cache/ does not exist and cannot be created");
+
+        dtd /= "metadata.dtd";
+        if (! dtd.exists() || dtd.mtime() > (std::time(0) + (24 * 60 * 60)))
+        {
+            PStream wget("wget -O- http://www.gentoo.org/dtd/metadata.dtd");
+
+            // see \ref EffSTL item 29
+            std::string dtd_data((std::istreambuf_iterator<char>(wget)),
+                    std::istreambuf_iterator<char>());
+            if (0 != wget.exit_status())
+                throw ConfigurationError("Couldn't get a new metadata.dtd");
+
+            std::ofstream dtd_file(stringify(dtd).c_str());
+            dtd_file << dtd_data;
+            if (! dtd_file)
+                throw ConfigurationError("Error writing to '" + stringify(dtd) +
+                        "' -- you should remove this file manually before continuing");
+        }
+
+        PStream xmllint("xmllint --noout --nonet --dtdvalid '"
+                + stringify(dtd) + /// \bug << todo
+                "' '" + stringify(f) + "' 2>&1");
 
         std::string s;
         while (std::getline(xmllint, s))
