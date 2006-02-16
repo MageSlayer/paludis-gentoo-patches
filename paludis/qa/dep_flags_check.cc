@@ -71,7 +71,7 @@ namespace
                     result << Message(qal_maybe, "Inverse arch flag '" + stringify(u->flag()) +
                             "' in " + role);
             }
-            if (env->package_database()->fetch_repository(env->package_database()->
+            else if (env->package_database()->fetch_repository(env->package_database()->
                         favourite_repository())->is_expand_flag(u->flag()))
             {
             }
