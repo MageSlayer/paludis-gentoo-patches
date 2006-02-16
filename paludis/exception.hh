@@ -138,7 +138,7 @@ namespace paludis
      */
     class ConfigurationError : public Exception
     {
-        protected:
+        public:
             /**
              * Constructor.
              */
