@@ -41,3 +41,13 @@ check_KV()
     die "check_KV not implenented"
 }
 
+debug-print()
+{
+    :
+}
+
+debug-print-function()
+{
+    :
+}
+
