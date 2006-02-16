@@ -34,7 +34,16 @@ QualudisCommandLine::QualudisCommandLine() :
             paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
             ("warning", "Show warnings only")
             ("silent", "Suppress all log messages"),
-            "warning")
+            "warning"),
+
+    a_message_level(&check_options, "message-level", 'M', "Specify the message level",
+            paludis::args::EnumArg::EnumArgOptions("info", "Show info and upwards")
+            ("minor", "Show minor and upwards")
+            ("major", "Show major and upwards")
+            ("fatal", "Show only fatals"),
+            "warning"),
+
+    message_level(paludis::qa::qal_info)
 {
 }
 

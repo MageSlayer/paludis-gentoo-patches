@@ -79,6 +79,9 @@ namespace
 
         for (qa::CheckResult::Iterator i(r.begin()), i_end(r.end()) ; i != i_end ; ++i)
         {
+            if (i->get<qa::mk_level>() < QualudisCommandLine::get_instance()->message_level)
+                continue;
+
             bool show(true);
             do
             {
@@ -283,6 +286,19 @@ int main(int argc, char *argv[])
             Log::get_instance()->set_log_level(ll_silent);
         else
             throw DoHelp("bad value for --log-level");
+
+        if (! QualudisCommandLine::get_instance()->a_message_level.specified())
+            QualudisCommandLine::get_instance()->message_level = qa::qal_info;
+        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "info")
+            QualudisCommandLine::get_instance()->message_level = qa::qal_info;
+        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "minor")
+            QualudisCommandLine::get_instance()->message_level = qa::qal_minor;
+        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "major")
+            QualudisCommandLine::get_instance()->message_level = qa::qal_major;
+        else if (QualudisCommandLine::get_instance()->a_message_level.argument() == "fatal")
+            QualudisCommandLine::get_instance()->message_level = qa::qal_fatal;
+        else
+            throw DoHelp("bad value for --message-level");
 
         if (QualudisCommandLine::get_instance()->a_version.specified())
             throw DoVersion();
