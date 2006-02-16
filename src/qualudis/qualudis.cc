@@ -208,7 +208,7 @@ namespace
     }
 
     bool
-    do_check_package_dir(const FSEntry & dir)
+    do_check_package_dir(const FSEntry & dir, const Environment & env)
     {
         bool ok(true), fatal(false);
 
@@ -233,7 +233,6 @@ namespace
 
         if (! fatal)
         {
-            qa::QAEnvironment env(dir.dirname().dirname());
             std::list<FSEntry> files((DirIterator(dir)), DirIterator());
             for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
             {
@@ -267,7 +266,7 @@ namespace
     }
 
     bool
-    do_check_category_dir(const FSEntry & dir)
+    do_check_category_dir(const FSEntry & dir, const Environment & env)
     {
         cout << "QA checks for category directory " << dir << ":" << endl;
         cout << endl;
@@ -281,7 +280,7 @@ namespace
             else if ('.' == d->basename().at(0))
                 continue;
             else if (d->is_directory())
-                ok &= do_check_package_dir(*d);
+                ok &= do_check_package_dir(*d, env);
             else if ("metadata.xml" == d->basename())
             {
                 bool fatal(false);
@@ -305,13 +304,19 @@ namespace
     {
         if (std::count_if(DirIterator(dir), DirIterator(), IsFileWithExtension(
                         dir.basename() + "-", ".ebuild")))
-            return do_check_package_dir(dir);
+        {
+            qa::QAEnvironment env(dir.dirname().dirname());
+            return do_check_package_dir(dir, env);
+        }
 
         else if ((dir / "profiles").is_directory())
             return do_check_top_level(dir);
 
         else if ((dir.dirname() / "profiles").is_directory())
-            return do_check_category_dir(dir);
+        {
+            qa::QAEnvironment env(dir.dirname());
+            return do_check_category_dir(dir, env);
+        }
 
         else
             throw DoHelp("qualudis should be run inside a repository");
