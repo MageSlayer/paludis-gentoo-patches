@@ -258,14 +258,6 @@ namespace
     }
 
     bool
-    do_check_top_level(const FSEntry & dir)
-    {
-        cout << "QA checks for top level directory " << dir << ":" << endl;
-
-        throw DoHelp("qualudis cannot currently be run at the repository level");
-    }
-
-    bool
     do_check_category_dir(const FSEntry & dir, const Environment & env)
     {
         cout << "QA checks for category directory " << dir << ":" << endl;
@@ -298,6 +290,28 @@ namespace
 
         return ok;
     }
+
+    bool
+    do_check_top_level(const FSEntry & dir)
+    {
+        cout << "QA checks for top level directory " << dir << ":" << endl << endl;
+
+        qa::QAEnvironment env(dir);
+        bool ok(true);
+
+        for (DirIterator d(dir) ; d != DirIterator() ; ++d)
+        {
+            if (d->basename() == "CVS" || '.' == d->basename().at(0))
+                continue;
+            if (env.package_database()->fetch_repository(
+                        env.package_database()->favourite_repository())->
+                    has_category_named(CategoryNamePart(d->basename())))
+                ok &= do_check_category_dir(*d, env);
+        }
+
+        return ok;
+    }
+
 
     bool
     do_check(const FSEntry & dir)
