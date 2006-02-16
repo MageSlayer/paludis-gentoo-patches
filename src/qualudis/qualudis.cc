@@ -156,6 +156,8 @@ namespace
         {
             try
             {
+                Context context("When performing check '" + stringify(*i) + "':");
+
                 qa::CheckResult r((*VC_::get_instance()->find_maker(*i)())(value));
 
                 if (r.empty())
@@ -210,6 +212,8 @@ namespace
     bool
     do_check_package_dir(const FSEntry & dir, const Environment & env)
     {
+        Context context("When checking package '" + stringify(dir) + "':");
+
         bool ok(true), fatal(false);
 
         cout << "QA checks for package directory " << dir << ":" << endl;
@@ -260,6 +264,8 @@ namespace
     bool
     do_check_category_dir(const FSEntry & dir, const Environment & env)
     {
+        Context context("When checking category '" + stringify(dir) + "':");
+
         cout << "QA checks for category directory " << dir << ":" << endl;
         cout << endl;
 
@@ -294,6 +300,8 @@ namespace
     bool
     do_check_top_level(const FSEntry & dir)
     {
+        Context context("When checking top level '" + stringify(dir) + "':");
+
         cout << "QA checks for top level directory " << dir << ":" << endl << endl;
 
         qa::QAEnvironment env(dir);
@@ -316,6 +324,8 @@ namespace
     bool
     do_check(const FSEntry & dir)
     {
+        Context context("When checking directory '" + stringify(dir) + "':");
+
         if (std::count_if(DirIterator(dir), DirIterator(), IsFileWithExtension(
                         dir.basename() + "-", ".ebuild")))
         {
