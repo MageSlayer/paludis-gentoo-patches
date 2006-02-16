@@ -55,7 +55,7 @@ VersionOperator::_decode(const std::string & v)
                 }
     }
 
-    throw InternalError(PALUDIS_HERE, "todo"); /// \bug
+    throw BadVersionOperatorError(v);
 }
 
 std::ostream &
@@ -131,3 +131,7 @@ bool (VersionSpec::* VersionOperator::as_version_spec_operator() const)(const Ve
     throw InternalError(PALUDIS_HERE, "_v is " + stringify(_v));
 }
 
+BadVersionOperatorError::BadVersionOperatorError(const std::string & msg) throw () :
+    Exception("Bad version operator '" + msg + "'")
+{
+}

@@ -111,6 +111,13 @@ namespace paludis
             bool (VersionSpec::* as_version_spec_operator() const)(const VersionSpec &) const;
     };
 
+    class BadVersionOperatorError :
+        public Exception
+    {
+        public:
+            BadVersionOperatorError(const std::string & msg) throw ();
+    };
+
     /**
      * A VersionOperator can be written to an ostreams
      */
