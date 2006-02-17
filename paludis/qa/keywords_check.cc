@@ -51,6 +51,9 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
         {
             result << Message(qal_major, "Bad entries in KEYWORDS");
         }
+
+        if (! metadata->get(vmk_e_keywords).empty())
+            result << Message(qal_major, "KEYWORDS was altered by an eclass");
     }
     catch (const InternalError &)
     {

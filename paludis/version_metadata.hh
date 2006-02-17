@@ -52,6 +52,7 @@ namespace paludis
         vmk_homepage,               ///< HOMEPAGE
         vmk_description,            ///< DESCRIPTION
         vmk_virtual,                ///< Are we a virtual for something (empty is no)?
+        vmk_e_keywords,             ///< KEYWORDS from ECLASS, for QA checks
         last_vmk                    ///< Number of items (keep at end!)
     };
 

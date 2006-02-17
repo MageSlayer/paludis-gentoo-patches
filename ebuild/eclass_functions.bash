@@ -41,8 +41,9 @@ inherit()
 
         local current_IUSE="${IUSE}" current_DEPEND="${DEPEND}"
         local current_RDEPEND="${RDEPEND}" current_PDEPEND="${PDEPEND}"
+        local current_KEYWORDS="${KEYWORDS}"
 
-        unset IUSE DEPEND RDEPEND PDEPEND
+        unset IUSE DEPEND RDEPEND PDEPEND KEYWORDS
 
         source "${location}" || die "Error sourcing eclass ${e}"
         hasq "${ECLASS}" ${INHERITED} || export INHERITED="${INHERITED} ${ECLASS}"
@@ -51,11 +52,13 @@ inherit()
         E_PDEPEND="${E_PDEPEND} ${PDEPEND}"
         E_RDEPEND="${E_RDEPEND} ${RDEPEND}"
         E_DEPEND="${E_DEPEND} ${DEPEND}"
+        E_KEYWORDS="${KEYWORDS} ${E_KEYWORDS}"
 
         IUSE="${current_IUSE}"
         DEPEND="${current_DEPEND}"
         RDEPEND="${current_RDEPEND}"
         PDEPEND="${current_PDEPEND}"
+        KEYWORDS="${current_KEYWORDS}"
 
         export ECLASS="${old_ECLASS}"
     done

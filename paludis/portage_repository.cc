@@ -634,6 +634,7 @@ PortageRepository::do_version_metadata(
         result->set(vmk_provide,     f.get("PROVIDE"));
         result->set(vmk_eapi,        f.get("EAPI"));
         result->set(vmk_virtual, "");
+        result->set(vmk_e_keywords,  f.get("E_KEYWORDS"));
 
         if (prog.exit_status())
         {

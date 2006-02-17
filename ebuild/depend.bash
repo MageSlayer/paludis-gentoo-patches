@@ -31,7 +31,8 @@ ebuild_f_depend()
     PDEPEND="${PDEPEND} ${E_PDEPEND}"
 
     for key in DEPEND RDEPEND PDEPEND IUSE SLOT SRC_URI RESTRICT LICENSE \
-            KEYWORDS INHERITED PROVIDE EAPI HOMEPAGE DESCRIPTION ; do
+            KEYWORDS INHERITED PROVIDE EAPI HOMEPAGE DESCRIPTION E_IUSE \
+            E_DEPEND E_RDEPEND E_PDEPEND E_KEYWORDS ; do
         set -o noglob
         local k=${!key}
         k=${k/\\/\\\\}
