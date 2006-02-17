@@ -298,6 +298,40 @@ namespace
     }
 
     bool
+    do_check_eclass_dir(const FSEntry & dir, const Environment &)
+    {
+        Context context("When checking eclass directory '" + stringify(dir) + "':");
+
+        cout << "QA checks for eclass directory " << dir << ":" << endl;
+        cout << endl;
+
+        bool ok(true);
+
+        for (DirIterator d(dir) ; d != DirIterator() ; ++d)
+        {
+            if ("CVS" == d->basename())
+                continue;
+            else if ('.' == d->basename().at(0))
+                continue;
+            else if (IsFileWithExtension(".eclass")(d->basename()))
+            {
+                bool fatal(false);
+
+                cout << "QA checks for eclass file " << *d << ":" << endl;
+
+                do_check_kind<qa::FileCheckMaker>(ok, fatal, *d);
+
+                cout << endl;
+
+                if (fatal)
+                    break;
+            }
+        }
+
+        return ok;
+    }
+
+    bool
     do_check_top_level(const FSEntry & dir)
     {
         Context context("When checking top level '" + stringify(dir) + "':");
@@ -313,7 +347,9 @@ namespace
                 continue;
             if (! d->is_directory())
                 continue;
-            if (env.package_database()->fetch_repository(
+            if (d->basename() == "eclass")
+                ok &= do_check_eclass_dir(*d, env);
+            else if (env.package_database()->fetch_repository(
                         env.package_database()->favourite_repository())->
                     has_category_named(CategoryNamePart(d->basename())))
                 ok &= do_check_category_dir(*d, env);
@@ -328,7 +364,13 @@ namespace
     {
         Context context("When checking directory '" + stringify(dir) + "':");
 
-        if (std::count_if(DirIterator(dir), DirIterator(), IsFileWithExtension(
+        if (dir.basename() == "eclass" && dir.is_directory())
+        {
+            qa::QAEnvironment env(dir.dirname());
+            return do_check_eclass_dir(dir, env);
+        }
+
+        else if (std::count_if(DirIterator(dir), DirIterator(), IsFileWithExtension(
                         dir.basename() + "-", ".ebuild")))
         {
             qa::QAEnvironment env(dir.dirname().dirname());

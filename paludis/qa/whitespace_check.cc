@@ -36,8 +36,9 @@ WhitespaceCheck::operator() (const FSEntry & f) const
     if (! f.is_regular_file())
         result << Message(qal_skip, "Not a regular file");
     else if (! IsFileWithExtension(".ebuild")(f.basename()) &&
-            ! IsFileWithExtension(".xml")(f.basename()))
-        result << Message(qal_skip, "Not an ebuild or xml file");
+            ! IsFileWithExtension(".xml")(f.basename()) &&
+            ! IsFileWithExtension(".eclass")(f.basename()))
+        result << Message(qal_skip, "Not an ebuild, eclass or xml file");
     else
     {
         std::ifstream ff(stringify(f).c_str());
