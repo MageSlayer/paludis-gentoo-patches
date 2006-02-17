@@ -39,4 +39,5 @@ add(`rdepend_packages_check',         `hh', `cc')
 add(`pdepend_overlap_check',          `hh', `cc')
 add(`qa',                             `hh', `cc')
 add(`slot_check',                     `hh', `cc')
+add(`whitespace_check',               `hh', `cc')
 
