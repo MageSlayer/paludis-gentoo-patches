@@ -18,6 +18,7 @@
  */
 
 #include "description_check.hh"
+#include <strings.h>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -42,8 +43,13 @@ DescriptionCheck::operator() (const EbuildCheckData & e) const
         const std::string::size_type length(metadata->get(vmk_description).length());
         if (0 == length)
             result << Message(qal_major, "DESCRIPTION unset or empty");
+        else if (0 == strcasecmp(e.get<ecd_name>().get<qpn_package>().data().c_str(),
+                    metadata->get(vmk_description).c_str()))
+            result << Message(qal_major, "DESCRIPTION equal to $PN? You can do better than that.");
         else if (length < 10)
             result << Message(qal_minor, "DESCRIPTION suspiciously short (" + stringify(length) + ")");
+        else if (length > 300)
+            result << Message(qal_minor, "DESCRIPTION written by Duncan? (" + stringify(length) + ")");
         else if (length > 120)
             result << Message(qal_minor, "DESCRIPTION too long (" + stringify(length) + ")");
 

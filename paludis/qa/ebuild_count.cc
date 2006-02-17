@@ -35,7 +35,13 @@ EbuildCountCheck::operator() (const FSEntry & d) const
     CheckResult result(d, identifier());
 
     std::size_t count(std::count_if(DirIterator(d), DirIterator(), IsFileWithExtension(".ebuild")));
-    if (count > 10)
+    if (count > 20)
+        result << Message(qal_minor, "Found " + stringify(count) +
+                " ebuilds, which is too many to count on both hands and both feet");
+    else if (count > 15)
+        result << Message(qal_minor, "Found " + stringify(count) +
+                " ebuilds, which is too many to count on both hands and one foot");
+    else if (count > 10)
         result << Message(qal_minor, "Found " + stringify(count) +
                 " ebuilds, which is too many to count on my fingers");
 
