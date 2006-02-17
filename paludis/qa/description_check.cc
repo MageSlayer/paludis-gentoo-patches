@@ -46,6 +46,9 @@ DescriptionCheck::operator() (const EbuildCheckData & e) const
         else if (0 == strcasecmp(e.get<ecd_name>().get<qpn_package>().data().c_str(),
                     metadata->get(vmk_description).c_str()))
             result << Message(qal_major, "DESCRIPTION equal to $PN? You can do better than that.");
+        else if (std::string::npos != metadata->get(vmk_description).find("Based on the") &&
+                std::string::npos != metadata->get(vmk_description).find("eclass"))
+            result << Message(qal_major, "DESCRIPTION is about as useful as a chocolate teapot");
         else if (length < 10)
             result << Message(qal_minor, "DESCRIPTION suspiciously short (" + stringify(length) + ")");
         else if (length > 300)
