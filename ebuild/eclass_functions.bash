@@ -52,7 +52,7 @@ inherit()
         E_PDEPEND="${E_PDEPEND} ${PDEPEND}"
         E_RDEPEND="${E_RDEPEND} ${RDEPEND}"
         E_DEPEND="${E_DEPEND} ${DEPEND}"
-        E_KEYWORDS="${KEYWORDS} ${E_KEYWORDS}"
+        E_KEYWORDS="${KEYWORDS:+${KEYWORDS} }${E_KEYWORDS}"
 
         IUSE="${current_IUSE}"
         DEPEND="${current_DEPEND}"
