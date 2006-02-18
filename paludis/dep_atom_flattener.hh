@@ -22,7 +22,6 @@
 
 #include <paludis/attributes.hh>
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_visitor.hh>
 #include <paludis/environment.hh>
 #include <paludis/instantiation_policy.hh>
 #include <paludis/package_database.hh>

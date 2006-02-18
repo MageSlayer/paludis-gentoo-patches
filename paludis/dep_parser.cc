@@ -19,14 +19,9 @@
 
 #include "exception.hh"
 #include "stringify.hh"
+#include "dep_atom.hh"
 #include "dep_parser.hh"
 #include "dep_lexer.hh"
-#include "all_dep_atom.hh"
-#include "any_dep_atom.hh"
-#include "use_dep_atom.hh"
-#include "block_dep_atom.hh"
-#include "package_dep_atom.hh"
-#include "dep_atom_visitor.hh"
 #include <stack>
 
 using namespace paludis;

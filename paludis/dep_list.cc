@@ -17,10 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "all_dep_atom.hh"
-#include "any_dep_atom.hh"
-#include "block_dep_atom.hh"
 #include "container_entry.hh"
+#include "dep_atom.hh"
 #include "dep_atom_flattener.hh"
 #include "dep_list.hh"
 #include "dep_parser.hh"
@@ -30,10 +28,8 @@
 #include "join.hh"
 #include "log.hh"
 #include "match_package.hh"
-#include "package_dep_atom.hh"
 #include "save.hh"
 #include "stringify.hh"
-#include "use_dep_atom.hh"
 
 #include <algorithm>
 #include <functional>
@@ -513,7 +509,7 @@ DepList::visit(const AnyDepAtom * const a)
      * we handle this by keeping a list of 'viable children'.
      */
 
-    std::deque<DepAtom::ConstPointer> viable_children;
+    std::list<DepAtom::ConstPointer> viable_children;
     std::copy(a->begin(), a->end(), filter_inserter(
                 std::back_inserter(viable_children), IsViable(*_implementation)));
 
@@ -526,7 +522,7 @@ DepList::visit(const AnyDepAtom * const a)
     }
 
     bool found(false);
-    for (CompositeDepAtom::Iterator i(viable_children.begin()),
+    for (std::list<DepAtom::ConstPointer>::iterator i(viable_children.begin()),
             i_end(viable_children.end()) ; i != i_end ; ++i)
     {
         Save<bool> save_check(&_implementation->check_existing_only, true);

@@ -19,12 +19,7 @@
 
 #include "pdepend_overlap_check.hh"
 #include <paludis/dep_parser.hh>
-#include <paludis/dep_atom_visitor.hh>
-#include <paludis/any_dep_atom.hh>
-#include <paludis/all_dep_atom.hh>
-#include <paludis/package_dep_atom.hh>
-#include <paludis/block_dep_atom.hh>
-#include <paludis/use_dep_atom.hh>
+#include <paludis/dep_atom.hh>
 #include <paludis/join.hh>
 
 using namespace paludis;

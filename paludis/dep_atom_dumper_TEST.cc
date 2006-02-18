@@ -19,11 +19,7 @@
 
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include "all_dep_atom.hh"
-#include "any_dep_atom.hh"
-#include "use_dep_atom.hh"
-#include "package_dep_atom.hh"
-#include "dep_atom_visitor.hh"
+#include "dep_atom.hh"
 #include "dep_atom_dumper.hh"
 #include <sstream>
 

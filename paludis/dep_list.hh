@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_HH 1
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_visitor.hh>
 #include <paludis/environment.hh>
 #include <paludis/instantiation_policy.hh>
 #include <paludis/private_implementation_pattern.hh>

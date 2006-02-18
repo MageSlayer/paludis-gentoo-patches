@@ -77,7 +77,7 @@ namespace
 {
     struct ArgIs
     {
-        const std::string & arg;
+        const std::string arg;
 
         ArgIs(const std::string & a) :
             arg(a)

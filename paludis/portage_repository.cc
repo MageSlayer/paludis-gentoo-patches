@@ -21,6 +21,7 @@
 
 #include "create_insert_iterator.hh"
 #include "dir_iterator.hh"
+#include "dep_atom.hh"
 #include "filter_insert_iterator.hh"
 #include "fs_entry.hh"
 #include "getenv.hh"
@@ -32,7 +33,6 @@
 #include "log.hh"
 #include "match_package.hh"
 #include "package_database.hh"
-#include "package_dep_atom.hh"
 #include "portage_repository.hh"
 #include "pstream.hh"
 #include "stringify.hh"

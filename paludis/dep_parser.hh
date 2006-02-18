@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_PARSER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_PARSER_HH 1
 
-#include <paludis/composite_dep_atom.hh>
+#include <paludis/dep_atom.hh>
 #include <paludis/counted_ptr.hh>
 #include <paludis/instantiation_policy.hh>
 #include <paludis/exception.hh>

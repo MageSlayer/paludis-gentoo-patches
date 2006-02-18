@@ -18,11 +18,7 @@
  */
 
 #include "dep_atom_flattener.hh"
-#include "package_dep_atom.hh"
-#include "all_dep_atom.hh"
-#include "any_dep_atom.hh"
-#include "block_dep_atom.hh"
-#include "use_dep_atom.hh"
+#include "dep_atom.hh"
 
 using namespace paludis;
 

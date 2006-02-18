@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "dep_atom.hh"
 #include "package_database.hh"
-#include "package_dep_atom.hh"
 #include "indirect_iterator.hh"
 #include "stringify.hh"
 #include "match_package.hh"

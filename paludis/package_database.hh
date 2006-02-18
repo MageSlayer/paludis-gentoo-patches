@@ -21,9 +21,10 @@
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_HH 1
 
 #include <paludis/counted_ptr.hh>
+#include <paludis/dep_atom.hh>
 #include <paludis/exception.hh>
 #include <paludis/instantiation_policy.hh>
-#include <paludis/package_dep_atom.hh>
+#include <paludis/join.hh>
 #include <paludis/private_implementation_pattern.hh>
 #include <paludis/qualified_package_name.hh>
 #include <paludis/repository.hh>
@@ -31,7 +32,6 @@
 #include <paludis/sorted_collection.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/join.hh>
 
 #include <ostream>
 

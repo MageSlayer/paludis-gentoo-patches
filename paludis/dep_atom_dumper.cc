@@ -17,12 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "all_dep_atom.hh"
-#include "any_dep_atom.hh"
-#include "use_dep_atom.hh"
-#include "block_dep_atom.hh"
-#include "package_dep_atom.hh"
-#include "dep_atom_visitor.hh"
+#include "dep_atom.hh"
 #include "dep_atom_dumper.hh"
 #include <algorithm>
 

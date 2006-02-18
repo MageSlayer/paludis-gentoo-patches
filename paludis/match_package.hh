@@ -12,9 +12,9 @@
  */
 
 #include <paludis/attributes.hh>
-#include <paludis/package_database.hh>
-#include <paludis/package_dep_atom.hh>
+#include <paludis/dep_atom.hh>
 #include <paludis/dep_list.hh>
+#include <paludis/package_database.hh>
 
 namespace paludis
 {
