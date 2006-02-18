@@ -98,8 +98,9 @@ namespace
             if (env->package_database()->fetch_repository(env->package_database()->
                         favourite_repository())->is_arch_flag(u->flag()))
             {
-                result << Message(qal_major, "Arch flag '" + stringify(u->flag()) +
-                        "' in " + role);
+                if (role != "SRC_URI")
+                    result << Message(qal_major, "Arch flag '" + stringify(u->flag()) +
+                            "' in " + role);
             }
             else if (env->package_database()->fetch_repository(env->package_database()->
                         favourite_repository())->is_expand_flag(u->flag()))
