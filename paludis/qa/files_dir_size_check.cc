@@ -69,10 +69,10 @@ FilesDirSizeCheck::operator() (const FSEntry & d) const
 
     if (f.total_size > (100 * 1024))
         result << Message(qal_minor, "files/ is way too bloated (" +
-                stringify(f.total_size / 1024) + "KBytes)");
+                stringify(f.total_size / 1024) + "KBytes, excluding digests and CVS)");
     else if (f.total_size > (20 * 1024))
         result << Message(qal_minor, "files/ is oversized (" +
-                stringify(f.total_size / 1024) + "KBytes)");
+                stringify(f.total_size / 1024) + "KBytes, excluding digests and CVS)");
 
 
     return result;
