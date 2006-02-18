@@ -54,13 +54,15 @@ namespace paludis
         class ArgsVisitor : public ArgsVisitorTypes::Visitor
         {
             private:
-                std::list<std::string>::iterator *_args_index;
+                std::list<std::string>::iterator *_args_index, _args_end;
+
+                const std::string& get_param(const ArgsOption * const);
 
             public:
                 /**
                  * Constructor
                  */
-                ArgsVisitor(std::list<std::string>::iterator *);
+                ArgsVisitor(std::list<std::string>::iterator *, std::list<std::string>::iterator);
 
                 /// Visit an ArgsOption.
                 void visit(ArgsOption * const);

@@ -18,6 +18,7 @@
  */
 
 #include <paludis/args/args.hh>
+#include <paludis/args/bad_value.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -107,5 +108,17 @@ namespace test_cases
             TEST_CHECK_EQUAL(*++(++(c1.begin_parameters())), "two");
         }
     } test_args_simple;
+
+    struct ArgsTestNoParam : TestCase
+    {
+        ArgsTestNoParam() : TestCase("Missing parameters") { }
+
+        void run()
+        {
+            char *args[] = { "program-name", "-e" };
+            CommandLine c1;
+            TEST_CHECK_THROWS(c1.run(2, args), BadValue);
+        }
+    } test_args_no_param;
 }
 

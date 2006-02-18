@@ -1,6 +1,4 @@
-#include "args_visitor.hh"
-#include "args_option.hh"
-
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
  *
@@ -18,15 +16,29 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "args_visitor.hh"
+#include "args_option.hh"
 #include "bad_value.hh"
+
+#include <paludis/destringify.hh>
 
 #include <sstream>
 
 using namespace paludis;
 using namespace args;
 
-ArgsVisitor::ArgsVisitor(std::list<std::string>::iterator *ai) : _args_index(ai)
+ArgsVisitor::ArgsVisitor(std::list<std::string>::iterator *ai, 
+        std::list<std::string>::iterator ae) : _args_index(ai), _args_end(ae)
 {
+}
+
+const std::string& ArgsVisitor::get_param(const ArgsOption * const arg)
+{
+    if (++(*_args_index) == _args_end)
+    {
+        throw BadValue("--" + arg->long_name(), "<none>");
+    }
+    return **_args_index;
 }
 
 void ArgsVisitor::visit(ArgsOption * const arg)
@@ -37,7 +49,7 @@ void ArgsVisitor::visit(ArgsOption * const arg)
 void ArgsVisitor::visit(StringArg * const arg)
 {
     visit(static_cast<ArgsOption *>(arg));
-    arg->set_argument(*++(*_args_index));
+    arg->set_argument(get_param(arg));
 }
 
 void ArgsVisitor::visit(AliasArg * const arg)
@@ -53,18 +65,19 @@ void ArgsVisitor::visit(SwitchArg * const arg)
 void ArgsVisitor::visit(IntegerArg * const arg)
 {
     visit(static_cast<ArgsOption*>(arg));
-    std::stringstream ss;
-    std::string param =  *++(*_args_index);
-    ss << param;
-    int i;
-    ss >> i;
-    if (!ss.eof() || ss.bad())
+    std::string param = get_param(arg);
+    try
+    {
+        arg->set_argument(destringify<int>(param));
+    }
+    catch(DestringifyError &e)
+    {
         throw BadValue("--" + arg->long_name(), param);
-    arg->set_argument(i);
+    }
 }
 
 void ArgsVisitor::visit(EnumArg * const arg)
 {
     visit(static_cast<ArgsOption*>(arg));
-    arg->set_argument(*++(*_args_index));
+    arg->set_argument(get_param(arg));
 }

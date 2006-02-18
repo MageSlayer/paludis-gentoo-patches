@@ -61,7 +61,7 @@ ArgsHandler::run(const int argc, const char * const * const argv)
 
     std::list<std::string>::iterator argit = args.begin(), arge = args.end();
 
-    ArgsVisitor visitor(&argit);
+    ArgsVisitor visitor(&argit, arge);
 
     for ( ; argit != arge; ++argit )
     {
