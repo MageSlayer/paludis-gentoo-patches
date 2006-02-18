@@ -67,6 +67,6 @@ DepLexer::DepLexer(const std::string & s)
         else if ('?' == (*t)[t->length() - 1])
             _tokens.push_back(std::make_pair(dpl_use_flag, *t));
         else
-            _tokens.push_back(std::make_pair(dpl_package, *t));
+            _tokens.push_back(std::make_pair(dpl_text, *t));
     }
 }

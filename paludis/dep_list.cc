@@ -19,7 +19,7 @@
 
 #include "container_entry.hh"
 #include "dep_atom.hh"
-#include "dep_atom_flattener.hh"
+#include "nest_atom_flattener.hh"
 #include "dep_list.hh"
 #include "dep_parser.hh"
 #include "filter_insert_iterator.hh"
@@ -28,6 +28,9 @@
 #include "join.hh"
 #include "log.hh"
 #include "match_package.hh"
+#include "nest_parser.hh"
+#include "nest_atom.hh"
+#include "nest_atom_flattener.hh"
 #include "save.hh"
 #include "stringify.hh"
 
@@ -382,9 +385,7 @@ DepList::visit(const PackageDepAtom * const p)
     /// \bug PROVIDE can contain use? blocks.
     if (! metadata->get(vmk_provide).empty())
     {
-        DepParserOptions dep_parser_options;
-        dep_parser_options.set(dpo_qualified_package_names);
-        DepAtom::ConstPointer provide(DepParser::parse(metadata->get(vmk_provide), dep_parser_options));
+        NestAtom::ConstPointer provide(NestParser::parse(metadata->get(vmk_provide)));
 
         CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
@@ -395,21 +396,22 @@ DepList::visit(const PackageDepAtom * const p)
                         _implementation->current_package->get<dle_version>(),
                         _implementation->current_package->get<dle_repository>()));
 
-        DepAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
+        NestAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
 
-        for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+        for (NestAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
         {
+            PackageDepAtom pp(QualifiedPackageName((*p)->text()));
             if (_implementation->merge_list.end() != std::find_if(
                         _implementation->merge_list.begin(), _implementation->merge_list.end(),
                         DepListEntryMatcher(
-                            _implementation->environment->package_database().raw_pointer(), **p)))
+                            _implementation->environment->package_database().raw_pointer(), pp)))
                 continue;
 
             VersionMetadata::Pointer p_metadata(new VersionMetadata);
             p_metadata->set(vmk_slot, merge_entry->get<dle_metadata>()->get(vmk_slot));
             p_metadata->set(vmk_virtual, stringify(merge_entry->get<dle_name>()));
             _implementation->merge_list.insert(next(merge_entry),
-                    DepListEntry((*p)->package(), merge_entry->get<dle_version>(),
+                    DepListEntry(pp.package(), merge_entry->get<dle_version>(),
                         p_metadata, merge_entry->get<dle_repository>(), true, true, true));
         }
     }
@@ -596,12 +598,8 @@ DepList::visit(const BlockDepAtom * const d)
                 continue;
             }
 
-            DepParserOptions dep_parser_options;
-            dep_parser_options.set(dpo_qualified_package_names);
-
-            DepAtom::ConstPointer provide(DepParser::parse(
-                        _implementation->current_package->get<dle_metadata>()->get(vmk_provide),
-                        dep_parser_options));
+            NestAtom::ConstPointer provide(NestParser::parse(
+                        _implementation->current_package->get<dle_metadata>()->get(vmk_provide)));
 
             CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
@@ -612,12 +610,12 @@ DepList::visit(const BlockDepAtom * const d)
                             _implementation->current_package->get<dle_version>(),
                             _implementation->current_package->get<dle_repository>()));
 
-            DepAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
+            NestAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
 
             bool skip(false);
-            for (IndirectIterator<DepAtomFlattener::Iterator, const PackageDepAtom> i(f.begin()),
+            for (IndirectIterator<NestAtomFlattener::Iterator, const TextNestAtom> i(f.begin()),
                     i_end(f.end()) ; i != i_end ; ++i)
-                if (i->package() == d->blocked_atom()->package())
+                if (QualifiedPackageName(i->text()) == d->blocked_atom()->package())
                 {
                     skip = true;
                     break;

@@ -74,7 +74,7 @@ namespace paludis
     enum DepLexerLexeme
     {
         dpl_whitespace,        ///< whitespace
-        dpl_package,           ///< a package name
+        dpl_text,              ///< a package or item name
         dpl_use_flag,          ///< a use flag
         dpl_double_bar,        ///< a double bar ('any' marker)
         dpl_open_paren,        ///< open paren

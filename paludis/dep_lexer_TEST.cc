@@ -84,7 +84,7 @@ namespace test_cases
             DepLexer l("app-editors/vim");
             DepLexer::Iterator i(l.begin());
             TEST_CHECK(i != l.end());
-            TEST_CHECK_EQUAL(i->first, dpl_package);
+            TEST_CHECK_EQUAL(i->first, dpl_text);
             TEST_CHECK_EQUAL(i->second, "app-editors/vim");
             TEST_CHECK(++i == l.end());
         }
@@ -105,7 +105,7 @@ namespace test_cases
             DepLexer::Iterator i(l.begin());
 
             TEST_CHECK(i != l.end());
-            TEST_CHECK_EQUAL(i->first, dpl_package);
+            TEST_CHECK_EQUAL(i->first, dpl_text);
             TEST_CHECK_EQUAL(i->second, "app-editors/vim");
 
             TEST_CHECK(++i != l.end());
@@ -113,7 +113,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(i->second, " ");
 
             TEST_CHECK(++i != l.end());
-            TEST_CHECK_EQUAL(i->first, dpl_package);
+            TEST_CHECK_EQUAL(i->first, dpl_text);
             TEST_CHECK_EQUAL(i->second, "app-misc/hilite");
 
             TEST_CHECK(++i != l.end());
@@ -121,7 +121,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(i->second, "   \n");
 
             TEST_CHECK(++i != l.end());
-            TEST_CHECK_EQUAL(i->first, dpl_package);
+            TEST_CHECK_EQUAL(i->first, dpl_text);
             TEST_CHECK_EQUAL(i->second, "sys-apps/findutils");
 
             TEST_CHECK(++i == l.end());
@@ -159,7 +159,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(i->second, " ");
 
             TEST_CHECK(++i != l.end());
-            TEST_CHECK_EQUAL(i->first, dpl_package);
+            TEST_CHECK_EQUAL(i->first, dpl_text);
             TEST_CHECK_EQUAL(i->second, "one/one");
 
             TEST_CHECK(++i != l.end());
@@ -167,7 +167,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(i->second, " ");
 
             TEST_CHECK(++i != l.end());
-            TEST_CHECK_EQUAL(i->first, dpl_package);
+            TEST_CHECK_EQUAL(i->first, dpl_text);
             TEST_CHECK_EQUAL(i->second, "two/two");
 
             TEST_CHECK(++i != l.end());
@@ -213,7 +213,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(i->second, " ");
 
             TEST_CHECK(++i != l.end());
-            TEST_CHECK_EQUAL(i->first, dpl_package);
+            TEST_CHECK_EQUAL(i->first, dpl_text);
             TEST_CHECK_EQUAL(i->second, "one/one");
 
             TEST_CHECK(++i != l.end());

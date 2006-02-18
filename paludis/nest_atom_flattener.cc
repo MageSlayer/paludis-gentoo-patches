@@ -17,15 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "dep_atom_flattener.hh"
-#include "dep_atom.hh"
+#include "nest_atom_flattener.hh"
+#include "nest_atom.hh"
 
 using namespace paludis;
 
-DepAtomFlattener::DepAtomFlattener(
+NestAtomFlattener::NestAtomFlattener(
         const Environment * const env,
         const PackageDatabaseEntry * const pkg,
-        DepAtom::ConstPointer a) :
+        NestAtom::ConstPointer a) :
     _env(env),
     _pkg(pkg),
     _a(a),
@@ -33,46 +33,36 @@ DepAtomFlattener::DepAtomFlattener(
 {
 }
 
-DepAtomFlattener::~DepAtomFlattener()
+NestAtomFlattener::~NestAtomFlattener()
 {
 }
 
-DepAtomFlattener::Iterator
-DepAtomFlattener::begin()
+NestAtomFlattener::Iterator
+NestAtomFlattener::begin()
 {
     if (! _done)
     {
-        _a->accept(static_cast<DepAtomVisitorTypes::ConstVisitor *>(this));
+        _a->accept(static_cast<NestAtomVisitorTypes::ConstVisitor *>(this));
         _done = true;
     }
 
     return _atoms.begin();
 }
 
-void DepAtomFlattener::visit(const AllDepAtom * a)
+void NestAtomFlattener::visit(const AllNestAtom * a)
 {
     std::for_each(a->begin(), a->end(), accept_visitor(
-                static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
+                static_cast<NestAtomVisitorTypes::ConstVisitor *>(this)));
 }
 
-void DepAtomFlattener::visit(const AnyDepAtom *)
-{
-    throw paludis::InternalError(PALUDIS_HERE, "Not allowed an AnyDepAtom");
-}
-
-void DepAtomFlattener::visit(const UseDepAtom * u)
+void NestAtomFlattener::visit(const UseNestAtom * u)
 {
     if (_env->query_use(u->flag(), _pkg) ^ u->inverse())
         std::for_each(u->begin(), u->end(), accept_visitor(
-                    static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
+                    static_cast<NestAtomVisitorTypes::ConstVisitor *>(this)));
 }
 
-void DepAtomFlattener::visit(const BlockDepAtom *)
-{
-    throw paludis::InternalError(PALUDIS_HERE, "Not allowed a BlockDepAtom");
-}
-
-void DepAtomFlattener::visit(const PackageDepAtom * p)
+void NestAtomFlattener::visit(const TextNestAtom * p)
 {
     _atoms.push_back(p);
 }

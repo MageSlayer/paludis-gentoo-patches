@@ -48,7 +48,7 @@ enum DepParserState
 };
 
 CompositeDepAtom::ConstPointer
-DepParser::parse(const std::string & s, const DepParserOptions & opts)
+DepParser::parse(const std::string & s)
 {
     Context context("When parsing dependency string '" + s + "':");
 
@@ -75,7 +75,7 @@ DepParser::parse(const std::string & s, const DepParserOptions & opts)
                             case dpl_whitespace:
                                  continue;
 
-                            case dpl_package:
+                            case dpl_text:
                                  {
                                      if (i->second.empty())
                                          throw DepStringParseError(i->second, "Empty package name");
@@ -110,10 +110,6 @@ DepParser::parse(const std::string & s, const DepParserOptions & opts)
 
                             case dpl_double_bar:
                                  {
-                                     if (! opts[dpo_allow_any_blocks])
-                                         throw DepStringParseError(s,
-                                                 "|| () blocks are disallowed here");
-
                                      CompositeDepAtom::Pointer a(new AnyDepAtom);
                                      stack.top()->add_child(a);
                                      stack.push(a);
@@ -160,7 +156,7 @@ DepParser::parse(const std::string & s, const DepParserOptions & opts)
                                 state = dps_had_double_bar_space;
                                 continue;
 
-                            case dpl_package:
+                            case dpl_text:
                             case dpl_use_flag:
                             case dpl_double_bar:
                             case dpl_open_paren:
@@ -183,7 +179,7 @@ DepParser::parse(const std::string & s, const DepParserOptions & opts)
                                 continue;
 
                             case dpl_whitespace:
-                            case dpl_package:
+                            case dpl_text:
                             case dpl_use_flag:
                             case dpl_double_bar:
                             case dpl_close_paren:
@@ -203,7 +199,7 @@ DepParser::parse(const std::string & s, const DepParserOptions & opts)
                                 state = dps_initial;
                                 continue;
 
-                            case dpl_package:
+                            case dpl_text:
                             case dpl_use_flag:
                             case dpl_double_bar:
                             case dpl_open_paren:
@@ -224,7 +220,7 @@ DepParser::parse(const std::string & s, const DepParserOptions & opts)
                                 state = dps_had_use_flag_space;
                                 continue;
 
-                            case dpl_package:
+                            case dpl_text:
                             case dpl_use_flag:
                             case dpl_double_bar:
                             case dpl_open_paren:
@@ -246,7 +242,7 @@ DepParser::parse(const std::string & s, const DepParserOptions & opts)
                                 continue;
 
                             case dpl_whitespace:
-                            case dpl_package:
+                            case dpl_text:
                             case dpl_use_flag:
                             case dpl_double_bar:
                             case dpl_close_paren:
@@ -269,15 +265,6 @@ DepParser::parse(const std::string & s, const DepParserOptions & opts)
     stack.pop();
     if (! stack.empty())
         throw DepStringNestingError(s);
-    return result;
-}
-
-DepParserOptions
-DepParser::default_options()
-{
-    DepParserOptions result;
-    result.set(dpo_qualified_package_names);
-    result.set(dpo_allow_any_blocks);
     return result;
 }
 
