@@ -809,3 +809,16 @@ PortageRepository::do_is_expand_flag(const UseFlagName & u) const
     return false;
 }
 
+bool
+PortageRepository::do_is_licence(const std::string & s) const
+{
+    FSEntry l(_implementation->location);
+    l /= "licenses";
+
+    if (! l.is_directory())
+        return false;
+
+    l /= s;
+    return l.exists() && l.is_regular_file();
+}
+

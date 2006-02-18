@@ -138,6 +138,11 @@ namespace paludis
              */
             virtual bool do_is_expand_flag(const UseFlagName &) const = 0;
 
+            /**
+             * Override in descendents: is this a licence?
+             */
+            virtual bool do_is_licence(const std::string &) const = 0;
+
         public:
             /**
              * Destructor.
@@ -335,6 +340,14 @@ namespace paludis
             bool is_expand_flag(const UseFlagName & u) const
             {
                 return do_is_expand_flag(u);
+            }
+
+            /**
+             * Query whether the specified item is a licence.
+             */
+            bool is_license(const std::string & u) const
+            {
+                return do_is_licence(u);
             }
     };
 

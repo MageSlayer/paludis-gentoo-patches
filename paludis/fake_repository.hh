@@ -75,6 +75,8 @@ namespace paludis
 
             virtual bool do_is_expand_flag(const UseFlagName &) const;
 
+            virtual bool do_is_licence(const std::string &) const;
+
         public:
             /**
              * Constructor.

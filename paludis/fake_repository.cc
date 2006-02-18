@@ -199,3 +199,9 @@ FakeRepository::do_is_expand_flag(const UseFlagName &) const
     return false;
 }
 
+bool
+FakeRepository::do_is_licence(const std::string &) const
+{
+    return false;
+}
+

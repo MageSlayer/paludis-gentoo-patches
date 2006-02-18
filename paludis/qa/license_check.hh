@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_QA_DEP_FLAGS_CHECK_HH
-#define PALUDIS_GUARD_PALUDIS_QA_DEP_FLAGS_CHECK_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_QA_LICENSE_CHECK_HH
+#define PALUDIS_GUARD_PALUDIS_QA_LICENSE_CHECK_HH 1
 
 #include <paludis/qa/ebuild_check.hh>
 #include <string>
@@ -27,11 +27,11 @@ namespace paludis
 {
     namespace qa
     {
-        class DepFlagsCheck :
+        class LicenseCheck :
             public EbuildCheck
         {
             public:
-                DepFlagsCheck();
+                LicenseCheck();
 
                 CheckResult operator() (const EbuildCheckData &) const;
 
@@ -39,12 +39,12 @@ namespace paludis
 
                 virtual std::string describe() const
                 {
-                    return "Checks use? flags in metadata";
+                    return "Checks that LICENSE is sane";
                 }
         };
 
-        static const EbuildCheckMaker::RegisterMaker register_dep_flags_check(
-                DepFlagsCheck::identifier(), &MakeEbuildCheck<DepFlagsCheck>::make_ebuild_check);
+        static const EbuildCheckMaker::RegisterMaker register_license_check(
+                LicenseCheck::identifier(), &MakeEbuildCheck<LicenseCheck>::make_ebuild_check);
     }
 }
 
