@@ -45,7 +45,11 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
 
             if (keywords.end() != keywords.find(KeywordName("-*")) &&
                     keywords.size() == 1)
-                result << Message(qal_major, "-* abuse");
+                result << Message(qal_major, "-* abuse (use package.mask and keyword properly)");
+
+            else if (keywords.empty())
+                result << Message(qal_major, "KEYWORDS empty");
+
         }
         catch (const NameError &)
         {
