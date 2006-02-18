@@ -45,14 +45,15 @@ namespace
                 return;
 
             std::string::size_type p(std::string::npos);
-            if ((! fetch_restrict) && std::string::npos == ((p = a->text().find("://"))))
+            if (std::string::npos == ((p = a->text().find("://"))) && ! fetch_restrict)
                 result << Message(qal_major, "No protocol found for '" + a->text() +
                             "' and not fetch restricted");
 
-            else if (("http" != a->text().substr(0, p)) &&
-                    ("https" != a->text().substr(0, p)) &&
-                    ("mirror" != a->text().substr(0, p)) &&
-                    ("ftp" != a->text().substr(0, p)))
+            else if ((std::string::npos != p) &&
+                    (("http" != a->text().substr(0, p)) &&
+                     ("https" != a->text().substr(0, p)) &&
+                     ("mirror" != a->text().substr(0, p)) &&
+                     ("ftp" != a->text().substr(0, p))))
                 result << Message(qal_major, "Unrecognised protocol for '" + a->text() + "'");
 
             else if ((std::string::npos != a->text().find("dev.gentoo.org")) ||
