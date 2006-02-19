@@ -19,6 +19,7 @@
 #include "args_visitor.hh"
 #include "args_option.hh"
 #include "bad_value.hh"
+#include "missing_value.hh"
 
 #include <paludis/destringify.hh>
 
@@ -36,7 +37,7 @@ const std::string& ArgsVisitor::get_param(const ArgsOption * const arg)
 {
     if (++(*_args_index) == _args_end)
     {
-        throw BadValue("--" + arg->long_name(), "<none>");
+        throw MissingValue("--" + arg->long_name());
     }
     return **_args_index;
 }

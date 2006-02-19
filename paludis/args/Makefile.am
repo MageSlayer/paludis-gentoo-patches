@@ -14,6 +14,7 @@ libpaludisargs_a_SOURCES = \
 	bad_argument.hh bad_argument.cc \
 	args_visitor.hh args_visitor.cc \
 	bad_value.hh	bad_value.cc \
+	missing_value.hh missing_value.cc \
 	args_dumper.hh	args_dumper.cc
 
 TESTS_ENVIRONMENT = env -u PALUDIS_OPTIONS TEST_SCRIPT_DIR="$(srcdir)/" $(SHELL) $(top_srcdir)/test/run_test.sh

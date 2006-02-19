@@ -18,7 +18,7 @@
  */
 
 #include <paludis/args/args.hh>
-#include <paludis/args/bad_value.hh>
+#include <paludis/args/missing_value.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -117,7 +117,7 @@ namespace test_cases
         {
             char *args[] = { "program-name", "-e" };
             CommandLine c1;
-            TEST_CHECK_THROWS(c1.run(2, args), BadValue);
+            TEST_CHECK_THROWS(c1.run(2, args), MissingValue);
         }
     } test_args_no_param;
 }
