@@ -88,7 +88,7 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         static std::set<QualifiedPackageName> suspicious_depend;
         if (suspicious_depend.empty())
         {
-            suspicious_depend.insert(QualifiedPackageName("vitrual/libc"));
+            suspicious_depend.insert(QualifiedPackageName("virtual/libc"));
         }
 
         Checker depend_checker(result, "DEPEND", suspicious_depend);
