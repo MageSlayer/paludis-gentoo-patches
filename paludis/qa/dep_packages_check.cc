@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "rdepend_packages_check.hh"
+#include "dep_packages_check.hh"
 #include <paludis/dep_parser.hh>
 #include <paludis/dep_atom.hh>
 
@@ -68,12 +68,12 @@ namespace
     };
 }
 
-RdependPackagesCheck::RdependPackagesCheck()
+DepPackagesCheck::DepPackagesCheck()
 {
 }
 
 CheckResult
-RdependPackagesCheck::operator() (const EbuildCheckData & e) const
+DepPackagesCheck::operator() (const EbuildCheckData & e) const
 {
     CheckResult result(stringify(e.get<ecd_name>()) + "-" + stringify(e.get<ecd_version>()),
             identifier());
@@ -85,22 +85,32 @@ RdependPackagesCheck::operator() (const EbuildCheckData & e) const
         VersionMetadata::ConstPointer metadata(
                 e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
 
-        static std::set<QualifiedPackageName> suspicious;
-        if (suspicious.empty())
+        static std::set<QualifiedPackageName> suspicious_depend;
+        if (suspicious_depend.empty())
         {
-            suspicious.insert(QualifiedPackageName("app-arch/rpm2targz"));
-            suspicious.insert(QualifiedPackageName("app-arch/unzip"));
-            suspicious.insert(QualifiedPackageName("dev-util/pkgconfig"));
-            suspicious.insert(QualifiedPackageName("sys-devel/autoconf"));
-            suspicious.insert(QualifiedPackageName("sys-devel/automake"));
-            suspicious.insert(QualifiedPackageName("sys-devel/flex"));
-            suspicious.insert(QualifiedPackageName("sys-devel/gettext"));
-            suspicious.insert(QualifiedPackageName("sys-devel/libtool"));
-            suspicious.insert(QualifiedPackageName("sys-devel/patch"));
-            suspicious.insert(QualifiedPackageName("app-doc/doxygen"));
+            suspicious_depend.insert(QualifiedPackageName("vitrual/libc"));
         }
 
-        Checker rdepend_checker(result, "RDEPEND", suspicious);
+        Checker depend_checker(result, "DEPEND", suspicious_depend);
+        std::string depend(metadata->get(vmk_depend));
+        DepParser::parse(depend)->accept(&depend_checker);
+
+        static std::set<QualifiedPackageName> suspicious_rdepend;
+        if (suspicious_rdepend.empty())
+        {
+            suspicious_rdepend.insert(QualifiedPackageName("app-arch/rpm2targz"));
+            suspicious_rdepend.insert(QualifiedPackageName("app-arch/unzip"));
+            suspicious_rdepend.insert(QualifiedPackageName("dev-util/pkgconfig"));
+            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/autoconf"));
+            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/automake"));
+            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/flex"));
+            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/gettext"));
+            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/libtool"));
+            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/patch"));
+            suspicious_rdepend.insert(QualifiedPackageName("app-doc/doxygen"));
+        }
+
+        Checker rdepend_checker(result, "RDEPEND", suspicious_rdepend);
         std::string rdepend(metadata->get(vmk_rdepend));
         DepParser::parse(rdepend)->accept(&rdepend_checker);
     }
@@ -118,9 +128,9 @@ RdependPackagesCheck::operator() (const EbuildCheckData & e) const
 }
 
 const std::string &
-RdependPackagesCheck::identifier()
+DepPackagesCheck::identifier()
 {
-    static const std::string id("rdepend packages");
+    static const std::string id("depend packages");
     return id;
 }
 

@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_QA_RDEPEND_PACKAGES_CHECK_HH
-#define PALUDIS_GUARD_PALUDIS_QA_RDEPEND_PACKAGES_CHECK_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_QA_DEP_PACKAGES_CHECK_HH
+#define PALUDIS_GUARD_PALUDIS_QA_DEP_PACKAGES_CHECK_HH 1
 
 #include <paludis/qa/ebuild_check.hh>
 #include <string>
@@ -27,11 +27,11 @@ namespace paludis
 {
     namespace qa
     {
-        class RdependPackagesCheck :
+        class DepPackagesCheck :
             public EbuildCheck
         {
             public:
-                RdependPackagesCheck();
+                DepPackagesCheck();
 
                 CheckResult operator() (const EbuildCheckData &) const;
 
@@ -39,12 +39,12 @@ namespace paludis
 
                 virtual std::string describe() const
                 {
-                    return "Checks packages that usually should not be in RDEPEND";
+                    return "Checks for packages that usually should not be in *DEPEND";
                 }
         };
 
-        static const EbuildCheckMaker::RegisterMaker register_rdepend_packages_check(
-                RdependPackagesCheck::identifier(), &MakeEbuildCheck<RdependPackagesCheck>::make_ebuild_check);
+        static const EbuildCheckMaker::RegisterMaker register_dep_packages_check(
+                DepPackagesCheck::identifier(), &MakeEbuildCheck<DepPackagesCheck>::make_ebuild_check);
     }
 }
 

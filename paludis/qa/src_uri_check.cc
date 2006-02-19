@@ -60,6 +60,8 @@ namespace
                     (std::string::npos != a->text().find("cvs.gentoo.org")) ||
                     (std::string::npos != a->text().find("toucan.gentoo.org")) ||
                     (std::string::npos != a->text().find("emu.gentoo.org")) ||
+                    (std::string::npos != a->text().find("berlios.de")) ||
+                    (std::string::npos != a->text().find("alpha.gnu.org")) ||
                     (std::string::npos != a->text().find("geocities.com")))
                 result << Message(qal_major, "Unreliable host for '" + a->text() + "'");
         }
