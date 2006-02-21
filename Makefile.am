@@ -8,5 +8,10 @@ SUBDIRS = misc test paludis ebuild src doc
 doxygen :
 	$(MAKE) -C doc doxygen
 
-
+all-local :
+	@echo
+	@echo "*********************************"
+	@echo "You should run 'make check' next."
+	@echo "*********************************"
+	@echo
 
