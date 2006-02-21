@@ -55,6 +55,8 @@ namespace paludis
 
             void visit(const PackageDepAtom * const);
 
+            void visit(const PlainTextDepAtom * const);
+
             void visit(const BlockDepAtom * const);
             ///}
     };

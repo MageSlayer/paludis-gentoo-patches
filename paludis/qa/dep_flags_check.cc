@@ -20,8 +20,7 @@
 #include "dep_flags_check.hh"
 #include <paludis/dep_parser.hh>
 #include <paludis/dep_atom.hh>
-#include <paludis/nest_parser.hh>
-#include <paludis/nest_atom.hh>
+#include <paludis/dep_parser.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -29,8 +28,7 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepAtomVisitorTypes::ConstVisitor,
-        NestAtomVisitorTypes::ConstVisitor
+        DepAtomVisitorTypes::ConstVisitor
     {
         CheckResult & result;
         const std::string role;
@@ -65,40 +63,13 @@ namespace
             if (env->package_database()->fetch_repository(env->package_database()->
                         favourite_repository())->is_arch_flag(u->flag()))
             {
-                if (u->inverse())
-                    result << Message(qal_maybe, "Inverse arch flag '" + stringify(u->flag()) +
-                            "' in " + role);
-            }
-            else if (env->package_database()->fetch_repository(env->package_database()->
-                        favourite_repository())->is_expand_flag(u->flag()))
-            {
-            }
-            else if (iuse.end() == iuse.find(u->flag()))
-                result << Message(qal_major, "Conditional flag '" + stringify(u->flag()) +
-                        "' in " + role + " not in IUSE");
-
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
-        }
-
-        void visit(const BlockDepAtom * const)
-        {
-        }
-
-        void visit(const TextNestAtom * const)
-        {
-        }
-
-        void visit(const AllNestAtom * const a)
-        {
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const UseNestAtom * const u)
-        {
-            if (env->package_database()->fetch_repository(env->package_database()->
-                        favourite_repository())->is_arch_flag(u->flag()))
-            {
-                if (role != "SRC_URI")
+                if (role == "DEPEND" || role == "RDEPEND" || role == "PDEPEND")
+                {
+                    if (u->inverse())
+                        result << Message(qal_maybe, "Inverse arch flag '" + stringify(u->flag()) +
+                                "' in " + role);
+                }
+                else if (role != "SRC_URI")
                     result << Message(qal_major, "Arch flag '" + stringify(u->flag()) +
                             "' in " + role);
             }
@@ -111,6 +82,14 @@ namespace
                         "' in " + role + " not in IUSE");
 
             std::for_each(u->begin(), u->end(), accept_visitor(this));
+        }
+
+        void visit(const PlainTextDepAtom * const)
+        {
+        }
+
+        void visit(const BlockDepAtom * const)
+        {
         }
     };
 }
@@ -150,15 +129,15 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
 
         Checker provide_checker(result, "PROVIDE", e.get<ecd_environment>(), iuse);
         std::string provide(metadata->get(vmk_provide));
-        NestParser::parse(provide)->accept(&provide_checker);
+        DepParser::parse(provide, DepParserPolicy<PackageDepAtom, false>::get_instance())->accept(&provide_checker);
 
         Checker license_checker(result, "LICENSE", e.get<ecd_environment>(), iuse);
         std::string license(metadata->get(vmk_license));
-        NestParser::parse(license)->accept(&license_checker);
+        DepParser::parse(license, DepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&license_checker);
 
         Checker src_uri_checker(result, "SRC_URI", e.get<ecd_environment>(), iuse);
         std::string src_uri(metadata->get(vmk_src_uri));
-        NestParser::parse(src_uri)->accept(&src_uri_checker);
+        DepParser::parse(src_uri, DepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&src_uri_checker);
     }
     catch (const InternalError &)
     {

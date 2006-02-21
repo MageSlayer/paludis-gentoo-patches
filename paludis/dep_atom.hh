@@ -43,6 +43,7 @@ namespace paludis
     class DepAtom;
     class CompositeDepAtom;
     class PackageDepAtom;
+    class PlainTextDepAtom;
     class AllDepAtom;
     class AnyDepAtom;
     class UseDepAtom;
@@ -51,7 +52,7 @@ namespace paludis
     /**
      * Visitor types for a visitor that can visit a DepAtom heirarchy.
      */
-    typedef VisitorTypes<PackageDepAtom *, AllDepAtom *, AnyDepAtom *,
+    typedef VisitorTypes<PackageDepAtom *, PlainTextDepAtom *, AllDepAtom *, AnyDepAtom *,
             UseDepAtom *, BlockDepAtom *> DepAtomVisitorTypes;
 
     /**
@@ -200,6 +201,26 @@ namespace paludis
     };
 
     /**
+     * A StringDepAtom represents a non-composite dep atom with an associated
+     * piece of text.
+     */
+    class StringDepAtom :
+        public DepAtom
+    {
+        private:
+            const std::string _str;
+
+        protected:
+            StringDepAtom(const std::string &);
+
+        public:
+            const std::string & text() const
+            {
+                return _str;
+            }
+    };
+
+    /**
      * A PackageDepAtom represents a package name (for example,
      * 'app-editors/vim'), possibly with associated version and SLOT
      * restrictions.
@@ -207,7 +228,7 @@ namespace paludis
      * \ingroup DepResolver
      */
     class PackageDepAtom :
-        public DepAtom,
+        public StringDepAtom,
         public Visitable<PackageDepAtom, DepAtomVisitorTypes>
     {
         private:
@@ -221,14 +242,6 @@ namespace paludis
              * Constructor, no version or SLOT restrictions.
              */
             PackageDepAtom(const QualifiedPackageName & package);
-
-            /**
-             * Constructor, with restrictions.
-             */
-            PackageDepAtom(const QualifiedPackageName & package,
-                    VersionOperator version_operator,
-                    CountedPtr<VersionSpec, count_policy::ExternalCountTag> version_spec,
-                    CountedPtr<SlotName, count_policy::ExternalCountTag> slot);
 
             /**
              * Constructor, parse restrictions ourself.
@@ -276,6 +289,26 @@ namespace paludis
             typedef CountedPtr<const PackageDepAtom, count_policy::InternalCountTag> ConstPointer;
     };
 
+    /**
+     * A PlainTextDepAtom represents a plain text entry (for example,
+     * a URI in SRC_URI).
+     *
+     * \ingroup DepResolver
+     */
+    class PlainTextDepAtom :
+        public StringDepAtom,
+        public Visitable<PlainTextDepAtom, DepAtomVisitorTypes>
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            PlainTextDepAtom(const std::string &);
+
+            typedef CountedPtr<PlainTextDepAtom, count_policy::InternalCountTag> Pointer;
+            typedef CountedPtr<const PlainTextDepAtom, count_policy::InternalCountTag> ConstPointer;
+    };
+
     class PackageDepAtomError :
         public Exception
     {
@@ -296,7 +329,7 @@ namespace paludis
      * \ingroup DepResolver
      */
     class BlockDepAtom :
-        public DepAtom,
+        public StringDepAtom,
         public Visitable<BlockDepAtom, DepAtomVisitorTypes>
     {
         private:

@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_NEST_ATOM_FLATTENER_HH
-#define PALUDIS_GUARD_PALUDIS_NEST_ATOM_FLATTENER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH
+#define PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH 1
 
 #include <paludis/attributes.hh>
-#include <paludis/nest_atom.hh>
+#include <paludis/dep_atom.hh>
 #include <paludis/environment.hh>
 #include <paludis/instantiation_policy.hh>
 #include <paludis/package_database.hh>
@@ -30,49 +30,52 @@
 namespace paludis
 {
     /**
-     * Extract the enabled components of a nest heirarchy for a particular
+     * Extract the enabled components of a dep heirarchy for a particular
      * package.
      */
-    class NestAtomFlattener :
-        private InstantiationPolicy<NestAtomFlattener, instantiation_method::NonCopyableTag>,
-        protected NestAtomVisitorTypes::ConstVisitor
+    class DepAtomFlattener :
+        private InstantiationPolicy<DepAtomFlattener, instantiation_method::NonCopyableTag>,
+        protected DepAtomVisitorTypes::ConstVisitor
     {
         private:
             const Environment * const _env;
 
             const PackageDatabaseEntry * const _pkg;
 
-            NestAtom::ConstPointer _a;
+            DepAtom::ConstPointer _a;
 
-            mutable std::list<const TextNestAtom *> _atoms;
+            mutable std::list<const StringDepAtom *> _atoms;
 
             mutable bool _done;
 
         protected:
             ///\name Visit methods
             ///{
-            void visit(const AllNestAtom *);
-            void visit(const UseNestAtom *);
-            void visit(const TextNestAtom *);
+            void visit(const AllDepAtom *);
+            void visit(const AnyDepAtom *) PALUDIS_ATTRIBUTE((noreturn));
+            void visit(const UseDepAtom *);
+            void visit(const PlainTextDepAtom *);
+            void visit(const PackageDepAtom *);
+            void visit(const BlockDepAtom *);
             ///}
 
         public:
             /**
              * Constructor.
              */
-            NestAtomFlattener(const Environment * const,
+            DepAtomFlattener(const Environment * const,
                     const PackageDatabaseEntry * const,
-                    const NestAtom::ConstPointer);
+                    const DepAtom::ConstPointer);
 
             /**
              * Destructor.
              */
-            ~NestAtomFlattener();
+            ~DepAtomFlattener();
 
             /**
              * Iterate over our dep atoms.
              */
-            typedef std::list<const TextNestAtom *>::const_iterator Iterator;
+            typedef std::list<const StringDepAtom *>::const_iterator Iterator;
 
             /**
              * Iterator to the start of our dep atoms.

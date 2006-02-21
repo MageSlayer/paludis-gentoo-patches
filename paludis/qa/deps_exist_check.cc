@@ -79,6 +79,10 @@ namespace
                 result << Message(qal_maybe, "No match for " + role + " block '!"
                         + stringify(*b->blocked_atom()) + "'");
         }
+
+        void visit(const PlainTextDepAtom * const)
+        {
+        }
     };
 }
 

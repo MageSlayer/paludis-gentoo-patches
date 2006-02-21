@@ -19,7 +19,7 @@
 
 #include "container_entry.hh"
 #include "dep_atom.hh"
-#include "nest_atom_flattener.hh"
+#include "dep_atom_flattener.hh"
 #include "dep_list.hh"
 #include "dep_parser.hh"
 #include "filter_insert_iterator.hh"
@@ -28,9 +28,6 @@
 #include "join.hh"
 #include "log.hh"
 #include "match_package.hh"
-#include "nest_parser.hh"
-#include "nest_atom.hh"
-#include "nest_atom_flattener.hh"
 #include "save.hh"
 #include "stringify.hh"
 
@@ -385,7 +382,8 @@ DepList::visit(const PackageDepAtom * const p)
     /// \bug PROVIDE can contain use? blocks.
     if (! metadata->get(vmk_provide).empty())
     {
-        NestAtom::ConstPointer provide(NestParser::parse(metadata->get(vmk_provide)));
+        DepAtom::ConstPointer provide(DepParser::parse(metadata->get(vmk_provide),
+                DepParserPolicy<PackageDepAtom, false>::get_instance()));
 
         CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
@@ -396,9 +394,9 @@ DepList::visit(const PackageDepAtom * const p)
                         _implementation->current_package->get<dle_version>(),
                         _implementation->current_package->get<dle_repository>()));
 
-        NestAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
+        DepAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
 
-        for (NestAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+        for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
         {
             PackageDepAtom pp(QualifiedPackageName((*p)->text()));
             if (_implementation->merge_list.end() != std::find_if(
@@ -598,8 +596,9 @@ DepList::visit(const BlockDepAtom * const d)
                 continue;
             }
 
-            NestAtom::ConstPointer provide(NestParser::parse(
-                        _implementation->current_package->get<dle_metadata>()->get(vmk_provide)));
+            DepAtom::ConstPointer provide(DepParser::parse(
+                        _implementation->current_package->get<dle_metadata>()->get(vmk_provide),
+                        DepParserPolicy<PackageDepAtom, false>::get_instance()));
 
             CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
@@ -610,10 +609,10 @@ DepList::visit(const BlockDepAtom * const d)
                             _implementation->current_package->get<dle_version>(),
                             _implementation->current_package->get<dle_repository>()));
 
-            NestAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
+            DepAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
 
             bool skip(false);
-            for (IndirectIterator<NestAtomFlattener::Iterator, const TextNestAtom> i(f.begin()),
+            for (IndirectIterator<DepAtomFlattener::Iterator, const StringDepAtom> i(f.begin()),
                     i_end(f.end()) ; i != i_end ; ++i)
                 if (QualifiedPackageName(i->text()) == d->blocked_atom()->package())
                 {
@@ -676,5 +675,11 @@ void
 DepList::set_max_stack_depth(const int value)
 {
     _implementation->max_stack_depth = value;
+}
+
+void
+DepList::visit(const PlainTextDepAtom * const t)
+{
+    throw InternalError(PALUDIS_HERE, "Got unexpected PlainTextDepAtom '" + t->text() + "'");
 }
 

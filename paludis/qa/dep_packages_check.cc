@@ -62,6 +62,10 @@ namespace
             std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
+        void visit(const PlainTextDepAtom * const)
+        {
+        }
+
         void visit(const BlockDepAtom * const)
         {
         }

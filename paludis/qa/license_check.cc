@@ -18,8 +18,8 @@
  */
 
 #include "license_check.hh"
-#include <paludis/nest_atom.hh>
-#include <paludis/nest_parser.hh>
+#include <paludis/dep_atom.hh>
+#include <paludis/dep_parser.hh>
 #include <paludis/tokeniser.hh>
 
 using namespace paludis;
@@ -28,7 +28,7 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        NestAtomVisitorTypes::ConstVisitor
+        DepAtomVisitorTypes::ConstVisitor
     {
         CheckResult & result;
         const Environment * const env;
@@ -39,23 +39,43 @@ namespace
         {
         }
 
-        void visit(const TextNestAtom * const a)
+        void visit(const PlainTextDepAtom * const a)
         {
             if (! env->package_database()->fetch_repository(
                         env->package_database()->favourite_repository())->is_license(a->text()))
                 result << Message(qal_major, "Item '" + a->text() + "' is not a licence");
         }
 
-        void visit(const AllNestAtom * const a)
+        void visit(const AllDepAtom * const a)
         {
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
-        void visit(const UseNestAtom * const u)
+        void visit(const AnyDepAtom * const a)
+        {
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const UseDepAtom * const u)
         {
             std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
+
+        void visit(const BlockDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const PackageDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
     };
+
+    void
+    Checker::visit(const BlockDepAtom * const)
+    {
+        throw InternalError(PALUDIS_HERE, "Unexpected BlockDepAtom");
+    }
+
+    void
+    Checker::visit(const PackageDepAtom * const)
+    {
+        throw InternalError(PALUDIS_HERE, "Unexpected PackageDepAtom");
+    }
 }
 
 LicenseCheck::LicenseCheck()
@@ -79,10 +99,11 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
 
             std::string license(metadata->get(vmk_license));
 
-            NestAtom::ConstPointer license_parts(0);
+            DepAtom::ConstPointer license_parts(0);
             try
             {
-                license_parts = NestParser::parse(license);
+                license_parts = DepParser::parse(license,
+                        DepParserPolicy<PlainTextDepAtom, true>::get_instance());
 
                 Checker checker(result, e.get<ecd_environment>());
                 license_parts->accept(&checker);

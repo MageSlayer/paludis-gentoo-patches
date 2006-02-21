@@ -72,6 +72,12 @@ DepAtomPrettyPrinter::visit(const PackageDepAtom * const p)
 }
 
 void
+DepAtomPrettyPrinter::visit(const PlainTextDepAtom * const p)
+{
+    _s << std::string(_indent, ' ') << p->text() << std::endl;
+}
+
+void
 DepAtomPrettyPrinter::visit(const BlockDepAtom * const b)
 {
     _s << std::string(_indent, ' ') << "!" << *b->blocked_atom() << std::endl;

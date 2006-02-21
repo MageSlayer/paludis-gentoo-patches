@@ -48,7 +48,7 @@ enum DepParserState
 };
 
 CompositeDepAtom::ConstPointer
-DepParser::parse(const std::string & s)
+DepParser::parse(const std::string & s, const DepParserPolicyInterface * const policy)
 {
     Context context("When parsing dependency string '" + s + "':");
 
@@ -76,17 +76,11 @@ DepParser::parse(const std::string & s)
                                  continue;
 
                             case dpl_text:
+                                 /// \bug VV policy
                                  {
                                      if (i->second.empty())
-                                         throw DepStringParseError(i->second, "Empty package name");
-                                     if ('!' == i->second.at(0))
-                                         stack.top()->add_child(DepAtom::Pointer(
-                                                     new BlockDepAtom(
-                                                         PackageDepAtom::Pointer(new PackageDepAtom(
-                                                                 i->second.substr(1))))));
-                                     else
-                                         stack.top()->add_child(DepAtom::Pointer(
-                                                     new PackageDepAtom(i->second)));
+                                         throw DepStringParseError(i->second, "Empty text entry");
+                                     stack.top()->add_child(policy->new_text_atom(i->second));
                                  }
                                  continue;
 
@@ -109,12 +103,16 @@ DepParser::parse(const std::string & s)
                                  continue;
 
                             case dpl_double_bar:
+                                 if (policy->permit_any_deps())
                                  {
                                      CompositeDepAtom::Pointer a(new AnyDepAtom);
                                      stack.top()->add_child(a);
                                      stack.push(a);
                                      state = dps_had_double_bar;
                                  }
+                                 else
+                                     throw DepStringParseError(s, "|| is not allowed here");
+
                                  continue;
 
                             case dpl_use_flag:

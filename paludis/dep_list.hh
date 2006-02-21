@@ -221,6 +221,7 @@ namespace paludis
         protected:
             ///\name Visit functions
             ///{
+            void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
             void visit(const PackageDepAtom * const);
             void visit(const UseDepAtom * const);
             void visit(const AnyDepAtom * const);

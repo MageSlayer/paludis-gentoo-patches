@@ -65,6 +65,12 @@ DepAtomDumper::visit(const PackageDepAtom * const p)
 }
 
 void
+DepAtomDumper::visit(const PlainTextDepAtom * const t)
+{
+    *_o << "<text>" << t->text() << "</text>";
+}
+
+void
 DepAtomDumper::visit(const BlockDepAtom * const b)
 {
     *_o << "<block>";

@@ -66,11 +66,13 @@ UseDepAtom::as_use_dep_atom() const
 }
 
 BlockDepAtom::BlockDepAtom(PackageDepAtom::ConstPointer a) :
+    StringDepAtom("!" + a->text()),
     _atom(a)
 {
 }
 
 PackageDepAtom::PackageDepAtom(const QualifiedPackageName & package) :
+    StringDepAtom(stringify(package)),
     _package(package),
     _version_operator("="),
     _version_spec(0),
@@ -78,19 +80,8 @@ PackageDepAtom::PackageDepAtom(const QualifiedPackageName & package) :
 {
 }
 
-PackageDepAtom::PackageDepAtom(
-        const QualifiedPackageName & package,
-        VersionOperator version_operator,
-        CountedPtr<VersionSpec, count_policy::ExternalCountTag> version_spec_ptr,
-        CountedPtr<SlotName, count_policy::ExternalCountTag> slot_ptr) :
-    _package(package),
-    _version_operator(version_operator),
-    _version_spec(version_spec_ptr),
-    _slot(slot_ptr)
-{
-}
-
 PackageDepAtom::PackageDepAtom(const std::string & ss) :
+    StringDepAtom(ss),
     _package(CategoryNamePart("later"), PackageNamePart("later")),
     _version_operator("="),
     _version_spec(0),
@@ -190,6 +181,16 @@ paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
 
 PackageDepAtomError::PackageDepAtomError(const std::string & msg) throw () :
     Exception(msg)
+{
+}
+
+StringDepAtom::StringDepAtom(const std::string & s) :
+    _str(s)
+{
+}
+
+PlainTextDepAtom::PlainTextDepAtom(const std::string & s) :
+    StringDepAtom(s)
 {
 }
 

@@ -17,15 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "nest_atom_flattener.hh"
-#include "nest_atom.hh"
+#include "dep_atom_flattener.hh"
+#include "dep_atom.hh"
 
 using namespace paludis;
 
-NestAtomFlattener::NestAtomFlattener(
+DepAtomFlattener::DepAtomFlattener(
         const Environment * const env,
         const PackageDatabaseEntry * const pkg,
-        NestAtom::ConstPointer a) :
+        DepAtom::ConstPointer a) :
     _env(env),
     _pkg(pkg),
     _a(a),
@@ -33,36 +33,51 @@ NestAtomFlattener::NestAtomFlattener(
 {
 }
 
-NestAtomFlattener::~NestAtomFlattener()
+DepAtomFlattener::~DepAtomFlattener()
 {
 }
 
-NestAtomFlattener::Iterator
-NestAtomFlattener::begin()
+DepAtomFlattener::Iterator
+DepAtomFlattener::begin()
 {
     if (! _done)
     {
-        _a->accept(static_cast<NestAtomVisitorTypes::ConstVisitor *>(this));
+        _a->accept(static_cast<DepAtomVisitorTypes::ConstVisitor *>(this));
         _done = true;
     }
 
     return _atoms.begin();
 }
 
-void NestAtomFlattener::visit(const AllNestAtom * a)
+void DepAtomFlattener::visit(const AllDepAtom * a)
 {
     std::for_each(a->begin(), a->end(), accept_visitor(
-                static_cast<NestAtomVisitorTypes::ConstVisitor *>(this)));
+                static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
 }
 
-void NestAtomFlattener::visit(const UseNestAtom * u)
+void DepAtomFlattener::visit(const AnyDepAtom *)
+{
+    throw InternalError(PALUDIS_HERE, "Found unexpected AnyDepAtom");
+}
+
+void DepAtomFlattener::visit(const UseDepAtom * u)
 {
     if (_env->query_use(u->flag(), _pkg) ^ u->inverse())
         std::for_each(u->begin(), u->end(), accept_visitor(
-                    static_cast<NestAtomVisitorTypes::ConstVisitor *>(this)));
+                    static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
 }
 
-void NestAtomFlattener::visit(const TextNestAtom * p)
+void DepAtomFlattener::visit(const PlainTextDepAtom * p)
+{
+    _atoms.push_back(p);
+}
+
+void DepAtomFlattener::visit(const PackageDepAtom * p)
+{
+    _atoms.push_back(p);
+}
+
+void DepAtomFlattener::visit(const BlockDepAtom * p)
 {
     _atoms.push_back(p);
 }

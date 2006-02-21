@@ -76,10 +76,18 @@ namespace
             std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
+        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
+
         void visit(const BlockDepAtom * const)
         {
         }
     };
+
+    void Checker::visit(const PlainTextDepAtom * const t)
+    {
+        throw InternalError(PALUDIS_HERE, "Found unexpected PlainTextDepAtom '"
+                + t->text() + "'");
+    }
 }
 
 DepAnyCheck::DepAnyCheck()

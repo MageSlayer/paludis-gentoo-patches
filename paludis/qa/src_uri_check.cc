@@ -18,8 +18,8 @@
  */
 
 #include "src_uri_check.hh"
-#include <paludis/nest_atom.hh>
-#include <paludis/nest_parser.hh>
+#include <paludis/dep_atom.hh>
+#include <paludis/dep_parser.hh>
 #include <paludis/tokeniser.hh>
 
 using namespace paludis;
@@ -28,7 +28,7 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        NestAtomVisitorTypes::ConstVisitor
+        DepAtomVisitorTypes::ConstVisitor
     {
         CheckResult & result;
         bool fetch_restrict;
@@ -39,7 +39,7 @@ namespace
         {
         }
 
-        void visit(const TextNestAtom * const a)
+        void visit(const PlainTextDepAtom * const a)
         {
             if (a->text().empty())
                 return;
@@ -66,16 +66,37 @@ namespace
                 result << Message(qal_major, "Unreliable host for '" + a->text() + "'");
         }
 
-        void visit(const AllNestAtom * const a)
+        void visit(const AllDepAtom * const a)
         {
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
-        void visit(const UseNestAtom * const u)
+        void visit(const UseDepAtom * const u)
         {
             std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
+
+        void visit(const AnyDepAtom * const u)
+        {
+            result << Message(qal_major, "Unexpected || dep block");
+            std::for_each(u->begin(), u->end(), accept_visitor(this));
+        }
+
+        void visit(const BlockDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const PackageDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
     };
+
+    void
+    Checker::visit(const BlockDepAtom * const)
+    {
+        throw InternalError(PALUDIS_HERE, "Unexpected BlockDepAtom");
+    }
+
+    void
+    Checker::visit(const PackageDepAtom * const)
+    {
+        throw InternalError(PALUDIS_HERE, "Unexpected PackageDepAtom");
+    }
 }
 
 SrcUriCheck::SrcUriCheck()
@@ -99,10 +120,11 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
 
             std::string src_uri(metadata->get(vmk_src_uri));
 
-            NestAtom::ConstPointer src_uri_parts(0);
+            DepAtom::ConstPointer src_uri_parts(0);
             try
             {
-                src_uri_parts = NestParser::parse(src_uri);
+                src_uri_parts = DepParser::parse(src_uri,
+                        DepParserPolicy<PlainTextDepAtom, false>::get_instance());
 
                 std::set<std::string> restricts;
                 Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");

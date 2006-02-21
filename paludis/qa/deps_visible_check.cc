@@ -76,6 +76,10 @@ namespace
         void visit(const BlockDepAtom * const)
         {
         }
+
+        void visit(const PlainTextDepAtom * const)
+        {
+        }
     };
 }
 
