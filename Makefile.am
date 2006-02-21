@@ -10,8 +10,8 @@ doxygen :
 
 all-local :
 	@echo
-	@echo "*********************************"
-	@echo "You should run 'make check' next."
-	@echo "*********************************"
+	@echo "************************************************************"
+	@echo "You should run 'make check' if you have not already done so."
+	@echo "************************************************************"
 	@echo
 
