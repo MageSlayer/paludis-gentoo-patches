@@ -45,10 +45,7 @@ struct MatchRule::StringRule :
     std::string::size_type
     local_match(const std::string & t, std::string::size_type p) const
     {
-        if (p + s.length() <= t.length())
-            return (0 == t.compare(p, s.length(), s)) ? s.length() : std::string::npos;
-        else
-            return std::string::npos;
+        return (0 == t.compare(p, s.length(), s)) ? s.length() : std::string::npos;
     }
 };
 
@@ -67,9 +64,32 @@ struct MatchRule::SequenceRule :
     local_match(const std::string & t, std::string::size_type p) const
     {
         std::string::size_type l1(r1._rule->local_match(t, p)), l2(0);
+        if (std::string::npos == l1)
+            return l1;
+
+        l2 = r2._rule->local_match(t, p + l1);
+        return (std::string::npos == l2) ? l2 : l1 + l2;
+    }
+};
+
+struct MatchRule::EitherRule :
+    MatchRule::Rule
+{
+    const MatchRule r1, r2;
+
+    EitherRule(const MatchRule & rr1, const MatchRule & rr2) :
+        r1(rr1),
+        r2(rr2)
+    {
+    }
+
+    std::string::size_type
+    local_match(const std::string & t, std::string::size_type p) const
+    {
+        std::string::size_type l1(r1._rule->local_match(t, p));
         if (std::string::npos != l1)
-            l2 = r2._rule->local_match(t, p + l1);
-        return (std::string::npos == l2) ? l2 : p + l1 + l2;
+            return l1;
+        return r2._rule->local_match(t, p);
     }
 };
 
@@ -88,13 +108,9 @@ struct MatchRule::ZeroOrMoreRule :
     {
         std::string::size_type result(p), q;
         while (std::string::npos != ((q = r1._rule->local_match(t, result))))
-        {
-            if (0 == q)
-                break;
             result += q;
-        }
 
-        return result;
+        return result - p;
     }
 };
 
@@ -137,6 +153,12 @@ const MatchRule
 MatchRule::operator>> (const MatchRule & other) const
 {
     return MatchRule(CountedPtr<Rule>(new SequenceRule(*this, other)));
+}
+
+const MatchRule
+MatchRule::operator|| (const MatchRule & other) const
+{
+    return MatchRule(CountedPtr<Rule>(new EitherRule(*this, other)));
 }
 
 const MatchRule

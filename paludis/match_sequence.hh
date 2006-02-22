@@ -32,6 +32,7 @@ namespace paludis
             struct StringRule;
             struct SequenceRule;
             struct ZeroOrMoreRule;
+            struct EitherRule;
             struct EolRule;
 
             CountedPtr<Rule> _rule;
@@ -50,6 +51,8 @@ namespace paludis
             ~MatchRule();
 
             const MatchRule operator>> (const MatchRule &) const;
+
+            const MatchRule operator|| (const MatchRule &) const;
 
             const MatchRule operator* () const;
 

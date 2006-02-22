@@ -34,17 +34,26 @@ namespace test_case
         {
             typedef MatchRule X;
 
-            X r1(*X("\t") >> X("econf") >> X::eol());
+            TEST_CHECK(X::eol().match(""));
+            TEST_CHECK(! X::eol().match("a"));
+
+            X r1(*X("\t") >> X("econf") >> *X(" ") >> (X::eol() || (X("||") >> *X(" ") >> X("die"))));
 
             TEST_CHECK(r1.match("econf"));
             TEST_CHECK(r1.match("\teconf"));
             TEST_CHECK(r1.match("\t\teconf"));
+            TEST_CHECK(r1.match("\t\teconf  "));
             TEST_CHECK(! r1.match(" econf"));
             TEST_CHECK(! r1.match("\tecong"));
             TEST_CHECK(! r1.match("\t"));
+            TEST_CHECK(! r1.match("econfmoo"));
             TEST_CHECK(! r1.match("econf moo"));
 
-            X r2(*X("\t") >> X("econf") >> *X(" ") >> X("||") >> *X(" ") >> X("die"));
+            TEST_CHECK(r1.match("\teconf || die"));
+            TEST_CHECK(r1.match("\teconf || die \"moo\""));
+            TEST_CHECK(! r1.match("\teconf ||"));
+            TEST_CHECK(r1.match("\teconf   ||   die"));
+            TEST_CHECK(! r1.match("\texonf   ||   die"));
         }
     } test_match_rule;
 }
