@@ -21,6 +21,18 @@
 
 using namespace paludis;
 
+/* gcc 3.4 gets things horribly wrong, and thinks that some functions will
+ * never return when in fact they will. this is a nasty workaround. */
+#if defined(__GNUC__)
+#  if __GNUC__ < 4
+#    define WORK_AROUND_BROKEN_COMPILER do { std::string s; } while (false)
+#  else
+#    define WORK_AROUND_BROKEN_COMPILER
+#  endif
+#else
+#  define WORK_AROUND_BROKEN_COMPILER
+#endif
+
 struct MatchRule::Rule :
     InternalCounted<MatchRule::Rule>
 {
@@ -63,6 +75,8 @@ struct MatchRule::SequenceRule :
     std::string::size_type
     local_match(const std::string & t, std::string::size_type p) const
     {
+        WORK_AROUND_BROKEN_COMPILER;
+
         std::string::size_type l1(r1._rule->local_match(t, p)), l2(0);
         if (std::string::npos == l1)
             return l1;
@@ -86,6 +100,8 @@ struct MatchRule::EitherRule :
     std::string::size_type
     local_match(const std::string & t, std::string::size_type p) const
     {
+        WORK_AROUND_BROKEN_COMPILER;
+
         std::string::size_type l1(r1._rule->local_match(t, p));
         if (std::string::npos != l1)
             return l1;
@@ -106,6 +122,8 @@ struct MatchRule::ZeroOrMoreRule :
     std::string::size_type
     local_match(const std::string & t, std::string::size_type p) const
     {
+        WORK_AROUND_BROKEN_COMPILER;
+
         std::string::size_type result(p), q;
         while (std::string::npos != ((q = r1._rule->local_match(t, result))))
             result += q;
@@ -170,6 +188,7 @@ MatchRule::operator* () const
 bool
 MatchRule::match(const std::string & s) const
 {
+    WORK_AROUND_BROKEN_COMPILER;
     return (std::string::npos != _rule->local_match(s, 0));
 }
 
