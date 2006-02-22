@@ -47,6 +47,7 @@ DefaultsCheck::operator() (const FSEntry & f) const
     static const MatchRule r_einfo(*MatchRule("\t") >> MatchRule("einfo"));
     static const MatchRule r_colon(*MatchRule("\t") >> MatchRule(":"));
     static const MatchRule r_true(*MatchRule("\t") >> MatchRule("true"));
+    static const MatchRule r_comment(*MatchRule("\t") >> MatchRule("#"));
     static const MatchRule r_econf(*MatchRule("\t") >> MatchRule("econf") >> *MatchRule(" ")
             >> (MatchRule::eol() || (MatchRule("||") >> *MatchRule(" ") >> MatchRule("die"))));
     static const MatchRule r_emake(*MatchRule("\t") >> MatchRule("emake") >> *MatchRule(" ")
@@ -106,6 +107,8 @@ DefaultsCheck::operator() (const FSEntry & f) const
                                 ;
                             else if (r_true.match(line))
                                 ;
+                            else if (r_comment.match(line))
+                                ;
                             else
                                 src_compile_changed = true;
                         }
@@ -132,6 +135,8 @@ DefaultsCheck::operator() (const FSEntry & f) const
                             else if (r_colon.match(line))
                                 ;
                             else if (r_true.match(line))
+                                ;
+                            else if (r_comment.match(line))
                                 ;
                             else
                                 src_unpack_changed = true;
