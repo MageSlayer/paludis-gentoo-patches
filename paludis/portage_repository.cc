@@ -65,7 +65,7 @@ typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseMap;
 
 typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
 
-typedef MakeHashedSet<UseFlagName> UseFlagSet;
+typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
 
 typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
 
