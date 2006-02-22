@@ -76,7 +76,7 @@ namespace paludis
              * Return us as a UseDepAtom, or 0 if we are not a
              * UseDepAtom.
              */
-            virtual const UseDepAtom * as_use_dep_atom() const PALUDIS_ATTRIBUTE((pure));
+            virtual const UseDepAtom * as_use_dep_atom() const;
     };
 
     /**
@@ -197,7 +197,7 @@ namespace paludis
                 return _inverse;
             }
 
-            virtual const UseDepAtom * as_use_dep_atom() const PALUDIS_ATTRIBUTE((pure));
+            virtual const UseDepAtom * as_use_dep_atom() const;
     };
 
     /**

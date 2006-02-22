@@ -158,22 +158,22 @@ namespace paludis
                 /**
                  * Dereference operator (const).
                  */
-                inline const T_ & operator* () const PALUDIS_ATTRIBUTE((pure));
+                inline const T_ & operator* () const;
 
                 /**
                  * Dereference to member operator (const).
                  */
-                inline const T_ * operator-> () const PALUDIS_ATTRIBUTE((pure));
+                inline const T_ * operator-> () const;
 
                 /**
                  * Dereference operator (non const).
                  */
-                T_ & operator* () PALUDIS_ATTRIBUTE((pure));
+                T_ & operator* ();
 
                 /**
                  * Dereference to member operator (non const).
                  */
-                T_ * operator-> () PALUDIS_ATTRIBUTE((pure));
+                T_ * operator-> ();
 
                 /**
                  * Not null?
