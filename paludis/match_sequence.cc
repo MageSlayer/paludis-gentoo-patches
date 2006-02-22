@@ -25,7 +25,8 @@ using namespace paludis;
  * never return when in fact they will. this is a nasty workaround. */
 #if defined(__GNUC__)
 #  if __GNUC__ < 4
-#    define WORK_AROUND_BROKEN_COMPILER do { std::string s; } while (false)
+#    define WORK_AROUND_BROKEN_COMPILER do { std::string s; \
+        if (! s.empty()) return s.size(); } while (false)
 #  else
 #    define WORK_AROUND_BROKEN_COMPILER
 #  endif
