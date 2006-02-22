@@ -71,6 +71,11 @@ namespace paludis
         virtual CountedPtr<DepAtom> new_text_atom(const std::string &) const = 0;
 
         virtual bool permit_any_deps() const = 0;
+
+        virtual ~DepParserPolicyInterface()
+        {
+        }
+
     };
 
     template <typename TextAtom_, bool permit_any_>
