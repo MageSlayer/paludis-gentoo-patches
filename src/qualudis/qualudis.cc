@@ -402,9 +402,6 @@ int main(int argc, char *argv[])
         if (QualudisCommandLine::get_instance()->a_help.specified())
             throw DoHelp();
 
-        if (QualudisCommandLine::get_instance()->empty())
-            throw DoHelp();
-
         if (! QualudisCommandLine::get_instance()->a_log_level.specified())
             Log::get_instance()->set_log_level(ll_warning);
         else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "debug")
