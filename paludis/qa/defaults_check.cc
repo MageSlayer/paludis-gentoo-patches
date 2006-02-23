@@ -19,6 +19,7 @@
 
 #include "defaults_check.hh"
 #include <paludis/match_sequence.hh>
+#include <paludis/is_file_with_extension.hh>
 #include <fstream>
 
 using namespace paludis;
@@ -61,6 +62,8 @@ DefaultsCheck::operator() (const FSEntry & f) const
 
     if (! f.is_regular_file())
         result << Message(qal_skip, "Not a regular file");
+    else if (! IsFileWithExtension(".ebuild")(f.basename()))
+        result << Message(qal_skip, "Not an ebuild file");
     else
     {
         std::ifstream ff(stringify(f).c_str());
