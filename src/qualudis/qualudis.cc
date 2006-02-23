@@ -402,10 +402,8 @@ int main(int argc, char *argv[])
         if (QualudisCommandLine::get_instance()->a_help.specified())
             throw DoHelp();
 
-        if (1 != (QualudisCommandLine::get_instance()->a_check.specified() +
-                    QualudisCommandLine::get_instance()->a_version.specified() +
-                    QualudisCommandLine::get_instance()->a_describe.specified()))
-            throw DoHelp("you should specify exactly one action");
+        if (QualudisCommandLine::get_instance()->empty())
+            throw DoHelp();
 
         if (! QualudisCommandLine::get_instance()->a_log_level.specified())
             Log::get_instance()->set_log_level(ll_warning);
@@ -477,6 +475,24 @@ int main(int argc, char *argv[])
             return EXIT_SUCCESS;
         }
 
+        if (! QualudisCommandLine::get_instance()->empty())
+        {
+            QualudisCommandLine *c1 = QualudisCommandLine::get_instance();
+            QualudisCommandLine::ParametersIterator argit = c1->begin_parameters(), arge = c1->end_parameters();
+            for ( ; argit != arge; ++argit )
+            {
+                std::string arg = *argit;
+                try
+                {
+                    do_check(FSEntry::cwd() / arg);
+                }
+                catch(const DirOpenError & e)
+                {
+                    cout << e.message() << endl;
+                }
+            }
+            return EXIT_SUCCESS;
+        }
 
         throw InternalError(__PRETTY_FUNCTION__, "no action?");
     }
@@ -528,6 +544,7 @@ int main(int argc, char *argv[])
         if (h.message.empty())
         {
             cout << "Usage: " << argv[0] << " [options]" << endl;
+            cout << "   or: " << argv[0] << " [package/category ..]" << endl;
             cout << endl;
             cout << *QualudisCommandLine::get_instance();
             return EXIT_SUCCESS;
