@@ -46,6 +46,9 @@ IuseCheck::operator() (const EbuildCheckData & e) const
 
             if (iuse.end() != iuse.find(UseFlagName("gtk2")))
                 result << Message(qal_minor, "Deprecated USE flag 'gtk2'");
+
+            if (iuse.end() != iuse.find(UseFlagName("xml2")))
+                result << Message(qal_minor, "Deprecated USE flag 'xml2'");
         }
         catch (const NameError & e)
         {
