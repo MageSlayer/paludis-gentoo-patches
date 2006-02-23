@@ -62,7 +62,7 @@ InheritsCheck::operator() (const EbuildCheckData & e) const
                 inherits_blacklist.begin(), inherits_blacklist.end(),
                 std::inserter(bad_inherits, bad_inherits.begin()));
 
-        if (! inherits_blacklist.empty())
+        if (! bad_inherits.empty())
             result << Message(qal_major, "Deprecated inherits '" + join(bad_inherits.begin(),
                         bad_inherits.end(), "', '") + "'");
     }
