@@ -83,6 +83,7 @@ DigestCollisionsCheck::operator() (const FSEntry & d) const
             {
                 if (entries.at(1) != existing->second.get<de_md5>())
                     result << Message(qal_major, "Digest conflict on '" + entries.at(2) +
+                            "' in '" + stringify(*i) +
                             "' (original was '" + stringify(existing->second.get<de_owner>()) + "')");
             }
             else
