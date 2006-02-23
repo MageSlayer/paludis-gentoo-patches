@@ -73,7 +73,7 @@ ebuild_load_ebuild()
 
 case ${1:x} in
     metadata)
-        ebuild_load_ebuild "${2}"
+        PATH="" ebuild_load_ebuild "${2}"
         ebuild_load_module depend
         ebuild_f_depend
         exit 0
