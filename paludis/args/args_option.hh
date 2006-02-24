@@ -22,7 +22,7 @@
 #define PALUDIS_GUARD_ARGS_ARGS_OPTION_HH 1
 
 #include <string>
-#include <map>
+#include <set>
 #include <vector>
 #include "args_visitor.hh"
 
@@ -169,6 +169,41 @@ namespace paludis
                  */
                 void set_argument(const std::string& arg) { _argument = arg; }
         };
+
+        class StringSetArg : public ArgsOption, public Visitable<StringSetArg, ArgsVisitorTypes>
+        {
+            private:
+                std::set<std::string> _args;
+
+            public:
+
+                /**
+                 * Type used to iterate over specified args.
+                 */
+                typedef std::set<std::string>::const_iterator Iterator;
+
+                /**
+                 * Constructor
+                 */
+                StringSetArg(ArgsGroup * const, const std::string & long_name,
+                        const char short_name, const std::string & description);
+
+                /**
+                 * Retrieve an iterator to the first arg
+                 */
+                Iterator args_begin() const { return _args.begin(); }
+
+                /**
+                 * Retrieve an iterator one past the last arg
+                 */
+                Iterator args_end() const { return _args.end(); }
+
+                /**
+                 * Add an argument to the set returned by [ args_begin(), args_end() )
+                 */
+                void add_argument(const std::string & arg) { _args.insert(arg); }
+        };
+
 
         /**
          * An AliasArg is an alias for another argument.

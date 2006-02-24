@@ -52,6 +52,7 @@ VISIT(SwitchArg)
 VISIT(StringArg)
 VISIT(IntegerArg)
 VISIT(AliasArg)
+VISIT(StringSetArg)
 
 void ArgsDumper::visit(const EnumArg * const a)
 {

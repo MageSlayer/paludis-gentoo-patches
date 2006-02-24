@@ -67,6 +67,12 @@ StringArg::StringArg(ArgsGroup * const g, const std::string & long_name,
 {
 }
 
+StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & long_name,
+        const char short_name, const std::string & description) :
+    ArgsOption(g, long_name, short_name, description)
+{
+}
+
 IntegerArg::IntegerArg(ArgsGroup * const group, const std::string& long_name, 
                 char short_name, const std::string& description) :
     ArgsOption(group, long_name, short_name, description)

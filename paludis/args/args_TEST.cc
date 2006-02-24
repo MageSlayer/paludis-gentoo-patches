@@ -45,7 +45,10 @@ struct CommandLine : public ArgsHandler
     StringArg arg_something;
     IntegerArg arg_somenum;
     EnumArg arg_enum;
+
+    ArgsGroup group_three;
     EnumArg arg_other_enum;
+    StringSetArg arg_stringset;
 
     CommandLine();
     ~CommandLine();
@@ -63,7 +66,10 @@ CommandLine::CommandLine() :
     arg_something(&group_two, "something", 's', "Value of something"),
     arg_somenum(&group_two, "num", 'n', "Some number"),
     arg_enum(&group_two, "enum", 'e', "One of three", EnumArg::EnumArgOptions("one", "Option one")("two", "option two")("three", "option three"), "two"),
-    arg_other_enum(&group_two, "something", '\0', "Blah.", EnumArg::EnumArgOptions("a", "A")("b", "B")("c", "C"), "b")
+
+    group_three(this, "Group three"),
+    arg_other_enum(&group_three, "something", '\0', "Blah.", EnumArg::EnumArgOptions("a", "A")("b", "B")("c", "C"), "b"),
+    arg_stringset(&group_three, "stringset", 't', "A StringSet.")
 {
 }
 
@@ -120,5 +126,22 @@ namespace test_cases
             TEST_CHECK_THROWS(c1.run(2, args), MissingValue);
         }
     } test_args_no_param;
+
+    struct ArgsTestStringSet : TestCase
+    {
+        ArgsTestStringSet() : TestCase("StringSet") { }
+
+        void run()
+        {
+            char *args[] = { "program-name", "--stringset", "one", "-t", "two", "-t", "three", "fnord" };
+            CommandLine c1;
+            c1.run(8, args);
+            TEST_CHECK(c1.arg_stringset.specified());
+            TEST_CHECK(std::find(c1.arg_stringset.args_begin(), c1.arg_stringset.args_end(), "one") != c1.arg_stringset.args_end());
+            TEST_CHECK(std::find(c1.arg_stringset.args_begin(), c1.arg_stringset.args_end(), "two") != c1.arg_stringset.args_end());
+            TEST_CHECK(std::find(c1.arg_stringset.args_begin(), c1.arg_stringset.args_end(), "three") != c1.arg_stringset.args_end());
+            TEST_CHECK(std::find(c1.arg_stringset.args_begin(), c1.arg_stringset.args_end(), "fnord") == c1.arg_stringset.args_end());
+        }
+    } test_args_string_set;
 }
 

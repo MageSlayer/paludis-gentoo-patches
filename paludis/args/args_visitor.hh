@@ -41,12 +41,13 @@ namespace paludis
         class SwitchArg;
         class IntegerArg;
         class EnumArg;
+        class StringSetArg;
 
         /**
          * Visitor types for visitors that can visit Args.
          */
         typedef VisitorTypes<ArgsOption *, StringArg *, AliasArg *, SwitchArg *,
-                IntegerArg *, EnumArg *> ArgsVisitorTypes;
+                IntegerArg *, EnumArg *, StringSetArg *> ArgsVisitorTypes;
 
         /**
          * Visitor class. Processes command-line options as they are found.
@@ -81,6 +82,9 @@ namespace paludis
 
                 /// Visit an EnumArg.
                 void visit(EnumArg * const);
+
+                /// Visit a StringSetArg.
+                void visit(StringSetArg * const);
         };
     }
 }

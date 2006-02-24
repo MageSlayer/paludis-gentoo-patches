@@ -68,6 +68,9 @@ namespace paludis
 
                 /// Visit an EnumArg.
                 void visit(const EnumArg * const);
+
+                /// Visit a StringSetArg.
+                void visit(const StringSetArg * const);
         };
     }
 }

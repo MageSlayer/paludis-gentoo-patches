@@ -82,3 +82,10 @@ void ArgsVisitor::visit(EnumArg * const arg)
     visit(static_cast<ArgsOption*>(arg));
     arg->set_argument(get_param(arg));
 }
+
+void ArgsVisitor::visit(StringSetArg * const arg)
+{
+    visit(static_cast<ArgsOption *>(arg));
+    std::string param = get_param(arg);
+    arg->add_argument(param);
+}
