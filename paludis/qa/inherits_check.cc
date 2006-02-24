@@ -51,6 +51,7 @@ InheritsCheck::operator() (const EbuildCheckData & e) const
         static std::set<std::string> inherits_blacklist;
         if (inherits_blacklist.empty())
         {
+            inherits_blacklist.insert("gcc");
             inherits_blacklist.insert("kmod");
             inherits_blacklist.insert("kernel-mod");
             inherits_blacklist.insert("gtk-engines");
