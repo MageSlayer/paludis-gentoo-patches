@@ -67,6 +67,8 @@ typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
 
 typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
 
+typedef MakeHashedSet<std::string>::Type MirrorSet;
+
 typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
 
 namespace paludis
@@ -134,6 +136,11 @@ namespace paludis
         /// Do we have arch_list?
         mutable bool has_arch_list;
 
+        /// Do we have mirrors?
+        mutable bool has_mirrors;
+
+        mutable MirrorSet mirrors;
+
         /// Constructor.
         Implementation(const PackageDatabase * const d, const FSEntry & l, const FSEntry & p,
                 const FSEntry & c);
@@ -155,7 +162,8 @@ Implementation<PortageRepository>::Implementation(const PackageDatabase * const 
     has_category_names(false),
     has_repo_mask(false),
     has_profile(false),
-    has_arch_list(false)
+    has_arch_list(false),
+    has_mirrors(false)
 {
 }
 
@@ -820,5 +828,26 @@ PortageRepository::do_is_licence(const std::string & s) const
 
     l /= s;
     return l.exists() && l.is_regular_file();
+}
+
+bool
+PortageRepository::do_is_mirror(const std::string & s) const
+{
+    if (! _implementation->has_mirrors)
+    {
+        static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+
+        LineConfigFile mirrors(_implementation->location / "profiles" / "thirdpartymirrors");
+        for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
+        {
+            std::vector<std::string> entries;
+            tokeniser.tokenise(*line, std::back_inserter(entries));
+            if (! entries.empty())
+                _implementation->mirrors.insert(entries.at(0));
+        }
+        _implementation->has_mirrors = true;
+    }
+
+    return _implementation->mirrors.end() != _implementation->mirrors.find(s);
 }
 

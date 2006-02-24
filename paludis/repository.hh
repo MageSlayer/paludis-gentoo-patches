@@ -143,6 +143,11 @@ namespace paludis
              */
             virtual bool do_is_licence(const std::string &) const = 0;
 
+            /**
+             * Override in descendents: is this a mirror?
+             */
+            virtual bool do_is_mirror(const std::string &) const = 0;
+
         public:
             /**
              * Destructor.
@@ -348,6 +353,14 @@ namespace paludis
             bool is_license(const std::string & u) const
             {
                 return do_is_licence(u);
+            }
+
+            /**
+             * Query whether the specified item is a mirror.
+             */
+            bool is_mirror(const std::string & u) const
+            {
+                return do_is_mirror(u);
             }
     };
 

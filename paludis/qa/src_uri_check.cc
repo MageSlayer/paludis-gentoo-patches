@@ -32,10 +32,12 @@ namespace
     {
         CheckResult & result;
         bool fetch_restrict;
+        const Environment * const env;
 
-        Checker(CheckResult & rr, bool f) :
+        Checker(CheckResult & rr, bool f, const Environment * const e) :
             result(rr),
-            fetch_restrict(f)
+            fetch_restrict(f),
+            env(e)
         {
         }
 
@@ -63,6 +65,18 @@ namespace
                     (std::string::npos != a->text().find("alpha.gnu.org")) ||
                     (std::string::npos != a->text().find("geocities.com")))
                 result << Message(qal_major, "Unreliable host for '" + a->text() + "'");
+
+            else
+            {
+                if (0 == a->text().compare(0, 9, "mirror://"))
+                {
+                    std::string mirror_host(a->text().substr(9));
+                    mirror_host.erase(mirror_host.find('/'));
+                    if (! env->package_database()->fetch_repository(
+                                env->package_database()->favourite_repository())->is_mirror(mirror_host))
+                        result << Message(qal_major, "Unknown mirror for '" + a->text() + "'");
+                }
+            }
         }
 
         void visit(const AllDepAtom * const a)
@@ -131,7 +145,7 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
                         std::inserter(restricts, restricts.begin()));
 
                 bool fetch_restrict(restricts.end() != restricts.find("fetch"));
-                Checker checker(result, fetch_restrict);
+                Checker checker(result, fetch_restrict, e.get<ecd_environment>());
                 src_uri_parts->accept(&checker);
             }
             catch (const DepStringError & e)

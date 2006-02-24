@@ -205,3 +205,9 @@ FakeRepository::do_is_licence(const std::string &) const
     return false;
 }
 
+bool
+FakeRepository::do_is_mirror(const std::string &) const
+{
+    return false;
+}
+
