@@ -49,6 +49,22 @@ CRCHash<QualifiedPackageName>::operator() (const QualifiedPackageName & val) con
 }
 
 std::size_t
+CRCHash<std::string>::operator() (const std::string & val) const
+{
+    std::size_t h(0);
+
+    for (std::string::size_type t(0) ; t < val.length() ; ++t)
+    {
+        std::size_t hh(h & h_mask);
+        h <<= 5;
+        h ^= (hh >> h_shift);
+        h ^= val[t];
+    }
+
+    return h;
+}
+
+std::size_t
 CRCHash<std::pair<QualifiedPackageName, VersionSpec> >::operator() (
         const std::pair<QualifiedPackageName, VersionSpec> & val) const
 {

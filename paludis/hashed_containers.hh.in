@@ -170,6 +170,33 @@ namespace paludis
 #endif
     };
 
+
+    /**
+     * Hash, for a string.
+     */
+    template<>
+    class CRCHash<std::string> :
+        public std::unary_function<std::string, std::size_t>,
+        protected CRCHashBase
+    {
+        public:
+            /// Hash function.
+            std::size_t operator() (const std::string & val) const;
+
+#if (! PALUDIS_HAVE_TR1_HASHES) && (! PALUDIS_HAVE_EXT_HASHES)
+            enum
+            {
+                min_buckets = 32,
+                bucket_size = 4
+            };
+
+            bool operator() (const std::string & i1, const std::string & i2) const
+            {
+                return i1 < i2;
+            }
+#endif
+    };
+
     /**
      * Hash, for a QualifiedPackageName + VersionSpec pair.
      */

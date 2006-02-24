@@ -22,6 +22,7 @@
 #include <paludis/dir_iterator.hh>
 #include <paludis/smart_record.hh>
 #include <paludis/tokeniser.hh>
+#include <paludis/hashed_containers.hh>
 #include <map>
 #include <fstream>
 
@@ -46,7 +47,7 @@ namespace
 
     typedef MakeSmartRecord<DigestDataTag>::Type DigestData;
 
-    static std::map<std::string, DigestData> digests;
+    static MakeHashedMap<std::string, DigestData>::Type digests;
 }
 
 DigestCollisionsCheck::DigestCollisionsCheck()
@@ -77,7 +78,7 @@ DigestCollisionsCheck::operator() (const FSEntry & d) const
             if ("MD5" != entries.at(0))
                 continue;
 
-            std::map<std::string, DigestData>::iterator existing(
+            MakeHashedMap<std::string, DigestData>::Type::iterator existing(
                     digests.find(entries.at(2)));
             if (digests.end() != existing)
             {
