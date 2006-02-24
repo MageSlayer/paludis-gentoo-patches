@@ -57,7 +57,7 @@ InheritsCheck::operator() (const EbuildCheckData & e) const
             inherits_blacklist.insert("gtk-engines2");
         }
 
-        static std::set<std::string> bad_inherits;
+        std::set<std::string> bad_inherits;
         std::set_intersection(inherits.begin(), inherits.end(),
                 inherits_blacklist.begin(), inherits_blacklist.end(),
                 std::inserter(bad_inherits, bad_inherits.begin()));
