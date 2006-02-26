@@ -27,7 +27,20 @@ EXPORT_FUNCTIONS()
 
     local e
     for e in "$@" ; do
-        eval "$1() { ${ECLASS}_${e} \"\$@\" ; }"
+        case "$e" in
+            pkg_setup|pkg_prerm|pkg_postrm|pkg_preinst|pkg_postinst)
+                eval "$1() { ${ECLASS}_${e} \"\$@\" ; }"
+                ;;
+
+            src_unpack|src_compile|src_install|src_test)
+                eval "$1() { ${ECLASS}_${e} \"\$@\" ; }"
+                ;;
+
+            *)
+                eval "$1() { ${ECLASS}_${e} \"\$@\" ; }"
+                echo "[EBUILD QA]: $e should not be in EXPORT_FUNCTIONS" 1>&2
+                ;;
+        esac
     done
 }
 
