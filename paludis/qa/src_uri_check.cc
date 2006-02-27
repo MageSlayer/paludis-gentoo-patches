@@ -71,10 +71,16 @@ namespace
                 if (0 == a->text().compare(0, 9, "mirror://"))
                 {
                     std::string mirror_host(a->text().substr(9));
-                    mirror_host.erase(mirror_host.find('/'));
-                    if (! env->package_database()->fetch_repository(
-                                env->package_database()->favourite_repository())->is_mirror(mirror_host))
-                        result << Message(qal_major, "Unknown mirror for '" + a->text() + "'");
+                    std::string::size_type p(mirror_host.find('/'));
+                    if (std::string::npos == p)
+                        result << Message(qal_major, "Malformed SRC_URI component '" + a->text() + "'");
+                    else
+                    {
+                        mirror_host.erase(p);
+                        if (! env->package_database()->fetch_repository(
+                                    env->package_database()->favourite_repository())->is_mirror(mirror_host))
+                            result << Message(qal_major, "Unknown mirror for '" + a->text() + "'");
+                    }
                 }
             }
         }
