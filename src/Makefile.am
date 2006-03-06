@@ -15,7 +15,7 @@ paludis_SOURCES = \
 	paludis.cc
 
 paludis_LDADD = \
-	$(top_builddir)/paludis/libpaludis.a \
+	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.a \
 	$(top_builddir)/paludis/util/libpaludisutil.a
 

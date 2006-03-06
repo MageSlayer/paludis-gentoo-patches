@@ -10,7 +10,7 @@ define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = $(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludis.a \
+	libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.a
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
@@ -38,7 +38,8 @@ EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	hashed_containers.hh.in testscriptlist
 SUBDIRS = util . args qa
 
-libpaludis_a_SOURCES = filelist
+libpaludis_la_SOURCES = filelist
+libpaludis_la_LDFLAGS = -version-info 0:0:0
 
 TESTS = testlist
 
@@ -49,7 +50,7 @@ TESTS_ENVIRONMENT = env \
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
-noinst_LIBRARIES = libpaludis.a
+lib_LTLIBRARIES = libpaludis.la
 
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am

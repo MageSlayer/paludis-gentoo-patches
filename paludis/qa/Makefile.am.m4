@@ -12,7 +12,7 @@ $1_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	libpaludisqa.a \
-	$(top_builddir)/paludis/libpaludis.a \
+	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.a
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
