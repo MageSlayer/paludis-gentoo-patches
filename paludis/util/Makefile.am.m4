@@ -28,7 +28,7 @@ include(`paludis/util/files.m4')
 
 CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh smart_record.hh \
-	hashed_containers.hh comparison_policy.hh
+	hashed_containers.hh comparison_policy.hh util.hh
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
 EXTRA_DIST = util.hh.m4 about.hh.in Makefile.am.m4 files.m4 smart_record.hh.m4 \
