@@ -27,7 +27,7 @@ UseFlagNameValidator::validate(const std::string & s)
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "0123456789-+_:");
+            "0123456789-+_:@");
 
     do
     {
