@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "config_file.hh"
-#include "strip.hh"
-#include "exception.hh"
-#include "stringify.hh"
+#include <paludis/config_file.hh>
+#include <paludis/util/strip.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 #include <fstream>
 
 using namespace paludis;

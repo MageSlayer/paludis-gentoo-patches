@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_FAKE_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
-#include <paludis/private_implementation_pattern.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
  * Declarations for the FakeRepository class.

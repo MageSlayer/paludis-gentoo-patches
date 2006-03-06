@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "inherits_check.hh"
-#include <paludis/tokeniser.hh>
-#include <paludis/join.hh>
+#include <paludis/qa/inherits_check.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/join.hh>
 #include <set>
 #include <algorithm>
 #include <iterator>

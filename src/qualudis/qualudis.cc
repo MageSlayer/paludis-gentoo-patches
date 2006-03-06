@@ -18,6 +18,7 @@
  */
 
 #include <paludis/paludis.hh>
+#include <paludis/util/util.hh>
 #include <paludis/args/args.hh>
 #include <paludis/qa/qa.hh>
 

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "parse_deps_check.hh"
+#include <paludis/qa/parse_deps_check.hh>
 #include <paludis/dep_parser.hh>
 
 using namespace paludis;

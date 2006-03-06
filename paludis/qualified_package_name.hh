@@ -22,9 +22,9 @@
 
 #include <paludis/package_name_part.hh>
 #include <paludis/category_name_part.hh>
-#include <paludis/smart_record.hh>
-#include <paludis/sorted_collection.hh>
-#include <paludis/exception.hh>
+#include <paludis/util/smart_record.hh>
+#include <paludis/util/sorted_collection.hh>
+#include <paludis/util/exception.hh>
 #include <ostream>
 
 namespace paludis

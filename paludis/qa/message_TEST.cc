@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "message.hh"
+#include <paludis/qa/message.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

@@ -1,6 +1,6 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
-#include "match_package.hh"
+#include <paludis/match_package.hh>
 
 using namespace paludis;
 

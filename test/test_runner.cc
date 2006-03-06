@@ -19,7 +19,7 @@
 
 #include "test_runner.hh"
 #include "test_framework.hh"
-#include <paludis/stringify.hh>
+#include <paludis/util/stringify.hh>
 
 #include <iostream>
 #include <fstream>

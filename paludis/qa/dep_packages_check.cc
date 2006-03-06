@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "dep_packages_check.hh"
+#include <paludis/qa/dep_packages_check.hh>
 #include <paludis/dep_parser.hh>
 #include <paludis/dep_atom.hh>
 

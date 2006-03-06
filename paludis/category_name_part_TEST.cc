@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "category_name_part.hh"
+#include <paludis/category_name_part.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>

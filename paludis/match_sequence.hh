@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_MATCH_SEQUENCE_HH 1
 
 #include <string>
-#include <paludis/counted_ptr.hh>
+#include <paludis/util/counted_ptr.hh>
 
 namespace paludis
 {

@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "pdepend_overlap_check.hh"
+#include <paludis/qa/pdepend_overlap_check.hh>
 #include <paludis/dep_parser.hh>
 #include <paludis/dep_atom.hh>
-#include <paludis/join.hh>
+#include <paludis/util/join.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

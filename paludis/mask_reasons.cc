@@ -18,5 +18,5 @@
  */
 
 
-#include "mask_reasons.hh"
+#include <paludis/mask_reasons.hh>
 

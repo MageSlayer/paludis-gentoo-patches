@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ebuild_check.hh"
+#include <paludis/qa/ebuild_check.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

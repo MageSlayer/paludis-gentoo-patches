@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEFAULT_ENVIRONMENT_HH
 #define PALUDIS_GUARD_PALUDIS_DEFAULT_ENVIRONMENT_HH 1
 
-#include <paludis/environment.hh>
+#include <paludis/qa/environment.hh>
 #include <paludis/package_database.hh>
 
 /** \file

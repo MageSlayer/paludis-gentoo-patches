@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "metadata_check.hh"
-#include <paludis/pstream.hh>
-#include <paludis/getenv.hh>
+#include <paludis/qa/metadata_check.hh>
+#include <paludis/util/pstream.hh>
+#include <paludis/util/getenv.hh>
 #include <ctime>
 #include <fstream>
 

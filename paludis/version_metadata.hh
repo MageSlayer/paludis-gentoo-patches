@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VERSION_METADATA_HH
 #define PALUDIS_GUARD_PALUDIS_VERSION_METADATA_HH 1
 
-#include <paludis/instantiation_policy.hh>
-#include <paludis/private_implementation_pattern.hh>
+#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/use_flag_name.hh>
 #include <paludis/keyword_name.hh>

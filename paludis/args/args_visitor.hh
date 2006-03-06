@@ -23,7 +23,7 @@
 
 #include <list>
 #include <string>
-#include <paludis/visitor.hh>
+#include <paludis/util/visitor.hh>
 
 /** \file
  * Declaration for ArgsVisitor

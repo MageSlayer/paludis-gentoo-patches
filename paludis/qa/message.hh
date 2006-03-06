@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QA_MESSAGE_HH
 #define PALUDIS_GUARD_PALUDIS_QA_MESSAGE_HH 1
 
-#include <paludis/smart_record.hh>
+#include <paludis/util/smart_record.hh>
 #include <string>
 
 /** \file

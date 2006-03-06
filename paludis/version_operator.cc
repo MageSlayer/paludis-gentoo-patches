@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "version_operator.hh"
-#include "stringify.hh"
+#include <paludis/version_operator.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 

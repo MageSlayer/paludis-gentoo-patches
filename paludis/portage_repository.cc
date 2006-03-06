@@ -19,26 +19,26 @@
 
 #include "config.h"
 
-#include "create_insert_iterator.hh"
-#include "dir_iterator.hh"
-#include "dep_atom.hh"
-#include "filter_insert_iterator.hh"
-#include "fs_entry.hh"
-#include "getenv.hh"
-#include "hashed_containers.hh"
-#include "indirect_iterator.hh"
-#include "is_file_with_extension.hh"
-#include "key_value_config_file.hh"
-#include "line_config_file.hh"
-#include "log.hh"
-#include "match_package.hh"
-#include "package_database.hh"
-#include "portage_repository.hh"
-#include "pstream.hh"
-#include "stringify.hh"
-#include "strip.hh"
-#include "tokeniser.hh"
-#include "transform_insert_iterator.hh"
+#include <paludis/util/create_insert_iterator.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/dep_atom.hh>
+#include <paludis/util/filter_insert_iterator.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/getenv.hh>
+#include <paludis/hashed_containers.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/is_file_with_extension.hh>
+#include <paludis/line_config_file.hh>
+#include <paludis/key_value_config_file.hh>
+#include <paludis/util/log.hh>
+#include <paludis/match_package.hh>
+#include <paludis/package_database.hh>
+#include <paludis/portage_repository.hh>
+#include <paludis/util/pstream.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/strip.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/transform_insert_iterator.hh>
 
 #include <map>
 #include <fstream>

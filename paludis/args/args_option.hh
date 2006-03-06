@@ -21,10 +21,10 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_OPTION_HH
 #define PALUDIS_GUARD_ARGS_ARGS_OPTION_HH 1
 
+#include <paludis/args/args_visitor.hh>
 #include <string>
 #include <set>
 #include <vector>
-#include "args_visitor.hh"
 
 /** \file
  * Declaration for ArgsOption.

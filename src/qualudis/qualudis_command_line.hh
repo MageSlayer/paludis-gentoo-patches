@@ -5,7 +5,7 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/qa/qa.hh>
-#include <paludis/instantiation_policy.hh>
+#include <paludis/util/instantiation_policy.hh>
 
 class QualudisCommandLine :
     public paludis::args::ArgsHandler,

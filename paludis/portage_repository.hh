@@ -21,8 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_PORTAGE_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
-#include <paludis/fs_entry.hh>
-#include <paludis/private_implementation_pattern.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <map>
 #include <string>
 

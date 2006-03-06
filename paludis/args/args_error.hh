@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_ERROR_HH
 #define PALUDIS_GUARD_ARGS_ARGS_ERROR_HH 1
 
-#include <paludis/exception.hh>
+#include <paludis/util/exception.hh>
 #include <string>
 
 /** \file

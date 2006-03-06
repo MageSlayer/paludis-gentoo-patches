@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_TEST_TEST_FRAMEWORK_HH
 #define PALUDIS_GUARD_TEST_TEST_FRAMEWORK_HH 1
 
-#include <paludis/stringify.hh>
+#include <paludis/util/stringify.hh>
 #include <string>
 #include <memory>
 #include <list>

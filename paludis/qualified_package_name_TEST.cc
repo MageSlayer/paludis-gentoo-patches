@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "qualified_package_name.hh"
-#include "exception.hh"
+#include <paludis/qualified_package_name.hh>
+#include <paludis/util/exception.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 

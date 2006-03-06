@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "iuse_check.hh"
+#include <paludis/qa/iuse_check.hh>
 #include <set>
 
 using namespace paludis;

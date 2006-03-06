@@ -21,9 +21,9 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_PARSER_HH 1
 
 #include <paludis/dep_atom.hh>
-#include <paludis/counted_ptr.hh>
-#include <paludis/instantiation_policy.hh>
-#include <paludis/exception.hh>
+#include <paludis/util/counted_ptr.hh>
+#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/exception.hh>
 #include <paludis/dep_lexer.hh>
 #include <string>
 

@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "deps_exist_check.hh"
+#include <paludis/qa/deps_exist_check.hh>
 #include <paludis/dep_parser.hh>
 #include <paludis/dep_atom.hh>
-#include <paludis/save.hh>
+#include <paludis/util/save.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

@@ -28,7 +28,7 @@
 
 #include <paludis/qualified_package_name.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/validated.hh>
+#include <paludis/util/validated.hh>
 
 #if PALUDIS_HAVE_TR1_HASHES
 #  include <tr1/unordered_set>

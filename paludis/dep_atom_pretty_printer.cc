@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "dep_atom_pretty_printer.hh"
-#include "dep_atom.hh"
-#include "save.hh"
+#include <paludis/dep_atom_pretty_printer.hh>
+#include <paludis/dep_atom.hh>
+#include <paludis/util/save.hh>
 #include <algorithm>
 
 using namespace paludis;

@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "digest_collisions_check.hh"
-#include <paludis/is_file_with_extension.hh>
-#include <paludis/dir_iterator.hh>
-#include <paludis/smart_record.hh>
-#include <paludis/tokeniser.hh>
+#include <paludis/qa/digest_collisions_check.hh>
+#include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/smart_record.hh>
+#include <paludis/util/tokeniser.hh>
 #include <paludis/hashed_containers.hh>
 #include <map>
 #include <fstream>

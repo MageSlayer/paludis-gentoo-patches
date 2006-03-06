@@ -23,8 +23,8 @@
 #include <paludis/package_database.hh>
 #include <paludis/use_flag_name.hh>
 #include <paludis/keyword_name.hh>
-#include <paludis/instantiation_policy.hh>
-#include <paludis/counted_ptr.hh>
+#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/counted_ptr.hh>
 #include <paludis/mask_reasons.hh>
 
 /** \file

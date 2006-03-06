@@ -16,12 +16,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "args_visitor.hh"
+#include <paludis/util/visitor.hh>
 #include "args_option.hh"
 #include "bad_value.hh"
 #include "missing_value.hh"
 
-#include <paludis/destringify.hh>
+#include <paludis/util/destringify.hh>
 
 #include <sstream>
 

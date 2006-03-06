@@ -19,7 +19,7 @@
 
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include "paludis.hh"
+#include <paludis/paludis.hh>
 #include <sstream>
 
 using namespace test;

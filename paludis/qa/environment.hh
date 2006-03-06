@@ -22,7 +22,7 @@
 
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <paludis/fs_entry.hh>
+#include <paludis/util/fs_entry.hh>
 
 /** \file
  * Declarations for the QAEnvironment class.

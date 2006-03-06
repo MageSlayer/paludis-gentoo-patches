@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "dep_atom.hh"
-#include "dep_lexer.hh"
-#include "exception.hh"
-#include "tokeniser.hh"
+#include <paludis/dep_atom.hh>
+#include <paludis/dep_lexer.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/tokeniser.hh>
 #include <vector>
 
 using namespace paludis;

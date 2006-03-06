@@ -11,7 +11,7 @@
  * possible.
  */
 
-#include <paludis/attributes.hh>
+#include <paludis/util/attributes.hh>
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/package_database.hh>

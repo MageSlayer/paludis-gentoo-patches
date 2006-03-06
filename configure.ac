@@ -330,9 +330,10 @@ AC_OUTPUT(
 	misc/svn-version-filter-data.bash
 	paludis/Makefile
 	paludis/about.hh
-	paludis/hashed_containers.hh
 	paludis/args/Makefile
+	paludis/hashed_containers.hh
 	paludis/qa/Makefile
+	paludis/util/Makefile
 	src/Makefile
 	src/qualudis/Makefile
 	test/Makefile

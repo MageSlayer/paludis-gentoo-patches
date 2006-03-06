@@ -17,19 +17,19 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "container_entry.hh"
-#include "dep_atom.hh"
-#include "dep_atom_flattener.hh"
-#include "dep_list.hh"
-#include "dep_parser.hh"
-#include "filter_insert_iterator.hh"
-#include "indirect_iterator.hh"
-#include "iterator_utilities.hh"
-#include "join.hh"
-#include "log.hh"
-#include "match_package.hh"
-#include "save.hh"
-#include "stringify.hh"
+#include <paludis/util/container_entry.hh>
+#include <paludis/dep_atom.hh>
+#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_list.hh>
+#include <paludis/dep_parser.hh>
+#include <paludis/util/filter_insert_iterator.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/iterator_utilities.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/log.hh>
+#include <paludis/match_package.hh>
+#include <paludis/util/save.hh>
+#include <paludis/util/stringify.hh>
 
 #include <algorithm>
 #include <functional>

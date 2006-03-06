@@ -20,16 +20,16 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH 1
 
-#include <paludis/attributes.hh>
-#include <paludis/composite_pattern.hh>
-#include <paludis/counted_ptr.hh>
-#include <paludis/instantiation_policy.hh>
+#include <paludis/util/attributes.hh>
+#include <paludis/util/composite_pattern.hh>
+#include <paludis/util/counted_ptr.hh>
+#include <paludis/util/instantiation_policy.hh>
 #include <paludis/qualified_package_name.hh>
 #include <paludis/slot_name.hh>
 #include <paludis/use_flag_name.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <list>
 
 /** \file

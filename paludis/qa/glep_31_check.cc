@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "glep_31_check.hh"
+#include <paludis/qa/glep_31_check.hh>
 #include <fstream>
 
 using namespace paludis;

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "has_misc_files_check.hh"
+#include <paludis/qa/has_misc_files_check.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

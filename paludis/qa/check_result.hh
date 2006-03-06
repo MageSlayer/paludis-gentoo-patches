@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QA_CHECK_RESULT_HH
 #define PALUDIS_GUARD_PALUDIS_QA_CHECK_RESULT_HH 1
 
-#include <paludis/fs_entry.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/qa/message.hh>
 #include <list>
 

@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "src_uri_check.hh"
+#include <paludis/qa/src_uri_check.hh>
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_parser.hh>
-#include <paludis/tokeniser.hh>
+#include <paludis/util/tokeniser.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

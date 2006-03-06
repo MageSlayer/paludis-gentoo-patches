@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SLOT_NAME_HH
 #define PALUDIS_GUARD_PALUDIS_SLOT_NAME_HH 1
 
-#include <paludis/validated.hh>
-#include <paludis/exception.hh>
-#include <paludis/instantiation_policy.hh>
+#include <paludis/util/validated.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/instantiation_policy.hh>
 #include <string>
 
 /** \file

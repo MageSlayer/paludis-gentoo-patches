@@ -19,7 +19,7 @@
 
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include "dep_lexer.hh"
+#include <paludis/dep_lexer.hh>
 #include <sstream>
 
 using namespace test;

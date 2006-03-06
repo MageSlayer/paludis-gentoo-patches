@@ -17,19 +17,19 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "create_insert_iterator.hh"
-#include "default_config.hh"
-#include "destringify.hh"
-#include "dir_iterator.hh"
-#include "filter_insert_iterator.hh"
-#include "fs_entry.hh"
-#include "getenv.hh"
-#include "is_file_with_extension.hh"
-#include "iterator_utilities.hh"
-#include "key_value_config_file.hh"
-#include "line_config_file.hh"
-#include "stringify.hh"
-#include "tokeniser.hh"
+#include <paludis/default_config.hh>
+#include <paludis/key_value_config_file.hh>
+#include <paludis/line_config_file.hh>
+#include <paludis/util/create_insert_iterator.hh>
+#include <paludis/util/destringify.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/filter_insert_iterator.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/getenv.hh>
+#include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/iterator_utilities.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/tokeniser.hh>
 #include <fstream>
 #include <algorithm>
 #include <sstream>

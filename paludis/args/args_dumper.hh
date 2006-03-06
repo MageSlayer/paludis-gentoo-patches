@@ -21,10 +21,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ARGS_ARGS_DUMPER_HH
 #define PALUDIS_GUARD_PALUDIS_ARGS_ARGS_DUMPER_HH 1
 
-#include <paludis/visitor.hh>
+#include <paludis/util/visitor.hh>
+#include <paludis/args/args_visitor.hh>
 #include <ostream>
-
-#include "args_visitor.hh"
 
 namespace paludis
 {

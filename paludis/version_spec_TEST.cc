@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "version_spec.hh"
+#include <paludis/version_spec.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

@@ -29,8 +29,10 @@ misc/do_m4.bash paludis/Makefile.am || exit $?
 misc/do_m4.bash paludis/paludis.hh || exit $?
 misc/do_m4.bash paludis/qa/Makefile.am || exit $?
 misc/do_m4.bash paludis/qa/qa.hh || exit $?
-misc/do_m4.bash paludis/smart_record.hh || exit $?
-misc/do_m4.bash paludis/comparison_policy.hh || exit $?
+misc/do_m4.bash paludis/util/util.hh || exit $?
+misc/do_m4.bash paludis/util/Makefile.am || exit $?
+misc/do_m4.bash paludis/util/smart_record.hh || exit $?
+misc/do_m4.bash paludis/util/comparison_policy.hh || exit $?
 run mkdir -p config
 run $(get libtoolize 1.5 ) --copy --force --automake
 rm -f config.cache

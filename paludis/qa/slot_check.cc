@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "slot_check.hh"
+#include <paludis/qa/slot_check.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

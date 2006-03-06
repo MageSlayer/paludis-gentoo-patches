@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "use_flag_name.hh"
+#include <paludis/use_flag_name.hh>
 
 using namespace paludis;
 

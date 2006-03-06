@@ -20,10 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VERSION_SPEC_HH
 #define PALUDIS_GUARD_PALUDIS_VERSION_SPEC_HH 1
 
-#include <paludis/private_implementation_pattern.hh>
-#include <paludis/comparison_policy.hh>
-#include <paludis/sorted_collection.hh>
-#include <paludis/exception.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/comparison_policy.hh>
+#include <paludis/util/sorted_collection.hh>
+#include <paludis/util/exception.hh>
 #include <string>
 #include <ostream>
 

@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "defaults_check.hh"
+#include <paludis/qa/defaults_check.hh>
 #include <paludis/match_sequence.hh>
-#include <paludis/is_file_with_extension.hh>
+#include <paludis/util/is_file_with_extension.hh>
 #include <fstream>
 
 using namespace paludis;

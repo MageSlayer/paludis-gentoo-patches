@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "dep_atom.hh"
-#include "dep_atom_dumper.hh"
+#include <paludis/dep_atom.hh>
+#include <paludis/dep_atom_dumper.hh>
 #include <algorithm>
 
 using namespace paludis;

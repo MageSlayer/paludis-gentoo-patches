@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_ARGS_ARGS_HANDLER_HH 1
 
 #include <paludis/args/args_group.hh>
-#include <paludis/instantiation_policy.hh>
+#include <paludis/util/instantiation_policy.hh>
 #include <string>
 #include <ostream>
 #include <map>

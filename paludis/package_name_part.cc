@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "package_name_part.hh"
+#include <paludis/package_name_part.hh>
 
 using namespace paludis;
 

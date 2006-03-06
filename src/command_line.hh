@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_COMMAND_LINE_HH 1
 
 #include <paludis/args/args.hh>
-#include <paludis/instantiation_policy.hh>
+#include <paludis/util/instantiation_policy.hh>
 
 /** \file
  * Declarations for the CommandLine class.

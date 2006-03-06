@@ -19,8 +19,8 @@
 
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include "dep_atom.hh"
-#include "dep_atom_dumper.hh"
+#include <paludis/dep_atom.hh>
+#include <paludis/dep_atom_dumper.hh>
 #include <sstream>
 
 using namespace test;

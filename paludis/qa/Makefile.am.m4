@@ -8,8 +8,12 @@ define(`testlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
-$1_TEST_LDADD = $(top_builddir)/paludis/test_extras.o $(top_builddir)/test/libtest.a \
-	libpaludisqa.a $(top_builddir)/paludis/libpaludis.a
+$1_TEST_LDADD = \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	libpaludisqa.a \
+	$(top_builddir)/paludis/libpaludis.a \
+	$(top_builddir)/paludis/util/libpaludisutil.a
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl

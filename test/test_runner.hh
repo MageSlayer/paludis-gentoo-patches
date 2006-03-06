@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_TEST_TEST_RUNNER_HH
 #define PALUDIS_GUARD_TEST_TEST_RUNNER_HH 1
 
-#include <paludis/attributes.hh>
+#include <paludis/util/attributes.hh>
 
 /** \file
  * Declarations for the default test runner.

@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_DUMPER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_DUMPER_HH 1
 
-#include <paludis/instantiation_policy.hh>
+#include <paludis/util/instantiation_policy.hh>
 #include <ostream>
 
 /** \file

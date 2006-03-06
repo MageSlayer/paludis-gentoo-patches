@@ -20,14 +20,14 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEFAULT_CONFIG_HH
 #define PALUDIS_GUARD_PALUDIS_DEFAULT_CONFIG_HH 1
 
-#include <paludis/exception.hh>
-#include <paludis/fs_entry.hh>
-#include <paludis/indirect_iterator.hh>
-#include <paludis/instantiation_policy.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/instantiation_policy.hh>
 #include <paludis/keyword_name.hh>
 #include <paludis/dep_atom.hh>
 #include <paludis/qualified_package_name.hh>
-#include <paludis/smart_record.hh>
+#include <paludis/util/smart_record.hh>
 #include <paludis/use_flag_name.hh>
 #include <paludis/use_flag_state.hh>
 

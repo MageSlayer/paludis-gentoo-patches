@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_PARSER_LEXER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_PARSER_LEXER_HH 1
 
-#include <paludis/instantiation_policy.hh>
-#include <paludis/exception.hh>
+#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/exception.hh>
 #include <list>
 #include <string>
 

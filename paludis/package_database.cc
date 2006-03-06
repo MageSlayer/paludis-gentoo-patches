@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "dep_atom.hh"
-#include "package_database.hh"
-#include "indirect_iterator.hh"
-#include "stringify.hh"
-#include "match_package.hh"
+#include <paludis/dep_atom.hh>
+#include <paludis/package_database.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/match_package.hh>
 
 #include <list>
 #include <map>

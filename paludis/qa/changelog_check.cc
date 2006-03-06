@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "changelog_check.hh"
-#include <paludis/pstream.hh>
+#include <paludis/qa/changelog_check.hh>
+#include <paludis/util/pstream.hh>
 #include <fstream>
 
 using namespace paludis;
