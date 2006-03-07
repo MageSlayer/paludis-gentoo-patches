@@ -618,6 +618,7 @@ PortageRepository::do_version_metadata(
                 "T='/dev/null' " +
                 "D='/dev/null' " +
                 "S='/dev/null' " +
+                "KV='" + kernel_version() + "' " +
                 getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
                 "/ebuild.bash metadata '" +
                 stringify(_implementation->location) + "/" + stringify(c) + "/" + stringify(p) + "/" +
