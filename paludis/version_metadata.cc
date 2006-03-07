@@ -78,14 +78,37 @@ VersionMetadata::~VersionMetadata()
 const std::string &
 VersionMetadata::get(const VersionMetadataKey key) const
 {
-    /// \bug check key
+    if (key < 0 || key >= static_cast<int>(_implementation->values.size()))
+        throw InternalError(PALUDIS_HERE, "Bad value for key");
     return _implementation->values[key];
 }
 
 VersionMetadata &
 VersionMetadata::set(const VersionMetadataKey key, const std::string & value)
 {
+    if (key < 0 || key >= static_cast<int>(_implementation->values.size()))
+        throw InternalError(PALUDIS_HERE, "Bad value for key");
+
     _implementation->values[key] = value;
+
+    switch (key)
+    {
+        case vmk_iuse:
+            _implementation->iuse.clear();
+            break;
+
+        case vmk_keywords:
+            _implementation->keywords.clear();
+            break;
+
+        case vmk_provide:
+            _implementation->provide.clear();
+            break;
+
+        default:
+            break;
+    }
+
     return *this;
 }
 

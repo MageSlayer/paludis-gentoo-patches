@@ -379,7 +379,6 @@ DepList::visit(const PackageDepAtom * const p)
                     false, false, false)));
 
     /* if we provide things, also insert them. */
-    /// \bug PROVIDE can contain use? blocks.
     if (! metadata->get(vmk_provide).empty())
     {
         DepAtom::ConstPointer provide(DepParser::parse(metadata->get(vmk_provide),

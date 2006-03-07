@@ -36,21 +36,18 @@ TestEnvironment::query_use(const UseFlagName & u, const PackageDatabaseEntry *) 
 bool
 TestEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntry * const) const
 {
-    /// \todo
     return k == KeywordName("test");
 }
 
 bool
 TestEnvironment::query_user_masks(const PackageDatabaseEntry &) const
 {
-    /// \todo?
     return false;
 }
 
 bool
 TestEnvironment::query_user_unmasks(const PackageDatabaseEntry &) const
 {
-    /// \todo?
     return false;
 }
 

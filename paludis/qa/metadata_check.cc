@@ -69,8 +69,7 @@ MetadataCheck::operator() (const FSEntry & f) const
         }
 
         PStream xmllint("xmllint --noout --nonet --dtdvalid '"
-                + stringify(dtd) + /// \bug << todo
-                "' '" + stringify(f) + "' 2>&1");
+                + stringify(dtd) + "' '" + stringify(f) + "' 2>&1");
 
         std::string s;
         while (std::getline(xmllint, s))

@@ -76,7 +76,6 @@ DepParser::parse(const std::string & s, const DepParserPolicyInterface * const p
                                  continue;
 
                             case dpl_text:
-                                 /// \bug VV policy
                                  {
                                      if (i->second.empty())
                                          throw DepStringParseError(i->second, "Empty text entry");
