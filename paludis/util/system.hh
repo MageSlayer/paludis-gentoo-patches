@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_GETENV_HH
-#define PALUDIS_GUARD_PALUDIS_GETENV_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_SYSTEM_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_SYSTEM_HH 1
 
 #include <paludis/util/exception.hh>
 #include <string>
@@ -50,6 +50,8 @@ namespace paludis
      * the variable is not defined.
      */
     std::string getenv_or_error(const std::string & key);
+
+    std::string kernel_version();
 }
 
 #endif

@@ -19,7 +19,7 @@
 
 #include <paludis/qa/metadata_check.hh>
 #include <paludis/util/pstream.hh>
-#include <paludis/util/getenv.hh>
+#include <paludis/util/system.hh>
 #include <ctime>
 #include <fstream>
 

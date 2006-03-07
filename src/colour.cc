@@ -19,7 +19,7 @@
 
 #include "colour.hh"
 #include <unistd.h>
-#include <paludis/util/getenv.hh>
+#include <paludis/util/system.hh>
 
 bool use_colour()
 {

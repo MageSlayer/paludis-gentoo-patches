@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/getenv.hh>
+#include <paludis/util/system.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -59,4 +59,25 @@ namespace test_cases
             TEST_CHECK_THROWS(getenv_or_error("THEREISNOSUCHVARIABLE"), GetenvError);
         }
     } test_getenv_or_error;
+
+    /**
+     * \test Test kernel_version.
+     *
+     * \ingroup Test
+     */
+    struct KernelVersionTest : TestCase
+    {
+        KernelVersionTest() : TestCase("kernel version") { }
+
+        void run()
+        {
+            TEST_CHECK(! kernel_version().empty());
+#ifdef linux
+            TEST_CHECK('2' == kernel_version().at(0));
+            TEST_CHECK('.' == kernel_version().at(1));
+#else
+#  error You need to write a sanity test for kernel_version() for your platform.
+#endif
+        }
+    } test_kernel_version;
 }

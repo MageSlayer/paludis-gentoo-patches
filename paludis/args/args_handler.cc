@@ -19,7 +19,7 @@
 
 #include "args.hh"
 #include "args_dumper.hh"
-#include <paludis/util/getenv.hh>
+#include <paludis/util/system.hh>
 #include <algorithm>
 
 /** \file

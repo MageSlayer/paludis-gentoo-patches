@@ -17,7 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/getenv.hh>
+#include <paludis/util/system.hh>
+#include <sys/utsname.h>
 #include <cstdlib>
 
 using namespace paludis;
@@ -42,3 +43,22 @@ paludis::getenv_or_error(const std::string & key)
         throw GetenvError(key);
     return e;
 }
+
+namespace
+{
+    std::string get_kernel_version()
+    {
+        struct utsname u;
+        if (0 != uname(&u))
+            throw InternalError(PALUDIS_HERE, "uname call failed");
+        return u.release;
+    }
+}
+
+std::string
+paludis::kernel_version()
+{
+    static const std::string result(get_kernel_version());
+    return result;
+}
+
