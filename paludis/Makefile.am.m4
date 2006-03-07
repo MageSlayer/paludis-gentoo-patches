@@ -11,7 +11,7 @@ $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = $(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.a
+	$(top_builddir)/paludis/util/libpaludisutil.la
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl

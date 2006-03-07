@@ -19,21 +19,20 @@
 
 #include "config.h"
 
-#include <paludis/util/create_insert_iterator.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/dep_atom.hh>
-#include <paludis/util/filter_insert_iterator.hh>
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/getenv.hh>
 #include <paludis/hashed_containers.hh>
-#include <paludis/util/indirect_iterator.hh>
-#include <paludis/util/is_file_with_extension.hh>
-#include <paludis/line_config_file.hh>
-#include <paludis/key_value_config_file.hh>
-#include <paludis/util/log.hh>
+#include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/portage_repository.hh>
+#include <paludis/util/create_insert_iterator.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/filter_insert_iterator.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/getenv.hh>
+#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>

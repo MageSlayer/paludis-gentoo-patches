@@ -24,10 +24,11 @@
 #include <paludis/util/exception.hh>
 #include <istream>
 #include <list>
+#include <map>
 #include <string>
 
 /** \file
- * Declarations for the ConfigFile class.
+ * Declarations for the ConfigFile classes.
  *
  * \ingroup ConfigFile
  * \ingroup Exception
@@ -119,6 +120,140 @@ namespace paludis
              * Destructor.
              */
             virtual ~ConfigFile();
+    };
+
+    /**
+     * A LineConfigFile is a ConfigFile that provides access to the
+     * normalised lines. Do not subclass.
+     *
+     * \ingroup ConfigFile
+     */
+    class LineConfigFile : protected ConfigFile
+    {
+        private:
+            mutable std::list<std::string> _lines;
+
+        protected:
+            void accept_line(const std::string &) const;
+
+        public:
+            /**
+             * Constructor, from a stream.
+             */
+            LineConfigFile(std::istream * const);
+
+            /**
+             * Constructor, from a filename.
+             */
+            LineConfigFile(const std::string & filename);
+
+            /**
+             * Iterator over our lines.
+             */
+            typedef std::list<std::string>::const_iterator Iterator;
+
+            /**
+             * Iterator to the start of our lines.
+             */
+            Iterator begin() const
+            {
+                return _lines.begin();
+            }
+
+            /**
+             * Iterator to past the end of our lines.
+             */
+            Iterator end() const
+            {
+                return _lines.end();
+            }
+    };
+
+    /**
+     * A KeyValueConfigFileError is thrown if bad data is encountered in
+     * a ConfigFile.
+     *
+     * \ingroup ConfigFile
+     * \ingroup Exception
+     */
+    class KeyValueConfigFileError : public ConfigurationError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            KeyValueConfigFileError(const std::string & message,
+                    const std::string & filename = "") throw ();
+    };
+
+    /**
+     * A KeyValueConfigFile is a ConfigFile that provides access to the
+     * normalised lines. Do not subclass.
+     *
+     * \ingroup ConfigFile
+     */
+    class KeyValueConfigFile : protected ConfigFile
+    {
+        private:
+            mutable std::map<std::string, std::string> _entries;
+
+        protected:
+            void accept_line(const std::string &) const;
+
+            /**
+             * Handle variable replacement.
+             */
+            std::string replace_variables(const std::string &) const;
+
+            /**
+             * Handle quote removal.
+             */
+            std::string strip_quotes(const std::string &) const;
+
+        public:
+            /**
+             * Constructor, from a stream.
+             */
+            KeyValueConfigFile(std::istream * const);
+
+            /**
+             * Constructor, from a filename.
+             */
+            KeyValueConfigFile(const std::string & filename);
+
+            /**
+             * Destructor.
+             */
+            ~KeyValueConfigFile();
+
+            /**
+             * Iterator over our key/values.
+             */
+            typedef std::map<std::string, std::string>::const_iterator Iterator;
+
+            /**
+             * Start of our key/values.
+             */
+            Iterator begin() const
+            {
+                return _entries.begin();
+            }
+
+            /**
+             * Past the end of our key/values.
+             */
+            Iterator end() const
+            {
+                return _entries.end();
+            }
+
+            /**
+             * Fetch the specified key, or a blank string.
+             */
+            std::string get(const std::string & key) const
+            {
+                return _entries[key];
+            }
     };
 }
 

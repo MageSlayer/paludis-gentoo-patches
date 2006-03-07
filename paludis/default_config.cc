@@ -17,9 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/config_file.hh>
 #include <paludis/default_config.hh>
-#include <paludis/key_value_config_file.hh>
-#include <paludis/line_config_file.hh>
 #include <paludis/util/create_insert_iterator.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -30,6 +29,7 @@
 #include <paludis/util/iterator_utilities.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
+
 #include <fstream>
 #include <algorithm>
 #include <sstream>

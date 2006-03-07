@@ -11,9 +11,9 @@ $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludisqa.a \
+	libpaludisqa.la \
 	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.a
+	$(top_builddir)/paludis/util/libpaludisutil.la
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
@@ -37,7 +37,8 @@ AM_CXXFLAGS = -I$(top_srcdir)
 DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
 EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist
 
-libpaludisqa_a_SOURCES = filelist
+libpaludisqa_la_SOURCES = filelist
+libpaludisqa_la_LDFLAGS = -version-info 0:0:0
 
 TESTS = testlist
 
@@ -48,7 +49,7 @@ TESTS_ENVIRONMENT = env \
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
-noinst_LIBRARIES = libpaludisqa.a
+lib_LTLIBRARIES = libpaludisqa.la
 
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am
