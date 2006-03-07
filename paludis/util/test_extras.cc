@@ -50,7 +50,8 @@ namespace
         const paludis::Exception * ee;
         if (0 != ((ee = dynamic_cast<const Exception *>(&e))))
             return stringify(ee->what()) + " (message " + ee->message() +
-                (ee->empty() ? stringify("") : ", backtrace " + ee->backtrace(" -> ")) + ")";
+                (ee->empty() ? std::string(", no backtrace") :
+                 ", backtrace " + ee->backtrace(" -> ")) + ")";
         else
             return e.what();
     }
