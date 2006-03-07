@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "src/install.hh"
 #include "src/colour.hh"
-#include <paludis/paludis.hh>
+#include "src/install.hh"
 #include <iostream>
+#include <paludis/paludis.hh>
 
 /** \file
  * Handle the --install action for the main paludis program.

@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
 #include <paludis/dep_lexer.hh>
 #include <sstream>
+#include <test/test_framework.hh>
+#include <test/test_runner.hh>
 
 using namespace test;
 using namespace paludis;

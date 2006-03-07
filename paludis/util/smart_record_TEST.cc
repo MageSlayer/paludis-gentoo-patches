@@ -18,8 +18,8 @@
  */
 
 #include <paludis/util/smart_record.hh>
-#include <test/test_runner.hh>
 #include <test/test_framework.hh>
+#include <test/test_runner.hh>
 
 using namespace paludis;
 using namespace test;

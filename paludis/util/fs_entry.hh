@@ -21,11 +21,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_FS_ENTRY_HH
 #define PALUDIS_GUARD_PALUDIS_FS_ENTRY_HH 1
 
-#include <string>
 #include <ostream>
 #include <paludis/util/comparison_policy.hh>
-#include <paludis/util/exception.hh>
 #include <paludis/util/counted_ptr.hh>
+#include <paludis/util/exception.hh>
+#include <string>
 #include <sys/stat.h>
 
 /** \file

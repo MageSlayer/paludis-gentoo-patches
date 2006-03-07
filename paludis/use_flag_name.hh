@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_USE_FLAG_NAME_HH
 #define PALUDIS_GUARD_PALUDIS_USE_FLAG_NAME_HH 1
 
-#include <paludis/util/validated.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/validated.hh>
 #include <string>
 
 /** \file

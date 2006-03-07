@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "test_runner.hh"
 #include "test_framework.hh"
+#include "test_runner.hh"
 #include <paludis/util/stringify.hh>
 
 #include <iostream>

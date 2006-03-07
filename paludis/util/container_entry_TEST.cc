@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <algorithm>
+#include <paludis/util/container_entry.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <paludis/util/container_entry.hh>
-#include <algorithm>
 
 using namespace test;
 using namespace paludis;

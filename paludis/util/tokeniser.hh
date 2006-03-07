@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_TOKENISER_HH
 #define PALUDIS_GUARD_PALUDIS_TOKENISER_HH 1
 
-#include <string>
 #include <iterator>
 #include <paludis/util/instantiation_policy.hh>
+#include <string>
 
 /** \file
  * Declarations for Tokeniser and related utilities.

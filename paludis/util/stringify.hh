@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_STRINGIFY_HH
 #define PALUDIS_GUARD_PALUDIS_STRINGIFY_HH 1
 
-#include <string>
 #include <sstream>
+#include <string>
 
 /** \file
  * Stringify functions.

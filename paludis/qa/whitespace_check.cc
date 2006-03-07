@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <fstream>
 #include <paludis/qa/whitespace_check.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::qa;

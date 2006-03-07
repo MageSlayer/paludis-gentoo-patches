@@ -18,11 +18,11 @@
  */
 
 
+#include <algorithm>
 #include <paludis/util/strip.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
-#include <algorithm>
 
 using namespace paludis;
 using namespace test;

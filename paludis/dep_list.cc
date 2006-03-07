@@ -17,17 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/container_entry.hh>
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/dep_parser.hh>
+#include <paludis/match_package.hh>
+#include <paludis/util/container_entry.hh>
 #include <paludis/util/filter_insert_iterator.hh>
 #include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/iterator_utilities.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
-#include <paludis/match_package.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 

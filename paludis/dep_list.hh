@@ -20,20 +20,20 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_HH 1
 
+#include <algorithm>
+#include <deque>
+#include <iterator>
+#include <list>
+#include <ostream>
 #include <paludis/dep_atom.hh>
 #include <paludis/qa/environment.hh>
-#include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/qualified_package_name.hh>
 #include <paludis/repository_name.hh>
 #include <paludis/slot_name.hh>
+#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/smart_record.hh>
 #include <paludis/version_spec.hh>
-#include <ostream>
-#include <list>
-#include <deque>
-#include <iterator>
-#include <algorithm>
 
 namespace paludis
 {

@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/fake_repository.hh>
-#include <paludis/version_metadata.hh>
-#include <paludis/util/stringify.hh>
 #include <map>
+#include <paludis/fake_repository.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/version_metadata.hh>
 
 using namespace paludis;
 

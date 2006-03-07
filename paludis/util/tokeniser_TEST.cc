@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <iterator>
 #include <paludis/util/tokeniser.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
-#include <iterator>
 
 using namespace test;
 using namespace paludis;

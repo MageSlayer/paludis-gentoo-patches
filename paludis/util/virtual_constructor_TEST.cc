@@ -1,10 +1,10 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
-#include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/counted_ptr.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+#include <paludis/util/virtual_constructor.hh>
 #include <set>
+#include <test/test_framework.hh>
+#include <test/test_runner.hh>
 
 using namespace test;
 using namespace paludis;

@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <algorithm>
 #include <paludis/util/filter_insert_iterator.hh>
+#include <set>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <set>
-#include <algorithm>
 
 using namespace test;
 using namespace paludis;

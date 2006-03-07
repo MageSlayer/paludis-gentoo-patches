@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_LOG_HH
 #define PALUDIS_GUARD_PALUDIS_LOG_HH 1
 
+#include <iosfwd>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <iosfwd>
 
 namespace paludis
 {

@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <algorithm>
 #include <paludis/util/deleter.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <algorithm>
 #include <vector>
 
 using namespace test;

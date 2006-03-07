@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/strip.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/strip.hh>
 
 namespace paludis
 {

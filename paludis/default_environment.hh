@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEFAULT_ENVIRONMENT_HH
 #define PALUDIS_GUARD_PALUDIS_DEFAULT_ENVIRONMENT_HH 1
 
-#include <paludis/qa/environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/qa/environment.hh>
 
 /** \file
  * Declarations for the DefaultEnvironment class.

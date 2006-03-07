@@ -18,8 +18,8 @@
  */
 
 #include <paludis/qa/has_misc_files_check.hh>
-#include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/is_file_with_extension.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

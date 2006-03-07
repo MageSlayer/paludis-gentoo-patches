@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/pstream.hh>
-#include <paludis/util/log.hh>
-#include <errno.h>
 #include <cstring>
+#include <errno.h>
+#include <paludis/util/log.hh>
+#include <paludis/util/pstream.hh>
 
 using namespace paludis;
 

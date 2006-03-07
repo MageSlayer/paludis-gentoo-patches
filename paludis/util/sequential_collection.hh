@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SEQUENTIAL_COLLECTION_HH
 #define PALUDIS_GUARD_PALUDIS_SEQUENTIAL_COLLECTION_HH 1
 
-#include <list>
 #include <algorithm>
+#include <list>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 

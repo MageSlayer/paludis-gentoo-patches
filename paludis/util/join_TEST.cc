@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/join.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
-#include <vector>
 #include <list>
+#include <paludis/util/join.hh>
+#include <test/test_framework.hh>
+#include <test/test_runner.hh>
+#include <vector>
 
 using namespace paludis;
 using namespace test;

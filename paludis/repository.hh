@@ -20,16 +20,16 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_HH 1
 
-#include <paludis/util/attributes.hh>
 #include <paludis/category_name_part.hh>
-#include <paludis/util/counted_ptr.hh>
-#include <paludis/util/exception.hh>
 #include <paludis/package_name_part.hh>
 #include <paludis/repository_name.hh>
 #include <paludis/use_flag_state.hh>
+#include <paludis/util/attributes.hh>
+#include <paludis/util/counted_ptr.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/virtual_constructor.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/util/virtual_constructor.hh>
 
 #include <map>
 #include <string>

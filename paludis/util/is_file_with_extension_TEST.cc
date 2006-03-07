@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <algorithm>
 #include <paludis/util/is_file_with_extension.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
-#include <algorithm>
 
 using namespace paludis;
 using namespace test;

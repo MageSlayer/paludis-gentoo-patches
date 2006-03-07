@@ -22,8 +22,8 @@
 #define PALUDIS_GUARD_ARGS_ARGS_VISITOR_HH 1
 
 #include <list>
-#include <string>
 #include <paludis/util/visitor.hh>
+#include <string>
 
 /** \file
  * Declaration for ArgsVisitor

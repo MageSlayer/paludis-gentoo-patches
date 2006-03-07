@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/qa/has_ebuilds_check.hh>
-#include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <algorithm>
+#include <paludis/qa/has_ebuilds_check.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/is_file_with_extension.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

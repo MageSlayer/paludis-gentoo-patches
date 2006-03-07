@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DIR_ITERATOR_HH
 #define PALUDIS_GUARD_PALUDIS_DIR_ITERATOR_HH 1
 
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <iterator>
+#include <paludis/util/counted_ptr.hh>
+#include <paludis/util/fs_entry.hh>
 #include <set>
 
 /** \file

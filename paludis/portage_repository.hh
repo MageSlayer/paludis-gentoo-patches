@@ -20,10 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PORTAGE_REPOSITORY_HH
 #define PALUDIS_GUARD_PALUDIS_PORTAGE_REPOSITORY_HH 1
 
+#include <map>
 #include <paludis/repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <map>
 #include <string>
 
 /** \file

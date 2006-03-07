@@ -20,10 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SORTED_COLLECTION_HH
 #define PALUDIS_GUARD_PALUDIS_SORTED_COLLECTION_HH 1
 
+#include <iterator>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <set>
-#include <iterator>
 
 namespace paludis
 {

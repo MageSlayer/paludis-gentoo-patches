@@ -18,9 +18,9 @@
  */
 
 #include <paludis/qa/glep_31_check.hh>
+#include <sstream>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <sstream>
 
 using namespace paludis;
 using namespace paludis::qa;

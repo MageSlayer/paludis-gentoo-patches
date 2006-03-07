@@ -21,8 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_INDIRECT_ITERATOR_HH 1
 
 #include <iterator>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/comparison_policy.hh>
+#include <paludis/util/instantiation_policy.hh>
 
 namespace paludis
 {

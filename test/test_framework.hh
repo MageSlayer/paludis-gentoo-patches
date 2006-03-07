@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_TEST_TEST_FRAMEWORK_HH
 #define PALUDIS_GUARD_TEST_TEST_FRAMEWORK_HH 1
 
-#include <paludis/util/stringify.hh>
-#include <string>
-#include <memory>
 #include <list>
+#include <memory>
+#include <paludis/util/stringify.hh>
 #include <sstream>
+#include <string>
 
 /** \file
  * Test framework class definitions.

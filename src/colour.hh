@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_SRC_COLOUR_HH
 #define PALUDIS_GUARD_SRC_COLOUR_HH 1
 
-#include <string>
-#include <paludis/util/stringify.hh>
 #include "src/command_line.hh"
+#include <paludis/util/stringify.hh>
+#include <string>
 
 enum Colour
 {

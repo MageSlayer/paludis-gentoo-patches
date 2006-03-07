@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <deque>
 #include <paludis/paludis.hh>
+#include <string>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <deque>
-#include <string>
 
 using namespace paludis;
 using namespace test;

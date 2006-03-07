@@ -17,13 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <test/test_framework.hh>
-#include <paludis/util/stringify.hh>
-#include <paludis/util/exception.hh>
-#include <paludis/util/attributes.hh>
-#include <paludis/util/log.hh>
 #include <exception>
+#include <paludis/util/attributes.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/stringify.hh>
 #include <sstream>
+#include <test/test_framework.hh>
 
 using namespace paludis;
 

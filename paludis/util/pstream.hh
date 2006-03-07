@@ -20,13 +20,13 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PSTREAM_HH
 #define PALUDIS_GUARD_PALUDIS_PSTREAM_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/exception.hh>
-#include <streambuf>
-#include <limits>
-#include <string>
 #include <cstdio>
 #include <istream>
+#include <limits>
+#include <paludis/util/exception.hh>
+#include <paludis/util/instantiation_policy.hh>
+#include <streambuf>
+#include <string>
 
 /** \file
  * Declarations for the PStream and PStreamInBuf classes, and related

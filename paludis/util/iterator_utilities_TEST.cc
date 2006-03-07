@@ -18,9 +18,9 @@
  */
 
 #include <paludis/util/iterator_utilities.hh>
+#include <string>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <string>
 #include <vector>
 
 using namespace test;

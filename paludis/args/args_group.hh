@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_GROUP_HH
 #define PALUDIS_GUARD_ARGS_ARGS_GROUP_HH 1
 
-#include <paludis/args/args_option.hh>
 #include <list>
+#include <paludis/args/args_option.hh>
 #include <string>
 
 /** \file

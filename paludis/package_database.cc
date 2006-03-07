@@ -18,10 +18,10 @@
  */
 
 #include <paludis/dep_atom.hh>
+#include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/match_package.hh>
 
 #include <list>
 #include <map>

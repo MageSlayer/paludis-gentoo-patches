@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DESTRINGIFY_HH
 #define PALUDIS_GUARD_PALUDIS_DESTRINGIFY_HH 1
 
-#include <string>
-#include <sstream>
 #include <paludis/util/exception.hh>
+#include <sstream>
+#include <string>
 
 /** \file
  * Destringify functions.

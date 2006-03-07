@@ -17,12 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/paludis.hh>
-#include <paludis/util/util.hh>
-#include "src/query.hh"
+#include "src/command_line.hh"
 #include "src/install.hh"
 #include "src/list.hh"
-#include "src/command_line.hh"
+#include "src/query.hh"
+#include <paludis/paludis.hh>
+#include <paludis/util/util.hh>
 
 #include <iostream>
 #include <cstdlib>

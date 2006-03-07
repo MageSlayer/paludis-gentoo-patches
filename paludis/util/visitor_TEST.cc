@@ -17,13 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/visitor.hh>
+#include <algorithm>
 #include <paludis/util/deleter.hh>
 #include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/visitor.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
-#include <algorithm>
 
 using namespace paludis;
 using namespace test;

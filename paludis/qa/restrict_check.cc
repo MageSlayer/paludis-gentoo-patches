@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <algorithm>
+#include <iterator>
 #include <paludis/qa/restrict_check.hh>
 #include <paludis/util/tokeniser.hh>
-#include <algorithm>
 #include <set>
-#include <iterator>
 
 using namespace paludis;
 using namespace paludis::qa;

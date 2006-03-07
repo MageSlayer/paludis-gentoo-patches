@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_DUMPER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_DUMPER_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
 #include <ostream>
+#include <paludis/util/instantiation_policy.hh>
 
 /** \file
  * Declarations for the DepAtomDumper class.

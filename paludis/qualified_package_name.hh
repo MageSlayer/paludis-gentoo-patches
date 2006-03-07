@@ -20,12 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QUALIFIED_PACKAGE_NAME_HH
 #define PALUDIS_GUARD_PALUDIS_QUALIFIED_PACKAGE_NAME_HH 1
 
-#include <paludis/package_name_part.hh>
+#include <ostream>
 #include <paludis/category_name_part.hh>
+#include <paludis/package_name_part.hh>
+#include <paludis/util/exception.hh>
 #include <paludis/util/smart_record.hh>
 #include <paludis/util/sorted_collection.hh>
-#include <paludis/util/exception.hh>
-#include <ostream>
 
 namespace paludis
 {

@@ -24,10 +24,10 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/filter_insert_iterator.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/system.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator_utilities.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 
 #include <fstream>

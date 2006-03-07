@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_HANDLER_HH
 #define PALUDIS_GUARD_ARGS_ARGS_HANDLER_HH 1
 
+#include <map>
+#include <ostream>
 #include <paludis/args/args_group.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <string>
-#include <ostream>
-#include <map>
 
 /** \file
  * Declaration for ArgsHandler.

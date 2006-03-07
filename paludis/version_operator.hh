@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VERSION_OPERATOR_HH
 #define PALUDIS_GUARD_PALUDIS_VERSION_OPERATOR_HH 1
 
+#include <ostream>
+#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/validated.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <string>
-#include <ostream>
 
 /** \file
  * Declarations for the VersionOperator class.

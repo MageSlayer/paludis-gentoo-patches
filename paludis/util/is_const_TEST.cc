@@ -18,9 +18,9 @@
  */
 
 #include <paludis/util/is_const.hh>
+#include <string>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <string>
 
 using namespace test;
 using namespace paludis;

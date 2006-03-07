@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_JOIN_HH
 #define PALUDIS_GUARD_PALUDIS_JOIN_HH 1
 
-#include <string>
 #include <paludis/util/stringify.hh>
+#include <string>
 
 namespace paludis
 {

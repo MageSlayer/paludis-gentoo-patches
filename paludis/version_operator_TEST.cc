@@ -18,8 +18,8 @@
  */
 
 #include <paludis/version_operator.hh>
-#include <test/test_runner.hh>
 #include <test/test_framework.hh>
+#include <test/test_runner.hh>
 
 using namespace test;
 using namespace paludis;

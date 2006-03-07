@@ -19,8 +19,8 @@
 
 #include "args.hh"
 #include "args_dumper.hh"
-#include <paludis/util/system.hh>
 #include <algorithm>
+#include <paludis/util/system.hh>
 
 /** \file
  * Implementation for ArgsHandler.

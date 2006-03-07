@@ -17,13 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "list.hh"
 #include "colour.hh"
-#include <paludis/paludis.hh>
-#include <iostream>
+#include "list.hh"
 #include <iomanip>
-#include <map>
+#include <iostream>
 #include <list>
+#include <map>
+#include <paludis/paludis.hh>
 
 namespace p = paludis;
 

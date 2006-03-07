@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/dep_atom.hh>
+#include <paludis/dep_lexer.hh>
+#include <paludis/dep_parser.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_parser.hh>
-#include <paludis/dep_lexer.hh>
 #include <stack>
 
 using namespace paludis;

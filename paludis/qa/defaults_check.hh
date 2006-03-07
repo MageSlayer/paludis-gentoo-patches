@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QA_DEFAULTS_CHECK_HH
 #define PALUDIS_GUARD_PALUDIS_QA_DEFAULTS_CHECK_HH 1
 
+#include <istream>
 #include <paludis/qa/file_check.hh>
 #include <string>
-#include <istream>
 
 namespace paludis
 {

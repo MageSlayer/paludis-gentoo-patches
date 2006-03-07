@@ -17,13 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <list>
+#include <paludis/default_config.hh>
 #include <paludis/default_environment.hh>
+#include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
-#include <paludis/default_config.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/match_package.hh>
-#include <list>
 #include <vector>
 
 using namespace paludis;

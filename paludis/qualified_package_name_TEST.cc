@@ -19,8 +19,8 @@
 
 #include <paludis/qualified_package_name.hh>
 #include <paludis/util/exception.hh>
-#include <test/test_runner.hh>
 #include <test/test_framework.hh>
+#include <test/test_runner.hh>
 
 using namespace test;
 using namespace paludis;

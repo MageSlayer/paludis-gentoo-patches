@@ -18,8 +18,8 @@
  */
 
 #include "colour.hh"
-#include <unistd.h>
 #include <paludis/util/system.hh>
+#include <unistd.h>
 
 bool use_colour()
 {

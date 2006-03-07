@@ -20,12 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QA_FILE_CHECK_HH
 #define PALUDIS_GUARD_PALUDIS_QA_FILE_CHECK_HH 1
 
-#include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/counted_ptr.hh>
-#include <paludis/util/virtual_constructor.hh>
 #include <paludis/qa/check.hh>
 #include <paludis/qa/check_result.hh>
+#include <paludis/util/counted_ptr.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/virtual_constructor.hh>
 
 /** \file
  * Declarations for the FileCheck class.

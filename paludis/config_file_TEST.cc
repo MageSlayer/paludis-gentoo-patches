@@ -17,12 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/stringify.hh>
 #include <paludis/config_file.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/stringify.hh>
+#include <sstream>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <sstream>
 #include <vector>
 
 using namespace test;

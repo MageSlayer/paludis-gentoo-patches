@@ -18,9 +18,9 @@
  */
 
 #include "test_framework.hh"
-#include <paludis/util/attributes.hh>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
+#include <paludis/util/attributes.hh>
 #include <unistd.h>
 
 /** \file

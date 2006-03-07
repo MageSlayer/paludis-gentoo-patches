@@ -20,10 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_CATEGORY_NAME_PART_HH
 #define PALUDIS_GUARD_PALUDIS_CATEGORY_NAME_PART_HH 1
 
-#include <paludis/util/validated.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sorted_collection.hh>
+#include <paludis/util/validated.hh>
 #include <string>
 
 /** \file

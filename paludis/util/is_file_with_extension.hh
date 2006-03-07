@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_IS_FILE_WITH_EXTENSION_HH
 #define PALUDIS_GUARD_PALUDIS_IS_FILE_WITH_EXTENSION_HH 1
 
+#include <functional>
 #include <paludis/util/fs_entry.hh>
 #include <string>
-#include <functional>
 
 /** \file
  * Declarations for the IsFileWithExtension class.

@@ -22,8 +22,8 @@
 #define PALUDIS_GUARD_ARGS_ARGS_OPTION_HH 1
 
 #include <paludis/args/args_visitor.hh>
-#include <string>
 #include <set>
+#include <string>
 #include <vector>
 
 /** \file

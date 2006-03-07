@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_STRIP_HH
 #define PALUDIS_GUARD_PALUDIS_STRIP_HH 1
 
-#include <string>
 #include <functional>
+#include <string>
 
 namespace paludis
 {

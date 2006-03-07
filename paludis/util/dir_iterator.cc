@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <dirent.h>
+#include <errno.h>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <sys/types.h>
-#include <dirent.h>
-#include <errno.h>
 
 /** \file
  * Implementation of paludis::DirIterator.

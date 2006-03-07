@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <ctime>
+#include <fstream>
 #include <paludis/qa/metadata_check.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/system.hh>
-#include <ctime>
-#include <fstream>
 
 using namespace paludis;
 using namespace paludis::qa;

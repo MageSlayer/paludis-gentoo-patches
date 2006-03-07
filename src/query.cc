@@ -17,13 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "src/query.hh"
 #include "src/colour.hh"
-#include <paludis/paludis.hh>
-#include <iostream>
-#include <iomanip>
-#include <string>
+#include "src/query.hh"
 #include <functional>
+#include <iomanip>
+#include <iostream>
+#include <paludis/paludis.hh>
+#include <string>
 
 /** \file
  * Handle the --query action for the main paludis program.

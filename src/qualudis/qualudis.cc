@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/paludis.hh>
-#include <paludis/util/util.hh>
 #include <paludis/args/args.hh>
+#include <paludis/paludis.hh>
 #include <paludis/qa/qa.hh>
+#include <paludis/util/util.hh>
 
 #include <cstdlib>
 #include <iostream>
