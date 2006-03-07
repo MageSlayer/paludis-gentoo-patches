@@ -86,6 +86,7 @@ DefaultConfig::DefaultConfig()
                 importance = destringify<int>(k.get("importance"));
 
             std::map<std::string, std::string> keys(k.begin(), k.end());
+            keys["repo_file"] = stringify(*repo_file);
             _repos.push_back(RepositoryConfigEntry(format, importance, keys));
         }
 

@@ -757,6 +757,9 @@ PortageRepository::make_portage_repository(
         const PackageDatabase * const db,
         const std::map<std::string, std::string> & m)
 {
+    Context context("When making Portage repository from repo_file '" +
+            (m.end() == m.find("repo_file") ? std::string("?") : m.find("repo_file")->second) + "':");
+
     std::string location;
     if (m.end() == m.find("location") || ((location = m.find("location")->second)).empty())
         throw PortageRepositoryConfigurationError("Key 'location' not specified or empty");
