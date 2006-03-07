@@ -32,6 +32,11 @@ CommandLine::CommandLine() :
     a_help(&action_args,     "help",         'h', "Display program help"),
 
     general_args(this, "General options"),
+    a_log_level(&general_args, "log-level",  '\0', "Specify the log level",
+            paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
+            ("warning", "Show warnings only")
+            ("silent", "Suppress all log messages"),
+            "warning"),
     a_no_colour(&general_args, "no-colour", 'c', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
 

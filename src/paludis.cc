@@ -18,6 +18,7 @@
  */
 
 #include <paludis/paludis.hh>
+#include <paludis/util/util.hh>
 #include "src/query.hh"
 #include "src/install.hh"
 #include "src/list.hh"
@@ -65,6 +66,18 @@ main(int argc, char *argv[])
 
         if (CommandLine::get_instance()->a_help.specified())
             throw DoHelp();
+
+        if (! CommandLine::get_instance()->a_log_level.specified())
+            p::Log::get_instance()->set_log_level(p::ll_warning);
+        else if (CommandLine::get_instance()->a_log_level.argument() == "debug")
+            p::Log::get_instance()->set_log_level(p::ll_debug);
+        else if (CommandLine::get_instance()->a_log_level.argument() == "warning")
+            p::Log::get_instance()->set_log_level(p::ll_warning);
+        else if (CommandLine::get_instance()->a_log_level.argument() == "silent")
+            p::Log::get_instance()->set_log_level(p::ll_silent);
+        else
+            throw DoHelp("bad value for --log-level");
+
 
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +
