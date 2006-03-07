@@ -44,14 +44,14 @@ namespace paludis
             /**
              * Pointer to our implementation data.
              */
-            CountedPtr<Implementation<C_>, count_policy::InternalCountTag> _implementation;
+            CountedPtr<Implementation<C_>, count_policy::InternalCountTag> _imp;
 
         public:
             /**
              * Constructor.
              */
             explicit PrivateImplementationPattern(Implementation<C_> * i) :
-                _implementation(i)
+                _imp(i)
             {
             }
     };

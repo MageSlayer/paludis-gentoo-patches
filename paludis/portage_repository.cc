@@ -275,8 +275,8 @@ PortageRepository::do_has_category_named(const CategoryNamePart & c) const
             "' in " + stringify(name()) + ":");
 
     need_category_names();
-    return _implementation->category_names.end() !=
-        _implementation->category_names.find(c);
+    return _imp->category_names.end() !=
+        _imp->category_names.find(c);
 }
 
 bool
@@ -290,28 +290,28 @@ PortageRepository::do_has_package_named(const CategoryNamePart & c,
     need_virtual_names();
 
     CategoryMap::iterator cat_iter(
-            _implementation->category_names.find(c));
+            _imp->category_names.find(c));
 
-    if (_implementation->category_names.end() == cat_iter)
+    if (_imp->category_names.end() == cat_iter)
         return false;
 
     const QualifiedPackageName n(c, p);
 
     if (cat_iter->second)
-        return _implementation->package_names.find(n) !=
-            _implementation->package_names.end();
+        return _imp->package_names.find(n) !=
+            _imp->package_names.end();
     else
     {
-        if (_implementation->package_names.find(n) !=
-                _implementation->package_names.end())
+        if (_imp->package_names.find(n) !=
+                _imp->package_names.end())
             return true;
 
-        FSEntry fs(_implementation->location);
+        FSEntry fs(_imp->location);
         fs /= stringify(c);
         fs /= stringify(p);
         if (! fs.is_directory())
             return false;
-        _implementation->package_names.insert(std::make_pair(n, false));
+        _imp->package_names.insert(std::make_pair(n, false));
         return true;
     }
 }
@@ -342,8 +342,8 @@ PortageRepository::do_category_names() const
     need_category_names();
 
     CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection);
-    CategoryMap::const_iterator i(_implementation->category_names.begin()),
-        i_end(_implementation->category_names.end());
+    CategoryMap::const_iterator i(_imp->category_names.begin()),
+        i_end(_imp->category_names.end());
     for ( ; i != i_end ; ++i)
         result->insert(i->first);
     return result;
@@ -362,10 +362,10 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
     need_category_names();
     need_virtual_names();
 
-    if (_implementation->category_names.end() == _implementation->category_names.find(c))
+    if (_imp->category_names.end() == _imp->category_names.find(c))
         return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection);
 
-    for (DirIterator d(_implementation->location / stringify(c)), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->location / stringify(c)), d_end ; d != d_end ; ++d)
     {
         if (! d->is_directory())
             continue;
@@ -375,7 +375,7 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
 
         try
         {
-            _implementation->package_names.insert(std::make_pair(
+            _imp->package_names.insert(std::make_pair(
                         QualifiedPackageName(c, PackageNamePart(d->basename())), false));
         }
         catch (const NameError &)
@@ -386,11 +386,11 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
         }
     }
 
-    _implementation->category_names[c] = true;
+    _imp->category_names[c] = true;
 
     QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection);
 
-    std::copy(_implementation->package_names.begin(), _implementation->package_names.end(),
+    std::copy(_imp->package_names.begin(), _imp->package_names.end(),
             transform_inserter(filter_inserter(result->inserter(), CategoryFilter(c)),
                     SelectFirst<QualifiedPackageName, bool>()));
 
@@ -406,7 +406,7 @@ PortageRepository::do_version_specs(const QualifiedPackageName & n) const
     if (has_package_named(n))
     {
         need_version_names(n);
-        return _implementation->version_specs.find(n)->second;
+        return _imp->version_specs.find(n)->second;
     }
     else
         return VersionSpecCollection::Pointer(new VersionSpecCollection);
@@ -423,7 +423,7 @@ PortageRepository::do_has_version(const CategoryNamePart & c,
     {
         need_version_names(QualifiedPackageName(c, p));
         VersionSpecCollection::Pointer vv(
-                _implementation->version_specs.find(QualifiedPackageName(c, p))->second);
+                _imp->version_specs.find(QualifiedPackageName(c, p))->second);
         return vv->end() != vv->find(v);
     }
     else
@@ -433,18 +433,18 @@ PortageRepository::do_has_version(const CategoryNamePart & c,
 void
 PortageRepository::need_category_names() const
 {
-    if (_implementation->has_category_names)
+    if (_imp->has_category_names)
         return;
 
     Context context("When loading category names for " + stringify(name()) + ":");
 
-    LineConfigFile cats(_implementation->location / "profiles" / "categories");
+    LineConfigFile cats(_imp->location / "profiles" / "categories");
 
     for (LineConfigFile::Iterator line(cats.begin()), line_end(cats.end()) ;
             line != line_end ; ++line)
-        _implementation->category_names.insert(std::make_pair(CategoryNamePart(*line), false));
+        _imp->category_names.insert(std::make_pair(CategoryNamePart(*line), false));
 
-    _implementation->has_category_names = true;
+    _imp->has_category_names = true;
 }
 
 void
@@ -452,7 +452,7 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
 {
     need_virtual_names();
 
-    if (_implementation->package_names[n])
+    if (_imp->package_names[n])
         return;
 
     Context context("When loading versions for '" + stringify(n) + "' in "
@@ -460,12 +460,12 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
 
     VersionSpecCollection::Pointer v(new VersionSpecCollection);
 
-    FSEntry path(_implementation->location / stringify(n.get<qpn_category>()) /
+    FSEntry path(_imp->location / stringify(n.get<qpn_category>()) /
             stringify(n.get<qpn_package>()));
     if (CategoryNamePart("virtual") == n.get<qpn_category>() && ! path.exists())
     {
         VirtualsMap::iterator i(
-                _implementation->virtuals_map.find(n));
+                _imp->virtuals_map.find(n));
         need_version_names(i->second->package());
 
         VersionSpecCollection::ConstPointer versions(version_specs(i->second->package()));
@@ -473,7 +473,7 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
                 vv != vv_end ; ++vv)
         {
             PackageDatabaseEntry e(i->second->package(), *vv, name());
-            if (! match_package(_implementation->db, i->second, e))
+            if (! match_package(_imp->db, i->second, e))
                 continue;
 
             v->insert(*vv);
@@ -491,8 +491,8 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
                     IsFileWithExtension(stringify(n.get<qpn_package>()) + "-", ".ebuild")));
 
 
-    _implementation->version_specs.insert(std::make_pair(n, v));
-    _implementation->package_names[n] = true;
+    _imp->version_specs.insert(std::make_pair(n, v));
+    _imp->package_names[n] = true;
 }
 
 RepositoryName
@@ -528,9 +528,9 @@ VersionMetadata::ConstPointer
 PortageRepository::do_version_metadata(
         const CategoryNamePart & c, const PackageNamePart & p, const VersionSpec & v) const
 {
-    if (_implementation->metadata.end() != _implementation->metadata.find(
+    if (_imp->metadata.end() != _imp->metadata.find(
                 std::make_pair(QualifiedPackageName(c, p), v)))
-            return _implementation->metadata.find(std::make_pair(QualifiedPackageName(c, p), v))->second;
+            return _imp->metadata.find(std::make_pair(QualifiedPackageName(c, p), v))->second;
 
     Context context("When fetching metadata for " + stringify(c) + "/" + stringify(p) +
             "-" + stringify(v));
@@ -545,12 +545,12 @@ PortageRepository::do_version_metadata(
 
     VersionMetadata::Pointer result(new VersionMetadata);
 
-    FSEntry cache_file(_implementation->cache);
+    FSEntry cache_file(_imp->cache);
     cache_file /= stringify(c);
     cache_file /= stringify(p) + "-" + stringify(v);
 
     bool ok(false);
-    VirtualsMap::iterator vi(_implementation->virtuals_map.end());
+    VirtualsMap::iterator vi(_imp->virtuals_map.end());
     if (cache_file.is_regular_file())
     {
         std::ifstream cache(std::string(cache_file).c_str());
@@ -582,7 +582,7 @@ PortageRepository::do_version_metadata(
             Log::get_instance()->message(ll_warning, "Couldn't read the cache file at '"
                     + stringify(cache_file) + "'");
     }
-    else if (_implementation->virtuals_map.end() != ((vi = _implementation->virtuals_map.find(
+    else if (_imp->virtuals_map.end() != ((vi = _imp->virtuals_map.find(
                 QualifiedPackageName(c, p)))))
     {
         VersionMetadata::ConstPointer m(version_metadata(vi->second->package(), v));
@@ -596,7 +596,7 @@ PortageRepository::do_version_metadata(
 
     if (! ok)
     {
-        if (_implementation->cache.basename() != "empty")
+        if (_imp->cache.basename() != "empty")
             Log::get_instance()->message(ll_warning, "No cache entry for '" + stringify(c) + "/" +
                     stringify(p) + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
 
@@ -609,11 +609,11 @@ PortageRepository::do_version_metadata(
                 "PF='" + stringify(p) + "-" + stringify(v) + "' " +
                 "A='' " +
                 "CATEGORY='" + stringify(c) + "' " +
-                "FILESDIR='" + stringify(_implementation->location) + "/" + stringify(c) + "/" +
+                "FILESDIR='" + stringify(_imp->location) + "/" + stringify(c) + "/" +
                     stringify(p) + "/files/' " +
-                "ECLASSDIR='" + stringify(_implementation->location) + "/eclass/' " +
-                "PORTDIR='" + stringify(_implementation->location) + "/' " +
-                "DISTDIR='" + stringify(_implementation->location) + "/distfiles/' " +
+                "ECLASSDIR='" + stringify(_imp->location) + "/eclass/' " +
+                "PORTDIR='" + stringify(_imp->location) + "/' " +
+                "DISTDIR='" + stringify(_imp->location) + "/distfiles/' " +
                 "WORKDIR='/dev/null' " +
                 "T='/dev/null' " +
                 "D='/dev/null' " +
@@ -621,7 +621,7 @@ PortageRepository::do_version_metadata(
                 "KV='" + kernel_version() + "' " +
                 getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
                 "/ebuild.bash metadata '" +
-                stringify(_implementation->location) + "/" + stringify(c) + "/" + stringify(p) + "/" +
+                stringify(_imp->location) + "/" + stringify(c) + "/" + stringify(p) + "/" +
                 stringify(p) + "-" + stringify(v) + ".ebuild'");
 
         PStream prog(cmd);
@@ -655,7 +655,7 @@ PortageRepository::do_version_metadata(
             ok = true;
     }
 
-    _implementation->metadata.insert(std::make_pair(std::make_pair(QualifiedPackageName(c, p), v), result));
+    _imp->metadata.insert(std::make_pair(std::make_pair(QualifiedPackageName(c, p), v), result));
     return result;
 }
 
@@ -663,12 +663,12 @@ bool
 PortageRepository::do_query_repository_masks(const CategoryNamePart & c,
         const PackageNamePart & p, const VersionSpec & v) const
 {
-    if (! _implementation->has_repo_mask)
+    if (! _imp->has_repo_mask)
     {
         Context context("When querying repository mask for '" + stringify(c) + "/" + stringify(p) + "-"
                 + stringify(v) + "':");
 
-        FSEntry fff(_implementation->location / "profiles" / "package.mask");
+        FSEntry fff(_imp->location / "profiles" / "package.mask");
         if (fff.exists())
         {
             LineConfigFile ff(fff);
@@ -676,21 +676,21 @@ PortageRepository::do_query_repository_masks(const CategoryNamePart & c,
                     line != line_end ; ++line)
             {
                 PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
-                _implementation->repo_mask[a->package()].push_back(a);
+                _imp->repo_mask[a->package()].push_back(a);
             }
         }
 
-        _implementation->has_repo_mask = true;
+        _imp->has_repo_mask = true;
     }
 
     RepositoryMaskMap::iterator r(
-            _implementation->repo_mask.find(QualifiedPackageName(c, p)));
-    if (_implementation->repo_mask.end() == r)
+            _imp->repo_mask.find(QualifiedPackageName(c, p)));
+    if (_imp->repo_mask.end() == r)
         return false;
     else
         for (IndirectIterator<std::deque<PackageDepAtom::ConstPointer>::const_iterator, const PackageDepAtom>
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(_implementation->db, *k, PackageDatabaseEntry(
+            if (match_package(_imp->db, *k, PackageDatabaseEntry(
                             QualifiedPackageName(c, p), v, name())))
                 return true;
 
@@ -708,15 +708,15 @@ PortageRepository::do_query_profile_masks(const CategoryNamePart &,
 UseFlagState
 PortageRepository::do_query_use(const UseFlagName & f) const
 {
-    if (! _implementation->has_profile)
+    if (! _imp->has_profile)
     {
         Context context("When checking USE state for '" + stringify(f) + "':");
-        _implementation->add_profile(_implementation->profile.realpath());
-        _implementation->has_profile = true;
+        _imp->add_profile(_imp->profile.realpath());
+        _imp->has_profile = true;
     }
 
-    UseMap::iterator p(_implementation->use.end());
-    if (_implementation->use.end() == ((p = _implementation->use.find(f))))
+    UseMap::iterator p(_imp->use.end());
+    if (_imp->use.end() == ((p = _imp->use.find(f))))
         return use_unspecified;
     else
         return p->second;
@@ -725,29 +725,29 @@ PortageRepository::do_query_use(const UseFlagName & f) const
 bool
 PortageRepository::do_query_use_mask(const UseFlagName & u) const
 {
-    if (! _implementation->has_profile)
+    if (! _imp->has_profile)
     {
         Context context("When checking USE mask for '" + stringify(u) + "':");
-        _implementation->add_profile(_implementation->profile.realpath());
-        _implementation->has_profile = true;
+        _imp->add_profile(_imp->profile.realpath());
+        _imp->has_profile = true;
     }
 
-    return _implementation->use_mask.end() != _implementation->use_mask.find(u);
+    return _imp->use_mask.end() != _imp->use_mask.find(u);
 }
 
 void
 PortageRepository::need_virtual_names() const
 {
-    if (! _implementation->has_profile)
+    if (! _imp->has_profile)
     {
         Context context("When loading virtual names:");
-        _implementation->add_profile(_implementation->profile.realpath());
-        _implementation->has_profile = true;
+        _imp->add_profile(_imp->profile.realpath());
+        _imp->has_profile = true;
 
         for (VirtualsMap::const_iterator
-                v(_implementation->virtuals_map.begin()), v_end(_implementation->virtuals_map.end()) ;
+                v(_imp->virtuals_map.begin()), v_end(_imp->virtuals_map.end()) ;
                 v != v_end ; ++v)
-            _implementation->package_names.insert(
+            _imp->package_names.insert(
                     std::make_pair(v->first, false));
     }
 }
@@ -784,33 +784,33 @@ PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
 bool
 PortageRepository::do_is_arch_flag(const UseFlagName & u) const
 {
-    if (! _implementation->has_arch_list)
+    if (! _imp->has_arch_list)
     {
         Context context("When checking arch list for '" + stringify(u) + "':");
 
-        LineConfigFile archs(_implementation->location / "profiles" / "arch.list");
+        LineConfigFile archs(_imp->location / "profiles" / "arch.list");
         std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(
-                    std::inserter(_implementation->arch_list, _implementation->arch_list.begin())));
+                    std::inserter(_imp->arch_list, _imp->arch_list.begin())));
 
-        _implementation->has_arch_list = true;
+        _imp->has_arch_list = true;
     }
 
-    return _implementation->arch_list.end() != _implementation->arch_list.find(u);
+    return _imp->arch_list.end() != _imp->arch_list.find(u);
 }
 
 bool
 PortageRepository::do_is_expand_flag(const UseFlagName & u) const
 {
-    if (! _implementation->has_profile)
+    if (! _imp->has_profile)
     {
         Context context("When checking USE_EXPAND list for '" + stringify(u) + "':");
-        _implementation->add_profile(_implementation->profile.realpath());
-        _implementation->has_profile = true;
+        _imp->add_profile(_imp->profile.realpath());
+        _imp->has_profile = true;
     }
 
     /// \todo VV no need for this to be linear
-    for (UseFlagSet::const_iterator i(_implementation->expand_list.begin()),
-            i_end(_implementation->expand_list.end()) ; i != i_end ; ++i)
+    for (UseFlagSet::const_iterator i(_imp->expand_list.begin()),
+            i_end(_imp->expand_list.end()) ; i != i_end ; ++i)
         if (0 == strncasecmp(
                     stringify(u).c_str(),
                     (stringify(*i) + "_").c_str(),
@@ -823,7 +823,7 @@ PortageRepository::do_is_expand_flag(const UseFlagName & u) const
 bool
 PortageRepository::do_is_licence(const std::string & s) const
 {
-    FSEntry l(_implementation->location);
+    FSEntry l(_imp->location);
     l /= "licenses";
 
     if (! l.is_directory())
@@ -836,21 +836,21 @@ PortageRepository::do_is_licence(const std::string & s) const
 bool
 PortageRepository::do_is_mirror(const std::string & s) const
 {
-    if (! _implementation->has_mirrors)
+    if (! _imp->has_mirrors)
     {
         static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
 
-        LineConfigFile mirrors(_implementation->location / "profiles" / "thirdpartymirrors");
+        LineConfigFile mirrors(_imp->location / "profiles" / "thirdpartymirrors");
         for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
         {
             std::vector<std::string> entries;
             tokeniser.tokenise(*line, std::back_inserter(entries));
             if (! entries.empty())
-                _implementation->mirrors.insert(entries.at(0));
+                _imp->mirrors.insert(entries.at(0));
         }
-        _implementation->has_mirrors = true;
+        _imp->has_mirrors = true;
     }
 
-    return _implementation->mirrors.end() != _implementation->mirrors.find(s);
+    return _imp->mirrors.end() != _imp->mirrors.find(s);
 }
 

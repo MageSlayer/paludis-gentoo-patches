@@ -78,31 +78,31 @@ VersionMetadata::~VersionMetadata()
 const std::string &
 VersionMetadata::get(const VersionMetadataKey key) const
 {
-    if (key < 0 || key >= static_cast<int>(_implementation->values.size()))
+    if (key < 0 || key >= static_cast<int>(_imp->values.size()))
         throw InternalError(PALUDIS_HERE, "Bad value for key");
-    return _implementation->values[key];
+    return _imp->values[key];
 }
 
 VersionMetadata &
 VersionMetadata::set(const VersionMetadataKey key, const std::string & value)
 {
-    if (key < 0 || key >= static_cast<int>(_implementation->values.size()))
+    if (key < 0 || key >= static_cast<int>(_imp->values.size()))
         throw InternalError(PALUDIS_HERE, "Bad value for key");
 
-    _implementation->values[key] = value;
+    _imp->values[key] = value;
 
     switch (key)
     {
         case vmk_iuse:
-            _implementation->iuse.clear();
+            _imp->iuse.clear();
             break;
 
         case vmk_keywords:
-            _implementation->keywords.clear();
+            _imp->keywords.clear();
             break;
 
         case vmk_provide:
-            _implementation->provide.clear();
+            _imp->provide.clear();
             break;
 
         default:
@@ -115,37 +115,37 @@ VersionMetadata::set(const VersionMetadataKey key, const std::string & value)
 VersionMetadata::IuseIterator
 VersionMetadata::begin_iuse() const
 {
-    if (_implementation->iuse.empty())
+    if (_imp->iuse.empty())
     {
         Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
         tokeniser.tokenise(get(vmk_iuse), create_inserter<UseFlagName>(
-                    std::inserter(_implementation->iuse, _implementation->iuse.begin())));
+                    std::inserter(_imp->iuse, _imp->iuse.begin())));
     }
-    return _implementation->iuse.begin();
+    return _imp->iuse.begin();
 }
 
 VersionMetadata::IuseIterator
 VersionMetadata::end_iuse() const
 {
-    return _implementation->iuse.end();
+    return _imp->iuse.end();
 }
 
 VersionMetadata::KeywordIterator
 VersionMetadata::begin_keywords() const
 {
-    if (_implementation->keywords.empty())
+    if (_imp->keywords.empty())
     {
         Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
         tokeniser.tokenise(get(vmk_keywords), create_inserter<KeywordName>(
-                    std::inserter(_implementation->keywords, _implementation->keywords.begin())));
+                    std::inserter(_imp->keywords, _imp->keywords.begin())));
     }
 
-    return _implementation->keywords.begin();
+    return _imp->keywords.begin();
 }
 
 VersionMetadata::KeywordIterator
 VersionMetadata::end_keywords() const
 {
-    return _implementation->keywords.end();
+    return _imp->keywords.end();
 }
 

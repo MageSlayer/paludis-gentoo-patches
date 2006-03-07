@@ -68,7 +68,7 @@ FakeRepository::~FakeRepository()
 bool
 FakeRepository::do_has_category_named(const CategoryNamePart & c) const
 {
-    return (_implementation->category_names->end() != _implementation->category_names->find(c));
+    return (_imp->category_names->end() != _imp->category_names->find(c));
 }
 
 bool
@@ -76,14 +76,14 @@ FakeRepository::do_has_package_named(const CategoryNamePart & c,
         const PackageNamePart & p) const
 {
     return has_category_named(c) &&
-        (_implementation->package_names.find(c)->second->end() !=
-         _implementation->package_names.find(c)->second->find(p));
+        (_imp->package_names.find(c)->second->end() !=
+         _imp->package_names.find(c)->second->find(p));
 }
 
 CategoryNamePartCollection::ConstPointer
 FakeRepository::do_category_names() const
 {
-    return _implementation->category_names;
+    return _imp->category_names;
 }
 
 QualifiedPackageNameCollection::ConstPointer
@@ -92,8 +92,8 @@ FakeRepository::do_package_names(const CategoryNamePart & c) const
     if (! has_category_named(c))
         throw InternalError(PALUDIS_HERE, "no category named " + stringify(c));
     QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection);
-    PackageNamePartCollection::Iterator p(_implementation->package_names.find(c)->second->begin()),
-        p_end(_implementation->package_names.find(c)->second->end());
+    PackageNamePartCollection::Iterator p(_imp->package_names.find(c)->second->begin()),
+        p_end(_imp->package_names.find(c)->second->end());
     for ( ; p != p_end ; ++p)
         result->insert(QualifiedPackageName(c, *p));
     return result;
@@ -106,7 +106,7 @@ FakeRepository::do_version_specs(const QualifiedPackageName & n) const
         throw InternalError(PALUDIS_HERE, "no category");
     if (! has_package_named(n.get<qpn_category>(), n.get<qpn_package>()))
         throw InternalError(PALUDIS_HERE, "no package");
-    return _implementation->versions.find(n)->second;
+    return _imp->versions.find(n)->second;
 }
 
 bool
@@ -117,23 +117,23 @@ FakeRepository::do_has_version(const CategoryNamePart & c,
         throw InternalError(PALUDIS_HERE, "no category");
     if (! has_package_named(c, p))
         throw InternalError(PALUDIS_HERE, "no package");
-    return _implementation->versions.find(QualifiedPackageName(c, p))->second->find(v) !=
-        _implementation->versions.find(QualifiedPackageName(c, p))->second->end();
+    return _imp->versions.find(QualifiedPackageName(c, p))->second->find(v) !=
+        _imp->versions.find(QualifiedPackageName(c, p))->second->end();
 }
 
 void
 FakeRepository::add_category(const CategoryNamePart & c)
 {
-    _implementation->category_names->insert(c);
-    _implementation->package_names.insert(std::make_pair(c, new PackageNamePartCollection));
+    _imp->category_names->insert(c);
+    _imp->package_names.insert(std::make_pair(c, new PackageNamePartCollection));
 }
 
 void
 FakeRepository::add_package(const CategoryNamePart & c, const PackageNamePart & p)
 {
     add_category(c);
-    _implementation->package_names.find(c)->second->insert(p);
-    _implementation->versions.insert(std::make_pair(QualifiedPackageName(c, p),
+    _imp->package_names.find(c)->second->insert(p);
+    _imp->versions.insert(std::make_pair(QualifiedPackageName(c, p),
                 new VersionSpecCollection));
 }
 
@@ -142,10 +142,10 @@ FakeRepository::add_version(const CategoryNamePart & c, const PackageNamePart & 
         const VersionSpec & v)
 {
     add_package(c, p);
-    _implementation->versions.find(QualifiedPackageName(c, p))->second->insert(v);
-    _implementation->metadata.insert(
+    _imp->versions.find(QualifiedPackageName(c, p))->second->insert(v);
+    _imp->metadata.insert(
             std::make_pair(stringify(c) + "/" + stringify(p) + "-" + stringify(v), new VersionMetadata));
-    VersionMetadata::Pointer r(_implementation->metadata.find(stringify(c) +
+    VersionMetadata::Pointer r(_imp->metadata.find(stringify(c) +
                 "/" + stringify(p) + "-" + stringify(v))->second);
     r->set(vmk_slot, "0");
     r->set(vmk_keywords, "test");
@@ -158,7 +158,7 @@ FakeRepository::do_version_metadata(
 {
     if (! has_version(c, p, v))
         throw InternalError(PALUDIS_HERE, "no version");
-    return _implementation->metadata.find(stringify(c) + "/" + stringify(p) + "-" + stringify(v))->second;
+    return _imp->metadata.find(stringify(c) + "/" + stringify(p) + "-" + stringify(v))->second;
 }
 
 bool

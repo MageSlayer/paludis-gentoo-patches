@@ -151,38 +151,38 @@ DepList::~DepList()
 void
 DepList::add(DepAtom::ConstPointer atom)
 {
-    std::list<DepListEntry> save_merge_list(_implementation->merge_list.begin(),
-            _implementation->merge_list.end());
+    std::list<DepListEntry> save_merge_list(_imp->merge_list.begin(),
+            _imp->merge_list.end());
 
-    _implementation->merge_list_insert_pos = _implementation->merge_list.end();
+    _imp->merge_list_insert_pos = _imp->merge_list.end();
     _add(atom);
 
     try
     {
-        std::list<DepListEntry>::iterator i(_implementation->merge_list.begin());
-        _implementation->merge_list_insert_pos = _implementation->merge_list.end();
-        while (i != _implementation->merge_list.end())
+        std::list<DepListEntry>::iterator i(_imp->merge_list.begin());
+        _imp->merge_list_insert_pos = _imp->merge_list.end();
+        while (i != _imp->merge_list.end())
         {
-            if (! i->get<dle_has_predeps>() && ! _implementation->drop_all)
+            if (! i->get<dle_has_predeps>() && ! _imp->drop_all)
                 throw InternalError(PALUDIS_HERE, "dle_has_predeps not set for " + stringify(*i));
 
-            else if (! i->get<dle_has_trypredeps>() && ! _implementation->drop_all)
+            else if (! i->get<dle_has_trypredeps>() && ! _imp->drop_all)
             {
                 Save<const DepListEntry *> save_current_package(
-                        &_implementation->current_package, &*i);
+                        &_imp->current_package, &*i);
                 _add_in_role(DepParser::parse(
-                            _implementation->environment->package_database()->fetch_metadata(
+                            _imp->environment->package_database()->fetch_metadata(
                                 PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
                                     i->get<dle_repository>()))->get(vmk_rdepend)), "RDEPEND");
                 i->set<dle_has_trypredeps>(true);
             }
 
-            else if (! i->get<dle_has_postdeps>() && ! _implementation->drop_all)
+            else if (! i->get<dle_has_postdeps>() && ! _imp->drop_all)
             {
                 Save<const DepListEntry *> save_current_package(
-                        &_implementation->current_package, &*i);
+                        &_imp->current_package, &*i);
                 _add_in_role(DepParser::parse(
-                            _implementation->environment->package_database()->fetch_metadata(
+                            _imp->environment->package_database()->fetch_metadata(
                                 PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
                                     i->get<dle_repository>()))->get(vmk_pdepend)), "PDEPEND");
                 i->set<dle_has_postdeps>(true);
@@ -193,7 +193,7 @@ DepList::add(DepAtom::ConstPointer atom)
     }
     catch (...)
     {
-        _implementation->merge_list.swap(save_merge_list);
+        _imp->merge_list.swap(save_merge_list);
         throw;
     }
 }
@@ -203,30 +203,30 @@ DepList::_add_raw(const DepAtom * const atom)
 {
 #if 0
     /// \bug VV this is debug code. remove it once we're sure this works
-    std::list<DepListEntry> backup_merge_list(_implementation->merge_list.begin(),
-            _implementation->merge_list.end());
+    std::list<DepListEntry> backup_merge_list(_imp->merge_list.begin(),
+            _imp->merge_list.end());
 #endif
 
     /* keep track of stack depth */
-    Save<int> old_stack_depth(&_implementation->stack_depth,
-            _implementation->stack_depth + 1);
-    if (_implementation->stack_depth > _implementation->max_stack_depth)
-        throw DepListStackTooDeepError(_implementation->stack_depth);
+    Save<int> old_stack_depth(&_imp->stack_depth,
+            _imp->stack_depth + 1);
+    if (_imp->stack_depth > _imp->max_stack_depth)
+        throw DepListStackTooDeepError(_imp->stack_depth);
 
     /* we need to make sure that merge_list doesn't get h0rked in the
      * event of a failure. */
-    bool merge_list_was_empty(_implementation->merge_list.empty()), irange_begin_is_begin(false);
+    bool merge_list_was_empty(_imp->merge_list.empty()), irange_begin_is_begin(false);
     std::list<DepListEntry>::iterator save_last, save_first, save_irange_begin, save_irange_end;
     if (! merge_list_was_empty)
     {
-        save_first = _implementation->merge_list.begin();
-        save_last = previous(_implementation->merge_list.end());
+        save_first = _imp->merge_list.begin();
+        save_last = previous(_imp->merge_list.end());
 
-        save_irange_end = _implementation->merge_list_insert_pos;
-        if (_implementation->merge_list_insert_pos == _implementation->merge_list.begin())
+        save_irange_end = _imp->merge_list_insert_pos;
+        if (_imp->merge_list_insert_pos == _imp->merge_list.begin())
             irange_begin_is_begin = true;
         else
-            save_irange_begin = previous(_implementation->merge_list_insert_pos);
+            save_irange_begin = previous(_imp->merge_list_insert_pos);
     }
 
     try
@@ -240,24 +240,24 @@ DepList::_add_raw(const DepAtom * const atom)
     catch (...)
     {
         if (merge_list_was_empty)
-            _implementation->merge_list.clear();
+            _imp->merge_list.clear();
         else
         {
-            _implementation->merge_list.erase(next(save_last), _implementation->merge_list.end());
-            _implementation->merge_list.erase(_implementation->merge_list.begin(), save_first);
-            _implementation->merge_list.erase(
-                    irange_begin_is_begin ? _implementation->merge_list.begin() : next(save_irange_begin),
+            _imp->merge_list.erase(next(save_last), _imp->merge_list.end());
+            _imp->merge_list.erase(_imp->merge_list.begin(), save_first);
+            _imp->merge_list.erase(
+                    irange_begin_is_begin ? _imp->merge_list.begin() : next(save_irange_begin),
                     save_irange_end);
         }
 
 #if 0
         /// \bug VV this is debug code. remove it once we're sure this works
-        if (backup_merge_list != _implementation->merge_list)
+        if (backup_merge_list != _imp->merge_list)
         {
             Log::get_instance()->message(ll_warning, "Old merge_list: " + join(backup_merge_list.begin(),
                         backup_merge_list.end(), " -> "));
-            Log::get_instance()->message(ll_warning, "New merge_list: " + join(_implementation->merge_list.begin(),
-                        _implementation->merge_list.end(), " -> "));
+            Log::get_instance()->message(ll_warning, "New merge_list: " + join(_imp->merge_list.begin(),
+                        _imp->merge_list.end(), " -> "));
             throw InternalError(PALUDIS_HERE, "merge list restore failed");
         }
 #endif
@@ -275,13 +275,13 @@ DepList::_add_in_role_raw(const DepAtom * const atom, const std::string & role)
 DepList::Iterator
 DepList::begin() const
 {
-    return _implementation->merge_list.begin();
+    return _imp->merge_list.begin();
 }
 
 DepList::Iterator
 DepList::end() const
 {
-    return _implementation->merge_list.end();
+    return _imp->merge_list.end();
 }
 
 void
@@ -320,20 +320,20 @@ DepList::visit(const PackageDepAtom * const p)
 
     /* are we already there? */
     std::list<DepListEntry>::iterator i;
-    if (_implementation->merge_list.end() != ((i = std::find_if(
-                        _implementation->merge_list.begin(),
-                        _implementation->merge_list.end(),
+    if (_imp->merge_list.end() != ((i = std::find_if(
+                        _imp->merge_list.begin(),
+                        _imp->merge_list.end(),
                         DepListEntryMatcher(
-                            _implementation->environment->package_database().raw_pointer(), *p)))))
+                            _imp->environment->package_database().raw_pointer(), *p)))))
     {
         /* what's our status? */
         if (! i->get<dle_has_predeps>())
         {
-            if (_implementation->drop_circular)
+            if (_imp->drop_circular)
                 return;
-            else if (_implementation->merge_list_insert_pos == i && (
-                        _implementation->drop_self_circular || (
-                            ! _implementation->dont_ignore_patch_dep && p->package() ==
+            else if (_imp->merge_list_insert_pos == i && (
+                        _imp->drop_self_circular || (
+                            ! _imp->dont_ignore_patch_dep && p->package() ==
                             QualifiedPackageName("sys-devel/patch"))))
                 return;
             else
@@ -344,9 +344,9 @@ DepList::visit(const PackageDepAtom * const p)
     }
 
     /* are we allowed to install things? */
-    if (_implementation->check_existing_only)
+    if (_imp->check_existing_only)
     {
-        _implementation->match_found = false;
+        _imp->match_found = false;
         return;
     }
 
@@ -355,15 +355,15 @@ DepList::visit(const PackageDepAtom * const p)
     VersionMetadata::ConstPointer metadata(0);
     PackageDatabaseEntryCollection::Pointer matches(0);
 
-    matches = _implementation->environment->package_database()->query(p);
+    matches = _imp->environment->package_database()->query(p);
     for (PackageDatabaseEntryCollection::ReverseIterator e(matches->rbegin()),
             e_end(matches->rend()) ; e != e_end ; ++e)
     {
         /* check masks */
-        if (_implementation->environment->mask_reasons(*e).any())
+        if (_imp->environment->mask_reasons(*e).any())
             continue;
 
-        metadata = _implementation->environment->package_database()->fetch_metadata(*e);
+        metadata = _imp->environment->package_database()->fetch_metadata(*e);
         match = &*e;
         break;
     }
@@ -373,7 +373,7 @@ DepList::visit(const PackageDepAtom * const p)
 
     /* make merge entry */
     std::list<DepListEntry>::iterator merge_entry(
-            _implementation->merge_list.insert(_implementation->merge_list_insert_pos,
+            _imp->merge_list.insert(_imp->merge_list_insert_pos,
                 DepListEntry(match->get<pde_name>(), match->get<pde_version>(),
                     metadata, match->get<pde_repository>(),
                     false, false, false)));
@@ -386,28 +386,28 @@ DepList::visit(const PackageDepAtom * const p)
 
         CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
-        if (_implementation->current_package)
+        if (_imp->current_package)
             e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
                     new PackageDatabaseEntry(
-                        _implementation->current_package->get<dle_name>(),
-                        _implementation->current_package->get<dle_version>(),
-                        _implementation->current_package->get<dle_repository>()));
+                        _imp->current_package->get<dle_name>(),
+                        _imp->current_package->get<dle_version>(),
+                        _imp->current_package->get<dle_repository>()));
 
-        DepAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
+        DepAtomFlattener f(_imp->environment, e.raw_pointer(), provide);
 
         for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
         {
             PackageDepAtom pp(QualifiedPackageName((*p)->text()));
-            if (_implementation->merge_list.end() != std::find_if(
-                        _implementation->merge_list.begin(), _implementation->merge_list.end(),
+            if (_imp->merge_list.end() != std::find_if(
+                        _imp->merge_list.begin(), _imp->merge_list.end(),
                         DepListEntryMatcher(
-                            _implementation->environment->package_database().raw_pointer(), pp)))
+                            _imp->environment->package_database().raw_pointer(), pp)))
                 continue;
 
             VersionMetadata::Pointer p_metadata(new VersionMetadata);
             p_metadata->set(vmk_slot, merge_entry->get<dle_metadata>()->get(vmk_slot));
             p_metadata->set(vmk_virtual, stringify(merge_entry->get<dle_name>()));
-            _implementation->merge_list.insert(next(merge_entry),
+            _imp->merge_list.insert(next(merge_entry),
                     DepListEntry(pp.package(), merge_entry->get<dle_version>(),
                         p_metadata, merge_entry->get<dle_repository>(), true, true, true));
         }
@@ -415,25 +415,25 @@ DepList::visit(const PackageDepAtom * const p)
 
 
     Save<std::list<DepListEntry>::iterator> old_merge_list_insert_pos(
-            &_implementation->merge_list_insert_pos, merge_entry);
+            &_imp->merge_list_insert_pos, merge_entry);
 
     context.change_context("When resolving package dependency '" + stringify(*p) +
             "' -> '" + stringify(*merge_entry) + "':");
 
     /* new current package */
-    Save<const DepListEntry *> old_current_package(&_implementation->current_package,
+    Save<const DepListEntry *> old_current_package(&_imp->current_package,
             &*merge_entry);
 
     /* merge depends */
-    if ((! merge_entry->get<dle_has_predeps>()) && ! (_implementation->drop_all))
+    if ((! merge_entry->get<dle_has_predeps>()) && ! (_imp->drop_all))
     {
         _add_in_role(DepParser::parse(metadata->get(vmk_depend)), "DEPEND");
         merge_entry->set<dle_has_predeps>(true);
     }
 
     /* merge rdepends */
-    if (! merge_entry->get<dle_has_trypredeps>() && dlro_always != _implementation->rdepend_post
-            && ! _implementation->drop_all)
+    if (! merge_entry->get<dle_has_trypredeps>() && dlro_always != _imp->rdepend_post
+            && ! _imp->drop_all)
     {
         try
         {
@@ -442,7 +442,7 @@ DepList::visit(const PackageDepAtom * const p)
         }
         catch (const CircularDependencyError &)
         {
-            if (dlro_never == _implementation->rdepend_post)
+            if (dlro_never == _imp->rdepend_post)
                 throw;
         }
     }
@@ -453,14 +453,14 @@ DepList::visit(const UseDepAtom * const u)
 {
     CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
-    if (_implementation->current_package)
+    if (_imp->current_package)
         e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
                 new PackageDatabaseEntry(
-                    _implementation->current_package->get<dle_name>(),
-                    _implementation->current_package->get<dle_version>(),
-                    _implementation->current_package->get<dle_repository>()));
+                    _imp->current_package->get<dle_name>(),
+                    _imp->current_package->get<dle_version>(),
+                    _imp->current_package->get<dle_repository>()));
 
-    if (_implementation->environment->query_use(u->flag(), e.raw_pointer()) ^ u->inverse())
+    if (_imp->environment->query_use(u->flag(), e.raw_pointer()) ^ u->inverse())
         std::for_each(u->begin(), u->end(), std::bind1st(std::mem_fun(&DepList::_add), this));
 }
 
@@ -510,12 +510,12 @@ DepList::visit(const AnyDepAtom * const a)
 
     std::list<DepAtom::ConstPointer> viable_children;
     std::copy(a->begin(), a->end(), filter_inserter(
-                std::back_inserter(viable_children), IsViable(*_implementation)));
+                std::back_inserter(viable_children), IsViable(*_imp)));
 
     if (viable_children.empty())
     {
-        if (_implementation->current_package)
-            Log::get_instance()->message(ll_qa, "Package '" + stringify(*_implementation->current_package)
+        if (_imp->current_package)
+            Log::get_instance()->message(ll_qa, "Package '" + stringify(*_imp->current_package)
                     + "' has suspicious || ( ) block that resolves to empty");
         return;
     }
@@ -524,18 +524,18 @@ DepList::visit(const AnyDepAtom * const a)
     for (std::list<DepAtom::ConstPointer>::iterator i(viable_children.begin()),
             i_end(viable_children.end()) ; i != i_end ; ++i)
     {
-        Save<bool> save_check(&_implementation->check_existing_only, true);
-        Save<bool> save_match(&_implementation->match_found, true);
+        Save<bool> save_check(&_imp->check_existing_only, true);
+        Save<bool> save_match(&_imp->match_found, true);
         _add(*i);
-        if ((found = _implementation->match_found))
+        if ((found = _imp->match_found))
             break;
     }
     if (found)
         return;
 
-    if (_implementation->check_existing_only)
+    if (_imp->check_existing_only)
     {
-        _implementation->match_found = false;
+        _imp->match_found = false;
         return;
     }
 
@@ -576,39 +576,39 @@ DepList::visit(const BlockDepAtom * const d)
     /* special case: foo/bar can DEPEND upon !foo/bar. */
 
     /* will we be installed by this point? */
-    std::list<DepListEntry>::iterator m(_implementation->merge_list.begin());
-    while (m != _implementation->merge_list.end())
+    std::list<DepListEntry>::iterator m(_imp->merge_list.begin());
+    while (m != _imp->merge_list.end())
     {
-        if (_implementation->merge_list.end() != ((m = std::find_if(m, _implementation->merge_list.end(),
-                    DepListEntryMatcher(_implementation->environment->package_database().raw_pointer(),
+        if (_imp->merge_list.end() != ((m = std::find_if(m, _imp->merge_list.end(),
+                    DepListEntryMatcher(_imp->environment->package_database().raw_pointer(),
                         *(d->blocked_atom()))))))
         {
-            if (! _implementation->current_package)
+            if (! _imp->current_package)
                 throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
                         + stringify(*m) + " (no current package)");
 
-            if (*_implementation->current_package == *m)
+            if (*_imp->current_package == *m)
             {
-                Log::get_instance()->message(ll_qa, "Package '" + stringify(*_implementation->current_package)
+                Log::get_instance()->message(ll_qa, "Package '" + stringify(*_imp->current_package)
                         + "' has suspicious block upon '!" + stringify(*d->blocked_atom()) + "'");
                 ++m;
                 continue;
             }
 
             DepAtom::ConstPointer provide(DepParser::parse(
-                        _implementation->current_package->get<dle_metadata>()->get(vmk_provide),
+                        _imp->current_package->get<dle_metadata>()->get(vmk_provide),
                         DepParserPolicy<PackageDepAtom, false>::get_instance()));
 
             CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
-            if (_implementation->current_package)
+            if (_imp->current_package)
                 e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
                         new PackageDatabaseEntry(
-                            _implementation->current_package->get<dle_name>(),
-                            _implementation->current_package->get<dle_version>(),
-                            _implementation->current_package->get<dle_repository>()));
+                            _imp->current_package->get<dle_name>(),
+                            _imp->current_package->get<dle_version>(),
+                            _imp->current_package->get<dle_repository>()));
 
-            DepAtomFlattener f(_implementation->environment, e.raw_pointer(), provide);
+            DepAtomFlattener f(_imp->environment, e.raw_pointer(), provide);
 
             bool skip(false);
             for (IndirectIterator<DepAtomFlattener::Iterator, const StringDepAtom> i(f.begin()),
@@ -631,49 +631,49 @@ DepList::visit(const BlockDepAtom * const d)
 void
 DepList::set_rdepend_post(const DepListRdependOption value)
 {
-    _implementation->rdepend_post = value;
+    _imp->rdepend_post = value;
 }
 
 void
 DepList::set_drop_circular(const bool value)
 {
-    _implementation->drop_circular = value;
+    _imp->drop_circular = value;
 }
 
 void
 DepList::set_drop_self_circular(const bool value)
 {
-    _implementation->drop_self_circular = value;
+    _imp->drop_self_circular = value;
 }
 
 void
 DepList::set_dont_ignore_patch_dep(const bool value)
 {
-    _implementation->dont_ignore_patch_dep = value;
+    _imp->dont_ignore_patch_dep = value;
 }
 
 void
 DepList::set_drop_all(const bool value)
 {
-    _implementation->drop_all = value;
+    _imp->drop_all = value;
 }
 
 void
 DepList::set_ignore_installed(const bool value)
 {
-    _implementation->ignore_installed = value;
+    _imp->ignore_installed = value;
 }
 
 void
 DepList::set_recursive_deps(const bool value)
 {
-    _implementation->recursive_deps = value;
+    _imp->recursive_deps = value;
 }
 
 void
 DepList::set_max_stack_depth(const int value)
 {
-    _implementation->max_stack_depth = value;
+    _imp->max_stack_depth = value;
 }
 
 void

@@ -42,8 +42,8 @@ namespace paludis
 Log::Log() :
     PrivateImplementationPattern<Log>(new Implementation<Log>)
 {
-    _implementation->log_level = initial_ll;
-    _implementation->stream = &std::cerr;
+    _imp->log_level = initial_ll;
+    _imp->stream = &std::cerr;
 }
 
 Log::~Log()
@@ -53,28 +53,28 @@ Log::~Log()
 void
 Log::set_log_level(const LogLevel l)
 {
-    _implementation->log_level = l;
+    _imp->log_level = l;
 }
 
 void
 Log::message(const LogLevel l, const std::string & s)
 {
-    if (l >= _implementation->log_level)
+    if (l >= _imp->log_level)
     {
         do
         {
             switch (l)
             {
                 case ll_debug:
-                    *_implementation->stream << "[DEBUG] ";
+                    *_imp->stream << "[DEBUG] ";
                     continue;
 
                 case ll_qa:
-                    *_implementation->stream << "[QA] ";
+                    *_imp->stream << "[QA] ";
                     continue;
 
                 case ll_warning:
-                    *_implementation->stream << "[WARNING] ";
+                    *_imp->stream << "[WARNING] ";
                     continue;
 
                 case ll_silent:
@@ -88,12 +88,12 @@ Log::message(const LogLevel l, const std::string & s)
 
         } while (false);
 
-        *_implementation->stream << s << std::endl;
+        *_imp->stream << s << std::endl;
     }
 }
 
 void
 Log::set_log_stream(std::ostream * const s)
 {
-    _implementation->stream = s;
+    _imp->stream = s;
 }

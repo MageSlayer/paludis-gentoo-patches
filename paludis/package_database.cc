@@ -97,13 +97,13 @@ PackageDatabase::add_repository(const Repository::ConstPointer r)
     Context c("When adding a repository named '" + stringify(r->name()) + "':");
 
     IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
-        r_c(_implementation->repositories.begin()),
-        r_end(_implementation->repositories.end());
+        r_c(_imp->repositories.begin()),
+        r_end(_imp->repositories.end());
     for ( ; r_c != r_end ; ++r_c)
         if (r_c->name() == r->name())
             throw DuplicateRepositoryError(stringify(r->name()));
 
-    _implementation->repositories.push_back(r);
+    _imp->repositories.push_back(r);
 }
 
 VersionMetadata::ConstPointer
@@ -124,8 +124,8 @@ Repository::ConstPointer
 PackageDatabase::fetch_repository(const RepositoryName & n) const
 {
     std::list<Repository::ConstPointer>::const_iterator
-        r(_implementation->repositories.begin()),
-        r_end(_implementation->repositories.end());
+        r(_imp->repositories.begin()),
+        r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
         if ((*r)->name() == n)
             return *r;
@@ -140,8 +140,8 @@ PackageDatabase::fetch_unique_qualified_package_name(
     QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection);
 
     IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
-        r(_implementation->repositories.begin()),
-        r_end(_implementation->repositories.end());
+        r(_imp->repositories.begin()),
+        r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
     {
         CategoryNamePartCollection::ConstPointer cats(r->category_names());
@@ -165,8 +165,8 @@ PackageDatabase::query(const PackageDepAtom * const a) const
     PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection);
 
     IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
-        r(_implementation->repositories.begin()),
-        r_end(_implementation->repositories.end());
+        r(_imp->repositories.begin()),
+        r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
     {
         if (! r->has_category_named(a->package().get<qpn_category>()))
@@ -196,8 +196,8 @@ PackageDatabase::better_repository(const RepositoryName & r1,
         const RepositoryName & r2) const
 {
     IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
-        r(_implementation->repositories.begin()),
-        r_end(_implementation->repositories.end());
+        r(_imp->repositories.begin()),
+        r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
     {
         if (r->name() == r1)
@@ -212,10 +212,10 @@ PackageDatabase::better_repository(const RepositoryName & r1,
 RepositoryName
 PackageDatabase::favourite_repository() const
 {
-    if (_implementation->repositories.empty())
+    if (_imp->repositories.empty())
         return RepositoryName("unnamed");
     else
-        return (*_implementation->repositories.begin())->name();
+        return (*_imp->repositories.begin())->name();
 }
 
 PackageDatabaseEntryCollection::Pointer
@@ -227,11 +227,11 @@ PackageDatabase::query(PackageDepAtom::ConstPointer a) const
 PackageDatabase::RepositoryIterator
 PackageDatabase::begin_repositories() const
 {
-    return _implementation->repositories.begin();
+    return _imp->repositories.begin();
 }
 
 PackageDatabase::RepositoryIterator
 PackageDatabase::end_repositories() const
 {
-    return _implementation->repositories.end();
+    return _imp->repositories.end();
 }
