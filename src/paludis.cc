@@ -68,9 +68,11 @@ main(int argc, char *argv[])
             throw DoHelp();
 
         if (! CommandLine::get_instance()->a_log_level.specified())
-            p::Log::get_instance()->set_log_level(p::ll_warning);
+            p::Log::get_instance()->set_log_level(p::ll_qa);
         else if (CommandLine::get_instance()->a_log_level.argument() == "debug")
             p::Log::get_instance()->set_log_level(p::ll_debug);
+        else if (CommandLine::get_instance()->a_log_level.argument() == "qa")
+            p::Log::get_instance()->set_log_level(p::ll_qa);
         else if (CommandLine::get_instance()->a_log_level.argument() == "warning")
             p::Log::get_instance()->set_log_level(p::ll_warning);
         else if (CommandLine::get_instance()->a_log_level.argument() == "silent")

@@ -404,9 +404,11 @@ int main(int argc, char *argv[])
             throw DoHelp();
 
         if (! QualudisCommandLine::get_instance()->a_log_level.specified())
-            Log::get_instance()->set_log_level(ll_warning);
+            Log::get_instance()->set_log_level(ll_qa);
         else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "debug")
             Log::get_instance()->set_log_level(ll_debug);
+        else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "qa")
+            Log::get_instance()->set_log_level(ll_qa);
         else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "warning")
             Log::get_instance()->set_log_level(ll_warning);
         else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "silent")

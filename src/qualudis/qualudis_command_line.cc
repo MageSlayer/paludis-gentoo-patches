@@ -32,6 +32,7 @@ QualudisCommandLine::QualudisCommandLine() :
     a_verbose(&check_options, "verbose", 'v', "Be verbose"),
     a_log_level(&check_options, "log-level", 'L', "Specify the log level",
             paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
+            ("qa",      "Show QA messages and warnings only")
             ("warning", "Show warnings only")
             ("silent", "Suppress all log messages"),
             "warning"),
