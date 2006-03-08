@@ -44,11 +44,22 @@ IuseCheck::operator() (const EbuildCheckData & e) const
         {
             std::set<UseFlagName> iuse(metadata->begin_iuse(), metadata->end_iuse());
 
-            if (iuse.end() != iuse.find(UseFlagName("gtk2")))
-                result << Message(qal_minor, "Deprecated USE flag 'gtk2'");
+            static std::set<UseFlagName> iuse_blacklist;
+            if (iuse_blacklist.empty())
+            {
+                iuse_blacklist.insert(UseFlagName("gtk2"));
+                iuse_blacklist.insert(UseFlagName("xml2"));
+                iuse_blacklist.insert(UseFlagName("oggvorbis"));
+            }
 
-            if (iuse.end() != iuse.find(UseFlagName("xml2")))
-                result << Message(qal_minor, "Deprecated USE flag 'xml2'");
+            std::set<UseFlagName> bad_iuse;
+            std::set_intersection(iuse.begin(), iuse.end(),
+                    iuse_blacklist.begin(), iuse_blacklist.end(),
+                    std::inserter(bad_iuse, bad_iuse.begin()));
+
+            if (! bad_iuse.empty())
+                result << Message(qal_minor, "Deprecated IUSEs '" + join(bad_iuse.begin(),
+                            bad_iuse.end(), "', '") + "'");
         }
         catch (const NameError & e)
         {
