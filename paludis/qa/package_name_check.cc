@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/name.hh>
 #include <paludis/qa/package_name_check.hh>
-#include <paludis/qualified_package_name.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

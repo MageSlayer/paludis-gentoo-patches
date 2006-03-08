@@ -20,9 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_HH 1
 
-#include <paludis/category_name_part.hh>
-#include <paludis/package_name_part.hh>
-#include <paludis/repository_name.hh>
+#include <paludis/name.hh>
 #include <paludis/use_flag_state.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/counted_ptr.hh>

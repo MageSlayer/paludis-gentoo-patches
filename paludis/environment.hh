@@ -20,10 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENT_HH
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_HH 1
 
-#include <paludis/keyword_name.hh>
 #include <paludis/mask_reasons.hh>
+#include <paludis/name.hh>
 #include <paludis/package_database.hh>
-#include <paludis/use_flag_name.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 

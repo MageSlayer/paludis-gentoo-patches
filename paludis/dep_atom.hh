@@ -21,9 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH 1
 
 #include <list>
-#include <paludis/qualified_package_name.hh>
-#include <paludis/slot_name.hh>
-#include <paludis/use_flag_name.hh>
+#include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/composite_pattern.hh>
 #include <paludis/util/counted_ptr.hh>

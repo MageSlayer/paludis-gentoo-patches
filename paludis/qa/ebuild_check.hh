@@ -20,10 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QA_EBUILD_CHECK_HH
 #define PALUDIS_GUARD_PALUDIS_QA_EBUILD_CHECK_HH 1
 
+#include <paludis/name.hh>
 #include <paludis/qa/check.hh>
 #include <paludis/qa/check_result.hh>
 #include <paludis/qa/environment.hh>
-#include <paludis/qualified_package_name.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/smart_record.hh>
 #include <paludis/util/virtual_constructor.hh>

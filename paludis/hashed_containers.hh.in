@@ -26,9 +26,9 @@
 #define PALUDIS_HAVE_EXT_HASHES @HAVE_EXT_HASHES@
 #define PALUDIS_HAVE_STD_HASHES @HAVE_STD_HASHES@
 
-#include <paludis/qualified_package_name.hh>
-#include <paludis/version_spec.hh>
+#include <paludis/name.hh>
 #include <paludis/util/validated.hh>
+#include <paludis/version_spec.hh>
 
 #if PALUDIS_HAVE_TR1_HASHES
 #  include <tr1/unordered_set>

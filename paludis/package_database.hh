@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_HH 1
 
 #include <paludis/dep_atom.hh>
-#include <paludis/qualified_package_name.hh>
+#include <paludis/name.hh>
 #include <paludis/repository.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>

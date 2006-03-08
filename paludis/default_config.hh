@@ -21,9 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DEFAULT_CONFIG_HH 1
 
 #include <paludis/dep_atom.hh>
-#include <paludis/keyword_name.hh>
-#include <paludis/qualified_package_name.hh>
-#include <paludis/use_flag_name.hh>
+#include <paludis/name.hh>
 #include <paludis/use_flag_state.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>

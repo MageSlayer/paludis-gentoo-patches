@@ -26,10 +26,8 @@
 #include <list>
 #include <ostream>
 #include <paludis/dep_atom.hh>
+#include <paludis/name.hh>
 #include <paludis/qa/environment.hh>
-#include <paludis/qualified_package_name.hh>
-#include <paludis/repository_name.hh>
-#include <paludis/slot_name.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/smart_record.hh>
