@@ -19,6 +19,8 @@
 
 #include <paludis/qa/iuse_check.hh>
 #include <set>
+#include <algorithm>
+#include <paludis/util/join.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
