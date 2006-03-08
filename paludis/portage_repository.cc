@@ -521,7 +521,10 @@ PortageRepository::fetch_repo_name(const std::string & location)
     }
     Log::get_instance()->message(ll_qa, "Couldn't open repo_name file in '"
             + location + "/profiles/'. Falling back to a generated name.");
-    return RepositoryName("x-" + location);
+
+    std::string modified_location(location);
+    std::replace(modified_location.begin(), modified_location.end(), '/', '-');
+    return RepositoryName("x-" + modified_location);
 }
 
 VersionMetadata::ConstPointer
