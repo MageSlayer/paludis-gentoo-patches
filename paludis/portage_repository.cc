@@ -527,6 +527,33 @@ PortageRepository::fetch_repo_name(const std::string & location)
     return RepositoryName("x-" + modified_location);
 }
 
+namespace
+{
+    std::string
+    log_level_string()
+    {
+        switch (Log::get_instance()->log_level())
+        {
+            case ll_qa:
+                return "qa";
+
+            case ll_warning:
+                return "warning";
+
+            case ll_debug:
+                return "debug";
+
+            case ll_silent:
+                return "silent";
+
+            case last_ll:
+                ;
+        };
+
+        throw InternalError(PALUDIS_HERE, "Bad log level");
+    }
+}
+
 VersionMetadata::ConstPointer
 PortageRepository::do_version_metadata(
         const CategoryNamePart & c, const PackageNamePart & p, const VersionSpec & v) const
@@ -622,6 +649,7 @@ PortageRepository::do_version_metadata(
                 "D='/dev/null' " +
                 "S='/dev/null' " +
                 "KV='" + kernel_version() + "' " +
+                "PALUDIS_EBUILD_LOG_LEVEL='" + log_level_string() + "' " +
                 getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
                 "/ebuild.bash metadata '" +
                 stringify(_imp->location) + "/" + stringify(c) + "/" + stringify(p) + "/" +

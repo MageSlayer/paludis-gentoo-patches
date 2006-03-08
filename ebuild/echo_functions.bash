@@ -39,4 +39,44 @@ use_enable()
     fi
 }
 
+ebuild_notice_level()
+{
+    case "$1" in
+        debug)
+            echo "1";
+            ;;
+
+        qa)
+            echo "2";
+            ;;
+
+        warning)
+            echo "3";
+            ;;
+
+        silent)
+            echo "4";
+            ;;
+
+        *)
+            echo "[WARNING.EBUILD] Bad value '$1' for qa level" 1>&2
+            echo "2";
+            ;;
+    esac
+}
+
+ebuild_notice()
+{
+    local level="$1"
+    shift
+
+    local level_num=$(ebuild_notice_level "${level}" )
+    local min_level_num=$(ebuild_notice_level "${PALUDIS_EBUILD_LOG_LEVEL}" )
+
+    if [[ "${level_num}" -ge "${min_level_num}" ]] ; then
+        local upper_level=$(echo ${level} | ${ebuild_real_tr} '[:lower:]' '[:upper:]' )
+        echo "[${upper_level}.EBUILD] $* (from ${EBUILD})" 1>&2
+    fi
+    true
+}
 

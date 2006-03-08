@@ -56,6 +56,12 @@ Log::set_log_level(const LogLevel l)
     _imp->log_level = l;
 }
 
+LogLevel
+Log::log_level() const
+{
+    return _imp->log_level;
+}
+
 void
 Log::message(const LogLevel l, const std::string & s)
 {

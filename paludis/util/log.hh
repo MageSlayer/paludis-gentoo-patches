@@ -32,6 +32,9 @@ namespace paludis
      * Keep this in order. When deciding whether to display a message, Log
      * uses message log level >= current log level, so it's important that
      * least critical levels have lower numeric values.
+     *
+     * When modifying this, you will probably also want to take a look at
+     * ebuild/echo_functions.bash and the command_line source files.
      */
     enum LogLevel
     {
@@ -65,6 +68,11 @@ namespace paludis
              * Only display messages of at least this level.
              */
             void set_log_level(const LogLevel);
+
+            /**
+             * Fetch the current log level.
+             */
+            LogLevel log_level() const;
 
             /**
              * Log a message at the specified level.

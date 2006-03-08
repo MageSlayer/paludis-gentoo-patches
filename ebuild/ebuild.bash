@@ -67,13 +67,17 @@ ebuild_load_module eclass_functions
 ebuild_load_ebuild()
 {
     [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
+    export EBUILD="${1}"
     source ${1} || die "Error sourcing ebuild '${1}'"
     [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"
 }
 
 case ${1:x} in
     metadata)
-        tr() { /usr/bin/tr "$@" ; }
+        for f in cut tr ; do
+            eval "export ebuild_real_${f}=\"$(which $f )\""
+            eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
+        done
         PATH="" ebuild_load_ebuild "${2}"
         ebuild_load_module depend
         ebuild_f_depend

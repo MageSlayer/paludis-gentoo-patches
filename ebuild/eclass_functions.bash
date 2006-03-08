@@ -38,7 +38,7 @@ EXPORT_FUNCTIONS()
 
             *)
                 eval "$1() { ${ECLASS}_${e} \"\$@\" ; }"
-                echo "[EBUILD QA]: $e should not be in EXPORT_FUNCTIONS for ${ECLASS}" 1>&2
+                ebuild_notice "qa" "$e should not be in EXPORT_FUNCTIONS for ${ECLASS}"
                 ;;
         esac
     done
