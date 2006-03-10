@@ -108,6 +108,8 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
             suspicious_rdepend.insert(QualifiedPackageName("sys-devel/autoconf"));
             suspicious_rdepend.insert(QualifiedPackageName("sys-devel/automake"));
             suspicious_rdepend.insert(QualifiedPackageName("sys-devel/flex"));
+            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/bison"));
+            suspicious_rdepend.insert(QualifiedPackageName("dev-util/yacc"));
             suspicious_rdepend.insert(QualifiedPackageName("sys-devel/gettext"));
             suspicious_rdepend.insert(QualifiedPackageName("sys-devel/libtool"));
             suspicious_rdepend.insert(QualifiedPackageName("sys-devel/patch"));
