@@ -114,6 +114,10 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
             suspicious_rdepend.insert(QualifiedPackageName("sys-devel/libtool"));
             suspicious_rdepend.insert(QualifiedPackageName("sys-devel/patch"));
             suspicious_rdepend.insert(QualifiedPackageName("app-doc/doxygen"));
+            suspicious_rdepend.insert(QualifiedPackageName("x11-misc/imake"));
+            suspicious_rdepend.insert(QualifiedPackageName("media-gfx/ebdftopcf"));
+            suspicious_rdepend.insert(QualifiedPackageName("x11-apps/bdftopcf"));
+            suspicious_rdepend.insert(QualifiedPackageName("app-arch/cabextract"));
         }
 
         Checker rdepend_checker(result, "RDEPEND", suspicious_rdepend);
