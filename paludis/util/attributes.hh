@@ -22,16 +22,22 @@
 
 /** \file
  * Declare the PALUDIS_ATTRIBUTE macro.
+ *
+ * \ingroup Utility
  */
 
 /** \def PALUDIS_ATTRIBUTE
  * If we're using a recent GCC or ICC, expands to __attribute__, otherwise
  * discards its arguments.
+ *
+ * \ingroup Utility
  */
 
 /** \def PALUDIS_CAN_USE_ATTRIBUTE
  * Defined if we can rely upon PALUDIS_ATTRIBUTE working (for example, for
  * weak).
+ *
+ * \ingroup Utility
  */
 
 #if (defined(__GNUC__) || defined(DOXYGEN))

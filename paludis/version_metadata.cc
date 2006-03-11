@@ -17,8 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/create_insert_iterator.hh>
-#include <paludis/util/create_insert_iterator.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/version_metadata.hh>
 #include <vector>

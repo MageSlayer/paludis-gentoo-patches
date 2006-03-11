@@ -19,13 +19,11 @@
 
 #include <paludis/config_file.hh>
 #include <paludis/default_config.hh>
-#include <paludis/util/create_insert_iterator.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
-#include <paludis/util/filter_insert_iterator.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/iterator_utilities.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>

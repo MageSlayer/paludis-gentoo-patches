@@ -31,6 +31,8 @@ namespace paludis
     /**
      * A Composite class represents both a class and a collection of
      * child instances of the same class.
+     *
+     * \ingroup Utility
      */
     template <typename ChildClass_, typename CompositeClass_ = ChildClass_>
     class Composite

@@ -25,19 +25,16 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/portage_repository.hh>
-#include <paludis/util/create_insert_iterator.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/util/dir_iterator.hh>
-#include <paludis/util/filter_insert_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/indirect_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/transform_insert_iterator.hh>
 
 #include <map>
 #include <fstream>

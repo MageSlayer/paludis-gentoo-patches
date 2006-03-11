@@ -19,7 +19,7 @@
 
 #include <algorithm>
 #include <paludis/util/deleter.hh>
-#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/util/visitor.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

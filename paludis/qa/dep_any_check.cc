@@ -21,7 +21,7 @@
 
 #include <paludis/dep_parser.hh>
 #include <paludis/dep_atom.hh>
-#include <paludis/util/iterator_utilities.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/util/save.hh>
 
 using namespace paludis;

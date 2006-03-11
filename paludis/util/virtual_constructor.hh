@@ -23,7 +23,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/transform_insert_iterator.hh>
+#include <paludis/util/iterator.hh>
 
 #include <algorithm>
 #include <vector>

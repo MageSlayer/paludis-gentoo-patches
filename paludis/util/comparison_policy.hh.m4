@@ -24,15 +24,25 @@ dnl vim: set ft=cpp et sw=4 sts=4 :
 #ifndef PALUDIS_GUARD_PALUDIS_COMPARISON_POLICY_HH
 #define PALUDIS_GUARD_PALUDIS_COMPARISON_POLICY_HH 1
 
+/** \file
+ * Declarations for the ComparisonPolicy class.
+ *
+ * \ingroup Utility
+ */
+
 namespace paludis
 {
     /**
      * Comparison modes for paludis::ComparisonPolicy.
+     *
+     * \ingroup Utility
      */
     namespace comparison_mode
     {
         /**
          * No comparisons can be made.
+         *
+         * \ingroup Utility
          */
         struct NoComparisonTag
         {
@@ -40,6 +50,8 @@ namespace paludis
 
         /**
          * Comparisons can be made via operator== and operator!=.
+         *
+         * \ingroup Utility
          */
         struct EqualityComparisonTag
         {
@@ -47,6 +59,8 @@ namespace paludis
 
         /**
          * The full range of comparison operators is available.
+         *
+         * \ingroup Utility
          */
         struct FullComparisonTag
         {
@@ -55,11 +69,15 @@ namespace paludis
 
     /**
      * Comparison methods for paludis::ComparisonPolicy.
+     *
+     * \ingroup Utility
      */
     namespace comparison_method
     {
         /**
          * Comparisons are done via a member of type MemberType_.
+         *
+         * \ingroup Utility
          */
         template <typename MemberType_>
         struct CompareByMemberTag
@@ -70,6 +88,8 @@ namespace paludis
          * Comparisons are done by a member function that returns an integer
          * less than zero (less than), equal to zero (equal to) or greater than
          * zero (greater than).
+         *
+         * \ingroup Utility
          */
         struct CompareByMemberComparisonFunctionTag
         {
@@ -79,6 +99,8 @@ namespace paludis
         /**
          * Comparisons are done via a member function that returns an item of
          * type MemberType_.
+         *
+         * \ingroup Utility
          */
         template <typename MemberType_>
         struct CompareByMemberFetchFunctionTag
@@ -90,6 +112,8 @@ namespace paludis
     /**
      * ComparisonPolicy specifies the availabillity of comparison methods and
      * the strategy used to do comparisons.
+     *
+     * \ingroup Utility
      */
     template <typename OurType_, typename ComparisonModeTag_, typename ComparisonMethodTag_>
     struct ComparisonPolicy
@@ -102,6 +126,8 @@ namespace paludis
 
     /**
      * ComparisonPolicy: specialisation for NoComparisonTag.
+     *
+     * \ingroup Utility
      */
     template <typename OurType_, typename ComparisonMethodTag_>
     class ComparisonPolicy<OurType_, comparison_mode::NoComparisonTag, ComparisonMethodTag_>
@@ -120,6 +146,8 @@ namespace paludis
     /**
      * ComparisonPolicy: specialisation for EqualityComparisonTag +
      * CompareByMemberTag.
+     *
+     * \ingroup Utility
      */
     template <typename OurType_, typename MemberType_>
     class ComparisonPolicy<OurType_, comparison_mode::EqualityComparisonTag,
@@ -166,6 +194,8 @@ make_operator(`!=')
     /**
      * ComparisonPolicy: specialisation for EqualityComparisonTag +
      * CompareByMemberComparisonFunctionTag.
+     *
+     * \ingroup Utility
      */
     template <typename OurType_>
     class ComparisonPolicy<OurType_, comparison_mode::EqualityComparisonTag,
@@ -212,6 +242,8 @@ make_operator(`!=')
     /**
      * ComparisonPolicy: specialisation for FullComparisonTag +
      * CompareByMemberTag.
+     *
+     * \ingroup Utility
      */
     template <typename OurType_, typename MemberType_>
     class ComparisonPolicy<OurType_, comparison_mode::FullComparisonTag,
@@ -262,6 +294,8 @@ make_operator(`>')
     /**
      * ComparisonPolicy: specialisation for FullComparisonTag +
      * CompareByMemberComparisonFunctionTag.
+     *
+     * \ingroup Utility
      */
     template <typename OurType_>
     class ComparisonPolicy<OurType_, comparison_mode::FullComparisonTag,
@@ -311,6 +345,8 @@ make_operator(`>')
     /**
      * ComparisonPolicy: specialisation for EqualityComparisonTag +
      * CompareByMemberFetchFunctionTag.
+     *
+     * \ingroup Utility
      */
     template <typename OurType_, typename MemberType_>
     class ComparisonPolicy<OurType_, comparison_mode::EqualityComparisonTag,
@@ -355,6 +391,8 @@ make_operator(`!=')
     /**
      * ComparisonPolicy: specialisation for FullComparisonTag +
      * CompareByMemberFetchFunctionTag.
+     *
+     * \ingroup Utility
      */
     template <typename OurType_, typename MemberType_>
     class ComparisonPolicy<OurType_, comparison_mode::FullComparisonTag,

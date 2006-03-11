@@ -25,7 +25,7 @@
 #include <paludis/use_flag_state.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/indirect_iterator.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/smart_record.hh>
 
