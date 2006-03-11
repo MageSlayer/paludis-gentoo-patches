@@ -23,13 +23,13 @@
 
 use()
 {
-    useq "${USE}" "${1}"
+    useq "${1}"
 }
 
 usev()
 {
-    if useq "${USE}" "${1}" ; then
-        echo "${1}"
+    if useq "${1}" ; then
+        echo "${1#!}"
         return 0
     else
         return 1
@@ -39,9 +39,9 @@ usev()
 useq()
 {
     if [[ "${1:0:1}" == "!" ]] ; then
-        ! hasq "${USE}" "${1}"
+        ! hasq "${1#!}" "${USE}"
     else
-        hasq "${USE}" "${1}"
+        hasq "${1}" "${USE}"
     fi
 }
 
@@ -64,7 +64,7 @@ hasq()
 {
     local x= want="$1"
     shift
-    for x in "$@" ; do
+    for x in $@ ; do
         [[ "${x}" == "${want}" ]] && return 0
     done
     return 1

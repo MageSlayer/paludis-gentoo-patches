@@ -28,5 +28,14 @@ libexecprog_SCRIPTS = \
 	unpack_functions.bash \
 	usage_error.bash
 
-EXTRA_DIST = $(libexecprog_SCRIPTS)
+TESTS_ENVIRONMENT = env \
+	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
+	TEST_SCRIPT_DIR="$(srcdir)/" \
+	$(SHELL) $(top_srcdir)/ebuild/run_test.bash
+
+TESTS = echo_functions_TEST.bash list_functions_TEST.bash
+EXTRA_DIST = $(libexecprog_SCRIPTS) run_test.bash $(TESTS)
+
+check_SCRIPTS = run_test.bash $(TESTS)
+check_PROGRAMS =
 

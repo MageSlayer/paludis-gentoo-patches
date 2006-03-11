@@ -24,18 +24,18 @@
 use_with()
 {
     if useq "${1}" ; then
-        echo "--with-${2:1}${3+=${3}}"
+        echo "--with-${2:-${1}}${3+=${3}}"
     else
-        echo "--without-${2:1}"
+        echo "--without-${2:-${1}}"
     fi
 }
 
 use_enable()
 {
     if useq "${1}" ; then
-        echo "--enable-${2:1}${3+=${3}}"
+        echo "--enable-${2:-${1}}${3+=${3}}"
     else
-        echo "--disable-${2:1}"
+        echo "--disable-${2:-${1}}"
     fi
 }
 

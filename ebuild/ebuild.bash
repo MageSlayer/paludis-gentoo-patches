@@ -72,7 +72,7 @@ ebuild_load_ebuild()
     [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"
 }
 
-case ${1:x} in
+[[ -n "${PALUDIS_IN_TEST_FRAMEWORK}" ]] || case ${1:x} in
     metadata)
         for f in cut tr ; do
             eval "export ebuild_real_${f}=\"$(which $f )\""
