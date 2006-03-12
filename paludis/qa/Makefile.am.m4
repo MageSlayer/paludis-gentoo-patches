@@ -38,6 +38,7 @@ DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
 EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist
 
 libpaludisqa_la_SOURCES = filelist
+libpaludisqa_la_LIBADD = $(top_builddir)/paludis/libpaludis.la
 libpaludisqa_la_LDFLAGS = -version-info 0:0:0
 
 TESTS = testlist
