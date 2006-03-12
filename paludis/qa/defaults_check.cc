@@ -18,9 +18,9 @@
  */
 
 #include <fstream>
-#include <paludis/match_sequence.hh>
 #include <paludis/qa/defaults_check.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/match_sequence.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
