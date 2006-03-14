@@ -50,6 +50,8 @@ EBUILD_MODULES_DIR=$(readlink -f $(dirname $0 ) )
 [[ -d ${EBUILD_MODULES_DIR} ]] || die "${EBUILD_MODULES_DIR} is not a directory"
 
 source /sbin/functions.sh || die "Couldn't source functions.sh"
+source /etc/make.globals || die "Couldn't source make.globals"
+source /etc/make.conf || die "Couldn't source make.conf"
 
 ebuild_load_module()
 {

@@ -30,6 +30,9 @@ pkg_init()
     done
 
     export WORKDIR="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/work"
+    if [[ -f "${WORKDIR}" ]] ; then
+        rm -fr "${WORKDIR}" || die "Couldn't clean out \$WORKDIR (\"${WORKDIR}\")"
+    fi
     mkdir -p "${WORKDIR}" || die "Couldn't create \$WORKDIR (\"${WORKDIR}\")"
 
     export T="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/temp"

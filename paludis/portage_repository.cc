@@ -20,6 +20,8 @@
 #include "config.h"
 
 #include <paludis/dep_atom.hh>
+#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_parser.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
@@ -80,6 +82,9 @@ namespace paludis
         /// Our owning db.
         const PackageDatabase * const db;
 
+        /// Our owning env.
+        const Environment * const env;
+
         /// Our base location.
         FSEntry location;
 
@@ -139,7 +144,8 @@ namespace paludis
         mutable MirrorSet mirrors;
 
         /// Constructor.
-        Implementation(const PackageDatabase * const d, const FSEntry & l, const FSEntry & p,
+        Implementation(const Environment * const,
+                const PackageDatabase * const d, const FSEntry & l, const FSEntry & p,
                 const FSEntry & c);
 
         /// Destructor.
@@ -150,9 +156,11 @@ namespace paludis
     };
 }
 
-Implementation<PortageRepository>::Implementation(const PackageDatabase * const d,
+Implementation<PortageRepository>::Implementation(const Environment * const env,
+        const PackageDatabase * const d,
         const FSEntry & l, const FSEntry & p, const FSEntry & c) :
     db(d),
+    env(env),
     location(l),
     profile(p),
     cache(c),
@@ -249,11 +257,12 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
     }
 }
 
-PortageRepository::PortageRepository(const PackageDatabase * const d,
+PortageRepository::PortageRepository(
+        const Environment * const e, const PackageDatabase * const d,
         const FSEntry & location, const FSEntry & profile,
         const FSEntry & cache) :
     Repository(PortageRepository::fetch_repo_name(location)),
-    PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(
+    PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(e,
                 d, location, profile, cache))
 {
     _info.insert(std::make_pair(std::string("location"), location));
@@ -781,6 +790,7 @@ PortageRepository::need_virtual_names() const
 
 CountedPtr<Repository>
 PortageRepository::make_portage_repository(
+        const Environment * const env,
         const PackageDatabase * const db,
         const std::map<std::string, std::string> & m)
 {
@@ -799,7 +809,7 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("cache") || ((cache = m.find("cache")->second)).empty())
         cache = location + "/metadata/cache";
 
-    return CountedPtr<Repository>(new PortageRepository(db, location, profile, cache));
+    return CountedPtr<Repository>(new PortageRepository(env, db, location, profile, cache));
 }
 
 PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
@@ -887,8 +897,23 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     if (! has_version(q, v))
         throw InternalError(PALUDIS_HERE, "TODO"); /// \todo fixme
 
+    VersionMetadata::ConstPointer metadata(version_metadata(q, v));
+
     std::string archives;
-    archives = "fluxbox-0.9.14.tar.bz2";
+    PackageDatabaseEntry e(q, v, name());
+    DepAtomFlattener f(_imp->env, &e,
+            DepParser::parse(metadata->get(vmk_src_uri),
+                DepParserPolicy<PlainTextDepAtom, false>::get_instance()));
+
+    for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
+    {
+        std::string::size_type p((*ff)->text().rfind('/'));
+        if (std::string::npos == p)
+            archives.append((*ff)->text());
+        else
+            archives.append((*ff)->text().substr(p + 1));
+        archives.append(" ");
+    }
 
     std::string cmd(
             "env P='" + stringify(q.get<qpn_package>()) + "-" + stringify(v.remove_revision()) + "' " +

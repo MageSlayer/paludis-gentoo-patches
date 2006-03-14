@@ -38,7 +38,7 @@ DefaultEnvironment::DefaultEnvironment() :
             r_end(DefaultConfig::get_instance()->end_repositories()) ; r != r_end ; ++r)
         package_database()->add_repository(
                 RepositoryMaker::get_instance()->find_maker(r->get<rce_format>())(
-                    package_database().raw_pointer(), r->get<rce_keys>()));
+                    this, package_database().raw_pointer(), r->get<rce_keys>()));
 
     /// \bug vdb
 }

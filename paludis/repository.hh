@@ -38,6 +38,8 @@
 
 namespace paludis
 {
+    class Environment;
+
     /**
      * A Repository provides a representation of a physical repository to a
      * PackageDatabase.
@@ -395,7 +397,8 @@ namespace paludis
      * Virtual constructor for repositories.
      */
     typedef VirtualConstructor<std::string,
-            Repository::Pointer (*) (const PackageDatabase * const, const std::map<std::string, std::string> &),
+            Repository::Pointer (*) (const Environment * const, const PackageDatabase * const,
+                    const std::map<std::string, std::string> &),
             virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> > RepositoryMaker;
 }
 

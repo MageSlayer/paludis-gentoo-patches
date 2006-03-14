@@ -36,7 +36,7 @@ QAEnvironment::QAEnvironment(const FSEntry & base) :
     keys.insert(std::make_pair(std::string("profile"), stringify(base / "profiles" / "base")));
 
     package_database()->add_repository(
-            RepositoryMaker::get_instance()->find_maker("portage")(
+            RepositoryMaker::get_instance()->find_maker("portage")(this,
             package_database().raw_pointer(), keys));
 }
 

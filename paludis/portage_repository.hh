@@ -96,7 +96,8 @@ namespace paludis
             /**
              * Constructor.
              */
-            PortageRepository(const PackageDatabase * const db,
+            PortageRepository(const Environment * const env,
+                    const PackageDatabase * const db,
                     const FSEntry & location, const FSEntry & profile,
                     const FSEntry & cache);
 
@@ -104,6 +105,7 @@ namespace paludis
              * Virtual constructor.
              */
             static CountedPtr<Repository> make_portage_repository(
+                    const Environment * const env,
                     const PackageDatabase * const db,
                     const std::map<std::string, std::string> &);
 
