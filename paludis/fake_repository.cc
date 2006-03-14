@@ -211,3 +211,7 @@ FakeRepository::do_is_mirror(const std::string &) const
     return false;
 }
 
+void
+FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &) const
+{
+}

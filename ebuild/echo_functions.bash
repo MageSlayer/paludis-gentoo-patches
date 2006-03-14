@@ -80,3 +80,8 @@ ebuild_notice()
     true
 }
 
+ebuild_section()
+{
+    echo ">>> $*" 1>&2
+}
+

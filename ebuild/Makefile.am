@@ -1,5 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~
+SUBDIRS = . utils
 
 libexecprogdir = $(libexecdir)/paludis/
 
@@ -13,6 +14,7 @@ libexecprog_SCRIPTS = \
 	list_functions.bash \
 	multilib_functions.bash \
 	pkg_config.bash \
+	pkg_init.bash \
 	pkg_nofetch.bash \
 	pkg_postinst.bash \
 	pkg_postrm.bash \

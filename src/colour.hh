@@ -39,7 +39,8 @@ enum Colour
     cl_flag_off      = cl_red,
     cl_slot          = cl_blue,
     cl_visible       = cl_flag_on,
-    cl_masked        = cl_flag_off
+    cl_masked        = cl_flag_off,
+    cl_heading       = cl_bold_green
 };
 
 bool use_colour() PALUDIS_ATTRIBUTE((pure));

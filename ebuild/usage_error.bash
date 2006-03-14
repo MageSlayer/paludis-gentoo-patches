@@ -23,6 +23,10 @@
 
 ebuild_f_usage_error()
 {
-    die "Usage error"
+    if [[ -z ${1} ]] ; then
+        die "Usage error"
+    else
+        die "Usage error: ${1}"
+    fi
 }
 

@@ -31,8 +31,8 @@ econf()
         if [[ -d /usr/share/gnuconfig ]] ; then
             local f
             for f in $(find "${WORKDIR}" -type f -name config.guess -or -name config.sub ) ; do
-                echo "econf: updating ${x} with /usr/share/gnuconfig/${x##*/}"
-                cp -f /usr/share/gnuconfig/${x##*/} ${x}
+                echo "econf: updating ${f} with /usr/share/gnuconfig/${f##*/}"
+                cp -f /usr/share/gnuconfig/${f##*/} ${f}
             done
         fi
 

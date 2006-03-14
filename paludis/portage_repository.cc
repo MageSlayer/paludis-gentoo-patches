@@ -43,6 +43,7 @@
 #include <vector>
 #include <deque>
 #include <limits>
+#include <iostream>
 #include <strings.h>
 
 using namespace paludis;
@@ -642,15 +643,13 @@ PortageRepository::do_version_metadata(
                 "PORTDIR='" + stringify(_imp->location) + "/' " +
                 "DISTDIR='" + stringify(_imp->location) + "/distfiles/' " +
                 "WORKDIR='/dev/null' " +
-                "T='/dev/null' " +
-                "D='/dev/null' " +
-                "S='/dev/null' " +
+                "PALUDIS_TMPDIR='/dev/null' " +
                 "KV='" + kernel_version() + "' " +
                 "PALUDIS_EBUILD_LOG_LEVEL='" + log_level_string() + "' " +
                 getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
-                "/ebuild.bash metadata '" +
+                "/ebuild.bash '" +
                 stringify(_imp->location) + "/" + stringify(c) + "/" + stringify(p) + "/" +
-                stringify(p) + "-" + stringify(v) + ".ebuild'");
+                stringify(p) + "-" + stringify(v) + ".ebuild' metadata");
 
         PStream prog(cmd);
         KeyValueConfigFile f(&prog);
@@ -880,5 +879,46 @@ PortageRepository::do_is_mirror(const std::string & s) const
     }
 
     return _imp->mirrors.end() != _imp->mirrors.find(s);
+}
+
+void
+PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v) const
+{
+    if (! has_version(q, v))
+        throw InternalError(PALUDIS_HERE, "TODO"); /// \todo fixme
+
+    std::string archives;
+    archives = "fluxbox-0.9.14.tar.bz2";
+
+    std::string cmd(
+            "env P='" + stringify(q.get<qpn_package>()) + "-" + stringify(v.remove_revision()) + "' " +
+            "PV='" + stringify(v.remove_revision()) + "' " +
+            "PR='" + v.revision_only() + "' " +
+            "PN='" + stringify(q.get<qpn_package>()) + "' " +
+            "PVR='" + stringify(v.remove_revision()) + "-" + v.revision_only() + "' " +
+            "PF='" + stringify(q.get<qpn_package>()) + "-" + stringify(v) + "' " +
+            "A='" + archives + "' " +
+            "CATEGORY='" + stringify(q.get<qpn_category>()) + "' " +
+            "FILESDIR='" + stringify(_imp->location) + "/" + stringify(q.get<qpn_category>()) + "/" +
+                stringify(q.get<qpn_package>()) + "/files/' " +
+            "ECLASSDIR='" + stringify(_imp->location) + "/eclass/' " +
+            "PORTDIR='" + stringify(_imp->location) + "/' " +
+            "DISTDIR='" + stringify(_imp->location) + "/distfiles/' " +
+            "PALUDIS_TMPDIR='" BIGTEMPDIR "/paludis/' " +
+            "KV='" + kernel_version() + "' " +
+            "PALUDIS_EBUILD_LOG_LEVEL='" + log_level_string() + "' " +
+            "PALUDIS_EBUILD_DIR='" + getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") + "' " +
+            getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+            "/ebuild.bash '" +
+            stringify(_imp->location) + "/" + stringify(q.get<qpn_category>()) + "/" +
+                stringify(q.get<qpn_package>()) + "/" +
+            stringify(q.get<qpn_package>()) + "-" + stringify(v) + ".ebuild' "
+            "init setup unpack compile test install preinst merge postinst tidyup");
+
+    PStream prog(cmd);
+    std::copy((std::istreambuf_iterator<char>(prog)), std::istreambuf_iterator<char>(),
+            std::ostreambuf_iterator<char>(std::cout));
+    if (prog.exit_status())
+        throw InternalError(PALUDIS_HERE, "TODO"); /// \todo fixme
 }
 

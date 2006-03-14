@@ -79,6 +79,8 @@ namespace paludis
 
             virtual bool do_is_mirror(const std::string &) const;
 
+            virtual void do_install(const QualifiedPackageName &, const VersionSpec &) const;
+
         public:
             /**
              * Constructor.

@@ -33,7 +33,10 @@ CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh \
 	hashed_containers.hh
 AM_CXXFLAGS = -I$(top_srcdir)
-DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
+DEFS= \
+	-DSYSCONFDIR=\"$(sysconfdir)\" \
+	-DLIBEXECDIR=\"$(libexecdir)\" \
+	-DBIGTEMPDIR=\"/var/tmp\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	hashed_containers.hh.in testscriptlist
 SUBDIRS = util . args qa

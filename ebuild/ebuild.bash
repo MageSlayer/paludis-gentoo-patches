@@ -49,6 +49,8 @@ diefunc()
 EBUILD_MODULES_DIR=$(readlink -f $(dirname $0 ) )
 [[ -d ${EBUILD_MODULES_DIR} ]] || die "${EBUILD_MODULES_DIR} is not a directory"
 
+source /sbin/functions.sh || die "Couldn't source functions.sh"
+
 ebuild_load_module()
 {
     source "${EBUILD_MODULES_DIR}/${1}.bash" || die "Error loading module ${1}"
@@ -72,36 +74,43 @@ ebuild_load_ebuild()
     [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"
 }
 
-[[ -n "${PALUDIS_IN_TEST_FRAMEWORK}" ]] || case ${1:x} in
-    metadata)
-        for f in cut tr ; do
-            eval "export ebuild_real_${f}=\"$(which $f )\""
-            eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
-        done
-        PATH="" ebuild_load_ebuild "${2}"
-        ebuild_load_module depend
-        ebuild_f_depend
-        exit 0
-        ;;
+ebuild_main()
+{
+    local action ebuild="$1"
+    shift
 
-    unpack|compile|install|test)
-        ebuild_load_ebuild "${2}"
-        ebuild_load_module src_${1}
-        ebuild_f_${1}
-        exit 0
-    ;;
+    for action in $@ ; do
+        case ${action} in
+            metadata)
+                for f in cut tr ; do
+                    eval "export ebuild_real_${f}=\"$(which $f )\""
+                    eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
+                done
+                PATH="" ebuild_load_ebuild "${ebuild}"
+                ebuild_load_module depend
+                ebuild_f_depend || die "${action} failed"
+                ;;
 
-    setup|config|nofetch|preinst|postinst|prerm|postrm)
-        ebuild_load_ebuild "${2}"
-        ebuild_load_module pkg_${1}
-        ebuild_f_${1}
-        exit 0
-    ;;
+            unpack|compile|install|test)
+                ebuild_load_module src_${action}
+                ebuild_load_ebuild "${ebuild}"
+                ebuild_f_${action} || die "${action} failed"
+            ;;
 
-    *)
-        ebuild_load_module usage_error
-        ebuild_f_usage_error
-        exit 1
-    ;;
-esac
+            init|setup|config|nofetch|preinst|postinst|prerm|postrm)
+                ebuild_load_module pkg_${action}
+                ebuild_load_ebuild "${ebuild}"
+                ebuild_f_${action} || die "${action} failed"
+            ;;
+
+            *)
+                ebuild_load_module usage_error
+                ebuild_f_usage_error "Unknown action '${action}'"
+                exit 1
+            ;;
+        esac
+    done
+}
+
+ebuild_main $@
 

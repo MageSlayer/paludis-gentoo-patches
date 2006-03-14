@@ -40,6 +40,8 @@ do_install()
     p::Context context("When performing install action from command line:");
     p::Environment * const env(p::DefaultEnvironment::get_instance());
 
+    cout << colour(cl_heading, "These packages will be installed:") << endl << endl;
+
     p::CompositeDepAtom::Pointer targets(new p::AllDepAtom);
 
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
@@ -114,6 +116,20 @@ do_install()
             }
 
             cout << endl;
+        }
+
+        if (CommandLine::get_instance()->a_pretend.specified())
+            return return_code;
+
+        for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
+                dep != dep_end ; ++dep)
+        {
+            cout << endl << colour(cl_heading,
+                    "Installing " + p::stringify(dep->get<p::dle_name>()) + "-"
+                    + p::stringify(dep->get<p::dle_version>())) << endl << endl;
+
+            env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
+                install(dep->get<p::dle_name>(), dep->get<p::dle_version>());
         }
     }
     catch (const p::DepListStackTooDeepError & e)

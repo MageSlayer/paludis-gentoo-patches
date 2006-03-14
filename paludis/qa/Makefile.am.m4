@@ -34,7 +34,10 @@ include(`paludis/qa/files.m4')
 CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in Makefile.am qa.hh
 AM_CXXFLAGS = -I$(top_srcdir)
-DEFS=-DSYSCONFDIR=\"$(sysconfdir)\" -DLIBEXECDIR=\"$(libexecdir)\"
+DEFS= \
+	-DSYSCONFDIR=\"$(sysconfdir)\" \
+	-DLIBEXECDIR=\"$(libexecdir)\" \
+	-DBIGTEMPDIR=\"/var/tmp\"
 EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist
 
 libpaludisqa_la_SOURCES = filelist

@@ -23,5 +23,13 @@
 
 pkg_preinst()
 {
+    :
+}
+
+ebuild_f_preinst()
+{
+    ebuild_section "Starting pkg_preinst"
+    pkg_preinst
+    ebuild_section "Done pkg_preinst"
 }
 

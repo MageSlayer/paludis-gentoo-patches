@@ -31,6 +31,9 @@ src_compile()
 
 ebuild_f_compile()
 {
+    ebuild_section "Starting src_compile"
+    cd ${S} || die "cd to \${S} (\"${S}\") failed"
     src_compile
+    ebuild_section "Done src_compile"
 }
 

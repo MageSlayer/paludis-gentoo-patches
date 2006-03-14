@@ -146,6 +146,11 @@ namespace paludis
              */
             virtual bool do_is_mirror(const std::string &) const = 0;
 
+            /**
+             * Override in descendents: install.
+             */
+            virtual void do_install(const QualifiedPackageName &, const VersionSpec &) const = 0;
+
         public:
             /**
              * Destructor.
@@ -359,6 +364,14 @@ namespace paludis
             bool is_mirror(const std::string & u) const
             {
                 return do_is_mirror(u);
+            }
+
+            /**
+             * Install a package.
+             */
+            void install(const QualifiedPackageName & q, const VersionSpec & v) const
+            {
+                do_install(q, v);
             }
     };
 

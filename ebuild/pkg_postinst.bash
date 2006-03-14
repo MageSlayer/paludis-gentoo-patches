@@ -23,5 +23,13 @@
 
 pkg_postinst()
 {
+    :
+}
+
+ebuild_f_postinst()
+{
+    ebuild_section "Starting pkg_postinst"
+    pkg_postinst
+    ebuild_section "Done pkg_postinst"
 }
 

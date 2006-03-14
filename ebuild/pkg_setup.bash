@@ -23,5 +23,13 @@
 
 pkg_setup()
 {
+    :
+}
+
+ebuild_f_setup()
+{
+    ebuild_section "Starting pkg_setup"
+    pkg_setup
+    ebuild_section "Done pkg_setup"
 }
 

@@ -143,6 +143,8 @@ void do_one_query(
             " " << metadata->get(p::vmk_rdepend) << std::endl;
         std::cout << "    " << std::setw(22) << std::left << "RESTRICT:" << std::setw(0) <<
             " " << metadata->get(p::vmk_restrict) << std::endl;
+        std::cout << "    " << std::setw(22) << std::left << "SRC_URI:" << std::setw(0) <<
+             " " << metadata->get(p::vmk_src_uri) << std::endl;
         std::cout << "    " << std::setw(22) << std::left << "VIRTUAL:" << std::setw(0) <<
              " " << metadata->get(p::vmk_virtual) << std::endl;
     }

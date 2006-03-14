@@ -30,3 +30,14 @@ src_test()
     fi
 }
 
+ebuild_f_test()
+{
+    if hasq "test" ${RESTRICT} ; then
+        ebuild_section "Skipping src_test (RESTRICT)"
+    else
+        ebuild_section "Starting src_test"
+        src_test
+        ebuild_section "Done src_test"
+    fi
+}
+

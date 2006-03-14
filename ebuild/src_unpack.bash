@@ -28,6 +28,9 @@ src_unpack()
 
 ebuild_f_unpack()
 {
+    ebuild_section "Starting src_unpack"
+    cd ${WORKDIR} || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     src_unpack
+    ebuild_section "Done src_unpack"
 }
 
