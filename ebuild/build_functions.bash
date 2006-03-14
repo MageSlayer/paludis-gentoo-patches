@@ -60,6 +60,11 @@ econf()
     fi
 }
 
+emake()
+{
+    ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
+}
+
 einstall()
 {
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
