@@ -42,7 +42,7 @@ keepdir()
     else
         local f
         for f in "$@" ; do
-            touch "${D}/${x}/.keep" || die "Couldn't touch .keep in ${x}"
+            touch "${D}/${f}/.keep" || die "Couldn't touch .keep in ${f}"
         done
     fi
 }
