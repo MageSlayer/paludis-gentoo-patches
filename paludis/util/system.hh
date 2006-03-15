@@ -62,6 +62,29 @@ namespace paludis
      * Use PStream instead if you need to capture stdout.
      */
     int run_command(const std::string & cmd);
+
+    namespace system_internals
+    {
+        class MakeEnvCommand
+        {
+            private:
+                std::string cmd;
+                std::string args;
+
+            public:
+                explicit MakeEnvCommand(const std::string &, const std::string &);
+
+                MakeEnvCommand operator() (const std::string &, const std::string &) const;
+
+                operator std::string() const;
+        };
+    }
+
+    /**
+     * Run a command, with environment.
+     */
+    const system_internals::MakeEnvCommand make_env_command(const std::string & cmd);
 }
 
 #endif
+

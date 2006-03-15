@@ -82,6 +82,6 @@ ebuild_notice()
 
 ebuild_section()
 {
-    echo ">>> $*" 1>&2
+    echo ">>> $*"
 }
 

@@ -93,7 +93,26 @@ namespace test_cases
         void run()
         {
             TEST_CHECK(0 == run_command("true"));
-            TEST_CHECK(0 != run_command("nosuchcommand"));
+            TEST_CHECK(0 != run_command("false"));
         }
     } test_run_command;
+
+    /**
+     * \test Test make_env_command.
+     *
+     * \ingroup Test
+     */
+    struct MakeEnvCommandTest : TestCase
+    {
+        MakeEnvCommandTest() : TestCase("make_env_command") { }
+
+        void run()
+        {
+            TEST_CHECK(0 != run_command(make_env_command("printenv PALUDUS_TEST_ENV_VAR")));
+            TEST_CHECK(0 == run_command(make_env_command("test -z `printenv PALUDUS_TEST_ENV_VAR`")(
+                            "PALUDUS_TEST_ENV_VAR", "")));
+            TEST_CHECK(0 == run_command(make_env_command("test -n `printenv PALUDUS_TEST_ENV_VAR`")(
+                            "PALUDUS_TEST_ENV_VAR", "foo")));
+        }
+    } test_make_env_command;
 }

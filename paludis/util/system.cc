@@ -87,3 +87,28 @@ paludis::run_command(const std::string & cmd)
     return status;
 }
 
+system_internals::MakeEnvCommand::MakeEnvCommand(const std::string & c,
+        const std::string & a) :
+    cmd(c),
+    args(a)
+{
+}
+
+system_internals::MakeEnvCommand
+system_internals::MakeEnvCommand::operator() (const std::string & k,
+        const std::string & v) const
+{
+    return MakeEnvCommand(cmd, args + k + "='" + v + "' ");
+}
+
+system_internals::MakeEnvCommand::operator std::string() const
+{
+    return "/usr/bin/env " + args + cmd;
+}
+
+const system_internals::MakeEnvCommand
+paludis::make_env_command(const std::string & cmd)
+{
+    return system_internals::MakeEnvCommand(cmd, "");
+}
+

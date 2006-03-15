@@ -925,31 +925,32 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         }
     }
 
-    std::string cmd(
-            "env P='" + stringify(q.get<qpn_package>()) + "-" + stringify(v.remove_revision()) + "' " +
-            "PV='" + stringify(v.remove_revision()) + "' " +
-            "PR='" + v.revision_only() + "' " +
-            "PN='" + stringify(q.get<qpn_package>()) + "' " +
-            "PVR='" + stringify(v.remove_revision()) + "-" + v.revision_only() + "' " +
-            "PF='" + stringify(q.get<qpn_package>()) + "-" + stringify(v) + "' " +
-            "A='" + archives + "' " +
-            "FLAT_SRC_URI='" + flat_src_uri + "' " +
-            "CATEGORY='" + stringify(q.get<qpn_category>()) + "' " +
-            "FILESDIR='" + stringify(_imp->location) + "/" + stringify(q.get<qpn_category>()) + "/" +
-                stringify(q.get<qpn_package>()) + "/files/' " +
-            "ECLASSDIR='" + stringify(_imp->location) + "/eclass/' " +
-            "PORTDIR='" + stringify(_imp->location) + "/' " +
-            "DISTDIR='" + stringify(_imp->location) + "/distfiles/' " +
-            "PALUDIS_TMPDIR='" BIGTEMPDIR "/paludis/' " +
-            "KV='" + kernel_version() + "' " +
-            "PALUDIS_EBUILD_LOG_LEVEL='" + log_level_string() + "' " +
-            "PALUDIS_EBUILD_DIR='" + getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") + "' " +
-            getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
-            "/ebuild.bash '" +
-            stringify(_imp->location) + "/" + stringify(q.get<qpn_category>()) + "/" +
+    std::string cmd(make_env_command(
+                getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+                "/ebuild.bash '" +
+                stringify(_imp->location) + "/" +
+                stringify(q.get<qpn_category>()) + "/" +
                 stringify(q.get<qpn_package>()) + "/" +
-            stringify(q.get<qpn_package>()) + "-" + stringify(v) + ".ebuild' "
-            "init fetch setup unpack compile test install preinst merge postinst tidyup");
+                stringify(q.get<qpn_package>()) + "-" + stringify(v) + ".ebuild' " +
+                "init fetch setup unpack compile test install preinst merge postinst tidyup")
+            ("P", stringify(q.get<qpn_package>()) + "-" + stringify(v.remove_revision()))
+            ("PV", stringify(v.remove_revision()))
+            ("PR", v.revision_only())
+            ("PN", stringify(q.get<qpn_package>()))
+            ("PVR", stringify(v.remove_revision()) + "-" + v.revision_only())
+            ("PF", stringify(q.get<qpn_package>()) + "-" + stringify(v))
+            ("A", archives)
+            ("FLAT_SRC_URI", flat_src_uri)
+            ("CATEGORY", stringify(q.get<qpn_category>()))
+            ("FILESDIR", stringify(_imp->location) + "/" + stringify(q.get<qpn_category>()) + "/" +
+                stringify(q.get<qpn_package>()) + "/files/")
+            ("ECLASSDIR", stringify(_imp->location) + "/eclass/")
+            ("PORTDIR", stringify(_imp->location) + "/")
+            ("DISTDIR", stringify(_imp->location) + "/distfiles/")
+            ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
+            ("KV", kernel_version())
+            ("PALUDIS_EBUILD_LOG_LEVEL", log_level_string())
+            ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
     if (0 != run_command(cmd))
         throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
