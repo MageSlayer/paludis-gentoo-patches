@@ -17,7 +17,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-pkg_init()
+builtin_init()
 {
     local a
     for a in P PV PR PN PVR PF CATEGORY FILESDIR ECLASSDIR PORTDIR \
@@ -29,16 +29,17 @@ pkg_init()
         [[ -d "${!a}" ]] || die "\$${a} (\"${!a}\") not a directory"
     done
 
-    export WORKDIR="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/work"
-    if [[ -f "${WORKDIR}" ]] ; then
-        rm -fr "${WORKDIR}" || die "Couldn't clean out \$WORKDIR (\"${WORKDIR}\")"
+    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" ]] ; then
+        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" || die "Couldn't remove previous work"
     fi
+
+    export WORKDIR="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/work"
     mkdir -p "${WORKDIR}" || die "Couldn't create \$WORKDIR (\"${WORKDIR}\")"
 
-    export T="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/temp"
+    export T="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/temp/"
     mkdir -p "${T}" || die "Couldn't create \$T (\"${T}\")"
 
-    export D="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/image"
+    export D="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/image/"
     mkdir -p "${D}" || die "Couldn't create \$D (\"${D}\")"
 
     export S="${WORKDIR}/${P}"
@@ -48,8 +49,8 @@ pkg_init()
 
 ebuild_f_init()
 {
-    ebuild_section "Starting pkg_init"
-    pkg_init
-    ebuild_section "Done pkg_init"
+    ebuild_section "Starting builtin_init"
+    builtin_init
+    ebuild_section "Done builtin_init"
 }
 

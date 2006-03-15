@@ -17,7 +17,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-src_fetch()
+builtin_fetch()
 {
     local a nofetch unique_aa
     for a in ${FLAT_SRC_URI} ; do
@@ -53,15 +53,15 @@ src_fetch()
             eerror "  * ${c}"
         done
         echo
-        die "src_fetch failed"
+        die "builtin_fetch failed"
     fi
 }
 
 ebuild_f_fetch()
 {
-    ebuild_section "Starting src_fetch"
-    src_fetch
-    ebuild_section "Done src_fetch"
+    ebuild_section "Starting builtin_fetch"
+    builtin_fetch
+    ebuild_section "Done builtin_fetch"
 }
 
 

@@ -14,7 +14,7 @@ libexecprog_SCRIPTS = \
 	list_functions.bash \
 	multilib_functions.bash \
 	pkg_config.bash \
-	pkg_init.bash \
+	builtin_init.bash \
 	pkg_nofetch.bash \
 	pkg_postinst.bash \
 	pkg_postrm.bash \
@@ -24,7 +24,8 @@ libexecprog_SCRIPTS = \
 	portage_stubs.bash \
 	sandbox_stubs.bash \
 	src_compile.bash \
-	src_fetch.bash \
+	builtin_fetch.bash \
+	builtin_merge.bash \
 	src_install.bash \
 	src_test.bash \
 	src_unpack.bash \

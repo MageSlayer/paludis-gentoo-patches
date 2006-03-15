@@ -3,10 +3,6 @@
 
 # Copyright (c) 2006 Ciaran McCreesh <ciaranm@gentoo.org>
 #
-# Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
-# Gentoo Foundation and distributed under the terms of the GNU General
-# Public License v2.
-#
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
 # Public License as published by the Free Software Foundation; either version
@@ -21,16 +17,16 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-src_install()
+builtin_merge()
 {
-    :
+    install -d "${ROOT}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
+    cp -vdfpR "${D}/"* "${ROOT}/" || die "builtin_merge failed"
 }
 
-ebuild_f_install()
+ebuild_f_merge()
 {
-    ebuild_section "Starting src_install"
-    cd ${S} || die "cd to \${S} (\"${S}\") failed"
-    src_install
-    ebuild_section "Done src_install"
+    ebuild_section "Starting builtin_merge"
+    builtin_merge
+    ebuild_section "Done builtin_merge"
 }
 

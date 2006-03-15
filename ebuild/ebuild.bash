@@ -93,13 +93,19 @@ ebuild_main()
                 ebuild_f_depend || die "${action} failed"
                 ;;
 
-            fetch|unpack|compile|install|test)
+            init|fetch|merge|tidyup)
+                ebuild_load_module builtin_${action}
+                ebuild_load_ebuild "${ebuild}"
+                ebuild_f_${action} || die "${action} failed"
+            ;;
+
+            unpack|compile|install|test)
                 ebuild_load_module src_${action}
                 ebuild_load_ebuild "${ebuild}"
                 ebuild_f_${action} || die "${action} failed"
             ;;
 
-            init|setup|config|nofetch|preinst|postinst|prerm|postrm)
+            setup|config|nofetch|preinst|postinst|prerm|postrm)
                 ebuild_load_module pkg_${action}
                 ebuild_load_ebuild "${ebuild}"
                 ebuild_f_${action} || die "${action} failed"
