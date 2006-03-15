@@ -29,15 +29,15 @@ EXPORT_FUNCTIONS()
     for e in "$@" ; do
         case "$e" in
             pkg_setup|pkg_prerm|pkg_postrm|pkg_preinst|pkg_postinst)
-                eval "$1() { ${ECLASS}_${e} \"\$@\" ; }"
+                eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
                 ;;
 
             src_unpack|src_compile|src_install|src_test)
-                eval "$1() { ${ECLASS}_${e} \"\$@\" ; }"
+                eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
                 ;;
 
             *)
-                eval "$1() { ${ECLASS}_${e} \"\$@\" ; }"
+                eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
                 ebuild_notice "qa" "$e should not be in EXPORT_FUNCTIONS for ${ECLASS}"
                 ;;
         esac

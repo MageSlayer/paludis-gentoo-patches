@@ -51,7 +51,17 @@ namespace paludis
      */
     std::string getenv_or_error(const std::string & key);
 
+    /**
+     * Fetch the kernel version, for $KV.
+     */
     std::string kernel_version();
+
+    /**
+     * Run a command, wait for it to terminate and return its exit status.
+     *
+     * Use PStream instead if you need to capture stdout.
+     */
+    int run_command(const std::string & cmd);
 }
 
 #endif

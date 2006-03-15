@@ -80,4 +80,20 @@ namespace test_cases
 #endif
         }
     } test_kernel_version;
+
+    /**
+     * \test Test run_command.
+     *
+     * \ingroup Test
+     */
+    struct RunCommandTest : TestCase
+    {
+        RunCommandTest() : TestCase("run_command") { }
+
+        void run()
+        {
+            TEST_CHECK(0 == run_command("true"));
+            TEST_CHECK(0 != run_command("nosuchcommand"));
+        }
+    } test_run_command;
 }

@@ -24,6 +24,7 @@ libexecprog_SCRIPTS = \
 	portage_stubs.bash \
 	sandbox_stubs.bash \
 	src_compile.bash \
+	src_fetch.bash \
 	src_install.bash \
 	src_test.bash \
 	src_unpack.bash \

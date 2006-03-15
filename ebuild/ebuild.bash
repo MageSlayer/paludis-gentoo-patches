@@ -93,7 +93,7 @@ ebuild_main()
                 ebuild_f_depend || die "${action} failed"
                 ;;
 
-            unpack|compile|install|test)
+            fetch|unpack|compile|install|test)
                 ebuild_load_module src_${action}
                 ebuild_load_ebuild "${ebuild}"
                 ebuild_f_${action} || die "${action} failed"

@@ -46,6 +46,7 @@
 #include <deque>
 #include <limits>
 #include <iostream>
+
 #include <strings.h>
 
 using namespace paludis;
@@ -899,20 +900,29 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 
     VersionMetadata::ConstPointer metadata(version_metadata(q, v));
 
-    std::string archives;
-    PackageDatabaseEntry e(q, v, name());
-    DepAtomFlattener f(_imp->env, &e,
-            DepParser::parse(metadata->get(vmk_src_uri),
-                DepParserPolicy<PlainTextDepAtom, false>::get_instance()));
-
-    for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
+    std::string archives, flat_src_uri;
     {
-        std::string::size_type p((*ff)->text().rfind('/'));
-        if (std::string::npos == p)
-            archives.append((*ff)->text());
-        else
-            archives.append((*ff)->text().substr(p + 1));
-        archives.append(" ");
+        PackageDatabaseEntry e(q, v, name());
+        DepAtomFlattener f(_imp->env, &e,
+                DepParser::parse(metadata->get(vmk_src_uri),
+                    DepParserPolicy<PlainTextDepAtom, false>::get_instance()));
+
+        for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
+        {
+            std::string::size_type p((*ff)->text().rfind('/'));
+            if (std::string::npos == p)
+                archives.append((*ff)->text());
+            else
+                archives.append((*ff)->text().substr(p + 1));
+            archives.append(" ");
+
+            if (0 == (*ff)->text().compare(0, 9, "mirror://"))
+            {
+            }
+            else
+                flat_src_uri.append((*ff)->text());
+            flat_src_uri.append(" ");
+        }
     }
 
     std::string cmd(
@@ -923,6 +933,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             "PVR='" + stringify(v.remove_revision()) + "-" + v.revision_only() + "' " +
             "PF='" + stringify(q.get<qpn_package>()) + "-" + stringify(v) + "' " +
             "A='" + archives + "' " +
+            "FLAT_SRC_URI='" + flat_src_uri + "' " +
             "CATEGORY='" + stringify(q.get<qpn_category>()) + "' " +
             "FILESDIR='" + stringify(_imp->location) + "/" + stringify(q.get<qpn_category>()) + "/" +
                 stringify(q.get<qpn_package>()) + "/files/' " +
@@ -938,12 +949,9 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             stringify(_imp->location) + "/" + stringify(q.get<qpn_category>()) + "/" +
                 stringify(q.get<qpn_package>()) + "/" +
             stringify(q.get<qpn_package>()) + "-" + stringify(v) + ".ebuild' "
-            "init setup unpack compile test install preinst merge postinst tidyup");
+            "init fetch setup unpack compile test install preinst merge postinst tidyup");
 
-    PStream prog(cmd);
-    std::copy((std::istreambuf_iterator<char>(prog)), std::istreambuf_iterator<char>(),
-            std::ostreambuf_iterator<char>(std::cout));
-    if (prog.exit_status())
-        throw InternalError(PALUDIS_HERE, "TODO"); /// \todo fixme
+    if (0 != run_command(cmd))
+        throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
 }
 

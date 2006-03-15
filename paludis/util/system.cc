@@ -20,6 +20,9 @@
 #include <cstdlib>
 #include <paludis/util/system.hh>
 #include <sys/utsname.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 using namespace paludis;
 
@@ -60,5 +63,27 @@ paludis::kernel_version()
 {
     static const std::string result(get_kernel_version());
     return result;
+}
+
+int
+paludis::run_command(const std::string & cmd)
+{
+    pid_t child(fork());
+    int status(-1);
+    if (0 == child)
+    {
+        execl("/bin/sh", "sh", "-c", cmd.c_str(), static_cast<char *>(0));
+        throw InternalError(PALUDIS_HERE, "execl failed"); /// \todo fixme
+    }
+    else if (-1 == child)
+    {
+        throw InternalError(PALUDIS_HERE, "fork failed"); /// \todo fixme
+    }
+    else
+    {
+        if (-1 == wait(&status))
+            throw InternalError(PALUDIS_HERE, "wait failed"); /// \todo fixme
+    }
+    return status;
 }
 
