@@ -48,6 +48,7 @@ diefunc()
 
 EBUILD_MODULES_DIR=$(readlink -f $(dirname $0 ) )
 [[ -d ${EBUILD_MODULES_DIR} ]] || die "${EBUILD_MODULES_DIR} is not a directory"
+export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_LOAD_EBUILD}"
 
 ebuild_source_profile()
 {

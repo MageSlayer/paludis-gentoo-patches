@@ -26,6 +26,13 @@ if [[ ! -d ${D} ]]; then
     exit 247
 fi
 
+if [[ ! -d ${PALUDIS_EBUILD_MODULES_DIR} ]]; then
+    echo "${0}: \${PALUDIS_EBUILD_MODULES_DIR} not valid; aborting" >&2
+    exit 1
+fi
+
+source "${PALUDIS_EBUILD_MODULES_DIR}/multilib_functions.bash"
+
 libdir="${D}${DESTTREE}/$(ebuild_get_libdir)"
 
 if [[ ${#} -lt 1 ]]; then
