@@ -925,14 +925,19 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         }
     }
 
+    std::string actions;
+    if (metadata->get(vmk_virtual).empty())
+        actions = "init fetch setup unpack compile test install preinst merge postinst tidyup";
+    else
+        actions = "merge";
+
     std::string cmd(make_env_command(
                 getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
                 "/ebuild.bash '" +
                 stringify(_imp->location) + "/" +
                 stringify(q.get<qpn_category>()) + "/" +
                 stringify(q.get<qpn_package>()) + "/" +
-                stringify(q.get<qpn_package>()) + "-" + stringify(v) + ".ebuild' " +
-                "init fetch setup unpack compile test install preinst merge postinst tidyup")
+                stringify(q.get<qpn_package>()) + "-" + stringify(v) + ".ebuild' " + actions)
             ("P", stringify(q.get<qpn_package>()) + "-" + stringify(v.remove_revision()))
             ("PV", stringify(v.remove_revision()))
             ("PR", v.revision_only())

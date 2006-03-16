@@ -26,6 +26,7 @@ libexecprog_SCRIPTS = \
 	src_compile.bash \
 	builtin_fetch.bash \
 	builtin_merge.bash \
+	builtin_tidyup.bash \
 	src_install.bash \
 	src_test.bash \
 	src_unpack.bash \

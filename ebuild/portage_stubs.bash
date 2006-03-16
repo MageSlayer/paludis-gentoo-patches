@@ -23,7 +23,8 @@
 
 has_version()
 {
-    die "has_version not implemented"
+#    die "has_version not implemented"
+    false
 }
 
 portageq()

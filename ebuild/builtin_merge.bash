@@ -20,7 +20,37 @@
 builtin_merge()
 {
     install -d "${ROOT}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
-    cp -vdfpR "${D}/"* "${ROOT}/" || die "builtin_merge failed"
+    if [[ -d "${D}" ]] ; then
+        cp -vdfpR "${D}/"* "${ROOT}/" || die "builtin_merge failed"
+    fi
+
+    local dbdir="${ROOT}"/var/db/pkg/"${CATEGORY}/${PF}"
+    install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
+
+    local v
+    for v in CATEGORY CBUILD CFLAGS CHOST CXXFLAGS DEPEND DESCRIPTION EAPI \
+        FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
+        PROVIDE RDEPEND SLOT SRC_URI USE ; do
+        echo "${!v}" > "${dbdir}"/${v} || die "pkg db write ${v} failed"
+    done
+
+    [[ -f "${EBUILD}" ]] && cp "${EBUILD}" ${dbdir}/
+    env | bzip2 > ${dbdir}/environment.bz2
+
+    touch ${dbdir}/CONTENTS || die "pkg db write CONTENTS failed"
+    local f ff
+    find "${D}/" | \
+    while read f ; do
+        ff=${f#${D}}
+        ff=${ff//+(\/)/\/}
+        if [[ -d "${f}" ]] ; then
+            echo "dir ${ff}" >> ${dbdir}/CONTENTS
+        elif [[ -l "${f}" ]] ; then
+            echo "sym ${ff} -> $(readlink ${f} ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
+        else
+            echo "obj ${ff} $(md5sum ${f} | cut -d ' ' -f1 ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
+        fi
+    done
 }
 
 ebuild_f_merge()

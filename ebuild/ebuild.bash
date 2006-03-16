@@ -70,9 +70,15 @@ ebuild_load_module eclass_functions
 
 ebuild_load_ebuild()
 {
-    [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
     export EBUILD="${1}"
-    source ${1} || die "Error sourcing ebuild '${1}'"
+    if [[ "${CATEGORY}" == "virtual" ]] ; then
+        if [[ -f "${1}" ]] ; then
+            source ${1} || die "Error sourcing ebuild '${1}'"
+        fi
+    else
+        [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
+        source ${1} || die "Error sourcing ebuild '${1}'"
+    fi
     [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"
 }
 
