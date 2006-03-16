@@ -55,11 +55,11 @@ unpack_one()
             ;;
 
         *.gz|*.Z|*.z)
-            gzip -dc "${1}" > "${1%.*}" || die "Couldn't unpack ${1}"
+            gzip -dc "${1}" > ${WORKDIR}/$(basename "${1%.*}" ) || die "Couldn't unpack ${1}"
             ;;
 
         *.bz2)
-            bunzip2 -dc "${1}" > "${1%.*}" || die "Couldn't unpack ${1}"
+            bzip2 -dc "${1}" > ${WORKDIR}/$(basename "${1%.*}" ) || die "Couldn't unpack ${1}"
             ;;
 
         *.rar|*.RAR)
