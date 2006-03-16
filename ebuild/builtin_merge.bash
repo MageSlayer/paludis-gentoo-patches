@@ -38,20 +38,22 @@ builtin_merge()
     env | bzip2 > ${dbdir}/environment.bz2
 
     touch ${dbdir}/CONTENTS || die "pkg db write CONTENTS failed"
-    local f ff
-    find "${D}/" | \
-    while read f ; do
-        ff=${f#${D}}
-        ff=${ff//+(\/)/\/}
-        [[ "${ff}" == "/" ]] && continue
-        if [[ -d "${f}" ]] ; then
-            echo "dir ${ff}" >> ${dbdir}/CONTENTS
-        elif [[ -L "${f}" ]] ; then
-            echo "sym ${ff} -> $(readlink ${f} ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
-        else
-            echo "obj ${ff} $(md5sum ${f} | cut -d ' ' -f1 ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
-        fi
-    done
+    if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then
+        local f ff
+        find "${D}/" | \
+        while read f ; do
+            ff=${f#${D}}
+            ff=${ff//+(\/)/\/}
+            [[ "${ff}" == "/" ]] && continue
+            if [[ -d "${f}" ]] ; then
+                echo "dir ${ff}" >> ${dbdir}/CONTENTS
+            elif [[ -L "${f}" ]] ; then
+                echo "sym ${ff} -> $(readlink ${f} ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
+            else
+                echo "obj ${ff} $(md5sum ${f} | cut -d ' ' -f1 ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
+            fi
+        done
+    fi
 }
 
 ebuild_f_merge()
