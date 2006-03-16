@@ -53,6 +53,23 @@ source /sbin/functions.sh || die "Couldn't source functions.sh"
 source /etc/make.globals || die "Couldn't source make.globals"
 source /etc/make.conf || die "Couldn't source make.conf"
 
+ebuild_source_profile()
+{
+    if [[ -f ${1}/make.defaults ]] ; then
+        source ${1}/make.defaults || die "Couldn't source ${1}/make.defaults"
+    fi
+
+    if [[ -f ${1}/bashrc ]] ; then
+        source ${1}/bashrc || die "Couldn't source ${1}/bashrc"
+    fi
+
+    if [[ -f ${1}/parent ]] ; then
+        ebuild_source_profile $(readlink -f ${1}/$(< ${1}/parent) )
+    fi
+}
+
+ebuild_source_profile $(readlink -f /etc/make.profile/ )
+
 ebuild_load_module()
 {
     source "${EBUILD_MODULES_DIR}/${1}.bash" || die "Error loading module ${1}"

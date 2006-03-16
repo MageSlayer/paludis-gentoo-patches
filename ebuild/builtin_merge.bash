@@ -43,9 +43,10 @@ builtin_merge()
     while read f ; do
         ff=${f#${D}}
         ff=${ff//+(\/)/\/}
+        [[ "${ff}" == "/" ]] && continue
         if [[ -d "${f}" ]] ; then
             echo "dir ${ff}" >> ${dbdir}/CONTENTS
-        elif [[ -l "${f}" ]] ; then
+        elif [[ -L "${f}" ]] ; then
             echo "sym ${ff} -> $(readlink ${f} ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
         else
             echo "obj ${ff} $(md5sum ${f} | cut -d ' ' -f1 ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS

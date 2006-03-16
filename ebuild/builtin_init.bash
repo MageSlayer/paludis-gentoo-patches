@@ -21,7 +21,8 @@ builtin_init()
 {
     local a
     for a in P PV PR PN PVR PF CATEGORY FILESDIR ECLASSDIR PORTDIR \
-        DISTDIR KV PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL PALUDIS_EBUILD_DIR ; do
+        DISTDIR KV PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL PALUDIS_EBUILD_DIR \
+        USERLAND KERNEL ARCH CHOST ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
     done
 
