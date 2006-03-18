@@ -19,6 +19,19 @@
 
 builtin_merge()
 {
+    if [[ -n "${CONFIG_PROTECT}" ]] ; then
+        local d f
+        for d in ${CONFIG_PROTECT} ; do
+
+            find "${D}${d}" -type f | \
+            while read f ; do
+                if [[ -e "${ROOT}${f#${D}}" ]] ; then
+                    echo "CONFIG_PROTECT ${f#${D}}"
+                fi
+            done
+        done
+    fi
+
     install -d "${ROOT}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
     if [[ -d "${D}" ]] ; then
         cp -vdfpR "${D}/"* "${ROOT}/" || die "builtin_merge failed"

@@ -24,7 +24,7 @@
 #include <paludis/util/comparison_policy.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/sorted_collection.hh>
+#include <paludis/util/collection.hh>
 #include <string>
 
 namespace paludis

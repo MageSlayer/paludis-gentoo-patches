@@ -638,28 +638,31 @@ PortageRepository::do_version_metadata(
             Log::get_instance()->message(ll_warning, "No cache entry for '" + stringify(c) + "/" +
                     stringify(p) + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
 
-        std::string cmd(
-                "env P='" + stringify(p) + "-" + stringify(v.remove_revision()) + "' " +
-                "PV='" + stringify(v.remove_revision()) + "' " +
-                "PR='" + v.revision_only() + "' " +
-                "PN='" + stringify(p) + "' " +
-                "PVR='" + stringify(v.remove_revision()) + "-" + v.revision_only() + "' " +
-                "PF='" + stringify(p) + "-" + stringify(v) + "' " +
-                "A='' " +
-                "CATEGORY='" + stringify(c) + "' " +
-                "FILESDIR='" + stringify(_imp->location) + "/" + stringify(c) + "/" +
-                    stringify(p) + "/files/' " +
-                "ECLASSDIR='" + stringify(_imp->location) + "/eclass/' " +
-                "PORTDIR='" + stringify(_imp->location) + "/' " +
-                "DISTDIR='" + stringify(_imp->location) + "/distfiles/' " +
-                "WORKDIR='/dev/null' " +
-                "PALUDIS_TMPDIR='/dev/null' " +
-                "KV='" + kernel_version() + "' " +
-                "PALUDIS_EBUILD_LOG_LEVEL='" + log_level_string() + "' " +
-                getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
-                "/ebuild.bash '" +
-                stringify(_imp->location) + "/" + stringify(c) + "/" + stringify(p) + "/" +
-                stringify(p) + "-" + stringify(v) + ".ebuild' metadata");
+        std::string actions("metadata");
+        std::string cmd(make_env_command(
+                    getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+                    "/ebuild.bash '" +
+                    stringify(_imp->location) + "/" +
+                    stringify(c) + "/" +
+                    stringify(p) + "/" +
+                    stringify(p) + "-" + stringify(v) + ".ebuild' " + actions)
+                ("P", stringify(p) + "-" + stringify(v.remove_revision()))
+                ("PV", stringify(v.remove_revision()))
+                ("PR", v.revision_only())
+                ("PN", stringify(p))
+                ("PVR", stringify(v.remove_revision()) + "-" + v.revision_only())
+                ("PF", stringify(p) + "-" + stringify(v))
+                ("CATEGORY", stringify(c))
+                ("FILESDIR", stringify(_imp->location) + "/" + stringify(c) + "/" +
+                    stringify(p) + "/files/")
+                ("ECLASSDIR", stringify(_imp->location) + "/eclass/")
+                ("PORTDIR", stringify(_imp->location) + "/")
+                ("DISTDIR", stringify(_imp->location) + "/distfiles/")
+                ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
+                ("KV", kernel_version())
+                ("PALUDIS_EBUILD_LOG_LEVEL", log_level_string())
+                ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
+
 
         PStream prog(cmd);
         KeyValueConfigFile f(&prog);
