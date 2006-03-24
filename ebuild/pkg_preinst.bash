@@ -28,8 +28,14 @@ pkg_preinst()
 
 ebuild_f_preinst()
 {
-    ebuild_section "Starting pkg_preinst"
-    pkg_preinst
-    ebuild_section "Done pkg_preinst"
+    if hasq "preinst" ${RESTRICT} ; then
+        ebuild_section "Skipping pkg_preinst (RESTRICT)"
+    elif hasq "preinst" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping pkg_preinst (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting pkg_preinst"
+        pkg_preinst
+        ebuild_section "Done pkg_preinst"
+    fi
 }
 

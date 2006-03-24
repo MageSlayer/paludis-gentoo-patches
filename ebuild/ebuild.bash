@@ -30,7 +30,7 @@ shopt -s expand_aliases
 EBUILD_KILL_PID=$$
 alias die='diefunc "$FUNCNAME" "$LINENO"'
 alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "$FUNCNAME" "$LINENO" "$_pipestatus"'
-trap 'echo "exiting with error." ; exit 250' 15
+trap 'echo "die trap: exiting with error." ; exit 250' 15
 
 diefunc()
 {
@@ -91,6 +91,8 @@ ebuild_load_ebuild()
     if [[ "${CATEGORY}" == "virtual" ]] ; then
         if [[ -f "${1}" ]] ; then
             source ${1} || die "Error sourcing ebuild '${1}'"
+        elif [[ -e "${1}" ]] ; then
+            die "'${1}' exists but is not a regular file"
         fi
     else
         [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
@@ -116,7 +118,7 @@ ebuild_main()
                 ebuild_f_depend || die "${action} failed"
                 ;;
 
-            init|fetch|merge|tidyup)
+            init|fetch|merge|tidyup|strip)
                 ebuild_load_module builtin_${action}
                 ebuild_load_ebuild "${ebuild}"
                 ebuild_f_${action} || die "${action} failed"

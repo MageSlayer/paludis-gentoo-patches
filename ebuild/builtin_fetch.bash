@@ -59,9 +59,15 @@ builtin_fetch()
 
 ebuild_f_fetch()
 {
-    ebuild_section "Starting builtin_fetch"
-    builtin_fetch
-    ebuild_section "Done builtin_fetch"
+    if hasq "fetch" ${RESTRICT} ; then
+        ebuild_section "Skipping builtin_fetch (RESTRICT)"
+    elif hasq "fetch" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping builtin_fetch (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting builtin_fetch"
+        builtin_fetch
+        ebuild_section "Done builtin_fetch"
+    fi
 }
 
 

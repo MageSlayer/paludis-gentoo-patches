@@ -71,8 +71,14 @@ builtin_merge()
 
 ebuild_f_merge()
 {
-    ebuild_section "Starting builtin_merge"
-    builtin_merge
-    ebuild_section "Done builtin_merge"
+    if hasq "merge" ${RESTRICT} ; then
+        ebuild_section "Skipping builtin_merge (RESTRICT)"
+    elif hasq "merge" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping builtin_merge (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting builtin_merge"
+        builtin_merge
+        ebuild_section "Done builtin_merge"
+    fi
 }
 

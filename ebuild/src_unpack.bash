@@ -28,9 +28,16 @@ src_unpack()
 
 ebuild_f_unpack()
 {
-    ebuild_section "Starting src_unpack"
     cd ${WORKDIR} || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
-    src_unpack
-    ebuild_section "Done src_unpack"
+
+    if hasq "unpack" ${RESTRICT} ; then
+        ebuild_section "Skipping src_unpack (RESTRICT)"
+    elif hasq "unpack" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_unpack (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting src_unpack"
+        src_unpack
+        ebuild_section "Done src_unpack"
+    fi
 }
 

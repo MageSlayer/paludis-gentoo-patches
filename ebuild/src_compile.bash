@@ -31,10 +31,17 @@ src_compile()
 
 ebuild_f_compile()
 {
-    ebuild_section "Starting src_compile"
     mkdir -p ${S}
     cd ${S} || die "cd to \${S} (\"${S}\") failed"
-    src_compile
-    ebuild_section "Done src_compile"
+
+    if hasq "compile" ${RESTRICT} ; then
+        ebuild_section "Skipping src_compile (RESTRICT)"
+    elif hasq "compile" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_compile (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting src_compile"
+        src_compile
+        ebuild_section "Done src_compile"
+    fi
 }
 

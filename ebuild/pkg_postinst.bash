@@ -28,8 +28,14 @@ pkg_postinst()
 
 ebuild_f_postinst()
 {
-    ebuild_section "Starting pkg_postinst"
-    pkg_postinst
-    ebuild_section "Done pkg_postinst"
+    if hasq "postinst" ${RESTRICT} ; then
+        ebuild_section "Skipping pkg_postinst (RESTRICT)"
+    elif hasq "postinst" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping pkg_postinst (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting pkg_postinst"
+        pkg_postinst
+        ebuild_section "Done pkg_postinst"
+    fi
 }
 

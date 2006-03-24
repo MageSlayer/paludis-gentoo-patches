@@ -26,9 +26,15 @@ builtin_tidyup()
 
 ebuild_f_tidyup()
 {
-    ebuild_section "Starting builtin_tidyup"
-    builtin_tidyup
-    ebuild_section "Done builtin_tidyup"
+    if hasq "tidyup" ${RESTRICT} ; then
+        ebuild_section "Skipping builtin_tidyup (RESTRICT)"
+    elif hasq "tidyup" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping builtin_tidyup (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting builtin_tidyup"
+        builtin_tidyup
+        ebuild_section "Done builtin_tidyup"
+    fi
 }
 
 

@@ -50,8 +50,14 @@ builtin_init()
 
 ebuild_f_init()
 {
-    ebuild_section "Starting builtin_init"
-    builtin_init
-    ebuild_section "Done builtin_init"
+    if hasq "init" ${RESTRICT} ; then
+        ebuild_section "Skipping builtin_init (RESTRICT)"
+    elif hasq "init" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping builtin_init (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting builtin_init"
+        builtin_init
+        ebuild_section "Done builtin_init"
+    fi
 }
 

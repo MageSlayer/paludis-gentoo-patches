@@ -34,6 +34,8 @@ ebuild_f_test()
 {
     if hasq "test" ${RESTRICT} ; then
         ebuild_section "Skipping src_test (RESTRICT)"
+    elif hasq "test" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_test (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting src_test"
         src_test
