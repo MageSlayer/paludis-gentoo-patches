@@ -3,6 +3,8 @@ ifdef(`__gnu__',`',`errprint(`This is not GNU m4...
 
 dnl vim: set ft=m4 noet :
 
+if ENABLE_QA
+
 define(`filelist', `')dnl
 define(`testlist', `')dnl
 define(`testscriptlist', `')dnl
@@ -31,15 +33,6 @@ addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 
 include(`paludis/qa/files.m4')
 
-CLEANFILES = *~
-MAINTAINERCLEANFILES = Makefile.in Makefile.am qa.hh
-AM_CXXFLAGS = -I$(top_srcdir)
-DEFS= \
-	-DSYSCONFDIR=\"$(sysconfdir)\" \
-	-DLIBEXECDIR=\"$(libexecdir)\" \
-	-DBIGTEMPDIR=\"/var/tmp\"
-EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist
-
 libpaludisqa_la_SOURCES = filelist
 libpaludisqa_la_LIBADD = $(top_builddir)/paludis/libpaludis.la
 libpaludisqa_la_LDFLAGS = -version-info 0:0:0
@@ -55,9 +48,19 @@ check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
 lib_LTLIBRARIES = libpaludisqa.la
 
+endif
+
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am
 
 qa.hh : qa.hh.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash qa.hh
 
+CLEANFILES = *~
+MAINTAINERCLEANFILES = Makefile.in Makefile.am qa.hh
+AM_CXXFLAGS = -I$(top_srcdir)
+DEFS= \
+	-DSYSCONFDIR=\"$(sysconfdir)\" \
+	-DLIBEXECDIR=\"$(libexecdir)\" \
+	-DBIGTEMPDIR=\"/var/tmp\"
+EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist

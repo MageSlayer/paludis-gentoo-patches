@@ -7,6 +7,8 @@ DEFS= \
 	-DBIGTEMPDIR=\"/var/tmp\"
 SUBDIRS = .
 
+if ENABLE_QA
+
 bin_PROGRAMS = qualudis
 
 qualudis_SOURCES = \
@@ -24,4 +26,6 @@ TESTS = version_TEST
 
 version_TEST :
 	echo -e "#!/bin/sh\n./qualudis --version" > $@
+
+endif
 

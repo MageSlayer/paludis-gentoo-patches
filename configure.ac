@@ -301,6 +301,18 @@ AC_SUBST([HAVE_DOT])
 AM_CONDITIONAL([HAVE_DOT], test "x$HAVE_DOT" = "xyes")
 dnl }}}
 
+dnl {{{ check for whether to build qa stuff
+AC_MSG_CHECKING([whether to build QA tools])
+AC_ARG_ENABLE([qa],
+			  [  --enable-qa             Build QA tool (qualudis) and library],
+			  [ENABLE_QA=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [ENABLE_QA=$enableval
+			   AC_MSG_RESULT([yes])])
+AC_SUBST([ENABLE_QA])
+AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
+dnl }}}
+
 dnl {{{ built sources
 GENERATED_FILE=misc/generated-file.txt
 AC_SUBST_FILE(GENERATED_FILE)
