@@ -56,4 +56,13 @@ std::string colour(Colour colour, const T_ & s)
             + "\033[0;0m";
 }
 
+template <typename T_>
+std::string xterm_title(const T_ & s)
+{
+    if (CommandLine::get_instance()->a_no_color.specified() || ! use_colour())
+        return "";
+    else
+        return "\x1b]2;" + paludis::stringify(s) + "\x07";
+}
+
 #endif

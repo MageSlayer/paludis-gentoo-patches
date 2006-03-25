@@ -121,12 +121,19 @@ do_install()
         if (CommandLine::get_instance()->a_pretend.specified())
             return return_code;
 
+        int current_count = 0, max_count = std::distance(dep_list.begin(), dep_list.end());
+        
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
         {
+            std::string cpv = p::stringify(dep->get<p::dle_name>()) + "-" + p::stringify(dep->get<p::dle_version>());
+
             cout << endl << colour(cl_heading,
-                    "Installing " + p::stringify(dep->get<p::dle_name>()) + "-"
-                    + p::stringify(dep->get<p::dle_version>())) << endl << endl;
+                    "Installing " + cpv) << endl << endl;
+
+            // TODO: some way to reset this properly would be nice.
+            cerr << xterm_title("(" + p::stringify(++current_count) + " of " + p::stringify(max_count) + ") Installing " + cpv);
+
 
             env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
                 install(dep->get<p::dle_name>(), dep->get<p::dle_version>());
