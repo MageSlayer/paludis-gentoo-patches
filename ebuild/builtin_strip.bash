@@ -2,6 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+# Copyright (c) 2006 Stephen Bennett <spb@gentoo.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +20,24 @@
 
 builtin_strip()
 {
-    :
+    STRIP=${STRIP:-${CHOST}-strip}
+    if ! type -p -- ${STRIP} >/dev/null; then
+        STRIP=strip
+    fi
+    PALUDIS_STRIP_FLAGS=${PALUDIS_STRIP_FLAGS:---strip-unneeded}
+
+    for fn in $(find "${D}" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 -or -name '*.so' -or -name '*.so.*' \)); do
+        local ft=$(file "${fn}")
+        if [[ $? != 0 || -z ${ft} ]]; then
+            return 1
+        fi
+
+        if [[ ${ft} == *"current ar archive"* ]]; then
+            ${STRIP} -g "${fn}"
+        elif [[ ${ft} == *"SB executable"* || ${ft} == *"SB shared object"* ]]; then
+            ${STRIP} ${PALUDIS_STRIP_FLAGS} "${fn}"
+        fi
+    done
 }
 
 ebuild_f_strip()
