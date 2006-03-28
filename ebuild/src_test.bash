@@ -23,10 +23,12 @@
 
 src_test()
 {
-    if emake -j1 -n check &>/dev/null ; then
-        emake -j1 check || die "make check failed"
-    elif emake -j1 -n test &>/dev/null ; then
-        emake -j1 test || die "make test failed"
+    if [[ -f Makefile ]] ; then
+        if emake -j1 -n check &>/dev/null ; then
+            emake -j1 check || die "make check failed"
+        elif emake -j1 -n test &>/dev/null ; then
+            emake -j1 test || die "make test failed"
+        fi
     fi
 }
 
