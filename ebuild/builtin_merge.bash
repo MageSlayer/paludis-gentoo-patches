@@ -22,7 +22,7 @@ builtin_merge()
     if [[ -n "${CONFIG_PROTECT}" ]] ; then
         local d f
         for d in ${CONFIG_PROTECT} ; do
-
+            [[ -d "${D}${d}" ]] || continue
             find "${D}${d}" -type f | \
             while read f ; do
                 if [[ -e "${ROOT}${f#${D}}" ]] ; then
