@@ -33,8 +33,10 @@ builtin_strip()
         fi
 
         if [[ ${ft} == *"current ar archive"* ]]; then
+            echo ${STRIP} -g "${fn}"
             ${STRIP} -g "${fn}"
         elif [[ ${ft} == *"SB executable"* || ${ft} == *"SB shared object"* ]]; then
+            echo ${STRIP} ${PALUDIS_STRIP_FLAGS} "${fn}"
             ${STRIP} ${PALUDIS_STRIP_FLAGS} "${fn}"
         fi
     done
