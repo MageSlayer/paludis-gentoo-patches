@@ -98,6 +98,7 @@ system_internals::MakeEnvCommand
 system_internals::MakeEnvCommand::operator() (const std::string & k,
         const std::string & v) const
 {
+    /// \bug this will explode if there're single quotes in the value
     return MakeEnvCommand(cmd, args + k + "='" + v + "' ");
 }
 
