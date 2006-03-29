@@ -18,6 +18,7 @@
  */
 
 #include <paludis/util/system.hh>
+#include <paludis/util/pstream.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -109,10 +110,43 @@ namespace test_cases
         void run()
         {
             TEST_CHECK(0 != run_command(make_env_command("printenv PALUDUS_TEST_ENV_VAR")));
-            TEST_CHECK(0 == run_command(make_env_command("test -z `printenv PALUDUS_TEST_ENV_VAR`")(
+            TEST_CHECK(0 == run_command(make_env_command("bash -c '[[ -z $PALUDUS_TEST_ENV_VAR ]]'")));
+            TEST_CHECK(0 == run_command(make_env_command("bash -c '[[ -z $PALUDUS_TEST_ENV_VAR ]]'")(
                             "PALUDUS_TEST_ENV_VAR", "")));
-            TEST_CHECK(0 == run_command(make_env_command("test -n `printenv PALUDUS_TEST_ENV_VAR`")(
+            TEST_CHECK(0 == run_command(make_env_command("bash -c '[[ -n $PALUDUS_TEST_ENV_VAR ]]'")(
                             "PALUDUS_TEST_ENV_VAR", "foo")));
+            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ -z $PALUDUS_TEST_ENV_VAR ]]'")(
+                            "PALUDUS_TEST_ENV_VAR", "foo")));
+            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ -n $PALUDUS_TEST_ENV_VAR ]]'")));
+            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ -n $PALUDUS_TEST_ENV_VAR ]]'")(
+                            "PALUDUS_TEST_ENV_VAR", "")));
+            TEST_CHECK(0 == run_command(make_env_command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")(
+                            "PALUDUS_TEST_ENV_VAR", "foo")));
+            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")));
+            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")(
+                            "PALUDUS_TEST_ENV_VAR", "")));
+            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")(
+                            "PALUDUS_TEST_ENV_VAR", "bar")));
         }
     } test_make_env_command;
+
+    /**
+     * \test Test make_env_command with quotes.
+     *
+     * \ingroup Test
+     */
+    struct MakeEnvCommandQuoteTest : TestCase
+    {
+        MakeEnvCommandQuoteTest() : TestCase("make_env_command quotes") { }
+
+        void run()
+        {
+            TEST_CHECK(0 == run_command(make_env_command(
+                            "bash -c '[[ x$PALUDUS_TEST_ENV_VAR == \"x....\" ]]'")
+                        ("PALUDUS_TEST_ENV_VAR", "....")));
+            TEST_CHECK(0 == run_command(make_env_command(
+                            "bash -c '[[ x$PALUDUS_TEST_ENV_VAR == \"x..'\"'\"'..\" ]]'")
+                        ("PALUDUS_TEST_ENV_VAR", "..'..")));
+        }
+    } test_make_env_command_quotes;
 }
