@@ -24,6 +24,7 @@ builtin_init()
         DISTDIR KV PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL PALUDIS_EBUILD_DIR \
         USERLAND KERNEL ARCH CHOST ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
+        declare -r ${a}="${!a}"
     done
 
     for a in FILESDIR ECLASSDIR PORTDIR DISTDIR ; do
@@ -36,12 +37,15 @@ builtin_init()
 
     export WORKDIR="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/work"
     mkdir -p "${WORKDIR}" || die "Couldn't create \$WORKDIR (\"${WORKDIR}\")"
+    declare -r WORKDIR="${WORKDIR}"
 
     export T="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/temp/"
     mkdir -p "${T}" || die "Couldn't create \$T (\"${T}\")"
+    declare -r T="${T}"
 
     export D="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/image/"
     mkdir -p "${D}" || die "Couldn't create \$D (\"${D}\")"
+    declare -r D="${D}"
 
     export S="${WORKDIR}/${P}"
 
