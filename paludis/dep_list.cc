@@ -314,8 +314,6 @@ DepList::visit(const PackageDepAtom * const p)
 {
     Context context("When resolving package dependency '" + stringify(*p) + "':");
 
-    /// \todo check installed db
-
     /* are we already there? */
     std::list<DepListEntry>::iterator i;
     if (_imp->merge_list.end() != ((i = std::find_if(

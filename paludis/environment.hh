@@ -36,8 +36,8 @@ namespace paludis
 {
     /**
      * Represents a working environment, which contains an available packages
-     * database and an installed packages database and provides various methods
-     * for querying package visibility and options.
+     * database and provides various methods for querying package visibility
+     * and options.
      *
      * \ingroup Environment
      */
@@ -46,13 +46,12 @@ namespace paludis
     {
         private:
             PackageDatabase::Pointer _package_database;
-            PackageDatabase::Pointer _installed_database;
 
         protected:
             /**
              * Constructor.
              */
-            Environment(PackageDatabase::Pointer, PackageDatabase::Pointer);
+            Environment(PackageDatabase::Pointer);
 
         public:
             /**
@@ -87,14 +86,6 @@ namespace paludis
             PackageDatabase::Pointer package_database() const
             {
                 return _package_database;
-            }
-
-            /**
-             * Fetch our installed database.
-             */
-            PackageDatabase::Pointer installed_database() const
-            {
-                return _installed_database;
             }
 
             /**

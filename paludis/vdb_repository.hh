@@ -90,6 +90,11 @@ namespace paludis
              * Destructor.
              */
             ~VDBRepository();
+
+            virtual bool installed() const
+            {
+                return true;
+            }
     };
 
     /**

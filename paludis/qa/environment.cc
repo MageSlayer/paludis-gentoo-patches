@@ -24,8 +24,7 @@ using namespace paludis;
 using namespace paludis::qa;
 
 QAEnvironment::QAEnvironment(const FSEntry & base) :
-    Environment(PackageDatabase::Pointer(new PackageDatabase),
-            PackageDatabase::Pointer(new PackageDatabase))
+    Environment(PackageDatabase::Pointer(new PackageDatabase))
 {
     std::map<std::string, std::string> keys;
 

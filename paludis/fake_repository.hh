@@ -123,6 +123,11 @@ namespace paludis
 
             typedef CountedPtr<FakeRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const FakeRepository, count_policy::InternalCountTag> ConstPointer;
+
+            virtual bool installed() const
+            {
+                return false;
+            }
     };
 }
 

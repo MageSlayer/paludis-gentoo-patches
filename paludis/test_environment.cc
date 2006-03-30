@@ -22,8 +22,7 @@
 using namespace paludis;
 
 TestEnvironment::TestEnvironment() :
-    Environment(PackageDatabase::Pointer(new PackageDatabase),
-            PackageDatabase::Pointer(new PackageDatabase))
+    Environment(PackageDatabase::Pointer(new PackageDatabase))
 {
 }
 

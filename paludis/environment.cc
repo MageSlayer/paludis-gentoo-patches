@@ -22,9 +22,8 @@
 
 using namespace paludis;
 
-Environment::Environment(PackageDatabase::Pointer d, PackageDatabase::Pointer i) :
-    _package_database(d),
-    _installed_database(i)
+Environment::Environment(PackageDatabase::Pointer d) :
+    _package_database(d)
 {
 }
 

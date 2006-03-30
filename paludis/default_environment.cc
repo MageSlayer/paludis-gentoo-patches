@@ -29,8 +29,7 @@
 using namespace paludis;
 
 DefaultEnvironment::DefaultEnvironment() :
-    Environment(PackageDatabase::Pointer(new PackageDatabase),
-            PackageDatabase::Pointer(new PackageDatabase))
+    Environment(PackageDatabase::Pointer(new PackageDatabase))
 {
     Context context("When loading default environment:");
 

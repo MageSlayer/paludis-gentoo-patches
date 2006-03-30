@@ -375,6 +375,13 @@ namespace paludis
             {
                 do_install(q, v);
             }
+
+            /**
+             * Return whether we are an 'installed' repo.
+             *
+             * No NVI indirection here, it's not worth it.
+             */
+            virtual bool installed() const = 0;
     };
 
     /**

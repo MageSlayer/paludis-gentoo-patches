@@ -113,6 +113,11 @@ namespace paludis
              * Destructor.
              */
             ~PortageRepository();
+
+            virtual bool installed() const
+            {
+                return false;
+            }
     };
 
     /**
