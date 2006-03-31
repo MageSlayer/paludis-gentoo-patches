@@ -62,9 +62,8 @@ econf()
 
 emake()
 {
-    cmd="${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} $@"
-    echo "${cmd}"
-    ${cmd}
+    echo ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
+    ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
 }
 
 einstall()
