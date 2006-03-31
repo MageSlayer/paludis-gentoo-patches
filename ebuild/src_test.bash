@@ -24,11 +24,18 @@
 src_test()
 {
     if [[ -f Makefile ]] ; then
-        if emake -j1 -n check &>/dev/null ; then
+        echo "Makefile found, looking for potential test targets"
+        if emake -j1 -n check ; then
+            echo "Found check target"
             emake -j1 check || die "make check failed"
-        elif emake -j1 -n test &>/dev/null ; then
+        elif emake -j1 -n test ; then
+            echo "Found test target"
             emake -j1 test || die "make test failed"
+        else
+            echo "No check or test target, skipping tests"
         fi
+    else
+        echo "No Makefile, skipping tests"
     fi
 }
 

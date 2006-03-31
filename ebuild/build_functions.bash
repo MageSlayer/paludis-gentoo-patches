@@ -64,7 +64,7 @@ emake()
 {
     cmd="${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} $@"
     echo "${cmd}"
-    ${cmd} || die "emake failed"
+    ${cmd}
 }
 
 einstall()
