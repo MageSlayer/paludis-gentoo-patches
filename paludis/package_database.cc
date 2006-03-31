@@ -160,7 +160,7 @@ PackageDatabase::fetch_unique_qualified_package_name(
 }
 
 PackageDatabaseEntryCollection::Pointer
-PackageDatabase::query(const PackageDepAtom * const a) const
+PackageDatabase::_do_query(const PackageDepAtom * const a, bool installed_only) const
 {
     PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection);
 
@@ -169,6 +169,9 @@ PackageDatabase::query(const PackageDepAtom * const a) const
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
     {
+        if (installed_only && ! r->installed())
+            continue;
+
         if (! r->has_category_named(a->package().get<qpn_category>()))
             continue;
 
@@ -187,8 +190,19 @@ PackageDatabase::query(const PackageDepAtom * const a) const
         }
     }
 
-
     return result;
+}
+
+PackageDatabaseEntryCollection::Pointer
+PackageDatabase::query(const PackageDepAtom * const a) const
+{
+    return _do_query(a, false);
+}
+
+PackageDatabaseEntryCollection::Pointer
+PackageDatabase::query_installed(const PackageDepAtom * const a) const
+{
+    return _do_query(a, true);
 }
 
 const RepositoryName &
@@ -222,6 +236,12 @@ PackageDatabaseEntryCollection::Pointer
 PackageDatabase::query(PackageDepAtom::ConstPointer a) const
 {
     return query(a.raw_pointer());
+}
+
+PackageDatabaseEntryCollection::Pointer
+PackageDatabase::query_installed(PackageDepAtom::ConstPointer a) const
+{
+    return query_installed(a.raw_pointer());
 }
 
 PackageDatabase::RepositoryIterator

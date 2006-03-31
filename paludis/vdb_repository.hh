@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_VDB_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
+#include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 namespace paludis
@@ -68,7 +69,8 @@ namespace paludis
 
             virtual bool do_is_mirror(const std::string &) const;
 
-            virtual void do_install(const QualifiedPackageName &, const VersionSpec &) const;
+            virtual void do_install(const QualifiedPackageName &,
+                    const VersionSpec &) const PALUDIS_ATTRIBUTE((noreturn));
 
         public:
             /**

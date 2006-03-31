@@ -106,7 +106,6 @@ namespace paludis
         bool recursive_deps;
         bool drop_circular;
         bool drop_self_circular;
-        bool dont_ignore_patch_dep;
         bool drop_all;
         bool ignore_installed;
         ///}
@@ -127,7 +126,6 @@ namespace paludis
             recursive_deps(true),
             drop_circular(false),
             drop_self_circular(false),
-            dont_ignore_patch_dep(false),
             drop_all(false),
             ignore_installed(false),
             stack_depth(0),
@@ -314,35 +312,39 @@ DepList::visit(const PackageDepAtom * const p)
 {
     Context context("When resolving package dependency '" + stringify(*p) + "':");
 
-    /* are we already there? */
-    std::list<DepListEntry>::iterator i;
-    if (_imp->merge_list.end() != ((i = std::find_if(
-                        _imp->merge_list.begin(),
-                        _imp->merge_list.end(),
-                        DepListEntryMatcher(
-                            _imp->environment->package_database().raw_pointer(), *p)))))
-    {
-        /* what's our status? */
-        if (! i->get<dle_has_predeps>())
-        {
-            if (_imp->drop_circular)
-                return;
-            else if (_imp->merge_list_insert_pos == i && (
-                        _imp->drop_self_circular || (
-                            ! _imp->dont_ignore_patch_dep && p->package() ==
-                            QualifiedPackageName("sys-devel/patch"))))
-                return;
-            else
-                throw CircularDependencyError(i, next(i));
-        }
+    PackageDatabaseEntryCollection::ConstPointer installed(
+            _imp->environment->package_database()->query_installed(p));
 
-        return;
+    /* are we already on the merge list? */
+    {
+        std::list<DepListEntry>::iterator i;
+        if (_imp->merge_list.end() != ((i = std::find_if(
+                            _imp->merge_list.begin(),
+                            _imp->merge_list.end(),
+                            DepListEntryMatcher(
+                                _imp->environment->package_database().raw_pointer(), *p)))))
+        {
+            /* what's our status? */
+            if (! i->get<dle_has_predeps>())
+            {
+                if (! installed->empty())
+                    return;
+
+                else if (_imp->drop_circular)
+                    return;
+
+                else
+                    throw CircularDependencyError(i, next(i));
+            }
+
+            return;
+        }
     }
 
     /* are we allowed to install things? */
     if (_imp->check_existing_only)
     {
-        _imp->match_found = false;
+        _imp->match_found = ! installed->empty();
         return;
     }
 
@@ -355,6 +357,12 @@ DepList::visit(const PackageDepAtom * const p)
     for (PackageDatabaseEntryCollection::ReverseIterator e(matches->rbegin()),
             e_end(matches->rend()) ; e != e_end ; ++e)
     {
+        /* if we're already installed, only include us if we're a better version */
+        /// \todo SLOTs?
+        if (! installed->empty())
+            if (e->get<pde_version>() <= installed->last()->get<pde_version>())
+                continue;
+
         /* check masks */
         if (_imp->environment->mask_reasons(*e).any())
             continue;
@@ -365,7 +373,12 @@ DepList::visit(const PackageDepAtom * const p)
     }
 
     if (! match)
-        throw AllMaskedError(stringify(*p));
+    {
+        if (! installed->empty())
+            return;
+        else
+            throw AllMaskedError(stringify(*p));
+    }
 
     /* make merge entry */
     std::list<DepListEntry>::iterator merge_entry(
@@ -408,7 +421,6 @@ DepList::visit(const PackageDepAtom * const p)
                         p_metadata, merge_entry->get<dle_repository>(), true, true, true));
         }
     }
-
 
     Save<std::list<DepListEntry>::iterator> old_merge_list_insert_pos(
             &_imp->merge_list_insert_pos, merge_entry);
@@ -640,12 +652,6 @@ void
 DepList::set_drop_self_circular(const bool value)
 {
     _imp->drop_self_circular = value;
-}
-
-void
-DepList::set_dont_ignore_patch_dep(const bool value)
-{
-    _imp->dont_ignore_patch_dep = value;
 }
 
 void

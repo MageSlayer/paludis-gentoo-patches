@@ -191,6 +191,10 @@ namespace paludis
         private InstantiationPolicy<PackageDatabase, instantiation_method::NonCopyableTag>,
         public InternalCounted<PackageDatabase>
     {
+        private:
+            PackageDatabaseEntryCollection::Pointer _do_query(
+                    const PackageDepAtom * const a, bool installed_only) const;
+
         public:
             /**
              * Constructor.
@@ -244,6 +248,19 @@ namespace paludis
              * Query the repository (overload for a CountedPtr)
              */
             PackageDatabaseEntryCollection::Pointer query(
+                    PackageDepAtom::ConstPointer a) const;
+
+            /**
+             * Query the repository, installed packages only.
+             */
+            PackageDatabaseEntryCollection::Pointer query_installed(
+                    const PackageDepAtom * const a) const;
+
+            /**
+             * Query the repository (overload for a CountedPtr), installed
+             * packages only.
+             */
+            PackageDatabaseEntryCollection::Pointer query_installed(
                     PackageDepAtom::ConstPointer a) const;
 
             /**

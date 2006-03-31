@@ -61,7 +61,6 @@ do_install()
 
     p::DepList dep_list(env);
     dep_list.set_drop_self_circular(CommandLine::get_instance()->a_dl_drop_self_circular.specified());
-    dep_list.set_dont_ignore_patch_dep(CommandLine::get_instance()->a_dl_patch_dep.specified());
     dep_list.set_drop_circular(CommandLine::get_instance()->a_dl_drop_circular.specified());
     dep_list.set_drop_all(CommandLine::get_instance()->a_dl_drop_all.specified());
     dep_list.set_ignore_installed(CommandLine::get_instance()->a_dl_ignore_installed.specified());

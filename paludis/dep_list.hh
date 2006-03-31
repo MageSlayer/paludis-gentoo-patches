@@ -271,12 +271,6 @@ namespace paludis
             void set_drop_self_circular(const bool value);
 
             /**
-             * Behaviour: if set, don't ignore the stupid sys-devel/patch dep
-             * upon itself
-             */
-            void set_dont_ignore_patch_dep(const bool value);
-
-            /**
              * Behaviour: if set, any circular dependencies are treated as if
              * they do not exist.
              */
