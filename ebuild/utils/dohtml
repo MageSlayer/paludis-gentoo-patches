@@ -21,6 +21,95 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-echo "spb still needs to implement dohtml." >&2
-kill $PPID
-exit 1
+source ${PALUDIS_EBUILD_DIR}/list_functions.bash
+
+if [[ ! -d ${D} ]]; then
+    echo "${0}: \${D} not valid; aborting" >&2
+    exit 247
+fi
+
+allowed_exts="png gif html htm jpg css jps"
+disallowed_dirs=""
+recurse=0
+args=( )
+
+split_names() {
+    list=$1
+    if [[ ${list} == *,* ]]; then
+        echo -n "${list%%,*} "
+        split_names ${list#*,}
+    else
+        echo ${list}
+    fi
+}
+
+parse_args() {
+    while [[ ${#} -gt 0 ]]; do
+        case $1 in 
+            -r)
+                recurse=1 ;;
+            -V)
+                verbose=1 ;;
+            -A)
+                allowed_exts="${allowed_exts} $(split_names $2)"
+                shift
+                ;;
+            -a)
+                allowed_exts="$(split_names $2)"
+                shift
+                ;;
+            -x)
+                disallowed_dirs="$(split_names $2)"
+                shift
+                ;;
+            *)
+                args=( "${args[@]}" "$1" ) ;;
+        esac
+        shift
+    done
+}
+
+install_file() {
+    bn=${1}
+    dn=${2}
+    prefix=${3}
+    local ret=0
+
+    path=${bn}
+    [[ -n ${prefix} ]] && path="${prefix}/${path}"
+    [[ -n ${dn} ]] && path="${dn}/${path}"
+
+    [[ -z ${DOCDESTTREE} ]] && DOCDESTTREE="html"
+
+    dir="${D}usr/share/doc/${PF}/${DOCDESTTREE}/${prefix}"
+
+    if [[ -f ${path} ]]; then
+        ext="${path##*.}"
+        if [[ -n ${ext} ]] && has $ext $allowed_exts; then
+            [[ ! -d ${dir} ]] && install -d "${dir}"
+            echo "install -m0644 ${path} ${dir}"
+            install -m0644 "${path}" "${dir}/${bn}"
+        fi
+    elif [[ $recurse == 1 && -d ${path} ]] &&
+            ! has "${bn}" ${disallowed_dirs}; then
+        for f in ${path}/*; do
+            pfx=${bn}
+            [[ -n ${prefix} ]] && pfx="${prefix}/${pfx}"
+            install_file "$(basename "${f}")" "${dn}" "${pfx}"
+            (( ret += $? ))
+        done
+    else
+        (( ++ret ))
+    fi
+    return ${ret}
+}
+
+parse_args "$@"
+
+retval=0
+for i in "${args[@]}"; do
+    install_file "$(basename "${i}")" "$(dirname "${i}")"
+    (( retval += $? ))
+done
+
+exit $retval
