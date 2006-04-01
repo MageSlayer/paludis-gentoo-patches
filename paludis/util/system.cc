@@ -19,6 +19,7 @@
 
 #include <cstdlib>
 #include <paludis/util/system.hh>
+#include <paludis/util/log.hh>
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -72,6 +73,7 @@ paludis::run_command(const std::string & cmd)
     int status(-1);
     if (0 == child)
     {
+        Log::get_instance()->message(ll_debug, "execl /bin/sh -c " + cmd);
         execl("/bin/sh", "sh", "-c", cmd.c_str(), static_cast<char *>(0));
         throw InternalError(PALUDIS_HERE, "execl failed"); /// \todo fixme
     }
