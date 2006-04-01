@@ -50,6 +50,20 @@ EBUILD_MODULES_DIR=$(readlink -f $(dirname $0 ) )
 [[ -d ${EBUILD_MODULES_DIR} ]] || die "${EBUILD_MODULES_DIR} is not a directory"
 export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
 
+save_vars()
+{
+    for var in "$@"; do
+        eval "saved_${var}='${!var}'"
+    done
+}
+
+restore_vars()
+{
+    for var in "$@"; do
+        eval "${var}='\${saved_${var}}'"
+    done
+}
+
 ebuild_source_profile()
 {
     if [[ -f ${1}/make.defaults ]] ; then
@@ -65,10 +79,29 @@ ebuild_source_profile()
     fi
 }
 
+_saved_vars="USE USE_EXPAND ${USE_EXPAND}"
+
+save_vars ${_saved_vars}
 source /sbin/functions.sh || die "Couldn't source functions.sh"
-source /etc/make.globals || die "Couldn't source make.globals"
-ebuild_source_profile $(readlink -f /etc/make.profile/ )
-source /etc/make.conf || die "Couldn't source make.conf"
+
+ebuild_source_profile $(readlink -f "${PALUDIS_PROFILE_DIR}")
+
+unset ${_saved_vars}
+
+if [[ -r ${PALUDIS_CONFIG_DIR}/bashrc ]]; then
+    source ${PALUDIS_CONFIG_DIR}/bashrc
+fi
+if [[ -r ${HOME}/.paludis/bashrc ]]; then
+    source ${HOME}/.paludis/bashrc
+fi
+
+for var in ${_saved_vars}; do
+    if [[ -n ${!var} ]]; then
+        die "${var} should not be set in bashrc. Aborting."
+    fi
+done
+restore_vars ${_saved_vars}
+
 
 ebuild_load_module()
 {

@@ -916,9 +916,10 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     else
         metadata = version_metadata(q, v);
 
+    PackageDatabaseEntry e(q, v, name());
+
     std::string archives, flat_src_uri;
     {
-        PackageDatabaseEntry e(q, v, name());
         DepAtomFlattener f(_imp->env, &e,
                 DepParser::parse(metadata->get(vmk_src_uri),
                     DepParserPolicy<PlainTextDepAtom, false>::get_instance()));
@@ -959,6 +960,16 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     else
         actions = "merge";
 
+    std::string use;
+    VersionMetadata::IuseIterator iuse_it=metadata->begin_iuse(), iuse_end=metadata->end_iuse();
+    for( ; iuse_it != iuse_end; ++iuse_it)
+    {
+        if(_imp->env->query_use(*iuse_it, &e))
+            use += (*iuse_it).data() + " ";
+    }
+    /// \todo add ARCH and USE_EXPAND
+
+
     std::string cmd(make_env_command(
                 getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
                 "/ebuild.bash '" +
@@ -973,6 +984,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("PVR", stringify(v.remove_revision()) + "-" + v.revision_only())
             ("PF", stringify(q.get<qpn_package>()) + "-" + stringify(v))
             ("A", archives)
+            ("USE", use)
+            ("USE_EXPAND", join(_imp->expand_list.begin(), _imp->expand_list.end(), " "))
             ("FLAT_SRC_URI", flat_src_uri)
             ("CATEGORY", stringify(q.get<qpn_category>()))
             ("FILESDIR", stringify(_imp->location) + "/" + stringify(q.get<qpn_category>()) + "/" +
@@ -981,6 +994,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("PORTDIR", stringify(_imp->location) + "/")
             ("DISTDIR", stringify(_imp->location) + "/distfiles/")
             ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
+            ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
+            ("PALUDIS_PROFILE_DIR", _imp->profile)
             ("KV", kernel_version())
             ("PALUDIS_EBUILD_LOG_LEVEL", log_level_string())
             ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
