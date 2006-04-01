@@ -887,9 +887,16 @@ PortageRepository::do_is_mirror(const std::string & s) const
             std::vector<std::string> entries;
             tokeniser.tokenise(*line, std::back_inserter(entries));
             if (! entries.empty())
+            {
+                /* pick up to five random mirrors only */
+                /// \todo param this
+                std::random_shuffle(next(entries.begin()), entries.end());
+                if (entries.size() > 6)
+                    entries.resize(6);
                 _imp->mirrors.insert(std::make_pair(
                             entries.at(0),
                             std::list<std::string>(next(entries.begin()), entries.end())));
+            }
         }
         _imp->has_mirrors = true;
     }
