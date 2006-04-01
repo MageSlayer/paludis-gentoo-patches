@@ -22,6 +22,9 @@ builtin_tidyup()
     if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" ]] ; then
         rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" || die "Couldn't remove work"
     fi
+
+    echo ldconfig
+    ldconfig -r "${ROOT:-/}" || die "ldconfig failed"
 }
 
 ebuild_f_tidyup()
