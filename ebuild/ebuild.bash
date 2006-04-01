@@ -79,7 +79,7 @@ ebuild_source_profile()
     fi
 }
 
-_saved_vars="USE USE_EXPAND ${USE_EXPAND}"
+_saved_vars="USE USE_EXPAND"
 
 save_vars ${_saved_vars}
 source /sbin/functions.sh || die "Couldn't source functions.sh"
