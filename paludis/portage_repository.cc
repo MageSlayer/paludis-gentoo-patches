@@ -962,9 +962,9 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 
     std::string use;
     VersionMetadata::IuseIterator iuse_it=metadata->begin_iuse(), iuse_end=metadata->end_iuse();
-    for( ; iuse_it != iuse_end; ++iuse_it)
+    for ( ; iuse_it != iuse_end; ++iuse_it)
     {
-        if(_imp->env->query_use(*iuse_it, &e))
+        if (_imp->env->query_use(*iuse_it, &e))
             use += (*iuse_it).data() + " ";
     }
     /// \todo add ARCH and USE_EXPAND
