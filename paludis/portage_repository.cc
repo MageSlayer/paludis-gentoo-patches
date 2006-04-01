@@ -898,11 +898,21 @@ PortageRepository::do_is_mirror(const std::string & s) const
 void
 PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v) const
 {
+    VersionMetadata::ConstPointer metadata(0);
     if (! has_version(q, v))
-        throw InternalError(PALUDIS_HERE, "Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' since has_version failed"); /// \todo fixme
-
-    VersionMetadata::ConstPointer metadata(version_metadata(q, v));
+    {
+        if (q.get<qpn_category>() == CategoryNamePart("virtual"))
+        {
+            VersionMetadata::Pointer m(new VersionMetadata);
+            m->set(vmk_virtual, " ");
+            metadata = m;
+        }
+        else
+            throw InternalError(PALUDIS_HERE, "Can't install '" + stringify(q) + "-"
+                    + stringify(v) + "' since has_version failed"); /// \todo fixme
+    }
+    else
+        metadata = version_metadata(q, v);
 
     std::string archives, flat_src_uri;
     {
