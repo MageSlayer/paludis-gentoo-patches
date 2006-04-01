@@ -34,6 +34,7 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
+#include <paludis/util/random.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
@@ -890,7 +891,8 @@ PortageRepository::do_is_mirror(const std::string & s) const
             {
                 /* pick up to five random mirrors only */
                 /// \todo param this
-                std::random_shuffle(next(entries.begin()), entries.end());
+                static Random r;
+                std::random_shuffle(next(entries.begin()), entries.end(), r);
                 if (entries.size() > 6)
                     entries.resize(6);
                 _imp->mirrors.insert(std::make_pair(
