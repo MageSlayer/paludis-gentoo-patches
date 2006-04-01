@@ -960,6 +960,17 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             else
                 flat_src_uri.append((*ff)->text());
             flat_src_uri.append(" ");
+
+            /* add mirror://gentoo/ entries */
+            /// \todo don't hardcode
+            if (is_mirror("gentoo"))
+            {
+                for (std::list<std::string>::iterator
+                        m(_imp->mirrors.find("gentoo")->second.begin()),
+                        m_end(_imp->mirrors.find("gentoo")->second.end()) ;
+                        m != m_end ; ++m)
+                    flat_src_uri.append(*m + "/" + (*ff)->text().substr(p + 1) + " ");
+            }
         }
     }
 
