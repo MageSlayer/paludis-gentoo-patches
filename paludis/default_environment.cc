@@ -24,6 +24,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/system.hh>
 #include <vector>
 
 using namespace paludis;
@@ -49,6 +50,13 @@ DefaultEnvironment::~DefaultEnvironment()
 bool
 DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
+    std::string env_use = " " + getenv_with_default("USE", "") + " ";
+
+    if (env_use.find(" " + f.data() + " ") != std::string::npos)
+        return true;
+    else if (env_use.find(" -" + f.data() + " ") != std::string::npos)
+        return false;
+
     if (e)
     {
         UseFlagState s(use_unspecified);
