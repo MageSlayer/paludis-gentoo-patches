@@ -19,26 +19,29 @@
 
 builtin_fetch()
 {
-    local a nofetch unique_aa
+    local a nofetch unique_aa old_aa
     for a in ${FLAT_SRC_URI} ; do
         local aa=${a##*/}
+        hasq "${aa}" ${unique_aa} || unique_aa="${unique_aa} ${aa}"
+
         if [[ -f "${DISTDIR}/${aa}" ]] ; then
-            if ! hasq ${aa} ${unique_aa} ; then
+            if [[ "${old_aa}" != "${aa}" ]] ; then
                 ebuild_section "Already have ${aa}"
-                unique_aa="${unique_aa} ${aa}"
+                old_aa="${aa}"
             fi
-            continue
         else
             if ! hasq fetch ${RESTRICT} ; then
-                if ! hasq ${aa} ${unique_aa} ; then
+                if [[ "${old_aa}" != "${aa}" ]] ; then
                     ebuild_section "Need to fetch ${aa}"
-                    unique_aa="${unique_aa} ${aa}"
+                    old_aa="${aa}"
                 fi
-                wget -O "${DISTDIR}/${aa}" "${a}"
+                if ! wget -O "${DISTDIR}/${aa}" "${a}" ; then
+                    rm -f "${DISTDIR}/${aa}"
+                fi
             else
-                if ! hasq ${aa} ${unique_aa} ; then
+                if ! [[ "${old_aa}" != "${aa}" ]] ; then
                     ebuild_section "Can't fetch ${aa}"
-                    unique_aa="${unique_aa} ${aa}"
+                    old_aa="${aa}"
                 fi
             fi
         fi
