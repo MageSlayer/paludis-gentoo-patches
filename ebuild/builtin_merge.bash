@@ -62,8 +62,10 @@ builtin_merge()
                 echo "dir ${ff}" >> ${dbdir}/CONTENTS
             elif [[ -L "${f}" ]] ; then
                 echo "sym ${ff} -> $(readlink ${f} ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
-            else
+            elif [[ -f "${f}" ]] ; then
                 echo "obj ${ff} $(md5sum ${f} | cut -d ' ' -f1 ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
+            else
+                echo "misc ${ff} $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
             fi
         done
     fi
