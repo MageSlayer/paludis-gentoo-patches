@@ -58,6 +58,7 @@ builtin_merge()
             ff=${f#${D}}
             ff=${ff//+(\/)/\/}
             [[ "${ff}" == "/" ]] && continue
+            echo ">>> ${ff}"
             if [[ -d "${f}" ]] ; then
                 echo "dir ${ff}" >> ${dbdir}/CONTENTS
             elif [[ -L "${f}" ]] ; then
