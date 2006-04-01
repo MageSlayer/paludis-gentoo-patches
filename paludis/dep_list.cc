@@ -359,9 +359,10 @@ DepList::visit(const PackageDepAtom * const p)
     {
         /* if we're already installed, only include us if we're a better version */
         /// \todo SLOTs?
-        if (! installed->empty())
-            if (e->get<pde_version>() <= installed->last()->get<pde_version>())
-                continue;
+        if (! _imp->ignore_installed)
+            if (! installed->empty())
+                if (e->get<pde_version>() <= installed->last()->get<pde_version>())
+                    continue;
 
         /* check masks */
         if (_imp->environment->mask_reasons(*e).any())
