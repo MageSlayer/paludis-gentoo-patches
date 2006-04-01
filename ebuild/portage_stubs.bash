@@ -29,7 +29,16 @@ has_version()
 
 portageq()
 {
-    die "portageq not implemented"
+    if [[ "$1" == "has_version" ]] ; then
+        if [[ "$2" != "$ROOT" ]] ; then
+            die "portageq has_version emulation only works on current ROOT"
+        else
+            shift ; shift
+            has_version "$@"
+        fi
+    else
+        die "portageq emulation for $1 not implemented"
+    fi
 }
 
 best_version()
