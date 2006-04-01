@@ -899,7 +899,8 @@ void
 PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v) const
 {
     if (! has_version(q, v))
-        throw InternalError(PALUDIS_HERE, "TODO"); /// \todo fixme
+        throw InternalError(PALUDIS_HERE, "Can't install '" + stringify(q) + "-"
+                + stringify(v) + "' since has_version failed"); /// \todo fixme
 
     VersionMetadata::ConstPointer metadata(version_metadata(q, v));
 
