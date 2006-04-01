@@ -40,9 +40,12 @@ builtin_fetch()
                     ebuild_section "Can't fetch ${aa}"
                     unique_aa="${unique_aa} ${aa}"
                 fi
-                nofetch="${nofetch:+${nofetch} }${aa}"
             fi
         fi
+    done
+
+    for a in ${unique_aa} ; do
+        [[ -f ${DISTDIR}/${a} ]] || nofetch="${nofetch} ${a}"
     done
 
     if [[ -n "${nofetch}" ]] ; then

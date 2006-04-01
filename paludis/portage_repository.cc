@@ -67,7 +67,7 @@ typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
 
 typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
 
-typedef MakeHashedSet<std::string>::Type MirrorSet;
+typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
 
 typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
 
@@ -142,7 +142,7 @@ namespace paludis
         /// Do we have mirrors?
         mutable bool has_mirrors;
 
-        mutable MirrorSet mirrors;
+        mutable MirrorMap mirrors;
 
         /// Constructor.
         Implementation(const Environment * const,
@@ -887,7 +887,9 @@ PortageRepository::do_is_mirror(const std::string & s) const
             std::vector<std::string> entries;
             tokeniser.tokenise(*line, std::back_inserter(entries));
             if (! entries.empty())
-                _imp->mirrors.insert(entries.at(0));
+                _imp->mirrors.insert(std::make_pair(
+                            entries.at(0),
+                            std::list<std::string>(next(entries.begin()), entries.end())));
         }
         _imp->has_mirrors = true;
     }
@@ -932,6 +934,18 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 
             if (0 == (*ff)->text().compare(0, 9, "mirror://"))
             {
+                std::string mirror((*ff)->text().substr(9));
+                std::string::size_type q(mirror.find('/'));
+                if (std::string::npos == q)
+                    throw InternalError(PALUDIS_HERE, "todo"); /// \bug todo
+                if (! is_mirror(mirror.substr(0, q)))
+                    throw InternalError(PALUDIS_HERE, "todo: not a mirror: '" +
+                            mirror.substr(0, q) + "'"); /// \bug todo
+                for (std::list<std::string>::iterator
+                        m(_imp->mirrors.find(mirror.substr(0, q))->second.begin()),
+                        m_end(_imp->mirrors.find(mirror.substr(0, q))->second.end()) ;
+                        m != m_end ; ++m)
+                    flat_src_uri.append(*m + "/" + (*ff)->text().substr(p + 1) + " ");
             }
             else
                 flat_src_uri.append((*ff)->text());
