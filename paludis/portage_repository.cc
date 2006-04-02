@@ -977,6 +977,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 
             /* add mirror://gentoo/ entries */
             /// \todo don't hardcode
+            /// \todo avoid for nomirror?
             if (is_mirror("gentoo"))
             {
                 for (std::list<std::string>::iterator
