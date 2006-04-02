@@ -39,34 +39,42 @@ unpack_one()
 
     case "${x}" in
         *.tar)
+            echo tar xf "${1}"
             tar xf "${1}" || die "Couldn't unpack ${1}"
             ;;
 
         *.tar.gz|*.tgz)
+            echo tar zxf "${1}"
             tar zxf "${1}" || die "Couldn't unpack ${1}"
             ;;
 
         *.tar.bz2|*.tbz2)
+            echo tar jxf "${1}"
             tar jxf "${1}" || die "Couldn't unpack ${1}"
             ;;
 
         *.zip|*.ZIP|*.jar)
+            echo unzip -qo "${1}"
             unzip -qo "${1}" || die "Couldn't unpack ${1}"
             ;;
 
         *.gz|*.Z|*.z)
+            echo gzip -dc "${1}" > ${WORKDIR}/$(basename "${1%.*}" )
             gzip -dc "${1}" > ${WORKDIR}/$(basename "${1%.*}" ) || die "Couldn't unpack ${1}"
             ;;
 
         *.bz2)
+            echo bzip2 -dc "${1}" > ${WORKDIR}/$(basename "${1%.*}" )
             bzip2 -dc "${1}" > ${WORKDIR}/$(basename "${1%.*}" ) || die "Couldn't unpack ${1}"
             ;;
 
         *.rar|*.RAR)
+            echo unrar x -idq "${1}"
             unrar x -idq "${1}" || die "Couldn't unpack ${1}"
             ;;
 
         *.LHa|*.LHA|*.lha|*.lzh)
+            echo lha xqf "${1}"
             lha xqf "${1}" || die "Couldn't unpack ${1}"
             ;;
 
