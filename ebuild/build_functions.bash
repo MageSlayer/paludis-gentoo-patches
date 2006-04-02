@@ -36,8 +36,8 @@ econf()
             done
         fi
 
-        [[ -z "${CBUILD}" ]] && LOCAL_EXTRA_ECONF="--build=${CBUILD} ${LOCAL_EXTRA_ECONF}"
-        [[ -z "${CTARGET}" ]] && LOCAL_EXTRA_ECONF="--target=${CTARGET} ${LOCAL_EXTRA_ECONF}"
+        [[ -z "${CBUILD}" ]] || LOCAL_EXTRA_ECONF="--build=${CBUILD} ${LOCAL_EXTRA_ECONF}"
+        [[ -z "${CTARGET}" ]] || LOCAL_EXTRA_ECONF="--target=${CTARGET} ${LOCAL_EXTRA_ECONF}"
 
         local cmd="${ECONF_SOURCE}/configure"
         cmd="${cmd} --prefix=/usr"
@@ -48,7 +48,12 @@ econf()
         cmd="${cmd} --sysconfdir=/etc"
         cmd="${cmd} --localstatedir=/var/lib"
         # Check that this is actually what's wanted for multilib etc.
-        cmd="${cmd} --libdir=${PREFIX}/$(ebuild_get_libdir)"
+        if [[ -n "${ABI}" ]] ; then
+            local v="LIBDIR_${ABI}"
+            if [[ -n "${!v}" ]] ; then
+                cmd="${cmd} --libdir=${PREFIX}/$(ebuild_get_libdir)"
+            fi
+        fi
 
         cmd="${cmd} $@ ${LOCAL_EXTRA_ECONF}"
 
