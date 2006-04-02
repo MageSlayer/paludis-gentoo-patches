@@ -26,6 +26,7 @@ unpack()
     [[ -z "$@" ]] && die "No arguments given to unpack"
 
     for x in "$@" ; do
+        x=$(echo $x )
         echo ">>> Unpacking ${x} to ${PWD}"
         [[ "${x:0:2}" == "./" ]] || x="${DISTDIR}/${x}"
         unpack_one "${x}"
