@@ -929,6 +929,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 
     std::string archives, flat_src_uri;
     {
+        std::set<std::string> already_in_archives;
+
         DepAtomFlattener f(_imp->env, &e,
                 DepParser::parse(metadata->get(vmk_src_uri),
                     DepParserPolicy<PlainTextDepAtom, false>::get_instance()));
@@ -937,9 +939,21 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         {
             std::string::size_type p((*ff)->text().rfind('/'));
             if (std::string::npos == p)
-                archives.append((*ff)->text());
+            {
+                if (already_in_archives.end() == already_in_archives.find((*ff)->text()))
+                {
+                    archives.append((*ff)->text());
+                    already_in_archives.insert((*ff)->text());
+                }
+            }
             else
-                archives.append((*ff)->text().substr(p + 1));
+            {
+                if (already_in_archives.end() == already_in_archives.find((*ff)->text().substr(p + 1)))
+                {
+                    archives.append((*ff)->text().substr(p + 1));
+                    already_in_archives.insert((*ff)->text().substr(p + 1));
+                }
+            }
             archives.append(" ");
 
             if (0 == (*ff)->text().compare(0, 9, "mirror://"))
