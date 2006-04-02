@@ -23,8 +23,8 @@ builtin_tidyup()
         rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" || die "Couldn't remove work"
     fi
 
-    echo ldconfig -r "${ROOT:-/}"
-    ldconfig -r "${ROOT:-/}" || die "ldconfig failed"
+    echo eselect env update
+    eselect env update || die "eselect env update failed"
 }
 
 ebuild_f_tidyup()
