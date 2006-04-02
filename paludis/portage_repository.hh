@@ -99,7 +99,8 @@ namespace paludis
             PortageRepository(const Environment * const env,
                     const PackageDatabase * const db,
                     const FSEntry & location, const FSEntry & profile,
-                    const FSEntry & cache);
+                    const FSEntry & cache, const FSEntry & distdir,
+                    const FSEntry & eclassdir);
 
             /**
              * Virtual constructor.

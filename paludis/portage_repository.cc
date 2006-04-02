@@ -96,6 +96,12 @@ namespace paludis
         /// Our cache.
         FSEntry cache;
 
+        /// Eclass dir
+        FSEntry eclassdir;
+
+        /// Distfiles dir
+        FSEntry distdir;
+
         /// Have we loaded our category names?
         mutable bool has_category_names;
 
@@ -148,7 +154,7 @@ namespace paludis
         /// Constructor.
         Implementation(const Environment * const,
                 const PackageDatabase * const d, const FSEntry & l, const FSEntry & p,
-                const FSEntry & c);
+                const FSEntry & c, const FSEntry &, const FSEntry &);
 
         /// Destructor.
         ~Implementation();
@@ -160,12 +166,15 @@ namespace paludis
 
 Implementation<PortageRepository>::Implementation(const Environment * const env,
         const PackageDatabase * const d,
-        const FSEntry & l, const FSEntry & p, const FSEntry & c) :
+        const FSEntry & l, const FSEntry & p, const FSEntry & c,
+        const FSEntry & e, const FSEntry & dd) :
     db(d),
     env(env),
     location(l),
     profile(p),
     cache(c),
+    eclassdir(e),
+    distdir(dd),
     has_category_names(false),
     has_repo_mask(false),
     has_profile(false),
@@ -262,14 +271,17 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 PortageRepository::PortageRepository(
         const Environment * const e, const PackageDatabase * const d,
         const FSEntry & location, const FSEntry & profile,
-        const FSEntry & cache) :
+        const FSEntry & cache, const FSEntry & eclassdir,
+        const FSEntry & distdir) :
     Repository(PortageRepository::fetch_repo_name(location)),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(e,
-                d, location, profile, cache))
+                d, location, profile, cache, eclassdir, distdir))
 {
     _info.insert(std::make_pair(std::string("location"), location));
     _info.insert(std::make_pair(std::string("profile"), profile));
     _info.insert(std::make_pair(std::string("cache"), cache));
+    _info.insert(std::make_pair(std::string("eclassdir"), eclassdir));
+    _info.insert(std::make_pair(std::string("distdir"), distdir));
     _info.insert(std::make_pair(std::string("format"), std::string("portage")));
 }
 
@@ -656,9 +668,9 @@ PortageRepository::do_version_metadata(
                 ("CATEGORY", stringify(c))
                 ("FILESDIR", stringify(_imp->location) + "/" + stringify(c) + "/" +
                     stringify(p) + "/files/")
-                ("ECLASSDIR", stringify(_imp->location) + "/eclass/")
+                ("ECLASSDIR", stringify(_imp->eclassdir))
                 ("PORTDIR", stringify(_imp->location) + "/")
-                ("DISTDIR", stringify(_imp->location) + "/distfiles/")
+                ("DISTDIR", stringify(_imp->distdir))
                 ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
                 ("KV", kernel_version())
                 ("PALUDIS_EBUILD_LOG_LEVEL", log_level_string())
@@ -810,11 +822,20 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("profile") || ((profile = m.find("profile")->second)).empty())
         throw PortageRepositoryConfigurationError("Key 'profile' not specified or empty");
 
+    std::string eclassdir;
+    if (m.end() == m.find("eclassdir") || ((eclassdir = m.find("eclassdir")->second)).empty())
+        eclassdir = location + "/eclass";
+
+    std::string distdir;
+    if (m.end() == m.find("distdir") || ((distdir = m.find("distdir")->second)).empty())
+        distdir = location + "/distfiles";
+
     std::string cache;
     if (m.end() == m.find("cache") || ((cache = m.find("cache")->second)).empty())
         cache = location + "/metadata/cache";
 
-    return CountedPtr<Repository>(new PortageRepository(env, db, location, profile, cache));
+    return CountedPtr<Repository>(new PortageRepository(env, db, location, profile, cache,
+                eclassdir, distdir));
 }
 
 PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
