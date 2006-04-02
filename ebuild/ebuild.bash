@@ -30,7 +30,7 @@ shopt -s expand_aliases
 EBUILD_KILL_PID=$$
 alias die='diefunc "$FUNCNAME" "$LINENO"'
 alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "$FUNCNAME" "$LINENO" "$_pipestatus"'
-trap 'echo "die trap: exiting with error." ; exit 250' 15
+trap 'echo "die trap: exiting with error." 1>&2 ; exit 250' 15
 
 diefunc()
 {
