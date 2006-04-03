@@ -161,7 +161,7 @@ namespace paludis
         /// Profile env vars.
         mutable ProfileEnvMap profile_env;
 
-        /// Sustem packages.
+        /// System packages.
         mutable AllDepAtom::Pointer system_packages;
 
         /// Constructor.
