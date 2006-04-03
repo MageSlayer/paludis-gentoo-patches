@@ -386,26 +386,27 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
     if (_imp->category_names.end() == _imp->category_names.find(c))
         return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection);
 
-    for (DirIterator d(_imp->location / stringify(c)), d_end ; d != d_end ; ++d)
-    {
-        if (! d->is_directory())
-            continue;
-        if (DirIterator() == std::find_if(DirIterator(*d), DirIterator(),
-                    IsFileWithExtension(".ebuild")))
-            continue;
+    if ((_imp->location / stringify(c)).is_directory())
+        for (DirIterator d(_imp->location / stringify(c)), d_end ; d != d_end ; ++d)
+        {
+            if (! d->is_directory())
+                continue;
+            if (DirIterator() == std::find_if(DirIterator(*d), DirIterator(),
+                        IsFileWithExtension(".ebuild")))
+                continue;
 
-        try
-        {
-            _imp->package_names.insert(std::make_pair(
-                        QualifiedPackageName(c, PackageNamePart(d->basename())), false));
+            try
+            {
+                _imp->package_names.insert(std::make_pair(
+                            QualifiedPackageName(c, PackageNamePart(d->basename())), false));
+            }
+            catch (const NameError &)
+            {
+                Log::get_instance()->message(ll_warning, "Skipping entry '" +
+                        d->basename() + "' in category '" + stringify(c) + "' in repository '"
+                        + stringify(name()) + "'");
+            }
         }
-        catch (const NameError &)
-        {
-            Log::get_instance()->message(ll_warning, "Skipping entry '" +
-                    d->basename() + "' in category '" + stringify(c) + "' in repository '"
-                    + stringify(name()) + "'");
-        }
-    }
 
     _imp->category_names[c] = true;
 
