@@ -64,12 +64,18 @@ namespace paludis
                 /**
                  * Internal use: called when we cannot find a key.
                  */
-                ValueType_ handle_not_found(const KeyType_ & k) const
-                {
-                    throw ExceptionType_(k);
-                }
+                ValueType_ handle_not_found(const KeyType_ & k) const PALUDIS_ATTRIBUTE((noreturn));
             };
         };
+
+        template <typename ExceptionType_>
+        template <typename KeyType_, typename ValueType_>
+        ValueType_
+        ThrowException<ExceptionType_>::Parent<KeyType_, ValueType_>::handle_not_found(
+                const KeyType_ & k) const
+        {
+            throw ExceptionType_(k);
+        }
     }
 
     /**

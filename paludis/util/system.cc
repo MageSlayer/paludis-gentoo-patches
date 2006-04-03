@@ -70,7 +70,6 @@ int
 paludis::run_command(const std::string & cmd)
 {
     pid_t child(fork());
-    int status(-1);
     if (0 == child)
     {
         Log::get_instance()->message(ll_debug, "execl /bin/sh -c " + cmd);
@@ -78,15 +77,16 @@ paludis::run_command(const std::string & cmd)
         throw InternalError(PALUDIS_HERE, "execl failed"); /// \todo fixme
     }
     else if (-1 == child)
-    {
         throw InternalError(PALUDIS_HERE, "fork failed"); /// \todo fixme
-    }
     else
     {
+        int status(-1);
         if (-1 == wait(&status))
             throw InternalError(PALUDIS_HERE, "wait failed"); /// \todo fixme
+        return status;
     }
-    return status;
+
+    throw InternalError(PALUDIS_HERE, "should never be reached");
 }
 
 system_internals::MakeEnvCommand::MakeEnvCommand(const std::string & c,
