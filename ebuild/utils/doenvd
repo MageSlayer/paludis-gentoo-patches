@@ -26,5 +26,5 @@ if [[ ${#} -lt 1 ]]; then
     exit 1
 fi
 
-export INSTDESTTREE=/etc/env.d/
+export INSDESTTREE=/etc/env.d/
 doins "$@"
