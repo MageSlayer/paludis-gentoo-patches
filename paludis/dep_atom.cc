@@ -175,7 +175,7 @@ paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
     }
 
     if (a.slot_ptr())
-        s << *a.slot_ptr();
+        s << ":" << *a.slot_ptr();
     return s;
 }
 

@@ -98,10 +98,22 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
-            DepParser::parse(">=app-editors/vim-6.4_alpha")->accept(&d);
-            TEST_CHECK_EQUAL(s.str(), "<all><package version=\">=6.4_alpha\">"
+            std::stringstream s1;
+            DepAtomDumper d1(&s1);
+            DepParser::parse(">=app-editors/vim-6.4_alpha")->accept(&d1);
+            TEST_CHECK_EQUAL(s1.str(), "<all><package version=\">=6.4_alpha\">"
+                    "app-editors/vim</package></all>");
+
+            std::stringstream s2;
+            DepAtomDumper d2(&s2);
+            DepParser::parse("=app-editors/vim-6.4_alpha-r1")->accept(&d2);
+            TEST_CHECK_EQUAL(s2.str(), "<all><package version=\"=6.4_alpha-r1\">"
+                    "app-editors/vim</package></all>");
+
+            std::stringstream s3;
+            DepAtomDumper d3(&s3);
+            DepParser::parse(">=app-editors/vim-6.4_alpha:one")->accept(&d3);
+            TEST_CHECK_EQUAL(s3.str(), "<all><package slot=\"one\" version=\">=6.4_alpha\">"
                     "app-editors/vim</package></all>");
         }
     } test_dep_atom_parser_decorated_package;
