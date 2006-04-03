@@ -23,6 +23,7 @@ builtin_tidyup()
         rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" || die "Couldn't remove work"
     fi
 
+    cd "${PALUDIS_TMPDIR}"
     echo eselect env update
     eselect env update || die "eselect env update failed"
 }
