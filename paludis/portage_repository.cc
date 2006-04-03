@@ -49,6 +49,7 @@
 #include <iostream>
 
 #include <strings.h>
+#include <ctype.h>
 
 using namespace paludis;
 
@@ -71,6 +72,8 @@ typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
 typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
 
 typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
+
+typedef MakeHashedMap<std::string, std::string>::Type ProfileEnvMap;
 
 namespace paludis
 {
@@ -140,7 +143,7 @@ namespace paludis
         /// Arch flags
         mutable UseFlagSet arch_list;
 
-        /// Arch flags
+        /// Expand flags
         mutable UseFlagSet expand_list;
 
         /// Do we have arch_list?
@@ -149,7 +152,11 @@ namespace paludis
         /// Do we have mirrors?
         mutable bool has_mirrors;
 
+        /// Mirrors.
         mutable MirrorMap mirrors;
+
+        /// Profile env vars.
+        mutable ProfileEnvMap profile_env;
 
         /// Constructor.
         Implementation(const Environment * const,
@@ -234,6 +241,10 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 
         tokeniser.tokenise(make_defaults_f.get("USE_EXPAND"), create_inserter<UseFlagName>(
                     std::inserter(expand_list, expand_list.begin())));
+
+        for (KeyValueConfigFile::Iterator k(make_defaults_f.begin()),
+                k_end(make_defaults_f.end()) ; k != k_end ; ++k)
+            profile_env[k->first] = k->second;
     }
 
     if ((f / "use.mask").exists())
@@ -1024,8 +1035,23 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         if (_imp->env->query_use(*iuse_it, &e))
             use += (*iuse_it).data() + " ";
     }
-    /// \todo add ARCH and USE_EXPAND
 
+    use += _imp->profile_env["ARCH"] + " ";
+    for (UseFlagSet::const_iterator x(_imp->expand_list.begin()),
+            x_end(_imp->expand_list.end()) ; x != x_end ; ++x)
+    {
+        static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+        std::list<std::string> uses;
+        tokeniser.tokenise(_imp->profile_env[stringify(*x)], std::back_inserter(uses));
+        for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
+                u != u_end ; ++u)
+        {
+            std::string lower_x;
+            std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
+                    &::tolower);
+            use += lower_x + "_" + *u + " ";
+        }
+    }
 
     std::string cmd(make_env_command(
                 getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
