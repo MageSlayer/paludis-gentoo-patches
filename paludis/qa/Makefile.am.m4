@@ -13,9 +13,9 @@ $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludisqa.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la
+	libpaludisqa.a \
+	$(top_builddir)/paludis/libpaludis.a \
+	$(top_builddir)/paludis/util/libpaludisutil.a
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
@@ -33,9 +33,7 @@ addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 
 include(`paludis/qa/files.m4')
 
-libpaludisqa_la_SOURCES = filelist
-libpaludisqa_la_LIBADD = $(top_builddir)/paludis/libpaludis.la
-libpaludisqa_la_LDFLAGS = -version-info 0:0:0
+libpaludisqa_a_SOURCES = filelist
 
 TESTS = testlist
 
@@ -46,7 +44,7 @@ TESTS_ENVIRONMENT = env \
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
-lib_LTLIBRARIES = libpaludisqa.la
+noinst_LIBRARIES = libpaludisqa.a
 
 endif
 

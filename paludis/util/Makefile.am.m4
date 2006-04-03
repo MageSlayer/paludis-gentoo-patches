@@ -8,7 +8,7 @@ define(`testlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
-$1_TEST_LDADD = test_extras.o $(top_builddir)/test/libtest.a libpaludisutil.la
+$1_TEST_LDADD = test_extras.o $(top_builddir)/test/libtest.a libpaludisutil.a
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
@@ -35,8 +35,7 @@ EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 smart_record.hh.m4 \
 	comparison_policy.hh.m4 testscriptlist test_extras.cc
 SUBDIRS = .
 
-libpaludisutil_la_SOURCES = filelist
-libpaludisutil_la_LDFLAGS = -version-info 0:0:0
+libpaludisutil_a_SOURCES = filelist
 
 TESTS = testlist
 
@@ -47,7 +46,7 @@ TESTS_ENVIRONMENT = env \
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
-lib_LTLIBRARIES = libpaludisutil.la
+noinst_LIBRARIES = libpaludisutil.a
 
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am
