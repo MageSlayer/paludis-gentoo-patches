@@ -333,6 +333,11 @@ DepList::visit(const PackageDepAtom * const p)
                 else if (_imp->drop_circular)
                     return;
 
+                else if (_imp->current_package && _imp->drop_self_circular &&
+                        match_package(_imp->environment->package_database(), p,
+                            _imp->current_package))
+                    return;
+
                 else
                     throw CircularDependencyError(i, next(i));
             }
