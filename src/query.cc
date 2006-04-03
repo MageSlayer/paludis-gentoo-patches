@@ -44,7 +44,8 @@ void do_one_query(
                     p::PackageNamePart(q))) :
             new p::PackageDepAtom(q));
 
-    p::PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(atom));
+    p::PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
+                atom, p::is_either));
     if (entries->empty())
         throw p::NoSuchPackageError(q);
 

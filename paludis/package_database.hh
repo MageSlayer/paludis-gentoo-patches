@@ -184,6 +184,16 @@ namespace paludis
     };
 
     /**
+     * Do we want installed, uninstalled or either?
+     */
+    enum InstallState
+    {
+        is_installed_only,    ///< Installed only
+        is_uninstalled_only,  ///< Uninstalled only
+        is_either             ///< Either
+    };
+
+    /**
      * A PackageDatabase can be queried for Package instances.
      */
     class PackageDatabase :
@@ -193,7 +203,7 @@ namespace paludis
     {
         private:
             PackageDatabaseEntryCollection::Pointer _do_query(
-                    const PackageDepAtom * const a, bool installed_only) const;
+                    const PackageDepAtom * const a, const InstallState) const;
 
         public:
             /**
@@ -242,26 +252,15 @@ namespace paludis
              * Query the repository.
              */
             PackageDatabaseEntryCollection::Pointer query(
-                    const PackageDepAtom * const a) const;
+                    const PackageDepAtom * const a,
+                    const InstallState) const;
 
             /**
              * Query the repository (overload for a CountedPtr)
              */
             PackageDatabaseEntryCollection::Pointer query(
-                    PackageDepAtom::ConstPointer a) const;
-
-            /**
-             * Query the repository, installed packages only.
-             */
-            PackageDatabaseEntryCollection::Pointer query_installed(
-                    const PackageDepAtom * const a) const;
-
-            /**
-             * Query the repository (overload for a CountedPtr), installed
-             * packages only.
-             */
-            PackageDatabaseEntryCollection::Pointer query_installed(
-                    PackageDepAtom::ConstPointer a) const;
+                    PackageDepAtom::ConstPointer a,
+                    const InstallState) const;
 
             /**
              * Which repository is better?

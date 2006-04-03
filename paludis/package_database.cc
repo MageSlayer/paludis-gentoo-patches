@@ -160,7 +160,7 @@ PackageDatabase::fetch_unique_qualified_package_name(
 }
 
 PackageDatabaseEntryCollection::Pointer
-PackageDatabase::_do_query(const PackageDepAtom * const a, bool installed_only) const
+PackageDatabase::_do_query(const PackageDepAtom * const a, const InstallState installed_state) const
 {
     PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection);
 
@@ -169,7 +169,10 @@ PackageDatabase::_do_query(const PackageDepAtom * const a, bool installed_only) 
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
     {
-        if (installed_only && ! r->installed())
+        if ((installed_state == is_installed_only) && ! r->installed())
+            continue;
+
+        if ((installed_state == is_uninstalled_only) && r->installed())
             continue;
 
         if (! r->has_category_named(a->package().get<qpn_category>()))
@@ -194,15 +197,9 @@ PackageDatabase::_do_query(const PackageDepAtom * const a, bool installed_only) 
 }
 
 PackageDatabaseEntryCollection::Pointer
-PackageDatabase::query(const PackageDepAtom * const a) const
+PackageDatabase::query(const PackageDepAtom * const a, const InstallState s) const
 {
-    return _do_query(a, false);
-}
-
-PackageDatabaseEntryCollection::Pointer
-PackageDatabase::query_installed(const PackageDepAtom * const a) const
-{
-    return _do_query(a, true);
+    return _do_query(a, s);
 }
 
 const RepositoryName &
@@ -233,15 +230,9 @@ PackageDatabase::favourite_repository() const
 }
 
 PackageDatabaseEntryCollection::Pointer
-PackageDatabase::query(PackageDepAtom::ConstPointer a) const
+PackageDatabase::query(PackageDepAtom::ConstPointer a, const InstallState s) const
 {
-    return query(a.raw_pointer());
-}
-
-PackageDatabaseEntryCollection::Pointer
-PackageDatabase::query_installed(PackageDepAtom::ConstPointer a) const
-{
-    return query_installed(a.raw_pointer());
+    return _do_query(a.raw_pointer(), s);
 }
 
 PackageDatabase::RepositoryIterator
