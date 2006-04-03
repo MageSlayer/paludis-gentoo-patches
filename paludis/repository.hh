@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_HH 1
 
 #include <paludis/name.hh>
-#include <paludis/use_flag_state.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>

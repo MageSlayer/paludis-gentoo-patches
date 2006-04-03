@@ -387,6 +387,15 @@ namespace paludis
      */
     typedef Validated<std::string, KeywordNameValidator> KeywordName;
 
+    /**
+     * A USE flag can be on, off or unspecified.
+     */
+    enum UseFlagState
+    {
+        use_unspecified,     /// unspecified
+        use_disabled,        /// disabled
+        use_enabled          /// enabled
+    };
 }
 
 #endif

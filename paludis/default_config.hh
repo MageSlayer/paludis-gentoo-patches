@@ -22,7 +22,6 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/name.hh>
-#include <paludis/use_flag_state.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator.hh>
