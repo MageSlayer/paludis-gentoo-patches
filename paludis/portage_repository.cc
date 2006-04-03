@@ -134,6 +134,9 @@ namespace paludis
         /// Use.
         mutable UseMap use;
 
+        /// Have virtual names?
+        mutable bool has_virtuals;
+
         /// Old style virtuals name mapping.
         mutable VirtualsMap virtuals_map;
 
@@ -157,6 +160,9 @@ namespace paludis
 
         /// Profile env vars.
         mutable ProfileEnvMap profile_env;
+
+        /// Sustem packages.
+        mutable AllDepAtom::Pointer system_packages;
 
         /// Constructor.
         Implementation(const Environment * const,
@@ -184,9 +190,11 @@ Implementation<PortageRepository>::Implementation(const Environment * const env,
     distdir(dd),
     has_category_names(false),
     has_repo_mask(false),
+    has_virtuals(false),
     has_profile(false),
     has_arch_list(false),
-    has_mirrors(false)
+    has_mirrors(false),
+    system_packages(new AllDepAtom)
 {
 }
 
@@ -275,6 +283,23 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
             virtuals_map.erase(QualifiedPackageName(tokens[0]));
             virtuals_map.insert(std::make_pair(QualifiedPackageName(tokens[0]),
                         PackageDepAtom::Pointer(new PackageDepAtom(tokens[1]))));
+        }
+    }
+
+    if ((f / "packages").exists())
+    {
+        Context context_local("When reading packages file:");
+
+        LineConfigFile virtuals_f(f / "packages");
+        for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
+                line != line_end ; ++line)
+        {
+            if (line->empty() || '*' != line->at(0))
+                continue;
+
+            Context context_line("When parsing line '" + *line + "':");
+            system_packages->add_child(PackageDepAtom::Pointer(new PackageDepAtom(
+                            line->substr(1))));
         }
     }
 }
@@ -803,18 +828,24 @@ PortageRepository::do_query_use_mask(const UseFlagName & u) const
 void
 PortageRepository::need_virtual_names() const
 {
+    if (_imp->has_virtuals)
+        return;
+
     if (! _imp->has_profile)
     {
         Context context("When loading virtual names:");
         _imp->add_profile(_imp->profile.realpath());
         _imp->has_profile = true;
-
-        for (VirtualsMap::const_iterator
-                v(_imp->virtuals_map.begin()), v_end(_imp->virtuals_map.end()) ;
-                v != v_end ; ++v)
-            _imp->package_names.insert(
-                    std::make_pair(v->first, false));
     }
+
+    need_category_names();
+
+    for (VirtualsMap::const_iterator
+            v(_imp->virtuals_map.begin()), v_end(_imp->virtuals_map.end()) ;
+            v != v_end ; ++v)
+        _imp->package_names.insert(std::make_pair(v->first, false));
+
+    _imp->has_virtuals = true;
 }
 
 CountedPtr<Repository>
@@ -942,6 +973,12 @@ PortageRepository::do_is_mirror(const std::string & s) const
 void
 PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v) const
 {
+    if (! _imp->has_profile)
+    {
+        _imp->add_profile(_imp->profile.realpath());
+        _imp->has_profile = true;
+    }
+
     VersionMetadata::ConstPointer metadata(0);
     if (! has_version(q, v))
     {
@@ -1085,5 +1122,18 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 
     if (0 != run_command(cmd))
         throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
+}
+
+DepAtom::Pointer
+PortageRepository::do_system_packages() const
+{
+    if (! _imp->has_profile)
+    {
+        Context c("When loading system packages list:");
+        _imp->add_profile(_imp->profile.realpath());
+        _imp->has_profile = true;
+    }
+
+    return _imp->system_packages;
 }
 

@@ -46,18 +46,36 @@ do_install()
 
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());
+
+    bool had_set_targets(false), had_pkg_targets(false);
     for ( ; q != q_end ; ++q)
     {
-        /* we might have a dep atom, but we might just have a simple package name
-         * without a category. either should work. also allow full atoms, to make
-         * it easy to test things like '|| ( foo/bar foo/baz )'. */
-        if (std::string::npos != q->find('/'))
-            targets->add_child(p::DepParser::parse(*q));
+        if (*q == "system")
+        {
+            had_set_targets = true;
+
+            for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
+                    r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+                targets->add_child((*r)->system_packages());
+        }
         else
-            targets->add_child(p::DepAtom::Pointer(new p::PackageDepAtom(
-                            env->package_database()->fetch_unique_qualified_package_name(
-                                p::PackageNamePart(*q)))));
+        {
+            had_pkg_targets = true;
+
+            /* we might have a dep atom, but we might just have a simple package name
+             * without a category. either should work. also allow full atoms, to make
+             * it easy to test things like '|| ( foo/bar foo/baz )'. */
+            if (std::string::npos != q->find('/'))
+                targets->add_child(p::DepParser::parse(*q));
+            else
+                targets->add_child(p::DepAtom::Pointer(new p::PackageDepAtom(
+                                env->package_database()->fetch_unique_qualified_package_name(
+                                    p::PackageNamePart(*q)))));
+        }
     }
+
+    if (had_set_targets && had_pkg_targets)
+        throw DoHelp("You should not specify set and package targets at the same time.");
 
     p::DepList dep_list(env);
     dep_list.set_drop_self_circular(CommandLine::get_instance()->a_dl_drop_self_circular.specified());
@@ -121,7 +139,7 @@ do_install()
             return return_code;
 
         int current_count = 0, max_count = std::distance(dep_list.begin(), dep_list.end());
-        
+
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
         {

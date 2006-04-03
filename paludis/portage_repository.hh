@@ -92,6 +92,8 @@ namespace paludis
 
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &) const;
 
+            virtual DepAtom::Pointer do_system_packages() const;
+
         public:
             /**
              * Constructor.

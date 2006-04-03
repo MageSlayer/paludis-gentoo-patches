@@ -38,21 +38,9 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-#ifndef DOXYGEN
-struct DoHelp
-{
-    const std::string message;
-
-    DoHelp(const std::string & m = "") :
-        message(m)
-    {
-    }
-};
-
 struct DoVersion
 {
 };
-#endif
 
 int
 main(int argc, char *argv[])

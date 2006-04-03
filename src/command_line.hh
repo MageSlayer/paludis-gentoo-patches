@@ -160,4 +160,14 @@ class CommandLine :
         /// }
 };
 
+struct DoHelp
+{
+    const std::string message;
+
+    DoHelp(const std::string & m = "") :
+        message(m)
+    {
+    }
+};
+
 #endif

@@ -461,3 +461,11 @@ VDBRepository::do_install(const QualifiedPackageName &, const VersionSpec &) con
     throw InternalError(PALUDIS_HERE, "TODO");
 }
 
+DepAtom::Pointer
+VDBRepository::do_system_packages() const
+{
+    AllDepAtom::Pointer result(new AllDepAtom);
+
+    return result;
+}
+

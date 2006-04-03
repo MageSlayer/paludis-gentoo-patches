@@ -215,3 +215,12 @@ void
 FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &) const
 {
 }
+
+DepAtom::Pointer
+FakeRepository::do_system_packages() const
+{
+    AllDepAtom::Pointer result(new AllDepAtom);
+
+    return result;
+}
+

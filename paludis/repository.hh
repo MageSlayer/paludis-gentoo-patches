@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_HH 1
 
+#include <paludis/dep_atom.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/counted_ptr.hh>
@@ -151,6 +152,11 @@ namespace paludis
              * Override in descendents: install.
              */
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &) const = 0;
+
+            /**
+             * Override in descendents: system package list.
+             */
+            virtual DepAtom::Pointer do_system_packages() const = 0;
 
         public:
             /**
@@ -381,6 +387,14 @@ namespace paludis
              * No NVI indirection here, it's not worth it.
              */
             virtual bool installed() const = 0;
+
+            /**
+             * Fetch our system packages list.
+             */
+            virtual DepAtom::Pointer system_packages() const
+            {
+                return do_system_packages();
+            }
     };
 
     /**
