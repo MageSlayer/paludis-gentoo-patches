@@ -65,6 +65,12 @@ class CommandLine :
         /// --list-packages
         paludis::args::SwitchArg a_list_packages;
 
+        /// --has-version
+        paludis::args::SwitchArg a_has_version;
+
+        /// --best-version
+        paludis::args::SwitchArg a_best_version;
+
         /// --version
         paludis::args::SwitchArg a_version;
 

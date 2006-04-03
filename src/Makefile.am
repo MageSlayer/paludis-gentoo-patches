@@ -10,6 +10,7 @@ SUBDIRS = . qualudis
 bin_PROGRAMS = paludis
 
 paludis_SOURCES = \
+	applets.hh           applets.cc           \
 	command_line.hh      command_line.cc      \
 	colour.hh            colour.cc            \
 	install.hh           install.cc           \

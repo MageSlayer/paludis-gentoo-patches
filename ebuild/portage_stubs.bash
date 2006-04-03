@@ -23,18 +23,26 @@
 
 has_version()
 {
-#    die "has_version not implemented"
-    false
+    # \todo Don't hardcode paludis, config dirs etc
+    paludis --has-version "$@"
 }
 
 portageq()
 {
+    # \todo Make this suck less...
     if [[ "$1" == "has_version" ]] ; then
         if [[ "$2" != "$ROOT" ]] ; then
             die "portageq has_version emulation only works on current ROOT"
         else
             shift ; shift
             has_version "$@"
+        fi
+    elif [[ "$1" == "best_version" ]] ; then
+        if [[ "$2" != "$ROOT" ]] ; then
+            die "portageq best_version emulation only works on current ROOT"
+        else
+            shift ; shift
+            best_version "$@"
         fi
     else
         die "portageq emulation for $1 not implemented"
@@ -43,7 +51,8 @@ portageq()
 
 best_version()
 {
-    die "best_version not implemented"
+    # \todo Don't hardcode paludis, config dirs etc
+    paludis --best-version "$@"
 }
 
 check_KV()

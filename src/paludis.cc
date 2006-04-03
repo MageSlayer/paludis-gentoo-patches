@@ -21,6 +21,7 @@
 #include "src/install.hh"
 #include "src/list.hh"
 #include "src/query.hh"
+#include "src/applets.hh"
 #include <paludis/paludis.hh>
 #include <paludis/util/util.hh>
 
@@ -86,7 +87,9 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_install.specified() +
                     CommandLine::get_instance()->a_list_repositories.specified() +
                     CommandLine::get_instance()->a_list_categories.specified() +
-                    CommandLine::get_instance()->a_list_packages.specified()))
+                    CommandLine::get_instance()->a_list_packages.specified() +
+                    CommandLine::get_instance()->a_has_version.specified() +
+                    CommandLine::get_instance()->a_best_version.specified()))
             throw DoHelp("you should specify exactly one action");
 
         if (CommandLine::get_instance()->a_version.specified())
@@ -130,6 +133,24 @@ main(int argc, char *argv[])
                 throw DoHelp("list-packages action takes no parameters");
 
             return do_list_packages();
+        }
+
+        if (CommandLine::get_instance()->a_has_version.specified())
+        {
+            if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters()))
+                throw DoHelp("has-version action takes exactly one parameter");
+
+            return do_has_version();
+        }
+
+        if (CommandLine::get_instance()->a_best_version.specified())
+        {
+            if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters()))
+                throw DoHelp("best-version action takes exactly one parameter");
+
+            return do_best_version();
         }
 
         throw p::InternalError(__PRETTY_FUNCTION__, "no action?");
