@@ -18,8 +18,8 @@ qualudis_SOURCES = \
 qualudis_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.a \
 	$(top_builddir)/paludis/qa/libpaludisqa.a \
-	$(top_builddir)/paludis/util/libpaludisutil.a \
-	$(top_builddir)/paludis/libpaludis.a
+	$(top_builddir)/paludis/libpaludis.a \
+	$(top_builddir)/paludis/util/libpaludisutil.a
 
 TESTS_ENVIRONMENT = env TEST_SCRIPT_DIR="$(srcdir)/" $(SHELL) $(top_srcdir)/test/run_test.sh bash
 TESTS = version_TEST
