@@ -54,7 +54,8 @@ do_install()
         {
             had_set_targets = true;
 
-            for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
+            for (p::PackageDatabase::RepositoryIterator r(
+                        env->package_database()->begin_repositories()),
                     r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
                 targets->add_child((*r)->system_packages());
         }
@@ -114,7 +115,8 @@ do_install()
 
             /* display slot name, unless it's 0 */
             if ("0" != dep->get<p::dle_metadata>()->get(p::vmk_slot))
-                cout << colour(cl_slot, " {:" + p::stringify(dep->get<p::dle_metadata>()->get(p::vmk_slot)) + "}");
+                cout << colour(cl_slot, " {:" + p::stringify(
+                            dep->get<p::dle_metadata>()->get(p::vmk_slot)) + "}");
 
             /* fetch db entry */
             p::PackageDatabaseEntry p(p::PackageDatabaseEntry(dep->get<p::dle_name>(),
@@ -126,7 +128,8 @@ do_install()
             {
                 if (env->query_use(*i, &p))
                     cout << " " << colour(cl_flag_on, *i);
-                else if (env->package_database()->fetch_repository(dep->get<p::dle_repository>())->query_use_mask(*i))
+                else if (env->package_database()->fetch_repository(
+                            dep->get<p::dle_repository>())->query_use_mask(*i))
                     cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");
                 else
                     cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));
@@ -146,13 +149,15 @@ do_install()
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
         {
-            std::string cpv = p::stringify(dep->get<p::dle_name>()) + "-" + p::stringify(dep->get<p::dle_version>());
+            std::string cpv = p::stringify(dep->get<p::dle_name>()) + "-" +
+                p::stringify(dep->get<p::dle_version>());
 
             cout << endl << colour(cl_heading,
                     "Installing " + cpv) << endl << endl;
 
             // TODO: some way to reset this properly would be nice.
-            cerr << xterm_title("(" + p::stringify(++current_count) + " of " + p::stringify(max_count) + ") Installing " + cpv);
+            cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
+                    p::stringify(max_count) + ") Installing " + cpv);
 
 
             env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
