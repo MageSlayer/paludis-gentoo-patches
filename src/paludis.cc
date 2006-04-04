@@ -80,7 +80,28 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_list_packages.specified() +
                     CommandLine::get_instance()->a_has_version.specified() +
                     CommandLine::get_instance()->a_best_version.specified()))
-            throw DoHelp("you should specify exactly one action");
+        {
+            if ((1 == std::distance(CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters())) &&
+                    ("moo" == *CommandLine::get_instance()->begin_parameters()))
+            {
+                cout << endl;
+                cout << " ______________________________________" << endl;
+                cout << "( Why do people keep doing this to me? )" << endl;
+                cout << " -------------------------------------- " << endl;
+                cout << "    o" << endl;
+                cout << "     o" << endl;
+                cout << "    ^__^         /" << endl;
+                cout << "    (oo)\\_______/  _________" << endl;
+                cout << "    (__)\\       )=(  ____|_ \\_____" << endl;
+                cout << "        ||----w |  \\ \\     \\_____ |" << endl;
+                cout << "        ||     ||   ||           ||" << endl;
+                cout << endl;
+                return EXIT_SUCCESS;
+            }
+            else
+                throw DoHelp("you should specify exactly one action");
+        }
 
         if (CommandLine::get_instance()->a_version.specified())
             throw DoVersion();
