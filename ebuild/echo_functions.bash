@@ -74,8 +74,8 @@ ebuild_notice()
     local min_level_num=$(ebuild_notice_level "${PALUDIS_EBUILD_LOG_LEVEL}" )
 
     if [[ "${level_num}" -ge "${min_level_num}" ]] ; then
-        local upper_level=$(echo ${level} | ${ebuild_real_tr} '[:lower:]' '[:upper:]' )
-        echo "[${upper_level}.EBUILD] $* (from ${EBUILD})" 1>&2
+        local upper_level=$(echo ${level} | ${ebuild_real_tr:-tr} '[:lower:]' '[:upper:]' )
+        echo "[${upper_level}.EBUILD] $* (from ${EBUILD:-?})" 1>&2
     fi
     true
 }

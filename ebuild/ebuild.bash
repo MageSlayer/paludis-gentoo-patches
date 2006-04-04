@@ -50,20 +50,6 @@ EBUILD_MODULES_DIR=$(readlink -f $(dirname $0 ) )
 [[ -d ${EBUILD_MODULES_DIR} ]] || die "${EBUILD_MODULES_DIR} is not a directory"
 export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
 
-save_vars()
-{
-    for var in "$@"; do
-        eval "saved_${var}='${!var}'"
-    done
-}
-
-restore_vars()
-{
-    for var in "$@"; do
-        eval "${var}='\${saved_${var}}'"
-    done
-}
-
 ebuild_source_profile()
 {
     if [[ -f ${1}/make.defaults ]] ; then
@@ -79,14 +65,15 @@ ebuild_source_profile()
     fi
 }
 
-_saved_vars="USE USE_EXPAND"
+save_vars="USE USE_EXPAND"
 
-save_vars ${_saved_vars}
-source /sbin/functions.sh || die "Couldn't source functions.sh"
+for var in ${save_vars} ; do
+    eval "export save_var_${var}='${!var}'"
+done
 
 ebuild_source_profile $(readlink -f "${PALUDIS_PROFILE_DIR}")
 
-unset ${_saved_vars}
+unset ${save_vars}
 
 if [[ -r ${PALUDIS_CONFIG_DIR}/bashrc ]]; then
     source ${PALUDIS_CONFIG_DIR}/bashrc
@@ -100,23 +87,26 @@ if [[ -r ${HOME}/.paludis/bashrc ]]; then
     source ${HOME}/.paludis/bashrc
 fi
 
-for var in ${_saved_vars}; do
+for var in ${save_vars}; do
     if [[ -n ${!var} ]]; then
         die "${var} should not be set in bashrc. Aborting."
     fi
 done
-restore_vars ${_saved_vars}
 
+for var in ${save_vars} ; do
+    eval "export ${var}=\${save_var_${var}}"
+done
 
 ebuild_load_module()
 {
     source "${EBUILD_MODULES_DIR}/${1}.bash" || die "Error loading module ${1}"
 }
 
+source /sbin/functions.sh || die "Couldn't source functions.sh"
+ebuild_load_module echo_functions
 ebuild_load_module sandbox_stubs
 ebuild_load_module portage_stubs
 ebuild_load_module list_functions
-ebuild_load_module echo_functions
 ebuild_load_module multilib_functions
 ebuild_load_module install_functions
 ebuild_load_module build_functions
