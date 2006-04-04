@@ -91,6 +91,9 @@ unset ${_saved_vars}
 if [[ -r ${PALUDIS_CONFIG_DIR}/bashrc ]]; then
     source ${PALUDIS_CONFIG_DIR}/bashrc
 fi
+if [[ -r ${ROOT}/${PALUDIS_CONFIG_DIR}/bashrc ]]; then
+    source ${ROOT}/${PALUDIS_CONFIG_DIR}/bashrc
+fi
 if [[ -r ${HOME}/.paludis/bashrc ]]; then
     source ${HOME}/.paludis/bashrc
 fi
