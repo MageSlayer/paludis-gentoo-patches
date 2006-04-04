@@ -56,6 +56,9 @@ class CommandLine :
         /// --install
         paludis::args::SwitchArg a_install;
 
+        /// --sync
+        paludis::args::SwitchArg a_sync;
+
         /// --list-repositories
         paludis::args::SwitchArg a_list_repositories;
 

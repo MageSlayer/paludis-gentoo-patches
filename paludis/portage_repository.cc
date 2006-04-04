@@ -105,6 +105,9 @@ namespace paludis
         /// Distfiles dir
         FSEntry distdir;
 
+        /// Sync URL
+        std::string sync;
+
         /// Have we loaded our category names?
         mutable bool has_category_names;
 
@@ -167,7 +170,7 @@ namespace paludis
         /// Constructor.
         Implementation(const Environment * const,
                 const PackageDatabase * const d, const FSEntry & l, const FSEntry & p,
-                const FSEntry & c, const FSEntry &, const FSEntry &);
+                const FSEntry & c, const FSEntry &, const FSEntry &, const std::string &);
 
         /// Destructor.
         ~Implementation();
@@ -180,7 +183,7 @@ namespace paludis
 Implementation<PortageRepository>::Implementation(const Environment * const env,
         const PackageDatabase * const d,
         const FSEntry & l, const FSEntry & p, const FSEntry & c,
-        const FSEntry & e, const FSEntry & dd) :
+        const FSEntry & e, const FSEntry & dd, const std::string & syn) :
     db(d),
     env(env),
     location(l),
@@ -188,6 +191,7 @@ Implementation<PortageRepository>::Implementation(const Environment * const env,
     cache(c),
     eclassdir(e),
     distdir(dd),
+    sync(syn),
     has_category_names(false),
     has_repo_mask(false),
     has_virtuals(false),
@@ -308,10 +312,10 @@ PortageRepository::PortageRepository(
         const Environment * const e, const PackageDatabase * const d,
         const FSEntry & location, const FSEntry & profile,
         const FSEntry & cache, const FSEntry & eclassdir,
-        const FSEntry & distdir) :
+        const FSEntry & distdir, const std::string & sync) :
     Repository(PortageRepository::fetch_repo_name(location)),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(e,
-                d, location, profile, cache, eclassdir, distdir))
+                d, location, profile, cache, eclassdir, distdir, sync))
 {
     _info.insert(std::make_pair(std::string("location"), location));
     _info.insert(std::make_pair(std::string("profile"), profile));
@@ -319,6 +323,8 @@ PortageRepository::PortageRepository(
     _info.insert(std::make_pair(std::string("eclassdir"), eclassdir));
     _info.insert(std::make_pair(std::string("distdir"), distdir));
     _info.insert(std::make_pair(std::string("format"), std::string("portage")));
+    if (! sync.empty())
+        _info.insert(std::make_pair(std::string("sync"), sync));
 }
 
 PortageRepository::~PortageRepository()
@@ -877,8 +883,12 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("cache") || ((cache = m.find("cache")->second)).empty())
         cache = location + "/metadata/cache";
 
+    std::string sync;
+    if (m.end() == m.find("sync") || ((sync = m.find("sync")->second)).empty())
+        ; // nothing
+
     return CountedPtr<Repository>(new PortageRepository(env, db, location, profile, cache,
-                eclassdir, distdir));
+                eclassdir, distdir, sync));
 }
 
 PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
@@ -1135,5 +1145,25 @@ PortageRepository::do_system_packages() const
     }
 
     return _imp->system_packages;
+}
+
+bool
+PortageRepository::do_sync() const
+{
+    if (_imp->sync.empty())
+        return false;
+
+    if (0 != _imp->sync.compare(0, 8, "rsync://"))
+        throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
+
+    std::string cmd("rsync --recursive --links --safe-links --perms --times "
+            "--compress --force --whole-file --delete --delete-after --stats "
+            "--timeout=180 --exclude=/distfiles --exclude=/packages --progress "
+            "'" + stringify(_imp->sync) + "' '" + stringify(_imp->location) + "/'");
+
+    if (0 != run_command(cmd))
+        throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
+
+    return true;
 }
 

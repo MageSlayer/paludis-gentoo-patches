@@ -22,6 +22,7 @@
 #include "src/list.hh"
 #include "src/query.hh"
 #include "src/applets.hh"
+#include "src/sync.hh"
 #include <paludis/paludis.hh>
 #include <paludis/util/util.hh>
 
@@ -73,6 +74,7 @@ main(int argc, char *argv[])
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +
                     CommandLine::get_instance()->a_install.specified() +
+                    CommandLine::get_instance()->a_sync.specified() +
                     CommandLine::get_instance()->a_list_repositories.specified() +
                     CommandLine::get_instance()->a_list_categories.specified() +
                     CommandLine::get_instance()->a_list_packages.specified() +
@@ -97,6 +99,15 @@ main(int argc, char *argv[])
                 throw DoHelp("install action requires at least one parameter");
 
             return do_install();
+        }
+
+        if (CommandLine::get_instance()->a_sync.specified())
+        {
+            /// \todo --sync foo?
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("sync action tales no parameters");
+
+            return do_sync();
         }
 
         if (CommandLine::get_instance()->a_list_repositories.specified())

@@ -16,6 +16,7 @@ paludis_SOURCES = \
 	install.hh           install.cc           \
 	list.hh              list.cc              \
 	query.hh             query.cc             \
+	sync.hh              sync.cc              \
 	paludis.cc
 
 paludis_LDADD = \

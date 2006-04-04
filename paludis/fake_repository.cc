@@ -224,3 +224,9 @@ FakeRepository::do_system_packages() const
     return result;
 }
 
+bool
+FakeRepository::do_sync() const
+{
+    return false;
+}
+

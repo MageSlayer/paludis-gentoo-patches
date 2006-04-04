@@ -74,6 +74,8 @@ namespace paludis
 
             virtual DepAtom::Pointer do_system_packages() const;
 
+            virtual bool do_sync() const;
+
         public:
             /**
              * Constructor.

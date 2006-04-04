@@ -94,6 +94,8 @@ namespace paludis
 
             virtual DepAtom::Pointer do_system_packages() const;
 
+            virtual bool do_sync() const;
+
         public:
             /**
              * Constructor.
@@ -102,7 +104,7 @@ namespace paludis
                     const PackageDatabase * const db,
                     const FSEntry & location, const FSEntry & profile,
                     const FSEntry & cache, const FSEntry & distdir,
-                    const FSEntry & eclassdir);
+                    const FSEntry & eclassdir, const std::string & sync);
 
             /**
              * Virtual constructor.

@@ -158,6 +158,11 @@ namespace paludis
              */
             virtual DepAtom::Pointer do_system_packages() const = 0;
 
+            /**
+             * Override in descendents: sync, if needed (true) or do nothing (false).
+             */
+            virtual bool do_sync() const = 0;
+
         public:
             /**
              * Destructor.
@@ -387,6 +392,16 @@ namespace paludis
              * No NVI indirection here, it's not worth it.
              */
             virtual bool installed() const = 0;
+
+            /**
+             * Sync, if necessary.
+             *
+             * \return True if we synced successfully, false if we skipped sync.
+             */
+            bool sync() const
+            {
+                return do_sync();
+            }
 
             /**
              * Fetch our system packages list.

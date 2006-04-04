@@ -469,3 +469,9 @@ VDBRepository::do_system_packages() const
     return result;
 }
 
+bool
+VDBRepository::do_sync() const
+{
+    return false;
+}
+
