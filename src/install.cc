@@ -135,10 +135,13 @@ do_install()
             cout << endl;
         }
 
+        int current_count = 0, max_count = std::distance(dep_list.begin(), dep_list.end());
+
+        cout << endl << "Total: " << max_count <<
+            (max_count == 1 ? " package" : " packages") << endl << endl;
+
         if (CommandLine::get_instance()->a_pretend.specified())
             return return_code;
-
-        int current_count = 0, max_count = std::distance(dep_list.begin(), dep_list.end());
 
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
