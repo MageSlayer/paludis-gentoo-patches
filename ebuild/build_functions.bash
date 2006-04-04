@@ -57,7 +57,7 @@ econf()
 
         cmd="${cmd} $@ ${LOCAL_EXTRA_ECONF}"
 
-        echo "${cmd}"
+        echo "${cmd}" 1>&2
         ${cmd} || die "econf failed"
 
     else
@@ -67,7 +67,7 @@ econf()
 
 emake()
 {
-    echo ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
+    echo ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@" 1>&2
     ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
 }
 
@@ -81,7 +81,7 @@ einstall()
         cmd="${cmd} sysconfdir='${D}/etc'"
         cmd="${cmd} localstatedir='${D}/var/lib'"
         cmd="${cmd} ${EXTRA_EINSTALL} ${@} install"
-        echo "${cmd}"
+        echo "${cmd}" 1>&2
         ${cmd} || die "einstall failed"
     else
         die "No Makefile for einstall"
