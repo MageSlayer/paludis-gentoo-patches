@@ -83,6 +83,11 @@ main(int argc, char *argv[])
         else
             p::DefaultConfig::get_instance()->set_paludis_command(std::string(argv[0]));
 
+        if (CommandLine::get_instance()->a_log_level.specified())
+            p::DefaultConfig::get_instance()->set_paludis_command(
+                    p::DefaultConfig::get_instance()->paludis_command() + " --log-level " +
+                    CommandLine::get_instance()->a_log_level.argument());
+
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +
                     CommandLine::get_instance()->a_install.specified() +
