@@ -175,8 +175,11 @@ namespace paludis
         /// Destructor.
         ~Implementation();
 
-        /// Add a use.mask, use from a profile directory, recursive.
+        /// Add a profile directory.
         void add_profile(const FSEntry & f) const;
+
+        private:
+            void add_profile_r(const FSEntry & f) const;
     };
 }
 
@@ -209,6 +212,35 @@ Implementation<PortageRepository>::~Implementation()
 void
 Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 {
+    Context context("When setting profile from directory '" + stringify(f) + "':");
+
+    add_profile_r(f);
+
+    for (UseFlagSet::const_iterator x(expand_list.begin()), x_end(expand_list.end()) ;
+            x != x_end ; ++x)
+    {
+        static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+        std::list<std::string> uses;
+        tokeniser.tokenise(profile_env[stringify(*x)], std::back_inserter(uses));
+        for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
+                u != u_end ; ++u)
+        {
+            std::string lower_x;
+            std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
+                    &::tolower);
+            use[UseFlagName(lower_x + "_" + *u)] = use_enabled;
+        }
+    }
+
+    std::string arch(profile_env["ARCH"]);
+    if (arch.empty())
+        throw InternalError(PALUDIS_HERE, "todo: ARCH unset"); /// \todo
+    use[UseFlagName(arch)] = use_enabled;
+}
+
+void
+Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
+{
     Context context("When reading profile directory '" + stringify(f) + "':");
 
     static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
@@ -226,7 +258,7 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 
         LineConfigFile parent(f / "parent");
         if (parent.begin() != parent.end())
-            add_profile((f / *parent.begin()).realpath());
+            add_profile_r((f / *parent.begin()).realpath());
         else
         {
             Log::get_instance()->message(ll_warning, "Profile parent file in '" +
