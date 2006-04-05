@@ -1180,7 +1180,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("ECLASSDIR", stringify(_imp->eclassdir))
             ("PORTDIR", stringify(_imp->location) + "/")
             ("DISTDIR", stringify(_imp->distdir))
-            ("ROOT", stringify(_imp->root))
+            ("ROOT", stringify(_imp->root) + "/")
             ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
             ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             ("PALUDIS_PROFILE_DIR", _imp->profile)
