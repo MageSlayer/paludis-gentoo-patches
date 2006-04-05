@@ -989,24 +989,32 @@ PortageRepository::do_is_mirror(const std::string & s) const
     {
         static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
 
-        LineConfigFile mirrors(_imp->location / "profiles" / "thirdpartymirrors");
-        for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
+        if ((_imp->location / "profiles" / "thirdpartymirrors").exists())
         {
-            std::vector<std::string> entries;
-            tokeniser.tokenise(*line, std::back_inserter(entries));
-            if (! entries.empty())
+            LineConfigFile mirrors(_imp->location / "profiles" / "thirdpartymirrors");
+            for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
             {
-                /* pick up to five random mirrors only */
-                /// \todo param this
-                static Random r;
-                std::random_shuffle(next(entries.begin()), entries.end(), r);
-                if (entries.size() > 6)
-                    entries.resize(6);
-                _imp->mirrors.insert(std::make_pair(
-                            entries.at(0),
-                            std::list<std::string>(next(entries.begin()), entries.end())));
+                std::vector<std::string> entries;
+                tokeniser.tokenise(*line, std::back_inserter(entries));
+                if (! entries.empty())
+                {
+                    /* pick up to five random mirrors only */
+                    /// \todo param this
+                    static Random r;
+                    std::random_shuffle(next(entries.begin()), entries.end(), r);
+                    if (entries.size() > 6)
+                        entries.resize(6);
+                    _imp->mirrors.insert(std::make_pair(
+                                entries.at(0),
+                                std::list<std::string>(next(entries.begin()), entries.end())));
+                }
             }
         }
+        else
+            Log::get_instance()->message(ll_warning, "No thirdpartymirrors file found in '"
+                    + stringify(_imp->location / "profiles") + "', so mirror:// SRC_URI "
+                    "components cannot be fetched");
+
         _imp->has_mirrors = true;
     }
 
