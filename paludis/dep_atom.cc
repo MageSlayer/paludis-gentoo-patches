@@ -111,6 +111,7 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
             _version_operator = s.substr(0, p);
 
             std::string::size_type q(p);
+
             while (true)
             {
                 if (p >= s.length())
@@ -121,6 +122,19 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
                 if (s.at(q) >= '0' && s.at(q) <= '9')
                     break;
             }
+
+            std::string::size_type new_q(q);
+            while (true)
+            {
+                if (new_q >= s.length())
+                    break;
+                new_q = s.find('-', new_q + 1);
+                if ((std::string::npos == new_q) || (++new_q >= s.length()))
+                    break;
+                if (s.at(new_q) >= '0' && s.at(new_q) <= '9')
+                    q = new_q;
+            }
+
             _package = QualifiedPackageName(s.substr(p, q - p - 1));
 
             if ('*' == s.at(s.length() - 1))

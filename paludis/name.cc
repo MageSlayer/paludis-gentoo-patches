@@ -139,23 +139,9 @@ PackageNamePartValidator::validate(const std::string & s)
         throw PackageNamePartError(s);
     }
 
-    /* we don't allow - followed by only numbers, because it could be
-     * a version spec. */
     for (std::string::size_type p(0) ; p < s.length() ; ++p)
     {
         if (std::string::npos == allowed_chars.find(s[p]))
-        {
-            Context c("When validating package name part '" + s + "':");
-            throw PackageNamePartError(s);
-        }
-
-        if ('-' != s[p])
-            continue;
-        if (++p >= s.length())
-            break;
-        if ((std::string::npos != number_chars.find(s[p]) &&
-                std::string::npos == s.find_first_not_of(number_chars, p)) ||
-                (std::string::npos == allowed_chars.find(s[p])))
         {
             Context c("When validating package name part '" + s + "':");
             throw PackageNamePartError(s);
