@@ -23,8 +23,7 @@
 
 has_version()
 {
-    # \todo Don't hardcode paludis, config dirs etc
-    paludis --has-version "$@"
+    ${PALUDIS_COMMAND} --has-version "$@"
 }
 
 portageq()
@@ -51,8 +50,7 @@ portageq()
 
 best_version()
 {
-    # \todo Don't hardcode paludis, config dirs etc
-    paludis --best-version "$@"
+    ${PALUDIS_COMMAND} --best-version "$@"
 }
 
 check_KV()

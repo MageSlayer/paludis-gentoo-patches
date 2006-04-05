@@ -117,6 +117,7 @@ namespace paludis
         private:
             static std::string _config_suffix;
             static bool _config_suffix_can_be_set;
+            std::string _paludis_command;
 
             std::string _bashrc_files;
 
@@ -344,6 +345,19 @@ namespace paludis
              * Our bashrc files.
              */
             std::string bashrc_files() const;
+
+            /**
+             * The paludis command.
+             */
+            std::string paludis_command() const
+            {
+                return _paludis_command;
+            }
+
+            void set_paludis_command(const std::string & s)
+            {
+                _paludis_command = s;
+            }
     };
 }
 

@@ -40,11 +40,15 @@ DefaultConfigError::DefaultConfigError(const std::string & msg) throw () :
 {
 }
 
-DefaultConfig::DefaultConfig()
+DefaultConfig::DefaultConfig() :
+    _paludis_command("paludis")
 {
     _config_suffix_can_be_set = false;
 
     Context context("When loading default configuration:");
+
+    if (! getenv_with_default("PALUDIS_SKIP_CONFIG", "").empty())
+        return;
 
     Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
 

@@ -50,6 +50,11 @@ namespace paludis
             {
                 return "";
             }
+
+            virtual std::string paludis_command() const
+            {
+                throw InternalError(PALUDIS_HERE, "Cannot use paludis_command in a test environment");
+            }
     };
 }
 

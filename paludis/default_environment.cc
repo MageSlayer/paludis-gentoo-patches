@@ -216,3 +216,10 @@ DefaultEnvironment::bashrc_files() const
 {
     return DefaultConfig::get_instance()->bashrc_files();
 }
+
+std::string
+DefaultEnvironment::paludis_command() const
+{
+    return DefaultConfig::get_instance()->paludis_command();
+}
+

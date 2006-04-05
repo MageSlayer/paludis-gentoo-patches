@@ -94,6 +94,11 @@ namespace paludis
             virtual std::string bashrc_files() const = 0;
 
             /**
+             * How to run paludis.
+             */
+            virtual std::string paludis_command() const = 0;
+
+            /**
              * Destructor.
              */
             virtual ~Environment();

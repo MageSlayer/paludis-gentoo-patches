@@ -58,6 +58,8 @@ namespace paludis
             virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
 
             virtual std::string bashrc_files() const;
+
+            virtual std::string paludis_command() const;
     };
 }
 #endif

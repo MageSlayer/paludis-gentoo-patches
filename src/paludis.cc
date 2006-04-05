@@ -57,6 +57,9 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_help.specified())
             throw DoHelp();
 
+        if (CommandLine::get_instance()->a_version.specified())
+            throw DoVersion();
+
         if (! CommandLine::get_instance()->a_log_level.specified())
             p::Log::get_instance()->set_log_level(p::ll_qa);
         else if (CommandLine::get_instance()->a_log_level.argument() == "debug")
@@ -71,7 +74,14 @@ main(int argc, char *argv[])
             throw DoHelp("bad value for --log-level");
 
         if (CommandLine::get_instance()->a_config_suffix.specified())
+        {
             p::DefaultConfig::set_config_suffix(CommandLine::get_instance()->a_config_suffix.argument());
+            p::DefaultConfig::get_instance()->set_paludis_command(
+                    std::string(argv[0]) + " --config-suffix " +
+                    CommandLine::get_instance()->a_config_suffix.argument());
+        }
+        else
+            p::DefaultConfig::get_instance()->set_paludis_command(std::string(argv[0]));
 
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +
@@ -106,9 +116,6 @@ main(int argc, char *argv[])
             else
                 throw DoHelp("you should specify exactly one action");
         }
-
-        if (CommandLine::get_instance()->a_version.specified())
-            throw DoVersion();
 
         if (CommandLine::get_instance()->a_query.specified())
         {

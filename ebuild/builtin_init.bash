@@ -22,7 +22,7 @@ builtin_init()
     local a
     for a in P PV PR PN PVR PF CATEGORY FILESDIR ECLASSDIR PORTDIR \
         DISTDIR KV PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL PALUDIS_EBUILD_DIR \
-        USERLAND KERNEL ARCH CHOST ; do
+        USERLAND KERNEL ARCH CHOST PALUDIS_COMMAND ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
         declare -r ${a}="${!a}"
     done
