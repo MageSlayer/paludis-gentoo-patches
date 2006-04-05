@@ -109,6 +109,9 @@ namespace paludis
         /// Sync URL
         std::string sync;
 
+        /// Root location
+        FSEntry root;
+
         /// Have we loaded our category names?
         mutable bool has_category_names;
 
@@ -171,7 +174,8 @@ namespace paludis
         /// Constructor.
         Implementation(const Environment * const,
                 const PackageDatabase * const d, const FSEntry & l, const FSEntry & p,
-                const FSEntry & c, const FSEntry &, const FSEntry &, const std::string &);
+                const FSEntry & c, const FSEntry &, const FSEntry &, const std::string &,
+                const FSEntry &);
 
         /// Destructor.
         ~Implementation();
@@ -187,7 +191,8 @@ namespace paludis
 Implementation<PortageRepository>::Implementation(const Environment * const env,
         const PackageDatabase * const d,
         const FSEntry & l, const FSEntry & p, const FSEntry & c,
-        const FSEntry & e, const FSEntry & dd, const std::string & syn) :
+        const FSEntry & e, const FSEntry & dd, const std::string & syn,
+        const FSEntry & r) :
     db(d),
     env(env),
     location(l),
@@ -196,6 +201,7 @@ Implementation<PortageRepository>::Implementation(const Environment * const env,
     eclassdir(e),
     distdir(dd),
     sync(syn),
+    root(r),
     has_category_names(false),
     has_repo_mask(false),
     has_virtuals(false),
@@ -345,10 +351,11 @@ PortageRepository::PortageRepository(
         const Environment * const e, const PackageDatabase * const d,
         const FSEntry & location, const FSEntry & profile,
         const FSEntry & cache, const FSEntry & eclassdir,
-        const FSEntry & distdir, const std::string & sync) :
+        const FSEntry & distdir, const std::string & sync,
+        const FSEntry & root) :
     Repository(PortageRepository::fetch_repo_name(location)),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(e,
-                d, location, profile, cache, eclassdir, distdir, sync))
+                d, location, profile, cache, eclassdir, distdir, sync, root))
 {
     _info.insert(std::make_pair(std::string("location"), location));
     _info.insert(std::make_pair(std::string("profile"), profile));
@@ -356,6 +363,7 @@ PortageRepository::PortageRepository(
     _info.insert(std::make_pair(std::string("eclassdir"), eclassdir));
     _info.insert(std::make_pair(std::string("distdir"), distdir));
     _info.insert(std::make_pair(std::string("format"), std::string("portage")));
+    _info.insert(std::make_pair(std::string("root"), stringify(root)));
     if (! sync.empty())
         _info.insert(std::make_pair(std::string("sync"), sync));
 }
@@ -921,8 +929,12 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("sync") || ((sync = m.find("sync")->second)).empty())
         ; // nothing
 
+    std::string root;
+    if (m.end() == m.find("root") || ((root = m.find("root")->second)).empty())
+        root = "/";
+
     return CountedPtr<Repository>(new PortageRepository(env, db, location, profile, cache,
-                eclassdir, distdir, sync));
+                eclassdir, distdir, sync, root));
 }
 
 PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
@@ -1030,6 +1042,9 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         _imp->add_profile(_imp->profile.realpath());
         _imp->has_profile = true;
     }
+
+    if (! _imp->root.is_directory())
+        throw InternalError(PALUDIS_HERE, "todo: root not a directory");
 
     VersionMetadata::ConstPointer metadata(0);
     if (! has_version(q, v))
@@ -1165,6 +1180,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("ECLASSDIR", stringify(_imp->eclassdir))
             ("PORTDIR", stringify(_imp->location) + "/")
             ("DISTDIR", stringify(_imp->distdir))
+            ("ROOT", stringify(_imp->root))
             ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
             ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             ("PALUDIS_PROFILE_DIR", _imp->profile)
@@ -1203,7 +1219,7 @@ PortageRepository::do_sync() const
         throw InternalError(PALUDIS_HERE, "todo: no protocol for sync"); /// \todo fixme
 
     SyncerMaker::get_instance()->find_maker(_imp->sync.substr(0, p))(
-            _imp->sync, _imp->location)->sync();
+            _imp->location, _imp->sync)->sync();
 
     return true;
 }

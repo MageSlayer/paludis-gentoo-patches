@@ -118,6 +118,8 @@ namespace paludis
             static std::string _config_suffix;
             static bool _config_suffix_can_be_set;
 
+            std::string _bashrc_files;
+
             DefaultConfig();
 
             ~DefaultConfig();

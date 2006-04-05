@@ -104,7 +104,8 @@ namespace paludis
                     const PackageDatabase * const db,
                     const FSEntry & location, const FSEntry & profile,
                     const FSEntry & cache, const FSEntry & distdir,
-                    const FSEntry & eclassdir, const std::string & sync);
+                    const FSEntry & eclassdir, const std::string & sync,
+                    const FSEntry & root);
 
             /**
              * Virtual constructor.

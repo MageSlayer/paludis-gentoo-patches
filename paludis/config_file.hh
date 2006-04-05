@@ -222,6 +222,18 @@ namespace paludis
             KeyValueConfigFile(const std::string & filename);
 
             /**
+             * Constructor, from a stream, with defaults.
+             */
+            KeyValueConfigFile(std::istream * const,
+                    const std::map<std::string, std::string> &);
+
+            /**
+             * Constructor, from a filename, with defaults.
+             */
+            KeyValueConfigFile(const std::string & filename,
+                    const std::map<std::string, std::string> &);
+
+            /**
              * Destructor.
              */
             ~KeyValueConfigFile();

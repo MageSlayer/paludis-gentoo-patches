@@ -143,6 +143,22 @@ KeyValueConfigFile::KeyValueConfigFile(const std::string & filename) :
     need_lines();
 }
 
+KeyValueConfigFile::KeyValueConfigFile(std::istream * const s,
+        const std::map<std::string, std::string> & m) :
+    ConfigFile(s),
+    _entries(m.begin(), m.end())
+{
+    need_lines();
+}
+
+KeyValueConfigFile::KeyValueConfigFile(const std::string & filename,
+        const std::map<std::string, std::string> & m) :
+    ConfigFile(filename),
+    _entries(m.begin(), m.end())
+{
+    need_lines();
+}
+
 KeyValueConfigFile::~KeyValueConfigFile()
 {
 }

@@ -24,6 +24,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
@@ -47,20 +48,46 @@ DefaultConfig::DefaultConfig()
 
     Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
 
+    /* indirection */
+    std::string root_prefix;
+    std::string config_suffix;
+    if (! _config_suffix.empty())
+        config_suffix = "-" + _config_suffix;
+
+    FSEntry config_dir(FSEntry(getenv_or_error("HOME")) / (".paludis" + config_suffix));
+    if (! config_dir.exists())
+        config_dir = (FSEntry(SYSCONFDIR) / ("paludis" + config_suffix));
+    if (! config_dir.exists())
+        throw DefaultConfigError("Can't find configuration directory");
+
+    Log::get_instance()->message(ll_debug, "DefaultConfig initial directory is '"
+            + stringify(config_dir) + "'");
+
+    if ((config_dir / "specpath").exists())
+    {
+        KeyValueConfigFile specpath(config_dir / "specpath");
+        root_prefix = specpath.get("root");
+        config_suffix = specpath.get("config-suffix");
+
+        if (! root_prefix.empty() && stringify(FSEntry(root_prefix).realpath()) != "/")
+        {
+            config_dir = FSEntry(root_prefix) / SYSCONFDIR / ("paludis" + config_suffix);
+            if (! config_dir.exists())
+                throw DefaultConfigError("Can't find configuration directory under root");
+        }
+    }
+
+    std::map<std::string, std::string> conf_vars;
+    conf_vars.insert(std::make_pair("ROOT", root_prefix));
+
+    Log::get_instance()->message(ll_debug, "DefaultConfig real directory is '"
+            + stringify(config_dir) + "', root prefix is '" + root_prefix +
+            "', config suffix is '" + config_suffix + "'");
+
     /* repositories */
     {
         std::list<FSEntry> dirs;
-        if (! getenv_with_default("PALUDIS_CONFIG_DIR", "").empty())
-            dirs.push_back(FSEntry(getenv_or_error("PALUDIS_CONFIG_DIR")) / "repositories");
-        else
-        {
-            dirs.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "repositories");
-            dirs.push_back(FSEntry(getenv_or_error("HOME"))
-                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "repositories");
-        }
+        dirs.push_back(config_dir / "repositories");
 
         std::list<FSEntry> repo_files;
         for (std::list<FSEntry>::const_iterator dir(dirs.begin()), dir_end(dirs.end()) ;
@@ -78,7 +105,7 @@ DefaultConfig::DefaultConfig()
         {
             Context local_context("When reading repository file '" + stringify(*repo_file) + "':");
 
-            KeyValueConfigFile k(*repo_file);
+            KeyValueConfigFile k(*repo_file, conf_vars);
 
             std::string format(k.get("format"));
             if (format.empty())
@@ -90,6 +117,7 @@ DefaultConfig::DefaultConfig()
 
             std::map<std::string, std::string> keys(k.begin(), k.end());
             keys["repo_file"] = stringify(*repo_file);
+            keys["root"] = root_prefix;
             _repos.push_back(RepositoryConfigEntry(format, importance, keys));
         }
 
@@ -102,17 +130,7 @@ DefaultConfig::DefaultConfig()
     /* keywords */
     {
         std::list<FSEntry> files;
-        if (! getenv_with_default("PALUDIS_CONFIG_DIR", "").empty())
-            files.push_back(FSEntry(getenv_or_error("PALUDIS_CONFIG_DIR")) / "keywords.conf");
-        else
-        {
-            files.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "keywords.conf");
-            files.push_back(FSEntry(getenv_or_error("HOME"))
-                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "keywords.conf");
-        }
+        files.push_back(config_dir / "keywords.conf");
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -151,17 +169,7 @@ DefaultConfig::DefaultConfig()
     /* user mask */
     {
         std::list<FSEntry> files;
-        if (! getenv_with_default("PALUDIS_CONFIG_DIR", "").empty())
-            files.push_back(FSEntry(getenv_or_error("PALUDIS_CONFIG_DIR")) / "package_mask.conf");
-        else
-        {
-            files.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "package_mask.conf");
-            files.push_back(FSEntry(getenv_or_error("HOME"))
-                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "package_mask.conf");
-        }
+        files.push_back(config_dir / "package_mask.conf");
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -184,17 +192,7 @@ DefaultConfig::DefaultConfig()
     /* user unmask */
     {
         std::list<FSEntry> files;
-        if (! getenv_with_default("PALUDIS_CONFIG_DIR", "").empty())
-            files.push_back(FSEntry(getenv_or_error("PALUDIS_CONFIG_DIR")) / "package_unmask.conf");
-        else
-        {
-            files.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "package_unmask.conf");
-            files.push_back(FSEntry(getenv_or_error("HOME"))
-                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "package_unmask.conf");
-        }
+        files.push_back(config_dir / "package_unmask.conf");
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -217,17 +215,7 @@ DefaultConfig::DefaultConfig()
     /* use */
     {
         std::list<FSEntry> files;
-        if (! getenv_with_default("PALUDIS_CONFIG_DIR", "").empty())
-            files.push_back(FSEntry(getenv_or_error("PALUDIS_CONFIG_DIR")) / "use.conf");
-        else
-        {
-            files.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "use.conf");
-            files.push_back(FSEntry(getenv_or_error("HOME"))
-                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "use.conf");
-        }
+        files.push_back(config_dir / "use.conf");
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -276,6 +264,8 @@ DefaultConfig::DefaultConfig()
             throw DefaultConfigError("No default keywords specified (a keywords.conf file should "
                     "contain an entry in the form '* keyword')");
     }
+
+    _bashrc_files = stringify(config_dir / "bashrc");
 }
 
 DefaultConfig::~DefaultConfig()
@@ -310,15 +300,6 @@ DefaultConfig::set_config_suffix(const std::string & s)
 std::string
 DefaultConfig::bashrc_files() const
 {
-    if (! getenv_with_default("PALUDIS_CONFIG_DIR", "").empty())
-        return stringify(FSEntry(getenv_or_error("PALUDIS_CONFIG_DIR")) / "bashrc");
-    else
-        return
-            stringify(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "bashrc") + " " +
-            stringify(FSEntry(getenv_or_error("HOME"))
-                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
-                    / "bashrc");
+    return _bashrc_files;
 }
 
