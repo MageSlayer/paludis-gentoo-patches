@@ -115,6 +115,9 @@ namespace paludis
         friend class InstantiationPolicy<DefaultConfig, instantiation_method::SingletonAsNeededTag>;
 
         private:
+            static std::string _config_suffix;
+            static bool _config_suffix_can_be_set;
+
             DefaultConfig();
 
             ~DefaultConfig();
@@ -141,6 +144,12 @@ namespace paludis
             std::vector<std::pair<UseFlagName, UseFlagState> > _default_use;
 
         public:
+            /**
+             * Set config suffix. Must be called before we do anything, or not
+             * at all.
+             */
+            static void set_config_suffix(const std::string &);
+
             /**
              * An iterator for our repositories.
              */

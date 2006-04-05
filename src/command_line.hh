@@ -97,6 +97,9 @@ class CommandLine :
         /// --no-color
         paludis::args::AliasArg a_no_color;
 
+        /// --config-suffix
+        paludis::args::StringArg a_config_suffix;
+
         ///}
 
         /// \name Query arguments

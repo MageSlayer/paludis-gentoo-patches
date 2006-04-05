@@ -43,6 +43,7 @@ CommandLine::CommandLine() :
             "qa"),
     a_no_colour(&general_args, "no-colour", 'c', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
+    a_config_suffix(&general_args, "config-suffix", '\0', "Config directory suffix"),
 
     query_args(this, "Query options"),
     a_show_slot(&query_args,        "show-slot",    'S', "Show SLOTs"),

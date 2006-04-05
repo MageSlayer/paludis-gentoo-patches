@@ -70,6 +70,8 @@ main(int argc, char *argv[])
         else
             throw DoHelp("bad value for --log-level");
 
+        if (CommandLine::get_instance()->a_config_suffix.specified())
+            p::DefaultConfig::set_config_suffix(CommandLine::get_instance()->a_config_suffix.argument());
 
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +

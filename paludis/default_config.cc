@@ -41,6 +41,8 @@ DefaultConfigError::DefaultConfigError(const std::string & msg) throw () :
 
 DefaultConfig::DefaultConfig()
 {
+    _config_suffix_can_be_set = false;
+
     Context context("When loading default configuration:");
 
     Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
@@ -53,8 +55,11 @@ DefaultConfig::DefaultConfig()
         else
         {
             dirs.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / "paludis" / "repositories");
-            dirs.push_back(FSEntry(getenv_or_error("HOME")) / ".paludis" / "repositories");
+                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "repositories");
+            dirs.push_back(FSEntry(getenv_or_error("HOME"))
+                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "repositories");
         }
 
         std::list<FSEntry> repo_files;
@@ -102,8 +107,11 @@ DefaultConfig::DefaultConfig()
         else
         {
             files.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / "paludis" / "keywords.conf");
-            files.push_back(FSEntry(getenv_or_error("HOME")) / ".paludis" / "keywords.conf");
+                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "keywords.conf");
+            files.push_back(FSEntry(getenv_or_error("HOME"))
+                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "keywords.conf");
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -148,8 +156,11 @@ DefaultConfig::DefaultConfig()
         else
         {
             files.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / "paludis" / "package_mask.conf");
-            files.push_back(FSEntry(getenv_or_error("HOME")) / ".paludis" / "package_mask.conf");
+                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "package_mask.conf");
+            files.push_back(FSEntry(getenv_or_error("HOME"))
+                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "package_mask.conf");
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -178,8 +189,11 @@ DefaultConfig::DefaultConfig()
         else
         {
             files.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / "paludis" / "package_unmask.conf");
-            files.push_back(FSEntry(getenv_or_error("HOME")) / ".paludis" / "package_unmask.conf");
+                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "package_unmask.conf");
+            files.push_back(FSEntry(getenv_or_error("HOME"))
+                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "package_unmask.conf");
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -208,8 +222,11 @@ DefaultConfig::DefaultConfig()
         else
         {
             files.push_back(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
-                    / "paludis" / "use.conf");
-            files.push_back(FSEntry(getenv_or_error("HOME")) / ".paludis" / "use.conf");
+                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "use.conf");
+            files.push_back(FSEntry(getenv_or_error("HOME"))
+                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "use.conf");
         }
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -264,3 +281,29 @@ DefaultConfig::DefaultConfig()
 DefaultConfig::~DefaultConfig()
 {
 }
+
+std::string DefaultConfig::_config_suffix;
+bool DefaultConfig::_config_suffix_can_be_set(true);
+
+void
+DefaultConfig::set_config_suffix(const std::string & s)
+{
+    if (! _config_suffix_can_be_set)
+        throw InternalError(PALUDIS_HERE, "DefaultConfig::set_config_suffix called after "
+                "DefaultConfig has been instantiated.");
+
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-_+:");
+
+    if (std::string::npos != s.find_first_not_of(allowed_chars))
+        throw DefaultConfigError("Invalid config suffix '" + s + "'");
+
+    if (! s.empty())
+        if ('-' == s.at(0) || '-' == s.at(s.length() - 1))
+            throw DefaultConfigError("Invalid config suffix '" + s + "'");
+
+    _config_suffix = s;
+}
+
