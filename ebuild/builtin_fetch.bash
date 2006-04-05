@@ -35,6 +35,7 @@ builtin_fetch()
                     ebuild_section "Need to fetch ${aa}"
                     old_aa="${aa}"
                 fi
+                echo wget -T 30 -t 1 -O "${DISTDIR}/${aa}" "${a}" 1>&2
                 if ! wget -T 30 -t 1 -O "${DISTDIR}/${aa}" "${a}" ; then
                     rm -f "${DISTDIR}/${aa}"
                 fi
