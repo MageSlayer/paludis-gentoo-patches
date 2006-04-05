@@ -29,6 +29,8 @@ CommandLine::CommandLine() :
     a_list_repositories(&action_args, "list-repositories", '\0', "List available repositories"),
     a_list_categories(&action_args, "list-categories", '\0', "List available categories"),
     a_list_packages(&action_args, "list-packages", '\0', "List available packages"),
+    a_list_sync_protocols(&action_args, "list-sync-protocols", '\0', "List available sync protocols"),
+    a_list_repository_formats(&action_args, "list-repository-formats", '\0', "List available repository formats"),
     a_has_version(&action_args, "has-version", '\0', "Check whether the specified atom is installed"),
     a_best_version(&action_args, "best-version", '\0', "Display the best version of the specified atom"),
     a_version(&action_args,  "version",      'V', "Display program version"),

@@ -23,7 +23,7 @@
 #include "src/command_line.hh"
 
 /** \file
- * Declaration for the do_has_version and do_best_version functions.
+ * Declaration for small do_* functions.
  */
 
 /// Handle --has-version.
@@ -31,6 +31,12 @@ int do_has_version();
 
 /// Handle --best-version.
 int do_best_version();
+
+/// Handle --list-repository-formats
+int do_list_repository_formats();
+
+/// Handle --list-sync-protocols
+int do_list_sync_protocols();
 
 #endif
 

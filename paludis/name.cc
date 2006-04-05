@@ -146,6 +146,11 @@ PackageNamePartValidator::validate(const std::string & s)
             Context c("When validating package name part '" + s + "':");
             throw PackageNamePartError(s);
         }
+
+        if ((p + 1 < s.length()) && (s[p] == '-') &&
+                (std::string::npos != number_chars.find(s[p + 1])))
+            if (std::string::npos == s.find_first_not_of(number_chars, p + 1))
+                throw PackageNamePartError(s);
     }
 }
 

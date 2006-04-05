@@ -41,17 +41,15 @@ int do_sync()
     for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        std::cout << std::endl << "Sync " << (*r)->name() << ":" << std::endl << std::endl;
+        std::cout << colour(cl_heading, "Sync " + p::stringify((*r)->name())) << std::endl;
 
         if ((*r)->sync())
         {
-            std::cout << std::endl << "Sync " << (*r)->name() << " completed"
-                << std::endl << std::endl;
+            std::cout << "Sync " << (*r)->name() << " completed" << std::endl;
         }
         else
         {
-            std::cout << std::endl << "Sync " << (*r)->name() << " skipped"
-                << std::endl << std::endl;
+            std::cout << "Sync " << (*r)->name() << " skipped" << std::endl;
         }
     }
 

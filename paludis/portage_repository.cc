@@ -27,6 +27,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/portage_repository.hh>
+#include <paludis/syncer.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
@@ -1192,19 +1193,17 @@ PortageRepository::do_system_packages() const
 bool
 PortageRepository::do_sync() const
 {
+    Context context("When syncing repository '" + stringify(name()) + "':");
+
     if (_imp->sync.empty())
         return false;
 
-    if (0 != _imp->sync.compare(0, 8, "rsync://"))
-        throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
+    std::string::size_type p(_imp->sync.find("://"));
+    if (std::string::npos == p)
+        throw InternalError(PALUDIS_HERE, "todo: no protocol for sync"); /// \todo fixme
 
-    std::string cmd("rsync --recursive --links --safe-links --perms --times "
-            "--compress --force --whole-file --delete --delete-after --stats "
-            "--timeout=180 --exclude=/distfiles --exclude=/packages --progress "
-            "'" + stringify(_imp->sync) + "' '" + stringify(_imp->location) + "/'");
-
-    if (0 != run_command(cmd))
-        throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
+    SyncerMaker::get_instance()->find_maker(_imp->sync.substr(0, p))(
+            _imp->sync, _imp->location)->sync();
 
     return true;
 }

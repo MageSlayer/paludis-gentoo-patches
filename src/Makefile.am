@@ -1,4 +1,4 @@
-CLEANFILES = *~ version_TEST
+CLEANFILES = *~ version_TEST list_sync_formats_TEST list_repository_formats_TEST
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS= \
@@ -25,8 +25,14 @@ paludis_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.a
 
 TESTS_ENVIRONMENT = env TEST_SCRIPT_DIR="$(srcdir)/" $(SHELL) $(top_srcdir)/test/run_test.sh bash
-TESTS = version_TEST
+TESTS = version_TEST list_sync_formats_TEST list_repository_formats_TEST
 
-version_TEST :
+version_TEST : paludis
 	echo -e "#!/bin/sh\n./paludis --version" > $@
+
+list_sync_formats_TEST : paludis
+	echo -e "#!/bin/sh\n./paludis --list-sync-protocols" > $@
+
+list_repository_formats_TEST : paludis
+	echo -e "#!/bin/sh\n./paludis --list-repository-formats" > $@
 

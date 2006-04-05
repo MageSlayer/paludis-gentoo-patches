@@ -80,6 +80,8 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_list_repositories.specified() +
                     CommandLine::get_instance()->a_list_categories.specified() +
                     CommandLine::get_instance()->a_list_packages.specified() +
+                    CommandLine::get_instance()->a_list_sync_protocols.specified() +
+                    CommandLine::get_instance()->a_list_repository_formats.specified() +
                     CommandLine::get_instance()->a_has_version.specified() +
                     CommandLine::get_instance()->a_best_version.specified()))
         {
@@ -155,6 +157,22 @@ main(int argc, char *argv[])
                 throw DoHelp("list-packages action takes no parameters");
 
             return do_list_packages();
+        }
+
+        if (CommandLine::get_instance()->a_list_sync_protocols.specified())
+        {
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("list-sync-protocols action takes no parameters");
+
+            return do_list_sync_protocols();
+        }
+
+        if (CommandLine::get_instance()->a_list_repository_formats.specified())
+        {
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("list-repository-formats action takes no parameters");
+
+            return do_list_repository_formats();
         }
 
         if (CommandLine::get_instance()->a_has_version.specified())

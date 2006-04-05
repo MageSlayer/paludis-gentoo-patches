@@ -68,6 +68,12 @@ class CommandLine :
         /// --list-packages
         paludis::args::SwitchArg a_list_packages;
 
+        /// --list-sync-protocols
+        paludis::args::SwitchArg a_list_sync_protocols;
+
+        /// --list-repository-formats
+        paludis::args::SwitchArg a_list_repository_formats;
+
         /// --has-version
         paludis::args::SwitchArg a_has_version;
 

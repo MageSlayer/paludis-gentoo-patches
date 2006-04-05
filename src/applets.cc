@@ -18,11 +18,13 @@
  */
 
 #include "src/applets.hh"
+#include "src/colour.hh"
 #include <functional>
 #include <iomanip>
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <string>
+#include <set>
 
 /** \file
  * Handle the --has-version and --best-version actions for the main paludis
@@ -67,4 +69,39 @@ int do_best_version()
     return return_code;
 }
 
+int do_list_repository_formats()
+{
+    int return_code(1);
+
+    std::set<std::string> keys;
+    p::RepositoryMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
+
+    if (! keys.empty())
+    {
+        return_code = 0;
+        for (std::set<std::string>::const_iterator k(keys.begin()), k_end(keys.end()) ;
+                k != k_end ; ++k)
+            std::cout << "* " << colour(cl_package_name, *k) << std::endl;
+    }
+
+    return return_code;
+}
+
+int do_list_sync_protocols()
+{
+    int return_code(1);
+
+    std::set<std::string> keys;
+    p::SyncerMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
+
+    if (! keys.empty())
+    {
+        return_code = 0;
+        for (std::set<std::string>::const_iterator k(keys.begin()), k_end(keys.end()) ;
+                k != k_end ; ++k)
+            std::cout << "* " << colour(cl_package_name, *k) << std::endl;
+    }
+
+    return return_code;
+}
 
