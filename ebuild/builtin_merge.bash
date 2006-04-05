@@ -19,6 +19,8 @@
 
 builtin_merge()
 {
+    ebuild_section "Merging to '${ROOT:-/}'..."
+
     if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then
         if [[ -n "${CONFIG_PROTECT}" ]] ; then
             local d f
@@ -34,13 +36,14 @@ builtin_merge()
         fi
 
         install -d "${ROOT}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
-        if [[ -d "${D}" ]] && [[ ${D}/* != "${D}/*" ]] ; then
+        if [[ -d "${D}" ]] && [[ $(echo ${D}/* ) != "${D}/*" ]] ; then
             cp --remove-destination -vdfpR "${D}/"* "${ROOT}/" \
                 || die "builtin_merge failed"
         fi
     fi
 
     local dbdir="${ROOT}"/var/db/pkg/"${CATEGORY}/${PF}"
+    ebuild_section "Writing VDB entry to '${dbdir}'..."
     install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
 
     local v
