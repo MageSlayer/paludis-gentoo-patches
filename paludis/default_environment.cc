@@ -211,3 +211,8 @@ DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
     return false;
 }
 
+std::string
+DefaultEnvironment::bashrc_files() const
+{
+    return DefaultConfig::get_instance()->bashrc_files();
+}

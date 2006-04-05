@@ -747,6 +747,7 @@ PortageRepository::do_version_metadata(
                 ("PORTDIR", stringify(_imp->location) + "/")
                 ("DISTDIR", stringify(_imp->distdir))
                 ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
+                ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
                 ("KV", kernel_version())
                 ("PALUDIS_EBUILD_LOG_LEVEL", log_level_string())
                 ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
@@ -1158,6 +1159,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
             ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
             ("PALUDIS_PROFILE_DIR", _imp->profile)
+            ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
             ("KV", kernel_version())
             ("PALUDIS_EBUILD_LOG_LEVEL", log_level_string())
             ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));

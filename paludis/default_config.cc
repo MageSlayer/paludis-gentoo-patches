@@ -307,3 +307,18 @@ DefaultConfig::set_config_suffix(const std::string & s)
     _config_suffix = s;
 }
 
+std::string
+DefaultConfig::bashrc_files() const
+{
+    if (! getenv_with_default("PALUDIS_CONFIG_DIR", "").empty())
+        return stringify(FSEntry(getenv_or_error("PALUDIS_CONFIG_DIR")) / "bashrc");
+    else
+        return
+            stringify(FSEntry(getenv_with_default("ROOT", "/") + "" SYSCONFDIR)
+                    / ("paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "bashrc") + " " +
+            stringify(FSEntry(getenv_or_error("HOME"))
+                    / (".paludis" + (_config_suffix.empty() ? std::string("") : "-" + _config_suffix))
+                    / "bashrc");
+}
+

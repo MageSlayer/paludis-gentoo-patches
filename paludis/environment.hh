@@ -89,6 +89,11 @@ namespace paludis
             }
 
             /**
+             * Our bashrc files.
+             */
+            virtual std::string bashrc_files() const = 0;
+
+            /**
              * Destructor.
              */
             virtual ~Environment();

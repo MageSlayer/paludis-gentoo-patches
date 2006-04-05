@@ -337,6 +337,11 @@ namespace paludis
             {
                 return _default_use.end();
             }
+
+            /**
+             * Our bashrc files.
+             */
+            std::string bashrc_files() const;
     };
 }
 

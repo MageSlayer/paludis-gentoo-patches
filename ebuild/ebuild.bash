@@ -50,6 +50,22 @@ EBUILD_MODULES_DIR=$(readlink -f $(dirname $0 ) )
 [[ -d ${EBUILD_MODULES_DIR} ]] || die "${EBUILD_MODULES_DIR} is not a directory"
 export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
 
+ebuild_load_module()
+{
+    source "${EBUILD_MODULES_DIR}/${1}.bash" || die "Error loading module ${1}"
+}
+
+source /sbin/functions.sh || die "Couldn't source functions.sh"
+ebuild_load_module echo_functions
+ebuild_load_module sandbox_stubs
+ebuild_load_module portage_stubs
+ebuild_load_module list_functions
+ebuild_load_module multilib_functions
+ebuild_load_module install_functions
+ebuild_load_module build_functions
+ebuild_load_module unpack_functions
+ebuild_load_module eclass_functions
+
 ebuild_source_profile()
 {
     if [[ -f ${1}/make.defaults ]] ; then
@@ -75,17 +91,14 @@ ebuild_source_profile $(readlink -f "${PALUDIS_PROFILE_DIR}")
 
 unset ${save_vars}
 
-if [[ -r ${PALUDIS_CONFIG_DIR}/bashrc ]]; then
-    source ${PALUDIS_CONFIG_DIR}/bashrc
-fi
-if [[ -n "${ROOT}" ]] && [[ "${ROOT}" != "/" ]] ; then
-    if [[ -r ${ROOT}/${PALUDIS_CONFIG_DIR}/bashrc ]]; then
-        source ${ROOT}/${PALUDIS_CONFIG_DIR}/bashrc
+for f in ${PALUDIS_BASHRC_FILES} ; do
+    if [[ -f ${f} ]] ; then
+        ebuild_notice "debug" "Loading bashrc file ${f}"
+        source ${f}
+    else
+        ebuild_notice "debug" "Skipping bashrc file ${f}"
     fi
-fi
-if [[ -r ${HOME}/.paludis/bashrc ]]; then
-    source ${HOME}/.paludis/bashrc
-fi
+done
 
 for var in ${save_vars}; do
     if [[ -n ${!var} ]]; then
@@ -96,22 +109,6 @@ done
 for var in ${save_vars} ; do
     eval "export ${var}=\${save_var_${var}}"
 done
-
-ebuild_load_module()
-{
-    source "${EBUILD_MODULES_DIR}/${1}.bash" || die "Error loading module ${1}"
-}
-
-source /sbin/functions.sh || die "Couldn't source functions.sh"
-ebuild_load_module echo_functions
-ebuild_load_module sandbox_stubs
-ebuild_load_module portage_stubs
-ebuild_load_module list_functions
-ebuild_load_module multilib_functions
-ebuild_load_module install_functions
-ebuild_load_module build_functions
-ebuild_load_module unpack_functions
-ebuild_load_module eclass_functions
 
 ebuild_load_ebuild()
 {
