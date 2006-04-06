@@ -307,8 +307,8 @@ AC_ARG_ENABLE([qa],
 			  [  --enable-qa             Build QA tool (qualudis) and library],
 			  [ENABLE_QA=$enableval
 			   AC_MSG_RESULT([$enableval])],
-			  [ENABLE_QA=$enableval
-			   AC_MSG_RESULT([yes])])
+			  [ENABLE_QA=no
+			   AC_MSG_RESULT([no])])
 AC_SUBST([ENABLE_QA])
 AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
 dnl }}}
