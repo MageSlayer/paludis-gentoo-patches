@@ -31,6 +31,7 @@ portageq()
     # \todo Make this suck less...
     if [[ "$1" == "has_version" ]] ; then
         if [[ "$2" != "$ROOT" ]] ; then
+            eerror "Error emulating 'portageq $@':"
             die "portageq has_version emulation only works on current ROOT"
         else
             shift ; shift
@@ -38,12 +39,14 @@ portageq()
         fi
     elif [[ "$1" == "best_version" ]] ; then
         if [[ "$2" != "$ROOT" ]] ; then
+            eerror "Error emulating 'portageq $@':"
             die "portageq best_version emulation only works on current ROOT"
         else
             shift ; shift
             best_version "$@"
         fi
     else
+        eerror "Error emulating 'portageq $@':"
         die "portageq emulation for $1 not implemented"
     fi
 }
