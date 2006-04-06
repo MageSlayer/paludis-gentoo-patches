@@ -70,3 +70,8 @@ SyncFailedError::SyncFailedError(const std::string & local, const std::string & 
 {
 }
 
+SyncFailedError::SyncFailedError(const std::string & msg) throw () :
+    PackageActionError(msg)
+{
+}
+
