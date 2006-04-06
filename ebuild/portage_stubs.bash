@@ -30,7 +30,7 @@ portageq()
 {
     # \todo Make this suck less...
     if [[ "$1" == "has_version" ]] ; then
-        if [[ "$2" != "$ROOT" ]] ; then
+        if [[ "$(readlink -f $2 )" != "$(readlink -f $ROOT )" ]] ; then
             eerror "Error emulating 'portageq $@':"
             die "portageq has_version emulation only works on current ROOT"
         else
@@ -38,7 +38,7 @@ portageq()
             has_version "$@"
         fi
     elif [[ "$1" == "best_version" ]] ; then
-        if [[ "$2" != "$ROOT" ]] ; then
+        if [[ "$(readlink -f $2 )" != "$(readlink -f $ROOT )" ]] ; then
             eerror "Error emulating 'portageq $@':"
             die "portageq best_version emulation only works on current ROOT"
         else
