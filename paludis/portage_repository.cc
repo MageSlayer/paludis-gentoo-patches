@@ -1195,7 +1195,7 @@ PortageRepository::do_sync() const
 
     std::string::size_type p(_imp->sync.find("://")), q(_imp->sync.find(":"));
     if (std::string::npos == p)
-        throw InternalError(PALUDIS_HERE, "todo: no protocol for sync"); /// \todo fixme
+        throw NoSuchSyncerError(_imp->sync);
 
     SyncerMaker::get_instance()->find_maker(_imp->sync.substr(0, std::min(p, q)))(
             _imp->location, _imp->sync.substr(q < p ? q + 1 : 0))->sync();
