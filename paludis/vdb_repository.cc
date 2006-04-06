@@ -238,7 +238,6 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
     p->metadata->set(vmk_depend,    file_contents(location, p->name, p->version, "DEPEND"));
     p->metadata->set(vmk_rdepend,   file_contents(location, p->name, p->version, "RDEPEND"));
     p->metadata->set(vmk_slot,      file_contents(location, p->name, p->version, "SLOT"));
-    p->metadata->set(vmk_restrict,  file_contents(location, p->name, p->version, "RESTRICT"));
     p->metadata->set(vmk_license,   file_contents(location, p->name, p->version, "LICENSE"));
     p->metadata->set(vmk_keywords,  "*");
     p->metadata->set(vmk_inherited, file_contents(location, p->name, p->version, "INHERITED"));
