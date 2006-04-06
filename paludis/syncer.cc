@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ * Copyright (c) 2006 Stephen Klimaszewski <steev@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,7 +51,31 @@ namespace
             }
     };
 
-    static const SyncerMaker::RegisterMaker register_rsync_syncer("rsync", &RsyncSyncer::make);
+    class SvnSyncer :
+        public Syncer
+    {
+        private:
+            std::string _local;
+            std::string _remote;
+
+        protected:
+            SvnSyncer(const std::string & local, const std::string & remote) :
+                _local(local),
+                _remote(remote)
+            {
+            }
+
+        public:
+            virtual void sync() const;
+            static Syncer::Pointer make(const std::string & local, const std::string & remote)
+            {
+                return Syncer::Pointer(new SvnSyncer(local, remote));
+            }
+    };
+
+    static const SyncerMaker::RegisterMaker register_rsync_syncer("rsync",  &RsyncSyncer::make);
+    static const SyncerMaker::RegisterMaker register_svn_syncer("svn", &SvnSyncer::make);
+    static const SyncerMaker::RegisterMaker register_svnplusssh_syncer("svn+ssh", &SvnSyncer::make);
 }
 
 void
@@ -60,6 +85,15 @@ RsyncSyncer::sync() const
             "--compress --force --whole-file --delete --delete-after --stats "
             "--timeout=180 --exclude=/distfiles --exclude=/packages --progress "
             "'" + _remote + "' '" + _local + "/'");
+
+    if (0 != run_command(cmd))
+        throw SyncFailedError(_local, _remote);
+}
+
+void
+SvnSyncer::sync() const
+{
+    std::string cmd("svn checkout '" + _remote + "' '" + _local + "/'");
 
     if (0 != run_command(cmd))
         throw SyncFailedError(_local, _remote);
