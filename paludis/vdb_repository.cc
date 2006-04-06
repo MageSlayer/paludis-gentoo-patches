@@ -468,19 +468,20 @@ VDBRepository::do_is_mirror(const std::string &) const
 void
 VDBRepository::do_install(const QualifiedPackageName &, const VersionSpec &) const
 {
-    throw InternalError(PALUDIS_HERE, "TODO: VDBRepository doesn't support do_install");
+    throw PackageInstallActionError("PortageRepository doesn't support do_install");
 }
 
 void
 VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v) const
 {
     if (! _imp->root.is_directory())
-        throw InternalError(PALUDIS_HERE, "todo: root not a directory");
+        throw PackageInstallActionError("Couldn't uninstall '" + stringify(q) + "-" +
+                stringify(v) + "' because root ('" + stringify(_imp->root) + "') is not a directory");
 
     VersionMetadata::ConstPointer metadata(0);
     if (! has_version(q, v))
-        throw InternalError(PALUDIS_HERE, "Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' since has_version failed"); /// \todo fixme
+        throw PackageInstallActionError("Couldn't uninstall '" + stringify(q) + "-" +
+                stringify(v) + "' because has_version failed");
     else
         metadata = version_metadata(q, v);
 
@@ -518,7 +519,8 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
             ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
     if (0 != run_command(cmd))
-        throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
+        throw PackageInstallActionError("Couldn't uninstall '" + stringify(q) + "-" +
+                stringify(v) + "'");
 }
 
 DepAtom::Pointer

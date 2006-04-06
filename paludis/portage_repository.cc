@@ -1018,7 +1018,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     }
 
     if (! _imp->root.is_directory())
-        throw InternalError(PALUDIS_HERE, "todo: root not a directory");
+        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                + stringify(v) + "' since root ('" + stringify(_imp->root) + "') isn't a directory");
 
     VersionMetadata::ConstPointer metadata(0);
     if (! has_version(q, v))
@@ -1030,8 +1031,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             metadata = m;
         }
         else
-            throw InternalError(PALUDIS_HERE, "Can't install '" + stringify(q) + "-"
-                    + stringify(v) + "' since has_version failed"); /// \todo fixme
+            throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                    + stringify(v) + "' since has_version failed");
     }
     else
         metadata = version_metadata(q, v);
@@ -1072,10 +1073,12 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                 std::string mirror((*ff)->text().substr(9));
                 std::string::size_type q(mirror.find('/'));
                 if (std::string::npos == q)
-                    throw InternalError(PALUDIS_HERE, "todo"); /// \bug todo
+                    throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                            + stringify(v) + "' since SRC_URI is broken");
                 if (! is_mirror(mirror.substr(0, q)))
-                    throw InternalError(PALUDIS_HERE, "todo: not a mirror: '" +
-                            mirror.substr(0, q) + "'"); /// \bug todo
+                    throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                            + stringify(v) + "' since SRC_URI references unknown mirror:// '" +
+                            mirror.substr(0, q) + "'");
                 for (std::list<std::string>::iterator
                         m(_imp->mirrors.find(mirror.substr(0, q))->second.begin()),
                         m_end(_imp->mirrors.find(mirror.substr(0, q))->second.end()) ;
@@ -1165,7 +1168,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
     if (0 != run_command(cmd))
-        throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
+        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                + stringify(v) + "'");
 }
 
 DepAtom::Pointer
@@ -1202,5 +1206,5 @@ PortageRepository::do_sync() const
 void
 PortageRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &) const
 {
-    throw InternalError(PALUDIS_HERE, "TODO: PortageRepository doesn't support do_uninstall");
+    throw PackageUninstallActionError("PortageRepository doesn't support do_uninstall");
 }

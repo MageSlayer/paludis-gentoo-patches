@@ -66,7 +66,7 @@ RsyncSyncer::sync() const
 }
 
 SyncFailedError::SyncFailedError(const std::string & local, const std::string & remote) throw () :
-    Exception("sync of '" + local + "' from '" + remote + "' failed")
+    PackageActionError("sync of '" + local + "' from '" + remote + "' failed")
 {
 }
 

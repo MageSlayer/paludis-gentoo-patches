@@ -22,6 +22,7 @@
 
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/repository.hh>
 #include <string>
 
 using namespace paludis;
@@ -65,7 +66,7 @@ namespace paludis
      * \ingroup Exception
      */
     class SyncFailedError :
-        public Exception
+        public PackageActionError
     {
         public:
             /**

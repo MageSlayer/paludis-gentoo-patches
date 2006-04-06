@@ -41,3 +41,18 @@ NoSuchRepositoryTypeError::NoSuchRepositoryTypeError(const std::string & format)
 {
 }
 
+PackageActionError::PackageActionError(const std::string & msg) throw () :
+    Exception(msg)
+{
+}
+
+PackageInstallActionError::PackageInstallActionError(const std::string & msg) throw () :
+    PackageActionError("Install error: " + msg)
+{
+}
+
+PackageUninstallActionError::PackageUninstallActionError(const std::string & msg) throw () :
+    PackageActionError("Uninstall error: " + msg)
+{
+}
+

@@ -439,6 +439,39 @@ namespace paludis
             NoSuchRepositoryTypeError(const std::string & format) throw ();
     };
 
+    /**
+     * Parent class for install, uninstall errors.
+     *
+     * \ingroup Exception
+     */
+    class PackageActionError : public Exception
+    {
+        protected:
+            PackageActionError(const std::string & msg) throw ();
+    };
+
+    /**
+     * Thrown if an install fails.
+     *
+     * \ingroup Exception.
+     */
+    class PackageInstallActionError : public PackageActionError
+    {
+        public:
+            PackageInstallActionError(const std::string & msg) throw ();
+    };
+
+    /**
+     * Thrown if an uninstall fails.
+     *
+     * \ingroup Exception.
+     */
+    class PackageUninstallActionError : public PackageActionError
+    {
+        public:
+            PackageUninstallActionError(const std::string & msg) throw ();
+    };
+
     class PackageDatabase;
 
     /**
