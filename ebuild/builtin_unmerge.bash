@@ -30,6 +30,7 @@ builtin_unmerge()
 
     sort -r -t ' ' -k 2 < "${dbdir}/CONTENTS" | \
     while read entry ; do
+        [[ -z "${entry}" ]] && continue
         local items=( ${entry} )
         case ${items[0]} in
             dir)
@@ -84,6 +85,7 @@ builtin_unmerge()
 
     sort -r -t ' ' -k 2 < "${dbdir}/CONTENTS" | \
     while read entry ; do
+        [[ -z "${entry}" ]] && continue
         local items=( ${entry} )
         case ${items[0]} in
             dir)
