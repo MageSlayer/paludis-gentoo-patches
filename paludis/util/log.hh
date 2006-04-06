@@ -83,6 +83,11 @@ namespace paludis
              * Change the log stream.
              */
             void set_log_stream(std::ostream * const);
+
+            /**
+             * Log level, as a string.
+             */
+            std::string log_level_string() const;
     };
 }
 

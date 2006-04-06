@@ -216,6 +216,11 @@ FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &) co
 {
 }
 
+void
+FakeRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &) const
+{
+}
+
 DepAtom::Pointer
 FakeRepository::do_system_packages() const
 {

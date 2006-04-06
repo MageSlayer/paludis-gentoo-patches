@@ -14,6 +14,7 @@ paludis_SOURCES = \
 	command_line.hh      command_line.cc      \
 	colour.hh            colour.cc            \
 	install.hh           install.cc           \
+	uninstall.hh         uninstall.cc         \
 	list.hh              list.cc              \
 	query.hh             query.cc             \
 	sync.hh              sync.cc              \

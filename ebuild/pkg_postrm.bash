@@ -23,5 +23,20 @@
 
 pkg_postrm()
 {
+    :
 }
+
+ebuild_f_postrm()
+{
+    if hasq "postrm" ${RESTRICT} ; then
+        ebuild_section "Skipping pkg_postrm (RESTRICT)"
+    elif hasq "postrm" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping pkg_postrm (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting pkg_postrm"
+        pkg_postrm
+        ebuild_section "Done pkg_postrm"
+    fi
+}
+
 

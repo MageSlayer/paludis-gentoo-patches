@@ -87,7 +87,9 @@ for var in ${save_vars} ; do
     eval "export save_var_${var}='${!var}'"
 done
 
-ebuild_source_profile $(readlink -f "${PALUDIS_PROFILE_DIR}")
+if [[ -n "${PALUDIS_PROFILE_DIR}" ]] ; then
+    ebuild_source_profile $(readlink -f "${PALUDIS_PROFILE_DIR}")
+fi
 
 unset ${save_vars}
 
@@ -134,31 +136,19 @@ ebuild_main()
     for action in $@ ; do
         case ${action} in
             metadata)
-                for f in cut tr ; do
-                    eval "export ebuild_real_${f}=\"$(which $f )\""
-                    eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
-                done
-                PATH="" ebuild_load_ebuild "${ebuild}"
                 ebuild_load_module depend
-                ebuild_f_depend || die "${action} failed"
                 ;;
 
-            init|fetch|merge|tidyup|strip)
+            init|fetch|merge|unmerge|tidyup|strip)
                 ebuild_load_module builtin_${action}
-                ebuild_load_ebuild "${ebuild}"
-                ebuild_f_${action} || die "${action} failed"
             ;;
 
             unpack|compile|install|test)
                 ebuild_load_module src_${action}
-                ebuild_load_ebuild "${ebuild}"
-                ebuild_f_${action} || die "${action} failed"
             ;;
 
             setup|config|nofetch|preinst|postinst|prerm|postrm)
                 ebuild_load_module pkg_${action}
-                ebuild_load_ebuild "${ebuild}"
-                ebuild_f_${action} || die "${action} failed"
             ;;
 
             *)
@@ -168,6 +158,23 @@ ebuild_main()
             ;;
         esac
     done
+
+    if [[ $1 == metadata ]] ; then
+        for f in cut tr ; do
+            eval "export ebuild_real_${f}=\"$(which $f )\""
+            eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
+        done
+        PATH="" ebuild_load_ebuild "${ebuild}"
+        ebuild_f_depend || die "${1} failed"
+    else
+        ebuild_load_ebuild "${ebuild}"
+        for action in $@ ; do
+            ebuild_f_${action} || die "${action} failed"
+            if [[ ${action} == "init" ]] ; then
+                ebuild_load_ebuild "${ebuild}"
+            fi
+        done
+    fi
 }
 
 ebuild_main $@

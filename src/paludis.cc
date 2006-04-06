@@ -19,6 +19,7 @@
 
 #include "src/command_line.hh"
 #include "src/install.hh"
+#include "src/uninstall.hh"
 #include "src/list.hh"
 #include "src/query.hh"
 #include "src/applets.hh"
@@ -91,6 +92,7 @@ main(int argc, char *argv[])
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +
                     CommandLine::get_instance()->a_install.specified() +
+                    CommandLine::get_instance()->a_uninstall.specified() +
                     CommandLine::get_instance()->a_sync.specified() +
                     CommandLine::get_instance()->a_list_repositories.specified() +
                     CommandLine::get_instance()->a_list_categories.specified() +
@@ -136,6 +138,14 @@ main(int argc, char *argv[])
                 throw DoHelp("install action requires at least one parameter");
 
             return do_install();
+        }
+
+        if (CommandLine::get_instance()->a_uninstall.specified())
+        {
+            if (CommandLine::get_instance()->empty())
+                throw DoHelp("uninstall action requires at least one parameter");
+
+            return do_uninstall();
         }
 
         if (CommandLine::get_instance()->a_sync.specified())

@@ -56,6 +56,9 @@ class CommandLine :
         /// --install
         paludis::args::SwitchArg a_install;
 
+        /// --uninstall
+        paludis::args::SwitchArg a_uninstall;
+
         /// --sync
         paludis::args::SwitchArg a_sync;
 
@@ -131,7 +134,7 @@ class CommandLine :
 
         /// }
 
-        /// \name Install arguments
+        /// \name (Un)Install arguments
         /// {
 
         /// Install arguments.

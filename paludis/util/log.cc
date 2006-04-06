@@ -103,3 +103,27 @@ Log::set_log_stream(std::ostream * const s)
 {
     _imp->stream = s;
 }
+
+std::string
+Log::log_level_string() const
+{
+    switch (Log::get_instance()->log_level())
+    {
+        case ll_qa:
+            return "qa";
+
+        case ll_warning:
+            return "warning";
+
+        case ll_debug:
+            return "debug";
+
+        case ll_silent:
+            return "silent";
+
+        case last_ll:
+            ;
+    };
+
+    throw InternalError(PALUDIS_HERE, "Bad log level");
+}

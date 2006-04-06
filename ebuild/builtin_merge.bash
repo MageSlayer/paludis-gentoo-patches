@@ -54,9 +54,14 @@ builtin_merge()
     done
 
     [[ -f "${EBUILD}" ]] && cp "${EBUILD}" ${dbdir}/
+    local x
+    for i in ${INHERITED} ; do
+        cp "${ECLASSDIR}/${i}".eclass "${dbdir}/" || die "save eclass ${i} failed"
+    done
+
     env | bzip2 > ${dbdir}/environment.bz2
 
-    touch ${dbdir}/CONTENTS || die "pkg db write CONTENTS failed"
+    > ${dbdir}/CONTENTS || die "pkg db write CONTENTS failed"
     if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then
         local f ff
         find "${D}/" | \

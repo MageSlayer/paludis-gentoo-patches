@@ -154,6 +154,11 @@ namespace paludis
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &) const = 0;
 
             /**
+             * Override in descendents: uninstall.
+             */
+            virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &) const = 0;
+
+            /**
              * Override in descendents: system package list.
              */
             virtual DepAtom::Pointer do_system_packages() const = 0;
@@ -384,6 +389,14 @@ namespace paludis
             void install(const QualifiedPackageName & q, const VersionSpec & v) const
             {
                 do_install(q, v);
+            }
+
+            /**
+             * Uninstall a package.
+             */
+            void uninstall(const QualifiedPackageName & q, const VersionSpec & v) const
+            {
+                do_uninstall(q, v);
             }
 
             /**

@@ -23,5 +23,19 @@
 
 pkg_prerm()
 {
+    :
+}
+
+ebuild_f_prerm()
+{
+    if hasq "prerm" ${RESTRICT} ; then
+        ebuild_section "Skipping pkg_prerm (RESTRICT)"
+    elif hasq "prerm" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping pkg_prerm (SKIP_FUNCTIONS)"
+    else
+        ebuild_section "Starting pkg_prerm"
+        pkg_prerm
+        ebuild_section "Done pkg_prerm"
+    fi
 }
 

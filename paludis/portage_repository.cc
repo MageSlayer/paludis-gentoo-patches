@@ -632,33 +632,6 @@ PortageRepository::fetch_repo_name(const std::string & location)
     return RepositoryName("x-" + modified_location);
 }
 
-namespace
-{
-    std::string
-    log_level_string()
-    {
-        switch (Log::get_instance()->log_level())
-        {
-            case ll_qa:
-                return "qa";
-
-            case ll_warning:
-                return "warning";
-
-            case ll_debug:
-                return "debug";
-
-            case ll_silent:
-                return "silent";
-
-            case last_ll:
-                ;
-        };
-
-        throw InternalError(PALUDIS_HERE, "Bad log level");
-    }
-}
-
 VersionMetadata::ConstPointer
 PortageRepository::do_version_metadata(
         const CategoryNamePart & c, const PackageNamePart & p, const VersionSpec & v) const
@@ -759,7 +732,7 @@ PortageRepository::do_version_metadata(
                 ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
                 ("PALUDIS_COMMAND", _imp->env->paludis_command())
                 ("KV", kernel_version())
-                ("PALUDIS_EBUILD_LOG_LEVEL", log_level_string())
+                ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
                 ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
 
@@ -1188,7 +1161,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
             ("PALUDIS_COMMAND", _imp->env->paludis_command())
             ("KV", kernel_version())
-            ("PALUDIS_EBUILD_LOG_LEVEL", log_level_string())
+            ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
             ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
     if (0 != run_command(cmd))
@@ -1226,3 +1199,8 @@ PortageRepository::do_sync() const
     return true;
 }
 
+void
+PortageRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &) const
+{
+    throw InternalError(PALUDIS_HERE, "TODO: PortageRepository doesn't support do_uninstall");
+}

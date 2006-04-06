@@ -141,6 +141,9 @@ namespace paludis
         /// Our base location.
         FSEntry location;
 
+        /// Root location
+        FSEntry root;
+
         /// Do we have entries loaded?
         mutable bool entries_valid;
 
@@ -155,7 +158,8 @@ namespace paludis
 
         /// Constructor.
         Implementation(const Environment * const,
-                const PackageDatabase * const d, const FSEntry & l);
+                const PackageDatabase * const d, const FSEntry & l,
+                const FSEntry & r);
 
         /// Destructor.
         ~Implementation();
@@ -164,10 +168,11 @@ namespace paludis
 
 Implementation<VDBRepository>::Implementation(const Environment * const env,
         const PackageDatabase * const d,
-        const FSEntry & l) :
+        const FSEntry & l, const FSEntry & r) :
     db(d),
     env(env),
     location(l),
+    root(r),
     entries_valid(false)
 {
 }
@@ -245,12 +250,13 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
 
 VDBRepository::VDBRepository(
         const Environment * const e, const PackageDatabase * const d,
-        const FSEntry & location) :
+        const FSEntry & location, const FSEntry & root) :
     Repository(RepositoryName("installed")),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(e,
-                d, location))
+                d, location, root))
 {
     _info.insert(std::make_pair(std::string("location"), location));
+    _info.insert(std::make_pair(std::string("root"), root));
     _info.insert(std::make_pair(std::string("format"), std::string("vdb")));
 }
 
@@ -422,7 +428,11 @@ VDBRepository::make_vdb_repository(
     if (m.end() == m.find("location") || ((location = m.find("location")->second)).empty())
         throw VDBRepositoryConfigurationError("Key 'location' not specified or empty");
 
-    return CountedPtr<Repository>(new VDBRepository(env, db, location));
+    std::string root;
+    if (m.end() == m.find("root") || ((root = m.find("root")->second)).empty())
+        root = "/";
+
+    return CountedPtr<Repository>(new VDBRepository(env, db, location, root));
 }
 
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(
@@ -458,7 +468,57 @@ VDBRepository::do_is_mirror(const std::string &) const
 void
 VDBRepository::do_install(const QualifiedPackageName &, const VersionSpec &) const
 {
-    throw InternalError(PALUDIS_HERE, "TODO");
+    throw InternalError(PALUDIS_HERE, "TODO: VDBRepository doesn't support do_install");
+}
+
+void
+VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v) const
+{
+    if (! _imp->root.is_directory())
+        throw InternalError(PALUDIS_HERE, "todo: root not a directory");
+
+    VersionMetadata::ConstPointer metadata(0);
+    if (! has_version(q, v))
+        throw InternalError(PALUDIS_HERE, "Can't install '" + stringify(q) + "-"
+                + stringify(v) + "' since has_version failed"); /// \todo fixme
+    else
+        metadata = version_metadata(q, v);
+
+    PackageDatabaseEntry e(q, v, name());
+    std::string actions;
+    if (metadata->get(vmk_virtual).empty())
+        actions = "prerm unmerge postrm";
+    else
+        actions = "unmerge";
+
+    std::string cmd(make_env_command(
+                getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+                "/ebuild.bash '" +
+                stringify(_imp->location) + "/" +
+                stringify(q.get<qpn_category>()) + "/" +
+                stringify(q.get<qpn_package>()) + "-" + stringify(v) + "/" +
+                stringify(q.get<qpn_package>()) + "-" + stringify(v) + ".ebuild' " + actions)
+            ("P", stringify(q.get<qpn_package>()) + "-" + stringify(v.remove_revision()))
+            ("PV", stringify(v.remove_revision()))
+            ("PR", v.revision_only())
+            ("PN", stringify(q.get<qpn_package>()))
+            ("PVR", stringify(v.remove_revision()) + "-" + v.revision_only())
+            ("PF", stringify(q.get<qpn_package>()) + "-" + stringify(v))
+            ("CATEGORY", stringify(q.get<qpn_category>()))
+            ("ECLASSDIR", stringify(_imp->location) + "/" +
+                stringify(q.get<qpn_category>()) + "/" +
+                stringify(q.get<qpn_package>()) + "-" + stringify(v) + "/")
+            ("ROOT", stringify(_imp->root) + "/")
+            ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
+            ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
+            ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
+            ("PALUDIS_COMMAND", _imp->env->paludis_command())
+            ("KV", kernel_version())
+            ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
+            ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
+
+    if (0 != run_command(cmd))
+        throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
 }
 
 DepAtom::Pointer
