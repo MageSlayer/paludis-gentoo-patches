@@ -39,8 +39,6 @@ DefaultEnvironment::DefaultEnvironment() :
         package_database()->add_repository(
                 RepositoryMaker::get_instance()->find_maker(r->get<rce_format>())(
                     this, package_database().raw_pointer(), r->get<rce_keys>()));
-
-    /// \bug vdb
 }
 
 DefaultEnvironment::~DefaultEnvironment()
