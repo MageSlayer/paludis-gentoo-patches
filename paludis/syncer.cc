@@ -62,6 +62,11 @@ RsyncSyncer::sync() const
             "'" + _remote + "' '" + _local + "/'");
 
     if (0 != run_command(cmd))
-        throw InternalError(PALUDIS_HERE, "todo"); /// \todo fixme
+        throw SyncFailedError(_local, _remote);
+}
+
+SyncFailedError::SyncFailedError(const std::string & local, const std::string & remote) throw () :
+    Exception("sync of '" + local + "' from '" + remote + "' failed")
+{
 }
 

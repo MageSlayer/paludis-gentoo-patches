@@ -59,6 +59,22 @@ namespace paludis
             NoSuchSyncerError(const std::string & format) throw ();
     };
 
+    /**
+     * Thrown if a sync fails.
+     *
+     * \ingroup Exception
+     */
+    class SyncFailedError :
+        public Exception
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            SyncFailedError(const std::string & local, const std::string & remote) throw ();
+    };
+
+
     typedef VirtualConstructor<std::string, Syncer::Pointer (*) (const std::string &, const std::string &),
             virtual_constructor_not_found::ThrowException<NoSuchSyncerError> > SyncerMaker;
 }

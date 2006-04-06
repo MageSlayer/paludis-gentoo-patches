@@ -43,13 +43,25 @@ int do_sync()
     {
         std::cout << colour(cl_heading, "Sync " + p::stringify((*r)->name())) << std::endl;
 
-        if ((*r)->sync())
+        try
         {
-            std::cout << "Sync " << (*r)->name() << " completed" << std::endl;
+            if ((*r)->sync())
+            {
+                std::cout << "Sync " << (*r)->name() << " completed" << std::endl;
+            }
+            else
+            {
+                std::cout << "Sync " << (*r)->name() << " skipped" << std::endl;
+            }
         }
-        else
+        catch (const p::SyncFailedError & e)
         {
-            std::cout << "Sync " << (*r)->name() << " skipped" << std::endl;
+            return_code |= 1;
+            std::cout << std::endl;
+            std::cerr << "Sync error:" << std::endl;
+            std::cerr << "  * " << e.backtrace("\n  * ") << e.message() << std::endl;
+            std::cerr << std::endl;
+            std::cout << "Sync " << (*r)->name() << " failed" << std::endl;
         }
     }
 
