@@ -63,7 +63,7 @@ namespace paludis
                     return "";
                 }
 
-                virtual std::string paludis_command() const
+                virtual std::string paludis_command() const PALUDIS_ATTRIBUTE((noreturn))
                 {
                     throw InternalError(PALUDIS_HERE, "Cannot use paludis_command in a QA environment");
                 }
