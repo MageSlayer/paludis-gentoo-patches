@@ -37,7 +37,7 @@ builtin_merge()
 
         install -d "${ROOT}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
         if [[ -d "${D}" ]] && [[ $(echo ${D}/* ) != "${D}/*" ]] ; then
-            cp --remove-destination -vdfpR "${D}/"* "${ROOT}/" \
+            cp --remove-destination -dfpR "${D}/"* "${ROOT}/" \
                 || die "builtin_merge failed"
         fi
     fi
