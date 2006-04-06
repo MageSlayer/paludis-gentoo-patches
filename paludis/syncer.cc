@@ -21,7 +21,7 @@
 #include <paludis/util/system.hh>
 
 NoSuchSyncerError::NoSuchSyncerError(const std::string & format) throw () :
-    ConfigurationError("No such syncer for format '" + format + "'")
+    SyncFailedError("No such syncer for format '" + format + "'")
 {
 }
 

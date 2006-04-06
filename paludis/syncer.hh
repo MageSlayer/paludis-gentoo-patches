@@ -47,20 +47,6 @@ namespace paludis
     };
 
     /**
-     * Thrown if a syncer of the specified type does not exist.
-     *
-     * \ingroup Exception
-     */
-    class NoSuchSyncerError : public ConfigurationError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            NoSuchSyncerError(const std::string & format) throw ();
-    };
-
-    /**
      * Thrown if a sync fails.
      *
      * \ingroup Exception
@@ -68,11 +54,28 @@ namespace paludis
     class SyncFailedError :
         public PackageActionError
     {
+        protected:
+            SyncFailedError(const std::string & msg) throw ();
+
         public:
             /**
              * Constructor.
              */
             SyncFailedError(const std::string & local, const std::string & remote) throw ();
+    };
+
+    /**
+     * Thrown if a syncer of the specified type does not exist.
+     *
+     * \ingroup Exception
+     */
+    class NoSuchSyncerError : public SyncFailedError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            NoSuchSyncerError(const std::string & format) throw ();
     };
 
 
