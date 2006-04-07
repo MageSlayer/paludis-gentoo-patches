@@ -101,6 +101,8 @@ do_install()
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
         {
+            Context loop_context("When displaying DepList entry '" + stringify(*dep) + "':");
+
             /* display name */
             cout << "* " << colour(cl_package_name, dep->get<p::dle_name>());
 
@@ -117,6 +119,32 @@ do_install()
             if ("0" != dep->get<p::dle_metadata>()->get(p::vmk_slot))
                 cout << colour(cl_slot, " {:" + p::stringify(
                             dep->get<p::dle_metadata>()->get(p::vmk_slot)) + "}");
+
+            /* indicate [U], [S] or [N]. display existing version, if we're
+             * already installed */
+            p::PackageDatabaseEntryCollection::Pointer existing(env->package_database()->
+                    query(p::PackageDepAtom::Pointer(new p::PackageDepAtom(p::stringify(
+                                    dep->get<p::dle_name>()))), p::is_installed_only));
+
+            if (existing->empty())
+                cout << colour(cl_updatemode, " [N]");
+            else
+            {
+                existing = env->package_database()->query(p::PackageDepAtom::Pointer(
+                            new p::PackageDepAtom(p::stringify(dep->get<p::dle_name>()) + ":" +
+                                dep->get<p::dle_metadata>()->get(vmk_slot))),
+                        p::is_installed_only);
+                if (existing->empty())
+                    cout << colour(cl_updatemode, " [S]");
+                else if (existing->last()->get<p::pde_version>() < dep->get<p::dle_version>())
+                    cout << colour(cl_updatemode, " [U " + stringify(
+                                existing->last()->get<pde_version>()) + "]");
+                else if (existing->last()->get<p::pde_version>() > dep->get<p::dle_version>())
+                    cout << colour(cl_updatemode, " [D " + stringify(
+                                existing->last()->get<pde_version>()) + "]");
+                else
+                    cout << colour(cl_updatemode, " [R]");
+            }
 
             /* fetch db entry */
             p::PackageDatabaseEntry p(p::PackageDatabaseEntry(dep->get<p::dle_name>(),
