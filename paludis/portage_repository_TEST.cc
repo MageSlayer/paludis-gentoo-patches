@@ -43,7 +43,7 @@ namespace test_cases
             std::map<std::string, std::string> keys;
             keys.insert(std::make_pair("format",   "portage"));
             keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo1"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/profiles/profile"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo1/profiles/profile"));
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "test-repo-1");
@@ -60,7 +60,7 @@ namespace test_cases
             std::map<std::string, std::string> keys;
             keys.insert(std::make_pair("format",   "portage"));
             keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo2"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/profiles/profile"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo2/profiles/profile"));
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
             TEST_CHECK(0 == repo->name().data().substr(
@@ -78,7 +78,7 @@ namespace test_cases
             std::map<std::string, std::string> keys;
             keys.insert(std::make_pair("format",   "portage"));
             keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo3"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/profiles/profile"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo3/profiles/profile"));
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
             TEST_CHECK(0 == repo->name().data().substr(
@@ -96,7 +96,7 @@ namespace test_cases
             std::map<std::string, std::string> keys;
             keys.insert(std::make_pair("format",   "portage"));
             keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo1"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/profiles/profile"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo1/profiles/profile"));
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -106,7 +106,58 @@ namespace test_cases
             TEST_CHECK(! repo->has_category_named(CategoryNamePart("cat-four")));
         }
     } test_portage_repository_has_category_named;
+
+    struct PortageRepositoryCategoryNamesTest : TestCase
+    {
+        PortageRepositoryCategoryNamesTest() : TestCase("category names") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format",   "portage"));
+            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo1"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo1/profiles/profile"));
+            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            CategoryNamePartCollection::ConstPointer c(repo->category_names());
+            TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-one")));
+            TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-two")));
+            TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-three")));
+            TEST_CHECK(c->end() == c->find(CategoryNamePart("cat-four")));
+            TEST_CHECK_EQUAL(3, std::distance(c->begin(), c->end()));
+        }
+    } test_portage_repository_category_names;
+
+    struct PortageRepositoryHasPackageNamedTest : TestCase
+    {
+        PortageRepositoryHasPackageNamedTest() : TestCase("has package named") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format",   "portage"));
+            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo4"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo4/profiles/profile"));
+            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-one")));
+            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-two")));
+            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-two")));
+            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-one")));
+            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-both")));
+            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-both")));
+            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-neither")));
+            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-neither")));
+            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-one")));
+            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-two")));
+            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-both")));
+            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-neither")));
+        }
+    } test_portage_repository_has_package_named;
+
 }
-
-
 
