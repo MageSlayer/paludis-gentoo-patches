@@ -237,7 +237,6 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
     p->metadata = VersionMetadata::Pointer(new VersionMetadata);
     p->metadata->set(vmk_depend,    file_contents(location, p->name, p->version, "DEPEND"));
     p->metadata->set(vmk_rdepend,   file_contents(location, p->name, p->version, "RDEPEND"));
-    p->metadata->set(vmk_slot,      file_contents(location, p->name, p->version, "SLOT"));
     p->metadata->set(vmk_license,   file_contents(location, p->name, p->version, "LICENSE"));
     p->metadata->set(vmk_keywords,  "*");
     p->metadata->set(vmk_inherited, file_contents(location, p->name, p->version, "INHERITED"));
@@ -245,6 +244,16 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
     p->metadata->set(vmk_pdepend,   file_contents(location, p->name, p->version, "PDEPEND"));
     p->metadata->set(vmk_provide,   file_contents(location, p->name, p->version, "PROVIDE"));
     p->metadata->set(vmk_eapi,      file_contents(location, p->name, p->version, "EAPI"));
+
+    std::string slot(file_contents(location, p->name, p->version, "SLOT"));
+    if (slot.empty())
+    {
+        Log::get_instance()->message(ll_warning, "VDBRepository entry '" +
+                stringify(p->name) + "-" + stringify(p->version) + "' in '" +
+                stringify(location) + " has empty SLOT, setting to \"0\"");
+        slot = "0";
+    }
+    p->metadata->set(vmk_slot,      slot);
 }
 
 VDBRepository::VDBRepository(
