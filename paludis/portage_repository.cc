@@ -1147,6 +1147,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("PN", stringify(q.get<qpn_package>()))
             ("PVR", stringify(v.remove_revision()) + "-" + v.revision_only())
             ("PF", stringify(q.get<qpn_package>()) + "-" + stringify(v))
+            ("SLOT", metadata->get(vmk_slot))
             ("A", archives)
             ("USE", use)
             ("USE_EXPAND", join(_imp->expand_list.begin(), _imp->expand_list.end(), " "))
