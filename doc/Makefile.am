@@ -27,3 +27,9 @@ doxygen :
 
 endif
 
+HOWTO.html : HOWTO.rst
+	rst2html.py $? > $@
+
+upload-howto : HOWTO.html
+	scp $? shell.berlios.de:/home/groups/paludis/htdocs/
+
