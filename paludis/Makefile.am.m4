@@ -29,7 +29,7 @@ addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 
 include(`paludis/files.m4')
 
-CLEANFILES = *~
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh \
 	hashed_containers.hh
 AM_CXXFLAGS = -I$(top_srcdir)

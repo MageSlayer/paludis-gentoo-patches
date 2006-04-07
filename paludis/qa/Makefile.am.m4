@@ -54,7 +54,7 @@ Makefile.am : Makefile.am.m4 files.m4
 qa.hh : qa.hh.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash qa.hh
 
-CLEANFILES = *~
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in Makefile.am qa.hh
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS= \

@@ -1,4 +1,5 @@
-CLEANFILES = *~ version_TEST list_sync_formats_TEST list_repository_formats_TEST
+CLEANFILES = *~ version_TEST list_sync_formats_TEST list_repository_formats_TEST \
+	gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS= \

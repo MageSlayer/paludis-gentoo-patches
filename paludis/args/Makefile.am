@@ -1,4 +1,4 @@
-CLEANFILES = *~
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir)
 
