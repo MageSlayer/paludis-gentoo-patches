@@ -483,11 +483,11 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
                 _imp->package_names.insert(std::make_pair(
                             QualifiedPackageName(c, PackageNamePart(d->basename())), false));
             }
-            catch (const NameError &)
+            catch (const NameError & e)
             {
                 Log::get_instance()->message(ll_warning, "Skipping entry '" +
                         d->basename() + "' in category '" + stringify(c) + "' in repository '"
-                        + stringify(name()) + "'");
+                        + stringify(name()) + "' (" + e.message() + ")");
             }
         }
 
