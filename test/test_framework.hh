@@ -121,7 +121,7 @@ namespace test
              */
             virtual unsigned max_run_time() const
             {
-                return 5;
+                return 30;
             }
     };
 
