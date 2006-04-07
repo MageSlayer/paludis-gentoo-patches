@@ -62,6 +62,18 @@ namespace test_cases
             TEST_CHECK(d.version_spec_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*d.version_spec_ptr(), "1.2");
             TEST_CHECK_EQUAL(d.version_operator(), vo_equal_star);
+
+            PackageDepAtom e("foo/bar:1.2.1");
+            TEST_CHECK_STRINGIFY_EQUAL(e.package(), "foo/bar");
+            TEST_CHECK(e.slot_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(*e.slot_ptr(), "1.2.1");
+            TEST_CHECK(! e.version_spec_ptr());
+
+            PackageDepAtom f("foo/bar:0");
+            TEST_CHECK_STRINGIFY_EQUAL(f.package(), "foo/bar");
+            TEST_CHECK(f.slot_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(*f.slot_ptr(), "0");
+            TEST_CHECK(! f.version_spec_ptr());
         }
     } test_package_dep_atom;
 }
