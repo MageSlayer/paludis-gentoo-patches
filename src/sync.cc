@@ -31,28 +31,19 @@
 
 namespace p = paludis;
 
-int do_sync()
+namespace
 {
-    int return_code(0);
-
-    p::Context context("When performing sync action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
-
-    for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
-            r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    int do_one_sync(p::Repository::ConstPointer r)
     {
-        std::cout << colour(cl_heading, "Sync " + p::stringify((*r)->name())) << std::endl;
+        int return_code(0);
 
+        std::cout << colour(cl_heading, "Sync " + p::stringify(r->name())) << std::endl;
         try
         {
-            if ((*r)->sync())
-            {
-                std::cout << "Sync " << (*r)->name() << " completed" << std::endl;
-            }
+            if (r->sync())
+                std::cout << "Sync " << r->name() << " completed" << std::endl;
             else
-            {
-                std::cout << "Sync " << (*r)->name() << " skipped" << std::endl;
-            }
+                std::cout << "Sync " << r->name() << " skipped" << std::endl;
         }
         catch (const p::SyncFailedError & e)
         {
@@ -61,7 +52,45 @@ int do_sync()
             std::cerr << "Sync error:" << std::endl;
             std::cerr << "  * " << e.backtrace("\n  * ") << e.message() << std::endl;
             std::cerr << std::endl;
-            std::cout << "Sync " << (*r)->name() << " failed" << std::endl;
+            std::cout << "Sync " << r->name() << " failed" << std::endl;
+        }
+
+        return return_code;
+    }
+}
+
+int do_sync()
+{
+    int return_code(0);
+
+    p::Context context("When performing sync action from command line:");
+    p::Environment * const env(p::DefaultEnvironment::get_instance());
+
+    if (CommandLine::get_instance()->empty())
+        for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
+                r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+            return_code |= do_one_sync(*r);
+    else
+    {
+        std::set<p::RepositoryName> repo_names;
+        std::copy(CommandLine::get_instance()->begin_parameters(),
+                CommandLine::get_instance()->end_parameters(),
+                p::create_inserter<p::RepositoryName>(std::inserter(
+                        repo_names, repo_names.begin())));
+
+        for (std::set<p::RepositoryName>::iterator r(repo_names.begin()), r_end(repo_names.end()) ;
+                r != r_end ; ++r)
+        {
+            try
+            {
+                return_code |= do_one_sync(env->package_database()->fetch_repository(*r));
+            }
+            catch (const NoSuchRepositoryError & e)
+            {
+                return_code |= 1;
+                std::cerr << "No such repository '" << *r << "'" << std::endl;
+                std::cout << "Sync " << *r << " failed" << std::endl;
+            }
         }
     }
 

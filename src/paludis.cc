@@ -166,10 +166,6 @@ main(int argc, char *argv[])
 
         if (CommandLine::get_instance()->a_sync.specified())
         {
-            /// \todo --sync foo?
-            if (! CommandLine::get_instance()->empty())
-                throw DoHelp("sync action tales no parameters");
-
             return do_sync();
         }
 
