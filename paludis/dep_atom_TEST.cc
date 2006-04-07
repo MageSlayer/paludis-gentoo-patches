@@ -27,6 +27,50 @@ using namespace test;
 namespace test_cases
 {
     /**
+     * \test Test DepAtom as_ functions.
+     *
+     * \ingroup Test
+     */
+    struct DepAtomAsTest : TestCase
+    {
+        DepAtomAsTest() : TestCase("dep atom as") { }
+
+        void run()
+        {
+            PackageDepAtom::Pointer x(new PackageDepAtom("foo/bar"));
+            TEST_CHECK(0 == x->as_use_dep_atom());
+
+            UseDepAtom::Pointer y(new UseDepAtom(UseFlagName("foo"), x));
+            TEST_CHECK(0 != y->as_use_dep_atom());
+            TEST_CHECK(y.raw_pointer() == y->as_use_dep_atom());
+        }
+    } test_dep_atom_as;
+
+    /**
+     * \test Test DepAtom composite functions.
+     *
+     * \ingroup Test
+     */
+    struct DepAtomCompositeTest : TestCase
+    {
+        DepAtomCompositeTest() : TestCase("dep atom composite") { }
+
+        void run()
+        {
+            AllDepAtom::Pointer x(new AllDepAtom);
+            TEST_CHECK(x->begin() == x->end());
+
+            x->add_child(PackageDepAtom::Pointer(new PackageDepAtom("x/y")));
+            TEST_CHECK(x->begin() != x->end());
+            TEST_CHECK_EQUAL(1, std::distance(x->begin(), x->end()));
+
+            x->add_child(PackageDepAtom::Pointer(new PackageDepAtom("x/y")));
+            TEST_CHECK(x->begin() != x->end());
+            TEST_CHECK_EQUAL(2, std::distance(x->begin(), x->end()));
+        }
+    } test_dep_atom_composite;
+
+    /**
      * \test Test PackageDepAtom.
      *
      * \ingroup Test
@@ -74,6 +118,17 @@ namespace test_cases
             TEST_CHECK(f.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*f.slot_ptr(), "0");
             TEST_CHECK(! f.version_spec_ptr());
+
+            PackageDepAtom g("foo/bar-100dpi");
+            TEST_CHECK_STRINGIFY_EQUAL(g.package(), "foo/bar-100dpi");
+
+            PackageDepAtom h(">=foo/bar-100dpi-1.23");
+            TEST_CHECK_STRINGIFY_EQUAL(h.package(), "foo/bar-100dpi");
+            TEST_CHECK(h.version_spec_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(*h.version_spec_ptr(), "1.23");
+            TEST_CHECK_EQUAL(h.version_operator(), vo_greater_equal);
+
+            TEST_CHECK_THROWS(PackageDepAtom(""), PackageDepAtomError);
         }
     } test_package_dep_atom;
 }
