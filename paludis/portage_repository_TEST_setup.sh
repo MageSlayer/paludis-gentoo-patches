@@ -81,3 +81,59 @@ END
 cd ..
 
 
+mkdir -p repo6/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo6/cat-one/pkg-one || exit 1
+mkdir -p repo6/metadata/cache/cat-one
+cd repo6 || exit 1
+echo "test-repo-6" > profiles/repo_name || exit 1
+cat <<END > profiles/categories || exit 1
+cat-one
+END
+cat <<END > profiles/profile/make.defaults
+ARCH=test
+END
+cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
+END
+cat <<END > metadata/cache/cat-one/pkg-one-1
+the/depend
+the/rdepend
+the-slot
+the-src-uri
+the-restrict
+the-homepage
+the-license
+the-description
+the-keywords
+the-inherited
+the-iuse
+unused
+the/pdepend
+the/provide
+0
+END
+cd ..
+
+
+mkdir -p repo7/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo7/cat-one/pkg-one || exit 1
+mkdir -p repo7/metadata/cache/cat-one
+cd repo7 || exit 1
+echo "test-repo-7" > profiles/repo_name || exit 1
+cat <<END > profiles/categories || exit 1
+cat-one
+END
+cat <<END > profiles/profile/make.defaults
+ARCH=test
+END
+cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+END
+cd ..
+
+

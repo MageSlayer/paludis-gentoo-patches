@@ -325,7 +325,6 @@ namespace test_cases
         }
     } test_portage_repository_has_version;
 
-
     struct PortageRepositoryVersionsTest : TestCase
     {
         PortageRepositoryVersionsTest() : TestCase("versions") { }
@@ -362,5 +361,61 @@ namespace test_cases
             }
         }
     } test_portage_repository_versions;
+
+    struct PortageRepositoryMetadataCachedTest : TestCase
+    {
+        PortageRepositoryMetadataCachedTest() : TestCase("metadata cached") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format",   "portage"));
+            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo6"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo6/profiles/profile"));
+            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+                VersionMetadata::ConstPointer m(0);
+
+                m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
+                TEST_CHECK_EQUAL(m->get(vmk_description), "the-description");
+
+                m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"));
+                TEST_CHECK_EQUAL(m->get(vmk_description), "");
+
+                m = repo->version_metadata(QualifiedPackageName("cat-two/pkg-one"), VersionSpec("1"));
+                TEST_CHECK_EQUAL(m->get(vmk_description), "");
+            }
+        }
+    } test_portage_repository_metadata_cached;
+
+    struct PortageRepositoryMetadataUncachedTest : TestCase
+    {
+        PortageRepositoryMetadataUncachedTest() : TestCase("metadata uncached") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format",   "portage"));
+            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo7"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo7/profiles/profile"));
+            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+                VersionMetadata::ConstPointer m(0);
+
+                m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
+                TEST_CHECK_EQUAL(m->get(vmk_description), "The Description");
+            }
+        }
+    } test_portage_repository_metadata_uncached;
 }
 
