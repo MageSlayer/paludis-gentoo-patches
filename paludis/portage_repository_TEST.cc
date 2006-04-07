@@ -259,5 +259,33 @@ namespace test_cases
         }
     } test_portage_repository_package_names;
 
+    struct PortageRepositoryBadPackageNamesTest : TestCase
+    {
+        PortageRepositoryBadPackageNamesTest() : TestCase("bad package names") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format",   "portage"));
+            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo5"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo5/profiles/profile"));
+            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            QualifiedPackageNameCollection::ConstPointer names(0);
+
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+
+                names = repo->package_names(CategoryNamePart("cat-one"));
+                TEST_CHECK(! names->empty());
+                TEST_CHECK(names->end() != names->find(QualifiedPackageName("cat-one/pkg-one")));
+                TEST_CHECK_EQUAL(1, std::distance(names->begin(), names->end()));
+            }
+        }
+    } test_portage_repository_bad_package_names;
+
 }
 

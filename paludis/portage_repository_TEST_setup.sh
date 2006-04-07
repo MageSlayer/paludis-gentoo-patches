@@ -60,3 +60,22 @@ END
 cd ..
 
 
+mkdir -p repo5/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo5/cat-one/{pkg-one,pkg-1,pkg.one} || exit 1
+cd repo5 || exit 1
+echo "test-repo-5" > profiles/repo_name || exit 1
+cat <<END > profiles/categories || exit 1
+cat-one
+END
+cat <<END > profiles/profile/make.defaults
+ARCH=test
+END
+cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
+END
+cat <<END > cat-one/pkg-1/pkg-1-1.ebuild || exit 1
+END
+cat <<END > cat-one/pkg.one/pkg.one-1.ebuild || exit 1
+END
+cd ..
+
+
