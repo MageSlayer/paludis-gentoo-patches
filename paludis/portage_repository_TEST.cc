@@ -287,5 +287,43 @@ namespace test_cases
         }
     } test_portage_repository_bad_package_names;
 
+    struct PortageRepositoryHasVersionTest : TestCase
+    {
+        PortageRepositoryHasVersionTest() : TestCase("has version") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format",   "portage"));
+            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo4"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo4/profiles/profile"));
+            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+
+                TEST_CHECK(repo->has_version(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1")));
+                TEST_CHECK(repo->has_version(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1.1-r1")));
+                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2")));
+
+                TEST_CHECK(repo->has_version(QualifiedPackageName("cat-one/pkg-both"), VersionSpec("3.45")));
+                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-one/pkg-both"), VersionSpec("1")));
+                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-one/pkg-both"), VersionSpec("1.23")));
+
+                TEST_CHECK(repo->has_version(QualifiedPackageName("cat-two/pkg-two"), VersionSpec("2")));
+                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-two/pkg-two"), VersionSpec("1")));
+
+                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-two/pkg-both"), VersionSpec("3.45")));
+                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-two/pkg-both"), VersionSpec("1")));
+                TEST_CHECK(repo->has_version(QualifiedPackageName("cat-two/pkg-both"), VersionSpec("1.23")));
+
+                TEST_CHECK(! repo->has_version(QualifiedPackageName("cat-two/pkg-neither"), VersionSpec("1")));
+            }
+        }
+    } test_portage_repository_has_version;
+
 }
 

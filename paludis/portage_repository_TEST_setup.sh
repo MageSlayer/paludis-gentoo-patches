@@ -51,11 +51,13 @@ ARCH=test
 END
 cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
 END
-cat <<END > cat-one/pkg-both/pkg-both-1.ebuild || exit 1
+cat <<END > cat-one/pkg-one/pkg-one-1.1-r1.ebuild || exit 1
 END
-cat <<END > cat-two/pkg-two/pkg-two-1.ebuild || exit 1
+cat <<END > cat-one/pkg-both/pkg-both-3.45.ebuild || exit 1
 END
-cat <<END > cat-two/pkg-both/pkg-both-1.ebuild || exit 1
+cat <<END > cat-two/pkg-two/pkg-two-2.ebuild || exit 1
+END
+cat <<END > cat-two/pkg-both/pkg-both-1.23.ebuild || exit 1
 END
 cd ..
 
