@@ -100,10 +100,15 @@ namespace test_cases
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
-            TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-one")));
-            TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-two")));
-            TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-three")));
-            TEST_CHECK(! repo->has_category_named(CategoryNamePart("cat-four")));
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+
+                TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-one")));
+                TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-two")));
+                TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-three")));
+                TEST_CHECK(! repo->has_category_named(CategoryNamePart("cat-four")));
+            }
         }
     } test_portage_repository_has_category_named;
 
@@ -121,12 +126,17 @@ namespace test_cases
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
-            CategoryNamePartCollection::ConstPointer c(repo->category_names());
-            TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-one")));
-            TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-two")));
-            TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-three")));
-            TEST_CHECK(c->end() == c->find(CategoryNamePart("cat-four")));
-            TEST_CHECK_EQUAL(3, std::distance(c->begin(), c->end()));
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+
+                CategoryNamePartCollection::ConstPointer c(repo->category_names());
+                TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-one")));
+                TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-two")));
+                TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-three")));
+                TEST_CHECK(c->end() == c->find(CategoryNamePart("cat-four")));
+                TEST_CHECK_EQUAL(3, std::distance(c->begin(), c->end()));
+            }
         }
     } test_portage_repository_category_names;
 
@@ -144,20 +154,110 @@ namespace test_cases
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
-            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-one")));
-            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-two")));
-            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-two")));
-            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-one")));
-            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-both")));
-            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-both")));
-            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-neither")));
-            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-neither")));
-            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-one")));
-            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-two")));
-            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-both")));
-            TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-neither")));
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-one")));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-two")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-two")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-one")));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-both")));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-both")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-neither")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-neither")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-one")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-two")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-both")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-neither")));
+            }
         }
     } test_portage_repository_has_package_named;
+
+    struct PortageRepositoryHasPackageNamedCachedTest : TestCase
+    {
+        PortageRepositoryHasPackageNamedCachedTest() : TestCase("has package named cached") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format",   "portage"));
+            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo4"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo4/profiles/profile"));
+            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            repo->package_names(CategoryNamePart("cat-one"));
+            repo->package_names(CategoryNamePart("cat-two"));
+            repo->package_names(CategoryNamePart("cat-three"));
+
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-one")));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-two")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-two")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-one")));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-both")));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-both")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-neither")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-neither")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-one")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-two")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-both")));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-neither")));
+            }
+        }
+    } test_portage_repository_has_package_named_cached;
+
+    struct PortageRepositoryPackageNamesTest : TestCase
+    {
+        PortageRepositoryPackageNamesTest() : TestCase("package names") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format",   "portage"));
+            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo4"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo4/profiles/profile"));
+            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            QualifiedPackageNameCollection::ConstPointer names(0);
+
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+
+                names = repo->package_names(CategoryNamePart("cat-one"));
+                TEST_CHECK(! names->empty());
+                TEST_CHECK(names->end() != names->find(QualifiedPackageName("cat-one/pkg-one")));
+                TEST_CHECK(names->end() != names->find(QualifiedPackageName("cat-one/pkg-both")));
+                TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-one/pkg-two")));
+                TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-one/pkg-neither")));
+                TEST_CHECK_EQUAL(2, std::distance(names->begin(), names->end()));
+
+                names = repo->package_names(CategoryNamePart("cat-two"));
+                TEST_CHECK(! names->empty());
+                TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-two/pkg-one")));
+                TEST_CHECK(names->end() != names->find(QualifiedPackageName("cat-two/pkg-both")));
+                TEST_CHECK(names->end() != names->find(QualifiedPackageName("cat-two/pkg-two")));
+                TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-two/pkg-neither")));
+                TEST_CHECK_EQUAL(2, std::distance(names->begin(), names->end()));
+
+                names = repo->package_names(CategoryNamePart("cat-three"));
+                TEST_CHECK(names->empty());
+                TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-three/pkg-one")));
+                TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-three/pkg-both")));
+                TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-three/pkg-two")));
+                TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-three/pkg-neither")));
+                TEST_CHECK_EQUAL(0, std::distance(names->begin(), names->end()));
+            }
+        }
+    } test_portage_repository_package_names;
 
 }
 
