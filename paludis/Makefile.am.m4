@@ -46,7 +46,7 @@ libpaludis_a_SOURCES = filelist
 TESTS = testlist
 
 TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
+	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	$(SHELL) $(top_srcdir)/test/run_test.sh
