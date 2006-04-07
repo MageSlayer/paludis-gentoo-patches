@@ -227,6 +227,24 @@ namespace test_cases
             TEST_CHECK(++i == l.end());
         }
     } test_dep_atom_parser_lexer_use;
+
+    /**
+     * \test Test DepLexer with bad input.
+     *
+     * \ingroup Test
+     */
+    struct DepLexerBadTest : TestCase
+    {
+        DepLexerBadTest() : TestCase("bad") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(DepLexer("(moo)"), DepStringError);
+            TEST_CHECK_THROWS(DepLexer("|foo"), DepStringError);
+            TEST_CHECK_THROWS(DepLexer("( moo )bar"), DepStringError);
+        }
+    } test_dep_atom_parser_lexer_bad;
+
 }
 
 
