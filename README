@@ -11,6 +11,6 @@ installed, and having GraphViz will help too). It will be created under
 stuck in a disused lavatory with a sign on the door saying 'Beware of the
 Leopard'.
 
-There's also a mini howto type thing in 'doc/HOWTO.txt'.
+There's also a mini howto type thing in 'doc/HOWTO.rst'.
 
 .. vim: set spell spelllang=en tw=80 : ..

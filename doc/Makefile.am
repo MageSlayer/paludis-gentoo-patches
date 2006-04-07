@@ -11,7 +11,7 @@ docfiles = \
 	doc_licence.doxygen \
 	doc_authors.doxygen
 
-EXTRA_DIST = doxygen.conf.in $(docfiles) HOWTO.txt
+EXTRA_DIST = doxygen.conf.in $(docfiles) HOWTO.rst
 
 if HAVE_DOXYGEN
 
