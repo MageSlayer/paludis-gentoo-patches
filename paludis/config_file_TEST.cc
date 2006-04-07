@@ -208,6 +208,25 @@ namespace test_cases
             TEST_CHECK_EQUAL(ff.get("x"), "foo");
             TEST_CHECK_EQUAL(ff.get("y"), "foo\\$");
             TEST_CHECK_EQUAL(ff.get("z"), "foofoo\\$");
+
+            std::stringstream t;
+            std::map<std::string, std::string> t_defs;
+            t_defs.insert(std::make_pair("a", "moo"));
+            t_defs.insert(std::make_pair("d", "bar"));
+            t_defs.insert(std::make_pair("e", "baz"));
+            t << "a=foo" << std::endl;
+            t << "b=$a" << std::endl;
+            t << "c=$d" << std::endl;
+            t << "d=$d" << std::endl;
+            t << "f = " << std::endl;
+            KeyValueConfigFile fg(&t, t_defs);
+
+            TEST_CHECK_EQUAL(fg.get("a"), "foo");
+            TEST_CHECK_EQUAL(fg.get("b"), "foo");
+            TEST_CHECK_EQUAL(fg.get("c"), "bar");
+            TEST_CHECK_EQUAL(fg.get("d"), "bar");
+            TEST_CHECK_EQUAL(fg.get("e"), "baz");
+            TEST_CHECK_EQUAL(fg.get("f"), "");
         }
     } test_key_value_config_file_vars;
 
@@ -241,6 +260,10 @@ namespace test_cases
             std::stringstream s5;
             s5 << "x=abc\\" << std::endl;
             TEST_CHECK_THROWS(KeyValueConfigFile ff(&s5), ConfigurationError);
+
+            std::stringstream s6;
+            s6 << "x=$" << std::endl;
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s6), ConfigurationError);
         }
     } test_key_value_config_file_errors;
 }
