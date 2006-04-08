@@ -77,7 +77,8 @@ DefaultConfig::DefaultConfig() :
         {
             config_dir = FSEntry(root_prefix) / SYSCONFDIR / ("paludis" + config_suffix);
             if (! config_dir.exists())
-                throw DefaultConfigError("Can't find configuration directory under root");
+                throw DefaultConfigError("Can't find configuration directory under root ("
+                        "tried '" + stringify(config_dir) + "'");
         }
     }
 
