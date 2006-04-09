@@ -1,4 +1,4 @@
-CLEANFILES = *~ html/* html
+CLEANFILES = *~ html/* html HOWTO.html
 MAINTAINERCLEANFILES = Makefile.in
 
 docfiles = \
