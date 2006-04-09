@@ -61,14 +61,16 @@ namespace paludis
     {
         private:
             FSEntry _base;
+            bool _ignore_dotfiles;
             CountedPtr<std::set<FSEntry>, count_policy::ExternalCountTag> _items;
             std::set<FSEntry>::iterator _iter;
 
         public:
             /**
-             * Constructor, to an FSEntry which must be a directory.
+             * Constructor, to an FSEntry which must be a directory, with an
+             * option to not ignore dotfiles.
              */
-            explicit DirIterator(const FSEntry & base);
+            explicit DirIterator(const FSEntry & base, bool ignore_dotfiles = true);
 
             /**
              * Copy constructor.

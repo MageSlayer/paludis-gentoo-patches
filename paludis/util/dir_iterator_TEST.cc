@@ -61,16 +61,33 @@ namespace test_cases
         {
             DirIterator iter(FSEntry("dir_iterator_TEST_dir"));
             DirIterator iter1(FSEntry("dir_iterator_TEST_dir"));
+            DirIterator iter2(FSEntry("dir_iterator_TEST_dir"), false);
 
             TEST_CHECK(iter != DirIterator());
             TEST_CHECK(DirIterator() != iter);
 
-            TEST_CHECK(*iter == FSEntry("dir_iterator_TEST_dir/all_perms"));
-            TEST_CHECK(*(iter++) == FSEntry("dir_iterator_TEST_dir/all_perms"));
-            TEST_CHECK(iter == DirIterator());
+            TEST_CHECK_EQUAL(iter->basename(), "file1");
+            TEST_CHECK(++iter != DirIterator());
+            TEST_CHECK_EQUAL(iter->basename(), "file2");
+            TEST_CHECK(++iter == DirIterator());
             TEST_CHECK(DirIterator() == iter);
 
-            TEST_CHECK(++iter1 == DirIterator());
+            while (iter1 != DirIterator())
+                ++iter1;
+            TEST_CHECK(iter1 == DirIterator());
+            TEST_CHECK(iter == iter1);
+
+            TEST_CHECK_EQUAL(iter2->basename(), ".file3");
+            TEST_CHECK(++iter2 != DirIterator());
+            TEST_CHECK_EQUAL(iter2->basename(), "file1");
+            TEST_CHECK(++iter2 != DirIterator());
+            TEST_CHECK_EQUAL(iter2->basename(), "file2");
+            TEST_CHECK(++iter2 == DirIterator());
+            TEST_CHECK(DirIterator() == iter2);
+            TEST_CHECK(iter2 == DirIterator());
+
+            TEST_CHECK(iter1 == iter2);
+            TEST_CHECK(iter2 == iter1);
         }
     } test_dir_iterator_iterate;
 }

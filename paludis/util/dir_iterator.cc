@@ -36,8 +36,9 @@ DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) thro
 {
 }
 
-DirIterator::DirIterator(const FSEntry & base) :
+DirIterator::DirIterator(const FSEntry & base, bool ignore_dotfiles) :
     _base(base),
+    _ignore_dotfiles(ignore_dotfiles),
     _items(new std::set<FSEntry>)
 {
     DIR * d(opendir(stringify(base).c_str()));
@@ -46,8 +47,15 @@ DirIterator::DirIterator(const FSEntry & base) :
 
     struct dirent * de;
     while (0 != ((de = readdir(d))))
-        if ('.' != de->d_name[0])
+        if (ignore_dotfiles)
+        {
+            if ('.' != de->d_name[0])
+                _items->insert(_base / std::string(de->d_name));
+        }
+        else if (! (de->d_name[0] == '.' &&
+                    (de->d_name[1] == '\0' || (de->d_name[1] == '.' && de->d_name[2] == '\0'))))
             _items->insert(_base / std::string(de->d_name));
+
     _iter = _items->begin();
 
     closedir(d);
@@ -55,6 +63,7 @@ DirIterator::DirIterator(const FSEntry & base) :
 
 DirIterator::DirIterator(const DirIterator & other) :
     _base(other._base),
+    _ignore_dotfiles(other._ignore_dotfiles),
     _items(other._items),
     _iter(other._iter)
 {
