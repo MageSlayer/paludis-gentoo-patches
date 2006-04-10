@@ -77,19 +77,35 @@ ConfigFile::need_lines() const
     if (_has_lines)
         return;
 
-    std::string line;
+    std::string line, accum;
     unsigned line_number(0);
     while (std::getline(*_stream, line))
     {
         Context c("When handling line " + stringify(++line_number) +
                 (_filename.empty() ? std::string(":") : " in file '" + _filename + "':"));
         normalise_line(line);
-        if (skip_line(line))
+
+        if (line.empty() || skip_line(line))
+        {
+            if (!accum.empty())
+                throw ConfigFileError("Line-continuation followed by a blank line or comment is invalid.");
+
             continue;
-        accept_line(line);
+        }
+        if ('\\' == line.at(line.length() - 1))
+        {
+            line.erase(line.length() - 1);
+            accum += line;
+            continue;
+        }
+
+        accept_line(accum + line);
+        accum.clear();
     }
     if (! _stream->eof())
         throw ConfigFileError("Error reading from file");
+    if (! accum.empty())
+        throw ConfigFileError("Line-continuation needs a continuation.");
 
     _has_lines = true;
 }

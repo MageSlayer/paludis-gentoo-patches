@@ -219,6 +219,8 @@ namespace test_cases
             t << "c=$d" << std::endl;
             t << "d=$d" << std::endl;
             t << "f = " << std::endl;
+            t << "g = foo \\" << std::endl;
+            t << "    bar" << std::endl;
             KeyValueConfigFile fg(&t, t_defs);
 
             TEST_CHECK_EQUAL(fg.get("a"), "foo");
@@ -227,6 +229,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(fg.get("d"), "bar");
             TEST_CHECK_EQUAL(fg.get("e"), "baz");
             TEST_CHECK_EQUAL(fg.get("f"), "");
+            TEST_CHECK_EQUAL(fg.get("g"), "foo bar");
         }
     } test_key_value_config_file_vars;
 
@@ -264,6 +267,14 @@ namespace test_cases
             std::stringstream s6;
             s6 << "x=$" << std::endl;
             TEST_CHECK_THROWS(KeyValueConfigFile ff(&s6), ConfigurationError);
+
+            std::stringstream s7;
+            s7 << "x=blah \\" << std::endl;
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s7), ConfigurationError);
+
+            std::stringstream s8;
+            s8 << "x=blah \\" << std::endl << "# foo" << std::endl;
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s8), ConfigurationError);
         }
     } test_key_value_config_file_errors;
 }
