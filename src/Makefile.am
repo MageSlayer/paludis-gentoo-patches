@@ -1,6 +1,3 @@
-CLEANFILES = *~ version_TEST list_sync_formats_TEST list_repository_formats_TEST \
-	gmon.out *.gcov *.gcno *.gcda
-MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
@@ -31,10 +28,16 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_SKIP_CONFIG="yes" \
 	$(SHELL) $(top_srcdir)/test/run_test.sh bash
 
-TESTS = version_TEST list_sync_formats_TEST list_repository_formats_TEST
+TESTS = version_TEST help_TEST list_sync_formats_TEST list_repository_formats_TEST
+
+CLEANFILES = *~ $(TESTS) gmon.out *.gcov *.gcno *.gcda
+MAINTAINERCLEANFILES = Makefile.in
 
 version_TEST : paludis
 	echo -e "#!/bin/sh\n./paludis --version" > $@
+
+help_TEST : paludis
+	echo -e "#!/bin/sh\n./paludis --help" > $@
 
 list_sync_formats_TEST : paludis
 	echo -e "#!/bin/sh\n./paludis --list-sync-protocols" > $@
