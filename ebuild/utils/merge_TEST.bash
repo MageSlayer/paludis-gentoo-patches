@@ -18,13 +18,17 @@
 
 merge_empty_TEST()
 {
-    ./merge "merge_TEST_dir/empty_src" "merge_TEST_dir/empty_dst"
+    ./merge "merge_TEST_dir/empty_src" \
+        "merge_TEST_dir/empty_dst" \
+        "merge_TEST_dir/empty_contents" 1>/dev/null
     test_return_code
 }
 
 merge_files_TEST()
 {
-    ./merge "merge_TEST_dir/files_src" "merge_TEST_dir/files_dst"
+    ./merge "merge_TEST_dir/files_src" \
+        "merge_TEST_dir/files_dst" \
+        "merge_TEST_dir/files_contents" 1>/dev/null
     test_return_code
 
     [[ -f "merge_TEST_dir/files_dst/one" ]] ; test_return_code
@@ -36,7 +40,9 @@ merge_files_TEST()
 
 merge_dirs_TEST()
 {
-    ./merge "merge_TEST_dir/dirs_src" "merge_TEST_dir/dirs_dst"
+    ./merge "merge_TEST_dir/dirs_src" \
+        "merge_TEST_dir/dirs_dst" \
+        "merge_TEST_dir/dirs_contents" 1>/dev/null
     test_return_code
 
     [[ -d "merge_TEST_dir/dirs_dst/dir_one" ]] ; test_return_code
@@ -55,7 +61,9 @@ merge_dirs_TEST()
 
 merge_dirs_over_TEST()
 {
-    ./merge "merge_TEST_dir/dirs_over_src" "merge_TEST_dir/dirs_over_dst"
+    ./merge "merge_TEST_dir/dirs_over_src" \
+        "merge_TEST_dir/dirs_over_dst" \
+        "merge_TEST_dir/dirs_over_contents" 1>/dev/null
     test_return_code
 
     [[ -d "merge_TEST_dir/dirs_over_dst/dir_one/" ]] ; test_return_code
@@ -74,7 +82,9 @@ merge_dirs_over_TEST()
 
 merge_links_TEST()
 {
-    ./merge "merge_TEST_dir/links_src" "merge_TEST_dir/links_dst"
+    ./merge "merge_TEST_dir/links_src" \
+        "merge_TEST_dir/links_dst" \
+        "merge_TEST_dir/links_contents" 1>/dev/null
     test_return_code
 
     [[ -f "merge_TEST_dir/links_dst/one" ]] ; test_return_code
@@ -87,4 +97,34 @@ merge_links_TEST()
     [[ -L "merge_TEST_dir/links_dst/link_to_two" ]] ; test_return_code
     test_equality "$(< merge_TEST_dir/links_dst/link_to_two)" "contents of two"
 }
+
+merge_links_over_TEST()
+{
+    ./merge "merge_TEST_dir/links_over_src" \
+        "merge_TEST_dir/links_over_dst" \
+        "merge_TEST_dir/links_over_contents" 1>/dev/null
+    test_return_code
+
+    [[ -f "merge_TEST_dir/links_over_dst/one" ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/links_over_dst/one)" "contents of one"
+
+    [[ -f "merge_TEST_dir/links_over_dst/two" ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/links_over_dst/two)" "contents of two"
+
+    [[ -f "merge_TEST_dir/links_over_dst/link_to_two" ]] ; test_return_code
+    [[ -L "merge_TEST_dir/links_over_dst/link_to_two" ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/links_over_dst/link_to_two)" "contents of two"
+
+    [[ -f "merge_TEST_dir/links_over_dst/link_to_three" ]] ; test_return_code
+    [[ -L "merge_TEST_dir/links_over_dst/link_to_three" ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/links_over_dst/link_to_three)" "contents of three"
+}
+merge_links_over_dir_TEST()
+{
+    ! ./merge "merge_TEST_dir/links_over_dir_src" \
+        "merge_TEST_dir/links_over_dir_dst" \
+        "merge_TEST_dir/links_over_dir_contents" &>/dev/null
+    test_return_code
+}
+
 

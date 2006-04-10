@@ -25,27 +25,6 @@ builtin_merge()
     local olddotglob=$?
     shopt -s dotglob
 
-    if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then
-        if [[ -n "${CONFIG_PROTECT}" ]] ; then
-            local d f
-            for d in ${CONFIG_PROTECT} ; do
-                [[ -d "${D}${d}" ]] || continue
-                find "${D}${d}" -type f | \
-                while read f ; do
-                    if [[ -e "${ROOT}${f#${D}}" ]] ; then
-                        echo "CONFIG_PROTECT ${f#${D}}"
-                    fi
-                done
-            done
-        fi
-
-        install -d "${ROOT}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
-        if [[ -d "${D}" ]] ; then
-            ${PALUDIS_EBUILD_MODULES_DIR}/utils/merge "${D}/" "${ROOT}/" \
-                || die "merge failed"
-        fi
-    fi
-
     local dbdir="${ROOT}"/var/db/pkg/"${CATEGORY}/${PF}"
     ebuild_section "Writing VDB entry to '${dbdir}'..."
     install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
@@ -64,26 +43,27 @@ builtin_merge()
     done
 
     env | bzip2 > ${dbdir}/environment.bz2
+    > ${dbdir}/CONTENTS
 
-    > ${dbdir}/CONTENTS || die "pkg db write CONTENTS failed"
     if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then
-        local f ff
-        find "${D}/" | \
-        while read f ; do
-            ff=${f#${D}}
-            ff=${ff//+(\/)/\/}
-            [[ "${ff}" == "/" ]] && continue
-            echo ">>> ${ff}"
-            if [[ -d "${f}" ]] ; then
-                echo "dir ${ff}" >> ${dbdir}/CONTENTS
-            elif [[ -L "${f}" ]] ; then
-                echo "sym ${ff} -> $(readlink ${f} ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
-            elif [[ -f "${f}" ]] ; then
-                echo "obj ${ff} $(md5sum ${f} | cut -d ' ' -f1 ) $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
-            else
-                echo "misc ${ff} $(stat -c '%Y' ${f} )" >> ${dbdir}/CONTENTS
-            fi
-        done
+        if [[ -n "${CONFIG_PROTECT}" ]] ; then
+            local d f
+            for d in ${CONFIG_PROTECT} ; do
+                [[ -d "${D}${d}" ]] || continue
+                find "${D}${d}" -type f | \
+                while read f ; do
+                    if [[ -e "${ROOT}${f#${D}}" ]] ; then
+                        echo "CONFIG_PROTECT ${f#${D}}"
+                    fi
+                done
+            done
+        fi
+
+        install -d "${ROOT}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
+        if [[ -d "${D}" ]] ; then
+            ${PALUDIS_EBUILD_MODULES_DIR}/utils/merge "${D}/" "${ROOT}/" "${dbdir}/CONTENTS" \
+                || die "merge failed"
+        fi
     fi
 
     [[ $olddotglob != 0 ]] && shopt -u dotglob

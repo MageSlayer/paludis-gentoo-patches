@@ -25,23 +25,33 @@ fi
 shopt -s dotglob
 shopt -s nullglob
 
-src=${1%/}/
-dst=${2%/}/
+src=$(readlink -f "${1%/}" )
+src="${src//+(\/)/\/}"
+export top_src="${src}"
+dst=$(readlink -f "${2%/}" )
+dst="${dst//+(\/)/\/}"
+export top_dst="${dst}"
+export contents=${3}
 
 if [[ ! -d ${src} ]] ; then
-    echo "${0}: ${src}: not a directory; aborting" >&2
+    echo "${src}: not a directory; aborting" >&2
     exit 247
 fi
 
 if [[ ! -d ${dst} ]] ; then
-    echo "${0}: ${dst}: not a directory; aborting" >&2
+    echo "${dst}: not a directory; aborting" >&2
+    exit 247
+fi
+
+if ! > "${contents}" ; then
+    echo "${contents}: can't create; aborting" >&2
     exit 247
 fi
 
 merge_this()
 {
     if [[ ! -d "${1}" ]] || [[ ! -d "${2}" ]] ; then
-        echo "${0}: merge_this called with bad parameters '${1}' '${2}'" >&2
+        echo "merge_this called with bad parameters '${1}' '${2}'" >&2
         exit 247
     fi
 
@@ -49,24 +59,34 @@ merge_this()
     for f in "${1}/"* ; do
 
         ff=$(basename "${f}" )
+        echo ">>> ${2#${top_dst}}/${ff}"
+
         if [[ -L "${f}" ]] ; then
-            if ! ln -s "$(readlink ${f} )" "${2}/${ff}" ; then
-                echo "${0}: error installing link ${f}"
+            if [[ -e "${2}/${ff}" ]] && ! rm -f "${2}/${ff}" ; then
+                echo "error removing ${2}/${ff} for link ${f}"
                 r=1
+            elif ! ln -s "$(readlink ${f} )" "${2}/${ff}" ; then
+                echo "error installing link ${f}"
+                r=1
+            else
+                echo -n "sym ${2#${top_dst}}/${ff} -> " >> ${contents}
+                echo -n "$(readlink ${2}/${ff} ) " >> ${contents}
+                echo -n "$(stat -c '%Y' ${2}/${ff} )" >> ${contents}
+                echo >> ${contents}
             fi
         elif [[ -d ${f} ]] ; then
             local ok=
             if [[ -d "${2}/${ff}"/ ]] ; then
                 :
             elif ! mkdir "${2}/${ff}" ; then
-                echo "${0}: error installing directory ${f}"
+                echo "error installing directory ${f}"
                 ok=no
-
             fi
 
             if [[ -z "${ok}" ]] ; then
+                echo "dir ${2#${top_dst}}/${ff}" >> ${contents}
                 if ! merge_this "${1}/${ff}" "${2}/${ff}" ; then
-                    echo "${0}: error installing directory contents ${f}"
+                    echo "error installing directory contents ${f}"
                     r=1
                 fi
             else
@@ -74,8 +94,17 @@ merge_this()
             fi
         else
             if ! cp -p "${f}" "${2}"/ ; then
-                echo "${0}: error installing file ${f}"
+                echo "error installing file ${f}"
                 r=1
+            else
+                if [[ -f "${f}" ]] ; then
+                    echo -n "obj ${2#${top_dst}}/${ff} " >> ${contents}
+                    echo -n "$(md5sum ${2}/${ff} | cut -d' ' -f1 ) " >> ${contents}
+                    echo -n "$(stat -c '%Y' ${2}/${ff} )" >> ${contents}
+                    echo >> ${contents}
+                else
+                    echo "misc ${2#${top_dst}}/${ff}" >> ${contents}
+                fi
             fi
         fi
     done
@@ -83,5 +112,5 @@ merge_this()
     return $r
 }
 
-merge_this "${1}" "${2}"
+merge_this "${src}" "${dst}"
 
