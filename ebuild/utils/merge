@@ -93,7 +93,7 @@ merge_this()
                 r=1
             fi
         else
-            if ! cp -p "${f}" "${2}"/ ; then
+            if ! cp -pR "${f}" "${2}"/ ; then
                 echo "error installing file ${f}"
                 r=1
             else
