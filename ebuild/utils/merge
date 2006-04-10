@@ -1,0 +1,87 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+# Copyright (c) 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+#
+# This file is part of the Paludis package manager. Paludis is free software;
+# you can redistribute it and/or modify it under the terms of the GNU General
+# Public License as published by the Free Software Foundation; either version
+# 2 of the License, or (at your option) any later version.
+#
+# Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA  02111-1307  USA
+
+if [[ -z "${1}" ]] || [[ -z "${2}" ]] ; then
+    echo "usage: ${0} from to"
+    exit 247
+fi
+
+shopt -s dotglob
+shopt -s nullglob
+
+src=${1%/}/
+dst=${2%/}/
+
+if [[ ! -d ${src} ]] ; then
+    echo "${0}: ${src}: not a directory; aborting" >&2
+    exit 247
+fi
+
+if [[ ! -d ${dst} ]] ; then
+    echo "${0}: ${dst}: not a directory; aborting" >&2
+    exit 247
+fi
+
+merge_this()
+{
+    if [[ ! -d "${1}" ]] || [[ ! -d "${2}" ]] ; then
+        echo "${0}: merge_this called with bad parameters '${1}' '${2}'" >&2
+        exit 247
+    fi
+
+    local f ff r=0
+    for f in "${1}/"* ; do
+
+        ff=$(basename "${f}" )
+        if [[ -L "${f}" ]] ; then
+            if ! ln -s "$(readlink ${f} )" "${2}/${ff}" ; then
+                echo "${0}: error installing link ${f}"
+                r=1
+            fi
+        elif [[ -d ${f} ]] ; then
+            local ok=
+            if [[ -d "${2}/${ff}"/ ]] ; then
+                :
+            elif ! mkdir "${2}/${ff}" ; then
+                echo "${0}: error installing directory ${f}"
+                ok=no
+
+            fi
+
+            if [[ -z "${ok}" ]] ; then
+                if ! merge_this "${1}/${ff}" "${2}/${ff}" ; then
+                    echo "${0}: error installing directory contents ${f}"
+                    r=1
+                fi
+            else
+                r=1
+            fi
+        else
+            if ! cp -p "${f}" "${2}"/ ; then
+                echo "${0}: error installing file ${f}"
+                r=1
+            fi
+        fi
+    done
+
+    return $r
+}
+
+merge_this "${1}" "${2}"
+

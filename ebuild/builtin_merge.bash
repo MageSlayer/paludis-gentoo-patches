@@ -21,6 +21,10 @@ builtin_merge()
 {
     ebuild_section "Merging to '${ROOT:-/}'..."
 
+    shopt -q dotglob
+    local olddotglob=$?
+    shopt -s dotglob
+
     if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then
         if [[ -n "${CONFIG_PROTECT}" ]] ; then
             local d f
@@ -36,9 +40,9 @@ builtin_merge()
         fi
 
         install -d "${ROOT}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
-        if [[ -d "${D}" ]] && [[ $(echo ${D}/* ) != "${D}/*" ]] ; then
-            cp --remove-destination -dfpR "${D}/"* "${ROOT}/" \
-                || die "builtin_merge failed"
+        if [[ -d "${D}" ]] ; then
+            ${PALUDIS_EBUILD_MODULES_DIR}/utils/merge "${D}/" "${ROOT}/" \
+                || die "merge failed"
         fi
     fi
 
@@ -81,6 +85,10 @@ builtin_merge()
             fi
         done
     fi
+
+    [[ $olddotglob != 0 ]] && shopt -u dotglob
+    shopt -q dotglob
+    [[ $olddotglob == $? ]] || ebuild_notice "warning" "shopt dotglob restore failed"
 }
 
 ebuild_f_merge()
