@@ -48,7 +48,11 @@ Make some skeleton directories and files::
     touch /mychroot/etc/ld.so.conf
 
 Set up your keywords.conf. At the very least, you'll need a "* keywords" line.
-Further lines can be added in the form "atom keywords"::
+Further lines can be added in the form "atom keywords". Like with Portage,
+accepting ``~keyword`` does *not* accept ``keyword``, so if you want a fully
+``~arch`` system you should use ``* arch ~arch``.
+
+::
 
     cat <<END > /mychroot/etc/paludis/keywords.conf
     * x86
@@ -131,7 +135,7 @@ painful 'Updating the Portage cache...' to go through. Paludis will use the
 metadata cache, if available, but does not use the dep cache.
 
 Now install baselayout and then system. We install baselayout manually first
-because it's easier than creating a bunch of directories manually.
+because it's easier than creating a bunch of directories by hand.
 
 Note that Paludis will use src_test regardless of FEATURES (FEATURES is a
 Portage thing, and Paludis doesn't use it any more than it has to).
