@@ -58,7 +58,8 @@ DefaultConfig::DefaultConfig() :
     if (! _config_suffix.empty())
         config_suffix = "-" + _config_suffix;
 
-    FSEntry config_dir(FSEntry(getenv_or_error("HOME")) / (".paludis" + config_suffix));
+    FSEntry config_dir(FSEntry(getenv_with_default("PALUDIS_HOME", getenv_or_error("HOME"))) /
+            (".paludis" + config_suffix));
     if (! config_dir.exists())
         config_dir = (FSEntry(SYSCONFDIR) / ("paludis" + config_suffix));
     if (! config_dir.exists())

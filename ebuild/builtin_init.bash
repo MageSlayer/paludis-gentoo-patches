@@ -42,6 +42,7 @@ builtin_init()
     export T="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/temp/"
     mkdir -p "${T}" || die "Couldn't create \$T (\"${T}\")"
     declare -r T="${T}"
+    export PALUDIS_HOME="${HOME}"
     export HOME="${T}"
 
     export D="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/image/"
