@@ -20,7 +20,7 @@
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
 if [[ -z "${1}" ]] || [[ -z "${2}" ]] ; then
-    echo "usage: ${0} from to"
+    echo "usage: ${0} from to contents"
     exit 247
 fi
 
