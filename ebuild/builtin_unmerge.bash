@@ -28,82 +28,8 @@ builtin_unmerge()
         eval "${v}='$(< ${dbdir}/${v} )' || die \"Load key ${v} failed\""
     done
 
-    sort -r -t ' ' -k 2 < "${dbdir}/CONTENTS" | \
-    while read entry ; do
-        [[ -z "${entry}" ]] && continue
-        local items=( ${entry} )
-        case ${items[0]} in
-            dir)
-                ;;
-
-            sym)
-                if ! [[ -L "${ROOT}/${items[1]}" ]] ; then
-                    echo "skip  !type  ${items[1]}"
-                elif [[ $(readlink "${ROOT}/${items[1]}" ) != "${items[3]}" ]] ; then
-                    echo "skip  !dest  ${items[1]}"
-                elif [[ $(stat -c '%Y' "${ROOT}/${items[1]}" ) != "${items[4]}" ]] ; then
-                    echo "skip  !time  ${items[1]}"
-                else
-                    echo "remove       ${items[1]}"
-                    rm -f "${ROOT}/${items[1]}"
-                fi
-                ;;
-
-            obj)
-                if ! [[ -f "${ROOT}/${items[1]}" ]] ; then
-                    echo "skip  !type  ${items[1]}"
-                elif [[ $(md5sum "${ROOT}/${items[1]}" | cut -d' ' -f1 ) != "${items[2]}" ]] ; then
-                    echo "skip  !md5   ${items[1]}"
-                elif [[ $(stat -c '%Y' "${ROOT}/${items[1]}" ) != "${items[3]}" ]] ; then
-                    echo "skip  !time  ${items[1]}"
-                else
-                    echo "remove       ${items[1]}"
-                    rm -f "${ROOT}/${items[1]}"
-                fi
-                ;;
-
-            misc)
-                if [[ -f "${ROOT}/${items[1]}" ]] ; then
-                    echo "skip  !type  ${items[1]}"
-                elif [[ $(stat -c '%Y' "${ROOT}/${items[1]}" ) != "${items[2]}" ]] ; then
-                    echo "skip  !time  ${items[1]}"
-                else
-                    echo "remove       ${items[1]}"
-                    rm -f "${ROOT}/${items[1]}"
-                fi
-                ;;
-
-            *)
-                die "Unknown VDB entry kind '${kind}'"
-                ;;
-        esac
-    done
-
-    shopt -q dotglob
-    local olddotglob=$?
-    shopt -s dotglob
-
-    sort -r -t ' ' -k 2 < "${dbdir}/CONTENTS" | \
-    while read entry ; do
-        [[ -z "${entry}" ]] && continue
-        local items=( ${entry} )
-        case ${items[0]} in
-            dir)
-                if ! [[ -d "${ROOT}/${items[1]}" ]] ; then
-                    echo "skip  !type  ${items[1]}"
-                elif [[ $(echo "${ROOT}/${items[1]}"/* ) != "${ROOT}/${items[1]}/*" ]] ; then
-                    echo "skip  !empty ${items[1]}"
-                else
-                    echo "remove       ${items[1]}"
-                    rm -fr "${ROOT}/${items[1]}"
-                fi
-                ;;
-        esac
-    done
-
-    [[ $olddotglob != 0 ]] && shopt -u dotglob
-    shopt -q dotglob
-    [[ $olddotglob == $? ]] || ebuild_notice "warning" "shopt dotglob restore failed"
+    ${PALUDIS_EBUILD_MODULES_DIR}/utils/unmerge "${ROOT}/" "${dbdir}/CONTENTS" \
+        || die "unmerge failed"
 
     rm -fr "${dbdir}"
 }

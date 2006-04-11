@@ -42,6 +42,12 @@ builtin_merge()
         cp "${ECLASSDIR}/${i}".eclass "${dbdir}/" || die "save eclass ${i} failed"
     done
 
+    local reinstall=
+    if [[ -f "${dbdir}/CONTENTS" ]] ; then
+        mv "${dbdir}/CONTENTS" "${dbdir}/OLDCONTENTS" || die "save contents failed"
+        reinstall="yes"
+    fi
+
     env | bzip2 > ${dbdir}/environment.bz2
     > ${dbdir}/CONTENTS
 
@@ -64,6 +70,12 @@ builtin_merge()
             ${PALUDIS_EBUILD_MODULES_DIR}/utils/merge "${D}/" "${ROOT}/" "${dbdir}/CONTENTS" \
                 || die "merge failed"
         fi
+    fi
+
+    if [[ -n "${reinstall}" ]] ; then
+        ${PALUDIS_EBUILD_MODULES_DIR}/utils/unmerge "${ROOT}/" "${dbdir}/OLDCONTENTS" \
+            || die "unmerge failed"
+        rm -f "${dbdir}/OLDCONTENTS"
     fi
 
     [[ $olddotglob != 0 ]] && shopt -u dotglob

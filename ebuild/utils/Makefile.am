@@ -37,7 +37,8 @@ libexecprog_SCRIPTS = \
 	newlib.a \
 	newlib.so \
 	newman \
-	newsbin
+	newsbin \
+	unmerge
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
@@ -45,9 +46,12 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	$(SHELL) $(top_srcdir)/ebuild/utils/run_test.bash
 
-TESTS = merge_TEST.bash dobin_TEST.bash
+TESTS = merge_TEST.bash dobin_TEST.bash unmerge_TEST.bash
 EXTRA_DIST = $(libexecprog_SCRIPTS) $(TESTS) run_test.bash
 
-check_SCRIPTS = $(TESTS) merge_TEST_setup.sh merge_TEST_cleanup.sh
+check_SCRIPTS = $(TESTS) \
+	merge_TEST_setup.sh merge_TEST_cleanup.sh \
+	unmerge_TEST_setup.sh unmerge_TEST_cleanup.sh
+
 check_PROGRAMS =
 
