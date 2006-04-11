@@ -250,7 +250,7 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
     {
         Log::get_instance()->message(ll_warning, "VDBRepository entry '" +
                 stringify(p->name) + "-" + stringify(p->version) + "' in '" +
-                stringify(location) + " has empty SLOT, setting to \"0\"");
+                stringify(location) + "' has empty SLOT, setting to \"0\"");
         slot = "0";
     }
     p->metadata->set(vmk_slot,      slot);
