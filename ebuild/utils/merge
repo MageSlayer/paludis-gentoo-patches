@@ -63,14 +63,16 @@ merge_this()
         ff=$(basename "${f}" )
         echo ">>> ${2#${top_dst}}/${ff}"
 
-        if [[ -L "${2}/${ff}" ]] ; then
-            if ! [[ -L "${f}" ]] ; then
-                ebuild_notice "qa" "ROOT has '${2}/${ff}' as a non-symlink, " \
-                    "but IMAGE '${f}' is a symlink"
+        if [[ -e "${f}" ]] || [[ -h "${f}" ]] ; then
+            if [[ -L "${2}/${ff}" ]] ; then
+                if ! [[ -L "${f}" ]] ; then
+                    ebuild_notice "qa" "ROOT has '${2}/${ff}' as a non-symlink, " \
+                        "but IMAGE '${f}' is a symlink"
+                fi
+            elif [[ -L "${f}" ]] ; then
+                ebuild_notice "qa" "ROOT has '${2}/${ff}' as a symlink, " \
+                    "but IMAGE '${f}' is a non-symlink"
             fi
-        elif [[ -L "${f}" ]] ; then
-            ebuild_notice "qa" "ROOT has '${2}/${ff}' as a symlink, " \
-                "but IMAGE '${f}' is a non-symlink"
         fi
 
         if [[ -L "${f}" ]] ; then
