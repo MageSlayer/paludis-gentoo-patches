@@ -1174,16 +1174,21 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 }
 
 DepAtom::Pointer
-PortageRepository::do_system_packages() const
+PortageRepository::do_package_set(const std::string & s) const
 {
-    if (! _imp->has_profile)
+    if ("system" == s)
     {
-        Context c("When loading system packages list:");
-        _imp->add_profile(_imp->profile.realpath());
-        _imp->has_profile = true;
-    }
+        if (! _imp->has_profile)
+        {
+            Context c("When loading system packages list:");
+            _imp->add_profile(_imp->profile.realpath());
+            _imp->has_profile = true;
+        }
 
-    return _imp->system_packages;
+        return _imp->system_packages;
+    }
+    else
+        return DepAtom::Pointer(new AllDepAtom);
 }
 
 bool

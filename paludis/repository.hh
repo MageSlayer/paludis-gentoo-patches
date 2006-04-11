@@ -159,9 +159,9 @@ namespace paludis
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &) const = 0;
 
             /**
-             * Override in descendents: system package list.
+             * Override in descendents: package list.
              */
-            virtual DepAtom::Pointer do_system_packages() const = 0;
+            virtual DepAtom::Pointer do_package_set(const std::string & id) const = 0;
 
             /**
              * Override in descendents: sync, if needed (true) or do nothing (false).
@@ -417,11 +417,11 @@ namespace paludis
             }
 
             /**
-             * Fetch our system packages list.
+             * Fetch a package set.
              */
-            virtual DepAtom::Pointer system_packages() const
+            virtual DepAtom::Pointer package_set(const std::string & s) const
             {
-                return do_system_packages();
+                return do_package_set(s);
             }
     };
 

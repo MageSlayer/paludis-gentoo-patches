@@ -532,9 +532,19 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
 }
 
 DepAtom::Pointer
-VDBRepository::do_system_packages() const
+VDBRepository::do_package_set(const std::string & s) const
 {
     AllDepAtom::Pointer result(new AllDepAtom);
+
+    if ("everything" == s)
+    {
+        if (! _imp->entries_valid)
+            _imp->load_entries();
+
+        for (std::vector<VDBEntry>::const_iterator p(_imp->entries.begin()),
+                p_end(_imp->entries.end()) ; p != p_end ; ++p)
+            result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(p->name)));
+    }
 
     return result;
 }

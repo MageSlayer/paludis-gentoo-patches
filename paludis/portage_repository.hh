@@ -95,7 +95,7 @@ namespace paludis
             virtual void do_uninstall(const QualifiedPackageName &,
                     const VersionSpec &) const PALUDIS_ATTRIBUTE((noreturn));
 
-            virtual DepAtom::Pointer do_system_packages() const;
+            virtual DepAtom::Pointer do_package_set(const std::string & s) const;
 
             virtual bool do_sync() const;
 

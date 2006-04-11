@@ -54,14 +54,17 @@ do_install()
         bool had_set_targets(false), had_pkg_targets(false);
         for ( ; q != q_end ; ++q)
         {
-            if (*q == "system")
+            if (*q == "system" || *q == "everything")
             {
+                if (had_set_targets)
+                    throw DoHelp("You should not specify more than one set target.");
+
                 had_set_targets = true;
 
                 for (p::PackageDatabase::RepositoryIterator r(
                             env->package_database()->begin_repositories()),
                         r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
-                    targets->add_child((*r)->system_packages());
+                    targets->add_child((*r)->package_set(*q));
             }
             else
             {
