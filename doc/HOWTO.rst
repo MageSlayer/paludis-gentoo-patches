@@ -142,9 +142,12 @@ because it's easier than creating a bunch of directories by hand.
 
 Note that Paludis will use src_test regardless of FEATURES (FEATURES is a
 Portage thing, and Paludis doesn't use it any more than it has to).
-Unfortunately, various system packages have broken test suites, so the system
-install will probably bomb out midway unless you export SKIP_FUNCTIONS=test
-beforehand.
+
+.. Important:: Unfortunately, various system packages have broken test suites,
+  so the system install will probably bomb out midway unless you export
+  SKIP_FUNCTIONS=test beforehand. You can do this in your environment or
+  (better) in ``/mychroot/etc/paludis/bashrc``. If you're especially sneaky,
+  you can do it conditional upon ``$PN``.
 
 Also note that there're a whole load of circular dependencies in system
 (ncurses <-> gpm, patch <-> patch, gcc <-> glibc for example), so you'll
