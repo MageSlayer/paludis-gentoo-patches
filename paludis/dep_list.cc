@@ -363,9 +363,10 @@ DepList::visit(const PackageDepAtom * const p)
     for (PackageDatabaseEntryCollection::ReverseIterator e(matches->rbegin()),
             e_end(matches->rend()) ; e != e_end ; ++e)
     {
-        /* if we're already installed, only include us if we're a better version */
+        /* if we're already installed, only include us if we're a better version or
+         * if we're a top level target */
         /// \todo SLOTs?
-        if (! _imp->ignore_installed)
+        if ((! _imp->ignore_installed) && (0 != _imp->current_package))
             if (! installed->empty())
                 if (e->get<pde_version>() <= installed->last()->get<pde_version>())
                     continue;
