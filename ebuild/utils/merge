@@ -17,6 +17,8 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
+
 if [[ -z "${1}" ]] || [[ -z "${2}" ]] ; then
     echo "usage: ${0} from to"
     exit 247
@@ -60,6 +62,18 @@ merge_this()
 
         ff=$(basename "${f}" )
         echo ">>> ${2#${top_dst}}/${ff}"
+
+        if [[ -L "${2}/${ff}" ]] ; then
+            if ! [[ -L "${f}" ]] ; then
+                ebuild_notice "qa" "ROOT has '${2}/${ff}' as a non-symlink, " \
+                    "but IMAGE '${f}' is a symlink"
+            fi
+        else
+            if [[ -L "${f}" ]] ; then
+                ebuild_notice "qa" "ROOT has '${2}/${ff}' as a symlink, " \
+                    "but IMAGE '${f}' is a non-symlink"
+            fi
+        fi
 
         if [[ -L "${f}" ]] ; then
             if [[ -e "${2}/${ff}" ]] && ! rm -f "${2}/${ff}" ; then
