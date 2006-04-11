@@ -119,7 +119,7 @@ namespace paludis
     class AmbiguousPackageNameError : public PackageDatabaseLookupError
     {
         private:
-            const std::string & _name;
+            std::string _name;
             std::list<std::string> _names;
 
         public:
