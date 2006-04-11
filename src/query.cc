@@ -30,6 +30,9 @@
  */
 
 namespace p = paludis;
+using std::cout;
+using std::cerr;
+using std::endl;
 
 void do_one_query(
         const p::Environment * const env,
@@ -50,12 +53,12 @@ void do_one_query(
         throw p::NoSuchPackageError(q);
 
     /* match! display it. */
-    std::cout << "* " << colour(cl_package_name, entries->begin()->get<p::pde_name>());
+    cout << "* " << colour(cl_package_name, entries->begin()->get<p::pde_name>());
     if (atom->version_spec_ptr())
-        std::cout << " (" << atom->version_operator() << *atom->version_spec_ptr() << ")";
+        cout << " (" << atom->version_operator() << *atom->version_spec_ptr() << ")";
     if (atom->slot_ptr())
-        std::cout << " (:" << *atom->slot_ptr() << ")";
-    std::cout << std::endl;
+        cout << " (:" << *atom->slot_ptr() << ")";
+    cout << endl;
 
     /* find all repository names. */
     p::RepositoryNameCollection repo_names;
@@ -67,7 +70,7 @@ void do_one_query(
     p::RepositoryNameCollection::Iterator r(repo_names.begin()), r_end(repo_names.end());
     for ( ; r != r_end ; ++r)
     {
-        std::cout << "    " << std::setw(22) << std::left <<
+        cout << "    " << std::setw(22) << std::left <<
             (p::stringify(*r) + ":") << std::setw(0) << " ";
 
         std::string old_slot;
@@ -82,14 +85,14 @@ void do_one_query(
                     if (old_slot.empty())
                         old_slot = slot_name;
                     else if (old_slot != slot_name)
-                        std::cout << colour(cl_slot, "{:" + old_slot + "} ");
+                        cout << colour(cl_slot, "{:" + old_slot + "} ");
                     old_slot = slot_name;
                 }
 
                 const p::MaskReasons masks(env->mask_reasons(*e));
 
                 if (masks.none())
-                    std::cout << colour(cl_visible, e->get<p::pde_version>());
+                    cout << colour(cl_visible, e->get<p::pde_version>());
                 else
                 {
                     std::string reasons;
@@ -103,20 +106,20 @@ void do_one_query(
                         reasons.append("R");
                     if (masks.test(p::mr_eapi))
                         reasons.append("E");
-                    std::cout << colour(cl_masked, "(" + stringify(e->get<p::pde_version>()) + ")" + reasons);
+                    cout << colour(cl_masked, "(" + stringify(e->get<p::pde_version>()) + ")" + reasons);
                 }
                 /// \todo ^^ text description of masks
 
                 if (e == entries->last())
-                    std::cout << "*";
-                std::cout << " ";
+                    cout << "*";
+                cout << " ";
             }
 
         /* still need to show the slot for the last item */
         if (CommandLine::get_instance()->a_show_slot.specified())
-            std::cout << colour(cl_slot, "{:" + old_slot + "} ");
+            cout << colour(cl_slot, "{:" + old_slot + "} ");
 
-        std::cout << std::endl;
+        cout << endl;
     }
 
     /* display metadata */
@@ -124,45 +127,45 @@ void do_one_query(
 
     if (CommandLine::get_instance()->a_show_metadata.specified())
     {
-        std::cout << "    " << std::setw(22) << std::left << "DEPEND:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_depend) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "DESCRIPTION:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_description) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "HOMEPAGE:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_homepage) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "IUSE:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_iuse) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_keywords) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "LICENSE:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_license) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_pdepend) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "PROVIDE:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_provide) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "RDEPEND:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_rdepend) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "RESTRICT:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_restrict) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "SRC_URI:" << std::setw(0) <<
-             " " << metadata->get(p::vmk_src_uri) << std::endl;
-        std::cout << "    " << std::setw(22) << std::left << "VIRTUAL:" << std::setw(0) <<
-             " " << metadata->get(p::vmk_virtual) << std::endl;
+        cout << "    " << std::setw(22) << std::left << "DEPEND:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_depend) << endl;
+        cout << "    " << std::setw(22) << std::left << "DESCRIPTION:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_description) << endl;
+        cout << "    " << std::setw(22) << std::left << "HOMEPAGE:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_homepage) << endl;
+        cout << "    " << std::setw(22) << std::left << "IUSE:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_iuse) << endl;
+        cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_keywords) << endl;
+        cout << "    " << std::setw(22) << std::left << "LICENSE:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_license) << endl;
+        cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_pdepend) << endl;
+        cout << "    " << std::setw(22) << std::left << "PROVIDE:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_provide) << endl;
+        cout << "    " << std::setw(22) << std::left << "RDEPEND:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_rdepend) << endl;
+        cout << "    " << std::setw(22) << std::left << "RESTRICT:" << std::setw(0) <<
+            " " << metadata->get(p::vmk_restrict) << endl;
+        cout << "    " << std::setw(22) << std::left << "SRC_URI:" << std::setw(0) <<
+             " " << metadata->get(p::vmk_src_uri) << endl;
+        cout << "    " << std::setw(22) << std::left << "VIRTUAL:" << std::setw(0) <<
+             " " << metadata->get(p::vmk_virtual) << endl;
     }
     else
     {
         if (! metadata->get(p::vmk_homepage).empty())
-            std::cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
-                " " << metadata->get(p::vmk_homepage) << std::endl;
+            cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
+                " " << metadata->get(p::vmk_homepage) << endl;
 
         if (! metadata->get(p::vmk_description).empty())
-            std::cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
-                " " << metadata->get(p::vmk_description) << std::endl;
+            cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
+                " " << metadata->get(p::vmk_description) << endl;
 
         if (CommandLine::get_instance()->a_show_license.specified())
             if (! metadata->get(p::vmk_license).empty())
-                std::cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
-                    " " << metadata->get(p::vmk_license) << std::endl;
+                cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
+                    " " << metadata->get(p::vmk_license) << endl;
 
         if (CommandLine::get_instance()->a_show_deps.specified())
         {
@@ -170,39 +173,39 @@ void do_one_query(
             {
                 p::DepAtomPrettyPrinter p_depend(12);
                 p::DepParser::parse(metadata->get(p::vmk_depend))->accept(&p_depend);
-                std::cout << "    " << std::setw(22) << std::left << "Build dependencies:" << std::setw(0)
-                    << std::endl << p_depend;
+                cout << "    " << std::setw(22) << std::left << "Build dependencies:" << std::setw(0)
+                    << endl << p_depend;
             }
 
             if (! metadata->get(p::vmk_rdepend).empty())
             {
                 p::DepAtomPrettyPrinter p_rdepend(12);
                 p::DepParser::parse(metadata->get(p::vmk_rdepend))->accept(&p_rdepend);
-                std::cout << "    " << std::setw(22) << std::left << "Runtime dependencies:" << std::setw(0)
-                    << std::endl << p_rdepend;
+                cout << "    " << std::setw(22) << std::left << "Runtime dependencies:" << std::setw(0)
+                    << endl << p_rdepend;
             }
 
             if (! metadata->get(p::vmk_pdepend).empty())
             {
                 p::DepAtomPrettyPrinter p_pdepend(12);
                 p::DepParser::parse(metadata->get(p::vmk_pdepend))->accept(&p_pdepend);
-                std::cout << "    " << std::setw(22) << std::left << "Post dependencies:" << std::setw(0)
-                    << std::endl << p_pdepend;
+                cout << "    " << std::setw(22) << std::left << "Post dependencies:" << std::setw(0)
+                    << endl << p_pdepend;
             }
         }
 
         if (! metadata->get(p::vmk_virtual).empty())
-            std::cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
-                " " << metadata->get(p::vmk_virtual) << std::endl;
+            cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
+                " " << metadata->get(p::vmk_virtual) << endl;
 
         if (! metadata->get(p::vmk_provide).empty())
-            std::cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
-                " " << metadata->get(p::vmk_provide) << std::endl;
+            cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
+                " " << metadata->get(p::vmk_provide) << endl;
     }
 
 
     /* blank line */
-    std::cout << std::endl;
+    cout << endl;
 }
 
 int do_query()
@@ -220,21 +223,32 @@ int do_query()
         {
             do_one_query(env, *q);
         }
+        catch (const p::AmbiguousPackageNameError & e)
+        {
+            cout << endl;
+            cerr << "Query error:" << endl;
+            cerr << "  * " << e.backtrace("\n  * ");
+            cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
+            for (p::AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+                    o_end(e.end_options()) ; o != o_end ; ++o)
+                cerr << "    * " << colour(cl_package_name, *o) << endl;
+            cerr << endl;
+        }
         catch (const p::NameError & e)
         {
             return_code |= 1;
-            std::cout << std::endl;
-            std::cerr << "Query error:" << std::endl;
-            std::cerr << "  * " << e.backtrace("\n  * ") << e.message() << std::endl;
-            std::cerr << std::endl;
+            cout << endl;
+            cerr << "Query error:" << endl;
+            cerr << "  * " << e.backtrace("\n  * ") << e.message() << endl;
+            cerr << endl;
         }
         catch (const p::PackageDatabaseLookupError & e)
         {
             return_code |= 1;
-            std::cout << std::endl;
-            std::cerr << "Query error:" << std::endl;
-            std::cerr << "  * " << e.backtrace("\n  * ") << e.message() << std::endl;
-            std::cerr << std::endl;
+            cout << endl;
+            cerr << "Query error:" << endl;
+            cerr << "  * " << e.backtrace("\n  * ") << e.message() << endl;
+            cerr << endl;
         }
     }
 
