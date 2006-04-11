@@ -442,10 +442,8 @@ DepList::visit(const PackageDepAtom * const p)
 
     /* merge depends */
     if ((! merge_entry->get<dle_has_predeps>()) && ! (_imp->drop_all))
-    {
         _add_in_role(DepParser::parse(metadata->get(vmk_depend)), "DEPEND");
-        merge_entry->set<dle_has_predeps>(true);
-    }
+    merge_entry->set<dle_has_predeps>(true);
 
     /* merge rdepends */
     if (! merge_entry->get<dle_has_trypredeps>() && dlro_always != _imp->rdepend_post
