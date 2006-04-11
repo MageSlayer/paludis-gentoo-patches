@@ -22,8 +22,11 @@ confusion later on. There's an ebuild at::
 
     http://svn.berlios.de/viewcvs/*checkout*/paludis/overlay/sys-apps/paludis/paludis-0.ebuild
 
-You'll need libebt, eselect and subversion. You should seriously consider
-grabbing an svn snapshot of eselect if 1.0.2 hasn't been released yet.
+You'll need libebt, eselect and subversion.
+
+.. Important:: You should seriously consider grabbing an svn snapshot of
+  eselect if 1.0.2 hasn't been released yet, or you will encounter weird "You
+  are not root" errors even when you're root.
 
 Make sure the test suite passes (either FEATURES="test" for Portage, or 'make
 check'). If it fails, don't continue until you figure out why.
@@ -165,6 +168,7 @@ And that should (but probably won't) give you a usable chroot::
 
     sudo cp /etc/resolv.conf /mychroot/etc/
     sudo chroot /mychroot
+    reset
     export HOME=/root
     cd
     mount -tproc none /proc
