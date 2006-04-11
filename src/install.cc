@@ -44,6 +44,8 @@ do_install()
 
     p::CompositeDepAtom::Pointer targets(new p::AllDepAtom);
 
+    p::DepList dep_list(env);
+
     try
     {
         CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
@@ -79,6 +81,9 @@ do_install()
 
         if (had_set_targets && had_pkg_targets)
             throw DoHelp("You should not specify set and package targets at the same time.");
+
+        if (had_set_targets)
+            dep_list.set_reinstall(false);
     }
     catch (const p::AmbiguousPackageNameError & e)
     {
@@ -93,7 +98,6 @@ do_install()
         return 1;
     }
 
-    p::DepList dep_list(env);
     dep_list.set_drop_self_circular(CommandLine::get_instance()->a_dl_drop_self_circular.specified());
     dep_list.set_drop_circular(CommandLine::get_instance()->a_dl_drop_circular.specified());
     dep_list.set_drop_all(CommandLine::get_instance()->a_dl_drop_all.specified());
@@ -241,7 +245,7 @@ do_install()
 
                     bool need_comma(false);
                     p::MaskReasons m(env->mask_reasons(*pp));
-                    for (int mm = 0 ; mm < m.size() ; ++mm)
+                    for (unsigned mm = 0 ; mm < m.size() ; ++mm)
                         if (m[mm])
                         {
                             if (need_comma)

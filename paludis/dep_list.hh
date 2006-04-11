@@ -312,6 +312,11 @@ namespace paludis
              * Behaviour: set the maximum stack depth.
              */
             void set_max_stack_depth(const int value);
+
+            /**
+             * Behaviour: set whether we reinstall first level deps.
+             */
+            void set_reinstall(const bool value);
     };
 }
 

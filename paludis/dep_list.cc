@@ -109,6 +109,7 @@ namespace paludis
         bool drop_self_circular;
         bool drop_all;
         bool ignore_installed;
+        bool reinstall;
         ///}
 
         ///\name Stack
@@ -129,6 +130,7 @@ namespace paludis
             drop_self_circular(false),
             drop_all(false),
             ignore_installed(false),
+            reinstall(true),
             stack_depth(0),
             max_stack_depth(100)
         {
@@ -366,7 +368,7 @@ DepList::visit(const PackageDepAtom * const p)
         /* if we're already installed, only include us if we're a better version or
          * if we're a top level target */
         /// \todo SLOTs?
-        if ((! _imp->ignore_installed) && (0 != _imp->current_package))
+        if ((! _imp->ignore_installed) && ((0 != _imp->current_package) || (! _imp->reinstall)))
             if (! installed->empty())
                 if (e->get<pde_version>() <= installed->last()->get<pde_version>())
                     continue;
@@ -688,5 +690,11 @@ void
 DepList::visit(const PlainTextDepAtom * const t)
 {
     throw InternalError(PALUDIS_HERE, "Got unexpected PlainTextDepAtom '" + t->text() + "'");
+}
+
+void
+DepList::set_reinstall(const bool value)
+{
+    _imp->reinstall = value;
 }
 
