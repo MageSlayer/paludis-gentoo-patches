@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <list>
 #include <set>
+#include <iterator>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 
@@ -35,7 +36,9 @@ namespace paludis
     template <typename T_>
     class SequentialCollection :
         private InstantiationPolicy<SequentialCollection<T_>, instantiation_method::NonCopyableTag>,
-        public InternalCounted<SequentialCollection<T_> >
+        public InternalCounted<SequentialCollection<T_> >,
+        public std::iterator<typename std::iterator_traits<
+            typename std::list<T_>::const_iterator>::iterator_category, T_>
     {
         private:
             std::list<T_> _items;
@@ -120,7 +123,9 @@ namespace paludis
     template <typename T_>
     class SortedCollection :
         private InstantiationPolicy<SortedCollection<T_>, instantiation_method::NonCopyableTag>,
-        public InternalCounted<SortedCollection<T_> >
+        public InternalCounted<SortedCollection<T_> >,
+        public std::iterator<typename std::iterator_traits<
+            typename std::set<T_>::const_iterator>::iterator_category, T_>
     {
         private:
             std::set<T_> _items;
