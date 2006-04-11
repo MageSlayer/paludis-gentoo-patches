@@ -25,15 +25,20 @@
 #include <paludis/repository.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/smart_record.hh>
 #include <paludis/util/collection.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
 
 #include <ostream>
+#include <algorithm>
+#include <functional>
+#include <iterator>
 
 namespace paludis
 {
@@ -113,6 +118,10 @@ namespace paludis
      */
     class AmbiguousPackageNameError : public PackageDatabaseLookupError
     {
+        private:
+            const std::string & _name;
+            std::list<std::string> _names;
+
         public:
             /**
              * Constructor.
@@ -120,14 +129,41 @@ namespace paludis
             template <typename I_>
             AmbiguousPackageNameError(const std::string & name,
                     I_ begin, const I_ end) throw ();
+
+            /**
+             * Destructor.
+             */
+            virtual ~AmbiguousPackageNameError() throw ()
+            {
+            }
+
+            const std::string & name() const
+            {
+                return _name;
+            }
+
+            typedef std::list<std::string>::const_iterator OptionsIterator;
+
+            OptionsIterator begin_options() const
+            {
+                return _names.begin();
+            }
+
+            OptionsIterator end_options() const
+            {
+                return _names.end();
+            }
     };
 
     template <typename I_>
     AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & name,
             I_ begin, const I_ end) throw () :
         PackageDatabaseLookupError("Ambiguous package name '" + name + "' (candidates are " +
-            join(begin, end, ", ") + ")")
+            join(begin, end, ", ") + ")"),
+        _name(name)
     {
+        std::transform(begin, end, std::back_inserter(_names),
+                &stringify<typename std::iterator_traits<I_>::value_type>);
     }
 
     /**
