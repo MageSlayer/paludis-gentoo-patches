@@ -67,7 +67,8 @@ NoResolvableOptionError::NoResolvableOptionError(I_ i, I_ end) throw () :
 }
 
 AllMaskedError::AllMaskedError(const std::string & query) throw () :
-    DepListError("Error searching for '" + query + "': no available versions")
+    DepListError("Error searching for '" + query + "': no available versions"),
+    _query(query)
 {
 }
 

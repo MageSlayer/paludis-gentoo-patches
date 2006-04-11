@@ -185,11 +185,26 @@ namespace paludis
      */
     class NoSuchPackageError : public PackageDatabaseLookupError
     {
+        private:
+            std::string _name;
+
         public:
             /**
              * Constructor.
              */
             NoSuchPackageError(const std::string & name) throw ();
+
+            /**
+             * Destructor.
+             */
+            virtual ~NoSuchPackageError() throw ()
+            {
+            }
+
+            const std::string & name() const
+            {
+                return _name;
+            }
     };
 
     /**

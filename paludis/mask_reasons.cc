@@ -19,4 +19,43 @@
 
 
 #include <paludis/mask_reasons.hh>
+#include <paludis/util/exception.hh>
+#include <ostream>
 
+std::ostream &
+paludis::operator<< (std::ostream & s, const MaskReason & r)
+{
+    do
+    {
+        switch (r)
+        {
+            case mr_keyword:
+                s << "keyword";
+                continue;
+
+            case mr_user_mask:
+                s << "user mask";
+                continue;
+
+            case mr_profile_mask:
+                s << "profile mask";
+                continue;
+
+            case mr_repository_mask:
+                s << "repository mask";
+                continue;
+
+            case mr_eapi:
+                s << "EAPI";
+                continue;
+
+            case last_mr:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad MaskReason value");
+    }
+    while (false);
+
+    return s;
+}

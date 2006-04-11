@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_MASK_REASONS_HH 1
 
 #include <bitset>
+#include <iosfwd>
 
 namespace paludis
 {
@@ -42,6 +43,12 @@ namespace paludis
      * A collection of reasons for why a package is masked.
      */
     typedef std::bitset<last_mr> MaskReasons;
+
+    /**
+     * Stringify.
+     */
+    std::ostream &
+    operator<< (std::ostream &, const MaskReason &);
 }
 
 #endif

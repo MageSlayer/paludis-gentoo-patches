@@ -52,7 +52,8 @@ DuplicateRepositoryError::DuplicateRepositoryError(const std::string & name) thr
 }
 
 NoSuchPackageError::NoSuchPackageError(const std::string & name) throw () :
-    PackageDatabaseLookupError("Could not find '" + name + "'")
+    PackageDatabaseLookupError("Could not find '" + name + "'"),
+    _name(name)
 {
 }
 

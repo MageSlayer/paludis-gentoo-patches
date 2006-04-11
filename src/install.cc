@@ -206,6 +206,61 @@ do_install()
                 install(dep->get<p::dle_name>(), dep->get<p::dle_version>());
         }
     }
+    catch (const p::NoSuchPackageError & e)
+    {
+        cout << endl;
+        cerr << "Query error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ");
+        cerr << "No such package '" << e.name() << "'" << endl;
+        return 1;
+    }
+    catch (const p::AllMaskedError & e)
+    {
+        try
+        {
+            p::PackageDatabaseEntryCollection::ConstPointer p(env->package_database()->query(
+                        p::PackageDepAtom::ConstPointer(new p::PackageDepAtom(e.query())),
+                        p::is_uninstalled_only));
+            if (p->empty())
+            {
+                cout << endl;
+                cerr << "Query error:" << endl;
+                cerr << "  * " << e.backtrace("\n  * ");
+                cerr << "All versions of '" << e.query() << "' are masked" << endl;
+            }
+            else
+            {
+                cout << endl;
+                cerr << "Query error:" << endl;
+                cerr << "  * " << e.backtrace("\n  * ");
+                cerr << "All versions of '" << e.query() << "' are masked. Candidates are:" << endl;
+                for (p::PackageDatabaseEntryCollection::Iterator pp(p->begin()), pp_end(p->end()) ;
+                        pp != pp_end ; ++pp)
+                {
+                    cerr << "    * " << colour(cl_package_name, *pp) << ": Masked by ";
+
+                    bool need_comma(false);
+                    p::MaskReasons m(env->mask_reasons(*pp));
+                    for (int mm = 0 ; mm < m.size() ; ++mm)
+                        if (m[mm])
+                        {
+                            if (need_comma)
+                                cerr << ", ";
+                            cerr << p::MaskReason(mm);
+                            need_comma = true;
+                        }
+                    cerr << endl;
+                }
+            }
+        }
+        catch (...)
+        {
+            throw e;
+        }
+
+        return 1;
+    }
+
     catch (const p::DepListStackTooDeepError & e)
     {
         cout << endl;

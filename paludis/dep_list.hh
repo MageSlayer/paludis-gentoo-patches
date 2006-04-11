@@ -123,11 +123,26 @@ namespace paludis
      */
     class AllMaskedError : public DepListError
     {
+        private:
+            std::string _query;
+
         public:
             /**
              * Constructor.
              */
             AllMaskedError(const std::string & query) throw ();
+
+            /**
+             * Destructor.
+             */
+            virtual ~AllMaskedError() throw ()
+            {
+            }
+
+            const std::string & query() const
+            {
+                return _query;
+            }
     };
 
     /**
