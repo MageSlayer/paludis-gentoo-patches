@@ -68,11 +68,9 @@ merge_this()
                 ebuild_notice "qa" "ROOT has '${2}/${ff}' as a non-symlink, " \
                     "but IMAGE '${f}' is a symlink"
             fi
-        else
-            if [[ -L "${f}" ]] ; then
-                ebuild_notice "qa" "ROOT has '${2}/${ff}' as a symlink, " \
-                    "but IMAGE '${f}' is a non-symlink"
-            fi
+        elif [[ -L "${f}" ]] ; then
+            ebuild_notice "qa" "ROOT has '${2}/${ff}' as a symlink, " \
+                "but IMAGE '${f}' is a non-symlink"
         fi
 
         if [[ -L "${f}" ]] ; then
