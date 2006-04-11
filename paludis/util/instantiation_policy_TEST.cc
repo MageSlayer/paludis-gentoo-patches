@@ -91,7 +91,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(MyClass::instances, 0);
             TEST_CHECK(0 != MyClass::get_instance());
             TEST_CHECK_EQUAL(MyClass::instances, 1);
-            TEST_CHECK_EQUAL(MyClass::get_instance(), MyClass::get_instance());
+            TEST_CHECK(MyClass::get_instance() == MyClass::get_instance());
             TEST_CHECK(MyClass::get_instance()->s.empty());
             MyClass::get_instance()->s = "foo";
             TEST_CHECK_EQUAL(MyClass::get_instance()->s, "foo");
@@ -115,7 +115,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(MyLoadAtStartupClass::instances, 1);
             TEST_CHECK(0 != MyLoadAtStartupClass::get_instance());
             TEST_CHECK_EQUAL(MyLoadAtStartupClass::instances, 1);
-            TEST_CHECK_EQUAL(MyLoadAtStartupClass::get_instance(), MyLoadAtStartupClass::get_instance());
+            TEST_CHECK(MyLoadAtStartupClass::get_instance() == MyLoadAtStartupClass::get_instance());
             TEST_CHECK(MyLoadAtStartupClass::get_instance()->s.empty());
             MyLoadAtStartupClass::get_instance()->s = "foo";
             TEST_CHECK_EQUAL(MyLoadAtStartupClass::get_instance()->s, "foo");

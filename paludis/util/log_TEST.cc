@@ -39,7 +39,7 @@ namespace test_cases
         void run()
         {
             TEST_CHECK(Log::get_instance());
-            TEST_CHECK_EQUAL(Log::get_instance(), Log::get_instance());
+            TEST_CHECK(Log::get_instance() == Log::get_instance());
 
             std::stringstream s;
             Log::get_instance()->set_log_stream(&s);

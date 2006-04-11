@@ -22,6 +22,7 @@
 
 #include <sstream>
 #include <string>
+#include <paludis/util/attributes.hh>
 
 /** \file
  * Stringify functions.
@@ -29,6 +30,34 @@
 
 namespace paludis
 {
+    template <typename T_, typename U_, typename V_>
+    class CountedPtr;
+
+    namespace stringify_internals
+    {
+        template <typename T_>
+        struct CheckType
+        {
+            enum { value = 0 } Value;
+        };
+
+        template <typename T_>
+        struct CheckType<T_ *>
+        {
+        };
+
+        template <typename T_, typename U_, typename V_>
+        struct CheckType<CountedPtr<T_, U_, V_> >
+        {
+        };
+
+        template <>
+        struct CheckType<char *>
+        {
+            enum { value = 0 } Value;
+        };
+    }
+
     /**
      * Convert item to a string.
      */
@@ -36,6 +65,10 @@ namespace paludis
     std::string
     stringify(const T_ & item)
     {
+        /* check that we're not trying to stringify a pointer or somesuch */
+        int check_for_stringifying_silly_things
+            PALUDIS_ATTRIBUTE((unused)) = stringify_internals::CheckType<T_>::value;
+
         std::ostringstream s;
         s << item;
         return s.str();
@@ -76,27 +109,6 @@ namespace paludis
     {
         return item ? "true" : "false";
     }
-
-    /**
-     * Convert item to a string (undefined overload for pointers, to
-     * catch screwups at compiletime rather than printing out addresses in
-     * weird places because of a missing *).
-     */
-    template <typename T_>
-    void
-    stringify(const T_ * const item);
-
-    template <typename T_, typename U_, typename V_>
-    class CountedPtr;
-
-    /**
-     * Convert item to a string (undefined overload for counted
-     * pointers, to catch screwups at compiletime rather than printing
-     * out addresses in weird places because of a missing *).
-     */
-    template <typename T_, typename U_, typename V_>
-    void
-    stringify(const CountedPtr<T_, U_, V_> & item);
 
     /**
      * Convert item to a string (overload for char *, which isn't a
