@@ -74,7 +74,7 @@ merge_this()
         fi
 
         if [[ -L "${f}" ]] ; then
-            if [[ -e "${2}/${ff}" ]] && ! rm -f "${2}/${ff}" ; then
+            if ( [[ -e "${2}/${ff}" ]] || [[ -h "${2}/${ff}" ]] ) && ! rm -f "${2}/${ff}" ; then
                 echo "error removing ${2}/${ff} for link ${f}"
                 r=1
             elif ! ln -s "$(readlink ${f} )" "${2}/${ff}" ; then
