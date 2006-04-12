@@ -187,6 +187,9 @@ Implementation<VDBRepository>::~Implementation()
 void
 Implementation<VDBRepository>::load_entries() const
 {
+    Context context("When loading VDBRepository entries from '" +
+            stringify(location) + "':");
+
     entries.clear();
     entries_valid = true;
     try
@@ -222,6 +225,9 @@ namespace
     file_contents(const FSEntry & location, const QualifiedPackageName & name,
             const VersionSpec & v, const std::string & key)
     {
+        Context context("When loading VDBRepository entry for '" + stringify(name)
+                + "-" + stringify(v) + "' key '" + key + "' from '" + stringify(location) + "':");
+
         FSEntry f(location / stringify(name.get<qpn_category>()) /
                 (stringify(name.get<qpn_package>()) + "-" + stringify(v)));
         if (! (f / key).is_regular_file())
@@ -244,6 +250,9 @@ namespace
 void
 Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) const
 {
+    Context context("When loading VDBRepository entry for '" + stringify(p->name)
+            + "-" + stringify(p->version) + "' from '" + stringify(location) + "':");
+
     p->metadata = VersionMetadata::Pointer(new VersionMetadata);
     p->metadata->set(vmk_depend,    file_contents(location, p->name, p->version, "DEPEND"));
     p->metadata->set(vmk_rdepend,   file_contents(location, p->name, p->version, "RDEPEND"));
@@ -492,6 +501,9 @@ VDBRepository::do_install(const QualifiedPackageName &, const VersionSpec &) con
 void
 VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v) const
 {
+    Context context("When uninstalling '" + stringify(q) + "-" + stringify(v) +
+            "' from '" + stringify(name()) + "':");
+
     if (! _imp->root.is_directory())
         throw PackageInstallActionError("Couldn't uninstall '" + stringify(q) + "-" +
                 stringify(v) + "' because root ('" + stringify(_imp->root) + "') is not a directory");
@@ -544,6 +556,9 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
 DepAtom::Pointer
 VDBRepository::do_package_set(const std::string & s) const
 {
+    Context context("When fetching package set '" + s + "' from '" +
+            stringify(name()) + "':");
+
     AllDepAtom::Pointer result(new AllDepAtom);
 
     if ("everything" == s)
