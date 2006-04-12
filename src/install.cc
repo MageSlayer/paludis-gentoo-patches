@@ -213,6 +213,15 @@ do_install()
                 install(dep->get<p::dle_name>(), dep->get<p::dle_version>());
         }
     }
+    catch (const p::PackageInstallActionError & e)
+    {
+        cout << endl;
+        cerr << "Install error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ");
+        cerr << e.message() << endl;
+
+        return_code |= 1;
+    }
     catch (const p::NoSuchPackageError & e)
     {
         cout << endl;
@@ -277,6 +286,8 @@ do_install()
         cerr << "Try '--dl-max-stack-depth " << std::max(
                 CommandLine::get_instance()->a_dl_max_stack_depth.argument() * 2, 100)
             << "'." << endl << endl;
+
+        return_code |= 1;
     }
     catch (const p::DepListError & e)
     {
