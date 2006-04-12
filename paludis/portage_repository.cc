@@ -711,7 +711,32 @@ PortageRepository::do_version_metadata(
             std::getline(cache, line); result->set(vmk_eapi,        line);
             result->set(vmk_virtual, "");
 
+            // check mtimes
+            time_t cache_time(cache_file.mtime());
             ok = true;
+
+            if ((_imp->location / stringify(c) / stringify(p) / (stringify(p) + "-" + stringify(v)
+                            + ".ebuild")).mtime() > cache_time)
+                ok = false;
+            else
+            {
+                FSEntry timestamp(_imp->location / "metadata" / "timestamp");
+                if (timestamp.exists())
+                    cache_time = timestamp.mtime();
+
+                static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+                std::list<std::string> inherits;
+                tokeniser.tokenise(stringify(result->get(vmk_inherited)),
+                            std::back_inserter(inherits));
+                for (std::list<std::string>::const_iterator i(inherits.begin()),
+                        i_end(inherits.end()) ; i != i_end ; ++i)
+                    if ((_imp->eclassdir / (*i + ".eclass")).mtime() > cache_time)
+                        ok = false;
+            }
+
+            if (! ok)
+                Log::get_instance()->message(ll_warning, "Stale cache file at '"
+                        + stringify(cache_file) + "'");
         }
         else
             Log::get_instance()->message(ll_warning, "Couldn't read the cache file at '"
