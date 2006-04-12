@@ -186,6 +186,7 @@ And that should (but probably won't) give you a usable chroot::
     mount -tproc none /proc
     mount -tsysfs none /sys
     udevstart
+    mount -tdevpts none /dev/pts
     eselect env update
     source /etc/profile
     ( . /etc/paludis/bashrc ; gcc-config -1 )
