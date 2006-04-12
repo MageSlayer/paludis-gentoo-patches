@@ -21,9 +21,15 @@ source ${PALUDIS_EBUILD_DIR}/install_functions.bash
 dobin_TEST()
 {
     mkdir -p dobin_TEST_dir/src dobin_TEST_dir/dst ; test_return_code
+
     echo "one contents" > dobin_TEST_dir/src/one ; test_return_code
+    chmod +x dobin_TEST_dir/src/one ; test_return_code
+
     echo "two contents" > dobin_TEST_dir/src/two ; test_return_code
+    chmod +x dobin_TEST_dir/src/two ; test_return_code
+
     echo "three contents" > dobin_TEST_dir/src/three ; test_return_code
+    chmod +x dobin_TEST_dir/src/three ; test_return_code
 
     export D=dobin_TEST_dir/dst
     ./dobin dobin_TEST_dir/src/one &>/dev/null ; test_return_code
