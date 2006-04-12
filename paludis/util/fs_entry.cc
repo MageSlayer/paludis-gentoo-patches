@@ -155,7 +155,7 @@ FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_
     _stat();
 
     if (! _exists)
-        throw FSError("Filesystem entry does not exist");
+        throw FSError("Filesystem entry '" + _path + "' does not exist");
 
     switch (user_group)
     {
@@ -311,7 +311,7 @@ FSEntry::ctime() const
     _stat();
 
     if (! _exists)
-        throw FSError("Filesystem entry does not exist");
+        throw FSError("Filesystem entry '" + _path + "' does not exist");
 
     return (*_stat_info).st_ctime;
 }
@@ -322,7 +322,7 @@ FSEntry::mtime() const
     _stat();
 
     if (! _exists)
-        throw FSError("Filesystem entry does not exist");
+        throw FSError("Filesystem entry '" + _path + "' does not exist");
 
     return (*_stat_info).st_mtime;
 }
@@ -333,10 +333,10 @@ FSEntry::file_size() const
     _stat();
 
     if (! _exists)
-        throw FSError("Filesystem entry does not exist");
+        throw FSError("Filesystem entry '" + _path + "' does not exist");
 
     if (! is_regular_file())
-        throw FSError("file_size called on a non-regular file");
+        throw FSError("file_size called on non-regular file '" + _path + "'");
 
     return _stat_info->st_size;
 }
