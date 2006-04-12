@@ -94,7 +94,8 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
     MaskReasons result;
     VersionMetadata::ConstPointer metadata(package_database()->fetch_metadata(e));
 
-    if (metadata->get(vmk_eapi) != "0" && metadata->get(vmk_eapi) != "")
+    if (metadata->get(vmk_eapi) != "0" && metadata->get(vmk_eapi) != ""
+            && metadata->get(vmk_eapi) != "paludis-1")
         result.set(mr_eapi);
     else
     {
