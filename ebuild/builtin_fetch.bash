@@ -62,6 +62,65 @@ builtin_fetch()
         echo
         die "builtin_fetch failed"
     fi
+
+    local badfetch=
+    if [[ -f "${FILESDIR}/digest-${PN}-${PVR%-r0}" ]] ; then
+        local line items sum
+        while read line ; do
+            line=( ${line} )
+            if ! hasq "${line[2]}" ${A} ; then
+                ebuild_section "Skipping check for ${line[2]}"
+                continue
+            fi
+            case ${line[0]} in
+                MD5)
+                    if [[ -f "${DISTDIR}/${line[2]}" ]] ; then
+                        ebegin "Checking md5 for ${line[2]}"
+                        sum=$(md5sum ${DISTDIR}/${line[2]} | cut -d ' ' -f1 )
+                        if [[ "${sum}" == "${line[1]}" ]] ; then
+                            eend 0
+                        else
+                            eend 1
+                            badfetch="${badfetch} ${line[2]}"
+                        fi
+                    fi
+                    ;;
+
+                RMD160)
+                    if [[ -f "${DISTDIR}/${line[2]}" ]] ; then
+                        ebegin "Checking rmd160 for ${line[2]}"
+                        sum=$(openssl dgst -rmd160 ${DISTDIR}/${line[2]} | cut -d '=' -f2 )
+                        if [[ "${sum# }" == "${line[1]}" ]] ; then
+                            eend 0
+                        else
+                            eend 1
+                            badfetch="${badfetch} ${line[2]}"
+                        fi
+                    fi
+                    ;;
+
+                SHA256)
+                    ;;
+
+                *)
+                    ebuild_section "Skipping unknown digest '${line[0]}'"
+                    ;;
+            esac
+        done < "${FILESDIR}"/digest-${PN}-${PVR%-r0}
+    else
+        ebuild_section "No digest file, skipping integrity checks"
+    fi
+
+    if [[ -n "${badfetch}" ]] ; then
+        local c
+        echo
+        eerror "Bad digests encountered for the following components:"
+        for c in ${badfetch} ; do
+            eerror "  * ${c}"
+        done
+        echo
+        die "builtin_fetch failed"
+    fi
 }
 
 ebuild_f_fetch()
