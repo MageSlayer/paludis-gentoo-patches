@@ -104,7 +104,7 @@ the-homepage
 the-license
 the-description
 the-keywords
-the-inherited
+
 the-iuse
 unused
 the/pdepend
