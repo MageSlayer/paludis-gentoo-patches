@@ -81,6 +81,9 @@ namespace
 void
 RsyncSyncer::sync() const
 {
+    Context context("When performing sync via rsync from '" + _remote + "' to '"
+            + _local + "':");
+
     std::string cmd("rsync --recursive --links --safe-links --perms --times "
             "--compress --force --whole-file --delete --delete-after --stats "
             "--timeout=180 --exclude=/distfiles --exclude=/packages --progress "
@@ -93,6 +96,9 @@ RsyncSyncer::sync() const
 void
 SvnSyncer::sync() const
 {
+    Context context("When performing sync via subversion from '" + _remote + "' to '"
+            + _local + "':");
+
     std::string cmd("svn checkout '" + _remote + "' '" + _local + "/'");
 
     if (0 != run_command(cmd))
