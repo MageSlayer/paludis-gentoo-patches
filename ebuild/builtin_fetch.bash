@@ -88,22 +88,27 @@ builtin_fetch()
 
                 RMD160)
                     if [[ -f "${DISTDIR}/${line[2]}" ]] ; then
-                        ebegin "Checking rmd160 for ${line[2]}"
-                        sum=$(openssl dgst -rmd160 ${DISTDIR}/${line[2]} | cut -d '=' -f2 )
-                        if [[ "${sum# }" == "${line[1]}" ]] ; then
-                            eend 0
+                        if type openssl &>/dev/null ; then
+                            ebegin "Checking rmd160 for ${line[2]}"
+                            sum=$(openssl dgst -rmd160 ${DISTDIR}/${line[2]} | cut -d '=' -f2 )
+                            if [[ "${sum# }" == "${line[1]}" ]] ; then
+                                eend 0
+                            else
+                                eend 1
+                                badfetch="${badfetch} ${line[2]}"
+                            fi
                         else
-                            eend 1
-                            badfetch="${badfetch} ${line[2]}"
+                            einfo "Can't check rmd160 for ${line[2]}"
                         fi
                     fi
                     ;;
 
                 SHA256)
+                    einfo "Can't check sha256 for ${line[2]}"
                     ;;
 
                 *)
-                    ebuild_section "Skipping unknown digest '${line[0]}'"
+                    einfo "Skipping unknown digest '${line[0]}' for ${line[2]}"
                     ;;
             esac
         done < "${FILESDIR}"/digest-${PN}-${PVR%-r0}
