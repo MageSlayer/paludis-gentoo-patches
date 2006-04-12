@@ -757,7 +757,7 @@ PortageRepository::do_version_metadata(
     if (! ok)
     {
         if (_imp->cache.basename() != "empty")
-            Log::get_instance()->message(ll_warning, "No cache entry for '" + stringify(c) + "/" +
+            Log::get_instance()->message(ll_warning, "No usable cache entry for '" + stringify(c) + "/" +
                     stringify(p) + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
 
         std::string actions("metadata");
