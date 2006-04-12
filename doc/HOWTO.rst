@@ -174,6 +174,8 @@ And that should (but probably won't) give you a usable chroot::
     reset
     export HOME=/root
     cd
+    cp /etc/skel/.bashrc .
+    . .bashrc
     mount -tproc none /proc
     mount -tsysfs none /sys
     udevstart
