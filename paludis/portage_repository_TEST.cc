@@ -63,8 +63,7 @@ namespace test_cases
             keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo2/profiles/profile"));
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
-            TEST_CHECK(0 == repo->name().data().substr(
-                        repo->name().data().length() - 33).compare("portage_repository_TEST_dir-repo2"));
+            TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo2");
         }
     } test_portage_repository_no_repo_name;
 
@@ -81,8 +80,7 @@ namespace test_cases
             keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo3/profiles/profile"));
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
-            TEST_CHECK(0 == repo->name().data().substr(
-                        repo->name().data().length() - 33).compare("portage_repository_TEST_dir-repo3"));
+            TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo3");
         }
     } test_portage_repository_empty_repo_name;
 
