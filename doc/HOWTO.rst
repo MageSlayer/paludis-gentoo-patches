@@ -76,6 +76,13 @@ value your sanity, since you'll be installing subversion::
     app-editors/vim -nls
     END
 
+Set up your licences.conf. If you don't care about licences, which is probably
+wise until we get licence grouping, it should look like this::
+
+    cat <<END > /mychroot/etc/paludis/licenses.conf
+    * *
+    END
+
 Set up your package_unmask.conf and package_mask.conf, if necessary::
 
     cat <<END > /mychroot/etc/paludis/package_unmask.conf
@@ -188,5 +195,5 @@ And that should (but probably won't) give you a usable chroot::
     paludis --uninstall app-editors/nano
     paludis --uninstall sys-apps/portage
 
-.. vim: set et sw=4 spell spelllang=en ft=glep :
+.. vim: set et sw=4 sts=4 spell spelllang=en ft=glep :
 
