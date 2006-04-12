@@ -18,6 +18,8 @@
  */
 
 #include <paludis/package_database.hh>
+#include <paludis/dep_atom.hh>
+#include <paludis/dep_parser.hh>
 #include <paludis/qa/environment.hh>
 
 using namespace paludis;
@@ -31,9 +33,64 @@ Environment::~Environment()
 {
 }
 
+namespace
+{
+    struct LicenceChecker :
+        DepAtomVisitorTypes::ConstVisitor
+    {
+        bool ok;
+        const Environment * const env;
+        const PackageDatabaseEntry * const db_entry;
+
+        LicenceChecker(const Environment * const e, const PackageDatabaseEntry * const d) :
+            ok(true),
+            env(e),
+            db_entry(d)
+        {
+        }
+
+        ///\name Visit methods
+        ///{
+        void visit(const AllDepAtom * atom)
+        {
+            std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+        }
+
+        void visit(const AnyDepAtom * atom)
+        {
+            std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+        }
+
+        void visit(const UseDepAtom * atom)
+        {
+            if (env->query_use(atom->flag(), db_entry))
+                std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+        }
+
+        void visit(const PlainTextDepAtom * atom)
+        {
+            if (! env->accept_license(atom->text(), db_entry))
+                ok = false;
+        }
+
+        void visit(const PackageDepAtom *) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "todo: encountered PackageDepAtom in licence?"); /// \bug todo
+        }
+
+        void visit(const BlockDepAtom *)  PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "todo: encountered BlockDepAtom in licence?"); /// \bug todo
+        }
+        ///}
+    };
+}
+
 MaskReasons
 Environment::mask_reasons(const PackageDatabaseEntry & e) const
 {
+    Context context("When checking mask reasons for '" + stringify(e) + "'");
+
     MaskReasons result;
     VersionMetadata::ConstPointer metadata(package_database()->fetch_metadata(e));
 
@@ -41,7 +98,6 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
         result.set(mr_eapi);
     else
     {
-
         result.set(mr_keyword);
         for (VersionMetadata::KeywordIterator k(metadata->begin_keywords()),
                 k_end(metadata->end_keywords()) ; k != k_end ; ++k)
@@ -50,6 +106,12 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
                 result.reset(mr_keyword);
                 break;
             }
+
+        LicenceChecker lc(this, &e);
+        DepParser::parse(metadata->get(vmk_license),
+                DepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&lc);
+        if (! lc.ok)
+            result.set(mr_license);
 
         if (! metadata->get(vmk_virtual).empty())
         {

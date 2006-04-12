@@ -66,6 +66,11 @@ namespace paludis
             virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const = 0;
 
             /**
+             * Is the specified LICENSE accepted?
+             */
+            virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const = 0;
+
+            /**
              * Fetch the masks for a particular package.
              */
             MaskReasons mask_reasons(const PackageDatabaseEntry &) const;

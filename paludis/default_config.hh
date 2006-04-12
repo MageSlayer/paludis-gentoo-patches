@@ -134,6 +134,13 @@ namespace paludis
 
             std::vector<KeywordName> _default_keywords;
 
+            std::map<QualifiedPackageName, std::vector<
+                std::pair<PackageDepAtom::ConstPointer, std::string> > > _licenses;
+
+            const std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > _empty_licenses;
+
+            std::vector<std::string> _default_licenses;
+
             std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > _user_masks;
 
             std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > _user_unmasks;
@@ -227,6 +234,61 @@ namespace paludis
             DefaultKeywordsIterator end_default_keywords() const
             {
                 return _default_keywords.end();
+            }
+
+            /**
+             * Iterate over our licenses entries.
+             */
+            typedef std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> >::const_iterator
+                PackageLicensesIterator;
+
+            /**
+             * Iterator to the start of the licenses entries for a
+             * particular package.
+             */
+            PackageLicensesIterator begin_package_licenses(const QualifiedPackageName & d) const
+            {
+                std::map<QualifiedPackageName, std::vector<
+                    std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
+                if (_licenses.end() != ((r = _licenses.find(d))))
+                    return r->second.begin();
+                else
+                    return _empty_licenses.begin();
+            }
+
+            /**
+             * Iterator to past the end of the licenses entries for a
+             * particular file.
+             */
+            PackageLicensesIterator end_package_licenses(const QualifiedPackageName & d) const
+            {
+                std::map<QualifiedPackageName, std::vector<
+                    std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
+                if (_licenses.end() != ((r = _licenses.find(d))))
+                    return r->second.end();
+                else
+                    return _empty_licenses.end();
+            }
+
+            /**
+             * Iterator over the default licenses entries.
+             */
+            typedef std::vector<std::string>::const_iterator DefaultLicensesIterator;
+
+            /**
+             * Iterator to the start of our default license entries.
+             */
+            DefaultLicensesIterator begin_default_licenses() const
+            {
+                return _default_licenses.begin();
+            }
+
+            /**
+             * Iterator to past the end of our default license entries.
+             */
+            DefaultLicensesIterator end_default_licenses() const
+            {
+                return _default_licenses.end();
             }
 
             /**

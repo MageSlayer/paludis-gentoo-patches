@@ -46,6 +46,8 @@ namespace paludis
 
             virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
 
+            virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
+
             virtual std::string bashrc_files() const
             {
                 return "";

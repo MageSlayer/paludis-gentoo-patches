@@ -39,6 +39,12 @@ TestEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntr
 }
 
 bool
+TestEnvironment::accept_license(const std::string &, const PackageDatabaseEntry * const) const
+{
+    return true;
+}
+
+bool
 TestEnvironment::query_user_masks(const PackageDatabaseEntry &) const
 {
     return false;

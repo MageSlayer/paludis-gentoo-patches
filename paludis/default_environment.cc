@@ -176,6 +176,43 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
 }
 
 bool
+DefaultEnvironment::accept_license(const std::string & license, const PackageDatabaseEntry * const d) const
+{
+    if (license == "*")
+        return true;
+
+    Context context("When checking license of '" + license +
+            (d ? "' for " + stringify(*d) : stringify("'")) + ":");
+
+    bool result(false);
+
+    if (d)
+        for (DefaultConfig::PackageLicensesIterator
+                k(DefaultConfig::get_instance()->begin_package_licenses(d->get<pde_name>())),
+                k_end(DefaultConfig::get_instance()->end_package_licenses(d->get<pde_name>())) ;
+                k != k_end ; ++k)
+        {
+            if (! match_package(package_database(), k->first, d))
+                continue;
+
+            result |= k->second == license;
+            result |= k->second == "*";
+        }
+
+    result |= DefaultConfig::get_instance()->end_default_licenses() !=
+        std::find(DefaultConfig::get_instance()->begin_default_licenses(),
+                DefaultConfig::get_instance()->end_default_licenses(),
+                license);
+
+    result |= DefaultConfig::get_instance()->end_default_licenses() !=
+        std::find(DefaultConfig::get_instance()->begin_default_licenses(),
+                DefaultConfig::get_instance()->end_default_licenses(),
+                "*");
+
+    return result;
+}
+
+bool
 DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
 {
     for (DefaultConfig::UserMasksIterator

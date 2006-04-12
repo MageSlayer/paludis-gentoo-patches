@@ -53,6 +53,8 @@ namespace paludis
 
             virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
 
+            virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
+
             virtual bool query_user_masks(const PackageDatabaseEntry &) const;
 
             virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;

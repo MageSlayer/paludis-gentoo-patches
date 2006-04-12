@@ -855,7 +855,9 @@ PortageRepository::do_query_use(const UseFlagName & f) const
     }
 
     UseMap::iterator p(_imp->use.end());
-    if (_imp->use.end() == ((p = _imp->use.find(f))))
+    if (query_use_mask(f))
+        return use_disabled;
+    else if (_imp->use.end() == ((p = _imp->use.find(f))))
         return use_unspecified;
     else
         return p->second;

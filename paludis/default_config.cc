@@ -172,6 +172,45 @@ DefaultConfig::DefaultConfig() :
                     "contain an entry in the form '* keyword')");
     }
 
+    /* licenses */
+    {
+        std::list<FSEntry> files;
+        files.push_back(config_dir / "licenses.conf");
+
+        for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
+                file != file_end ; ++file)
+        {
+            Context local_context("When reading licenses file '" + stringify(*file) + "':");
+
+            if (! file->is_regular_file())
+                continue;
+
+            LineConfigFile f(*file);
+            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+                    line != line_end ; ++line)
+            {
+                std::vector<std::string> tokens;
+                tokeniser.tokenise(*line, std::back_inserter(tokens));
+                if (tokens.empty())
+                    continue;
+                if ("*" == tokens.at(0))
+                    std::copy(next(tokens.begin()), tokens.end(), std::back_inserter(_default_licenses));
+                else
+                {
+                    PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
+                    for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+                            t != t_end ; ++t)
+                        _licenses[a->package()].push_back(std::make_pair(a, *t));
+                }
+            }
+        }
+
+        if (_default_licenses.empty())
+            throw DefaultConfigError("No default licenses specified (a licenses.conf file should "
+                    "contain an entry in the form '* keyword', or '* *' if you don't want any "
+                    "license filtering)");
+    }
+
     /* user mask */
     {
         std::list<FSEntry> files;

@@ -31,12 +31,14 @@ namespace paludis
      */
     enum MaskReason
     {
-        mr_keyword,           ///< no keyword match
-        mr_user_mask,         ///< user package.mask
-        mr_profile_mask,      ///< profile package.mask
-        mr_repository_mask,   ///< repository package.mask
-        mr_eapi,              ///< unknown eapi
-        last_mr               ///< number of entries
+        mr_keyword,               ///< no keyword match
+        mr_user_mask,             ///< user package.mask
+        mr_profile_mask,          ///< profile package.mask
+        mr_repository_mask,       ///< repository package.mask
+        mr_eapi,                  ///< unknown eapi
+        mr_license,               ///< unaccepted license
+        mr_licence = mr_license,  ///< convenience alias for those who can spell
+        last_mr                   ///< number of entries
     };
 
     /**
