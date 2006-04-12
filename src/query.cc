@@ -162,10 +162,9 @@ void do_one_query(
             cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
                 " " << metadata->get(p::vmk_description) << endl;
 
-        if (CommandLine::get_instance()->a_show_license.specified())
-            if (! metadata->get(p::vmk_license).empty())
-                cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
-                    " " << metadata->get(p::vmk_license) << endl;
+        if (! metadata->get(p::vmk_license).empty())
+            cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
+                " " << metadata->get(p::vmk_license) << endl;
 
         if (CommandLine::get_instance()->a_show_deps.specified())
         {

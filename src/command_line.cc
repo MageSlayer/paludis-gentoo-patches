@@ -50,8 +50,6 @@ CommandLine::CommandLine() :
 
     query_args(this, "Query options"),
     a_show_slot(&query_args,        "show-slot",    'S', "Show SLOTs"),
-    a_show_license(&query_args,     "show-license", 'L', "Show licenses"),
-    a_show_licence(&a_show_license, "show-licence"),
     a_show_deps(&query_args,        "show-deps",    'd', "Show dependencies"),
     a_show_metadata(&query_args,    "show-metadata", 'M', "Show raw metadata"),
 

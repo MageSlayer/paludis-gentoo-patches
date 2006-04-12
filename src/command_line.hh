@@ -120,12 +120,6 @@ class CommandLine :
         /// --show-slot
         paludis::args::SwitchArg a_show_slot;
 
-        /// --show-license
-        paludis::args::SwitchArg a_show_license;
-
-        /// --show-licence
-        paludis::args::AliasArg a_show_licence;
-
         /// --show-deps
         paludis::args::SwitchArg a_show_deps;
 
