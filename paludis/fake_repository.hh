@@ -134,6 +134,8 @@ namespace paludis
             {
                 return false;
             }
+
+            virtual void invalidate() const;
     };
 }
 

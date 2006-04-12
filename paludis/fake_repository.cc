@@ -235,3 +235,8 @@ FakeRepository::do_sync() const
     return false;
 }
 
+void
+FakeRepository::invalidate() const
+{
+}
+

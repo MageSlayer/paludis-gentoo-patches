@@ -163,6 +163,9 @@ namespace paludis
 
         /// Destructor.
         ~Implementation();
+
+        /// Invalidate.
+        void invalidate() const;
     };
 }
 
@@ -204,6 +207,13 @@ Implementation<VDBRepository>::load_entries() const
         entries_valid = false;
         throw;
     }
+}
+
+void
+Implementation<VDBRepository>::invalidate() const
+{
+    entries_valid = false;
+    entries.clear();
 }
 
 namespace
@@ -553,5 +563,11 @@ bool
 VDBRepository::do_sync() const
 {
     return false;
+}
+
+void
+VDBRepository::invalidate() const
+{
+    _imp->invalidate();
 }
 

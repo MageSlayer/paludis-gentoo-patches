@@ -183,6 +183,9 @@ namespace paludis
         /// Add a profile directory.
         void add_profile(const FSEntry & f) const;
 
+        /// Invalidate our cache.
+        void invalidate() const;
+
         private:
             void add_profile_r(const FSEntry & f) const;
     };
@@ -345,6 +348,30 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
                             line->substr(1))));
         }
     }
+}
+
+void
+Implementation<PortageRepository>::invalidate() const
+{
+    has_category_names = false;
+    category_names.clear();
+    package_names.clear();
+    version_specs.clear();
+    metadata.clear();
+    repo_mask.clear();
+    has_repo_mask = false;
+    use_mask.clear();
+    use.clear();
+    has_virtuals = false;
+    virtuals_map.clear();
+    has_profile = false;
+    arch_list.clear();
+    expand_list.clear();
+    has_arch_list = false;
+    has_mirrors = false;
+    mirrors.clear();
+    profile_env.clear();
+    system_packages = AllDepAtom::Pointer(0);
 }
 
 PortageRepository::PortageRepository(
@@ -1214,3 +1241,10 @@ PortageRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec 
 {
     throw PackageUninstallActionError("PortageRepository doesn't support do_uninstall");
 }
+
+void
+PortageRepository::invalidate() const
+{
+    _imp->invalidate();
+}
+

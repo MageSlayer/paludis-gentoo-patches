@@ -423,6 +423,11 @@ namespace paludis
             {
                 return do_package_set(s);
             }
+
+            /**
+             * Invalidate any cache.
+             */
+            virtual void invalidate() const = 0;
     };
 
     /**

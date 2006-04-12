@@ -208,10 +208,60 @@ do_install()
             cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
                     p::stringify(max_count) + ") Installing " + cpv);
 
-
             env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
                 install(dep->get<p::dle_name>(), dep->get<p::dle_version>());
+
+            // figure out if we need to unmerge anything
+            cout << endl << colour(cl_heading,
+                    "Cleaning stale versions after installing " + cpv) << endl << endl;
+
+            // manually invalidate any installed repos, they're probably
+            // wrong now
+            for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
+                    r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+                if ((*r)->installed())
+                    (*r)->invalidate();
+
+            // look for packages with the same name in the same slot
+            p::PackageDatabaseEntryCollection::Pointer collision_list(env->package_database()->query(
+                        p::PackageDepAtom::Pointer(new p::PackageDepAtom(
+                                p::stringify(dep->get<p::dle_name>()) + ":" +
+                                p::stringify(dep->get<p::dle_metadata>()->get(vmk_slot)))),
+                        is_installed_only));
+
+            // don't clean the thing we just installed
+            p::PackageDatabaseEntryCollection clean_list;
+            for (p::PackageDatabaseEntryCollection::Iterator c(collision_list->begin()),
+                    c_end(collision_list->end()) ; c != c_end ; ++c)
+                if (dep->get<dle_version>() != c->get<pde_version>())
+                    clean_list.insert(*c);
+
+            if (clean_list.empty())
+            {
+                cout << "* No cleaning required" << endl;
+            }
+            else
+            {
+                for (p::PackageDatabaseEntryCollection::Iterator c(clean_list.begin()),
+                        c_end(clean_list.end()) ; c != c_end ; ++c)
+                    cout << "* " << colour(cl_package_name, *c) << endl;
+                cout << endl;
+
+                for (p::PackageDatabaseEntryCollection::Iterator c(clean_list.begin()),
+                        c_end(clean_list.end()) ; c != c_end ; ++c)
+                {
+                    cout << endl << colour(cl_heading, "Cleaning " + p::stringify(*c)) << endl << endl;
+
+                    // TODO: some way to reset this properly would be nice.
+                    cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
+                            p::stringify(max_count) + ") Cleaning " + cpv + ": " + stringify(*c));
+
+                    env->package_database()->fetch_repository(c->get<p::pde_repository>())->
+                            uninstall(c->get<p::pde_name>(), c->get<p::pde_version>());
+                }
+            }
         }
+        cout << endl;
     }
     catch (const p::PackageInstallActionError & e)
     {
