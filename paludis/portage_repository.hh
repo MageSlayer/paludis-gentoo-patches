@@ -129,6 +129,10 @@ namespace paludis
             }
 
             virtual void invalidate() const;
+
+            virtual ProvideMapIterator begin_provide_map() const;
+
+            virtual ProvideMapIterator end_provide_map() const;
     };
 
     /**

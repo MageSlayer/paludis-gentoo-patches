@@ -156,6 +156,12 @@ namespace paludis
         /// Load metadata for one entry.
         void load_entry(std::vector<VDBEntry>::iterator) const;
 
+        /// Do we have provide map loaded?
+        mutable bool has_provide_map;
+
+        /// Provide map.
+        mutable std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
+
         /// Constructor.
         Implementation(const Environment * const,
                 const PackageDatabase * const d, const FSEntry & l,
@@ -176,7 +182,8 @@ Implementation<VDBRepository>::Implementation(const Environment * const env,
     env(env),
     location(l),
     root(r),
-    entries_valid(false)
+    entries_valid(false),
+    has_provide_map(false)
 {
 }
 
@@ -217,6 +224,9 @@ Implementation<VDBRepository>::invalidate() const
 {
     entries_valid = false;
     entries.clear();
+
+    has_provide_map = false;
+    provide_map.clear();
 }
 
 namespace
@@ -584,5 +594,55 @@ void
 VDBRepository::invalidate() const
 {
     _imp->invalidate();
+}
+
+Repository::ProvideMapIterator
+VDBRepository::begin_provide_map() const
+{
+    if (! _imp->has_provide_map)
+    {
+        Context context("When loading VDB PROVIDEs map:");
+
+        if (! _imp->entries_valid)
+            _imp->load_entries();
+
+        for (std::vector<VDBEntry>::iterator e(_imp->entries.begin()),
+                e_end(_imp->entries.end()) ; e != e_end ; ++e)
+        {
+            if (! e->metadata)
+                _imp->load_entry(e);
+            const std::string provide_str(e->metadata->get(vmk_provide));
+            if (provide_str.empty())
+                continue;
+
+            DepAtom::ConstPointer provide(DepParser::parse(provide_str,
+                        DepParserPolicy<PackageDepAtom, false>::get_instance()));
+            PackageDatabaseEntry dbe(e->name, e->version, name());
+            DepAtomFlattener f(_imp->env, &dbe, provide);
+
+            for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+            {
+                QualifiedPackageName pp((*p)->text());
+
+                if (pp.get<qpn_category>() != CategoryNamePart("virtual"))
+                    Log::get_instance()->message(ll_warning, "PROVIDE of non-virtual '"
+                            + stringify(pp) + "' from '" + stringify(e->name) + "-"
+                            + stringify(e->version) + "' in '" + stringify(name())
+                            + "' will not work as expected");
+
+                _imp->provide_map.insert(std::make_pair(pp, e->name));
+            }
+        }
+
+        _imp->has_provide_map = true;
+    }
+
+    return _imp->provide_map.begin();
+}
+
+Repository::ProvideMapIterator
+VDBRepository::end_provide_map() const
+{
+    return _imp->provide_map.end();
 }
 

@@ -428,6 +428,12 @@ namespace paludis
              * Invalidate any cache.
              */
             virtual void invalidate() const = 0;
+
+            typedef std::map<QualifiedPackageName, QualifiedPackageName>::const_iterator ProvideMapIterator;
+
+            virtual ProvideMapIterator begin_provide_map() const = 0;
+
+            virtual ProvideMapIterator end_provide_map() const = 0;
     };
 
     /**

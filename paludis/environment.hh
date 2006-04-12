@@ -47,6 +47,10 @@ namespace paludis
         private:
             PackageDatabase::Pointer _package_database;
 
+            mutable bool _has_provide_map;
+
+            mutable std::map<QualifiedPackageName, QualifiedPackageName> _provide_map;
+
         protected:
             /**
              * Constructor.
@@ -107,6 +111,12 @@ namespace paludis
              * Destructor.
              */
             virtual ~Environment();
+
+            typedef std::map<QualifiedPackageName, QualifiedPackageName>::const_iterator ProvideMapIterator;
+
+            ProvideMapIterator begin_provide_map() const;
+
+            ProvideMapIterator end_provide_map() const;
     };
 }
 

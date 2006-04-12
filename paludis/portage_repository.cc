@@ -186,6 +186,9 @@ namespace paludis
         /// Invalidate our cache.
         void invalidate() const;
 
+        /// (Empty) provides map.
+        const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
+
         private:
             void add_profile_r(const FSEntry & f) const;
     };
@@ -418,7 +421,9 @@ PortageRepository::do_has_package_named(const CategoryNamePart & c,
             + stringify(p) + "' in " + stringify(name()) + ":");
 
     need_category_names();
-    need_virtual_names();
+
+    if (c == CategoryNamePart("virtual"))
+        need_virtual_names();
 
     CategoryMap::iterator cat_iter(
             _imp->category_names.find(c));
@@ -491,7 +496,8 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
             + "' in " + stringify(name()) + ":");
 
     need_category_names();
-    need_virtual_names();
+    if (c == CategoryNamePart("virtual"))
+        need_virtual_names();
 
     if (_imp->category_names.end() == _imp->category_names.find(c))
         return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection);
@@ -582,7 +588,8 @@ PortageRepository::need_category_names() const
 void
 PortageRepository::need_version_names(const QualifiedPackageName & n) const
 {
-    need_virtual_names();
+    if (n.get<qpn_category>() == CategoryNamePart("virtual"))
+        need_virtual_names();
 
     if (_imp->package_names[n])
         return;
@@ -907,21 +914,40 @@ PortageRepository::need_virtual_names() const
     if (_imp->has_virtuals)
         return;
 
-    if (! _imp->has_profile)
-    {
-        Context context("When loading virtual names:");
-        _imp->add_profile(_imp->profile.realpath());
-        _imp->has_profile = true;
-    }
-
-    need_category_names();
-
-    for (VirtualsMap::const_iterator
-            v(_imp->virtuals_map.begin()), v_end(_imp->virtuals_map.end()) ;
-            v != v_end ; ++v)
-        _imp->package_names.insert(std::make_pair(v->first, false));
-
     _imp->has_virtuals = true;
+
+    try
+    {
+        if (! _imp->has_profile)
+        {
+            Context context("When loading virtual names:");
+            _imp->add_profile(_imp->profile.realpath());
+            _imp->has_profile = true;
+        }
+
+        need_category_names();
+
+        for (Environment::ProvideMapIterator p(_imp->env->begin_provide_map()),
+                p_end(_imp->env->end_provide_map()) ; p != p_end ; ++p)
+        {
+            if (! has_package_named(p->second))
+                continue;
+
+            _imp->virtuals_map.erase(p->first);
+            _imp->virtuals_map.insert(std::make_pair(p->first, PackageDepAtom::Pointer(
+                            new PackageDepAtom(p->second))));
+        }
+
+        for (VirtualsMap::const_iterator
+                v(_imp->virtuals_map.begin()), v_end(_imp->virtuals_map.end()) ;
+                v != v_end ; ++v)
+            _imp->package_names.insert(std::make_pair(v->first, false));
+    }
+    catch (...)
+    {
+        _imp->has_virtuals = false;
+        throw;
+    }
 }
 
 CountedPtr<Repository>
@@ -1273,5 +1299,17 @@ void
 PortageRepository::invalidate() const
 {
     _imp->invalidate();
+}
+
+Repository::ProvideMapIterator
+PortageRepository::begin_provide_map() const
+{
+    return _imp->provide_map.begin();
+}
+
+Repository::ProvideMapIterator
+PortageRepository::end_provide_map() const
+{
+    return _imp->provide_map.end();
 }
 

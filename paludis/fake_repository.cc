@@ -46,6 +46,9 @@ namespace paludis
         /// Our metadata.
         std::map<std::string, VersionMetadata::Pointer > metadata;
 
+        /// (Empty) provides map.
+        const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
+
         /// Constructor.
         Implementation() :
             category_names(new CategoryNamePartCollection)
@@ -238,5 +241,17 @@ FakeRepository::do_sync() const
 void
 FakeRepository::invalidate() const
 {
+}
+
+Repository::ProvideMapIterator
+FakeRepository::begin_provide_map() const
+{
+    return _imp->provide_map.begin();
+}
+
+Repository::ProvideMapIterator
+FakeRepository::end_provide_map() const
+{
+    return _imp->provide_map.end();
 }
 

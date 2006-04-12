@@ -25,7 +25,8 @@
 using namespace paludis;
 
 Environment::Environment(PackageDatabase::Pointer d) :
-    _package_database(d)
+    _package_database(d),
+    _has_provide_map(false)
 {
 }
 
@@ -157,5 +158,34 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
     }
 
     return result;
+}
+
+Environment::ProvideMapIterator
+Environment::begin_provide_map() const
+{
+    if (! _has_provide_map)
+    {
+        Context context("When scanning for PROVIDEs:");
+
+        for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+                r_end(package_database()->end_repositories()) ; r != r_end ; ++r)
+        {
+            if (! (*r)->installed())
+                continue;
+
+            std::copy((*r)->begin_provide_map(), (*r)->end_provide_map(),
+                    std::inserter(_provide_map, _provide_map.begin()));
+        }
+
+        _has_provide_map = true;
+    }
+
+    return _provide_map.begin();
+}
+
+Environment::ProvideMapIterator
+Environment::end_provide_map() const
+{
+    return _provide_map.end();
 }
 
