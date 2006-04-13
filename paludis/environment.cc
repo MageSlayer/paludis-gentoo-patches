@@ -20,7 +20,8 @@
 #include <paludis/package_database.hh>
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_parser.hh>
-#include <paludis/qa/environment.hh>
+#include <paludis/environment.hh>
+#include <paludis/util/log.hh>
 
 using namespace paludis;
 
@@ -187,5 +188,122 @@ Environment::ProvideMapIterator
 Environment::end_provide_map() const
 {
     return _provide_map.end();
+}
+
+DepAtom::Pointer
+Environment::package_set(const std::string & s) const
+{
+    if (s == "everything" || s == "system" || s == "world")
+    {
+        AllDepAtom::Pointer result(new AllDepAtom);
+
+        for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+                r_end(package_database()->end_repositories()) ;
+                r != r_end ; ++r)
+        {
+            DepAtom::Pointer add((*r)->package_set(s));
+            if (0 != add)
+                result->add_child(add);
+
+            if ("system" != s)
+            {
+                add = (*r)->package_set("system");
+                if (0 != add)
+                    result->add_child(add);
+            }
+        }
+
+        return result;
+    }
+    else
+    {
+        for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+                r_end(package_database()->end_repositories()) ;
+                r != r_end ; ++r)
+        {
+            DepAtom::Pointer result((*r)->package_set(s));
+            if (0 != result)
+                return result;
+        }
+
+        return DepAtom::Pointer(0);
+    }
+}
+
+namespace
+{
+    struct WorldTargetFinder :
+        DepAtomVisitorTypes::ConstVisitor
+    {
+        std::list<const PackageDepAtom *> items;
+
+        ///\name Visit methods
+        ///{
+        void visit(const AllDepAtom * a)
+        {
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const AnyDepAtom *)
+        {
+        }
+
+        void visit(const UseDepAtom *)
+        {
+        }
+
+        void visit(const PlainTextDepAtom *)
+        {
+        }
+
+        void visit(const PackageDepAtom * a)
+        {
+            if (! (a->slot_ptr() || a->version_spec_ptr()))
+                items.push_back(a);
+        }
+
+        void visit(const BlockDepAtom *)
+        {
+        }
+        ///}
+
+    };
+}
+
+void
+Environment::add_appropriate_to_world(DepAtom::ConstPointer a) const
+{
+    WorldTargetFinder w;
+    a->accept(&w);
+    for (std::list<const PackageDepAtom *>::const_iterator i(w.items.begin()),
+            i_end(w.items.end()) ; i != i_end ; ++i)
+    {
+        if (! package_database()->query(*i, is_installed_only)->empty())
+            Log::get_instance()->message(ll_debug, "Not adding '" + stringify(**i) +
+                    "' to world, because it is already installed");
+        else
+        {
+            for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+                    r_end(package_database()->end_repositories()) ;
+                    r != r_end ; ++r)
+                (*r)->add_to_world((*i)->package());
+        }
+    }
+}
+
+
+void
+Environment::remove_appropriate_from_world(DepAtom::ConstPointer a) const
+{
+    WorldTargetFinder w;
+    a->accept(&w);
+    for (std::list<const PackageDepAtom *>::const_iterator i(w.items.begin()),
+            i_end(w.items.end()) ; i != i_end ; ++i)
+    {
+        for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+                r_end(package_database()->end_repositories()) ;
+                r != r_end ; ++r)
+            (*r)->remove_from_world((*i)->package());
+    }
 }
 

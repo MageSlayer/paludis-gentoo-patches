@@ -117,6 +117,11 @@ namespace paludis
             ProvideMapIterator begin_provide_map() const;
 
             ProvideMapIterator end_provide_map() const;
+
+            DepAtom::Pointer package_set(const std::string &) const;
+
+            void add_appropriate_to_world(DepAtom::ConstPointer) const;
+            void remove_appropriate_from_world(DepAtom::ConstPointer) const;
     };
 }
 

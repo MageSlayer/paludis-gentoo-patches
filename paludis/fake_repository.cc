@@ -227,7 +227,7 @@ FakeRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &) 
 DepAtom::Pointer
 FakeRepository::do_package_set(const std::string &) const
 {
-    AllDepAtom::Pointer result(new AllDepAtom);
+    AllDepAtom::Pointer result(0);
 
     return result;
 }

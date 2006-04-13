@@ -144,6 +144,9 @@ namespace paludis
         /// Root location
         FSEntry root;
 
+        /// World file
+        FSEntry world_file;
+
         /// Do we have entries loaded?
         mutable bool entries_valid;
 
@@ -165,7 +168,7 @@ namespace paludis
         /// Constructor.
         Implementation(const Environment * const,
                 const PackageDatabase * const d, const FSEntry & l,
-                const FSEntry & r);
+                const FSEntry & r, const FSEntry &);
 
         /// Destructor.
         ~Implementation();
@@ -177,11 +180,12 @@ namespace paludis
 
 Implementation<VDBRepository>::Implementation(const Environment * const env,
         const PackageDatabase * const d,
-        const FSEntry & l, const FSEntry & r) :
+        const FSEntry & l, const FSEntry & r, const FSEntry & w) :
     db(d),
     env(env),
     location(l),
     root(r),
+    world_file(w),
     entries_valid(false),
     has_provide_map(false)
 {
@@ -203,6 +207,9 @@ Implementation<VDBRepository>::load_entries() const
     {
         for (DirIterator cat_i(location), cat_iend ; cat_i != cat_iend ; ++cat_i)
         {
+            if (! cat_i->is_directory())
+                continue;
+
             for (DirIterator pkg_i(*cat_i), pkg_iend ; pkg_i != pkg_iend ; ++pkg_i)
             {
                 PackageDepAtom atom("=" + cat_i->basename() + "/" + pkg_i->basename());
@@ -287,14 +294,15 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
 
 VDBRepository::VDBRepository(
         const Environment * const e, const PackageDatabase * const d,
-        const FSEntry & location, const FSEntry & root) :
+        const FSEntry & location, const FSEntry & root, const FSEntry & world) :
     Repository(RepositoryName("installed")),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(e,
-                d, location, root))
+                d, location, root, world))
 {
     _info.insert(std::make_pair(std::string("location"), location));
     _info.insert(std::make_pair(std::string("root"), root));
     _info.insert(std::make_pair(std::string("format"), std::string("vdb")));
+    _info.insert(std::make_pair(std::string("world"), world));
 }
 
 VDBRepository::~VDBRepository()
@@ -469,7 +477,11 @@ VDBRepository::make_vdb_repository(
     if (m.end() == m.find("root") || ((root = m.find("root")->second)).empty())
         root = "/";
 
-    return CountedPtr<Repository>(new VDBRepository(env, db, location, root));
+    std::string world;
+    if (m.end() == m.find("world") || ((world = m.find("world")->second)).empty())
+        world = location + "/world";
+
+    return CountedPtr<Repository>(new VDBRepository(env, db, location, root, world));
 }
 
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(
@@ -569,19 +581,40 @@ VDBRepository::do_package_set(const std::string & s) const
     Context context("When fetching package set '" + s + "' from '" +
             stringify(name()) + "':");
 
-    AllDepAtom::Pointer result(new AllDepAtom);
-
     if ("everything" == s)
     {
+        AllDepAtom::Pointer result(new AllDepAtom);
+
         if (! _imp->entries_valid)
             _imp->load_entries();
 
         for (std::vector<VDBEntry>::const_iterator p(_imp->entries.begin()),
                 p_end(_imp->entries.end()) ; p != p_end ; ++p)
             result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(p->name)));
-    }
 
-    return result;
+        return result;
+    }
+    else if ("world" == s)
+    {
+        AllDepAtom::Pointer result(new AllDepAtom);
+
+        if (_imp->world_file.exists())
+        {
+            LineConfigFile world(_imp->world_file);
+
+            for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
+                    line != line_end ; ++line)
+                result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(
+                                QualifiedPackageName(*line))));
+        }
+        else
+            Log::get_instance()->message(ll_warning, "World file '" + stringify(_imp->world_file) +
+                    "' doesn't exist");
+
+        return result;
+    }
+    else
+        return DepAtom::Pointer(0);
 }
 
 bool
@@ -662,3 +695,71 @@ VDBRepository::end_provide_map() const
     return _imp->provide_map.end();
 }
 
+void
+VDBRepository::add_to_world(const QualifiedPackageName & n) const
+{
+    bool found(false);
+
+    if (_imp->world_file.exists())
+    {
+        LineConfigFile world(_imp->world_file);
+
+        for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
+                line != line_end ; ++line)
+            if (QualifiedPackageName(*line) == n)
+            {
+                found = true;
+                break;
+            }
+    }
+
+    if (! found)
+    {
+        std::ofstream world(stringify(_imp->world_file).c_str(), std::ios::out | std::ios::app);
+        if (! world)
+            Log::get_instance()->message(ll_warning, "Cannot append to world file '"
+                    + stringify(_imp->world_file) + "', skipping world update");
+        else
+            world << n << std::endl;
+    }
+}
+
+void
+VDBRepository::remove_from_world(const QualifiedPackageName & n) const
+{
+    std::list<std::string> world_lines;
+
+    if (_imp->world_file.exists())
+    {
+        std::ifstream world_file(stringify(_imp->world_file).c_str());
+
+        if (! world_file)
+        {
+            Log::get_instance()->message(ll_warning, "Cannot read world file '"
+                    + stringify(_imp->world_file) + "', skipping world update");
+            return;
+        }
+
+        std::string line;
+        while (std::getline(world_file, line))
+        {
+            if (strip_leading(strip_trailing(line, " \t"), "\t") != stringify(n))
+                world_lines.push_back(line);
+            else
+                Log::get_instance()->message(ll_debug, "Removing line '"
+                            + line + "' from world file '" + stringify(_imp->world_file));
+        }
+    }
+
+    std::ofstream world_file(stringify(_imp->world_file).c_str());
+
+    if (! world_file)
+    {
+        Log::get_instance()->message(ll_warning, "Cannot write world file '"
+                + stringify(_imp->world_file) + "', skipping world update");
+        return;
+    }
+
+    std::copy(world_lines.begin(), world_lines.end(),
+            std::ostream_iterator<std::string>(world_file, "\n"));
+}

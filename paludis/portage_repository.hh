@@ -133,6 +133,14 @@ namespace paludis
             virtual ProvideMapIterator begin_provide_map() const;
 
             virtual ProvideMapIterator end_provide_map() const;
+
+            virtual void add_to_world(const QualifiedPackageName &) const
+            {
+            }
+
+            virtual void remove_from_world(const QualifiedPackageName &) const
+            {
+            }
     };
 
     /**

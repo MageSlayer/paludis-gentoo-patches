@@ -85,7 +85,8 @@ namespace paludis
             VDBRepository(const Environment * const env,
                     const PackageDatabase * const db,
                     const FSEntry & location,
-                    const FSEntry & root);
+                    const FSEntry & root,
+                    const FSEntry & world);
 
             /**
              * Virtual constructor.
@@ -110,6 +111,10 @@ namespace paludis
             virtual ProvideMapIterator begin_provide_map() const;
 
             virtual ProvideMapIterator end_provide_map() const;
+
+            virtual void add_to_world(const QualifiedPackageName &) const;
+
+            virtual void remove_from_world(const QualifiedPackageName &) const;
     };
 
     /**

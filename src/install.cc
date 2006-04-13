@@ -54,17 +54,14 @@ do_install()
         bool had_set_targets(false), had_pkg_targets(false);
         for ( ; q != q_end ; ++q)
         {
-            if (*q == "system" || *q == "everything")
+            DepAtom::Pointer s(0);
+            if (s = ((env->package_set(*q))))
             {
                 if (had_set_targets)
                     throw DoHelp("You should not specify more than one set target.");
 
                 had_set_targets = true;
-
-                for (p::PackageDatabase::RepositoryIterator r(
-                            env->package_database()->begin_repositories()),
-                        r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
-                    targets->add_child((*r)->package_set(*q));
+                targets->add_child(s);
             }
             else
             {
@@ -87,6 +84,8 @@ do_install()
 
         if (had_set_targets)
             dep_list.set_reinstall(false);
+        else if (! CommandLine::get_instance()->a_pretend.specified())
+            env->add_appropriate_to_world(targets);
     }
     catch (const p::AmbiguousPackageNameError & e)
     {
@@ -352,3 +351,4 @@ do_install()
 
     return return_code;
 }
+

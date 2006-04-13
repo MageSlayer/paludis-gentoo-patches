@@ -97,6 +97,14 @@ do_uninstall()
     if (CommandLine::get_instance()->a_pretend.specified())
         return return_code;
 
+    {
+        p::AllDepAtom::Pointer all(new p::AllDepAtom);
+        for (std::list<p::PackageDepAtom::Pointer>::const_iterator t(targets.begin()),
+                t_end(targets.end()) ; t != t_end ; ++t)
+            all->add_child(*t);
+        env->remove_appropriate_from_world(all);
+    }
+
     for (p::PackageDatabaseEntryCollection::Iterator pkg(unmerge->begin()), pkg_end(unmerge->end()) ;
             pkg != pkg_end ; ++pkg)
     {

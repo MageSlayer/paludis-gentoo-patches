@@ -1268,7 +1268,7 @@ PortageRepository::do_package_set(const std::string & s) const
         return _imp->system_packages;
     }
     else
-        return DepAtom::Pointer(new AllDepAtom);
+        return DepAtom::Pointer(0);
 }
 
 bool

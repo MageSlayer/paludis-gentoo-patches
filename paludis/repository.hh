@@ -434,6 +434,9 @@ namespace paludis
             virtual ProvideMapIterator begin_provide_map() const = 0;
 
             virtual ProvideMapIterator end_provide_map() const = 0;
+
+            virtual void add_to_world(const QualifiedPackageName &) const = 0;
+            virtual void remove_from_world(const QualifiedPackageName &) const = 0;
     };
 
     /**
