@@ -66,7 +66,7 @@ CommandLine::CommandLine() :
     a_dl_drop_circular(&dl_args, "dl-drop-circular", '\0', "Drop circular dependencies"),
     a_dl_drop_all(&dl_args, "dl-drop-all", '0', "Drop all dependencies"),
     a_dl_ignore_installed(&dl_args, "dl-ignore-installed", 'e', "Ignore installed packages"),
-    a_dl_recursive_deps(&dl_args, "dl-recursive-deps", 'D', "Check dependencies for installed packages"),
+    a_dl_no_recursive_deps(&dl_args, "dl-no-recursive-deps", '\0', "Don't check runtime dependencies for installed packages"),
     a_dl_max_stack_depth(&dl_args, "dl-max-stack-depth", '\0', "Maximum stack depth (default 100)")
 {
     a_dl_max_stack_depth.set_argument(100);

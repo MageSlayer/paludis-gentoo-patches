@@ -105,7 +105,7 @@ do_install()
     dep_list.set_drop_circular(CommandLine::get_instance()->a_dl_drop_circular.specified());
     dep_list.set_drop_all(CommandLine::get_instance()->a_dl_drop_all.specified());
     dep_list.set_ignore_installed(CommandLine::get_instance()->a_dl_ignore_installed.specified());
-    dep_list.set_recursive_deps(CommandLine::get_instance()->a_dl_recursive_deps.specified());
+    dep_list.set_recursive_deps(! CommandLine::get_instance()->a_dl_no_recursive_deps.specified());
     dep_list.set_max_stack_depth(CommandLine::get_instance()->a_dl_max_stack_depth.argument());
 
     if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "always")
