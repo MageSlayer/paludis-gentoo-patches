@@ -126,6 +126,12 @@ ebuild_load_ebuild()
         source ${1} || die "Error sourcing ebuild '${1}'"
     fi
     [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"
+
+    IUSE="${IUSE} ${E_IUSE}"
+    DEPEND="${DEPEND} ${E_DEPEND}"
+    RDEPEND="${RDEPEND} ${E_RDEPEND}"
+    PDEPEND="${PDEPEND} ${E_PDEPEND}"
+    KEYWORDS="${KEYWORDS} ${E_KEYWORDS}"
 }
 
 ebuild_main()
