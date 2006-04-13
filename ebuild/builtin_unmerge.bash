@@ -28,6 +28,14 @@ builtin_unmerge()
         eval "${v}='$(< ${dbdir}/${v} )' || die \"Load key ${v} failed\""
     done
 
+    eval $(bzcat "${dbdir}/environment.bz2" | while read line; do
+        if [[ ${line%%=*} == CONFIG_PROTECT ]]; then
+            echo "CONFIG_PROTECT='${line#*=} ${CONFIG_PROTECT}'"
+        elif [[ ${line%%=*} == CONFIG_PROTECT_MASK ]]; then
+            echo "CONFIG_PROTECT_MASK='${line#*=} ${CONFIG_PROTECT_MASK}'"
+        fi
+    done)
+
     ${PALUDIS_EBUILD_MODULES_DIR}/utils/unmerge "${ROOT}/" "${dbdir}/CONTENTS" \
         || die "unmerge failed"
 

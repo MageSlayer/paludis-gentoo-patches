@@ -71,8 +71,23 @@ while read entry ; do
             elif [[ $(stat -c '%Y' -- "${ROOT}/${items[1]}" ) != "${items[3]}" ]] ; then
                 echo "skip  !time  ${items[1]}"
             else
-                echo "remove       ${items[1]}"
-                rm -f "${ROOT}/${items[1]}"
+                cfgpro=
+                for c in ${CONFIG_PROTECT}; do
+                    if [[ ${items[1]} == "${c%/}"/* ]]; then
+                        cfgpro="yes"
+                        for cm in ${CONFIG_PROTECT_MASK}; do
+                            if [[ ${items[1]} == "${cm}"/* ]]; then
+                                cfgpro=
+                            fi
+                        done
+                    fi
+                done
+                if [[ -n ${cfgpro} ]]; then
+                    echo "cfgpro       ${items[1]}"
+                else
+                    echo "remove       ${items[1]}"
+                    rm -f "${ROOT}/${items[1]}"
+                fi
             fi
             ;;
 
