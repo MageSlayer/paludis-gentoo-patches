@@ -25,7 +25,7 @@ builtin_merge()
     local olddotglob=$?
     shopt -s dotglob
 
-    local dbdir="${ROOT}"/var/db/pkg/"${CATEGORY}/${PF}"
+    local dbdir="${ROOT%/}"/var/db/pkg/"${CATEGORY}/${PF}"
     ebuild_section "Writing VDB entry to '${dbdir}'..."
     install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
 
@@ -65,15 +65,15 @@ builtin_merge()
             done
         fi
 
-        install -d "${ROOT}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
+        install -d "${ROOT%/}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
         if [[ -d "${D}" ]] ; then
-            ${PALUDIS_EBUILD_MODULES_DIR}/utils/merge "${D}/" "${ROOT}/" "${dbdir}/CONTENTS" \
+            ${PALUDIS_EBUILD_MODULES_DIR}/utils/merge "${D%/}/" "${ROOT%/}/" "${dbdir}/CONTENTS" \
                 || die "merge failed"
         fi
     fi
 
     if [[ -n "${reinstall}" ]] ; then
-        ${PALUDIS_EBUILD_MODULES_DIR}/utils/unmerge "${ROOT}/" "${dbdir}/OLDCONTENTS" \
+        ${PALUDIS_EBUILD_MODULES_DIR}/utils/unmerge "${ROOT%/}/" "${dbdir}/OLDCONTENTS" \
             || die "unmerge failed"
         rm -f "${dbdir}/OLDCONTENTS"
     fi

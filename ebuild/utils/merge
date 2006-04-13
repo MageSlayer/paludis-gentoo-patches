@@ -60,7 +60,7 @@ merge_this()
     local f ff r=0
     for f in "${1}/"* ; do
 
-        ff=$(basename "${f}" )
+        ff=$(basename -- "${f}" )
         echo ">>> ${2#${top_dst}}/${ff}"
 
         if [[ -e "${f}" ]] || [[ -h "${f}" ]] ; then
@@ -76,23 +76,23 @@ merge_this()
         fi
 
         if [[ -L "${f}" ]] ; then
-            if ( [[ -e "${2}/${ff}" ]] || [[ -h "${2}/${ff}" ]] ) && ! rm -f "${2}/${ff}" ; then
+            if ( [[ -e "${2}/${ff}" ]] || [[ -h "${2}/${ff}" ]] ) && ! rm -f -- "${2}/${ff}" ; then
                 echo "error removing ${2}/${ff} for link ${f}"
                 r=1
-            elif ! ln -s "$(readlink ${f} )" "${2}/${ff}" ; then
+            elif ! ln -s -- "$(readlink -- ${f} )" "${2}/${ff}" ; then
                 echo "error installing link ${f}"
                 r=1
             else
                 echo -n "sym ${2#${top_dst}}/${ff} -> " >> ${contents}
-                echo -n "$(readlink ${2}/${ff} ) " >> ${contents}
-                echo -n "$(stat -c '%Y' ${2}/${ff} )" >> ${contents}
+                echo -n "$(readlink -- ${2}/${ff} ) " >> ${contents}
+                echo -n "$(stat -c '%Y' -- ${2}/${ff} )" >> ${contents}
                 echo >> ${contents}
             fi
         elif [[ -d ${f} ]] ; then
             local ok=
             if [[ -d "${2}/${ff}"/ ]] ; then
                 :
-            elif ! mkdir "${2}/${ff}" ; then
+            elif ! mkdir -- "${2}/${ff}" ; then
                 echo "error installing directory ${f}"
                 ok=no
             fi
@@ -107,14 +107,14 @@ merge_this()
                 r=1
             fi
         else
-            if ! cp --remove-destination -pR "${f}" "${2}"/ ; then
+            if ! cp --remove-destination -pR -- "${f}" "${2}"/ ; then
                 echo "error installing file ${f}"
                 r=1
             else
                 if [[ -f "${f}" ]] ; then
                     echo -n "obj ${2#${top_dst}}/${ff} " >> ${contents}
-                    echo -n "$(md5sum ${2}/${ff} | cut -d' ' -f1 ) " >> ${contents}
-                    echo -n "$(stat -c '%Y' ${2}/${ff} )" >> ${contents}
+                    echo -n "$(md5sum -- ${2}/${ff} | cut -d' ' -f1 ) " >> ${contents}
+                    echo -n "$(stat -c '%Y' -- ${2}/${ff} )" >> ${contents}
                     echo >> ${contents}
                 else
                     echo "misc ${2#${top_dst}}/${ff}" >> ${contents}

@@ -19,10 +19,12 @@
 
 builtin_init()
 {
+    export ROOT="${ROOT//+(\/)//}"
+
     local a
     for a in P PV PR PN PVR PF CATEGORY FILESDIR ECLASSDIR PORTDIR \
         DISTDIR KV PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL PALUDIS_EBUILD_DIR \
-        USERLAND KERNEL ARCH CHOST PALUDIS_COMMAND ; do
+        USERLAND KERNEL ARCH CHOST PALUDIS_COMMAND ROOT ; do
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
         declare -r ${a}="${!a}"
     done
@@ -46,6 +48,7 @@ builtin_init()
     export HOME="${T}"
 
     export D="${PALUDIS_TMPDIR}/${CATEGORY}/${PF}/image/"
+    export D="${D//+(\/)//}"
     mkdir -p "${D}" || die "Couldn't create \$D (\"${D}\")"
     declare -r D="${D}"
 

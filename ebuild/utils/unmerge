@@ -53,22 +53,22 @@ while read entry ; do
         sym)
             if ! [[ -L "${ROOT}/${items[1]}" ]] ; then
                 echo "skip  !type  ${items[1]}"
-            elif [[ $(readlink "${ROOT}/${items[1]}" ) != "${items[3]}" ]] ; then
+            elif [[ $(readlink -- "${ROOT}/${items[1]}" ) != "${items[3]}" ]] ; then
                 echo "skip  !dest  ${items[1]}"
-            elif [[ $(stat -c '%Y' "${ROOT}/${items[1]}" ) != "${items[4]}" ]] ; then
+            elif [[ $(stat -c '%Y' -- "${ROOT}/${items[1]}" ) != "${items[4]}" ]] ; then
                 echo "skip  !time  ${items[1]}"
             else
                 echo "remove       ${items[1]}"
-                rm -f "${ROOT}/${items[1]}"
+                rm -f -- "${ROOT}/${items[1]}"
             fi
             ;;
 
         obj)
             if ! [[ -f "${ROOT}/${items[1]}" ]] ; then
                 echo "skip  !type  ${items[1]}"
-            elif [[ $(md5sum "${ROOT}/${items[1]}" | cut -d' ' -f1 ) != "${items[2]}" ]] ; then
+            elif [[ $(md5sum -- "${ROOT}/${items[1]}" | cut -d' ' -f1 ) != "${items[2]}" ]] ; then
                 echo "skip  !md5   ${items[1]}"
-            elif [[ $(stat -c '%Y' "${ROOT}/${items[1]}" ) != "${items[3]}" ]] ; then
+            elif [[ $(stat -c '%Y' -- "${ROOT}/${items[1]}" ) != "${items[3]}" ]] ; then
                 echo "skip  !time  ${items[1]}"
             else
                 echo "remove       ${items[1]}"
@@ -79,7 +79,7 @@ while read entry ; do
         misc)
             if [[ -f "${ROOT}/${items[1]}" ]] ; then
                 echo "skip  !type  ${items[1]}"
-            elif [[ $(stat -c '%Y' "${ROOT}/${items[1]}" ) != "${items[2]}" ]] ; then
+            elif [[ $(stat -c '%Y' -- "${ROOT}/${items[1]}" ) != "${items[2]}" ]] ; then
                 echo "skip  !time  ${items[1]}"
             else
                 echo "remove       ${items[1]}"
@@ -105,7 +105,7 @@ while read entry ; do
                 echo "skip  !empty ${items[1]}"
             else
                 echo "remove       ${items[1]}"
-                rm -fr "${ROOT}/${items[1]}"
+                rm -fr -- "${ROOT}/${items[1]}"
             fi
             ;;
     esac
