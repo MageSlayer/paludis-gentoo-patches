@@ -85,7 +85,8 @@ do_install()
         if (had_set_targets)
             dep_list.set_reinstall(false);
         else if (! CommandLine::get_instance()->a_pretend.specified())
-            env->add_appropriate_to_world(targets);
+            if (! CommandLine::get_instance()->a_preserve_world.specified())
+                env->add_appropriate_to_world(targets);
     }
     catch (const p::AmbiguousPackageNameError & e)
     {

@@ -137,6 +137,9 @@ class CommandLine :
         /// --pretend
         paludis::args::SwitchArg a_pretend;
 
+        /// --preserve-world
+        paludis::args::SwitchArg a_preserve_world;
+
         /// }
 
         /// \name DepList behaviour arguments
