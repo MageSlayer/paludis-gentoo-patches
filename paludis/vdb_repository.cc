@@ -612,28 +612,41 @@ VDBRepository::begin_provide_map() const
             Context loop_context("When loading VDB PROVIDEs entry for '"
                     + stringify(e->name) + "-" + stringify(e->version) + "':");
 
-            if (! e->metadata)
-                _imp->load_entry(e);
-            const std::string provide_str(e->metadata->get(vmk_provide));
-            if (provide_str.empty())
-                continue;
-
-            DepAtom::ConstPointer provide(DepParser::parse(provide_str,
-                        DepParserPolicy<PackageDepAtom, false>::get_instance()));
-            PackageDatabaseEntry dbe(e->name, e->version, name());
-            DepAtomFlattener f(_imp->env, &dbe, provide);
-
-            for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+            try
             {
-                QualifiedPackageName pp((*p)->text());
+                if (! e->metadata)
+                    _imp->load_entry(e);
+                const std::string provide_str(e->metadata->get(vmk_provide));
+                if (provide_str.empty())
+                    continue;
 
-                if (pp.get<qpn_category>() != CategoryNamePart("virtual"))
-                    Log::get_instance()->message(ll_warning, "PROVIDE of non-virtual '"
-                            + stringify(pp) + "' from '" + stringify(e->name) + "-"
-                            + stringify(e->version) + "' in '" + stringify(name())
-                            + "' will not work as expected");
+                DepAtom::ConstPointer provide(DepParser::parse(provide_str,
+                            DepParserPolicy<PackageDepAtom, false>::get_instance()));
+                PackageDatabaseEntry dbe(e->name, e->version, name());
+                DepAtomFlattener f(_imp->env, &dbe, provide);
 
-                _imp->provide_map.insert(std::make_pair(pp, e->name));
+                for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+                {
+                    QualifiedPackageName pp((*p)->text());
+
+                    if (pp.get<qpn_category>() != CategoryNamePart("virtual"))
+                        Log::get_instance()->message(ll_warning, "PROVIDE of non-virtual '"
+                                + stringify(pp) + "' from '" + stringify(e->name) + "-"
+                                + stringify(e->version) + "' in '" + stringify(name())
+                                + "' will not work as expected");
+
+                    _imp->provide_map.insert(std::make_pair(pp, e->name));
+                }
+            }
+            catch (const InternalError &)
+            {
+                throw;
+            }
+            catch (const Exception & ee)
+            {
+                Log::get_instance()->message(ll_warning, "Skipping VDB PROVIDE entry for '"
+                        + stringify(e->name) + "-" + stringify(e->version) + "' due to exception '"
+                        + stringify(ee.message()) + "' (" + stringify(ee.what()) + ")");
             }
         }
 
