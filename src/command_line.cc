@@ -26,7 +26,7 @@ CommandLine::CommandLine() :
     a_query(&action_args,     "query",        'q',  "Query for package information"),
     a_install(&action_args,   "install",      'i',  "Install one or more packages"),
     a_uninstall(&action_args, "uninstall",    'u',  "Uninstall one or more packages"),
-    a_sync(&action_args,      "sync",         '\0', "Sync repositories"),
+    a_sync(&action_args,      "sync",         's', "Sync repositories"),
     a_list_repositories(&action_args, "list-repositories", '\0', "List available repositories"),
     a_list_categories(&action_args, "list-categories", '\0', "List available categories"),
     a_list_packages(&action_args, "list-packages", '\0', "List available packages"),
@@ -44,13 +44,13 @@ CommandLine::CommandLine() :
             ("warning", "Show warnings only")
             ("silent",  "Suppress all log messages"),
             "qa"),
-    a_no_colour(&general_args, "no-colour", 'c', "Do not use colour"),
+    a_no_colour(&general_args, "no-colour", 'C', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
-    a_config_suffix(&general_args, "config-suffix", '\0', "Config directory suffix"),
+    a_config_suffix(&general_args, "config-suffix", 'c', "Config directory suffix"),
 
     query_args(this, "Query options"),
     a_show_slot(&query_args,        "show-slot",    'S', "Show SLOTs"),
-    a_show_deps(&query_args,        "show-deps",    'd', "Show dependencies"),
+    a_show_deps(&query_args,        "show-deps",    'D', "Show dependencies"),
     a_show_metadata(&query_args,    "show-metadata", 'M', "Show raw metadata"),
 
     install_args(this, "Install, Uninstall options"),
