@@ -47,6 +47,7 @@ namespace paludis
         dle_has_predeps,     ///< DEPEND (and RDEPEND if not rdepend_post) done?
         dle_has_trypredeps,  ///< RDEPEND (if rdepend_post) done?
         dle_has_postdeps,    ///< PDEPEND done?
+        dle_skip_install,    ///< Skip installing this?
         last_dle             ///< Number of entries
     };
 
@@ -62,7 +63,8 @@ namespace paludis
         SmartRecordKey<dle_repository, RepositoryName>,
         SmartRecordKey<dle_has_predeps, bool>,
         SmartRecordKey<dle_has_trypredeps, bool>,
-        SmartRecordKey<dle_has_postdeps, bool>
+        SmartRecordKey<dle_has_postdeps, bool>,
+        SmartRecordKey<dle_skip_install, bool>
     {
     };
 

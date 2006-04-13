@@ -147,9 +147,22 @@ DepList::~DepList()
 {
 }
 
+namespace
+{
+    struct IsSkip
+    {
+        bool operator() (const DepListEntry & e) const
+        {
+            return e.get<dle_skip_install>();
+        }
+    };
+}
+
 void
 DepList::add(DepAtom::ConstPointer atom)
 {
+    Context context("When adding dependencies:");
+
     std::list<DepListEntry> save_merge_list(_imp->merge_list.begin(),
             _imp->merge_list.end());
 
@@ -189,6 +202,9 @@ DepList::add(DepAtom::ConstPointer atom)
             else
                 ++i;
         }
+
+        /* remove skip entries */
+        _imp->merge_list.remove_if(IsSkip());
     }
     catch (...)
     {
@@ -382,23 +398,35 @@ DepList::visit(const PackageDepAtom * const p)
         break;
     }
 
+    std::list<DepListEntry>::iterator merge_entry;
     if (! match)
     {
         if (! installed->empty())
-            return;
+        {
+            if (_imp->recursive_deps)
+            {
+                metadata = _imp->environment->package_database()->fetch_metadata(
+                        *installed->last());
+                merge_entry = _imp->merge_list.insert(_imp->merge_list_insert_pos,
+                        DepListEntry(installed->last()->get<pde_name>(),
+                            installed->last()->get<pde_version>(), metadata,
+                            installed->last()->get<pde_repository>(),
+                            true, false, false, true));
+            }
+            else
+                return;
+        }
         else
             throw AllMaskedError(stringify(*p));
     }
-
-    /* make merge entry */
-    std::list<DepListEntry>::iterator merge_entry(
-            _imp->merge_list.insert(_imp->merge_list_insert_pos,
+    else
+        merge_entry = _imp->merge_list.insert(_imp->merge_list_insert_pos,
                 DepListEntry(match->get<pde_name>(), match->get<pde_version>(),
                     metadata, match->get<pde_repository>(),
-                    false, false, false)));
+                    false, false, false, false));
 
     /* if we provide things, also insert them. */
-    if (! metadata->get(vmk_provide).empty())
+    if ((! metadata->get(vmk_provide).empty()) && ! merge_entry->get<dle_skip_install>())
     {
         DepAtom::ConstPointer provide(DepParser::parse(metadata->get(vmk_provide),
                 DepParserPolicy<PackageDepAtom, false>::get_instance()));
@@ -428,7 +456,7 @@ DepList::visit(const PackageDepAtom * const p)
             p_metadata->set(vmk_virtual, stringify(merge_entry->get<dle_name>()));
             _imp->merge_list.insert(next(merge_entry),
                     DepListEntry(pp.package(), merge_entry->get<dle_version>(),
-                        p_metadata, merge_entry->get<dle_repository>(), true, true, true));
+                        p_metadata, merge_entry->get<dle_repository>(), true, true, true, false));
         }
     }
 
@@ -537,6 +565,7 @@ DepList::visit(const AnyDepAtom * const a)
     }
 
     bool found(false);
+    std::list<DepAtom::ConstPointer>::iterator found_i;
     for (std::list<DepAtom::ConstPointer>::iterator i(viable_children.begin()),
             i_end(viable_children.end()) ; i != i_end ; ++i)
     {
@@ -544,10 +573,17 @@ DepList::visit(const AnyDepAtom * const a)
         Save<bool> save_match(&_imp->match_found, true);
         _add(*i);
         if ((found = _imp->match_found))
+        {
+            found_i = i;
             break;
+        }
     }
     if (found)
+    {
+        if (_imp->recursive_deps && ! _imp->check_existing_only)
+            _add(*found_i);
         return;
+    }
 
     if (_imp->check_existing_only)
     {
