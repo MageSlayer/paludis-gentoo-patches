@@ -609,6 +609,9 @@ VDBRepository::begin_provide_map() const
         for (std::vector<VDBEntry>::iterator e(_imp->entries.begin()),
                 e_end(_imp->entries.end()) ; e != e_end ; ++e)
         {
+            Context loop_context("When loading VDB PROVIDEs entry for '"
+                    + stringify(e->name) + "-" + stringify(e->version) + "':");
+
             if (! e->metadata)
                 _imp->load_entry(e);
             const std::string provide_str(e->metadata->get(vmk_provide));
