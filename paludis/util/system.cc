@@ -89,15 +89,15 @@ paludis::run_command(const std::string & cmd)
     throw InternalError(PALUDIS_HERE, "should never be reached");
 }
 
-system_internals::MakeEnvCommand::MakeEnvCommand(const std::string & c,
+MakeEnvCommand::MakeEnvCommand(const std::string & c,
         const std::string & a) :
     cmd(c),
     args(a)
 {
 }
 
-system_internals::MakeEnvCommand
-system_internals::MakeEnvCommand::operator() (const std::string & k,
+MakeEnvCommand
+MakeEnvCommand::operator() (const std::string & k,
         const std::string & v) const
 {
     std::string vv;
@@ -110,14 +110,14 @@ system_internals::MakeEnvCommand::operator() (const std::string & k,
     return MakeEnvCommand(cmd, args + k + "='" + vv + "' ");
 }
 
-system_internals::MakeEnvCommand::operator std::string() const
+MakeEnvCommand::operator std::string() const
 {
     return "/usr/bin/env " + args + cmd;
 }
 
-const system_internals::MakeEnvCommand
+const MakeEnvCommand
 paludis::make_env_command(const std::string & cmd)
 {
-    return system_internals::MakeEnvCommand(cmd, "");
+    return MakeEnvCommand(cmd, "");
 }
 
