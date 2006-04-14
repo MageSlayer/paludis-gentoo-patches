@@ -623,9 +623,62 @@ DepList::visit(const BlockDepAtom * const d)
     Context context("When checking block '!" + stringify(*(d->blocked_atom())) + "':");
 
     /* special case: the provider of virtual/blah can DEPEND upon !virtual/blah. */
-    /// \bug This may have issues if a virtual is provided by a virtual...
-    //
     /* special case: foo/bar can DEPEND upon !foo/bar. */
+
+    /* are we already installed? */
+    PackageDatabaseEntryCollection::ConstPointer installed(_imp->environment->package_database()->
+            query(d->blocked_atom(), is_installed_only));
+    if (! installed->empty())
+    {
+        if (! _imp->current_package)
+            throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by installed package '"
+                    + stringify(*installed->last()) + "' (no current package)");
+
+        for (PackageDatabaseEntryCollection::Iterator ii(installed->begin()),
+                ii_end(installed->end()) ; ii != ii_end ; ++ii)
+        {
+            if (_imp->current_package->get<dle_name>() == ii->get<pde_name>())
+            {
+                Log::get_instance()->message(ll_qa, "Package '" + stringify(*_imp->current_package)
+                        + "' has suspicious block upon '!" + stringify(*d->blocked_atom()) + "'");
+                continue;
+            }
+
+            DepAtom::ConstPointer provide(DepParser::parse(
+                        _imp->current_package->get<dle_metadata>()->get(vmk_provide),
+                        DepParserPolicy<PackageDepAtom, false>::get_instance()));
+
+            CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
+
+            e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
+                    new PackageDatabaseEntry(
+                        _imp->current_package->get<dle_name>(),
+                        _imp->current_package->get<dle_version>(),
+                        _imp->current_package->get<dle_repository>()));
+
+            DepAtomFlattener f(_imp->environment, e.raw_pointer(), provide);
+
+            bool skip(false);
+            for (IndirectIterator<DepAtomFlattener::Iterator, const StringDepAtom> i(f.begin()),
+                    i_end(f.end()) ; i != i_end ; ++i)
+                if (QualifiedPackageName(i->text()) == d->blocked_atom()->package())
+                {
+                    skip = true;
+                    break;
+                }
+
+            if (skip)
+                Log::get_instance()->message(ll_qa, "Ignoring block on '" +
+                        stringify(*(d->blocked_atom())) + "' in '" +
+                        stringify(*_imp->current_package) +
+                        "' which is blocked by installed package '" + stringify(*ii) +
+                        "' due to PROVIDE");
+            else
+                throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by installed package '"
+                        + stringify(*installed->last()) + "' when trying to install package '" +
+                        stringify(*_imp->current_package) + "'");
+        }
+    }
 
     /* will we be installed by this point? */
     std::list<DepListEntry>::iterator m(_imp->merge_list.begin());
@@ -637,7 +690,7 @@ DepList::visit(const BlockDepAtom * const d)
         {
             if (! _imp->current_package)
                 throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
-                        + stringify(*m) + " (no current package)");
+                        + stringify(*m) + "' (no current package)");
 
             if (*_imp->current_package == *m)
             {
@@ -653,12 +706,11 @@ DepList::visit(const BlockDepAtom * const d)
 
             CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
-            if (_imp->current_package)
-                e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
-                        new PackageDatabaseEntry(
-                            _imp->current_package->get<dle_name>(),
-                            _imp->current_package->get<dle_version>(),
-                            _imp->current_package->get<dle_repository>()));
+            e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
+                    new PackageDatabaseEntry(
+                        _imp->current_package->get<dle_name>(),
+                        _imp->current_package->get<dle_version>(),
+                        _imp->current_package->get<dle_repository>()));
 
             DepAtomFlattener f(_imp->environment, e.raw_pointer(), provide);
 
@@ -671,9 +723,16 @@ DepList::visit(const BlockDepAtom * const d)
                     break;
                 }
 
-            if (! skip)
+            if (skip)
+                Log::get_instance()->message(ll_qa, "Ignoring block on '" +
+                        stringify(*(d->blocked_atom())) + "' in '" +
+                        stringify(*_imp->current_package) +
+                        "' which is blocked by pending package '" + stringify(*m) +
+                        "' due to PROVIDE");
+            else
                 throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"
-                        + stringify(*m));
+                        + stringify(*m) + "' when trying to install '"
+                        + stringify(*_imp->current_package) + "'");
 
             ++m;
         }
