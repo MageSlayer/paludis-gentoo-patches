@@ -72,7 +72,7 @@ additional per-atom lines can be specified. The -apache2 is important, if you
 value your sanity, since you'll be installing subversion::
 
     cat <<END > /mychroot/etc/paludis/use.conf
-    * -doc nls unicode -apache2
+    * -doc nls -apache2 LINGUAS: en INPUT_DEVICES: keyboard mouse VIDEO_CARDS: ati
     app-editors/vim -nls
     END
 
@@ -99,6 +99,9 @@ your profile)::
     export CFLAGS="-O2 -march=pentium4 -fomit-frame-pointer"
     export CXXFLAGS="\${CFLAGS}"
     export CHOST="i686-pc-linux-gnu"
+    export MAKEOPTS="-j2"
+    export EBEEP_IGNORE="yes"
+    export EPAUSE_IGNORE="yes"
     END
 
 Set up your repository files. Do not tinker with the VDB location! Here we'll
