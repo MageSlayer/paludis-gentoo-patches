@@ -209,9 +209,17 @@ namespace paludis
             /**
              * Insert an item, return whether we succeeded.
              */
-            bool insert(T_ v)
+            bool insert(const T_ & v)
             {
                 return _items.insert(v).second;
+            }
+
+            /**
+             * Erase an item, return whether we succeeded.
+             */
+            bool erase(const T_ & v)
+            {
+                return 0 != _items.erase(v);
             }
 
             /**
