@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+# Copyright (c) 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
 # Copyright (c) 2006 Stephen Bennett <spb@gentoo.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;

@@ -2,7 +2,7 @@
 #define PALUDIS_GUARD_ARGS_BAD_VALUE_HH 1
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@gentoo.org>
+ * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
