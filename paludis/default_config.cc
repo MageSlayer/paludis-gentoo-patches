@@ -32,6 +32,7 @@
 #include <fstream>
 #include <algorithm>
 #include <sstream>
+#include <ctype.h>
 
 using namespace paludis;
 
@@ -279,14 +280,24 @@ DefaultConfig::DefaultConfig() :
                 if (tokens.empty())
                     continue;
 
+                std::string prefix;
                 if ("*" == tokens.at(0))
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                     {
                         if ('-' == t->at(0))
-                            _default_use.push_back(std::make_pair(UseFlagName(t->substr(1)), use_disabled));
+                            _default_use.push_back(std::make_pair(UseFlagName(
+                                            prefix + t->substr(1)), use_disabled));
+                        else if (':' == t->at(t->length() - 1))
+                        {
+                            prefix.clear();
+                            std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix),
+                                    &::tolower);
+                            prefix.append("_");
+                        }
                         else
-                            _default_use.push_back(std::make_pair(UseFlagName(*t), use_enabled));
+                            _default_use.push_back(std::make_pair(UseFlagName(
+                                            prefix + *t), use_enabled));
                     }
                 else
                 {
@@ -296,10 +307,17 @@ DefaultConfig::DefaultConfig() :
                     {
                         if ('-' == t->at(0))
                             _use[a->package()].push_back(UseConfigEntry(
-                                        a, UseFlagName(t->substr(1)), use_disabled));
+                                        a, UseFlagName(prefix + t->substr(1)), use_disabled));
+                        else if (':' == t->at(t->length() - 1))
+                        {
+                            prefix.clear();
+                            std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix),
+                                    &::tolower);
+                            prefix.append("_");
+                        }
                         else
                             _use[a->package()].push_back(UseConfigEntry(
-                                        a, UseFlagName(*t), use_enabled));
+                                        a, UseFlagName(prefix + *t), use_enabled));
                     }
                 }
             }
