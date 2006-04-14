@@ -48,13 +48,6 @@ DefaultEnvironment::~DefaultEnvironment()
 bool
 DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
-    std::string env_use = " " + getenv_with_default("USE", "") + " ";
-
-    if (env_use.find(" " + f.data() + " ") != std::string::npos)
-        return true;
-    else if (env_use.find(" -" + f.data() + " ") != std::string::npos)
-        return false;
-
     if (e)
     {
         UseFlagState s(use_unspecified);
@@ -256,5 +249,66 @@ std::string
 DefaultEnvironment::paludis_command() const
 {
     return DefaultConfig::get_instance()->paludis_command();
+}
+
+UseFlagNameCollection::Pointer
+DefaultEnvironment::query_enabled_use_matching(const std::string & prefix,
+        const PackageDatabaseEntry * e) const
+{
+    UseFlagNameCollection::Pointer result(new UseFlagNameCollection);
+
+    for (DefaultConfig::DefaultUseIterator
+            u(DefaultConfig::get_instance()->begin_default_use()),
+            u_end(DefaultConfig::get_instance()->end_default_use()) ;
+            u != u_end ; ++u)
+    {
+        if (0 != u->first.data().compare(0, prefix.length(), prefix))
+            continue;
+
+        switch (u->second)
+        {
+            case use_enabled:
+                result->insert(u->first);
+                break;
+
+            case use_disabled:
+                result->erase(u->first);
+                break;
+
+            case use_unspecified:
+                break;
+        }
+    }
+
+    if (e)
+    {
+        for (DefaultConfig::UseConfigIterator
+                u(DefaultConfig::get_instance()->begin_use_config(e->get<pde_name>())),
+                u_end(DefaultConfig::get_instance()->end_use_config(e->get<pde_name>())) ;
+                u != u_end ; ++u)
+        {
+            if (0 != u->get<uce_flag_name>().data().compare(0, prefix.length(), prefix))
+                continue;
+
+            if (! match_package(package_database(), *u->get<uce_dep_atom>(), *e))
+                continue;
+
+            switch (u->get<uce_flag_state>())
+            {
+                case use_enabled:
+                    result->insert(u->get<uce_flag_name>());
+                    break;
+
+                case use_disabled:
+                    result->erase(u->get<uce_flag_name>());
+                    break;
+
+                case use_unspecified:
+                    break;
+            }
+        }
+    }
+
+    return result;
 }
 

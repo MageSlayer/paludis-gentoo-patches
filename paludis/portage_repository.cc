@@ -1214,7 +1214,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         }
     }
 
-    std::string cmd(make_env_command(
+    MakeEnvCommand cmd(make_env_command(
                 getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
                 "/ebuild.bash '" +
                 stringify(_imp->location) + "/" +
@@ -1247,6 +1247,22 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("KV", kernel_version())
             ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
             ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
+
+    for (UseFlagSet::const_iterator u(_imp->expand_list.begin()),
+            u_end(_imp->expand_list.end()) ; u != u_end ; ++u)
+    {
+        std::string prefix;
+        std::transform(u->data().begin(), u->data().end(), std::back_inserter(prefix),
+                &::tolower);
+        prefix.append("_");
+
+        UseFlagNameCollection::Pointer x(_imp->env->query_enabled_use_matching(prefix, &e));
+        std::string value;
+        for (UseFlagNameCollection::Iterator xx(x->begin()), xx_end(x->end()) ;
+                xx != xx_end ; ++xx)
+            value.append(stringify(*xx).erase(0, stringify(*u).length() + 1) + " ");
+        cmd = cmd(stringify(*u), value);
+    }
 
     if (0 != run_command(cmd))
         throw PackageInstallActionError("Can't install '" + stringify(q) + "-"

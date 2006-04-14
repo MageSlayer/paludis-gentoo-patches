@@ -67,6 +67,12 @@ namespace paludis
                 {
                     throw InternalError(PALUDIS_HERE, "Cannot use paludis_command in a QA environment");
                 }
+
+                virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
+                        const std::string &, const PackageDatabaseEntry *) const
+                {
+                    return UseFlagNameCollection::Pointer(new UseFlagNameCollection);
+                }
         };
     }
 }

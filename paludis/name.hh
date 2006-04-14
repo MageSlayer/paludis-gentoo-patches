@@ -264,6 +264,8 @@ namespace paludis
      */
     typedef Validated<std::string, UseFlagNameValidator> UseFlagName;
 
+    typedef SortedCollection<UseFlagName> UseFlagNameCollection;
+
     /**
      * A SlotNameError is thrown if an invalid value is assigned to
      * a SlotName.

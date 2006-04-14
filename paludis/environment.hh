@@ -65,6 +65,13 @@ namespace paludis
             virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
 
             /**
+             * Fetch a list of enabled USE flags that start with a given prefix,
+             * for USE_EXPAND.
+             */
+            virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
+                    const std::string & prefix, const PackageDatabaseEntry *) const = 0;
+
+            /**
              * Is the specified KEYWORD accepted?
              */
             virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const = 0;

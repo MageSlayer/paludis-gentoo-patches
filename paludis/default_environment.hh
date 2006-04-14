@@ -62,6 +62,9 @@ namespace paludis
             virtual std::string bashrc_files() const;
 
             virtual std::string paludis_command() const;
+
+            virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
+                    const std::string & prefix, const PackageDatabaseEntry *) const;
     };
 }
 #endif

@@ -57,6 +57,12 @@ namespace paludis
             {
                 return "false";
             }
+
+            virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
+                    const std::string &, const PackageDatabaseEntry *) const
+            {
+                return UseFlagNameCollection::Pointer(new UseFlagNameCollection);
+            }
     };
 }
 
