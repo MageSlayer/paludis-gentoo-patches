@@ -32,9 +32,16 @@ builtin_merge()
     local v
     for v in CATEGORY CBUILD CFLAGS CHOST CXXFLAGS DEPEND DESCRIPTION EAPI \
         FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
-        PROVIDE RDEPEND SLOT SRC_URI USE ; do
+        PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK ; do
         echo "${!v}" > "${dbdir}"/${v} || die "pkg db write ${v} failed"
     done
+
+    if [[ -n ${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT} ]]; then
+        CONFIG_PROTECT=${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT}
+    fi
+    if [[ -n ${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK} ]]; then
+        CONFIG_PROTECT_MASK=${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK}
+    fi
 
     [[ -f "${EBUILD}" ]] && cp "${EBUILD}" ${dbdir}/
     local x

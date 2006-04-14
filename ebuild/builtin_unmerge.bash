@@ -28,13 +28,27 @@ builtin_unmerge()
         eval "${v}='$(< ${dbdir}/${v} )' || die \"Load key ${v} failed\""
     done
 
-    eval $(bzcat "${dbdir}/environment.bz2" | while read line; do
-        if [[ ${line%%=*} == CONFIG_PROTECT ]]; then
-            echo "CONFIG_PROTECT='${line#*=} ${CONFIG_PROTECT}'"
-        elif [[ ${line%%=*} == CONFIG_PROTECT_MASK ]]; then
-            echo "CONFIG_PROTECT_MASK='${line#*=} ${CONFIG_PROTECT_MASK}'"
+    if [[ -f ${dbdir}/CONFIG_PROTECT ]]; then
+        CONFIG_PROTECT="$(< ${dbdir}/CONFIG_PROTECT) ${CONFIG_PROTECT}"
+        if [[ -f ${dbdir}/CONFIG_PROTECT_MASK ]]; then
+            CONFIG_PROTECT_MASK="$(< ${dbdir}/CONFIG_PROTECT_MASK)"
         fi
-    done)
+    else
+        eval $(bzcat "${dbdir}/environment.bz2" | while read line; do
+            if [[ ${line%%=*} == CONFIG_PROTECT ]]; then
+                echo "CONFIG_PROTECT='${line#*=} ${CONFIG_PROTECT}'"
+            elif [[ ${line%%=*} == CONFIG_PROTECT_MASK ]]; then
+                echo "CONFIG_PROTECT_MASK='${line#*=}'"
+            fi
+        done)
+    fi
+
+    if [[ -n ${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT} ]]; then
+        CONFIG_PROTECT=${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT}
+    fi
+    if [[ -n ${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK} ]]; then
+        CONFIG_PROTECT_MASK=${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK}
+    fi
 
     ${PALUDIS_EBUILD_MODULES_DIR}/utils/unmerge "${ROOT}/" "${dbdir}/CONTENTS" \
         || die "unmerge failed"
