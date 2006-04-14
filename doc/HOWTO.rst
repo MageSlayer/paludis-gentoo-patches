@@ -9,31 +9,45 @@ and maybe get a usable chroot if you're lucky
    READ EVERYTHING CAREFULLY, OR YOU WILL BREAK YOUR SYSTEM!
 
 THIS WILL PROBABLY NOT ACTUALLY WORK! Paludis is at the very early alpha stage.
-It can sometimes install things, if you're very lucky, but it can't uninstall
-them, upgrade them sensibly or anything like that. There are zillions of things
-that are not implemented. There are zillions of things that Paludis does
+It can sometimes install things, if you're very lucky, and if you're really
+lucky it might let you upgrade or uninstall them too. There are zillions of
+things that are not implemented. There are zillions of things that Paludis does
 differently from Portage -- some of these are intentional, some are not.
+
+You should join the ``#paludis`` channel on Freenode. If you're doing anything
+development-related, you should probably also ask to be allowed to subscribe
+to the ``paludis-sekrit`` mailing list.
 
 Do not try to use Paludis and Portage to install things inside the same root.
 The config and vdb formats are not compatible!
 
-Install Paludis locally, being sure to configure sysconfdir as /etc to avoid
-confusion later on. There's an ebuild at::
+------------
+Requirements
+------------
+
+Install Paludis locally, being sure to configure ``sysconfdir`` as ``/etc`` to
+avoid confusion later on. There's an ebuild at::
 
     http://svn.berlios.de/viewcvs/*checkout*/paludis/overlay/sys-apps/paludis/paludis-0.ebuild
 
-You'll need libebt, eselect and subversion.
+You'll need ``libebt``, ``eselect`` and ``subversion``. You'll also need either
+``g++-3.4``, ``g++-4.1`` or some other reasonably standard C++ compiler. If
+you're trying to run on non-Linux, you'll also need to fix a few includes.
 
 .. Important:: You should seriously consider grabbing an svn snapshot of
-  eselect if 1.0.2 hasn't been released yet, or you will encounter weird "You
+  ``eselect`` if 1.0.2 hasn't been released yet, or you will encounter weird "You
   are not root" errors even when you're root.
 
-Make sure the test suite passes (either FEATURES="test" for Portage, or 'make
-check'). If it fails, don't continue until you figure out why.
+Make sure the test suite passes (either ``FEATURES="test"`` for Portage, or
+``make check``). If it fails, don't continue until you figure out why.
+
+-------------
+Configuration
+-------------
 
 Set up a local bootstrap config directory. We're assuming you're using
-/mychroot as the root path. The reason for doing things this way will become
-apparent later on.
+``/mychroot`` as the root path. The reason for doing things this way will
+become apparent later on.
 
 ::
 
@@ -50,10 +64,10 @@ Make some skeleton directories and files::
     mkdir -p /mychroot/tmp/
     touch /mychroot/etc/ld.so.conf
 
-Set up your keywords.conf. At the very least, you'll need a "* keywords" line.
-Further lines can be added in the form "atom keywords". Like with Portage,
-accepting ``~keyword`` does *not* accept ``keyword``, so if you want a fully
-``~arch`` system you should use ``* arch ~arch``.
+Set up your ``keywords.conf``. At the very least, you'll need a ``* keywords``
+line.  Further lines can be added in the form "atom keywords". Like with
+Portage, accepting ``~keyword`` does *not* accept ``keyword``, so if you want a
+fully ``~arch`` system you should use ``* arch ~arch``.
 
 ::
 
@@ -67,33 +81,37 @@ accepting ``~keyword`` does *not* accept ``keyword``, so if you want a fully
     app-editors/vim-core x86 ~x86
     END
 
-Set up your use.conf. At the very least, you'll need a "* flags" line. Again,
-additional per-atom lines can be specified. The -apache2 is important, if you
-value your sanity, since you'll be installing subversion::
+Set up your ``use.conf``. At the very least, you'll need a ``* flags`` line. Again,
+additional per-atom lines can be specified. The ``-apache2`` is important, if you
+value your sanity, since you'll be installing subversion. We're experimenting with
+a slightly different way of handling ``USE_EXPAND`` variables that allows different
+settings for different packages. This may change.
+
+::
 
     cat <<END > /mychroot/etc/paludis/use.conf
     * -doc nls -apache2 LINGUAS: en INPUT_DEVICES: keyboard mouse VIDEO_CARDS: ati
     app-editors/vim -nls
     END
 
-Set up your licences.conf. If you don't care about licences, which is probably
-wise until we get licence grouping, it should look like this::
+Set up your ``licences.conf``. If you don't care about licences, which is
+probably wise until we get licence grouping, it should look like this::
 
     cat <<END > /mychroot/etc/paludis/licenses.conf
     * *
     END
 
-Set up your package_unmask.conf and package_mask.conf, if necessary::
+Set up your ``package_unmask.conf`` and ``package_mask.conf``, if necessary::
 
     cat <<END > /mychroot/etc/paludis/package_unmask.conf
     app-editors/vim
     app-editors/vim-core
     END
 
-Set up your bashrc. This must NOT be used to change any values that affect
-dependency resolution (e.g. USE, LINGUAS). It can be used to set CFLAGS, CHOST
-and the like (on some archs you'll have to do this to avoid getting junk from
-your profile)::
+Set up your ``bashrc``. This must **NOT** be used to change any values that
+affect dependency resolution (e.g. USE, LINGUAS). It can be used to set CFLAGS,
+CHOST and the like (on some archs you'll have to do this to avoid getting junk
+from your profile)::
 
     cat <<END > /mychroot/etc/paludis/bashrc
     export CFLAGS="-O2 -march=pentium4 -fomit-frame-pointer"
@@ -105,10 +123,10 @@ your profile)::
     END
 
 Set up your repository files. Do not tinker with the VDB location! Here we'll
-avoid using /usr/portage for the main tree because sticking data that gets
-changed on /usr is silly. We use the ${ROOT} variable, which is set magically,
-to make the config work both in and outside of a chroot (this is one of the
-reasons we have the weird-looking specpath thing)::
+avoid using ``/usr/portage`` for the main tree because sticking data that gets
+changed on ``/usr`` is silly. We use the ``${ROOT}`` variable, which is set
+magically, to make the config work both in and outside of a chroot (this is one
+of the reasons we have the weird-looking specpath thing)::
 
     cat <<END > /mychroot/etc/paludis/repositories/gentoo.conf
     location = \${ROOT}/var/paludis/repositories/gentoo/
@@ -133,19 +151,28 @@ reasons we have the weird-looking specpath thing)::
     importance = 10
     END
 
+
+------------
+Initial Sync
+------------
+
 Now check that the config looks ok, and sync::
 
     paludis --config-suffix bootstrap --list-repositories
     sudo paludis --config-suffix bootstrap --sync
 
-If you have problems, try adding "--log-level debug". This may or may not give
-helpful information....
+If you have problems, try adding ``--log-level debug``. This may or may not
+give helpful information... This applies at all stages.
 
 The initial sync will be slow. You can cheat and copy an existing Portage tree
-checkout into /mychroot/var/paludis/repositories/gentoo/, but remember to
+checkout into ``/mychroot/var/paludis/repositories/gentoo/``, but remember to
 preserve mtimes and permissions if you do. Note that there's no hideously
 painful 'Updating the Portage cache...' to go through. Paludis will use the
 metadata cache, if available, but does not use the dep cache.
+
+-----------------
+Installing Things
+-----------------
 
 Now install baselayout and then system. We install baselayout manually first
 because it's easier than creating a bunch of directories by hand.
@@ -177,6 +204,10 @@ unavoidable for now. It won't pull in Paludis, so we do that manually::
     paludis --config-suffix bootstrap --install --pretend sys-apps/paludis
     sudo paludis --config-suffix bootstrap --install sys-apps/paludis
 
+---------
+Chrooting
+---------
+
 And that should (but probably won't) give you a usable chroot::
 
     sudo cp /etc/resolv.conf /mychroot/etc/
@@ -198,6 +229,10 @@ And that should (but probably won't) give you a usable chroot::
     paludis --install app-editors/vim
     paludis --uninstall app-editors/nano
     paludis --uninstall sys-apps/portage
+
+If you're especially crazy you can tar up your chroot and use it like a stage 3
+when installing a system. This has worked at least once for one person, but
+note that there was a full moon at the time.
 
 .. vim: set et sw=4 sts=4 spell spelllang=en ft=glep :
 
