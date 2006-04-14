@@ -107,6 +107,10 @@ do_uninstall()
         env->remove_appropriate_from_world(all);
     }
 
+    p::InstallOptions opts(false, false);
+    if (CommandLine::get_instance()->a_no_config_protection.specified())
+        opts.set<io_noconfigprotect>(true);
+
     for (p::PackageDatabaseEntryCollection::Iterator pkg(unmerge->begin()), pkg_end(unmerge->end()) ;
             pkg != pkg_end ; ++pkg)
     {
@@ -121,7 +125,7 @@ do_uninstall()
                 p::stringify(max_count) + ") Uninstalling " + cpv);
 
         env->package_database()->fetch_repository(pkg->get<p::pde_repository>())->
-            uninstall(pkg->get<p::pde_name>(), pkg->get<p::pde_version>());
+            uninstall(pkg->get<p::pde_name>(), pkg->get<p::pde_version>(), opts);
     }
 
     return return_code;

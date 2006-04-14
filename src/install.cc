@@ -195,6 +195,10 @@ do_install()
         if (CommandLine::get_instance()->a_pretend.specified())
             return return_code;
 
+        p::InstallOptions opts(false, false);
+        if (CommandLine::get_instance()->a_no_config_protection.specified())
+            opts.set<io_noconfigprotect>(true);
+
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
         {
@@ -209,7 +213,7 @@ do_install()
                     p::stringify(max_count) + ") Installing " + cpv);
 
             env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
-                install(dep->get<p::dle_name>(), dep->get<p::dle_version>());
+                install(dep->get<p::dle_name>(), dep->get<p::dle_version>(), opts);
 
             // figure out if we need to unmerge anything
             cout << endl << colour(cl_heading,
@@ -257,7 +261,7 @@ do_install()
                             p::stringify(max_count) + ") Cleaning " + cpv + ": " + stringify(*c));
 
                     env->package_database()->fetch_repository(c->get<p::pde_repository>())->
-                            uninstall(c->get<p::pde_name>(), c->get<p::pde_version>());
+                            uninstall(c->get<p::pde_name>(), c->get<p::pde_version>(), opts);
                 }
             }
         }

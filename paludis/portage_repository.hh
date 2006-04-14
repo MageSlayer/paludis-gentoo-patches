@@ -90,10 +90,11 @@ namespace paludis
 
             virtual bool do_is_mirror(const std::string &) const;
 
-            virtual void do_install(const QualifiedPackageName &, const VersionSpec &) const;
+            virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
+                    const InstallOptions &) const;
 
             virtual void do_uninstall(const QualifiedPackageName &,
-                    const VersionSpec &) const PALUDIS_ATTRIBUTE((noreturn));
+                    const VersionSpec &, const InstallOptions &) const PALUDIS_ATTRIBUTE((noreturn));
 
             virtual DepAtom::Pointer do_package_set(const std::string & s) const;
 

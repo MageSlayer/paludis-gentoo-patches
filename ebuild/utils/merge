@@ -52,9 +52,10 @@ fi
 
 make_cfgpro_filename()
 {
-    local fn="${1}" i=0
-    while [[ -e "${2}/${fn}" ]]; do
-        fn="._cfg$(printf '%.4i' ${i})${1}"
+    local fn="$(basename ${1})" i=0
+    while [[ -e "${2}/${fn}" &&
+            "$(md5sum "${2}/${fn}" |cut -d\  -f 1)" != "$(md5sum "${1}" |cut -d\  -f 1)" ]]; do
+        fn="._cfg$(printf '%.4i' ${i})$(basename ${1})"
         (( ++i ))
     done
     echo ${fn}
@@ -119,10 +120,10 @@ merge_this()
         else
             local cfgpro=
             for c in ${CONFIG_PROTECT}; do
-                if [[ ${2#${top_dst}} == "${c}"/* ]]; then
+                if [[ ${2#${top_dst}} == "${c%/}/"* ]]; then
                     cfgpro=yes
                     for cm in ${CONFIG_PROTECT_MASK}; do
-                        if [[ ${2#${top_dst}} == "${cm}"/* ]]; then
+                        if [[ ${2#${top_dst}} == "${cm%/}/"* ]]; then
                             cfgpro=
                         fi
                     done
@@ -132,7 +133,7 @@ merge_this()
             if [[ -n ${cfgpro} &&
                     -e ${2}/${ff} &&
                     "$(md5sum ${f} |cut -d\  -f 1)" != "$(md5sum ${2}/${ff} |cut -d\  -f 1)" ]]; then
-                fn="${1}/$(make_cfgpro_filename ${ff} ${2})"
+                fn="${1}/$(make_cfgpro_filename ${f} ${2})"
                 if [[ ${fn} != ${f} ]]; then
                     mv "${f}" "${fn}"
                 fi

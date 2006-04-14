@@ -36,6 +36,7 @@ builtin_merge()
         echo "${!v}" > "${dbdir}"/${v} || die "pkg db write ${v} failed"
     done
 
+    echo "override cfgpro: '${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT}' '${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK}'"
     if [[ -n ${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT} ]]; then
         CONFIG_PROTECT=${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT}
     fi

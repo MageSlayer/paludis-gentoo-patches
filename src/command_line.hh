@@ -140,6 +140,9 @@ class CommandLine :
         /// --preserve-world
         paludis::args::SwitchArg a_preserve_world;
 
+        /// --no-config-protection
+        paludis::args::SwitchArg a_no_config_protection;
+
         /// }
 
         /// \name DepList behaviour arguments

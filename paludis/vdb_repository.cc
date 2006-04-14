@@ -515,13 +515,13 @@ VDBRepository::do_is_mirror(const std::string &) const
 }
 
 void
-VDBRepository::do_install(const QualifiedPackageName &, const VersionSpec &) const
+VDBRepository::do_install(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
 {
     throw PackageInstallActionError("PortageRepository doesn't support do_install");
 }
 
 void
-VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v) const
+VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v, const InstallOptions & o) const
 {
     Context context("When uninstalling '" + stringify(q) + "-" + stringify(v) +
             "' from '" + stringify(name()) + "':");
@@ -567,6 +567,7 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
             ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
             ("PALUDIS_COMMAND", _imp->env->paludis_command())
             ("KV", kernel_version())
+            ("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK", o.get<io_noconfigprotect>() ? "/" : "")
             ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
             ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 

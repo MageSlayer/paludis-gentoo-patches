@@ -30,10 +30,12 @@ enum Colour
     cl_green         = 32,
     cl_yellow        = 33,
     cl_blue          = 34,
+    cl_pink          = 35,
 
     cl_bold_red      = cl_red + 100,
     cl_bold_green    = cl_green + 100,
     cl_bold_blue     = cl_blue + 100,
+    cl_bold_pink     = cl_pink + 100,
 
     cl_package_name  = cl_bold_blue,
     cl_flag_on       = cl_green,

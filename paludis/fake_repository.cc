@@ -215,12 +215,12 @@ FakeRepository::do_is_mirror(const std::string &) const
 }
 
 void
-FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &) const
+FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
 {
 }
 
 void
-FakeRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &) const
+FakeRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
 {
 }
 

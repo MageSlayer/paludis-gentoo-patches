@@ -41,6 +41,32 @@ namespace paludis
     class Environment;
 
     /**
+     * Keys for InstallOptions.
+     */
+    enum InstallOptionsKeys
+    {
+        io_noconfigprotect,     ///< Disable config protection
+        io_fetchonly,           ///< Fetch only
+        last_io                 ///< Number of entries
+    };
+
+    /**
+     * Tag for InstallOptions.
+     */
+    struct InstallOptionsTag :
+        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
+        SmartRecordKeys<InstallOptionsKeys, last_io>,
+        SmartRecordKey<io_noconfigprotect, bool>,
+        SmartRecordKey<io_fetchonly, bool>
+    {
+    };
+
+    /**
+     * Defines various options for package installation.
+     */
+    typedef MakeSmartRecord<InstallOptionsTag>::Type InstallOptions;
+
+    /**
      * A Repository provides a representation of a physical repository to a
      * PackageDatabase.
      *
@@ -151,12 +177,14 @@ namespace paludis
             /**
              * Override in descendents: install.
              */
-            virtual void do_install(const QualifiedPackageName &, const VersionSpec &) const = 0;
+            virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
+                    const InstallOptions &) const = 0;
 
             /**
              * Override in descendents: uninstall.
              */
-            virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &) const = 0;
+            virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &,
+                    const InstallOptions &) const = 0;
 
             /**
              * Override in descendents: package list.
@@ -386,17 +414,17 @@ namespace paludis
             /**
              * Install a package.
              */
-            void install(const QualifiedPackageName & q, const VersionSpec & v) const
+            void install(const QualifiedPackageName & q, const VersionSpec & v, const InstallOptions & i) const
             {
-                do_install(q, v);
+                do_install(q, v, i);
             }
 
             /**
              * Uninstall a package.
              */
-            void uninstall(const QualifiedPackageName & q, const VersionSpec & v) const
+            void uninstall(const QualifiedPackageName & q, const VersionSpec & v, const InstallOptions & i) const
             {
-                do_uninstall(q, v);
+                do_uninstall(q, v, i);
             }
 
             /**

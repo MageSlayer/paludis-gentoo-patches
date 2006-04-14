@@ -1089,7 +1089,7 @@ PortageRepository::do_is_mirror(const std::string & s) const
 }
 
 void
-PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v) const
+PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v, const InstallOptions & o) const
 {
     if (! _imp->has_profile)
     {
@@ -1245,6 +1245,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
             ("PALUDIS_COMMAND", _imp->env->paludis_command())
             ("KV", kernel_version())
+            ("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK", o.get<io_noconfigprotect>() ? "/" : "")
             ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
             ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
@@ -1306,7 +1307,7 @@ PortageRepository::do_sync() const
 }
 
 void
-PortageRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &) const
+PortageRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
 {
     throw PackageUninstallActionError("PortageRepository doesn't support do_uninstall");
 }

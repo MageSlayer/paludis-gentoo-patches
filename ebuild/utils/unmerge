@@ -76,7 +76,7 @@ while read entry ; do
                     if [[ ${items[1]} == "${c%/}"/* ]]; then
                         cfgpro="yes"
                         for cm in ${CONFIG_PROTECT_MASK}; do
-                            if [[ ${items[1]} == "${cm}"/* ]]; then
+                            if [[ ${items[1]} == "${cm%/}"/* ]]; then
                                 cfgpro=
                             fi
                         done
