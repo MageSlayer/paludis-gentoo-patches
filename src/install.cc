@@ -32,6 +32,65 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
+namespace
+{
+    struct LicenceDisplayer :
+        p::DepAtomVisitorTypes::ConstVisitor
+    {
+        const Environment * const env;
+        const PackageDatabaseEntry * const db_entry;
+
+        LicenceDisplayer(const Environment * const e, const PackageDatabaseEntry * const d) :
+            env(e),
+            db_entry(d)
+        {
+        }
+
+        ///\name Visit methods
+        ///{
+        void visit(const AllDepAtom * atom)
+        {
+            cerr << "( ";
+            std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+            cerr << ") ";
+        }
+
+        void visit(const AnyDepAtom * atom)
+        {
+            cerr << "|| ( ";
+            std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+            cerr << ") ";
+        }
+
+        void visit(const UseDepAtom * atom)
+        {
+            cerr << atom->flag() << "? ( ";
+            std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+            cerr << ") ";
+        }
+
+        void visit(const PlainTextDepAtom * atom)
+        {
+            if (env->accept_license(atom->text(), db_entry))
+                cerr << colour(cl_green, atom->text());
+            else
+                cerr << colour(cl_red, atom->text());
+            cerr << " ";
+        }
+
+        void visit(const PackageDepAtom *) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "todo: encountered PackageDepAtom in licence?"); /// \bug todo
+        }
+
+        void visit(const BlockDepAtom *)  PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "todo: encountered BlockDepAtom in licence?"); /// \bug todo
+        }
+        ///}
+    };
+}
+
 int
 do_install()
 {
@@ -317,6 +376,19 @@ do_install()
                             if (need_comma)
                                 cerr << ", ";
                             cerr << p::MaskReason(mm);
+
+                            if (p::mr_license == mm)
+                            {
+                                cerr << " ";
+                                std::string license_str(env->package_database()->fetch_repository(
+                                            pp->get<pde_repository>())->version_metadata(
+                                            pp->get<pde_name>(), pp->get<pde_version>())->get(p::vmk_license));
+
+                                LicenceDisplayer ld(env, &*pp);
+                                p::DepParser::parse(license_str, DepParserPolicy<PlainTextDepAtom,
+                                        true>::get_instance())->accept(&ld);
+                            }
+
                             need_comma = true;
                         }
                     cerr << endl;
