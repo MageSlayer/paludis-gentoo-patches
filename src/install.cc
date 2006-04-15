@@ -269,6 +269,11 @@ do_install()
             if (opts.get<io_fetchonly>())
             {
                 cout << endl << colour(cl_heading, "Fetching " + cpv) << endl << endl;
+
+                // TODO: some way to reset this properly would be nice.
+                cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
+                        p::stringify(max_count) + ") Fetching " + cpv);
+ 
             }
             else
             {
