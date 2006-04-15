@@ -29,6 +29,30 @@ using namespace paludis;
 
 namespace paludis
 {
+    /**
+     * Keys for SyncOptions
+     */
+    enum SyncOptionsKeys
+    {
+        so_excludefrom,     ///< Filename from which to take a list of excluded files
+        so_last             ///< Number of keys.
+    };
+
+    /**
+     * Tag for SyncOptions.
+     */
+    struct SyncOptionsTag :
+        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
+        SmartRecordKeys<SyncOptionsKeys, so_last>,
+        SmartRecordKey<so_excludefrom, std::string>
+    {
+    };
+
+    /**
+     * Defines options to be passed to the syncer.
+     */
+    typedef MakeSmartRecord<SyncOptionsTag>::Type SyncOptions;
+
     class Syncer :
         private InstantiationPolicy<Syncer, instantiation_method::NonCopyableTag>,
         public InternalCounted<Syncer>
@@ -43,7 +67,7 @@ namespace paludis
             {
             }
 
-            virtual void sync() const = 0;
+            virtual void sync(const SyncOptions &) const = 0;
     };
 
     /**

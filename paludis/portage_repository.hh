@@ -109,7 +109,7 @@ namespace paludis
                     const FSEntry & location, const FSEntry & profile,
                     const FSEntry & cache, const FSEntry & distdir,
                     const FSEntry & eclassdir, const std::string & sync,
-                    const FSEntry & root);
+                    const std::string & sync_exclude, const FSEntry & root);
 
             /**
              * Virtual constructor.

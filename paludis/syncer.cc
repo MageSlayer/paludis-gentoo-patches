@@ -43,7 +43,7 @@ namespace
             }
 
         public:
-            virtual void sync() const;
+            virtual void sync(const SyncOptions &) const;
 
             static Syncer::Pointer make(const std::string & local, const std::string & remote)
             {
@@ -66,7 +66,7 @@ namespace
             }
 
         public:
-            virtual void sync() const;
+            virtual void sync(const SyncOptions &) const;
             static Syncer::Pointer make(const std::string & local, const std::string & remote)
             {
                 return Syncer::Pointer(new SvnSyncer(local, remote));
@@ -79,22 +79,27 @@ namespace
 }
 
 void
-RsyncSyncer::sync() const
+RsyncSyncer::sync(const SyncOptions & opts) const
 {
     Context context("When performing sync via rsync from '" + _remote + "' to '"
             + _local + "':");
 
+    std::string exclude;
+    if (! opts.get<so_excludefrom>().empty())
+        exclude = "--exclude-from " + std::string(opts.get<so_excludefrom>()) + " ";
+
+
     std::string cmd("rsync --recursive --links --safe-links --perms --times "
             "--compress --force --whole-file --delete --delete-after --stats "
             "--timeout=180 --exclude=/distfiles --exclude=/packages --progress "
-            "'" + _remote + "' '" + _local + "/'");
+            + exclude + "'" + _remote + "' '" + _local + "/'");
 
     if (0 != run_command(cmd))
         throw SyncFailedError(_local, _remote);
 }
 
 void
-SvnSyncer::sync() const
+SvnSyncer::sync(const SyncOptions &) const
 {
     Context context("When performing sync via subversion from '" + _remote + "' to '"
             + _local + "':");

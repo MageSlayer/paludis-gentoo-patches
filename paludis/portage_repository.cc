@@ -109,6 +109,9 @@ namespace paludis
         /// Sync URL
         std::string sync;
 
+        /// Sync exclude file
+        std::string sync_exclude;
+
         /// Root location
         FSEntry root;
 
@@ -175,7 +178,7 @@ namespace paludis
         Implementation(const Environment * const,
                 const PackageDatabase * const d, const FSEntry & l, const FSEntry & p,
                 const FSEntry & c, const FSEntry &, const FSEntry &, const std::string &,
-                const FSEntry &);
+                const std::string &, const FSEntry &);
 
         /// Destructor.
         ~Implementation();
@@ -198,7 +201,7 @@ Implementation<PortageRepository>::Implementation(const Environment * const env,
         const PackageDatabase * const d,
         const FSEntry & l, const FSEntry & p, const FSEntry & c,
         const FSEntry & e, const FSEntry & dd, const std::string & syn,
-        const FSEntry & r) :
+        const std::string & se, const FSEntry & r) :
     db(d),
     env(env),
     location(l),
@@ -207,6 +210,7 @@ Implementation<PortageRepository>::Implementation(const Environment * const env,
     eclassdir(e),
     distdir(dd),
     sync(syn),
+    sync_exclude(se),
     root(r),
     has_category_names(false),
     has_repo_mask(false),
@@ -382,10 +386,10 @@ PortageRepository::PortageRepository(
         const FSEntry & location, const FSEntry & profile,
         const FSEntry & cache, const FSEntry & eclassdir,
         const FSEntry & distdir, const std::string & sync,
-        const FSEntry & root) :
+        const std::string & sync_exclude, const FSEntry & root) :
     Repository(PortageRepository::fetch_repo_name(location)),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(e,
-                d, location, profile, cache, eclassdir, distdir, sync, root))
+                d, location, profile, cache, eclassdir, distdir, sync, sync_exclude, root))
 {
     _info.insert(std::make_pair(std::string("location"), location));
     _info.insert(std::make_pair(std::string("profile"), profile));
@@ -396,6 +400,9 @@ PortageRepository::PortageRepository(
     _info.insert(std::make_pair(std::string("root"), stringify(root)));
     if (! sync.empty())
         _info.insert(std::make_pair(std::string("sync"), sync));
+    if (! sync_exclude.empty())
+        _info.insert(std::make_pair(std::string("sync_exclude"), sync_exclude));
+
 }
 
 PortageRepository::~PortageRepository()
@@ -983,12 +990,16 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("sync") || ((sync = m.find("sync")->second)).empty())
         ; // nothing
 
+    std::string sync_exclude;
+    if (m.end() == m.find("sync_exclude") || ((sync_exclude = m.find("sync_exclude")->second)).empty())
+        ; // nothing
+
     std::string root;
     if (m.end() == m.find("root") || ((root = m.find("root")->second)).empty())
         root = "/";
 
     return CountedPtr<Repository>(new PortageRepository(env, db, location, profile, cache,
-                eclassdir, distdir, sync, root));
+                eclassdir, distdir, sync, sync_exclude, root));
 }
 
 PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
@@ -1307,8 +1318,10 @@ PortageRepository::do_sync() const
     if (std::string::npos == p)
         throw NoSuchSyncerError(_imp->sync);
 
+    SyncOptions opts(_imp->sync_exclude);
+
     SyncerMaker::get_instance()->find_maker(_imp->sync.substr(0, std::min(p, q)))(
-            _imp->location, _imp->sync.substr(q < p ? q + 1 : 0))->sync();
+            _imp->location, _imp->sync.substr(q < p ? q + 1 : 0))->sync(opts);
 
     return true;
 }
