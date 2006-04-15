@@ -1220,17 +1220,23 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     for (UseFlagSet::const_iterator x(_imp->expand_list.begin()),
             x_end(_imp->expand_list.end()) ; x != x_end ; ++x)
     {
+        std::string lower_x;
+        std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
+                &::tolower);
+
         static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
         std::list<std::string> uses;
         tokeniser.tokenise(_imp->profile_env[stringify(*x)], std::back_inserter(uses));
+
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
-        {
-            std::string lower_x;
-            std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
-                    &::tolower);
             use += lower_x + "_" + *u + " ";
-        }
+
+        UseFlagNameCollection::Pointer u(_imp->env->query_enabled_use_matching(
+                    lower_x + "_", &e));
+        for (UseFlagNameCollection::Iterator uu(u->begin()), uu_end(u->end()) ;
+                uu != uu_end ; ++uu)
+            use += stringify(*uu) + " ";
     }
 
     MakeEnvCommand cmd(make_env_command(
