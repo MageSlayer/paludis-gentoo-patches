@@ -94,11 +94,18 @@ settings for different packages. This may change.
     app-editors/vim -nls
     END
 
-Set up your ``licences.conf``. If you don't care about licences, which is
+Set up your ``licenses.conf``. If you don't care about licences, which is
 probably wise until we get licence grouping, it should look like this::
 
     cat <<END > /mychroot/etc/paludis/licenses.conf
     * *
+    END
+
+If you want some more fun, the following list is probably enough to install a
+base system with any fairly close to default USE flags::
+
+    cat <<END > /mychroot/etc/paludis/licenses.conf
+    * LGPL-2.1 LGPL-2 GPL-2 BSD MIT as-is tcp_wrappers_license freedist
     END
 
 Set up your ``package_unmask.conf`` and ``package_mask.conf``, if necessary::
