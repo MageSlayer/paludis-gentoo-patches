@@ -81,7 +81,7 @@ builtin_fetch()
                             eend 0
                         else
                             eend 1
-                            badfetch="${badfetch} ${line[2]}"
+                            hasq "${line[2]}" ${badfetch} || badfetch="${badfetch} ${line[2]}"
                         fi
                     fi
                     ;;
@@ -95,7 +95,7 @@ builtin_fetch()
                                 eend 0
                             else
                                 eend 1
-                                badfetch="${badfetch} ${line[2]}"
+                                hasq "${line[2]}" ${badfetch} || badfetch="${badfetch} ${line[2]}"
                             fi
                         else
                             einfo "Can't check rmd160 for ${line[2]}"
