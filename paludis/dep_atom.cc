@@ -76,7 +76,8 @@ PackageDepAtom::PackageDepAtom(const QualifiedPackageName & package) :
     _package(package),
     _version_operator("="),
     _version_spec(0),
-    _slot(0)
+    _slot(0),
+    _repository(0)
 {
 }
 
@@ -85,7 +86,8 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
     _package(CategoryNamePart("later"), PackageNamePart("later")),
     _version_operator("="),
     _version_spec(0),
-    _slot(0)
+    _slot(0),
+    _repository(0)
 {
     Context context("When parsing package dep atom '" + ss + "':");
 
@@ -95,6 +97,13 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
 
         if (s.empty())
             throw PackageDepAtomError("Got empty dep atom");
+
+        std::string::size_type repo_p;
+        if (std::string::npos != ((repo_p = s.rfind("::"))))
+        {
+            _repository.assign(new RepositoryName(s.substr(repo_p + 2)));
+            s.erase(repo_p);
+        }
 
         std::string::size_type slot_p;
         if (std::string::npos != ((slot_p = s.rfind(':'))))
@@ -190,6 +199,8 @@ paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
 
     if (a.slot_ptr())
         s << ":" << *a.slot_ptr();
+    if (a.repository_ptr())
+        s << "::" << *a.repository_ptr();
     return s;
 }
 

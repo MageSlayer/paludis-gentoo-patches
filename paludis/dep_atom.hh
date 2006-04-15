@@ -234,6 +234,7 @@ namespace paludis
             VersionOperator _version_operator;
             CountedPtr<VersionSpec, count_policy::ExternalCountTag> _version_spec;
             CountedPtr<SlotName, count_policy::ExternalCountTag> _slot;
+            CountedPtr<RepositoryName, count_policy::ExternalCountTag> _repository;
             std::string _tag;
 
         public:
@@ -283,6 +284,15 @@ namespace paludis
             {
                 return _slot;
             }
+
+            /**
+             * Fetch the repo name (may be a zero pointer).
+             */
+            CountedPtr<RepositoryName, count_policy::ExternalCountTag> repository_ptr() const
+            {
+                return _repository;
+            }
+
 
             typedef CountedPtr<PackageDepAtom, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const PackageDepAtom, count_policy::InternalCountTag> ConstPointer;

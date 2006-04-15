@@ -18,6 +18,10 @@ match_package_internals::do_match(
                 (*atom->version_spec_ptr())))
         return false;
 
+    if (atom->repository_ptr())
+        if (*atom->repository_ptr() != entry->get<pde_repository>())
+            return false;
+
     if (atom->slot_ptr())
     {
         VersionMetadata::ConstPointer metadata(db->fetch_metadata(*entry));
@@ -42,9 +46,12 @@ match_package_internals::do_match(
                 (*atom->version_spec_ptr())))
         return false;
 
+    if (atom->repository_ptr() && (*atom->repository_ptr() != entry->get<dle_repository>()))
+        return false;
+
     if (atom->slot_ptr() && (atom->slot_ptr()->data() != entry->get<dle_metadata>()->get(vmk_slot)))
         return false;
 
     return true;
-
 }
+

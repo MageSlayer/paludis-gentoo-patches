@@ -58,6 +58,8 @@ void do_one_query(
         cout << " (" << atom->version_operator() << *atom->version_spec_ptr() << ")";
     if (atom->slot_ptr())
         cout << " (:" << *atom->slot_ptr() << ")";
+    if (atom->repository_ptr())
+        cout << " (::" << *atom->repository_ptr() << ")";
     cout << endl;
 
     /* find all repository names. */
