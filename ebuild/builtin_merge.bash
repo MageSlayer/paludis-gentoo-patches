@@ -36,7 +36,6 @@ builtin_merge()
         echo "${!v}" > "${dbdir}"/${v} || die "pkg db write ${v} failed"
     done
 
-    echo "override cfgpro: '${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT}' '${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK}'"
     if [[ -n ${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT} ]]; then
         CONFIG_PROTECT=${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT}
     fi
@@ -60,19 +59,6 @@ builtin_merge()
     > ${dbdir}/CONTENTS
 
     if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then
-        if [[ -n "${CONFIG_PROTECT}" ]] ; then
-            local d f
-            for d in ${CONFIG_PROTECT} ; do
-                [[ -d "${D}${d}" ]] || continue
-                find "${D}${d}" -type f | \
-                while read f ; do
-                    if [[ -e "${ROOT}${f#${D}}" ]] ; then
-                        echo "CONFIG_PROTECT ${f#${D}}"
-                    fi
-                done
-            done
-        fi
-
         install -d "${ROOT%/}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
         if [[ -d "${D}" ]] ; then
             ${PALUDIS_EBUILD_MODULES_DIR}/utils/merge "${D%/}/" "${ROOT%/}/" "${dbdir}/CONTENTS" \
