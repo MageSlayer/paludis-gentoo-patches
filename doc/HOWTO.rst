@@ -231,7 +231,7 @@ And that should (but probably won't) give you a usable chroot::
     mount -tdevpts none /dev/pts
     eselect env update
     source /etc/profile
-    ( . /etc/paludis/bashrc ; gcc-config -1 )
+    ( . /etc/paludis/bashrc ; export REAL_CHOST=$CHOST ; gcc-config 1 )
     eselect env update
     source /etc/profile
     paludis --uninstall sys-apps/portage
