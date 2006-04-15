@@ -143,6 +143,9 @@ class CommandLine :
         /// --no-config-protection
         paludis::args::SwitchArg a_no_config_protection;
 
+        /// --fetch
+        paludis::args::SwitchArg a_fetch;
+
         /// }
 
         /// \name DepList behaviour arguments

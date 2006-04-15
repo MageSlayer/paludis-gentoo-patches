@@ -1184,7 +1184,14 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     }
 
     std::string actions;
-    if (metadata->get(vmk_virtual).empty())
+    if (o.get<io_fetchonly>())
+    {
+        if (metadata->get(vmk_virtual).empty())
+            actions = "init fetch";
+        else
+            actions = "";
+    }
+    else if (metadata->get(vmk_virtual).empty())
         actions = "init fetch setup unpack compile test install strip preinst merge postinst tidyup";
     else
         actions = "merge";

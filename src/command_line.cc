@@ -57,6 +57,7 @@ CommandLine::CommandLine() :
     a_pretend(&install_args, "pretend", 'p', "Pretend only"),
     a_preserve_world(&install_args, "preserve-world", '1', "Don't modify the world file"),
     a_no_config_protection(&install_args, "no-config-protection", '\0', "Disable config file protection (dangerous)"),
+    a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
 
     dl_args(this, "DepList behaviour (use with caution)"),
     a_dl_rdepend_post(&dl_args, "dl-rdepend-post", '\0', "Treat RDEPEND like PDEPEND", 
