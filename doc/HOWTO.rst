@@ -224,6 +224,7 @@ And that should (but probably won't) give you a usable chroot::
     cd
     cp /etc/skel/.bashrc .
     . .bashrc
+    ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
     mount -tproc none /proc
     mount -tsysfs none /sys
     udevstart
@@ -233,9 +234,9 @@ And that should (but probably won't) give you a usable chroot::
     ( . /etc/paludis/bashrc ; gcc-config -1 )
     eselect env update
     source /etc/profile
+    paludis --uninstall sys-apps/portage
     paludis --install app-editors/vim
     paludis --uninstall app-editors/nano
-    paludis --uninstall sys-apps/portage
 
 If you're especially crazy you can tar up your chroot and use it like a stage 3
 when installing a system. This has worked at least once for one person, but
