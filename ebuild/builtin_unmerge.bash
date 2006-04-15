@@ -25,7 +25,7 @@ builtin_unmerge()
     for v in CATEGORY CBUILD CFLAGS CHOST CXXFLAGS DEPEND DESCRIPTION EAPI \
         FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
         PROVIDE RDEPEND SLOT SRC_URI USE ; do
-        eval "${v}='$(< ${dbdir}/${v} )' || die \"Load key ${v} failed\""
+        eval "${v}=\$(< ${dbdir}/${v} ) || die \"Load key ${v} failed\""
     done
 
     if [[ -f ${dbdir}/CONFIG_PROTECT ]]; then
