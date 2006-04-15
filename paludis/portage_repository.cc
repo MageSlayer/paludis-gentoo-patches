@@ -351,8 +351,9 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
                 continue;
 
             Context context_line("When parsing line '" + *line + "':");
-            system_packages->add_child(PackageDepAtom::Pointer(new PackageDepAtom(
-                            line->substr(1))));
+            PackageDepAtom::Pointer atom(new PackageDepAtom(line->substr(1)));
+            atom->set_tag("system");
+            system_packages->add_child(atom);
         }
     }
 }

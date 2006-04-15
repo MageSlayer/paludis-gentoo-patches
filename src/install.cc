@@ -243,6 +243,11 @@ do_install()
                     cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));
             }
 
+            /* display tag */
+            if (! dep->get<p::dle_tag>().empty())
+                cout << " " << colour(cl_tag, "<" + p::join(dep->get<p::dle_tag>().begin(),
+                            dep->get<p::dle_tag>().end(), ",") + ">");
+
             cout << endl;
         }
 

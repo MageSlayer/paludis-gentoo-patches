@@ -234,6 +234,7 @@ namespace paludis
             VersionOperator _version_operator;
             CountedPtr<VersionSpec, count_policy::ExternalCountTag> _version_spec;
             CountedPtr<SlotName, count_policy::ExternalCountTag> _slot;
+            std::string _tag;
 
         public:
             /**
@@ -285,6 +286,22 @@ namespace paludis
 
             typedef CountedPtr<PackageDepAtom, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const PackageDepAtom, count_policy::InternalCountTag> ConstPointer;
+
+            /**
+             * Fetch our tag.
+             */
+            const std::string & tag() const
+            {
+                return _tag;
+            }
+
+            /**
+             * Set our tag.
+             */
+            void set_tag(const std::string & s)
+            {
+                _tag = s;
+            }
     };
 
     /**

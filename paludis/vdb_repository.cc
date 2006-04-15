@@ -591,7 +591,11 @@ VDBRepository::do_package_set(const std::string & s) const
 
         for (std::vector<VDBEntry>::const_iterator p(_imp->entries.begin()),
                 p_end(_imp->entries.end()) ; p != p_end ; ++p)
-            result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(p->name)));
+        {
+            PackageDepAtom::Pointer atom(new PackageDepAtom(p->name));
+            atom->set_tag("everything");
+            result->add_child(atom);
+        }
 
         return result;
     }
@@ -605,8 +609,11 @@ VDBRepository::do_package_set(const std::string & s) const
 
             for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
                     line != line_end ; ++line)
-                result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(
-                                QualifiedPackageName(*line))));
+            {
+                PackageDepAtom::Pointer atom(new PackageDepAtom(QualifiedPackageName(*line)));
+                atom->set_tag("world");
+                result->add_child(atom);
+            }
         }
         else
             Log::get_instance()->message(ll_warning, "World file '" + stringify(_imp->world_file) +

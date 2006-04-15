@@ -361,6 +361,12 @@ DepList::visit(const PackageDepAtom * const p)
                     throw CircularDependencyError(i, next(i));
             }
 
+            if (! p->tag().empty())
+            {
+                std::set<std::string> new_tags(i->get<dle_tag>());
+                new_tags.insert(p->tag());
+                i->set<dle_tag>(new_tags);
+            }
             return;
         }
     }
@@ -399,6 +405,9 @@ DepList::visit(const PackageDepAtom * const p)
     }
 
     std::list<DepListEntry>::iterator merge_entry;
+    std::set<std::string> tags;
+    if (! p->tag().empty())
+        tags.insert(p->tag());
     if (! match)
     {
         if (! installed->empty())
@@ -411,7 +420,7 @@ DepList::visit(const PackageDepAtom * const p)
                         DepListEntry(installed->last()->get<pde_name>(),
                             installed->last()->get<pde_version>(), metadata,
                             installed->last()->get<pde_repository>(),
-                            true, false, false, true));
+                            true, false, false, true, tags));
             }
             else
                 return;
@@ -423,7 +432,7 @@ DepList::visit(const PackageDepAtom * const p)
         merge_entry = _imp->merge_list.insert(_imp->merge_list_insert_pos,
                 DepListEntry(match->get<pde_name>(), match->get<pde_version>(),
                     metadata, match->get<pde_repository>(),
-                    false, false, false, false));
+                    false, false, false, false, tags));
 
     /* if we provide things, also insert them. */
     if ((! metadata->get(vmk_provide).empty()) && ! merge_entry->get<dle_skip_install>())
@@ -456,7 +465,8 @@ DepList::visit(const PackageDepAtom * const p)
             p_metadata->set(vmk_virtual, stringify(merge_entry->get<dle_name>()));
             _imp->merge_list.insert(next(merge_entry),
                     DepListEntry(pp.package(), merge_entry->get<dle_version>(),
-                        p_metadata, merge_entry->get<dle_repository>(), true, true, true, false));
+                        p_metadata, merge_entry->get<dle_repository>(), true, true, true, false,
+                        std::set<std::string>()));
         }
     }
 

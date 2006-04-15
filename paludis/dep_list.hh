@@ -25,6 +25,7 @@
 #include <iterator>
 #include <list>
 #include <ostream>
+#include <set>
 #include <paludis/dep_atom.hh>
 #include <paludis/name.hh>
 #include <paludis/qa/environment.hh>
@@ -48,6 +49,7 @@ namespace paludis
         dle_has_trypredeps,  ///< RDEPEND (if rdepend_post) done?
         dle_has_postdeps,    ///< PDEPEND done?
         dle_skip_install,    ///< Skip installing this?
+        dle_tag,             ///< Our tag
         last_dle             ///< Number of entries
     };
 
@@ -64,7 +66,8 @@ namespace paludis
         SmartRecordKey<dle_has_predeps, bool>,
         SmartRecordKey<dle_has_trypredeps, bool>,
         SmartRecordKey<dle_has_postdeps, bool>,
-        SmartRecordKey<dle_skip_install, bool>
+        SmartRecordKey<dle_skip_install, bool>,
+        SmartRecordKey<dle_tag, std::set<std::string> >
     {
     };
 
