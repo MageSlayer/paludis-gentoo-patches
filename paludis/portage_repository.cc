@@ -1187,7 +1187,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     if (o.get<io_fetchonly>())
     {
         if (metadata->get(vmk_virtual).empty())
-            actions = "init fetch";
+            actions = "fetch";
         else
             actions = "";
     }
