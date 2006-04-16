@@ -5,6 +5,7 @@ dnl vim: set ft=m4 noet :
 
 define(`filelist', `')dnl
 define(`testlist', `')dnl
+define(`headerlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
@@ -15,7 +16,7 @@ $1_TEST_LDADD = $(top_builddir)/paludis/util/test_extras.o \
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
-define(`addhh', `define(`filelist', filelist `$1.hh')')dnl
+define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', headerlist `$1.hh')')dnl
 define(`addcc', `define(`filelist', filelist `$1.cc')')dnl
 define(`addimpl', `define(`filelist', filelist `$1-impl.hh')')dnl
 define(`addthis', `dnl
@@ -53,7 +54,9 @@ TESTS_ENVIRONMENT = env \
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
-noinst_LIBRARIES = libpaludis.a
+lib_LIBRARIES = libpaludis.a
+paludis_includedir = $(includedir)/paludis/
+paludis_include_HEADERS = headerlist
 
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am

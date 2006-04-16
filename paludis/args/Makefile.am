@@ -5,20 +5,34 @@ AM_CXXFLAGS = -I$(top_srcdir)
 TESTS = \
 	args_TEST
 
-libpaludisargs_a_SOURCES = \
-	args.hh          args.cc \
-	args_error.hh    args_error.cc \
-	args_group.hh    args_group.cc \
-	args_handler.hh  args_handler.cc \
-	args_option.hh   args_option.cc \
-	bad_argument.hh  bad_argument.cc \
-	args_visitor.hh  args_visitor.cc \
-	bad_value.hh     bad_value.cc \
-	missing_value.hh missing_value.cc \
-	args_dumper.hh   args_dumper.cc
+paludis_args_includedir = $(includedir)/paludis/args/
+
+paludis_args_include_HEADERS = \
+	args.hh           \
+	args_error.hh     \
+	args_group.hh     \
+	args_handler.hh   \
+	args_option.hh    \
+	bad_argument.hh   \
+	args_visitor.hh   \
+	bad_value.hh      \
+	missing_value.hh  \
+	args_dumper.hh
+
+libpaludisargs_a_SOURCES = $(paludis_args_include_HEADERS) \
+	args.cc \
+	args_error.cc \
+	args_group.cc \
+	args_handler.cc \
+	args_option.cc \
+	bad_argument.cc \
+	args_visitor.cc \
+	bad_value.cc \
+	missing_value.cc \
+	args_dumper.cc
 
 TESTS_ENVIRONMENT = env -u PALUDIS_OPTIONS TEST_SCRIPT_DIR="$(srcdir)/" $(SHELL) $(top_srcdir)/test/run_test.sh
-noinst_LIBRARIES = libpaludisargs.a
+lib_LIBRARIES = libpaludisargs.a
 check_PROGRAMS = $(TESTS)
 
 test_ldadd = \
