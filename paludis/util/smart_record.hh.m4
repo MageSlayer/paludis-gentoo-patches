@@ -524,16 +524,6 @@ forloop(`idx', `0', max_record_size, `
         }
 #endif
 
-#ifdef DOXYGEN
-        /**
-         * Do the comparison for a RecordBase.
-         */
-        template <typename Tag_, unsigned key_count_>
-        struct DoFullCompareByAll
-        {
-        };
-
-#else
         template <typename Tag_, unsigned key_count_>
         struct DoFullCompareByAll;
 
@@ -563,7 +553,26 @@ forloop(`idy', `0', decr(`'idx`'), `
             }
         };
 ')
-#endif
+
+        template <typename Tag_, unsigned key_count_>
+        struct DoEqualCompareByAll;
+
+forloop(`idx', `1', max_record_size, `
+        template <typename Tag_>
+        struct DoEqualCompareByAll<Tag_, `'idx`'>
+        {
+            static bool do_compare(const RecordBase<Tag_, `'idx`'> * const a,
+                    const RecordBase<Tag_, `'idx`'> * const b)
+            {
+forloop(`idy', `0', decr(`'idx`'), `
+                if (RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*a) !=
+                        RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*b))
+                    return false;
+')
+                return true;
+            }
+        };
+')
 
         template <typename Tag_, unsigned key_count_>
         int RecordComparisonBase<Tag_, key_count_, comparison_mode::FullComparisonTag,
@@ -571,6 +580,15 @@ forloop(`idy', `0', decr(`'idx`'), `
                     const RecordBase<Tag_, key_count_> & other) const
         {
             return DoFullCompareByAll<Tag_, key_count_>::do_compare(
+                    static_cast<const RecordBase<Tag_, key_count_> *>(this), &other);
+        }
+
+        template <typename Tag_, unsigned key_count_>
+        bool RecordComparisonBase<Tag_, key_count_, comparison_mode::EqualityComparisonTag,
+            comparison_method::SmartRecordCompareByAllTag>::compare(
+                    const RecordBase<Tag_, key_count_> & other) const
+        {
+            return DoEqualCompareByAll<Tag_, key_count_>::do_compare(
                     static_cast<const RecordBase<Tag_, key_count_> *>(this), &other);
         }
 
