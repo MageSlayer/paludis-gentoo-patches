@@ -1204,7 +1204,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             actions = "";
     }
     else if (metadata->get(vmk_virtual).empty())
-        actions = "init fetch setup unpack compile test install strip preinst merge postinst tidyup";
+        actions = "init fetch setup unpack compile test install strip preinst "
+            "merge postinst updateenv tidyup";
     else
         actions = "merge";
 

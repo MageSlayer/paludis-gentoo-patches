@@ -29,6 +29,7 @@ libexecprog_SCRIPTS = \
 	builtin_unmerge.bash \
 	builtin_tidyup.bash \
 	builtin_strip.bash \
+	builtin_updateenv.bash \
 	src_install.bash \
 	src_test.bash \
 	src_unpack.bash \

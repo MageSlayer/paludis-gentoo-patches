@@ -145,7 +145,7 @@ ebuild_main()
                 ebuild_load_module depend
                 ;;
 
-            init|fetch|merge|unmerge|tidyup|strip)
+            init|fetch|merge|unmerge|tidyup|updateenv|strip)
                 ebuild_load_module builtin_${action}
             ;;
 

@@ -17,23 +17,23 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-builtin_tidyup()
+builtin_updateenv()
 {
-    if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" ]] ; then
-        rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" || die "Couldn't remove work"
-    fi
+    cd "${PALUDIS_TMPDIR}"
+    echo eselect env update
+    eselect env update || die "eselect env update failed"
 }
 
-ebuild_f_tidyup()
+ebuild_f_updateenv()
 {
-    if hasq "tidyup" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_tidyup (RESTRICT)"
+    if hasq "updateenv" ${RESTRICT} ; then
+        ebuild_section "Skipping builtin_updateenv (RESTRICT)"
     elif hasq "tidyup" ${SKIP_FUNCTIONS} ; then
-        ebuild_section "Skipping builtin_tidyup (SKIP_FUNCTIONS)"
+        ebuild_section "Skipping builtin_updateenv (SKIP_FUNCTIONS)"
     else
-        ebuild_section "Starting builtin_tidyup"
-        builtin_tidyup
-        ebuild_section "Done builtin_tidyup"
+        ebuild_section "Starting builtin_updateenv"
+        builtin_updateenv
+        ebuild_section "Done builtin_updateenv"
     fi
 }
 
