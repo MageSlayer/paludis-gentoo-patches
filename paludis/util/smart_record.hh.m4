@@ -31,6 +31,7 @@ define(`_forloop', `$4`'ifelse($1, `$3', , `define(`$1', incr($1))_forloop(`$1',
 #include <paludis/util/comparison_policy.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/exception.hh>
+#include <string>
 
 namespace paludis
 {
@@ -99,18 +100,6 @@ namespace paludis
         static const unsigned key_count = Count_;
     };
 
-#ifdef DOXYGEN
-    /**
-     * A SmartRecordKey inherit used by a tag for a MakeSmartRecord
-     * instantiation specifies that the key accessed via Idx_ is of
-     * type T_.
-     */
-    template <unsigned Idx_, typename T_>
-    struct SmartRecordKey
-    {
-    };
-
-#else
     template <unsigned Idx_, typename T_>
     struct SmartRecordKey;
 
@@ -121,22 +110,114 @@ forloop(`idx', `0', max_record_size, `
         typedef T_ KeyType`'idx`';
     };
 ')
-#endif
 
     /**
      * Internal use by SmartRecord.
      */
     namespace smart_record_internals
     {
-#ifdef DOXYGEN
-        /**
-         * Fetch the type of a given key.
-         */
-        template <typename Tag_, unsigned Key_>
-        struct GetRecordKeyType
+        template <typename T_>
+        struct CharStarToString
         {
+            typedef T_ Type;
         };
-#else
+
+        template <unsigned i_>
+        struct CharStarToString<char [i_]>
+        {
+            typedef std::string Type;
+        };
+
+
+        template <>
+        struct CharStarToString<char *>
+        {
+            typedef std::string Type;
+        };
+
+        struct ParamListTail
+        {
+            static const unsigned list_length = 0;
+        };
+
+        template <unsigned left_idx_, typename L_, typename R_>
+        struct ParamList
+        {
+            static const unsigned left_idx = left_idx_;
+            L_ left;
+            typedef L_ LeftType;
+
+            R_ right;
+            typedef R_ RightType;
+
+            static const unsigned list_length = 1 + RightType::list_length;
+
+            ParamList(const L_ & l, const R_ & r) :
+                left(l),
+                right(r)
+            {
+            }
+        };
+
+        template <unsigned idx_, typename Result_, unsigned left_idx_, typename L_, typename R_>
+        Result_
+        find_list_entry(const ParamList<left_idx_, L_, R_> & list);
+
+        template <bool is_left, unsigned idx_, typename Result_, unsigned left_idx_, typename L_, typename R_>
+        struct FindListEntry;
+
+        template <unsigned idx_, typename Result_, unsigned left_idx_, typename L_, typename R_>
+        struct FindListEntry<true, idx_, Result_, left_idx_, L_, R_>
+        {
+            Result_ operator() (const ParamList<left_idx_, L_, R_> & list) const
+            {
+                return list.left;
+            }
+        };
+
+        template <unsigned idx_, typename Result_, unsigned left_idx_, typename L_, typename R_>
+        struct FindListEntry<false, idx_, Result_, left_idx_, L_, R_>
+        {
+            Result_ operator() (const ParamList<left_idx_, L_, R_> & list) const
+            {
+                return find_list_entry<idx_, Result_>(list.right);
+            }
+        };
+
+        template <unsigned idx_, typename Result_, unsigned left_idx_, typename L_, typename R_>
+        Result_
+        find_list_entry(const ParamList<left_idx_, L_, R_> & list)
+        {
+            return FindListEntry<left_idx_ == idx_, idx_, Result_, left_idx_, L_, R_>()(list);
+        }
+
+        template <unsigned idx_, typename T_>
+        struct ParamListNode
+        {
+            T_ value;
+            static const unsigned idx = idx_;
+
+            ParamListNode(const T_ & t) :
+                value(t)
+            {
+            }
+        };
+
+        template <unsigned left_idx_, typename T_, unsigned right_idx_, typename U_>
+        ParamList<left_idx_, T_, ParamList<right_idx_, U_, ParamListTail> >
+        operator, (const ParamListNode<left_idx_, T_> & t, const ParamListNode<right_idx_, U_> & u)
+        {
+            return ParamList<left_idx_, T_, ParamList<right_idx_, U_, ParamListTail> >(t.value,
+                    ParamList<right_idx_, U_, ParamListTail>(u.value, ParamListTail()));
+        }
+
+        template <unsigned left_idx_, typename T_, typename U_, unsigned right_idx_, typename V_>
+        ParamList<left_idx_, V_, ParamList<right_idx_, T_, U_> >
+        operator, (const ParamList<right_idx_, T_, U_> & t, const ParamListNode<left_idx_, V_> & u)
+        {
+            return ParamList<left_idx_, V_, ParamList<right_idx_, T_, U_> >(u.value, t);
+        }
+
         template <typename Tag_, unsigned Key_>
         struct GetRecordKeyType;
 
@@ -147,43 +228,13 @@ forloop(`idx', `0', max_record_size, `
             typedef typename Tag_::KeyType`'idx`' Type;
         };
 ')
-#endif
 
-#ifdef DOXYGEN
-        /**
-         * Base class for a SmartRecord.
-         */
-        template <typename Tag_, unsigned key_count_>
-        struct RecordBase
-        {
-        };
-#else
         template <typename Tag_, unsigned key_count_>
         struct RecordBase;
-#endif
 
-#ifdef DOXYGEN
-        /**
-         * Fetches a key with the given index.
-         */
-        template <typename Tag_, unsigned key_count_, unsigned Key_>
-        struct RecordKeyGetter
-        {
-        };
-#else
         template <typename Tag_, unsigned key_count_, unsigned Key_>
         struct RecordKeyGetter;
-#endif
 
-#ifdef DOXYGEN
-        /**
-         * Fetches a member pointer to a key with a given index.
-         */
-        template <typename Tag_, unsigned key_count_, unsigned Key_>
-        struct RecordKeyPointerGetter
-        {
-        };
-#else
         template <typename Tag_, unsigned key_count_, unsigned Key_>
         struct RecordKeyPointerGetter;
 
@@ -211,21 +262,9 @@ forloop(`idx', `0', max_record_size, `
             }
         };
 ')
-#endif
 
-#ifdef DOXYGEN
-        /**
-         * Inherited by RecordBase to provide the appropriate comparison
-         * operators.
-         */
-        template <typename Tag_, unsigned key_count_, typename ComparisonModeTag_, typename ComparisonMethodTag_>
-        struct RecordComparisonBase
-        {
-        };
-#else
         template <typename Tag_, unsigned key_count_, typename ComparisonModeTag_, typename ComparisonMethodTag_>
         struct RecordComparisonBase;
-#endif
 
         /**
          * RecordComparisonBase: specialisation for comparison_mode::NoComparisonTag.
@@ -398,8 +437,6 @@ forloop(`idx', `0', max_record_size, `
                 }
         };
 
-#ifdef DOXYGEN
-#else
 forloop(`idx', `1', max_record_size, `
         template<typename Tag_>
         class RecordBase<Tag_, `'idx`'> : public RecordComparisonBase<Tag_, `'idx`',
@@ -467,6 +504,18 @@ forloop(`idy', `0', decr(idx), `
                 {
                     return RecordKeyGetter<Tag_, `'idx`', k_>::do_set(*this, v);
                 }
+
+                template <typename List_>
+                static RecordBase
+                create(const List_ & list)
+                {
+                    return RecordBase(
+ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
+                            find_list_entry<`'idy`', typename Tag_::KeyType`'idy`'>(list),
+') ')
+                            find_list_entry<`'decr(idx)`', typename Tag_::KeyType`'decr(idx)`'>(list)
+                            );
+                }
         };
 
         template<typename Tag_>
@@ -522,7 +571,6 @@ forloop(`idx', `0', max_record_size, `
                 comparison_method::CompareByMemberTag<typename GetRecordKeyType<Tag_, key_>::Type> >(other)
         {
         }
-#endif
 
         template <typename Tag_, unsigned key_count_>
         struct DoFullCompareByAll;
@@ -656,6 +704,14 @@ forloop(`idy', `0', decr(`'idx`'), `
          */
         typedef smart_record_internals::RecordBase<Tag_, Tag_::key_count> Type;
     };
+
+    template <unsigned idx_, typename T_>
+    smart_record_internals::ParamListNode<idx_, typename smart_record_internals::CharStarToString<T_>::Type>
+    param(const T_ & t)
+    {
+        return smart_record_internals::ParamListNode<idx_,
+               typename smart_record_internals::CharStarToString<T_>::Type>(t);
+    }
 }
 
 #endif

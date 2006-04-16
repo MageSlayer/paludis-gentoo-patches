@@ -30,30 +30,29 @@ using namespace test;
  * \ingroup Test
  */
 
-#ifndef DOXYGEN
-
-enum PersonKeys
+namespace
 {
-    firstname,
-    surname,
-    age
-};
+    enum PersonKeys
+    {
+        firstname,
+        surname,
+        age
+    };
 
-struct PersonRecordTag :
-    SmartRecordTag<
-        comparison_mode::FullComparisonTag,
-        comparison_method::SmartRecordCompareByAllTag
-    >,
-    SmartRecordKeys<PersonKeys, 3>,
-    SmartRecordKey<firstname, std::string>,
-    SmartRecordKey<surname, std::string>,
-    SmartRecordKey<age, unsigned>
-{
-};
+    struct PersonRecordTag :
+        SmartRecordTag<
+            comparison_mode::FullComparisonTag,
+            comparison_method::SmartRecordCompareByAllTag
+        >,
+        SmartRecordKeys<PersonKeys, 3>,
+        SmartRecordKey<firstname, std::string>,
+        SmartRecordKey<surname, std::string>,
+        SmartRecordKey<age, unsigned>
+    {
+    };
 
-typedef MakeSmartRecord<PersonRecordTag>::Type Person;
-
-#endif
+    typedef MakeSmartRecord<PersonRecordTag>::Type Person;
+}
 
 namespace test_cases
 {
@@ -93,5 +92,36 @@ namespace test_cases
             TEST_CHECK_EQUAL(p3.get<age>(), 4);
         }
     } test_simple_record;
+
+    /**
+     * \test Test a list constructed SmartRecord.
+     *
+     * \ingroup Test
+     */
+    struct ListConstructedRecordTest : TestCase
+    {
+        ListConstructedRecordTest() : TestCase("list constructed") { }
+
+        void run()
+        {
+            const Person p1(Person::create((
+                            param<firstname>("first"),
+                            param<surname>("sur"),
+                            param<age>(10))));
+
+            TEST_CHECK_EQUAL(p1.get<firstname>(), "first");
+            TEST_CHECK_EQUAL(p1.get<surname>(), "sur");
+            TEST_CHECK_EQUAL(p1.get<age>(), 10);
+
+            const Person p2(Person::create((
+                            param<surname>("bar"),
+                            param<firstname>("foo"),
+                            param<age>(42))));
+
+            TEST_CHECK_EQUAL(p2.get<firstname>(), "foo");
+            TEST_CHECK_EQUAL(p2.get<surname>(), "bar");
+            TEST_CHECK_EQUAL(p2.get<age>(), 42);
+        }
+    } test_list_constructed_record;
 }
 
