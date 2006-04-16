@@ -166,9 +166,7 @@ namespace paludis
         mutable std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
         /// Constructor.
-        Implementation(const Environment * const,
-                const PackageDatabase * const d, const FSEntry & l,
-                const FSEntry & r, const FSEntry &);
+        Implementation(const VDBRepositoryParams &);
 
         /// Destructor.
         ~Implementation();
@@ -178,14 +176,12 @@ namespace paludis
     };
 }
 
-Implementation<VDBRepository>::Implementation(const Environment * const env,
-        const PackageDatabase * const d,
-        const FSEntry & l, const FSEntry & r, const FSEntry & w) :
-    db(d),
-    env(env),
-    location(l),
-    root(r),
-    world_file(w),
+Implementation<VDBRepository>::Implementation(const VDBRepositoryParams & p) :
+    db(p.get<vdbrpk_package_database>()),
+    env(p.get<vdbrpk_environment>()),
+    location(p.get<vdbrpk_location>()),
+    root(p.get<vdbrpk_root>()),
+    world_file(p.get<vdbrpk_world>()),
     entries_valid(false),
     has_provide_map(false)
 {
@@ -292,17 +288,14 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
     p->metadata->set(vmk_slot,      slot);
 }
 
-VDBRepository::VDBRepository(
-        const Environment * const e, const PackageDatabase * const d,
-        const FSEntry & location, const FSEntry & root, const FSEntry & world) :
+VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     Repository(RepositoryName("installed")),
-    PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(e,
-                d, location, root, world))
+    PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(p))
 {
-    _info.insert(std::make_pair(std::string("location"), location));
-    _info.insert(std::make_pair(std::string("root"), root));
+    _info.insert(std::make_pair(std::string("location"), _imp->location));
+    _info.insert(std::make_pair(std::string("root"), _imp->root));
     _info.insert(std::make_pair(std::string("format"), std::string("vdb")));
-    _info.insert(std::make_pair(std::string("world"), world));
+    _info.insert(std::make_pair(std::string("world"), _imp->world_file));
 }
 
 VDBRepository::~VDBRepository()
@@ -481,7 +474,12 @@ VDBRepository::make_vdb_repository(
     if (m.end() == m.find("world") || ((world = m.find("world")->second)).empty())
         world = location + "/world";
 
-    return CountedPtr<Repository>(new VDBRepository(env, db, location, root, world));
+    return CountedPtr<Repository>(new VDBRepository(VDBRepositoryParams::create((
+                        param<vdbrpk_environment>(env),
+                        param<vdbrpk_package_database>(db),
+                        param<vdbrpk_location>(location),
+                        param<vdbrpk_root>(root),
+                        param<vdbrpk_world>(world)))));
 }
 
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(

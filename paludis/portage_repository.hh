@@ -24,6 +24,7 @@
 #include <paludis/repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/smart_record.hh>
 #include <string>
 
 /** \file
@@ -33,6 +34,39 @@
 namespace paludis
 {
     class PackageDatabase;
+
+    enum PortageRepositoryParamsKeys
+    {
+        prpk_environment,
+        prpk_package_database,
+        prpk_location,
+        prpk_profile,
+        prpk_cache,
+        prpk_distdir,
+        prpk_eclassdir,
+        prpk_sync,
+        prpk_sync_exclude,
+        prpk_root,
+        last_prpk
+    };
+
+    struct PortageRepositoryParamsTag :
+        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
+        SmartRecordKeys<PortageRepositoryParamsKeys, last_prpk>,
+        SmartRecordKey<prpk_environment, const Environment *>,
+        SmartRecordKey<prpk_package_database, const PackageDatabase *>,
+        SmartRecordKey<prpk_location, const FSEntry>,
+        SmartRecordKey<prpk_profile, const FSEntry>,
+        SmartRecordKey<prpk_cache, const FSEntry>,
+        SmartRecordKey<prpk_distdir, const FSEntry>,
+        SmartRecordKey<prpk_eclassdir, const FSEntry>,
+        SmartRecordKey<prpk_sync, const FSEntry>,
+        SmartRecordKey<prpk_sync_exclude, const std::string>,
+        SmartRecordKey<prpk_root, const FSEntry>
+    {
+    };
+
+    typedef MakeSmartRecord<PortageRepositoryParamsTag>::Type PortageRepositoryParams;
 
     /**
      * A PortageRepository is a Repository that handles the layout used by
@@ -104,12 +138,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            PortageRepository(const Environment * const env,
-                    const PackageDatabase * const db,
-                    const FSEntry & location, const FSEntry & profile,
-                    const FSEntry & cache, const FSEntry & distdir,
-                    const FSEntry & eclassdir, const std::string & sync,
-                    const std::string & sync_exclude, const FSEntry & root);
+            PortageRepository(const PortageRepositoryParams &);
 
             /**
              * Virtual constructor.

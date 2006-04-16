@@ -23,9 +23,33 @@
 #include <paludis/repository.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/smart_record.hh>
 
 namespace paludis
 {
+    enum VDBRepositoryParamsKeys
+    {
+        vdbrpk_environment,
+        vdbrpk_package_database,
+        vdbrpk_location,
+        vdbrpk_root,
+        vdbrpk_world,
+        last_vdbrpk
+    };
+
+    struct VDBRepositoryParamsTag :
+        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
+        SmartRecordKeys<VDBRepositoryParamsKeys, last_vdbrpk>,
+        SmartRecordKey<vdbrpk_environment, const Environment *>,
+        SmartRecordKey<vdbrpk_package_database, const PackageDatabase *>,
+        SmartRecordKey<vdbrpk_location, const FSEntry>,
+        SmartRecordKey<vdbrpk_root, const FSEntry>,
+        SmartRecordKey<vdbrpk_world, const FSEntry>
+    {
+    };
+
+    typedef MakeSmartRecord<VDBRepositoryParamsTag>::Type VDBRepositoryParams;
+
     class VDBRepository :
         public Repository,
         public PrivateImplementationPattern<VDBRepository>
@@ -83,11 +107,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            VDBRepository(const Environment * const env,
-                    const PackageDatabase * const db,
-                    const FSEntry & location,
-                    const FSEntry & root,
-                    const FSEntry & world);
+            VDBRepository(const VDBRepositoryParams &);
 
             /**
              * Virtual constructor.

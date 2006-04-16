@@ -174,10 +174,7 @@ namespace paludis
         mutable AllDepAtom::Pointer system_packages;
 
         /// Constructor.
-        Implementation(const Environment * const,
-                const PackageDatabase * const d, const FSEntry & l, const FSEntry & p,
-                const FSEntry & c, const FSEntry &, const FSEntry &, const std::string &,
-                const std::string &, const FSEntry &);
+        Implementation(const PortageRepositoryParams &);
 
         /// Destructor.
         ~Implementation();
@@ -196,21 +193,17 @@ namespace paludis
     };
 }
 
-Implementation<PortageRepository>::Implementation(const Environment * const env,
-        const PackageDatabase * const d,
-        const FSEntry & l, const FSEntry & p, const FSEntry & c,
-        const FSEntry & e, const FSEntry & dd, const std::string & syn,
-        const std::string & se, const FSEntry & r) :
-    db(d),
-    env(env),
-    location(l),
-    profile(p),
-    cache(c),
-    eclassdir(e),
-    distdir(dd),
-    sync(syn),
-    sync_exclude(se),
-    root(r),
+Implementation<PortageRepository>::Implementation(const PortageRepositoryParams & p) :
+    db(p.get<prpk_package_database>()),
+    env(p.get<prpk_environment>()),
+    location(p.get<prpk_location>()),
+    profile(p.get<prpk_profile>()),
+    cache(p.get<prpk_cache>()),
+    eclassdir(p.get<prpk_eclassdir>()),
+    distdir(p.get<prpk_distdir>()),
+    sync(p.get<prpk_sync>()),
+    sync_exclude(p.get<prpk_sync_exclude>()),
+    root(p.get<prpk_root>()),
     has_category_names(false),
     has_repo_mask(false),
     has_virtuals(false),
@@ -387,27 +380,21 @@ Implementation<PortageRepository>::invalidate() const
     system_packages = AllDepAtom::Pointer(0);
 }
 
-PortageRepository::PortageRepository(
-        const Environment * const e, const PackageDatabase * const d,
-        const FSEntry & location, const FSEntry & profile,
-        const FSEntry & cache, const FSEntry & eclassdir,
-        const FSEntry & distdir, const std::string & sync,
-        const std::string & sync_exclude, const FSEntry & root) :
-    Repository(PortageRepository::fetch_repo_name(location)),
-    PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(e,
-                d, location, profile, cache, eclassdir, distdir, sync, sync_exclude, root))
+PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
+    Repository(PortageRepository::fetch_repo_name(p.get<prpk_location>())),
+    PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(p))
 {
-    _info.insert(std::make_pair(std::string("location"), location));
-    _info.insert(std::make_pair(std::string("profile"), profile));
-    _info.insert(std::make_pair(std::string("cache"), cache));
-    _info.insert(std::make_pair(std::string("eclassdir"), eclassdir));
-    _info.insert(std::make_pair(std::string("distdir"), distdir));
+    _info.insert(std::make_pair(std::string("location"), _imp->location));
+    _info.insert(std::make_pair(std::string("profile"), _imp->profile));
+    _info.insert(std::make_pair(std::string("cache"), _imp->cache));
+    _info.insert(std::make_pair(std::string("eclassdir"), _imp->eclassdir));
+    _info.insert(std::make_pair(std::string("distdir"), _imp->distdir));
     _info.insert(std::make_pair(std::string("format"), std::string("portage")));
-    _info.insert(std::make_pair(std::string("root"), stringify(root)));
-    if (! sync.empty())
-        _info.insert(std::make_pair(std::string("sync"), sync));
-    if (! sync_exclude.empty())
-        _info.insert(std::make_pair(std::string("sync_exclude"), sync_exclude));
+    _info.insert(std::make_pair(std::string("root"), stringify(_imp->root)));
+    if (! _imp->sync.empty())
+        _info.insert(std::make_pair(std::string("sync"), _imp->sync));
+    if (! _imp->sync_exclude.empty())
+        _info.insert(std::make_pair(std::string("sync_exclude"), _imp->sync_exclude));
 
 }
 
@@ -1004,8 +991,17 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("root") || ((root = m.find("root")->second)).empty())
         root = "/";
 
-    return CountedPtr<Repository>(new PortageRepository(env, db, location, profile, cache,
-                eclassdir, distdir, sync, sync_exclude, root));
+    return CountedPtr<Repository>(new PortageRepository(PortageRepositoryParams::create((
+                        param<prpk_environment>(env),
+                        param<prpk_package_database>(db),
+                        param<prpk_location>(location),
+                        param<prpk_profile>(profile),
+                        param<prpk_cache>(cache),
+                        param<prpk_eclassdir>(eclassdir),
+                        param<prpk_distdir>(distdir),
+                        param<prpk_sync>(sync),
+                        param<prpk_sync_exclude>(sync_exclude),
+                        param<prpk_root>(root)))));
 }
 
 PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
