@@ -47,7 +47,6 @@
 #include <vector>
 #include <deque>
 #include <limits>
-#include <iostream>
 
 #include <strings.h>
 #include <ctype.h>
