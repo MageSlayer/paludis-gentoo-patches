@@ -1175,7 +1175,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                         m(_imp->mirrors.find(mirror.substr(0, q))->second.begin()),
                         m_end(_imp->mirrors.find(mirror.substr(0, q))->second.end()) ;
                         m != m_end ; ++m)
-                    flat_src_uri.append(*m + "/" + (*ff)->text().substr(p + 1) + " ");
+                    flat_src_uri.append(*m + "/" + mirror.substr(q + 1) + " ");
             }
             else
                 flat_src_uri.append((*ff)->text());
