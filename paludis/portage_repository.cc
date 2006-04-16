@@ -273,14 +273,20 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
         Context context_local("When reading parent file:");
 
         LineConfigFile parent(f / "parent");
-        if (parent.begin() != parent.end())
-            add_profile_r((f / *parent.begin()).realpath());
-        else
+        LineConfigFile::Iterator it = parent.begin(), it_end = parent.end();
+
+        if (it == it_end)
         {
             Log::get_instance()->message(ll_warning, "Profile parent file in '" +
                     stringify(f) + "' cannot be read");
             return;
         }
+
+        for ( ; it != it_end; ++it)
+        {
+            add_profile_r((f / (*it)).realpath());
+        }
+
     }
 
     if ((f / "make.defaults").exists())

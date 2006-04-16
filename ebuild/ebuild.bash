@@ -68,16 +68,18 @@ ebuild_load_module eclass_functions
 
 ebuild_source_profile()
 {
+    if [[ -f ${1}/parent ]] ; then
+        while read line; do
+            ebuild_source_profile $(readlink -f ${1}/${line} )
+        done <${1}/parent
+    fi
+
     if [[ -f ${1}/make.defaults ]] ; then
         source ${1}/make.defaults || die "Couldn't source ${1}/make.defaults"
     fi
 
     if [[ -f ${1}/bashrc ]] ; then
         source ${1}/bashrc || die "Couldn't source ${1}/bashrc"
-    fi
-
-    if [[ -f ${1}/parent ]] ; then
-        ebuild_source_profile $(readlink -f ${1}/$(< ${1}/parent) )
     fi
 }
 
