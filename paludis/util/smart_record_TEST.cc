@@ -89,6 +89,8 @@ namespace test_cases
             TEST_CHECK_EQUAL(p3.get<age>(), 1);
             p3.set<age>(2);
             TEST_CHECK_EQUAL(p3.get<age>(), 2);
+            p3.get<age>() = 4;
+            TEST_CHECK_EQUAL(p3.get<age>(), 4);
         }
     } test_simple_record;
 }

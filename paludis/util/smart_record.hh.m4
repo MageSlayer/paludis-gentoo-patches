@@ -197,6 +197,12 @@ forloop(`idx', `0', max_record_size, `
                 return r._v`'idx`';
             }
 
+            static typename GetRecordKeyType<Tag_, `'idx`'>::Type &
+            do_get(RecordBase<Tag_, key_count_> & r)
+            {
+                return r._v`'idx`';
+            }
+
             static void
             do_set(RecordBase<Tag_, key_count_> & r,
                 const typename GetRecordKeyType<Tag_, `'idx`'>::Type & v)
@@ -446,6 +452,12 @@ forloop(`idy', `0', decr(idx), `
 
                 template <typename Tag_::Keys k_>
                 const typename GetRecordKeyType<Tag_, k_>::Type & get() const
+                {
+                    return RecordKeyGetter<Tag_, `'idx`', k_>::do_get(*this);
+                }
+
+                template <typename Tag_::Keys k_>
+                typename GetRecordKeyType<Tag_, k_>::Type & get()
                 {
                     return RecordKeyGetter<Tag_, `'idx`', k_>::do_get(*this);
                 }
