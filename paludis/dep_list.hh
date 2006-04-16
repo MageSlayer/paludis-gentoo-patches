@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_HH 1
 
 #include <algorithm>
+#include <bitset>
 #include <deque>
 #include <iterator>
 #include <list>
@@ -45,28 +46,36 @@ namespace paludis
         dle_version,         ///< Package version
         dle_metadata,        ///< Package SLOT
         dle_repository,      ///< Repository name
-        dle_has_predeps,     ///< DEPEND (and RDEPEND if not rdepend_post) done?
-        dle_has_trypredeps,  ///< RDEPEND (if rdepend_post) done?
-        dle_has_postdeps,    ///< PDEPEND done?
-        dle_skip_install,    ///< Skip installing this?
+        dle_flags,           ///< Flags
         dle_tag,             ///< Our tag
         last_dle             ///< Number of entries
     };
 
     /**
+     * Flags for a DepListEntry.
+     */
+    enum DepListEntryFlag
+    {
+        dlef_has_predeps,
+        dlef_has_trypredeps,
+        dlef_has_postdeps,
+        dlef_skip,
+        last_dlef
+    };
+
+    typedef std::bitset<last_dlef> DepListEntryFlags;
+
+    /**
      * Tag for a DepListEntry.
      */
     struct DepListEntryTag :
-        SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
+        SmartRecordTag<comparison_mode::EqualityComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
         SmartRecordKeys<DepListEntryKeys, last_dle>,
         SmartRecordKey<dle_name, QualifiedPackageName>,
         SmartRecordKey<dle_version, VersionSpec>,
         SmartRecordKey<dle_metadata, VersionMetadata::ConstPointer>,
         SmartRecordKey<dle_repository, RepositoryName>,
-        SmartRecordKey<dle_has_predeps, bool>,
-        SmartRecordKey<dle_has_trypredeps, bool>,
-        SmartRecordKey<dle_has_postdeps, bool>,
-        SmartRecordKey<dle_skip_install, bool>,
+        SmartRecordKey<dle_flags, DepListEntryFlags>,
         SmartRecordKey<dle_tag, std::set<std::string> >
     {
     };

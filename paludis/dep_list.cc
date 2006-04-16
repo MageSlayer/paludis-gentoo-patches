@@ -153,7 +153,7 @@ namespace
     {
         bool operator() (const DepListEntry & e) const
         {
-            return e.get<dle_skip_install>();
+            return e.get<dle_flags>()[dlef_skip];
         }
     };
 }
@@ -175,10 +175,10 @@ DepList::add(DepAtom::ConstPointer atom)
         _imp->merge_list_insert_pos = _imp->merge_list.end();
         while (i != _imp->merge_list.end())
         {
-            if (! i->get<dle_has_predeps>() && ! _imp->drop_all)
+            if (! i->get<dle_flags>()[dlef_has_predeps] && ! _imp->drop_all)
                 throw InternalError(PALUDIS_HERE, "dle_has_predeps not set for " + stringify(*i));
 
-            else if (! i->get<dle_has_trypredeps>() && ! _imp->drop_all)
+            else if (! i->get<dle_flags>()[dlef_has_trypredeps] && ! _imp->drop_all)
             {
                 Save<const DepListEntry *> save_current_package(
                         &_imp->current_package, &*i);
@@ -186,10 +186,10 @@ DepList::add(DepAtom::ConstPointer atom)
                             _imp->environment->package_database()->fetch_metadata(
                                 PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
                                     i->get<dle_repository>()))->get(vmk_rdepend)), "RDEPEND");
-                i->set<dle_has_trypredeps>(true);
+                i->get<dle_flags>().set(dlef_has_trypredeps);
             }
 
-            else if (! i->get<dle_has_postdeps>() && ! _imp->drop_all)
+            else if (! i->get<dle_flags>()[dlef_has_postdeps] && ! _imp->drop_all)
             {
                 Save<const DepListEntry *> save_current_package(
                         &_imp->current_package, &*i);
@@ -197,7 +197,7 @@ DepList::add(DepAtom::ConstPointer atom)
                             _imp->environment->package_database()->fetch_metadata(
                                 PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
                                     i->get<dle_repository>()))->get(vmk_pdepend)), "PDEPEND");
-                i->set<dle_has_postdeps>(true);
+                i->get<dle_flags>().set(dlef_has_postdeps);
             }
             else
                 ++i;
@@ -344,7 +344,7 @@ DepList::visit(const PackageDepAtom * const p)
                                 _imp->environment->package_database().raw_pointer(), *p)))))
         {
             /* what's our status? */
-            if (! i->get<dle_has_predeps>())
+            if (! i->get<dle_flags>()[dlef_has_predeps])
             {
                 if (! installed->empty())
                     return;
@@ -416,11 +416,13 @@ DepList::visit(const PackageDepAtom * const p)
             {
                 metadata = _imp->environment->package_database()->fetch_metadata(
                         *installed->last());
+                DepListEntryFlags flags;
+                flags.set(dlef_has_predeps);
+                flags.set(dlef_skip);
                 merge_entry = _imp->merge_list.insert(_imp->merge_list_insert_pos,
                         DepListEntry(installed->last()->get<pde_name>(),
                             installed->last()->get<pde_version>(), metadata,
-                            installed->last()->get<pde_repository>(),
-                            true, false, false, true, tags));
+                            installed->last()->get<pde_repository>(), flags, tags));
             }
             else
                 return;
@@ -429,13 +431,15 @@ DepList::visit(const PackageDepAtom * const p)
             throw AllMaskedError(stringify(*p));
     }
     else
+    {
+        DepListEntryFlags flags;
         merge_entry = _imp->merge_list.insert(_imp->merge_list_insert_pos,
                 DepListEntry(match->get<pde_name>(), match->get<pde_version>(),
-                    metadata, match->get<pde_repository>(),
-                    false, false, false, false, tags));
+                    metadata, match->get<pde_repository>(), flags, tags));
+    }
 
     /* if we provide things, also insert them. */
-    if ((! metadata->get(vmk_provide).empty()) && ! merge_entry->get<dle_skip_install>())
+    if ((! metadata->get(vmk_provide).empty()) && ! merge_entry->get<dle_flags>()[dlef_skip])
     {
         DepAtom::ConstPointer provide(DepParser::parse(metadata->get(vmk_provide),
                 DepParserPolicy<PackageDepAtom, false>::get_instance()));
@@ -463,9 +467,14 @@ DepList::visit(const PackageDepAtom * const p)
             VersionMetadata::Pointer p_metadata(new VersionMetadata);
             p_metadata->set(vmk_slot, merge_entry->get<dle_metadata>()->get(vmk_slot));
             p_metadata->set(vmk_virtual, stringify(merge_entry->get<dle_name>()));
+
+            DepListEntryFlags flags;
+            flags.set(dlef_has_predeps);
+            flags.set(dlef_has_trypredeps);
+            flags.set(dlef_has_postdeps);
             _imp->merge_list.insert(next(merge_entry),
                     DepListEntry(pp.package(), merge_entry->get<dle_version>(),
-                        p_metadata, merge_entry->get<dle_repository>(), true, true, true, false,
+                        p_metadata, merge_entry->get<dle_repository>(), flags,
                         std::set<std::string>()));
         }
     }
@@ -481,18 +490,18 @@ DepList::visit(const PackageDepAtom * const p)
             &*merge_entry);
 
     /* merge depends */
-    if ((! merge_entry->get<dle_has_predeps>()) && ! (_imp->drop_all))
+    if ((! merge_entry->get<dle_flags>()[dlef_has_predeps]) && ! (_imp->drop_all))
         _add_in_role(DepParser::parse(metadata->get(vmk_depend)), "DEPEND");
-    merge_entry->set<dle_has_predeps>(true);
+    merge_entry->get<dle_flags>().set(dlef_has_predeps);
 
     /* merge rdepends */
-    if (! merge_entry->get<dle_has_trypredeps>() && dlro_always != _imp->rdepend_post
+    if (! merge_entry->get<dle_flags>()[dlef_has_trypredeps] && dlro_always != _imp->rdepend_post
             && ! _imp->drop_all)
     {
         try
         {
             _add_in_role(DepParser::parse(metadata->get(vmk_rdepend)), "RDEPEND");
-            merge_entry->set<dle_has_trypredeps>(true);
+            merge_entry->get<dle_flags>().set(dlef_has_trypredeps);
         }
         catch (const CircularDependencyError &)
         {
