@@ -118,7 +118,12 @@ Set up your ``package_unmask.conf`` and ``package_mask.conf``, if necessary::
 Set up your ``bashrc``. This must **NOT** be used to change any values that
 affect dependency resolution (e.g. USE, LINGUAS). It can be used to set CFLAGS,
 CHOST and the like (on some archs you'll have to do this to avoid getting junk
-from your profile)::
+from your profile).
+
+.. Note:: The backslash before the dollar is for cat. If you're not using cat,
+   don't include the backslash before the dollar signs.
+
+::
 
     cat <<END > /mychroot/etc/paludis/bashrc
     export CFLAGS="-O2 -march=pentium4 -fomit-frame-pointer"
