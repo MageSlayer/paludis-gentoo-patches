@@ -188,6 +188,15 @@ namespace paludis
     };
 
     /**
+     * Convenience constructor for an IndirectIterator.
+     */
+    template <typename Value_, typename Iter_>
+    IndirectIterator<Iter_, Value_> indirect_iterator(const Iter_ & i)
+    {
+        return IndirectIterator<Iter_, Value_>(i);
+    }
+
+    /**
      * A FilterInsertIterator is an insert iterator that only performs an insert
      * if a particular predicate function returns true for the object to be
      * inserted.
