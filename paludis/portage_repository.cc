@@ -1248,6 +1248,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                     )),
             EbuildInstallCommandParams::create((
                     param<ecipk_use>(use),
+                    param<ecipk_a>(archives),
                     param<ecipk_use_expand>(join(_imp->expand_list.begin(),
                             _imp->expand_list.end(), " ")),
                     param<ecipk_expand_vars>(expand_vars),

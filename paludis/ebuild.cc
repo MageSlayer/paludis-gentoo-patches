@@ -210,6 +210,7 @@ MakeEnvCommand
 EbuildInstallCommand::extend_command(const MakeEnvCommand & cmd)
 {
     MakeEnvCommand result(cmd
+            ("A", install_params.get<ecipk_a>())
             ("USE", install_params.get<ecipk_use>())
             ("USE_EXPAND", install_params.get<ecipk_use_expand>())
             ("ROOT", install_params.get<ecipk_root>())

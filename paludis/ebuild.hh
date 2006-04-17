@@ -153,6 +153,7 @@ namespace paludis
 
     enum EbuildInstallCommandParamsKeys
     {
+        ecipk_a,
         ecipk_use,
         ecipk_use_expand,
         ecipk_root,
@@ -167,6 +168,7 @@ namespace paludis
     struct EbuildInstallCommandParamsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<EbuildInstallCommandParamsKeys, last_ecipk>,
+        SmartRecordKey<ecipk_a, std::string>,
         SmartRecordKey<ecipk_use, std::string>,
         SmartRecordKey<ecipk_use_expand, std::string>,
         SmartRecordKey<ecipk_root, std::string>,
