@@ -77,7 +77,8 @@ PackageDepAtom::PackageDepAtom(const QualifiedPackageName & package) :
     _version_operator("="),
     _version_spec(0),
     _slot(0),
-    _repository(0)
+    _repository(0),
+    _tag(0)
 {
 }
 
@@ -87,7 +88,8 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
     _version_operator("="),
     _version_spec(0),
     _slot(0),
-    _repository(0)
+    _repository(0),
+    _tag(0)
 {
     Context context("When parsing package dep atom '" + ss + "':");
 

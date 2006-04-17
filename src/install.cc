@@ -21,6 +21,7 @@
 #include "src/install.hh"
 #include <iostream>
 #include <paludis/paludis.hh>
+#include <paludis/util/iterator.hh>
 
 /** \file
  * Handle the --install action for the main paludis program.
@@ -88,6 +89,16 @@ namespace
             throw InternalError(PALUDIS_HERE, "todo: encountered BlockDepAtom in licence?"); /// \bug todo
         }
         ///}
+    };
+
+    struct TagDisplayer :
+        p::DepTagVisitorTypes::ConstVisitor
+    {
+        void visit(const GLSADepTag * const tag)
+        {
+            cout << "* " << colour(cl_yellow, tag->short_text()) << ": "
+                << tag->glsa_title() << endl;
+        }
     };
 }
 
@@ -178,6 +189,8 @@ do_install()
     {
         dep_list.add(targets);
 
+        std::set<p::DepTag::ConstPointer, p::DepTag::Comparator> all_tags;
+
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
         {
@@ -243,10 +256,22 @@ do_install()
                     cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));
             }
 
-            /* display tag */
+            /* display tag, add tag to our post display list */
             if (! dep->get<p::dle_tag>().empty())
-                cout << " " << colour(cl_tag, "<" + p::join(dep->get<p::dle_tag>().begin(),
-                            dep->get<p::dle_tag>().end(), ",") + ">");
+            {
+                std::string tag_titles;
+                for (std::set<DepTag::ConstPointer, DepTag::Comparator>::const_iterator
+                        tag(dep->get<p::dle_tag>().begin()),
+                        tag_end(dep->get<p::dle_tag>().end()) ;
+                        tag != tag_end ; ++tag)
+                {
+                    all_tags.insert(*tag);
+                    tag_titles.append((*tag)->short_text());
+                    tag_titles.append(",");
+                }
+                tag_titles.erase(tag_titles.length() - 1);
+                cout << " " << colour(cl_tag, "<" + tag_titles + ">");
+            }
 
             cout << endl;
         }
@@ -257,7 +282,46 @@ do_install()
             (max_count == 1 ? " package" : " packages") << endl << endl;
 
         if (CommandLine::get_instance()->a_pretend.specified())
+        {
+            if (all_tags.empty())
+                return return_code;
+
+            TagDisplayer tag_displayer;
+
+            std::set<std::string> tag_categories;
+            std::transform(
+                    p::indirect_iterator<const DepTag>(all_tags.begin()),
+                    p::indirect_iterator<const DepTag>(all_tags.end()),
+                    std::inserter(tag_categories, tag_categories.begin()),
+                    std::mem_fun_ref(&DepTag::category));
+
+            for (std::set<std::string>::iterator cat(tag_categories.begin()),
+                    cat_end(tag_categories.end()) ; cat != cat_end ; ++cat)
+            {
+                p::DepTagCategory::ConstPointer c(p::DepTagCategoryMaker::get_instance()->
+                        find_maker(*cat)());
+
+                if (! c->title().empty())
+                    cout << colour(cl_heading, c->title()) << endl << endl;
+                if (! c->pre_text().empty())
+                    cout << c->pre_text() << endl << endl;
+
+                for (std::set<p::DepTag::ConstPointer, p::DepTag::Comparator>::const_iterator
+                        t(all_tags.begin()), t_end(all_tags.end()) ;
+                        t != t_end ; ++t)
+                {
+                    if ((*t)->category() != *cat)
+                        continue;
+                    (*t)->accept(&tag_displayer);
+                }
+                cout << endl;
+
+                if (! c->post_text().empty())
+                    cout << c->post_text() << endl << endl;
+            }
+
             return return_code;
+        }
 
         p::InstallOptions opts(false, false);
         if (CommandLine::get_instance()->a_no_config_protection.specified())

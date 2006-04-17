@@ -352,7 +352,6 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
 
             Context context_line("When parsing line '" + *line + "':");
             PackageDepAtom::Pointer atom(new PackageDepAtom(line->substr(1)));
-            atom->set_tag("system");
             system_packages->add_child(atom);
         }
     }
@@ -1283,7 +1282,10 @@ PortageRepository::do_security_set() const
     {
         Context c("When parsing security advisory '" + stringify(*f) + "':");
         AdvisoryFile advisory(*f);
-        std::string advisory_tag = "GLSA " + advisory.get("Id");
+
+        GLSADepTag::Pointer advisory_tag(new GLSADepTag(advisory.get("Id"),
+                    advisory.get("Title")));
+
         bool is_affected = false;
 
         std::list<std::string> a_list, u_list;

@@ -28,6 +28,7 @@
 #include <ostream>
 #include <set>
 #include <paludis/dep_atom.hh>
+#include <paludis/dep_tag.hh>
 #include <paludis/name.hh>
 #include <paludis/qa/environment.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -76,7 +77,7 @@ namespace paludis
         SmartRecordKey<dle_metadata, VersionMetadata::ConstPointer>,
         SmartRecordKey<dle_repository, RepositoryName>,
         SmartRecordKey<dle_flags, DepListEntryFlags>,
-        SmartRecordKey<dle_tag, std::set<std::string> >
+        SmartRecordKey<dle_tag, std::set<DepTag::ConstPointer, DepTag::Comparator> >
     {
     };
 

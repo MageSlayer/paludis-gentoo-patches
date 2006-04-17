@@ -576,7 +576,6 @@ VDBRepository::do_package_set(const std::string & s) const
                 p_end(_imp->entries.end()) ; p != p_end ; ++p)
         {
             PackageDepAtom::Pointer atom(new PackageDepAtom(p->name));
-            atom->set_tag("everything");
             result->add_child(atom);
         }
 
@@ -594,7 +593,6 @@ VDBRepository::do_package_set(const std::string & s) const
                     line != line_end ; ++line)
             {
                 PackageDepAtom::Pointer atom(new PackageDepAtom(QualifiedPackageName(*line)));
-                atom->set_tag("world");
                 result->add_child(atom);
             }
         }

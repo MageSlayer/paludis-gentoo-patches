@@ -361,12 +361,8 @@ DepList::visit(const PackageDepAtom * const p)
                     throw CircularDependencyError(i, next(i));
             }
 
-            if (! p->tag().empty())
-            {
-                std::set<std::string> new_tags(i->get<dle_tag>());
-                new_tags.insert(p->tag());
-                i->set<dle_tag>(new_tags);
-            }
+            if (p->tag())
+                i->get<dle_tag>().insert(p->tag());
             return;
         }
     }
@@ -405,8 +401,8 @@ DepList::visit(const PackageDepAtom * const p)
     }
 
     std::list<DepListEntry>::iterator merge_entry;
-    std::set<std::string> tags;
-    if (! p->tag().empty())
+    std::set<DepTag::ConstPointer, DepTag::Comparator> tags;
+    if (p->tag())
         tags.insert(p->tag());
     if (! match)
     {
@@ -475,7 +471,7 @@ DepList::visit(const PackageDepAtom * const p)
             _imp->merge_list.insert(next(merge_entry),
                     DepListEntry(pp.package(), merge_entry->get<dle_version>(),
                         p_metadata, merge_entry->get<dle_repository>(), flags,
-                        std::set<std::string>()));
+                        std::set<DepTag::ConstPointer, DepTag::Comparator>()));
         }
     }
 

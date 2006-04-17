@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH 1
 
 #include <list>
+#include <paludis/dep_tag.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/composite_pattern.hh>
@@ -235,7 +236,7 @@ namespace paludis
             CountedPtr<VersionSpec, count_policy::ExternalCountTag> _version_spec;
             CountedPtr<SlotName, count_policy::ExternalCountTag> _slot;
             CountedPtr<RepositoryName, count_policy::ExternalCountTag> _repository;
-            std::string _tag;
+            DepTag::ConstPointer _tag;
 
         public:
             /**
@@ -300,7 +301,7 @@ namespace paludis
             /**
              * Fetch our tag.
              */
-            const std::string & tag() const
+            DepTag::ConstPointer tag() const
             {
                 return _tag;
             }
@@ -308,7 +309,7 @@ namespace paludis
             /**
              * Set our tag.
              */
-            void set_tag(const std::string & s)
+            void set_tag(const DepTag::ConstPointer & s)
             {
                 _tag = s;
             }
