@@ -1081,6 +1081,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         if (q.get<qpn_category>() == CategoryNamePart("virtual"))
         {
             VersionMetadata::Pointer m(new VersionMetadata);
+            m->set(vmk_slot, "0");
             m->set(vmk_virtual, " ");
             metadata = m;
         }
