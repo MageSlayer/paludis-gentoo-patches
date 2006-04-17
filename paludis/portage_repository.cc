@@ -1268,7 +1268,7 @@ PortageRepository::do_security_set() const
 
     FSEntry security = _imp->location / "metadata" / "security";
     if (!security.is_directory())
-        return DepAtom::Pointer(0);
+        return DepAtom::Pointer(new AllDepAtom);
 
     std::list<FSEntry> advisories;
     std::copy(DirIterator(_imp->location / "metadata" / "security"), DirIterator(),

@@ -315,7 +315,7 @@ namespace paludis
      * the beginning of a multi-line description of the security problem.
      *
      * Valid header items are:
-     *  Affected, Bug-Url, Commited-By, Id, Reviewed-By, Unaffected, Url
+     *  Affected, Bug-Url, Committed-By, Id, Reviewed-By, Unaffected, Url
      *
      * \ingroup ConfigFile
      */

@@ -410,8 +410,8 @@ AdvisoryFile::sanitise()
     if (_entries["Title"].empty())
             throw AdvisoryFileError("Missing mandatory key: 'Title'.");
 
-    if (_entries["Commited-By"].empty())
-            throw AdvisoryFileError("Missing mandatory key: 'Commited-By'.");
+    if (_entries["Committed-By"].empty())
+            throw AdvisoryFileError("Missing mandatory key: 'Committed-By'.");
 
     if (_entries["Reviewed-By"].empty())
             throw AdvisoryFileError("Missing mandatory key: 'Reviewed-by'.");
