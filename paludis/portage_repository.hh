@@ -79,6 +79,7 @@ namespace paludis
             void need_category_names() const;
             void need_version_names(const QualifiedPackageName &) const;
             void need_virtual_names() const;
+            DepAtom::Pointer do_security_set() const;
 
         protected:
             /**

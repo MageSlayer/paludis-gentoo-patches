@@ -47,7 +47,7 @@ enum DepParserState
     dps_had_use_flag_space
 };
 
-CompositeDepAtom::ConstPointer
+CompositeDepAtom::Pointer
 DepParser::parse(const std::string & s, const DepParserPolicyInterface * const policy)
 {
     Context context("When parsing dependency string '" + s + "':");

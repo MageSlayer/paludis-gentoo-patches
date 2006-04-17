@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
+ * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -269,3 +270,101 @@ KeyValueConfigFile::strip_quotes(const std::string & s) const
         return s;
 }
 
+AdvisoryFileError::AdvisoryFileError(const std::string & msg,
+        const std::string & filename) throw () :
+    ConfigurationError("Advisory file error" +
+            (filename.empty() ? ": " : "in file '" + filename + "': ") + msg)
+{
+}
+
+AdvisoryFile::AdvisoryFile(std::istream * const s) :
+    ConfigFile(s),
+    _end_of_header(false)
+{
+    need_lines();
+    sanitise();
+}
+
+AdvisoryFile::AdvisoryFile(const std::string & filename) :
+    ConfigFile(filename),
+    _end_of_header(false)
+{
+    need_lines();
+    sanitise();
+}
+
+AdvisoryFile::AdvisoryFile(std::istream * const s,
+        const std::map<std::string, std::string> & m) :
+    ConfigFile(s),
+    _entries(m.begin(), m.end()),
+    _end_of_header(false)
+{
+    _end_of_header = false;
+    need_lines();
+    sanitise();
+}
+
+AdvisoryFile::AdvisoryFile(const std::string & filename,
+        const std::map<std::string, std::string> & m) :
+    ConfigFile(filename),
+    _entries(m.begin(), m.end()),
+    _end_of_header(false)
+{
+    need_lines();
+    sanitise();
+}
+
+AdvisoryFile::~AdvisoryFile()
+{
+}
+
+void
+AdvisoryFile::accept_line(const std::string & line) const
+{
+    std::string::size_type p(line.find(':'));
+
+    if ((std::string::npos == p) || (_end_of_header))
+    {
+        _entries["Description"] += line + "\n";
+        _end_of_header = true;
+    }
+    else
+    {
+        std::string key(line.substr(0, p)), value(line.substr(p + 1));
+        normalise_line(key);
+        normalise_line(value);
+        if ((key == "Affected") || (key == "Unaffected") || (key == "Bug-Id") || (key == "Url")
+            || (key == "Reviewed-By"))
+        {
+            if (!_entries[key].empty())
+                value = "\n" + value;
+            _entries[key] += value;
+        }
+        else
+        {
+            if (_entries[key].empty())
+                _entries[key] = value;
+            else
+                throw ConfigFileError("When adding value for key '" + key + "': Duplicate key found.");
+        }
+    }
+}
+
+void
+AdvisoryFile::sanitise()
+{
+    if (_entries["Id"].empty())
+        throw AdvisoryFileError("Missing mandatory key: 'Id'.");
+
+    if (_entries["Title"].empty())
+            throw AdvisoryFileError("Missing mandatory key: 'Title'.");
+
+    if (_entries["Commited-By"].empty())
+            throw AdvisoryFileError("Missing mandatory key: 'Commited-By'.");
+
+    if (_entries["Reviewed-By"].empty())
+            throw AdvisoryFileError("Missing mandatory key: 'Reviewed-by'.");
+
+    if ((_entries["Affected"].size() + _entries["Unaffected"].size()) == 0)
+            throw AdvisoryFileError("Missing either 'Affected' or 'Unaffected' key.");
+}

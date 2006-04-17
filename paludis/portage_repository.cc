@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
+ * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -1298,6 +1299,62 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 }
 
 DepAtom::Pointer
+PortageRepository::do_security_set() const
+{
+    Context c("When building security package set:");
+    AllDepAtom::Pointer security_packages(new AllDepAtom);
+
+    FSEntry security = _imp->location / "metadata" / "security";
+    if (!security.is_directory())
+        return DepAtom::Pointer(0);
+
+    std::list<FSEntry> advisories;
+    std::copy(DirIterator(_imp->location / "metadata" / "security"), DirIterator(),
+        filter_inserter(std::back_inserter(advisories),
+        IsFileWithExtension("advisory-", ".conf")));
+    
+    std::list<FSEntry>::const_iterator f(advisories.begin()),
+        f_end(advisories.end());
+
+    for ( ; f != f_end; ++f)
+    {
+        Context c("When parsing security advisory '" + stringify(*f) + "':");
+        AdvisoryFile advisory(*f);
+        std::string advisory_tag = "GLSA " + advisory.get("Id");
+        bool is_affected = false;
+
+        std::list<std::string> a_list, u_list;
+        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser("\n");
+        tokeniser.tokenise(advisory.get("Affected"), std::back_inserter(a_list));
+        tokeniser.tokenise(advisory.get("Unaffected"), std::back_inserter(u_list));
+        if (a_list.size() != u_list.size())
+            throw AdvisoryFileError("Number of affected packages does not match number of unaffected packages.");
+
+        std::list<std::string>::const_iterator a(a_list.begin()), a_end(a_list.end());
+        std::list<std::string>::const_iterator u(u_list.begin()), u_end(u_list.end());
+        while ((a != a_end) && (u != u_end))
+        {
+            PackageDepAtom::Pointer affected(new PackageDepAtom(*a)),
+                unaffected(new PackageDepAtom(*u));
+            ++a; ++u;
+            
+            if (affected->package() != unaffected->package())
+                throw AdvisoryFileError("Affected and unaffected items are out of sync.");
+
+            if ((_imp->db->query(affected, is_installed_only))->empty())
+                continue;
+            
+            is_affected = true;
+            unaffected->set_tag(advisory_tag);
+            security_packages->add_child(unaffected);
+        }
+        
+    }
+
+    return security_packages;
+}
+
+DepAtom::Pointer
 PortageRepository::do_package_set(const std::string & s) const
 {
     if ("system" == s)
@@ -1310,6 +1367,10 @@ PortageRepository::do_package_set(const std::string & s) const
         }
 
         return _imp->system_packages;
+    }
+    else if ("security" == s)
+    {
+        return do_security_set();
     }
     else
         return DepAtom::Pointer(0);

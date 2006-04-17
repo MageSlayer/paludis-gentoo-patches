@@ -267,6 +267,104 @@ namespace paludis
                 return _entries[key];
             }
     };
+
+    /**
+     * An AdvisoryFileError is thrown if bad data is encountered in
+     * a ConfigFile.
+     *
+     * \ingroup ConfigFile
+     * \ingroup Exception
+     */
+    class AdvisoryFileError : public ConfigurationError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            AdvisoryFileError(const std::string & message,
+                    const std::string & filename = "") throw ();
+    };
+
+    /**
+     * An AdvisoryFile is a file containing all necessary information to
+     * update one or more packages in order to avoid a security problem.
+     *
+     * It uses a textformat with RFC 822 style headers, an empty line denotes
+     * the beginning of a multi-line description of the security problem.
+     *
+     * Valid header items are:
+     *  Affected, Bug-Url, Commited-By, Id, Reviewed-By, Unaffected, Url
+     *
+     * \ingroup ConfigFile
+     */
+
+    class AdvisoryFile : protected ConfigFile
+    {
+        private:
+            mutable std::map<std::string, std::string> _entries;
+            mutable bool _end_of_header;
+        protected:
+            void accept_line(const std::string &) const;
+            void sanitise();
+
+        public:
+            /**
+             * Constructor, from a stream.
+             */
+            AdvisoryFile(std::istream * const);
+
+            /**
+             * Constructor, from a filename.
+             */
+            AdvisoryFile(const std::string & filename);
+
+            /**
+             * Constructor, from a stream, with defaults.
+             */
+            AdvisoryFile(std::istream * const,
+                    const std::map<std::string, std::string> &);
+
+            /**
+             * Constructor, from a filename, with defaults.
+             */
+            AdvisoryFile(const std::string & filename,
+                    const std::map<std::string, std::string> &);
+
+            /**
+             * Destructor.
+             */
+            ~AdvisoryFile();
+
+            /**
+             * Iterator over our lines.
+             */
+            typedef std::map<std::string, std::string>::const_iterator Iterator;
+
+            /**
+             * Iterator to the start of our lines.
+             */
+            Iterator begin() const
+            {
+                return _entries.begin();
+            }
+
+            /**
+             * Iterator to past the end of our lines.
+             */
+            Iterator end() const
+            {
+                return _entries.end();
+            }
+
+            /**
+             * Fetch the specified key, or a blank string.
+             */
+            std::string get(const std::string & key) const
+            {
+                return _entries[key];
+            }
+    };
+
 }
 
 #endif

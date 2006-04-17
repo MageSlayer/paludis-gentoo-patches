@@ -149,7 +149,7 @@ namespace paludis
              * Parse a given dependency string, and return an appropriate
              * DepAtom tree.
              */
-            static CompositeDepAtom::ConstPointer parse(const std::string & s,
+            static CompositeDepAtom::Pointer parse(const std::string & s,
                     const DepParserPolicyInterface * const policy = DefaultPolicy::get_instance());
     };
 }
