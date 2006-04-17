@@ -163,7 +163,7 @@ LineConfigFile::accept_line(const std::string & s) const
 KeyValueConfigFileError::KeyValueConfigFileError(const std::string & msg,
         const std::string & filename) throw () :
     ConfigurationError("Key/Value config file error" +
-            (filename.empty() ? ": " : "in file '" + filename + "': ") + msg)
+            (filename.empty() ? ": " : " in file '" + filename + "': ") + msg)
 {
 }
 
