@@ -1275,7 +1275,7 @@ PortageRepository::do_security_set() const
     std::copy(DirIterator(_imp->location / "metadata" / "security"), DirIterator(),
         filter_inserter(std::back_inserter(advisories),
         IsFileWithExtension("advisory-", ".conf")));
-    
+
     std::list<FSEntry>::const_iterator f(advisories.begin()),
         f_end(advisories.end());
 
@@ -1300,18 +1300,18 @@ PortageRepository::do_security_set() const
             PackageDepAtom::Pointer affected(new PackageDepAtom(*a)),
                 unaffected(new PackageDepAtom(*u));
             ++a; ++u;
-            
+
             if (affected->package() != unaffected->package())
                 throw AdvisoryFileError("Affected and unaffected items are out of sync.");
 
             if ((_imp->db->query(affected, is_installed_only))->empty())
                 continue;
-            
+
             is_affected = true;
             unaffected->set_tag(advisory_tag);
             security_packages->add_child(unaffected);
         }
-        
+
     }
 
     return security_packages;
