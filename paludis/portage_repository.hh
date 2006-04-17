@@ -60,7 +60,7 @@ namespace paludis
         SmartRecordKey<prpk_cache, const FSEntry>,
         SmartRecordKey<prpk_distdir, const FSEntry>,
         SmartRecordKey<prpk_eclassdir, const FSEntry>,
-        SmartRecordKey<prpk_sync, const FSEntry>,
+        SmartRecordKey<prpk_sync, const std::string>,
         SmartRecordKey<prpk_sync_exclude, const std::string>,
         SmartRecordKey<prpk_root, const FSEntry>
     {
