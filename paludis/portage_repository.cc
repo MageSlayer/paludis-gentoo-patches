@@ -23,6 +23,7 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/dep_parser.hh>
+#include <paludis/ebuild.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
@@ -768,63 +769,22 @@ PortageRepository::do_version_metadata(
             Log::get_instance()->message(ll_warning, "No usable cache entry for '" + stringify(c) + "/" +
                     stringify(p) + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
 
-        std::string actions("metadata");
-        std::string cmd(make_env_command(
-                    getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
-                    "/ebuild.bash '" +
-                    stringify(_imp->location) + "/" +
-                    stringify(c) + "/" +
-                    stringify(p) + "/" +
-                    stringify(p) + "-" + stringify(v) + ".ebuild' " + actions)
-                ("P", stringify(p) + "-" + stringify(v.remove_revision()))
-                ("PV", stringify(v.remove_revision()))
-                ("PR", v.revision_only())
-                ("PN", stringify(p))
-                ("PVR", stringify(v.remove_revision()) + "-" + v.revision_only())
-                ("PF", stringify(p) + "-" + stringify(v))
-                ("CATEGORY", stringify(c))
-                ("FILESDIR", stringify(_imp->location) + "/" + stringify(c) + "/" +
-                    stringify(p) + "/files/")
-                ("ECLASSDIR", stringify(_imp->eclassdir))
-                ("PORTDIR", stringify(_imp->location) + "/")
-                ("DISTDIR", stringify(_imp->distdir))
-                ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
-                ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
-                ("PALUDIS_COMMAND", _imp->env->paludis_command())
-                ("KV", kernel_version())
-                ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
-                ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
+        PackageDatabaseEntry e(QualifiedPackageName(c, p), v, name());
+        EbuildMetadataCommand cmd(EbuildCommandParams::create((
+                        param<ecpk_environment>(_imp->env),
+                        param<ecpk_db_entry>(&e),
+                        param<ecpk_ebuild_dir>(_imp->location / stringify(c) / stringify(p)),
+                        param<ecpk_files_dir>(_imp->location / stringify(c) / stringify(p) / "files"),
+                        param<ecpk_eclass_dir>(_imp->eclassdir),
+                        param<ecpk_portdir>(_imp->location),
+                        param<ecpk_distdir>(_imp->distdir)
+                        )));
+        if (! cmd())
+            Log::get_instance()->message(ll_warning, "No usable metadata for '" + stringify(c) + "/" +
+                    stringify(p) + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
 
-
-        PStream prog(cmd);
-        KeyValueConfigFile f(&prog);
-
-        result->set(vmk_depend,      f.get("DEPEND"));
-        result->set(vmk_rdepend,     f.get("RDEPEND"));
-        result->set(vmk_slot,        f.get("SLOT"));
-        result->set(vmk_src_uri,     f.get("SRC_URI"));
-        result->set(vmk_restrict,    f.get("RESTRICT"));
-        result->set(vmk_homepage,    f.get("HOMEPAGE"));
-        result->set(vmk_license,     f.get("LICENSE"));
-        result->set(vmk_description, f.get("DESCRIPTION"));
-        result->set(vmk_keywords,    f.get("KEYWORDS"));
-        result->set(vmk_inherited,   f.get("INHERITED"));
-        result->set(vmk_iuse,        f.get("IUSE"));
-        result->set(vmk_pdepend,     f.get("PDEPEND"));
-        result->set(vmk_provide,     f.get("PROVIDE"));
-        result->set(vmk_eapi,        f.get("EAPI"));
-        result->set(vmk_virtual, "");
-        result->set(vmk_e_keywords,  f.get("E_KEYWORDS"));
-
-        if (prog.exit_status())
-        {
-            Log::get_instance()->message(ll_warning, "Could not generate cache for '"
-                    + stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '"
-                    + stringify(name()) + "'");
-            result->set(vmk_eapi, "UNKNOWN");
-        }
-        else
-            ok = true;
+        if (0 == ((result = cmd.metadata())))
+            throw InternalError(PALUDIS_HERE, "cmd.metadata() is zero pointer???");
     }
 
     _imp->metadata.insert(std::make_pair(std::make_pair(QualifiedPackageName(c, p), v), result));
@@ -1103,7 +1063,8 @@ PortageRepository::do_is_mirror(const std::string & s) const
 }
 
 void
-PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v, const InstallOptions & o) const
+PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v,
+        const InstallOptions & o) const
 {
     if (! _imp->has_profile)
     {
@@ -1197,20 +1158,6 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         }
     }
 
-    std::string actions;
-    if (o.get<io_fetchonly>())
-    {
-        if (metadata->get(vmk_virtual).empty())
-            actions = "fetch";
-        else
-            actions = "";
-    }
-    else if (metadata->get(vmk_virtual).empty())
-        actions = "init fetch setup unpack compile test install strip preinst "
-            "merge postinst updateenv tidyup";
-    else
-        actions = "merge";
-
     std::string use;
     VersionMetadata::IuseIterator iuse_it=metadata->begin_iuse(), iuse_end=metadata->end_iuse();
     for ( ; iuse_it != iuse_end; ++iuse_it)
@@ -1242,41 +1189,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             use += stringify(*uu) + " ";
     }
 
-    MakeEnvCommand cmd(make_env_command(
-                getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
-                "/ebuild.bash '" +
-                stringify(_imp->location) + "/" +
-                stringify(q.get<qpn_category>()) + "/" +
-                stringify(q.get<qpn_package>()) + "/" +
-                stringify(q.get<qpn_package>()) + "-" + stringify(v) + ".ebuild' " + actions)
-            ("P", stringify(q.get<qpn_package>()) + "-" + stringify(v.remove_revision()))
-            ("PV", stringify(v.remove_revision()))
-            ("PR", v.revision_only())
-            ("PN", stringify(q.get<qpn_package>()))
-            ("PVR", stringify(v.remove_revision()) + "-" + v.revision_only())
-            ("PF", stringify(q.get<qpn_package>()) + "-" + stringify(v))
-            ("SLOT", metadata->get(vmk_slot))
-            ("A", archives)
-            ("USE", use)
-            ("USE_EXPAND", join(_imp->expand_list.begin(), _imp->expand_list.end(), " "))
-            ("FLAT_SRC_URI", flat_src_uri)
-            ("CATEGORY", stringify(q.get<qpn_category>()))
-            ("FILESDIR", stringify(_imp->location) + "/" + stringify(q.get<qpn_category>()) + "/" +
-                stringify(q.get<qpn_package>()) + "/files/")
-            ("ECLASSDIR", stringify(_imp->eclassdir))
-            ("PORTDIR", stringify(_imp->location) + "/")
-            ("DISTDIR", stringify(_imp->distdir))
-            ("ROOT", stringify(_imp->root) + "/")
-            ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
-            ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
-            ("PALUDIS_PROFILE_DIR", stringify(_imp->profile))
-            ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
-            ("PALUDIS_COMMAND", _imp->env->paludis_command())
-            ("KV", kernel_version())
-            ("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK", o.get<io_noconfigprotect>() ? "/" : "")
-            ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
-            ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
-
+    std::map<std::string, std::string> expand_vars;
     for (UseFlagSet::const_iterator u(_imp->expand_list.begin()),
             u_end(_imp->expand_list.end()) ; u != u_end ; ++u)
     {
@@ -1290,12 +1203,62 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         for (UseFlagNameCollection::Iterator xx(x->begin()), xx_end(x->end()) ;
                 xx != xx_end ; ++xx)
             value.append(stringify(*xx).erase(0, stringify(*u).length() + 1) + " ");
-        cmd = cmd(stringify(*u), value);
+
+        expand_vars.insert(std::make_pair(stringify(*u), value));
     }
 
-    if (0 != run_command(cmd))
-        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "'");
+    EbuildFetchCommand fetch_cmd(EbuildCommandParams::create((
+                    param<ecpk_environment>(_imp->env),
+                    param<ecpk_db_entry>(&e),
+                    param<ecpk_ebuild_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        stringify(q.get<qpn_package>())),
+                    param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        stringify(q.get<qpn_package>()) / "files"),
+                    param<ecpk_eclass_dir>(_imp->eclassdir),
+                    param<ecpk_portdir>(_imp->location),
+                    param<ecpk_distdir>(_imp->distdir)
+                    )),
+            EbuildFetchCommandParams::create((
+                    param<ecfpk_a>(archives),
+                    param<ecfpk_use>(use),
+                    param<ecfpk_use_expand>(join(_imp->expand_list.begin(),
+                            _imp->expand_list.end(), " ")),
+                    param<ecfpk_expand_vars>(expand_vars),
+                    param<ecfpk_flat_src_uri>(flat_src_uri),
+                    param<ecfpk_root>(stringify(_imp->root) + "/"),
+                    param<ecfpk_profile>(stringify(_imp->profile))
+                    )));
+
+    if (metadata->get(vmk_virtual).empty())
+        fetch_cmd();
+
+    if (o.get<io_fetchonly>())
+        return;
+
+    EbuildInstallCommand install_cmd(EbuildCommandParams::create((
+                    param<ecpk_environment>(_imp->env),
+                    param<ecpk_db_entry>(&e),
+                    param<ecpk_ebuild_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        stringify(q.get<qpn_package>())),
+                    param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        stringify(q.get<qpn_package>()) / "files"),
+                    param<ecpk_eclass_dir>(_imp->eclassdir),
+                    param<ecpk_portdir>(_imp->location),
+                    param<ecpk_distdir>(_imp->distdir)
+                    )),
+            EbuildInstallCommandParams::create((
+                    param<ecipk_use>(use),
+                    param<ecipk_use_expand>(join(_imp->expand_list.begin(),
+                            _imp->expand_list.end(), " ")),
+                    param<ecipk_expand_vars>(expand_vars),
+                    param<ecipk_root>(stringify(_imp->root) + "/"),
+                    param<ecipk_profile>(stringify(_imp->profile)),
+                    param<ecipk_disable_cfgpro>(o.get<io_noconfigprotect>()),
+                    param<ecipk_merge_only>(! metadata->get(vmk_virtual).empty()),
+                    param<ecipk_slot>(SlotName(metadata->get(vmk_slot)))
+                    )));
+
+    install_cmd();
 }
 
 DepAtom::Pointer

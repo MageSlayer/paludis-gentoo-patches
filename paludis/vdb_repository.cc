@@ -20,6 +20,7 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/dep_parser.hh>
+#include <paludis/ebuild.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
@@ -535,42 +536,27 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
         metadata = version_metadata(q, v);
 
     PackageDatabaseEntry e(q, v, name());
-    std::string actions;
-    if (metadata->get(vmk_virtual).empty())
-        actions = "prerm unmerge postrm";
-    else
-        actions = "unmerge";
 
-    std::string cmd(make_env_command(
-                getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
-                "/ebuild.bash '" +
-                stringify(_imp->location) + "/" +
-                stringify(q.get<qpn_category>()) + "/" +
-                stringify(q.get<qpn_package>()) + "-" + stringify(v) + "/" +
-                stringify(q.get<qpn_package>()) + "-" + stringify(v) + ".ebuild' " + actions)
-            ("P", stringify(q.get<qpn_package>()) + "-" + stringify(v.remove_revision()))
-            ("PV", stringify(v.remove_revision()))
-            ("PR", v.revision_only())
-            ("PN", stringify(q.get<qpn_package>()))
-            ("PVR", stringify(v.remove_revision()) + "-" + v.revision_only())
-            ("PF", stringify(q.get<qpn_package>()) + "-" + stringify(v))
-            ("CATEGORY", stringify(q.get<qpn_category>()))
-            ("ECLASSDIR", stringify(_imp->location) + "/" +
-                stringify(q.get<qpn_category>()) + "/" +
-                stringify(q.get<qpn_package>()) + "-" + stringify(v) + "/")
-            ("ROOT", stringify(_imp->root) + "/")
-            ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
-            ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
-            ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
-            ("PALUDIS_COMMAND", _imp->env->paludis_command())
-            ("KV", kernel_version())
-            ("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK", o.get<io_noconfigprotect>() ? "/" : "")
-            ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
-            ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
+    EbuildUninstallCommand uninstall_cmd(EbuildCommandParams::create((
+                    param<ecpk_environment>(_imp->env),
+                    param<ecpk_db_entry>(&e),
+                    param<ecpk_ebuild_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
+                    param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
+                    param<ecpk_eclass_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
+                    param<ecpk_portdir>(_imp->location),
+                    param<ecpk_distdir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        (stringify(q.get<qpn_package>()) + "-" + stringify(v)))
+                    )),
+            EbuildUninstallCommandParams::create((
+                    param<ecupk_root>(stringify(_imp->root) + "/"),
+                    param<ecupk_disable_cfgpro>(o.get<io_noconfigprotect>()),
+                    param<ecupk_unmerge_only>(! metadata->get(vmk_virtual).empty())
+                    )));
 
-    if (0 != run_command(cmd))
-        throw PackageInstallActionError("Couldn't uninstall '" + stringify(q) + "-" +
-                stringify(v) + "'");
+    uninstall_cmd();
 }
 
 DepAtom::Pointer

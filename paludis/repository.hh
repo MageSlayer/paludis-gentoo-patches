@@ -504,6 +504,17 @@ namespace paludis
     };
 
     /**
+     * Thrown if a fetch fails.
+     *
+     * \ingroup Exception.
+     */
+    class PackageFetchActionError : public PackageActionError
+    {
+        public:
+            PackageFetchActionError(const std::string & msg) throw ();
+    };
+
+    /**
      * Thrown if an uninstall fails.
      *
      * \ingroup Exception.

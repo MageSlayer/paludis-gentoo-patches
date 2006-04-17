@@ -51,6 +51,11 @@ PackageInstallActionError::PackageInstallActionError(const std::string & msg) th
 {
 }
 
+PackageFetchActionError::PackageFetchActionError(const std::string & msg) throw () :
+    PackageActionError("Fetch error: " + msg)
+{
+}
+
 PackageUninstallActionError::PackageUninstallActionError(const std::string & msg) throw () :
     PackageActionError("Uninstall error: " + msg)
 {
