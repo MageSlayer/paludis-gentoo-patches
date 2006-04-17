@@ -76,11 +76,6 @@ FSEntry::operator= (const FSEntry & other)
     return *this;
 }
 
-FSEntry::operator std::string() const
-{
-    return _path;
-}
-
 FSEntry
 FSEntry::operator/ (const FSEntry & rhs) const
 {
@@ -301,7 +296,7 @@ FSEntry::cwd()
 std::ostream &
 paludis::operator<< (std::ostream & s, const FSEntry & f)
 {
-    s << std::string(f);
+    s << f._path;
     return s;
 }
 

@@ -382,14 +382,14 @@ Implementation<PortageRepository>::invalidate() const
 }
 
 PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
-    Repository(PortageRepository::fetch_repo_name(p.get<prpk_location>())),
+    Repository(PortageRepository::fetch_repo_name(stringify(p.get<prpk_location>()))),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(p))
 {
-    _info.insert(std::make_pair(std::string("location"), _imp->location));
-    _info.insert(std::make_pair(std::string("profile"), _imp->profile));
-    _info.insert(std::make_pair(std::string("cache"), _imp->cache));
-    _info.insert(std::make_pair(std::string("eclassdir"), _imp->eclassdir));
-    _info.insert(std::make_pair(std::string("distdir"), _imp->distdir));
+    _info.insert(std::make_pair(std::string("location"), stringify(_imp->location)));
+    _info.insert(std::make_pair(std::string("profile"), stringify(_imp->profile)));
+    _info.insert(std::make_pair(std::string("cache"), stringify(_imp->cache)));
+    _info.insert(std::make_pair(std::string("eclassdir"), stringify(_imp->eclassdir)));
+    _info.insert(std::make_pair(std::string("distdir"), stringify(_imp->distdir)));
     _info.insert(std::make_pair(std::string("format"), std::string("portage")));
     _info.insert(std::make_pair(std::string("root"), stringify(_imp->root)));
     if (! _imp->sync.empty())
@@ -696,7 +696,7 @@ PortageRepository::do_version_metadata(
     VirtualsMap::iterator vi(_imp->virtuals_map.end());
     if (cache_file.is_regular_file())
     {
-        std::ifstream cache(std::string(cache_file).c_str());
+        std::ifstream cache(stringify(cache_file).c_str());
         std::string line;
 
         if (cache)
@@ -1269,7 +1269,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             ("ROOT", stringify(_imp->root) + "/")
             ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
             ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
-            ("PALUDIS_PROFILE_DIR", _imp->profile)
+            ("PALUDIS_PROFILE_DIR", stringify(_imp->profile))
             ("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
             ("PALUDIS_COMMAND", _imp->env->paludis_command())
             ("KV", kernel_version())
@@ -1391,7 +1391,7 @@ PortageRepository::do_sync() const
     SyncOptions opts(_imp->sync_exclude);
 
     SyncerMaker::get_instance()->find_maker(_imp->sync.substr(0, std::min(p, q)))(
-            _imp->location, _imp->sync.substr(q < p ? q + 1 : 0))->sync(opts);
+            stringify(_imp->location), _imp->sync.substr(q < p ? q + 1 : 0))->sync(opts);
 
     return true;
 }

@@ -52,6 +52,12 @@ class TestFile : protected ConfigFile
             need_lines();
         }
 
+        TestFile(const FSEntry & filename) :
+            ConfigFile(filename)
+        {
+            need_lines();
+        }
+
         mutable std::vector<std::string> lines;
 
     protected:

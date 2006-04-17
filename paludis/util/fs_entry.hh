@@ -81,6 +81,8 @@ namespace paludis
                         comparison_mode::FullComparisonTag,
                         comparison_method::CompareByMemberTag<std::string> >
     {
+        friend std::ostream & operator<< (std::ostream & s, const FSEntry & f);
+
         private:
             std::string _path;
 
@@ -145,11 +147,6 @@ namespace paludis
             {
                 return operator/= (FSEntry(rhs));
             }
-
-            /**
-             * Fetch a string representation of our path.
-             */
-            operator std::string() const;
 
             /**
              * Does a filesystem entry exist at our location?

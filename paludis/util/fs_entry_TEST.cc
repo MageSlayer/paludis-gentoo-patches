@@ -100,7 +100,7 @@ namespace test_cases
             FSEntry r(f.realpath());
             TEST_CHECK(r.is_regular_file());
             std::string g("fs_entry_TEST_dir/dir_a/file_in_a");
-            TEST_CHECK_EQUAL(std::string(r).substr(std::string(r).length() - g.length()), g);
+            TEST_CHECK_EQUAL(stringify(r).substr(stringify(r).length() - g.length()), g);
         }
     } test_fs_entry_realpath;
 
@@ -199,15 +199,15 @@ namespace test_cases
             FSEntry e("..");
 
             TEST_CHECK(a.basename() == "bar");
-            TEST_CHECK(std::string(a.dirname()) == "/foo");
+            TEST_CHECK(stringify(a.dirname()) == "/foo");
             TEST_CHECK(b.basename() == "cow");
-            TEST_CHECK(std::string(b.dirname()) == "/moo/went/the");
+            TEST_CHECK(stringify(b.dirname()) == "/moo/went/the");
             TEST_CHECK(c.basename() == "/");
-            TEST_CHECK(std::string(c.dirname()) == "/");
+            TEST_CHECK(stringify(c.dirname()) == "/");
             TEST_CHECK(d.basename() == ".");
-            TEST_CHECK(std::string(d.dirname()) == ".");
+            TEST_CHECK(stringify(d.dirname()) == ".");
             TEST_CHECK(e.basename() == "..");
-            TEST_CHECK(std::string(e.dirname()) == "..");
+            TEST_CHECK(stringify(e.dirname()) == "..");
         }
     } test_fs_entry_dir_base_name;
 }

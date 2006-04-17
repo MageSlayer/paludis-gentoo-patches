@@ -24,6 +24,7 @@
 #include <list>
 #include <map>
 #include <paludis/util/exception.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <string>
 
@@ -108,6 +109,11 @@ namespace paludis
             ConfigFile(const std::string & filename);
 
             /**
+             * Constructor, from a file.
+             */
+            ConfigFile(const FSEntry & filename);
+
+            /**
              * Our filename, or blank if unknown.
              */
             std::string filename() const
@@ -146,6 +152,11 @@ namespace paludis
              * Constructor, from a filename.
              */
             LineConfigFile(const std::string & filename);
+
+            /**
+             * Constructor, from a filename.
+             */
+            LineConfigFile(const FSEntry & filename);
 
             /**
              * Iterator over our lines.
@@ -222,6 +233,11 @@ namespace paludis
             KeyValueConfigFile(const std::string & filename);
 
             /**
+             * Constructor, from a filename.
+             */
+            KeyValueConfigFile(const FSEntry & filename);
+
+            /**
              * Constructor, from a stream, with defaults.
              */
             KeyValueConfigFile(std::istream * const,
@@ -231,6 +247,12 @@ namespace paludis
              * Constructor, from a filename, with defaults.
              */
             KeyValueConfigFile(const std::string & filename,
+                    const std::map<std::string, std::string> &);
+
+            /**
+             * Constructor, from a filename, with defaults.
+             */
+            KeyValueConfigFile(const FSEntry & filename,
                     const std::map<std::string, std::string> &);
 
             /**
@@ -319,6 +341,11 @@ namespace paludis
             AdvisoryFile(const std::string & filename);
 
             /**
+             * Constructor, from a filename.
+             */
+            AdvisoryFile(const FSEntry & filename);
+
+            /**
              * Constructor, from a stream, with defaults.
              */
             AdvisoryFile(std::istream * const,
@@ -328,6 +355,12 @@ namespace paludis
              * Constructor, from a filename, with defaults.
              */
             AdvisoryFile(const std::string & filename,
+                    const std::map<std::string, std::string> &);
+
+            /**
+             * Constructor, from a filename, with defaults.
+             */
+            AdvisoryFile(const FSEntry & filename,
                     const std::map<std::string, std::string> &);
 
             /**

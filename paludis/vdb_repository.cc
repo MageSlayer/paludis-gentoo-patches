@@ -291,10 +291,10 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     Repository(RepositoryName("installed")),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(p))
 {
-    _info.insert(std::make_pair(std::string("location"), _imp->location));
-    _info.insert(std::make_pair(std::string("root"), _imp->root));
+    _info.insert(std::make_pair(std::string("location"), stringify(_imp->location)));
+    _info.insert(std::make_pair(std::string("root"), stringify(_imp->root)));
     _info.insert(std::make_pair(std::string("format"), std::string("vdb")));
-    _info.insert(std::make_pair(std::string("world"), _imp->world_file));
+    _info.insert(std::make_pair(std::string("world"), stringify(_imp->world_file)));
 }
 
 VDBRepository::~VDBRepository()

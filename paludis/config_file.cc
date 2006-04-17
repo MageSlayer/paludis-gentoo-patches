@@ -51,6 +51,19 @@ catch (...)
     throw;
 }
 
+ConfigFile::ConfigFile(const FSEntry & filename) try :
+    _stream(_make_stream(stringify(filename))),
+    _has_lines(false),
+    _filename(stringify(filename)),
+    _destroy_stream(true)
+{
+}
+catch (...)
+{
+    _destroy_stream = false;
+    throw;
+}
+
 ConfigFile::~ConfigFile()
 {
     if (_stream && _destroy_stream)
@@ -135,6 +148,12 @@ LineConfigFile::LineConfigFile(const std::string & filename) :
     need_lines();
 }
 
+LineConfigFile::LineConfigFile(const FSEntry & filename) :
+    ConfigFile(filename)
+{
+    need_lines();
+}
+
 void
 LineConfigFile::accept_line(const std::string & s) const
 {
@@ -160,6 +179,12 @@ KeyValueConfigFile::KeyValueConfigFile(const std::string & filename) :
     need_lines();
 }
 
+KeyValueConfigFile::KeyValueConfigFile(const FSEntry & filename) :
+    ConfigFile(filename)
+{
+    need_lines();
+}
+
 KeyValueConfigFile::KeyValueConfigFile(std::istream * const s,
         const std::map<std::string, std::string> & m) :
     ConfigFile(s),
@@ -169,6 +194,14 @@ KeyValueConfigFile::KeyValueConfigFile(std::istream * const s,
 }
 
 KeyValueConfigFile::KeyValueConfigFile(const std::string & filename,
+        const std::map<std::string, std::string> & m) :
+    ConfigFile(filename),
+    _entries(m.begin(), m.end())
+{
+    need_lines();
+}
+
+KeyValueConfigFile::KeyValueConfigFile(const FSEntry & filename,
         const std::map<std::string, std::string> & m) :
     ConfigFile(filename),
     _entries(m.begin(), m.end())
@@ -293,6 +326,14 @@ AdvisoryFile::AdvisoryFile(const std::string & filename) :
     sanitise();
 }
 
+AdvisoryFile::AdvisoryFile(const FSEntry & filename) :
+    ConfigFile(filename),
+    _end_of_header(false)
+{
+    need_lines();
+    sanitise();
+}
+
 AdvisoryFile::AdvisoryFile(std::istream * const s,
         const std::map<std::string, std::string> & m) :
     ConfigFile(s),
@@ -305,6 +346,16 @@ AdvisoryFile::AdvisoryFile(std::istream * const s,
 }
 
 AdvisoryFile::AdvisoryFile(const std::string & filename,
+        const std::map<std::string, std::string> & m) :
+    ConfigFile(filename),
+    _entries(m.begin(), m.end()),
+    _end_of_header(false)
+{
+    need_lines();
+    sanitise();
+}
+
+AdvisoryFile::AdvisoryFile(const FSEntry & filename,
         const std::map<std::string, std::string> & m) :
     ConfigFile(filename),
     _entries(m.begin(), m.end()),
