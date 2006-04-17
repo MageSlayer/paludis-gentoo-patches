@@ -65,8 +65,7 @@ namespace
                 return false;
             if (version < other.version)
                 return true;
-            if (version > other.version)
-                return false;
+            return false;
         }
 
         struct CompareCategory
