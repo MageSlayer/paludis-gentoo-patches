@@ -24,6 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/smart_record.hh>
+#include <paludis/util/fs_entry.hh>
 
 namespace paludis
 {
