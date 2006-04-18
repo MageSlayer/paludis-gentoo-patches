@@ -51,7 +51,7 @@ econf()
         if [[ -n "${ABI}" ]] ; then
             local v="LIBDIR_${ABI}"
             if [[ -n "${!v}" ]] ; then
-                cmd="${cmd} --libdir=${PREFIX}/$(ebuild_get_libdir)"
+                cmd="${cmd} --libdir=/usr/$(ebuild_get_libdir)"
             fi
         fi
 
