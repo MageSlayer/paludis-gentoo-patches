@@ -360,6 +360,43 @@ namespace test_cases
         }
     } test_portage_repository_versions;
 
+    struct PortageRepositoryDuffVersionsTest : TestCase
+    {
+        PortageRepositoryDuffVersionsTest() : TestCase("duff versions") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format",   "portage"));
+            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo8"));
+            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo8/profiles/profile"));
+            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+
+                VersionSpecCollection::ConstPointer versions(0);
+
+                versions = repo->version_specs(QualifiedPackageName("cat-one/pkg-one"));
+                TEST_CHECK(! versions->empty());
+                TEST_CHECK_EQUAL(2, std::distance(versions->begin(), versions->end()));
+                TEST_CHECK(versions->end() != versions->find(VersionSpec("1")));
+                TEST_CHECK(versions->end() != versions->find(VersionSpec("1.1-r1")));
+                TEST_CHECK(versions->end() == versions->find(VersionSpec("2")));
+
+                versions = repo->version_specs(QualifiedPackageName("cat-one/pkg-neither"));
+                TEST_CHECK(versions->empty());
+                TEST_CHECK_EQUAL(0, std::distance(versions->begin(), versions->end()));
+                TEST_CHECK(versions->end() == versions->find(VersionSpec("1")));
+                TEST_CHECK(versions->end() == versions->find(VersionSpec("1.1-r1")));
+                TEST_CHECK(versions->end() == versions->find(VersionSpec("2")));
+            }
+        }
+    } test_portage_repository_duff_versions;
+
     struct PortageRepositoryMetadataCachedTest : TestCase
     {
         PortageRepositoryMetadataCachedTest() : TestCase("metadata cached") { }

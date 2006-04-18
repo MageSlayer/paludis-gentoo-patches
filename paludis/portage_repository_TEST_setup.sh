@@ -137,3 +137,33 @@ END
 cd ..
 
 
+mkdir -p repo8/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo8/{cat-one/{pkg-one,pkg-both},cat-two/{pkg-two,pkg-both}} || exit 1
+cd repo8 || exit 1
+echo "test-repo-8" > profiles/repo_name || exit 1
+cat <<END > profiles/categories || exit 1
+cat-one
+cat-two
+END
+cat <<END > profiles/profile/make.defaults
+ARCH=test
+END
+cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
+END
+cat <<END > cat-one/pkg-one/pkg-one-1-monkey.ebuild || exit 1
+END
+cat <<END > cat-one/pkg-one/pkg-one-1.1-r1.ebuild || exit 1
+END
+cat <<END > cat-one/pkg-both/pkg-both-3.45.ebuild || exit 1
+END
+cat <<END > cat-one/pkg-both/pkg-both-3.45_r1.ebuild || exit 1
+END
+cat <<END > cat-two/pkg-two/pkg-two-2.ebuild || exit 1
+END
+cat <<END > cat-two/pkg-both/pkg-both-1.23.ebuild || exit 1
+END
+cat <<END > cat-two/pkg-both/pkg-both-.ebuild || exit 1
+END
+cd ..
+
+

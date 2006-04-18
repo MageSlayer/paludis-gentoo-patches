@@ -620,16 +620,26 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
         }
     }
     else
-        std::copy(DirIterator(path), DirIterator(),
-                filter_inserter(
-                    transform_inserter(
-                        transform_inserter(
-                            transform_inserter(v->inserter(),
-                                StripTrailingString(".ebuild")),
-                            StripLeadingString(stringify(n.get<qpn_package>()) + "-")),
-                        std::mem_fun_ref(&FSEntry::basename)),
-                    IsFileWithExtension(stringify(n.get<qpn_package>()) + "-", ".ebuild")));
+    {
+        for (DirIterator e(path), e_end ; e != e_end ; ++e)
+        {
+            if (! IsFileWithExtension(stringify(n.get<qpn_package>()) + "-", ".ebuild")(*e))
+                continue;
 
+            try
+            {
+                v->insert(strip_leading_string(
+                            strip_trailing_string(e->basename(), ".ebuild"),
+                            stringify(n.get<qpn_package>()) + "-"));
+            }
+            catch (const NameError &)
+            {
+                Log::get_instance()->message(ll_warning, "Skipping entry '"
+                        + stringify(*e) + "' for '" + stringify(n) + "' in repository '"
+                        + stringify(name()) + "'");
+            }
+        }
+    }
 
     _imp->version_specs.insert(std::make_pair(n, v));
     _imp->package_names[n] = true;
