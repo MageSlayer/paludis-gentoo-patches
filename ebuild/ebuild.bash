@@ -75,7 +75,7 @@ ebuild_source_profile()
     fi
 
     if [[ -f ${1}/make.defaults ]] ; then
-        source ${1}/make.defaults || die "Couldn't source ${1}/make.defaults"
+        eval "$(sed -e 's/^\([a-zA-Z0-9\-_]\+=\)/export \1/' ${1}/make.defaults )" || die "Couldn't source ${1}/make.defaults"
     fi
 
     if [[ -f ${1}/bashrc ]] ; then
