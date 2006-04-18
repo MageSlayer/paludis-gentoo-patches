@@ -847,7 +847,7 @@ PortageRepository::do_query_profile_masks(const CategoryNamePart &,
 }
 
 UseFlagState
-PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry *e) const
+PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry *) const
 {
     if (! _imp->has_profile)
     {
