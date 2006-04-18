@@ -401,7 +401,7 @@ do_install()
                         cout << endl << colour(cl_heading, "Cleaning " + p::stringify(*c)) << endl << endl;
 
                         // TODO: some way to reset this properly would be nice.
-                        cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
+                        cerr << xterm_title("(" + p::stringify(current_count) + " of " +
                                 p::stringify(max_count) + ") Cleaning " + cpv + ": " + stringify(*c));
 
                         env->package_database()->fetch_repository(c->get<p::pde_repository>())->
