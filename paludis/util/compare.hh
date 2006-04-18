@@ -45,7 +45,7 @@ namespace paludis
     {
         if (t1 < t2)
             return -1;
-        else if (t2 > t1)
+        else if (t1 > t2)
             return 1;
         else
             return 0;
@@ -64,7 +64,7 @@ namespace paludis
     {
         if (t1 < t2)
             return -1;
-        else if (t2 > t1)
+        else if (t1 > t2)
             return 1;
         else
             return 0;
@@ -83,7 +83,7 @@ namespace paludis
     {
         if (t1 < t2)
             return -1;
-        else if (t2 > t1)
+        else if (t1 > t2)
             return 1;
         else
             return 0;
@@ -102,7 +102,7 @@ namespace paludis
     {
         if (t1 < t2)
             return -1;
-        else if (t2 > t1)
+        else if (t1 > t2)
             return 1;
         else
             return 0;

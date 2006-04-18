@@ -20,6 +20,8 @@
 #include <paludis/util/smart_record.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <vector>
+#include <iterator>
 
 using namespace paludis;
 using namespace test;
@@ -52,6 +54,22 @@ namespace
     };
 
     typedef MakeSmartRecord<PersonRecordTag>::Type Person;
+
+    enum PairKeys
+    {
+        first,
+        second
+    };
+
+    struct PairTag :
+        SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
+        SmartRecordKeys<PairKeys, 2>,
+        SmartRecordKey<first, int>,
+        SmartRecordKey<second, int>
+    {
+    };
+
+    typedef MakeSmartRecord<PairTag>::Type Pair;
 }
 
 namespace test_cases
@@ -123,5 +141,55 @@ namespace test_cases
             TEST_CHECK_EQUAL(p2.get<age>(), 42);
         }
     } test_list_constructed_record;
+
+    struct PairTest : TestCase
+    {
+        PairTest() : TestCase("pair") { }
+
+        void run()
+        {
+            std::vector<Pair> v;
+            v.push_back(Pair(0, 0));
+            v.push_back(Pair(0, 1));
+            v.push_back(Pair(0, 2));
+            v.push_back(Pair(1, 0));
+            v.push_back(Pair(1, 1));
+            v.push_back(Pair(1, 2));
+            v.push_back(Pair(2, 0));
+
+            std::vector<Pair>::iterator v1(v.begin()), v_end(v.end());
+            for ( ; v1 != v_end ; ++v1)
+            {
+                TestMessageSuffix s1("v1:" + stringify(v1->get<first>()) + "/"
+                        + stringify(v1->get<second>()), true);
+                std::vector<Pair>::iterator v2(v.begin());
+                for ( ; v2 != v_end ; ++v2)
+                {
+                    TestMessageSuffix s2("v2:" + stringify(v2->get<first>()) + "/"
+                            + stringify(v2->get<second>()), true);
+
+                    if (std::distance(v.begin(), v1) < std::distance(v.begin(), v2))
+                    {
+                        TEST_CHECK(*v1 < *v2);
+                        TEST_CHECK(*v2 > *v1);
+                        TEST_CHECK(*v1 != *v2);
+                        TEST_CHECK(*v2 != *v1);
+                    }
+                    else if (std::distance(v.begin(), v1) > std::distance(v.begin(), v2))
+                    {
+                        TEST_CHECK(*v2 < *v1);
+                        TEST_CHECK(*v1 > *v2);
+                        TEST_CHECK(*v2 != *v1);
+                        TEST_CHECK(*v1 != *v2);
+                    }
+                    else
+                    {
+                        TEST_CHECK(*v2 == *v1);
+                        TEST_CHECK(*v1 == *v2);
+                    }
+                }
+            }
+        }
+    } test_pair;
 }
 
