@@ -179,7 +179,7 @@ FakeRepository::do_query_profile_masks(const CategoryNamePart &,
 }
 
 UseFlagState
-FakeRepository::do_query_use(const UseFlagName &) const
+FakeRepository::do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const
 {
     return use_unspecified;
 }

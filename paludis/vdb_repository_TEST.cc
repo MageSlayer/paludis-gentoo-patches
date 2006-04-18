@@ -68,5 +68,30 @@ namespace test_cases
         }
     } test_vdb_repository_has_category_named;
 
+    struct VDBRepositoryQueryUseTest : TestCase
+    {
+        VDBRepositoryQueryUseTest() : TestCase("query USE") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format",   "vdb"));
+            keys.insert(std::make_pair("location", "vdb_repository_TEST_dir/repo1"));
+            VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            PackageDatabaseEntry e1(QualifiedPackageName(CategoryNamePart("cat-one"), PackageNamePart("pkg-one")),
+                    VersionSpec("1"), RepositoryName("installed"));
+            PackageDatabaseEntry e2(QualifiedPackageName(CategoryNamePart("cat-one"), PackageNamePart("pkg-neither")),
+                    VersionSpec("1"), RepositoryName("installed"));
+
+            TEST_CHECK(repo->query_use(UseFlagName("flag1"), &e1) == use_enabled);
+            TEST_CHECK(repo->query_use(UseFlagName("flag2"), &e1) == use_enabled);
+            TEST_CHECK(repo->query_use(UseFlagName("flag3"), &e1) == use_disabled);
+
+            TEST_CHECK(repo->query_use(UseFlagName("flag4"), &e2) == use_unspecified);
+        }
+    } test_vdb_repository_query_use;
 }
 

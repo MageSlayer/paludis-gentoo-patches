@@ -28,6 +28,7 @@
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/package_database_entry.hh>
 
 #include <map>
 #include <string>
@@ -147,7 +148,7 @@ namespace paludis
             /**
              * Override in descendents: get use.
              */
-            virtual UseFlagState do_query_use(const UseFlagName &) const = 0;
+            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
 
             /**
              * Override in descendents: get use mask.
@@ -363,12 +364,12 @@ namespace paludis
             /**
              * Query the state of the specified use flag.
              */
-            UseFlagState query_use(const UseFlagName & u) const
+            UseFlagState query_use(const UseFlagName & u, const PackageDatabaseEntry *pde) const
             {
                 if (do_query_use_mask(u))
                     return use_disabled;
                 else
-                    return do_query_use(u);
+                    return do_query_use(u, pde);
             }
 
             /**

@@ -34,6 +34,7 @@
 #include <paludis/util/collection.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/package_database_entry.hh>
 
 #include <ostream>
 #include <algorithm>
@@ -43,45 +44,6 @@
 namespace paludis
 {
     class PackageDepAtom;
-
-    /**
-     * Keys in a PackageDatabaseEntry.
-     */
-    enum PackageDatabaseEntryKeys
-    {
-        pde_name,              ///< Our package
-        pde_version,           ///< Our version
-        pde_repository,        ///< Our repository
-        last_pde               ///< Number of items
-    };
-
-    /**
-     * Tag for a PackageDatabaseEntry.
-     */
-    struct PackageDatabaseEntryTag :
-        SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
-        SmartRecordKeys<PackageDatabaseEntryKeys, last_pde>,
-        SmartRecordKey<pde_name, QualifiedPackageName>,
-        SmartRecordKey<pde_version, VersionSpec>,
-        SmartRecordKey<pde_repository, RepositoryName>
-    {
-    };
-
-    /**
-     * A PackageDatabaseEntry holds a QualifiedPackageName, a VersionSpec and a
-     * RepositoryName, and is fully comparable.
-     */
-    typedef MakeSmartRecord<PackageDatabaseEntryTag>::Type PackageDatabaseEntry;
-
-    /**
-     * A collection of PackageDatabaseEntry instances.
-     */
-    typedef SortedCollection<PackageDatabaseEntry> PackageDatabaseEntryCollection;
-
-    /**
-     * A PackageDatabaseEntry can be written to a stream.
-     */
-    std::ostream & operator<< (std::ostream &, const PackageDatabaseEntry &);
 
     /**
      * A PackageDatabaseError is an error that occurs when performing some

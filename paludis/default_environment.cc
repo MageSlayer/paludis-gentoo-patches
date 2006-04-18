@@ -123,8 +123,8 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         throw InternalError(PALUDIS_HERE, "bad state " + stringify(state));
     } while (false);
 
-    switch (e ? package_database()->fetch_repository(e->get<pde_repository>())->query_use(f) :
-            package_database()->fetch_repository(package_database()->favourite_repository())->query_use(f))
+    switch (e ? package_database()->fetch_repository(e->get<pde_repository>())->query_use(f, e) :
+            package_database()->fetch_repository(package_database()->favourite_repository())->query_use(f, e))
     {
         case use_disabled:
         case use_unspecified:

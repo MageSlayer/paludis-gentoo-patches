@@ -50,6 +50,7 @@ namespace
         QualifiedPackageName name;
         VersionSpec version;
         VersionMetadata::Pointer metadata;
+        std::set<UseFlagName> use;
 
         VDBEntry(const QualifiedPackageName & n, const VersionSpec & v) :
             name(n),
@@ -286,6 +287,11 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
         slot = "0";
     }
     p->metadata->set(vmk_slot,      slot);
+
+    std::string raw_use(file_contents(location, p->name, p->version, "USE"));
+    p->use.clear();
+    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> t(" \t\n");
+    t.tokenise(raw_use, create_inserter<UseFlagName>(std::inserter(p->use, p->use.begin())));
 }
 
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
@@ -442,9 +448,31 @@ VDBRepository::do_query_profile_masks(const CategoryNamePart &,
 }
 
 UseFlagState
-VDBRepository::do_query_use(const UseFlagName &) const
+VDBRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry * const e) const
 {
-    return use_unspecified;
+    if (! _imp->entries_valid)
+        _imp->load_entries();
+
+    if (e->get<pde_repository>() == name())
+    {
+
+        std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
+            r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
+                            e->get<pde_name>(), e->get<pde_version>()), VDBEntry::CompareVersion()));
+
+        if (r.first == r.second)
+            return use_unspecified;
+
+        if (!r.first->metadata)
+            _imp->load_entry(r.first);
+
+        if (r.first->use.end() != r.first->use.find(f))
+            return use_enabled;
+        else
+            return use_disabled;
+    }
+    else
+        return use_unspecified;
 }
 
 bool
