@@ -58,7 +58,7 @@ smart_record.hh : smart_record.hh.m4
 	$(top_srcdir)/misc/do_m4.bash smart_record.hh
 
 comparison_policy.hh : comparison_policy.hh.m4
-	$(top_srcdir)/misc/do_m4.bash comparison_policy.hh.m4
+	$(top_srcdir)/misc/do_m4.bash comparison_policy.hh
 
 util.hh : util.hh.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash util.hh
