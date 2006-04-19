@@ -18,12 +18,12 @@
 
 unmerge_empty_TEST()
 {
-    ./merge "unmerge_TEST_dir/empty_src" \
+    ${PALUDIS_EBUILD_DIR}/utils/merge "unmerge_TEST_dir/empty_src" \
         "unmerge_TEST_dir/empty_dst" \
         "unmerge_TEST_dir/empty_contents" 1>/dev/null
     test_return_code
 
-    ./unmerge "unmerge_TEST_dir/empty_dst" \
+    ${PALUDIS_EBUILD_DIR}/utils/unmerge "unmerge_TEST_dir/empty_dst" \
         "unmerge_TEST_dir/empty_contents" 1>/dev/null
     test_return_code
 
@@ -38,7 +38,7 @@ unmerge_empty_TEST()
 
 unmerge_files_TEST()
 {
-    ./merge "unmerge_TEST_dir/files_src" \
+    ${PALUDIS_EBUILD_DIR}/utils/merge "unmerge_TEST_dir/files_src" \
         "unmerge_TEST_dir/files_dst" \
         "unmerge_TEST_dir/files_contents" 1>/dev/null
     test_return_code
@@ -51,7 +51,7 @@ unmerge_files_TEST()
     done
     test_equality "$ok" "yes"
 
-    ./unmerge "unmerge_TEST_dir/files_dst" \
+    ${PALUDIS_EBUILD_DIR}/utils/unmerge "unmerge_TEST_dir/files_dst" \
         "unmerge_TEST_dir/files_contents" 1>/dev/null
     test_return_code
 
