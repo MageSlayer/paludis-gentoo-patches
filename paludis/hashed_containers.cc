@@ -19,6 +19,12 @@
 
 #include "hashed_containers.hh"
 
+/** \file
+ * Implementation for hashed_containers.hh.
+ *
+ * \ingroup grphashedcontainers
+ */
+
 using namespace paludis;
 
 #if PALUDIS_HAVE_TR1_HASHES || PALUDIS_HAVE_EXT_HASHES || PALUDIS_HAVE_STD_HASHES

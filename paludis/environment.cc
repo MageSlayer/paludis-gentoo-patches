@@ -23,6 +23,12 @@
 #include <paludis/environment.hh>
 #include <paludis/util/log.hh>
 
+/** \file
+ * Implementation of Environment.
+ *
+ * \ingroup grpenvironment
+ */
+
 using namespace paludis;
 
 Environment::Environment(PackageDatabase::Pointer d) :
@@ -37,6 +43,9 @@ Environment::~Environment()
 
 namespace
 {
+    /**
+     * Check whether licences for a package are accepted.
+     */
     struct LicenceChecker :
         DepAtomVisitorTypes::ConstVisitor
     {
@@ -44,6 +53,7 @@ namespace
         const Environment * const env;
         const PackageDatabaseEntry * const db_entry;
 
+        /// Constructor
         LicenceChecker(const Environment * const e, const PackageDatabaseEntry * const d) :
             ok(true),
             env(e),
@@ -232,9 +242,14 @@ Environment::package_set(const std::string & s) const
 
 namespace
 {
+    /**
+     * Find package targets that are appropriate for adding to or removing
+     * from the world file.
+     */
     struct WorldTargetFinder :
         DepAtomVisitorTypes::ConstVisitor
     {
+        /// Matches
         std::list<const PackageDepAtom *> items;
 
         ///\name Visit methods

@@ -23,11 +23,21 @@
 #include <bitset>
 #include <iosfwd>
 
+/** \file
+ * Declarations for MaskReasons and related classes.
+ *
+ * \ingroup grpmaskreasons
+ */
+
 namespace paludis
 {
     /**
      * Each value represents one reason for a package being
      * masked.
+     *
+     * \see MaskReasons
+     *
+     * \ingroup grpmaskreasons
      */
     enum MaskReason
     {
@@ -43,11 +53,15 @@ namespace paludis
 
     /**
      * A collection of reasons for why a package is masked.
+     *
+     * \ingroup grpmaskreasons
      */
     typedef std::bitset<last_mr> MaskReasons;
 
     /**
-     * Stringify.
+     * Stringify a MaskReason.
+     *
+     * \ingroup grpmaskreasons
      */
     std::ostream &
     operator<< (std::ostream &, const MaskReason &);

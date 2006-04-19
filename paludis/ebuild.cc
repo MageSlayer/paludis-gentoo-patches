@@ -24,6 +24,12 @@
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
 
+/** \file
+ * Implementation for ebuild.hh things.
+ *
+ * \ingroup grpebuildinterface
+ */
+
 using namespace paludis;
 
 EbuildCommand::EbuildCommand(const EbuildCommandParams & p) :

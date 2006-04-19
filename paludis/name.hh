@@ -28,14 +28,20 @@
 #include <paludis/util/collection.hh>
 #include <paludis/util/validated.hh>
 
+/** \file
+ * Declarations for various Name classes.
+ *
+ * \ingroup grpnames
+ */
+
 namespace paludis
 {
     /**
      * A PackageNamePartError is thrown if an invalid value is assigned to
      * a PackageNamePart.
      *
-     * \ingroup Database
-     * \ingroup Exception
+     * \ingroup grpnames
+     * \ingroup grpexceptions
      */
     class PackageNamePartError : public NameError
     {
@@ -50,7 +56,7 @@ namespace paludis
      * A PackageNamePartValidator handles validation rules for the value
      * of a PackageNamePart.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     struct PackageNamePartValidator :
         private InstantiationPolicy<PackageNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -66,14 +72,14 @@ namespace paludis
      * A PackageNamePart holds a std::string that is a valid name for the
      * category part of a QualifiedPackageName.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     typedef Validated<std::string, PackageNamePartValidator> PackageNamePart;
 
     /**
      * Holds a set of PackageNamePart instances.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     typedef SortedCollection<PackageNamePart> PackageNamePartCollection;
 
@@ -81,8 +87,8 @@ namespace paludis
      * A CategoryNamePartError is thrown if an invalid value is assigned to
      * a CategoryNamePart.
      *
-     * \ingroup Exception
-     * \ingroup Database
+     * \ingroup grpexceptions
+     * \ingroup grpnames
      */
     class CategoryNamePartError : public NameError
     {
@@ -97,7 +103,7 @@ namespace paludis
      * A CategoryNamePartValidator handles validation rules for the value
      * of a CategoryNamePart.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     struct CategoryNamePartValidator :
         private InstantiationPolicy<CategoryNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -113,19 +119,23 @@ namespace paludis
      * A CategoryNamePart holds a std::string that is a valid name for the
      * category part of a QualifiedPackageName.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     typedef Validated<std::string, CategoryNamePartValidator> CategoryNamePart;
 
     /**
      * Holds a set of CategoryNamePart instances.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     typedef SortedCollection<CategoryNamePart> CategoryNamePartCollection;
 
     /**
      * Keys for a QualifiedPackageName.
+     *
+     * \ingroup grpnames
+     *
+     * \see QualifiedPackageName
      */
     enum QualifiedPackageNameKeys
     {
@@ -136,6 +146,10 @@ namespace paludis
 
     /**
      * Tags for a QualifiedPackageName.
+     *
+     * \ingroup grpnames
+     *
+     * \see QualifiedPackageName
      */
     struct QualifiedPackageNameTag :
         SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
@@ -148,6 +162,8 @@ namespace paludis
     /**
      * A QualifiedPackageName instance holds a CategoryNamePart and
      * a PackageNamePart.
+     *
+     * \ingroup grpnames
      */
     class QualifiedPackageName :
         public MakeSmartRecord<QualifiedPackageNameTag>::Type
@@ -193,11 +209,15 @@ namespace paludis
 
     /**
      * Output a QualifiedPackageName to a stream.
+     *
+     * \ingroup grpnames
      */
     std::ostream & operator<< (std::ostream &, const QualifiedPackageName &);
 
     /**
      * Holds a collection of QualifiedPackageName instances.
+     *
+     * \ingroup grpnames
      */
     typedef SortedCollection<QualifiedPackageName> QualifiedPackageNameCollection;
 
@@ -205,6 +225,9 @@ namespace paludis
      * A QualifiedPackageNameError may be thrown if an invalid name is
      * assigned to a QualifiedPackageName (alternatively, the exception
      * raised may be a PackageNamePartError or a CategoryNamePartError).
+     *
+     * \ingroup grpnames
+     * \ingroup grpexceptions
      */
     class QualifiedPackageNameError : public NameError
     {
@@ -218,6 +241,8 @@ namespace paludis
     /**
      * Convenience operator to make a QualifiedPackageName from a
      * PackageNamePart and a CategoryNamePart.
+     *
+     * \ingroup grpnames
      */
     inline const QualifiedPackageName
     operator+ (const CategoryNamePart & c, const PackageNamePart & p)
@@ -229,8 +254,8 @@ namespace paludis
      * A UseFlagNameError is thrown if an invalid value is assigned to
      * a UseFlagName.
      *
-     * \ingroup Database
-     * \ingroup Exception
+     * \ingroup grpnames
+     * \ingroup grpexceptions
      */
     class UseFlagNameError : public NameError
     {
@@ -245,7 +270,7 @@ namespace paludis
      * A UseFlagNameValidator handles validation rules for the value of a
      * UseFlagName.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     struct UseFlagNameValidator :
         private InstantiationPolicy<UseFlagNameValidator, instantiation_method::NonInstantiableTag>
@@ -260,18 +285,23 @@ namespace paludis
     /**
      * A UseFlagName holds a std::string that is a valid name for a USE flag.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     typedef Validated<std::string, UseFlagNameValidator> UseFlagName;
 
+    /**
+     * A collection of UseFlagName instances.
+     *
+     * \ingroup grpnames
+     */
     typedef SortedCollection<UseFlagName> UseFlagNameCollection;
 
     /**
      * A SlotNameError is thrown if an invalid value is assigned to
      * a SlotName.
      *
-     * \ingroup Database
-     * \ingroup Exception
+     * \ingroup grpnames
+     * \ingroup grpexceptions
      */
     class SlotNameError : public NameError
     {
@@ -286,7 +316,7 @@ namespace paludis
      * A SlotNameValidator handles validation rules for the value of a
      * SlotName.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     struct SlotNameValidator :
         private InstantiationPolicy<SlotNameValidator, instantiation_method::NonInstantiableTag>
@@ -301,7 +331,7 @@ namespace paludis
     /**
      * A SlotName holds a std::string that is a valid name for a SLOT.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     typedef Validated<std::string, SlotNameValidator> SlotName;
 
@@ -309,8 +339,8 @@ namespace paludis
      * A RepositoryNameError is thrown if an invalid value is assigned to
      * a RepositoryName.
      *
-     * \ingroup Exception
-     * \ingroup Database
+     * \ingroup grpexceptions
+     * \ingroup grpnames
      */
     class RepositoryNameError : public NameError
     {
@@ -325,7 +355,7 @@ namespace paludis
      * A RepositoryNameValidator handles validation rules for the value
      * of a RepositoryName.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     struct RepositoryNameValidator :
         private InstantiationPolicy<RepositoryNameValidator, instantiation_method::NonInstantiableTag>
@@ -341,12 +371,14 @@ namespace paludis
      * A RepositoryNamePart holds a std::string that is a valid name for a
      * Repository.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     typedef Validated<std::string, RepositoryNameValidator> RepositoryName;
 
     /**
      * Holds a collection of RepositoryName instances.
+     *
+     * \ingroup grpnames
      */
     typedef SequentialCollection<RepositoryName> RepositoryNameCollection;
 
@@ -354,7 +386,7 @@ namespace paludis
      * A KeywordNameValidator handles validation rules for the value of a
      * UseFlagName.
      *
-     * \ingroup Environment
+     * \ingroup grpnames
      */
     struct KeywordNameValidator :
         private InstantiationPolicy<KeywordNameValidator, instantiation_method::NonInstantiableTag>
@@ -370,8 +402,8 @@ namespace paludis
      * A KeywordNameError is thrown if an invalid value is assigned to
      * a KeywordNameName.
      *
-     * \ingroup Environment
-     * \ingroup Exception
+     * \ingroup grpnames
+     * \ingroup grpexceptions
      */
     class KeywordNameError : public NameError
     {
@@ -385,12 +417,14 @@ namespace paludis
     /**
      * A KeywordName holds a std::string that is a valid name for a KEYWORD.
      *
-     * \ingroup Database
+     * \ingroup grpnames
      */
     typedef Validated<std::string, KeywordNameValidator> KeywordName;
 
     /**
      * A USE flag can be on, off or unspecified.
+     *
+     * \ingroup grpnames
      */
     enum UseFlagState
     {

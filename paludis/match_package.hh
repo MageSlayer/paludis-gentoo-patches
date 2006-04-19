@@ -9,6 +9,8 @@
  * Do not merge this file into dep_atom. It will cause all sorts of horrible
  * circular dependency issues. Avoid including this file in headers if at all
  * possible.
+ *
+ * \ingroup grpmatchpackage
  */
 
 #include <paludis/dep_atom.hh>
@@ -20,11 +22,15 @@ namespace paludis
 {
     /**
      * For internal use by match_package.
+     *
+     * \ingroup grpmatchpackage
      */
     namespace match_package_internals
     {
         /**
          * Do the match on a PackageDatabaseEntry.
+         *
+         * \ingroup grpmatchpackage
          */
         bool do_match(
                 const PackageDatabase * const db,
@@ -34,6 +40,8 @@ namespace paludis
 
         /**
          * Do the match on a DepListEntry.
+         *
+         * \ingroup grpmatchpackage
          */
         bool do_match(
                 const PackageDatabase * const db,
@@ -42,7 +50,9 @@ namespace paludis
             PALUDIS_ATTRIBUTE((nonnull(2, 3)));
 
         /**
-         * Normalise type.
+         * Normalise DB type.
+         *
+         * \ingroup grpmatchpackage
          */
         inline const PackageDatabase * sanitise_db(const PackageDatabase * db)
         {
@@ -53,6 +63,8 @@ namespace paludis
          * Normalise type.
          *
          * \deprecated Use sanitise_db(const PackageDatabase *) instead.
+         *
+         * \ingroup grpmatchpackage
          */
         inline const PackageDatabase * sanitise_db(const PackageDatabase & db) PALUDIS_ATTRIBUTE((deprecated));
 
@@ -62,7 +74,9 @@ namespace paludis
         }
 
         /**
-         * Normalise type.
+         * Normalise DB type.
+         *
+         * \ingroup grpmatchpackage
          */
         template <typename P1_, typename P2_>
         inline const PackageDatabase * sanitise_db(const CountedPtr<const PackageDatabase, P1_, P2_> db)
@@ -71,7 +85,9 @@ namespace paludis
         }
 
         /**
-         * Normalise type.
+         * Normalise DB type.
+         *
+         * \ingroup grpmatchpackage
          */
         inline const PackageDatabase * sanitise_db(const PackageDatabase::ConstPointer db)
         {
@@ -79,7 +95,9 @@ namespace paludis
         }
 
         /**
-         * Normalise type.
+         * Normalise atom type.
+         *
+         * \ingroup grpmatchpackage
          */
         inline const PackageDepAtom * sanitise_atom(const PackageDepAtom * atom)
         {
@@ -87,7 +105,9 @@ namespace paludis
         }
 
         /**
-         * Normalise type.
+         * Normalise atom type.
+         *
+         * \ingroup grpmatchpackage
          */
         inline const PackageDepAtom * sanitise_atom(const PackageDepAtom & atom)
         {
@@ -95,7 +115,9 @@ namespace paludis
         }
 
         /**
-         * Normalise type.
+         * Normalise atom type.
+         *
+         * \ingroup grpmatchpackage
          */
         template <typename P1_, typename P2_>
         inline const PackageDepAtom * sanitise_atom(const CountedPtr<const PackageDepAtom, P1_, P2_> atom)
@@ -104,7 +126,9 @@ namespace paludis
         }
 
         /**
-         * Normalise type.
+         * Normalise target type.
+         *
+         * \ingroup grpmatchpackage
          */
         template <typename T_>
         inline const T_ * sanitise_target(const T_ * e)
@@ -113,7 +137,9 @@ namespace paludis
         }
 
         /**
-         * Normalise type.
+         * Normalise target type.
+         *
+         * \ingroup grpmatchpackage
          */
         template <typename T_>
         inline const T_ * sanitise_target(const T_ & e)
@@ -123,7 +149,13 @@ namespace paludis
     }
 
     /**
-     * Does the specified atom match the specified target?
+     * Return whether the specified atom matches the specified target.
+     *
+     * \param db      Some kind of package database
+     * \param atom    Some kind of package dep atom
+     * \param target  Some kind of target
+     *
+     * \ingroup grpmatchpackage
      */
     template <typename DB_, typename Atom_, typename Target_>
     bool match_package(

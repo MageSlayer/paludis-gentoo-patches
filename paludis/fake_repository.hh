@@ -26,7 +26,7 @@
 /** \file
  * Declarations for the FakeRepository class.
  *
- * \ingroup Database
+ * \ingroup grpfakerepository
  */
 
 namespace paludis
@@ -35,7 +35,7 @@ namespace paludis
      * A FakeRepository is a Repository subclass that is used for
      * various test cases.
      *
-     * \ingroup Database
+     * \ingroup grpfakerepository
      */
     class FakeRepository : public Repository,
                            private PrivateImplementationPattern<FakeRepository>

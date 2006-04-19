@@ -22,12 +22,20 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/version_metadata.hh>
 
+/** \file
+ * Implementation for FakeRepository.
+ *
+ * \ingroup grpfakerepository
+ */
+
 using namespace paludis;
 
 namespace paludis
 {
     /**
      * Implementation data for FakeRepository.
+     *
+     * \ingroup grpfakerepository
      */
     template<>
     struct Implementation<FakeRepository> :

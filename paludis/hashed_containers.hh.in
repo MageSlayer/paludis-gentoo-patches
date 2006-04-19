@@ -22,8 +22,33 @@
 #ifndef PALUDIS_GUARD_PALUDIS_HASHED_CONTAINERS_HH
 #define PALUDIS_GUARD_PALUDIS_HASHED_CONTAINERS_HH 1
 
+/** \file
+ * Declarations for the MakeHashedMap and MakeHashedSet classes, and related
+ * utilities.
+ *
+ * \ingroup grphashedcontainers
+ */
+
+/**
+ * Non-zero if we have std::tr1:: hashes (g++-4).
+ *
+ * \ingroup grphashedcontainers
+ */
 #define PALUDIS_HAVE_TR1_HASHES @HAVE_TR1_HASHES@
+
+/**
+ * Non-zero if we have __gnu_cxx:: hashes under ext/ (g++-3).
+ *
+ * \ingroup grphashedcontainers
+ */
 #define PALUDIS_HAVE_EXT_HASHES @HAVE_EXT_HASHES@
+
+
+/**
+ * Non-zero if we have std:: hashes (icc70).
+ *
+ * \ingroup grphashedcontainers
+ */
 #define PALUDIS_HAVE_STD_HASHES @HAVE_STD_HASHES@
 
 #include <paludis/name.hh>
@@ -50,11 +75,18 @@
 
 namespace paludis
 {
+    /**
+     * Hash function base template.
+     *
+     * \ingroup grphashedcontainers
+     */
     template <typename T_>
     struct CRCHash;
 
     /**
      * Make a hashed map of some kind from Key_ to Value_.
+     *
+     * \ingroup grphashedcontainers
      */
     template <typename Key_, typename Value_>
     struct MakeHashedMap
@@ -79,6 +111,8 @@ namespace paludis
 
     /**
      * Make a hashed set of some kind of Key_.
+     *
+     * \ingroup grphashedcontainers
      */
     template <typename Key_>
     struct MakeHashedSet
@@ -102,10 +136,12 @@ namespace paludis
     };
 
 #if PALUDIS_HAVE_TR1_HASHES || PALUDIS_HAVE_EXT_HASHES || PALUDIS_HAVE_STD_HASHES
-    namespace
+    namespace hashed_containers_internals
     {
         /**
          * Base definitions for our CRCHash.
+         *
+         * \ingroup grphashedcontainers
          */
         struct CRCHashBase
         {
@@ -119,11 +155,13 @@ namespace paludis
 
     /**
      * Hash, for QualifiedPackageName.
+     *
+     * \ingroup grphashedcontainers
      */
     template <>
     class CRCHash<QualifiedPackageName> :
         public std::unary_function<QualifiedPackageName, std::size_t>,
-        protected CRCHashBase
+        protected hashed_containers_internals::CRCHashBase
     {
         public:
             /// Hash function.
@@ -145,11 +183,13 @@ namespace paludis
 
     /**
      * Hash, for a validated string type.
+     *
+     * \ingroup grphashedcontainers
      */
     template <typename Validated_>
     class CRCHash<Validated<std::string, Validated_> > :
         public std::unary_function<Validated<std::string, Validated_>, std::size_t>,
-        protected CRCHashBase
+        protected hashed_containers_internals::CRCHashBase
     {
         public:
             /// Hash function.
@@ -173,11 +213,13 @@ namespace paludis
 
     /**
      * Hash, for a string.
+     *
+     * \ingroup grphashedcontainers
      */
     template<>
     class CRCHash<std::string> :
         public std::unary_function<std::string, std::size_t>,
-        protected CRCHashBase
+        protected hashed_containers_internals::CRCHashBase
     {
         public:
             /// Hash function.
@@ -199,11 +241,13 @@ namespace paludis
 
     /**
      * Hash, for a QualifiedPackageName + VersionSpec pair.
+     *
+     * \ingroup grphashedcontainers
      */
     template <>
     class CRCHash<std::pair<QualifiedPackageName, VersionSpec> > :
         public std::unary_function<std::pair<QualifiedPackageName, VersionSpec>, std::size_t>,
-        protected CRCHashBase
+        protected hashed_containers_internals::CRCHashBase
     {
         public:
             /// Hash function.

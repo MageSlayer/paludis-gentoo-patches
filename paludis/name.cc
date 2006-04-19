@@ -20,6 +20,12 @@
 #include <paludis/name.hh>
 #include <paludis/util/stringify.hh>
 
+/** \file
+ * Implementation of name.hh things.
+ *
+ * \ingroup grpnames
+ */
+
 using namespace paludis;
 
 QualifiedPackageNameError::QualifiedPackageNameError(const std::string & s) throw () :

@@ -28,8 +28,21 @@
 #include <string>
 #include <map>
 
+/** \file
+ * Declarations for the EbuildCommand classes.
+ *
+ * \ingroup grpebuildinterface
+ */
+
 namespace paludis
 {
+    /**
+     * Keys for EbuildCommandParams.
+     *
+     * \see EbuildCommandParams
+     *
+     * \ingroup grpebuildinterface
+     */
     enum EbuildCommandParamsKeys
     {
         ecpk_environment,
@@ -45,6 +58,13 @@ namespace paludis
     class Environment;
     class MakeEnvCommand;
 
+    /**
+     * Tag for EbuildCommandParams.
+     *
+     * \see EbuildCommandParams.
+     *
+     * \ingroup grpebuildinterface
+     */
     struct EbuildCommandParamsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<EbuildCommandParamsKeys, last_ecpk>,
@@ -58,32 +78,87 @@ namespace paludis
     {
     };
 
+    /**
+     * Parameters for EbuildCommand's constructor.
+     *
+     * \ingroup grpebuildinterface
+     */
     typedef MakeSmartRecord<EbuildCommandParamsTag>::Type EbuildCommandParams;
 
+    /**
+     * An EbuildCommand is the base class from which specific ebuild
+     * command interfaces are descended.
+     *
+     * \ingroup grpebuildinterface
+     */
     class EbuildCommand :
         private InstantiationPolicy<EbuildCommand, instantiation_method::NonCopyableTag>
     {
         protected:
+            /**
+             * Our parameters.
+             */
             const EbuildCommandParams params;
 
+            /**
+             * Constructor.
+             */
             EbuildCommand(const EbuildCommandParams &);
 
+            /**
+             * Override in descendents: which commands (for example, 'prerm
+             * unmerge postrm') do we give to ebuild.bash?
+             */
             virtual std::string commands() const = 0;
 
+            /**
+             * Actions to be taken after a successful command.
+             *
+             * The return value of this function is used for the return value
+             * of operator().
+             */
             virtual bool success();
 
+            /**
+             * Actions to be taken after a failed command.
+             *
+             * The return value of this function is used for the return value
+             * of operator(). In some descendents, this function throws and
+             * does not return.
+             */
             virtual bool failure() = 0;
 
+            /**
+             * Run the specified command. Can be overridden if, for example,
+             * the command output needs to be captured.
+             *
+             * \return Whether the command succeeded.
+             */
             virtual bool do_run_command(const std::string &);
 
+            /**
+             * Extend the command to be run.
+             */
             virtual MakeEnvCommand extend_command(const MakeEnvCommand &) = 0;
 
         public:
+            /**
+             * Destructor.
+             */
             virtual ~EbuildCommand();
 
+            /**
+             * Run the command.
+             */
             virtual bool operator() ();
     };
 
+    /**
+     * An EbuildMetadataCommand is used to generate metadata for a particular
+     * ebuild in a PortageRepository.
+     *
+     * \ingroup grpebuildinterface
+     */
     class EbuildMetadataCommand :
         public EbuildCommand
     {
@@ -100,14 +175,28 @@ namespace paludis
             virtual bool do_run_command(const std::string &);
 
         public:
+            /**
+             * Constructor.
+             */
             EbuildMetadataCommand(const EbuildCommandParams &);
 
+            /**
+             * Return a pointer to our generated metadata. If operator() has not
+             * yet been called, will be a zero pointer.
+             */
             VersionMetadata::Pointer metadata() const
             {
                 return _metadata;
             }
     };
 
+    /**
+     * Keys for EbuildFetchCommandParams.
+     *
+     * \see EbuildFetchCommandParams
+     *
+     * \ingroup grpebuildinterface
+     */
     enum EbuildFetchCommandParamsKeys
     {
         ecfpk_a,
@@ -120,6 +209,13 @@ namespace paludis
         last_ecfpk
     };
 
+    /**
+     * Tag for EbuildFetchCommandParams.
+     *
+     * \see EbuildFetchCommandParams
+     *
+     * \ingroup grpebuildinterface
+     */
     struct EbuildFetchCommandParamsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<EbuildFetchCommandParamsKeys, last_ecfpk>,
@@ -133,8 +229,17 @@ namespace paludis
     {
     };
 
+    /**
+     * Parameters for EbuildFetchCommand's constructor.
+     *
+     * \ingroup grpebuildinterface.
+     */
     typedef MakeSmartRecord<EbuildFetchCommandParamsTag>::Type EbuildFetchCommandParams;
 
+    /**
+     * An EbuildFetchCommand is used to download and verify the digests for a
+     * particular ebuild in a PortageRepository. On failure it throws.
+     */
     class EbuildFetchCommand :
         public EbuildCommand
     {
@@ -148,9 +253,19 @@ namespace paludis
             virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
 
         public:
+            /**
+             * Constructor.
+             */
             EbuildFetchCommand(const EbuildCommandParams &, const EbuildFetchCommandParams &);
     };
 
+    /**
+     * Keys for EbuildInstallCommandParams.
+     *
+     * \see EbuildInstallCommandParams
+     *
+     * \ingroup grpebuildinterface
+     */
     enum EbuildInstallCommandParamsKeys
     {
         ecipk_a,
@@ -165,6 +280,13 @@ namespace paludis
         last_ecipk
     };
 
+    /**
+     * Tag for EbuildInstallCommandParams.
+     *
+     * \see EbuildInstallCommandParams
+     *
+     * \ingroup grpebuildinterface
+     */
     struct EbuildInstallCommandParamsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<EbuildInstallCommandParamsKeys, last_ecipk>,
@@ -180,8 +302,19 @@ namespace paludis
     {
     };
 
+    /**
+     * Parameters for EbuildInstallCommand's constructor.
+     *
+     * \ingroup grpebuildinterface
+     */
     typedef MakeSmartRecord<EbuildInstallCommandParamsTag>::Type EbuildInstallCommandParams;
 
+    /**
+     * An EbuildInstallCommand is used to install an ebuild from a
+     * PortageRepository. On failure it throws.
+     *
+     * \ingroup grpebuildinterface
+     */
     class EbuildInstallCommand :
         public EbuildCommand
     {
@@ -195,9 +328,19 @@ namespace paludis
             virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
 
         public:
+            /**
+             * Constructor.
+             */
             EbuildInstallCommand(const EbuildCommandParams &, const EbuildInstallCommandParams &);
     };
 
+    /**
+     * Keys for EbuildUninstallCommandParams.
+     *
+     * \see EbuildUninstallCommandParams
+     *
+     * \ingroup grpebuildinterface
+     */
     enum EbuildUninstallCommandParamsKeys
     {
         ecupk_root,
@@ -206,6 +349,13 @@ namespace paludis
         last_ecupk
     };
 
+    /**
+     * Tags for EbuildUninstallCommandParams.
+     *
+     * \see EbuildUninstallCommandParams
+     *
+     * \ingroup grpebuildinterface
+     */
     struct EbuildUninstallCommandParamsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<EbuildUninstallCommandParamsKeys, last_ecupk>,
@@ -215,8 +365,18 @@ namespace paludis
     {
     };
 
+    /**
+     * Parameters for EbuildUninstallCommand's constructor.
+     *
+     * \ingroup grpebuildinterface
+     */
     typedef MakeSmartRecord<EbuildUninstallCommandParamsTag>::Type EbuildUninstallCommandParams;
 
+    /**
+     * An EbuildUninstallCommand is used to uninstall a package in a VDBRepository.
+     *
+     * \ingroup grpebuildinterface
+     */
     class EbuildUninstallCommand :
         public EbuildCommand
     {
@@ -230,6 +390,9 @@ namespace paludis
             virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
 
         public:
+            /**
+             * Constructor.
+             */
             EbuildUninstallCommand(const EbuildCommandParams &, const EbuildUninstallCommandParams &);
     };
 }

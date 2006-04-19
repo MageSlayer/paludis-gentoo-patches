@@ -39,6 +39,21 @@
  * \ingroup grplibpaludis
  */
 
+/** \defgroup grpebuildinterface Ebuild interface
+ *
+ * \ingroup grplibpaludis
+ */
+
+/** \defgroup grphashedcontainers Hashed containers
+ *
+ * \ingroup grplibpaludis
+ */
+
+/** \defgroup grpnames Names
+ *
+ * \ingroup grplibpaludis
+ */
+
 // ----- grpconfigfile Subgroups -----
 
 /** \defgroup grpkvconfigfile Key/Value configuration file
@@ -63,11 +78,35 @@
  * \ingroup grpenvironment
  */
 
+/** \defgroup grppackagedatabase Package database
+ *
+ * \ingroup grpenvironment
+ */
+
+/** \defgroup grpmaskreasons Mask reasons
+ *
+ * \ingroup grpenvironment
+ */
+
 // ----- grpdefaultenvironment Subgroups -----
 
 /** \defgroup grpdefaultconfig Default configuration
  *
  * \ingroup grpdefaultenvironment
+ */
+
+// --- grppackagedatabase Subgroups -----
+
+/** \defgroup grprepository Repositories
+ *
+ * \ingroup grppackagedatabase
+ */
+
+// --- grprepository Subgroups -----
+
+/** \defgroup grpfakerepository Fake repository
+ *
+ * \ingroup grprepository
  */
 
 // ----- grpdepatoms Subgroups -----
@@ -100,6 +139,11 @@
  */
 
 /** \defgroup grpdepparser Dependency parsing
+ *
+ * \ingroup grpdependencies
+ */
+
+/** \defgroup grpmatchpackage Match package
  *
  * \ingroup grpdependencies
  */

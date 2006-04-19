@@ -22,6 +22,12 @@
 #include <paludis/util/exception.hh>
 #include <ostream>
 
+/** \file
+ * Implementation of MaskReason classes.
+ *
+ * \ingroup grpmaskreasons
+ */
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const MaskReason & r)
 {
@@ -63,3 +69,4 @@ paludis::operator<< (std::ostream & s, const MaskReason & r)
 
     return s;
 }
+

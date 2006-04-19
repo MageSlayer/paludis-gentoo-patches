@@ -29,7 +29,7 @@
 /** \file
  * Declarations for the Environment class.
  *
- * \ingroup Environment
+ * \ingroup grpenvironment
  */
 
 namespace paludis
@@ -39,7 +39,7 @@ namespace paludis
      * database and provides various methods for querying package visibility
      * and options.
      *
-     * \ingroup Environment
+     * \ingroup grpenvironment
      */
     class Environment :
         private InstantiationPolicy<Environment, instantiation_method::NonCopyableTag>
@@ -119,15 +119,35 @@ namespace paludis
              */
             virtual ~Environment();
 
+            /**
+             * Iterator over our provide map.
+             */
             typedef std::map<QualifiedPackageName, QualifiedPackageName>::const_iterator ProvideMapIterator;
 
+            /**
+             * Iterator to the start of our provide map.
+             */
             ProvideMapIterator begin_provide_map() const;
 
+            /**
+             * Iterator to past the end of our provide map.
+             */
             ProvideMapIterator end_provide_map() const;
 
+            /**
+             * Fetch a named package set.
+             */
             DepAtom::Pointer package_set(const std::string &) const;
 
+            /**
+             * Add packages to world, if they are not there already, and if they are
+             * not a restricted atom.
+             */
             void add_appropriate_to_world(DepAtom::ConstPointer) const;
+
+            /**
+             * Remove packages from world, if they are there.
+             */
             void remove_appropriate_from_world(DepAtom::ConstPointer) const;
     };
 }
