@@ -38,10 +38,10 @@ namespace
     struct LicenceDisplayer :
         p::DepAtomVisitorTypes::ConstVisitor
     {
-        const Environment * const env;
-        const PackageDatabaseEntry * const db_entry;
+        const p::Environment * const env;
+        const p::PackageDatabaseEntry * const db_entry;
 
-        LicenceDisplayer(const Environment * const e, const PackageDatabaseEntry * const d) :
+        LicenceDisplayer(const p::Environment * const e, const p::PackageDatabaseEntry * const d) :
             env(e),
             db_entry(d)
         {
@@ -49,28 +49,28 @@ namespace
 
         ///\name Visit methods
         ///{
-        void visit(const AllDepAtom * atom)
+        void visit(const p::AllDepAtom * atom)
         {
             cerr << "( ";
-            std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+            std::for_each(atom->begin(), atom->end(), p::accept_visitor(this));
             cerr << ") ";
         }
 
-        void visit(const AnyDepAtom * atom)
+        void visit(const p::AnyDepAtom * atom)
         {
             cerr << "|| ( ";
-            std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+            std::for_each(atom->begin(), atom->end(), p::accept_visitor(this));
             cerr << ") ";
         }
 
-        void visit(const UseDepAtom * atom)
+        void visit(const p::UseDepAtom * atom)
         {
             cerr << atom->flag() << "? ( ";
-            std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+            std::for_each(atom->begin(), atom->end(), p::accept_visitor(this));
             cerr << ") ";
         }
 
-        void visit(const PlainTextDepAtom * atom)
+        void visit(const p::PlainTextDepAtom * atom)
         {
             if (env->accept_license(atom->text(), db_entry))
                 cerr << colour(cl_green, atom->text());
@@ -79,14 +79,14 @@ namespace
             cerr << " ";
         }
 
-        void visit(const PackageDepAtom *) PALUDIS_ATTRIBUTE((noreturn))
+        void visit(const p::PackageDepAtom *) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw InternalError(PALUDIS_HERE, "todo: encountered PackageDepAtom in licence?"); /// \bug todo
+            throw p::InternalError(PALUDIS_HERE, "todo: encountered PackageDepAtom in licence?"); /// \bug todo
         }
 
-        void visit(const BlockDepAtom *)  PALUDIS_ATTRIBUTE((noreturn))
+        void visit(const p::BlockDepAtom *)  PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw InternalError(PALUDIS_HERE, "todo: encountered BlockDepAtom in licence?"); /// \bug todo
+            throw p::InternalError(PALUDIS_HERE, "todo: encountered BlockDepAtom in licence?"); /// \bug todo
         }
         ///}
     };
@@ -94,7 +94,7 @@ namespace
     struct TagDisplayer :
         p::DepTagVisitorTypes::ConstVisitor
     {
-        void visit(const GLSADepTag * const tag)
+        void visit(const p::GLSADepTag * const tag)
         {
             cout << "* " << colour(cl_yellow, tag->short_text()) << ": "
                 << tag->glsa_title() << endl;
@@ -124,7 +124,7 @@ do_install()
         bool had_set_targets(false), had_pkg_targets(false);
         for ( ; q != q_end ; ++q)
         {
-            DepAtom::Pointer s(0);
+            p::DepAtom::Pointer s(0);
             if (s = ((env->package_set(*q))))
             {
                 if (had_set_targets)
@@ -194,7 +194,7 @@ do_install()
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
         {
-            Context loop_context("When displaying DepList entry '" + stringify(*dep) + "':");
+            p::Context loop_context("When displaying DepList entry '" + stringify(*dep) + "':");
 
             /* display name */
             cout << "* " << colour(cl_package_name, dep->get<p::dle_name>());
@@ -225,16 +225,16 @@ do_install()
             {
                 existing = env->package_database()->query(p::PackageDepAtom::Pointer(
                             new p::PackageDepAtom(p::stringify(dep->get<p::dle_name>()) + ":" +
-                                dep->get<p::dle_metadata>()->get(vmk_slot))),
+                                dep->get<p::dle_metadata>()->get(p::vmk_slot))),
                         p::is_installed_only);
                 if (existing->empty())
                     cout << colour(cl_updatemode, " [S]");
                 else if (existing->last()->get<p::pde_version>() < dep->get<p::dle_version>())
-                    cout << colour(cl_updatemode, " [U " + stringify(
-                                existing->last()->get<pde_version>()) + "]");
+                    cout << colour(cl_updatemode, " [U " + p::stringify(
+                                existing->last()->get<p::pde_version>()) + "]");
                 else if (existing->last()->get<p::pde_version>() > dep->get<p::dle_version>())
-                    cout << colour(cl_updatemode, " [D " + stringify(
-                                existing->last()->get<pde_version>()) + "]");
+                    cout << colour(cl_updatemode, " [D " + p::stringify(
+                                existing->last()->get<p::pde_version>()) + "]");
                 else
                     cout << colour(cl_updatemode, " [R]");
             }
@@ -260,7 +260,7 @@ do_install()
             if (! dep->get<p::dle_tag>().empty())
             {
                 std::string tag_titles;
-                for (std::set<DepTag::ConstPointer, DepTag::Comparator>::const_iterator
+                for (std::set<p::DepTag::ConstPointer, p::DepTag::Comparator>::const_iterator
                         tag(dep->get<p::dle_tag>().begin()),
                         tag_end(dep->get<p::dle_tag>().end()) ;
                         tag != tag_end ; ++tag)
@@ -290,10 +290,10 @@ do_install()
 
             std::set<std::string> tag_categories;
             std::transform(
-                    p::indirect_iterator<const DepTag>(all_tags.begin()),
-                    p::indirect_iterator<const DepTag>(all_tags.end()),
+                    p::indirect_iterator<const p::DepTag>(all_tags.begin()),
+                    p::indirect_iterator<const p::DepTag>(all_tags.end()),
                     std::inserter(tag_categories, tag_categories.begin()),
-                    std::mem_fun_ref(&DepTag::category));
+                    std::mem_fun_ref(&p::DepTag::category));
 
             for (std::set<std::string>::iterator cat(tag_categories.begin()),
                     cat_end(tag_categories.end()) ; cat != cat_end ; ++cat)
@@ -325,9 +325,9 @@ do_install()
 
         p::InstallOptions opts(false, false);
         if (CommandLine::get_instance()->a_no_config_protection.specified())
-            opts.set<io_noconfigprotect>(true);
+            opts.set<p::io_noconfigprotect>(true);
         if (CommandLine::get_instance()->a_fetch.specified())
-            opts.set<io_fetchonly>(true);
+            opts.set<p::io_fetchonly>(true);
 
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
@@ -335,7 +335,7 @@ do_install()
             std::string cpv = p::stringify(dep->get<p::dle_name>()) + "-" +
                 p::stringify(dep->get<p::dle_version>());
 
-            if (opts.get<io_fetchonly>())
+            if (opts.get<p::io_fetchonly>())
             {
                 cout << endl << colour(cl_heading, "Fetching " + cpv) << endl << endl;
 
@@ -357,7 +357,7 @@ do_install()
             env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
                 install(dep->get<p::dle_name>(), dep->get<p::dle_version>(), opts);
 
-            if (! opts.get<io_fetchonly>())
+            if (! opts.get<p::io_fetchonly>())
             {
                 // figure out if we need to unmerge anything
                 cout << endl << colour(cl_heading,
@@ -374,14 +374,14 @@ do_install()
                 p::PackageDatabaseEntryCollection::Pointer collision_list(env->package_database()->query(
                             p::PackageDepAtom::Pointer(new p::PackageDepAtom(
                                     p::stringify(dep->get<p::dle_name>()) + ":" +
-                                    p::stringify(dep->get<p::dle_metadata>()->get(vmk_slot)))),
-                            is_installed_only));
+                                    p::stringify(dep->get<p::dle_metadata>()->get(p::vmk_slot)))),
+                            p::is_installed_only));
 
                 // don't clean the thing we just installed
                 p::PackageDatabaseEntryCollection clean_list;
                 for (p::PackageDatabaseEntryCollection::Iterator c(collision_list->begin()),
                         c_end(collision_list->end()) ; c != c_end ; ++c)
-                    if (dep->get<dle_version>() != c->get<pde_version>())
+                    if (dep->get<p::dle_version>() != c->get<p::pde_version>())
                         clean_list.insert(*c);
 
                 if (clean_list.empty())
@@ -467,11 +467,11 @@ do_install()
                             {
                                 cerr << " ";
                                 std::string license_str(env->package_database()->fetch_repository(
-                                            pp->get<pde_repository>())->version_metadata(
-                                            pp->get<pde_name>(), pp->get<pde_version>())->get(p::vmk_license));
+                                            pp->get<p::pde_repository>())->version_metadata(
+                                            pp->get<p::pde_name>(), pp->get<p::pde_version>())->get(p::vmk_license));
 
                                 LicenceDisplayer ld(env, &*pp);
-                                p::DepParser::parse(license_str, DepParserPolicy<PlainTextDepAtom,
+                                p::DepParser::parse(license_str, p::DepParserPolicy<p::PlainTextDepAtom,
                                         true>::get_instance())->accept(&ld);
                             }
 

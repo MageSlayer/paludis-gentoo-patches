@@ -60,7 +60,7 @@ do_uninstall()
     }
 
     bool ok(true);
-    p::PackageDatabaseEntryCollection::Pointer unmerge(new PackageDatabaseEntryCollection);
+    p::PackageDatabaseEntryCollection::Pointer unmerge(new p::PackageDatabaseEntryCollection);
     for (std::list<p::PackageDepAtom::Pointer>::iterator t(targets.begin()), t_end(targets.end()) ;
             t != t_end ; ++t)
     {
@@ -109,7 +109,7 @@ do_uninstall()
 
     p::InstallOptions opts(false, false);
     if (CommandLine::get_instance()->a_no_config_protection.specified())
-        opts.set<io_noconfigprotect>(true);
+        opts.set<p::io_noconfigprotect>(true);
 
     for (p::PackageDatabaseEntryCollection::Iterator pkg(unmerge->begin()), pkg_end(unmerge->end()) ;
             pkg != pkg_end ; ++pkg)

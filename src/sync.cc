@@ -85,7 +85,7 @@ int do_sync()
             {
                 return_code |= do_one_sync(env->package_database()->fetch_repository(*r));
             }
-            catch (const NoSuchRepositoryError & e)
+            catch (const p::NoSuchRepositoryError & e)
             {
                 return_code |= 1;
                 std::cerr << "No such repository '" << *r << "'" << std::endl;
