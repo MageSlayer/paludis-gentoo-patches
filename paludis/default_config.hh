@@ -32,13 +32,20 @@
 #include <vector>
 #include <string>
 
+/** \file
+ * Declarations for the DefaultConfig class and related utilities.
+ *
+ * \ingroup grpdefaultconfig
+ */
+
 namespace paludis
 {
     /**
      * A DefaultConfigError is thrown if a configuration error is encountered
      * by DefaultConfig.
      *
-     * \ingroup Exception
+     * \ingroup grpexceptions
+     * \ingroup grpdefaultconfig
      */
     class DefaultConfigError : public ConfigurationError
     {
@@ -51,6 +58,10 @@ namespace paludis
 
     /**
      * Keys for RepositoryConfigEntry.
+     *
+     * \see RepositoryConfigEntry
+     *
+     * \ingroup grpdefaultconfig
      */
     enum RepositoryConfigEntryKeys
     {
@@ -62,6 +73,10 @@ namespace paludis
 
     /**
      * Tag for RepositoryConfigEntry.
+     *
+     * \see RepositoryConfigEntry
+     *
+     * \ingroup grpdefaultconfig
      */
     struct RepositoryConfigEntryTag :
         SmartRecordTag<comparison_mode::FullComparisonTag,
@@ -75,11 +90,17 @@ namespace paludis
 
     /**
      * Holds an entry in a DefaultConfig's repository configuration data.
+     *
+     * \ingroup grpdefaultconfig
      */
     typedef MakeSmartRecord<RepositoryConfigEntryTag>::Type RepositoryConfigEntry;
 
     /**
      * Keys for UseConfigEntry.
+     *
+     * \see UseConfigEntry
+     *
+     * \ingroup grpdefaultconfig
      */
     enum UseConfigEntryKeys
     {
@@ -90,6 +111,10 @@ namespace paludis
 
     /**
      * Tag for UseConfigEntry.
+     *
+     * \see UseConfigEntry
+     *
+     * \ingroup grpdefaultconfig
      */
     struct UseConfigEntryTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
@@ -101,13 +126,17 @@ namespace paludis
     };
 
     /**
-     *  An entry in a DefaultConfig's use configuration data.
+     * An entry in a DefaultConfig's use configuration data.
+     *
+     * \ingroup grpdefaultconfig
      */
     typedef MakeSmartRecord<UseConfigEntryTag>::Type UseConfigEntry;
 
     /**
      * DefaultConfig is used by DefaultEnvironment to access the user's
      * configuration settings from on-disk configuration files.
+     *
+     * \ingroup grpdefaultconfig
      */
     class DefaultConfig :
         public InstantiationPolicy<DefaultConfig, instantiation_method::SingletonAsNeededTag>
@@ -160,6 +189,9 @@ namespace paludis
              */
             static void set_config_suffix(const std::string &);
 
+            ///\name Repositories
+            ///{
+
             /**
              * An iterator for our repositories.
              */
@@ -180,6 +212,11 @@ namespace paludis
             {
                 return _repos.end();
             }
+
+            ///}
+
+            ///\name Keywords
+            ///{
 
             /**
              * Iterate over our package.keywords entries.
@@ -236,6 +273,11 @@ namespace paludis
                 return _default_keywords.end();
             }
 
+            ///}
+
+            ///\name Licenses
+            ///{
+
             /**
              * Iterate over our licenses entries.
              */
@@ -290,6 +332,11 @@ namespace paludis
             {
                 return _default_licenses.end();
             }
+
+            ///}
+
+            ///\name Masks
+            ///{
 
             /**
              * Iterator over user package masks.
@@ -351,6 +398,11 @@ namespace paludis
                     return _empty_masks.end();
             }
 
+            ///}
+
+            ///\name Use
+            ///{
+
             /**
              * Iterator to the start of the use configuration.
              */
@@ -402,6 +454,7 @@ namespace paludis
             {
                 return _default_use.end();
             }
+            ///}
 
             /**
              * Our bashrc files.
@@ -416,6 +469,9 @@ namespace paludis
                 return _paludis_command;
             }
 
+            /**
+             * Set the paludis command.
+             */
             void set_paludis_command(const std::string & s)
             {
                 _paludis_command = s;

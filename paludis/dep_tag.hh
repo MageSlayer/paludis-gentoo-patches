@@ -20,6 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_TAG_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_TAG_HH 1
 
+/** \file
+ * Declarations for the DepTag and DepTagCategory classes.
+ *
+ * \ingroup grpdeptag
+ */
+
 #include <string>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
@@ -29,6 +35,17 @@
 
 namespace paludis
 {
+    /**
+     * A DepTagCategory is identified by its name and has associated display
+     * information for a DepTag's category.
+     *
+     * It is usually accessed via DepTagCategoryMaker.
+     *
+     * \see DepTagCategoryMaker
+     * \see DepTag
+     *
+     * \ingroup grpdeptag
+     */
     class DepTagCategory :
         InstantiationPolicy<DepTagCategory, instantiation_method::NonCopyableTag>,
         public InternalCounted<DepTagCategory>
@@ -40,32 +57,54 @@ namespace paludis
             const std::string _post_text;
 
         public:
+            /**
+             * Constructor.
+             */
             DepTagCategory(const std::string & id,
                     const std::string & t,
                     const std::string & pre,
                     const std::string & post);
 
+            /**
+             * Fetch our short ID (for example, 'GLSA').
+             */
             std::string id() const
             {
                 return _id;
             }
 
+            /**
+             * Fetch our title (for example, 'Security advisories'), or an
+             * empty string if we're untitled.
+             */
             std::string title() const
             {
                 return _title;
             }
 
+            /**
+             * Fetch our pre list text, or an empty string.
+             */
             std::string pre_text() const
             {
                 return _pre_text;
             }
 
+            /**
+             * Fetch our post list text, or an empty string.
+             */
             std::string post_text() const
             {
                 return _post_text;
             }
     };
 
+    /**
+     * Thrown if DepTagCategoryMaker cannot find the named DepTagCategory.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grpdeptag
+     */
     class NoSuchDepTagCategory :
         public Exception
     {
@@ -73,31 +112,70 @@ namespace paludis
             NoSuchDepTagCategory(const std::string &) throw ();
     };
 
+    /**
+     * Virtual constructor for accessing DepTagCategory instances.
+     *
+     * \ingroup grpdeptag
+     */
     typedef VirtualConstructor<std::string, DepTagCategory::ConstPointer (*) (),
             virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> > DepTagCategoryMaker;
 
     class DepTag;
     class GLSADepTag;
 
+    /**
+     * Visitor class for visiting the different DepTag subclasses.
+     *
+     * \ingroup grpdeptag
+     */
     typedef VisitorTypes<GLSADepTag *> DepTagVisitorTypes;
 
+    /**
+     * A DepTag can be associated with a PackageDepAtom, and is transferred
+     * onto any associated DepListEntry instances. 
+     *
+     * It is used for tagging dep list entries visually, for example to
+     * indicate an associated GLSA.
+     *
+     * \ingroup grpdeptag
+     */
     class DepTag :
         InstantiationPolicy<DepTag, instantiation_method::NonCopyableTag>,
         public InternalCounted<DepTag>,
         public virtual VisitableInterface<DepTagVisitorTypes>
     {
         protected:
+            /**
+             * Constructor.
+             */
             DepTag();
 
         public:
+            /**
+             * Destructor.
+             */
             virtual ~DepTag();
 
+            /**
+             * Fetch our short text (for example, 'GLSA-1234') that is
+             * displayed with the dep list entry.
+             */
             virtual std::string short_text() const = 0;
 
+            /**
+             * Fetch our DepTagCategory's tag.
+             */
             virtual std::string category() const = 0;
 
+            /**
+             * Used for comparisons in containers containing pointers to DepTag
+             * instances.
+             *
+             * \ingroup grpdeptag
+             */
             struct Comparator
             {
+                /// Perform the comparison.
                 bool operator() (const DepTag::ConstPointer & d1,
                         const DepTag::ConstPointer & d2) const
                 {
@@ -106,6 +184,11 @@ namespace paludis
             };
     };
 
+    /**
+     * DepTag subclass for GLSAs.
+     *
+     * \ingroup grpdeptag
+     */
     class GLSADepTag :
         public DepTag,
         public Visitable<GLSADepTag, DepTagVisitorTypes>
@@ -115,12 +198,19 @@ namespace paludis
             const std::string _glsa_title;
 
         public:
+            /**
+             * Constructor.
+             */
             GLSADepTag(const std::string & id, const std::string & glsa_title);
 
             virtual std::string short_text() const;
 
             virtual std::string category() const;
 
+            /**
+             * Fetch our GLSA title (for example, 'Yet another PHP remote access
+             * hole').
+             */
             std::string glsa_title() const;
     };
 }

@@ -28,7 +28,7 @@ using namespace paludis;
 /** \file
  * Test cases for DepParser.
  *
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -36,7 +36,7 @@ namespace test_cases
     /**
      * \test Test DepParser with an empty input.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserEmptyTest : TestCase
     {
@@ -54,7 +54,7 @@ namespace test_cases
     /**
      * \test Test DepParser with a blank input.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserBlankTest : TestCase
     {
@@ -72,7 +72,7 @@ namespace test_cases
     /**
      * \test Test DepParser with a package.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserPackageTest : TestCase
     {
@@ -90,7 +90,7 @@ namespace test_cases
     /**
      * \test Test DepParser with a decorated package.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserDecoratedPackageTest : TestCase
     {
@@ -121,7 +121,7 @@ namespace test_cases
     /**
      * \test Test DepParser with a sequence of packages.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserPackagesTest : TestCase
     {
@@ -140,7 +140,7 @@ namespace test_cases
     /**
      * \test Test DepParser with an any group.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserAnyTest : TestCase
     {
@@ -159,7 +159,7 @@ namespace test_cases
     /**
      * \test Test DepParser with an all group.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserAllTest : TestCase
     {
@@ -178,7 +178,7 @@ namespace test_cases
     /**
      * \test Test DepParser with a use group.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserUseTest : TestCase
     {
@@ -197,7 +197,7 @@ namespace test_cases
     /**
      * \test Test DepParser with an inverse use group.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserInvUseTest : TestCase
     {
@@ -216,7 +216,7 @@ namespace test_cases
     /**
      * \test Test DepParser nesting errors.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserBadNestingTest : TestCase
     {
@@ -237,7 +237,7 @@ namespace test_cases
     /**
      * \test Test DepParser weird errors.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepParserBadValuesTest : TestCase
     {

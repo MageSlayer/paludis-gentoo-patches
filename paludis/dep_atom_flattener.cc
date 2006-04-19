@@ -20,6 +20,12 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
 
+/** \file
+ * Implementation of dep_atom_flattener.hh.
+ *
+ * \ingroup grpdepatomflattener
+ */
+
 using namespace paludis;
 
 DepAtomFlattener::DepAtomFlattener(

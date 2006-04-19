@@ -28,8 +28,7 @@
 /** \file
  * Declarations for the DepLexer class.
  *
- * \ingroup DepResolver
- * \ingroup Exception
+ * \ingroup grpdeplexer
  */
 
 namespace paludis
@@ -38,8 +37,8 @@ namespace paludis
      * A DepStringError descendent is thrown if an invalid depend string is
      * encountered.
      *
-     * \ingroup Exception
-     * \ingroup DepResolver
+     * \ingroup grpdeplexer
+     * \ingroup grpexceptions
      */
     class DepStringError : public Exception
     {
@@ -55,8 +54,8 @@ namespace paludis
      * A DepStringLexError is thrown if a lex-level error is encountered when
      * parsing a dependency string.
      *
-     * \ingroup Exception
-     * \ingroup DepResolver
+     * \ingroup grpdeplexer
+     * \ingroup grpexceptions
      */
     class DepStringLexError : public DepStringError
     {
@@ -70,6 +69,10 @@ namespace paludis
 
     /**
      * Lexemes used by DepLexer.
+     *
+     * \see DepLexer
+     *
+     * \ingroup grpdeplexer
      */
     enum DepLexerLexeme
     {
@@ -82,7 +85,12 @@ namespace paludis
     };
 
     /**
-     * Converts a dependency string into a sequence of tokens.
+     * Converts a dependency string into a sequence of tokens, which are
+     * then handled by DepParser.
+     *
+     * \see DepParser
+     *
+     * \ingroup grpdeplexer
      */
     class DepLexer :
         private InstantiationPolicy<DepLexer, instantiation_method::NonCopyableTag>

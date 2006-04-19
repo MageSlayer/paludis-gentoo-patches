@@ -24,10 +24,18 @@
 #include <paludis/dep_atom.hh>
 #include <sstream>
 
+/** \file
+ * Declarations for the DepAtomPrettyPrinter class.
+ *
+ * \ingroup grpdepatomprettyprinter
+ */
+
 namespace paludis
 {
     /**
-     * Pretty print dependency atoms
+     * Pretty print dependency atoms.
+     *
+     * \ingroup grpdepatomprettyprinter
      */
     class DepAtomPrettyPrinter :
         public DepAtomVisitorTypes::ConstVisitor
@@ -65,6 +73,8 @@ namespace paludis
 
     /**
      * Output a DepAtomPrettyPrinter to an ostream.
+     *
+     * \ingroup grpdepatomprettyprinter
      */
     std::ostream & operator<< (std::ostream & s, const DepAtomPrettyPrinter & p);
 }

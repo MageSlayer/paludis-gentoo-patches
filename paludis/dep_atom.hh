@@ -34,7 +34,7 @@
 /** \file
  * Declarations for the DepAtom classes.
  *
- * \ingroup DepResolver
+ * \ingroup grpdepatoms
  */
 
 namespace paludis
@@ -50,6 +50,8 @@ namespace paludis
 
     /**
      * Visitor types for a visitor that can visit a DepAtom heirarchy.
+     *
+     * \ingroup grpdepatoms
      */
     typedef VisitorTypes<PackageDepAtom *, PlainTextDepAtom *, AllDepAtom *, AnyDepAtom *,
             UseDepAtom *, BlockDepAtom *> DepAtomVisitorTypes;
@@ -57,7 +59,7 @@ namespace paludis
     /**
      * Base class for a dependency atom.
      *
-     * \ingroup DepResolver
+     * \ingroup grpdepatoms
      */
     class DepAtom :
         public virtual VisitableInterface<DepAtomVisitorTypes>,
@@ -69,6 +71,9 @@ namespace paludis
             DepAtom();
 
         public:
+            /**
+             * Destructor.
+             */
             virtual ~DepAtom();
 
             /**
@@ -82,7 +87,7 @@ namespace paludis
      * Class for dependency atoms that have a number of child dependency
      * atoms.
      *
-     * \ingroup DepResolver
+     * \ingroup grpdepatoms
      */
     class CompositeDepAtom :
         public DepAtom,
@@ -131,7 +136,7 @@ namespace paludis
     /**
      * Represents a "|| ( )" dependency block.
      *
-     * \ingroup DepResolver
+     * \ingroup grpdepatoms
      */
     class AnyDepAtom :
         public CompositeDepAtom,
@@ -148,7 +153,7 @@ namespace paludis
      * Represents a ( first second third ) or top level group of dependency
      * atoms.
      *
-     * \ingroup DepResolver
+     * \ingroup grpdepatoms
      */
     class AllDepAtom :
         public CompositeDepAtom,
@@ -164,7 +169,7 @@ namespace paludis
     /**
      * Represents a use? ( ) dependency atom.
      *
-     * \ingroup DepResolver
+     * \ingroup grpdepatoms
      */
     class UseDepAtom :
         public CompositeDepAtom,
@@ -202,6 +207,8 @@ namespace paludis
     /**
      * A StringDepAtom represents a non-composite dep atom with an associated
      * piece of text.
+     *
+     * \ingroup grpdepatoms
      */
     class StringDepAtom :
         public DepAtom
@@ -213,6 +220,9 @@ namespace paludis
             StringDepAtom(const std::string &);
 
         public:
+            /**
+             * Fetch our text.
+             */
             const std::string & text() const
             {
                 return _str;
@@ -224,7 +234,7 @@ namespace paludis
      * 'app-editors/vim'), possibly with associated version and SLOT
      * restrictions.
      *
-     * \ingroup DepResolver
+     * \ingroup grpdepatoms
      */
     class PackageDepAtom :
         public StringDepAtom,
@@ -319,7 +329,7 @@ namespace paludis
      * A PlainTextDepAtom represents a plain text entry (for example,
      * a URI in SRC_URI).
      *
-     * \ingroup DepResolver
+     * \ingroup grpdepatoms
      */
     class PlainTextDepAtom :
         public StringDepAtom,
@@ -335,6 +345,12 @@ namespace paludis
             typedef CountedPtr<const PlainTextDepAtom, count_policy::InternalCountTag> ConstPointer;
     };
 
+    /**
+     * Thrown if an invalid package dep atom specification is encountered.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grpdepatoms
+     */
     class PackageDepAtomError :
         public Exception
     {
@@ -344,6 +360,8 @@ namespace paludis
 
     /**
      * A PackageDepAtom can be written to an ostream.
+     *
+     * \ingroup grpdepatoms
      */
     std::ostream & operator<< (std::ostream &, const PackageDepAtom &);
 
@@ -352,7 +370,7 @@ namespace paludis
      * 'app-editors/vim'), possibly with associated version and SLOT
      * restrictions.
      *
-     * \ingroup DepResolver
+     * \ingroup grpdepatoms
      */
     class BlockDepAtom :
         public StringDepAtom,

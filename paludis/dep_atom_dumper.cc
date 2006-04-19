@@ -21,6 +21,12 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_dumper.hh>
 
+/** \file
+ * Implementation for dep_atom_dumper.hh.
+ *
+ * \ingroup grpdepatomdumper
+ */
+
 using namespace paludis;
 
 DepAtomDumper::DepAtomDumper(std::ostream * const o) :

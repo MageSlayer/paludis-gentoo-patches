@@ -31,8 +31,7 @@
 /** \file
  * Declarations for the ConfigFile classes.
  *
- * \ingroup ConfigFile
- * \ingroup Exception
+ * \ingroup grpconfigfile
  */
 
 namespace paludis
@@ -40,8 +39,8 @@ namespace paludis
     /**
      * Thrown if an error occurs when reading a ConfigFile.
      *
-     * \ingroup Exception
-     * \ingroup ConfigFile
+     * \ingroup grpexceptions
+     * \ingroup grpconfigfile
      */
     class ConfigFileError : public ConfigurationError
     {
@@ -57,7 +56,7 @@ namespace paludis
      * starting with a # being ignored and leading and trailing whitespace
      * being discarded.
      *
-     * \ingroup ConfigFile
+     * \ingroup grpconfigfile
      */
     class ConfigFile :
         paludis::InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>
@@ -132,7 +131,7 @@ namespace paludis
      * A LineConfigFile is a ConfigFile that provides access to the
      * normalised lines. Do not subclass.
      *
-     * \ingroup ConfigFile
+     * \ingroup grplineconfigfile
      */
     class LineConfigFile : protected ConfigFile
     {
@@ -184,8 +183,8 @@ namespace paludis
      * A KeyValueConfigFileError is thrown if bad data is encountered in
      * a ConfigFile.
      *
-     * \ingroup ConfigFile
-     * \ingroup Exception
+     * \ingroup grpkvconfigfile
+     * \ingroup grpexceptions
      */
     class KeyValueConfigFileError : public ConfigurationError
     {
@@ -201,7 +200,7 @@ namespace paludis
      * A KeyValueConfigFile is a ConfigFile that provides access to the
      * normalised lines. Do not subclass.
      *
-     * \ingroup ConfigFile
+     * \ingroup grpkvconfigfile
      */
     class KeyValueConfigFile : protected ConfigFile
     {
@@ -294,8 +293,8 @@ namespace paludis
      * An AdvisoryFileError is thrown if bad data is encountered in
      * a ConfigFile.
      *
-     * \ingroup ConfigFile
-     * \ingroup Exception
+     * \ingroup grpadvisoryconfigfile
+     * \ingroup grpexceptions
      */
     class AdvisoryFileError : public ConfigurationError
     {
@@ -317,7 +316,7 @@ namespace paludis
      * Valid header items are:
      *  Affected, Bug-Url, Committed-By, Id, Reviewed-By, Unaffected, Url
      *
-     * \ingroup ConfigFile
+     * \ingroup grpadvisoryconfigfile
      */
 
     class AdvisoryFile : protected ConfigFile

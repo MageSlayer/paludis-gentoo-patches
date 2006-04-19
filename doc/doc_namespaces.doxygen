@@ -12,6 +12,10 @@
  * \ingroup Test
  */
 
+/** \namespace paludis
+ * Paludis library code.
+ */
+
 /** \namespace paludis::args
  * Commandline argument handling.
  *
@@ -23,8 +27,3 @@
  *
  * \ingroup Args
  */
-
-/** \namespace paludis
- * Paludis library code.
- */
-

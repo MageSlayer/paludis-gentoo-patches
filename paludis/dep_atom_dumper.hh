@@ -25,12 +25,16 @@
 
 /** \file
  * Declarations for the DepAtomDumper class.
+ *
+ * \ingroup grpdepatomdumper
  */
 
 namespace paludis
 {
     /**
      * Dump dependency atoms to a stream in pseudo-XML form, for testing.
+     *
+     * \ingroup grpdepatomdumper
      */
     class DepAtomDumper :
         public DepAtomVisitorTypes::ConstVisitor,

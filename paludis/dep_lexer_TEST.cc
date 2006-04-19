@@ -28,7 +28,7 @@ using namespace paludis;
 /** \file
  * Test cases for DepLexer.
  *
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -36,7 +36,7 @@ namespace test_cases
     /**
      * \test Test DepLexer with an empty input.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepLexerEmptyTest : TestCase
     {
@@ -53,7 +53,7 @@ namespace test_cases
     /**
      * \test Test DepLexer with a blank input.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepLexerBlankTest : TestCase
     {
@@ -73,7 +73,7 @@ namespace test_cases
     /**
      * \test Test DepLexer with a package.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepLexerPackageTest : TestCase
     {
@@ -93,7 +93,7 @@ namespace test_cases
     /**
      * \test Test DepParser with a sequence of packages.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepLexerPackagesTest : TestCase
     {
@@ -131,7 +131,7 @@ namespace test_cases
     /**
      * \test Test DepLexer with an any group.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepLexerAnyTest : TestCase
     {
@@ -185,7 +185,7 @@ namespace test_cases
     /**
      * \test Test DepLexer with a use group.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepLexerUseTest : TestCase
     {
@@ -231,7 +231,7 @@ namespace test_cases
     /**
      * \test Test DepLexer with bad input.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepLexerBadTest : TestCase
     {

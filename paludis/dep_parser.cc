@@ -24,6 +24,12 @@
 #include <paludis/util/stringify.hh>
 #include <stack>
 
+/** \file
+ * Implementation for dep_parser.hh things.
+ *
+ * \ingroup grpdepparser
+ */
+
 using namespace paludis;
 
 DepStringParseError::DepStringParseError(const std::string & d,
@@ -37,15 +43,18 @@ DepStringNestingError::DepStringNestingError(const std::string & dep_string) thr
 {
 }
 
-enum DepParserState
+namespace
 {
-    dps_initial,
-    dps_had_double_bar,
-    dps_had_double_bar_space,
-    dps_had_paren,
-    dps_had_use_flag,
-    dps_had_use_flag_space
-};
+    enum DepParserState
+    {
+        dps_initial,
+        dps_had_double_bar,
+        dps_had_double_bar_space,
+        dps_had_paren,
+        dps_had_use_flag,
+        dps_had_use_flag_space
+    };
+}
 
 CompositeDepAtom::Pointer
 DepParser::parse(const std::string & s, const DepParserPolicyInterface * const policy)

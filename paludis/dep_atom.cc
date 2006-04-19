@@ -19,6 +19,12 @@
 
 #include <paludis/dep_atom.hh>
 
+/** \file
+ * Implementation for dep_atom.hh things.
+ *
+ * \ingroup grpdepatoms
+ */
+
 using namespace paludis;
 
 DepAtom::DepAtom()

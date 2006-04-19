@@ -29,7 +29,7 @@ using namespace paludis;
 /** \file
  * Test cases for DepAtomDumper.
  *
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -37,7 +37,7 @@ namespace test_cases
     /**
      * \test Test DepAtomDumper.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepAtomDumperTest : TestCase
     {
@@ -62,3 +62,4 @@ namespace test_cases
         }
     } test_dep_atom_dumper;
 }
+

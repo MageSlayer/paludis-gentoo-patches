@@ -25,43 +25,93 @@
 /** \file
  * Defines constants giving the Paludis version number and information about
  * how Paludis was built.
+ *
+ * \ingroup grpabout
  */
 
-/// The package name (eg Paludis)
+/**
+ * The package name (eg Paludis).
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_PACKAGE "@PACKAGE@"
 
-/// The major version (eg 0.4.1 -> 0)
+/**
+ * The major version (eg 0.4.1 -> 0).
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_VERSION_MAJOR @VERSION_MAJOR@
 
-/// The minor version (eg 0.4.1 -> 4)
+/**
+ * The minor version (eg 0.4.1 -> 4).
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_VERSION_MINOR @VERSION_MINOR@
 
-/// The micro version (eg 0.4.1 -> 1)
+/**
+ * The micro version (eg 0.4.1 -> 1).
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_VERSION_MICRO @VERSION_MICRO@
 
-/// The version, two digits per part (eg 1.3.5 -> 10305)
+/**
+ * The version, two digits per part (eg 1.3.5 -> 10305).
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_VERSION ((100 * 100 * PALUDIS_VERSION_MAJOR) \
         + (100 * PALUDIS_VERSION_MINOR) + PALUDIS_VERSION_MICRO)
 
-/// The subversion revision, if applicable (eg "65" or "65M" or "").
+/**
+ * The subversion revision, if applicable (eg "65" or "65M" or "").
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_SUBVERSION_REVISION "@SVNVERSION@"
 
-/// The CXXFLAGS used to build Paludis.
+/**
+ * The CXXFLAGS used to build Paludis.
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_BUILD_CXXFLAGS "@CXXFLAGS@"
 
-/// The LDFLAGS used to build Paludis.
+/**
+ * The LDFLAGS used to build Paludis.
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_BUILD_LDFLAGS "@LDFLAGS@"
 
-/// The compiler used to build Paludis.
+/**
+ * The compiler used to build Paludis.
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_BUILD_CXX "@CXX@"
 
-/// The user who built Paludis.
+/**
+ * The user who built Paludis.
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_BUILD_USER "@BUILDUSER@"
 
-/// The host on which Paludis was built.
+/**
+ * The host on which Paludis was built.
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_BUILD_HOST "@BUILDHOST@"
 
-/// The date when Paludis was built.
+/**
+ * The date when Paludis was built.
+ *
+ * \ingroup grpabout
+ */
 #define PALUDIS_BUILD_DATE "@BUILDDATE@"
 
 #endif

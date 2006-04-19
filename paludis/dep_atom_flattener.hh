@@ -27,11 +27,22 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 
+/**
+ * Declarations for DepAtomFlattener.
+ *
+ * \ingroup grpdepatomflattener
+ */
+
 namespace paludis
 {
     /**
      * Extract the enabled components of a dep heirarchy for a particular
      * package.
+     *
+     * This is useful for picking out SRC_URI, PROVIDE etc components. It is
+     * <b>not</b> suitable for heirarchies that can contain || ( ) blocks.
+     *
+     * \ingroup grpdepatomflattener
      */
     class DepAtomFlattener :
         private InstantiationPolicy<DepAtomFlattener, instantiation_method::NonCopyableTag>,

@@ -22,6 +22,12 @@
 #include <paludis/dep_atom_pretty_printer.hh>
 #include <paludis/util/save.hh>
 
+/** \file
+ * Implementation of dep_atom_pretty_printer.hh.
+ *
+ * \ingroup grpdepatomprettyprinter
+ */
+
 using namespace paludis;
 
 std::ostream &

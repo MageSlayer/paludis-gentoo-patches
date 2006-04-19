@@ -19,10 +19,23 @@
 
 #include "dep_tag.hh"
 
+/** \file
+ * Implementation for DepTag, DepTagCategory etc.
+ *
+ * \ingroup grpdeptag
+ */
+
 using namespace paludis;
 
 namespace
 {
+    /**
+     * Create the DepTagCategory for GLSAs.
+     *
+     * \see register_glsa_dep_tag
+     *
+     * \ingroup grpdeptag
+     */
     DepTagCategory::ConstPointer
     make_glsa_dep_tag()
     {
@@ -32,9 +45,15 @@ namespace
                     "Your system is potentially affected by these security issues:",
                     "Please read the advisories carefully and take appropriate action."));
     }
+
+    /**
+     * Register the GLSA dep tag category instance.
+     *
+     * \ingroup grpdeptag
+     */
+    static const DepTagCategoryMaker::RegisterMaker register_glsa_dep_tag("glsa",
+            &make_glsa_dep_tag);
 }
-static const DepTagCategoryMaker::RegisterMaker register_glsa_dep_tag("glsa",
-        &make_glsa_dep_tag);
 
 DepTagCategory::DepTagCategory(const std::string & id,
         const std::string & t, const std::string & pre,

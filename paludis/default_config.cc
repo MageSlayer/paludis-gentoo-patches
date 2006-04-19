@@ -34,6 +34,12 @@
 #include <sstream>
 #include <ctype.h>
 
+/** \file
+ * Implementation of default_config.hh classes.
+ *
+ * \ingroup grpdefaultconfig
+ */
+
 using namespace paludis;
 
 DefaultConfigError::DefaultConfigError(const std::string & msg) throw () :

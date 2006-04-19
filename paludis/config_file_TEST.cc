@@ -32,48 +32,66 @@ using namespace paludis;
 /** \file
  * Test cases for config_file.hh .
  *
- * \ingroup Test
- * \ingroup ConfigFile
+ * \ingroup grptestcases
+ * \ingroup grpconfigfile
  */
 
-#ifndef DOXYGEN
-class TestFile : protected ConfigFile
+namespace
 {
-    public:
-        TestFile(std::istream * const stream) :
-            ConfigFile(stream)
-        {
-            need_lines();
-        }
+    /**
+     * A ConfigFile descendent for use in tests.
+     *
+     * \ingroup grptestcases
+     */
+    class TestFile : protected ConfigFile
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            TestFile(std::istream * const stream) :
+                ConfigFile(stream)
+            {
+                need_lines();
+            }
 
-        TestFile(const std::string & filename) :
-            ConfigFile(filename)
-        {
-            need_lines();
-        }
+            /**
+             * Constructor.
+             */
+            TestFile(const std::string & filename) :
+                ConfigFile(filename)
+            {
+                need_lines();
+            }
 
-        TestFile(const FSEntry & filename) :
-            ConfigFile(filename)
-        {
-            need_lines();
-        }
+            /**
+             * Constructor.
+             */
+            TestFile(const FSEntry & filename) :
+                ConfigFile(filename)
+            {
+                need_lines();
+            }
 
-        mutable std::vector<std::string> lines;
+            /**
+             * Our lines.
+             */
+            mutable std::vector<std::string> lines;
 
-    protected:
-        void accept_line(const std::string & s) const
-        {
-            lines.push_back(s);
-        }
-};
-#endif
+        protected:
+            void accept_line(const std::string & s) const
+            {
+                lines.push_back(s);
+            }
+    };
+}
 
 namespace test_cases
 {
     /**
      * \test Test ConfigFile.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct ConfigFileTest : TestCase
     {
@@ -104,7 +122,7 @@ namespace test_cases
     /**
      * \test Test ConfigFile with file opening.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct ConfigFileOpenFileTest : TestCase
     {
@@ -136,7 +154,7 @@ namespace test_cases
     /**
      * \test Test LineConfigFile.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct LineConfigFileTest : TestCase
     {
@@ -169,7 +187,7 @@ namespace test_cases
     /**
      * \test Test KeyValueConfigFile basics.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct KeyValueConfigFileTest : TestCase
     {
@@ -197,7 +215,7 @@ namespace test_cases
     /**
      * \test Test KeyValueConfigFile variables.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct KeyValueConfigFileVarsTest : TestCase
     {
@@ -242,7 +260,7 @@ namespace test_cases
     /**
      * \test Test KeyValueConfigFile errors.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct KeyValueConfigFileErrorsTest : TestCase
     {

@@ -23,6 +23,12 @@
 #include <paludis/util/tokeniser.hh>
 #include <vector>
 
+/** \file
+ * Implementation of dep_lexer.hh things.
+ *
+ * \ingroup grpdeplexer
+ */
+
 using namespace paludis;
 
 DepStringLexError::DepStringLexError(const std::string & dep_string,
@@ -70,3 +76,4 @@ DepLexer::DepLexer(const std::string & s)
             _tokens.push_back(std::make_pair(dpl_text, *t));
     }
 }
+

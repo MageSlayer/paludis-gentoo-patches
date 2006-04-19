@@ -21,6 +21,12 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
+/** \file
+ * Test cases for dep_atom.hh classes.
+ *
+ * \ingroup grptestcases
+ */
+
 using namespace paludis;
 using namespace test;
 
@@ -29,7 +35,7 @@ namespace test_cases
     /**
      * \test Test DepAtom as_ functions.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepAtomAsTest : TestCase
     {
@@ -49,7 +55,7 @@ namespace test_cases
     /**
      * \test Test DepAtom composite functions.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DepAtomCompositeTest : TestCase
     {
@@ -73,7 +79,7 @@ namespace test_cases
     /**
      * \test Test PackageDepAtom.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct PackageDepAtomTest : TestCase
     {

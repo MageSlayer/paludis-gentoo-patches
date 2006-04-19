@@ -24,6 +24,12 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 
+/** \file
+ * Implementation for config_file.hh classes.
+ *
+ * \ingroup grpconfigfile
+ */
+
 using namespace paludis;
 
 ConfigFileError::ConfigFileError(const std::string & message) throw () :

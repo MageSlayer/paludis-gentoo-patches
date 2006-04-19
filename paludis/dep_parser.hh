@@ -30,8 +30,7 @@
 /** \file
  * Declarations for the DepParser class.
  *
- * \ingroup DepResolver
- * \ingroup Exception
+ * \ingroup grpdepparser
  */
 
 namespace paludis
@@ -40,8 +39,8 @@ namespace paludis
      * A DepStringParseError is thrown if an error is encountered when parsing
      * a dependency string.
      *
-     * \ingroup Exception
-     * \ingroup DepResolver
+     * \ingroup grpexceptions
+     * \ingroup grpdepparser
      */
     class DepStringParseError : public DepStringError
     {
@@ -56,6 +55,9 @@ namespace paludis
     /**
      * A DepStringNestingError is thrown if a dependency string does not have
      * properly balanced parentheses.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grpdepparser
      */
     class DepStringNestingError : public DepStringParseError
     {
@@ -66,18 +68,40 @@ namespace paludis
             DepStringNestingError(const std::string & dep_string) throw ();
     };
 
+    /**
+     * Interface provided by DepParserPolicy classes.
+     *
+     * \see DepParserPolicy
+     *
+     * \ingroup grpdepparser
+     */
     struct DepParserPolicyInterface
     {
+        /**
+         * Create a new text atom from the provided string.
+         */
         virtual CountedPtr<DepAtom> new_text_atom(const std::string &) const = 0;
 
+        /**
+         * Are || ( ) deps permitted?
+         */
         virtual bool permit_any_deps() const = 0;
 
+        /**
+         * Destructor.
+         */
         virtual ~DepParserPolicyInterface()
         {
         }
-
     };
 
+    /**
+     * Policy class describing how DepParser::parse should behave.
+     *
+     * \see DepParser
+     *
+     * \ingroup grpdepparser
+     */
     template <typename TextAtom_, bool permit_any_>
     class DepParserPolicy :
         public DepParserPolicyInterface,
@@ -104,6 +128,14 @@ namespace paludis
             }
     };
 
+    /**
+     * Policy class describing how DepParser::parse should behave
+     * (specialisation for PackageDepAtom).
+     *
+     * \see DepParser
+     *
+     * \ingroup grpdepparser
+     */
     template <bool permit_any_>
     class DepParserPolicy<PackageDepAtom, permit_any_> :
         public DepParserPolicyInterface,
@@ -136,7 +168,10 @@ namespace paludis
 
     /**
      * The DepParser converts string representations of a dependency
-     * specification into a DepAtom instance.
+     * specification into a DepAtom instance. The DepLexer class is
+     * used as the first stage.
+     *
+     * \ingroup grpdepparser
      */
     class DepParser :
         private InstantiationPolicy<DepParser, instantiation_method::NonInstantiableTag>
