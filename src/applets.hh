@@ -38,5 +38,8 @@ int do_list_repository_formats();
 /// Handle --list-sync-protocols
 int do_list_sync_protocols();
 
+/// Handle --list-dep-tag-categories
+int do_list_dep_tag_categories();
+
 #endif
 

@@ -28,7 +28,8 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_SKIP_CONFIG="yes" \
 	$(SHELL) $(top_srcdir)/test/run_test.sh bash
 
-TESTS = version_TEST help_TEST list_sync_formats_TEST list_repository_formats_TEST
+TESTS = version_TEST help_TEST list_sync_formats_TEST \
+	list_repository_formats_TEST list_dep_tag_categories_TEST
 
 CLEANFILES = *~ $(TESTS) gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in
@@ -44,4 +45,7 @@ list_sync_formats_TEST : paludis
 
 list_repository_formats_TEST : paludis
 	echo -e "#!/bin/sh\n./paludis --list-repository-formats" > $@
+
+list_dep_tag_categories_TEST : paludis
+	echo -e "#!/bin/sh\n./paludis --list-dep-tag-categories" > $@
 

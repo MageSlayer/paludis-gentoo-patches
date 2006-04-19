@@ -27,8 +27,8 @@
 #include <set>
 
 /** \file
- * Handle the --has-version and --best-version actions for the main paludis
- * program.
+ * Handle the --has-version, --best-version and various --list actions for the
+ * main paludis program.
  */
 
 namespace p = paludis;
@@ -93,6 +93,24 @@ int do_list_sync_protocols()
 
     std::set<std::string> keys;
     p::SyncerMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
+
+    if (! keys.empty())
+    {
+        return_code = 0;
+        for (std::set<std::string>::const_iterator k(keys.begin()), k_end(keys.end()) ;
+                k != k_end ; ++k)
+            std::cout << "* " << colour(cl_package_name, *k) << std::endl;
+    }
+
+    return return_code;
+}
+
+int do_list_dep_tag_categories()
+{
+    int return_code(1);
+
+    std::set<std::string> keys;
+    p::DepTagCategoryMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
 
     if (! keys.empty())
     {

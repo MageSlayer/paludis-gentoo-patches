@@ -85,6 +85,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_list_packages.specified() +
                     CommandLine::get_instance()->a_list_sync_protocols.specified() +
                     CommandLine::get_instance()->a_list_repository_formats.specified() +
+                    CommandLine::get_instance()->a_list_dep_tag_categories.specified() +
                     CommandLine::get_instance()->a_has_version.specified() +
                     CommandLine::get_instance()->a_best_version.specified()))
         {
@@ -126,6 +127,14 @@ main(int argc, char *argv[])
                 throw DoHelp("list-repository-formats action takes no parameters");
 
             return do_list_repository_formats();
+        }
+
+        if (CommandLine::get_instance()->a_list_dep_tag_categories.specified())
+        {
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("list-dep-tag-categories action takes no parameters");
+
+            return do_list_dep_tag_categories();
         }
 
         /* these actions do need DefaultConfig */
