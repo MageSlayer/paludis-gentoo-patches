@@ -653,6 +653,8 @@ VDBRepository::begin_provide_map() const
     {
         Context context("When loading VDB PROVIDEs map:");
 
+        Log::get_instance()->message(ll_debug, "Starting VDB PROVIDEs map creation");
+
         if (! _imp->entries_valid)
             _imp->load_entries();
 
@@ -699,6 +701,8 @@ VDBRepository::begin_provide_map() const
                         + stringify(ee.message()) + "' (" + stringify(ee.what()) + ")");
             }
         }
+
+        Log::get_instance()->message(ll_debug, "Done VDB PROVIDEs map creation");
 
         _imp->has_provide_map = true;
     }

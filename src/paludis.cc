@@ -75,6 +75,8 @@ main(int argc, char *argv[])
         else
             throw DoHelp("bad value for --log-level");
 
+        p::Log::get_instance()->set_program_name(argv[0]);
+
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +
                     CommandLine::get_instance()->a_install.specified() +

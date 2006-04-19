@@ -36,6 +36,9 @@ namespace paludis
 
         /// Current output stream
         std::ostream * stream;
+
+        /// Program name
+        std::string program_name;
     };
 }
 
@@ -44,6 +47,7 @@ Log::Log() :
 {
     _imp->log_level = initial_ll;
     _imp->stream = &std::cerr;
+    _imp->program_name = "paludis";
 }
 
 Log::~Log()
@@ -67,6 +71,7 @@ Log::message(const LogLevel l, const std::string & s)
 {
     if (l >= _imp->log_level)
     {
+        *_imp->stream << _imp->program_name << "@" << ::time(0) << ": ";
         do
         {
             switch (l)
@@ -127,3 +132,10 @@ Log::log_level_string() const
 
     throw InternalError(PALUDIS_HERE, "Bad log level");
 }
+
+void
+Log::set_program_name(const std::string & s)
+{
+    _imp->program_name = s;
+}
+

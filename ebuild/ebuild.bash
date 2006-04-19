@@ -32,6 +32,8 @@ alias die='diefunc "$FUNCNAME" "$LINENO"'
 alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "$FUNCNAME" "$LINENO" "$_pipestatus"'
 trap 'echo "die trap: exiting with error." 1>&2 ; exit 250' 15
 
+export EBUILD_PROGRAM_NAME="$0"
+
 diefunc()
 {
     local func="$1" line="$2"
