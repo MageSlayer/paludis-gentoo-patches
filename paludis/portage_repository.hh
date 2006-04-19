@@ -29,12 +29,20 @@
 
 /** \file
  * Declaration for the PortageRepository class.
+ *
+ * \ingroup grpportagerepository
  */
 
 namespace paludis
 {
     class PackageDatabase;
 
+    /**
+     * Keys for PortageRepositoryParams.
+     *
+     * \see PortageRepositoryParams
+     * \ingroup grpportagerepository
+     */
     enum PortageRepositoryParamsKeys
     {
         prpk_environment,
@@ -50,6 +58,12 @@ namespace paludis
         last_prpk
     };
 
+    /**
+     * Tag for PortageRepositoryParams.
+     *
+     * \see PortageRepositoryParams
+     * \ingroup grpportagerepository
+     */
     struct PortageRepositoryParamsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<PortageRepositoryParamsKeys, last_prpk>,
@@ -66,11 +80,19 @@ namespace paludis
     {
     };
 
+    /**
+     * Constructor parameters for PortageRepository.
+     *
+     * \see PortageRepository
+     * \ingroup grpportagerepository
+     */
     typedef MakeSmartRecord<PortageRepositoryParamsTag>::Type PortageRepositoryParams;
 
     /**
      * A PortageRepository is a Repository that handles the layout used by
      * Portage for the main Gentoo tree.
+     *
+     * \ingroup grpportagerepository
      */
     class PortageRepository : public Repository,
                               private PrivateImplementationPattern<PortageRepository>
@@ -178,7 +200,8 @@ namespace paludis
      * Thrown if invalid parameters are provided for
      * PortageRepository::make_portage_repository.
      *
-     * \ingroup Exception
+     * \ingroup grpexceptions
+     * \ingroup grpportagerepository
      */
     class PortageRepositoryConfigurationError : public ConfigurationError
     {
@@ -189,6 +212,9 @@ namespace paludis
             PortageRepositoryConfigurationError(const std::string & msg) throw ();
     };
 
+    /**
+     * Register PortageRepository.
+     */
     static const RepositoryMaker::RegisterMaker register_portage_repository(
             "portage", &PortageRepository::make_portage_repository);
 

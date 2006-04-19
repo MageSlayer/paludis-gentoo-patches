@@ -19,6 +19,12 @@
 
 #include <paludis/test_environment.hh>
 
+/** \file
+ * Implementation of TestEnvironment.
+ *
+ * \ingroup grptestenvironment
+ */
+
 using namespace paludis;
 
 TestEnvironment::TestEnvironment() :

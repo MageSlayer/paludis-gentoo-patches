@@ -41,6 +41,12 @@
 #include <functional>
 #include <iterator>
 
+/** \file
+ * Declarations for the PackageDatabase class and related utilities.
+ *
+ * \ingroup grppackagedatabase
+ */
+
 namespace paludis
 {
     class PackageDepAtom;
@@ -48,6 +54,9 @@ namespace paludis
     /**
      * A PackageDatabaseError is an error that occurs when performing some
      * operation upon a PackageDatabase.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grppackagedatabase
      */
     class PackageDatabaseError : public Exception
     {
@@ -61,6 +70,9 @@ namespace paludis
     /**
      * A PackageDatabaseLookupError descendent is thrown if an error occurs
      * when looking for something in a PackageDatabase.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grppackagedatabase
      */
     class PackageDatabaseLookupError : public PackageDatabaseError
     {
@@ -75,8 +87,8 @@ namespace paludis
      * Thrown if a PackageDatabase query results in more than one matching
      * Package.
      *
-     * \ingroup Exception
-     * \ingroup Database
+     * \ingroup grpexceptions
+     * \ingroup grppackagedatabase
      */
     class AmbiguousPackageNameError : public PackageDatabaseLookupError
     {
@@ -99,18 +111,30 @@ namespace paludis
             {
             }
 
+            /**
+             * The name of the package.
+             */
             const std::string & name() const
             {
                 return _name;
             }
 
+            /**
+             * Iterator over possible matches.
+             */
             typedef std::list<std::string>::const_iterator OptionsIterator;
 
+            /**
+             * Start of our options.
+             */
             OptionsIterator begin_options() const
             {
                 return _names.begin();
             }
 
+            /**
+             * Past the end of our options.
+             */
             OptionsIterator end_options() const
             {
                 return _names.end();
@@ -131,6 +155,9 @@ namespace paludis
     /**
      * Thrown if a Repository with the same name as an existing member is added
      * to a PackageDatabase.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grppackagedatabase
      */
     class DuplicateRepositoryError : public PackageDatabaseError
     {
@@ -144,6 +171,9 @@ namespace paludis
     /**
      * Thrown if there is no Package in a PackageDatabase with the given
      * name.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grppackagedatabase
      */
     class NoSuchPackageError : public PackageDatabaseLookupError
     {
@@ -163,6 +193,9 @@ namespace paludis
             {
             }
 
+            /**
+             * Name of the package.
+             */
             const std::string & name() const
             {
                 return _name;
@@ -172,6 +205,9 @@ namespace paludis
     /**
      * Thrown if there is no Repository in a RepositoryDatabase with the given
      * name.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grppackagedatabase
      */
     class NoSuchRepositoryError : public PackageDatabaseLookupError
     {
@@ -185,6 +221,9 @@ namespace paludis
     /**
      * Thrown if there is no Version in a PackageDatabase with the given
      * name.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grppackagedatabase
      */
     class NoSuchVersionError : public PackageDatabaseLookupError
     {
@@ -197,7 +236,9 @@ namespace paludis
     };
 
     /**
-     * Do we want installed, uninstalled or either?
+     * Do we want installed, uninstalled or either when querying?
+     *
+     * \ingroup grppackagedatabase
      */
     enum InstallState
     {
@@ -208,6 +249,8 @@ namespace paludis
 
     /**
      * A PackageDatabase can be queried for Package instances.
+     *
+     * \ingroup grppackagedatabase
      */
     class PackageDatabase :
         private PrivateImplementationPattern<PackageDatabase>,

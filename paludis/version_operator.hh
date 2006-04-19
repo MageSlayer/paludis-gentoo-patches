@@ -29,7 +29,7 @@
 /** \file
  * Declarations for the VersionOperator class.
  *
- * \ingroup DepResolver
+ * \ingroup grpversions
  */
 
 namespace paludis
@@ -37,7 +37,7 @@ namespace paludis
     /**
      * Represents an operator attached to a VersionSpec.
      *
-     * \ingroup DepResolver
+     * \ingroup grpversions
      */
     enum VersionOperatorValue
     {
@@ -54,7 +54,7 @@ namespace paludis
     /**
      * An operator attached to a VersionSpec, validated.
      *
-     * \ingroup DepResolver
+     * \ingroup grpversions
      */
     class VersionOperator : public ComparisonPolicy<VersionOperator,
                                 comparison_mode::EqualityComparisonTag,
@@ -111,6 +111,12 @@ namespace paludis
             bool (VersionSpec::* as_version_spec_operator() const)(const VersionSpec &) const;
     };
 
+    /**
+     * Thrown if a bad version operator is encountered.
+     *
+     * \ingroup grpversions
+     * \ingroup grpexceptions
+     */
     class BadVersionOperatorError :
         public Exception
     {
@@ -119,7 +125,9 @@ namespace paludis
     };
 
     /**
-     * A VersionOperator can be written to an ostreams
+     * A VersionOperator can be written to an ostream.
+     *
+     * \ingroup grpversions
      */
     std::ostream & operator<< (std::ostream & s, const VersionOperator &);
 }

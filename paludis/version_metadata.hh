@@ -27,10 +27,18 @@
 #include <set>
 #include <string>
 
+/** \file
+ * Declarations for the VersionMetadata class.
+ *
+ * \ingroup grpversions
+ */
+
 namespace paludis
 {
     /**
      * Represents a VersionMetadata key value.
+     *
+     * \ingroup grpversions
      */
     enum VersionMetadataKey
     {
@@ -56,6 +64,8 @@ namespace paludis
 
     /**
      * Holds the metadata associated with a particular version.
+     *
+     * \ingroup grpversions
      */
     class VersionMetadata :
         private InstantiationPolicy<VersionMetadata, instantiation_method::NonCopyableTag>,

@@ -27,13 +27,19 @@
 #include <paludis/util/collection.hh>
 #include <string>
 
+/** \file
+ * Declarations of the VersionSpec class.
+ *
+ * \ingroup grpversions
+ */
+
 namespace paludis
 {
     /**
      * Thrown if a VersionSpec is created from an invalid version string.
      *
-     * \ingroup Exception
-     * \ingroup Database
+     * \ingroup grpexceptions
+     * \ingroup grpversions
      */
     class BadVersionSpecError : public NameError
     {
@@ -46,6 +52,8 @@ namespace paludis
 
     /**
      * A VersionSpec represents a version number (for example, 1.2.3b-r1).
+     *
+     * \ingroup grpversions
      */
     class VersionSpec : private PrivateImplementationPattern<VersionSpec>,
                         public ComparisonPolicy<VersionSpec, comparison_mode::FullComparisonTag,
@@ -110,11 +118,15 @@ namespace paludis
 
     /**
      * Output a VersionSpec to a stream.
+     *
+     * \ingroup grpversions
      */
     std::ostream & operator<< (std::ostream &, const VersionSpec &);
 
     /**
      * Holds a collection of VersionSpec instances.
+     *
+     * \ingroup grpversions
      */
     typedef SortedCollection<VersionSpec> VersionSpecCollection;
 }

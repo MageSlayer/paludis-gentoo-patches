@@ -19,6 +19,12 @@
 
 #include <paludis/repository.hh>
 
+/** \file
+ * Implementation of Repository.
+ *
+ * \ingroup grprepository
+ */
+
 using namespace paludis;
 
 Repository::Repository(const RepositoryName & name) :

@@ -24,6 +24,12 @@
 #include <vector>
 #include <limits>
 
+/** \file
+ * Implementation of VersionSpec.
+ *
+ * \ingroup grpversions
+ */
+
 using namespace paludis;
 
 BadVersionSpecError::BadVersionSpecError(const std::string & name) throw () :
@@ -33,6 +39,11 @@ BadVersionSpecError::BadVersionSpecError(const std::string & name) throw () :
 
 namespace
 {
+    /**
+     * Type of a Part in a VersionSpec data vector.
+     *
+     * \ingroup grpversions
+     */
     enum PartKind
     {
         alpha,
@@ -47,6 +58,12 @@ namespace
         scm
     };
 
+    /**
+     * Keys for a Part.
+     *
+     * \see Part
+     * \ingroup grpversions
+     */
     enum PartKeys
     {
         part_kind,
@@ -54,6 +71,12 @@ namespace
         last_part
     };
 
+    /**
+     * Tag for a Part.
+     *
+     * \see Part
+     * \ingroup grpversions
+     */
     struct PartTag :
         SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
         SmartRecordKeys<PartKeys, last_part>,
@@ -62,6 +85,9 @@ namespace
     {
     };
 
+    /**
+     * An entry in a VersionSpec data vector.
+     */
     typedef MakeSmartRecord<PartTag>::Type Part;
 }
 
@@ -323,6 +349,11 @@ VersionSpec::hash_value() const
 
 namespace
 {
+    /**
+     * Identify Part instances that are revisions.
+     *
+     * \ingroup grpversions
+     */
     struct IsRevisionPart
     {
         bool operator() (const Part & p) const

@@ -41,17 +41,34 @@
 #include <algorithm>
 #include <vector>
 
+/** \file
+ * Implementation for VDBRepository.
+ *
+ * \ingroup grpvdbrepository
+ */
+
 using namespace paludis;
 
 namespace
 {
+    /**
+     * Holds an entry in a VDB.
+     */
     struct VDBEntry
     {
+        /// Our package name.
         QualifiedPackageName name;
+
+        /// Our package version.
         VersionSpec version;
+
+        /// Our metadata, may be zero.
         VersionMetadata::Pointer metadata;
+
+        /// Our built USE flags.
         std::set<UseFlagName> use;
 
+        /// Constructor
         VDBEntry(const QualifiedPackageName & n, const VersionSpec & v) :
             name(n),
             version(v),
@@ -59,6 +76,7 @@ namespace
         {
         }
 
+        /// Comparison operator
         bool operator< (const VDBEntry & other) const
         {
             if (name < other.name)
@@ -70,6 +88,11 @@ namespace
             return false;
         }
 
+        /**
+         * Compare a VDBEntry by category only.
+         *
+         * \ingroup grpvdbrepository
+         */
         struct CompareCategory
         {
             bool operator() (const CategoryNamePart & c, const VDBEntry & e) const
@@ -83,6 +106,11 @@ namespace
             }
         };
 
+        /**
+         * Compare a VDBEntry by name only.
+         *
+         * \ingroup grpvdbrepository
+         */
         struct ComparePackage
         {
             bool operator() (const QualifiedPackageName & c, const VDBEntry & e) const
@@ -96,6 +124,11 @@ namespace
             }
         };
 
+        /**
+         * Compare a VDBEntry by name and version.
+         *
+         * \ingroup grpvdbrepository
+         */
         struct CompareVersion
         {
             bool operator() (const std::pair<QualifiedPackageName, VersionSpec> & c,
@@ -129,6 +162,11 @@ namespace
 
 namespace paludis
 {
+    /**
+     * Implementation data for VDBRepository.
+     *
+     * \ingroup grpvdbrepository
+     */
     template <>
     struct Implementation<VDBRepository> :
         InternalCounted<Implementation<VDBRepository> >
@@ -151,7 +189,7 @@ namespace paludis
         /// Do we have entries loaded?
         mutable bool entries_valid;
 
-        /// Our entries.
+        /// Our entries, keep this sorted!
         mutable std::vector<VDBEntry> entries;
 
         /// Load entries.
@@ -235,6 +273,11 @@ Implementation<VDBRepository>::invalidate() const
 
 namespace
 {
+    /**
+     * Fetch the contents of a VDB file.
+     *
+     * \ingroup grpvdbrepository
+     */
     std::string
     file_contents(const FSEntry & location, const QualifiedPackageName & name,
             const VersionSpec & v, const std::string & key)

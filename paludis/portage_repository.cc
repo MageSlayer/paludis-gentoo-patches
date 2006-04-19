@@ -53,34 +53,42 @@
 #include <strings.h>
 #include <ctype.h>
 
+/** \file
+ * Implementation of PortageRepository.
+ *
+ * \ingroup grpportagerepository
+ */
+
 using namespace paludis;
-
-typedef MakeHashedMap<QualifiedPackageName, VersionSpecCollection::Pointer>::Type VersionsMap;
-
-typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
-
-typedef MakeHashedMap<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> >::Type RepositoryMaskMap;
-
-typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
-
-typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
-
-typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseMap;
-
-typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
-
-typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
-
-typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
-
-typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
-
-typedef MakeHashedMap<std::string, std::string>::Type ProfileEnvMap;
 
 namespace paludis
 {
+    typedef MakeHashedMap<QualifiedPackageName, VersionSpecCollection::Pointer>::Type VersionsMap;
+
+    typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
+
+    typedef MakeHashedMap<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> >::Type RepositoryMaskMap;
+
+    typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
+
+    typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
+
+    typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseMap;
+
+    typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
+
+    typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
+
+    typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
+
+    typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
+
+    typedef MakeHashedMap<std::string, std::string>::Type ProfileEnvMap;
+
     /**
      * Implementation data for a PortageRepository.
+     *
+     * \ingroup grpportagerepository
      */
     template <>
     struct Implementation<PortageRepository> :
@@ -453,23 +461,29 @@ PortageRepository::do_has_package_named(const CategoryNamePart & c,
     }
 }
 
-#ifndef DOXYGEN
-struct CategoryFilter :
-    std::unary_function<bool, QualifiedPackageName>
+namespace
 {
-    CategoryNamePart category;
-
-    CategoryFilter(const CategoryNamePart & c) :
-        category(c)
+    /**
+     * Filter QualifiedPackageName instances by category.
+     *
+     * \ingroup grpportagerepository
+     */
+    struct CategoryFilter :
+        std::unary_function<bool, QualifiedPackageName>
     {
-    }
+        CategoryNamePart category;
 
-    bool operator() (const QualifiedPackageName & a) const
-    {
-        return a.get<qpn_category>() == category;
-    }
-};
-#endif
+        CategoryFilter(const CategoryNamePart & c) :
+            category(c)
+        {
+        }
+
+        bool operator() (const QualifiedPackageName & a) const
+        {
+            return a.get<qpn_category>() == category;
+        }
+    };
+}
 
 CategoryNamePartCollection::ConstPointer
 PortageRepository::do_category_names() const

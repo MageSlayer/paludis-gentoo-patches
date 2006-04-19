@@ -20,6 +20,12 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/version_operator.hh>
 
+/** \file
+ * Implementation for VersionOperator.
+ *
+ * \ingroup grpversions
+ */
+
 using namespace paludis;
 
 VersionOperatorValue
@@ -104,8 +110,6 @@ paludis::operator<< (std::ostream & s, const VersionOperator & v)
     return s;
 }
 
-// The function below makes Doxygen crap itself... It's a bug in doxygen, not
-// a genuinely undocumented function.
 bool (VersionSpec::* VersionOperator::as_version_spec_operator() const)(const VersionSpec &) const
 {
     switch (_v)

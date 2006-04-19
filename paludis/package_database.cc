@@ -27,6 +27,10 @@
 #include <map>
 #include <set>
 
+/** \file
+ * Implementation of PackageDatabase.
+ */
+
 using namespace paludis;
 
 std::ostream &
@@ -72,6 +76,8 @@ namespace paludis
 {
     /**
      * Implementation data for a PackageDatabase.
+     *
+     * \ingroup grppackagedatabase
      */
     template<>
     struct Implementation<PackageDatabase> :

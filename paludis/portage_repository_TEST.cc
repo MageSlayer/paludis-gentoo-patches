@@ -28,11 +28,16 @@ using namespace paludis;
 /** \file
  * Test cases for PortageRepository.
  *
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
 namespace test_cases
 {
+    /**
+     * \test Test PortageRepository repository names.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryRepoNameTest : TestCase
     {
         PortageRepositoryRepoNameTest() : TestCase("repo name") { }
@@ -50,6 +55,11 @@ namespace test_cases
         }
     } test_portage_repository_repo_name;
 
+    /**
+     * \test Test PortageRepository repository with no names.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryNoRepoNameTest : TestCase
     {
         PortageRepositoryNoRepoNameTest() : TestCase("no repo name") { }
@@ -67,6 +77,11 @@ namespace test_cases
         }
     } test_portage_repository_no_repo_name;
 
+    /**
+     * \test Test PortageRepository repository empty names.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryEmptyRepoNameTest : TestCase
     {
         PortageRepositoryEmptyRepoNameTest() : TestCase("empty repo name") { }
@@ -84,6 +99,11 @@ namespace test_cases
         }
     } test_portage_repository_empty_repo_name;
 
+    /**
+     * \test Test PortageRepository repository has_category_named.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryHasCategoryNamedTest : TestCase
     {
         PortageRepositoryHasCategoryNamedTest() : TestCase("has category named") { }
@@ -110,6 +130,11 @@ namespace test_cases
         }
     } test_portage_repository_has_category_named;
 
+    /**
+     * \test Test PortageRepository category_names.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryCategoryNamesTest : TestCase
     {
         PortageRepositoryCategoryNamesTest() : TestCase("category names") { }
@@ -138,6 +163,11 @@ namespace test_cases
         }
     } test_portage_repository_category_names;
 
+    /**
+     * \test Test PortageRepository has_package_named.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryHasPackageNamedTest : TestCase
     {
         PortageRepositoryHasPackageNamedTest() : TestCase("has package named") { }
@@ -172,6 +202,11 @@ namespace test_cases
         }
     } test_portage_repository_has_package_named;
 
+    /**
+     * \test Test PortageRepository has_package_named cached.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryHasPackageNamedCachedTest : TestCase
     {
         PortageRepositoryHasPackageNamedCachedTest() : TestCase("has package named cached") { }
@@ -210,6 +245,11 @@ namespace test_cases
         }
     } test_portage_repository_has_package_named_cached;
 
+    /**
+     * \test Test PortageRepository package_names.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryPackageNamesTest : TestCase
     {
         PortageRepositoryPackageNamesTest() : TestCase("package names") { }
@@ -257,6 +297,11 @@ namespace test_cases
         }
     } test_portage_repository_package_names;
 
+    /**
+     * \test Test PortageRepository bad package names.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryBadPackageNamesTest : TestCase
     {
         PortageRepositoryBadPackageNamesTest() : TestCase("bad package names") { }
@@ -285,6 +330,11 @@ namespace test_cases
         }
     } test_portage_repository_bad_package_names;
 
+    /**
+     * \test Test PortageRepository has_version.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryHasVersionTest : TestCase
     {
         PortageRepositoryHasVersionTest() : TestCase("has version") { }
@@ -323,6 +373,11 @@ namespace test_cases
         }
     } test_portage_repository_has_version;
 
+    /**
+     * \test Test PortageRepository versions.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryVersionsTest : TestCase
     {
         PortageRepositoryVersionsTest() : TestCase("versions") { }
@@ -360,6 +415,11 @@ namespace test_cases
         }
     } test_portage_repository_versions;
 
+    /**
+     * \test Test PortageRepository duff versions.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryDuffVersionsTest : TestCase
     {
         PortageRepositoryDuffVersionsTest() : TestCase("duff versions") { }
@@ -397,6 +457,11 @@ namespace test_cases
         }
     } test_portage_repository_duff_versions;
 
+    /**
+     * \test Test PortageRepository cached metadata.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryMetadataCachedTest : TestCase
     {
         PortageRepositoryMetadataCachedTest() : TestCase("metadata cached") { }
@@ -428,6 +493,11 @@ namespace test_cases
         }
     } test_portage_repository_metadata_cached;
 
+    /**
+     * \test Test PortageRepository uncached metadata.
+     *
+     * \ingroup grptestcases
+     */
     struct PortageRepositoryMetadataUncachedTest : TestCase
     {
         PortageRepositoryMetadataUncachedTest() : TestCase("metadata uncached") { }

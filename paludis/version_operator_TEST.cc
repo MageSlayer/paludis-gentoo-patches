@@ -27,7 +27,7 @@ using namespace paludis;
 /** \file
  * Test cases for version_operator.hh.
  *
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -35,7 +35,7 @@ namespace test_cases
     /**
      * \test Test VersionOperator creation and assignment.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct VersionOperatorTest : TestCase
     {
@@ -69,7 +69,7 @@ namespace test_cases
     /**
      * \test Test VersionOperator creation and assignment from a string.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct VersionOperatorFromStringTest : TestCase
     {
@@ -97,7 +97,7 @@ namespace test_cases
     /**
      * \test Test VersionOperator stringification.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct VersionOperatorToStringTest : TestCase
     {

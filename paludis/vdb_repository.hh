@@ -26,8 +26,20 @@
 #include <paludis/util/smart_record.hh>
 #include <paludis/util/fs_entry.hh>
 
+/** \file
+ * Declarations for VDBRepository.
+ *
+ * \ingroup grpvdbrepository
+ */
+
 namespace paludis
 {
+    /**
+     * Keys for VDBRepositoryParams
+     *
+     * \see VDBRepositoryParams
+     * \ingroup grpvdbrepository
+     */
     enum VDBRepositoryParamsKeys
     {
         vdbrpk_environment,
@@ -38,6 +50,12 @@ namespace paludis
         last_vdbrpk
     };
 
+    /**
+     * Tag for VDBRepositoryParams.
+     *
+     * \see VDBRepositoryParams
+     * \ingroup grpvdbrepository
+     */
     struct VDBRepositoryParamsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<VDBRepositoryParamsKeys, last_vdbrpk>,
@@ -49,8 +67,22 @@ namespace paludis
     {
     };
 
+    /**
+     * Constructor parameters for VDBRepository.
+     *
+     * \see VDBRepository
+     * \ingroup grpvdbrepository
+     */
     typedef MakeSmartRecord<VDBRepositoryParamsTag>::Type VDBRepositoryParams;
 
+    /**
+     * A VDBRepository represents the /var/db/pkg database used for
+     * installed packages.
+     *
+     * It has a stupid name because Portage called it that.
+     *
+     * \ingroup grpvdbrepository
+     */
     class VDBRepository :
         public Repository,
         public PrivateImplementationPattern<VDBRepository>
@@ -143,7 +175,8 @@ namespace paludis
      * Thrown if invalid parameters are provided for
      * PortageRepository::make_portage_repository.
      *
-     * \ingroup Exception
+     * \ingroup grpvdbrepository
+     * \ingroup grpexceptions
      */
     class VDBRepositoryConfigurationError : public ConfigurationError
     {
@@ -154,6 +187,11 @@ namespace paludis
             VDBRepositoryConfigurationError(const std::string & msg) throw ();
     };
 
+    /**
+     * Register the VDB repository format.
+     *
+     * \ingroup grpvdbrepository
+     */
     static const RepositoryMaker::RegisterMaker register_vdb_repository(
             "vdb", &VDBRepository::make_vdb_repository);
 }

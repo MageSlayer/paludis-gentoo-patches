@@ -23,12 +23,20 @@
 #include <paludis/package_database.hh>
 #include <paludis/qa/environment.hh>
 
+/** \file
+ * Declarations for the TestEnvironment class.
+ *
+ * \ingroup grptestenvironment
+ */
+
 namespace paludis
 {
     /**
      * A TestEnvironment is an environment used during testing that lets us
      * control all the options rather than reading them from configuration
      * files.
+     *
+     * \ingroup grptestenvironment
      */
     class TestEnvironment : public Environment
     {

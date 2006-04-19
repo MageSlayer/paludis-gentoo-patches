@@ -21,6 +21,14 @@
 #include "syncer.hh"
 #include <paludis/util/system.hh>
 
+/** \file
+ * Implementation for Syncer classes.
+ *
+ * \ingroup grpsyncer
+ */
+
+using namespace paludis;
+
 NoSuchSyncerError::NoSuchSyncerError(const std::string & format) throw () :
     SyncFailedError("No such syncer for format '" + format + "'")
 {
@@ -28,6 +36,11 @@ NoSuchSyncerError::NoSuchSyncerError(const std::string & format) throw () :
 
 namespace
 {
+    /**
+     * A Syncer for rsync:// syncing.
+     *
+     * \ingroup grpsyncer
+     */
     class RsyncSyncer :
         public Syncer
     {
@@ -51,6 +64,11 @@ namespace
             }
     };
 
+    /**
+     * A Syncer for svn:// (subversion) syncing.
+     *
+     * \ingroup grpsyncer
+     */
     class SvnSyncer :
         public Syncer
     {
@@ -73,8 +91,25 @@ namespace
             }
     };
 
+    /**
+     * Register rsync:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
     static const SyncerMaker::RegisterMaker register_rsync_syncer("rsync",  &RsyncSyncer::make);
+
+    /**
+     * Register svn:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
     static const SyncerMaker::RegisterMaker register_svn_syncer("svn", &SvnSyncer::make);
+
+    /**
+     * Register svn+ssh:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
     static const SyncerMaker::RegisterMaker register_svnplusssh_syncer("svn+ssh", &SvnSyncer::make);
 }
 

@@ -35,6 +35,8 @@
 
 /** \file
  * Declarations for the Repository class.
+ *
+ * \ingroup grprepository
  */
 
 namespace paludis
@@ -43,6 +45,9 @@ namespace paludis
 
     /**
      * Keys for InstallOptions.
+     *
+     * \see InstallOptions
+     * \ingroup grprepository
      */
     enum InstallOptionsKeys
     {
@@ -53,6 +58,9 @@ namespace paludis
 
     /**
      * Tag for InstallOptions.
+     *
+     * \see InstallOptions
+     * \ingroup grprepository
      */
     struct InstallOptionsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
@@ -64,6 +72,8 @@ namespace paludis
 
     /**
      * Defines various options for package installation.
+     *
+     * \ingroup grprepository
      */
     typedef MakeSmartRecord<InstallOptionsTag>::Type InstallOptions;
 
@@ -73,6 +83,8 @@ namespace paludis
      *
      * We make pretty heavy use of the non-virtual interface idiom here. See
      * \ref EffCpp items 35 and 37.
+     *
+     * \ingroup grprepository
      */
     class Repository :
         private InstantiationPolicy<Repository, instantiation_method::NonCopyableTag>,
@@ -458,20 +470,37 @@ namespace paludis
              */
             virtual void invalidate() const = 0;
 
+            /**
+             * Our provide map iterator type.
+             */
             typedef std::map<QualifiedPackageName, QualifiedPackageName>::const_iterator ProvideMapIterator;
 
+            /**
+             * Start of our provide map.
+             */
             virtual ProvideMapIterator begin_provide_map() const = 0;
 
+            /**
+             * Past the end of our provide map.
+             */
             virtual ProvideMapIterator end_provide_map() const = 0;
 
+            /**
+             * Add this package to world.
+             */
             virtual void add_to_world(const QualifiedPackageName &) const = 0;
+
+            /**
+             * Remove this package from world, if it is present.
+             */
             virtual void remove_from_world(const QualifiedPackageName &) const = 0;
     };
 
     /**
      * Thrown if a repository of the specified type does not exist.
      *
-     * \ingroup Exception
+     * \ingroup grpexceptions
+     * \ingroup grprepository
      */
     class NoSuchRepositoryTypeError : public ConfigurationError
     {
@@ -485,7 +514,8 @@ namespace paludis
     /**
      * Parent class for install, uninstall errors.
      *
-     * \ingroup Exception
+     * \ingroup grpexceptions
+     * \ingroup grprepository
      */
     class PackageActionError : public Exception
     {
@@ -496,7 +526,8 @@ namespace paludis
     /**
      * Thrown if an install fails.
      *
-     * \ingroup Exception.
+     * \ingroup grprepository
+     * \ingroup grpexceptions
      */
     class PackageInstallActionError : public PackageActionError
     {
@@ -507,7 +538,8 @@ namespace paludis
     /**
      * Thrown if a fetch fails.
      *
-     * \ingroup Exception.
+     * \ingroup grpexceptions
+     * \ingroup grprepository
      */
     class PackageFetchActionError : public PackageActionError
     {
@@ -518,7 +550,8 @@ namespace paludis
     /**
      * Thrown if an uninstall fails.
      *
-     * \ingroup Exception.
+     * \ingroup grprepository
+     * \ingroup grpexceptions
      */
     class PackageUninstallActionError : public PackageActionError
     {
@@ -530,6 +563,8 @@ namespace paludis
 
     /**
      * Virtual constructor for repositories.
+     *
+     * \ingroup grprepository
      */
     typedef VirtualConstructor<std::string,
             Repository::Pointer (*) (const Environment * const, const PackageDatabase * const,

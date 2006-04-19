@@ -22,12 +22,20 @@
 #include <paludis/version_metadata.hh>
 #include <vector>
 
+/** \file
+ * Implementation of VersionMetadata.
+ *
+ * \ingroup grpversions
+ */
+
 using namespace paludis;
 
 namespace paludis
 {
     /**
      * Implementation data for VersionMetadata.
+     *
+     * \ingroup grpversions
      */
     template <>
     struct Implementation<VersionMetadata> :

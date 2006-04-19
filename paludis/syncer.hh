@@ -25,12 +25,19 @@
 #include <paludis/repository.hh>
 #include <string>
 
-using namespace paludis;
+/** \file
+ * Declarations for the Syncer classes.
+ *
+ * \ingroup grpsyncer
+ */
 
 namespace paludis
 {
     /**
-     * Keys for SyncOptions
+     * Keys for SyncOptions.
+     *
+     * \see SyncOptions
+     * \ingroup grpsyncer
      */
     enum SyncOptionsKeys
     {
@@ -40,6 +47,9 @@ namespace paludis
 
     /**
      * Tag for SyncOptions.
+     *
+     * \see SyncOptions
+     * \ingroup grpsyncer
      */
     struct SyncOptionsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
@@ -50,30 +60,47 @@ namespace paludis
 
     /**
      * Defines options to be passed to the syncer.
+     *
+     * \ingroup grpsyncer
      */
     typedef MakeSmartRecord<SyncOptionsTag>::Type SyncOptions;
 
+    /**
+     * A Syncer subclass handles syncing Repository instances.
+     *
+     * \ingroup grpsyncer
+     */
     class Syncer :
         private InstantiationPolicy<Syncer, instantiation_method::NonCopyableTag>,
         public InternalCounted<Syncer>
     {
         protected:
+            /**
+             * Constructor.
+             */
             Syncer()
             {
             }
 
         public:
+            /**
+             * Destructor.
+             */
             virtual ~Syncer()
             {
             }
 
+            /**
+             * Perform the sync.
+             */
             virtual void sync(const SyncOptions &) const = 0;
     };
 
     /**
      * Thrown if a sync fails.
      *
-     * \ingroup Exception
+     * \ingroup grpsyncer
+     * \ingroup grpexceptions
      */
     class SyncFailedError :
         public PackageActionError
@@ -91,7 +118,8 @@ namespace paludis
     /**
      * Thrown if a syncer of the specified type does not exist.
      *
-     * \ingroup Exception
+     * \ingroup grpsyncer
+     * \ingroup grpexceptions
      */
     class NoSuchSyncerError : public SyncFailedError
     {
@@ -103,6 +131,11 @@ namespace paludis
     };
 
 
+    /**
+     * Virtual constructor for Syncer subclasses.
+     *
+     * \ingroup grpsyncer
+     */
     typedef VirtualConstructor<std::string, Syncer::Pointer (*) (const std::string &, const std::string &),
             virtual_constructor_not_found::ThrowException<NoSuchSyncerError> > SyncerMaker;
 }
