@@ -2,7 +2,28 @@
 
 /** \mainpage
 
+\section overview Overview
+
+This is the documentation for Paludis, the other package manager. It is available as part of Paludis via <code>make doxygen</code>, or on the web at <a href="http://paludis.berlios.de/">the Paludis project page</a>.
+
+\section userdocs For End Users
+
+You shouldn't be touching Paludis at the moment. Paludis will delete all your
+files, then delete everyone else's files, then rape your dog. Go away.
+
+If you're still here, read \link BootstrapHowto the Bootstrap HOWTO \endlink for
+how to break your system or possibly set up a chroot.
+
+We have a <a href="https://developer.berlios.de/bugs/?group_id=6360">bug
+tracker</a> and some
+<a href="https://developer.berlios.de/mail/?group_id=6360">mailing lists</a>, but
+you shouldn't try to use these until after you've discussed your problem in our
+IRC channel. Read the howto for more details.
+
 \section developerdocs For Developers
+
+Start by getting a
+<a href="https://developer.berlios.de/svn/?group_id=6360">Subversion checkout</a>.
 
 It's best to start by skimming over the main program to get a feel for how
 everything fits together. Useful files:
@@ -10,6 +31,8 @@ everything fits together. Useful files:
 - src/paludis.cc The main program.
 - src/query.cc The --query action handler.
 - src/install.cc The --install action handler.
+- src/applets.cc Various small action handlers.
+- src/list.cc The --list action handlers
 
 After that, the following classes are good places to begin:
 
@@ -17,15 +40,14 @@ After that, the following classes are good places to begin:
   operating environment.
 - paludis::PackageDatabase provides routines for querying packages. An
   instance can be obtained via paludis::DefaultEnvironment.
+- paludis::DepList can be used for making dependency lists.
+- paludis::Repository is subclassed to do querying, installing,
+  uninstalling, syncing and the like.
 
 The <a href="modules.html">Modules</a> link in the header bar will probably
 be of more use than any of the full class lists.
 
 You should also read \link CodingStandards the Coding Standards \endlink
 before tinkering.
-
-\section userdocs For End Users
-
-You shouldn't be touching paludis at the moment. Go away.
 
 */

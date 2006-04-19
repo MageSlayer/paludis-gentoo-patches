@@ -1,0 +1,261 @@
+/* vim: set ft=cpp tw=80 sw=4 et : */
+
+/**
+\page BootstrapHowto Bootstrap Howto
+
+\section BootstrapHowtoMain How to make a Paludis chroot
+
+\warning READ EVERYTHING CAREFULLY, OR YOU WILL BREAK YOUR SYSTEM!
+
+<b>THIS WILL PROBABLY NOT ACTUALLY WORK!</b> Paludis is at the very
+early alpha stage.  It can sometimes install things, if you're very lucky, and
+if you're really lucky it might let you upgrade or uninstall them too. There are
+zillions of things that are not implemented. There are zillions of things that
+Paludis does differently from Portage -- some of these are intentional, some are
+not.
+
+You should join the <code>#paludis</code> channel on Freenode. If you're doing
+anything development-related, you should probably also ask to be allowed to
+subscribe to the <code>paludis-sekrit</code> mailing list.
+
+\warning Do not try to use Paludis and Portage to install things inside the same
+    root. The config and vdb formats are not compatible!
+
+\section BootstrapHowtoRequirements Requirements
+
+Install Paludis locally, being sure to configure <code>sysconfdir</code> as
+<code>/etc</code> to avoid confusion later on. There's an ebuild <a
+href="http://svn.berlios.de/viewcvs/%2acheckout%2a/paludis/overlay/sys-apps/paludis/paludis-0.ebuild">here</a>.
+
+You'll need libebt, eselect and Subversion. You'll also need either g++-3.4,
+g++-4.1 or some other reasonably standard C++ compiler along with a complete
+standard library implementation (so no uClibc++). If you're trying to run on
+non-Linux, you'll also need to fix a few includes and submit a patch.
+
+Make sure the test suite passes (either <code>FEATURES="test"</code> for
+Portage, or <code>make check</code>). If it fails, don't continue until you
+figure out why.
+
+\section BootstrapConfiguration Configuration
+
+Set up a local bootstrap config directory. We're assuming in this document that
+you're using <code>/mychroot</code> as the root path, but anywhere not on a
+noexec / nodev filesystem should work. The reason for doing things this way will
+become apparent later on.
+
+\verbatim
+    mkdir ~/.paludis-bootstrap
+    cat <<END > ~/.paludis-bootstrap/specpath
+    root = /mychroot
+    config-suffix =
+    END
+\endverbatim
+
+Make some skeleton directories and files:
+
+\verbatim
+    mkdir -p /mychroot/etc/{env.d,paludis/repositories}
+    mkdir -p /mychroot/var/{db/pkg,paludis/repositories/gentoo/distfiles}
+    mkdir -p /mychroot/tmp/
+    touch /mychroot/etc/ld.so.conf
+\endverbatim
+
+Set up your <code>keywords.conf</code>. At the very least, you'll need a <code>*
+keywords</code> line.  Further lines can be added in the form "atom keywords".
+Like with Portage, accepting <code>~keyword</code> does <b>not</b> accept
+<code>keyword</code>, so if you want a fully <code>~arch</code> system you
+should use <code>* arch ~arch</code>.
+
+\verbatim
+    cat <<END > /mychroot/etc/paludis/keywords.conf
+    * x86
+    dev-cpp/libebt x86 ~x86
+    sys-apps/paludis x86 ~x86
+    dev-util/subversion x86 ~x86
+    app-admin/eselect x86 ~x86
+    app-editors/vim x86 ~x86
+    app-editors/vim-core x86 ~x86
+    END
+\endverbatim
+
+Set up your <code>use.conf</code>. At the very least, you'll need a <code>*
+flags</code> line. Again, additional per-atom lines can be specified. The
+<code>-apache2</code> is important, if you value your sanity, since you'll be
+installing subversion. We're experimenting with a slightly different way of
+handling <code>USE_EXPAND</code> variables that allows different settings for
+different packages. This may change, but for now it looks like this:
+
+\verbatim
+    cat <<END > /mychroot/etc/paludis/use.conf
+    * -doc nls -apache2 LINGUAS: en INPUT_DEVICES: keyboard mouse VIDEO_CARDS: ati
+    app-editors/vim -nls
+    END
+\endverbatim
+
+Set up your <code>licenses.conf</code>. If you don't care about licences, which
+is probably wise until we get licence grouping, it should look like this:
+
+\verbatim
+    cat <<END > /mychroot/etc/paludis/licenses.conf
+    * *
+    END
+\endverbatim
+
+If you want some more fun, the following list might be enough to install a
+base system with any fairly close to default USE flags:
+
+\verbatim
+    cat <<END > /mychroot/etc/paludis/licenses.conf
+    * LGPL-2.1 LGPL-2 GPL-2 BSD MIT as-is tcp_wrappers_license freedist
+    END
+\endverbatim
+
+Set up your <code>package_unmask.conf</code> and <code>package_mask.conf</code>,
+if necessary::
+
+\verbatim
+    cat <<END > /mychroot/etc/paludis/package_unmask.conf
+    app-editors/vim
+    app-editors/vim-core
+    END
+\endverbatim
+
+Set up your <code>bashrc</code>. This must <b>NOT</b> be used to change any
+values that affect dependency resolution (e.g. <code>USE</code>,
+        <code>LINGUAS</code>). It can be used to set <code>CFLAGS</code>,
+       <code>CHOST</code> and the like (on some archs you'll have to do this to
+               avoid getting junk from your profile). Remember to
+       <code>export</code> your variables.
+
+\note The backslash before the dollar is for cat. If you're not using cat,
+   don't include the backslash before the dollar signs.
+
+\verbatim
+    cat <<END > /mychroot/etc/paludis/bashrc
+    export CFLAGS="-O2 -march=pentium4 -fomit-frame-pointer"
+    export CXXFLAGS="\${CFLAGS}"
+    export CHOST="i686-pc-linux-gnu"
+    export MAKEOPTS="-j2"
+    export EBEEP_IGNORE="yes"
+    export EPAUSE_IGNORE="yes"
+    END
+\endverbatim
+
+Set up your repository files. Do not tinker with the VDB location, it
+<b>must</b> go in <code>${ROOT}/var/db/pkg</code>. Here we'll avoid using
+<code>/usr/portage</code> for the main tree because sticking data that gets
+changed on <code>/usr</code> is silly. We use the <code>${ROOT}</code> variable,
+which is set magically, to make the config work both in and outside of a
+chroot (this is one of the reasons we have the weird-looking specpath
+thing):
+
+\verbatim
+    cat <<END > /mychroot/etc/paludis/repositories/gentoo.conf
+    location = \${ROOT}/var/paludis/repositories/gentoo/
+    sync = rsync://rsync.europe.gentoo.org/gentoo-portage/
+    profile = \${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
+    format = portage
+    END
+
+    cat <<END > /mychroot/etc/paludis/repositories/installed.conf
+    location = \${ROOT}/var/db/pkg/
+    format = vdb
+    END
+
+    cat <<END > /mychroot/etc/paludis/repositories/paludis-overlay.conf
+    location = \${ROOT}/var/paludis/repositories/paludis-overlay/
+    sync = svn://svn.berlios.de/paludis/overlay
+    profile = \${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
+    eclassdir = \${ROOT}/var/paludis/repositories/gentoo/eclass
+    distdir = \${ROOT}/var/paludis/repositories/gentoo/distfiles
+    cache = /var/empty
+    format = portage
+    importance = 10
+    END
+\endverbatim
+
+\section BootstrapHowtoSync Initial Sync
+
+Now check that the config looks ok, and sync:
+
+\verbatim
+    paludis --config-suffix bootstrap --list-repositories
+    sudo paludis --config-suffix bootstrap --sync
+\endverbatim
+
+If you have problems, try adding <code>--log-level debug</code>. This may or may
+not give helpful information... This applies at all stages.
+
+The initial sync will be slow. You can cheat and copy an existing Portage tree
+checkout into <code>/mychroot/var/paludis/repositories/gentoo/</code>, but
+remember to preserve mtimes and permissions if you do. Note that there's no
+hideously painful 'Updating the Portage cache...' to go through. Paludis will
+use the metadata cache, if available, but does not use the dep cache.
+
+\section BootstrapInstalling Installing Things
+
+Now install baselayout and then system. We install baselayout manually first
+because it's easier than creating a bunch of directories by hand.
+
+Note that Paludis will use src_test regardless of FEATURES (FEATURES is a
+Portage thing, and Paludis doesn't use it any more than it has to).
+
+\note Unfortunately, various system packages have broken test suites, so the
+    system install will probably bomb out midway unless you export
+    SKIP_FUNCTIONS=test beforehand. You can do this in your environment or (better)
+    in <code>/mychroot/etc/paludis/bashrc</code>. If you're especially sneaky,
+    you can do it conditional upon <code>$PN</code>.
+
+Also note that there're a whole load of circular dependencies in system
+(ncurses <-> gpm, patch <-> patch, gcc <-> glibc for example), so you'll
+almost certainly need --dl-drop-circular at this stage.
+
+\verbatim
+    paludis --config-suffix bootstrap --install --pretend --dl-drop-all sys-apps/baselayout
+    sudo paludis --config-suffix bootstrap --install --dl-drop-all sys-apps/baselayout
+
+    paludis --config-suffix bootstrap --install --pretend --dl-drop-circular system
+    sudo paludis --config-suffix bootstrap --install --dl-drop-circular system
+\endverbatim
+
+Note that system will pull in Portage. That's a profiles thing that's
+unavoidable for now. It won't pull in Paludis, so we do that manually:
+
+\verbatim
+    paludis --config-suffix bootstrap --install --pretend sys-apps/paludis
+    sudo paludis --config-suffix bootstrap --install sys-apps/paludis
+\endverbatim
+
+\section BootstrapHowtoChroot Chrooting
+
+And that should (but probably won't) give you a usable chroot:
+
+\verbatim
+    sudo cp /etc/resolv.conf /mychroot/etc/
+    sudo chroot /mychroot
+    reset
+    export HOME=/root
+    cd
+    cp /etc/skel/.bashrc .
+    . .bashrc
+    ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
+    mount -tproc none /proc
+    mount -tsysfs none /sys
+    udevstart
+    mount -tdevpts none /dev/pts
+    eselect env update
+    source /etc/profile
+    ( . /etc/paludis/bashrc ; export REAL_CHOST=$CHOST ; gcc-config 1 )
+    eselect env update
+    source /etc/profile
+    paludis --uninstall sys-apps/portage
+    paludis --install app-editors/vim
+    paludis --uninstall app-editors/nano
+\endverbatim
+
+If you're especially crazy you can tar up your chroot and use it like a stage 3
+when installing a system. This has worked at least once for one person, but
+note that there was a full moon at the time.
+
+*/
+

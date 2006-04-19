@@ -1,4 +1,4 @@
-CLEANFILES = *~ html/* html HOWTO.html
+CLEANFILES = *~ html/* html
 MAINTAINERCLEANFILES = Makefile.in
 
 docfiles = \
@@ -9,9 +9,11 @@ docfiles = \
 	doc_directories.doxygen \
 	doc_references.doxygen \
 	doc_licence.doxygen \
-	doc_authors.doxygen
+	doc_authors.doxygen \
+	doc_bootstrap_howto.doxygen \
+	doc_changelog.doxygen
 
-EXTRA_DIST = doxygen.conf.in $(docfiles) HOWTO.rst
+EXTRA_DIST = doxygen.conf.in $(docfiles)
 
 if HAVE_DOXYGEN
 
@@ -27,9 +29,7 @@ doxygen :
 
 endif
 
-HOWTO.html : HOWTO.rst
-	rst2html.py $? > $@
-
-upload-howto : HOWTO.html
-	scp $? shell.berlios.de:/home/groups/paludis/htdocs/
+upload-homepage : doxygen
+	cd `readlink -f $(top_srcdir)/doc/html` && tar jc ./ | \
+		ssh shell.berlios.de tar vjx -C /home/groups/paludis/htdocs/
 

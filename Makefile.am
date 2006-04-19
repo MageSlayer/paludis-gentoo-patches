@@ -8,6 +8,9 @@ SUBDIRS = misc test paludis ebuild src doc
 doxygen :
 	$(MAKE) -C doc doxygen
 
+upload-homepage :
+	$(MAKE) -C doc upload-homepage
+
 check-local :
 	touch $(top_builddir)/done-check
 
