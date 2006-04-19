@@ -20,6 +20,8 @@
 #include <paludis/version_spec.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <vector>
+#include <iterator>
 
 using namespace test;
 using namespace paludis;
@@ -115,67 +117,6 @@ namespace test_cases
     } test_version_spec_parse;
 
     /**
-     * \test VersionSpec comparisons
-     *
-     * \ingroup Test
-     */
-    struct VersionSpecCompareTest : TestCase
-    {
-        VersionSpecCompareTest() : TestCase("version spec compare") {}
-
-        void run()
-        {
-            TEST_CHECK(VersionSpec("1") < VersionSpec("2"));
-            TEST_CHECK(VersionSpec("3.10g") < VersionSpec("3.10.18"));
-            TEST_CHECK(VersionSpec("4.0.2_pre20051120") < VersionSpec("4.0.2_pre20051223"));
-            TEST_CHECK(VersionSpec("1_alpha") < VersionSpec("1_beta"));
-            TEST_CHECK(VersionSpec("1_beta") < VersionSpec("1_pre"));
-            TEST_CHECK(VersionSpec("1_rc") < VersionSpec("1"));
-            TEST_CHECK(VersionSpec("1") < VersionSpec("1_p0"));
-            TEST_CHECK(VersionSpec("1_alpha2") < VersionSpec("1_beta1"));
-            TEST_CHECK(VersionSpec("1_beta2") < VersionSpec("1_pre1"));
-            TEST_CHECK(VersionSpec("1_rc3") < VersionSpec("1"));
-            TEST_CHECK(VersionSpec("1") < VersionSpec("1_p2"));
-
-            TEST_CHECK(! (VersionSpec("1") > VersionSpec("2")));
-            TEST_CHECK(! (VersionSpec("3.10g") > VersionSpec("3.10.18")));
-            TEST_CHECK(! (VersionSpec("4.0.2_pre20051120") > VersionSpec("4.0.2_pre20051223")));
-            TEST_CHECK(! (VersionSpec("1_alpha") > VersionSpec("1_beta")));
-            TEST_CHECK(! (VersionSpec("1_beta") > VersionSpec("1_pre")));
-            TEST_CHECK(! (VersionSpec("1_rc") > VersionSpec("1")));
-            TEST_CHECK(! (VersionSpec("1") > VersionSpec("1_p0")));
-            TEST_CHECK(! (VersionSpec("1_alpha2") > VersionSpec("1_beta1")));
-            TEST_CHECK(! (VersionSpec("1_beta2") > VersionSpec("1_pre1")));
-            TEST_CHECK(! (VersionSpec("1_rc3") > VersionSpec("1")));
-            TEST_CHECK(! (VersionSpec("1") > VersionSpec("1_p2")));
-
-            TEST_CHECK(VersionSpec("2") > VersionSpec("1"));
-            TEST_CHECK(VersionSpec("3.10.18") > VersionSpec("3.10g"));
-            TEST_CHECK(VersionSpec("4.0.2_pre20051223") > VersionSpec("4.0.2_pre20051120"));
-            TEST_CHECK(VersionSpec("1_beta") > VersionSpec("1_alpha"));
-            TEST_CHECK(VersionSpec("1_pre") > VersionSpec("1_beta"));
-            TEST_CHECK(VersionSpec("1") > VersionSpec("1_rc"));
-            TEST_CHECK(VersionSpec("1_p0") > VersionSpec("1"));
-            TEST_CHECK(VersionSpec("1_beta1") > VersionSpec("1_alpha2"));
-            TEST_CHECK(VersionSpec("1_pre1") > VersionSpec("1_beta2"));
-            TEST_CHECK(VersionSpec("1") > VersionSpec("1_rc3"));
-            TEST_CHECK(VersionSpec("1_p2") > VersionSpec("1"));
-
-            TEST_CHECK(! (VersionSpec("2") < VersionSpec("1")));
-            TEST_CHECK(! (VersionSpec("3.10.18") < VersionSpec("3.10g")));
-            TEST_CHECK(! (VersionSpec("4.0.2_pre20051223") < VersionSpec("4.0.2_pre20051120")));
-            TEST_CHECK(! (VersionSpec("1_beta") < VersionSpec("1_alpha")));
-            TEST_CHECK(! (VersionSpec("1_pre") < VersionSpec("1_beta")));
-            TEST_CHECK(! (VersionSpec("1") < VersionSpec("1_rc")));
-            TEST_CHECK(! (VersionSpec("1_p0") < VersionSpec("1")));
-            TEST_CHECK(! (VersionSpec("1_beta1") < VersionSpec("1_alpha2")));
-            TEST_CHECK(! (VersionSpec("1_pre1") < VersionSpec("1_beta2")));
-            TEST_CHECK(! (VersionSpec("1") < VersionSpec("1_rc3")));
-            TEST_CHECK(! (VersionSpec("1_p2") < VersionSpec("1")));
-        }
-    } test_version_spec_compare;
-
-    /**
      * \test VersionSpec star comparisons
      *
      * \ingroup Test
@@ -234,5 +175,121 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r99").revision_only(), "r99");
         }
     } test_version_revision_only;
+
+    /**
+     * \test VersionSpec ordering.
+     *
+     * \ingroup Test
+     */
+    struct VersionSpecCompareSCMTest : TestCase
+    {
+        VersionSpecCompareSCMTest() : TestCase("version spec compare") {}
+
+        virtual unsigned max_run_time() const
+        {
+            return 300;
+        }
+
+        void run()
+        {
+            TEST_CHECK(VersionSpec("1.0") == VersionSpec("1"));
+            TEST_CHECK(VersionSpec("1") == VersionSpec("1.0"));
+            TEST_CHECK(! (VersionSpec("1") < VersionSpec("1.0")));
+            TEST_CHECK(! (VersionSpec("1") > VersionSpec("1.0")));
+            TEST_CHECK(! (VersionSpec("1.0") < VersionSpec("1")));
+            TEST_CHECK(! (VersionSpec("1.0") > VersionSpec("1")));
+            TEST_CHECK(VersionSpec("1.0_alpha") == VersionSpec("1_alpha"));
+            TEST_CHECK(VersionSpec("1_alpha") == VersionSpec("1.0_alpha"));
+            TEST_CHECK(! (VersionSpec("1_alpha") < VersionSpec("1.0_alpha")));
+            TEST_CHECK(! (VersionSpec("1_alpha") > VersionSpec("1.0_alpha")));
+            TEST_CHECK(! (VersionSpec("1.0_alpha") < VersionSpec("1_alpha")));
+            TEST_CHECK(! (VersionSpec("1.0_alpha") > VersionSpec("1_alpha")));
+
+            std::vector<VersionSpec> v;
+            v.push_back(VersionSpec("1_alpha"));
+            v.push_back(VersionSpec("1_alpha10"));
+            v.push_back(VersionSpec("1_alpha10-r1"));
+            v.push_back(VersionSpec("1_alpha10_p1"));
+            v.push_back(VersionSpec("1_alpha10_p1-r1"));
+            v.push_back(VersionSpec("1_alpha11"));
+            v.push_back(VersionSpec("1_beta"));
+            v.push_back(VersionSpec("1_beta10"));
+            v.push_back(VersionSpec("1_beta10-r1"));
+            v.push_back(VersionSpec("1_beta10_p1"));
+            v.push_back(VersionSpec("1_beta10_p1-r1"));
+            v.push_back(VersionSpec("1_beta11"));
+            v.push_back(VersionSpec("1_pre"));
+            v.push_back(VersionSpec("1_pre10"));
+            v.push_back(VersionSpec("1_pre10-r1"));
+            v.push_back(VersionSpec("1_pre10_p1"));
+            v.push_back(VersionSpec("1_pre10_p1-r1"));
+            v.push_back(VersionSpec("1_pre11"));
+            v.push_back(VersionSpec("1_rc"));
+            v.push_back(VersionSpec("1_rc10"));
+            v.push_back(VersionSpec("1_rc10-r1"));
+            v.push_back(VersionSpec("1_rc10_p1"));
+            v.push_back(VersionSpec("1_rc10_p1-r1"));
+            v.push_back(VersionSpec("1_rc11"));
+            v.push_back(VersionSpec("1"));
+            v.push_back(VersionSpec("1-r1"));
+            v.push_back(VersionSpec("1_p1"));
+            v.push_back(VersionSpec("1p"));
+            v.push_back(VersionSpec("1.1_alpha3"));
+            v.push_back(VersionSpec("1.1"));
+            v.push_back(VersionSpec("1.1-r1"));
+            v.push_back(VersionSpec("1.1.1"));
+            v.push_back(VersionSpec("1.1.1-scm"));
+            v.push_back(VersionSpec("1.1.2"));
+            v.push_back(VersionSpec("1.1-scm"));
+            v.push_back(VersionSpec("1.1-scm-r1"));
+            v.push_back(VersionSpec("1.2_alpha"));
+            v.push_back(VersionSpec("1.2_alpha-scm"));
+            v.push_back(VersionSpec("1.2_beta"));
+            v.push_back(VersionSpec("1.2_beta10"));
+            v.push_back(VersionSpec("1.2_beta10_p1"));
+            v.push_back(VersionSpec("1.2_beta10_p1-scm"));
+            v.push_back(VersionSpec("1.2_beta10-scm"));
+            v.push_back(VersionSpec("1.2_beta11"));
+            v.push_back(VersionSpec("1.2_beta11-scm"));
+            v.push_back(VersionSpec("1.2_beta-scm"));
+            v.push_back(VersionSpec("1.2"));
+            v.push_back(VersionSpec("1.2-r1"));
+            v.push_back(VersionSpec("1.2-scm"));
+            v.push_back(VersionSpec("1.2-scm-r1"));
+            v.push_back(VersionSpec("1-scm"));
+            v.push_back(VersionSpec("2_alpha"));
+            v.push_back(VersionSpec("scm"));
+
+            std::vector<VersionSpec>::iterator v1(v.begin()), v_end(v.end());
+            for ( ; v1 != v_end ; ++v1)
+            {
+                TestMessageSuffix s1("v1:" + stringify(*v1), false);
+                std::vector<VersionSpec>::iterator v2(v.begin());
+                for ( ; v2 != v_end ; ++v2)
+                {
+                    TestMessageSuffix s2("v2:" + stringify(*v2), false);
+                    if (std::distance(v.begin(), v1) < std::distance(v.begin(), v2))
+                    {
+                        TEST_CHECK(*v1 < *v2);
+                        TEST_CHECK(*v2 > *v1);
+                        TEST_CHECK(*v1 != *v2);
+                        TEST_CHECK(*v2 != *v1);
+                    }
+                    else if (std::distance(v.begin(), v1) > std::distance(v.begin(), v2))
+                    {
+                        TEST_CHECK(*v2 < *v1);
+                        TEST_CHECK(*v1 > *v2);
+                        TEST_CHECK(*v2 != *v1);
+                        TEST_CHECK(*v1 != *v2);
+                    }
+                    else
+                    {
+                        TEST_CHECK(*v2 == *v1);
+                        TEST_CHECK(*v1 == *v2);
+                    }
+                }
+            }
+        }
+    } test_version_spec_compare;
 }
 

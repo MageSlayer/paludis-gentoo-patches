@@ -61,12 +61,6 @@ namespace paludis
 
         public:
             /**
-             * Maximum number of a.b.c.d parts allowed in a version number. We
-             * use this to avoid having to dynamically allocate memory.
-             */
-            static const unsigned max_version_parts_count = 10;
-
-            /**
              * Constructor.
              */
             VersionSpec(const std::string & text);

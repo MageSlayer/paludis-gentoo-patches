@@ -19,7 +19,10 @@
 
 #include <algorithm>
 #include <paludis/util/exception.hh>
+#include <paludis/util/smart_record.hh>
 #include <paludis/version_spec.hh>
+#include <vector>
+#include <limits>
 
 using namespace paludis;
 
@@ -28,14 +31,39 @@ BadVersionSpecError::BadVersionSpecError(const std::string & name) throw () :
 {
 }
 
-enum SuffixPart
+namespace
 {
-    alpha,
-    beta,
-    pre,
-    rc,
-    none
-};
+    enum PartKind
+    {
+        alpha,
+        beta,
+        pre,
+        rc,
+        empty,
+        revision,
+        patch,
+        letter,
+        number,
+        scm
+    };
+
+    enum PartKeys
+    {
+        part_kind,
+        part_value,
+        last_part
+    };
+
+    struct PartTag :
+        SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
+        SmartRecordKeys<PartKeys, last_part>,
+        SmartRecordKey<part_kind, PartKind>,
+        SmartRecordKey<part_value, unsigned long>
+    {
+    };
+
+    typedef MakeSmartRecord<PartTag>::Type Part;
+}
 
 namespace paludis
 {
@@ -49,26 +77,8 @@ namespace paludis
         /// Our raw string representation.
         std::string text;
 
-        /// The x.y.z parts of our version (zero filled).
-        long version_parts[VersionSpec::max_version_parts_count];
-
-        /// The letter (1.2.3a -> a) part of our version.
-        char letter_part;
-
-        /// The suffix level (alpha, beta, pre, rc, none) part of our version.
-        SuffixPart suffix_part;
-
-        /// The suffix level of our version.
-        unsigned long suffix_level_part;
-
-        /// The patch level of our revision.
-        long patch_level_part;
-
-        /// The revision (-r1 -> 1) part of our version.
-        unsigned long revision_part;
-
-        /// If we are used in an =* comparison, the number of digits to consider
-        unsigned long max_star_count;
+        /// Our parts.
+        std::vector<Part> parts;
     };
 }
 
@@ -80,26 +90,25 @@ VersionSpec::VersionSpec(const std::string & text) :
 
     /* set us up with some sane defaults */
     _imp->text = text;
-    std::fill_n(&_imp->version_parts[0],
-            VersionSpec::max_version_parts_count, 0);
-    _imp->letter_part = '\0';
-    _imp->revision_part = 0;
-    _imp->suffix_part = none;
-    _imp->suffix_level_part = 0;
-    _imp->patch_level_part = -1;
 
     /* parse */
-    unsigned version_part_idx(0);
     std::string::size_type p(0);
 
+    if (text == "scm")
+    {
+        _imp->parts.push_back(Part(scm, 0));
+        return;
+    }
+
     /* numbers... */
+    unsigned long x(0);
     while (p < text.length())
     {
         if (text.at(p) < '0' || text.at(p) > '9')
             throw BadVersionSpecError(text);
 
-        _imp->version_parts[version_part_idx] *= 10;
-        _imp->version_parts[version_part_idx] += text.at(p) - '0';
+        x *= 10;
+        x += text.at(p) - '0';
 
         if (++p >= text.length())
             break;
@@ -107,68 +116,98 @@ VersionSpec::VersionSpec(const std::string & text) :
         if ('.' == text.at(p))
         {
             ++p;
-            if (++version_part_idx >= VersionSpec::max_version_parts_count)
-                throw BadVersionSpecError(text);
+            _imp->parts.push_back(Part(number, x));
+            x = 0;
         }
 
         if (text.at(p) < '0' || text.at(p) > '9')
             break;
     }
-    _imp->max_star_count = version_part_idx + 1;
+    _imp->parts.push_back(Part(number, x));
+
+    while (! _imp->parts.empty())
+    {
+        if (0 == _imp->parts[_imp->parts.size() - 1].get<part_value>())
+            _imp->parts.pop_back();
+        else
+            break;
+    }
 
     /* letter */
     if (p < text.length())
         if (text.at(p) >= 'a' && text.at(p) <= 'z')
-            _imp->letter_part = text.at(p++);
+            _imp->parts.push_back(Part(letter, text.at(p++)));
 
     /* suffix */
     if (p < text.length())
         do
         {
+            PartKind k(empty);
             if (0 == text.compare(p, 6, "_alpha"))
             {
-                _imp->suffix_part = alpha;
+                k = alpha;
                 p += 6;
             }
             else if (0 == text.compare(p, 5, "_beta"))
             {
-                _imp->suffix_part = beta;
+                k = beta;
                 p += 5;
             }
             else if (0 == text.compare(p, 4, "_pre"))
             {
-                _imp->suffix_part = pre;
+                k = pre;
                 p += 4;
             }
             else if (0 == text.compare(p, 3, "_rc"))
             {
-                _imp->suffix_part = rc;
+                k = rc;
                 p += 3;
             }
             else
                 break;
 
+            x = std::numeric_limits<unsigned long>::max();
             for ( ; p < text.length() ; ++p)
             {
                 if (text.at(p) < '0' || text.at(p) > '9')
                     break;
-                _imp->suffix_level_part *= 10;
-                _imp->suffix_level_part += text.at(p) - '0';
+                if (x == std::numeric_limits<unsigned long>::max())
+                    x = 0;
+                x *= 10;
+                x += text.at(p) - '0';
             }
+
+            _imp->parts.push_back(Part(k, x));
         } while (false);
 
     /* patch level */
     if (p < text.length() && 0 == text.compare(p, 2, "_p"))
     {
-        _imp->patch_level_part = 0;
-
+        x = std::numeric_limits<unsigned long>::max();
         for (p += 2 ; p < text.length() ; ++p)
         {
             if (text.at(p) < '0' || text.at(p) > '9')
                 break;
-            _imp->patch_level_part *= 10;
-            _imp->patch_level_part += text.at(p) - '0';
+            if (x == std::numeric_limits<unsigned long>::max())
+                x = 0;
+            x *= 10;
+            x += text.at(p) - '0';
         }
+        _imp->parts.push_back(Part(patch, x));
+    }
+
+    /* scm */
+    if ((p < text.length()) && (0 == text.compare(p, 4, "-scm")))
+    {
+        p += 4;
+        _imp->parts.push_back(Part(scm, 0));
+    }
+    else
+    {
+        for (std::vector<Part>::iterator i(_imp->parts.begin()),
+                i_end(_imp->parts.end()) ; i != i_end ; ++i)
+            if (std::numeric_limits<unsigned long>::max() == i->get<part_value>())
+                i->set<part_value>(0);
     }
 
     /* revision */
@@ -176,14 +215,16 @@ VersionSpec::VersionSpec(const std::string & text) :
         if (0 == text.compare(p, 2, "-r"))
         {
             p += 2;
+            x = 0;
             while (p < text.length())
             {
                 if (text.at(p) < '0' || text.at(p) > '9')
                     break;
-                _imp->revision_part *= 10;
-                _imp->revision_part += text.at(p) - '0';
+                x *= 10;
+                x += text.at(p) - '0';
                 ++p;
             }
+            _imp->parts.push_back(Part(revision, x));
         }
 
 
@@ -197,16 +238,7 @@ VersionSpec::VersionSpec(const VersionSpec & other) :
     ComparisonPolicyType(other)
 {
     _imp->text = other._imp->text;
-    /* don't change this to std::copy_n, it's non-portable. */
-    std::copy(&other._imp->version_parts[0],
-            &other._imp->version_parts[max_version_parts_count] + 1,
-            &_imp->version_parts[0]);
-    _imp->letter_part = other._imp->letter_part;
-    _imp->revision_part = other._imp->revision_part;
-    _imp->suffix_part = other._imp->suffix_part;
-    _imp->suffix_level_part = other._imp->suffix_level_part;
-    _imp->patch_level_part = other._imp->patch_level_part;
-    _imp->max_star_count = other._imp->max_star_count;
+    _imp->parts = other._imp->parts;
 }
 
 const VersionSpec &
@@ -215,16 +247,7 @@ VersionSpec::operator= (const VersionSpec & other)
     if (this != &other)
     {
         _imp->text = other._imp->text;
-        /* don't change this to std::copy_n, it's non-portable. */
-        std::copy(&other._imp->version_parts[0],
-                &other._imp->version_parts[max_version_parts_count] + 1,
-                &_imp->version_parts[0]);
-        _imp->letter_part = other._imp->letter_part;
-        _imp->revision_part = other._imp->revision_part;
-        _imp->suffix_part = other._imp->suffix_part;
-        _imp->suffix_level_part = other._imp->suffix_level_part;
-        _imp->patch_level_part = other._imp->patch_level_part;
-        _imp->max_star_count = other._imp->max_star_count;
+        _imp->parts = other._imp->parts;
     }
     return *this;
 }
@@ -236,38 +259,23 @@ VersionSpec::~VersionSpec()
 int
 VersionSpec::compare(const VersionSpec & other) const
 {
-    for (unsigned i(0) ; i < VersionSpec::max_version_parts_count ; ++i)
+    std::vector<Part>::const_iterator
+        v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
+        v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
+
+    Part end_part(empty, 0);
+    while (true)
     {
-        if (_imp->version_parts[i] < other._imp->version_parts[i])
+        const Part * const p1(v1 == v1_end ? &end_part : &*v1++);
+        const Part * const p2(v2 == v2_end ? &end_part : &*v2++);
+        if (&end_part == p1 && &end_part == p2)
+            break;
+
+        if (*p1 < *p2)
             return -1;
-        else if (_imp->version_parts[i] > other._imp->version_parts[i])
+        if (*p1 > *p2)
             return 1;
     }
-
-    if (_imp->letter_part < other._imp->letter_part)
-        return -1;
-    if (_imp->letter_part > other._imp->letter_part)
-        return 1;
-
-    if (_imp->suffix_part < other._imp->suffix_part)
-        return -1;
-    if (_imp->suffix_part > other._imp->suffix_part)
-        return 1;
-
-    if (_imp->suffix_level_part < other._imp->suffix_level_part)
-        return -1;
-    if (_imp->suffix_level_part > other._imp->suffix_level_part)
-        return 1;
-
-    if (_imp->patch_level_part < other._imp->patch_level_part)
-        return -1;
-    if (_imp->patch_level_part > other._imp->patch_level_part)
-        return 1;
-
-    if (_imp->revision_part < other._imp->revision_part)
-        return -1;
-    if (_imp->revision_part > other._imp->revision_part)
-        return 1;
 
     return 0;
 }
@@ -275,21 +283,27 @@ VersionSpec::compare(const VersionSpec & other) const
 bool
 VersionSpec::tilde_compare(const VersionSpec & other) const
 {
-    for (unsigned i(0) ; i < VersionSpec::max_version_parts_count ; ++i)
-        if (_imp->version_parts[i] != other._imp->version_parts[i])
+    std::vector<Part>::const_iterator
+        v1(_imp->parts.begin()), v1_end(_imp->parts.end()),
+        v2(other._imp->parts.begin()), v2_end(other._imp->parts.end());
+
+    Part end_part(empty, 0);
+    while (true)
+    {
+        const Part * p1(v1 == v1_end ? &end_part : &*v1++);
+        while (p1 != &end_part && p1->get<part_kind>() == revision)
+            p1 = (v1 == v1_end ? &end_part : &*v1++);
+
+        const Part * p2(v2 == v2_end ? &end_part : &*v2++);
+        while (p2 != &end_part && p2->get<part_kind>() == revision)
+            p2 = (v2 == v2_end ? &end_part : &*v2++);
+
+        if (&end_part == p1 && &end_part == p2)
+            break;
+
+        if (*p1 != *p2)
             return false;
-
-    if (_imp->letter_part != other._imp->letter_part)
-        return false;
-
-    if (_imp->suffix_part != other._imp->suffix_part)
-        return false;
-
-    if (_imp->suffix_level_part != other._imp->suffix_level_part)
-        return false;
-
-    if (_imp->patch_level_part != other._imp->patch_level_part)
-        return false;
+    }
 
     return true;
 }
@@ -304,14 +318,30 @@ std::size_t
 VersionSpec::hash_value() const
 {
     /// \todo Improve this;
-    return _imp->version_parts[0];
+    return _imp->parts[0].get<part_value>();
+}
+
+namespace
+{
+    struct IsRevisionPart
+    {
+        bool operator() (const Part & p) const
+        {
+            return p.get<part_kind>() == revision;
+        }
+    };
 }
 
 VersionSpec
 VersionSpec::remove_revision() const
 {
     VersionSpec result(*this);
-    result._imp->revision_part = 0;
+
+    // see EffSTL item 9
+    result._imp->parts.erase(std::remove_if(
+                result._imp->parts.begin(),
+                result._imp->parts.end(),
+                IsRevisionPart()));
 
     std::string::size_type p;
     if (std::string::npos != ((p = result._imp->text.rfind("-r"))))
@@ -324,7 +354,12 @@ VersionSpec::remove_revision() const
 std::string
 VersionSpec::revision_only() const
 {
-    return "r" + stringify(_imp->revision_part);
+    std::vector<Part>::const_iterator r(std::find_if(_imp->parts.begin(),
+                _imp->parts.end(), IsRevisionPart()));
+    if (r != _imp->parts.end())
+        return "r" + stringify(r->get<part_value>());
+    else
+        return "r0";
 }
 
 std::ostream &
@@ -333,3 +368,4 @@ paludis::operator<< (std::ostream & s, const VersionSpec & v)
     s << v._imp->text;
     return s;
 }
+
