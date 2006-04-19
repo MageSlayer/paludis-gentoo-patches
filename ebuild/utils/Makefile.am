@@ -47,11 +47,11 @@ TESTS_ENVIRONMENT = env \
 	$(SHELL) $(top_srcdir)/ebuild/utils/run_test.bash
 
 TESTS = merge_TEST.bash dobin_TEST.bash unmerge_TEST.bash
-EXTRA_DIST = $(libexecprog_SCRIPTS) $(TESTS) run_test.bash
-
 check_SCRIPTS = $(TESTS) \
 	merge_TEST_setup.sh merge_TEST_cleanup.sh \
 	unmerge_TEST_setup.sh unmerge_TEST_cleanup.sh
+
+EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash
 
 check_PROGRAMS =
 
