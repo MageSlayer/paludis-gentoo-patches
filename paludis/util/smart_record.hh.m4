@@ -150,6 +150,11 @@ forloop(`idx', `0', max_record_size, `
             typedef std::string Type;
         };
 
+        template <unsigned i_>
+        struct CharStarToString<const char [i_]>
+        {
+            typedef std::string Type;
+        };
 
         template <>
         struct CharStarToString<char *>
