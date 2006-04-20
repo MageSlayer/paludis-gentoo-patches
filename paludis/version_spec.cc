@@ -372,7 +372,7 @@ VersionSpec::remove_revision() const
     result._imp->parts.erase(std::remove_if(
                 result._imp->parts.begin(),
                 result._imp->parts.end(),
-                IsRevisionPart()));
+                IsRevisionPart()), result._imp->parts.end());
 
     std::string::size_type p;
     if (std::string::npos != ((p = result._imp->text.rfind("-r"))))
