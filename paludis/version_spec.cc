@@ -151,7 +151,7 @@ VersionSpec::VersionSpec(const std::string & text) :
     }
     _imp->parts.push_back(Part(number, x));
 
-    while (! _imp->parts.empty())
+    while (_imp->parts.size() > 1)
     {
         if (0 == _imp->parts[_imp->parts.size() - 1].get<part_value>())
             _imp->parts.pop_back();
@@ -344,6 +344,8 @@ std::size_t
 VersionSpec::hash_value() const
 {
     /// \todo Improve this;
+    if (_imp->parts.empty())
+        return 0;
     return _imp->parts[0].get<part_value>();
 }
 
