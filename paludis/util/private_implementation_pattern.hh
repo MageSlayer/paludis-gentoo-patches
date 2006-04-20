@@ -23,11 +23,19 @@
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 
+/** \file
+ * Declarations for the PrivateImplementationPattern pattern.
+ *
+ * \ingroup grppimp
+ */
+
 namespace paludis
 {
     /**
      * Private implementation data, to be specialised for any class that
      * uses PrivateImplementationPattern.
+     *
+     * \ingroup grppimp
      */
     template <typename C_>
     struct Implementation;
@@ -35,6 +43,8 @@ namespace paludis
     /**
      * A class descended from PrivateImplementationPattern has an associated
      * Implementation instance.
+     *
+     * \ingroup grppimp
      */
     template <typename C_>
     class PrivateImplementationPattern :

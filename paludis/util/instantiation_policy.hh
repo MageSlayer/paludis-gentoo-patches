@@ -20,59 +20,72 @@
 #ifndef PALUDIS_GUARD_PALUDIS_INSTANTIATION_POLICY_HH
 #define PALUDIS_GUARD_PALUDIS_INSTANTIATION_POLICY_HH 1
 
+/** \file
+ * InstantiationPolicy patterns.
+ *
+ * \ingroup grpinstance
+ */
+
 namespace paludis
 {
     /**
      * Instantiation policies for paludis::InstantiationPolicy.
+     *
+     * \ingroup grpinstance
      */
     namespace instantiation_method
     {
         /**
-         * Cannot be copied or assigned to.
+         * Cannot be copie
+         *
+         * \ingroup grpinstanced or assigned to.
          */
         struct NonCopyableTag
         {
         };
 
         /**
-         * Cannot be instantiated.
+         * Cannot be instantia
+         *
+         * \ingroup grpinstanceted.
          */
         struct NonInstantiableTag
         {
         };
 
         /**
-         * Single instance created at startup.
+         * Single instance cre
+         *
+         * \ingroup grpinstanceated at startup.
          */
         struct SingletonAtStartupTag
         {
         };
 
         /**
-         * Single instance created when needed.
+         * Single instance cre
+         *
+         * \ingroup grpinstanceated when needed.
          */
         struct SingletonAsNeededTag
         {
         };
     }
 
-#ifdef DOXYGEN
     /**
      * InstantiationPolicy is used to specify behaviour of classes that have
      * something other than the default C++ instantiation behaviour.
+     *
+     * \ingroup grpinstance
      */
     template <typename OurType_, typename InstantiationMethodTag_>
-    struct InstantiationPolicy
-    {
-    };
-#else
-    template <typename OurType_, typename InstantiationMethodTag_>
     struct InstantiationPolicy;
-#endif
 
     /**
      * InstantiationPolicy: specialisation for classes that cannot be copied
      * or assigned to.
+     *
+     * \ingroup grpinstance
      */
     template<typename OurType_>
     class InstantiationPolicy<OurType_, instantiation_method::NonCopyableTag>
@@ -94,6 +107,8 @@ namespace paludis
 
     /**
      * InstantiationPolicy: specialisation for classes that cannot be created.
+     *
+     * \ingroup grpinstance
      */
     template<typename OurType_>
     class InstantiationPolicy<OurType_, instantiation_method::NonInstantiableTag>
@@ -119,6 +134,8 @@ namespace paludis
     /**
      * InstantiationPolicy: specialisation for singleton classes that are
      * created at startup.
+     *
+     * \ingroup grpinstance
      */
     template<typename OurType_>
     class InstantiationPolicy<OurType_, instantiation_method::SingletonAtStartupTag>
@@ -153,6 +170,8 @@ namespace paludis
     /**
      * InstantiationPolicy: specialisation for singleton classes that are
      * created as needed.
+     *
+     * \ingroup grpinstance
      */
     template<typename OurType_>
     class InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>

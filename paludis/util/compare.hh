@@ -27,7 +27,7 @@
 /** \file
  * Declarations for the compare functions.
  *
- * \ingroup Utility
+ * \ingroup grpcompare
  */
 
 namespace paludis
@@ -37,7 +37,7 @@ namespace paludis
      *
      * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
      *
-     * \ingroup Utility
+     * \ingroup grpcompare
      */
     inline int compare(int t1, int t2) PALUDIS_ATTRIBUTE((always_inline));
 
@@ -56,7 +56,7 @@ namespace paludis
      *
      * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
      *
-     * \ingroup Utility
+     * \ingroup grpcompare
      */
     inline int compare(unsigned t1, unsigned t2) PALUDIS_ATTRIBUTE((always_inline));
 
@@ -75,7 +75,7 @@ namespace paludis
      *
      * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
      *
-     * \ingroup Utility
+     * \ingroup grpcompare
      */
     inline int long compare(unsigned long t1, unsigned long t2) PALUDIS_ATTRIBUTE((always_inline));
 
@@ -94,7 +94,7 @@ namespace paludis
      *
      * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
      *
-     * \ingroup Utility
+     * \ingroup grpcompare
      */
     inline int compare(long t1, long t2) PALUDIS_ATTRIBUTE((always_inline));
 
@@ -113,7 +113,7 @@ namespace paludis
      *
      * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
      *
-     * \ingroup Utility
+     * \ingroup grpcompare
      */
     template <typename T_>
     inline int compare(
@@ -140,7 +140,7 @@ namespace paludis
      *
      * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
      *
-     * \ingroup Utility
+     * \ingroup grpcompare
      */
     template <typename T_, typename U_>
     inline int compare(
@@ -155,7 +155,7 @@ namespace paludis
      *
      * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
      *
-     * \ingroup Utility
+     * \ingroup grpcompare
      */
     template <typename T_>
     int compare(

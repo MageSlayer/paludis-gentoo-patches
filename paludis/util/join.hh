@@ -23,10 +23,18 @@
 #include <paludis/util/stringify.hh>
 #include <string>
 
+/** \file
+ * Declarations for the join function.
+ *
+ * \ingroup grpjoin
+ */
+
 namespace paludis
 {
     /**
      * Join together the items from i to end using joiner.
+     *
+     * \ingroup grpjoin
      */
     template <typename I_, typename T_>
     T_ join(I_ i, I_ end, const T_ & joiner)
@@ -46,6 +54,8 @@ namespace paludis
     /**
      * Convenience alternative join allowing a char * to be used for a
      * string.
+     *
+     * \ingroup grpjoin
      */
     template <typename I_>
     std::string join(I_ begin, const I_ end, const char * const t)

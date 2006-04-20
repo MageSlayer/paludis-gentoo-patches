@@ -24,7 +24,7 @@ using namespace paludis;
 /** \file
  * Implementation of IsFileWithExtension.
  *
- * \ingroup Filesystem
+ * \ingroup grpfilesystem
  */
 
 bool

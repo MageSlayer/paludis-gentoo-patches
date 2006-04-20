@@ -26,12 +26,17 @@
 
 /** \file
  * Destringify functions.
+ *
+ * \ingroup grpdestringify
  */
 
 namespace paludis
 {
     /**
      * Default exception type thrown by destringify when it fails.
+     *
+     * \ingroup grpdestringify
+     * \ingroup grpexceptions
      */
     class DestringifyError : public Exception
     {
@@ -44,11 +49,15 @@ namespace paludis
 
     /**
      * For internal use by destringify.
+     *
+     * \ingroup grpdestringify
      */
     namespace destringify_internals
     {
         /**
          * Basic destringifier.
+         *
+         * \ingroup grpdestringify
          */
         template <typename Type_, typename Exception_>
         struct Destringifier
@@ -69,6 +78,8 @@ namespace paludis
 
         /**
          * Specialised destringify for std::string.
+         *
+         * \ingroup grpdestringify
          */
         template <typename Exception_>
         struct Destringifier<std::string, Exception_>
@@ -84,6 +95,8 @@ namespace paludis
 
         /**
          * Specialised destringify for bool.
+         *
+         * \ingroup grpdestringify
          */
         template <typename Exception_>
         struct Destringifier<bool, Exception_>
@@ -114,6 +127,8 @@ namespace paludis
 
     /**
      * Extract a value of some type from a string.
+     *
+     * \ingroup grpdestringify
      */
     template <typename Type_, typename Exception_>
     Type_ destringify(const std::string & s)
@@ -127,6 +142,8 @@ namespace paludis
     /**
      * Extract a value of some type from a string (overload with a default
      * exception of DestringifyError).
+     *
+     * \ingroup grpdestringify
      */
     template <typename Type_>
     Type_ destringify(const std::string & s)

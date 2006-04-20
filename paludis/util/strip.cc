@@ -20,6 +20,12 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/strip.hh>
 
+/** \file
+ * Implementation of strip things.
+ *
+ * \ingroup grpstrippers
+ */
+
 namespace paludis
 {
     std::string strip_leading_string(const std::string & s, const std::string & prefix)

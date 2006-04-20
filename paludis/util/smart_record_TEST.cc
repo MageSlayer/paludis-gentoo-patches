@@ -29,7 +29,7 @@ using namespace test;
 /** \file
  * Test cases for smart_record.hh .
  *
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
 namespace
@@ -77,7 +77,7 @@ namespace test_cases
     /**
      * \test Test a simple SmartRecord.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct SimpleRecordTest : TestCase
     {
@@ -114,7 +114,7 @@ namespace test_cases
     /**
      * \test Test a list constructed SmartRecord.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct ListConstructedRecordTest : TestCase
     {

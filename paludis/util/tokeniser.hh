@@ -27,7 +27,7 @@
 /** \file
  * Declarations for Tokeniser and related utilities.
  *
- * \ingroup Tokeniser
+ * \ingroup grptokenise
  */
 
 namespace paludis
@@ -35,14 +35,14 @@ namespace paludis
     /**
      * Delimiter policy for Tokeniser.
      *
-     * \ingroup Tokeniser
+     * \ingroup grptokenise
      */
     namespace delim_kind
     {
         /**
          * Any of the characters split, and the delimiter is discarded.
          *
-         * \ingroup Tokeniser
+         * \ingroup grptokenise
          */
         struct AnyOfTag
         {
@@ -52,14 +52,14 @@ namespace paludis
     /**
      * Delimiter mode for Tokeniser.
      *
-     * \ingroup Tokeniser
+     * \ingroup grptokenise
      */
     namespace delim_mode
     {
         /**
          * Discard the delimiters.
          *
-         * \ingroup Tokeniser
+         * \ingroup grptokenise
          */
         struct DelimiterTag
         {
@@ -68,7 +68,7 @@ namespace paludis
         /**
          * Keep the delimiters.
          *
-         * \ingroup Tokeniser
+         * \ingroup grptokenise
          */
         struct BoundaryTag
         {
@@ -78,14 +78,14 @@ namespace paludis
     /**
      * Tokeniser internal use only.
      *
-     * \ingroup Tokeniser
+     * \ingroup grptokenise
      */
     namespace tokeniser_internals
     {
         /**
          * A Writer handles Tokeniser's writes.
          *
-         * \ingroup Tokeniser
+         * \ingroup grptokenise
          */
         template <typename DelimMode_, typename Char_, typename Iter_>
         struct Writer;
@@ -94,7 +94,7 @@ namespace paludis
          * A Writer handles Tokeniser's writes (specialisation for
          * delim_mode::DelimiterTag).
          *
-         * \ingroup Tokeniser
+         * \ingroup grptokenise
          */
         template <typename Char_, typename Iter_>
         struct Writer<delim_mode::DelimiterTag, Char_, Iter_>
@@ -119,7 +119,7 @@ namespace paludis
          * A Writer handles Tokeniser's writes (specialisation for
          * delim_mode::BoundaryTag).
          *
-         * \ingroup Tokeniser
+         * \ingroup grptokenise
          */
         template <typename Char_, typename Iter_>
         struct Writer<delim_mode::BoundaryTag, Char_, Iter_>
@@ -146,7 +146,7 @@ namespace paludis
     /**
      * Tokeniser splits up strings into smaller strings.
      *
-     * \ingroup Tokeniser
+     * \ingroup grptokenise
      */
     template <typename DelimKind_, typename DelimMode_, typename Char_ = std::string::value_type>
     struct Tokeniser;
@@ -154,7 +154,7 @@ namespace paludis
     /**
      * Tokeniser: specialisation for delim_kind::AnyOfTag.
      *
-     * \ingroup Tokeniser
+     * \ingroup grptokenise
      */
     template <typename DelimMode_, typename Char_>
     class Tokeniser<delim_kind::AnyOfTag, DelimMode_, Char_> :

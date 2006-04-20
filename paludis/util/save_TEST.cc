@@ -27,8 +27,7 @@ using namespace paludis;
 /** \file
  * Test cases for save.hh .
  *
- * \ingroup Utility
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -36,7 +35,7 @@ namespace test_cases
     /**
      * \test Test Save.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct SaveTest : TestCase
     {

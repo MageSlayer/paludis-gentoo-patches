@@ -180,3 +180,134 @@
  * \ingroup grpdepparser
  */
 
+// ----- grplibpaludisutil Subgroups -----
+
+/** \defgroup grpcollections Collections
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpcompare Comparisons
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grppatterns Patterns
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpcontainerentries Container entries
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grppointers Pointers
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpdeleter Deleter
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpfilesystem Filesystem
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpstrings Strings
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grplog Log
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grplog System
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grprandom Random numbers
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpsave Save
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grprecords Records
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpvalidated Validated
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+// ----- grppatterns Subgroups -----
+
+/** \defgroup grpcomposite Composite pattern
+ *
+ * \ingroup grppatterns
+ */
+
+/** \defgroup grpinstance Instance patterns
+ *
+ * \ingroup grppointers
+ */
+
+/** \defgroup grppimp Private implementation pattern
+ *
+ * \ingroup grppatterns
+ */
+
+/** \defgroup grpvc Virtual constructor
+ *
+ * \ingroup grppatterns
+ */
+
+/** \defgroup grpvisitor Visitor
+ *
+ * \ingroup grpvisitor
+ */
+
+// ----- grpstrings Subgroups -----
+
+/** \defgroup grpdestringify Destringify
+ *
+ * \ingroup grpstrings
+ */
+
+/** \defgroup grpjoin Join
+ *
+ * \ingroup grpstrings
+ */
+
+/** \defgroup grpstringify Stringify
+ *
+ * \ingroup grpstrings
+ */
+
+/** \defgroup grptokenise Tokenise
+ *
+ * \ingroup grpstrings
+ */
+
+/** \defgroup grpmatch Match
+ *
+ * \ingroup grpstrings
+ */
+
+/** \defgroup grpstrippers Strippers
+ *
+ * \ingroup grpstrings
+ */
+

@@ -23,29 +23,43 @@
 #include <functional>
 #include <string>
 
+/** \file
+ * Strip functions and adapters.
+ *
+ * \ingroup grpstrippers
+ */
+
 namespace paludis
 {
     /**
      * Return a string equal to s minus any leading characters that are
      * contained in prefix.
+     *
+     * \ingroup grpstrippers
      */
     std::string strip_leading_string(const std::string & s, const std::string & prefix);
 
     /**
      * Return a string equal to s, minus the string remove if remove occurs at
      * the start of s.
+     *
+     * \ingroup grpstrippers
      */
     std::string strip_leading(const std::string & s, const std::string & remove);
 
     /**
      * Return a string equal to s minus any trailing characters that are
      * contained in suffix.
+     *
+     * \ingroup grpstrippers
      */
     std::string strip_trailing_string(const std::string & s, const std::string & suffix);
 
     /**
      * Return a string equal to s, minus the string remove if remove occurs at
      * the end of s.
+     *
+     * \ingroup grpstrippers
      */
     std::string strip_trailing(const std::string & s, const std::string & remove);
 
@@ -53,6 +67,8 @@ namespace paludis
      * Adapt one of the strip_ functions for use as a std::unary_function by
      * binding a value to the second parameter (avoids the reference to const
      * issue with std::bind2nd).
+     *
+     * \ingroup grpstrippers
      */
     template <std::string (* f_)(const std::string &, const std::string &)>
     class StripAdapter :
@@ -81,21 +97,29 @@ namespace paludis
 
     /**
      * Adapt strip_leading_string to a functor by binding its second argument.
+     *
+     * \ingroup grpstrippers
      */
     typedef StripAdapter<&strip_leading_string> StripLeadingString;
 
     /**
      * Adapt strip_leading to a functor by binding its second argument.
+     *
+     * \ingroup grpstrippers
      */
     typedef StripAdapter<&strip_leading> StripLeading;
 
     /**
      * Adapt strip_trailing_string to a functor by binding its second argument.
+     *
+     * \ingroup grpstrippers
      */
     typedef StripAdapter<&strip_trailing_string> StripTrailingString;
 
     /**
      * Adapt strip_trailing to a functor by binding its second argument.
+     *
+     * \ingroup grpstrippers
      */
     typedef StripAdapter<&strip_trailing> StripTrailing;
 }

@@ -25,6 +25,12 @@
 #include <sstream>
 #include <test/test_framework.hh>
 
+/** \file
+ * Some extras, for test cases.
+ *
+ * \ingroup grptestcases
+ */
+
 using namespace paludis;
 
 namespace

@@ -23,12 +23,19 @@
 #include <paludis/util/exception.hh>
 #include <string>
 
+/** \file
+ * Various system utilities.
+ *
+ * \ingroup grpsystem
+ */
+
 namespace paludis
 {
     /**
      * Thrown if getenv_or_error fails.
      *
-     * \ingroup Exception
+     * \ingroup grpexceptions
+     * \ingroup grpsystem
      */
     class GetenvError : public Exception
     {
@@ -42,17 +49,23 @@ namespace paludis
     /**
      * Fetch the value of environment variable key, or def if the variable is
      * not defined.
+     *
+     * \ingroup grpsystem
      */
     std::string getenv_with_default(const std::string & key, const std::string & def);
 
     /**
      * Fetch the value of environment variable key, or throw a GetenvError if
      * the variable is not defined.
+     *
+     * \ingroup grpsystem
      */
     std::string getenv_or_error(const std::string & key);
 
     /**
      * Fetch the kernel version, for $KV.
+     *
+     * \ingroup grpsystem
      */
     std::string kernel_version();
 
@@ -60,9 +73,14 @@ namespace paludis
      * Run a command, wait for it to terminate and return its exit status.
      *
      * Use PStream instead if you need to capture stdout.
+     *
+     * \ingroup grpsystem
      */
     int run_command(const std::string & cmd);
 
+    /**
+     * Make a command that's run in a particular environment.
+     */
     class MakeEnvCommand
     {
         private:
@@ -70,15 +88,26 @@ namespace paludis
             std::string args;
 
         public:
+            /**
+             * Constructor.
+             */
             explicit MakeEnvCommand(const std::string &, const std::string &);
 
+            /**
+             * Add some environment.
+             */
             MakeEnvCommand operator() (const std::string &, const std::string &) const;
 
+            /**
+             * Turn ourself into a command string.
+             */
             operator std::string() const;
     };
 
     /**
-     * Run a command, with environment.
+     * Make a command, with environment.
+     *
+     * \ingroup grpsystem
      */
     const MakeEnvCommand make_env_command(const std::string & cmd);
 }

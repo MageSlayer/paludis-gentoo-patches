@@ -31,7 +31,7 @@
  * Declaration for the Exception base class, the InternalError exception
  * class, the NameError class and related utilities.
  *
- * \ingroup Exception
+ * \ingroup grpexceptions
  */
 
 namespace paludis
@@ -39,7 +39,7 @@ namespace paludis
     /**
      * Context tag for libebt.
      *
-     * \ingroup Exception
+     * \ingroup grpexceptions
      */
     struct PaludisBacktraceTag
     {
@@ -48,14 +48,14 @@ namespace paludis
     /**
      * Backtrace context class.
      *
-     * \ingroup Exception
+     * \ingroup grpexceptions
      */
     typedef libebt::BacktraceContext<PaludisBacktraceTag> Context;
 
     /**
      * Base exception class.
      *
-     * \ingroup Exception
+     * \ingroup grpexceptions
      */
     class Exception :
         public std::exception,
@@ -86,7 +86,7 @@ namespace paludis
      * An InternalError is an Exception that is thrown if something that is
      * never supposed to happen happens.
      *
-     * \ingroup Exception
+     * \ingroup grpexceptions
      */
     class InternalError : public Exception
     {
@@ -115,8 +115,8 @@ namespace paludis
      * A NameError is an Exception that is thrown when some kind of invalid
      * name is encountered.
      *
-     * \ingroup Exception
-     * \ingroup Database
+     * \ingroup grpexceptions
+     * \ingroup grpnames
      */
     class NameError : public Exception
     {
@@ -133,8 +133,8 @@ namespace paludis
     /**
      * A ConfigurationError is thrown when an invalid configuration occurs.
      *
-     * \ingroup Exception
-     * \ingroup ConfigFile
+     * \ingroup grpexceptions
+     * \ingroup grpconfigfile
      */
     class ConfigurationError : public Exception
     {
@@ -150,7 +150,7 @@ namespace paludis
  * Expands to the current function name, file and line, for use with
  * paludis::InternalError.
  *
- * \ingroup Exception
+ * \ingroup grpexceptions
  */
 #define PALUDIS_HERE (paludis::stringify(__PRETTY_FUNCTION__) + " at " + \
         paludis::stringify(__FILE__) + ":" + paludis::stringify(__LINE__))

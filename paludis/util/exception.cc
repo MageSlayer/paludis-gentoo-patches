@@ -19,6 +19,12 @@
 
 #include <paludis/util/exception.hh>
 
+/** \file
+ * Exception class implementations.
+ *
+ * \ingroup grpexceptions
+ */
+
 using namespace paludis;
 
 Exception::Exception(const std::string & message) throw () :

@@ -27,13 +27,15 @@ using namespace test;
 /** \file
  * Test cases for dir_iterator.hh.
  *
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
 namespace test_cases
 {
     /**
      * \test Test DirIterator construction and manipulation.
+     *
+     * \ingroup grptestcases
      */
     struct DirIteratorManipulationTest : TestCase
     {
@@ -52,6 +54,8 @@ namespace test_cases
 
     /**
      * \test Test DirIterator iterating abilities
+     *
+     * \ingroup grptestcases
      */
     struct DirIteratorIterateTest : TestCase
     {

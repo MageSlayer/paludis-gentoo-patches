@@ -32,7 +32,7 @@
 /** \file
  * Implementation of paludis::FSEntry.
  *
- * \ingroup Filesystem
+ * \ingroup grpfilesystem
  */
 
 using namespace paludis;

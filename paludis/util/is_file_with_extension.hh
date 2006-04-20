@@ -27,7 +27,7 @@
 /** \file
  * Declarations for the IsFileWithExtension class.
  *
- * \ingroup Filesystem
+ * \ingroup grpfilesystem
  */
 
 namespace paludis
@@ -37,7 +37,7 @@ namespace paludis
      * FSEntry instance is a file with a given extension and (optionally) a
      * given filename prefix.
      *
-     * \ingroup Filesystem
+     * \ingroup grpfilesystem
      */
     class IsFileWithExtension :
         public std::unary_function<bool, FSEntry>

@@ -29,34 +29,40 @@ using namespace paludis;
 /** \file
  * Test cases for deleter.hh.
  *
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
-#ifndef DOXYGEN
-struct MyClass
+namespace
 {
-    static int instances;
-
-    MyClass()
+    /**
+     * Test class to be deleted, with an instance count.
+     *
+     * \ingroup grptestcases
+     */
+    struct MyClass
     {
-        ++instances;
-    }
+        static int instances;
 
-    ~MyClass()
-    {
-        --instances;
-    }
-};
+        MyClass()
+        {
+            ++instances;
+        }
+
+        ~MyClass()
+        {
+            --instances;
+        }
+    };
+}
 
 int MyClass::instances = 0;
-#endif
 
 namespace test_cases
 {
     /**
      * Test Deleter.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DeleterTest : TestCase
     {

@@ -23,11 +23,19 @@
 #include <ostream>
 #include <paludis/util/comparison_policy.hh>
 
+/** \file
+ * Validated declarations.
+ *
+ * \ingroup grpvalidated
+ */
+
 namespace paludis
 {
     /**
      * A Validated wraps a particular class instance, ensuring that it always
      * meets certain validation criteria.
+     *
+     * \ingroup grpvalidated
      */
     template <typename ValidatedDataType_, typename Validator_>
     class Validated : public ComparisonPolicy<
@@ -88,6 +96,8 @@ namespace paludis
 
     /**
      * Writing a Validated instance to a stream is done by its data.
+     *
+     * \ingroup grpvalidated
      */
     template <typename D_, typename V_>
     std::ostream &

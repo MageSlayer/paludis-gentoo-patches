@@ -25,7 +25,15 @@
 
 namespace paludis
 {
-    /// \todo Don't use cstdlib functions here.
+    /**
+     * A basic random number generator class.
+     *
+     * See \ref TCppPL 22.7 for justification.
+     *
+     * \todo Don't use cstdlib functions here.
+     *
+     * \ingroup grprandom
+     */
     class Random
     {
         private:

@@ -26,6 +26,8 @@
 
 /** \file
  * Stringify functions.
+ *
+ * \ingroup grpstringify
  */
 
 namespace paludis
@@ -60,6 +62,8 @@ namespace paludis
 
     /**
      * Convert item to a string.
+     *
+     * \ingroup grpstringify
      */
     template <typename T_>
     std::string
@@ -76,6 +80,8 @@ namespace paludis
 
     /**
      * Convert item to a string (overload for std::string).
+     *
+     * \ingroup grpstringify
      */
     inline std::string
     stringify(const std::string & item)
@@ -85,6 +91,8 @@ namespace paludis
 
     /**
      * Convert item to a string (overload for char).
+     *
+     * \ingroup grpstringify
      */
     inline std::string
     stringify(const char & item)
@@ -94,6 +102,8 @@ namespace paludis
 
     /**
      * Convert item to a string (overload for unsigned char).
+     *
+     * \ingroup grpstringify
      */
     inline std::string
     stringify(const unsigned char & item)
@@ -103,6 +113,8 @@ namespace paludis
 
     /**
      * Convert item to a string (overload for bool).
+     *
+     * \ingroup grpstringify
      */
     inline std::string
     stringify(const bool & item)
@@ -113,6 +125,8 @@ namespace paludis
     /**
      * Convert item to a string (overload for char *, which isn't a
      * screwup like other pointers).
+     *
+     * \ingroup grpstringify
      */
     inline std::string
     stringify(const char * const item)

@@ -23,7 +23,7 @@
 /** \file
  * Declarations for the Deleter class.
  *
- * \ingroup Utility
+ * \ingroup grpdeleter
  */
 
 namespace paludis
@@ -31,7 +31,9 @@ namespace paludis
     /**
      * A Deleter is a functor that deletes something.
      *
-     * \ingroup Utility
+     * See \ref EffSTL item 7.
+     *
+     * \ingroup grpdeleter
      */
     class Deleter
     {

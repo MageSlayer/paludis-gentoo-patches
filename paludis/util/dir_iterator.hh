@@ -28,8 +28,7 @@
 /** \file
  * Declarations for paludis::DirIterator.
  *
- * \ingroup Filesystem
- * \ingroup Exception
+ * \ingroup grpfilesystem
  */
 
 namespace paludis
@@ -37,7 +36,8 @@ namespace paludis
     /**
      * Raised when a directory open fails.
      *
-     * \ingroup Exception
+     * \ingroup grpfilesystem
+     * \ingroup grpexceptions
      */
     class DirOpenError : public FSError
     {
@@ -55,7 +55,7 @@ namespace paludis
      * if it turns out that it's quicker to use opendir and seekdir for each
      * instance.
      *
-     * \ingroup Filesystem
+     * \ingroup grpfilesystem
      */
     class DirIterator : public std::iterator<std::forward_iterator_tag, FSEntry>
     {

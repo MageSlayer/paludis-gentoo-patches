@@ -25,57 +25,64 @@
 using namespace test;
 using namespace paludis;
 
-/**
- * \file
+/** \file
  * Test cases for instantiation_policy.hh .
+ *
+ * \ingroup grptestcases
  */
 
-#ifndef DOXYGEN
-
-class MyClass :
-    public InstantiationPolicy<MyClass, instantiation_method::SingletonAsNeededTag>
+namespace
 {
-    friend class InstantiationPolicy<MyClass, instantiation_method::SingletonAsNeededTag>;
+    /**
+     * Test class for InstantiationPolicy.
+     *
+     * \ingroup grptestcases
+     */
+    class MyClass :
+        public InstantiationPolicy<MyClass, instantiation_method::SingletonAsNeededTag>
+    {
+        friend class InstantiationPolicy<MyClass, instantiation_method::SingletonAsNeededTag>;
 
-    private:
-        MyClass()
-        {
-            ++instances;
-        }
+        private:
+            MyClass()
+            {
+                ++instances;
+            }
 
-    public:
-        std::string s;
+        public:
+            std::string s;
 
-        static int instances;
-};
+            static int instances;
+    };
 
-int MyClass::instances = 0;
+    int MyClass::instances = 0;
 
-struct MyLoadAtStartupClass :
-    public InstantiationPolicy<MyLoadAtStartupClass, instantiation_method::SingletonAtStartupTag>
-{
-    friend class InstantiationPolicy<MyLoadAtStartupClass, instantiation_method::SingletonAtStartupTag>;
+    struct MyLoadAtStartupClass :
+        public InstantiationPolicy<MyLoadAtStartupClass, instantiation_method::SingletonAtStartupTag>
+    {
+        friend class InstantiationPolicy<MyLoadAtStartupClass, instantiation_method::SingletonAtStartupTag>;
 
-    private:
-        MyLoadAtStartupClass()
-        {
-            ++instances;
-        }
+        private:
+            MyLoadAtStartupClass()
+            {
+                ++instances;
+            }
 
-    public:
-        std::string s;
+        public:
+            std::string s;
 
-        static int instances;
-};
+            static int instances;
+    };
 
-int MyLoadAtStartupClass::instances = 0;
-
-#endif
+    int MyLoadAtStartupClass::instances = 0;
+}
 
 namespace test_cases
 {
     /**
      * \test Test singleton behaviour.
+     *
+     * \ingroup grptestcases
      */
     struct SingletonPatternTest : TestCase
     {
@@ -100,6 +107,8 @@ namespace test_cases
 
     /**
      * \test Test singleton create at startup behaviour.
+     *
+     * \ingroup grptestcases
      */
     struct SingletonPatternCreateAtStartupTest : TestCase
     {

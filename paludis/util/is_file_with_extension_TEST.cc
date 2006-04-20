@@ -23,6 +23,12 @@
 #include <test/test_runner.hh>
 #include <vector>
 
+/** \file
+ * Test cases for IsFileWithExtension.
+ *
+ * \ingroup grptestcases
+ */
+
 using namespace paludis;
 using namespace test;
 
@@ -31,7 +37,7 @@ namespace test_cases
     /**
      * \test Test IsFileWithExtension.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct IsFileWithExtensionTest : TestCase
     {
@@ -58,7 +64,7 @@ namespace test_cases
     /**
      * \test Test IsFileWithExtension with a prefix.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct IsFileWithExtensionPrefixTest : TestCase
     {

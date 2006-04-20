@@ -22,6 +22,12 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
+/** \file
+ * Test cases for system.hh .
+ *
+ * \ingroup grptestcases
+ */
+
 using namespace test;
 using namespace paludis;
 
@@ -31,7 +37,7 @@ namespace test_cases
     /**
      * \test Test getenv_with_default.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct GetenvWithDefaultTest : TestCase
     {
@@ -48,7 +54,7 @@ namespace test_cases
     /**
      * \test Test getenv_or_error.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct GetenvOrErrorTest : TestCase
     {
@@ -64,7 +70,7 @@ namespace test_cases
     /**
      * \test Test kernel_version.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct KernelVersionTest : TestCase
     {
@@ -85,7 +91,7 @@ namespace test_cases
     /**
      * \test Test run_command.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct RunCommandTest : TestCase
     {
@@ -101,7 +107,7 @@ namespace test_cases
     /**
      * \test Test make_env_command.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct MakeEnvCommandTest : TestCase
     {
@@ -133,7 +139,7 @@ namespace test_cases
     /**
      * \test Test make_env_command with quotes.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct MakeEnvCommandQuoteTest : TestCase
     {

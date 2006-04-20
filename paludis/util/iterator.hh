@@ -27,7 +27,7 @@
 /** \file
  * Declarations for various iterator helpers.
  *
- * \ingroup Iterator
+ * \ingroup grpiterators
  */
 
 namespace paludis
@@ -35,7 +35,7 @@ namespace paludis
     /**
      * Return a new iterator pointing to the item after i.
      *
-     * \ingroup Iterator
+     * \ingroup grpiterators
      */
     template <typename T_>
     T_ next(const T_ & i)
@@ -47,7 +47,7 @@ namespace paludis
     /**
      * Return a new iterator pointing to the item before i.
      *
-     * \ingroup Iterator
+     * \ingroup grpiterators
      */
     template <typename T_>
     T_ previous(const T_ & i)
@@ -63,6 +63,8 @@ namespace paludis
     {
         /**
          * Determine the comparison class to use for IndirectIterator.
+         *
+         * \ingroup grpiterators
          */
         template <typename IterCategory_, typename Iter_, typename Value_>
         struct Comparisons
@@ -78,6 +80,8 @@ namespace paludis
         /**
          * Determine the comparison class to use for IndirectIterator
          * (specialisation for random access iterators).
+         *
+         * \ingroup grpiterators
          */
         template <typename Iter_, typename Value_>
         struct Comparisons<std::random_access_iterator_tag, Iter_, Value_>
@@ -95,7 +99,7 @@ namespace paludis
      * An IndirectIterator is an iterator adapter that does one additional level
      * of dereferencing.
      *
-     * \ingroup Iterator
+     * \ingroup grpiterators
      */
     template <typename Iter_, typename Value_>
     class IndirectIterator : public std::iterator<typename std::iterator_traits<Iter_>::iterator_category, Value_>,
@@ -189,6 +193,8 @@ namespace paludis
 
     /**
      * Convenience constructor for an IndirectIterator.
+     *
+     * \ingroup grpiterators
      */
     template <typename Value_, typename Iter_>
     IndirectIterator<Iter_, Value_> indirect_iterator(const Iter_ & i)
@@ -201,7 +207,7 @@ namespace paludis
      * if a particular predicate function returns true for the object to be
      * inserted.
      *
-     * \ingroup Iterator
+     * \ingroup grpiterators
      */
     template <typename Iter_, typename Pred_>
     class FilterInsertIterator :
@@ -292,7 +298,7 @@ namespace paludis
     /**
      * Convenience function: make a FilterInsertIterator.
      *
-     * \ingroup Iterator
+     * \ingroup grpiterators
      */
     template <typename Iter_, typename Pred_>
     FilterInsertIterator<Iter_, Pred_> filter_inserter(
@@ -305,7 +311,7 @@ namespace paludis
      * A TransformInsertIterator is an insert iterator that calls some function
      * upon an item before inserting it.
      *
-     * \ingroup Iterator
+     * \ingroup grpiterators
      */
     template <typename Iter_, typename Trans_>
     class TransformInsertIterator :
@@ -391,7 +397,7 @@ namespace paludis
     /**
      * Convenience function: make a TransformInsertIterator.
      *
-     * \ingroup Iterator
+     * \ingroup grpiterators
      */
     template <typename Iter_, typename Trans_>
     TransformInsertIterator<Iter_, Trans_> transform_inserter(
@@ -402,6 +408,8 @@ namespace paludis
 
     /**
      * Convenience class: select the first item of a pair.
+     *
+     * \ingroup grpiterators
      */
     template <typename A_, typename B_>
     struct SelectFirst :
@@ -416,6 +424,8 @@ namespace paludis
 
     /**
      * Convenience class: select the second item of a pair.
+     *
+     * \ingroup grpiterators
      */
     template <typename A_, typename B_>
     struct SelectSecond :
@@ -432,7 +442,7 @@ namespace paludis
      * A CreateInsertIterator is an insert iterator that creates an object of
      * the specified type using the provided value.
      *
-     * \ingroup Iterator
+     * \ingroup grpiterators
      */
     template <typename Iter_, typename Type_>
     class CreateInsertIterator :
@@ -514,7 +524,7 @@ namespace paludis
     /**
      * Convenience function: make a CreateInsertIterator.
      *
-     * \ingroup Iterator
+     * \ingroup grpiterators
      */
     template <typename Type_, typename Iter_>
     CreateInsertIterator<Iter_, Type_> create_inserter(const Iter_ & i)

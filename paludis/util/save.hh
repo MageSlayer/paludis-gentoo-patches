@@ -25,7 +25,7 @@
 /** \file
  * Declarations for the Save class.
  *
- * \ingroup Utility
+ * \ingroup grpsave
  */
 
 namespace paludis
@@ -35,7 +35,7 @@ namespace paludis
      * duration of the Save instance's lifetime (RAII, see \ref EffCpp item 13 or
      * \ref TCppPL section 14.4).
      *
-     * \ingroup Utility
+     * \ingroup grpsave
      */
     template <typename T_>
     class Save :

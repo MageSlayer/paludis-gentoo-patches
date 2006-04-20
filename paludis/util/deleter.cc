@@ -19,6 +19,12 @@
 
 #include <paludis/util/deleter.hh>
 
+/** \file
+ * Implementation for Deleter.
+ *
+ * \ingroup grpdeleter
+ */
+
 using namespace paludis;
 
 Deleter::Deleter()

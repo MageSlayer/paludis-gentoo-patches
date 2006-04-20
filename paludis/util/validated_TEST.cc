@@ -27,7 +27,7 @@ using namespace paludis;
 /** \file
  * Test cases for validated.hh .
  *
- * \ingroup Test
+ * \ingroup grpvalidated
  */
 
 #ifndef DOXYGEN
@@ -52,7 +52,7 @@ namespace test_cases
     /**
      * \test Validated<PositiveEven> tests.
      *
-     * \ingroup Test
+     * \ingroup grpvalidated
      */
     struct ValidatedPositiveEvenTests : TestCase
     {
@@ -73,7 +73,7 @@ namespace test_cases
     /**
      * \test Validated<PositiveEven> comparison tests.
      *
-     * \ingroup Test
+     * \ingroup grpvalidated
      */
     struct ValidatedPositiveEvenComparisonTests : TestCase
     {

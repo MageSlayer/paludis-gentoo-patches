@@ -22,6 +22,12 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
+/** \file
+ * Test cases for Log.
+ *
+ * \ingroup grptestcases
+ */
+
 using namespace paludis;
 using namespace test;
 
@@ -30,7 +36,7 @@ namespace test_cases
     /**
      * \test Test Log.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct LogTest : TestCase
     {

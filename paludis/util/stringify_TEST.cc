@@ -28,7 +28,7 @@ using namespace paludis;
 /** \file
  * Test cases for stringify.hh .
  *
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -36,7 +36,7 @@ namespace test_cases
     /** \test
      * Test stringify on int.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct StringifyIntTests : TestCase
     {
@@ -55,7 +55,7 @@ namespace test_cases
     /** \test
      * Test stringify on char *.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct StringifyCharStarTests : TestCase
     {
@@ -73,7 +73,7 @@ namespace test_cases
     /** \test
      * Test stringify on std::string.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct StringifyStringTests : TestCase
     {
@@ -91,7 +91,7 @@ namespace test_cases
     /** \test
      * Test stringify on char.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct StringifyCharTests : TestCase
     {
@@ -113,7 +113,7 @@ namespace test_cases
     /** \test
      * Test stringify on bool.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct StringifyBoolTests : TestCase
     {

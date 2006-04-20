@@ -33,12 +33,20 @@ define(`_forloop', `$4`'ifelse($1, `$3', , `define(`$1', incr($1))_forloop(`$1',
 #include <paludis/util/exception.hh>
 #include <string>
 
+/** \file
+ * SmartRecord declarations.
+ *
+ * \ingroup grprecords
+ */
+
 namespace paludis
 {
     namespace comparison_method
     {
         /**
          * Comparisons are done by considering each member in order.
+         *
+         * \ingroup grprecords
          */
         struct SmartRecordCompareByAllTag
         {
@@ -46,6 +54,8 @@ namespace paludis
 
         /**
          * Comparisons are done by considering a specific key.
+         *
+         * \ingroup grprecords
          */
         template <unsigned key_>
         struct SmartRecordCompareByKeyTag
@@ -54,6 +64,8 @@ namespace paludis
 
         /**
          * Comparisons are done by considering a range of keys.
+         *
+         * \ingroup grprecords
          */
         template <unsigned first_key_, unsigned last_key_>
         struct SmartRecordCompareByKeyRangeTag
@@ -63,6 +75,8 @@ namespace paludis
 
     /**
      * Provides the basic typedefs required for a MakeSmartRecord instantiation.
+     *
+     * \ingroup grprecords
      */
     template <
         typename ComparisonModeTag_ = comparison_mode::NoComparisonTag,
@@ -71,6 +85,8 @@ namespace paludis
     {
         /**
          * Mode used for ComparisonPolicy.
+         *
+         * \ingroup grprecords
          */
         typedef ComparisonModeTag_ ComparisonModeTag;
 
@@ -78,6 +94,8 @@ namespace paludis
          * Method used for ComparisonPolicy, should be either
          * comparison_method::SmartRecordCompareByAllTag or
          * comparison_method::SmartRecordCompareByKeyTag .
+         *
+         * \ingroup grprecords
          */
         typedef ComparisonMethod_ ComparisonMethodTag;
     };
@@ -85,6 +103,8 @@ namespace paludis
     /**
      * Provides the key information typedefs for a MakeSmartRecord
      * instantiation.
+     *
+     * \ingroup grprecords
      */
     template <typename E_, unsigned Count_>
     struct SmartRecordKeys
@@ -113,6 +133,8 @@ forloop(`idx', `0', max_record_size, `
 
     /**
      * Internal use by SmartRecord.
+     *
+     * \ingroup grprecords
      */
     namespace smart_record_internals
     {
@@ -268,6 +290,8 @@ forloop(`idx', `0', max_record_size, `
 
         /**
          * RecordComparisonBase: specialisation for comparison_mode::NoComparisonTag.
+         *
+         * \ingroup grprecords
          */
         template <typename Tag_, unsigned key_count_, typename ComparisonMethodTag_>
         struct RecordComparisonBase<Tag_, key_count_, comparison_mode::NoComparisonTag, ComparisonMethodTag_> :
@@ -279,6 +303,8 @@ forloop(`idx', `0', max_record_size, `
          * RecordComparisonBase: specialisation for
          * comparison_mode::EqualityComparisonTag and
          * comparison_method::SmartRecordCompareByKeyTag.
+         *
+         * \ingroup grprecords
          */
         template <typename Tag_, unsigned key_count_, unsigned key_>
         class RecordComparisonBase<Tag_, key_count_, comparison_mode::EqualityComparisonTag,
@@ -298,6 +324,8 @@ forloop(`idx', `0', max_record_size, `
          * RecordComparisonBase: specialisation for
          * comparison_mode::FullComparisonTag and
          * comparison_method::SmartRecordCompareByKeyTag.
+         *
+         * \ingroup grprecords
          */
         template <typename Tag_, unsigned key_count_, unsigned key_>
         class RecordComparisonBase<Tag_, key_count_, comparison_mode::FullComparisonTag,
@@ -317,6 +345,8 @@ forloop(`idx', `0', max_record_size, `
          * RecordComparisonBase: specialisation for
          * comparison_mode::EqualityComparisonTag and
          * comparison_method::SmartRecordCompareByAllTag.
+         *
+         * \ingroup grprecords
          */
         template <typename Tag_, unsigned key_count_>
         class RecordComparisonBase<Tag_, key_count_, comparison_mode::EqualityComparisonTag,
@@ -348,6 +378,8 @@ forloop(`idx', `0', max_record_size, `
          * RecordComparisonBase: specialisation for
          * comparison_mode::FullComparisonTag and
          * comparison_method::SmartRecordCompareByAllTag.
+         *
+         * \ingroup grprecords
          */
         template <typename Tag_, unsigned key_count_>
         class RecordComparisonBase<Tag_, key_count_, comparison_mode::FullComparisonTag,
@@ -379,6 +411,8 @@ forloop(`idx', `0', max_record_size, `
          * RecordComparisonBase: specialisation for
          * comparison_mode::EqualityComparisonTag and
          * comparison_method::SmartRecordCompareByKeyRangeTag.
+         *
+         * \ingroup grprecords
          */
         template <typename Tag_, unsigned key_count_, unsigned first_key_, unsigned last_key_>
         class RecordComparisonBase<Tag_, key_count_, comparison_mode::EqualityComparisonTag,
@@ -410,6 +444,8 @@ forloop(`idx', `0', max_record_size, `
          * RecordComparisonBase: specialisation for
          * comparison_mode::FullComparisonTag and
          * comparison_method::SmartRecordCompareByKeyRangeTag.
+         *
+         * \ingroup grprecords
          */
         template <typename Tag_, unsigned key_count_, unsigned first_key_, unsigned last_key_>
         class RecordComparisonBase<Tag_, key_count_, comparison_mode::FullComparisonTag,
@@ -642,12 +678,16 @@ forloop(`idy', `0', decr(`'idx`'), `
 
         /**
          * Do the comparison for a range of keys.
+         *
+         * \ingroup grprecords
          */
         template <typename Tag_, unsigned key_count_, unsigned from_key_, unsigned count_>
         struct DoFullCompareByKeyRange
         {
             /**
              * Do the comparison.
+             *
+             * \ingroup grprecords
              */
             static int do_compare(const RecordBase<Tag_, key_count_> * const a,
                     const RecordBase<Tag_, key_count_> * const b)
@@ -666,6 +706,8 @@ forloop(`idy', `0', decr(`'idx`'), `
         /**
          * Do the comparison for a range of keys (specialisation for zero sized
          * ranges).
+         *
+         * \ingroup grprecords
          */
         template <typename Tag_, unsigned key_count_, unsigned from_key_>
         struct DoFullCompareByKeyRange<Tag_, key_count_, from_key_, 0>
@@ -695,16 +737,25 @@ forloop(`idy', `0', decr(`'idx`'), `
 
     /**
      * Create a SmartRecord with the attributes described by Tag_.
+     *
+     * \ingroup grprecords
      */
     template <typename Tag_>
     struct MakeSmartRecord
     {
         /**
          * The type of our SmartRecord.
+         *
+         * \ingroup grprecords
          */
         typedef smart_record_internals::RecordBase<Tag_, Tag_::key_count> Type;
     };
 
+    /**
+     * Create a named parameter for creating a SmartRecord instance.
+     *
+     * \ingroup grprecords
+     */
     template <unsigned idx_, typename T_>
     smart_record_internals::ParamListNode<idx_, typename smart_record_internals::CharStarToString<T_>::Type>
     param(const T_ & t)

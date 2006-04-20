@@ -24,6 +24,12 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
+/** \file
+ * Declarations for Log and related classes.
+ *
+ * \ingroup grplog
+ */
+
 namespace paludis
 {
     /**
@@ -35,6 +41,8 @@ namespace paludis
      *
      * When modifying this, you will probably also want to take a look at
      * ebuild/echo_functions.bash and the command_line source files.
+     *
+     * \ingroup grplog
      */
     enum LogLevel
     {
@@ -48,6 +56,8 @@ namespace paludis
 
     /**
      * Singleton class that handles log messages.
+     *
+     * \ingroup grplog
      */
     class Log :
         public InstantiationPolicy<Log, instantiation_method::SingletonAsNeededTag>,

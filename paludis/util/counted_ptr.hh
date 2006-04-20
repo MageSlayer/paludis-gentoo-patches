@@ -27,8 +27,7 @@
 /** \file
  * Declaration for the CountedPtr template class.
  *
- * \ingroup Pointer
- * \ingroup Exception
+ * \ingroup grppointers
  */
 
 namespace paludis
@@ -36,8 +35,8 @@ namespace paludis
     /**
      * Thrown when a CountedPtr check fails.
      *
-     * \ingroup Pointer
-     * \ingroup Exception
+     * \ingroup grppointers
+     * \ingroup grpexceptions
      */
     class CountedPtrError : public Exception
     {
@@ -51,14 +50,14 @@ namespace paludis
     /**
      * Contains CountedPtr count policies.
      *
-     * \ingroup Pointer
+     * \ingroup grppointers
      */
     namespace count_policy
     {
         /**
          * CountedPtr policy: reference counts are stored separately.
          *
-         * \ingroup Pointer
+         * \ingroup grppointers
          */
         struct ExternalCountTag
         {
@@ -68,7 +67,7 @@ namespace paludis
          * CountedPtr policy: reference counts are stored by the class via the
          * Counted subclass.
          *
-         * \ingroup Pointer
+         * \ingroup grppointers
          */
         struct InternalCountTag
         {
@@ -78,14 +77,14 @@ namespace paludis
     /**
      * Contains CountedPtr dereference policies.
      *
-     * \ingroup Pointer
+     * \ingroup grppointers
      */
     namespace dereference_policy
     {
         /**
          * CountedPtr dereferences are not checked.
          *
-         * \ingroup Pointer
+         * \ingroup grppointers
          */
         struct UncheckedDereferenceTag
         {
@@ -95,7 +94,7 @@ namespace paludis
          * CountedPtr dereferences are checked, and a CountedPtrError is
          * thrown for 0 dereferences.
          *
-         * \ingroup Pointer
+         * \ingroup grppointers
          */
         struct CheckedDereferenceTag
         {
@@ -105,18 +104,22 @@ namespace paludis
     /**
      * CountedPtr internals.
      *
-     * \ingroup Pointer
+     * \ingroup grppointers
      */
     namespace counted_ptr_internals
     {
         /**
          * Base class for CountedPtr.
+         *
+         * \ingroup grppointers
          */
         template <typename T_, typename DereferencePolicy_>
         class CountedPtrBase;
 
         /**
          * Base class for CountedPtr (specialisation for UncheckedDereferenceTag).
+         *
+         * \ingroup grppointers
          */
         template <typename T_>
         class CountedPtrBase<T_, dereference_policy::UncheckedDereferenceTag> :
@@ -217,6 +220,8 @@ namespace paludis
         }
         /**
          * Base class for CountedPtr (specialisation for CheckedDereferenceTag).
+         *
+         * \ingroup grppointers
          */
         template <typename T_>
         class CountedPtrBase<T_, dereference_policy::CheckedDereferenceTag> :
@@ -328,7 +333,7 @@ namespace paludis
     /**
      * Reference counted pointer class.
      *
-     * \ingroup Pointer
+     * \ingroup grppointers
      */
     template <typename T_, typename CountPolicy_ = count_policy::InternalCountTag,
              typename DereferencePolicy_ = dereference_policy::UncheckedDereferenceTag>
@@ -337,7 +342,7 @@ namespace paludis
     /**
      * Base for an internal counted class.
      *
-     * \ingroup Pointer
+     * \ingroup grppointers
      */
     template <typename T_, typename DereferencePolicy_ = dereference_policy::UncheckedDereferenceTag>
     class InternalCounted;
@@ -345,7 +350,7 @@ namespace paludis
     /**
      * Reference counted pointer class (specialisation for ExternalCountTag).
      *
-     * \ingroup Pointer
+     * \ingroup grppointers
      */
     template <typename T_, typename DereferencePolicy_>
     class CountedPtr<T_, count_policy::ExternalCountTag, DereferencePolicy_> :
@@ -446,7 +451,7 @@ namespace paludis
     /**
      * Reference counted pointer class (specialisation for InternalCountTag).
      *
-     * \ingroup Pointer
+     * \ingroup grppointers
      */
     template <typename T_, typename DereferencePolicy_>
     class CountedPtr<T_, count_policy::InternalCountTag, DereferencePolicy_> :
@@ -549,7 +554,7 @@ namespace paludis
     /**
      * Base class for an internally counted class.
      *
-     * \ingroup Pointer
+     * \ingroup grppointers
      */
     template <typename T_, typename DereferencePolicy_>
     class InternalCounted :

@@ -25,7 +25,7 @@
 /** \file
  * Declarations for the ContainerEntry class.
  *
- * \ingroup Utility
+ * \ingroup grpcontainerentries
  */
 
 namespace paludis
@@ -34,7 +34,7 @@ namespace paludis
      * Hold an entry in a container for as long as our ContainerEntry instance
      * is in scope (RAII, see \ref EffCpp item 13 or \ref TCppPL section 14.4).
      *
-     * \ingroup Utility
+     * \ingroup grpcontainerentries
      */
     template <typename Container_>
     struct ContainerEntry;
@@ -44,7 +44,7 @@ namespace paludis
      * is in scope (RAII, see \ref EffCpp item 13 or \ref TCppPL section 14.4;
      * partial specialisation for std::list).
      *
-     * \ingroup Utility
+     * \ingroup grpcontainerentries
      */
     template <typename Item_>
     class ContainerEntry<std::list<Item_> >

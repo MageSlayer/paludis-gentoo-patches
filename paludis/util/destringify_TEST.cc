@@ -28,7 +28,7 @@ using namespace paludis;
 /** \file
  * Test cases for destringify.hh
  *
- * \ingroup Test
+ * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -36,7 +36,7 @@ namespace test_cases
     /** \test
      * Test destringify for integers.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DestringifyIntTests : TestCase
     {
@@ -56,7 +56,7 @@ namespace test_cases
     /** \test
      * Test destringify for floats.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DestringifyFloatTests : TestCase
     {
@@ -75,7 +75,7 @@ namespace test_cases
     /** \test
      * Test destringify for strings.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DestringifyStringTests : TestCase
     {
@@ -91,7 +91,7 @@ namespace test_cases
     /** \test
      * Test destringify for bool.
      *
-     * \ingroup Test
+     * \ingroup grptestcases
      */
     struct DestringifyBoolTests : TestCase
     {

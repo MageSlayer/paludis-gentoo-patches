@@ -24,8 +24,19 @@
 using namespace test;
 using namespace paludis;
 
+/** \file
+ * Test cases for MatchRule.
+ *
+ * \ingroup grptestcases
+ */
+
 namespace test_case
 {
+    /**
+     * \test Test MatchRule
+     *
+     * \ingroup grptestcases
+     */
     struct MatchRuleTest : TestCase
     {
         MatchRuleTest() : TestCase("match rule") { }

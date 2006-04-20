@@ -27,11 +27,20 @@
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 
+/** \file
+ * Various wrappers around collections of items, for convenience and
+ * avoiding passing around huge containers.
+ *
+ * \ingroup grpcollections
+ */
+
 namespace paludis
 {
     /**
      * Wrapper around a std::list of a particular item. Multiple items
      * with the same value are disallowed.
+     *
+     * \ingroup grpcollections
      */
     template <typename T_>
     class SequentialCollection :
@@ -119,6 +128,8 @@ namespace paludis
     /**
      * Wrapper around a std::set of a particular item. May be changed at some
      * point to support template find.
+     *
+     * \ingroup grpcollections
      */
     template <typename T_>
     class SortedCollection :

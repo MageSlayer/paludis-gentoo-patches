@@ -31,8 +31,7 @@
 /** \file
  * Declarations for paludis::Filesystem.
  *
- * \ingroup Filesystem
- * \ingroup Exception
+ * \ingroup grpfilesystem
  */
 
 namespace paludis
@@ -40,7 +39,8 @@ namespace paludis
     /**
      * Generic filesystem error class.
      *
-     * \ingroup Exception
+     * \ingroup grpexceptions
+     * \ingroup grpfilesystem
      */
     class FSError : public Exception
     {
@@ -52,7 +52,9 @@ namespace paludis
     };
 
     /**
-     * File permissions used by FSEntry
+     * File permissions used by FSEntry.
+     *
+     * \ingroup grpfilesystem
      */
     enum FSPermission
     {
@@ -62,7 +64,9 @@ namespace paludis
     };
 
     /**
-     * User classes used by FSEntry
+     * User classes used by FSEntry.
+     *
+     * \ingroup grpfilesystem
      */
     enum FSUserGroup
     {
@@ -74,7 +78,7 @@ namespace paludis
     /**
      * Represents an entry (which may or may not exist) in the filesystem.
      *
-     * \ingroup Filesystem
+     * \ingroup grpfilesystem
      */
     class FSEntry : public ComparisonPolicy<
                         FSEntry,
@@ -99,7 +103,7 @@ namespace paludis
 
             /**
              * Runs lstat() on the current path if we have not done so already
-             * Note: lstat() will give information on the symbolic link itself, and not what
+             * Note: lstat() will give information on the symlink itself, and not what
              * the link points to, which is how stat() works.
              */
             void _stat() const;
@@ -219,6 +223,8 @@ namespace paludis
 
     /**
      * An FSEntry can be written to an ostream.
+     *
+     * \ingroup grpfilesystem
      */
     std::ostream & operator<< (std::ostream & s, const FSEntry & f);
 }

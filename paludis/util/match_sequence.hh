@@ -23,8 +23,19 @@
 #include <paludis/util/counted_ptr.hh>
 #include <string>
 
+/** \file
+ * Declarations for the MatchRule classes.
+ *
+ * \ingroup grpmatch
+ */
+
 namespace paludis
 {
+    /**
+     * MatchRule is used to match text.
+     *
+     * \ingroup grpmatch
+     */
     class MatchRule
     {
         private:
@@ -42,20 +53,44 @@ namespace paludis
             MatchRule(CountedPtr<Rule>);
 
         public:
+            /**
+             * Constructor.
+             */
             MatchRule(const std::string &);
 
+            /**
+             * Copy constructor.
+             */
             MatchRule(const MatchRule &);
 
+            /**
+             * A rule matching end of line.
+             */
             static const MatchRule eol();
 
+            /**
+             * Destructor.
+             */
             ~MatchRule();
 
+            /**
+             * Followed by rule.
+             */
             const MatchRule operator>> (const MatchRule &) const;
 
+            /**
+             * Alternation rule.
+             */
             const MatchRule operator|| (const MatchRule &) const;
 
+            /**
+             * Repetition rule.
+             */
             const MatchRule operator* () const;
 
+            /**
+             * Match against a string.
+             */
             bool match(const std::string &) const;
     };
 }

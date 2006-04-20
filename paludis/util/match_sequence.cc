@@ -19,6 +19,12 @@
 
 #include <paludis/util/match_sequence.hh>
 
+/** \file
+ * Implementation for MatchRule.
+ *
+ * \ingroup grpmatch
+ */
+
 using namespace paludis;
 
 struct MatchRule::Rule :

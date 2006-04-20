@@ -31,13 +31,15 @@ using namespace test;
  *
  * \todo this is nowhere near complete.
  *
- * \ingroup Test
+ * \ingroup grpfilesystem
  */
 
 namespace test_cases
 {
     /**
      * \test Test FSEntry construction and manipulation.
+     *
+     * \ingroup grpfilesystem
      */
     struct FSEntryManipulationTest : TestCase
     {
@@ -65,6 +67,8 @@ namespace test_cases
 
     /**
      * \test Test FSEntry realpath.
+     *
+     * \ingroup grpfilesystem
      */
     struct FSEntryRealpathTest : TestCase
     {
@@ -106,6 +110,8 @@ namespace test_cases
 
     /**
      * \test Test FSEntry has_permission methods.
+     *
+     * \ingroup grpfilesystem
      */
     struct FSEntryHasPermission: TestCase
     {
@@ -143,6 +149,8 @@ namespace test_cases
 
     /**
      * \test Test FSEntry ctime and mtime methods
+     *
+     * \ingroup grpfilesystem
      */
     struct FSEntryTime : TestCase
     {
@@ -166,6 +174,8 @@ namespace test_cases
 
     /**
      * \test Test FSEntry file_size
+     *
+     * \ingroup grpfilesystem
      */
     struct FSEntryFileSize : TestCase
     {
@@ -185,6 +195,8 @@ namespace test_cases
 
     /**
      * \test Test FSEntry basename and dirname methods
+     *
+     * \ingroup grpfilesystem
      */
     struct FSEntryBaseDirName : TestCase
     {
@@ -211,3 +223,4 @@ namespace test_cases
         }
     } test_fs_entry_dir_base_name;
 }
+

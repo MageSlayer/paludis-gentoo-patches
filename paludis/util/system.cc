@@ -25,6 +25,12 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+/** \file
+ * Implementation of various system utilities.
+ *
+ * \ingroup grpsystem
+ */
+
 using namespace paludis;
 
 GetenvError::GetenvError(const std::string & key) throw () :
@@ -50,6 +56,11 @@ paludis::getenv_or_error(const std::string & key)
 
 namespace
 {
+    /**
+     * Fetch the kernel version, for paludis::kernel_version.
+     *
+     * \ingroup grpsystem
+     */
     std::string get_kernel_version()
     {
         struct utsname u;

@@ -22,6 +22,12 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
 
+/** \file
+ * Implementation for PStream.
+ *
+ * \ingroup grpsystem
+ */
+
 using namespace paludis;
 
 PStreamError::PStreamError(const std::string & message) throw () :

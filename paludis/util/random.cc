@@ -19,6 +19,12 @@
 
 #include "random.hh"
 
+/** \file
+ * Implementation for random.hh.
+ *
+ * \ingroup grprandom
+ */
+
 using namespace paludis;
 
 bool Random::done_srand(false);

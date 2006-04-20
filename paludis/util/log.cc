@@ -20,12 +20,20 @@
 #include <iostream>
 #include <paludis/util/log.hh>
 
+/** \file
+ * Implementation for Log.
+ *
+ * \ingroup grplog
+ */
+
 using namespace paludis;
 
 namespace paludis
 {
     /**
      * Implementation data for Log.
+     *
+     * \ingroup grplog
      */
     template<>
     struct Implementation<Log> :

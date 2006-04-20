@@ -26,7 +26,7 @@
 /** \file
  * Implementation of paludis::DirIterator.
  *
- * \ingroup Filesystem
+ * \ingroup grpfilesystem
  */
 
 using namespace paludis;
