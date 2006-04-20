@@ -121,6 +121,9 @@ namespace paludis
         public Exception
     {
         public:
+            /**
+             * Constructor.
+             */
             BadVersionOperatorError(const std::string & msg) throw ();
     };
 

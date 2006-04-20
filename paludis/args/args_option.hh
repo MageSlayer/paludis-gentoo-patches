@@ -29,7 +29,7 @@
 /** \file
  * Declaration for ArgsOption.
  *
- * \ingroup Args
+ * \ingroup grplibpaludisargs
  */
 
 namespace paludis
@@ -41,7 +41,7 @@ namespace paludis
         /**
          * Base class for a command line option.
          *
-         * \ingroup Args
+         * \ingroup grplibpaludisargs
          */
         class ArgsOption : public virtual VisitableInterface<ArgsVisitorTypes>
         {
@@ -127,7 +127,7 @@ namespace paludis
          * A SwitchArg is an option that can either be specified or not
          * specified, and that takes no value (for example, --help).
          *
-         * \ingroup Args
+         * \ingroup grplibpaludisargs
          */
         class SwitchArg : public ArgsOption, public Visitable<SwitchArg, ArgsVisitorTypes>
         {
@@ -144,7 +144,7 @@ namespace paludis
         /**
          * An option that takes a string argument.
          *
-         * \ingroup Args
+         * \ingroup grplibpaludisargs
          */
         class StringArg : public ArgsOption, public Visitable<StringArg, ArgsVisitorTypes>
         {
@@ -170,6 +170,11 @@ namespace paludis
                 void set_argument(const std::string& arg) { _argument = arg; }
         };
 
+        /**
+         * An option that takes a set of strings.
+         *
+         * \ingroup grplibpaludisargs
+         */
         class StringSetArg : public ArgsOption, public Visitable<StringSetArg, ArgsVisitorTypes>
         {
             private:
@@ -208,7 +213,7 @@ namespace paludis
         /**
          * An AliasArg is an alias for another argument.
          *
-         * \ingroup Args
+         * \ingroup grplibpaludisargs
          */
         class AliasArg : public ArgsOption, public Visitable<AliasArg, ArgsVisitorTypes>
         {
@@ -235,7 +240,7 @@ namespace paludis
         /**
          * An option that takes an integer argument.
          *
-         * \ingroup Args
+         * \ingroup grplibpaludisargs
          */
         class IntegerArg : public ArgsOption, public Visitable<IntegerArg, ArgsVisitorTypes>
         {
@@ -262,7 +267,7 @@ namespace paludis
         /**
          * An option that takes one of a predefined set of string arguments.
          *
-         * \ingroup Args
+         * \ingroup grplibpaludisargs
          */
         class EnumArg : public ArgsOption, public Visitable<EnumArg, ArgsVisitorTypes>
         {
@@ -277,7 +282,7 @@ namespace paludis
                  * Helper class for passing available options and associated descriptions
                  * to the EnumArg constructor.
                  *
-                 * \ingroup Args
+                 * \ingroup grplibpaludisargs
                  */
                 class EnumArgOptions
                 {

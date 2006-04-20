@@ -35,12 +35,19 @@ using std::endl;
 
 namespace
 {
+    /**
+     * Display licences.
+     */
     struct LicenceDisplayer :
         p::DepAtomVisitorTypes::ConstVisitor
     {
+        /// Our environment.
         const p::Environment * const env;
+
+        /// Our db entry.
         const p::PackageDatabaseEntry * const db_entry;
 
+        /// Constructor.
         LicenceDisplayer(const p::Environment * const e, const p::PackageDatabaseEntry * const d) :
             env(e),
             db_entry(d)

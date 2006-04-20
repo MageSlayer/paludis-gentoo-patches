@@ -520,6 +520,9 @@ namespace paludis
     class PackageActionError : public Exception
     {
         protected:
+            /**
+             * Constructor.
+             */
             PackageActionError(const std::string & msg) throw ();
     };
 
@@ -532,6 +535,9 @@ namespace paludis
     class PackageInstallActionError : public PackageActionError
     {
         public:
+            /**
+             * Constructor.
+             */
             PackageInstallActionError(const std::string & msg) throw ();
     };
 
@@ -544,6 +550,9 @@ namespace paludis
     class PackageFetchActionError : public PackageActionError
     {
         public:
+            /**
+             * Constructor.
+             */
             PackageFetchActionError(const std::string & msg) throw ();
     };
 
@@ -556,6 +565,9 @@ namespace paludis
     class PackageUninstallActionError : public PackageActionError
     {
         public:
+            /**
+             * Constructor.
+             */
             PackageUninstallActionError(const std::string & msg) throw ();
     };
 

@@ -26,8 +26,7 @@
 /** \file
  * Declaration for ArgsError.
  *
- * \ingroup Args
- * \ingroup Exception
+ * \ingroup grplibpaludisargs
  */
 
 namespace paludis
@@ -37,8 +36,8 @@ namespace paludis
         /**
          * Thrown if an invalid command line argument is provided.
          *
-         * \ingroup Args
-         * \ingroup Exception
+         * \ingroup grplibpaludisargs
+         * \ingroup grpexceptions
          */
         class ArgsError : public paludis::Exception
         {

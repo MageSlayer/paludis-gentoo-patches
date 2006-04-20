@@ -109,6 +109,9 @@ namespace paludis
         public Exception
     {
         public:
+            /**
+             * Constructor.
+             */
             NoSuchDepTagCategory(const std::string &) throw ();
     };
 

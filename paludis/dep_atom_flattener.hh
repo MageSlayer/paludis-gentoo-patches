@@ -27,7 +27,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 
-/**
+/** \file
  * Declarations for DepAtomFlattener.
  *
  * \ingroup grpdepatomflattener

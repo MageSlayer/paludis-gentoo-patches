@@ -129,7 +129,14 @@ namespace paludis
                 return _children.end();
             }
 
+            /**
+             * A non-constant smart pointer to ourself.
+             */
             typedef CountedPtr<CompositeDepAtom, count_policy::InternalCountTag> Pointer;
+
+            /**
+             * A constant smart pointer to ourself.
+             */
             typedef CountedPtr<const CompositeDepAtom, count_policy::InternalCountTag> ConstPointer;
     };
 
@@ -217,6 +224,9 @@ namespace paludis
             const std::string _str;
 
         protected:
+            /**
+             * Constructor.
+             */
             StringDepAtom(const std::string &);
 
         public:
@@ -305,7 +315,14 @@ namespace paludis
             }
 
 
+            /**
+             * A non-constant smart pointer to ourself.
+             */
             typedef CountedPtr<PackageDepAtom, count_policy::InternalCountTag> Pointer;
+
+            /**
+             * A constant smart pointer to ourself.
+             */
             typedef CountedPtr<const PackageDepAtom, count_policy::InternalCountTag> ConstPointer;
 
             /**
@@ -341,7 +358,14 @@ namespace paludis
              */
             PlainTextDepAtom(const std::string &);
 
+            /**
+             * A non-constant smart pointer to ourself.
+             */
             typedef CountedPtr<PlainTextDepAtom, count_policy::InternalCountTag> Pointer;
+
+            /**
+             * A constant smart pointer to ourself.
+             */
             typedef CountedPtr<const PlainTextDepAtom, count_policy::InternalCountTag> ConstPointer;
     };
 
@@ -355,6 +379,9 @@ namespace paludis
         public Exception
     {
         public:
+            /**
+             * Constructor.
+             */
             PackageDepAtomError(const std::string & msg) throw ();
     };
 
@@ -393,7 +420,14 @@ namespace paludis
                 return _atom;
             }
 
+            /**
+             * A non-constant smart pointer to ourself.
+             */
             typedef CountedPtr<BlockDepAtom, count_policy::InternalCountTag> Pointer;
+
+            /**
+             * A constant smart pointer to ourself.
+             */
             typedef CountedPtr<const BlockDepAtom, count_policy::InternalCountTag> ConstPointer;
     };
 

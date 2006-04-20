@@ -38,6 +38,8 @@ namespace paludis
 
         /**
          * Visitor class. Prints help text appropriate to each command line option.
+         *
+         * \ingroup grplibpaludisargs
          */
         class ArgsDumper : public ArgsVisitorTypes::ConstVisitor
         {

@@ -129,7 +129,14 @@ namespace paludis
                 return add_version(CategoryNamePart(c), PackageNamePart(p), VersionSpec(v));
             }
 
+            /**
+             * A non-constant smart pointer to ourself.
+             */
             typedef CountedPtr<FakeRepository, count_policy::InternalCountTag> Pointer;
+
+            /**
+             * A constant smart pointer to ourself.
+             */
             typedef CountedPtr<const FakeRepository, count_policy::InternalCountTag> ConstPointer;
 
             virtual bool installed() const

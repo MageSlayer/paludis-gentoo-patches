@@ -11,6 +11,9 @@
 /** \defgroup grplibpaludisqa Paludis QA library
  */
 
+/** \defgroup grplibpaludisargs Paludis args library
+ */
+
 /** \defgroup grptestcases Test cases
  */
 
@@ -227,7 +230,7 @@
  * \ingroup grplibpaludisutil
  */
 
-/** \defgroup grplog System
+/** \defgroup grpsystem System
  *
  * \ingroup grplibpaludisutil
  */
@@ -261,7 +264,7 @@
 
 /** \defgroup grpinstance Instance patterns
  *
- * \ingroup grppointers
+ * \ingroup grppatterns
  */
 
 /** \defgroup grppimp Private implementation pattern

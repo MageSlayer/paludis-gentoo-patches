@@ -63,26 +63,37 @@ using namespace paludis;
 
 namespace paludis
 {
+    /// Map for versions.
     typedef MakeHashedMap<QualifiedPackageName, VersionSpecCollection::Pointer>::Type VersionsMap;
 
+    /// Map for virtuals.
     typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
 
+    /// Map for repository masks.
     typedef MakeHashedMap<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> >::Type RepositoryMaskMap;
 
+    /// Map for categories.
     typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
 
+    /// Map for packages.
     typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
 
+    /// Map for USE flags.
     typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseMap;
 
+    /// Map for USE masking.
     typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
 
+    /// Map for USE flag sets.
     typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
 
+    /// Map for mirrors.
     typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
 
+    /// Map for metadata.
     typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
 
+    /// Map for profile environment.
     typedef MakeHashedMap<std::string, std::string>::Type ProfileEnvMap;
 
     /**
@@ -471,13 +482,16 @@ namespace
     struct CategoryFilter :
         std::unary_function<bool, QualifiedPackageName>
     {
+        /// Our category.
         CategoryNamePart category;
 
+        /// Constructor.
         CategoryFilter(const CategoryNamePart & c) :
             category(c)
         {
         }
 
+        /// Predicate.
         bool operator() (const QualifiedPackageName & a) const
         {
             return a.get<qpn_category>() == category;

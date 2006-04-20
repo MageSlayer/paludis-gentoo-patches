@@ -49,8 +49,13 @@ namespace
     struct LicenceChecker :
         DepAtomVisitorTypes::ConstVisitor
     {
+        /// Are all necessary licences ok?
         bool ok;
+
+        /// Our environment.
         const Environment * const env;
+
+        /// Our package database.
         const PackageDatabaseEntry * const db_entry;
 
         /// Constructor

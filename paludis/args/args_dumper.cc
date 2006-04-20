@@ -23,6 +23,12 @@
 
 #include <sstream>
 
+/** \file
+ * Implementation of ArgsDumper.
+ *
+ * \ingroup grplibpaludisargs
+ */
+
 using namespace paludis;
 using namespace paludis::args;
 
@@ -45,6 +51,7 @@ void ArgsDumper::visit(const ArgsOption * const a)
     _os << " " << a->description() << std::endl;
 }
 
+#ifndef DOXYGEN
 #define VISIT(type) void ArgsDumper::visit(const type * const a) \
     { visit(static_cast<const ArgsOption *>(a)); }
 
@@ -53,6 +60,7 @@ VISIT(StringArg)
 VISIT(IntegerArg)
 VISIT(AliasArg)
 VISIT(StringSetArg)
+#endif
 
 void ArgsDumper::visit(const EnumArg * const a)
 {

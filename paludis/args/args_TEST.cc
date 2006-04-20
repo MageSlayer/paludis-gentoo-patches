@@ -28,6 +28,8 @@ using namespace test;
 
 /** \file
  * Test cases for paludis::args things.
+ *
+ * \ingroup grptestcases
  */
 
 #ifndef DOXYGEN
@@ -83,6 +85,8 @@ namespace test_cases
 {
     /**
      * \test Simple args tests.
+     *
+     * \ingroup grptestcases
      */
     struct ArgsTestSimple : TestCase
     {
@@ -115,6 +119,11 @@ namespace test_cases
         }
     } test_args_simple;
 
+    /**
+     * \test Missing parameters tests.
+     *
+     * \ingroup grptestcases
+     */
     struct ArgsTestNoParam : TestCase
     {
         ArgsTestNoParam() : TestCase("Missing parameters") { }
@@ -127,6 +136,11 @@ namespace test_cases
         }
     } test_args_no_param;
 
+    /**
+     * \test String tests.
+     *
+     * \ingroup grptestcases
+     */
     struct ArgsTestStringSet : TestCase
     {
         ArgsTestStringSet() : TestCase("StringSet") { }

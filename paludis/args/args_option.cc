@@ -23,7 +23,7 @@
 /** \file
  * Implementation for ArgsOption.
  *
- * \ingroup Args
+ * \ingroup grplibpaludisargs
  */
 
 using namespace paludis::args;
@@ -81,15 +81,22 @@ IntegerArg::IntegerArg(ArgsGroup * const group, const std::string& long_name,
 
 namespace
 {
+    /**
+     * Is an arg a particular value?
+     *
+     * \ingroup grplibpaludisargs
+     */
     struct ArgIs
     {
         const std::string arg;
 
+        /// Constructor.
         ArgIs(const std::string & a) :
             arg(a)
         {
         }
 
+        /// Comparator.
         bool operator() (const std::pair<std::string, std::string> & p) const
         {
             return p.first == arg;

@@ -181,6 +181,9 @@ class CommandLine :
         /// }
 };
 
+/**
+ * Show the help message.
+ */
 struct DoHelp
 {
     const std::string message;

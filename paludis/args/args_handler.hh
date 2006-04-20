@@ -29,7 +29,7 @@
 /** \file
  * Declaration for ArgsHandler.
  *
- * \ingroup Args
+ * \ingroup grplibpaludisargs
  */
 
 namespace paludis
@@ -39,7 +39,7 @@ namespace paludis
         /**
          * Handles command line arguments.
          *
-         * \ingroup Args
+         * \ingroup grplibpaludisargs
          */
         class ArgsHandler : private InstantiationPolicy<ArgsHandler, instantiation_method::NonCopyableTag>
         {
@@ -120,7 +120,7 @@ namespace paludis
         /**
          * Output an ArgsHandler to an ostream, for --help output.
          *
-         * \ingroup Args
+         * \ingroup grplibpaludisargs
          */
         std::ostream & operator<< (std::ostream &, const ArgsHandler &);
     }

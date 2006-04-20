@@ -50,8 +50,10 @@ namespace
      */
     struct C
     {
+        /// Dummy stream.
         std::stringstream s;
 
+        /// Constructor.
         C()
         {
             test::set_exception_to_debug_string(&verbose_exception_to_debug_string);

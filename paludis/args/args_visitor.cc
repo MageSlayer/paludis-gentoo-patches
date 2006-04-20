@@ -25,6 +25,12 @@
 
 #include <sstream>
 
+/** \file
+ * Implementation for ArgsVisitor.
+ *
+ * \ingroup grplibpaludisargs
+ */
+
 using namespace paludis;
 using namespace args;
 

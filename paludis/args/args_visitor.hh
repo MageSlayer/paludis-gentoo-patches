@@ -28,7 +28,7 @@
 /** \file
  * Declaration for ArgsVisitor
  *
- * \ingroup Args
+ * \ingroup grplibpaludisargs
  */
 
 namespace paludis
@@ -45,12 +45,16 @@ namespace paludis
 
         /**
          * Visitor types for visitors that can visit Args.
+         *
+         * \ingroup grplibpaludisargs
          */
         typedef VisitorTypes<ArgsOption *, StringArg *, AliasArg *, SwitchArg *,
                 IntegerArg *, EnumArg *, StringSetArg *> ArgsVisitorTypes;
 
         /**
          * Visitor class. Processes command-line options as they are found.
+         *
+         * \ingroup grplibpaludisargs
          */
         class ArgsVisitor : public ArgsVisitorTypes::Visitor
         {

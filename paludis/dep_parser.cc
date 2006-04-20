@@ -45,6 +45,11 @@ DepStringNestingError::DepStringNestingError(const std::string & dep_string) thr
 
 namespace
 {
+    /**
+     * Our current state.
+     *
+     * \ingroup grpdepparser
+     */
     enum DepParserState
     {
         dps_initial,

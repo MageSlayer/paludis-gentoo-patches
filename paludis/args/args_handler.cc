@@ -25,7 +25,7 @@
 /** \file
  * Implementation for ArgsHandler.
  *
- * \ingroup Args
+ * \ingroup grplibpaludisargs
  */
 
 using namespace paludis::args;

@@ -232,18 +232,21 @@ namespace paludis
     /**
      * Parameters for EbuildFetchCommand's constructor.
      *
-     * \ingroup grpebuildinterface.
+     * \ingroup grpebuildinterface
      */
     typedef MakeSmartRecord<EbuildFetchCommandParamsTag>::Type EbuildFetchCommandParams;
 
     /**
      * An EbuildFetchCommand is used to download and verify the digests for a
      * particular ebuild in a PortageRepository. On failure it throws.
+     *
+     * \ingroup grpebuildinterface
      */
     class EbuildFetchCommand :
         public EbuildCommand
     {
         protected:
+            /// Parameters for fetch.
             const EbuildFetchCommandParams fetch_params;
 
             virtual std::string commands() const;
@@ -319,6 +322,7 @@ namespace paludis
         public EbuildCommand
     {
         protected:
+            /// Parameters for install.
             const EbuildInstallCommandParams install_params;
 
             virtual std::string commands() const;
@@ -381,6 +385,7 @@ namespace paludis
         public EbuildCommand
     {
         protected:
+            /// Parameters for uninstall.
             const EbuildUninstallCommandParams uninstall_params;
 
             virtual std::string commands() const;

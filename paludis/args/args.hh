@@ -23,7 +23,7 @@
 /** \file
  * Master include file for command line argument handling.
  *
- * \ingroup Args
+ * \ingroup grplibpaludisargs
  */
 
 #include <paludis/args/args_error.hh>

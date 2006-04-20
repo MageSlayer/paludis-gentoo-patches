@@ -106,6 +106,9 @@ namespace paludis
         public PackageActionError
     {
         protected:
+            /**
+             * Constructor.
+             */
             SyncFailedError(const std::string & msg) throw ();
 
         public:

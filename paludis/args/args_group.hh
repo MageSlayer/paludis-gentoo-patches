@@ -27,7 +27,7 @@
 /** \file
  * Declaration for ArgsGroup.
  *
- * \ingroup Args
+ * \ingroup grplibpaludisargs
  */
 
 namespace paludis
@@ -40,7 +40,7 @@ namespace paludis
         /**
          * Contains a related group of command line arguments.
          *
-         * \ingroup Args
+         * \ingroup grplibpaludisargs
          */
         class ArgsGroup
         {

@@ -22,7 +22,7 @@
 /** \file
  * Implementation for ArgsGroup.
  *
- * \ingroup Args
+ * \ingroup grplibpaludisargs
  */
 
 using namespace paludis::args;

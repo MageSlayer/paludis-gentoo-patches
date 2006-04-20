@@ -64,6 +64,9 @@ namespace paludis
         last_dlef
     };
 
+    /**
+     * Flags for a DepListEntry.
+     */
     typedef std::bitset<last_dlef> DepListEntryFlags;
 
     /**
@@ -154,6 +157,9 @@ namespace paludis
             {
             }
 
+            /**
+             * Our query.
+             */
             const std::string & query() const
             {
                 return _query;

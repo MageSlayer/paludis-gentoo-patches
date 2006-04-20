@@ -22,6 +22,6 @@
 /** \file
  * Implementation for args.hh .
  *
- * \ingroup Args
+ * \ingroup grplibpaludisargs
  */
 
