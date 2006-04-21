@@ -87,11 +87,15 @@ namespace paludis
          * Our Repository instances.
          */
         std::list<Repository::ConstPointer> repositories;
+
+        /// Our environment.
+        const Environment * environment;
     };
 }
-PackageDatabase::PackageDatabase() :
+PackageDatabase::PackageDatabase(const Environment * const e) :
     PrivateImplementationPattern<PackageDatabase>(new Implementation<PackageDatabase>)
 {
+    _imp->environment = e;
 }
 
 PackageDatabase::~PackageDatabase()
@@ -193,7 +197,7 @@ PackageDatabase::_do_query(const PackageDepAtom * const a, const InstallState in
         for ( ; v != v_end ; ++v)
         {
             PackageDatabaseEntry e(a->package(), *v, r->name());
-            if (! match_package(this, *a, e))
+            if (! match_package(_imp->environment, *a, e))
                 continue;
 
             result->insert(e);

@@ -15,7 +15,7 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_list.hh>
-#include <paludis/package_database.hh>
+#include <paludis/environment.hh>
 #include <paludis/util/attributes.hh>
 
 namespace paludis
@@ -33,7 +33,7 @@ namespace paludis
          * \ingroup grpmatchpackage
          */
         bool do_match(
-                const PackageDatabase * const db,
+                const Environment * const env,
                 const PackageDepAtom * const atom,
                 const PackageDatabaseEntry * const entry)
             PALUDIS_ATTRIBUTE((nonnull(1, 2, 3)));
@@ -44,33 +44,19 @@ namespace paludis
          * \ingroup grpmatchpackage
          */
         bool do_match(
-                const PackageDatabase * const db,
+                const Environment * const env,
                 const PackageDepAtom * const atom,
                 const DepListEntry * const entry)
             PALUDIS_ATTRIBUTE((nonnull(2, 3)));
 
         /**
-         * Normalise DB type.
+         * Normalise env type.
          *
          * \ingroup grpmatchpackage
          */
-        inline const PackageDatabase * sanitise_db(const PackageDatabase * db)
+        inline const Environment * sanitise_env(const Environment * env)
         {
-            return db;
-        }
-
-        /**
-         * Normalise type.
-         *
-         * \deprecated Use sanitise_db(const PackageDatabase *) instead.
-         *
-         * \ingroup grpmatchpackage
-         */
-        inline const PackageDatabase * sanitise_db(const PackageDatabase & db) PALUDIS_ATTRIBUTE((deprecated));
-
-        inline const PackageDatabase * sanitise_db(const PackageDatabase & db)
-        {
-            return &db;
+            return env;
         }
 
         /**
@@ -79,19 +65,9 @@ namespace paludis
          * \ingroup grpmatchpackage
          */
         template <typename P1_, typename P2_>
-        inline const PackageDatabase * sanitise_db(const CountedPtr<const PackageDatabase, P1_, P2_> db)
+        inline const Environment * sanitise_env(const CountedPtr<const Environment, P1_, P2_> env)
         {
-            return db.raw_pointer();
-        }
-
-        /**
-         * Normalise DB type.
-         *
-         * \ingroup grpmatchpackage
-         */
-        inline const PackageDatabase * sanitise_db(const PackageDatabase::ConstPointer db)
-        {
-            return db.raw_pointer();
+            return env.raw_pointer();
         }
 
         /**
@@ -151,20 +127,20 @@ namespace paludis
     /**
      * Return whether the specified atom matches the specified target.
      *
-     * \param db      Some kind of package database
+     * \param env     Some kind of environment
      * \param atom    Some kind of package dep atom
      * \param target  Some kind of target
      *
      * \ingroup grpmatchpackage
      */
-    template <typename DB_, typename Atom_, typename Target_>
+    template <typename Env_, typename Atom_, typename Target_>
     bool match_package(
-            const DB_ & db,
+            const Env_ & env,
             const Atom_ & atom,
             const Target_ & target)
     {
         return match_package_internals::do_match(
-                match_package_internals::sanitise_db(db),
+                match_package_internals::sanitise_env(env),
                 match_package_internals::sanitise_atom(atom),
                 match_package_internals::sanitise_target(target));
     }

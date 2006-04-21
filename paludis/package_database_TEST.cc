@@ -33,22 +33,6 @@ using namespace test;
 namespace test_cases
 {
     /**
-     * \test Basic PackageDatabase tests.
-     *
-     * \ingroup grptestcases
-     */
-    struct PackageDatabaseTest : TestCase
-    {
-        PackageDatabaseTest() : TestCase("package database") { }
-
-        void run()
-        {
-            PackageDatabase p;
-            TEST_CHECK(true);
-        }
-    } package_database_test;
-
-    /**
      * \test PackageDatabase repository tests.
      *
      * \ingroup grptestcases
@@ -59,7 +43,9 @@ namespace test_cases
 
         void run()
         {
-            PackageDatabase p;
+            TestEnvironment e;
+            PackageDatabase & p(*e.package_database());
+
             FakeRepository::Pointer r1(new FakeRepository(RepositoryName("repo1")));
             FakeRepository::Pointer r2(new FakeRepository(RepositoryName("repo2")));
 
@@ -114,7 +100,9 @@ namespace test_cases
 
         void run()
         {
-            PackageDatabase p;
+            TestEnvironment e;
+            PackageDatabase & p(*e.package_database());
+
             FakeRepository::Pointer r1(new FakeRepository(RepositoryName("repo1")));
             r1->add_version(CategoryNamePart("r1c1"), PackageNamePart("r1c1p1"), VersionSpec("1"));
             r1->add_version(CategoryNamePart("r1c1"), PackageNamePart("r1c1p2"), VersionSpec("1"));
@@ -175,7 +163,9 @@ namespace test_cases
 
         void run()
         {
-            PackageDatabase p;
+            TestEnvironment e;
+            PackageDatabase & p(*e.package_database());
+
             FakeRepository::Pointer r1(new FakeRepository(RepositoryName("repo1")));
             r1->add_package(CategoryNamePart("cat-one"), PackageNamePart("pkg-one"));
             r1->add_package(CategoryNamePart("cat-one"), PackageNamePart("pkg-two"));

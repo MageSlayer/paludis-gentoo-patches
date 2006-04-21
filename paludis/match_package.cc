@@ -29,7 +29,7 @@ using namespace paludis;
 
 bool
 match_package_internals::do_match(
-        const PackageDatabase * const db,
+        const Environment * const env,
         const PackageDepAtom * const atom,
         const PackageDatabaseEntry * const entry)
 {
@@ -47,7 +47,7 @@ match_package_internals::do_match(
 
     if (atom->slot_ptr())
     {
-        VersionMetadata::ConstPointer metadata(db->fetch_metadata(*entry));
+        VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*entry));
         if (*atom->slot_ptr() != SlotName(metadata->get(vmk_slot)))
             return false;
     }
@@ -57,7 +57,7 @@ match_package_internals::do_match(
 
 bool
 match_package_internals::do_match(
-        const PackageDatabase * const,
+        const Environment * const,
         const PackageDepAtom * const atom,
         const DepListEntry * const entry)
 {

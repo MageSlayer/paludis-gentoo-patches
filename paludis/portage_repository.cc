@@ -641,7 +641,7 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
                 vv != vv_end ; ++vv)
         {
             PackageDatabaseEntry e(i->second->package(), *vv, name());
-            if (! match_package(_imp->db, i->second, e))
+            if (! match_package(_imp->env, i->second, e))
                 continue;
 
             v->insert(*vv);
@@ -859,7 +859,7 @@ PortageRepository::do_query_repository_masks(const CategoryNamePart & c,
     else
         for (IndirectIterator<std::deque<PackageDepAtom::ConstPointer>::const_iterator, const PackageDepAtom>
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(_imp->db, *k, PackageDatabaseEntry(
+            if (match_package(_imp->env, *k, PackageDatabaseEntry(
                             QualifiedPackageName(c, p), v, name())))
                 return true;
 

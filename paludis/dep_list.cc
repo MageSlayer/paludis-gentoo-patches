@@ -310,18 +310,18 @@ DepList::visit(const AllDepAtom * const v)
 struct DepListEntryMatcher :
     public std::unary_function<bool, const DepListEntry &>
 {
-    const PackageDatabase * const db;
+    const Environment * const env;
     const PackageDepAtom & atom;
 
-    DepListEntryMatcher(const PackageDatabase * const d, const PackageDepAtom & p) :
-        db(d),
+    DepListEntryMatcher(const Environment * const e, const PackageDepAtom & p) :
+        env(e),
         atom(p)
     {
     }
 
     bool operator() (const DepListEntry & e) const
     {
-        return match_package(db, atom, e);
+        return match_package(env, atom, e);
     }
 };
 #endif
@@ -340,8 +340,7 @@ DepList::visit(const PackageDepAtom * const p)
         if (_imp->merge_list.end() != ((i = std::find_if(
                             _imp->merge_list.begin(),
                             _imp->merge_list.end(),
-                            DepListEntryMatcher(
-                                _imp->environment->package_database().raw_pointer(), *p)))))
+                            DepListEntryMatcher(_imp->environment, *p)))))
         {
             /* what's our status? */
             if (! i->get<dle_flags>()[dlef_has_predeps])
@@ -353,8 +352,7 @@ DepList::visit(const PackageDepAtom * const p)
                     return;
 
                 else if (_imp->current_package && _imp->drop_self_circular &&
-                        match_package(_imp->environment->package_database(), p,
-                            _imp->current_package))
+                        match_package(_imp->environment, p, _imp->current_package))
                     return;
 
                 else
@@ -456,8 +454,7 @@ DepList::visit(const PackageDepAtom * const p)
             PackageDepAtom pp(QualifiedPackageName((*p)->text()));
             if (_imp->merge_list.end() != std::find_if(
                         _imp->merge_list.begin(), _imp->merge_list.end(),
-                        DepListEntryMatcher(
-                            _imp->environment->package_database().raw_pointer(), pp)))
+                        DepListEntryMatcher(_imp->environment, pp)))
                 continue;
 
             VersionMetadata::Pointer p_metadata(new VersionMetadata);
@@ -700,8 +697,7 @@ DepList::visit(const BlockDepAtom * const d)
     while (m != _imp->merge_list.end())
     {
         if (_imp->merge_list.end() != ((m = std::find_if(m, _imp->merge_list.end(),
-                    DepListEntryMatcher(_imp->environment->package_database().raw_pointer(),
-                        *(d->blocked_atom()))))))
+                    DepListEntryMatcher(_imp->environment, *(d->blocked_atom()))))))
         {
             if (! _imp->current_package)
                 throw BlockError("'" + stringify(*(d->blocked_atom())) + "' blocked by pending package '"

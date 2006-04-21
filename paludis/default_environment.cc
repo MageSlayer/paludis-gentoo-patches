@@ -30,7 +30,7 @@
 using namespace paludis;
 
 DefaultEnvironment::DefaultEnvironment() :
-    Environment(PackageDatabase::Pointer(new PackageDatabase))
+    Environment(PackageDatabase::Pointer(new PackageDatabase(this)))
 {
     Context context("When loading default environment:");
 
@@ -60,7 +60,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
             if (f != u->get<uce_flag_name>())
                 continue;
 
-            if (! match_package(package_database(), *u->get<uce_dep_atom>(), *e))
+            if (! match_package(this, *u->get<uce_dep_atom>(), *e))
                 continue;
 
             switch (u->get<uce_flag_state>())
@@ -154,7 +154,7 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
                 k_end(DefaultConfig::get_instance()->end_package_keywords(d->get<pde_name>())) ;
                 k != k_end ; ++k)
         {
-            if (! match_package(package_database(), k->first, d))
+            if (! match_package(this, k->first, d))
                 continue;
 
             result |= k->second == keyword;
@@ -185,7 +185,7 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
                 k_end(DefaultConfig::get_instance()->end_package_licenses(d->get<pde_name>())) ;
                 k != k_end ; ++k)
         {
-            if (! match_package(package_database(), k->first, d))
+            if (! match_package(this, k->first, d))
                 continue;
 
             result |= k->second == license;
@@ -213,7 +213,7 @@ DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_masks(d.get<pde_name>())) ;
             k != k_end ; ++k)
     {
-        if (! match_package(package_database(), *k, d))
+        if (! match_package(this, *k, d))
             continue;
 
         return true;
@@ -230,7 +230,7 @@ DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_unmasks(d.get<pde_name>())) ;
             k != k_end ; ++k)
     {
-        if (! match_package(package_database(), *k, d))
+        if (! match_package(this, *k, d))
             continue;
 
         return true;
@@ -290,7 +290,7 @@ DefaultEnvironment::query_enabled_use_matching(const std::string & prefix,
             if (0 != u->get<uce_flag_name>().data().compare(0, prefix.length(), prefix))
                 continue;
 
-            if (! match_package(package_database(), *u->get<uce_dep_atom>(), *e))
+            if (! match_package(this, *u->get<uce_dep_atom>(), *e))
                 continue;
 
             switch (u->get<uce_flag_state>())

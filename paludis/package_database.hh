@@ -50,6 +50,7 @@
 namespace paludis
 {
     class PackageDepAtom;
+    class Environment;
 
     /**
      * A PackageDatabaseError is an error that occurs when performing some
@@ -265,7 +266,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            PackageDatabase();
+            explicit PackageDatabase(const Environment * const);
 
             /**
              * Destructor.
