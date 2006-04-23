@@ -940,6 +940,9 @@ PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabas
     if (_imp->use_mask.end() != _imp->use_mask.find(u))
         return true;
 
+    if (0 == e)
+        return false;
+
     PackageUseMaskMap::iterator it = _imp->package_use_mask.find(e->get<pde_name>());
     if (_imp->package_use_mask.end() == it)
         return false;
