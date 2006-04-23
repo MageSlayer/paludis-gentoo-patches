@@ -135,6 +135,22 @@ namespace test_cases
             TEST_CHECK_EQUAL(h.version_operator(), vo_greater_equal);
 
             TEST_CHECK_THROWS(PackageDepAtom(""), PackageDepAtomError);
+
+            PackageDepAtom i("foo/bar[one][-two]");
+            TEST_CHECK_STRINGIFY_EQUAL(i.package(), "foo/bar");
+            TEST_CHECK(! i.version_spec_ptr());
+            TEST_CHECK(! i.repository_ptr());
+            TEST_CHECK(! i.slot_ptr());
+            TEST_CHECK(i.use_requirements_ptr());
+            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("one")) !=
+                    i.use_requirements_ptr()->end());
+            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("two")) !=
+                    i.use_requirements_ptr()->end());
+            TEST_CHECK(i.use_requirements_ptr()->find(UseFlagName("three")) ==
+                    i.use_requirements_ptr()->end());
+            TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("one")) == use_enabled);
+            TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("two")) == use_disabled);
+            TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("moo")) == use_unspecified);
         }
     } test_package_dep_atom;
 }

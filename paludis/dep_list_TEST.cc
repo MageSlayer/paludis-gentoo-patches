@@ -1123,6 +1123,198 @@ namespace test_cases
     } test_dep_list_44;
 
     /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase45 : DepListTestCase<45>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "( cat/two[enabled] )");
+            repo->add_version("cat", "two", "1")->set(vmk_iuse, "enabled");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_45;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase46 : DepListTestCase<46>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "( cat/two[-disabled] )");
+            repo->add_version("cat", "two", "1")->set(vmk_iuse, "disabled");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_46;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase47 : DepListTestCase<47>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "( cat/two[disabled] )");
+            repo->add_version("cat", "two", "1")->set(vmk_iuse, "disabled");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env);
+            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_47;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase48 : DepListTestCase<48>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "( cat/two[-enabled] )");
+            repo->add_version("cat", "two", "1")->set(vmk_iuse, "enabled");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env);
+            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_48;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase49 : DepListTestCase<49>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "( cat/two cat/two[enabled] )");
+            repo->add_version("cat", "two", "1")->set(vmk_iuse, "enabled");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_49;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase50 : DepListTestCase<50>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "( cat/two cat/two[-disabled] )");
+            repo->add_version("cat", "two", "1")->set(vmk_iuse, "disabled");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_50;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase51 : DepListTestCase<51>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "( cat/two cat/two[disabled] )");
+            repo->add_version("cat", "two", "1")->set(vmk_iuse, "disabled");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env);
+            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_51;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCase52 : DepListTestCase<52>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->set(vmk_depend, "( cat/two cat/two[-enabled] )");
+            repo->add_version("cat", "two", "1")->set(vmk_iuse, "enabled");
+        }
+
+        void populate_expected()
+        {
+            merge_target="cat/one";
+        }
+
+        void check_lists()
+        {
+            TEST_CHECK(true);
+            DepList d(&env);
+            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK(d.begin() == d.end());
+        }
+    } test_dep_list_52;
+
+    /**
      * \test Test DepList transactional add behaviour.
      *
      * \ingroup Test

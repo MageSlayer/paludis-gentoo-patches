@@ -30,6 +30,7 @@
 #include <paludis/util/visitor.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
+#include <map>
 
 /** \file
  * Declarations for the DepAtom classes.
@@ -240,6 +241,43 @@ namespace paludis
     };
 
     /**
+     * A selection of USE flag requirements.
+     *
+     * \ingroup grpdepatoms
+     */
+    class UseRequirements :
+        public InternalCounted<UseRequirements>
+    {
+        private:
+            std::map<UseFlagName, UseFlagState> _reqs;
+
+        public:
+            typedef std::map<UseFlagName, UseFlagState>::const_iterator Iterator;
+
+            Iterator begin() const
+            {
+                return _reqs.begin();
+            }
+
+            Iterator end() const
+            {
+                return _reqs.end();
+            }
+
+            Iterator find(const UseFlagName & u) const
+            {
+                return _reqs.find(u);
+            }
+
+            bool insert(const UseFlagName & u, UseFlagState s)
+            {
+                return _reqs.insert(std::make_pair(u, s)).second;
+            }
+
+            UseFlagState state(const UseFlagName &) const;
+    };
+
+    /**
      * A PackageDepAtom represents a package name (for example,
      * 'app-editors/vim'), possibly with associated version and SLOT
      * restrictions.
@@ -256,6 +294,7 @@ namespace paludis
             CountedPtr<VersionSpec, count_policy::ExternalCountTag> _version_spec;
             CountedPtr<SlotName, count_policy::ExternalCountTag> _slot;
             CountedPtr<RepositoryName, count_policy::ExternalCountTag> _repository;
+            UseRequirements::Pointer _use_requirements;
             DepTag::ConstPointer _tag;
 
         public:
@@ -314,6 +353,13 @@ namespace paludis
                 return _repository;
             }
 
+            /**
+             * Fetch the use requirements (may be a zero pointer).
+             */
+            UseRequirements::ConstPointer use_requirements_ptr() const
+            {
+                return _use_requirements;
+            }
 
             /**
              * A non-constant smart pointer to ourself.

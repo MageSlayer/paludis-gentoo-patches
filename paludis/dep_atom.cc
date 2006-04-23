@@ -84,6 +84,7 @@ PackageDepAtom::PackageDepAtom(const QualifiedPackageName & package) :
     _version_spec(0),
     _slot(0),
     _repository(0),
+    _use_requirements(0),
     _tag(0)
 {
 }
@@ -95,6 +96,7 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
     _version_spec(0),
     _slot(0),
     _repository(0),
+    _use_requirements(0),
     _tag(0)
 {
     Context context("When parsing package dep atom '" + ss + "':");
@@ -105,6 +107,33 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
 
         if (s.empty())
             throw PackageDepAtomError("Got empty dep atom");
+
+        std::string::size_type use_group_p;
+        while (std::string::npos != ((use_group_p = s.rfind('['))))
+        {
+            if (s.at(s.length() - 1) != ']')
+                throw PackageDepAtomError("Mismatched []");
+
+            std::string flag(s.substr(use_group_p + 1));
+            UseFlagState state(use_enabled);
+            if (flag.length() < 2)
+                throw PackageDepAtomError("Invalid [] contents");
+            flag.erase(flag.length() - 1);
+            if ('-' == flag.at(0))
+            {
+                state = use_disabled;
+                flag.erase(0, 1);
+                if (flag.empty())
+                    throw PackageDepAtomError("Invalid [] contents");
+            }
+            UseFlagName name(flag);
+            if (0 == _use_requirements)
+                _use_requirements.assign(new UseRequirements);
+            if (! _use_requirements->insert(name, state))
+                throw PackageDepAtomError("Conflicting [] contents");
+
+            s.erase(use_group_p);
+        }
 
         std::string::size_type repo_p;
         if (std::string::npos != ((repo_p = s.rfind("::"))))
@@ -209,6 +238,15 @@ paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
         s << ":" << *a.slot_ptr();
     if (a.repository_ptr())
         s << "::" << *a.repository_ptr();
+
+    if (a.use_requirements_ptr())
+    {
+        for (UseRequirements::Iterator u(a.use_requirements_ptr()->begin()),
+                u_end(a.use_requirements_ptr()->end()) ; u != u_end ; ++u)
+            s << "[" << (u->second == use_disabled ? "-" + stringify(u->first) :
+                    stringify(u->first)) << "]";
+    }
+
     return s;
 }
 
@@ -225,5 +263,14 @@ StringDepAtom::StringDepAtom(const std::string & s) :
 PlainTextDepAtom::PlainTextDepAtom(const std::string & s) :
     StringDepAtom(s)
 {
+}
+
+UseFlagState
+UseRequirements::state(const UseFlagName & u) const
+{
+    Iterator i(find(u));
+    if (end() == i)
+        return use_unspecified;
+    return i->second;
 }
 

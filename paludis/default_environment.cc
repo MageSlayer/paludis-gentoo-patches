@@ -48,6 +48,13 @@ DefaultEnvironment::~DefaultEnvironment()
 bool
 DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
+    /* first check package database use masks... */
+    if (e ? package_database()->fetch_repository(e->get<pde_repository>())->query_use_mask(f, e) :
+            package_database()->fetch_repository(
+                package_database()->favourite_repository())->query_use_mask(f, e))
+        return false;
+
+    /* check use: per package user config */
     if (e)
     {
         UseFlagState s(use_unspecified);
@@ -97,6 +104,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         } while (false);
     }
 
+    /* check use: general user config */
     do
     {
         UseFlagState state(use_unspecified);
@@ -123,6 +131,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         throw InternalError(PALUDIS_HERE, "bad state " + stringify(state));
     } while (false);
 
+    /* check use: package database config */
     switch (e ? package_database()->fetch_repository(e->get<pde_repository>())->query_use(f, e) :
             package_database()->fetch_repository(package_database()->favourite_repository())->query_use(f, e))
     {

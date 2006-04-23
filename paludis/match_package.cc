@@ -45,11 +45,37 @@ match_package_internals::do_match(
         if (*atom->repository_ptr() != entry->get<pde_repository>())
             return false;
 
-    if (atom->slot_ptr())
+    if (atom->slot_ptr() || atom->use_requirements_ptr())
     {
         VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*entry));
-        if (*atom->slot_ptr() != SlotName(metadata->get(vmk_slot)))
-            return false;
+
+        if (atom->slot_ptr())
+            if (*atom->slot_ptr() != SlotName(metadata->get(vmk_slot)))
+                return false;
+
+        if (atom->use_requirements_ptr())
+        {
+            for (UseRequirements::Iterator u(atom->use_requirements_ptr()->begin()),
+                    u_end(atom->use_requirements_ptr()->end()) ; u != u_end ; ++u)
+            {
+                switch (u->second)
+                {
+                    case use_unspecified:
+                        continue;
+
+                    case use_enabled:
+                        if (! env->query_use(u->first, entry))
+                            return false;
+                        continue;
+
+                    case use_disabled:
+                        if (env->query_use(u->first, entry))
+                            return false;
+                        continue;
+                }
+                throw InternalError(PALUDIS_HERE, "bad UseFlagState");
+            }
+        }
     }
 
     return true;
@@ -57,7 +83,7 @@ match_package_internals::do_match(
 
 bool
 match_package_internals::do_match(
-        const Environment * const,
+        const Environment * const env,
         const PackageDepAtom * const atom,
         const DepListEntry * const entry)
 {
@@ -74,6 +100,33 @@ match_package_internals::do_match(
 
     if (atom->slot_ptr() && (atom->slot_ptr()->data() != entry->get<dle_metadata>()->get(vmk_slot)))
         return false;
+
+    if (atom->use_requirements_ptr())
+    {
+        PackageDatabaseEntry e(entry->get<dle_name>(), entry->get<dle_version>(),
+                entry->get<dle_repository>());
+
+        for (UseRequirements::Iterator u(atom->use_requirements_ptr()->begin()),
+                u_end(atom->use_requirements_ptr()->end()) ; u != u_end ; ++u)
+        {
+            switch (u->second)
+            {
+                case use_unspecified:
+                    continue;
+
+                case use_enabled:
+                    if (! env->query_use(u->first, &e))
+                        return false;
+                    continue;
+
+                case use_disabled:
+                    if (env->query_use(u->first, &e))
+                        return false;
+                    continue;
+            }
+            throw InternalError(PALUDIS_HERE, "bad UseFlagState");
+        }
+    }
 
     return true;
 }

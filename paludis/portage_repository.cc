@@ -30,16 +30,17 @@
 #include <paludis/package_database.hh>
 #include <paludis/portage_repository.hh>
 #include <paludis/syncer.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/system.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/random.hh>
+#include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 
 #include <map>
@@ -909,7 +910,7 @@ PortageRepository::do_query_profile_masks(const CategoryNamePart &,
 }
 
 UseFlagState
-PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry *e) const
+PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
     if (! _imp->has_profile)
     {
@@ -919,6 +920,7 @@ PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntr
     }
 
     UseMap::iterator p(_imp->use.end());
+
     if (query_use_mask(f, e))
         return use_disabled;
     else if (_imp->use.end() == ((p = _imp->use.find(f))))
@@ -950,8 +952,20 @@ PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabas
     for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator i = it->second.begin(), 
             i_end = it->second.end(); i != i_end; ++i)
     {
-        if (match_package(_imp->env, i->first, e) && u == i->second)
-            return true;
+        static bool recursive(false);
+        if (recursive)
+        {
+            if (i->first->use_requirements_ptr())
+                continue;
+            if (match_package(_imp->env, i->first, e) && u == i->second)
+                return true;
+        }
+        else
+        {
+            Save<bool> save_recursive(&recursive, true);
+            if (match_package(_imp->env, i->first, e) && u == i->second)
+                return true;
+        }
     }
 
     return false;
