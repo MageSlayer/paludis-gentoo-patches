@@ -302,13 +302,14 @@ AM_CONDITIONAL([HAVE_DOT], test "x$HAVE_DOT" = "xyes")
 dnl }}}
 
 dnl {{{ check for whether to build qa stuff
-AC_MSG_CHECKING([whether to build QA tools])
-AC_ARG_ENABLE([qa],
-			  [  --enable-qa             Build QA tool (qualudis) and library],
-			  [ENABLE_QA=$enableval
-			   AC_MSG_RESULT([$enableval])],
-			  [ENABLE_QA=no
-			   AC_MSG_RESULT([no])])
+dnl AC_MSG_CHECKING([whether to build QA tools])
+dnl AC_ARG_ENABLE([qa],
+dnl 			  [  --enable-qa             Build QA tool (qualudis) and library],
+dnl 			  [ENABLE_QA=$enableval
+dnl 			   AC_MSG_RESULT([$enableval])],
+dnl 			  [ENABLE_QA=no
+dnl 			   AC_MSG_RESULT([no])])
+ENABLE_QA=no
 AC_SUBST([ENABLE_QA])
 AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
 dnl }}}
