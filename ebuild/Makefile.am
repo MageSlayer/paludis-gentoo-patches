@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~
-SUBDIRS = . utils
+SUBDIRS = . utils digests
 
 libexecprogdir = $(libexecdir)/paludis/
 

@@ -338,6 +338,7 @@ AC_OUTPUT(
 	doc/Makefile
 	doc/doxygen.conf
 	ebuild/Makefile
+	ebuild/digests/Makefile
 	ebuild/utils/Makefile
 	misc/Makefile
 	misc/svn-version-filter-data.bash

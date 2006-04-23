@@ -70,52 +70,28 @@ builtin_fetch()
 
     local badfetch=
     if [[ -f "${FILESDIR}/digest-${PN}-${PVR%-r0}" ]] ; then
-        local line items sum
+        local line items prg
         while read line ; do
             line=( ${line} )
             if ! hasq "${line[2]}" ${A} ; then
                 ebuild_section "Skipping check for ${line[2]}"
                 continue
             fi
-            case ${line[0]} in
-                MD5)
-                    if [[ -f "${DISTDIR}/${line[2]}" ]] ; then
-                        ebegin "Checking md5 for ${line[2]}"
-                        sum=$(md5sum ${DISTDIR}/${line[2]} | cut -d ' ' -f1 )
-                        if [[ "${sum}" == "${line[1]}" ]] ; then
-                            eend 0
-                        else
-                            eend 1
-                            hasq "${line[2]}" ${badfetch} || badfetch="${badfetch} ${line[2]}"
-                        fi
-                    fi
-                    ;;
 
-                RMD160)
-                    if [[ -f "${DISTDIR}/${line[2]}" ]] ; then
-                        if type openssl &>/dev/null ; then
-                            ebegin "Checking rmd160 for ${line[2]}"
-                            sum=$(openssl dgst -rmd160 ${DISTDIR}/${line[2]} | cut -d '=' -f2 )
-                            if [[ "${sum# }" == "${line[1]}" ]] ; then
-                                eend 0
-                            else
-                                eend 1
-                                hasq "${line[2]}" ${badfetch} || badfetch="${badfetch} ${line[2]}"
-                            fi
-                        else
-                            einfo "Can't check rmd160 for ${line[2]}"
-                        fi
-                    fi
-                    ;;
+            prg="${PALUDIS_EBUILD_DIR}/digests/do$(echo ${line[0]} | tr \
+                '[[:upper:]]' '[[:lower:]]')"
+            if [[ -x "${prg}" ]] ; then
+                ebegin "Checking ${line[0]} for ${line[2]}"
+                if [[ $("${prg}" "${DISTDIR}/${line[2]}" ) == "${line[1]}" ]] ; then
+                    eend 0
+                else
+                    eend 1
+                    hasq "${line[2]}" ${badfetch} || badfetch="${badfetch} ${line[2]}"
+                fi
+            else
+                einfo "Can't check ${line[0]} for ${line[2]}"
+            fi
 
-                SHA256)
-                    einfo "Can't check sha256 for ${line[2]}"
-                    ;;
-
-                *)
-                    einfo "Skipping unknown digest '${line[0]}' for ${line[2]}"
-                    ;;
-            esac
         done < "${FILESDIR}"/digest-${PN}-${PVR%-r0}
     else
         ebuild_section "No digest file, skipping integrity checks"
