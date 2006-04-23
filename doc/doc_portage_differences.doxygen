@@ -1,0 +1,64 @@
+/* vim: set ft=cpp tw=80 sw=4 et : */
+
+/**
+\page PortageDifferences How Paludis and Portage Differ
+
+This is not a complete list. It's not even vaguely near complete. Rather, it's
+a collection of lists of things of interest that are intentionally different
+between Paludis and its predecessor, Portage.
+
+\section PortageDifferencesEndUser For the End User
+
+Paludis isn't aimed at end users. Having said that, the following features
+would be relevant if it were:
+
+- A whole different configuration system, making it far easier to maintain
+  multiple systems, some in chroots, with entirely separate configuration
+  files.
+
+- Performance. Paludis is fast.
+
+- Low dependency bloat. No Python, no big external crypto libraries.
+
+- Security integration.
+
+- Multiple repository support, replacing Portage's highly limited overlays.
+
+- Simple per-(category, package, version, anything else) environment variable
+  setting (e.g. CFLAGS).
+
+- Licence filtering.
+
+\section PortageDifferencesEbuildDeveloper For the Ebuild Developer
+
+As well as the end user advantages, ebuild authors will benefit from:
+
+- :slot dependencies
+
+- ::repository dependencies
+
+- [use] dependencies
+
+- Circular dependency detection
+
+- Per package use masking, and from this per package use combination
+  restrictions.
+
+- Default deep dependency resolution.
+
+- Support for -scm versions.
+
+\section PortageDifferencesProgrammer For the Programmer
+
+- Proper library / interface separation.
+
+- Reasonable internals documentation, via Doxygen.
+
+- Consistent interfaces for different repository types.
+
+- Modularity where it matters.
+
+- Test suites, to detect the impact of changes.
+
+*/
+

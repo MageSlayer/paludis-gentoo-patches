@@ -12,7 +12,9 @@ You shouldn't be touching Paludis at the moment. Paludis will delete all your
 files, then delete everyone else's files, then rape your dog. Go away.
 
 If you're still here, read \link BootstrapHowto the Bootstrap HOWTO \endlink for
-how to break your system or possibly set up a chroot.
+how to break your system or possibly set up a chroot. You may also like to read
+about \link PortageDifferences some of the differences between Paludis and
+Portage\endlink.
 
 We have a <a href="https://developer.berlios.de/bugs/?group_id=6360">bug
 tracker</a> and some
@@ -23,7 +25,9 @@ IRC channel. Read the howto for more details.
 \section developerdocs For Developers
 
 Start by getting a
-<a href="https://developer.berlios.de/svn/?group_id=6360">Subversion checkout</a>.
+<a href="https://developer.berlios.de/svn/?group_id=6360">Subversion
+checkout</a>, and reading the \link PortageDifferences Paludis and Portage
+differences \endlink document.
 
 It's best to start by skimming over the main program to get a feel for how
 everything fits together. Useful files:
