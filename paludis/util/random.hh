@@ -21,35 +21,38 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_RANDOM_HH 1
 
 #include <cstdlib>
-#include <time.h>
+#include <inttypes.h>
 
 namespace paludis
 {
     /**
-     * A basic random number generator class.
+     * A basic random number generator class, which is not suitable for
+     * cryptography but is fast and reasonably pseudorandom.
      *
-     * See \ref TCppPL 22.7 for justification.
-     *
-     * \todo Don't use cstdlib functions here.
+     * See \ref TCppPL 22.7 for justification. See \ref TaoCP2 3.2.1 for the
+     * basic algorithm and \ref AppCrypt 16.1 for the choice of numbers.
      *
      * \ingroup grprandom
      */
     class Random
     {
         private:
-            static bool done_srand;
+            static uint32_t global_seed;
+            uint32_t local_seed;
+
+            static const uint32_t _a = 2416;
+            static const uint32_t _b = 374441;
+            static const uint32_t _m = 1771875;
 
         public:
+            Random(uint32_t seed);
+            Random();
+
             template <typename DiffType_>
             DiffType_ operator() (DiffType_ max)
             {
-                if (! done_srand)
-                {
-                    std::srand(time(0));
-                    done_srand = true;
-                }
-
-                double t(static_cast<double>(std::rand()) / static_cast<double>(RAND_MAX));
+                local_seed = (_a * local_seed + _b) % _m;
+                double t(static_cast<double>(local_seed) / static_cast<double>(_m));
                 return static_cast<DiffType_>(t * max);
             }
     };

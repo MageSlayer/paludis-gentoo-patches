@@ -5,8 +5,12 @@
 
 \section ReferencesBooks Books
 
+\anchor AppCrypt
+<strong>AppCrypt</strong>: Applied Cryptography Second Edition / Bruce
+Schneier / Wiley / ISBN 0-471-11709-9
+
 \anchor EffCpp
-<strong>EffCpp</strong>: Effective C++ Third Edition / Scott Meyer /
+<strong>EffCpp</strong>: Effective C++ Third Edition / Scott Meyers /
 Addison-Wesley / ISBN 0-321-33487-6
 
 \anchor EffSTL
@@ -21,6 +25,11 @@ Addison-Wesley / ISBN 0-201-63361-2
 \anchor MCppD
 <strong>MCppD</strong>: Modern C++ Design: Generic Programming and Design
 Patterns Applied / Andrei Alexandrescu / Addison-Wesley / ISBN 0-201-70431-5
+
+\anchor TaoCP2
+<strong>TaoCP2</strong>: The Art of Computer Programming, Volume 2:
+Seminumerical Algorithms, Third Edition / Donald E. Knuth / Addison-Wesley /
+ISBN 0-201-89684-2
 
 \anchor TCppSL
 <strong>TCppSL</strong>: The C++ Standard Library / Nicolai M. Josuttis /

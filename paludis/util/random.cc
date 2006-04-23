@@ -18,6 +18,7 @@
  */
 
 #include "random.hh"
+#include <time.h>
 
 /** \file
  * Implementation for random.hh.
@@ -27,5 +28,16 @@
 
 using namespace paludis;
 
-bool Random::done_srand(false);
+uint32_t Random::global_seed(0xdeadbeef ^ ::time(0));
+
+Random::Random(uint32_t seed) :
+    local_seed(seed)
+{
+}
+
+Random::Random() :
+    local_seed(global_seed ^ ((::time(0) >> 16) | (::time(0) << 16)))
+{
+    global_seed += local_seed;
+}
 
