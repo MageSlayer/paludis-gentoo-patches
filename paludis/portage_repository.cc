@@ -84,6 +84,9 @@ namespace paludis
     /// Map for USE masking.
     typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
 
+    /// Map for package USE masking.
+    typedef MakeHashedMap<QualifiedPackageName, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> > >::Type PackageUseMaskMap;
+
     /// Map for USE flag sets.
     typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
 
@@ -160,6 +163,9 @@ namespace paludis
 
         /// Use mask.
         mutable UseMaskSet use_mask;
+
+        /// Package use mask.
+        mutable PackageUseMaskMap package_use_mask;
 
         /// Use.
         mutable UseMap use;
@@ -338,6 +344,34 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
                 use_mask.erase(UseFlagName(line->substr(1)));
             else
                 use_mask.insert(UseFlagName(*line));
+    }
+
+    if ((f / "package.use.mask").exists())
+    {
+        Context context_local("When reading package use.mask file:");
+
+        LineConfigFile package_use_mask_f(f / "package.use.mask");
+        for (LineConfigFile::Iterator line(package_use_mask_f.begin()), line_end(package_use_mask_f.end());
+                line != line_end; ++line)
+        {
+            std::deque<std::string> tokens;
+            tokeniser.tokenise(*line, std::back_inserter(tokens));
+            if (tokens.size() < 2)
+                continue;
+
+            std::deque<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
+            PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
+            QualifiedPackageName p(d->package());
+
+            PackageUseMaskMap::iterator i = package_use_mask.find(p);
+            if (package_use_mask.end() == i)
+                i = package_use_mask.insert(make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >())).first;
+
+            for ( ; t != t_end; ++t)
+            {
+                (*i).second.push_back(std::make_pair(d, UseFlagName(*t)));
+            }
+        }
     }
 
     if ((f / "virtuals").exists())
@@ -875,7 +909,7 @@ PortageRepository::do_query_profile_masks(const CategoryNamePart &,
 }
 
 UseFlagState
-PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry *) const
+PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry *e) const
 {
     if (! _imp->has_profile)
     {
@@ -885,7 +919,7 @@ PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntr
     }
 
     UseMap::iterator p(_imp->use.end());
-    if (query_use_mask(f))
+    if (query_use_mask(f, e))
         return use_disabled;
     else if (_imp->use.end() == ((p = _imp->use.find(f))))
         return use_unspecified;
@@ -894,7 +928,7 @@ PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntr
 }
 
 bool
-PortageRepository::do_query_use_mask(const UseFlagName & u) const
+PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabaseEntry *e) const
 {
     if (! _imp->has_profile)
     {
@@ -903,7 +937,21 @@ PortageRepository::do_query_use_mask(const UseFlagName & u) const
         _imp->has_profile = true;
     }
 
-    return _imp->use_mask.end() != _imp->use_mask.find(u);
+    if (_imp->use_mask.end() != _imp->use_mask.find(u))
+        return true;
+
+    PackageUseMaskMap::iterator it = _imp->package_use_mask.find(e->get<pde_name>());
+    if (_imp->package_use_mask.end() == it)
+        return false;
+
+    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator i = it->second.begin(), 
+            i_end = it->second.end(); i != i_end; ++i)
+    {
+        if (match_package(_imp->env, i->first, e) && u == i->second)
+            return true;
+    }
+
+    return false;
 }
 
 void

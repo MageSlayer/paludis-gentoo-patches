@@ -69,7 +69,7 @@ namespace paludis
 
             virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
 
-            virtual bool do_query_use_mask(const UseFlagName &) const;
+            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const;
 
             virtual bool do_is_arch_flag(const UseFlagName &) const;
 

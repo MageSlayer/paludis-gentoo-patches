@@ -522,5 +522,45 @@ namespace test_cases
             }
         }
     } test_portage_repository_metadata_uncached;
+
+    /**
+     * \test Test PortageRepository query_use and query_use_mask functions.
+     *
+     * \ingroup grptestcases
+     */
+    struct PortageRepositoryQueryUseTest : TestCase
+    {
+        PortageRepositoryQueryUseTest() : TestCase("USE query") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            std::map<std::string, std::string> keys;
+            keys.insert(std::make_pair("format", "portage"));
+            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo9"));
+            keys.insert(std::make_pair("profile", "portage_repository_TEST_dir/repo9/profiles/profile"));
+            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+
+                PackageDatabaseEntry p1(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("test-repo-9"));
+                PackageDatabaseEntry p2(QualifiedPackageName("cat-two/pkg-two"), VersionSpec("1"), RepositoryName("test-repo-9"));
+                PackageDatabaseEntry p3(QualifiedPackageName("cat-one/pkg-none"), VersionSpec("1"), RepositoryName("test-repo-9"));
+                PackageDatabaseEntry p4(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"), RepositoryName("test-repo-9"));
+
+                TEST_CHECK(repo->query_use(UseFlagName("flag1"), &p1) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag2"), &p1) == use_disabled);
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag2"), &p1));
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag2"), &p3));
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), &p2));
+                TEST_CHECK(! repo->query_use_mask(UseFlagName("flag3"), &p1));
+                TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), &p4));
+                TEST_CHECK(repo->query_use(UseFlagName("flag3"), &p1) == use_enabled);
+            }
+        }
+    } test_portage_repository_query_use;
 }
 

@@ -257,7 +257,7 @@ do_install()
                 if (env->query_use(*i, &p))
                     cout << " " << colour(cl_flag_on, *i);
                 else if (env->package_database()->fetch_repository(
-                            dep->get<p::dle_repository>())->query_use_mask(*i))
+                            dep->get<p::dle_repository>())->query_use_mask(*i, &p))
                     cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");
                 else
                     cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));

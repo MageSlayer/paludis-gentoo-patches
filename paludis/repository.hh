@@ -165,7 +165,7 @@ namespace paludis
             /**
              * Override in descendents: get use mask.
              */
-            virtual bool do_query_use_mask(const UseFlagName &) const = 0;
+            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
 
             /**
              * Override in descendents: is this an arch flag?
@@ -378,7 +378,7 @@ namespace paludis
              */
             UseFlagState query_use(const UseFlagName & u, const PackageDatabaseEntry *pde) const
             {
-                if (do_query_use_mask(u))
+                if (do_query_use_mask(u, pde))
                     return use_disabled;
                 else
                     return do_query_use(u, pde);
@@ -387,9 +387,9 @@ namespace paludis
             /**
              * Query whether the specified use flag is masked.
              */
-            bool query_use_mask(const UseFlagName & u) const
+            bool query_use_mask(const UseFlagName & u, const PackageDatabaseEntry *pde) const
             {
-                return do_query_use_mask(u);
+                return do_query_use_mask(u, pde);
             }
 
             /**

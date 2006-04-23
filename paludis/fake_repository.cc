@@ -193,7 +193,7 @@ FakeRepository::do_query_use(const UseFlagName &, const PackageDatabaseEntry *) 
 }
 
 bool
-FakeRepository::do_query_use_mask(const UseFlagName &) const
+FakeRepository::do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const
 {
     return false;
 }

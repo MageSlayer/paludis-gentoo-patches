@@ -167,3 +167,28 @@ END
 cd ..
 
 
+mkdir -p repo9/{eclass,distfiles,profiles/profile} || exit 1
+mkdir -p repo9/{cat-one/pkg-one,cat-two/pkg-two} || exit 1
+cd repo9 || exit 1
+echo "test-repo-9" > profiles/repo_name || exit 1
+cat <<END >profiles/categories || exit 1
+cat-one
+cat-two
+END
+cat <<END >profiles/profile/make.defaults || exit 1
+ARCH=test
+USE="flag1 flag2 flag3"
+END
+cat <<END >profiles/profile/use.mask || exit 1
+flag2
+END
+cat <<END >profiles/profile/package.use.mask || exit 1
+cat-two/pkg-two flag3
+>=cat-one/pkg-one-2 flag3
+END
+cat <<END > cat-one/pkg-one/pkg-one-1.ebuild || exit 1
+END
+cat <<END > cat-one/pkg-one/pkg-one-2.ebuild || exit 1
+cat <<END > cat-two/pkg-two/pkg-two-1.ebuild || exit 1
+END
+

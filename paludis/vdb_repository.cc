@@ -519,7 +519,7 @@ VDBRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry * 
 }
 
 bool
-VDBRepository::do_query_use_mask(const UseFlagName &) const
+VDBRepository::do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const
 {
     return false;
 }
