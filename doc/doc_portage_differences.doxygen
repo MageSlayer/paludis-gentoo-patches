@@ -1,4 +1,4 @@
-/* vim: set ft=cpp tw=80 sw=4 et : */
+/* vim: set ft=cpp tw=80 sw=4 et spell spelllang=en : */
 
 /**
 \page PortageDifferences How Paludis and Portage Differ
@@ -47,6 +47,8 @@ As well as the end user advantages, ebuild authors will benefit from:
 - Default deep dependency resolution.
 
 - Support for -scm versions.
+
+- Multiple inheritance for profiles.
 
 \section PortageDifferencesProgrammer For the Programmer
 
