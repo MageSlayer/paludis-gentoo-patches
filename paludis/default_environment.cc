@@ -23,8 +23,11 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
+#include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/dir_iterator.hh>
 #include <vector>
 
 using namespace paludis;
@@ -320,4 +323,104 @@ DefaultEnvironment::query_enabled_use_matching(const std::string & prefix,
 
     return result;
 }
+
+namespace
+{
+    void add_one_hook(const std::string & base, std::list<FSEntry> & result)
+    {
+        try
+        {
+            FSEntry r(base);
+            if (r.is_directory())
+            {
+                Log::get_instance()->message(ll_debug, "Adding hook directory '"
+                        + base + "'");
+                result.push_back(r);
+            }
+            else
+                Log::get_instance()->message(ll_debug, "Skipping hook directory candidate '"
+                        + base + "'");
+        }
+        catch (const FSError & e)
+        {
+            Log::get_instance()->message(ll_warning, "Caught exception '" +
+                    e.message() + "' (" + e.what() + ") when checking hook "
+                    "directory '" + base + "'");
+        }
+    }
+
+    const std::list<FSEntry> & get_hook_dirs()
+    {
+        static std::list<FSEntry> result;
+        static bool done_hooks(false);
+        if (! done_hooks)
+        {
+            add_one_hook(DefaultConfig::get_instance()->config_dir() + "/hooks", result);
+            add_one_hook(LIBEXECDIR "/paludis/hooks", result);
+            add_one_hook(DATADIR "/paludis/hooks", result);
+            done_hooks = true;
+        }
+        return result;
+    }
+
+    struct Hooker
+    {
+        std::string hook, paludis_command;
+
+        Hooker(const std::string & h, const std::string & p) :
+            hook(h),
+            paludis_command(p)
+        {
+        }
+
+        void operator() (const FSEntry & f) const
+        {
+            Context context("When running hook script '" + stringify(f) +
+                    "' for hook '" + hook + "':");
+            Log::get_instance()->message(ll_debug, "Starting hook script '" +
+                    stringify(f) + "' for '" + hook + "'");
+
+            int exit_status(run_command(make_env_command("bash '" + stringify(f) + "'")
+                        ("ROOT", DefaultConfig::get_instance()->root())
+                        ("HOOK", hook)
+                        ("PALUDIS_COMMAND", paludis_command)));
+            if (0 == exit_status)
+                Log::get_instance()->message(ll_debug, "Hook '" + stringify(f)
+                        + "' returned success '" + stringify(exit_status) + "'");
+            else
+                Log::get_instance()->message(ll_warning, "Hook '" + stringify(f)
+                        + "' returned failure '" + stringify(exit_status) + "'");
+        }
+    };
+}
+
+void
+DefaultEnvironment::perform_hook(const std::string & hook) const
+{
+    Context context("When triggering hook '" + hook + "'");
+    Log::get_instance()->message(ll_debug, "Starting hook '" + hook + "'");
+
+    const std::list<FSEntry> & hook_dirs(get_hook_dirs());
+
+    for (std::list<FSEntry>::const_iterator h(hook_dirs.begin()),
+            h_end(hook_dirs.end()) ; h != h_end ; ++h)
+    {
+        FSEntry hh(*h / hook);
+        if (! hh.is_directory())
+            continue;
+
+        std::list<FSEntry> hooks;
+        std::copy(DirIterator(hh), DirIterator(),
+                filter_inserter(std::back_inserter(hooks), IsFileWithExtension(".bash")));
+        std::for_each(hooks.begin(), hooks.end(), Hooker(hook, paludis_command()));
+    }
+}
+
+std::string
+DefaultEnvironment::hook_dirs() const
+{
+    const std::list<FSEntry> & hook_dirs(get_hook_dirs());
+    return join(hook_dirs.begin(), hook_dirs.end(), " ");
+}
+
 

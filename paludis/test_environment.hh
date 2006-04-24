@@ -61,6 +61,11 @@ namespace paludis
                 return "";
             }
 
+            virtual std::string hook_dirs() const
+            {
+                return "";
+            }
+
             virtual std::string paludis_command() const
             {
                 return "false";
@@ -70,6 +75,10 @@ namespace paludis
                     const std::string &, const PackageDatabaseEntry *) const
             {
                 return UseFlagNameCollection::Pointer(new UseFlagNameCollection);
+            }
+
+            virtual void perform_hook(const std::string &) const
+            {
             }
     };
 }

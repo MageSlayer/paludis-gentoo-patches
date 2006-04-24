@@ -29,6 +29,8 @@ would be relevant if it were:
 
 - Licence filtering.
 
+- Hook scripts, for running code after a certain action occurs.
+
 \section PortageDifferencesEbuildDeveloper For the Ebuild Developer
 
 As well as the end user advantages, ebuild authors will benefit from:
@@ -49,6 +51,8 @@ As well as the end user advantages, ebuild authors will benefit from:
 - Support for -scm versions.
 
 - Multiple inheritance for profiles.
+
+- Ability to install hook scripts.
 
 \section PortageDifferencesProgrammer For the Programmer
 

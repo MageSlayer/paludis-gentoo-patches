@@ -336,6 +336,11 @@ do_install()
         if (CommandLine::get_instance()->a_fetch.specified())
             opts.set<p::io_fetchonly>(true);
 
+        if (opts.get<p::io_fetchonly>())
+            env->perform_hook("fetch_all_pre");
+        else
+            env->perform_hook("install_all_pre");
+
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
         {
@@ -361,8 +366,18 @@ do_install()
                         p::stringify(max_count) + ") Installing " + cpv);
             }
 
+            if (opts.get<p::io_fetchonly>())
+                env->perform_hook("fetch_pre");
+            else
+                env->perform_hook("install_pre");
+
             env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
                 install(dep->get<p::dle_name>(), dep->get<p::dle_version>(), opts);
+
+            if (opts.get<p::io_fetchonly>())
+                env->perform_hook("fetch_post");
+            else
+                env->perform_hook("install_post");
 
             if (! opts.get<p::io_fetchonly>())
             {
@@ -402,6 +417,7 @@ do_install()
                         cout << "* " << colour(cl_package_name, *c) << endl;
                     cout << endl;
 
+                    env->perform_hook("uninstall_all_pre");
                     for (p::PackageDatabaseEntryCollection::Iterator c(clean_list.begin()),
                             c_end(clean_list.end()) ; c != c_end ; ++c)
                     {
@@ -411,12 +427,21 @@ do_install()
                         cerr << xterm_title("(" + p::stringify(current_count) + " of " +
                                 p::stringify(max_count) + ") Cleaning " + cpv + ": " + stringify(*c));
 
+                        env->perform_hook("uninstall_pre");
                         env->package_database()->fetch_repository(c->get<p::pde_repository>())->
                                 uninstall(c->get<p::pde_name>(), c->get<p::pde_version>(), opts);
+                        env->perform_hook("uninstall_post");
                     }
+                    env->perform_hook("uninstall_all_post");
                 }
             }
         }
+
+        if (opts.get<p::io_fetchonly>())
+            env->perform_hook("fetch_all_post");
+        else
+            env->perform_hook("install_all_post");
+
         cout << endl;
     }
     catch (const p::PackageInstallActionError & e)
@@ -495,7 +520,6 @@ do_install()
 
         return 1;
     }
-
     catch (const p::DepListStackTooDeepError & e)
     {
         cout << endl;

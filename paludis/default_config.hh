@@ -147,7 +147,8 @@ namespace paludis
             static std::string _config_suffix;
             static bool _config_suffix_can_be_set;
             std::string _paludis_command;
-
+            std::string _root;
+            std::string _config_dir;
             std::string _bashrc_files;
 
             DefaultConfig();
@@ -475,6 +476,22 @@ namespace paludis
             void set_paludis_command(const std::string & s)
             {
                 _paludis_command = s;
+            }
+
+            /**
+             * The ROOT.
+             */
+            std::string root() const
+            {
+                return _root;
+            }
+
+            /**
+             * The config directory.
+             */
+            std::string config_dir() const
+            {
+                return _config_dir;
             }
     };
 }

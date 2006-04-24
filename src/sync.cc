@@ -78,12 +78,15 @@ int do_sync()
                 p::create_inserter<p::RepositoryName>(std::inserter(
                         repo_names, repo_names.begin())));
 
+        env->perform_hook("sync_all_pre");
         for (std::set<p::RepositoryName>::iterator r(repo_names.begin()), r_end(repo_names.end()) ;
                 r != r_end ; ++r)
         {
             try
             {
+                env->perform_hook("sync_pre");
                 return_code |= do_one_sync(env->package_database()->fetch_repository(*r));
+                env->perform_hook("sync_post");
             }
             catch (const p::NoSuchRepositoryError & e)
             {
@@ -92,6 +95,7 @@ int do_sync()
                 std::cout << "Sync " << *r << " failed" << std::endl;
             }
         }
+        env->perform_hook("sync_all_post");
     }
 
     return return_code;

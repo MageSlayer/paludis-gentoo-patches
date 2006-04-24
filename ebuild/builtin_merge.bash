@@ -28,6 +28,7 @@ builtin_merge()
     local dbdir="${ROOT%/}"/var/db/pkg/"${CATEGORY}/${PF}"
     ebuild_section "Writing VDB entry to '${dbdir}'..."
     install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
+    install -d "${ROOT%/}"/var/db/pkg/.cache || die "couldn't make pkg db cache"
 
     local v
     for v in CATEGORY CBUILD CFLAGS CHOST CXXFLAGS DEPEND DESCRIPTION EAPI \

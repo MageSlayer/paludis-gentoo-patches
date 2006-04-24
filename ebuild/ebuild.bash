@@ -138,6 +138,27 @@ ebuild_load_ebuild()
     KEYWORDS="${KEYWORDS} ${E_KEYWORDS}"
 }
 
+perform_hook()
+{
+    export HOOK=${1}
+    ebuild_notice "debug" "Starting hook '${HOOK}'"
+
+    local hook_dir
+    for hook_dir in ${PALUDIS_HOOK_DIRS} ; do
+        [[ -d "${hook_dir}/${HOOK}" ]] || continue
+        local hook_file
+        for hook_file in "${hook_dir}/${HOOK}/"*.bash ; do
+            [[ -e "${hook_file}" ]] || continue
+            ebuild_notice "debug" "Starting hook script '${hook_file}' for '${HOOK}'"
+            if ! bash "${hook_file}" ; then
+                ebuild_notice "warning" "Hook '${hook_file}' returned failure"
+            else
+                ebuild_notice "warning" "Hook '${hook_file}' returned success"
+            fi
+        done
+    done
+}
+
 ebuild_main()
 {
     local action ebuild="$1"
@@ -145,11 +166,7 @@ ebuild_main()
 
     for action in $@ ; do
         case ${action} in
-            metadata)
-                ebuild_load_module depend
-                ;;
-
-            init|fetch|merge|unmerge|tidyup|updateenv|strip)
+            metadata|init|fetch|merge|unmerge|tidyup|strip)
                 ebuild_load_module builtin_${action}
             ;;
 
@@ -174,15 +191,19 @@ ebuild_main()
             eval "export ebuild_real_${f}=\"$(which $f )\""
             eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
         done
+        perform_hook ebuild_${action}_pre
         PATH="" ebuild_load_ebuild "${ebuild}"
-        ebuild_f_depend || die "${1} failed"
+        ebuild_f_metadata || die "${1} failed"
+        perform_hook ebuild_${action}_post
     else
         ebuild_load_ebuild "${ebuild}"
         for action in $@ ; do
+            perform_hook ebuild_${action}_pre
             ebuild_f_${action} || die "${action} failed"
             if [[ ${action} == "init" ]] ; then
                 ebuild_load_ebuild "${ebuild}"
             fi
+            perform_hook ebuild_${action}_post
         done
     fi
 }

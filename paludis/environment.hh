@@ -110,6 +110,11 @@ namespace paludis
             virtual std::string bashrc_files() const = 0;
 
             /**
+             * Our hook directories.
+             */
+            virtual std::string hook_dirs() const = 0;
+
+            /**
              * How to run paludis.
              */
             virtual std::string paludis_command() const = 0;
@@ -149,6 +154,11 @@ namespace paludis
              * Remove packages from world, if they are there.
              */
             void remove_appropriate_from_world(DepAtom::ConstPointer) const;
+
+            /**
+             * Perform a hook.
+             */
+            virtual void perform_hook(const std::string & Hook) const = 0;
     };
 }
 

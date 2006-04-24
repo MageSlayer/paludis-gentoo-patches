@@ -75,7 +75,7 @@ ebuild_notice()
 
     if [[ "${level_num}" -ge "${min_level_num}" ]] ; then
         local upper_level=$(echo ${level} | ${ebuild_real_tr:-tr} '[:lower:]' '[:upper:]' )
-        echo -n "${EBUILD_PROGRAM_NAME:-ebuild.bash}@$(date +%s ): "
+        echo -n "${EBUILD_PROGRAM_NAME:-ebuild.bash}@$(date +%s ): " 1>&2
         echo "[${upper_level}.EBUILD] $* (from ${EBUILD:-?})" 1>&2
     fi
     true

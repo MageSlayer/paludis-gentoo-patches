@@ -1,5 +1,5 @@
 #!/bin/bash
-# vim: set sw=4 sts=4 et :
+# vim: set et sw=4 sts=4 :
 
 # Copyright (c) 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
 #
@@ -17,23 +17,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-builtin_updateenv()
-{
-    cd "${PALUDIS_TMPDIR}"
-    echo eselect env update
-    eselect env update || die "eselect env update failed"
-}
+source /sbin/functions.sh
 
-ebuild_f_updateenv()
-{
-    if hasq "updateenv" ${RESTRICT} ; then
-        ebuild_section "Skipping builtin_updateenv (RESTRICT)"
-    elif hasq "tidyup" ${SKIP_FUNCTIONS} ; then
-        ebuild_section "Skipping builtin_updateenv (SKIP_FUNCTIONS)"
-    else
-        ebuild_section "Starting builtin_updateenv"
-        builtin_updateenv
-        ebuild_section "Done builtin_updateenv"
-    fi
-}
+echo
+einfo "Regenerating environment..."
+eselect env update || exit 1
+einfo "Done regenerating environment"
+echo
 

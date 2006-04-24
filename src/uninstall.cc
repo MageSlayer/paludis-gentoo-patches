@@ -111,6 +111,7 @@ do_uninstall()
     if (CommandLine::get_instance()->a_no_config_protection.specified())
         opts.set<p::io_noconfigprotect>(true);
 
+    env->perform_hook("uninstall_all_pre");
     for (p::PackageDatabaseEntryCollection::Iterator pkg(unmerge->begin()), pkg_end(unmerge->end()) ;
             pkg != pkg_end ; ++pkg)
     {
@@ -124,9 +125,12 @@ do_uninstall()
         cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
                 p::stringify(max_count) + ") Uninstalling " + cpv);
 
+        env->perform_hook("uninstall_pre");
         env->package_database()->fetch_repository(pkg->get<p::pde_repository>())->
             uninstall(pkg->get<p::pde_name>(), pkg->get<p::pde_version>(), opts);
+        env->perform_hook("uninstall_post");
     }
+    env->perform_hook("uninstall_all_post");
 
     return return_code;
 }

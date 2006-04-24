@@ -90,6 +90,9 @@ DefaultConfig::DefaultConfig() :
         }
     }
 
+    _root = root_prefix;
+    _config_dir = stringify(config_dir);
+
     std::map<std::string, std::string> conf_vars;
     conf_vars.insert(std::make_pair("ROOT", root_prefix));
 

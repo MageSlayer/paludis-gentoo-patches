@@ -6,7 +6,13 @@ libexecprogdir = $(libexecdir)/paludis/
 
 libexecprog_SCRIPTS = \
 	build_functions.bash \
-	depend.bash \
+	builtin_fetch.bash \
+	builtin_init.bash \
+	builtin_merge.bash \
+	builtin_metadata.bash \
+	builtin_strip.bash \
+	builtin_tidyup.bash \
+	builtin_unmerge.bash \
 	ebuild.bash \
 	echo_functions.bash \
 	eclass_functions.bash \
@@ -14,7 +20,6 @@ libexecprog_SCRIPTS = \
 	list_functions.bash \
 	multilib_functions.bash \
 	pkg_config.bash \
-	builtin_init.bash \
 	pkg_nofetch.bash \
 	pkg_postinst.bash \
 	pkg_postrm.bash \
@@ -24,12 +29,6 @@ libexecprog_SCRIPTS = \
 	portage_stubs.bash \
 	sandbox_stubs.bash \
 	src_compile.bash \
-	builtin_fetch.bash \
-	builtin_merge.bash \
-	builtin_unmerge.bash \
-	builtin_tidyup.bash \
-	builtin_strip.bash \
-	builtin_updateenv.bash \
 	src_install.bash \
 	src_test.bash \
 	src_unpack.bash \

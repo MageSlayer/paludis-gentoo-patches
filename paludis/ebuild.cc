@@ -80,6 +80,7 @@ EbuildCommand::operator() ()
                 ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
                 ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
                 ("PALUDIS_BASHRC_FILES", params.get<ecpk_environment>()->bashrc_files())
+                ("PALUDIS_HOOK_DIRS", params.get<ecpk_environment>()->hook_dirs())
                 ("PALUDIS_COMMAND", params.get<ecpk_environment>()->paludis_command())
                 ("KV", kernel_version())
                 ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
@@ -202,7 +203,7 @@ EbuildInstallCommand::commands() const
         return "merge";
     else
         return "init setup unpack compile test install strip preinst "
-            "merge postinst updateenv tidyup";
+            "merge postinst tidyup";
 }
 
 bool
