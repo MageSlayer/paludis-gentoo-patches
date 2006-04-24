@@ -39,5 +39,6 @@ IsFileWithExtension::operator() (const FSEntry & f) const
         return false;
     if (0 != filename.compare(0, _prefix.length(), _prefix))
         return false;
-    return f.is_regular_file();
+    return f.is_regular_file() || (f.exists() && f.realpath().is_regular_file());
 }
+

@@ -66,13 +66,13 @@ namespace test_cases
     } test_fs_entry_manipulation;
 
     /**
-     * \test Test FSEntry realpath.
+     * \test Test FSEntry behavior.
      *
      * \ingroup grpfilesystem
      */
     struct FSEntryRealpathTest : TestCase
     {
-        FSEntryRealpathTest() : TestCase("realpath") { }
+        FSEntryRealpathTest() : TestCase("behavior") { }
 
         void run()
         {
@@ -105,8 +105,12 @@ namespace test_cases
             TEST_CHECK(r.is_regular_file());
             std::string g("fs_entry_TEST_dir/dir_a/file_in_a");
             TEST_CHECK_EQUAL(stringify(r).substr(stringify(r).length() - g.length()), g);
+
+            FSEntry h("fs_entry_TEST_dir/symlink_to_file_in_a");
+            TEST_CHECK(h.is_symbolic_link());
+            TEST_CHECK(! h.is_regular_file());
         }
-    } test_fs_entry_realpath;
+    } test_fs_entry_behaviour;
 
     /**
      * \test Test FSEntry has_permission methods.
