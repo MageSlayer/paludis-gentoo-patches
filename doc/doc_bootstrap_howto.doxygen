@@ -106,7 +106,8 @@ base system with any fairly close to default USE flags:
 
 \verbatim
     cat <<END > /mychroot/etc/paludis/licenses.conf
-    * LGPL-2.1 LGPL-2 GPL-2 BSD MIT as-is tcp_wrappers_license freedist
+    * LGPL-2.1 LGPL-2 GPL-2 BSD MIT BZIP2 Artistic DB PSF-2.1.1 PSF-2.2
+    * as-is tcp_wrappers_license freedist ZLIB openssl CRACKLIB PAM FLEX
     END
 \endverbatim
 
