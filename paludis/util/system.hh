@@ -110,6 +110,13 @@ namespace paludis
      * \ingroup grpsystem
      */
     const MakeEnvCommand make_env_command(const std::string & cmd);
+
+    /**
+     * Make a command that is run inside the sandbox, if sandbox is enabled.
+     *
+     * \ingroup grpsystem
+     */
+    const std::string make_sandbox_command(const std::string & cmd);
 }
 
 #endif

@@ -80,6 +80,9 @@ builtin_merge()
 
 ebuild_f_merge()
 {
+    local old_sandbox_write="${SANDBOX_WRITE}"
+    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+
     if hasq "merge" ${RESTRICT} ; then
         ebuild_section "Skipping builtin_merge (RESTRICT)"
     elif hasq "merge" ${SKIP_FUNCTIONS} ; then
@@ -89,5 +92,7 @@ ebuild_f_merge()
         builtin_merge
         ebuild_section "Done builtin_merge"
     fi
+
+    SANDBOX_WRITE="${old_sandbox_write}"
 }
 

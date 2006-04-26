@@ -28,6 +28,9 @@ pkg_postrm()
 
 ebuild_f_postrm()
 {
+    local old_sandbox_write="${SANDBOX_WRITE}"
+    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+
     if hasq "postrm" ${RESTRICT} ; then
         ebuild_section "Skipping pkg_postrm (RESTRICT)"
     elif hasq "postrm" ${SKIP_FUNCTIONS} ; then
@@ -37,6 +40,8 @@ ebuild_f_postrm()
         pkg_postrm
         ebuild_section "Done pkg_postrm"
     fi
+
+    SANDBOX_WRITE="${old_sandbox_write}"
 }
 
 

@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "config.h"
 
 /** \file
  * Implementation of various system utilities.
@@ -130,5 +131,15 @@ const MakeEnvCommand
 paludis::make_env_command(const std::string & cmd)
 {
     return MakeEnvCommand(cmd, "");
+}
+
+const std::string
+paludis::make_sandbox_command(const std::string & cmd)
+{
+#if HAVE_SANDBOX
+    return "sandbox " + cmd;
+#else
+    return cmd;
+#endif
 }
 

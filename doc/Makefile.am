@@ -20,7 +20,7 @@ if HAVE_DOXYGEN
 
 doxygen : doxygen.conf $(top_srcdir)/paludis/*.cc $(top_srcdir)/paludis/*.hh \
 		$(docfiles)
-	nice doxygen doxygen.conf
+	doxygen doxygen.conf
 
 else
 

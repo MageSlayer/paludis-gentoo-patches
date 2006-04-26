@@ -120,6 +120,11 @@ namespace paludis
             virtual bool success();
 
             /**
+             * Should the sandbox, if available, be used?
+             */
+            virtual bool use_sandbox() const;
+
+            /**
              * Actions to be taken after a failed command.
              *
              * The return value of this function is used for the return value

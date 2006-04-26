@@ -279,6 +279,23 @@ fi
 AC_MSG_RESULT([${cxxflags_message}])
 dnl }}}
 
+dnl {{{ sandbox
+AC_MSG_CHECKING([whether to enable sandbox])
+AC_ARG_ENABLE([sandbox],
+			  [  --enable-sandbox        Enable sandbox],
+			  [HAVE_SANDBOX=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [AC_MSG_RESULT([autodetect])
+			   AC_CHECK_PROG(HAVE_SANDBOX, [sandbox], [yes], [no])])
+AC_SUBST([HAVE_SANDBOX])
+AM_CONDITIONAL([HAVE_SANDBOX], test "x$HAVE_SANDBOX" = "xyes")
+if test x"$HAVE_SANDBOX" = "xyes" ; then
+	AC_DEFINE([HAVE_SANDBOX], 1, [Do we have sandbox?])
+else
+	AC_DEFINE([HAVE_SANDBOX], 0)
+fi
+dnl }}}
+
 dnl {{{ doxygen, dot
 AC_MSG_CHECKING([whether to enable doxygen])
 AC_ARG_ENABLE([doxygen],

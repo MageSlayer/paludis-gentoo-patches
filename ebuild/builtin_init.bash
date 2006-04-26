@@ -52,6 +52,9 @@ builtin_init()
     mkdir -p "${D}" || die "Couldn't create \$D (\"${D}\")"
     declare -r D="${D}"
 
+    export IMAGE="${D}"
+    declare -r IMAGE="${IMAGE}"
+
     export S="${WORKDIR}/${P}"
 
     export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"

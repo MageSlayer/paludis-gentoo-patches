@@ -23,21 +23,21 @@
 
 addread()
 {
-    :
+    export SANDBOX_READ="${SANDBOX_READ+${SANDBOX_READ}:}${1}"
 }
 
 addwrite()
 {
-    :
+    export SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${1}"
 }
 
 adddeny()
 {
-    :
+    export SANDBOX_DENY="${SANDBOX_DENY+${SANDBOX_DENY}:}${1}"
 }
 
 addpredict()
 {
-    :
+    export SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}${1}"
 }
 

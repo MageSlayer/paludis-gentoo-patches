@@ -28,6 +28,9 @@ pkg_prerm()
 
 ebuild_f_prerm()
 {
+    local old_sandbox_write="${SANDBOX_WRITE}"
+    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+
     if hasq "prerm" ${RESTRICT} ; then
         ebuild_section "Skipping pkg_prerm (RESTRICT)"
     elif hasq "prerm" ${SKIP_FUNCTIONS} ; then
@@ -37,5 +40,7 @@ ebuild_f_prerm()
         pkg_prerm
         ebuild_section "Done pkg_prerm"
     fi
+
+    SANDBOX_WRITE="${old_sandbox_write}"
 }
 

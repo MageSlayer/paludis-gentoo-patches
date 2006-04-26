@@ -58,6 +58,9 @@ builtin_unmerge()
 
 ebuild_f_unmerge()
 {
+    local old_sandbox_write="${SANDBOX_WRITE}"
+    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+
     if hasq "unmerge" ${RESTRICT} ; then
         ebuild_section "Skipping builtin_unmerge (RESTRICT)"
     elif hasq "unmerge" ${SKIP_FUNCTIONS} ; then
@@ -67,6 +70,8 @@ ebuild_f_unmerge()
         builtin_unmerge
         ebuild_section "Done builtin_unmerge"
     fi
+
+    SANDBOX_WRITE="${old_sandbox_write}"
 }
 
 

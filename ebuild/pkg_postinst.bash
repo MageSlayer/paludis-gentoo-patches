@@ -28,6 +28,9 @@ pkg_postinst()
 
 ebuild_f_postinst()
 {
+    local old_sandbox_write="${SANDBOX_WRITE}"
+    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+
     if hasq "postinst" ${RESTRICT} ; then
         ebuild_section "Skipping pkg_postinst (RESTRICT)"
     elif hasq "postinst" ${SKIP_FUNCTIONS} ; then
@@ -37,5 +40,7 @@ ebuild_f_postinst()
         pkg_postinst
         ebuild_section "Done pkg_postinst"
     fi
+
+    SANDBOX_WRITE="${old_sandbox_write}"
 }
 

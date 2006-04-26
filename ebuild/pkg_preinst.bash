@@ -28,6 +28,9 @@ pkg_preinst()
 
 ebuild_f_preinst()
 {
+    local old_sandbox_write="${SANDBOX_WRITE}"
+    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+
     if hasq "preinst" ${RESTRICT} ; then
         ebuild_section "Skipping pkg_preinst (RESTRICT)"
     elif hasq "preinst" ${SKIP_FUNCTIONS} ; then
@@ -37,5 +40,7 @@ ebuild_f_preinst()
         pkg_preinst
         ebuild_section "Done pkg_preinst"
     fi
+
+    SANDBOX_WRITE="${old_sandbox_write}"
 }
 

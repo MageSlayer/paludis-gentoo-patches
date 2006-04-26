@@ -25,6 +25,13 @@ unalias -a
 unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR GLOBIGNORE
 eval unset LANG ${!LC_*}
 
+export SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}"
+export SANDBOX_PREDICT="${SANDBOX_PREDICT}/proc/self/maps:/dev/console:/dev/random"
+export SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}"
+export SANDBOX_WRITE="${SANDBOX_WRITE}/dev/shm:/dev/stdout:/dev/stderr:/dev/null:/dev/tty"
+export SANDBOX_WRITE="${SANDBOX_WRITE}:${PALUDIS_TMPDIR}"
+export SANDBOX_ON="1"
+
 shopt -s expand_aliases
 
 EBUILD_KILL_PID=$$
@@ -59,7 +66,7 @@ ebuild_load_module()
 
 source /sbin/functions.sh || die "Couldn't source functions.sh"
 ebuild_load_module echo_functions
-ebuild_load_module sandbox_stubs
+ebuild_load_module sandbox
 ebuild_load_module portage_stubs
 ebuild_load_module list_functions
 ebuild_load_module multilib_functions
@@ -143,6 +150,9 @@ perform_hook()
     export HOOK=${1}
     ebuild_notice "debug" "Starting hook '${HOOK}'"
 
+    local old_sandbox_on="${SANDBOX_ON}"
+    export SANDBOX_ON="0"
+
     local hook_dir
     for hook_dir in ${PALUDIS_HOOK_DIRS} ; do
         [[ -d "${hook_dir}/${HOOK}" ]] || continue
@@ -157,6 +167,8 @@ perform_hook()
             fi
         done
     done
+
+    export SANDBOX_ON="${old_sandbox_on}"
 }
 
 ebuild_main()

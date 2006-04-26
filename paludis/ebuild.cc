@@ -48,6 +48,12 @@ EbuildCommand::success()
 }
 
 bool
+EbuildCommand::use_sandbox() const
+{
+    return true;
+}
+
+bool
 EbuildCommand::failure()
 {
     return false;
@@ -56,13 +62,17 @@ EbuildCommand::failure()
 bool
 EbuildCommand::operator() ()
 {
-    MakeEnvCommand cmd(extend_command(make_env_command(
-                    getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
-                    "/ebuild.bash '" +
-                    stringify(params.get<ecpk_ebuild_dir>()) + "/" +
-                    stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_package>()) + "-" +
-                    stringify(params.get<ecpk_db_entry>()->get<pde_version>()) +
-                    ".ebuild' " + commands())
+    std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+            "/ebuild.bash '" +
+            stringify(params.get<ecpk_ebuild_dir>()) + "/" +
+            stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_package>()) + "-" +
+            stringify(params.get<ecpk_db_entry>()->get<pde_version>()) +
+            ".ebuild' " + commands());
+
+    if (use_sandbox())
+        ebuild_cmd = make_sandbox_command(ebuild_cmd);
+
+    MakeEnvCommand cmd(extend_command(make_env_command(ebuild_cmd)
                 ("P", stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_package>()) + "-" +
                  stringify(params.get<ecpk_db_entry>()->get<pde_version>().remove_revision()))
                 ("PV", stringify(params.get<ecpk_db_entry>()->get<pde_version>().remove_revision()))

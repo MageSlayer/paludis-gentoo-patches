@@ -55,5 +55,3 @@ ebuild_f_strip()
     fi
 }
 
-
-
