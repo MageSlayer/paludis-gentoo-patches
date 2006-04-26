@@ -24,6 +24,8 @@
 #include "src/query.hh"
 #include "src/applets.hh"
 #include "src/sync.hh"
+#include "config.h"
+
 #include <paludis/paludis.hh>
 #include <paludis/util/util.hh>
 
@@ -257,6 +259,11 @@ main(int argc, char *argv[])
 
         cout << "libebt:      " << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR
             << "." << LIBEBT_VERSION_MICRO << endl;
+#if HAVE_SANDBOX
+        cout << "sandbox:     enabled" << endl;
+#else
+        cout << "sandbox:     disabled" << endl;
+#endif
         cout << endl;
         cout << "Paludis comes with ABSOLUTELY NO WARRANTY. Paludis is free software, and you" << endl;
         cout << "are welcome to redistribute it under the terms of the GNU General Public" << endl;
