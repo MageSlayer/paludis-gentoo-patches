@@ -19,6 +19,7 @@
 
 #include "src/colour.hh"
 #include "src/query.hh"
+#include "src/licence.hh"
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -170,8 +171,13 @@ void do_one_query(
                 " " << metadata->get(p::vmk_description) << endl;
 
         if (! metadata->get(p::vmk_license).empty())
-            cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) <<
-                " " << metadata->get(p::vmk_license) << endl;
+        {
+            cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) << " ";
+            LicenceDisplayer d(cout, env, &display_entry);
+            p::DepParser::parse(metadata->get(p::vmk_license),
+                    p::DepParserPolicy<p::PlainTextDepAtom, true>::get_instance())->accept(&d);
+            cout << endl;
+        }
 
         if (CommandLine::get_instance()->a_show_deps.specified())
         {

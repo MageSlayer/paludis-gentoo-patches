@@ -19,6 +19,7 @@
 
 #include "src/colour.hh"
 #include "src/install.hh"
+#include "src/licence.hh"
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <paludis/util/iterator.hh>
@@ -35,69 +36,6 @@ using std::endl;
 
 namespace
 {
-    /**
-     * Display licences.
-     */
-    struct LicenceDisplayer :
-        p::DepAtomVisitorTypes::ConstVisitor
-    {
-        /// Our environment.
-        const p::Environment * const env;
-
-        /// Our db entry.
-        const p::PackageDatabaseEntry * const db_entry;
-
-        /// Constructor.
-        LicenceDisplayer(const p::Environment * const e, const p::PackageDatabaseEntry * const d) :
-            env(e),
-            db_entry(d)
-        {
-        }
-
-        ///\name Visit methods
-        ///{
-        void visit(const p::AllDepAtom * atom)
-        {
-            cerr << "( ";
-            std::for_each(atom->begin(), atom->end(), p::accept_visitor(this));
-            cerr << ") ";
-        }
-
-        void visit(const p::AnyDepAtom * atom)
-        {
-            cerr << "|| ( ";
-            std::for_each(atom->begin(), atom->end(), p::accept_visitor(this));
-            cerr << ") ";
-        }
-
-        void visit(const p::UseDepAtom * atom)
-        {
-            cerr << atom->flag() << "? ( ";
-            std::for_each(atom->begin(), atom->end(), p::accept_visitor(this));
-            cerr << ") ";
-        }
-
-        void visit(const p::PlainTextDepAtom * atom)
-        {
-            if (env->accept_license(atom->text(), db_entry))
-                cerr << colour(cl_green, atom->text());
-            else
-                cerr << colour(cl_red, atom->text());
-            cerr << " ";
-        }
-
-        void visit(const p::PackageDepAtom *) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw p::InternalError(PALUDIS_HERE, "todo: encountered PackageDepAtom in licence?"); /// \bug todo
-        }
-
-        void visit(const p::BlockDepAtom *)  PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw p::InternalError(PALUDIS_HERE, "todo: encountered BlockDepAtom in licence?"); /// \bug todo
-        }
-        ///}
-    };
-
     struct TagDisplayer :
         p::DepTagVisitorTypes::ConstVisitor
     {
@@ -503,7 +441,7 @@ do_install()
                                             pp->get<p::pde_name>(), pp->get<p::pde_version>())->get(
                                             p::vmk_license));
 
-                                LicenceDisplayer ld(env, &*pp);
+                                LicenceDisplayer ld(cerr, env, &*pp);
                                 p::DepParser::parse(license_str, p::DepParserPolicy<p::PlainTextDepAtom,
                                         true>::get_instance())->accept(&ld);
                             }
