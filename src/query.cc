@@ -47,10 +47,15 @@ void do_one_query(
                     p::PackageNamePart(q))) :
             new p::PackageDepAtom(q));
 
-    p::PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
-                atom, p::is_either));
+    p::PackageDatabaseEntryCollection::ConstPointer
+        entries(env->package_database()->query(atom, p::is_either)),
+        preferred_entries(env->package_database()->query(atom, p::is_installed_only));
     if (entries->empty())
         throw p::NoSuchPackageError(q);
+    if (preferred_entries->empty())
+        preferred_entries = entries;
+
+    const p::PackageDatabaseEntry display_entry(*preferred_entries->last());
 
     /* match! display it. */
     cout << "* " << colour(cl_package_name, entries->begin()->get<p::pde_name>());
@@ -112,7 +117,7 @@ void do_one_query(
                 }
                 /// \todo ^^ text description of masks
 
-                if (e == entries->last())
+                if (*e == display_entry)
                     cout << "*";
                 cout << " ";
             }
@@ -125,7 +130,7 @@ void do_one_query(
     }
 
     /* display metadata */
-    p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*entries->last()));
+    p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(display_entry));
 
     if (CommandLine::get_instance()->a_show_metadata.specified())
     {
