@@ -500,11 +500,24 @@ do_install()
                                 cerr << " ";
                                 std::string license_str(env->package_database()->fetch_repository(
                                             pp->get<p::pde_repository>())->version_metadata(
-                                            pp->get<p::pde_name>(), pp->get<p::pde_version>())->get(p::vmk_license));
+                                            pp->get<p::pde_name>(), pp->get<p::pde_version>())->get(
+                                            p::vmk_license));
 
                                 LicenceDisplayer ld(env, &*pp);
                                 p::DepParser::parse(license_str, p::DepParserPolicy<p::PlainTextDepAtom,
                                         true>::get_instance())->accept(&ld);
+                            }
+                            else if (p::mr_keyword == mm)
+                            {
+                                cerr << " ( " << colour(cl_red, p::join(
+                                                env->package_database()->fetch_repository(
+                                                    pp->get<p::pde_repository>())->version_metadata(
+                                                    pp->get<p::pde_name>(), pp->get<p::pde_version>())->
+                                                begin_keywords(),
+                                                env->package_database()->fetch_repository(
+                                                    pp->get<p::pde_repository>())->version_metadata(
+                                                    pp->get<p::pde_name>(), pp->get<p::pde_version>())->
+                                                end_keywords(), " ")) << " )";
                             }
 
                             need_comma = true;
