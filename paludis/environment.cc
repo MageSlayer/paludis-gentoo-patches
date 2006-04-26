@@ -22,6 +22,7 @@
 #include <paludis/dep_parser.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/save.hh>
 
 /** \file
  * Implementation of Environment.
@@ -75,7 +76,22 @@ namespace
 
         void visit(const AnyDepAtom * atom)
         {
-            std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+            bool local_ok(false);
+
+            if (atom->begin() == atom->end())
+                local_ok = true;
+            else
+            {
+                for (CompositeDepAtom::Iterator i(atom->begin()), i_end(atom->end()) ;
+                        i != i_end ; ++i)
+                {
+                    Save<bool> save_ok(&ok, true);
+                    (*i)->accept(this);
+                    local_ok |= ok;
+                }
+            }
+
+            ok &= local_ok;
         }
 
         void visit(const UseDepAtom * atom)
