@@ -79,6 +79,11 @@ unpack_one()
             lha xqf "${1}" || die "Couldn't unpack ${1}"
             ;;
 
+        *.a|*.deb)
+            echo ar x "${1}" 1&>2
+            ar x "${1}" 1>&2
+            ;;
+
         *)
             echo "Skipping unpack for ${1}"
             ;;
