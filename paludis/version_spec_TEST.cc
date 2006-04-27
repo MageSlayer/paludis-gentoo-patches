@@ -257,6 +257,7 @@ namespace test_cases
             v.push_back(VersionSpec("1-scm"));
             v.push_back(VersionSpec("2_alpha"));
             v.push_back(VersionSpec("scm"));
+            v.push_back(VersionSpec("scm-r3"));
 
             std::vector<VersionSpec>::iterator v1(v.begin()), v_end(v.end());
             for ( ; v1 != v_end ; ++v1)
