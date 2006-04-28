@@ -10,6 +10,7 @@ dnl on this file at present...
 
 add(`about',                             `hh', `test')
 add(`config_file',                       `hh', `cc', `test', `testscript')
+add(`contents',                          `hh', `cc')
 add(`default_config',                    `hh', `cc')
 add(`default_environment',               `hh', `cc')
 add(`dep_atom',                          `hh', `cc', `test')

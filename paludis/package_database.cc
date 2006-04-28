@@ -131,6 +131,20 @@ PackageDatabase::fetch_metadata(const PackageDatabaseEntry & e) const
             e.get<pde_name>().get<qpn_package>(), e.get<pde_version>());
 }
 
+Contents::ConstPointer
+PackageDatabase::fetch_contents(const PackageDatabaseEntry & e) const
+{
+    const Repository::ConstPointer rr(fetch_repository(e.get<pde_repository>()));
+    if (! rr->has_category_named(e.get<pde_name>().get<qpn_category>()))
+        throw NoSuchPackageError(stringify(e.get<pde_name>()));
+    if (! rr->has_package_named(e.get<pde_name>()))
+        throw NoSuchPackageError(stringify(e.get<pde_name>()));
+    if (! rr->has_version(e.get<pde_name>(), e.get<pde_version>()))
+        throw NoSuchVersionError(stringify(e.get<pde_name>()), e.get<pde_version>());
+    return rr->contents(e.get<pde_name>().get<qpn_category>(),
+            e.get<pde_name>().get<qpn_package>(), e.get<pde_version>());
+}
+
 Repository::ConstPointer
 PackageDatabase::fetch_repository(const RepositoryName & n) const
 {

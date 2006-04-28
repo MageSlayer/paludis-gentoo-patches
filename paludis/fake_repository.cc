@@ -172,6 +172,15 @@ FakeRepository::do_version_metadata(
     return _imp->metadata.find(stringify(c) + "/" + stringify(p) + "-" + stringify(v))->second;
 }
 
+Contents::ConstPointer
+FakeRepository::do_contents(
+        const CategoryNamePart & c, const PackageNamePart & p, const VersionSpec & v) const
+{
+    if (! has_version(c, p, v))
+        throw InternalError(PALUDIS_HERE, "no version");
+    return Contents::Pointer(new Contents);
+}
+
 bool
 FakeRepository::do_query_repository_masks(const CategoryNamePart &,
         const PackageNamePart &, const VersionSpec &) const

@@ -57,6 +57,11 @@
  * \ingroup grplibpaludis
  */
 
+/** \defgroup grpcontents Contents
+ *
+ * \ingroup grplibpaludis
+ */
+
 // ----- grpconfigfile Subgroups -----
 
 /** \defgroup grpkvconfigfile Key/Value configuration file

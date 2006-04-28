@@ -33,6 +33,8 @@ CommandLine::CommandLine() :
     a_list_sync_protocols(&action_args, "list-sync-protocols", '\0', "List available sync protocols"),
     a_list_repository_formats(&action_args, "list-repository-formats", '\0', "List available repository formats"),
     a_list_dep_tag_categories(&action_args, "list-dep-tag-categories", '\0', "List known dep tag categories"),
+    a_contents(&action_args, "contents", 'k', "Display contents of a package"),
+    a_owner(&action_args, "owner", 'o', "Display the owner of a file"),
     a_has_version(&action_args, "has-version", '\0', "Check whether the specified atom is installed"),
     a_best_version(&action_args, "best-version", '\0', "Display the best version of the specified atom"),
     a_version(&action_args,  "version",      'V', "Display program version"),
@@ -71,7 +73,10 @@ CommandLine::CommandLine() :
     a_dl_drop_all(&dl_args, "dl-drop-all", '0', "Drop all dependencies"),
     a_dl_ignore_installed(&dl_args, "dl-ignore-installed", 'e', "Ignore installed packages"),
     a_dl_no_recursive_deps(&dl_args, "dl-no-recursive-deps", '\0', "Don't check runtime dependencies for installed packages"),
-    a_dl_max_stack_depth(&dl_args, "dl-max-stack-depth", '\0', "Maximum stack depth (default 100)")
+    a_dl_max_stack_depth(&dl_args, "dl-max-stack-depth", '\0', "Maximum stack depth (default 100)"),
+
+    owner_args(this, "Owner options"),
+    a_full_match(&owner_args, "full-match", '\0', "Match whole filename")
 {
     a_dl_max_stack_depth.set_argument(100);
 }

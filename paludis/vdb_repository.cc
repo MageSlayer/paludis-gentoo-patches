@@ -459,6 +459,9 @@ VDBRepository::do_version_metadata(
     Context context("When fetching metadata for " + stringify(c) + "/" + stringify(p) +
             "-" + stringify(v));
 
+    if (! _imp->entries_valid)
+        _imp->load_entries();
+
     std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
                         QualifiedPackageName(c, p), v), VDBEntry::CompareVersion()));
@@ -476,6 +479,90 @@ VDBRepository::do_version_metadata(
             _imp->load_entry(r.first);
         return r.first->metadata;
     }
+}
+
+Contents::ConstPointer
+VDBRepository::do_contents(
+        const CategoryNamePart & c, const PackageNamePart & p, const VersionSpec & v) const
+{
+    Context context("When fetching contents for " + stringify(c) + "/" + stringify(p) +
+            "-" + stringify(v));
+
+    if (! _imp->entries_valid)
+        _imp->load_entries();
+
+    std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
+        r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
+                        QualifiedPackageName(c, p), v), VDBEntry::CompareVersion()));
+
+    if (r.first == r.second)
+    {
+        Log::get_instance()->message(ll_warning, "version lookup failed for request for '" +
+                stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '" +
+                stringify(name()) + "'");
+        return Contents::ConstPointer(new Contents);
+    }
+
+    Contents::Pointer result(new Contents);
+
+    FSEntry f(_imp->location / stringify(c) / (stringify(p) + "-" + stringify(v)));
+    if (! (f / "CONTENTS").is_regular_file())
+    {
+        Log::get_instance()->message(ll_warning, "CONTENTS lookup failed for request for '" +
+                stringify(c + p) + "-" + stringify(v) + "' in vdb '" +
+                stringify(_imp->location) + "'");
+        return result;
+    }
+
+    std::ifstream ff(stringify(f / "CONTENTS").c_str());
+    if (! ff)
+        throw InternalError(PALUDIS_HERE, "TODO reading " + stringify(_imp->location) + " name " +
+                stringify(c + p) + " version " + stringify(v) + " CONTENTS"); /// \todo
+
+    std::string line;
+    unsigned line_number(0);
+    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> t(" \t\n");
+    while (std::getline(ff, line))
+    {
+        ++line_number;
+
+        std::vector<std::string> tokens;
+        t.tokenise(line, std::back_inserter(tokens));
+        if (tokens.empty())
+            continue;
+
+        if (tokens.size() < 2)
+        {
+            Log::get_instance()->message(ll_warning, "CONTENTS for '" +
+                    stringify(c + p) + "-" + stringify(v) + "' in vdb '" +
+                    stringify(_imp->location) + "' has broken line " +
+                    stringify(line_number) + ", skipping");
+            continue;
+        }
+
+        if ("obj" == tokens.at(0))
+            result->add(ContentsEntry::Pointer(new ContentsFileEntry(tokens.at(1))));
+        else if ("dir" == tokens.at(0))
+            result->add(ContentsEntry::Pointer(new ContentsDirEntry(tokens.at(1))));
+        else if ("misc" == tokens.at(0))
+            result->add(ContentsEntry::Pointer(new ContentsMiscEntry(tokens.at(1))));
+        else if ("sym" == tokens.at(0))
+        {
+            if (tokens.size() < 4)
+            {
+                Log::get_instance()->message(ll_warning, "CONTENTS for '" +
+                        stringify(c + p) + "-" + stringify(v) + "' in vdb '" +
+                        stringify(_imp->location) + "' has broken sym line " +
+                        stringify(line_number) + ", skipping");
+                continue;
+            }
+
+            result->add(ContentsEntry::Pointer(new ContentsSymEntry(
+                            tokens.at(1), tokens.at(3))));
+        }
+    }
+
+    return result;
 }
 
 bool

@@ -35,6 +35,7 @@
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database_entry.hh>
+#include <paludis/contents.hh>
 
 #include <ostream>
 #include <algorithm>
@@ -286,6 +287,11 @@ namespace paludis
              * Fetch the version metadata for a particular item.
              */
             VersionMetadata::ConstPointer fetch_metadata(const PackageDatabaseEntry &) const;
+
+            /**
+             * Fetch the contents for a particular item.
+             */
+            Contents::ConstPointer fetch_contents(const PackageDatabaseEntry &) const;
 
             /**
              * Fetch a named repository.

@@ -21,6 +21,8 @@
 #include "src/install.hh"
 #include "src/uninstall.hh"
 #include "src/list.hh"
+#include "src/contents.hh"
+#include "src/owner.hh"
 #include "src/query.hh"
 #include "src/applets.hh"
 #include "src/sync.hh"
@@ -92,6 +94,8 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_list_sync_protocols.specified() +
                     CommandLine::get_instance()->a_list_repository_formats.specified() +
                     CommandLine::get_instance()->a_list_dep_tag_categories.specified() +
+                    CommandLine::get_instance()->a_contents.specified() +
+                    CommandLine::get_instance()->a_owner.specified() +
                     CommandLine::get_instance()->a_has_version.specified() +
                     CommandLine::get_instance()->a_best_version.specified()))
         {
@@ -206,6 +210,22 @@ main(int argc, char *argv[])
                 throw DoHelp("list-packages action takes no parameters");
 
             return do_list_packages();
+        }
+
+        if (CommandLine::get_instance()->a_contents.specified())
+        {
+            if (CommandLine::get_instance()->empty())
+                throw DoHelp("contents action requires at least one parameter");
+
+            return do_contents();
+        }
+
+        if (CommandLine::get_instance()->a_owner.specified())
+        {
+            if (CommandLine::get_instance()->empty())
+                throw DoHelp("owner action requires at least one parameter");
+
+            return do_owner();
         }
 
         if (CommandLine::get_instance()->a_has_version.specified())

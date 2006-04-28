@@ -80,6 +80,12 @@ class CommandLine :
         /// --list-dep-tag-categories
         paludis::args::SwitchArg a_list_dep_tag_categories;
 
+        /// --contents
+        paludis::args::SwitchArg a_contents;
+
+        /// --owner
+        paludis::args::SwitchArg a_owner;
+
         /// --has-version
         paludis::args::SwitchArg a_has_version;
 
@@ -177,6 +183,17 @@ class CommandLine :
 
         /// --dl-max-stack-depth
         paludis::args::IntegerArg a_dl_max_stack_depth;
+
+        /// }
+
+        /// \name Owner arguments
+        /// {
+
+        /// Owner arguments.
+        paludis::args::ArgsGroup owner_args;
+
+        /// --full-match
+        paludis::args::SwitchArg a_full_match;
 
         /// }
 };

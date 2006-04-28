@@ -129,6 +129,10 @@ namespace paludis
                     const CategoryNamePart &, const PackageNamePart &,
                     const VersionSpec &) const;
 
+            virtual Contents::ConstPointer do_contents(
+                    const CategoryNamePart &, const PackageNamePart &,
+                    const VersionSpec &) const;
+
             virtual bool do_query_repository_masks(const CategoryNamePart &,
                     const PackageNamePart &, const VersionSpec &) const;
 

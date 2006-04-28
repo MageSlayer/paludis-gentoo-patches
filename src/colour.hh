@@ -26,6 +26,7 @@
 
 enum Colour
 {
+    cl_none          = 0,
     cl_red           = 31,
     cl_green         = 32,
     cl_yellow        = 33,
@@ -45,7 +46,12 @@ enum Colour
     cl_masked        = cl_flag_off,
     cl_heading       = cl_bold_green,
     cl_updatemode    = cl_yellow,
-    cl_tag           = cl_yellow
+    cl_tag           = cl_yellow,
+
+    cl_file          = cl_none,
+    cl_dir           = cl_blue,
+    cl_sym           = cl_pink,
+    cl_misc          = cl_red
 };
 
 bool use_colour() PALUDIS_ATTRIBUTE((pure));
@@ -55,10 +61,12 @@ std::string colour(Colour colour, const T_ & s)
 {
     if (CommandLine::get_instance()->a_no_color.specified() || ! use_colour())
         return paludis::stringify(s);
-    else
+    else if (cl_none != colour)
         return "\033[" + paludis::stringify(static_cast<unsigned>(colour) / 100) + ";"
             + paludis::stringify(static_cast<unsigned>(colour) % 100) + "m" + paludis::stringify(s)
             + "\033[0;0m";
+    else
+        return paludis::stringify(s);
 }
 
 template <typename T_>

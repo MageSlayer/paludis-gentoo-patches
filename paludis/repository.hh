@@ -29,6 +29,7 @@
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_database_entry.hh>
+#include <paludis/contents.hh>
 
 #include <map>
 #include <string>
@@ -108,6 +109,13 @@ namespace paludis
              * Override in descendents: fetch the metadata.
              */
             virtual VersionMetadata::ConstPointer do_version_metadata(
+                    const CategoryNamePart &, const PackageNamePart &,
+                    const VersionSpec &) const = 0;
+
+            /**
+             * Override in descendents: fetch the contents.
+             */
+            virtual Contents::ConstPointer do_contents(
                     const CategoryNamePart &, const PackageNamePart &,
                     const VersionSpec &) const = 0;
 
@@ -316,6 +324,26 @@ namespace paludis
                     const VersionSpec & v) const
             {
                 return version_metadata(q.get<qpn_category>(), q.get<qpn_package>(), v);
+            }
+
+            /**
+             * Fetch contents.
+             */
+            Contents::ConstPointer contents(
+                    const CategoryNamePart & c, const PackageNamePart & p,
+                    const VersionSpec & v) const
+            {
+                return do_contents(c, p, v);
+            }
+
+            /**
+             * Fetch contents (override for QualifiedPackageName).
+             */
+            Contents::ConstPointer contents(
+                    const QualifiedPackageName & q,
+                    const VersionSpec & v) const
+            {
+                return do_contents(q.get<qpn_category>(), q.get<qpn_package>(), v);
             }
 
             /**

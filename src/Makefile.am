@@ -17,6 +17,8 @@ paludis_SOURCES = \
 	query.hh             query.cc             \
 	sync.hh              sync.cc              \
 	licence.hh           licence.cc           \
+	contents.hh          contents.cc          \
+	owner.hh             owner.cc             \
 	paludis.cc
 
 paludis_LDADD = \
