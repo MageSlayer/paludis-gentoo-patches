@@ -24,6 +24,7 @@
 econf()
 {
     local LOCAL_EXTRA_ECONF="${EXTRA_ECONF}"
+    local LOCAL_ECONF_WRAPPER="${ECONF_WRAPPER}"
 
     [[ -z "${ECONF_SOURCE}" ]] && ECONF_SOURCE=.
 
@@ -55,7 +56,7 @@ econf()
             fi
         fi
 
-        cmd="${cmd} $@ ${LOCAL_EXTRA_ECONF}"
+        cmd="${LOCAL_ECONF_WRAPPER} ${cmd} $@ ${LOCAL_EXTRA_ECONF}"
 
         echo "${cmd}" 1>&2
         ${cmd} || die "econf failed"
@@ -67,14 +68,14 @@ econf()
 
 emake()
 {
-    echo ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@" 1>&2
-    ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
+    echo ${EMAKE_WRAPPER} ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@" 1>&2
+    ${EMAKE_WRAPPER} ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
 }
 
 einstall()
 {
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
-        local cmd="make prefix='${D}/usr'"
+        local cmd="${EINSTALL_WRAPPER} make prefix='${D}/usr'"
         cmd="${cmd} mandir='${D}/usr/share/man'"
         cmd="${cmd} infodir='${D}/usr/share/info'"
         cmd="${cmd} datadir='${D}/usr/share'"
