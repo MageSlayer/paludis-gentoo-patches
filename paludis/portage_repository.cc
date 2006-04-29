@@ -1523,7 +1523,7 @@ PortageRepository::do_security_set() const
 
             PackageDepAtom::Pointer p(make_atom(*e));
             p->set_tag(advisory_tag);
-            security_packages->add_child(make_atom(*e));
+            security_packages->add_child(p);
         }
     }
 
