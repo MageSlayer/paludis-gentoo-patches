@@ -27,6 +27,7 @@
 #include <paludis/hashed_containers.hh>
 #include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
+#include <paludis/package_database_entry.hh>
 #include <paludis/package_database.hh>
 #include <paludis/portage_repository.hh>
 #include <paludis/syncer.hh>
@@ -1372,6 +1373,57 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     install_cmd();
 }
 
+namespace
+{
+    inline
+    PackageDepAtom::Pointer make_atom(const PackageDatabaseEntry & e)
+    {
+        QualifiedPackageName n(e.get<pde_name>());
+        VersionSpec v(e.get<pde_version>());
+
+        std::string s("=" + stringify(n) + "-" + stringify(v));
+        return PackageDepAtom::Pointer(new PackageDepAtom(s));
+    }
+
+    struct IsNotMemberOfCollection
+    {
+        PackageDatabaseEntryCollection::ConstPointer _c;
+        IsNotMemberOfCollection(const PackageDatabaseEntryCollection::ConstPointer & c) :
+            _c(c)
+        {
+        }
+
+        bool operator() (const PackageDatabaseEntry & e) const
+        {
+            bool result = (_c->find(e) == _c->end());
+            return result;
+        }
+    };
+}
+
+PackageDatabaseEntryCollection::Iterator
+PortageRepository::find_best(PackageDatabaseEntryCollection::Pointer & c, const PackageDatabaseEntry & e) const
+{
+    Context local("When finding best update for '" + stringify(e.get<pde_name>()) + "-" + stringify(e.get<pde_version>()) + "':");
+    //Find an entry in c that matches e best. e is not in c.
+    QualifiedPackageName n(e.get<pde_name>());
+    std::string s(_imp->env->package_database()->fetch_metadata(e)->get(vmk_slot));
+    PackageDatabaseEntryCollection::Iterator i(c->begin()), i_end(c->end()), i_best(c->end());
+    for ( ; i != i_end; ++i)
+    {
+        if (n != i->get<pde_name>())
+            continue;
+        if (s != _imp->env->package_database()->fetch_metadata(*i)->get(vmk_slot))
+        {
+            continue;
+        }
+
+        i_best = i;
+    }
+
+    return i_best;
+}
+
 DepAtom::Pointer
 PortageRepository::do_security_set() const
 {
@@ -1398,34 +1450,81 @@ PortageRepository::do_security_set() const
         GLSADepTag::Pointer advisory_tag(new GLSADepTag(advisory.get("Id"),
                     advisory.get("Title")));
 
-        bool is_affected = false;
-
-        std::list<std::string> a_list, u_list;
-        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser("\n");
-        tokeniser.tokenise(advisory.get("Affected"), std::back_inserter(a_list));
-        tokeniser.tokenise(advisory.get("Unaffected"), std::back_inserter(u_list));
-        if (a_list.size() != u_list.size())
-            throw AdvisoryFileError("Number of affected packages does not match number of unaffected packages.");
-
-        std::list<std::string>::const_iterator a(a_list.begin()), a_end(a_list.end());
-        std::list<std::string>::const_iterator u(u_list.begin()), u_end(u_list.end());
-        while ((a != a_end) && (u != u_end))
+        PackageDatabaseEntryCollection::Pointer affected(new PackageDatabaseEntryCollection),
+                unaffected(new PackageDatabaseEntryCollection);
+        std::list<AdvisoryLine>::const_iterator u(advisory.begin_unaffected()), u_end(advisory.end_unaffected());
+        for ( ; u != u_end ; ++u)
         {
-            PackageDepAtom::Pointer affected(new PackageDepAtom(*a)),
-                unaffected(new PackageDepAtom(*u));
-            ++a; ++u;
-
-            if (affected->package() != unaffected->package())
-                throw AdvisoryFileError("Affected and unaffected items are out of sync.");
-
-            if ((_imp->db->query(affected, is_installed_only))->empty())
-                continue;
-
-            is_affected = true;
-            unaffected->set_tag(advisory_tag);
-            security_packages->add_child(unaffected);
+            Context c("When parsing 'Unaffected:' line '" + u->line() + "':");
+            if (u->is_range())
+            {
+                PackageDepAtom::Pointer p(new PackageDepAtom((*u)[0]));
+                PackageDatabaseEntryCollection::ConstPointer c_one = _imp->db->query(p, is_either);
+                p.assign(new PackageDepAtom((*u)[1]));
+                PackageDatabaseEntryCollection::ConstPointer c_two = _imp->db->query(p, is_either);
+                std::set_intersection(c_one->begin(), c_one->end(), c_two->begin(), c_two->end(),
+                        filter_inserter(unaffected->inserter(), IsNotMemberOfCollection(unaffected)));
+            }
+            else
+            {
+                PackageDepAtom::Pointer p(new PackageDepAtom((*u)[0]));
+                PackageDatabaseEntryCollection::ConstPointer c = _imp->db->query(p, is_either);
+                std::copy(c->begin(), c->end(), filter_inserter(unaffected->inserter(), IsNotMemberOfCollection(unaffected)));
+            }
         }
 
+        std::list<AdvisoryLine>::const_iterator a(advisory.begin_affected()), a_end(advisory.end_affected());
+        for ( ; a != a_end ; ++a)
+        {
+            Context c("When parsing 'Affected:' line '" + a->line() + "':");
+            if (a->is_range())
+            {
+                PackageDepAtom::Pointer p(new PackageDepAtom((*a)[0]));
+                PackageDatabaseEntryCollection::ConstPointer installed_one = _imp->db->query(p, is_installed_only);
+                PackageDatabaseEntryCollection::ConstPointer either_one = _imp->db->query(p, is_either);
+                p.assign(new PackageDepAtom((*a)[1]));
+                PackageDatabaseEntryCollection::ConstPointer installed_two = _imp->db->query(p, is_installed_only);
+                PackageDatabaseEntryCollection::ConstPointer either_two = _imp->db->query(p, is_either);
+                std::set_intersection(installed_one->begin(), installed_one->end(), installed_two->begin(), installed_two->end(),
+                        filter_inserter(affected->inserter(), IsNotMemberOfCollection(affected)));
+                PackageDatabaseEntryCollection::Iterator e(either_one->begin()), e_end(either_one->end());
+                for ( ; e != e_end; ++e)
+                {
+                    IsNotMemberOfCollection f(either_two);
+                    if (f(*e))
+                        continue;
+
+                    if (unaffected->find(*e) != unaffected->end())
+                        unaffected->erase(*e);
+                }
+            }
+            else
+            {
+                PackageDepAtom::Pointer p(new PackageDepAtom((*a)[0]));
+                PackageDatabaseEntryCollection::ConstPointer c = _imp->db->query(p, is_installed_only);
+                std::copy(c->begin(), c->end(), filter_inserter(affected->inserter(), IsNotMemberOfCollection(affected)));
+                PackageDatabaseEntryCollection::Iterator e(c->begin()), e_end(c->end());
+                for ( ; e != e_end; ++e)
+                {
+                    if (unaffected->find(*e) != unaffected->end())
+                        unaffected->erase(*e);
+                }
+            }
+        }
+
+        PackageDatabaseEntryCollection::Iterator i(affected->begin()), i_end(affected->end());
+        for ( ; i != i_end ; ++i)
+        {
+            Context c("When finding best update for package '" + stringify(*i) + "':");
+
+            PackageDatabaseEntryCollection::Iterator e = find_best(unaffected, *i);
+            if (e == unaffected->end())
+                throw AllMaskedError("No best update available for package '" + stringify(*i) + "':");
+
+            PackageDepAtom::Pointer p(make_atom(*e));
+            p->set_tag(advisory_tag);
+            security_packages->add_child(make_atom(*e));
+        }
     }
 
     return security_packages;

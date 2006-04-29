@@ -23,6 +23,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/tokeniser.hh>
 
 /** \file
  * Implementation for config_file.hh classes.
@@ -309,6 +310,31 @@ KeyValueConfigFile::strip_quotes(const std::string & s) const
         return s;
 }
 
+AdvisoryLine::AdvisoryLine(const std::string & s) :
+    _line(s),
+    _is_range(false)
+{
+    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t");
+    tokeniser.tokenise(s, std::back_inserter(_tokens));
+
+    if ((_tokens.size() < 1) || (_tokens.size() > 2))
+        throw AdvisoryFileError("Wrong count of atoms on line.");
+
+    if (_tokens.size() == 2)
+    {
+        if (!(is_range_token(0) && is_range_token(1)))
+            throw AdvisoryFileError("Line must exactly contain 1 non-range atom or 2 range atoms.");
+
+        if (is_range_bigger(0) && is_range_bigger(1))
+            throw AdvisoryFileError("Broken range: Two bigger/bigger than atoms.");
+
+        if (is_range_smaller(0) && is_range_smaller(1))
+            throw AdvisoryFileError("Broken range: Two smaller/smaller than atoms.");
+
+        _is_range = true;
+    }
+}
+
 AdvisoryFileError::AdvisoryFileError(const std::string & msg,
         const std::string & filename) throw () :
     ConfigurationError("Advisory file error" +
@@ -346,7 +372,6 @@ AdvisoryFile::AdvisoryFile(std::istream * const s,
     _entries(m.begin(), m.end()),
     _end_of_header(false)
 {
-    _end_of_header = false;
     need_lines();
     sanitise();
 }
@@ -393,6 +418,11 @@ AdvisoryFile::accept_line(const std::string & line) const
         if ((key == "Affected") || (key == "Unaffected") || (key == "Bug-Id") || (key == "Url")
             || (key == "Reviewed-By"))
         {
+            if (key == "Affected")
+                _affected.push_back(AdvisoryLine(value));
+            else if (key == "Unaffected")
+                _unaffected.push_back(AdvisoryLine(value));
+
             if (!_entries[key].empty())
                 value = "\n" + value;
             _entries[key] += value;
@@ -402,7 +432,7 @@ AdvisoryFile::accept_line(const std::string & line) const
             if (_entries[key].empty())
                 _entries[key] = value;
             else
-                throw ConfigFileError("When adding value for key '" + key + "': Duplicate key found.");
+                throw AdvisoryFileError("When adding value for key '" + key + "': Duplicate key found.");
         }
     }
 }
