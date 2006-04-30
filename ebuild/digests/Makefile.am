@@ -32,6 +32,8 @@ EXTRA_DIST = $(libexecprog_SCRIPTS) dosha256_TEST.cc dormd160_TEST.cc
 check_SCRIPTS =
 check_PROGRAMS = $(TESTS)
 
+AM_CXXFLAGS = -I$(top_srcdir)
+
 dosha256_TEST_SOURCES = sha256.cc sha256.hh dosha256_TEST.cc
 dosha256_TEST_CXXFLAGS = -I$(top_srcdir)
 dosha256_TEST_LDADD = $(top_builddir)/test/libtest.a
