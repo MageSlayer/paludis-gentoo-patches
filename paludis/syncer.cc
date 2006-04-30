@@ -19,6 +19,7 @@
  */
 
 #include "syncer.hh"
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/system.hh>
 
 /** \file
@@ -119,10 +120,11 @@ RsyncSyncer::sync(const SyncOptions & opts) const
     Context context("When performing sync via rsync from '" + _remote + "' to '"
             + _local + "':");
 
+    FSEntry(_local).mkdir();
+
     std::string exclude;
     if (! opts.get<so_excludefrom>().empty())
         exclude = "--exclude-from " + std::string(opts.get<so_excludefrom>()) + " ";
-
 
     std::string cmd("rsync --recursive --links --safe-links --perms --times "
             "--compress --force --whole-file --delete --delete-after --stats "
