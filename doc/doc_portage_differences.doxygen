@@ -31,6 +31,9 @@ would be relevant if it were:
 
 - Hook scripts, for running code after a certain action occurs.
 
+- Wrappers for econf, emake, wget etc to allow user defined command bindings
+  (nice, ionice, taskset etc).
+
 \section PortageDifferencesEbuildDeveloper For the Ebuild Developer
 
 As well as the end user advantages, ebuild authors will benefit from:
