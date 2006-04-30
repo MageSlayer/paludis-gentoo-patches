@@ -32,8 +32,8 @@ dobin_TEST()
     chmod +x dobin_TEST_dir/src/three ; test_return_code
 
     export D=dobin_TEST_dir/dst
-    ./dobin dobin_TEST_dir/src/one &>/dev/null ; test_return_code
-    ./dobin dobin_TEST_dir/src/two dobin_TEST_dir/src/three &>/dev/null ; test_return_code
+    ${PALUDIS_EBUILD_DIR}/utils/dobin dobin_TEST_dir/src/one &>/dev/null ; test_return_code
+    ${PALUDIS_EBUILD_DIR}/utils/dobin dobin_TEST_dir/src/two dobin_TEST_dir/src/three &>/dev/null ; test_return_code
 
     [[ -f dobin_TEST_dir/dst/usr/bin/one ]] ; test_return_code
     [[ -f dobin_TEST_dir/dst/usr/bin/two ]] ; test_return_code
@@ -54,9 +54,9 @@ dobin_fail_TEST()
     echo "three contents" > dobin_TEST_dir/src/three ; test_return_code
 
     export D=dobin_TEST_dir/dst
-    ! ./dobin dobin_TEST_dir/src/four &>/dev/null ; test_return_code
-    ! ./dobin dobin_TEST_dir/src/one dobin_TEST_dir/src/seven &>/dev/null ; test_return_code
-    ! ./dobin dobin_TEST_dir/src/eight dobin_TEST_dir/src/one &>/dev/null ; test_return_code
+    ! ${PALUDIS_EBUILD_DIR}/utils/dobin dobin_TEST_dir/src/four &>/dev/null ; test_return_code
+    ! ${PALUDIS_EBUILD_DIR}/utils/dobin dobin_TEST_dir/src/one dobin_TEST_dir/src/seven &>/dev/null ; test_return_code
+    ! ${PALUDIS_EBUILD_DIR}/utils/dobin dobin_TEST_dir/src/eight dobin_TEST_dir/src/one &>/dev/null ; test_return_code
 
     [[ -f dobin_TEST_dir/dst/usr/bin/one ]] ; test_return_code
     ! [[ -f dobin_TEST_dir/dst/usr/bin/four ]] ; test_return_code
