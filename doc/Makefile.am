@@ -14,7 +14,7 @@ docfiles = \
 	doc_changelog.doxygen \
 	doc_portage_differences.doxygen
 
-EXTRA_DIST = doxygen.conf.in $(docfiles)
+EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css $(docfiles)
 
 if HAVE_DOXYGEN
 
