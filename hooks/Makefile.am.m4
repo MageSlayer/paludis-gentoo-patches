@@ -3,8 +3,8 @@ ifdef(`__gnu__',`',`errprint(`This is not GNU m4...
 
 dnl vim: set ft=m4 noet :
 
-MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ .keep
+MAINTAINERCLEANFILES = Makefile.in Makefile.am
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda .keep
 SUBDIRS = .
 
 installhookcommonprogdir = $(libexecdir)/paludis/hooks/common
@@ -24,6 +24,7 @@ TESTS_ENVIRONMENT = env \
 
 TESTS =
 EXTRA_DIST = \
+	Makefile.am.m4 \
 	$(installhookcommonprog_SCRIPTS) \
 	$(installhookinstallallpost_SCRIPTS) \
 	$(TESTS)
