@@ -216,6 +216,17 @@ namespace paludis
             off_t file_size() const;
 
             /**
+             * Try to make a directory.
+             *
+             * \return True, if we succeeded, and false if the directory
+             *   already exists and is a directory.
+             *
+             * \exception FSError If an error other than the directory already
+             *   existing occurs.
+             */
+            bool mkdir();
+
+            /**
              * Return the current working directory
              */
             static FSEntry cwd();

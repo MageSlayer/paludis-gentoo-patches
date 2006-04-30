@@ -74,6 +74,11 @@ namespace test_cases
     {
         FSEntryRealpathTest() : TestCase("behavior") { }
 
+        bool repeatable() const
+        {
+            return false;
+        }
+
         void run()
         {
             FSEntry d("fs_entry_TEST_dir");
@@ -109,6 +114,13 @@ namespace test_cases
             FSEntry h("fs_entry_TEST_dir/symlink_to_file_in_a");
             TEST_CHECK(h.is_symbolic_link());
             TEST_CHECK(! h.is_regular_file());
+
+            FSEntry i("fs_entry_TEST_dir/dir_to_make");
+            TEST_CHECK(i.mkdir());
+            TEST_CHECK(! i.mkdir());
+
+            FSEntry j("fs_entry_TEST_dir/dir_a/file_in_a");
+            TEST_CHECK_THROWS(j.mkdir(), FSError);
         }
     } test_fs_entry_behaviour;
 

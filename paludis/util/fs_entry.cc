@@ -23,6 +23,7 @@
 #include <paludis/util/stringify.hh>
 
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
 #include <limits.h>
@@ -334,5 +335,22 @@ FSEntry::file_size() const
         throw FSError("file_size called on non-regular file '" + _path + "'");
 
     return _stat_info->st_size;
+}
+
+bool
+FSEntry::mkdir()
+{
+    if (0 == ::mkdir(_path.c_str(), 0755))
+        return true;
+
+    int e(errno);
+    if (e == EEXIST)
+    {
+        if (is_directory())
+            return false;
+        throw FSError("mkdir '" + _path + "' failed: target exists and is not a directory");
+    }
+    else
+        throw FSError("mkdir '" + _path + "' failed: " + ::strerror(e));
 }
 
