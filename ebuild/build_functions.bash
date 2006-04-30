@@ -75,13 +75,13 @@ emake()
 einstall()
 {
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
-        local cmd="${EINSTALL_WRAPPER} make prefix='${D}/usr'"
-        cmd="${cmd} mandir='${D}/usr/share/man'"
-        cmd="${cmd} infodir='${D}/usr/share/info'"
-        cmd="${cmd} datadir='${D}/usr/share'"
-        cmd="${cmd} sysconfdir='${D}/etc'"
-        cmd="${cmd} localstatedir='${D}/var/lib'"
-        cmd="${cmd} libdir='${D}/usr/$(ebuild_get_libdir)'"
+        local cmd="${EINSTALL_WRAPPER} make prefix=${D}/usr"
+        cmd="${cmd} mandir=${D}/usr/share/man"
+        cmd="${cmd} infodir=${D}/usr/share/info"
+        cmd="${cmd} datadir=${D}/usr/share"
+        cmd="${cmd} sysconfdir=${D}/etc"
+        cmd="${cmd} localstatedir=${D}/var/lib"
+        cmd="${cmd} libdir=${D}/usr/$(ebuild_get_libdir)"
         cmd="${cmd} ${EXTRA_EINSTALL} ${@} install"
         echo "${cmd}" 1>&2
         ${cmd} || die "einstall failed"
