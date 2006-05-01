@@ -24,8 +24,9 @@ subscribe to the <code>paludis-sekrit</code> mailing list.
 \section BootstrapHowtoRequirements Requirements
 
 Install Paludis locally, being sure to configure <code>sysconfdir</code> as
-<code>/etc</code> to avoid confusion later on. There's an ebuild
-<a href="http://svn.berlios.de/viewcvs/%2acheckout%2a/paludis/overlay/sys-apps/paludis/paludis-0.ebuild">here</a>.
+<code>/etc</code> to avoid confusion later on. There're ebuilds
+<a href="http://svn.berlios.de/viewcvs/paludis/overlay/sys-apps/paludis/">
+in the Paludis overlay</a>.
 
 You'll need libebt, eselect and Subversion. You'll also need either g++-3.4,
 g++-4.1 or some other reasonably standard C++ compiler along with a complete
