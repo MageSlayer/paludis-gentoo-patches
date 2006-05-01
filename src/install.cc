@@ -434,7 +434,16 @@ do_install()
                                 cerr << ", ";
                             cerr << p::MaskReason(mm);
 
-                            if (p::mr_license == mm)
+                            if (p::mr_eapi == mm)
+                            {
+                                std::string eapi_str(env->package_database()->fetch_repository(
+                                            pp->get<p::pde_repository>())->version_metadata(
+                                            pp->get<p::pde_name>(), pp->get<p::pde_version>())->get(
+                                            p::vmk_eapi));
+
+                                cerr << " ( " << colour(cl_red, eapi_str) << " )";
+                            }
+                            else if (p::mr_license == mm)
                             {
                                 cerr << " ";
                                 std::string license_str(env->package_database()->fetch_repository(
