@@ -64,7 +64,13 @@ int do_best_version()
     if (entries->empty())
         return_code = 1;
     else
-        std::cout << *(entries->last()) << std::endl;
+    {
+        // don't include repo, it breaks built_with_use and the like.
+        std::string entry(
+                stringify(entries->last()->get<p::pde_name>()) + "-" +
+                stringify(entries->last()->get<p::pde_version>()));
+        std::cout << entry << std::endl;
+    }
 
     return return_code;
 }
