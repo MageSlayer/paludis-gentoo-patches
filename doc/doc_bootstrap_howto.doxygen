@@ -211,7 +211,7 @@ cat <<"END" > /mychroot/etc/paludis/repositories/paludis-overlay.conf
 location = ${ROOT}/var/paludis/repositories/paludis-overlay/
 sync = svn://svn.berlios.de/paludis/overlay
 profile = ${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
-eclassdir = \${ROOT}/var/paludis/repositories/gentoo/eclass
+eclassdir = ${ROOT}/var/paludis/repositories/gentoo/eclass
 distdir = ${ROOT}/var/paludis/repositories/gentoo/distfiles
 cache = /var/empty
 format = portage
