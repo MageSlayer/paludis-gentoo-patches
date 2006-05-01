@@ -148,7 +148,6 @@ install-data-local :
 
 uninstall-local :
 	rm $(DESTDIR)/$(libexecdir)/paludis/hooks/*/gnu_info_index.bash
-	rm $(DESTDIR)/$(libexecdir)/paludis/hooks/*/find_config_updates.bash
 	rm $(DESTDIR)/$(libexecdir)/paludis/hooks/*/eselect_env_update.bash
 	rm $(DESTDIR)/$(libexecdir)/paludis/hooks/*/log.bash
 
