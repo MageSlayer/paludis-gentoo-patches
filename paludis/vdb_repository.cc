@@ -288,12 +288,7 @@ namespace
         FSEntry f(location / stringify(name.get<qpn_category>()) /
                 (stringify(name.get<qpn_package>()) + "-" + stringify(v)));
         if (! (f / key).is_regular_file())
-        {
-            Log::get_instance()->message(ll_warning, "metadata key lookup failed for request for '" +
-                    stringify(name) + "-" + stringify(v) + "' in vdb '" +
-                    stringify(location) + "' for key '" + key + "'");
             return "";
-        }
 
         std::ifstream ff(stringify(f / key).c_str());
         if (! ff)
