@@ -61,6 +61,26 @@ do_install()
 
     p::DepList dep_list(env);
 
+    dep_list.set_drop_self_circular(CommandLine::get_instance()->a_dl_drop_self_circular.specified());
+    dep_list.set_drop_circular(CommandLine::get_instance()->a_dl_drop_circular.specified());
+    dep_list.set_drop_all(CommandLine::get_instance()->a_dl_drop_all.specified());
+    dep_list.set_ignore_installed(CommandLine::get_instance()->a_dl_ignore_installed.specified());
+    dep_list.set_recursive_deps(! CommandLine::get_instance()->a_dl_no_recursive_deps.specified());
+    dep_list.set_max_stack_depth(CommandLine::get_instance()->a_dl_max_stack_depth.argument());
+
+    if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "always")
+        dep_list.set_rdepend_post(p::dlro_always);
+    else if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "never")
+        dep_list.set_rdepend_post(p::dlro_never);
+    else
+        dep_list.set_rdepend_post(p::dlro_as_needed);
+
+    p::InstallOptions opts(false, false);
+    if (CommandLine::get_instance()->a_no_config_protection.specified())
+        opts.set<p::io_noconfigprotect>(true);
+    if (CommandLine::get_instance()->a_fetch.specified())
+        opts.set<p::io_fetchonly>(true);
+
     try
     {
         CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
@@ -99,7 +119,8 @@ do_install()
 
         if (had_set_targets)
             dep_list.set_reinstall(false);
-        else if (! CommandLine::get_instance()->a_pretend.specified())
+        else if ((! CommandLine::get_instance()->a_pretend.specified()) &&
+                (! opts.get<p::io_fetchonly>()))
             if (! CommandLine::get_instance()->a_preserve_world.specified())
                 env->add_appropriate_to_world(targets);
     }
@@ -115,20 +136,6 @@ do_install()
         cerr << endl;
         return 1;
     }
-
-    dep_list.set_drop_self_circular(CommandLine::get_instance()->a_dl_drop_self_circular.specified());
-    dep_list.set_drop_circular(CommandLine::get_instance()->a_dl_drop_circular.specified());
-    dep_list.set_drop_all(CommandLine::get_instance()->a_dl_drop_all.specified());
-    dep_list.set_ignore_installed(CommandLine::get_instance()->a_dl_ignore_installed.specified());
-    dep_list.set_recursive_deps(! CommandLine::get_instance()->a_dl_no_recursive_deps.specified());
-    dep_list.set_max_stack_depth(CommandLine::get_instance()->a_dl_max_stack_depth.argument());
-
-    if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "always")
-        dep_list.set_rdepend_post(p::dlro_always);
-    else if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "never")
-        dep_list.set_rdepend_post(p::dlro_never);
-    else
-        dep_list.set_rdepend_post(p::dlro_as_needed);
 
     try
     {
@@ -267,12 +274,6 @@ do_install()
 
             return return_code;
         }
-
-        p::InstallOptions opts(false, false);
-        if (CommandLine::get_instance()->a_no_config_protection.specified())
-            opts.set<p::io_noconfigprotect>(true);
-        if (CommandLine::get_instance()->a_fetch.specified())
-            opts.set<p::io_fetchonly>(true);
 
         if (opts.get<p::io_fetchonly>())
             env->perform_hook("fetch_all_pre");
