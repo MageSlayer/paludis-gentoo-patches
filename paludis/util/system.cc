@@ -137,7 +137,14 @@ const std::string
 paludis::make_sandbox_command(const std::string & cmd)
 {
 #if HAVE_SANDBOX
-    return "sandbox " + cmd;
+    if (getenv_with_default("SANDBOX_ACTIVE", "").empty())
+    {
+        Log::get_instance()->message(ll_warning, "Already inside sandbox, not spawning "
+                "another sandbox instance");
+        return cmd;
+    }
+    else
+        return "sandbox " + cmd;
 #else
     return cmd;
 #endif
