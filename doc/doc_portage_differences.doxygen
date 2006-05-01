@@ -34,6 +34,8 @@ would be relevant if it were:
 - Wrappers for econf, emake, wget etc to allow user defined command bindings
   (nice, ionice, taskset etc).
 
+- User definable package sets.
+
 \section PortageDifferencesEbuildDeveloper For the Ebuild Developer
 
 As well as the end user advantages, ebuild authors will benefit from:

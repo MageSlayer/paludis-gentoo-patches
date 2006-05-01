@@ -18,6 +18,7 @@
  */
 
 #include <list>
+#include <paludis/config_file.hh>
 #include <paludis/default_config.hh>
 #include <paludis/default_environment.hh>
 #include <paludis/match_package.hh>
@@ -27,6 +28,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/tokeniser.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <vector>
 
@@ -423,4 +425,56 @@ DefaultEnvironment::hook_dirs() const
     return join(hook_dirs.begin(), hook_dirs.end(), " ");
 }
 
+DepAtom::Pointer
+DefaultEnvironment::local_package_set(const std::string & s) const
+{
+    Context context("When looking for package set '" + s + "' in default environment:");
+
+    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+    FSEntry ff(FSEntry(DefaultConfig::get_instance()->config_dir()) / "sets" / (s + ".conf"));
+    if (ff.exists())
+    {
+        LineConfigFile f(ff);
+        AllDepAtom::Pointer result(new AllDepAtom);
+
+        for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+                line != line_end ; ++line)
+        {
+            std::vector<std::string> tokens;
+            tokeniser.tokenise(*line, std::back_inserter(tokens));
+            if (tokens.empty())
+                continue;
+
+            if (1 == tokens.size())
+            {
+                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                        + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
+                result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(tokens.at(0))));
+            }
+            else if ("*" == tokens.at(0))
+            {
+                result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(tokens.at(1))));
+            }
+            else if ("?" == tokens.at(0))
+            {
+                PackageDepAtom::Pointer p(new PackageDepAtom(tokens.at(1)));
+                if (! package_database()->query(
+                            PackageDepAtom::Pointer(new PackageDepAtom(p->package())),
+                            is_installed_only)->empty())
+                    result->add_child(p);
+            }
+            else
+                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                        + stringify(ff) + "' does not start with '*' or '?' token, skipping");
+
+            if (tokens.size() > 2)
+                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                        + stringify(ff) + "' has trailing garbage");
+        }
+
+        return result;
+    }
+
+    return DepAtom::Pointer(0);
+}
 

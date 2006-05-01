@@ -57,6 +57,14 @@ namespace paludis
              */
             Environment(PackageDatabase::Pointer);
 
+            /**
+             * Local package set, or zero.
+             */
+            virtual DepAtom::Pointer local_package_set(const std::string &) const
+            {
+                return DepAtom::Pointer(0);
+            }
+
         public:
             /**
              * Does the user want the specified USE flag set for a

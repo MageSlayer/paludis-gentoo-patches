@@ -248,6 +248,10 @@ Environment::package_set(const std::string & s) const
     }
     else
     {
+        DepAtom::Pointer rr(local_package_set(s));
+        if (0 != rr)
+            return rr;
+
         for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
                 r_end(package_database()->end_repositories()) ;
                 r != r_end ; ++r)
