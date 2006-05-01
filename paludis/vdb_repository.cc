@@ -684,7 +684,7 @@ VDBRepository::do_is_mirror(const std::string &) const
 void
 VDBRepository::do_install(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
 {
-    throw PackageInstallActionError("PortageRepository doesn't support do_install");
+    throw PackageInstallActionError("VDBRepository doesn't support do_install");
 }
 
 void
