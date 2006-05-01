@@ -302,6 +302,19 @@ namespace
         return strip_leading(strip_trailing(std::string((std::istreambuf_iterator<char>(ff)),
                         std::istreambuf_iterator<char>()), " \t\n"), " \t\n");
     }
+
+    /**
+     * Filter if a USE flag is a -flag.
+     *
+     * \ingroup grpvdbrepository
+     */
+    struct IsPositiveFlag
+    {
+        bool operator() (const std::string & f) const
+        {
+            return 0 != f.compare(0, 1, "-");
+        }
+    };
 }
 
 void
@@ -336,7 +349,8 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
     std::string raw_use(file_contents(location, p->name, p->version, "USE"));
     p->use.clear();
     Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> t(" \t\n");
-    t.tokenise(raw_use, create_inserter<UseFlagName>(std::inserter(p->use, p->use.begin())));
+    t.tokenise(raw_use, filter_inserter(create_inserter<UseFlagName>(
+                    std::inserter(p->use, p->use.begin())), IsPositiveFlag()));
 }
 
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
