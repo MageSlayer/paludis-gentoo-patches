@@ -46,7 +46,7 @@ become apparent later on.
 
 \verbatim
 mkdir ~/.paludis-bootstrap
-cat <<END > ~/.paludis-bootstrap/specpath
+cat <<"END" > ~/.paludis-bootstrap/specpath
 root = /mychroot
 config-suffix =
 END
@@ -68,7 +68,7 @@ Like with Portage, accepting <code>~keyword</code> does <b>not</b> accept
 should use <code>* arch ~arch</code>.
 
 \verbatim
-cat <<END > /mychroot/etc/paludis/keywords.conf
+cat <<"END" > /mychroot/etc/paludis/keywords.conf
 * x86
 dev-cpp/libebt x86 ~x86
 sys-apps/paludis x86 ~x86
@@ -87,7 +87,7 @@ handling <code>USE_EXPAND</code> variables that allows different settings for
 different packages. This may change, but for now it looks like this:
 
 \verbatim
-cat <<END > /mychroot/etc/paludis/use.conf
+cat <<"END" > /mychroot/etc/paludis/use.conf
 * -doc nls -apache2 LINGUAS: en INPUT_DEVICES: keyboard mouse VIDEO_CARDS: ati
 app-editors/vim -nls
 END
@@ -97,7 +97,7 @@ Set up your <code>licenses.conf</code>. If you don't care about licences, which
 is probably wise until we get licence grouping, it should look like this:
 
 \verbatim
-cat <<END > /mychroot/etc/paludis/licenses.conf
+cat <<"END" > /mychroot/etc/paludis/licenses.conf
 * *
 END
 \endverbatim
@@ -106,7 +106,7 @@ If you want some more fun, the following list might be enough to install a
 base system if you don't turn on too many extra USE flags:
 
 \verbatim
-cat <<END > /mychroot/etc/paludis/licenses.conf
+cat <<"END" > /mychroot/etc/paludis/licenses.conf
 # These are the basic system requirements. It's possible to knock off
 # a few of these by turning off some default USE flags.
 * LGPL-2.1 LGPL-2 GPL-2 BSD MIT BZIP2 Artistic DB PSF-2.1.1 PSF-2.2
@@ -144,7 +144,7 @@ Set up your <code>package_unmask.conf</code> and <code>package_mask.conf</code>,
 if necessary::
 
 \verbatim
-cat <<END > /mychroot/etc/paludis/package_unmask.conf
+cat <<"END" > /mychroot/etc/paludis/package_unmask.conf
 app-editors/vim
 app-editors/vim-core
 END
@@ -161,13 +161,10 @@ Unfortunately, some packages in system have broken test suites, and some
 packages abuse non-${ROOT} locations in pkg_postinst. Thus, you will also
 need to add a bit of magic to work around these packages.
 
-\note The backslash before the dollar is for cat. If you're not using cat,
-   don't include the backslash before the dollar signs.
-
 \verbatim
-cat <<END > /mychroot/etc/paludis/bashrc
+cat <<"END" > /mychroot/etc/paludis/bashrc
 export CFLAGS="-O2 -march=pentium4 -fomit-frame-pointer"
-export CXXFLAGS="\${CFLAGS}"
+export CXXFLAGS="${CFLAGS}"
 export CHOST="i686-pc-linux-gnu"
 export MAKEOPTS="-j2"
 export EBEEP_IGNORE="yes"
@@ -198,24 +195,24 @@ chroot (this is one of the reasons we have the weird-looking specpath
 thing):
 
 \verbatim
-cat <<END > /mychroot/etc/paludis/repositories/gentoo.conf
-location = \${ROOT}/var/paludis/repositories/gentoo/
+cat <<"END" > /mychroot/etc/paludis/repositories/gentoo.conf
+location = ${ROOT}/var/paludis/repositories/gentoo/
 sync = rsync://rsync.europe.gentoo.org/gentoo-portage/
-profile = \${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
+profile = ${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
 format = portage
 END
 
-cat <<END > /mychroot/etc/paludis/repositories/installed.conf
-location = \${ROOT}/var/db/pkg/
+cat <<"END" > /mychroot/etc/paludis/repositories/installed.conf
+location = ${ROOT}/var/db/pkg/
 format = vdb
 END
 
-cat <<END > /mychroot/etc/paludis/repositories/paludis-overlay.conf
-location = \${ROOT}/var/paludis/repositories/paludis-overlay/
+cat <<"END" > /mychroot/etc/paludis/repositories/paludis-overlay.conf
+location = ${ROOT}/var/paludis/repositories/paludis-overlay/
 sync = svn://svn.berlios.de/paludis/overlay
-profile = \${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
+profile = ${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
 eclassdir = \${ROOT}/var/paludis/repositories/gentoo/eclass
-distdir = \${ROOT}/var/paludis/repositories/gentoo/distfiles
+distdir = ${ROOT}/var/paludis/repositories/gentoo/distfiles
 cache = /var/empty
 format = portage
 importance = 10
