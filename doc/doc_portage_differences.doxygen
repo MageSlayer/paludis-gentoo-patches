@@ -59,6 +59,8 @@ As well as the end user advantages, ebuild authors will benefit from:
 
 - Ability to install hook scripts.
 
+- Repository definable package sets.
+
 \section PortageDifferencesProgrammer For the Programmer
 
 - Proper library / interface separation.
