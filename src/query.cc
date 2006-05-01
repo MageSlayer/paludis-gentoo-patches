@@ -35,6 +35,19 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+namespace
+{
+    struct CannotQueryPackageSet
+    {
+        const std::string query;
+
+        CannotQueryPackageSet(const std::string & q) :
+            query(q)
+        {
+        }
+    };
+}
+
 void do_one_query(
         const p::Environment * const env,
         const std::string & q)
@@ -43,10 +56,17 @@ void do_one_query(
 
     /* we might have a dep atom, but we might just have a simple package name
      * without a category. either should work. */
-    p::PackageDepAtom::Pointer atom(std::string::npos == q.find('/') ?
-            new p::PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
-                    p::PackageNamePart(q))) :
-            new p::PackageDepAtom(q));
+    p::PackageDepAtom::Pointer atom(0);
+    if (std::string::npos == q.find('/'))
+    {
+        if (0 != env->package_set(q))
+            throw CannotQueryPackageSet(q);
+        else
+            atom.assign(new p::PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
+                            p::PackageNamePart(q))));
+    }
+    else
+        atom.assign(new p::PackageDepAtom(q));
 
     p::PackageDatabaseEntryCollection::ConstPointer
         entries(env->package_database()->query(atom, p::is_either)),
@@ -244,6 +264,13 @@ int do_query()
             for (p::AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
                     o_end(e.end_options()) ; o != o_end ; ++o)
                 cerr << "    * " << colour(cl_package_name, *o) << endl;
+            cerr << endl;
+        }
+        catch (const CannotQueryPackageSet & e)
+        {
+            cout << endl;
+            cerr << "Query error:" << endl;
+            cerr << "  * Target '" << e.query << "' is a set, not a package." << endl;
             cerr << endl;
         }
         catch (const p::NameError & e)
