@@ -78,15 +78,17 @@ int do_sync()
                 p::create_inserter<p::RepositoryName>(std::inserter(
                         repo_names, repo_names.begin())));
 
-        env->perform_hook("sync_all_pre");
+        env->perform_hook(p::Hook("sync_all_pre")("TARGETS", p::join(
+                        CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters(), " ")));
         for (std::set<p::RepositoryName>::iterator r(repo_names.begin()), r_end(repo_names.end()) ;
                 r != r_end ; ++r)
         {
             try
             {
-                env->perform_hook("sync_pre");
+                env->perform_hook(p::Hook("sync_pre")("TARGET", stringify(*r)));
                 return_code |= do_one_sync(env->package_database()->fetch_repository(*r));
-                env->perform_hook("sync_post");
+                env->perform_hook(p::Hook("sync_post")("TARGET", stringify(*r)));
             }
             catch (const p::NoSuchRepositoryError & e)
             {
@@ -95,7 +97,9 @@ int do_sync()
                 std::cout << "Sync " << *r << " failed" << std::endl;
             }
         }
-        env->perform_hook("sync_all_post");
+        env->perform_hook(p::Hook("sync_all_post")("TARGETS", p::join(
+                        CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters(), " ")));
     }
 
     return return_code;

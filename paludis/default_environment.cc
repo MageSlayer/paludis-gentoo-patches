@@ -367,9 +367,10 @@ namespace
 
     struct Hooker
     {
-        std::string hook, paludis_command;
+        Hook hook;
+        std::string paludis_command;
 
-        Hooker(const std::string & h, const std::string & p) :
+        Hooker(const Hook & h, const std::string & p) :
             hook(h),
             paludis_command(p)
         {
@@ -378,14 +379,19 @@ namespace
         void operator() (const FSEntry & f) const
         {
             Context context("When running hook script '" + stringify(f) +
-                    "' for hook '" + hook + "':");
+                    "' for hook '" + hook.name() + "':");
             Log::get_instance()->message(ll_debug, "Starting hook script '" +
-                    stringify(f) + "' for '" + hook + "'");
+                    stringify(f) + "' for '" + hook.name() + "'");
 
-            int exit_status(run_command(make_env_command("bash '" + stringify(f) + "'")
-                        ("ROOT", DefaultConfig::get_instance()->root())
-                        ("HOOK", hook)
-                        ("PALUDIS_COMMAND", paludis_command)));
+            MakeEnvCommand cmd(make_env_command("bash '" + stringify(f) + "'")
+                    ("ROOT", DefaultConfig::get_instance()->root())
+                    ("HOOK", hook.name())
+                    ("PALUDIS_COMMAND", paludis_command));
+
+            for (Hook::Iterator h(hook.begin()), h_end(hook.end()) ; h != h_end ; ++h)
+                cmd = cmd(h->first, h->second);
+
+            int exit_status(run_command(cmd));
             if (0 == exit_status)
                 Log::get_instance()->message(ll_debug, "Hook '" + stringify(f)
                         + "' returned success '" + stringify(exit_status) + "'");
@@ -397,17 +403,17 @@ namespace
 }
 
 void
-DefaultEnvironment::perform_hook(const std::string & hook) const
+DefaultEnvironment::perform_hook(const Hook & hook) const
 {
-    Context context("When triggering hook '" + hook + "'");
-    Log::get_instance()->message(ll_debug, "Starting hook '" + hook + "'");
+    Context context("When triggering hook '" + hook.name() + "'");
+    Log::get_instance()->message(ll_debug, "Starting hook '" + hook.name() + "'");
 
     const std::list<FSEntry> & hook_dirs(get_hook_dirs());
 
     for (std::list<FSEntry>::const_iterator h(hook_dirs.begin()),
             h_end(hook_dirs.end()) ; h != h_end ; ++h)
     {
-        FSEntry hh(*h / hook);
+        FSEntry hh(*h / hook.name());
         if (! hh.is_directory())
             continue;
 

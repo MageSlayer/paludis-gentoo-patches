@@ -276,53 +276,58 @@ do_install()
         }
 
         if (opts.get<p::io_fetchonly>())
-            env->perform_hook("fetch_all_pre");
+            env->perform_hook(p::Hook("fetch_all_pre")("TARGETS", p::join(
+                            CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters(), " ")));
         else
-            env->perform_hook("install_all_pre");
+            env->perform_hook(p::Hook("install_all_pre")("TARGETS", p::join(
+                            CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters(), " ")));
 
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
                 dep != dep_end ; ++dep)
         {
-            std::string cpv = p::stringify(dep->get<p::dle_name>()) + "-" +
-                p::stringify(dep->get<p::dle_version>());
+            std::string cpvr = p::stringify(dep->get<p::dle_name>()) + "-" +
+                p::stringify(dep->get<p::dle_version>()) + "::" +
+                p::stringify(dep->get<p::dle_repository>());
 
             if (opts.get<p::io_fetchonly>())
             {
-                cout << endl << colour(cl_heading, "Fetching " + cpv) << endl << endl;
+                cout << endl << colour(cl_heading, "Fetching " + cpvr) << endl << endl;
 
                 // TODO: some way to reset this properly would be nice.
                 cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
-                        p::stringify(max_count) + ") Fetching " + cpv);
+                        p::stringify(max_count) + ") Fetching " + cpvr);
  
             }
             else
             {
                 cout << endl << colour(cl_heading,
-                        "Installing " + cpv) << endl << endl;
+                        "Installing " + cpvr) << endl << endl;
 
                 // TODO: some way to reset this properly would be nice.
                 cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
-                        p::stringify(max_count) + ") Installing " + cpv);
+                        p::stringify(max_count) + ") Installing " + cpvr);
             }
 
             if (opts.get<p::io_fetchonly>())
-                env->perform_hook("fetch_pre");
+                env->perform_hook(p::Hook("fetch_pre")("TARGET", cpvr));
             else
-                env->perform_hook("install_pre");
+                env->perform_hook(p::Hook("install_pre")("TARGET", cpvr));
 
             env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
                 install(dep->get<p::dle_name>(), dep->get<p::dle_version>(), opts);
 
             if (opts.get<p::io_fetchonly>())
-                env->perform_hook("fetch_post");
+                env->perform_hook(p::Hook("fetch_post")("TARGET", cpvr));
             else
-                env->perform_hook("install_post");
+                env->perform_hook(p::Hook("install_post")("TARGET", cpvr));
 
             if (! opts.get<p::io_fetchonly>())
             {
                 // figure out if we need to unmerge anything
                 cout << endl << colour(cl_heading,
-                        "Cleaning stale versions after installing " + cpv) << endl << endl;
+                        "Cleaning stale versions after installing " + cpvr) << endl << endl;
 
                 // manually invalidate any installed repos, they're probably
                 // wrong now
@@ -356,30 +361,35 @@ do_install()
                         cout << "* " << colour(cl_package_name, *c) << endl;
                     cout << endl;
 
-                    env->perform_hook("uninstall_all_pre");
-                    for (p::PackageDatabaseEntryCollection::Iterator c(clean_list.begin()),
-                            c_end(clean_list.end()) ; c != c_end ; ++c)
+                    p::PackageDatabaseEntryCollection::Iterator c(clean_list.begin()),
+                        c_end(clean_list.end());
+                    env->perform_hook(p::Hook("uninstall_all_pre")("TARGETS", p::join(c, c_end, " ")));
+                    for ( ; c != c_end ; ++c)
                     {
                         cout << endl << colour(cl_heading, "Cleaning " + p::stringify(*c)) << endl << endl;
 
                         // TODO: some way to reset this properly would be nice.
                         cerr << xterm_title("(" + p::stringify(current_count) + " of " +
-                                p::stringify(max_count) + ") Cleaning " + cpv + ": " + stringify(*c));
+                                p::stringify(max_count) + ") Cleaning " + cpvr + ": " + stringify(*c));
 
-                        env->perform_hook("uninstall_pre");
+                        env->perform_hook(p::Hook("uninstall_pre")("TARGET", stringify(*c)));
                         env->package_database()->fetch_repository(c->get<p::pde_repository>())->
                                 uninstall(c->get<p::pde_name>(), c->get<p::pde_version>(), opts);
-                        env->perform_hook("uninstall_post");
+                        env->perform_hook(p::Hook("uninstall_post")("TARGET", stringify(*c)));
                     }
-                    env->perform_hook("uninstall_all_post");
+                    env->perform_hook(p::Hook("uninstall_all_pre")("TARGETS", p::join(c, c_end, " ")));
                 }
             }
         }
 
         if (opts.get<p::io_fetchonly>())
-            env->perform_hook("fetch_all_post");
+            env->perform_hook(p::Hook("fetch_all_post")("TARGETS", p::join(
+                            CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters(), " ")));
         else
-            env->perform_hook("install_all_post");
+            env->perform_hook(p::Hook("install_all_post")("TARGETS", p::join(
+                            CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters(), " ")));
 
         cout << endl;
     }

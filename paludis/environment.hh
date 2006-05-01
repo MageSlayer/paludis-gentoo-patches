@@ -35,6 +35,41 @@
 namespace paludis
 {
     /**
+     * Represents the data for an Environment hook call.
+     *
+     * \ingroup grpenvironment
+     */
+    class Hook
+    {
+        private:
+            std::map<std::string, std::string> _extra_env;
+
+            std::string _name;
+
+        public:
+            Hook(const std::string & name);
+
+            Hook operator() (const std::string & key, const std::string & value) const;
+
+            typedef std::map<std::string, std::string>::const_iterator Iterator;
+
+            Iterator begin() const
+            {
+                return _extra_env.begin();
+            }
+
+            Iterator end() const
+            {
+                return _extra_env.end();
+            }
+
+            std::string name() const
+            {
+                return _name;
+            }
+    };
+
+    /**
      * Represents a working environment, which contains an available packages
      * database and provides various methods for querying package visibility
      * and options.
@@ -166,7 +201,7 @@ namespace paludis
             /**
              * Perform a hook.
              */
-            virtual void perform_hook(const std::string & Hook) const = 0;
+            virtual void perform_hook(const Hook & hook) const = 0;
     };
 }
 

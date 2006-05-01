@@ -77,7 +77,7 @@ namespace paludis
                 return UseFlagNameCollection::Pointer(new UseFlagNameCollection);
             }
 
-            virtual void perform_hook(const std::string &) const
+            virtual void perform_hook(const Hook &) const
             {
             }
     };

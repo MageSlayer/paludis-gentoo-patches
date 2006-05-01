@@ -71,7 +71,7 @@ namespace paludis
             virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
                     const std::string & prefix, const PackageDatabaseEntry *) const;
 
-            virtual void perform_hook(const std::string & hook) const;
+            virtual void perform_hook(const Hook & hook) const;
     };
 }
 #endif

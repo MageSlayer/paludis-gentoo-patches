@@ -331,7 +331,6 @@ Environment::add_appropriate_to_world(DepAtom::ConstPointer a) const
     }
 }
 
-
 void
 Environment::remove_appropriate_from_world(DepAtom::ConstPointer a) const
 {
@@ -345,5 +344,18 @@ Environment::remove_appropriate_from_world(DepAtom::ConstPointer a) const
                 r != r_end ; ++r)
             (*r)->remove_from_world((*i)->package());
     }
+}
+
+Hook::Hook(const std::string & n) :
+    _name(n)
+{
+}
+
+Hook
+Hook::operator() (const std::string & k, const std::string & v) const
+{
+    Hook result(*this);
+    result._extra_env.insert(std::make_pair(k, v));
+    return result;
 }
 

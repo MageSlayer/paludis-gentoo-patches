@@ -111,26 +111,27 @@ do_uninstall()
     if (CommandLine::get_instance()->a_no_config_protection.specified())
         opts.set<p::io_noconfigprotect>(true);
 
-    env->perform_hook("uninstall_all_pre");
+    env->perform_hook(p::Hook("uninstall_all_pre")("TARGETS", join(unmerge->begin(), unmerge->end(), " ")));
     for (p::PackageDatabaseEntryCollection::Iterator pkg(unmerge->begin()), pkg_end(unmerge->end()) ;
             pkg != pkg_end ; ++pkg)
     {
-        std::string cpv = p::stringify(pkg->get<p::pde_name>()) + "-" +
-            p::stringify(pkg->get<p::pde_version>());
+        std::string cpvr = p::stringify(pkg->get<p::pde_name>()) + "-" +
+            p::stringify(pkg->get<p::pde_version>()) + "::" +
+            p::stringify(pkg->get<p::pde_repository>());
 
         cout << endl << colour(cl_heading,
-                "Uninstalling " + cpv) << endl << endl;
+                "Uninstalling " + cpvr) << endl << endl;
 
         // TODO: some way to reset this properly would be nice.
         cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
-                p::stringify(max_count) + ") Uninstalling " + cpv);
+                p::stringify(max_count) + ") Uninstalling " + cpvr);
 
-        env->perform_hook("uninstall_pre");
+        env->perform_hook(p::Hook("uninstall_pre")("TARGET", cpvr));
         env->package_database()->fetch_repository(pkg->get<p::pde_repository>())->
             uninstall(pkg->get<p::pde_name>(), pkg->get<p::pde_version>(), opts);
-        env->perform_hook("uninstall_post");
+        env->perform_hook(p::Hook("uninstall_post")("TARGET", cpvr));
     }
-    env->perform_hook("uninstall_all_post");
+    env->perform_hook(p::Hook("uninstall_all_post")("TARGETS", join(unmerge->begin(), unmerge->end(), " ")));
 
     return return_code;
 }
