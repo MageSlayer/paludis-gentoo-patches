@@ -131,6 +131,9 @@ namespace paludis
         /// Distfiles dir
         FSEntry distdir;
 
+        /// Sets dir
+        FSEntry setsdir;
+
         /// Sync URL
         std::string sync;
 
@@ -230,6 +233,7 @@ Implementation<PortageRepository>::Implementation(const PortageRepositoryParams 
     cache(p.get<prpk_cache>()),
     eclassdir(p.get<prpk_eclassdir>()),
     distdir(p.get<prpk_distdir>()),
+    setsdir(p.get<prpk_setsdir>()),
     sync(p.get<prpk_sync>()),
     sync_exclude(p.get<prpk_sync_exclude>()),
     root(p.get<prpk_root>()),
@@ -445,6 +449,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     _info.insert(std::make_pair(std::string("cache"), stringify(_imp->cache)));
     _info.insert(std::make_pair(std::string("eclassdir"), stringify(_imp->eclassdir)));
     _info.insert(std::make_pair(std::string("distdir"), stringify(_imp->distdir)));
+    _info.insert(std::make_pair(std::string("setsdir"), stringify(_imp->setsdir)));
     _info.insert(std::make_pair(std::string("format"), std::string("portage")));
     _info.insert(std::make_pair(std::string("root"), stringify(_imp->root)));
     if (! _imp->sync.empty())
@@ -1046,6 +1051,10 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("distdir") || ((distdir = m.find("distdir")->second)).empty())
         distdir = location + "/distfiles";
 
+    std::string setsdir;
+    if (m.end() == m.find("setsdir") || ((setsdir = m.find("setsdir")->second)).empty())
+        setsdir = location + "/sets";
+
     std::string cache;
     if (m.end() == m.find("cache") || ((cache = m.find("cache")->second)).empty())
         cache = location + "/metadata/cache";
@@ -1070,6 +1079,7 @@ PortageRepository::make_portage_repository(
                         param<prpk_cache>(cache),
                         param<prpk_eclassdir>(eclassdir),
                         param<prpk_distdir>(distdir),
+                        param<prpk_setsdir>(setsdir),
                         param<prpk_sync>(sync),
                         param<prpk_sync_exclude>(sync_exclude),
                         param<prpk_root>(root)))));
@@ -1547,6 +1557,52 @@ PortageRepository::do_package_set(const std::string & s) const
     else if ("security" == s)
     {
         return do_security_set();
+    }
+    else if ((_imp->setsdir / (s + ".conf")).exists())
+    {
+        FSEntry ff(_imp->setsdir / (s + ".conf"));
+        Context context("When loading package set '" + s + "' from '" + stringify(ff) + "':");
+
+        AllDepAtom::Pointer result(new AllDepAtom);
+        LineConfigFile f(ff);
+        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+
+        for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+                line != line_end ; ++line)
+        {
+            std::vector<std::string> tokens;
+            tokeniser.tokenise(*line, std::back_inserter(tokens));
+            if (tokens.empty())
+                continue;
+
+            if (1 == tokens.size())
+            {
+                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                        + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
+                result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(tokens.at(0))));
+            }
+            else if ("*" == tokens.at(0))
+            {
+                result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(tokens.at(1))));
+            }
+            else if ("?" == tokens.at(0))
+            {
+                PackageDepAtom::Pointer p(new PackageDepAtom(tokens.at(1)));
+                if (! _imp->env->package_database()->query(
+                            PackageDepAtom::Pointer(new PackageDepAtom(p->package())),
+                            is_installed_only)->empty())
+                    result->add_child(p);
+            }
+            else
+                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                        + stringify(ff) + "' does not start with '*' or '?' token, skipping");
+
+            if (tokens.size() > 2)
+                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                        + stringify(ff) + "' has trailing garbage");
+        }
+
+        return result;
     }
     else
         return DepAtom::Pointer(0);

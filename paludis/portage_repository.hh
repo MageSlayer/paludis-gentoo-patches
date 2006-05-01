@@ -52,6 +52,7 @@ namespace paludis
         prpk_cache,
         prpk_distdir,
         prpk_eclassdir,
+        prpk_setsdir,
         prpk_sync,
         prpk_sync_exclude,
         prpk_root,
@@ -74,6 +75,7 @@ namespace paludis
         SmartRecordKey<prpk_cache, const FSEntry>,
         SmartRecordKey<prpk_distdir, const FSEntry>,
         SmartRecordKey<prpk_eclassdir, const FSEntry>,
+        SmartRecordKey<prpk_setsdir, const FSEntry>,
         SmartRecordKey<prpk_sync, const std::string>,
         SmartRecordKey<prpk_sync_exclude, const std::string>,
         SmartRecordKey<prpk_root, const FSEntry>
