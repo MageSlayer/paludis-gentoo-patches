@@ -170,7 +170,10 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
 std::string
 EbuildFetchCommand::commands() const
 {
-    return "fetch";
+    if (fetch_params.get<ecfpk_no_fetch>())
+        return "nofetch";
+    else
+        return "fetch";
 }
 
 bool

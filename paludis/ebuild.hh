@@ -211,6 +211,7 @@ namespace paludis
         ecfpk_root,
         ecfpk_profile,
         ecfpk_expand_vars,
+        ecfpk_no_fetch,
         last_ecfpk
     };
 
@@ -230,7 +231,8 @@ namespace paludis
         SmartRecordKey<ecfpk_flat_src_uri, std::string>,
         SmartRecordKey<ecfpk_root, std::string>,
         SmartRecordKey<ecfpk_profile, std::string>,
-        SmartRecordKey<ecfpk_expand_vars, std::map<std::string, std::string> >
+        SmartRecordKey<ecfpk_expand_vars, std::map<std::string, std::string> >,
+        SmartRecordKey<ecfpk_no_fetch, bool>
     {
     };
 

@@ -23,12 +23,40 @@
 
 pkg_nofetch()
 {
-    [[ -z "${SRC_URI}" ]] && return
+    [[ -z "${A}" ]] && return
 
-    local f
-    echo "The following files could not be fetched automatically for ${PN}:"
-    for f in ${SRC_URI} ; do
+    local f g=
+    for f in ${A} ; do
+        [[ -f "${DISTDIR}/${A}" ]] && continue
+        if [[ -z "${g}" ]] ; then
+            echo "The following files could not be fetched automatically for ${PN}:"
+            g=no
+        fi
         echo "* ${f}"
     done
 }
 
+ebuild_f_nofetch()
+{
+    local old_sandbox_write="${SANDBOX_WRITE}"
+    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${DISTDIR}"
+    if hasq "nofetch" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping pkg_nofetch (SKIP_FUNCTIONS)"
+    else
+        local a f=
+        for a in ${A} ; do
+            [[ -f "${DISTDIR}/${a}" ]] && continue
+            f=yes
+        done
+
+        if [[ -z "${f}" ]] ; then
+            ebuild_section "Skipping pkg_nofetch (fully fetched already)"
+        else
+            ebuild_section "Starting pkg_nofetch"
+            pkg_nofetch
+            ebuild_section "Done pkg_nofetch"
+            die "Manual fetching is required"
+        fi
+    fi
+    SANDBOX_WRITE="${old_sandbox_write}"
+}

@@ -1186,6 +1186,8 @@ void
 PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v,
         const InstallOptions & o) const
 {
+    static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
+
     if (! _imp->has_profile)
     {
         _imp->add_profile(_imp->profile.realpath());
@@ -1295,7 +1297,6 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
                 &::tolower);
 
-        static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
         std::list<std::string> uses;
         tokeniser.tokenise(_imp->profile_env[stringify(*x)], std::back_inserter(uses));
 
@@ -1328,6 +1329,13 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         expand_vars.insert(std::make_pair(stringify(*u), value));
     }
 
+    bool fetch_restrict(false);
+    {
+        std::list<std::string> restricts;
+        tokeniser.tokenise(metadata->get(vmk_restrict), std::back_inserter(restricts));
+        fetch_restrict = (restricts.end() != std::find(restricts.begin(), restricts.end(), "fetch"));
+    }
+
     EbuildFetchCommand fetch_cmd(EbuildCommandParams::create((
                     param<ecpk_environment>(_imp->env),
                     param<ecpk_db_entry>(&e),
@@ -1347,7 +1355,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                     param<ecfpk_expand_vars>(expand_vars),
                     param<ecfpk_flat_src_uri>(flat_src_uri),
                     param<ecfpk_root>(stringify(_imp->root) + "/"),
-                    param<ecfpk_profile>(stringify(_imp->profile))
+                    param<ecfpk_profile>(stringify(_imp->profile)),
+                    param<ecfpk_no_fetch>(fetch_restrict)
                     )));
 
     if (metadata->get(vmk_virtual).empty())
