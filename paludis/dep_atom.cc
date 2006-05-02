@@ -165,7 +165,7 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
                 q = s.find('-', q + 1);
                 if ((std::string::npos == q) || (++q >= s.length()))
                     throw PackageDepAtomError("Couldn't parse dep atom '" + ss + "'");
-                if (s.at(q) >= '0' && s.at(q) <= '9')
+                if ((s.at(q) >= '0' && s.at(q) <= '9') || (0 == s.compare(q, 3, "scm")))
                     break;
             }
 

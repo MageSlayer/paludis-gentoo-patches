@@ -151,6 +151,18 @@ namespace test_cases
             TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("one")) == use_enabled);
             TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("two")) == use_disabled);
             TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("moo")) == use_unspecified);
+
+            PackageDepAtom j("=foo/bar-scm-r3");
+            TEST_CHECK_STRINGIFY_EQUAL(j.package(), "foo/bar");
+            TEST_CHECK(j.version_spec_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(*j.version_spec_ptr(), "scm-r3");
+            TEST_CHECK_EQUAL(j.version_operator(), vo_equal);
+
+            PackageDepAtom k("=foo/bar-scm");
+            TEST_CHECK_STRINGIFY_EQUAL(k.package(), "foo/bar");
+            TEST_CHECK(k.version_spec_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(*k.version_spec_ptr(), "scm");
+            TEST_CHECK_EQUAL(k.version_operator(), vo_equal);
         }
     } test_package_dep_atom;
 }
