@@ -36,6 +36,9 @@ would be relevant if it were:
 
 - User definable package sets.
 
+- Repositories can deliver news items, warning the user of important changes
+  before they take place.
+
 \section PortageDifferencesEbuildDeveloper For the Ebuild Developer
 
 As well as the end user advantages, ebuild authors will benefit from:
@@ -60,6 +63,8 @@ As well as the end user advantages, ebuild authors will benefit from:
 - Ability to install hook scripts.
 
 - Repository definable package sets.
+
+- Ability to deliver news items to the end user.
 
 \section PortageDifferencesProgrammer For the Programmer
 
