@@ -190,6 +190,14 @@ namespace paludis
              */
             static void set_config_suffix(const std::string &);
 
+            /**
+             * Get config suffix.
+             */
+            static std::string config_suffix()
+            {
+                return _config_suffix;
+            }
+
             ///\name Repositories
             ///{
 

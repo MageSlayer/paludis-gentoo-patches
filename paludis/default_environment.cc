@@ -386,6 +386,8 @@ namespace
             MakeEnvCommand cmd(make_env_command("bash '" + stringify(f) + "'")
                     ("ROOT", DefaultConfig::get_instance()->root())
                     ("HOOK", hook.name())
+                    ("HOOK_LOG_LEVEL", Log::get_instance()->log_level_string())
+                    ("HOOK_CONFIG_SUFFIX", DefaultConfig::config_suffix())
                     ("PALUDIS_COMMAND", paludis_command));
 
             for (Hook::Iterator h(hook.begin()), h_end(hook.end()) ; h != h_end ; ++h)
