@@ -26,6 +26,7 @@
 #include "src/query.hh"
 #include "src/applets.hh"
 #include "src/sync.hh"
+#include "src/news.hh"
 #include "config.h"
 
 #include <paludis/paludis.hh>
@@ -97,6 +98,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_contents.specified() +
                     CommandLine::get_instance()->a_owner.specified() +
                     CommandLine::get_instance()->a_has_version.specified() +
+                    CommandLine::get_instance()->a_update_news.specified() +
                     CommandLine::get_instance()->a_best_version.specified()))
         {
             if ((1 == std::distance(CommandLine::get_instance()->begin_parameters(),
@@ -244,6 +246,14 @@ main(int argc, char *argv[])
                 throw DoHelp("best-version action takes exactly one parameter");
 
             return do_best_version();
+        }
+
+        if (CommandLine::get_instance()->a_update_news.specified())
+        {
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("update-news action takes no parameters");
+
+            return do_update_news();
         }
 
         throw p::InternalError(__PRETTY_FUNCTION__, "no action?");

@@ -21,6 +21,7 @@
 #include <fstream>
 #include <paludis/config_file.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
@@ -454,4 +455,33 @@ AdvisoryFile::sanitise()
 
     if ((_entries["Affected"].size() + _entries["Unaffected"].size()) == 0)
             throw AdvisoryFileError("Missing either 'Affected' or 'Unaffected' key.");
+}
+
+NewsFile::NewsFile(const FSEntry & filename) :
+    ConfigFile(filename),
+    _in_header(true)
+{
+    need_lines();
+}
+
+void
+NewsFile::accept_line(const std::string & line) const
+{
+    if (_in_header)
+    {
+        std::string::size_type p(line.find(':'));
+        if (std::string::npos == p)
+            _in_header = false;
+        else
+        {
+            std::string k(strip_leading(strip_trailing(line.substr(0, p), " \t\n"), " \t\n"));
+            std::string v(strip_leading(strip_trailing(line.substr(p + 1), " \t\n"), " \t\n"));
+            if (k == "Display-If-Installed")
+                _display_if_installed.push_back(v);
+            else if (k == "Display-If-Keyword")
+                _display_if_keyword.push_back(v);
+            if (k == "Display-If-Profile")
+                _display_if_profile.push_back(v);
+        }
+    }
 }

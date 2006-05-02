@@ -86,17 +86,24 @@ class CommandLine :
         /// --owner
         paludis::args::SwitchArg a_owner;
 
+        /// --version
+        paludis::args::SwitchArg a_version;
+
+        /// --help
+        paludis::args::SwitchArg a_help;
+
+        /// Action arguments (internal).
+        paludis::args::ArgsGroup action_args_internal;
+
         /// --has-version
         paludis::args::SwitchArg a_has_version;
 
         /// --best-version
         paludis::args::SwitchArg a_best_version;
 
-        /// --version
-        paludis::args::SwitchArg a_version;
+        /// --update-news
+        paludis::args::SwitchArg a_update_news;
 
-        /// --help
-        paludis::args::SwitchArg a_help;
 
         ///}
 

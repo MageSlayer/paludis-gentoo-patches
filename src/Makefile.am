@@ -19,6 +19,7 @@ paludis_SOURCES = \
 	licence.hh           licence.cc           \
 	contents.hh          contents.cc          \
 	owner.hh             owner.cc             \
+	news.hh              news.cc              \
 	paludis.cc
 
 paludis_LDADD = \

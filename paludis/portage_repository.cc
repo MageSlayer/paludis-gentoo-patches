@@ -134,6 +134,9 @@ namespace paludis
         /// Sets dir
         FSEntry setsdir;
 
+        /// News dir
+        FSEntry newsdir;
+
         /// Sync URL
         std::string sync;
 
@@ -234,6 +237,7 @@ Implementation<PortageRepository>::Implementation(const PortageRepositoryParams 
     eclassdir(p.get<prpk_eclassdir>()),
     distdir(p.get<prpk_distdir>()),
     setsdir(p.get<prpk_setsdir>()),
+    newsdir(p.get<prpk_newsdir>()),
     sync(p.get<prpk_sync>()),
     sync_exclude(p.get<prpk_sync_exclude>()),
     root(p.get<prpk_root>()),
@@ -450,6 +454,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     _info.insert(std::make_pair(std::string("eclassdir"), stringify(_imp->eclassdir)));
     _info.insert(std::make_pair(std::string("distdir"), stringify(_imp->distdir)));
     _info.insert(std::make_pair(std::string("setsdir"), stringify(_imp->setsdir)));
+    _info.insert(std::make_pair(std::string("newsdir"), stringify(_imp->newsdir)));
     _info.insert(std::make_pair(std::string("format"), std::string("portage")));
     _info.insert(std::make_pair(std::string("root"), stringify(_imp->root)));
     if (! _imp->sync.empty())
@@ -1055,6 +1060,10 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("setsdir") || ((setsdir = m.find("setsdir")->second)).empty())
         setsdir = location + "/sets";
 
+    std::string newsdir;
+    if (m.end() == m.find("newsdir") || ((newsdir = m.find("newsdir")->second)).empty())
+        newsdir = location + "/metadata/news";
+
     std::string cache;
     if (m.end() == m.find("cache") || ((cache = m.find("cache")->second)).empty())
         cache = location + "/metadata/cache";
@@ -1080,6 +1089,7 @@ PortageRepository::make_portage_repository(
                         param<prpk_eclassdir>(eclassdir),
                         param<prpk_distdir>(distdir),
                         param<prpk_setsdir>(setsdir),
+                        param<prpk_newsdir>(newsdir),
                         param<prpk_sync>(sync),
                         param<prpk_sync_exclude>(sync_exclude),
                         param<prpk_root>(root)))));
@@ -1659,5 +1669,113 @@ Repository::ProvideMapIterator
 PortageRepository::end_provide_map() const
 {
     return _imp->provide_map.end();
+}
+
+void
+PortageRepository::update_news() const
+{
+    Context context("When updating news for repository '" + stringify(name()) + "':");
+
+    if (! _imp->newsdir.is_directory())
+        return;
+
+    std::set<std::string> skip;
+    FSEntry
+        skip_file(_imp->root / "var" / "lib" / "paludis" / "news" /
+                ("news-" + stringify(name()) + ".skip")),
+        unread_file(_imp->root / "var" / "lib" / "paludis" / "news" /
+                ("news-" + stringify(name()) + ".unread"));
+
+    if (skip_file.is_regular_file())
+    {
+        Context local_context("When handling news skip file '" + stringify(skip_file) + "':");
+        LineConfigFile s(skip_file);
+        std::copy(s.begin(), s.end(), std::inserter(skip, skip.end()));
+    }
+
+    for (DirIterator d(_imp->newsdir), d_end ; d != d_end ; ++d)
+    {
+        Context local_context("When handling news entry '" + stringify(*d) + "':");
+
+        if (! d->is_directory())
+            continue;
+        if (! (*d / (d->basename() + ".en.txt")).is_regular_file())
+            continue;
+
+        if (skip.end() != skip.find(d->basename()))
+            continue;
+
+        try
+        {
+            NewsFile news(*d / (d->basename() + ".en.txt"));
+            bool show(true);
+
+            if (news.begin_display_if_installed() != news.end_display_if_installed())
+            {
+                bool local_show(false);
+                for (NewsFile::DisplayIfInstalledIterator i(news.begin_display_if_installed()),
+                        i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
+                    if (! _imp->env->package_database()->query(PackageDepAtom::Pointer(
+                                    new PackageDepAtom(*i)), is_installed_only)->empty())
+                        local_show = true;
+                show &= local_show;
+            }
+
+            if (news.begin_display_if_keyword() != news.end_display_if_keyword())
+            {
+                if (! _imp->has_profile)
+                {
+                    _imp->add_profile(_imp->profile.realpath());
+                    _imp->has_profile = true;
+                }
+
+                bool local_show(false);
+                for (NewsFile::DisplayIfKeywordIterator i(news.begin_display_if_keyword()),
+                        i_end(news.end_display_if_keyword()) ; i != i_end ; ++i)
+                    if (_imp->profile_env["ARCH"] == *i)
+                        local_show = true;
+                show &= local_show;
+            }
+
+            if (news.begin_display_if_profile() != news.end_display_if_profile())
+            {
+                bool local_show(false);
+                std::string profile(strip_leading_string(strip_trailing_string(
+                            strip_leading_string(stringify(_imp->profile.realpath()),
+                                stringify(_imp->location.realpath())), "/"), "/"));
+                Log::get_instance()->message(ll_debug, "Profile path is '" + profile + "'");
+                for (NewsFile::DisplayIfProfileIterator i(news.begin_display_if_profile()),
+                        i_end(news.end_display_if_profile()) ; i != i_end ; ++i)
+                    if (profile == *i)
+                        local_show = true;
+                show &= local_show;
+            }
+
+            if (show)
+            {
+                std::ofstream s(stringify(skip_file).c_str(), std::ios::out | std::ios::app);
+                if (! s)
+                    Log::get_instance()->message(ll_warning, "Cannot append to news skip file '"
+                            + stringify(skip_file) + "', skipping news item '" + stringify(*d) + "'");
+
+                std::ofstream t(stringify(unread_file).c_str(), std::ios::out | std::ios::app);
+                if (! t)
+                    Log::get_instance()->message(ll_warning, "Cannot append to unread file '"
+                            + stringify(unread_file) + "', skipping news item '" + stringify(*d) + "'");
+
+                if (s && t)
+                {
+                    s << d->basename() << std::endl;
+                    t << d->basename() << std::endl;
+                }
+            }
+        }
+        catch (const ConfigFileError & e)
+        {
+            Log::get_instance()->message(ll_warning, "Skipping news item '"
+                    + stringify(*d) + "' because of exception '" + e.message() + "' ("
+                    + e.what() + ")");
+        }
+    }
 }
 

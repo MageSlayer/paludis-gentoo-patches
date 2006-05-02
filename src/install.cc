@@ -141,6 +141,11 @@ do_install()
     {
         dep_list.add(targets);
 
+        if (CommandLine::get_instance()->a_pretend.specified())
+            env->perform_hook(p::Hook("install_pretend_pre")("TARGETS", p::join(
+                            CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters(), " ")));
+
         std::set<p::DepTag::ConstPointer, p::DepTag::Comparator> all_tags;
 
         for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
@@ -233,11 +238,8 @@ do_install()
         cout << endl << "Total: " << max_count <<
             (max_count == 1 ? " package" : " packages") << endl << endl;
 
-        if (CommandLine::get_instance()->a_pretend.specified())
+        if (CommandLine::get_instance()->a_pretend.specified() && ! all_tags.empty())
         {
-            if (all_tags.empty())
-                return return_code;
-
             TagDisplayer tag_displayer;
 
             std::set<std::string> tag_categories;
@@ -271,7 +273,13 @@ do_install()
                 if (! c->post_text().empty())
                     cout << c->post_text() << endl << endl;
             }
+        }
 
+        if (CommandLine::get_instance()->a_pretend.specified())
+        {
+            env->perform_hook(p::Hook("install_pretend_post")("TARGETS", p::join(
+                            CommandLine::get_instance()->begin_parameters(),
+                            CommandLine::get_instance()->end_parameters(), " ")));
             return return_code;
         }
 

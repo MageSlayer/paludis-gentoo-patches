@@ -497,6 +497,65 @@ namespace paludis
             }
     };
 
+    /**
+     * A NewsFile represents a GLEP 42 news file.
+     *
+     * \ingroup grpconfigfile
+     */
+    class NewsFile :
+        protected ConfigFile
+    {
+        private:
+            mutable bool _in_header;
+            mutable std::list<std::string> _display_if_installed;
+            mutable std::list<std::string> _display_if_keyword;
+            mutable std::list<std::string> _display_if_profile;
+
+        protected:
+            void accept_line(const std::string &) const;
+
+        public:
+            /**
+             * Constructor, from a filename.
+             */
+            NewsFile(const FSEntry & filename);
+
+            typedef std::list<std::string>::const_iterator DisplayIfInstalledIterator;
+
+            DisplayIfInstalledIterator begin_display_if_installed() const
+            {
+                return _display_if_installed.begin();
+            }
+
+            DisplayIfInstalledIterator end_display_if_installed() const
+            {
+                return _display_if_installed.end();
+            }
+
+            typedef std::list<std::string>::const_iterator DisplayIfKeywordIterator;
+
+            DisplayIfKeywordIterator begin_display_if_keyword() const
+            {
+                return _display_if_keyword.begin();
+            }
+
+            DisplayIfKeywordIterator end_display_if_keyword() const
+            {
+                return _display_if_keyword.end();
+            }
+
+            typedef std::list<std::string>::const_iterator DisplayIfProfileIterator;
+
+            DisplayIfProfileIterator begin_display_if_profile() const
+            {
+                return _display_if_profile.begin();
+            }
+
+            DisplayIfProfileIterator end_display_if_profile() const
+            {
+                return _display_if_profile.end();
+            }
+    };
 }
 
 #endif

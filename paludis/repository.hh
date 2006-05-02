@@ -522,6 +522,13 @@ namespace paludis
              * Remove this package from world, if it is present.
              */
             virtual void remove_from_world(const QualifiedPackageName &) const = 0;
+
+            /**
+             * Update our news.unread file.
+             */
+            virtual void update_news() const
+            {
+            }
     };
 
     /**

@@ -53,6 +53,7 @@ namespace paludis
         prpk_distdir,
         prpk_eclassdir,
         prpk_setsdir,
+        prpk_newsdir,
         prpk_sync,
         prpk_sync_exclude,
         prpk_root,
@@ -76,6 +77,7 @@ namespace paludis
         SmartRecordKey<prpk_distdir, const FSEntry>,
         SmartRecordKey<prpk_eclassdir, const FSEntry>,
         SmartRecordKey<prpk_setsdir, const FSEntry>,
+        SmartRecordKey<prpk_newsdir, const FSEntry>,
         SmartRecordKey<prpk_sync, const std::string>,
         SmartRecordKey<prpk_sync_exclude, const std::string>,
         SmartRecordKey<prpk_root, const FSEntry>
@@ -202,6 +204,8 @@ namespace paludis
             virtual void remove_from_world(const QualifiedPackageName &) const
             {
             }
+
+            virtual void update_news() const;
     };
 
     /**

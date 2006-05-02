@@ -35,10 +35,13 @@ CommandLine::CommandLine() :
     a_list_dep_tag_categories(&action_args, "list-dep-tag-categories", '\0', "List known dep tag categories"),
     a_contents(&action_args, "contents", 'k', "Display contents of a package"),
     a_owner(&action_args, "owner", 'o', "Display the owner of a file"),
-    a_has_version(&action_args, "has-version", '\0', "Check whether the specified atom is installed"),
-    a_best_version(&action_args, "best-version", '\0', "Display the best version of the specified atom"),
     a_version(&action_args,  "version",      'V', "Display program version"),
     a_help(&action_args,     "help",         'h', "Display program help"),
+
+    action_args_internal(this, "More actions (internal use)"),
+    a_has_version(&action_args_internal, "has-version", '\0', "Check whether the specified atom is installed"),
+    a_best_version(&action_args_internal, "best-version", '\0', "Display the best version of the specified atom"),
+    a_update_news(&action_args_internal, "update-news", '\0', "Regenerate news.unread files"),
 
     general_args(this, "General options"),
     a_log_level(&general_args, "log-level",  '\0', "Specify the log level",
