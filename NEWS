@@ -1,5 +1,28 @@
 News for Paludis
 ================
 
+This file lists the major changes between versions. For a more detailed list
+of every change, see the ChangeLog.
+
+0.2.1:
+    * Build issues caused by trying to invoke sandbox from inside sandbox have
+      been fixed.
+
+    * The value of EAPI is now shown in the --install mask reasons.
+
+    * User and repository defined package sets are supported.
+
+    * The hook script interface has been enhanced. A hook script for logging
+      important actions to paludis.log is included.
+
+    * The --best-version output no longer includes the ::repository suffix.
+
+    * VDB reading is more tolerant of missing and malformed files.
+
+    * Using --query on a package set produces a better error.
+
+    * Ebuilds using fetch restrict will now have pkg_nofetch called where
+      appropriate.
+
 0.2.0:
     Initial public release.
