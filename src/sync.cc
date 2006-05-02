@@ -67,9 +67,22 @@ int do_sync()
     p::Environment * const env(p::DefaultEnvironment::get_instance());
 
     if (CommandLine::get_instance()->empty())
+    {
+        std::string targets;
         for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
                 r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+            targets.append(stringify((*r)->name()) + " ");
+
+        env->perform_hook(p::Hook("sync_all_pre")("TARGETS", targets));
+        for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
+                r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+        {
+            env->perform_hook(p::Hook("sync_pre")("TARGET", stringify((*r)->name())));
             return_code |= do_one_sync(*r);
+            env->perform_hook(p::Hook("sync_post")("TARGET", stringify((*r)->name())));
+        }
+        env->perform_hook(p::Hook("sync_all_post")("TARGETS", targets));
+    }
     else
     {
         std::set<p::RepositoryName> repo_names;
