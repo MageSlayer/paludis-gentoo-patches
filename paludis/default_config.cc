@@ -217,7 +217,7 @@ DefaultConfig::DefaultConfig() :
 
         if (_default_licenses.empty())
             throw DefaultConfigError("No default licenses specified (a licenses.conf file should "
-                    "contain an entry in the form '* keyword', or '* *' if you don't want any "
+                    "contain an entry in the form '* license license', or '* *' if you don't want any "
                     "license filtering)");
     }
 
