@@ -117,6 +117,14 @@ namespace test
             }
 
             /**
+             * Should we be skipped?
+             */
+            virtual bool skip() const
+            {
+                return false;
+            }
+
+            /**
              * After how many seconds should we timeout?
              */
             virtual unsigned max_run_time() const

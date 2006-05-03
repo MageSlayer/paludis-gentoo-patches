@@ -19,6 +19,7 @@
 
 #include <paludis/portage_repository.hh>
 #include <paludis/test_environment.hh>
+#include <paludis/util/system.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -501,6 +502,11 @@ namespace test_cases
     struct PortageRepositoryMetadataUncachedTest : TestCase
     {
         PortageRepositoryMetadataUncachedTest() : TestCase("metadata uncached") { }
+
+        bool skip() const
+        {
+            return ! getenv_with_default("SANDBOX_ON", "").empty();
+        }
 
         void run()
         {

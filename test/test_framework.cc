@@ -200,6 +200,12 @@ RunTest::operator() (TestCase * test_case) const
 
     for (int repeat = 0 ; repeat < 2 ; ++repeat)
     {
+        if (test_case->skip())
+        {
+            std::cout << "(skip)" << std::endl;
+            break;
+        }
+
         if (0 != repeat)
             std::cout << "  (repeat): " << std::flush;
 
