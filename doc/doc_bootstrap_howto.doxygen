@@ -172,7 +172,7 @@ export EPAUSE_IGNORE="yes"
 
 case "${PN}" in
 
-    python)
+    python|portage)
         export SKIP_FUNCTIONS=test
         export SANDBOX_PREDICT=/
         ;;
