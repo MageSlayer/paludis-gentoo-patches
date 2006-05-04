@@ -24,9 +24,9 @@ subscribe to the <code>paludis-sekrit</code> mailing list.
 \section BootstrapHowtoRequirements Requirements
 
 Install Paludis locally, being sure to configure <code>sysconfdir</code> as
-<code>/etc</code> to avoid confusion later on. There're ebuilds
+<code>/etc</code> to avoid confusion later on. There're ebuilds in the tree, or in
 <a href="http://svn.berlios.de/viewcvs/paludis/overlay/sys-apps/paludis/">
-in the Paludis overlay</a>.
+the Paludis overlay</a> if you need SVN ebuilds.
 
 You'll need libebt, eselect and Subversion. You'll also need either g++-3.4,
 g++-4.1 or some other reasonably standard C++ compiler along with a complete
@@ -192,7 +192,7 @@ Set up your repository files. Do not tinker with the VDB location, it
 changed on <code>/usr</code> is silly. We use the <code>${ROOT}</code> variable,
 which is set magically, to make the config work both in and outside of a
 chroot (this is one of the reasons we have the weird-looking specpath
-thing):
+thing). The Paludis overlay is optional but recommended.
 
 \verbatim
 cat <<"END" > /mychroot/etc/paludis/repositories/gentoo.conf
