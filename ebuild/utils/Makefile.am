@@ -55,16 +55,16 @@ EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash \
 	newlib.so.in newlib.a.in dolib.so.in dolib.a.in
 
 newlib.a : newlib.a.in
-	cat newlib.a.in > newlib.a
+	cat $< > $@
 
 newlib.so : newlib.so.in
-	cat newlib.so.in > newlib.so
+	cat $< > $@
 
 dolib.so : dolib.so.in
-	cat dolib.so.in > dolib.so
+	cat $< > $@
 
 dolib.a : dolib.a.in
-	cat dolib.a.in > dolib.a
+	cat $< > $@
 
 check_PROGRAMS =
 
