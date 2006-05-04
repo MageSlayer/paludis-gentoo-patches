@@ -50,7 +50,8 @@ namespace
 
 void do_one_query(
         const p::Environment * const env,
-        const std::string & q)
+        const std::string & q,
+        p::MaskReasons & mask_reasons_to_explain)
 {
     p::Context local_context("When handling query '" + q + "':");
 
@@ -124,19 +125,39 @@ void do_one_query(
                 else
                 {
                     std::string reasons;
-                    if (masks.test(p::mr_keyword))
-                        reasons.append("K");
-                    if (masks.test(p::mr_user_mask))
-                        reasons.append("U");
-                    if (masks.test(p::mr_profile_mask))
-                        reasons.append("P");
-                    if (masks.test(p::mr_repository_mask))
-                        reasons.append("R");
-                    if (masks.test(p::mr_eapi))
-                        reasons.append("E");
+                    for (p::MaskReason m(p::MaskReason(0)) ; m < p::last_mr ;
+                            m = p::MaskReason(static_cast<int>(m) + 1))
+                    {
+                        if (! masks.test(m))
+                            continue;
+
+                        switch (m)
+                        {
+                            case p::mr_keyword:
+                                reasons.append("K");
+                                break;
+                            case p::mr_user_mask:
+                                reasons.append("U");
+                                break;
+                            case p::mr_profile_mask:
+                                reasons.append("P");
+                                break;
+                            case p::mr_repository_mask:
+                                reasons.append("R");
+                                break;
+                            case p::mr_eapi:
+                                reasons.append("E");
+                                break;
+                            case p::mr_license:
+                                reasons.append("L");
+                                break;
+                            case p::last_mr:
+                                break;
+                        }
+                    }
+                    mask_reasons_to_explain |= masks;
                     cout << colour(cl_masked, "(" + stringify(e->get<p::pde_version>()) + ")" + reasons);
                 }
-                /// \todo ^^ text description of masks
 
                 if (*e == display_entry)
                     cout << "*";
@@ -247,13 +268,15 @@ int do_query()
     p::Context context("When performing query action from command line:");
     p::Environment * const env(p::DefaultEnvironment::get_instance());
 
+    p::MaskReasons mask_reasons_to_explain;
+
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());
     for ( ; q != q_end ; ++q)
     {
         try
         {
-            do_one_query(env, *q);
+            do_one_query(env, *q, mask_reasons_to_explain);
         }
         catch (const p::AmbiguousPackageNameError & e)
         {
@@ -289,6 +312,48 @@ int do_query()
             cerr << "  * " << e.backtrace("\n  * ") << e.message() << endl;
             cerr << endl;
         }
+    }
+
+    if (mask_reasons_to_explain.any())
+    {
+        cout << colour(cl_heading, "Key to mask reasons:") << endl << endl;
+
+        /* use for/case to get compiler warnings when new mr_ are added */
+        for (p::MaskReason m(p::MaskReason(0)) ; m < p::last_mr ;
+                m = p::MaskReason(static_cast<int>(m) + 1))
+        {
+            if (! mask_reasons_to_explain.test(m))
+                continue;
+
+            switch (m)
+            {
+                case p::mr_keyword:
+                    cout << "* " << colour(cl_yellow, "K") << ": keyword";
+                    break;
+                case p::mr_user_mask:
+                    cout << "* " << colour(cl_yellow, "U") << ": user mask";
+                    break;
+                case p::mr_profile_mask:
+                    cout << "* " << colour(cl_yellow, "P") << ": profile mask";
+                    break;
+                case p::mr_repository_mask:
+                    cout << "* " << colour(cl_yellow, "R") << ": repository mask";
+                    break;
+                case p::mr_eapi:
+                    cout << "* " << colour(cl_yellow, "K") << ": EAPI";
+                    break;
+                case p::mr_license:
+                    cout << "* " << colour(cl_yellow, "K") << ": licence";
+                    break;
+
+                case p::last_mr:
+                    break;
+            }
+
+            cout << endl;
+        }
+
+        cout << endl;
     }
 
     return return_code;
