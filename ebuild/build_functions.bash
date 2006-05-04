@@ -40,26 +40,34 @@ econf()
         [[ -z "${CBUILD}" ]] || LOCAL_EXTRA_ECONF="--build=${CBUILD} ${LOCAL_EXTRA_ECONF}"
         [[ -z "${CTARGET}" ]] || LOCAL_EXTRA_ECONF="--target=${CTARGET} ${LOCAL_EXTRA_ECONF}"
 
-        local cmd="${ECONF_SOURCE}/configure"
-        cmd="${cmd} --prefix=/usr"
-        cmd="${cmd} --host=${CHOST}"
-        cmd="${cmd} --mandir=/usr/share/man"
-        cmd="${cmd} --infodir=/usr/share/info"
-        cmd="${cmd} --datadir=/usr/share"
-        cmd="${cmd} --sysconfdir=/etc"
-        cmd="${cmd} --localstatedir=/var/lib"
         # Check that this is actually what's wanted for multilib etc.
+        local libcmd=
         if [[ -n "${ABI}" ]] ; then
             local v="LIBDIR_${ABI}"
             if [[ -n "${!v}" ]] ; then
-                cmd="${cmd} --libdir=/usr/$(ebuild_get_libdir)"
+                libcmd="--libdir=/usr/$(ebuild_get_libdir)"
             fi
         fi
 
-        cmd="${LOCAL_ECONF_WRAPPER} ${cmd} $@ ${LOCAL_EXTRA_ECONF}"
+        echo ${LOCAL_ECONF_WRAPPER} ${ECONF_SOURCE}/configure \
+            --prefix=/usr \
+            --host=${CHOST} \
+            --mandir=/usr/share/man \
+            --infodir=/usr/share/info \
+            --datadir=/usr/share \
+            --sysconfdir=/etc \
+            --localstatedir=/var/lib \
+            ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} 1>&2
 
-        echo "${cmd}" 1>&2
-        ${cmd} || die "econf failed"
+        ${LOCAL_ECONF_WRAPPER} ${ECONF_SOURCE}/configure \
+            --prefix=/usr \
+            --host=${CHOST} \
+            --mandir=/usr/share/man \
+            --infodir=/usr/share/info \
+            --datadir=/usr/share \
+            --sysconfdir=/etc \
+            --localstatedir=/var/lib \
+            ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} || die "econf failed"
 
     else
         die "No configure script for econf"
