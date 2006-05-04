@@ -28,6 +28,9 @@ pkg_setup()
 
 ebuild_f_setup()
 {
+    local old_sandbox_write="${SANDBOX_WRITE}"
+    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+
     if hasq "setup" ${RESTRICT} ; then
         ebuild_section "Skipping pkg_setup (RESTRICT)"
     elif hasq "setup" ${SKIP_FUNCTIONS} ; then
@@ -37,5 +40,7 @@ ebuild_f_setup()
         pkg_setup
         ebuild_section "Done pkg_setup"
     fi
+
+    SANDBOX_WRITE="${old_sandbox_write}"
 }
 
