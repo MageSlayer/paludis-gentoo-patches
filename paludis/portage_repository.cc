@@ -1227,6 +1227,16 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 
     PackageDatabaseEntry e(q, v, name());
 
+    bool fetch_restrict(false), no_mirror(false);
+    {
+        std::list<std::string> restricts;
+        tokeniser.tokenise(metadata->get(vmk_restrict), std::back_inserter(restricts));
+        fetch_restrict = (restricts.end() != std::find(restricts.begin(), restricts.end(), "fetch")) ||
+            (restricts.end() != std::find(restricts.begin(), restricts.end(), "nofetch"));
+        no_mirror = (restricts.end() != std::find(restricts.begin(), restricts.end(), "mirror")) ||
+            (restricts.end() != std::find(restricts.begin(), restricts.end(), "nomirror"));
+    }
+
     std::string archives, flat_src_uri;
     {
         std::set<std::string> already_in_archives;
@@ -1279,8 +1289,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 
             /* add mirror://gentoo/ entries */
             /// \todo don't hardcode
-            /// \todo avoid for nomirror?
-            if (is_mirror("gentoo"))
+            if (is_mirror("gentoo") && ! no_mirror)
             {
                 for (std::list<std::string>::iterator
                         m(_imp->mirrors.find("gentoo")->second.begin()),
@@ -1337,13 +1346,6 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             value.append(stringify(*xx).erase(0, stringify(*u).length() + 1) + " ");
 
         expand_vars.insert(std::make_pair(stringify(*u), value));
-    }
-
-    bool fetch_restrict(false);
-    {
-        std::list<std::string> restricts;
-        tokeniser.tokenise(metadata->get(vmk_restrict), std::back_inserter(restricts));
-        fetch_restrict = (restricts.end() != std::find(restricts.begin(), restricts.end(), "fetch"));
     }
 
     EbuildFetchCommand fetch_cmd(EbuildCommandParams::create((
