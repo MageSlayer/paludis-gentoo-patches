@@ -4,6 +4,17 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.2.2:
+    * Deplist tags are now used for all package sets.
+
+    * The --query output now includes a key explaining the mask symbols.
+
+    * News items can now be delivered via repositories (GLEP 42).
+
+    * Various sandbox issues have been fixed.
+
+    * Various bugfixes.
+
 0.2.1:
     * Build issues caused by trying to invoke sandbox from inside sandbox have
       been fixed.
