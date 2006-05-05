@@ -444,6 +444,7 @@ DefaultEnvironment::local_package_set(const std::string & s) const
     {
         LineConfigFile f(ff);
         AllDepAtom::Pointer result(new AllDepAtom);
+        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s));
 
         for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
@@ -457,15 +458,20 @@ DefaultEnvironment::local_package_set(const std::string & s) const
             {
                 Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(tokens.at(0))));
+                PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(0)));
+                atom->set_tag(tag);
+                result->add_child(atom);
             }
             else if ("*" == tokens.at(0))
             {
-                result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(tokens.at(1))));
+                PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(1)));
+                atom->set_tag(tag);
+                result->add_child(atom);
             }
             else if ("?" == tokens.at(0))
             {
                 PackageDepAtom::Pointer p(new PackageDepAtom(tokens.at(1)));
+                p->set_tag(tag);
                 if (! package_database()->query(
                             PackageDepAtom::Pointer(new PackageDepAtom(p->package())),
                             is_installed_only)->empty())

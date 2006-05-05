@@ -737,6 +737,7 @@ VDBRepository::do_package_set(const std::string & s) const
     if ("everything" == s)
     {
         AllDepAtom::Pointer result(new AllDepAtom);
+        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag("everything"));
 
         if (! _imp->entries_valid)
             _imp->load_entries();
@@ -745,6 +746,7 @@ VDBRepository::do_package_set(const std::string & s) const
                 p_end(_imp->entries.end()) ; p != p_end ; ++p)
         {
             PackageDepAtom::Pointer atom(new PackageDepAtom(p->name));
+            atom->set_tag(tag);
             result->add_child(atom);
         }
 
@@ -753,6 +755,7 @@ VDBRepository::do_package_set(const std::string & s) const
     else if ("world" == s)
     {
         AllDepAtom::Pointer result(new AllDepAtom);
+        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag("world"));
 
         if (_imp->world_file.exists())
         {
@@ -762,6 +765,7 @@ VDBRepository::do_package_set(const std::string & s) const
                     line != line_end ; ++line)
             {
                 PackageDepAtom::Pointer atom(new PackageDepAtom(QualifiedPackageName(*line)));
+                atom->set_tag(tag);
                 result->add_child(atom);
             }
         }

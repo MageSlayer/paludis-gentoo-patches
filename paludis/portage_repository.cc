@@ -208,6 +208,9 @@ namespace paludis
         /// System packages.
         mutable AllDepAtom::Pointer system_packages;
 
+        /// Tag for system packages.
+        mutable GeneralSetDepTag::Pointer system_tag;
+
         /// Constructor.
         Implementation(const PortageRepositoryParams &);
 
@@ -247,7 +250,8 @@ Implementation<PortageRepository>::Implementation(const PortageRepositoryParams 
     has_profile(false),
     has_arch_list(false),
     has_mirrors(false),
-    system_packages(new AllDepAtom)
+    system_packages(new AllDepAtom),
+    system_tag(new GeneralSetDepTag("system"))
 {
 }
 
@@ -415,6 +419,7 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
 
             Context context_line("When parsing line '" + *line + "':");
             PackageDepAtom::Pointer atom(new PackageDepAtom(line->substr(1)));
+            atom->set_tag(system_tag);
             system_packages->add_child(atom);
         }
     }
@@ -1581,6 +1586,8 @@ PortageRepository::do_package_set(const std::string & s) const
     }
     else if ((_imp->setsdir / (s + ".conf")).exists())
     {
+        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s));
+
         FSEntry ff(_imp->setsdir / (s + ".conf"));
         Context context("When loading package set '" + s + "' from '" + stringify(ff) + "':");
 
@@ -1600,15 +1607,20 @@ PortageRepository::do_package_set(const std::string & s) const
             {
                 Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(tokens.at(0))));
+                PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(0)));
+                atom->set_tag(tag);
+                result->add_child(atom);
             }
             else if ("*" == tokens.at(0))
             {
-                result->add_child(PackageDepAtom::Pointer(new PackageDepAtom(tokens.at(1))));
+                PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(1)));
+                atom->set_tag(tag);
+                result->add_child(atom);
             }
             else if ("?" == tokens.at(0))
             {
                 PackageDepAtom::Pointer p(new PackageDepAtom(tokens.at(1)));
+                p->set_tag(tag);
                 if (! _imp->env->package_database()->query(
                             PackageDepAtom::Pointer(new PackageDepAtom(p->package())),
                             is_installed_only)->empty())

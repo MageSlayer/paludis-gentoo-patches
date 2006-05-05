@@ -125,13 +125,14 @@ namespace paludis
 
     class DepTag;
     class GLSADepTag;
+    class GeneralSetDepTag;
 
     /**
      * Visitor class for visiting the different DepTag subclasses.
      *
      * \ingroup grpdeptag
      */
-    typedef VisitorTypes<GLSADepTag *> DepTagVisitorTypes;
+    typedef VisitorTypes<GLSADepTag *, GeneralSetDepTag *> DepTagVisitorTypes;
 
     /**
      * A DepTag can be associated with a PackageDepAtom, and is transferred
@@ -215,6 +216,29 @@ namespace paludis
              * hole').
              */
             std::string glsa_title() const;
+    };
+
+    /**
+     * DepTag subclass for general sets.
+     *
+     * \ingroup grpdeptag
+     */
+    class GeneralSetDepTag :
+        public DepTag,
+        public Visitable<GeneralSetDepTag, DepTagVisitorTypes>
+    {
+        private:
+            const std::string _id;
+
+        public:
+            /**
+             * Constructor.
+             */
+            GeneralSetDepTag(const std::string & id);
+
+            virtual std::string short_text() const;
+
+            virtual std::string category() const;
     };
 }
 

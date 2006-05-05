@@ -224,7 +224,7 @@ Environment::end_provide_map() const
 DepAtom::Pointer
 Environment::package_set(const std::string & s) const
 {
-    if (s == "everything" || s == "system" || s == "world")
+    if (s == "everything" || s == "system" || s == "world" || s == "security")
     {
         AllDepAtom::Pointer result(new AllDepAtom);
 

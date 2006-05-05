@@ -53,6 +53,31 @@ namespace
      */
     static const DepTagCategoryMaker::RegisterMaker register_glsa_dep_tag("glsa",
             &make_glsa_dep_tag);
+
+    /**
+     * Create the DepTagCategory for seneral sets.
+     *
+     * \see register_general_set_dep_tag
+     *
+     * \ingroup grpdeptag
+     */
+    DepTagCategory::ConstPointer
+    make_general_set_dep_tag()
+    {
+        return DepTagCategory::ConstPointer(new DepTagCategory(
+                    "general",
+                    "General sets",
+                    "",
+                    ""));
+    }
+
+    /**
+     * Register the general set dep tag category instance.
+     *
+     * \ingroup grpdeptag
+     */
+    static const DepTagCategoryMaker::RegisterMaker register_general_set_dep_tag("general",
+            &make_general_set_dep_tag);
 }
 
 DepTagCategory::DepTagCategory(const std::string & id,
@@ -100,5 +125,22 @@ std::string
 GLSADepTag::glsa_title() const
 {
     return _glsa_title;
+}
+
+GeneralSetDepTag::GeneralSetDepTag(const std::string & id) :
+    _id(id)
+{
+}
+
+std::string
+GeneralSetDepTag::short_text() const
+{
+    return _id;
+}
+
+std::string
+GeneralSetDepTag::category() const
+{
+    return "general";
 }
 

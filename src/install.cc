@@ -44,6 +44,18 @@ namespace
             cout << "* " << colour(cl_yellow, tag->short_text()) << ": "
                 << tag->glsa_title() << endl;
         }
+
+        void visit(const p::GeneralSetDepTag * const tag)
+        {
+            cout << "* " << colour(cl_yellow, tag->short_text());
+            if (tag->short_text() == "world")
+                cout << ":      " << "Packages that have been explicitly installed";
+            else if (tag->short_text() == "everything")
+                cout << ":      " << "All installed packages";
+            else if (tag->short_text() == "system")
+                cout << ":      " << "Packages that are part of the base system";
+            cout << endl;
+        }
     };
 }
 
@@ -256,7 +268,7 @@ do_install()
                         find_maker(*cat)());
 
                 if (! c->title().empty())
-                    cout << colour(cl_heading, c->title()) << endl << endl;
+                    cout << colour(cl_heading, c->title()) << ":" << endl << endl;
                 if (! c->pre_text().empty())
                     cout << c->pre_text() << endl << endl;
 
