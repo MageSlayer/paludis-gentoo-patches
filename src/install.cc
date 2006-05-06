@@ -217,12 +217,21 @@ do_install()
                     i_end(dep->get<p::dle_metadata>()->end_iuse()) ; i != i_end ; ++i)
             {
                 if (env->query_use(*i, &p))
-                    cout << " " << colour(cl_flag_on, *i);
-                else if (env->package_database()->fetch_repository(
-                            dep->get<p::dle_repository>())->query_use_mask(*i, &p))
-                    cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");
+                {
+                    if (env->package_database()->fetch_repository(
+                                dep->get<p::dle_repository>())->query_use_force(*i, &p))
+                        cout << " " << colour(cl_flag_on, "(" + p::stringify(*i) + ")");
+                    else
+                        cout << " " << colour(cl_flag_on, *i);
+                }
                 else
-                    cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));
+                {
+                    if (env->package_database()->fetch_repository(
+                                dep->get<p::dle_repository>())->query_use_mask(*i, &p))
+                        cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");
+                    else
+                        cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));
+                }
             }
 
             /* display tag, add tag to our post display list */
