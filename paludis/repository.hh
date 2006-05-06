@@ -432,7 +432,7 @@ namespace paludis
              */
             bool query_use_force(const UseFlagName & u, const PackageDatabaseEntry *pde) const
             {
-                return do_query_use_mask(u, pde);
+                return do_query_use_force(u, pde);
             }
 
             /**
