@@ -54,6 +54,10 @@ As well as the end user advantages, ebuild authors will benefit from:
 - Per package use masking, and from this per package use combination
   restrictions.
 
+- Profile-level use forcing, globally and per-package, and from this the
+  ability to specify a default in cases where one of n USE flags must be
+  enabled.
+
 - Default deep dependency resolution.
 
 - Support for -scm versions.
