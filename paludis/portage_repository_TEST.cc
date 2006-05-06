@@ -565,6 +565,9 @@ namespace test_cases
                 TEST_CHECK(! repo->query_use_mask(UseFlagName("flag3"), &p1));
                 TEST_CHECK(repo->query_use_mask(UseFlagName("flag3"), &p4));
                 TEST_CHECK(repo->query_use(UseFlagName("flag3"), &p1) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag4"), &p3) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag5"), &p2) == use_enabled);
+                TEST_CHECK(repo->query_use(UseFlagName("flag5"), &p1) == use_disabled);
             }
         }
     } test_portage_repository_query_use;

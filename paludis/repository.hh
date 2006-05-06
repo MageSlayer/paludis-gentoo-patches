@@ -176,6 +176,11 @@ namespace paludis
             virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
 
             /**
+             * Override in descendents: get use force.
+             */
+            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
+
+            /**
              * Override in descendents: is this an arch flag?
              */
             virtual bool do_is_arch_flag(const UseFlagName &) const = 0;
@@ -408,6 +413,8 @@ namespace paludis
             {
                 if (do_query_use_mask(u, pde))
                     return use_disabled;
+                else if (do_query_use_force(u, pde))
+                    return use_enabled;
                 else
                     return do_query_use(u, pde);
             }
@@ -416,6 +423,14 @@ namespace paludis
              * Query whether the specified use flag is masked.
              */
             bool query_use_mask(const UseFlagName & u, const PackageDatabaseEntry *pde) const
+            {
+                return do_query_use_mask(u, pde);
+            }
+
+            /**
+             * Query whether the specified use flag is forced.
+             */
+            bool query_use_force(const UseFlagName & u, const PackageDatabaseEntry *pde) const
             {
                 return do_query_use_mask(u, pde);
             }

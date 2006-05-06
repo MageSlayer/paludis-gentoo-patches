@@ -622,6 +622,12 @@ VDBRepository::do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry
     return false;
 }
 
+bool
+VDBRepository::do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const
+{
+    return false;
+}
+
 CountedPtr<Repository>
 VDBRepository::make_vdb_repository(
         const Environment * const env,

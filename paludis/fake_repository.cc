@@ -208,6 +208,12 @@ FakeRepository::do_query_use_mask(const UseFlagName &, const PackageDatabaseEntr
 }
 
 bool
+FakeRepository::do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const
+{
+    return false;
+}
+
+bool
 FakeRepository::do_is_arch_flag(const UseFlagName &) const
 {
     return false;

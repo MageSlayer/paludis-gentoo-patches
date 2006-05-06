@@ -175,6 +175,12 @@ namespace paludis
         /// Package use mask.
         mutable PackageUseMaskMap package_use_mask;
 
+        /// Use force.
+        mutable UseMaskSet use_force;
+
+        /// Package use force.
+        mutable PackageUseMaskMap package_use_force;
+
         /// Use.
         mutable UseMap use;
 
@@ -380,6 +386,49 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
             PackageUseMaskMap::iterator i = package_use_mask.find(p);
             if (package_use_mask.end() == i)
                 i = package_use_mask.insert(make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >())).first;
+
+            for ( ; t != t_end; ++t)
+            {
+                (*i).second.push_back(std::make_pair(d, UseFlagName(*t)));
+            }
+        }
+    }
+
+    if ((f / "use.force").exists())
+    {
+        Context context_local("When reading use.force file:");
+
+        LineConfigFile use_force_f(f / "use.force");
+        for (LineConfigFile::Iterator line(use_force_f.begin()), line_end(use_force_f.end());
+                line != line_end; ++line)
+        {
+            if ('-' == line->at(0))
+                use_force.erase(UseFlagName(line->substr(1)));
+            else
+                use_force.insert(UseFlagName(*line));
+        }
+    }
+
+    if ((f / "package.use.force").exists())
+    {
+        Context context_local("When reading package use.force file:");
+
+        LineConfigFile package_use_force_f(f / "package.use.force");
+        for (LineConfigFile::Iterator line(package_use_force_f.begin()), line_end(package_use_force_f.end());
+                line != line_end; ++line)
+        {
+            std::deque<std::string> tokens;
+            tokeniser.tokenise(*line, std::back_inserter(tokens));
+            if (tokens.size() < 2)
+                continue;
+
+            std::deque<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
+            PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
+            QualifiedPackageName p(d->package());
+
+            PackageUseMaskMap::iterator i = package_use_force.find(p);
+            if (package_use_force.end() == i)
+                i = package_use_force.insert(make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >())).first;
 
             for ( ; t != t_end; ++t)
             {
@@ -972,7 +1021,7 @@ PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabas
     if (_imp->package_use_mask.end() == it)
         return false;
 
-    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator i = it->second.begin(), 
+    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator i = it->second.begin(),
             i_end = it->second.end(); i != i_end; ++i)
     {
         static bool recursive(false);
@@ -993,6 +1042,49 @@ PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabas
 
     return false;
 }
+
+bool
+PortageRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEntry *e) const
+{
+    if (! _imp->has_profile)
+    {
+        Context context("When checking USE force for '" + stringify(u) + "':");
+        _imp->add_profile(_imp->profile.realpath());
+        _imp->has_profile = true;
+    }
+
+    if (_imp->use_force.end() != _imp->use_force.find(u))
+        return true;
+
+    if (0 == e)
+        return false;
+
+    PackageUseMaskMap::iterator it = _imp->package_use_force.find(e->get<pde_name>());
+    if (_imp->package_use_mask.end() == it)
+        return false;
+
+    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator i = it->second.begin(),
+            i_end = it->second.end(); i != i_end; ++i)
+    {
+        static bool recursive(false);
+        if (recursive)
+        {
+            if (i->first->use_requirements_ptr())
+                continue;
+            if (match_package(_imp->env, i->first, e) && u == i->second)
+                return true;
+        }
+        else
+        {
+            Save<bool> save_recursive(&recursive, true);
+            if (match_package(_imp->env, i->first, e) && u == i->second)
+                return true;
+        }
+    }
+
+    return false;
+}
+
 
 void
 PortageRepository::need_virtual_names() const
