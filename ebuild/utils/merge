@@ -99,6 +99,7 @@ merge_this()
                 echo -n "$(stat -c '%Y' -- ${2}/${ff} )" >> ${contents}
                 echo >> ${contents}
             fi
+            hash -r
         elif [[ -d ${f} ]] ; then
             local ok=
             if [[ -d "${2}/${ff}"/ ]] ; then
