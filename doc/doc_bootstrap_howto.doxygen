@@ -177,7 +177,7 @@ case "${PN}" in
         export SANDBOX_PREDICT=/
         ;;
 
-    automake|glibc|e2fsprogs|neon|gettext)
+    automake|glibc|e2fsprogs|neon|gettext|tar)
         export SKIP_FUNCTIONS=test
         ;;
 
