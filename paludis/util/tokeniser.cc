@@ -22,7 +22,7 @@
 using namespace paludis;
 
 WhitespaceTokeniser::WhitespaceTokeniser() :
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(" \t\n")
+    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(" \t\r\n")
 {
 }
 

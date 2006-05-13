@@ -315,8 +315,7 @@ AdvisoryLine::AdvisoryLine(const std::string & s) :
     _line(s),
     _is_range(false)
 {
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t");
-    tokeniser.tokenise(s, std::back_inserter(_tokens));
+    WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(_tokens));
 
     if ((_tokens.size() < 1) || (_tokens.size() > 2))
         throw AdvisoryFileError("Wrong count of atoms on line.");

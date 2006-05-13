@@ -536,13 +536,12 @@ VDBRepository::do_contents(
 
     std::string line;
     unsigned line_number(0);
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> t(" \t\n");
     while (std::getline(ff, line))
     {
         ++line_number;
 
         std::vector<std::string> tokens;
-        t.tokenise(line, std::back_inserter(tokens));
+        WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
         if (tokens.empty())
             continue;
 

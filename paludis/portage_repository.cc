@@ -277,9 +277,8 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
     for (UseFlagSet::const_iterator x(expand_list.begin()), x_end(expand_list.end()) ;
             x != x_end ; ++x)
     {
-        static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
         std::list<std::string> uses;
-        tokeniser.tokenise(profile_env[stringify(*x)], std::back_inserter(uses));
+        WhitespaceTokeniser::get_instance()->tokenise(profile_env[stringify(*x)], std::back_inserter(uses));
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
         {
@@ -300,8 +299,6 @@ void
 Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
 {
     Context context("When reading profile directory '" + stringify(f) + "':");
-
-    static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
 
     if (! f.is_directory())
     {
@@ -337,7 +334,7 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
 
         KeyValueConfigFile make_defaults_f(f / "make.defaults");
         std::deque<std::string> uses;
-        tokeniser.tokenise(make_defaults_f.get("USE"), std::back_inserter(uses));
+        WhitespaceTokeniser::get_instance()->tokenise(make_defaults_f.get("USE"), std::back_inserter(uses));
         for (std::deque<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
         {
@@ -347,7 +344,8 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
                 use[UseFlagName(*u)] = use_enabled;
         }
 
-        tokeniser.tokenise(make_defaults_f.get("USE_EXPAND"), create_inserter<UseFlagName>(
+        WhitespaceTokeniser::get_instance()->tokenise(
+                make_defaults_f.get("USE_EXPAND"), create_inserter<UseFlagName>(
                     std::inserter(expand_list, expand_list.begin())));
 
         for (KeyValueConfigFile::Iterator k(make_defaults_f.begin()),
@@ -377,7 +375,7 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
                 line != line_end; ++line)
         {
             std::deque<std::string> tokens;
-            tokeniser.tokenise(*line, std::back_inserter(tokens));
+            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
             if (tokens.size() < 2)
                 continue;
 
@@ -420,7 +418,7 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
                 line != line_end; ++line)
         {
             std::deque<std::string> tokens;
-            tokeniser.tokenise(*line, std::back_inserter(tokens));
+            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
             if (tokens.size() < 2)
                 continue;
 
@@ -448,7 +446,7 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
                 line != line_end ; ++line)
         {
             std::deque<std::string> tokens;
-            tokeniser.tokenise(*line, std::back_inserter(tokens));
+            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
             if (tokens.size() < 2)
                 continue;
             virtuals_map.erase(QualifiedPackageName(tokens[0]));
@@ -1258,15 +1256,13 @@ PortageRepository::do_is_mirror(const std::string & s) const
 {
     if (! _imp->has_mirrors)
     {
-        static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-
         if ((_imp->location / "profiles" / "thirdpartymirrors").exists())
         {
             LineConfigFile mirrors(_imp->location / "profiles" / "thirdpartymirrors");
             for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
             {
                 std::vector<std::string> entries;
-                tokeniser.tokenise(*line, std::back_inserter(entries));
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(entries));
                 if (! entries.empty())
                 {
                     /* pick up to five random mirrors only */
@@ -1690,13 +1686,11 @@ PortageRepository::do_package_set(const std::string & s) const
 
         AllDepAtom::Pointer result(new AllDepAtom);
         LineConfigFile f(ff);
-        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-
         for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
         {
             std::vector<std::string> tokens;
-            tokeniser.tokenise(*line, std::back_inserter(tokens));
+            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
             if (tokens.empty())
                 continue;
 

@@ -57,8 +57,6 @@ DefaultConfig::DefaultConfig() :
     if (! getenv_with_default("PALUDIS_SKIP_CONFIG", "").empty())
         return;
 
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-
     /* indirection */
     std::string root_prefix;
     std::string config_suffix;
@@ -161,7 +159,7 @@ DefaultConfig::DefaultConfig() :
                     line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
-                tokeniser.tokenise(*line, std::back_inserter(tokens));
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
                 if (tokens.empty())
                     continue;
                 if ("*" == tokens.at(0))
@@ -200,7 +198,7 @@ DefaultConfig::DefaultConfig() :
                     line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
-                tokeniser.tokenise(*line, std::back_inserter(tokens));
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
                 if (tokens.empty())
                     continue;
                 if ("*" == tokens.at(0))
@@ -285,7 +283,7 @@ DefaultConfig::DefaultConfig() :
                     line != line_end ; ++line)
             {
                 std::vector<std::string> tokens;
-                tokeniser.tokenise(*line, std::back_inserter(tokens));
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
                 if (tokens.empty())
                     continue;
 

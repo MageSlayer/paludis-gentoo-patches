@@ -438,7 +438,6 @@ DefaultEnvironment::local_package_set(const std::string & s) const
 {
     Context context("When looking for package set '" + s + "' in default environment:");
 
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
     FSEntry ff(FSEntry(DefaultConfig::get_instance()->config_dir()) / "sets" / (s + ".conf"));
     if (ff.exists())
     {
@@ -450,7 +449,7 @@ DefaultEnvironment::local_package_set(const std::string & s) const
                 line != line_end ; ++line)
         {
             std::vector<std::string> tokens;
-            tokeniser.tokenise(*line, std::back_inserter(tokens));
+            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
             if (tokens.empty())
                 continue;
 
