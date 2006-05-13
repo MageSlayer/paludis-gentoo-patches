@@ -347,10 +347,10 @@ int do_query()
                     cout << "* " << colour(cl_yellow, "R") << ": repository mask";
                     break;
                 case p::mr_eapi:
-                    cout << "* " << colour(cl_yellow, "K") << ": EAPI";
+                    cout << "* " << colour(cl_yellow, "E") << ": EAPI";
                     break;
                 case p::mr_license:
-                    cout << "* " << colour(cl_yellow, "K") << ": licence";
+                    cout << "* " << colour(cl_yellow, "L") << ": licence";
                     break;
 
                 case p::last_mr:
