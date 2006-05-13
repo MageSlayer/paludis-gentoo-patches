@@ -21,6 +21,7 @@
 #include <paludis/fake_repository.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/version_metadata.hh>
+#include <paludis/dep_parser.hh>
 
 /** \file
  * Implementation for FakeRepository.
@@ -155,11 +156,13 @@ FakeRepository::add_version(const CategoryNamePart & c, const PackageNamePart & 
     add_package(c, p);
     _imp->versions.find(QualifiedPackageName(c, p))->second->insert(v);
     _imp->metadata.insert(
-            std::make_pair(stringify(c) + "/" + stringify(p) + "-" + stringify(v), new VersionMetadata));
+            std::make_pair(stringify(c) + "/" + stringify(p) + "-" + stringify(v),
+                VersionMetadata::Pointer(new VersionMetadata::Ebuild(DepParser::parse_depend))));
     VersionMetadata::Pointer r(_imp->metadata.find(stringify(c) +
                 "/" + stringify(p) + "-" + stringify(v))->second);
-    r->set(vmk_slot, "0");
-    r->set(vmk_keywords, "test");
+    r->set<vm_slot>(SlotName("0"));
+    r->set<vm_eapi>("0");
+    r->get_ebuild_interface()->set<evm_keywords>("test");
     return r;
 }
 

@@ -40,7 +40,7 @@ std::ostream &
 paludis::operator<< (std::ostream & s, const DepListEntry & e)
 {
     s << e.get<dle_name>() << "-" << e.get<dle_version>() << ":"
-        << e.get<dle_metadata>()->get(vmk_slot) << "::" << e.get<dle_repository>();
+        << e.get<dle_metadata>()->get<vm_slot>() << "::" << e.get<dle_repository>();
     return s;
 }
 
@@ -182,10 +182,10 @@ DepList::add(DepAtom::ConstPointer atom)
             {
                 Save<const DepListEntry *> save_current_package(
                         &_imp->current_package, &*i);
-                _add_in_role(DepParser::parse(
-                            _imp->environment->package_database()->fetch_metadata(
-                                PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
-                                    i->get<dle_repository>()))->get(vmk_rdepend)), "RDEPEND");
+                _add_in_role(_imp->environment->package_database()->fetch_metadata(
+                            PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
+                                i->get<dle_repository>()))->get<vm_deps>().run_depend(),
+                        "runtime dependencies");
                 i->get<dle_flags>().set(dlef_has_trypredeps);
             }
 
@@ -193,10 +193,10 @@ DepList::add(DepAtom::ConstPointer atom)
             {
                 Save<const DepListEntry *> save_current_package(
                         &_imp->current_package, &*i);
-                _add_in_role(DepParser::parse(
-                            _imp->environment->package_database()->fetch_metadata(
-                                PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
-                                    i->get<dle_repository>()))->get(vmk_pdepend)), "PDEPEND");
+                _add_in_role(_imp->environment->package_database()->fetch_metadata(
+                            PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
+                                i->get<dle_repository>()))->get<vm_deps>().post_depend(),
+                        "post dependencies");
                 i->get<dle_flags>().set(dlef_has_postdeps);
             }
             else
@@ -433,10 +433,13 @@ DepList::visit(const PackageDepAtom * const p)
     }
 
     /* if we provide things, also insert them. */
-    if ((! metadata->get(vmk_provide).empty()) && ! merge_entry->get<dle_flags>()[dlef_skip])
+    std::string provide_str;
+    if (metadata->get_ebuild_interface())
+        provide_str = metadata->get_ebuild_interface()->get<evm_provide>();
+    if ((! provide_str.empty()) && ! merge_entry->get<dle_flags>()[dlef_skip])
     {
-        DepAtom::ConstPointer provide(DepParser::parse(metadata->get(vmk_provide),
-                DepParserPolicy<PackageDepAtom, false>::get_instance()));
+        DepAtom::ConstPointer provide(DepParser::parse(provide_str,
+                    DepParserPolicy<PackageDepAtom, false>::get_instance()));
 
         CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
@@ -457,9 +460,10 @@ DepList::visit(const PackageDepAtom * const p)
                         DepListEntryMatcher(_imp->environment, pp)))
                 continue;
 
-            VersionMetadata::Pointer p_metadata(new VersionMetadata);
-            p_metadata->set(vmk_slot, merge_entry->get<dle_metadata>()->get(vmk_slot));
-            p_metadata->set(vmk_virtual, stringify(merge_entry->get<dle_name>()));
+            VersionMetadata::Pointer p_metadata(new VersionMetadata::Ebuild(
+                        &DepParser::parse_depend));
+            p_metadata->set<vm_slot>(merge_entry->get<dle_metadata>()->get<vm_slot>());
+            p_metadata->get_ebuild_interface()->set<evm_virtual>(stringify(merge_entry->get<dle_name>()));
 
             DepListEntryFlags flags;
             flags.set(dlef_has_predeps);
@@ -484,7 +488,7 @@ DepList::visit(const PackageDepAtom * const p)
 
     /* merge depends */
     if ((! merge_entry->get<dle_flags>()[dlef_has_predeps]) && ! (_imp->drop_all))
-        _add_in_role(DepParser::parse(metadata->get(vmk_depend)), "DEPEND");
+        _add_in_role(metadata->get<vm_deps>().build_depend(), "build dependencies");
     merge_entry->get<dle_flags>().set(dlef_has_predeps);
 
     /* merge rdepends */
@@ -493,7 +497,7 @@ DepList::visit(const PackageDepAtom * const p)
     {
         try
         {
-            _add_in_role(DepParser::parse(metadata->get(vmk_rdepend)), "RDEPEND");
+            _add_in_role(metadata->get<vm_deps>().run_depend(), "runtime dependencies");
             merge_entry->get<dle_flags>().set(dlef_has_trypredeps);
         }
         catch (const CircularDependencyError &)
@@ -656,9 +660,11 @@ DepList::visit(const BlockDepAtom * const d)
                 continue;
             }
 
-            DepAtom::ConstPointer provide(DepParser::parse(
-                        _imp->current_package->get<dle_metadata>()->get(vmk_provide),
-                        DepParserPolicy<PackageDepAtom, false>::get_instance()));
+            DepAtom::ConstPointer provide(new AllDepAtom);
+            if (_imp->current_package->get<dle_metadata>()->get_ebuild_interface())
+                provide = DepParser::parse(
+                        _imp->current_package->get<dle_metadata>()->get_ebuild_interface()->get<evm_provide>(),
+                        DepParserPolicy<PackageDepAtom, false>::get_instance());
 
             CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
@@ -711,9 +717,11 @@ DepList::visit(const BlockDepAtom * const d)
                 continue;
             }
 
-            DepAtom::ConstPointer provide(DepParser::parse(
-                        _imp->current_package->get<dle_metadata>()->get(vmk_provide),
-                        DepParserPolicy<PackageDepAtom, false>::get_instance()));
+            DepAtom::ConstPointer provide(new AllDepAtom);
+            if (_imp->current_package->get<dle_metadata>()->get_ebuild_interface())
+                provide = DepParser::parse(
+                        _imp->current_package->get<dle_metadata>()->get_ebuild_interface()->get<evm_provide>(),
+                        DepParserPolicy<PackageDepAtom, false>::get_instance());
 
             CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 

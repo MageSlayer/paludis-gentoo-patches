@@ -23,6 +23,7 @@
 #include <paludis/environment.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/tokeniser.hh>
 
 /** \file
  * Implementation of Environment.
@@ -127,39 +128,52 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
     MaskReasons result;
     VersionMetadata::ConstPointer metadata(package_database()->fetch_metadata(e));
 
-    if (metadata->get(vmk_eapi) != "0" && metadata->get(vmk_eapi) != ""
-            && metadata->get(vmk_eapi) != "paludis-1")
+    if (metadata->get<vm_eapi>() != "0" && metadata->get<vm_eapi>() != ""
+            && metadata->get<vm_eapi>() != "paludis-1")
         result.set(mr_eapi);
     else
     {
-        result.set(mr_keyword);
-        for (VersionMetadata::KeywordIterator k(metadata->begin_keywords()),
-                k_end(metadata->end_keywords()) ; k != k_end ; ++k)
-            if (accept_keyword(*k, &e))
-            {
-                result.reset(mr_keyword);
-                break;
-            }
-
-        LicenceChecker lc(this, &e);
-        DepParser::parse(metadata->get(vmk_license),
-                DepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&lc);
-        if (! lc.ok)
-            result.set(mr_license);
-
-        if (! metadata->get(vmk_virtual).empty())
+        if (metadata->get_ebuild_interface())
         {
-            QualifiedPackageName n(metadata->get(vmk_virtual));
+            std::set<KeywordName> keywords;
+            WhitespaceTokeniser::get_instance()->tokenise(
+                    metadata->get_ebuild_interface()->get<evm_keywords>(),
+                    create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
 
-            PackageDatabaseEntry ee(n, e.get<pde_version>(), e.get<pde_repository>());
-            for (VersionMetadata::KeywordIterator k(metadata->begin_keywords()),
-                    k_end(metadata->end_keywords()) ; k != k_end ; ++k)
-                if (accept_keyword(*k, &ee))
+            result.set(mr_keyword);
+            for (std::set<KeywordName>::const_iterator i(keywords.begin()),
+                    i_end(keywords.end()) ; i != i_end ; ++i)
+                if (accept_keyword(*i, &e))
                 {
                     result.reset(mr_keyword);
                     break;
                 }
+
+            if (! metadata->get_ebuild_interface()->get<evm_virtual>().empty())
+            {
+                QualifiedPackageName n(metadata->get_ebuild_interface()->get<evm_virtual>());
+
+                PackageDatabaseEntry ee(n, e.get<pde_version>(), e.get<pde_repository>());
+                std::set<KeywordName> keywords;
+                WhitespaceTokeniser::get_instance()->tokenise(
+                        metadata->get_ebuild_interface()->get<evm_keywords>(),
+                        create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
+
+                for (std::set<KeywordName>::const_iterator i(keywords.begin()),
+                        i_end(keywords.end()) ; i != i_end ; ++i)
+                    if (accept_keyword(*i, &ee))
+                    {
+                        result.reset(mr_keyword);
+                        break;
+                    }
+            }
         }
+
+        LicenceChecker lc(this, &e);
+        DepParser::parse(metadata->get<vm_license>(),
+                DepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&lc);
+        if (! lc.ok)
+            result.set(mr_license);
 
         if (! query_user_unmasks(e))
         {
@@ -174,18 +188,19 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
                         e.get<pde_version>()))
                 result.set(mr_repository_mask);
 
-            if (! metadata->get(vmk_virtual).empty())
-            {
-                QualifiedPackageName n(metadata->get(vmk_virtual));
+            if (metadata->get_ebuild_interface())
+                if (! metadata->get_ebuild_interface()->get<evm_virtual>().empty())
+                {
+                    QualifiedPackageName n(metadata->get_ebuild_interface()->get<evm_virtual>());
 
-                if (package_database()->fetch_repository(e.get<pde_repository>())->query_profile_masks(n,
-                            e.get<pde_version>()))
-                    result.set(mr_profile_mask);
+                    if (package_database()->fetch_repository(e.get<pde_repository>())->query_profile_masks(n,
+                                e.get<pde_version>()))
+                        result.set(mr_profile_mask);
 
-                if (package_database()->fetch_repository(e.get<pde_repository>())->query_repository_masks(n,
-                            e.get<pde_version>()))
-                    result.set(mr_repository_mask);
-            }
+                    if (package_database()->fetch_repository(e.get<pde_repository>())->query_repository_masks(n,
+                                e.get<pde_version>()))
+                        result.set(mr_repository_mask);
+                }
         }
     }
 

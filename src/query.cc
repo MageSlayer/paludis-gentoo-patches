@@ -110,7 +110,7 @@ void do_one_query(
                 if (CommandLine::get_instance()->a_show_slot.specified())
                 {
                     /* show the slot, if we're about to move onto a new slot */
-                    std::string slot_name(metadata->get(p::vmk_slot));
+                    std::string slot_name(stringify(metadata->get<p::vm_slot>()));
                     if (old_slot.empty())
                         old_slot = slot_name;
                     else if (old_slot != slot_name)
@@ -176,84 +176,91 @@ void do_one_query(
 
     if (CommandLine::get_instance()->a_show_metadata.specified())
     {
-        cout << "    " << std::setw(22) << std::left << "DEPEND:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_depend) << endl;
         cout << "    " << std::setw(22) << std::left << "DESCRIPTION:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_description) << endl;
+            " " << metadata->get<p::vm_description>() << endl;
         cout << "    " << std::setw(22) << std::left << "HOMEPAGE:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_homepage) << endl;
-        cout << "    " << std::setw(22) << std::left << "IUSE:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_iuse) << endl;
-        cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_keywords) << endl;
+            " " << metadata->get<p::vm_homepage>() << endl;
         cout << "    " << std::setw(22) << std::left << "LICENSE:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_license) << endl;
-        cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_pdepend) << endl;
-        cout << "    " << std::setw(22) << std::left << "PROVIDE:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_provide) << endl;
+            " " << metadata->get<p::vm_license>() << endl;
+
+        cout << "    " << std::setw(22) << std::left << "DEPEND:" << std::setw(0) <<
+            " " << metadata->get<p::vm_deps>().get<p::vmd_build_depend_string>() << endl;
         cout << "    " << std::setw(22) << std::left << "RDEPEND:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_rdepend) << endl;
-        cout << "    " << std::setw(22) << std::left << "RESTRICT:" << std::setw(0) <<
-            " " << metadata->get(p::vmk_restrict) << endl;
-        cout << "    " << std::setw(22) << std::left << "SRC_URI:" << std::setw(0) <<
-             " " << metadata->get(p::vmk_src_uri) << endl;
-        cout << "    " << std::setw(22) << std::left << "VIRTUAL:" << std::setw(0) <<
-             " " << metadata->get(p::vmk_virtual) << endl;
+            " " << metadata->get<p::vm_deps>().get<p::vmd_run_depend_string>() << endl;
+        cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
+            " " << metadata->get<p::vm_deps>().get<p::vmd_post_depend_string>() << endl;
+
+        if (metadata->get_ebuild_interface())
+        {
+            cout << "    " << std::setw(22) << std::left << "IUSE:" << std::setw(0) <<
+                " " << metadata->get_ebuild_interface()->get<p::evm_iuse>() << endl;
+            cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
+                " " << metadata->get_ebuild_interface()->get<p::evm_keywords>() << endl;
+            cout << "    " << std::setw(22) << std::left << "PROVIDE:" << std::setw(0) <<
+                " " << metadata->get_ebuild_interface()->get<p::evm_provide>() << endl;
+            cout << "    " << std::setw(22) << std::left << "RESTRICT:" << std::setw(0) <<
+                " " << metadata->get_ebuild_interface()->get<p::evm_restrict>() << endl;
+            cout << "    " << std::setw(22) << std::left << "SRC_URI:" << std::setw(0) <<
+                 " " << metadata->get_ebuild_interface()->get<p::evm_src_uri>() << endl;
+            cout << "    " << std::setw(22) << std::left << "VIRTUAL:" << std::setw(0) <<
+                 " " << metadata->get_ebuild_interface()->get<p::evm_virtual>() << endl;
+        }
     }
     else
     {
-        if (! metadata->get(p::vmk_homepage).empty())
+        if (! metadata->get<p::vm_homepage>().empty())
             cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
-                " " << metadata->get(p::vmk_homepage) << endl;
+                " " << metadata->get<p::vm_homepage>() << endl;
 
-        if (! metadata->get(p::vmk_description).empty())
+        if (! metadata->get<p::vm_description>().empty())
             cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
-                " " << metadata->get(p::vmk_description) << endl;
+                " " << metadata->get<p::vm_description>() << endl;
 
-        if (! metadata->get(p::vmk_license).empty())
+        if (! metadata->get<p::vm_license>().empty())
         {
             cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) << " ";
             LicenceDisplayer d(cout, env, &display_entry);
-            p::DepParser::parse(metadata->get(p::vmk_license),
+            p::DepParser::parse(metadata->get<p::vm_license>(),
                     p::DepParserPolicy<p::PlainTextDepAtom, true>::get_instance())->accept(&d);
             cout << endl;
         }
 
         if (CommandLine::get_instance()->a_show_deps.specified())
         {
-            if (! metadata->get(p::vmk_depend).empty())
+            if (! metadata->get<p::vm_deps>().get<p::vmd_build_depend_string>().empty())
             {
                 p::DepAtomPrettyPrinter p_depend(12);
-                p::DepParser::parse(metadata->get(p::vmk_depend))->accept(&p_depend);
+                metadata->get<p::vm_deps>().build_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Build dependencies:" << std::setw(0)
                     << endl << p_depend;
             }
 
-            if (! metadata->get(p::vmk_rdepend).empty())
+            if (! metadata->get<p::vm_deps>().get<p::vmd_run_depend_string>().empty())
             {
-                p::DepAtomPrettyPrinter p_rdepend(12);
-                p::DepParser::parse(metadata->get(p::vmk_rdepend))->accept(&p_rdepend);
+                p::DepAtomPrettyPrinter p_depend(12);
+                metadata->get<p::vm_deps>().run_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Runtime dependencies:" << std::setw(0)
-                    << endl << p_rdepend;
+                    << endl << p_depend;
             }
 
-            if (! metadata->get(p::vmk_pdepend).empty())
+            if (! metadata->get<p::vm_deps>().get<p::vmd_post_depend_string>().empty())
             {
-                p::DepAtomPrettyPrinter p_pdepend(12);
-                p::DepParser::parse(metadata->get(p::vmk_pdepend))->accept(&p_pdepend);
+                p::DepAtomPrettyPrinter p_depend(12);
+                metadata->get<p::vm_deps>().post_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Post dependencies:" << std::setw(0)
-                    << endl << p_pdepend;
+                    << endl << p_depend;
             }
         }
 
-        if (! metadata->get(p::vmk_virtual).empty())
+        if (metadata->get_ebuild_interface() && ! metadata->get_ebuild_interface()->
+                get<p::evm_virtual>().empty())
             cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
-                " " << metadata->get(p::vmk_virtual) << endl;
+                " " << metadata->get_ebuild_interface()->get<p::evm_virtual>() << endl;
 
-        if (! metadata->get(p::vmk_provide).empty())
+        if (metadata->get_ebuild_interface() && ! metadata->get_ebuild_interface()->
+                get<p::evm_provide>().empty())
             cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
-                " " << metadata->get(p::vmk_provide) << endl;
+                " " << metadata->get_ebuild_interface()->get<p::evm_provide>() << endl;
     }
 
 

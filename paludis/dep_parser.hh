@@ -186,6 +186,11 @@ namespace paludis
              */
             static CompositeDepAtom::Pointer parse(const std::string & s,
                     const DepParserPolicyInterface * const policy = DefaultPolicy::get_instance());
+
+            /**
+             * Convenience wrapper for parse for depend strings, for VersionMetadata.
+             */
+            static DepAtom::ConstPointer parse_depend(const std::string & s);
     };
 }
 

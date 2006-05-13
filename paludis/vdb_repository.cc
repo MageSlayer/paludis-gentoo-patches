@@ -318,18 +318,24 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
     Context context("When loading VDBRepository entry for '" + stringify(p->name)
             + "-" + stringify(p->version) + "' from '" + stringify(location) + "':");
 
-    p->metadata = VersionMetadata::Pointer(new VersionMetadata);
-    p->metadata->set(vmk_depend,      file_contents(location, p->name, p->version, "DEPEND"));
-    p->metadata->set(vmk_rdepend,     file_contents(location, p->name, p->version, "RDEPEND"));
-    p->metadata->set(vmk_license,     file_contents(location, p->name, p->version, "LICENSE"));
-    p->metadata->set(vmk_keywords,    "*");
-    p->metadata->set(vmk_inherited,   file_contents(location, p->name, p->version, "INHERITED"));
-    p->metadata->set(vmk_iuse,        file_contents(location, p->name, p->version, "IUSE"));
-    p->metadata->set(vmk_pdepend,     file_contents(location, p->name, p->version, "PDEPEND"));
-    p->metadata->set(vmk_provide,     file_contents(location, p->name, p->version, "PROVIDE"));
-    p->metadata->set(vmk_eapi,        file_contents(location, p->name, p->version, "EAPI"));
-    p->metadata->set(vmk_homepage,    file_contents(location, p->name, p->version, "HOMEPAGE"));
-    p->metadata->set(vmk_description, file_contents(location, p->name, p->version, "DESCRIPTION"));
+    p->metadata = VersionMetadata::Pointer(new VersionMetadata::Ebuild(DepParser::parse_depend));
+    p->metadata->get<vm_deps>().set<vmd_build_depend_string>(
+            file_contents(location, p->name, p->version, "DEPEND"));
+    p->metadata->get<vm_deps>().set<vmd_run_depend_string>(
+            file_contents(location, p->name, p->version, "RDEPEND"));
+    p->metadata->set<vm_license>(file_contents(location, p->name, p->version, "LICENSE"));
+    p->metadata->get_ebuild_interface()->set<evm_keywords>("*");
+    p->metadata->get_ebuild_interface()->set<evm_inherited>(
+            file_contents(location, p->name, p->version, "INHERITED"));
+    p->metadata->get_ebuild_interface()->set<evm_iuse>(
+            file_contents(location, p->name, p->version, "IUSE"));
+    p->metadata->get<vm_deps>().set<vmd_post_depend_string>(
+            file_contents(location, p->name, p->version, "PDEPEND"));
+    p->metadata->get_ebuild_interface()->set<evm_provide>(
+            file_contents(location, p->name, p->version, "PROVIDE"));
+    p->metadata->set<vm_eapi>(file_contents(location, p->name, p->version, "EAPI"));
+    p->metadata->set<vm_homepage>(file_contents(location, p->name, p->version, "HOMEPAGE"));
+    p->metadata->set<vm_description>(file_contents(location, p->name, p->version, "DESCRIPTION"));
 
     std::string slot(file_contents(location, p->name, p->version, "SLOT"));
     if (slot.empty())
@@ -339,12 +345,12 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
                 stringify(location) + "' has empty SLOT, setting to \"0\"");
         slot = "0";
     }
-    p->metadata->set(vmk_slot,      slot);
+    p->metadata->set<vm_slot>(SlotName(slot));
 
     std::string raw_use(file_contents(location, p->name, p->version, "USE"));
     p->use.clear();
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> t(" \t\n");
-    t.tokenise(raw_use, filter_inserter(create_inserter<UseFlagName>(
+    WhitespaceTokeniser::get_instance()->tokenise(raw_use,
+            filter_inserter(create_inserter<UseFlagName>(
                     std::inserter(p->use, p->use.begin())), IsPositiveFlag()));
 }
 
@@ -480,7 +486,7 @@ VDBRepository::do_version_metadata(
         Log::get_instance()->message(ll_warning, "version lookup failed for request for '" +
                 stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "'");
-        return VersionMetadata::ConstPointer(new VersionMetadata);
+        return VersionMetadata::ConstPointer(new VersionMetadata(&DepParser::parse_depend));
     }
     else
     {
@@ -728,7 +734,7 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
             EbuildUninstallCommandParams::create((
                     param<ecupk_root>(stringify(_imp->root) + "/"),
                     param<ecupk_disable_cfgpro>(o.get<io_noconfigprotect>()),
-                    param<ecupk_unmerge_only>(! metadata->get(vmk_virtual).empty())
+                    param<ecupk_unmerge_only>(! metadata->get_ebuild_interface()->get<evm_virtual>().empty())
                     )));
 
     uninstall_cmd();
@@ -819,7 +825,7 @@ VDBRepository::begin_provide_map() const
             {
                 if (! e->metadata)
                     _imp->load_entry(e);
-                const std::string provide_str(e->metadata->get(vmk_provide));
+                const std::string provide_str(e->metadata->get_ebuild_interface()->get<evm_provide>());
                 if (provide_str.empty())
                     continue;
 

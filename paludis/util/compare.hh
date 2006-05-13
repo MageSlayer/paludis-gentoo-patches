@@ -39,8 +39,6 @@ namespace paludis
      *
      * \ingroup grpcompare
      */
-    inline int compare(int t1, int t2) PALUDIS_ATTRIBUTE((always_inline));
-
     inline int compare(int t1, int t2)
     {
         if (t1 < t2)
@@ -58,8 +56,6 @@ namespace paludis
      *
      * \ingroup grpcompare
      */
-    inline int compare(unsigned t1, unsigned t2) PALUDIS_ATTRIBUTE((always_inline));
-
     inline int compare(unsigned t1, unsigned t2)
     {
         if (t1 < t2)
@@ -77,8 +73,6 @@ namespace paludis
      *
      * \ingroup grpcompare
      */
-    inline int long compare(unsigned long t1, unsigned long t2) PALUDIS_ATTRIBUTE((always_inline));
-
     inline int long compare(unsigned long t1, unsigned long t2)
     {
         if (t1 < t2)
@@ -96,8 +90,6 @@ namespace paludis
      *
      * \ingroup grpcompare
      */
-    inline int compare(long t1, long t2) PALUDIS_ATTRIBUTE((always_inline));
-
     inline int compare(long t1, long t2)
     {
         if (t1 < t2)
@@ -115,12 +107,6 @@ namespace paludis
      *
      * \ingroup grpcompare
      */
-    template <typename T_>
-    inline int compare(
-            const std::basic_string<T_> & t1,
-            const std::basic_string<T_> & t2)
-        PALUDIS_ATTRIBUTE((always_inline));
-
     template <typename T_>
     inline int compare(
             const std::basic_string<T_> & t1,

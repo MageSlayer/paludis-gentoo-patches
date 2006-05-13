@@ -30,51 +30,44 @@
 
 using namespace paludis;
 
-namespace paludis
+VersionMetadataDeps::VersionMetadataDeps(ParserFunction p) :
+    MakeSmartRecord<VersionMetadataDepsTag>::Type(MakeSmartRecord<VersionMetadataDepsTag>::Type::create((
+                    param<vmd_build_depend_string>(""),
+                    param<vmd_run_depend_string>(""),
+                    param<vmd_post_depend_string>(""),
+                    param<vmd_parser>(p))))
 {
-    /**
-     * Implementation data for VersionMetadata.
-     *
-     * \ingroup grpversions
-     */
-    template <>
-    struct Implementation<VersionMetadata> :
-        InternalCounted<Implementation<VersionMetadata> >
-    {
-        /**
-         * Our values.
-         */
-        std::vector<std::string> values;
-
-        /**
-         * Cache: IUSE.
-         */
-        mutable std::set<UseFlagName> iuse;
-
-        /**
-         * Cache: KEYWORDS.
-         */
-        mutable std::set<KeywordName> keywords;
-
-        /**
-         * Cache: PROVIDE.
-         */
-        mutable std::set<QualifiedPackageName> provide;
-
-        /**
-         * Constructor.
-         */
-        Implementation();
-    };
 }
 
-Implementation<VersionMetadata>::Implementation()
+DepAtom::ConstPointer
+VersionMetadataDeps::build_depend() const
 {
-    values.resize(static_cast<unsigned>(last_vmk));
+    return get<vmd_parser>()(get<vmd_build_depend_string>());
 }
 
-VersionMetadata::VersionMetadata() :
-    PrivateImplementationPattern<VersionMetadata>(new Implementation<VersionMetadata>())
+DepAtom::ConstPointer
+VersionMetadataDeps::run_depend() const
+{
+    return get<vmd_parser>()(get<vmd_run_depend_string>());
+}
+
+DepAtom::ConstPointer
+VersionMetadataDeps::post_depend() const
+{
+    return get<vmd_parser>()(get<vmd_post_depend_string>());
+}
+
+VersionMetadata::Ebuild::Ebuild(ParserFunction f) :
+    VersionMetadata(f, &_e),
+    _e(EbuildVersionMetadata::create((
+                    param<evm_src_uri>(""),
+                    param<evm_restrict>(""),
+                    param<evm_keywords>(""),
+                    param<evm_inherited>(""),
+                    param<evm_iuse>(""),
+                    param<evm_inherited>(""),
+                    param<evm_provide>(""),
+                    param<evm_virtual>(""))))
 {
 }
 
@@ -82,77 +75,31 @@ VersionMetadata::~VersionMetadata()
 {
 }
 
-const std::string &
-VersionMetadata::get(const VersionMetadataKey key) const
+VersionMetadata::VersionMetadata(ParserFunction p) :
+    MakeSmartRecord<VersionMetadataTag>::Type(MakeSmartRecord<VersionMetadataTag>::Type::create((
+                    param<vm_slot>(SlotName("unset")),
+                    param<vm_deps>(VersionMetadataDeps(p)),
+                    param<vm_homepage>(""),
+                    param<vm_license>(""),
+                    param<vm_description>(""),
+                    param<vm_eapi>("UNSET"),
+                    param<vm_licence>("")
+                    ))),
+    _ebuild_if(0)
 {
-    if (key < 0 || key >= static_cast<int>(_imp->values.size()))
-        throw InternalError(PALUDIS_HERE, "Bad value for key");
-    return _imp->values[key];
 }
 
-VersionMetadata &
-VersionMetadata::set(const VersionMetadataKey key, const std::string & value)
+VersionMetadata::VersionMetadata(ParserFunction p, EbuildVersionMetadata * ebuild_if) :
+    MakeSmartRecord<VersionMetadataTag>::Type(MakeSmartRecord<VersionMetadataTag>::Type::create((
+                    param<vm_slot>(SlotName("unset")),
+                    param<vm_deps>(VersionMetadataDeps(p)),
+                    param<vm_homepage>(""),
+                    param<vm_license>(""),
+                    param<vm_description>(""),
+                    param<vm_eapi>("UNSET"),
+                    param<vm_licence>("")
+                    ))),
+    _ebuild_if(ebuild_if)
 {
-    if (key < 0 || key >= static_cast<int>(_imp->values.size()))
-        throw InternalError(PALUDIS_HERE, "Bad value for key");
-
-    _imp->values[key] = value;
-
-    switch (key)
-    {
-        case vmk_iuse:
-            _imp->iuse.clear();
-            break;
-
-        case vmk_keywords:
-            _imp->keywords.clear();
-            break;
-
-        case vmk_provide:
-            _imp->provide.clear();
-            break;
-
-        default:
-            break;
-    }
-
-    return *this;
-}
-
-VersionMetadata::IuseIterator
-VersionMetadata::begin_iuse() const
-{
-    if (_imp->iuse.empty())
-    {
-        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-        tokeniser.tokenise(get(vmk_iuse), create_inserter<UseFlagName>(
-                    std::inserter(_imp->iuse, _imp->iuse.begin())));
-    }
-    return _imp->iuse.begin();
-}
-
-VersionMetadata::IuseIterator
-VersionMetadata::end_iuse() const
-{
-    return _imp->iuse.end();
-}
-
-VersionMetadata::KeywordIterator
-VersionMetadata::begin_keywords() const
-{
-    if (_imp->keywords.empty())
-    {
-        Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-        tokeniser.tokenise(get(vmk_keywords), create_inserter<KeywordName>(
-                    std::inserter(_imp->keywords, _imp->keywords.begin())));
-    }
-
-    return _imp->keywords.begin();
-}
-
-VersionMetadata::KeywordIterator
-VersionMetadata::end_keywords() const
-{
-    return _imp->keywords.end();
 }
 

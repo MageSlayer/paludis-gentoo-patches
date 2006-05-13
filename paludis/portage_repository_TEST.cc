@@ -483,13 +483,13 @@ namespace test_cases
                 VersionMetadata::ConstPointer m(0);
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->get(vmk_description), "the-description");
+                TEST_CHECK_EQUAL(m->get<vm_description>(), "the-description");
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"));
-                TEST_CHECK_EQUAL(m->get(vmk_description), "");
+                TEST_CHECK_EQUAL(m->get<vm_description>(), "");
 
                 m = repo->version_metadata(QualifiedPackageName("cat-two/pkg-one"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->get(vmk_description), "");
+                TEST_CHECK_EQUAL(m->get<vm_description>(), "");
             }
         }
     } test_portage_repository_metadata_cached;
@@ -524,7 +524,7 @@ namespace test_cases
                 VersionMetadata::ConstPointer m(0);
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->get(vmk_description), "The Description");
+                TEST_CHECK_EQUAL(m->get<vm_description>(), "The Description");
             }
         }
     } test_portage_repository_metadata_uncached;

@@ -50,7 +50,7 @@ match_package_internals::do_match(
         VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*entry));
 
         if (atom->slot_ptr())
-            if (*atom->slot_ptr() != SlotName(metadata->get(vmk_slot)))
+            if (*atom->slot_ptr() != SlotName(metadata->get<vm_slot>()))
                 return false;
 
         if (atom->use_requirements_ptr())
@@ -98,7 +98,7 @@ match_package_internals::do_match(
     if (atom->repository_ptr() && (*atom->repository_ptr() != entry->get<dle_repository>()))
         return false;
 
-    if (atom->slot_ptr() && (atom->slot_ptr()->data() != entry->get<dle_metadata>()->get(vmk_slot)))
+    if (atom->slot_ptr() && (*atom->slot_ptr() != entry->get<dle_metadata>()->get<vm_slot>()))
         return false;
 
     if (atom->use_requirements_ptr())

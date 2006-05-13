@@ -279,3 +279,8 @@ DepParser::parse(const std::string & s, const DepParserPolicyInterface * const p
     return result;
 }
 
+DepAtom::ConstPointer
+DepParser::parse_depend(const std::string & s)
+{
+    return DepParser::parse(s);
+}

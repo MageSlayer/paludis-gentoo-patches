@@ -168,7 +168,7 @@ namespace paludis
         public EbuildCommand
     {
         private:
-            VersionMetadata::Pointer _metadata;
+            VersionMetadata::Ebuild::Pointer _metadata;
 
         protected:
             virtual std::string commands() const;

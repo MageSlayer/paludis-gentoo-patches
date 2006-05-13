@@ -87,7 +87,8 @@ namespace paludis
     typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
 
     /// Map for package USE masking.
-    typedef MakeHashedMap<QualifiedPackageName, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> > >::Type PackageUseMaskMap;
+    typedef MakeHashedMap<QualifiedPackageName,
+            std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> > >::Type PackageUseMaskMap;
 
     /// Map for USE flag sets.
     typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
@@ -96,7 +97,8 @@ namespace paludis
     typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
 
     /// Map for metadata.
-    typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
+    typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>,
+            VersionMetadata::Pointer>::Type MetadataMap;
 
     /// Map for profile environment.
     typedef MakeHashedMap<std::string, std::string>::Type ProfileEnvMap;
@@ -821,10 +823,11 @@ PortageRepository::do_version_metadata(
         Log::get_instance()->message(ll_warning, "has_version failed for request for '" +
                 stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "'");
-        return VersionMetadata::ConstPointer(new VersionMetadata);
+        return VersionMetadata::ConstPointer(new VersionMetadata::Ebuild(
+                    DepParser::parse_depend));
     }
 
-    VersionMetadata::Pointer result(new VersionMetadata);
+    VersionMetadata::Pointer result(new VersionMetadata::Ebuild(DepParser::parse_depend));
 
     FSEntry cache_file(_imp->cache);
     cache_file /= stringify(c);
@@ -839,23 +842,22 @@ PortageRepository::do_version_metadata(
 
         if (cache)
         {
-            /// \bug this lot
-            std::getline(cache, line); result->set(vmk_depend,      line);
-            std::getline(cache, line); result->set(vmk_rdepend,     line);
-            std::getline(cache, line); result->set(vmk_slot,        line);
-            std::getline(cache, line); result->set(vmk_src_uri,     line);
-            std::getline(cache, line); result->set(vmk_restrict,    line);
-            std::getline(cache, line); result->set(vmk_homepage,    line);
-            std::getline(cache, line); result->set(vmk_license,     line);
-            std::getline(cache, line); result->set(vmk_description, line);
-            std::getline(cache, line); result->set(vmk_keywords,    line);
-            std::getline(cache, line); result->set(vmk_inherited,   line);
-            std::getline(cache, line); result->set(vmk_iuse,        line);
+            std::getline(cache, line); result->get<vm_deps>().set<vmd_build_depend_string>(line);
+            std::getline(cache, line); result->get<vm_deps>().set<vmd_run_depend_string>(line);
+            std::getline(cache, line); result->set<vm_slot>(SlotName(line));
+            std::getline(cache, line); result->get_ebuild_interface()->set<evm_src_uri>(line);
+            std::getline(cache, line); result->get_ebuild_interface()->set<evm_restrict>(line);
+            std::getline(cache, line); result->set<vm_homepage>(line);
+            std::getline(cache, line); result->set<vm_license>(line);
+            std::getline(cache, line); result->set<vm_description>(line);
+            std::getline(cache, line); result->get_ebuild_interface()->set<evm_keywords>(line);
+            std::getline(cache, line); result->get_ebuild_interface()->set<evm_inherited>(line);
+            std::getline(cache, line); result->get_ebuild_interface()->set<evm_iuse>(line);
             std::getline(cache, line);
-            std::getline(cache, line); result->set(vmk_pdepend,     line);
-            std::getline(cache, line); result->set(vmk_provide,     line);
-            std::getline(cache, line); result->set(vmk_eapi,        line);
-            result->set(vmk_virtual, "");
+            std::getline(cache, line); result->get<vm_deps>().set<vmd_post_depend_string>(line);
+            std::getline(cache, line); result->get_ebuild_interface()->set<evm_provide>(line);
+            std::getline(cache, line); result->set<vm_eapi>(line);
+            result->get_ebuild_interface()->set<evm_virtual>("");
 
             // check mtimes
             time_t cache_time(cache_file.mtime());
@@ -870,10 +872,10 @@ PortageRepository::do_version_metadata(
                 if (timestamp.exists())
                     cache_time = timestamp.mtime();
 
-                static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
                 std::list<std::string> inherits;
-                tokeniser.tokenise(stringify(result->get(vmk_inherited)),
-                            std::back_inserter(inherits));
+                WhitespaceTokeniser::get_instance()->tokenise(
+                        stringify(result->get_ebuild_interface()->get<evm_inherited>()),
+                        std::back_inserter(inherits));
                 for (std::list<std::string>::const_iterator i(inherits.begin()),
                         i_end(inherits.end()) ; i != i_end ; ++i)
                     if ((_imp->eclassdir / (*i + ".eclass")).mtime() > cache_time)
@@ -892,11 +894,12 @@ PortageRepository::do_version_metadata(
                 QualifiedPackageName(c, p)))))
     {
         VersionMetadata::ConstPointer m(version_metadata(vi->second->package(), v));
-        result->set(vmk_slot, m->get(vmk_slot));
-        result->set(vmk_keywords, m->get(vmk_keywords));
-        result->set(vmk_eapi, m->get(vmk_eapi));
-        result->set(vmk_virtual, stringify(vi->second->package()));
-        result->set(vmk_depend, "=" + stringify(vi->second->package()) + "-" + stringify(v));
+        result->set<vm_slot>(m->get<vm_slot>());
+        result->get_ebuild_interface()->set<evm_keywords>(m->get_ebuild_interface()->get<evm_keywords>());
+        result->set<vm_eapi>(m->get<vm_eapi>());
+        result->get_ebuild_interface()->set<evm_virtual>(stringify(vi->second->package()));
+        result->get<vm_deps>().set<vmd_build_depend_string>(
+                "=" + stringify(vi->second->package()) + "-" + stringify(v));
         ok = true;
     }
 
@@ -1293,8 +1296,6 @@ void
 PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v,
         const InstallOptions & o) const
 {
-    static Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-
     if (! _imp->has_profile)
     {
         _imp->add_profile(_imp->profile.realpath());
@@ -1310,9 +1311,9 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     {
         if (q.get<qpn_category>() == CategoryNamePart("virtual"))
         {
-            VersionMetadata::Pointer m(new VersionMetadata);
-            m->set(vmk_slot, "0");
-            m->set(vmk_virtual, " ");
+            VersionMetadata::Ebuild::Pointer m(new VersionMetadata::Ebuild(DepParser::parse_depend));
+            m->set<vm_slot>(SlotName("0"));
+            m->get_ebuild_interface()->set<evm_virtual>(" ");
             metadata = m;
         }
         else
@@ -1327,7 +1328,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     bool fetch_restrict(false), no_mirror(false);
     {
         std::list<std::string> restricts;
-        tokeniser.tokenise(metadata->get(vmk_restrict), std::back_inserter(restricts));
+        WhitespaceTokeniser::get_instance()->tokenise(
+                metadata->get_ebuild_interface()->get<evm_restrict>(), std::back_inserter(restricts));
         fetch_restrict = (restricts.end() != std::find(restricts.begin(), restricts.end(), "fetch")) ||
             (restricts.end() != std::find(restricts.begin(), restricts.end(), "nofetch"));
         no_mirror = (restricts.end() != std::find(restricts.begin(), restricts.end(), "mirror")) ||
@@ -1339,7 +1341,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         std::set<std::string> already_in_archives;
 
         DepAtomFlattener f(_imp->env, &e,
-                DepParser::parse(metadata->get(vmk_src_uri),
+                DepParser::parse(metadata->get_ebuild_interface()->get<evm_src_uri>(),
                     DepParserPolicy<PlainTextDepAtom, false>::get_instance()));
 
         for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
@@ -1398,11 +1400,14 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     }
 
     std::string use;
-    VersionMetadata::IuseIterator iuse_it=metadata->begin_iuse(), iuse_end=metadata->end_iuse();
-    for ( ; iuse_it != iuse_end; ++iuse_it)
     {
-        if (_imp->env->query_use(*iuse_it, &e))
-            use += (*iuse_it).data() + " ";
+        std::set<UseFlagName> iuse;
+        WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
+                get<evm_iuse>(), create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
+        for (std::set<UseFlagName>::const_iterator iuse_it(iuse.begin()), iuse_end(iuse.end()) ;
+                iuse_it != iuse_end; ++iuse_it)
+            if (_imp->env->query_use(*iuse_it, &e))
+                use += (*iuse_it).data() + " ";
     }
 
     use += _imp->profile_env["ARCH"] + " ";
@@ -1414,7 +1419,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                 &::tolower);
 
         std::list<std::string> uses;
-        tokeniser.tokenise(_imp->profile_env[stringify(*x)], std::back_inserter(uses));
+        WhitespaceTokeniser::get_instance()->tokenise(_imp->profile_env[stringify(*x)],
+                std::back_inserter(uses));
 
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
@@ -1468,7 +1474,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                     param<ecfpk_no_fetch>(fetch_restrict)
                     )));
 
-    if (metadata->get(vmk_virtual).empty())
+    if (metadata->get_ebuild_interface()->get<evm_virtual>().empty())
         fetch_cmd();
 
     if (o.get<io_fetchonly>())
@@ -1494,8 +1500,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                     param<ecipk_root>(stringify(_imp->root) + "/"),
                     param<ecipk_profile>(stringify(_imp->profile)),
                     param<ecipk_disable_cfgpro>(o.get<io_noconfigprotect>()),
-                    param<ecipk_merge_only>(! metadata->get(vmk_virtual).empty()),
-                    param<ecipk_slot>(SlotName(metadata->get(vmk_slot)))
+                    param<ecipk_merge_only>(! metadata->get_ebuild_interface()->get<evm_virtual>().empty()),
+                    param<ecipk_slot>(SlotName(metadata->get<vm_slot>()))
                     )));
 
     install_cmd();
@@ -1532,19 +1538,18 @@ namespace
 PackageDatabaseEntryCollection::Iterator
 PortageRepository::find_best(PackageDatabaseEntryCollection::Pointer & c, const PackageDatabaseEntry & e) const
 {
-    Context local("When finding best update for '" + stringify(e.get<pde_name>()) + "-" + stringify(e.get<pde_version>()) + "':");
-    //Find an entry in c that matches e best. e is not in c.
+    Context local("When finding best update for '" + stringify(e.get<pde_name>()) + "-" +
+            stringify(e.get<pde_version>()) + "':");
+    // Find an entry in c that matches e best. e is not in c.
     QualifiedPackageName n(e.get<pde_name>());
-    std::string s(_imp->env->package_database()->fetch_metadata(e)->get(vmk_slot));
+    SlotName s(_imp->env->package_database()->fetch_metadata(e)->get<vm_slot>());
     PackageDatabaseEntryCollection::Iterator i(c->begin()), i_end(c->end()), i_best(c->end());
     for ( ; i != i_end; ++i)
     {
         if (n != i->get<pde_name>())
             continue;
-        if (s != _imp->env->package_database()->fetch_metadata(*i)->get(vmk_slot))
-        {
+        if (s != _imp->env->package_database()->fetch_metadata(*i)->get<vm_slot>())
             continue;
-        }
 
         i_best = i;
     }

@@ -224,6 +224,20 @@ namespace paludis
         }
     }
 
+    /**
+     * Convenience singleton class for tokenising on whitespace.
+     *
+     * \ingroup grptokenise
+     */
+    class WhitespaceTokeniser :
+        public InstantiationPolicy<WhitespaceTokeniser, instantiation_method::SingletonAtStartupTag>,
+        public Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag>
+    {
+        friend class InstantiationPolicy<WhitespaceTokeniser, instantiation_method::SingletonAtStartupTag>;
+
+        private:
+            WhitespaceTokeniser();
+    };
 }
 
 #endif

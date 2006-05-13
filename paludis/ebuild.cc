@@ -23,6 +23,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
+#include <paludis/dep_parser.hh>
 
 /** \file
  * Implementation for ebuild.hh things.
@@ -137,30 +138,29 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
 {
     PStream prog(cmd);
     KeyValueConfigFile f(&prog);
-    _metadata.assign(new VersionMetadata);
+    _metadata.assign(new VersionMetadata::Ebuild(DepParser::parse_depend));
 
-    _metadata->set(vmk_depend,      f.get("DEPEND"));
-    _metadata->set(vmk_rdepend,     f.get("RDEPEND"));
-    _metadata->set(vmk_slot,        f.get("SLOT"));
-    _metadata->set(vmk_src_uri,     f.get("SRC_URI"));
-    _metadata->set(vmk_restrict,    f.get("RESTRICT"));
-    _metadata->set(vmk_homepage,    f.get("HOMEPAGE"));
-    _metadata->set(vmk_license,     f.get("LICENSE"));
-    _metadata->set(vmk_description, f.get("DESCRIPTION"));
-    _metadata->set(vmk_keywords,    f.get("KEYWORDS"));
-    _metadata->set(vmk_inherited,   f.get("INHERITED"));
-    _metadata->set(vmk_iuse,        f.get("IUSE"));
-    _metadata->set(vmk_pdepend,     f.get("PDEPEND"));
-    _metadata->set(vmk_provide,     f.get("PROVIDE"));
-    _metadata->set(vmk_eapi,        f.get("EAPI"));
-    _metadata->set(vmk_virtual, "");
-    _metadata->set(vmk_e_keywords,  f.get("E_KEYWORDS"));
+    _metadata->get<vm_deps>().set<vmd_build_depend_string>(f.get("DEPEND"));
+    _metadata->get<vm_deps>().set<vmd_run_depend_string>(f.get("RDEPEND"));
+    _metadata->set<vm_slot>(SlotName(f.get("SLOT")));
+    _metadata->get_ebuild_interface()->set<evm_src_uri>(f.get("SRC_URI"));
+    _metadata->get_ebuild_interface()->set<evm_restrict>(f.get("RESTRICT"));
+    _metadata->set<vm_homepage>(f.get("HOMEPAGE"));
+    _metadata->set<vm_license>(f.get("LICENSE"));
+    _metadata->set<vm_description>(f.get("DESCRIPTION"));
+    _metadata->get_ebuild_interface()->set<evm_keywords>(f.get("KEYWORDS"));
+    _metadata->get_ebuild_interface()->set<evm_inherited>(f.get("INHERITED"));
+    _metadata->get_ebuild_interface()->set<evm_iuse>(f.get("IUSE"));
+    _metadata->get<vm_deps>().set<vmd_post_depend_string>(f.get("PDEPEND"));
+    _metadata->get_ebuild_interface()->set<evm_provide>(f.get("PROVIDE"));
+    _metadata->set<vm_eapi>(f.get("EAPI"));
+    _metadata->get_ebuild_interface()->set<evm_virtual>("");
 
     if (prog.exit_status())
     {
         Log::get_instance()->message(ll_warning, "Could not generate cache for '"
                 + stringify(*params.get<ecpk_db_entry>()) + "'");
-        _metadata->set(vmk_eapi, "UNKNOWN");
+        _metadata->set<vm_eapi>("UNKNOWN");
 
         return false;
     }

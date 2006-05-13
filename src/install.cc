@@ -23,6 +23,7 @@
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/util/tokeniser.hh>
 
 /** \file
  * Handle the --install action for the main paludis program.
@@ -178,9 +179,9 @@ do_install()
                 cout << "::" << dep->get<p::dle_repository>();
 
             /* display slot name, unless it's 0 */
-            if ("0" != dep->get<p::dle_metadata>()->get(p::vmk_slot))
+            if (p::SlotName("0") != dep->get<p::dle_metadata>()->get<p::vm_slot>())
                 cout << colour(cl_slot, " {:" + p::stringify(
-                            dep->get<p::dle_metadata>()->get(p::vmk_slot)) + "}");
+                            dep->get<p::dle_metadata>()->get<p::vm_slot>()) + "}");
 
             /* indicate [U], [S] or [N]. display existing version, if we're
              * already installed */
@@ -194,7 +195,7 @@ do_install()
             {
                 existing = env->package_database()->query(p::PackageDepAtom::Pointer(
                             new p::PackageDepAtom(p::stringify(dep->get<p::dle_name>()) + ":" +
-                                dep->get<p::dle_metadata>()->get(p::vmk_slot))),
+                                stringify(dep->get<p::dle_metadata>()->get<p::vm_slot>()))),
                         p::is_installed_only);
                 if (existing->empty())
                     cout << colour(cl_updatemode, " [S]");
@@ -213,24 +214,31 @@ do_install()
                         dep->get<p::dle_version>(), dep->get<p::dle_repository>()));
 
             /* display USE flags */
-            for (p::VersionMetadata::IuseIterator i(dep->get<p::dle_metadata>()->begin_iuse()),
-                    i_end(dep->get<p::dle_metadata>()->end_iuse()) ; i != i_end ; ++i)
+            if (dep->get<p::dle_metadata>()->get_ebuild_interface())
             {
-                if (env->query_use(*i, &p))
+                std::set<p::UseFlagName> iuse;
+                p::WhitespaceTokeniser::get_instance()->tokenise(
+                        dep->get<p::dle_metadata>()->get_ebuild_interface()->get<p::evm_iuse>(),
+                        p::create_inserter<p::UseFlagName>(std::inserter(iuse, iuse.end())));
+                for (std::set<p::UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
+                        i != i_end ; ++i)
                 {
-                    if (env->package_database()->fetch_repository(
-                                dep->get<p::dle_repository>())->query_use_force(*i, &p))
-                        cout << " " << colour(cl_flag_on, "(" + p::stringify(*i) + ")");
+                    if (env->query_use(*i, &p))
+                    {
+                        if (env->package_database()->fetch_repository(
+                                    dep->get<p::dle_repository>())->query_use_force(*i, &p))
+                            cout << " " << colour(cl_flag_on, "(" + p::stringify(*i) + ")");
+                        else
+                            cout << " " << colour(cl_flag_on, *i);
+                    }
                     else
-                        cout << " " << colour(cl_flag_on, *i);
-                }
-                else
-                {
-                    if (env->package_database()->fetch_repository(
-                                dep->get<p::dle_repository>())->query_use_mask(*i, &p))
-                        cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");
-                    else
-                        cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));
+                    {
+                        if (env->package_database()->fetch_repository(
+                                    dep->get<p::dle_repository>())->query_use_mask(*i, &p))
+                            cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");
+                        else
+                            cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));
+                    }
                 }
             }
 
@@ -369,7 +377,7 @@ do_install()
                 p::PackageDatabaseEntryCollection::Pointer collision_list(env->package_database()->query(
                             p::PackageDepAtom::Pointer(new p::PackageDepAtom(
                                     p::stringify(dep->get<p::dle_name>()) + ":" +
-                                    p::stringify(dep->get<p::dle_metadata>()->get(p::vmk_slot)))),
+                                    p::stringify(dep->get<p::dle_metadata>()->get<p::vm_slot>()))),
                             p::is_installed_only));
 
                 // don't clean the thing we just installed
@@ -477,8 +485,7 @@ do_install()
                             {
                                 std::string eapi_str(env->package_database()->fetch_repository(
                                             pp->get<p::pde_repository>())->version_metadata(
-                                            pp->get<p::pde_name>(), pp->get<p::pde_version>())->get(
-                                            p::vmk_eapi));
+                                            pp->get<p::pde_name>(), pp->get<p::pde_version>())->get<p::vm_eapi>());
 
                                 cerr << " ( " << colour(cl_red, eapi_str) << " )";
                             }
@@ -487,8 +494,8 @@ do_install()
                                 cerr << " ";
                                 std::string license_str(env->package_database()->fetch_repository(
                                             pp->get<p::pde_repository>())->version_metadata(
-                                            pp->get<p::pde_name>(), pp->get<p::pde_version>())->get(
-                                            p::vmk_license));
+                                            pp->get<p::pde_name>(), pp->get<p::pde_version>())->get<
+                                                p::vm_license>());
 
                                 LicenceDisplayer ld(cerr, env, &*pp);
                                 p::DepParser::parse(license_str, p::DepParserPolicy<p::PlainTextDepAtom,
@@ -496,15 +503,20 @@ do_install()
                             }
                             else if (p::mr_keyword == mm)
                             {
-                                cerr << " ( " << colour(cl_red, p::join(
-                                                env->package_database()->fetch_repository(
-                                                    pp->get<p::pde_repository>())->version_metadata(
-                                                    pp->get<p::pde_name>(), pp->get<p::pde_version>())->
-                                                begin_keywords(),
-                                                env->package_database()->fetch_repository(
-                                                    pp->get<p::pde_repository>())->version_metadata(
-                                                    pp->get<p::pde_name>(), pp->get<p::pde_version>())->
-                                                end_keywords(), " ")) << " )";
+                                p::VersionMetadata::ConstPointer m(env->package_database()->fetch_repository(
+                                            pp->get<p::pde_repository>())->version_metadata(
+                                            pp->get<p::pde_name>(), pp->get<p::pde_version>()));
+                                if (m->get_ebuild_interface())
+                                {
+                                    std::set<p::KeywordName> keywords;
+                                    p::WhitespaceTokeniser::get_instance()->tokenise(
+                                            m->get_ebuild_interface()->get<p::evm_keywords>(),
+                                            p::create_inserter<p::KeywordName>(
+                                                std::inserter(keywords, keywords.end())));
+
+                                    cerr << " ( " << colour(cl_red, p::join(keywords.begin(),
+                                                    keywords.end(), " ")) << " )";
+                                }
                             }
 
                             need_comma = true;
