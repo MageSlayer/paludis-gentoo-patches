@@ -32,10 +32,12 @@ doxygen :
 endif
 
 clean-local :
+	mkdir -p html
 	touch html/dummy
 	find html/ -type f | grep -v '\.svn' | xargs rm
 
 maintainer-clean-local :
+	mkdir -p html
 	touch html/dummy
 	find html/ -type f | grep -v '\.svn' | xargs rm
 
