@@ -21,14 +21,14 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_PARSER_HH 1
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_lexer.hh>
+#include <paludis/portage_dep_lexer.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <string>
 
 /** \file
- * Declarations for the DepParser class.
+ * Declarations for the PortageDepParser class.
  *
  * \ingroup grpdepparser
  */
@@ -69,13 +69,13 @@ namespace paludis
     };
 
     /**
-     * Interface provided by DepParserPolicy classes.
+     * Interface provided by PortageDepParserPolicy classes.
      *
-     * \see DepParserPolicy
+     * \see PortageDepParserPolicy
      *
      * \ingroup grpdepparser
      */
-    struct DepParserPolicyInterface
+    struct PortageDepParserPolicyInterface
     {
         /**
          * Create a new text atom from the provided string.
@@ -90,29 +90,29 @@ namespace paludis
         /**
          * Destructor.
          */
-        virtual ~DepParserPolicyInterface()
+        virtual ~PortageDepParserPolicyInterface()
         {
         }
     };
 
     /**
-     * Policy class describing how DepParser::parse should behave.
+     * Policy class describing how PortageDepParser::parse should behave.
      *
-     * \see DepParser
+     * \see PortageDepParser
      *
      * \ingroup grpdepparser
      */
     template <typename TextAtom_, bool permit_any_>
-    class DepParserPolicy :
-        public DepParserPolicyInterface,
-        public InstantiationPolicy<DepParserPolicy<TextAtom_, permit_any_>,
+    class PortageDepParserPolicy :
+        public PortageDepParserPolicyInterface,
+        public InstantiationPolicy<PortageDepParserPolicy<TextAtom_, permit_any_>,
             instantiation_method::SingletonAsNeededTag>
     {
-        friend class InstantiationPolicy<DepParserPolicy<TextAtom_, permit_any_>,
+        friend class InstantiationPolicy<PortageDepParserPolicy<TextAtom_, permit_any_>,
             instantiation_method::SingletonAsNeededTag>;
 
         private:
-            DepParserPolicy()
+            PortageDepParserPolicy()
             {
             }
 
@@ -129,24 +129,24 @@ namespace paludis
     };
 
     /**
-     * Policy class describing how DepParser::parse should behave
+     * Policy class describing how PortageDepParser::parse should behave
      * (specialisation for PackageDepAtom).
      *
-     * \see DepParser
+     * \see PortageDepParser
      *
      * \ingroup grpdepparser
      */
     template <bool permit_any_>
-    class DepParserPolicy<PackageDepAtom, permit_any_> :
-        public DepParserPolicyInterface,
-        public InstantiationPolicy<DepParserPolicy<PackageDepAtom, permit_any_>,
+    class PortageDepParserPolicy<PackageDepAtom, permit_any_> :
+        public PortageDepParserPolicyInterface,
+        public InstantiationPolicy<PortageDepParserPolicy<PackageDepAtom, permit_any_>,
             instantiation_method::SingletonAsNeededTag>
     {
-        friend class InstantiationPolicy<DepParserPolicy<PackageDepAtom, permit_any_>,
+        friend class InstantiationPolicy<PortageDepParserPolicy<PackageDepAtom, permit_any_>,
             instantiation_method::SingletonAsNeededTag>;
 
         private:
-            DepParserPolicy()
+            PortageDepParserPolicy()
             {
             }
 
@@ -167,17 +167,17 @@ namespace paludis
     };
 
     /**
-     * The DepParser converts string representations of a dependency
-     * specification into a DepAtom instance. The DepLexer class is
+     * The PortageDepParser converts string representations of a dependency
+     * specification into a DepAtom instance. The PortageDepLexer class is
      * used as the first stage.
      *
      * \ingroup grpdepparser
      */
-    class DepParser :
-        private InstantiationPolicy<DepParser, instantiation_method::NonInstantiableTag>
+    class PortageDepParser :
+        private InstantiationPolicy<PortageDepParser, instantiation_method::NonInstantiableTag>
     {
         private:
-            typedef DepParserPolicy<PackageDepAtom, true> DefaultPolicy;
+            typedef PortageDepParserPolicy<PackageDepAtom, true> DefaultPolicy;
 
         public:
             /**
@@ -185,7 +185,7 @@ namespace paludis
              * DepAtom tree.
              */
             static CompositeDepAtom::Pointer parse(const std::string & s,
-                    const DepParserPolicyInterface * const policy = DefaultPolicy::get_instance());
+                    const PortageDepParserPolicyInterface * const policy = DefaultPolicy::get_instance());
 
             /**
              * Convenience wrapper for parse for depend strings, for VersionMetadata.

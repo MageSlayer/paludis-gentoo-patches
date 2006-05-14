@@ -18,7 +18,7 @@
  */
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_lexer.hh>
+#include <paludis/portage_dep_lexer.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/tokeniser.hh>
 #include <vector>
@@ -42,7 +42,7 @@ DepStringError::DepStringError(const std::string & d, const std::string & m) thr
 {
 }
 
-DepLexer::DepLexer(const std::string & s)
+PortageDepLexer::PortageDepLexer(const std::string & s)
 {
     Context context("When lexing dependency string '" + s + "':");
 

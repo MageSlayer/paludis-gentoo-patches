@@ -19,7 +19,7 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/ebuild.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/config_file.hh>
@@ -318,7 +318,7 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
     Context context("When loading VDBRepository entry for '" + stringify(p->name)
             + "-" + stringify(p->version) + "' from '" + stringify(location) + "':");
 
-    p->metadata = VersionMetadata::Pointer(new VersionMetadata::Ebuild(DepParser::parse_depend));
+    p->metadata = VersionMetadata::Pointer(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
     p->metadata->get<vm_deps>().set<vmd_build_depend_string>(
             file_contents(location, p->name, p->version, "DEPEND"));
     p->metadata->get<vm_deps>().set<vmd_run_depend_string>(
@@ -486,7 +486,7 @@ VDBRepository::do_version_metadata(
         Log::get_instance()->message(ll_warning, "version lookup failed for request for '" +
                 stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "'");
-        return VersionMetadata::ConstPointer(new VersionMetadata(&DepParser::parse_depend));
+        return VersionMetadata::ConstPointer(new VersionMetadata(&PortageDepParser::parse_depend));
     }
     else
     {
@@ -828,8 +828,8 @@ VDBRepository::begin_provide_map() const
                 if (provide_str.empty())
                     continue;
 
-                DepAtom::ConstPointer provide(DepParser::parse(provide_str,
-                            DepParserPolicy<PackageDepAtom, false>::get_instance()));
+                DepAtom::ConstPointer provide(PortageDepParser::parse(provide_str,
+                            PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
                 PackageDatabaseEntry dbe(e->name, e->version, name());
                 DepAtomFlattener f(_imp->env, &dbe, provide);
 

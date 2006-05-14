@@ -21,7 +21,7 @@
 #include <paludis/fake_repository.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/version_metadata.hh>
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 
 /** \file
  * Implementation for FakeRepository.
@@ -157,7 +157,7 @@ FakeRepository::add_version(const CategoryNamePart & c, const PackageNamePart & 
     _imp->versions.find(QualifiedPackageName(c, p))->second->insert(v);
     _imp->metadata.insert(
             std::make_pair(stringify(c) + "/" + stringify(p) + "-" + stringify(v),
-                VersionMetadata::Pointer(new VersionMetadata::Ebuild(DepParser::parse_depend))));
+                VersionMetadata::Pointer(new VersionMetadata::Ebuild(PortageDepParser::parse_depend))));
     VersionMetadata::Pointer r(_imp->metadata.find(stringify(c) +
                 "/" + stringify(p) + "-" + stringify(v))->second);
     r->set<vm_slot>(SlotName("0"));

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_lexer.hh>
+#include <paludis/portage_dep_lexer.hh>
 #include <sstream>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -26,7 +26,7 @@ using namespace test;
 using namespace paludis;
 
 /** \file
- * Test cases for DepLexer.
+ * Test cases for PortageDepLexer.
  *
  * \ingroup grptestcases
  */
@@ -34,35 +34,35 @@ using namespace paludis;
 namespace test_cases
 {
     /**
-     * \test Test DepLexer with an empty input.
+     * \test Test PortageDepLexer with an empty input.
      *
      * \ingroup grptestcases
      */
-    struct DepLexerEmptyTest : TestCase
+    struct PortageDepLexerEmptyTest : TestCase
     {
-        DepLexerEmptyTest() : TestCase("empty") { }
+        PortageDepLexerEmptyTest() : TestCase("empty") { }
 
         void run()
         {
-            DepLexer l("");
-            DepLexer::Iterator i(l.begin());
+            PortageDepLexer l("");
+            PortageDepLexer::Iterator i(l.begin());
             TEST_CHECK(i == l.end());
         }
     } test_dep_atom_parser_lexer_empty;
 
     /**
-     * \test Test DepLexer with a blank input.
+     * \test Test PortageDepLexer with a blank input.
      *
      * \ingroup grptestcases
      */
-    struct DepLexerBlankTest : TestCase
+    struct PortageDepLexerBlankTest : TestCase
     {
-        DepLexerBlankTest() : TestCase("blank") { }
+        PortageDepLexerBlankTest() : TestCase("blank") { }
 
         void run()
         {
-            DepLexer l("   \n   \t");
-            DepLexer::Iterator i(l.begin());
+            PortageDepLexer l("   \n   \t");
+            PortageDepLexer::Iterator i(l.begin());
             TEST_CHECK(i != l.end());
             TEST_CHECK_EQUAL(i->first, dpl_whitespace);
             TEST_CHECK_EQUAL(i->second, "   \n   \t");
@@ -71,18 +71,18 @@ namespace test_cases
     } test_dep_atom_parser_lexer_blank;
 
     /**
-     * \test Test DepLexer with a package.
+     * \test Test PortageDepLexer with a package.
      *
      * \ingroup grptestcases
      */
-    struct DepLexerPackageTest : TestCase
+    struct PortageDepLexerPackageTest : TestCase
     {
-        DepLexerPackageTest() : TestCase("package") { }
+        PortageDepLexerPackageTest() : TestCase("package") { }
 
         void run()
         {
-            DepLexer l("app-editors/vim");
-            DepLexer::Iterator i(l.begin());
+            PortageDepLexer l("app-editors/vim");
+            PortageDepLexer::Iterator i(l.begin());
             TEST_CHECK(i != l.end());
             TEST_CHECK_EQUAL(i->first, dpl_text);
             TEST_CHECK_EQUAL(i->second, "app-editors/vim");
@@ -95,14 +95,14 @@ namespace test_cases
      *
      * \ingroup grptestcases
      */
-    struct DepLexerPackagesTest : TestCase
+    struct PortageDepLexerPackagesTest : TestCase
     {
-        DepLexerPackagesTest() : TestCase("packages") { }
+        PortageDepLexerPackagesTest() : TestCase("packages") { }
 
         void run()
         {
-            DepLexer l("app-editors/vim app-misc/hilite   \nsys-apps/findutils");
-            DepLexer::Iterator i(l.begin());
+            PortageDepLexer l("app-editors/vim app-misc/hilite   \nsys-apps/findutils");
+            PortageDepLexer::Iterator i(l.begin());
 
             TEST_CHECK(i != l.end());
             TEST_CHECK_EQUAL(i->first, dpl_text);
@@ -129,18 +129,18 @@ namespace test_cases
     } test_dep_atom_parser_lexer_packages;
 
     /**
-     * \test Test DepLexer with an any group.
+     * \test Test PortageDepLexer with an any group.
      *
      * \ingroup grptestcases
      */
-    struct DepLexerAnyTest : TestCase
+    struct PortageDepLexerAnyTest : TestCase
     {
-        DepLexerAnyTest() : TestCase("any") { }
+        PortageDepLexerAnyTest() : TestCase("any") { }
 
         void run()
         {
-            DepLexer l("|| ( one/one two/two )");
-            DepLexer::Iterator i(l.begin());
+            PortageDepLexer l("|| ( one/one two/two )");
+            PortageDepLexer::Iterator i(l.begin());
 
             TEST_CHECK(i != l.end());
             TEST_CHECK_EQUAL(i->first, dpl_double_bar);
@@ -183,18 +183,18 @@ namespace test_cases
     } test_dep_atom_parser_lexer_any;
 
     /**
-     * \test Test DepLexer with a use group.
+     * \test Test PortageDepLexer with a use group.
      *
      * \ingroup grptestcases
      */
-    struct DepLexerUseTest : TestCase
+    struct PortageDepLexerUseTest : TestCase
     {
-        DepLexerUseTest() : TestCase("use") { }
+        PortageDepLexerUseTest() : TestCase("use") { }
 
         void run()
         {
-            DepLexer l("foo? ( one/one )");
-            DepLexer::Iterator i(l.begin());
+            PortageDepLexer l("foo? ( one/one )");
+            PortageDepLexer::Iterator i(l.begin());
 
             TEST_CHECK(i != l.end());
             TEST_CHECK_EQUAL(i->first, dpl_use_flag);
@@ -229,19 +229,19 @@ namespace test_cases
     } test_dep_atom_parser_lexer_use;
 
     /**
-     * \test Test DepLexer with bad input.
+     * \test Test PortageDepLexer with bad input.
      *
      * \ingroup grptestcases
      */
-    struct DepLexerBadTest : TestCase
+    struct PortageDepLexerBadTest : TestCase
     {
-        DepLexerBadTest() : TestCase("bad") { }
+        PortageDepLexerBadTest() : TestCase("bad") { }
 
         void run()
         {
-            TEST_CHECK_THROWS(DepLexer("(moo)"), DepStringError);
-            TEST_CHECK_THROWS(DepLexer("|foo"), DepStringError);
-            TEST_CHECK_THROWS(DepLexer("( moo )bar"), DepStringError);
+            TEST_CHECK_THROWS(PortageDepLexer("(moo)"), DepStringError);
+            TEST_CHECK_THROWS(PortageDepLexer("|foo"), DepStringError);
+            TEST_CHECK_THROWS(PortageDepLexer("( moo )bar"), DepStringError);
         }
     } test_dep_atom_parser_lexer_bad;
 

@@ -74,7 +74,7 @@ namespace test_cases
             {
                 TEST_CHECK(true);
                 DepList d(&env);
-                d.add(DepParser::parse(merge_target));
+                d.add(PortageDepParser::parse(merge_target));
                 TEST_CHECK(true);
 
                 unsigned n(0);
@@ -991,7 +991,7 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env);
-            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_39;
@@ -1019,7 +1019,7 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env);
-            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_40;
@@ -1176,7 +1176,7 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env);
-            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_47;
@@ -1203,7 +1203,7 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env);
-            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_48;
@@ -1272,7 +1272,7 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env);
-            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_51;
@@ -1299,7 +1299,7 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env);
-            TEST_CHECK_THROWS(d.add(DepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_52;
@@ -1328,11 +1328,11 @@ namespace test_cases
             repo->add_version("cat", "seven", "1")->get<vm_deps>().set<vmd_build_depend_string>("cat/doesnotexist");
 
             DepList d(&env);
-            d.add(DepParser::parse("cat/one"));
+            d.add(PortageDepParser::parse("cat/one"));
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
 
-            TEST_CHECK_THROWS(d.add(DepParser::parse("cat/five")), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse("cat/five")), DepListError);
 
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
@@ -1363,11 +1363,11 @@ namespace test_cases
             repo->add_version("cat", "seven", "1")->get<vm_deps>().set<vmd_post_depend_string>("cat/doesnotexist");
 
             DepList d(&env);
-            d.add(DepParser::parse("cat/one"));
+            d.add(PortageDepParser::parse("cat/one"));
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
 
-            TEST_CHECK_THROWS(d.add(DepParser::parse("cat/five")), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse("cat/five")), DepListError);
 
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");

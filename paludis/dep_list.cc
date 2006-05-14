@@ -20,7 +20,6 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/dep_list.hh>
-#include <paludis/dep_parser.hh>
 #include <paludis/match_package.hh>
 #include <paludis/util/container_entry.hh>
 #include <paludis/util/iterator.hh>
@@ -433,13 +432,9 @@ DepList::visit(const PackageDepAtom * const p)
     }
 
     /* if we provide things, also insert them. */
-    std::string provide_str;
-    if (metadata->get_ebuild_interface())
-        provide_str = metadata->get_ebuild_interface()->get<evm_provide>();
-    if ((! provide_str.empty()) && ! merge_entry->get<dle_flags>()[dlef_skip])
+    if ((metadata->get_ebuild_interface()) && ! merge_entry->get<dle_flags>()[dlef_skip])
     {
-        DepAtom::ConstPointer provide(DepParser::parse(provide_str,
-                    DepParserPolicy<PackageDepAtom, false>::get_instance()));
+        DepAtom::ConstPointer provide(metadata->get_ebuild_interface()->provide());
 
         CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
@@ -461,7 +456,7 @@ DepList::visit(const PackageDepAtom * const p)
                 continue;
 
             VersionMetadata::Pointer p_metadata(new VersionMetadata::Ebuild(
-                        &DepParser::parse_depend));
+                        merge_entry->get<dle_metadata>()->get<vm_deps>().get<vmd_parser>()));
             p_metadata->set<vm_slot>(merge_entry->get<dle_metadata>()->get<vm_slot>());
             p_metadata->get_ebuild_interface()->set<evm_virtual>(stringify(merge_entry->get<dle_name>()));
 
@@ -662,9 +657,7 @@ DepList::visit(const BlockDepAtom * const d)
 
             DepAtom::ConstPointer provide(new AllDepAtom);
             if (_imp->current_package->get<dle_metadata>()->get_ebuild_interface())
-                provide = DepParser::parse(
-                        _imp->current_package->get<dle_metadata>()->get_ebuild_interface()->get<evm_provide>(),
-                        DepParserPolicy<PackageDepAtom, false>::get_instance());
+                provide = _imp->current_package->get<dle_metadata>()->get_ebuild_interface()->provide();
 
             CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
@@ -719,9 +712,7 @@ DepList::visit(const BlockDepAtom * const d)
 
             DepAtom::ConstPointer provide(new AllDepAtom);
             if (_imp->current_package->get<dle_metadata>()->get_ebuild_interface())
-                provide = DepParser::parse(
-                        _imp->current_package->get<dle_metadata>()->get_ebuild_interface()->get<evm_provide>(),
-                        DepParserPolicy<PackageDepAtom, false>::get_instance());
+                provide = _imp->current_package->get<dle_metadata>()->get_ebuild_interface()->provide();
 
             CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 

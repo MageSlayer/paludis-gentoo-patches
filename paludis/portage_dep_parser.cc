@@ -18,8 +18,8 @@
  */
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_lexer.hh>
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_lexer.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <stack>
@@ -50,7 +50,7 @@ namespace
      *
      * \ingroup grpdepparser
      */
-    enum DepParserState
+    enum PortageDepParserState
     {
         dps_initial,
         dps_had_double_bar,
@@ -62,16 +62,16 @@ namespace
 }
 
 CompositeDepAtom::Pointer
-DepParser::parse(const std::string & s, const DepParserPolicyInterface * const policy)
+PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInterface * const policy)
 {
     Context context("When parsing dependency string '" + s + "':");
 
     std::stack<CompositeDepAtom::Pointer> stack;
     stack.push(CompositeDepAtom::Pointer(new AllDepAtom));
 
-    DepParserState state(dps_initial);
-    DepLexer lexer(s);
-    DepLexer::Iterator i(lexer.begin()), i_end(lexer.end());
+    PortageDepParserState state(dps_initial);
+    PortageDepLexer lexer(s);
+    PortageDepLexer::Iterator i(lexer.begin()), i_end(lexer.end());
 
     for ( ; i != i_end ; ++i)
     {
@@ -280,7 +280,7 @@ DepParser::parse(const std::string & s, const DepParserPolicyInterface * const p
 }
 
 DepAtom::ConstPointer
-DepParser::parse_depend(const std::string & s)
+PortageDepParser::parse_depend(const std::string & s)
 {
-    return DepParser::parse(s);
+    return PortageDepParser::parse(s);
 }

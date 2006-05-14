@@ -19,7 +19,6 @@
 
 #include <paludis/package_database.hh>
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_parser.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
@@ -170,8 +169,7 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
         }
 
         LicenceChecker lc(this, &e);
-        DepParser::parse(metadata->get<vm_license>(),
-                DepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&lc);
+        metadata->license()->accept(&lc);
         if (! lc.ok)
             result.set(mr_license);
 

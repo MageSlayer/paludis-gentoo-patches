@@ -26,7 +26,7 @@ using namespace test;
 using namespace paludis;
 
 /** \file
- * Test cases for DepParser.
+ * Test cases for PortageDepParser.
  *
  * \ingroup grptestcases
  */
@@ -34,223 +34,223 @@ using namespace paludis;
 namespace test_cases
 {
     /**
-     * \test Test DepParser with an empty input.
+     * \test Test PortageDepParser with an empty input.
      *
      * \ingroup grptestcases
      */
-    struct DepParserEmptyTest : TestCase
+    struct PortageDepParserEmptyTest : TestCase
     {
-        DepParserEmptyTest() : TestCase("empty") { }
+        PortageDepParserEmptyTest() : TestCase("empty") { }
 
         void run()
         {
             std::stringstream s;
             DepAtomDumper d(&s);
-            DepParser::parse("")->accept(&d);
+            PortageDepParser::parse("")->accept(&d);
             TEST_CHECK_EQUAL(s.str(), "<all></all>");
         }
     } test_dep_atom_parser_empty;
 
     /**
-     * \test Test DepParser with a blank input.
+     * \test Test PortageDepParser with a blank input.
      *
      * \ingroup grptestcases
      */
-    struct DepParserBlankTest : TestCase
+    struct PortageDepParserBlankTest : TestCase
     {
-        DepParserBlankTest() : TestCase("blank") { }
+        PortageDepParserBlankTest() : TestCase("blank") { }
 
         void run()
         {
             std::stringstream s;
             DepAtomDumper d(&s);
-            DepParser::parse("   \n   \t")->accept(&d);
+            PortageDepParser::parse("   \n   \t")->accept(&d);
             TEST_CHECK_EQUAL(s.str(), "<all></all>");
         }
     } test_dep_atom_parser_blank;
 
     /**
-     * \test Test DepParser with a package.
+     * \test Test PortageDepParser with a package.
      *
      * \ingroup grptestcases
      */
-    struct DepParserPackageTest : TestCase
+    struct PortageDepParserPackageTest : TestCase
     {
-        DepParserPackageTest() : TestCase("package") { }
+        PortageDepParserPackageTest() : TestCase("package") { }
 
         void run()
         {
             std::stringstream s;
             DepAtomDumper d(&s);
-            DepParser::parse("app-editors/vim")->accept(&d);
+            PortageDepParser::parse("app-editors/vim")->accept(&d);
             TEST_CHECK_EQUAL(s.str(), "<all><package>app-editors/vim</package></all>");
         }
     } test_dep_atom_parser_package;
 
     /**
-     * \test Test DepParser with a decorated package.
+     * \test Test PortageDepParser with a decorated package.
      *
      * \ingroup grptestcases
      */
-    struct DepParserDecoratedPackageTest : TestCase
+    struct PortageDepParserDecoratedPackageTest : TestCase
     {
-        DepParserDecoratedPackageTest() : TestCase("decorated package") { }
+        PortageDepParserDecoratedPackageTest() : TestCase("decorated package") { }
 
         void run()
         {
             std::stringstream s1;
             DepAtomDumper d1(&s1);
-            DepParser::parse(">=app-editors/vim-6.4_alpha")->accept(&d1);
+            PortageDepParser::parse(">=app-editors/vim-6.4_alpha")->accept(&d1);
             TEST_CHECK_EQUAL(s1.str(), "<all><package version=\">=6.4_alpha\">"
                     "app-editors/vim</package></all>");
 
             std::stringstream s2;
             DepAtomDumper d2(&s2);
-            DepParser::parse("=app-editors/vim-6.4_alpha-r1")->accept(&d2);
+            PortageDepParser::parse("=app-editors/vim-6.4_alpha-r1")->accept(&d2);
             TEST_CHECK_EQUAL(s2.str(), "<all><package version=\"=6.4_alpha-r1\">"
                     "app-editors/vim</package></all>");
 
             std::stringstream s3;
             DepAtomDumper d3(&s3);
-            DepParser::parse(">=app-editors/vim-6.4_alpha:one")->accept(&d3);
+            PortageDepParser::parse(">=app-editors/vim-6.4_alpha:one")->accept(&d3);
             TEST_CHECK_EQUAL(s3.str(), "<all><package slot=\"one\" version=\">=6.4_alpha\">"
                     "app-editors/vim</package></all>");
         }
     } test_dep_atom_parser_decorated_package;
 
     /**
-     * \test Test DepParser with a sequence of packages.
+     * \test Test PortageDepParser with a sequence of packages.
      *
      * \ingroup grptestcases
      */
-    struct DepParserPackagesTest : TestCase
+    struct PortageDepParserPackagesTest : TestCase
     {
-        DepParserPackagesTest() : TestCase("packages") { }
+        PortageDepParserPackagesTest() : TestCase("packages") { }
 
         void run()
         {
             std::stringstream s;
             DepAtomDumper d(&s);
-            DepParser::parse("app-editors/vim app-misc/hilite   \nsys-apps/findutils")->accept(&d);
+            PortageDepParser::parse("app-editors/vim app-misc/hilite   \nsys-apps/findutils")->accept(&d);
             TEST_CHECK_EQUAL(s.str(), "<all><package>app-editors/vim</package>"
                     "<package>app-misc/hilite</package><package>sys-apps/findutils</package></all>");
         }
     } test_dep_atom_parser_packages;
 
     /**
-     * \test Test DepParser with an any group.
+     * \test Test PortageDepParser with an any group.
      *
      * \ingroup grptestcases
      */
-    struct DepParserAnyTest : TestCase
+    struct PortageDepParserAnyTest : TestCase
     {
-        DepParserAnyTest() : TestCase("any") { }
+        PortageDepParserAnyTest() : TestCase("any") { }
 
         void run()
         {
             std::stringstream s;
             DepAtomDumper d(&s);
-            DepParser::parse("|| ( one/one two/two )")->accept(&d);
+            PortageDepParser::parse("|| ( one/one two/two )")->accept(&d);
             TEST_CHECK_EQUAL(s.str(), "<all><any><package>one/one</package>"
                     "<package>two/two</package></any></all>");
         }
     } test_dep_atom_parser_any;
 
     /**
-     * \test Test DepParser with an all group.
+     * \test Test PortageDepParser with an all group.
      *
      * \ingroup grptestcases
      */
-    struct DepParserAllTest : TestCase
+    struct PortageDepParserAllTest : TestCase
     {
-        DepParserAllTest() : TestCase("all") { }
+        PortageDepParserAllTest() : TestCase("all") { }
 
         void run()
         {
             std::stringstream s;
             DepAtomDumper d(&s);
-            DepParser::parse(" ( one/one two/two )    ")->accept(&d);
+            PortageDepParser::parse(" ( one/one two/two )    ")->accept(&d);
             TEST_CHECK_EQUAL(s.str(), "<all><all><package>one/one</package>"
                     "<package>two/two</package></all></all>");
         }
     } test_dep_atom_parser_all;
 
     /**
-     * \test Test DepParser with a use group.
+     * \test Test PortageDepParser with a use group.
      *
      * \ingroup grptestcases
      */
-    struct DepParserUseTest : TestCase
+    struct PortageDepParserUseTest : TestCase
     {
-        DepParserUseTest() : TestCase("use") { }
+        PortageDepParserUseTest() : TestCase("use") { }
 
         void run()
         {
             std::stringstream s;
             DepAtomDumper d(&s);
-            DepParser::parse("foo? ( one/one )")->accept(&d);
+            PortageDepParser::parse("foo? ( one/one )")->accept(&d);
             TEST_CHECK_EQUAL(s.str(), "<all><use flag=\"foo\" inverse=\"false\"><package>one/one</package>"
                     "</use></all>");
         }
     } test_dep_atom_parser_use;
 
     /**
-     * \test Test DepParser with an inverse use group.
+     * \test Test PortageDepParser with an inverse use group.
      *
      * \ingroup grptestcases
      */
-    struct DepParserInvUseTest : TestCase
+    struct PortageDepParserInvUseTest : TestCase
     {
-        DepParserInvUseTest() : TestCase("!use") { }
+        PortageDepParserInvUseTest() : TestCase("!use") { }
 
         void run()
         {
             std::stringstream s;
             DepAtomDumper d(&s);
-            DepParser::parse("!foo? ( one/one )")->accept(&d);
+            PortageDepParser::parse("!foo? ( one/one )")->accept(&d);
             TEST_CHECK_EQUAL(s.str(), "<all><use flag=\"foo\" inverse=\"true\"><package>one/one</package>"
                     "</use></all>");
         }
     } test_dep_atom_parser_inv_use;
 
     /**
-     * \test Test DepParser nesting errors.
+     * \test Test PortageDepParser nesting errors.
      *
      * \ingroup grptestcases
      */
-    struct DepParserBadNestingTest : TestCase
+    struct PortageDepParserBadNestingTest : TestCase
     {
-        DepParserBadNestingTest() : TestCase("bad nesting") { }
+        PortageDepParserBadNestingTest() : TestCase("bad nesting") { }
 
         void run()
         {
             std::stringstream s;
             DepAtomDumper d(&s);
-            TEST_CHECK_THROWS(DepParser::parse("!foo? ( one/one")->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(DepParser::parse("!foo? ( one/one ) )")->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(DepParser::parse("( ( ( ) )")->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(DepParser::parse("( ( ( ) ) ) )")->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(DepParser::parse(")")->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse("!foo? ( one/one")->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse("!foo? ( one/one ) )")->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse("( ( ( ) )")->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse("( ( ( ) ) ) )")->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse(")")->accept(&d), DepStringError);
         }
     } test_dep_atom_parser_bad_nesting;
 
     /**
-     * \test Test DepParser weird errors.
+     * \test Test PortageDepParser weird errors.
      *
      * \ingroup grptestcases
      */
-    struct DepParserBadValuesTest : TestCase
+    struct PortageDepParserBadValuesTest : TestCase
     {
-        DepParserBadValuesTest() : TestCase("bad values") { }
+        PortageDepParserBadValuesTest() : TestCase("bad values") { }
 
         void run()
         {
             std::stringstream s;
             DepAtomDumper d(&s);
-            TEST_CHECK_THROWS(DepParser::parse("!foo? ||")->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(DepParser::parse("(((")->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(DepParser::parse(")")->accept(&d), DepStringError);
-            TEST_CHECK_THROWS(DepParser::parse("(foo/bar)")->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse("!foo? ||")->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse("(((")->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse(")")->accept(&d), DepStringError);
+            TEST_CHECK_THROWS(PortageDepParser::parse("(foo/bar)")->accept(&d), DepStringError);
         }
     } test_dep_atom_parser_bad_values;
 }

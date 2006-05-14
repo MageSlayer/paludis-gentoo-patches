@@ -119,7 +119,7 @@ do_install()
                  * without a category. either should work. also allow full atoms, to make
                  * it easy to test things like '|| ( foo/bar foo/baz )'. */
                 if (std::string::npos != q->find('/'))
-                    targets->add_child(p::DepParser::parse(*q));
+                    targets->add_child(p::PortageDepParser::parse(*q));
                 else
                     targets->add_child(p::DepAtom::Pointer(new p::PackageDepAtom(
                                     env->package_database()->fetch_unique_qualified_package_name(
@@ -492,14 +492,12 @@ do_install()
                             else if (p::mr_license == mm)
                             {
                                 cerr << " ";
-                                std::string license_str(env->package_database()->fetch_repository(
-                                            pp->get<p::pde_repository>())->version_metadata(
-                                            pp->get<p::pde_name>(), pp->get<p::pde_version>())->get<
-                                                p::vm_license>());
 
                                 LicenceDisplayer ld(cerr, env, &*pp);
-                                p::DepParser::parse(license_str, p::DepParserPolicy<p::PlainTextDepAtom,
-                                        true>::get_instance())->accept(&ld);
+                                env->package_database()->fetch_repository(
+                                        pp->get<p::pde_repository>())->version_metadata(
+                                        pp->get<p::pde_name>(), pp->get<p::pde_version>())->license()->
+                                        accept(&ld);
                             }
                             else if (p::mr_keyword == mm)
                             {

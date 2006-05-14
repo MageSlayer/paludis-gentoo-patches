@@ -220,8 +220,7 @@ void do_one_query(
         {
             cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) << " ";
             LicenceDisplayer d(cout, env, &display_entry);
-            p::DepParser::parse(metadata->get<p::vm_license>(),
-                    p::DepParserPolicy<p::PlainTextDepAtom, true>::get_instance())->accept(&d);
+            metadata->license()->accept(&d);
             cout << endl;
         }
 

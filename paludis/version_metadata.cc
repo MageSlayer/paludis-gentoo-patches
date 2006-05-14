@@ -20,6 +20,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/version_metadata.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <vector>
 
 /** \file
@@ -59,15 +60,7 @@ VersionMetadataDeps::post_depend() const
 
 VersionMetadata::Ebuild::Ebuild(ParserFunction f) :
     VersionMetadata(f, &_e),
-    _e(EbuildVersionMetadata::create((
-                    param<evm_src_uri>(""),
-                    param<evm_restrict>(""),
-                    param<evm_keywords>(""),
-                    param<evm_inherited>(""),
-                    param<evm_iuse>(""),
-                    param<evm_inherited>(""),
-                    param<evm_provide>(""),
-                    param<evm_virtual>(""))))
+    _e()
 {
 }
 
@@ -83,7 +76,7 @@ VersionMetadata::VersionMetadata(ParserFunction p) :
                     param<vm_license>(""),
                     param<vm_description>(""),
                     param<vm_eapi>("UNSET"),
-                    param<vm_licence>("")
+                    param<vm_license>("")
                     ))),
     _ebuild_if(0)
 {
@@ -97,9 +90,36 @@ VersionMetadata::VersionMetadata(ParserFunction p, EbuildVersionMetadata * ebuil
                     param<vm_license>(""),
                     param<vm_description>(""),
                     param<vm_eapi>("UNSET"),
-                    param<vm_licence>("")
+                    param<vm_license>("")
                     ))),
     _ebuild_if(ebuild_if)
 {
+}
+
+EbuildVersionMetadata::EbuildVersionMetadata() :
+    MakeSmartRecord<EbuildVersionMetadataTag>::Type((EbuildVersionMetadata::create((
+                        param<evm_src_uri>(""),
+                        param<evm_restrict>(""),
+                        param<evm_keywords>(""),
+                        param<evm_inherited>(""),
+                        param<evm_iuse>(""),
+                        param<evm_inherited>(""),
+                        param<evm_provide>(""),
+                        param<evm_virtual>("")))))
+{
+}
+
+DepAtom::ConstPointer
+EbuildVersionMetadata::provide() const
+{
+    return PortageDepParser::parse(get<evm_provide>(), PortageDepParserPolicy<PackageDepAtom,
+            false>::get_instance());
+}
+
+DepAtom::ConstPointer
+VersionMetadata::license() const
+{
+    return PortageDepParser::parse(get<vm_license>(), PortageDepParserPolicy<PlainTextDepAtom,
+            true>::get_instance());
 }
 

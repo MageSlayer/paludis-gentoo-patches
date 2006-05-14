@@ -20,15 +20,15 @@
 
 #include "config.h"
 
+#include <paludis/config_file.hh>
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
-#include <paludis/dep_parser.hh>
 #include <paludis/ebuild.hh>
 #include <paludis/hashed_containers.hh>
-#include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
-#include <paludis/package_database_entry.hh>
 #include <paludis/package_database.hh>
+#include <paludis/package_database_entry.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/portage_repository.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -822,10 +822,10 @@ PortageRepository::do_version_metadata(
                 stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "'");
         return VersionMetadata::ConstPointer(new VersionMetadata::Ebuild(
-                    DepParser::parse_depend));
+                    PortageDepParser::parse_depend));
     }
 
-    VersionMetadata::Pointer result(new VersionMetadata::Ebuild(DepParser::parse_depend));
+    VersionMetadata::Pointer result(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
 
     FSEntry cache_file(_imp->cache);
     cache_file /= stringify(c);
@@ -1307,7 +1307,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     {
         if (q.get<qpn_category>() == CategoryNamePart("virtual"))
         {
-            VersionMetadata::Ebuild::Pointer m(new VersionMetadata::Ebuild(DepParser::parse_depend));
+            VersionMetadata::Ebuild::Pointer m(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
             m->set<vm_slot>(SlotName("0"));
             m->get_ebuild_interface()->set<evm_virtual>(" ");
             metadata = m;
@@ -1337,8 +1337,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         std::set<std::string> already_in_archives;
 
         DepAtomFlattener f(_imp->env, &e,
-                DepParser::parse(metadata->get_ebuild_interface()->get<evm_src_uri>(),
-                    DepParserPolicy<PlainTextDepAtom, false>::get_instance()));
+                PortageDepParser::parse(metadata->get_ebuild_interface()->get<evm_src_uri>(),
+                    PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
 
         for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
         {

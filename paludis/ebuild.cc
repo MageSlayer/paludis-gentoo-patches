@@ -23,7 +23,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 
 /** \file
  * Implementation for ebuild.hh things.
@@ -138,7 +138,7 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
 {
     PStream prog(cmd);
     KeyValueConfigFile f(&prog);
-    _metadata.assign(new VersionMetadata::Ebuild(DepParser::parse_depend));
+    _metadata.assign(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
 
     _metadata->get<vm_deps>().set<vmd_build_depend_string>(f.get("DEPEND"));
     _metadata->get<vm_deps>().set<vmd_run_depend_string>(f.get("RDEPEND"));

@@ -26,7 +26,7 @@
 #include <string>
 
 /** \file
- * Declarations for the DepLexer class.
+ * Declarations for the PortageDepLexer class.
  *
  * \ingroup grpdeplexer
  */
@@ -68,13 +68,13 @@ namespace paludis
     };
 
     /**
-     * Lexemes used by DepLexer.
+     * Lexemes used by PortageDepLexer.
      *
-     * \see DepLexer
+     * \see PortageDepLexer
      *
      * \ingroup grpdeplexer
      */
-    enum DepLexerLexeme
+    enum PortageDepLexerLexeme
     {
         dpl_whitespace,        ///< whitespace
         dpl_text,              ///< a package or item name
@@ -92,17 +92,17 @@ namespace paludis
      *
      * \ingroup grpdeplexer
      */
-    class DepLexer :
-        private InstantiationPolicy<DepLexer, instantiation_method::NonCopyableTag>
+    class PortageDepLexer :
+        private InstantiationPolicy<PortageDepLexer, instantiation_method::NonCopyableTag>
     {
         private:
-            std::list<std::pair<DepLexerLexeme, std::string> > _tokens;
+            std::list<std::pair<PortageDepLexerLexeme, std::string> > _tokens;
 
         public:
             /**
              * Iterator for our tokens.
              */
-            typedef std::list<std::pair<DepLexerLexeme, std::string> >::const_iterator Iterator;
+            typedef std::list<std::pair<PortageDepLexerLexeme, std::string> >::const_iterator Iterator;
 
             /**
              * Iterator to the start of our tokens.
@@ -123,7 +123,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            DepLexer(const std::string &);
+            PortageDepLexer(const std::string &);
     };
 }
 

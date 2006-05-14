@@ -73,7 +73,6 @@ namespace paludis
         vm_deps,
         vm_slot,
         vm_license,
-        vm_licence = vm_license,
         vm_eapi,
         vm_homepage,
         vm_description,
@@ -117,7 +116,14 @@ namespace paludis
     {
     };
 
-    typedef MakeSmartRecord<EbuildVersionMetadataTag>::Type EbuildVersionMetadata;
+    class EbuildVersionMetadata :
+        public MakeSmartRecord<EbuildVersionMetadataTag>::Type
+    {
+        public:
+            EbuildVersionMetadata();
+
+            DepAtom::ConstPointer provide() const;
+    };
 
     class VersionMetadata :
         private InstantiationPolicy<VersionMetadata, instantiation_method::NonCopyableTag>,
@@ -146,6 +152,8 @@ namespace paludis
             {
                 return _ebuild_if;
             }
+
+            DepAtom::ConstPointer license() const;
 
             class Ebuild;
     };
