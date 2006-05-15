@@ -30,6 +30,8 @@ namespace p = paludis;
 int
 do_list_repositories()
 {
+    int ret_code(1);
+
     p::Context context("When performing list-repositories action from command line:");
     p::Environment * const env(p::DefaultEnvironment::get_instance());
 
@@ -37,6 +39,15 @@ do_list_repositories()
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
+        if (CommandLine::get_instance()->a_repository.specified())
+            if (CommandLine::get_instance()->a_repository.args_end() == std::find(
+                        CommandLine::get_instance()->a_repository.args_begin(),
+                        CommandLine::get_instance()->a_repository.args_end(),
+                        stringify(r->name())))
+                continue;
+
+        ret_code = 0;
+
         std::cout << "* " << colour(cl_package_name, r->name()) << std::endl;
 
         for (p::Repository::InfoIterator i(r->begin_info()), i_end(r->end_info()) ; i != i_end ; ++i)
@@ -46,12 +57,14 @@ do_list_repositories()
         std::cout << std::endl;
     }
 
-    return 0;
+    return ret_code;
 }
 
 int
 do_list_categories()
 {
+    int ret_code(1);
+
     p::Context context("When performing list-categories action from command line:");
     p::Environment * const env(p::DefaultEnvironment::get_instance());
 
@@ -61,6 +74,13 @@ do_list_categories()
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
+        if (CommandLine::get_instance()->a_repository.specified())
+            if (CommandLine::get_instance()->a_repository.args_end() == std::find(
+                        CommandLine::get_instance()->a_repository.args_begin(),
+                        CommandLine::get_instance()->a_repository.args_end(),
+                        stringify(r->name())))
+                continue;
+
         p::CategoryNamePartCollection::ConstPointer cat_names(r->category_names());
         for (p::CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
@@ -70,18 +90,29 @@ do_list_categories()
     for (std::map<p::CategoryNamePart, std::list<p::RepositoryName > >::const_iterator
             c(cats.begin()), c_end(cats.end()) ; c != c_end ; ++c)
     {
+        if (CommandLine::get_instance()->a_category.specified())
+            if (CommandLine::get_instance()->a_category.args_end() == std::find(
+                        CommandLine::get_instance()->a_category.args_begin(),
+                        CommandLine::get_instance()->a_category.args_end(),
+                        stringify(c->first)))
+                continue;
+
+        ret_code = 0;
+
         std::cout << "* " << colour(cl_package_name, c->first) << std::endl;
         std::cout << "    " << std::setw(22) << std::left << "found in:" <<
             std::setw(0) << " " << p::join(c->second.begin(), c->second.end(), ", ") << std::endl;
         std::cout << std::endl;
     }
 
-    return 0;
+    return ret_code;
 }
 
 int
 do_list_packages()
 {
+    int ret_code(1);
+
     p::Context context("When performing list-packages action from command line:");
     p::Environment * const env(p::DefaultEnvironment::get_instance());
 
@@ -91,10 +122,24 @@ do_list_packages()
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
     {
+        if (CommandLine::get_instance()->a_repository.specified())
+            if (CommandLine::get_instance()->a_repository.args_end() == std::find(
+                        CommandLine::get_instance()->a_repository.args_begin(),
+                        CommandLine::get_instance()->a_repository.args_end(),
+                        stringify(r->name())))
+                continue;
+
         p::CategoryNamePartCollection::ConstPointer cat_names(r->category_names());
         for (p::CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
+            if (CommandLine::get_instance()->a_category.specified())
+                if (CommandLine::get_instance()->a_category.args_end() == std::find(
+                            CommandLine::get_instance()->a_category.args_begin(),
+                            CommandLine::get_instance()->a_category.args_end(),
+                            stringify(*c)))
+                    continue;
+
             p::QualifiedPackageNameCollection::ConstPointer pkg_names(r->package_names(*c));
             for (p::QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
@@ -105,11 +150,21 @@ do_list_packages()
     for (std::map<p::QualifiedPackageName, std::list<p::RepositoryName > >::const_iterator
             p(pkgs.begin()), p_end(pkgs.end()) ; p != p_end ; ++p)
     {
+        if (CommandLine::get_instance()->a_package.specified())
+            if (CommandLine::get_instance()->a_package.args_end() == std::find(
+                        CommandLine::get_instance()->a_package.args_begin(),
+                        CommandLine::get_instance()->a_package.args_end(),
+                        stringify(p->first.get<p::qpn_package>())))
+                continue;
+
+        ret_code = 0;
+
         std::cout << "* " << colour(cl_package_name, p->first) << std::endl;
         std::cout << "    " << std::setw(22) << std::left << "found in:" <<
             std::setw(0) << " " << p::join(p->second.begin(), p->second.end(), ", ") << std::endl;
         std::cout << std::endl;
     }
 
-    return 0;
+    return ret_code;
 }
+

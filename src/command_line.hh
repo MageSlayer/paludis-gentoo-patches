@@ -71,15 +71,6 @@ class CommandLine :
         /// --list-packages
         paludis::args::SwitchArg a_list_packages;
 
-        /// --list-sync-protocols
-        paludis::args::SwitchArg a_list_sync_protocols;
-
-        /// --list-repository-formats
-        paludis::args::SwitchArg a_list_repository_formats;
-
-        /// --list-dep-tag-categories
-        paludis::args::SwitchArg a_list_dep_tag_categories;
-
         /// --contents
         paludis::args::SwitchArg a_contents;
 
@@ -101,9 +92,17 @@ class CommandLine :
         /// --best-version
         paludis::args::SwitchArg a_best_version;
 
+        /// --list-sync-protocols
+        paludis::args::SwitchArg a_list_sync_protocols;
+
+        /// --list-repository-formats
+        paludis::args::SwitchArg a_list_repository_formats;
+
+        /// --list-dep-tag-categories
+        paludis::args::SwitchArg a_list_dep_tag_categories;
+
         /// --update-news
         paludis::args::SwitchArg a_update_news;
-
 
         ///}
 
@@ -190,6 +189,23 @@ class CommandLine :
 
         /// --dl-max-stack-depth
         paludis::args::IntegerArg a_dl_max_stack_depth;
+
+        /// }
+
+        /// \name List arguments
+        /// {
+
+        /// List arguments.
+        paludis::args::ArgsGroup list_args;
+
+        /// --repository
+        paludis::args::StringSetArg a_repository;
+
+        /// --category
+        paludis::args::StringSetArg a_category;
+
+        /// --package
+        paludis::args::StringSetArg a_package;
 
         /// }
 
