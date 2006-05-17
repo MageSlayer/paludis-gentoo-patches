@@ -64,7 +64,6 @@ ebuild_load_module()
     source "${EBUILD_MODULES_DIR}/${1}.bash" || die "Error loading module ${1}"
 }
 
-source /sbin/functions.sh || die "Couldn't source functions.sh"
 ebuild_load_module echo_functions
 ebuild_load_module sandbox
 ebuild_load_module portage_stubs

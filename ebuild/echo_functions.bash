@@ -21,6 +21,82 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+COLOUR_GOOD=$'\e[32;01m'
+COLOUR_WARN=$'\e[33;01m'
+COLOUR_BAD=$'\e[31;01m'
+COLOUR_BRACKET=$'\e[34;01m'
+COLOUR_NORMAL=$'\e[0m'
+PALUDIS_ENDCOL=$'\e[A\e['$(( ${COLUMNS:-80} - 7 ))'G'
+
+einfon()
+{
+    echo -ne " ${COLOUR_GOOD}*${COLOUR_NORMAL} $*"
+    PALUDIS_LAST_E_CMD=einfon
+}
+
+einfo()
+{
+    einfon "$*\n"
+    PALUDIS_LAST_E_CMD=einfo
+}
+
+ewarn()
+{
+    echo -e " ${COLOUR_WARN}*${COLOUR_NORMAL} $*"
+    PALUDIS_LAST_E_CMD=ewarn
+}
+
+eerror()
+{
+    echo -e " ${COLOUR_BAD}*${COLOUR_NORMAL} $*"
+    PALUDIS_LAST_E_CMD=eerror
+}
+
+ebegin()
+{
+    einfo "$* ..."
+    PALUDIS_LAST_E_CMD=ebegin
+    PALUDIS_LAST_E_LEN=$(( 4 + ${#msg} ))
+}
+
+_eend()
+{
+    local retval=${1:-0} efunc=${2:-eerror} msg
+    shift 2
+
+    if [[ ${retval} == 0 ]]; then
+        msg="${COLOUR_BRACKET}[ ${COLOUR_GOOD}ok${COLOUR_BRACKET} ]${COLOUR_NORMAL}"
+    else
+        if [[ -n "$*" ]]; then
+            ${efunc} $*
+        fi
+        msg="${COLOUR_BRACKET}[ ${COLOUR_BAD}!!${COLOUR_BRACKET} ]${COLOUR_NORMAL}"
+    fi
+
+#    printf "%$(( ${COLUMNS:-80} - PALUDIS_LAST_E_LEN - 6))s%b\n" '' "${msg}"
+    echo -e "${PALUDIS_ENDCOL} ${msg}"
+
+    return ${retval}
+}
+
+eend()
+{
+    local retval=${1:-0}
+    shift
+    _eend ${retval} eerror "$*"
+    PALUDIS_LAST_E_CMD=eend
+    return ${retval}
+}
+
+ewend()
+{
+    local retval=${1:-0}
+    shift
+    _eend ${retval} ewarn "$*"
+    PALUDIS_LAST_E_CMD=ewend
+    return ${retval}
+}
+
 use_with()
 {
     if useq "${1}" ; then
