@@ -115,8 +115,8 @@ cd ..
 
 
 mkdir -p repo7/{eclass,distfiles,profiles/profile} || exit 1
-mkdir -p repo7/cat-one/pkg-one || exit 1
-mkdir -p repo7/metadata/cache/cat-one
+mkdir -p repo7/cat-one/pkg-{one,two} || exit 1
+mkdir -p repo7/metadata/cache/cat-{one,two}
 cd repo7 || exit 1
 echo "test-repo-7" > profiles/repo_name || exit 1
 cat <<END > profiles/categories || exit 1
@@ -133,6 +133,9 @@ SLOT="0"
 IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
+END
+cat <<END > cat-one/pkg-two/pkg-two-1.ebuild || exit 1
+i am a fish
 END
 cd ..
 

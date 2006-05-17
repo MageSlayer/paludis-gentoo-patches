@@ -163,23 +163,35 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
     KeyValueConfigFile f(&prog);
     _metadata.assign(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
 
-    _metadata->get<vm_deps>().set<vmd_build_depend_string>(f.get("DEPEND"));
-    _metadata->get<vm_deps>().set<vmd_run_depend_string>(f.get("RDEPEND"));
-    _metadata->set<vm_slot>(SlotName(f.get("SLOT")));
-    _metadata->get_ebuild_interface()->set<evm_src_uri>(f.get("SRC_URI"));
-    _metadata->get_ebuild_interface()->set<evm_restrict>(f.get("RESTRICT"));
-    _metadata->set<vm_homepage>(f.get("HOMEPAGE"));
-    _metadata->set<vm_license>(f.get("LICENSE"));
-    _metadata->set<vm_description>(f.get("DESCRIPTION"));
-    _metadata->get_ebuild_interface()->set<evm_keywords>(f.get("KEYWORDS"));
-    _metadata->get_ebuild_interface()->set<evm_inherited>(f.get("INHERITED"));
-    _metadata->get_ebuild_interface()->set<evm_iuse>(f.get("IUSE"));
-    _metadata->get<vm_deps>().set<vmd_post_depend_string>(f.get("PDEPEND"));
-    _metadata->get_ebuild_interface()->set<evm_provide>(f.get("PROVIDE"));
-    _metadata->set<vm_eapi>(f.get("EAPI"));
-    _metadata->get_ebuild_interface()->set<evm_virtual>("");
+    bool ok(false);
+    try
+    {
+        _metadata->get<vm_deps>().set<vmd_build_depend_string>(f.get("DEPEND"));
+        _metadata->get<vm_deps>().set<vmd_run_depend_string>(f.get("RDEPEND"));
+        _metadata->set<vm_slot>(SlotName(f.get("SLOT")));
+        _metadata->get_ebuild_interface()->set<evm_src_uri>(f.get("SRC_URI"));
+        _metadata->get_ebuild_interface()->set<evm_restrict>(f.get("RESTRICT"));
+        _metadata->set<vm_homepage>(f.get("HOMEPAGE"));
+        _metadata->set<vm_license>(f.get("LICENSE"));
+        _metadata->set<vm_description>(f.get("DESCRIPTION"));
+        _metadata->get_ebuild_interface()->set<evm_keywords>(f.get("KEYWORDS"));
+        _metadata->get_ebuild_interface()->set<evm_inherited>(f.get("INHERITED"));
+        _metadata->get_ebuild_interface()->set<evm_iuse>(f.get("IUSE"));
+        _metadata->get<vm_deps>().set<vmd_post_depend_string>(f.get("PDEPEND"));
+        _metadata->get_ebuild_interface()->set<evm_provide>(f.get("PROVIDE"));
+        _metadata->set<vm_eapi>(f.get("EAPI"));
+        _metadata->get_ebuild_interface()->set<evm_virtual>("");
 
-    if (prog.exit_status())
+        if (prog.exit_status())
+            ok = true;
+    }
+    catch (const NameError &)
+    {
+    }
+
+    if (ok)
+        return true;
+    else
     {
         Log::get_instance()->message(ll_warning, "Could not generate cache for '"
                 + stringify(*params.get<ecpk_db_entry>()) + "'");
@@ -187,7 +199,6 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
 
         return false;
     }
-    return true;
 }
 
 std::string
