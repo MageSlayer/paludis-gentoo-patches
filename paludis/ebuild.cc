@@ -109,7 +109,7 @@ MakeEnvCommand
 EbuildCommand::add_portage_vars(const MakeEnvCommand & cmd) const
 {
     return cmd
-        ("PORTAGE_ACTUAL_DISTDIR", stringify(params.get<ecpk_portdir>()))
+        ("PORTAGE_ACTUAL_DISTDIR", stringify(params.get<ecpk_distdir>()))
         ("PORTAGE_BASHRC", "/dev/null")
         ("PORTAGE_BUILDDIR", BIGTEMPDIR "/paludis/" +
              stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_category>()) + "/" +
