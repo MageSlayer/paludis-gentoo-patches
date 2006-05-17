@@ -52,9 +52,9 @@ namespace
             if (tag->short_text() == "world")
                 cout << ":      " << "Packages that have been explicitly installed";
             else if (tag->short_text() == "everything")
-                cout << ":      " << "All installed packages";
+                cout << ": " << "All installed packages";
             else if (tag->short_text() == "system")
-                cout << ":      " << "Packages that are part of the base system";
+                cout << ":     " << "Packages that are part of the base system";
             cout << endl;
         }
     };
