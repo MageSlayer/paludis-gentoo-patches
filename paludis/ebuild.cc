@@ -17,13 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ebuild.hh"
+#include <paludis/ebuild.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <sys/resource.h>
+#include <sys/time.h>
 
 /** \file
  * Implementation for ebuild.hh things.
@@ -97,10 +99,31 @@ EbuildCommand::operator() ()
                 ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
                 ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))));
 
-    if (do_run_command(cmd))
+    if (do_run_command(add_portage_vars(cmd)))
         return success();
     else
         return failure();
+}
+
+MakeEnvCommand
+EbuildCommand::add_portage_vars(const MakeEnvCommand & cmd) const
+{
+    return cmd
+        ("PORTAGE_ACTUAL_DISTDIR", stringify(params.get<ecpk_portdir>()))
+        ("PORTAGE_BASHRC", "/dev/null")
+        ("PORTAGE_BUILDDIR", BIGTEMPDIR "/paludis/" +
+             stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_category>()) + "/" +
+             stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_package>()) + "-" +
+             stringify(params.get<ecpk_db_entry>()->get<pde_version>()))
+        ("PORTAGE_CALLER", params.get<ecpk_environment>()->paludis_command())
+        ("PORTAGE_GID", "0")
+        ("PORTAGE_INST_GID", "0")
+        ("PORTAGE_INST_UID", "0")
+        ("PORTAGE_MASTER_PID", stringify(::getpid()))
+        ("PORTAGE_NICENCESS", stringify(::getpriority(PRIO_PROCESS, 0)))
+        ("PORTAGE_TMPDIR", BIGTEMPDIR)
+        ("PORTAGE_TMPFS", "/dev/shm")
+        ("PORTAGE_WORKDIR_MODE", "0700");
 }
 
 bool

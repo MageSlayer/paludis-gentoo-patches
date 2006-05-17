@@ -210,6 +210,7 @@ ebuild_main()
     else
         ebuild_load_ebuild "${ebuild}"
         for action in $@ ; do
+            export EBUILD_PHASE="${action}"
             perform_hook ebuild_${action}_pre
             ebuild_f_${action} || die "${action} failed"
             if [[ ${action} == "init" ]] ; then

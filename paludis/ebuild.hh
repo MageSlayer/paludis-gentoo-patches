@@ -142,6 +142,11 @@ namespace paludis
             virtual bool do_run_command(const std::string &);
 
             /**
+             * Add Portage emulation vars.
+             */
+            virtual MakeEnvCommand add_portage_vars(const MakeEnvCommand &) const;
+
+            /**
              * Extend the command to be run.
              */
             virtual MakeEnvCommand extend_command(const MakeEnvCommand &) = 0;
