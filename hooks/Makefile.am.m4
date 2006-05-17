@@ -7,7 +7,7 @@ MAINTAINERCLEANFILES = Makefile.in Makefile.am
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda .keep
 SUBDIRS = .
 
-installvarlibpaludisnewsdir = /var/lib/paludis/news
+installvarlibpaludisnewsdir = $(localstatedir)/paludis/news
 
 installhookcommonprogdir = $(libexecdir)/paludis/hooks/common
 installhookinstallallpostdir = $(libexecdir)/paludis/hooks/install_all_post
