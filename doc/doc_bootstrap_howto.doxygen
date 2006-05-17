@@ -21,6 +21,10 @@ subscribe to the <code>paludis-sekrit</code> mailing list.
 \warning Do not try to use Paludis and Portage to install things inside the same
     root. The config and vdb formats are not compatible!
 
+\warning Do not file bugs related to Paludis on Gentoo Bugzilla. Do not discuss
+    Paludis on Gentoo mailing lists or forums. Do not pester Gentoo developers
+    about Paludis.
+
 \section BootstrapHowtoRequirements Requirements
 
 Install Paludis locally, being sure to configure <code>sysconfdir</code> as

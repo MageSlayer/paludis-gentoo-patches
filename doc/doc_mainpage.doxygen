@@ -22,6 +22,10 @@ tracker</a> and some
 you shouldn't try to use these until after you've discussed your problem in our
 IRC channel. Read the howto for more details.
 
+\warning Do not file bugs related to Paludis on Gentoo Bugzilla. Do not discuss
+    Paludis on Gentoo mailing lists or forums. Do not pester Gentoo developers
+    about Paludis.
+
 \section developerdocs For Developers
 
 Start by getting a
