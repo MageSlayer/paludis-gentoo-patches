@@ -31,7 +31,7 @@ libpaludisargs_a_SOURCES = $(paludis_args_include_HEADERS) \
 	missing_value.cc \
 	args_dumper.cc
 
-TESTS_ENVIRONMENT = env -u PALUDIS_OPTIONS TEST_SCRIPT_DIR="$(srcdir)/" $(SHELL) $(top_srcdir)/test/run_test.sh
+TESTS_ENVIRONMENT = env -u PALUDIS_OPTIONS TEST_SCRIPT_DIR="$(srcdir)/" bash $(top_srcdir)/test/run_test.sh
 lib_LIBRARIES = libpaludisargs.a
 check_PROGRAMS = $(TESTS)
 

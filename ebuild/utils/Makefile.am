@@ -44,7 +44,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
 	PALUDIS_EBUILD_LOG_LEVEL="silent" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
-	$(SHELL) $(top_srcdir)/ebuild/utils/run_test.bash
+	bash $(top_srcdir)/ebuild/utils/run_test.bash
 
 TESTS = merge_TEST.bash dobin_TEST.bash unmerge_TEST.bash
 check_SCRIPTS = $(TESTS) \

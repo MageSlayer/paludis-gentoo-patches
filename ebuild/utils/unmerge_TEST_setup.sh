@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # vim: set ft=sh sw=4 sts=4 et :
 
 mkdir -p unmerge_TEST_dir/{empty_src,empty_dst} || exit 2

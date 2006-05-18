@@ -24,7 +24,7 @@ dormd160_SOURCES = \
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
-	$(SHELL) $(top_srcdir)/test/run_test.sh
+	bash $(top_srcdir)/test/run_test.sh
 
 TESTS = dosha256_TEST dormd160_TEST
 EXTRA_DIST = $(libexecprog_SCRIPTS) dosha256_TEST.cc dormd160_TEST.cc

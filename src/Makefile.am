@@ -30,7 +30,7 @@ paludis_LDADD = \
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_SKIP_CONFIG="yes" \
-	$(SHELL) $(top_srcdir)/test/run_test.sh bash
+	bash $(top_srcdir)/test/run_test.sh bash
 
 TESTS = version_TEST help_TEST list_sync_formats_TEST \
 	list_repository_formats_TEST list_dep_tag_categories_TEST

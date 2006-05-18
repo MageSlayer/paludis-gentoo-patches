@@ -51,7 +51,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
-	$(SHELL) $(top_srcdir)/test/run_test.sh
+	bash $(top_srcdir)/test/run_test.sh
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist

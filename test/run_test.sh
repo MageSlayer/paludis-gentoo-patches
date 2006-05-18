@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # vim: set ft=sh sw=4 sts=4 et :
 
 if test -f "$TEST_SCRIPT_DIR""${2:-${1}}"_"setup.sh" ; then

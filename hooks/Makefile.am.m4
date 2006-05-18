@@ -27,7 +27,7 @@ installvarlibpaludisnews_SCRIPTS = \
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
-	$(SHELL) $(top_srcdir)/ebuild/run_test.bash
+	bash $(top_srcdir)/ebuild/run_test.bash
 
 TESTS =
 EXTRA_DIST = \
