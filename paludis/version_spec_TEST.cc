@@ -141,6 +141,24 @@ namespace test_cases
     } test_version_spec_star_compare;
 
     /**
+     * \test VersionSpec tilde comparisons
+     *
+     * \ingroup grptestcases
+     */
+    struct VersionSpecTildeCompareTest : TestCase
+    {
+        VersionSpecTildeCompareTest() : TestCase("version spec tilde compare") {}
+
+        void run()
+        {
+            TEST_CHECK(VersionSpec("1.2").tilde_compare(VersionSpec("1.2")));
+            TEST_CHECK(VersionSpec("1.2").tilde_compare(VersionSpec("1.2-r1")));
+            TEST_CHECK(! VersionSpec("1.2").tilde_compare(VersionSpec("1.3")));
+            TEST_CHECK(VersionSpec("1.2-r1").tilde_compare(VersionSpec("1.2-r2")));
+        }
+    } test_version_spec_tilde_compare;
+
+    /**
      * \test VersionSpec remove revision
      *
      * \ingroup grptestcases
