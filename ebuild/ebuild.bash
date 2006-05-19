@@ -65,6 +65,7 @@ ebuild_load_module()
 }
 
 ebuild_load_module echo_functions
+ebuild_load_module kernel_functions
 ebuild_load_module sandbox
 ebuild_load_module portage_stubs
 ebuild_load_module list_functions

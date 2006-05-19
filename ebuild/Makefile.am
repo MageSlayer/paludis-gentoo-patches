@@ -15,6 +15,7 @@ libexecprog_SCRIPTS = \
 	builtin_unmerge.bash \
 	ebuild.bash \
 	echo_functions.bash \
+	kernel_functions.bash \
 	eclass_functions.bash \
 	install_functions.bash \
 	list_functions.bash \
@@ -40,7 +41,7 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/ebuild/run_test.bash
 
-TESTS = echo_functions_TEST.bash list_functions_TEST.bash
+TESTS = echo_functions_TEST.bash list_functions_TEST.bash kernel_functions_TEST.bash
 EXTRA_DIST = $(libexecprog_SCRIPTS) run_test.bash $(TESTS)
 
 check_SCRIPTS = run_test.bash $(TESTS)
