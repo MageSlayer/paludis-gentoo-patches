@@ -331,6 +331,22 @@ AC_SUBST([ENABLE_QA])
 AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
 dnl }}}
 
+dnl {{{ colourschemes
+AC_MSG_CHECKING([which colourscheme to use])
+AC_ARG_ENABLE([pink],
+			  [ --enable-pink             Make it pink],
+			[WANT_PINK=$enableval
+			 AC_MSG_RESULT([pink])],
+			[WANT_PINK=no
+			 AC_MSG_RESULT([default])])
+AM_CONDITIONAL([WANT_PINK], test "x$WANT_PINK" = "xyes")
+if test x"$WANT_PINK" = "xyes"; then
+	AC_DEFINE([PALUDIS_COLOUR_PINK], 1, [Are we pinkified?])
+else
+	AC_DEFINE([PALUDIS_COLOUR_PINK], 0)
+fi
+dnl }}}
+
 dnl {{{ built sources
 GENERATED_FILE=misc/generated-file.txt
 AC_SUBST_FILE(GENERATED_FILE)

@@ -22,6 +22,7 @@
 
 #include "src/command_line.hh"
 #include <paludis/util/stringify.hh>
+#include <config.h>
 #include <string>
 
 enum Colour
@@ -38,6 +39,17 @@ enum Colour
     cl_bold_blue     = cl_blue + 100,
     cl_bold_pink     = cl_pink + 100,
 
+#if PALUDIS_COLOUR_PINK==1
+    cl_package_name  = cl_bold_pink,
+    cl_flag_on       = cl_pink,
+    cl_flag_off      = cl_red,
+    cl_slot          = cl_blue,
+    cl_visible       = cl_flag_on,
+    cl_masked        = cl_flag_off,
+    cl_heading       = cl_bold_pink,
+    cl_updatemode    = cl_yellow,
+    cl_tag           = cl_yellow,
+#else
     cl_package_name  = cl_bold_blue,
     cl_flag_on       = cl_green,
     cl_flag_off      = cl_red,
@@ -47,7 +59,7 @@ enum Colour
     cl_heading       = cl_bold_green,
     cl_updatemode    = cl_yellow,
     cl_tag           = cl_yellow,
-
+#endif
     cl_file          = cl_none,
     cl_dir           = cl_blue,
     cl_sym           = cl_pink,
