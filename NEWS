@@ -4,6 +4,18 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.2.3:
+    * Added support for repository-level global and per-package USE forcing.
+
+    * Added --repository, --category, and --package filter options for --list
+      actions.
+
+    * Added an eselect-based newsreader. Paludis now provides a reference
+      implementation of GLEP 42.
+
+    * Various bugfixes -- reinstalling glibc and coreutils should work now,
+      amongst others.
+
 0.2.2:
     * Deplist tags are now used for all package sets.
 
