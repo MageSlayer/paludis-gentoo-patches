@@ -136,6 +136,9 @@ namespace paludis
         /// Sets dir
         FSEntry setsdir;
 
+        /// Security dir
+        FSEntry securitydir;
+
         /// News dir
         FSEntry newsdir;
 
@@ -251,6 +254,7 @@ Implementation<PortageRepository>::Implementation(const PortageRepositoryParams 
     eclassdir(p.get<prpk_eclassdir>()),
     distdir(p.get<prpk_distdir>()),
     setsdir(p.get<prpk_setsdir>()),
+    securitydir(p.get<prpk_securitydir>()),
     newsdir(p.get<prpk_newsdir>()),
     sync(p.get<prpk_sync>()),
     sync_exclude(p.get<prpk_sync_exclude>()),
@@ -525,6 +529,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     _info.insert(std::make_pair(std::string("cache"), stringify(_imp->cache)));
     _info.insert(std::make_pair(std::string("eclassdir"), stringify(_imp->eclassdir)));
     _info.insert(std::make_pair(std::string("distdir"), stringify(_imp->distdir)));
+    _info.insert(std::make_pair(std::string("securitydir"), stringify(_imp->securitydir)));
     _info.insert(std::make_pair(std::string("setsdir"), stringify(_imp->setsdir)));
     _info.insert(std::make_pair(std::string("newsdir"), stringify(_imp->newsdir)));
     _info.insert(std::make_pair(std::string("format"), std::string("portage")));
@@ -1176,6 +1181,10 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("setsdir") || ((setsdir = m.find("setsdir")->second)).empty())
         setsdir = location + "/sets";
 
+    std::string securitydir;
+    if (m.end() == m.find("securitydir") || ((securitydir = m.find("securitydir")->second)).empty())
+        securitydir = location + "/metadata/security";
+
     std::string newsdir;
     if (m.end() == m.find("newsdir") || ((newsdir = m.find("newsdir")->second)).empty())
         newsdir = location + "/metadata/news";
@@ -1204,6 +1213,7 @@ PortageRepository::make_portage_repository(
                         param<prpk_cache>(cache),
                         param<prpk_eclassdir>(eclassdir),
                         param<prpk_distdir>(distdir),
+                        param<prpk_securitydir>(securitydir),
                         param<prpk_setsdir>(setsdir),
                         param<prpk_newsdir>(newsdir),
                         param<prpk_sync>(sync),
@@ -1577,12 +1587,11 @@ PortageRepository::do_security_set() const
     Context c("When building security package set:");
     AllDepAtom::Pointer security_packages(new AllDepAtom);
 
-    FSEntry security = _imp->location / "metadata" / "security";
-    if (!security.is_directory())
+    if (!_imp->securitydir.is_directory())
         return DepAtom::Pointer(new AllDepAtom);
 
     std::list<FSEntry> advisories;
-    std::copy(DirIterator(_imp->location / "metadata" / "security"), DirIterator(),
+    std::copy(DirIterator(_imp->securitydir), DirIterator(),
         filter_inserter(std::back_inserter(advisories),
         IsFileWithExtension("advisory-", ".conf")));
 
