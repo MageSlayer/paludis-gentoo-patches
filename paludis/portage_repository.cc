@@ -236,6 +236,9 @@ namespace paludis
 
         private:
             void add_profile_r(const FSEntry & f) const;
+
+            /// Raw system lines.
+            mutable std::set<std::string> system_lines;
     };
 }
 
@@ -287,6 +290,15 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
                     &::tolower);
             use[UseFlagName(lower_x + "_" + *u)] = use_enabled;
         }
+    }
+
+    for (std::set<std::string>::iterator it(system_lines.begin()), it_end(system_lines.end());
+            it != it_end; ++it)
+    {
+        Context context_atom("When parsing package '" + *it + "':");
+        PackageDepAtom::Pointer atom(new PackageDepAtom(*it));
+        atom->set_tag(system_tag);
+        system_packages->add_child(atom);
     }
 
     std::string arch(profile_env["ARCH"]);
@@ -463,13 +475,19 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
         for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
                 line != line_end ; ++line)
         {
-            if (line->empty() || '*' != line->at(0))
+            if (line->empty())
                 continue;
 
-            Context context_line("When parsing line '" + *line + "':");
-            PackageDepAtom::Pointer atom(new PackageDepAtom(line->substr(1)));
-            atom->set_tag(system_tag);
-            system_packages->add_child(atom);
+            Context context_line("When reading line '" + *line + "':");
+
+            if ('*' == line->at(0))
+                system_lines.insert(line->substr(1));
+            else if('-' == line->at(0) && '*' == line->at(1))
+                if (0==system_lines.erase(line->substr(2)))
+                {
+                    Log::get_instance()->message(ll_qa, "Trying to remove packages line '" + line->substr(2) +
+                            "' that doesn't exist.");
+                }
         }
     }
 }
