@@ -482,7 +482,7 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
 
             if ('*' == line->at(0))
                 system_lines.insert(line->substr(1));
-            else if('-' == line->at(0) && '*' == line->at(1))
+            else if ('-' == line->at(0) && '*' == line->at(1))
                 if (0==system_lines.erase(line->substr(2)))
                 {
                     Log::get_instance()->message(ll_qa, "Trying to remove packages line '" + line->substr(2) +
