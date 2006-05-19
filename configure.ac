@@ -358,6 +358,7 @@ AC_OUTPUT(
 	ebuild/Makefile
 	ebuild/digests/Makefile
 	ebuild/utils/Makefile
+	eselect/Makefile
 	hooks/Makefile
 	misc/Makefile
 	misc/svn-version-filter-data.bash
