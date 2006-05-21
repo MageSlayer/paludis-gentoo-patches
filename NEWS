@@ -4,6 +4,12 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.2.4:
+    * An ebuild metadata generation bug has been fixed.
+
+    * For Portage format repositories, the location of security advisories is
+    now a configuration option.
+
 0.2.3:
     * Added support for repository-level global and per-package USE forcing.
 
