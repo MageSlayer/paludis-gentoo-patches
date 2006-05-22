@@ -1,4 +1,4 @@
-MAINTAINERCLEANFILES = Makefile.in Makefile.am
+MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda .keep
 SUBDIRS = .
 
