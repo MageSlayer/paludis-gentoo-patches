@@ -108,12 +108,12 @@ namespace
 
         void visit(const PackageDepAtom *) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw InternalError(PALUDIS_HERE, "todo: encountered PackageDepAtom in licence?"); /// \bug todo
+            throw InternalError(PALUDIS_HERE, "Encountered PackageDepAtom in licence?");
         }
 
         void visit(const BlockDepAtom *)  PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw InternalError(PALUDIS_HERE, "todo: encountered BlockDepAtom in licence?"); /// \bug todo
+            throw InternalError(PALUDIS_HERE, "Encountered BlockDepAtom in licence?");
         }
         ///}
     };

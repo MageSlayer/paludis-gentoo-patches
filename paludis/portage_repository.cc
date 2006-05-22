@@ -307,7 +307,9 @@ Implementation<PortageRepository>::add_profile(const FSEntry & f) const
 
     std::string arch(profile_env["ARCH"]);
     if (arch.empty())
-        throw InternalError(PALUDIS_HERE, "todo: ARCH unset"); /// \todo
+        throw PortageRepositoryConfigurationError("ARCH variable is unset for repository at '"
+                + stringify(location) + "'");
+
     use[UseFlagName(arch)] = use_enabled;
 }
 
@@ -1001,7 +1003,6 @@ bool
 PortageRepository::do_query_profile_masks(const CategoryNamePart &,
         const PackageNamePart &, const VersionSpec &) const
 {
-    /// \todo
     return false;
 }
 
@@ -1254,7 +1255,6 @@ PortageRepository::do_is_expand_flag(const UseFlagName & u) const
         _imp->has_profile = true;
     }
 
-    /// \todo VV no need for this to be linear
     for (UseFlagSet::const_iterator i(_imp->expand_list.begin()),
             i_end(_imp->expand_list.end()) ; i != i_end ; ++i)
         if (0 == strncasecmp(
@@ -1294,7 +1294,6 @@ PortageRepository::do_is_mirror(const std::string & s) const
                 if (! entries.empty())
                 {
                     /* pick up to five random mirrors only */
-                    /// \todo param this
                     static Random r;
                     std::random_shuffle(next(entries.begin()), entries.end(), r);
                     if (entries.size() > 6)
@@ -1420,18 +1419,18 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             flat_src_uri.append(" ");
 
             /* add mirror://gentoo/ entries */
-            /// \todo don't hardcode
-            if (is_mirror("gentoo") && ! no_mirror)
+            std::string master_mirror(strip_trailing_string(stringify(name()), "x-"));
+            if (is_mirror(master_mirror) && ! no_mirror)
             {
                 for (Environment::MirrorIterator
-                        m(_imp->env->begin_mirrors("gentoo")),
-                        m_end(_imp->env->end_mirrors("gentoo")) ;
+                        m(_imp->env->begin_mirrors(master_mirror)),
+                        m_end(_imp->env->end_mirrors(master_mirror)) ;
                         m != m_end ; ++m)
                     flat_src_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
 
                 for (std::list<std::string>::iterator
-                        m(_imp->mirrors.find("gentoo")->second.begin()),
-                        m_end(_imp->mirrors.find("gentoo")->second.end()) ;
+                        m(_imp->mirrors.find(master_mirror)->second.begin()),
+                        m_end(_imp->mirrors.find(master_mirror)->second.end()) ;
                         m != m_end ; ++m)
                     flat_src_uri.append(*m + "/" + (*ff)->text().substr(p + 1) + " ");
             }
