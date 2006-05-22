@@ -143,6 +143,7 @@ ebuild_load_ebuild()
     RDEPEND="${RDEPEND} ${E_RDEPEND}"
     PDEPEND="${PDEPEND} ${E_PDEPEND}"
     KEYWORDS="${KEYWORDS} ${E_KEYWORDS}"
+    [[ ${EAPI-unset} == "unset" ]] && EAPI="0"
 }
 
 perform_hook()

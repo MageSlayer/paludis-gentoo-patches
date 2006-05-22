@@ -525,6 +525,7 @@ namespace test_cases
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
                 TEST_CHECK_EQUAL(m->get<vm_description>(), "The Description");
+                TEST_CHECK_EQUAL(m->get<vm_eapi>(), "0");
             }
         }
     } test_portage_repository_metadata_uncached;
