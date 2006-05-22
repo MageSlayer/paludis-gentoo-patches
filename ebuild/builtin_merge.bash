@@ -30,10 +30,11 @@ builtin_merge()
     install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
     install -d "${ROOT%/}"/var/db/pkg/.cache || die "couldn't make pkg db cache"
 
-    local v
+    local v VDB_FORMAT="paludis-1"
     for v in CATEGORY CBUILD CFLAGS CHOST CXXFLAGS DEPEND DESCRIPTION EAPI \
         FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
-        PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK ; do
+        PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK \
+        VDB_FORMAT ; do
         echo "${!v}" > "${dbdir}"/${v} || die "pkg db write ${v} failed"
     done
 
