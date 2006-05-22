@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <errno.h>
 #include "config.h"
 
 /** \file
@@ -86,15 +87,16 @@ paludis::run_command(const std::string & cmd)
     {
         Log::get_instance()->message(ll_debug, "execl /bin/sh -c " + cmd);
         execl("/bin/sh", "sh", "-c", cmd.c_str(), static_cast<char *>(0));
-        throw InternalError(PALUDIS_HERE, "execl failed"); /// \todo fixme
+        throw InternalError(PALUDIS_HERE, "execl /bin/sh -c '" + cmd + "' failed:"
+                + stringify(strerror(errno)));
     }
     else if (-1 == child)
-        throw InternalError(PALUDIS_HERE, "fork failed"); /// \todo fixme
+        throw InternalError(PALUDIS_HERE, "fork failed: " + stringify(strerror(errno)));
     else
     {
         int status(-1);
         if (-1 == wait(&status))
-            throw InternalError(PALUDIS_HERE, "wait failed"); /// \todo fixme
+            throw InternalError(PALUDIS_HERE, "wait failed: " + stringify(strerror(errno)));
         return status;
     }
 
