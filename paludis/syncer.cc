@@ -93,6 +93,35 @@ namespace
     };
 
     /**
+     * A Syncer for Git syncing.
+     *
+     * \ingroup grpsyncer
+     */
+    class GitSyncer :
+        public Syncer
+    {
+        private:
+            std::string _local;
+            std::string _remote;
+
+        protected:
+            GitSyncer(const std::string & local, const std::string & remote) :
+                _local(local),
+                _remote(remote)
+            {
+                if (0 == _remote.compare(0, 8, "git+http", 0, 8))
+                    _remote = _remote.erase(0, 4);
+            }
+
+        public:
+            virtual void sync(const SyncOptions &) const;
+            static Syncer::Pointer make(const std::string & local, const std::string & remote)
+            {
+                return Syncer::Pointer(new GitSyncer(local, remote));
+            }
+    };
+
+    /**
      * Register rsync:// protocol.
      *
      * \ingroup grpsyncer
@@ -112,6 +141,27 @@ namespace
      * \ingroup grpsyncer
      */
     static const SyncerMaker::RegisterMaker register_svnplusssh_syncer("svn+ssh", &SvnSyncer::make);
+
+    /**
+     * Register git:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
+    static const SyncerMaker::RegisterMaker register_git_syncer("git", &GitSyncer::make);
+
+    /**
+     * Register git+ssh:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
+    static const SyncerMaker::RegisterMaker register_gitplusssh_syncer("git+ssh", &GitSyncer::make);
+
+    /**
+     * Register git+http:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
+    static const SyncerMaker::RegisterMaker register_gitplushttp_syncer("git+http", &GitSyncer::make);
 }
 
 void
@@ -147,6 +197,27 @@ SvnSyncer::sync(const SyncOptions &) const
         throw SyncFailedError(_local, _remote);
 }
 
+void
+GitSyncer::sync(const SyncOptions &) const
+{
+    Context context("When performing sync via git from '" + _remote + "' to '"
+            + _local + "':");
+
+    std::string cmd;
+    FSEntry git_dir(_local+"/.git");
+
+    if (FSEntry(_local).is_directory() && ! git_dir.is_directory())
+        throw SyncGitDirectoryExists(_local);
+
+    if (git_dir.is_directory())
+        cmd = "cd '" + _local + "' && git pull";
+    else
+        cmd = "git clone '"+ _remote + "' '" + _local + "'";
+
+    if (0 != run_command(make_env_command(cmd)("LC_ALL", "C")))
+        throw SyncFailedError(_local, _remote);
+}
+
 SyncFailedError::SyncFailedError(const std::string & local, const std::string & remote) throw () :
     PackageActionError("sync of '" + local + "' from '" + remote + "' failed")
 {
@@ -157,3 +228,7 @@ SyncFailedError::SyncFailedError(const std::string & msg) throw () :
 {
 }
 
+SyncGitDirectoryExists::SyncGitDirectoryExists(const std::string & local) throw () :
+    SyncFailedError("'" + local + "' exists but it is not a Git repository")
+{
+}

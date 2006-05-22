@@ -119,6 +119,22 @@ namespace paludis
     };
 
     /**
+     * Thrown if a directory exists where a Git repository should be cloned.
+     *
+     * \ingroup grpsyncer
+     * \ingroup grpexceptions
+     */
+    class SyncGitDirectoryExists :
+        public SyncFailedError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            SyncGitDirectoryExists(const std::string & local) throw ();
+    };
+
+    /**
      * Thrown if a syncer of the specified type does not exist.
      *
      * \ingroup grpsyncer
