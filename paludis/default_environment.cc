@@ -491,3 +491,15 @@ DefaultEnvironment::local_package_set(const std::string & s) const
     return DepAtom::Pointer(0);
 }
 
+DefaultEnvironment::MirrorIterator
+DefaultEnvironment::begin_mirrors(const std::string & mirror) const
+{
+    return DefaultConfig::get_instance()->begin_mirrors(mirror);
+}
+
+DefaultEnvironment::MirrorIterator
+DefaultEnvironment::end_mirrors(const std::string & mirror) const
+{
+    return DefaultConfig::get_instance()->end_mirrors(mirror);
+}
+

@@ -40,6 +40,9 @@ namespace paludis
      */
     class TestEnvironment : public Environment
     {
+        private:
+            std::multimap<std::string, std::string> _mirrors;
+
         public:
             /**
              * Constructor.
@@ -79,6 +82,16 @@ namespace paludis
 
             virtual void perform_hook(const Hook &) const
             {
+            }
+
+            virtual MirrorIterator begin_mirrors(const std::string &) const
+            {
+                return _mirrors.end();
+            }
+
+            virtual MirrorIterator end_mirrors(const std::string &) const
+            {
+                return _mirrors.end();
             }
     };
 }

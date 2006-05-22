@@ -1393,13 +1393,22 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             {
                 std::string mirror((*ff)->text().substr(9));
                 std::string::size_type q(mirror.find('/'));
+
                 if (std::string::npos == q)
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since SRC_URI is broken");
+
                 if (! is_mirror(mirror.substr(0, q)))
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since SRC_URI references unknown mirror:// '" +
                             mirror.substr(0, q) + "'");
+
+                for (Environment::MirrorIterator
+                        m(_imp->env->begin_mirrors(mirror.substr(0, q))),
+                        m_end(_imp->env->end_mirrors(mirror.substr(0, q))) ;
+                        m != m_end ; ++m)
+                    flat_src_uri.append(m->second + "/" + mirror.substr(q + 1) + " ");
+
                 for (std::list<std::string>::iterator
                         m(_imp->mirrors.find(mirror.substr(0, q))->second.begin()),
                         m_end(_imp->mirrors.find(mirror.substr(0, q))->second.end()) ;
@@ -1414,6 +1423,12 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             /// \todo don't hardcode
             if (is_mirror("gentoo") && ! no_mirror)
             {
+                for (Environment::MirrorIterator
+                        m(_imp->env->begin_mirrors("gentoo")),
+                        m_end(_imp->env->end_mirrors("gentoo")) ;
+                        m != m_end ; ++m)
+                    flat_src_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
+
                 for (std::list<std::string>::iterator
                         m(_imp->mirrors.find("gentoo")->second.begin()),
                         m_end(_imp->mirrors.find("gentoo")->second.end()) ;

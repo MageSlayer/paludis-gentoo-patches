@@ -183,6 +183,21 @@ namespace paludis
             ProvideMapIterator end_provide_map() const;
 
             /**
+             * Iterator over named mirror entries.
+             */
+            typedef std::multimap<std::string, std::string>::const_iterator MirrorIterator;
+
+            /**
+             * Iterator to the start of our mirrors.
+             */
+            virtual MirrorIterator begin_mirrors(const std::string & mirror) const = 0;
+
+            /**
+             * Iterator to past the end of our mirrors.
+             */
+            virtual MirrorIterator end_mirrors(const std::string & mirror) const = 0;
+
+            /**
              * Fetch a named package set.
              */
             DepAtom::Pointer package_set(const std::string &) const;

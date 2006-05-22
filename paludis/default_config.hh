@@ -183,6 +183,8 @@ namespace paludis
 
             std::vector<std::pair<UseFlagName, UseFlagState> > _default_use;
 
+            std::multimap<std::string, std::string> _mirrors;
+
         public:
             /**
              * Set config suffix. Must be called before we do anything, or not
@@ -500,6 +502,18 @@ namespace paludis
             std::string config_dir() const
             {
                 return _config_dir;
+            }
+
+            typedef std::multimap<std::string, std::string>::const_iterator MirrorIterator;
+
+            MirrorIterator begin_mirrors(const std::string & m) const
+            {
+                return _mirrors.lower_bound(m);
+            }
+
+            MirrorIterator end_mirrors(const std::string & m) const
+            {
+                return _mirrors.upper_bound(m);
             }
     };
 }

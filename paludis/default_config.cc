@@ -335,6 +335,34 @@ DefaultConfig::DefaultConfig() :
                     "contain an entry in the form '* keyword')");
     }
 
+    /* mirrors */
+    {
+        std::list<FSEntry> files;
+        files.push_back(config_dir / "mirrors.conf");
+
+        for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
+                file != file_end ; ++file)
+        {
+            Context local_context("When reading mirrors file '" + stringify(*file) + "':");
+
+            if (! file->is_regular_file())
+                continue;
+
+            LineConfigFile f(*file);
+            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+                    line != line_end ; ++line)
+            {
+                std::vector<std::string> m;
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(m));
+                if (m.size() < 2)
+                    continue;
+                for (std::vector<std::string>::const_iterator mm(next(m.begin())),
+                        mm_end(m.end()) ; mm != mm_end ; ++mm)
+                    _mirrors.insert(std::make_pair(m.at(0), *mm));
+            }
+        }
+    }
+
     _bashrc_files = stringify(config_dir / "bashrc");
 }
 

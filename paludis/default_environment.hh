@@ -72,6 +72,10 @@ namespace paludis
                     const std::string & prefix, const PackageDatabaseEntry *) const;
 
             virtual void perform_hook(const Hook & hook) const;
+
+            virtual MirrorIterator begin_mirrors(const std::string & mirror) const;
+
+            virtual MirrorIterator end_mirrors(const std::string & mirror) const;
     };
 }
 #endif
