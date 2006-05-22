@@ -194,6 +194,21 @@ namespace paludis
     };
 
     /**
+     * Thrown if a key read fails.
+     *
+     * \ingroup grpvdbrepository
+     * \ingroup grpexceptions
+     */
+    class VDBRepositoryKeyReadError : public ConfigurationError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            VDBRepositoryKeyReadError(const std::string & msg) throw ();
+    };
+
+    /**
      * Register the VDB repository format.
      *
      * \ingroup grpvdbrepository

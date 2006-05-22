@@ -292,8 +292,7 @@ namespace
 
         std::ifstream ff(stringify(f / key).c_str());
         if (! ff)
-            throw InternalError(PALUDIS_HERE, "TODO reading " + stringify(location) + " name " +
-                    stringify(name) + " version " + stringify(v) + " key " + key); /// \todo
+            throw VDBRepositoryKeyReadError("Could not read '" + stringify(f / key) + "'");
         return strip_leading(strip_trailing(std::string((std::istreambuf_iterator<char>(ff)),
                         std::istreambuf_iterator<char>()), " \t\n"), " \t\n");
     }
@@ -531,8 +530,7 @@ VDBRepository::do_contents(
 
     std::ifstream ff(stringify(f / "CONTENTS").c_str());
     if (! ff)
-        throw InternalError(PALUDIS_HERE, "TODO reading " + stringify(_imp->location) + " name " +
-                stringify(c + p) + " version " + stringify(v) + " CONTENTS"); /// \todo
+        throw VDBRepositoryKeyReadError("Could not read '" + stringify(f / "CONTENTS") + "'");
 
     std::string line;
     unsigned line_number(0);
@@ -665,6 +663,12 @@ VDBRepository::make_vdb_repository(
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(
         const std::string & msg) throw () :
     ConfigurationError("VDB repository configuration error: " + msg)
+{
+}
+
+VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
+        const std::string & msg) throw () :
+    ConfigurationError("VDB repository key read error: " + msg)
 {
 }
 
