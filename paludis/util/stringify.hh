@@ -35,6 +35,11 @@ namespace paludis
     template <typename T_, typename U_, typename V_>
     class CountedPtr;
 
+    /**
+     * For use by stringify.
+     *
+     * \ingroup grpstringify
+     */
     namespace stringify_internals
     {
         template <typename T_>

@@ -36,17 +36,34 @@
 
 namespace paludis
 {
+    /**
+     * A pointer to a parse function.
+     *
+     * \ingroup grpversions
+     */
     typedef DepAtom::ConstPointer (* ParserFunction) (const std::string &);
 
+    /**
+     * Keys for VersionMetadataDeps.
+     *
+     * \see VersionMetadataDeps
+     * \ingroup grpversions
+     */
     enum VersionMetadataDepsKey
     {
-        vmd_parser,
-        vmd_build_depend_string,
-        vmd_run_depend_string,
-        vmd_post_depend_string,
-        last_vmd
+        vmd_parser,                 ///< Our parser
+        vmd_build_depend_string,    ///< Our build deps
+        vmd_run_depend_string,      ///< Our runtime deps
+        vmd_post_depend_string,     ///< Our post deps
+        last_vmd                    ///< Number of items
     };
 
+    /**
+     * Tag for VersionMetadataDeps.
+     *
+     * \see VersionMetadataDeps
+     * \ingroup grpversions
+     */
     struct VersionMetadataDepsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<VersionMetadataDepsKey, last_vmd>,
@@ -57,28 +74,60 @@ namespace paludis
     {
     };
 
+    /**
+     * Version metadata dependency information.
+     *
+     * \see VersionMetadata
+     * \ingroup grpversions
+     */
     class VersionMetadataDeps :
         public MakeSmartRecord<VersionMetadataDepsTag>::Type
     {
         public:
+            /**
+             * Constructor.
+             */
             VersionMetadataDeps(ParserFunction);
 
+            /**
+             * Our build depends.
+             */
             DepAtom::ConstPointer build_depend() const;
+
+            /**
+             * Our runtime depends.
+             */
             DepAtom::ConstPointer run_depend() const;
+
+            /**
+             * Our post depends.
+             */
             DepAtom::ConstPointer post_depend() const;
     };
 
+    /**
+     * Key for VersionMetadata.
+     *
+     * \see VersionMetadata
+     * \ingroup grpversions
+     */
     enum VersionMetadataKey
     {
-        vm_deps,
-        vm_slot,
-        vm_license,
-        vm_eapi,
-        vm_homepage,
-        vm_description,
-        last_vm
+        vm_deps,         ///< Dependencies
+        vm_slot,         ///< Slot
+        vm_license,      ///< Licence
+        vm_eapi,         ///< EAPI
+        vm_homepage,     ///< Homepage
+        vm_description,  ///< Description
+        last_vm          ///< Number of items
     };
 
+    /**
+     * Tag for VersionMetadata.
+     *
+     * \see VersionMetadata
+     * \ingroup grpversions
+     */
     struct VersionMetadataTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<VersionMetadataKey, last_vm>,
@@ -91,18 +140,30 @@ namespace paludis
     {
     };
 
+    /**
+     * Key for EbuildVersionMetadata.
+     *
+     * \see EbuildVersionMetadata
+     * \ingroup grpversions
+     */
     enum EbuildVersionMetadataKey
     {
-        evm_provide,
-        evm_src_uri,
-        evm_restrict,
-        evm_keywords,
-        evm_iuse,
-        evm_virtual,
-        evm_inherited,
-        last_evm
+        evm_provide,         ///< PROVIDE
+        evm_src_uri,         ///< SRC_URI
+        evm_restrict,        ///< RESTRICT
+        evm_keywords,        ///< KEYWORDS
+        evm_iuse,            ///< IUSE
+        evm_virtual,         ///< virtual for what?
+        evm_inherited,       ///< INHERITED
+        last_evm             ///< number of items
     };
 
+    /**
+     * Tag for EbuildVersionMetadata.
+     *
+     * \see EbuildVersionMetadata
+     * \ingroup grpversions
+     */
     struct EbuildVersionMetadataTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<EbuildVersionMetadataKey, last_evm>,
@@ -116,15 +177,32 @@ namespace paludis
     {
     };
 
+    /**
+     * Version metadata for an ebuild.
+     *
+     * \ingroup grpversions
+     * \see VersionMetadata
+     */
     class EbuildVersionMetadata :
         public MakeSmartRecord<EbuildVersionMetadataTag>::Type
     {
         public:
+            /**
+             * Constructor.
+             */
             EbuildVersionMetadata();
 
+            /**
+             * PROVIDE, as a dep atom.
+             */
             DepAtom::ConstPointer provide() const;
     };
 
+    /**
+     * Version metadata.
+     *
+     * \ingroup grpversions
+     */
     class VersionMetadata :
         private InstantiationPolicy<VersionMetadata, instantiation_method::NonCopyableTag>,
         public MakeSmartRecord<VersionMetadataTag>::Type,
@@ -134,30 +212,54 @@ namespace paludis
             EbuildVersionMetadata * _ebuild_if;
 
         protected:
+            /**
+             * Constructor.
+             */
             VersionMetadata(ParserFunction, EbuildVersionMetadata * ebuild_if);
 
         public:
+            /**
+             * Constructor.
+             */
             VersionMetadata(ParserFunction);
 
+            /**
+             * Destructor.
+             */
             virtual ~VersionMetadata();
 
+            /**
+             * Fetch our ebuild interface, or 0.
+             */
             EbuildVersionMetadata *
             get_ebuild_interface()
             {
                 return _ebuild_if;
             }
 
+            /**
+             * Fetch our ebuild interface, or 0.
+             */
             const EbuildVersionMetadata *
             get_ebuild_interface() const
             {
                 return _ebuild_if;
             }
 
+            /**
+             * Fetch our licence, as a dep atom structure.
+             */
             DepAtom::ConstPointer license() const;
 
             class Ebuild;
     };
 
+    /**
+     * VersionMetadata subclass, for ebuilds.
+     *
+     * \ingroup grpversions
+     * \see VersionMetadata
+     */
     class VersionMetadata::Ebuild :
         public VersionMetadata
     {
@@ -165,9 +267,19 @@ namespace paludis
             EbuildVersionMetadata _e;
 
         public:
+            /**
+             * Constructor.
+             */
             Ebuild(ParserFunction);
 
+            /**
+             * Pointer to us.
+             */
             typedef CountedPtr<VersionMetadata::Ebuild, count_policy::InternalCountTag> Pointer;
+
+            /**
+             * Const pointer to us.
+             */
             typedef CountedPtr<const VersionMetadata::Ebuild, count_policy::InternalCountTag> ConstPointer;
     };
 }
