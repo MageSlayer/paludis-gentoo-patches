@@ -145,12 +145,25 @@ END
 \endverbatim
 
 Set up your <code>package_unmask.conf</code> and <code>package_mask.conf</code>,
-if necessary::
+if necessary:
 
 \verbatim
 cat <<"END" > /mychroot/etc/paludis/package_unmask.conf
 app-editors/vim
 app-editors/vim-core
+END
+\endverbatim
+
+Set up your <code>mirrors.conf</code>, if you feel like it (note that 0.2.5 or
+later is required, or this file is ignored). It uses the same format as
+<code>thirdpartymirrors</code>. Remember to include the <code>/distfiles</code>
+for Gentoo mirrors.
+
+\verbatim
+cat <<"END" > /mychroot/etc/paludis/mirrors.conf
+gentoo http://gentoo.blueyonder.co.uk/distfiles/
+gnu http://gnu.blueyonder.co.uk/
+debian http://debian.blueyonder.co.uk/
 END
 \endverbatim
 
