@@ -249,6 +249,7 @@ namespace test_cases
             v.push_back(VersionSpec("1"));
             v.push_back(VersionSpec("1-r1"));
             v.push_back(VersionSpec("1_p1"));
+            v.push_back(VersionSpec("1-try2"));
             v.push_back(VersionSpec("1p"));
             v.push_back(VersionSpec("1.1_alpha3"));
             v.push_back(VersionSpec("1.1"));

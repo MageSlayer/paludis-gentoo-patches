@@ -53,6 +53,7 @@ namespace
         empty,
         revision,
         patch,
+        trypart,
         letter,
         number,
         scm
@@ -221,6 +222,22 @@ VersionSpec::VersionSpec(const std::string & text) :
                 x += text.at(p) - '0';
             }
             _imp->parts.push_back(Part(patch, x));
+        }
+
+        /* try */
+        if (p < text.length() && 0 == text.compare(p, 4, "-try"))
+        {
+            x = std::numeric_limits<unsigned long>::max();
+            for (p += 4 ; p < text.length() ; ++p)
+            {
+                if (text.at(p) < '0' || text.at(p) > '9')
+                    break;
+                if (x == std::numeric_limits<unsigned long>::max())
+                    x = 0;
+                x *= 10;
+                x += text.at(p) - '0';
+            }
+            _imp->parts.push_back(Part(trypart, x));
         }
 
         /* scm */

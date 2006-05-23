@@ -39,6 +39,8 @@ would be relevant if it were:
 - Repositories can deliver news items, warning the user of important changes
   before they take place.
 
+- Ability to sync from Subversion, Git.
+
 \section PortageDifferencesEbuildDeveloper For the Ebuild Developer
 
 As well as the end user advantages, ebuild authors will benefit from:
@@ -60,7 +62,7 @@ As well as the end user advantages, ebuild authors will benefit from:
 
 - Default deep dependency resolution.
 
-- Support for -scm versions.
+- Support for -scm, -try versions.
 
 - Multiple inheritance for profiles.
 
