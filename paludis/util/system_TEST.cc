@@ -82,6 +82,9 @@ namespace test_cases
 #ifdef linux
             TEST_CHECK('2' == kernel_version().at(0));
             TEST_CHECK('.' == kernel_version().at(1));
+#elif defined(__FreeBSD__)
+	    TEST_CHECK('6' == kernel_version().at(0));
+	    TEST_CHECK('.' == kernel_version().at(1));
 #else
 #  error You need to write a sanity test for kernel_version() for your platform.
 #endif
