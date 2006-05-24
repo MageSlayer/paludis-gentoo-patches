@@ -347,6 +347,19 @@ else
 fi
 dnl }}}
 
+dnl {{{ is sed gnu sed
+AC_MSG_CHECKING([if we need a sed wrapper])
+AC_SUBST([NEED_SED_WRAPPER])
+AM_CONDITIONAL([NEED_SED_WRAPPER], test x`sed --version &>/dev/null || echo yes` = "xyes")
+if test x`sed --version &>/dev/null || echo yes` = "xyes"; then
+	AC_DEFINE([NEED_SED_WRAPPER], 1, [Do we need sed wrapper?])
+	AC_MSG_RESULT([yes])
+else
+	AC_DEFINE([NEED_SED_WRAPPER], 0)
+	AC_MSG_RESULT([no])
+fi
+dnl }}}
+
 dnl {{{ built sources
 GENERATED_FILE=misc/generated-file.txt
 AC_SUBST_FILE(GENERATED_FILE)

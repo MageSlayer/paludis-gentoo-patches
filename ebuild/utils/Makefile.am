@@ -3,6 +3,10 @@ CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a
 
 libexecprogdir = $(libexecdir)/paludis/utils
 
+if NEED_SED_WRAPPER
+libexecprog_SCRIPTS_extra = sed
+endif
+
 libexecprog_SCRIPTS = \
 	dobin \
 	doconfd \
@@ -38,7 +42,8 @@ libexecprog_SCRIPTS = \
 	newlib.so \
 	newman \
 	newsbin \
-	unmerge
+	unmerge \
+	$(libexecprog_SCRIPTS_extra)
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
