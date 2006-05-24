@@ -355,7 +355,7 @@ BUILDUSER=`whoami`
 AC_SUBST([BUILDUSER])
 BUILDHOST=`hostname`
 AC_SUBST([BUILDHOST])
-BUILDDATE=`date --iso=seconds`
+BUILDDATE=`date +%Y-%m-%dT%H:%M:%S%z`
 AC_SUBST([BUILDDATE])
 if test -d "${ac_top_srcdir:-./}/.svn" ; then
 	SVNVERSION=`svnversion "${ac_top_srcdir:-./}"`
