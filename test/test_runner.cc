@@ -25,7 +25,9 @@
 #include <fstream>
 #include <cstdlib>
 #include <signal.h>
+#if defined(__GLIBC__)
 #include <execinfo.h>
+#endif
 #include <unistd.h>
 #include <sys/types.h>
 
@@ -41,6 +43,7 @@ namespace
 {
     void do_backtrace()
     {
+#if defined(__GLIBC__)
         void * bt[50];
         size_t sz = backtrace(bt, 50);
         char * * symbols = backtrace_symbols(bt, sz);
@@ -50,6 +53,7 @@ namespace
             std::cerr << "  * " << symbols[n] << std::endl;
 
         std::free(symbols);
+#endif
     }
 }
 
