@@ -26,10 +26,10 @@ regen_info_dirs=
 for info_path in ${INFOPATH/:/ } ; do
     info_path="${ROOT%/}/${info_path}"
     [[ -d "${info_path}" ]] || continue
-    info_time=$(stat -c '%Y' "${info_path}" )
+    info_time=$(getmtime "${info_path}" )
 
     if [[ -f "${ROOT}/var/db/pkg/.cache/info_time_cache" ]] ; then
-        info_time_cache=$(stat -c '%Y' "${ROOT}"/var/db/pkg/.cache/info_time_cache )
+        info_time_cache=$(getmtime "${ROOT}"/var/db/pkg/.cache/info_time_cache )
         [[ "${info_time}" -le "${info_time_cache}" ]] && continue
     fi
 

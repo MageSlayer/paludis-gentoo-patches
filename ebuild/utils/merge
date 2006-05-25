@@ -99,7 +99,7 @@ merge_this()
             else
                 echo -n "sym ${2#${top_dst}}/${ff} -> " >> ${contents}
                 echo -n "$(readlink -- ${2}/${ff} ) " >> ${contents}
-                echo -n "$(stat -c '%Y' -- ${2}/${ff} )" >> ${contents}
+                echo -n "$(getmtime -- ${2}/${ff} )" >> ${contents}
                 echo >> ${contents}
             fi
             hash -r
@@ -150,7 +150,7 @@ merge_this()
                 if [[ -f "${fn}" ]] ; then
                     echo -n "obj ${2#${top_dst}}/${ff} " >> ${contents}
                     echo -n "$(md5sum -- ${2}/${ff} | cut -d' ' -f1 ) " >> ${contents}
-                    echo -n "$(stat -c '%Y' -- ${2}/${ff} )" >> ${contents}
+                    echo -n "$(getmtime -- ${2}/${ff} )" >> ${contents}
                     echo >> ${contents}
                 else
                     echo "misc ${2#${top_dst}}/${ff}" >> ${contents}
