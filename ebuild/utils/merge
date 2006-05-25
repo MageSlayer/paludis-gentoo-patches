@@ -27,10 +27,10 @@ fi
 shopt -s dotglob
 shopt -s nullglob
 
-src=$(readlink -f "${1%/}/" )
+src=$(realpath "${1%/}/" )
 src="${src//+(\/)/\/}"
 export top_src="${src}"
-dst=$(readlink -f "${2%/}/" )
+dst=$(realpath "${2%/}/" )
 dst="${dst//+(\/)/\/}"
 export top_dst="${dst}"
 export contents=${3}

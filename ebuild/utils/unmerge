@@ -27,7 +27,7 @@ fi
 shopt -s dotglob
 shopt -s nullglob
 
-ROOT=$(readlink -f "${1%+(/)}/" )
+ROOT=$(realpath "${1%+(/)}/" )
 export ROOT
 export contents=${2}
 

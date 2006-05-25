@@ -42,6 +42,6 @@ maintainer-clean-local :
 	find html/ -type f | grep -v '\.svn' | xargs rm
 
 upload-homepage : doxygen
-	cd `readlink -f $(top_srcdir)/doc/html` && tar jc ./ | \
+	cd `realpath $(top_srcdir)/doc/html` && tar jc ./ | \
 		ssh shell.berlios.de tar vjx -C /home/groups/paludis/htdocs/
 

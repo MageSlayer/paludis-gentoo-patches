@@ -55,7 +55,7 @@ diefunc()
     exit 249
 }
 
-EBUILD_MODULES_DIR=$(readlink -f $(dirname $0 ) )
+EBUILD_MODULES_DIR=$(realpath $(dirname $0 ) )
 [[ -d ${EBUILD_MODULES_DIR} ]] || die "${EBUILD_MODULES_DIR} is not a directory"
 export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
 
@@ -79,7 +79,7 @@ ebuild_source_profile()
 {
     if [[ -f ${1}/parent ]] ; then
         while read line; do
-            ebuild_source_profile $(readlink -f ${1}/${line} )
+            ebuild_source_profile $(realpath ${1}/${line} )
         done <${1}/parent
     fi
 
@@ -99,7 +99,7 @@ for var in ${save_vars} ; do
 done
 
 if [[ -n "${PALUDIS_PROFILE_DIR}" ]] ; then
-    ebuild_source_profile $(readlink -f "${PALUDIS_PROFILE_DIR}")
+    ebuild_source_profile $(realpath "${PALUDIS_PROFILE_DIR}")
 fi
 
 unset ${save_vars}
