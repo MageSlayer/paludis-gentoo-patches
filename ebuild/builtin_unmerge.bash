@@ -61,7 +61,7 @@ ebuild_f_unmerge()
     local old_sandbox_write="${SANDBOX_WRITE}"
     SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
     local old_sandbox_on="${SANDBOX_ON}"
-    [[ "$(realpath ${ROOT} )" != "/" ]] || SANDBOX_ON=0
+    [[ "$(canonicalise ${ROOT} )" != "/" ]] || SANDBOX_ON=0
 
     if hasq "unmerge" ${RESTRICT} ; then
         ebuild_section "Skipping builtin_unmerge (RESTRICT)"

@@ -56,8 +56,6 @@ builtin_init()
     declare -r IMAGE="${IMAGE}"
 
     export S="${WORKDIR}/${P}"
-
-    export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
 }
 
 ebuild_f_init()

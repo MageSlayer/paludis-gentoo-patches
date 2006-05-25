@@ -1,0 +1,6 @@
+#!/bin/bash
+case $(uname -s) in
+	FreeBSD) realpath $@ ;;
+	*) readlink -f $@ ;;
+esac
+

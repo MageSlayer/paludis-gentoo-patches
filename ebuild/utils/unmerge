@@ -27,7 +27,7 @@ fi
 shopt -s dotglob
 shopt -s nullglob
 
-ROOT=$(realpath "${1%+(/)}/" )
+ROOT=$(canonicalise "${1%+(/)}/" )
 export ROOT
 export contents=${2}
 

@@ -8,6 +8,7 @@ libexecprog_SCRIPTS_extra = sed
 endif
 
 libexecprog_SCRIPTS = \
+	canonicalise \
 	dobin \
 	doconfd \
 	dodir \

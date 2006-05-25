@@ -37,7 +37,7 @@ libexecprog_SCRIPTS = \
 	usage_error.bash
 
 TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
+	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/ebuild/run_test.bash
 
