@@ -30,6 +30,7 @@ libexecprog_SCRIPTS = \
 	dosym \
 	fowners \
 	fperms \
+	getmtime \
 	merge \
 	newbin \
 	newconfd \
