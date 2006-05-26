@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a
+CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a sed
 
 libexecprogdir = $(libexecdir)/paludis/utils
 
