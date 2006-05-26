@@ -18,11 +18,7 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
-
-if ! type canonicalise 1>/dev/null ; then
-     echo "canonicalise not in PATH (${PATH})"
-     exit 246
-fi
+export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
 
 if [[ -z "${1}" ]] || [[ -z "${2}" ]] ; then
     echo "usage: ${0} from contents"
