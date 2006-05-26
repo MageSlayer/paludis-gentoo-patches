@@ -17,6 +17,7 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
 export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
+type canonicalise || die "canonicalise not in PATH (${PATH})"
 
 unmerge_empty_TEST()
 {
