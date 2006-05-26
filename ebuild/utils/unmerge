@@ -19,6 +19,11 @@
 
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
+if ! type canonicalise 1>/dev/null ; then
+     echo "canonicalise not in PATH (${PATH})"
+     exit 246
+fi
+
 if [[ -z "${1}" ]] || [[ -z "${2}" ]] ; then
     echo "usage: ${0} from contents"
     exit 247
