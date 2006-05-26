@@ -73,5 +73,8 @@ dolib.so : dolib.so.in
 dolib.a : dolib.a.in
 	cat $< > $@
 
+sed : sed.in
+	cat $< > $@
+
 check_PROGRAMS =
 
