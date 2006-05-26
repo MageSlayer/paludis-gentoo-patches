@@ -16,9 +16,6 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
-type canonicalise || die "canonicalise not in PATH (${PATH})"
-
 merge_empty_TEST()
 {
     ${PALUDIS_EBUILD_DIR}/utils/merge "merge_TEST_dir/empty_src" \
