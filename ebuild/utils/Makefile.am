@@ -48,7 +48,7 @@ libexecprog_SCRIPTS = \
 	$(libexecprog_SCRIPTS_extra)
 
 TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
+	PALUDIS_EBUILD_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_srcdir)/ebuild/`" \
 	PALUDIS_EBUILD_LOG_LEVEL="silent" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/ebuild/utils/run_test.bash
