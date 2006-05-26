@@ -332,14 +332,17 @@ AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
 dnl }}}
 
 dnl {{{ colourschemes
-AC_MSG_CHECKING([which colourscheme to use])
+AC_MSG_CHECKING([whether we like pink])
 AC_ARG_ENABLE([pink],
 			  [ --enable-pink             Make it pink],
 			[WANT_PINK=$enableval
-			 AC_MSG_RESULT([pink])],
+			 AC_MSG_RESULT([$enableval])
+			 COLOURSCHEME=pink],
 			[WANT_PINK=no
-			 AC_MSG_RESULT([default])])
+			 AC_MSG_RESULT([no :(])
+			 COLOURSCHEME=default])
 AM_CONDITIONAL([WANT_PINK], test "x$WANT_PINK" = "xyes")
+AC_SUBST([COLOURSCHEME])
 if test x"$WANT_PINK" = "xyes"; then
 	AC_DEFINE([PALUDIS_COLOUR_PINK], 1, [Are we pinkified?])
 else
@@ -387,6 +390,7 @@ AC_OUTPUT(
 	ebuild/Makefile
 	ebuild/digests/Makefile
 	ebuild/utils/Makefile
+	ebuild/echo_functions.bash
 	eselect/Makefile
 	hooks/Makefile
 	misc/Makefile

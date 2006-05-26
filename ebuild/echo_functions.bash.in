@@ -1,6 +1,8 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
+@GENERATED_FILE@
+
 # Copyright (c) 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
@@ -21,10 +23,26 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-COLOUR_GOOD=$'\e[32;01m'
-COLOUR_WARN=$'\e[33;01m'
-COLOUR_BAD=$'\e[31;01m'
-COLOUR_BRACKET=$'\e[34;01m'
+[[ -z ${PALUDIS_COLOURS} ]] && PALUDIS_COLOURS=@COLOURSCHEME@
+
+COLOUR_GREEN=$'\e[32;01m'
+COLOUR_YELLOW=$'\e[33;01m'
+COLOUR_RED=$'\e[31;01m'
+COLOUR_BLUE=$'\e[34;01m'
+COLOUR_PINK=$'\e[35;01m'
+
+if [[ ${PALUDIS_COLOURS} == pink ]]; then
+    COLOUR_GOOD=${COLOUR_PINK}
+    COLOUR_WARN=${COLOUR_YELLOW}
+    COLOUR_BAD=${COLOUR_RED}
+    COLOUR_BRACKET=${COLOUR_PINK}
+else
+    COLOUR_GOOD=${COLOUR_GREEN}
+    COLOUR_WARN=${COLOUR_YELLOW}
+    COLOUR_BAD=${COLOUR_RED}
+    COLOUR_BRACKET=${COLOUR_BLUE}
+fi
+
 COLOUR_NORMAL=$'\e[0m'
 PALUDIS_ENDCOL=$'\e[A\e['$(( ${COLUMNS:-80} - 7 ))'G'
 
