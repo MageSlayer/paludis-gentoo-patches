@@ -149,7 +149,7 @@ namespace paludis
             static const std::size_t h_shift = std::numeric_limits<std::size_t>::digits - 5;
 
             /// Mask value.
-            static const std::size_t h_mask = 0x1f << h_shift;
+            static const std::size_t h_mask = static_cast<std::size_t>(0x1f) << h_shift;
         };
     }
 
