@@ -337,7 +337,12 @@ AC_ARG_ENABLE([pink],
 			  [ --enable-pink             Make it pink],
 			[WANT_PINK=$enableval
 			 AC_MSG_RESULT([$enableval])
-			 COLOURSCHEME=pink],
+			 if test x$enableval = xyes ; then
+				 COLOURSCHEME=pink
+			 else
+				 COLOURSCHEME=default
+			 fi
+			 ],
 			[WANT_PINK=no
 			 AC_MSG_RESULT([no :(])
 			 COLOURSCHEME=default])
