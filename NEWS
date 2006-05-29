@@ -4,6 +4,19 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.2.5:
+    * Syncing via Git is possible (git://, git+http://, git+ssh://).
+
+    * A new mirrors.conf configuration file can be used by the user to specify
+    favourite mirrors. It has the same format as thirdpartymirrors from the
+    repository.
+
+    * Error condition handling is improved in many places.
+
+    * Versions can now include -try.
+
+    * Initial work towards FreeBSD support has been started.
+
 0.2.4:
     * An ebuild metadata generation bug has been fixed.
 
