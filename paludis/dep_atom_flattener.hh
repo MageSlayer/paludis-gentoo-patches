@@ -23,7 +23,7 @@
 #include <list>
 #include <paludis/dep_atom.hh>
 #include <paludis/package_database.hh>
-#include <paludis/qa/environment.hh>
+#include <paludis/environment.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
 

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_TEST_ENVIRONMENT_HH 1
 
 #include <paludis/package_database.hh>
-#include <paludis/qa/environment.hh>
+#include <paludis/environment.hh>
 
 /** \file
  * Declarations for the TestEnvironment class.

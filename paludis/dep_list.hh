@@ -30,7 +30,7 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/name.hh>
-#include <paludis/qa/environment.hh>
+#include <paludis/environment.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/smart_record.hh>
