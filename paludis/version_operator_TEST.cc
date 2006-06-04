@@ -88,7 +88,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(VersionOperator("<"),  VersionOperator(vo_less));
             TEST_CHECK_EQUAL(VersionOperator("<="), VersionOperator(vo_less_equal));
             TEST_CHECK_EQUAL(VersionOperator("="),  VersionOperator(vo_equal));
-            TEST_CHECK_EQUAL(VersionOperator("~"),  VersionOperator(vo_tidle));
+            TEST_CHECK_EQUAL(VersionOperator("~"),  VersionOperator(vo_tilde));
             TEST_CHECK_EQUAL(VersionOperator(">"),  VersionOperator(vo_greater));
             TEST_CHECK_EQUAL(VersionOperator(">="), VersionOperator(vo_greater_equal));
         }
@@ -107,7 +107,7 @@ namespace test_cases
         {
             TEST_CHECK_EQUAL(stringify(VersionOperator(vo_greater)), ">");
             TEST_CHECK_EQUAL(stringify(VersionOperator(vo_equal)), "=");
-            TEST_CHECK_EQUAL(stringify(VersionOperator(vo_tidle)), "~");
+            TEST_CHECK_EQUAL(stringify(VersionOperator(vo_tilde)), "~");
         }
     } test_version_operator_to_string;
 }

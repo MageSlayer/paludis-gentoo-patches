@@ -44,7 +44,7 @@ namespace paludis
         vo_less_equal,       ///< <= dependency
         vo_less,             ///< < dependency
         vo_equal,            ///< = dependency
-        vo_tidle,            ///< ~ dependency
+        vo_tilde,            ///< ~ dependency
         vo_greater,          ///< > dependency
         vo_greater_equal,    ///< >= dependency
         vo_equal_star,       ///< =* dependency

@@ -46,7 +46,7 @@ VersionOperator::_decode(const std::string & v)
                     return vo_less;
 
                 case '~':
-                    return vo_tidle;
+                    return vo_tilde;
             }
 
         case 2:
@@ -83,7 +83,7 @@ paludis::operator<< (std::ostream & s, const VersionOperator & v)
                 s << "<";
                 continue;
 
-            case vo_tidle:
+            case vo_tilde:
                 s << "~";
                 continue;
 
@@ -120,7 +120,7 @@ bool (VersionSpec::* VersionOperator::as_version_spec_operator() const)(const Ve
             return &VersionSpec::operator<= ;
         case vo_equal:
             return &VersionSpec::operator== ;
-        case vo_tidle:
+        case vo_tilde:
             return &VersionSpec::tilde_compare ;
         case vo_greater:
             return &VersionSpec::operator> ;
