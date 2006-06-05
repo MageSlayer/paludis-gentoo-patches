@@ -96,17 +96,25 @@ namespace test_cases
 
         void run()
         {
-            std::vector<int> v;
-            v.reserve(10000);
-            std::generate_n(std::back_inserter(v), 10000, RandomUpTo(Random(), 10));
+            int failures(0);
 
-            double a(0);
-            for (int i(0) ; i <= 9 ; ++i)
-                a += (square(std::count(v.begin(), v.end(), i) - (10000 / 10)) / (10000 / 10));
+            for (int attempts(0) ; attempts < 3 ; ++ attempts)
+            {
+                std::vector<int> v;
+                v.reserve(10000);
+                std::generate_n(std::back_inserter(v), 10000, RandomUpTo(Random(), 10));
 
-            TestMessageSuffix suffix("a=" + stringify(a), true);
-            TEST_CHECK(a >= 2.088);
-            TEST_CHECK(a <= 21.67);
+                double a(0);
+                for (int i(0) ; i <= 9 ; ++i)
+                    a += (square(std::count(v.begin(), v.end(), i) - (10000 / 10)) / (10000 / 10));
+
+                TestMessageSuffix suffix("a=" + stringify(a), true);
+                TEST_CHECK(true);
+                if ((a < 2.088) || (a > 21.67))
+                    ++failures;
+            }
+
+            TEST_CHECK(failures <= 1);
         }
     } test_random_chi_square;
 }
