@@ -44,7 +44,7 @@ unpack_one()
             tar xf "${1}" || die "Couldn't unpack ${1}"
             ;;
 
-        *.tar.gz|*.tgz)
+        *.tar.gz|*.tgz|*.tar.Z)
             echo tar zxf "${1}" 1>&2
             tar zxf "${1}" || die "Couldn't unpack ${1}"
             ;;
