@@ -29,6 +29,7 @@ libexecprog_SCRIPTS = \
 	dosbin \
 	dosed \
 	dosym \
+	emake \
 	fowners \
 	fperms \
 	getmtime \

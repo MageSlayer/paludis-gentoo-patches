@@ -74,12 +74,6 @@ econf()
     fi
 }
 
-emake()
-{
-    echo ${EMAKE_WRAPPER} ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@" 1>&2
-    ${EMAKE_WRAPPER} ${MAKE:-make} ${MAKEOPTS} ${EXTRA_EMAKE} "$@"
-}
-
 einstall()
 {
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
