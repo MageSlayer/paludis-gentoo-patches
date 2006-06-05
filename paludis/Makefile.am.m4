@@ -37,8 +37,7 @@ AM_CXXFLAGS = -I$(top_srcdir)
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
-	-DDATADIR=\"$(datadir)\" \
-	-DBIGTEMPDIR=\"/var/tmp\"
+	-DDATADIR=\"$(datadir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	hashed_containers.hh.in testscriptlist
 SUBDIRS = util . args qa

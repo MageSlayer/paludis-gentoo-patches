@@ -90,7 +90,7 @@ EbuildCommand::operator() ()
                 ("ECLASSDIR", stringify(params.get<ecpk_eclass_dir>()))
                 ("PORTDIR", stringify(params.get<ecpk_portdir>()))
                 ("DISTDIR", stringify(params.get<ecpk_distdir>()))
-                ("PALUDIS_TMPDIR", BIGTEMPDIR "/paludis/")
+                ("PALUDIS_TMPDIR", stringify(params.get<ecpk_buildroot>()))
                 ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
                 ("PALUDIS_BASHRC_FILES", params.get<ecpk_environment>()->bashrc_files())
                 ("PALUDIS_HOOK_DIRS", params.get<ecpk_environment>()->hook_dirs())
@@ -111,7 +111,7 @@ EbuildCommand::add_portage_vars(const MakeEnvCommand & cmd) const
     return cmd
         ("PORTAGE_ACTUAL_DISTDIR", stringify(params.get<ecpk_distdir>()))
         ("PORTAGE_BASHRC", "/dev/null")
-        ("PORTAGE_BUILDDIR", BIGTEMPDIR "/paludis/" +
+        ("PORTAGE_BUILDDIR", stringify(params.get<ecpk_buildroot>()) + "/" +
              stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_category>()) + "/" +
              stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_package>()) + "-" +
              stringify(params.get<ecpk_db_entry>()->get<pde_version>()))
@@ -121,7 +121,7 @@ EbuildCommand::add_portage_vars(const MakeEnvCommand & cmd) const
         ("PORTAGE_INST_UID", "0")
         ("PORTAGE_MASTER_PID", stringify(::getpid()))
         ("PORTAGE_NICENCESS", stringify(::getpriority(PRIO_PROCESS, 0)))
-        ("PORTAGE_TMPDIR", BIGTEMPDIR)
+        ("PORTAGE_TMPDIR", stringify(params.get<ecpk_buildroot>()))
         ("PORTAGE_TMPFS", "/dev/shm")
         ("PORTAGE_WORKDIR_MODE", "0700");
 }

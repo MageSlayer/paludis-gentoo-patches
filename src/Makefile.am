@@ -1,8 +1,7 @@
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
-	-DLIBEXECDIR=\"$(libexecdir)\" \
-	-DBIGTEMPDIR=\"/var/tmp\"
+	-DLIBEXECDIR=\"$(libexecdir)\"
 SUBDIRS = . qualudis
 
 bin_PROGRAMS = paludis

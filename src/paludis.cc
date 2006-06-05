@@ -278,7 +278,6 @@ main(int argc, char *argv[])
         cout << "LDFLAGS:     " << PALUDIS_BUILD_LDFLAGS << endl;
         cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
         cout << "LIBEXECDIR:  " << LIBEXECDIR << endl;
-        cout << "BIGTEMPDIR:  " << BIGTEMPDIR << endl;
         cout << "stdlib:      "
 #if defined(__GLIBCXX__)
 #  define XSTRINGIFY(x) #x

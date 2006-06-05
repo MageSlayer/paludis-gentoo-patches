@@ -151,6 +151,9 @@ namespace paludis
         /// Root location
         FSEntry root;
 
+        /// Build root
+        FSEntry buildroot;
+
         /// Have we loaded our category names?
         mutable bool has_category_names;
 
@@ -259,6 +262,7 @@ Implementation<PortageRepository>::Implementation(const PortageRepositoryParams 
     sync(p.get<prpk_sync>()),
     sync_exclude(p.get<prpk_sync_exclude>()),
     root(p.get<prpk_root>()),
+    buildroot(p.get<prpk_buildroot>()),
     has_category_names(false),
     has_repo_mask(false),
     has_virtuals(false),
@@ -536,6 +540,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     _info.insert(std::make_pair(std::string("newsdir"), stringify(_imp->newsdir)));
     _info.insert(std::make_pair(std::string("format"), std::string("portage")));
     _info.insert(std::make_pair(std::string("root"), stringify(_imp->root)));
+    _info.insert(std::make_pair(std::string("buildroot"), stringify(_imp->buildroot)));
     if (! _imp->sync.empty())
         _info.insert(std::make_pair(std::string("sync"), _imp->sync));
     if (! _imp->sync_exclude.empty())
@@ -937,7 +942,8 @@ PortageRepository::do_version_metadata(
                             stringify(q.get<qpn_package>()) / "files"),
                         param<ecpk_eclass_dir>(_imp->eclassdir),
                         param<ecpk_portdir>(_imp->location),
-                        param<ecpk_distdir>(_imp->distdir)
+                        param<ecpk_distdir>(_imp->distdir),
+                        param<ecpk_buildroot>(_imp->buildroot)
                         )));
         if (! cmd())
             Log::get_instance()->message(ll_warning, "No usable metadata for '" + stringify(q)
@@ -1200,6 +1206,10 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("root") || ((root = m.find("root")->second)).empty())
         root = "/";
 
+    std::string buildroot;
+    if (m.end() == m.find("buildroot") || ((buildroot = m.find("buildroot")->second)).empty())
+        buildroot = "/var/tmp/paludis";
+
     return CountedPtr<Repository>(new PortageRepository(PortageRepositoryParams::create((
                         param<prpk_environment>(env),
                         param<prpk_package_database>(db),
@@ -1213,7 +1223,8 @@ PortageRepository::make_portage_repository(
                         param<prpk_newsdir>(newsdir),
                         param<prpk_sync>(sync),
                         param<prpk_sync_exclude>(sync_exclude),
-                        param<prpk_root>(root)))));
+                        param<prpk_root>(root),
+                        param<prpk_buildroot>(buildroot)))));
 }
 
 PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
@@ -1492,7 +1503,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                         stringify(q.get<qpn_package>()) / "files"),
                     param<ecpk_eclass_dir>(_imp->eclassdir),
                     param<ecpk_portdir>(_imp->location),
-                    param<ecpk_distdir>(_imp->distdir)
+                    param<ecpk_distdir>(_imp->distdir),
+                    param<ecpk_buildroot>(_imp->buildroot)
                     )),
             EbuildFetchCommandParams::create((
                     param<ecfpk_a>(archives),
@@ -1521,7 +1533,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                         stringify(q.get<qpn_package>()) / "files"),
                     param<ecpk_eclass_dir>(_imp->eclassdir),
                     param<ecpk_portdir>(_imp->location),
-                    param<ecpk_distdir>(_imp->distdir)
+                    param<ecpk_distdir>(_imp->distdir),
+                    param<ecpk_buildroot>(_imp->buildroot)
                     )),
             EbuildInstallCommandParams::create((
                     param<ecipk_use>(use),

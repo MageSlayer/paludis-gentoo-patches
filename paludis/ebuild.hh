@@ -52,6 +52,7 @@ namespace paludis
         ecpk_eclass_dir,
         ecpk_portdir,
         ecpk_distdir,
+        ecpk_buildroot,
         last_ecpk
     };
 
@@ -74,7 +75,8 @@ namespace paludis
         SmartRecordKey<ecpk_files_dir, const FSEntry>,
         SmartRecordKey<ecpk_eclass_dir, const FSEntry>,
         SmartRecordKey<ecpk_portdir, const FSEntry>,
-        SmartRecordKey<ecpk_distdir, const FSEntry>
+        SmartRecordKey<ecpk_distdir, const FSEntry>,
+        SmartRecordKey<ecpk_buildroot, const FSEntry>
     {
     };
 

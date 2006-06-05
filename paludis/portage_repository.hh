@@ -58,6 +58,7 @@ namespace paludis
         prpk_sync,
         prpk_sync_exclude,
         prpk_root,
+        prpk_buildroot,
         last_prpk
     };
 
@@ -82,7 +83,8 @@ namespace paludis
         SmartRecordKey<prpk_newsdir, const FSEntry>,
         SmartRecordKey<prpk_sync, const std::string>,
         SmartRecordKey<prpk_sync_exclude, const std::string>,
-        SmartRecordKey<prpk_root, const FSEntry>
+        SmartRecordKey<prpk_root, const FSEntry>,
+        SmartRecordKey<prpk_buildroot, const FSEntry>
     {
     };
 

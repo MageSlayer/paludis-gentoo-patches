@@ -183,6 +183,9 @@ namespace paludis
         /// Root location
         FSEntry root;
 
+        /// Build root
+        FSEntry buildroot;
+
         /// World file
         FSEntry world_file;
 
@@ -220,6 +223,7 @@ Implementation<VDBRepository>::Implementation(const VDBRepositoryParams & p) :
     env(p.get<vdbrpk_environment>()),
     location(p.get<vdbrpk_location>()),
     root(p.get<vdbrpk_root>()),
+    buildroot("/var/tmp/paludis"),
     world_file(p.get<vdbrpk_world>()),
     entries_valid(false),
     has_provide_map(false)
@@ -733,7 +737,8 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
                         (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
                     param<ecpk_portdir>(_imp->location),
                     param<ecpk_distdir>(_imp->location / stringify(q.get<qpn_category>()) /
-                        (stringify(q.get<qpn_package>()) + "-" + stringify(v)))
+                        (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
+                    param<ecpk_buildroot>(_imp->buildroot)
                     )),
             EbuildUninstallCommandParams::create((
                     param<ecupk_root>(stringify(_imp->root) + "/"),
