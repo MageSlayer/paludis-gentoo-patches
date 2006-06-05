@@ -261,7 +261,7 @@ namespace paludis
     {
         private:
             PackageDatabaseEntryCollection::Pointer _do_query(
-                    const PackageDepAtom * const a, const InstallState) const;
+                    const PackageDepAtom & a, const InstallState) const;
 
         public:
             /**
@@ -315,7 +315,7 @@ namespace paludis
              * Query the repository.
              */
             PackageDatabaseEntryCollection::Pointer query(
-                    const PackageDepAtom * const a,
+                    const PackageDepAtom & a,
                     const InstallState) const;
 
             /**
@@ -330,7 +330,6 @@ namespace paludis
              */
             const RepositoryName & better_repository(const RepositoryName &,
                     const RepositoryName &) const;
-
 
             /**
              * Iterate over all of our repositories.

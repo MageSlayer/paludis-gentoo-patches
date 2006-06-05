@@ -43,8 +43,7 @@ namespace paludis
         protected:
             virtual bool do_has_category_named(const CategoryNamePart &) const;
 
-            virtual bool do_has_package_named(const CategoryNamePart &,
-                    const PackageNamePart &) const;
+            virtual bool do_has_package_named(const QualifiedPackageName &) const;
 
             virtual CategoryNamePartCollection::ConstPointer do_category_names() const;
 
@@ -54,22 +53,22 @@ namespace paludis
             virtual VersionSpecCollection::ConstPointer do_version_specs(
                     const QualifiedPackageName &) const;
 
-            virtual bool do_has_version(const CategoryNamePart &,
-                    const PackageNamePart &, const VersionSpec &) const;
+            virtual bool do_has_version(const QualifiedPackageName &,
+                    const VersionSpec &) const;
 
             virtual VersionMetadata::ConstPointer do_version_metadata(
-                    const CategoryNamePart &, const PackageNamePart &,
+                    const QualifiedPackageName &,
                     const VersionSpec &) const;
 
             virtual Contents::ConstPointer do_contents(
-                    const CategoryNamePart &, const PackageNamePart &,
+                    const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual bool do_query_repository_masks(const CategoryNamePart &,
-                    const PackageNamePart &, const VersionSpec &) const;
+            virtual bool do_query_repository_masks(const QualifiedPackageName &,
+                    const VersionSpec &) const;
 
-            virtual bool do_query_profile_masks(const CategoryNamePart &,
-                    const PackageNamePart &, const VersionSpec &) const;
+            virtual bool do_query_profile_masks(const QualifiedPackageName &,
+                    const VersionSpec &) const;
 
             virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
 
@@ -115,14 +114,14 @@ namespace paludis
             /**
              * Add a package, and a category if necessary.
              */
-            void add_package(const CategoryNamePart &, const PackageNamePart &);
+            void add_package(const QualifiedPackageName &);
 
             /**
              * Add a version, and a package and category if necessary, and set some
              * default values for its metadata, and return said metadata.
              */
             VersionMetadata::Pointer add_version(
-                    const CategoryNamePart &, const PackageNamePart &, const VersionSpec &);
+                    const QualifiedPackageName &, const VersionSpec &);
 
             /**
              * Add a version, and a package and category if necessary, and set some
@@ -132,7 +131,7 @@ namespace paludis
             VersionMetadata::Pointer add_version(
                     const std::string & c, const std::string & p, const std::string & v)
             {
-                return add_version(CategoryNamePart(c), PackageNamePart(p), VersionSpec(v));
+                return add_version(CategoryNamePart(c) + PackageNamePart(p), VersionSpec(v));
             }
 
             /**

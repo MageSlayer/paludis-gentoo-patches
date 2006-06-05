@@ -96,9 +96,9 @@ namespace test_cases
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
-            PackageDatabaseEntry e1(QualifiedPackageName(CategoryNamePart("cat-one"), PackageNamePart("pkg-one")),
+            PackageDatabaseEntry e1(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"),
                     VersionSpec("1"), RepositoryName("installed"));
-            PackageDatabaseEntry e2(QualifiedPackageName(CategoryNamePart("cat-one"), PackageNamePart("pkg-neither")),
+            PackageDatabaseEntry e2(CategoryNamePart("cat-one") + PackageNamePart("pkg-neither"),
                     VersionSpec("1"), RepositoryName("installed"));
 
             TEST_CHECK(repo->query_use(UseFlagName("flag1"), &e1) == use_enabled);

@@ -383,17 +383,16 @@ VDBRepository::do_has_category_named(const CategoryNamePart & c) const
 }
 
 bool
-VDBRepository::do_has_package_named(const CategoryNamePart & c,
-        const PackageNamePart & p) const
+VDBRepository::do_has_package_named(const QualifiedPackageName & q) const
 {
-    Context context("When checking for package '" + stringify(c) + "/"
-            + stringify(p) + "' in " + stringify(name()) + ":");
+    Context context("When checking for package '" + stringify(q) +
+            "' in " + stringify(name()) + ":");
 
     if (! _imp->entries_valid)
         _imp->load_entries();
 
     std::pair<std::vector<VDBEntry>::const_iterator, std::vector<VDBEntry>::const_iterator>
-        r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), QualifiedPackageName(c, p),
+        r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), q,
                     VDBEntry::ComparePackage()));
     return r.first != r.second;
 }
@@ -456,34 +455,34 @@ VDBRepository::do_version_specs(const QualifiedPackageName & n) const
 }
 
 bool
-VDBRepository::do_has_version(const CategoryNamePart & c,
-        const PackageNamePart & p, const VersionSpec & v) const
+VDBRepository::do_has_version(const QualifiedPackageName & q,
+        const VersionSpec & v) const
 {
     Context context("When checking for version '" + stringify(v) + "' in '"
-            + stringify(c) + "/" + stringify(p) + "' in " + stringify(name()) + ":");
+            + stringify(q) + "' in " + stringify(name()) + ":");
 
-    VersionSpecCollection::ConstPointer versions(do_version_specs(QualifiedPackageName(c, p)));
+    VersionSpecCollection::ConstPointer versions(do_version_specs(q));
     return versions->end() != versions->find(v);
 }
 
 VersionMetadata::ConstPointer
 VDBRepository::do_version_metadata(
-        const CategoryNamePart & c, const PackageNamePart & p, const VersionSpec & v) const
+        const QualifiedPackageName & q, const VersionSpec & v) const
 {
-    Context context("When fetching metadata for " + stringify(c) + "/" + stringify(p) +
-            "-" + stringify(v));
+    Context context("When fetching metadata for '" + stringify(q) +
+            "-" + stringify(v) + "':");
 
     if (! _imp->entries_valid)
         _imp->load_entries();
 
     std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
-                        QualifiedPackageName(c, p), v), VDBEntry::CompareVersion()));
+                        q, v), VDBEntry::CompareVersion()));
 
     if (r.first == r.second)
     {
         Log::get_instance()->message(ll_warning, "version lookup failed for request for '" +
-                stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '" +
+                stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "'");
         return VersionMetadata::ConstPointer(new VersionMetadata(&PortageDepParser::parse_depend));
     }
@@ -497,33 +496,34 @@ VDBRepository::do_version_metadata(
 
 Contents::ConstPointer
 VDBRepository::do_contents(
-        const CategoryNamePart & c, const PackageNamePart & p, const VersionSpec & v) const
+        const QualifiedPackageName & q, const VersionSpec & v) const
 {
-    Context context("When fetching contents for " + stringify(c) + "/" + stringify(p) +
-            "-" + stringify(v));
+    Context context("When fetching contents for '" + stringify(q) +
+            "-" + stringify(v) + "':");
 
     if (! _imp->entries_valid)
         _imp->load_entries();
 
     std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
-                        QualifiedPackageName(c, p), v), VDBEntry::CompareVersion()));
+                        q, v), VDBEntry::CompareVersion()));
 
     if (r.first == r.second)
     {
         Log::get_instance()->message(ll_warning, "version lookup failed for request for '" +
-                stringify(c) + "/" + stringify(p) + "-" + stringify(v) + "' in repository '" +
+                stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "'");
         return Contents::ConstPointer(new Contents);
     }
 
     Contents::Pointer result(new Contents);
 
-    FSEntry f(_imp->location / stringify(c) / (stringify(p) + "-" + stringify(v)));
+    FSEntry f(_imp->location / stringify(q.get<qpn_category>()) /
+            (stringify(q.get<qpn_package>()) + "-" + stringify(v)));
     if (! (f / "CONTENTS").is_regular_file())
     {
         Log::get_instance()->message(ll_warning, "CONTENTS lookup failed for request for '" +
-                stringify(c + p) + "-" + stringify(v) + "' in vdb '" +
+                stringify(q) + "-" + stringify(v) + "' in vdb '" +
                 stringify(_imp->location) + "'");
         return result;
     }
@@ -546,7 +546,7 @@ VDBRepository::do_contents(
         if (tokens.size() < 2)
         {
             Log::get_instance()->message(ll_warning, "CONTENTS for '" +
-                    stringify(c + p) + "-" + stringify(v) + "' in vdb '" +
+                    stringify(q) + "-" + stringify(v) + "' in vdb '" +
                     stringify(_imp->location) + "' has broken line " +
                     stringify(line_number) + ", skipping");
             continue;
@@ -563,7 +563,7 @@ VDBRepository::do_contents(
             if (tokens.size() < 4)
             {
                 Log::get_instance()->message(ll_warning, "CONTENTS for '" +
-                        stringify(c + p) + "-" + stringify(v) + "' in vdb '" +
+                        stringify(q) + "-" + stringify(v) + "' in vdb '" +
                         stringify(_imp->location) + "' has broken sym line " +
                         stringify(line_number) + ", skipping");
                 continue;
@@ -578,21 +578,22 @@ VDBRepository::do_contents(
 }
 
 bool
-VDBRepository::do_query_repository_masks(const CategoryNamePart &,
-        const PackageNamePart &, const VersionSpec &) const
+VDBRepository::do_query_repository_masks(const QualifiedPackageName &,
+        const VersionSpec &) const
 {
     return false;
 }
 
 bool
-VDBRepository::do_query_profile_masks(const CategoryNamePart &,
-        const PackageNamePart &, const VersionSpec &) const
+VDBRepository::do_query_profile_masks(const QualifiedPackageName &,
+        const VersionSpec &) const
 {
     return false;
 }
 
 UseFlagState
-VDBRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry * const e) const
+VDBRepository::do_query_use(const UseFlagName & f,
+        const PackageDatabaseEntry * const e) const
 {
     if (! _imp->entries_valid)
         _imp->load_entries();

@@ -109,21 +109,21 @@ namespace paludis
              * Override in descendents: fetch the metadata.
              */
             virtual VersionMetadata::ConstPointer do_version_metadata(
-                    const CategoryNamePart &, const PackageNamePart &,
+                    const QualifiedPackageName &,
                     const VersionSpec &) const = 0;
 
             /**
              * Override in descendents: fetch the contents.
              */
             virtual Contents::ConstPointer do_contents(
-                    const CategoryNamePart &, const PackageNamePart &,
+                    const QualifiedPackageName &,
                     const VersionSpec &) const = 0;
 
             /**
              * Override in descendents: check for a version.
              */
-            virtual bool do_has_version(const CategoryNamePart &,
-                    const PackageNamePart &, const VersionSpec &) const = 0;
+            virtual bool do_has_version(const QualifiedPackageName &,
+                    const VersionSpec &) const = 0;
 
             /**
              * Override in descendents: fetch version specs.
@@ -145,8 +145,7 @@ namespace paludis
             /**
              * Override in descendents: check for a package.
              */
-            virtual bool do_has_package_named(const CategoryNamePart &,
-                    const PackageNamePart &) const = 0;
+            virtual bool do_has_package_named(const QualifiedPackageName &) const = 0;
 
             /**
              * Override in descendents: check for a category.
@@ -156,14 +155,14 @@ namespace paludis
             /**
              * Override in descendents: check for a mask.
              */
-            virtual bool do_query_repository_masks(const CategoryNamePart &,
-                    const PackageNamePart &, const VersionSpec &) const = 0;
+            virtual bool do_query_repository_masks(const QualifiedPackageName &,
+                    const VersionSpec &) const = 0;
 
             /**
              * Override in descendents: check for a mask.
              */
-            virtual bool do_query_profile_masks(const CategoryNamePart &,
-                    const PackageNamePart &, const VersionSpec &) const = 0;
+            virtual bool do_query_profile_masks(const QualifiedPackageName &,
+                    const VersionSpec &) const = 0;
 
             /**
              * Override in descendents: get use.
@@ -244,19 +243,9 @@ namespace paludis
             /**
              * Do we have a package in the given category with the given name?
              */
-            bool has_package_named(const CategoryNamePart & c,
-                    const PackageNamePart & p) const
-            {
-                return do_has_package_named(c, p);
-            }
-
-            /**
-             * Do we have a package in the given category with the given name?
-             * (Override for QualifiedPackageName).
-             */
             bool has_package_named(const QualifiedPackageName & q) const
             {
-                return has_package_named(q.get<qpn_category>(), q.get<qpn_package>());
+                return do_has_package_named(q);
             }
 
             /**
@@ -286,103 +275,47 @@ namespace paludis
             }
 
             /**
-             * Fetch our versions (override for split name).
-             */
-            VersionSpecCollection::ConstPointer version_specs(
-                    const CategoryNamePart & c, const PackageNamePart & p) const
-            {
-                return version_specs(QualifiedPackageName(c, p));
-            }
-
-            /**
              * Do we have a version spec?
-             */
-            bool has_version(const CategoryNamePart & c,
-                    const PackageNamePart & p, const VersionSpec & v) const
-            {
-                return do_has_version(c, p, v);
-            }
-
-            /**
-             * Do we have a version spec? (Override for QualifiedPackageName).
              */
             bool has_version(const QualifiedPackageName & q, const VersionSpec & v) const
             {
-                return has_version(q.get<qpn_category>(), q.get<qpn_package>(), v);
+                return do_has_version(q, v);
             }
 
             /**
              * Fetch metadata.
              */
             VersionMetadata::ConstPointer version_metadata(
-                    const CategoryNamePart & c, const PackageNamePart & p,
-                    const VersionSpec & v) const
-            {
-                return do_version_metadata(c, p, v);
-            }
-
-            /**
-             * Fetch metadata (override for QualifiedPackageName).
-             */
-            VersionMetadata::ConstPointer version_metadata(
                     const QualifiedPackageName & q,
                     const VersionSpec & v) const
             {
-                return version_metadata(q.get<qpn_category>(), q.get<qpn_package>(), v);
+                return do_version_metadata(q, v);
             }
 
             /**
              * Fetch contents.
              */
             Contents::ConstPointer contents(
-                    const CategoryNamePart & c, const PackageNamePart & p,
-                    const VersionSpec & v) const
-            {
-                return do_contents(c, p, v);
-            }
-
-            /**
-             * Fetch contents (override for QualifiedPackageName).
-             */
-            Contents::ConstPointer contents(
                     const QualifiedPackageName & q,
                     const VersionSpec & v) const
             {
-                return do_contents(q.get<qpn_category>(), q.get<qpn_package>(), v);
+                return do_contents(q, v);
             }
 
             /**
              * Query repository masks.
              */
-            bool query_repository_masks(const CategoryNamePart & c, const PackageNamePart & p,
-                    const VersionSpec & v) const
-            {
-                return do_query_repository_masks(c, p, v);
-            }
-
-            /**
-             * Query repository masks (override for QualifiedPackageName).
-             */
             bool query_repository_masks(const QualifiedPackageName & q, const VersionSpec & v) const
             {
-                return do_query_repository_masks(q.get<qpn_category>(), q.get<qpn_package>(), v);
+                return do_query_repository_masks(q, v);
             }
 
             /**
              * Query profile masks.
              */
-            bool query_profile_masks(const CategoryNamePart & c, const PackageNamePart & p,
-                    const VersionSpec & v) const
-            {
-                return do_query_profile_masks(c, p, v);
-            }
-
-            /**
-             * Query profile masks (override for QualifiedPackageName).
-             */
             bool query_profile_masks(const QualifiedPackageName & q, const VersionSpec & v) const
             {
-                return do_query_profile_masks(q.get<qpn_category>(), q.get<qpn_package>(), v);
+                return do_query_profile_masks(q, v);
             }
 
             /**

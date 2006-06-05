@@ -331,7 +331,7 @@ DepList::visit(const PackageDepAtom * const p)
     Context context("When resolving package dependency '" + stringify(*p) + "':");
 
     PackageDatabaseEntryCollection::ConstPointer installed(
-            _imp->environment->package_database()->query(p, is_installed_only));
+            _imp->environment->package_database()->query(*p, is_installed_only));
 
     /* are we already on the merge list? */
     {
@@ -376,7 +376,7 @@ DepList::visit(const PackageDepAtom * const p)
     VersionMetadata::ConstPointer metadata(0);
     PackageDatabaseEntryCollection::Pointer matches(0);
 
-    matches = _imp->environment->package_database()->query(p, is_uninstalled_only);
+    matches = _imp->environment->package_database()->query(*p, is_uninstalled_only);
     for (PackageDatabaseEntryCollection::ReverseIterator e(matches->rbegin()),
             e_end(matches->rend()) ; e != e_end ; ++e)
     {

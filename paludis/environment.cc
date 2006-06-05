@@ -331,7 +331,7 @@ Environment::add_appropriate_to_world(DepAtom::ConstPointer a) const
     for (std::list<const PackageDepAtom *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
     {
-        if (! package_database()->query(*i, is_installed_only)->empty())
+        if (! package_database()->query(**i, is_installed_only)->empty())
             Log::get_instance()->message(ll_debug, "Not adding '" + stringify(**i) +
                     "' to world, because it is already installed");
         else

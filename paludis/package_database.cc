@@ -127,8 +127,7 @@ PackageDatabase::fetch_metadata(const PackageDatabaseEntry & e) const
         throw NoSuchPackageError(stringify(e.get<pde_name>()));
     if (! rr->has_version(e.get<pde_name>(), e.get<pde_version>()))
         throw NoSuchVersionError(stringify(e.get<pde_name>()), e.get<pde_version>());
-    return rr->version_metadata(e.get<pde_name>().get<qpn_category>(),
-            e.get<pde_name>().get<qpn_package>(), e.get<pde_version>());
+    return rr->version_metadata(e.get<pde_name>(), e.get<pde_version>());
 }
 
 Contents::ConstPointer
@@ -141,8 +140,7 @@ PackageDatabase::fetch_contents(const PackageDatabaseEntry & e) const
         throw NoSuchPackageError(stringify(e.get<pde_name>()));
     if (! rr->has_version(e.get<pde_name>(), e.get<pde_version>()))
         throw NoSuchVersionError(stringify(e.get<pde_name>()), e.get<pde_version>());
-    return rr->contents(e.get<pde_name>().get<qpn_category>(),
-            e.get<pde_name>().get<qpn_package>(), e.get<pde_version>());
+    return rr->contents(e.get<pde_name>(), e.get<pde_version>());
 }
 
 Repository::ConstPointer
@@ -172,8 +170,8 @@ PackageDatabase::fetch_unique_qualified_package_name(
         CategoryNamePartCollection::ConstPointer cats(r->category_names());
         CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end());
         for ( ; c != c_end ; ++c)
-            if (r->has_package_named(*c, p))
-                    result->insert(QualifiedPackageName(*c, p));
+            if (r->has_package_named(*c + p))
+                    result->insert(*c + p);
     }
 
     if (result->empty())
@@ -185,7 +183,7 @@ PackageDatabase::fetch_unique_qualified_package_name(
 }
 
 PackageDatabaseEntryCollection::Pointer
-PackageDatabase::_do_query(const PackageDepAtom * const a, const InstallState installed_state) const
+PackageDatabase::_do_query(const PackageDepAtom & a, const InstallState installed_state) const
 {
     PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection);
 
@@ -200,18 +198,18 @@ PackageDatabase::_do_query(const PackageDepAtom * const a, const InstallState in
         if ((installed_state == is_uninstalled_only) && r->installed())
             continue;
 
-        if (! r->has_category_named(a->package().get<qpn_category>()))
+        if (! r->has_category_named(a.package().get<qpn_category>()))
             continue;
 
-        if (! r->has_package_named(a->package()))
+        if (! r->has_package_named(a.package()))
             continue;
 
-        VersionSpecCollection::ConstPointer versions(r->version_specs(a->package()));
+        VersionSpecCollection::ConstPointer versions(r->version_specs(a.package()));
         VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end());
         for ( ; v != v_end ; ++v)
         {
-            PackageDatabaseEntry e(a->package(), *v, r->name());
-            if (! match_package(_imp->environment, *a, e))
+            PackageDatabaseEntry e(a.package(), *v, r->name());
+            if (! match_package(_imp->environment, a, e))
                 continue;
 
             result->insert(e);
@@ -222,7 +220,7 @@ PackageDatabase::_do_query(const PackageDepAtom * const a, const InstallState in
 }
 
 PackageDatabaseEntryCollection::Pointer
-PackageDatabase::query(const PackageDepAtom * const a, const InstallState s) const
+PackageDatabase::query(const PackageDepAtom & a, const InstallState s) const
 {
     return _do_query(a, s);
 }
@@ -257,7 +255,7 @@ PackageDatabase::favourite_repository() const
 PackageDatabaseEntryCollection::Pointer
 PackageDatabase::query(PackageDepAtom::ConstPointer a, const InstallState s) const
 {
-    return _do_query(a.raw_pointer(), s);
+    return _do_query(*a.raw_pointer(), s);
 }
 
 PackageDatabase::RepositoryIterator

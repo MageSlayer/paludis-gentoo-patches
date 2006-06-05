@@ -119,8 +119,7 @@ namespace paludis
 
             virtual bool do_has_category_named(const CategoryNamePart &) const;
 
-            virtual bool do_has_package_named(const CategoryNamePart &,
-                    const PackageNamePart &) const;
+            virtual bool do_has_package_named(const QualifiedPackageName &) const;
 
             virtual CategoryNamePartCollection::ConstPointer do_category_names() const;
 
@@ -130,22 +129,21 @@ namespace paludis
             virtual VersionSpecCollection::ConstPointer do_version_specs(
                     const QualifiedPackageName &) const;
 
-            virtual bool do_has_version(const CategoryNamePart &,
-                    const PackageNamePart &, const VersionSpec &) const;
+            virtual bool do_has_version(const QualifiedPackageName &, const VersionSpec &) const;
 
             virtual VersionMetadata::ConstPointer do_version_metadata(
-                    const CategoryNamePart &, const PackageNamePart &,
+                    const QualifiedPackageName &,
                     const VersionSpec &) const;
 
             virtual Contents::ConstPointer do_contents(
-                    const CategoryNamePart &, const PackageNamePart &,
+                    const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual bool do_query_repository_masks(const CategoryNamePart &,
-                    const PackageNamePart &, const VersionSpec &) const;
+            virtual bool do_query_repository_masks(const QualifiedPackageName &,
+                    const VersionSpec &) const;
 
-            virtual bool do_query_profile_masks(const CategoryNamePart &,
-                    const PackageNamePart &, const VersionSpec &) const;
+            virtual bool do_query_profile_masks(const QualifiedPackageName &,
+                    const VersionSpec &) const;
 
             virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
 
