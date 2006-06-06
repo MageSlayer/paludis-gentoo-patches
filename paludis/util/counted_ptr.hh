@@ -484,7 +484,8 @@ namespace paludis
              */
             template <typename O_>
             CountedPtr(const CountedPtr<O_, count_policy::InternalCountTag> & other) :
-                counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(other.raw_pointer())
+                counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(
+                        static_cast<T_ *>(other.raw_pointer()))
             {
                 if (0 != this->_ptr)
                     ++*this->_ptr->reference_count_pointer();
