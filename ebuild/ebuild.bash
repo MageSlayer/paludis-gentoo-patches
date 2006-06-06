@@ -201,7 +201,7 @@ ebuild_main()
     done
 
     if [[ $1 == metadata ]] ; then
-        for f in cut tr ; do
+        for f in cut tr date ; do
             eval "export ebuild_real_${f}=\"$(which $f )\""
             eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
         done
