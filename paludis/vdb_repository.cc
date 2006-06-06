@@ -358,7 +358,18 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
 }
 
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
-    Repository(RepositoryName("installed")),
+    Repository(RepositoryName("installed"),
+            RepositoryCapabilities::create((
+                    param<repo_installable>(static_cast<InstallableInterface *>(0)),
+                    param<repo_installed>(this),
+                    param<repo_mask>(static_cast<MaskInterface *>(0)),
+                    param<repo_news>(static_cast<NewsInterface *>(0)),
+                    param<repo_sets>(this),
+                    param<repo_syncable>(static_cast<SyncableInterface *>(0)),
+                    param<repo_uninstallable>(this),
+                    param<repo_use>(this),
+                    param<repo_world>(this)
+                    ))),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(p))
 {
     _info.insert(std::make_pair(std::string("location"), stringify(_imp->location)));
@@ -581,20 +592,6 @@ VDBRepository::do_contents(
     return result;
 }
 
-bool
-VDBRepository::do_query_repository_masks(const QualifiedPackageName &,
-        const VersionSpec &) const
-{
-    return false;
-}
-
-bool
-VDBRepository::do_query_profile_masks(const QualifiedPackageName &,
-        const VersionSpec &) const
-{
-    return false;
-}
-
 UseFlagState
 VDBRepository::do_query_use(const UseFlagName & f,
         const PackageDatabaseEntry * const e) const
@@ -702,12 +699,6 @@ VDBRepository::do_is_mirror(const std::string &) const
 }
 
 void
-VDBRepository::do_install(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
-{
-    throw PackageInstallActionError("VDBRepository doesn't support do_install");
-}
-
-void
 VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v, const InstallOptions & o) const
 {
     Context context("When uninstalling '" + stringify(q) + "-" + stringify(v) +
@@ -798,12 +789,6 @@ VDBRepository::do_package_set(const std::string & s) const
     }
     else
         return DepAtom::Pointer(0);
-}
-
-bool
-VDBRepository::do_sync() const
-{
-    return false;
 }
 
 void

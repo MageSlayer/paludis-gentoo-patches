@@ -216,6 +216,9 @@ do_install()
             /* display USE flags */
             if (dep->get<p::dle_metadata>()->get_ebuild_interface())
             {
+                const p::Repository::UseInterface * const use_interface(
+                        env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
+                        get_interface<p::repo_use>());
                 std::set<p::UseFlagName> iuse;
                 p::WhitespaceTokeniser::get_instance()->tokenise(
                         dep->get<p::dle_metadata>()->get_ebuild_interface()->get<p::evm_iuse>(),
@@ -225,16 +228,14 @@ do_install()
                 {
                     if (env->query_use(*i, &p))
                     {
-                        if (env->package_database()->fetch_repository(
-                                    dep->get<p::dle_repository>())->query_use_force(*i, &p))
+                        if (use_interface && use_interface->query_use_force(*i, &p))
                             cout << " " << colour(cl_flag_on, "(" + p::stringify(*i) + ")");
                         else
                             cout << " " << colour(cl_flag_on, *i);
                     }
                     else
                     {
-                        if (env->package_database()->fetch_repository(
-                                    dep->get<p::dle_repository>())->query_use_mask(*i, &p))
+                        if (use_interface && use_interface->query_use_mask(*i, &p))
                             cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");
                         else
                             cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));
@@ -352,8 +353,12 @@ do_install()
             else
                 env->perform_hook(p::Hook("install_pre")("TARGET", cpvr));
 
-            env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
-                install(dep->get<p::dle_name>(), dep->get<p::dle_version>(), opts);
+            const p::Repository::InstallableInterface * const installable_interface(
+                    env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
+                    get_interface<p::repo_installable>());
+            if (! installable_interface)
+                throw p::InternalError(PALUDIS_HERE, "Trying to install from a non-installable repository");
+            installable_interface->install(dep->get<p::dle_name>(), dep->get<p::dle_version>(), opts);
 
             if (opts.get<p::io_fetchonly>())
                 env->perform_hook(p::Hook("fetch_post")("TARGET", cpvr));
@@ -370,7 +375,7 @@ do_install()
                 // wrong now
                 for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
                         r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
-                    if ((*r)->installed())
+                    if ((*r)->get_interface<p::repo_installed>())
                         (*r)->invalidate();
 
                 // look for packages with the same name in the same slot
@@ -410,8 +415,13 @@ do_install()
                                 p::stringify(max_count) + ") Cleaning " + cpvr + ": " + stringify(*c));
 
                         env->perform_hook(p::Hook("uninstall_pre")("TARGET", stringify(*c)));
-                        env->package_database()->fetch_repository(c->get<p::pde_repository>())->
-                                uninstall(c->get<p::pde_name>(), c->get<p::pde_version>(), opts);
+
+                        const p::Repository::UninstallableInterface * const uninstall_interface(
+                                env->package_database()->fetch_repository(c->get<p::pde_repository>())->
+                                get_interface<p::repo_uninstallable>());
+                        if (! uninstall_interface)
+                            throw p::InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
+                        uninstall_interface->uninstall(c->get<p::pde_name>(), c->get<p::pde_version>(), opts);
                         env->perform_hook(p::Hook("uninstall_post")("TARGET", stringify(*c)));
                     }
                     env->perform_hook(p::Hook("uninstall_all_pre")("TARGETS", p::join(c, c_end, " ")));

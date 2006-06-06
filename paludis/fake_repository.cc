@@ -67,7 +67,19 @@ namespace paludis
 }
 
 FakeRepository::FakeRepository(const RepositoryName & name) :
-    Repository(name),
+    Repository(name, RepositoryCapabilities::create((
+                    param<repo_installable>(static_cast<InstallableInterface *>(0)),
+                    param<repo_installed>(static_cast<InstalledInterface *>(0)),
+                    param<repo_mask>(this),
+                    param<repo_news>(static_cast<NewsInterface *>(0)),
+                    param<repo_sets>(static_cast<SetsInterface *>(0)),
+                    param<repo_syncable>(static_cast<SyncableInterface *>(0)),
+                    param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
+                    param<repo_use>(this),
+                    param<repo_world>(static_cast<WorldInterface *>(0))
+                    ))),
+    Repository::MaskInterface(),
+    Repository::UseInterface(),
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>)
 {
     _info.insert(std::make_pair(std::string("format"), std::string("fake")));
@@ -170,15 +182,6 @@ FakeRepository::do_version_metadata(
     return _imp->metadata.find(stringify(q) + "-" + stringify(v))->second;
 }
 
-Contents::ConstPointer
-FakeRepository::do_contents(
-        const QualifiedPackageName & q, const VersionSpec & v) const
-{
-    if (! has_version(q, v))
-        throw InternalError(PALUDIS_HERE, "no version");
-    return Contents::Pointer(new Contents);
-}
-
 bool
 FakeRepository::do_query_repository_masks(const QualifiedPackageName &,
         const VersionSpec &) const
@@ -230,30 +233,6 @@ FakeRepository::do_is_licence(const std::string &) const
 
 bool
 FakeRepository::do_is_mirror(const std::string &) const
-{
-    return false;
-}
-
-void
-FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
-{
-}
-
-void
-FakeRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
-{
-}
-
-DepAtom::Pointer
-FakeRepository::do_package_set(const std::string &) const
-{
-    AllDepAtom::Pointer result(0);
-
-    return result;
-}
-
-bool
-FakeRepository::do_sync() const
 {
     return false;
 }

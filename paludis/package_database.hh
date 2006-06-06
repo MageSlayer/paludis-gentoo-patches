@@ -284,16 +284,6 @@ namespace paludis
             void add_repository(Repository::ConstPointer);
 
             /**
-             * Fetch the version metadata for a particular item.
-             */
-            VersionMetadata::ConstPointer fetch_metadata(const PackageDatabaseEntry &) const;
-
-            /**
-             * Fetch the contents for a particular item.
-             */
-            Contents::ConstPointer fetch_contents(const PackageDatabaseEntry &) const;
-
-            /**
              * Fetch a named repository.
              */
             Repository::ConstPointer fetch_repository(const RepositoryName &) const;

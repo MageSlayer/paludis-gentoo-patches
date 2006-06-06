@@ -37,8 +37,11 @@ namespace paludis
      *
      * \ingroup grpfakerepository
      */
-    class FakeRepository : public Repository,
-                           private PrivateImplementationPattern<FakeRepository>
+    class FakeRepository :
+        public Repository,
+        public Repository::MaskInterface,
+        public Repository::UseInterface,
+        private PrivateImplementationPattern<FakeRepository>
     {
         protected:
             virtual bool do_has_category_named(const CategoryNamePart &) const;
@@ -57,10 +60,6 @@ namespace paludis
                     const VersionSpec &) const;
 
             virtual VersionMetadata::ConstPointer do_version_metadata(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual Contents::ConstPointer do_contents(
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
@@ -83,16 +82,6 @@ namespace paludis
             virtual bool do_is_licence(const std::string &) const;
 
             virtual bool do_is_mirror(const std::string &) const;
-
-            virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &) const;
-
-            virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &) const;
-
-            virtual DepAtom::Pointer do_package_set(const std::string & s) const;
-
-            virtual bool do_sync() const;
 
         public:
             /**
@@ -144,24 +133,11 @@ namespace paludis
              */
             typedef CountedPtr<const FakeRepository, count_policy::InternalCountTag> ConstPointer;
 
-            virtual bool installed() const
-            {
-                return false;
-            }
-
             virtual void invalidate() const;
 
             virtual ProvideMapIterator begin_provide_map() const;
 
             virtual ProvideMapIterator end_provide_map() const;
-
-            virtual void remove_from_world(const QualifiedPackageName &) const
-            {
-            }
-
-            virtual void add_to_world(const QualifiedPackageName &) const
-            {
-            }
     };
 }
 

@@ -27,8 +27,11 @@
 
 using namespace paludis;
 
-Repository::Repository(const RepositoryName & name) :
-    _name(name)
+Repository::Repository(
+        const RepositoryName & name,
+        const RepositoryCapabilities & caps) :
+    _name(name),
+    _caps(caps)
 {
 }
 

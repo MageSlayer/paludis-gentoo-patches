@@ -106,7 +106,9 @@ void do_one_query(
         for (e = entries->begin() ; e != e_end ; ++e)
             if (e->get<p::pde_repository>() == *r)
             {
-                p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*e));
+                p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
+                            e->get<p::pde_repository>())->version_metadata(e->get<p::pde_name>(),
+                            e->get<p::pde_version>()));
                 if (CommandLine::get_instance()->a_show_slot.specified())
                 {
                     /* show the slot, if we're about to move onto a new slot */
@@ -172,7 +174,9 @@ void do_one_query(
     }
 
     /* display metadata */
-    p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(display_entry));
+    p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
+                display_entry.get<p::pde_repository>())->version_metadata(
+                display_entry.get<p::pde_name>(), display_entry.get<p::pde_version>()));
 
     if (CommandLine::get_instance()->a_show_metadata.specified())
     {

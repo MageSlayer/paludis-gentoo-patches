@@ -181,9 +181,9 @@ DepList::add(DepAtom::ConstPointer atom)
             {
                 Save<const DepListEntry *> save_current_package(
                         &_imp->current_package, &*i);
-                _add_in_role(_imp->environment->package_database()->fetch_metadata(
-                            PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
-                                i->get<dle_repository>()))->get<vm_deps>().run_depend(),
+                _add_in_role(_imp->environment->package_database()->fetch_repository(
+                            i->get<dle_repository>())->version_metadata(
+                            i->get<dle_name>(), i->get<dle_version>())->get<vm_deps>().run_depend(),
                         "runtime dependencies");
                 i->get<dle_flags>().set(dlef_has_trypredeps);
             }
@@ -192,9 +192,9 @@ DepList::add(DepAtom::ConstPointer atom)
             {
                 Save<const DepListEntry *> save_current_package(
                         &_imp->current_package, &*i);
-                _add_in_role(_imp->environment->package_database()->fetch_metadata(
-                            PackageDatabaseEntry(i->get<dle_name>(), i->get<dle_version>(),
-                                i->get<dle_repository>()))->get<vm_deps>().post_depend(),
+                _add_in_role(_imp->environment->package_database()->fetch_repository(
+                            i->get<dle_repository>())->version_metadata(
+                            i->get<dle_name>(), i->get<dle_version>())->get<vm_deps>().post_depend(),
                         "post dependencies");
                 i->get<dle_flags>().set(dlef_has_postdeps);
             }
@@ -392,7 +392,8 @@ DepList::visit(const PackageDepAtom * const p)
         if (_imp->environment->mask_reasons(*e).any())
             continue;
 
-        metadata = _imp->environment->package_database()->fetch_metadata(*e);
+        metadata = _imp->environment->package_database()->fetch_repository(
+                e->get<pde_repository>())->version_metadata(e->get<pde_name>(), e->get<pde_version>());
         match = &*e;
         break;
     }
@@ -407,8 +408,9 @@ DepList::visit(const PackageDepAtom * const p)
         {
             if (_imp->recursive_deps)
             {
-                metadata = _imp->environment->package_database()->fetch_metadata(
-                        *installed->last());
+                metadata = _imp->environment->package_database()->fetch_repository(
+                        installed->last()->get<pde_repository>())->version_metadata(
+                        installed->last()->get<pde_name>(), installed->last()->get<pde_version>());
                 DepListEntryFlags flags;
                 flags.set(dlef_has_predeps);
                 flags.set(dlef_skip);

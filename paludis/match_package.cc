@@ -47,7 +47,9 @@ match_package_internals::do_match(
 
     if (atom->slot_ptr() || atom->use_requirements_ptr())
     {
-        VersionMetadata::ConstPointer metadata(env->package_database()->fetch_metadata(*entry));
+        VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
+                    entry->get<pde_repository>())->version_metadata(
+                    entry->get<pde_name>(), entry->get<pde_version>()));
 
         if (atom->slot_ptr())
             if (*atom->slot_ptr() != SlotName(metadata->get<vm_slot>()))

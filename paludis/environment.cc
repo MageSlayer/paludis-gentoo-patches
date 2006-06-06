@@ -125,7 +125,8 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
     Context context("When checking mask reasons for '" + stringify(e) + "'");
 
     MaskReasons result;
-    VersionMetadata::ConstPointer metadata(package_database()->fetch_metadata(e));
+    VersionMetadata::ConstPointer metadata(package_database()->fetch_repository(
+                e.get<pde_repository>())->version_metadata(e.get<pde_name>(), e.get<pde_version>()));
 
     if (metadata->get<vm_eapi>() != "0" && metadata->get<vm_eapi>() != ""
             && metadata->get<vm_eapi>() != "paludis-1")
@@ -178,27 +179,33 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
             if (query_user_masks(e))
                 result.set(mr_user_mask);
 
-            if (package_database()->fetch_repository(e.get<pde_repository>())->query_profile_masks(e.get<pde_name>(),
-                        e.get<pde_version>()))
-                result.set(mr_profile_mask);
+            const Repository * const repo(package_database()->fetch_repository(
+                        e.get<pde_repository>()).raw_pointer());
 
-            if (package_database()->fetch_repository(e.get<pde_repository>())->query_repository_masks(e.get<pde_name>(),
-                        e.get<pde_version>()))
-                result.set(mr_repository_mask);
+            if (repo->get_interface<repo_mask>())
+            {
+                if (repo->get_interface<repo_mask>()->query_profile_masks(e.get<pde_name>(),
+                            e.get<pde_version>()))
+                    result.set(mr_profile_mask);
 
-            if (metadata->get_ebuild_interface())
-                if (! metadata->get_ebuild_interface()->get<evm_virtual>().empty())
-                {
-                    QualifiedPackageName n(metadata->get_ebuild_interface()->get<evm_virtual>());
+                if (repo->get_interface<repo_mask>()->query_repository_masks(e.get<pde_name>(),
+                            e.get<pde_version>()))
+                    result.set(mr_repository_mask);
 
-                    if (package_database()->fetch_repository(e.get<pde_repository>())->query_profile_masks(n,
-                                e.get<pde_version>()))
-                        result.set(mr_profile_mask);
+                if (metadata->get_ebuild_interface())
+                    if (! metadata->get_ebuild_interface()->get<evm_virtual>().empty())
+                    {
+                        QualifiedPackageName n(metadata->get_ebuild_interface()->get<evm_virtual>());
 
-                    if (package_database()->fetch_repository(e.get<pde_repository>())->query_repository_masks(n,
-                                e.get<pde_version>()))
-                        result.set(mr_repository_mask);
-                }
+                        if (repo->get_interface<repo_mask>()->query_profile_masks(n,
+                                    e.get<pde_version>()))
+                            result.set(mr_profile_mask);
+
+                        if (repo->get_interface<repo_mask>()->query_repository_masks(n,
+                                    e.get<pde_version>()))
+                            result.set(mr_repository_mask);
+                    }
+            }
         }
     }
 
@@ -215,7 +222,7 @@ Environment::begin_provide_map() const
         for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
                 r_end(package_database()->end_repositories()) ; r != r_end ; ++r)
         {
-            if (! (*r)->installed())
+            if (! (*r)->get_interface<repo_installed>())
                 continue;
 
             std::copy((*r)->begin_provide_map(), (*r)->end_provide_map(),
@@ -245,13 +252,16 @@ Environment::package_set(const std::string & s) const
                 r_end(package_database()->end_repositories()) ;
                 r != r_end ; ++r)
         {
-            DepAtom::Pointer add((*r)->package_set(s));
+            if (! (*r)->get_interface<repo_sets>())
+                continue;
+
+            DepAtom::Pointer add((*r)->get_interface<repo_sets>()->package_set(s));
             if (0 != add)
                 result->add_child(add);
 
             if ("system" != s)
             {
-                add = (*r)->package_set("system");
+                add = (*r)->get_interface<repo_sets>()->package_set("system");
                 if (0 != add)
                     result->add_child(add);
             }
@@ -269,7 +279,10 @@ Environment::package_set(const std::string & s) const
                 r_end(package_database()->end_repositories()) ;
                 r != r_end ; ++r)
         {
-            DepAtom::Pointer result((*r)->package_set(s));
+            if (! (*r)->get_interface<repo_sets>())
+                continue;
+
+            DepAtom::Pointer result((*r)->get_interface<repo_sets>()->package_set(s));
             if (0 != result)
                 return result;
         }
@@ -339,7 +352,8 @@ Environment::add_appropriate_to_world(DepAtom::ConstPointer a) const
             for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
                     r_end(package_database()->end_repositories()) ;
                     r != r_end ; ++r)
-                (*r)->add_to_world((*i)->package());
+                if ((*r)->get_interface<repo_world>())
+                    (*r)->get_interface<repo_world>()->add_to_world((*i)->package());
         }
     }
 }
@@ -355,7 +369,8 @@ Environment::remove_appropriate_from_world(DepAtom::ConstPointer a) const
         for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
                 r_end(package_database()->end_repositories()) ;
                 r != r_end ; ++r)
-            (*r)->remove_from_world((*i)->package());
+            if ((*r)->get_interface<repo_world>())
+                (*r)->get_interface<repo_world>()->remove_from_world((*i)->package());
     }
 }
 

@@ -588,10 +588,14 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                PackageDatabaseEntry p1(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("test-repo-9"));
-                PackageDatabaseEntry p2(QualifiedPackageName("cat-two/pkg-two"), VersionSpec("1"), RepositoryName("test-repo-9"));
-                PackageDatabaseEntry p3(QualifiedPackageName("cat-one/pkg-none"), VersionSpec("1"), RepositoryName("test-repo-9"));
-                PackageDatabaseEntry p4(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"), RepositoryName("test-repo-9"));
+                PackageDatabaseEntry p1(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"),
+                        RepositoryName("test-repo-9"));
+                PackageDatabaseEntry p2(QualifiedPackageName("cat-two/pkg-two"), VersionSpec("1"),
+                        RepositoryName("test-repo-9"));
+                PackageDatabaseEntry p3(QualifiedPackageName("cat-one/pkg-none"), VersionSpec("1"),
+                        RepositoryName("test-repo-9"));
+                PackageDatabaseEntry p4(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"),
+                        RepositoryName("test-repo-9"));
 
                 TEST_CHECK(repo->query_use(UseFlagName("flag1"), &p1) == use_enabled);
                 TEST_CHECK(repo->query_use(UseFlagName("flag2"), &p1) == use_disabled);

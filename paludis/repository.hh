@@ -79,11 +79,30 @@ namespace paludis
     typedef MakeSmartRecord<InstallOptionsTag>::Type InstallOptions;
 
     /**
+     * Capability keys for a repository.
+     */
+    enum RepositoryCapabilitiesKeys
+    {
+        repo_installable,
+        repo_installed,
+        repo_mask,
+        repo_news,
+        repo_sets,
+        repo_syncable,
+        repo_uninstallable,
+        repo_use,
+        repo_world,
+        last_repo
+    };
+
+    /**
      * A Repository provides a representation of a physical repository to a
      * PackageDatabase.
      *
      * We make pretty heavy use of the non-virtual interface idiom here. See
-     * \ref EffCpp items 35 and 37.
+     * \ref EffCpp items 35 and 37. There's a lot of optional functionality
+     * available. These are split off via get_interface() style functions,
+     * which return 0 if an interface is not available.
      *
      * \ingroup grprepository
      */
@@ -91,8 +110,52 @@ namespace paludis
         private InstantiationPolicy<Repository, instantiation_method::NonCopyableTag>,
         public InternalCounted<Repository>
     {
+        public:
+            class InstallableInterface;
+            class InstalledInterface;
+            class MaskInterface;
+            class NewsInterface;
+            class SetsInterface;
+            class SyncableInterface;
+            class UninstallableInterface;
+            class UseInterface;
+            class WorldInterface;
+
+        protected:
+            /**
+             * Tag for RepositoryCapabilities.
+             *
+             * \see RepositoryCapabilities
+             * \ingroup grprepository
+             */
+            struct RepositoryCapabilitiesTag :
+                SmartRecordTag<comparison_mode::NoComparisonTag, void>,
+                SmartRecordKeys<RepositoryCapabilitiesKeys, last_repo>,
+                SmartRecordKey<repo_installable, InstallableInterface *>,
+                SmartRecordKey<repo_installed, InstalledInterface *>,
+                SmartRecordKey<repo_mask, MaskInterface *>,
+                SmartRecordKey<repo_news, NewsInterface *>,
+                SmartRecordKey<repo_sets, SetsInterface *>,
+                SmartRecordKey<repo_syncable, SyncableInterface *>,
+                SmartRecordKey<repo_uninstallable, UninstallableInterface *>,
+                SmartRecordKey<repo_use, UseInterface *>,
+                SmartRecordKey<repo_world, WorldInterface *>
+            {
+            };
+
+            /**
+             * Holds pointers to upcast ourself to different capability interfaces. Each entry
+             * is either a this pointer or a zero pointer.
+             *
+             * \see Repository
+             * \ingroup grprepository
+             */
+            typedef MakeSmartRecord<RepositoryCapabilitiesTag>::Type RepositoryCapabilities;
+
         private:
             const RepositoryName _name;
+
+            RepositoryCapabilities _caps;
 
         protected:
             /**
@@ -103,19 +166,15 @@ namespace paludis
             /**
              * Constructor.
              */
-            Repository(const RepositoryName &);
+            Repository(const RepositoryName &, const RepositoryCapabilities &);
+
+            ///\name Implementations: naviagation functions
+            ///{
 
             /**
              * Override in descendents: fetch the metadata.
              */
             virtual VersionMetadata::ConstPointer do_version_metadata(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const = 0;
-
-            /**
-             * Override in descendents: fetch the contents.
-             */
-            virtual Contents::ConstPointer do_contents(
                     const QualifiedPackageName &,
                     const VersionSpec &) const = 0;
 
@@ -152,42 +211,10 @@ namespace paludis
              */
             virtual bool do_has_category_named(const CategoryNamePart &) const = 0;
 
-            /**
-             * Override in descendents: check for a mask.
-             */
-            virtual bool do_query_repository_masks(const QualifiedPackageName &,
-                    const VersionSpec &) const = 0;
+            ///}
 
-            /**
-             * Override in descendents: check for a mask.
-             */
-            virtual bool do_query_profile_masks(const QualifiedPackageName &,
-                    const VersionSpec &) const = 0;
-
-            /**
-             * Override in descendents: get use.
-             */
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
-
-            /**
-             * Override in descendents: get use mask.
-             */
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
-
-            /**
-             * Override in descendents: get use force.
-             */
-            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
-
-            /**
-             * Override in descendents: is this an arch flag?
-             */
-            virtual bool do_is_arch_flag(const UseFlagName &) const = 0;
-
-            /**
-             * Override in descendents: is this an expand flag?
-             */
-            virtual bool do_is_expand_flag(const UseFlagName &) const = 0;
+            ///\name Implementations: misc files
+            ///{
 
             /**
              * Override in descendents: is this a licence?
@@ -199,29 +226,34 @@ namespace paludis
              */
             virtual bool do_is_mirror(const std::string &) const = 0;
 
-            /**
-             * Override in descendents: install.
-             */
-            virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &) const = 0;
-
-            /**
-             * Override in descendents: uninstall.
-             */
-            virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &) const = 0;
-
-            /**
-             * Override in descendents: package list.
-             */
-            virtual DepAtom::Pointer do_package_set(const std::string & id) const = 0;
-
-            /**
-             * Override in descendents: sync, if needed (true) or do nothing (false).
-             */
-            virtual bool do_sync() const = 0;
+            ///}
 
         public:
+            ///\name Interface queries
+            ///{
+
+            /**
+             * Fetch an interface.
+             */
+            template <RepositoryCapabilitiesKeys k_>
+            typename RepositoryCapabilities::GetKeyType<k_>::Type
+            get_interface()
+            {
+                return _caps.get<k_>();
+            }
+
+            /**
+             * Fetch an interface, const.
+             */
+            template <RepositoryCapabilitiesKeys k_>
+            const typename RepositoryCapabilities::GetKeyType<k_>::Type
+            get_interface() const
+            {
+                return _caps.get<k_>();
+            }
+
+            ///}
+
             /**
              * Destructor.
              */
@@ -293,32 +325,6 @@ namespace paludis
             }
 
             /**
-             * Fetch contents.
-             */
-            Contents::ConstPointer contents(
-                    const QualifiedPackageName & q,
-                    const VersionSpec & v) const
-            {
-                return do_contents(q, v);
-            }
-
-            /**
-             * Query repository masks.
-             */
-            bool query_repository_masks(const QualifiedPackageName & q, const VersionSpec & v) const
-            {
-                return do_query_repository_masks(q, v);
-            }
-
-            /**
-             * Query profile masks.
-             */
-            bool query_profile_masks(const QualifiedPackageName & q, const VersionSpec & v) const
-            {
-                return do_query_profile_masks(q, v);
-            }
-
-            /**
              * Iterator to information about our repository.
              */
             typedef std::map<std::string, std::string>::const_iterator InfoIterator;
@@ -339,6 +345,117 @@ namespace paludis
                 return _info.end();
             }
 
+            /**
+             * Query whether the specified item is a licence.
+             */
+            bool is_license(const std::string & u) const
+            {
+                return do_is_licence(u);
+            }
+
+            /**
+             * Query whether the specified item is a mirror.
+             */
+            bool is_mirror(const std::string & u) const
+            {
+                return do_is_mirror(u);
+            }
+
+            /**
+             * Invalidate any cache.
+             */
+            virtual void invalidate() const = 0;
+
+            /**
+             * Our provide map iterator type.
+             */
+            typedef std::map<QualifiedPackageName, QualifiedPackageName>::const_iterator ProvideMapIterator;
+
+            /**
+             * Start of our provide map.
+             */
+            virtual ProvideMapIterator begin_provide_map() const = 0;
+
+            /**
+             * Past the end of our provide map.
+             */
+            virtual ProvideMapIterator end_provide_map() const = 0;
+    };
+
+    /**
+     * Interface for handling masks for the Repository class.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::MaskInterface
+    {
+        protected:
+            /**
+             * Override in descendents: check for a mask.
+             */
+            virtual bool do_query_repository_masks(const QualifiedPackageName &,
+                    const VersionSpec &) const = 0;
+
+            /**
+             * Override in descendents: check for a mask.
+             */
+            virtual bool do_query_profile_masks(const QualifiedPackageName &,
+                    const VersionSpec &) const = 0;
+
+        public:
+            /**
+             * Query repository masks.
+             */
+            bool query_repository_masks(const QualifiedPackageName & q, const VersionSpec & v) const
+            {
+                return do_query_repository_masks(q, v);
+            }
+
+            /**
+             * Query profile masks.
+             */
+            bool query_profile_masks(const QualifiedPackageName & q, const VersionSpec & v) const
+            {
+                return do_query_profile_masks(q, v);
+            }
+    };
+
+    /**
+     * Interface for handling USE flags for the Repository class.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::UseInterface
+    {
+        protected:
+            /**
+             * Override in descendents: get use.
+             */
+            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
+
+            /**
+             * Override in descendents: get use mask.
+             */
+            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
+
+            /**
+             * Override in descendents: get use force.
+             */
+            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
+
+            /**
+             * Override in descendents: is this an arch flag?
+             */
+            virtual bool do_is_arch_flag(const UseFlagName &) const = 0;
+
+            /**
+             * Override in descendents: is this an expand flag?
+             */
+            virtual bool do_is_expand_flag(const UseFlagName &) const = 0;
+
+        public:
             /**
              * Query the state of the specified use flag.
              */
@@ -383,23 +500,52 @@ namespace paludis
             {
                 return do_is_expand_flag(u);
             }
+    };
 
+    /**
+     * Interface for handling actions for installed repositories.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::InstalledInterface
+    {
+        protected:
             /**
-             * Query whether the specified item is a licence.
+             * Override in descendents: fetch the contents.
              */
-            bool is_license(const std::string & u) const
-            {
-                return do_is_licence(u);
-            }
+            virtual Contents::ConstPointer do_contents(
+                    const QualifiedPackageName &,
+                    const VersionSpec &) const = 0;
 
+        public:
             /**
-             * Query whether the specified item is a mirror.
+             * Fetch contents.
              */
-            bool is_mirror(const std::string & u) const
+            Contents::ConstPointer contents(
+                    const QualifiedPackageName & q,
+                    const VersionSpec & v) const
             {
-                return do_is_mirror(u);
+                return do_contents(q, v);
             }
+    };
 
+    /**
+     * Interface for handling installs for repositories.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::InstallableInterface
+    {
+        protected:
+            /**
+             * Override in descendents: install.
+             */
+            virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
+                    const InstallOptions &) const = 0;
+
+        public:
             /**
              * Install a package.
              */
@@ -407,7 +553,24 @@ namespace paludis
             {
                 do_install(q, v, i);
             }
+    };
 
+    /**
+     * Interface for handling uninstalls for repositories.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::UninstallableInterface
+    {
+        protected:
+            /**
+             * Override in descendents: uninstall.
+             */
+            virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &,
+                    const InstallOptions &) const = 0;
+
+        public:
             /**
              * Uninstall a package.
              */
@@ -415,14 +578,47 @@ namespace paludis
             {
                 do_uninstall(q, v, i);
             }
+    };
 
+    /**
+     * Interface for package sets for repositories.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::SetsInterface
+    {
+        protected:
             /**
-             * Return whether we are an 'installed' repo.
-             *
-             * No NVI indirection here, it's not worth it.
+             * Override in descendents: package list.
              */
-            virtual bool installed() const = 0;
+            virtual DepAtom::Pointer do_package_set(const std::string & id) const = 0;
 
+        public:
+            /**
+             * Fetch a package set.
+             */
+            virtual DepAtom::Pointer package_set(const std::string & s) const
+            {
+                return do_package_set(s);
+            }
+    };
+
+    /**
+     * Interface for syncing for repositories.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::SyncableInterface
+    {
+        protected:
+            /**
+             * Override in descendents: sync, if needed (true) or do nothing (false).
+             */
+            virtual bool do_sync() const = 0;
+
+        public:
             /**
              * Sync, if necessary.
              *
@@ -432,35 +628,17 @@ namespace paludis
             {
                 return do_sync();
             }
+    };
 
-            /**
-             * Fetch a package set.
-             */
-            virtual DepAtom::Pointer package_set(const std::string & s) const
-            {
-                return do_package_set(s);
-            }
-
-            /**
-             * Invalidate any cache.
-             */
-            virtual void invalidate() const = 0;
-
-            /**
-             * Our provide map iterator type.
-             */
-            typedef std::map<QualifiedPackageName, QualifiedPackageName>::const_iterator ProvideMapIterator;
-
-            /**
-             * Start of our provide map.
-             */
-            virtual ProvideMapIterator begin_provide_map() const = 0;
-
-            /**
-             * Past the end of our provide map.
-             */
-            virtual ProvideMapIterator end_provide_map() const = 0;
-
+    /**
+     * Interface for world handling for repositories.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::WorldInterface
+    {
+        public:
             /**
              * Add this package to world.
              */
@@ -470,7 +648,17 @@ namespace paludis
              * Remove this package from world, if it is present.
              */
             virtual void remove_from_world(const QualifiedPackageName &) const = 0;
+    };
 
+    /**
+     * Interface for news handling for repositories.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::NewsInterface
+    {
+        public:
             /**
              * Update our news.unread file.
              */

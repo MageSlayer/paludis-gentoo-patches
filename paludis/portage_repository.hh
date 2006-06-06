@@ -102,8 +102,15 @@ namespace paludis
      *
      * \ingroup grpportagerepository
      */
-    class PortageRepository : public Repository,
-                              private PrivateImplementationPattern<PortageRepository>
+    class PortageRepository :
+        public Repository,
+        public Repository::MaskInterface,
+        public Repository::UseInterface,
+        public Repository::InstallableInterface,
+        public Repository::SyncableInterface,
+        public Repository::NewsInterface,
+        public Repository::SetsInterface,
+        private PrivateImplementationPattern<PortageRepository>
     {
         private:
             void need_category_names() const;
@@ -164,9 +171,6 @@ namespace paludis
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
-            virtual void do_uninstall(const QualifiedPackageName &,
-                    const VersionSpec &, const InstallOptions &) const PALUDIS_ATTRIBUTE((noreturn));
-
             virtual DepAtom::Pointer do_package_set(const std::string & s) const;
 
             virtual bool do_sync() const;
@@ -201,15 +205,10 @@ namespace paludis
 
             virtual ProvideMapIterator end_provide_map() const;
 
-            virtual void add_to_world(const QualifiedPackageName &) const
-            {
-            }
-
-            virtual void remove_from_world(const QualifiedPackageName &) const
-            {
-            }
-
             virtual void update_news() const;
+
+            typedef CountedPtr<PortageRepository, count_policy::InternalCountTag> Pointer;
+            typedef CountedPtr<const PortageRepository, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**

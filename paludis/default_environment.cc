@@ -54,10 +54,14 @@ bool
 DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
     /* first check package database use masks... */
-    if (e ? package_database()->fetch_repository(e->get<pde_repository>())->query_use_mask(f, e) :
-            package_database()->fetch_repository(
-                package_database()->favourite_repository())->query_use_mask(f, e))
-        return false;
+    const Repository * const repo((e ?
+                package_database()->fetch_repository(e->get<pde_repository>()) :
+                package_database()->fetch_repository(package_database()->favourite_repository())
+                ).raw_pointer());
+
+    if (repo->get_interface<repo_use>())
+        if (repo->get_interface<repo_use>()->query_use_mask(f, e))
+            return false;
 
     /* check use: per package user config */
     if (e)
@@ -137,16 +141,16 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
     } while (false);
 
     /* check use: package database config */
-    switch (e ? package_database()->fetch_repository(e->get<pde_repository>())->query_use(f, e) :
-            package_database()->fetch_repository(package_database()->favourite_repository())->query_use(f, e))
-    {
-        case use_disabled:
-        case use_unspecified:
-            return false;
+    if (repo->get_interface<repo_use>())
+        switch (repo->get_interface<repo_use>()->query_use(f, e))
+        {
+            case use_disabled:
+            case use_unspecified:
+                return false;
 
-        case use_enabled:
-            return true;
-    }
+            case use_enabled:
+                return true;
+        }
 
     throw InternalError(PALUDIS_HERE, "bad state");
 }

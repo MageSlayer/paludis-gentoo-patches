@@ -527,7 +527,18 @@ Implementation<PortageRepository>::invalidate() const
 }
 
 PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
-    Repository(PortageRepository::fetch_repo_name(stringify(p.get<prpk_location>()))),
+    Repository(PortageRepository::fetch_repo_name(stringify(p.get<prpk_location>())),
+            RepositoryCapabilities::create((
+                    param<repo_mask>(this),
+                    param<repo_installable>(this),
+                    param<repo_installed>(static_cast<InstalledInterface *>(0)),
+                    param<repo_news>(this),
+                    param<repo_sets>(this),
+                    param<repo_syncable>(this),
+                    param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
+                    param<repo_use>(this),
+                    param<repo_world>(static_cast<WorldInterface *>(0))
+                    ))),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(p))
 {
     _info.insert(std::make_pair(std::string("location"), stringify(_imp->location)));
@@ -1587,13 +1598,15 @@ PortageRepository::find_best(PackageDatabaseEntryCollection::Pointer & c, const 
             stringify(e.get<pde_version>()) + "':");
     // Find an entry in c that matches e best. e is not in c.
     QualifiedPackageName n(e.get<pde_name>());
-    SlotName s(_imp->env->package_database()->fetch_metadata(e)->get<vm_slot>());
+    SlotName s(_imp->env->package_database()->fetch_repository(e.get<pde_repository>())->version_metadata(
+                e.get<pde_name>(), e.get<pde_version>())->get<vm_slot>());
     PackageDatabaseEntryCollection::Iterator i(c->begin()), i_end(c->end()), i_best(c->end());
     for ( ; i != i_end; ++i)
     {
         if (n != i->get<pde_name>())
             continue;
-        if (s != _imp->env->package_database()->fetch_metadata(*i)->get<vm_slot>())
+        if (s != _imp->env->package_database()->fetch_repository(i->get<pde_repository>())->version_metadata(
+                    i->get<pde_name>(), i->get<pde_version>())->get<vm_slot>())
             continue;
 
         i_best = i;
@@ -1798,12 +1811,6 @@ PortageRepository::do_sync() const
             stringify(_imp->location), _imp->sync.substr(q < p ? q + 1 : 0))->sync(opts);
 
     return true;
-}
-
-void
-PortageRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
-{
-    throw PackageUninstallActionError("PortageRepository doesn't support do_uninstall");
 }
 
 void

@@ -117,45 +117,6 @@ PackageDatabase::add_repository(const Repository::ConstPointer r)
     _imp->repositories.push_back(r);
 }
 
-VersionMetadata::ConstPointer
-PackageDatabase::fetch_metadata(const PackageDatabaseEntry & e) const
-{
-    const Repository::ConstPointer rr(fetch_repository(e.get<pde_repository>()));
-    if (! rr->has_category_named(e.get<pde_name>().get<qpn_category>()))
-        throw NoSuchPackageError(stringify(e.get<pde_name>()));
-    if (! rr->has_package_named(e.get<pde_name>()))
-        throw NoSuchPackageError(stringify(e.get<pde_name>()));
-    if (! rr->has_version(e.get<pde_name>(), e.get<pde_version>()))
-        throw NoSuchVersionError(stringify(e.get<pde_name>()), e.get<pde_version>());
-    return rr->version_metadata(e.get<pde_name>(), e.get<pde_version>());
-}
-
-Contents::ConstPointer
-PackageDatabase::fetch_contents(const PackageDatabaseEntry & e) const
-{
-    const Repository::ConstPointer rr(fetch_repository(e.get<pde_repository>()));
-    if (! rr->has_category_named(e.get<pde_name>().get<qpn_category>()))
-        throw NoSuchPackageError(stringify(e.get<pde_name>()));
-    if (! rr->has_package_named(e.get<pde_name>()))
-        throw NoSuchPackageError(stringify(e.get<pde_name>()));
-    if (! rr->has_version(e.get<pde_name>(), e.get<pde_version>()))
-        throw NoSuchVersionError(stringify(e.get<pde_name>()), e.get<pde_version>());
-    return rr->contents(e.get<pde_name>(), e.get<pde_version>());
-}
-
-Repository::ConstPointer
-PackageDatabase::fetch_repository(const RepositoryName & n) const
-{
-    std::list<Repository::ConstPointer>::const_iterator
-        r(_imp->repositories.begin()),
-        r_end(_imp->repositories.end());
-    for ( ; r != r_end ; ++r)
-        if ((*r)->name() == n)
-            return *r;
-
-    throw NoSuchRepositoryError(stringify(n));
-}
-
 QualifiedPackageName
 PackageDatabase::fetch_unique_qualified_package_name(
         const PackageNamePart & p) const
@@ -192,10 +153,10 @@ PackageDatabase::_do_query(const PackageDepAtom & a, const InstallState installe
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
     {
-        if ((installed_state == is_installed_only) && ! r->installed())
+        if ((installed_state == is_installed_only) && ! r->get_interface<repo_installed>())
             continue;
 
-        if ((installed_state == is_uninstalled_only) && r->installed())
+        if ((installed_state == is_uninstalled_only) && r->get_interface<repo_installed>())
             continue;
 
         if (! r->has_category_named(a.package().get<qpn_category>()))
@@ -223,6 +184,19 @@ PackageDatabaseEntryCollection::Pointer
 PackageDatabase::query(const PackageDepAtom & a, const InstallState s) const
 {
     return _do_query(a, s);
+}
+
+Repository::ConstPointer
+PackageDatabase::fetch_repository(const RepositoryName & n) const
+{
+    std::list<Repository::ConstPointer>::const_iterator
+        r(_imp->repositories.begin()),
+        r_end(_imp->repositories.end());
+    for ( ; r != r_end ; ++r)
+        if ((*r)->name() == n)
+            return *r;
+
+    throw NoSuchRepositoryError(stringify(n));
 }
 
 const RepositoryName &

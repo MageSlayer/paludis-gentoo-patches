@@ -40,7 +40,7 @@ namespace
         std::cout << colour(cl_heading, "Sync " + p::stringify(r->name())) << std::endl;
         try
         {
-            if (r->sync())
+            if (r->get_interface<p::repo_syncable>() && r->get_interface<p::repo_syncable>()->sync())
                 std::cout << "Sync " << r->name() << " completed" << std::endl;
             else
                 std::cout << "Sync " << r->name() << " skipped" << std::endl;

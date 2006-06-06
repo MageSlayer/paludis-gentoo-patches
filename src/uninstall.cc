@@ -127,8 +127,12 @@ do_uninstall()
                 p::stringify(max_count) + ") Uninstalling " + cpvr);
 
         env->perform_hook(p::Hook("uninstall_pre")("TARGET", cpvr));
-        env->package_database()->fetch_repository(pkg->get<p::pde_repository>())->
-            uninstall(pkg->get<p::pde_name>(), pkg->get<p::pde_version>(), opts);
+        const p::Repository::UninstallableInterface * const uninstall_interface(
+                env->package_database()->fetch_repository(pkg->get<p::pde_repository>())->
+                get_interface<p::repo_uninstallable>());
+        if (! uninstall_interface)
+            throw p::InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
+        uninstall_interface->uninstall(pkg->get<p::pde_name>(), pkg->get<p::pde_version>(), opts);
         env->perform_hook(p::Hook("uninstall_post")("TARGET", cpvr));
     }
     env->perform_hook(p::Hook("uninstall_all_post")("TARGETS", join(unmerge->begin(), unmerge->end(), " ")));

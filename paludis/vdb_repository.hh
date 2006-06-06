@@ -85,6 +85,11 @@ namespace paludis
      */
     class VDBRepository :
         public Repository,
+        public Repository::InstalledInterface,
+        public Repository::UseInterface,
+        public Repository::UninstallableInterface,
+        public Repository::SetsInterface,
+        public Repository::WorldInterface,
         public PrivateImplementationPattern<VDBRepository>
     {
         protected:
@@ -110,12 +115,6 @@ namespace paludis
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual bool do_query_repository_masks(const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
-            virtual bool do_query_profile_masks(const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
             virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
 
             virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const;
@@ -130,15 +129,10 @@ namespace paludis
 
             virtual bool do_is_mirror(const std::string &) const;
 
-            virtual void do_install(const QualifiedPackageName &,
-                    const VersionSpec &, const InstallOptions &) const PALUDIS_ATTRIBUTE((noreturn));
-
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &, 
                     const InstallOptions &) const;
 
             virtual DepAtom::Pointer do_package_set(const std::string &) const;
-
-            virtual bool do_sync() const;
 
         public:
             /**
@@ -173,6 +167,9 @@ namespace paludis
             virtual void add_to_world(const QualifiedPackageName &) const;
 
             virtual void remove_from_world(const QualifiedPackageName &) const;
+
+            typedef CountedPtr<VDBRepository, count_policy::InternalCountTag> Pointer;
+            typedef CountedPtr<const VDBRepository, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
