@@ -25,8 +25,8 @@
 /** \file
  * Declaration for BadArgument.
  *
- * \ingroup Args
- * \ingroup Exception
+ * \ingroup grplibpaludisargs
+ * \ingroup grpexceptions
  */
 
 namespace paludis
@@ -36,8 +36,8 @@ namespace paludis
         /**
          * Thrown if an unrecognised command line argument is specified.
          *
-         * \ingroup Args
-         * \ingroup Exception
+         * \ingroup grplibpaludisargs
+         * \ingroup grpexceptions
          */
         class BadArgument : public ArgsError
         {

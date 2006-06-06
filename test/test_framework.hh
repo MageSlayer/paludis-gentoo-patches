@@ -137,7 +137,7 @@ namespace test
      * Thrown if a TestCase failed.
      *
      * \ingroup Test
-     * \ingroup Exception
+     * \ingroup grpexceptions
      */
     class TestFailedException : public std::exception
     {

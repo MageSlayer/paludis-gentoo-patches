@@ -26,7 +26,7 @@
 /** \file
  * Declarations for the DefaultEnvironment class.
  *
- * \ingroup Environment
+ * \ingroup grpdefaultenvironment
  */
 
 namespace paludis
@@ -35,7 +35,7 @@ namespace paludis
      * The DefaultEnvironment is an Environment that corresponds to the normal
      * operating evironment.
      *
-     * \ingroup Environment
+     * \ingroup grpdefaultenvironment
      */
     class DefaultEnvironment :
         public Environment,

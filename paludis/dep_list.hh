@@ -40,6 +40,9 @@ namespace paludis
 {
     /**
      * Keys for a DepListEntry.
+     *
+     * \see DepListEntry
+     * \ingroup grpdepresolver
      */
     enum DepListEntryKeys
     {
@@ -54,6 +57,9 @@ namespace paludis
 
     /**
      * Flags for a DepListEntry.
+     *
+     * \see DepListEntry
+     * \ingroup grpdepresolver
      */
     enum DepListEntryFlag
     {
@@ -66,11 +72,15 @@ namespace paludis
 
     /**
      * Flags for a DepListEntry.
+     *
+     * \ingroup grpdepresolver
      */
     typedef std::bitset<last_dlef> DepListEntryFlags;
 
     /**
      * Tag for a DepListEntry.
+     *
+     * \ingroup grpdepresolver
      */
     struct DepListEntryTag :
         SmartRecordTag<comparison_mode::EqualityComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
@@ -86,16 +96,23 @@ namespace paludis
 
     /**
      * A DepListEntry represents an entry in a DepList.
+     *
+     * \ingroup grpdepresolver
      */
     typedef MakeSmartRecord<DepListEntryTag>::Type DepListEntry;
 
     /**
      * A DepListEntry can be written to a stream.
+     *
+     * \ingroup grpdepresolver
      */
     std::ostream & operator<< (std::ostream &, const DepListEntry &);
 
     /**
      * Thrown if an error occurs whilst building a DepList.
+     *
+     * \ingroup grpdepresolver
+     * \ingroup grpexceptions
      */
     class DepListError : public Exception
     {
@@ -108,6 +125,9 @@ namespace paludis
 
     /**
      * Thrown if a DepList's add stack gets too deep.
+     *
+     * \ingroup grpdepresolver
+     * \ingroup grpexceptions
      */
     class DepListStackTooDeepError : public DepListError
     {
@@ -120,6 +140,9 @@ namespace paludis
 
     /**
      * Thrown if no entry in a || ( ) block is resolvable.
+     *
+     * \ingroup grpdepresolver
+     * \ingroup grpexceptions
      */
     class NoResolvableOptionError : public DepListError
     {
@@ -138,6 +161,9 @@ namespace paludis
 
     /**
      * Thrown if all versions of a particular atom are masked.
+     *
+     * \ingroup grpdepresolver
+     * \ingroup grpexceptions
      */
     class AllMaskedError : public DepListError
     {
@@ -168,6 +194,9 @@ namespace paludis
 
     /**
      * Thrown if a block is encountered.
+     *
+     * \ingroup grpdepresolver
+     * \ingroup grpexceptions
      */
     class BlockError : public DepListError
     {
@@ -180,6 +209,9 @@ namespace paludis
 
     /**
      * Thrown if a circular dependency is encountered.
+     *
+     * \ingroup grpdepresolver
+     * \ingroup grpexceptions
      */
     class CircularDependencyError : public DepListError
     {
@@ -208,10 +240,12 @@ namespace paludis
     };
 
     /**
-     * Used in DepList::set_rdepend_post
+     * Used in DepList::set_rdepend_post.
+     *
+     * \ingroup grpdepresolver
      */
-    enum DepListRdependOption 
-    { 
+    enum DepListRdependOption
+    {
         /**
          * RDEPENDs are always merged before the package; abort if this fails.
          */
@@ -231,6 +265,8 @@ namespace paludis
 
     /**
      * Holds a list of dependencies in merge order.
+     *
+     * \ingroup grpdepresolver
      */
     class DepList :
         private InstantiationPolicy<DepList, instantiation_method::NonCopyableTag>,

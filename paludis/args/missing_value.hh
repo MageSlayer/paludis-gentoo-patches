@@ -1,7 +1,3 @@
-#ifndef PALUDIS_GUARD_PALUDIS_ARGS_MISSING_VALUE_HH
-#define PALUDIS_GUARD_PALUDIS_ARGS_MISSING_VALUE_HH 1
-
-
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
@@ -22,13 +18,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef PALUDIS_GUARD_PALUDIS_ARGS_MISSING_VALUE_HH
+#define PALUDIS_GUARD_PALUDIS_ARGS_MISSING_VALUE_HH 1
+
 #include <paludis/args/args_error.hh>
 
 /** \file
  * Declaration for MissingValue
  *
- * \ingroup Args
- * \ingroup Exception
+ * \ingroup grplibpaludisargs
+ * \ingroup grpexceptions
  */
 
 namespace paludis
@@ -39,8 +38,8 @@ namespace paludis
          * Thrown if an argument is specified that needs a parameter,
          * but no parameter is given.
          *
-         * \ingroup Args
-         * \ingroup Exception
+         * \ingroup grplibpaludisargs
+         * \ingroup grpexceptions
          */
         class MissingValue : public ArgsError
         {

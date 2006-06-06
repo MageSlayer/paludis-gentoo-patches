@@ -1,5 +1,4 @@
-#ifndef PALUDIS_GUARD_ARGS_BAD_VALUE_HH
-#define PALUDIS_GUARD_ARGS_BAD_VALUE_HH 1
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
@@ -18,33 +17,36 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef PALUDIS_GUARD_ARGS_BAD_VALUE_HH
+#define PALUDIS_GUARD_ARGS_BAD_VALUE_HH 1
+
 #include <paludis/args/args_error.hh>
 
 /** \file
  * Declaration for BadValue.
  *
- * \ingroup Args
- * \ingroup Exception
+ * \ingroup grplibpaludisargs
+ * \ingroup grpexceptions
  */
 
 namespace paludis 
 {
     namespace args
     {
-	/**
-	 * Thrown if an invalid parameter is passed to a valid command line argument.
-	 *
-	 * \ingroup Args
-	 * \ingroup Exception
-	 */
-	class BadValue : public ArgsError
-	{
-	    public:
-		/**
-		 * Constructor
-		 */
-		BadValue(const std::string& option, const std::string& value) throw();
-	};
+        /**
+         * Thrown if an invalid parameter is passed to a valid command line argument.
+         *
+         * \ingroup grplibpaludisargs
+         * \ingroup grpexceptions
+         */
+        class BadValue : public ArgsError
+        {
+            public:
+                /**
+                 * Constructor
+                 */
+                BadValue(const std::string& option, const std::string& value) throw();
+        };
     }
 }
 
