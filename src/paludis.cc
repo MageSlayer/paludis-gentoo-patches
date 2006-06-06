@@ -17,16 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "src/applets.hh"
+#include "src/colour.hh"
 #include "src/command_line.hh"
-#include "src/install.hh"
-#include "src/uninstall.hh"
-#include "src/list.hh"
 #include "src/contents.hh"
+#include "src/install.hh"
+#include "src/list.hh"
+#include "src/news.hh"
 #include "src/owner.hh"
 #include "src/query.hh"
-#include "src/applets.hh"
 #include "src/sync.hh"
-#include "src/news.hh"
+#include "src/uninstall.hh"
 #include "config.h"
 
 #include <paludis/paludis.hh>
@@ -106,13 +107,13 @@ main(int argc, char *argv[])
                     ("moo" == *CommandLine::get_instance()->begin_parameters()))
             {
                 cout << endl;
-                cout << " ______________________________________" << endl;
-                cout << "( Why do people keep doing this to me? )" << endl;
-                cout << " -------------------------------------- " << endl;
+                cout << " ______________________________" << endl;
+                cout << "( Ugh. Another Portage user... )" << endl;
+                cout << " ------------------------------ " << endl;
                 cout << "    o" << endl;
                 cout << "     o" << endl;
                 cout << "    ^__^         /" << endl;
-                cout << "    (oo)\\_______/  _________" << endl;
+                cout << "    (" << colour(cl_bold_pink, "oo") << ")\\_______/  _________" << endl;
                 cout << "    (__)\\       )=(  ____|_ \\_____" << endl;
                 cout << "        ||----w |  \\ \\     \\_____ |" << endl;
                 cout << "        ||     ||   ||           ||" << endl;
