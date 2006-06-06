@@ -24,6 +24,7 @@
 #include <paludis/paludis.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/log.hh>
 
 /** \file
  * Handle the --install action for the main paludis program.
@@ -154,6 +155,9 @@ do_install()
     {
         dep_list.add(targets);
 
+        int current_count(0), max_count(0), new_count(0), upgrade_count(0),
+            downgrade_count(0), new_slot_count(0), rebuild_count(0);
+
         if (CommandLine::get_instance()->a_pretend.specified())
             env->perform_hook(p::Hook("install_pretend_pre")("TARGETS", p::join(
                             CommandLine::get_instance()->begin_parameters(),
@@ -190,7 +194,11 @@ do_install()
                                     dep->get<p::dle_name>()))), p::is_installed_only));
 
             if (existing->empty())
+            {
                 cout << colour(cl_updatemode, " [N]");
+                ++new_count;
+                ++max_count;
+            }
             else
             {
                 existing = env->package_database()->query(p::PackageDepAtom::Pointer(
@@ -198,15 +206,31 @@ do_install()
                                 stringify(dep->get<p::dle_metadata>()->get<p::vm_slot>()))),
                         p::is_installed_only);
                 if (existing->empty())
+                {
                     cout << colour(cl_updatemode, " [S]");
+                    ++new_slot_count;
+                    ++max_count;
+                }
                 else if (existing->last()->get<p::pde_version>() < dep->get<p::dle_version>())
+                {
                     cout << colour(cl_updatemode, " [U " + p::stringify(
                                 existing->last()->get<p::pde_version>()) + "]");
+                    ++upgrade_count;
+                    ++max_count;
+                }
                 else if (existing->last()->get<p::pde_version>() > dep->get<p::dle_version>())
+                {
                     cout << colour(cl_updatemode, " [D " + p::stringify(
                                 existing->last()->get<p::pde_version>()) + "]");
+                    ++downgrade_count;
+                    ++max_count;
+                }
                 else
+                {
                     cout << colour(cl_updatemode, " [R]");
+                    ++rebuild_count;
+                    ++max_count;
+                }
             }
 
             /* fetch db entry */
@@ -263,10 +287,51 @@ do_install()
             cout << endl;
         }
 
-        int current_count = 0, max_count = std::distance(dep_list.begin(), dep_list.end());
+        if (max_count != new_count + upgrade_count + downgrade_count + new_slot_count +
+                rebuild_count)
+            p::Log::get_instance()->message(p::ll_warning, "Max count doesn't add up. This is a bug!");
 
-        cout << endl << "Total: " << max_count <<
-            (max_count == 1 ? " package" : " packages") << endl << endl;
+        cout << endl << "Total: " << max_count << (max_count == 1 ? " package" : " packages");
+        if (max_count)
+        {
+            bool need_comma(false);
+            cout << " (";
+            if (new_count)
+            {
+                cout << new_count << " new";
+                need_comma = true;
+            }
+            if (upgrade_count)
+            {
+                if (need_comma)
+                    cout << ", ";
+                cout << upgrade_count << (upgrade_count == 1 ? " upgrade" : " upgrades");
+                need_comma = true;
+            }
+            if (downgrade_count)
+            {
+                if (need_comma)
+                    cout << ", ";
+                cout << downgrade_count << (downgrade_count == 1 ? " downgrade" : " downgrades");
+                need_comma = true;
+            }
+            if (new_slot_count)
+            {
+                if (need_comma)
+                    cout << ", ";
+                cout << new_slot_count << (new_slot_count == 1 ? " in new slot" : " in new slots");
+                need_comma = true;
+            }
+            if (rebuild_count)
+            {
+                if (need_comma)
+                    cout << ", ";
+                cout << rebuild_count << (rebuild_count == 1 ? " rebuild" : " rebuilds");
+                need_comma = true;
+            }
+            cout << ")";
+        }
+        cout << endl << endl;
 
         if (CommandLine::get_instance()->a_pretend.specified() && ! all_tags.empty())
         {
