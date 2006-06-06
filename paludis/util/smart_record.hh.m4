@@ -529,6 +529,12 @@ forloop(`idy', `0', decr(idx), `
                 }
 
                 template <typename Tag_::Keys k_>
+                struct GetKeyType
+                {
+                    typedef typename GetRecordKeyType<Tag_, k_>::Type Type;
+                };
+
+                template <typename Tag_::Keys k_>
                 const typename GetRecordKeyType<Tag_, k_>::Type & get() const
                 {
                     return RecordKeyGetter<Tag_, `'idx`', k_>::do_get(*this);
