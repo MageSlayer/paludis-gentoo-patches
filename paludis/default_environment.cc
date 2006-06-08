@@ -362,8 +362,11 @@ namespace
         if (! done_hooks)
         {
             add_one_hook(DefaultConfig::get_instance()->config_dir() + "/hooks", result);
-            add_one_hook(LIBEXECDIR "/paludis/hooks", result);
-            add_one_hook(DATADIR "/paludis/hooks", result);
+            if (getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
+            {
+                add_one_hook(LIBEXECDIR "/paludis/hooks", result);
+                add_one_hook(DATADIR "/paludis/hooks", result);
+            }
             done_hooks = true;
         }
         return result;
