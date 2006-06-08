@@ -1,0 +1,5 @@
+#!/bin/bash
+
+PALUDIS_HOME=./install_TEST_dir/config/ ./paludis --config-suffix install-test --install target || exit 1
+./install_TEST_dir/root/usr/bin/testbin | grep success >/dev/null
+

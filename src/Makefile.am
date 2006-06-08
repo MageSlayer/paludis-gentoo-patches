@@ -35,36 +35,12 @@ TESTS_ENVIRONMENT = env \
 
 TESTS = version_TEST help_TEST list_sync_formats_TEST \
 	list_repository_formats_TEST list_dep_tag_categories_TEST \
-	exception_TEST install_TEST
+	exception_TEST install_TEST upgrade_TEST
 
-EXTRA_DIST = install_TEST_setup.sh install_TEST_cleanup.sh
+EXTRA_DIST = $(TESTS) \
+	install_TEST_setup.sh install_TEST_cleanup.sh \
+	upgrade_TEST_setup.sh upgrade_TEST_cleanup.sh
 
-CLEANFILES = *~ $(TESTS) gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in
-
-version_TEST : paludis
-	echo -e "#!/bin/sh\nenv PALUDIS_SKIP_CONFIG=yes ./paludis --version" > $@
-
-help_TEST : paludis
-	echo -e "#!/bin/sh\nenv PALUDIS_SKIP_CONFIG=yes ./paludis --help" > $@
-
-exception_TEST : paludis
-	echo -e "#!/bin/sh\nenv PALUDIS_HOME=./ \\" > $@
-	echo -e "    ./paludis --config-suffix paludis-build-test -pi asdf 2>&1 \\" >> $@
-	echo -e "    | grep 'Default configuration error' >/dev/null" >> $@
-
-list_sync_formats_TEST : paludis
-	echo -e "#!/bin/sh\nenv PALUDIS_SKIP_CONFIG=yes ./paludis --list-sync-protocols" > $@
-
-list_repository_formats_TEST : paludis
-	echo -e "#!/bin/sh\nenv PALUDIS_SKIP_CONFIG=yes ./paludis --list-repository-formats" > $@
-
-list_dep_tag_categories_TEST : paludis
-	echo -e "#!/bin/sh\nenv PALUDIS_SKIP_CONFIG=yes ./paludis --list-dep-tag-categories" > $@
-
-install_TEST : paludis
-	echo -e "#!/bin/sh\nenv \\" > $@
-	echo -e "    PALUDIS_HOME=./install_TEST_dir/config/ \\" >> $@
-	echo -e "   ./paludis --config-suffix install-test --install target" >> $@
-	echo -e "./install_TEST_dir/root/usr/bin/testbin | grep success >/dev/null" >> $@
 
