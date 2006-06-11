@@ -21,18 +21,19 @@
 #ifndef PALUDIS_GUARD_PALUDIS_FS_ENTRY_HH
 #define PALUDIS_GUARD_PALUDIS_FS_ENTRY_HH 1
 
-#include <ostream>
 #include <paludis/util/comparison_policy.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>
 #include <string>
-#include <sys/stat.h>
+#include <iosfwd>
 
 /** \file
  * Declarations for paludis::Filesystem.
  *
  * \ingroup grpfilesystem
  */
+
+struct stat;
 
 namespace paludis
 {
@@ -90,7 +91,7 @@ namespace paludis
         private:
             std::string _path;
 
-            mutable CountedPtr<struct stat, count_policy::ExternalCountTag> _stat_info;
+            mutable CountedPtr<struct ::stat, count_policy::ExternalCountTag> _stat_info;
 
             mutable bool _exists;
 
@@ -238,6 +239,15 @@ namespace paludis
      * \ingroup grpfilesystem
      */
     std::ostream & operator<< (std::ostream & s, const FSEntry & f);
+
+    template <typename T_> class SequentialCollection;
+
+    /**
+     * An ordered group of FSEntry instances.
+     *
+     * \ingroup grpfilesystem
+     */
+    typedef SequentialCollection<FSEntry> FSEntryCollection;
 }
 
 #endif

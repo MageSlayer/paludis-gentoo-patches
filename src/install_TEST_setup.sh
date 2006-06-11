@@ -32,14 +32,14 @@ cat <<END > root/${SYSCONFDIR}/paludis/repositories/repo1.conf
 location = `pwd`/repo1
 cache = /var/empty
 format = portage
-profile = \${location}/profiles/testprofile
+profiles = \${location}/profiles/testprofile \${location}/profiles/anothertestprofile
 buildroot = `pwd`/build
 END
 
 mkdir -p root/tmp
 touch root/${SYSCONFDIR}/ld.so.conf
 
-mkdir -p repo1/{eclass,distfiles,profiles/testprofile,test-category/target/files} || exit 1
+mkdir -p repo1/{eclass,distfiles,profiles/{testprofile,anothertestprofile},test-category/target/files} || exit 1
 
 mkdir -p src/target-2
 cat <<"END" > src/target-2/testbin
@@ -62,9 +62,26 @@ cat <<END > profiles/testprofile/make.defaults
 ARCH=test
 USERLAND=test
 KERNEL=test
+TESTPROFILE_WAS_SOURCED=yes
+PROFILE_ORDERING=1
+END
+cat <<END > profiles/anothertestprofile/make.defaults
+ARCH=test
+USERLAND=test
+KERNEL=test
+ANOTHERTESTPROFILE_WAS_SOURCED=yes
+PROFILE_ORDERING=2
+END
+
+cat <<"END" > eclass/foo.eclass
+inherit_was_ok() {
+    true
+}
 END
 
 cat <<"END" > test-category/target/target-2.ebuild || exit 1
+inherit foo
+
 DESCRIPTION="Test target"
 HOMEPAGE="http://paludis.berlios.de/"
 SRC_URI="http://invalid.domain/${P}.tar.gz"
@@ -75,6 +92,13 @@ KEYWORDS="test"
 
 pkg_setup() {
     [[ -z "${USER_BASHRC_WAS_USED}" ]] && die "bad env"
+    [[ -z "${TESTPROFILE_WAS_SOURCED}" ]] && die "testprofile not sourced"
+    [[ -z "${ANOTHERTESTPROFILE_WAS_SOURCED}" ]] && die "anothertestprofile not sourced"
+    [[ ${PROFILE_ORDERING:-0} != 2 ]] && die "bad profile source ordering"
+}
+
+src_compile() {
+    inherit_was_ok || die "inherit didn't work"
 }
 
 src_test() {

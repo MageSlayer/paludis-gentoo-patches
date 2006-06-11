@@ -46,9 +46,17 @@ builtin_merge()
     fi
 
     [[ -f "${EBUILD}" ]] && cp "${EBUILD}" ${dbdir}/
-    local x
+    local x e ee=
+    for e in ${ECLASSDIRS:-${ECLASSDIR}} ; do
+        ee="${e} ${ee}"
+    done
     for i in ${INHERITED} ; do
-        cp "${ECLASSDIR}/${i}".eclass "${dbdir}/" || die "save eclass ${i} failed"
+        for e in ${ee} ; do
+            if [[ -f "${e}/${i}".eclass ]] ; then
+                cp "${e}/${i}".eclass "${dbdir}/" || die "save eclass ${i} failed"
+                break
+            fi
+        done
     done
 
     local reinstall=

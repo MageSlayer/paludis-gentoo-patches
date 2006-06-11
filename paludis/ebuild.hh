@@ -49,7 +49,7 @@ namespace paludis
         ecpk_db_entry,
         ecpk_ebuild_dir,
         ecpk_files_dir,
-        ecpk_eclass_dir,
+        ecpk_eclassdirs,
         ecpk_portdir,
         ecpk_distdir,
         ecpk_buildroot,
@@ -73,7 +73,7 @@ namespace paludis
         SmartRecordKey<ecpk_db_entry, const PackageDatabaseEntry *>,
         SmartRecordKey<ecpk_ebuild_dir, const FSEntry>,
         SmartRecordKey<ecpk_files_dir, const FSEntry>,
-        SmartRecordKey<ecpk_eclass_dir, const FSEntry>,
+        SmartRecordKey<ecpk_eclassdirs, FSEntryCollection::ConstPointer>,
         SmartRecordKey<ecpk_portdir, const FSEntry>,
         SmartRecordKey<ecpk_distdir, const FSEntry>,
         SmartRecordKey<ecpk_buildroot, const FSEntry>
@@ -216,7 +216,7 @@ namespace paludis
         ecfpk_use_expand,
         ecfpk_flat_src_uri,
         ecfpk_root,
-        ecfpk_profile,
+        ecfpk_profiles,
         ecfpk_expand_vars,
         ecfpk_no_fetch,
         last_ecfpk
@@ -237,7 +237,7 @@ namespace paludis
         SmartRecordKey<ecfpk_use_expand, std::string>,
         SmartRecordKey<ecfpk_flat_src_uri, std::string>,
         SmartRecordKey<ecfpk_root, std::string>,
-        SmartRecordKey<ecfpk_profile, std::string>,
+        SmartRecordKey<ecfpk_profiles, FSEntryCollection::ConstPointer>,
         SmartRecordKey<ecfpk_expand_vars, std::map<std::string, std::string> >,
         SmartRecordKey<ecfpk_no_fetch, bool>
     {
@@ -289,7 +289,7 @@ namespace paludis
         ecipk_use,
         ecipk_use_expand,
         ecipk_root,
-        ecipk_profile,
+        ecipk_profiles,
         ecipk_expand_vars,
         ecipk_disable_cfgpro,
         ecipk_merge_only,
@@ -311,7 +311,7 @@ namespace paludis
         SmartRecordKey<ecipk_use, std::string>,
         SmartRecordKey<ecipk_use_expand, std::string>,
         SmartRecordKey<ecipk_root, std::string>,
-        SmartRecordKey<ecipk_profile, std::string>,
+        SmartRecordKey<ecipk_profiles, FSEntryCollection::ConstPointer>,
         SmartRecordKey<ecipk_expand_vars, std::map<std::string, std::string> >,
         SmartRecordKey<ecipk_disable_cfgpro, bool>,
         SmartRecordKey<ecipk_merge_only, bool>,

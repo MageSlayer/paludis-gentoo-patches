@@ -46,9 +46,11 @@ EXPORT_FUNCTIONS()
 
 inherit()
 {
-    local e
+    local e ee location=
     for e in "$@" ; do
-        local location="${ECLASSDIR}/${e}.eclass"
+        for ee in ${ECLASSDIRS:-${ECLASSDIR}} ; do
+            [[ -f "${ee}/${e}.eclass" ]] && location="${ECLASSDIR}/${e}.eclass"
+        done
         local old_ECLASS="${ECLASS}"
         export ECLASS="${e}"
 
@@ -58,6 +60,7 @@ inherit()
 
         unset IUSE DEPEND RDEPEND PDEPEND KEYWORDS
 
+        [[ -z "${location}" ]] && die "Error finding eclass ${e}"
         source "${location}" || die "Error sourcing eclass ${e}"
         hasq "${ECLASS}" ${INHERITED} || export INHERITED="${INHERITED} ${ECLASS}"
 

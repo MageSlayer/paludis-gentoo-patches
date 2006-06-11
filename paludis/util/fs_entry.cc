@@ -98,7 +98,7 @@ FSEntry::operator/= (const FSEntry & rhs)
 
     _checked = false;
     _exists = false;
-    _stat_info = CountedPtr<struct stat, count_policy::ExternalCountTag>(0);
+    _stat_info = CountedPtr<struct ::stat, count_policy::ExternalCountTag>(0);
 
     return *this;
 }

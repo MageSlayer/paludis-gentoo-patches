@@ -87,7 +87,9 @@ EbuildCommand::operator() ()
                  stringify(params.get<ecpk_db_entry>()->get<pde_version>()))
                 ("CATEGORY", stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_category>()))
                 ("FILESDIR", stringify(params.get<ecpk_files_dir>()))
-                ("ECLASSDIR", stringify(params.get<ecpk_eclass_dir>()))
+                ("ECLASSDIR", stringify(*params.get<ecpk_eclassdirs>()->begin()))
+                ("ECLASSDIRS", join(params.get<ecpk_eclassdirs>()->begin(),
+                                    params.get<ecpk_eclassdirs>()->end(), " "))
                 ("PORTDIR", stringify(params.get<ecpk_portdir>()))
                 ("DISTDIR", stringify(params.get<ecpk_distdir>()))
                 ("PALUDIS_TMPDIR", stringify(params.get<ecpk_buildroot>()))
@@ -226,7 +228,9 @@ EbuildFetchCommand::extend_command(const MakeEnvCommand & cmd)
             ("USE_EXPAND", fetch_params.get<ecfpk_use_expand>())
             ("FLAT_SRC_URI", fetch_params.get<ecfpk_flat_src_uri>())
             ("ROOT", fetch_params.get<ecfpk_root>())
-            ("PALUDIS_PROFILE_DIR", fetch_params.get<ecfpk_profile>()));
+            ("PALUDIS_PROFILE_DIR", stringify(*fetch_params.get<ecfpk_profiles>()->begin()))
+            ("PALUDIS_PROFILE_DIRS", join(fetch_params.get<ecfpk_profiles>()->begin(),
+                                          fetch_params.get<ecfpk_profiles>()->end(), " ")));
 
     for (std::map<std::string, std::string>::const_iterator
             i(fetch_params.get<ecfpk_expand_vars>().begin()),
@@ -270,7 +274,9 @@ EbuildInstallCommand::extend_command(const MakeEnvCommand & cmd)
             ("ROOT", install_params.get<ecipk_root>())
             ("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK",
                 install_params.get<ecipk_disable_cfgpro>() ? "/" : "")
-            ("PALUDIS_PROFILE_DIR", install_params.get<ecipk_profile>())
+            ("PALUDIS_PROFILE_DIR", stringify(*install_params.get<ecipk_profiles>()->begin()))
+            ("PALUDIS_PROFILE_DIRS", join(install_params.get<ecipk_profiles>()->begin(),
+                                          install_params.get<ecipk_profiles>()->end(), " "))
             ("SLOT", stringify(install_params.get<ecipk_slot>())));
 
     for (std::map<std::string, std::string>::const_iterator

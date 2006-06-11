@@ -717,6 +717,10 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
 
     PackageDatabaseEntry e(q, v, name());
 
+    FSEntryCollection::Pointer eclassdirs(new FSEntryCollection);
+    eclassdirs->append(FSEntry(_imp->location / stringify(q.get<qpn_category>()) /
+                (stringify(q.get<qpn_package>()) + "-" + stringify(v))));
+
     EbuildUninstallCommand uninstall_cmd(EbuildCommandParams::create((
                     param<ecpk_environment>(_imp->env),
                     param<ecpk_db_entry>(&e),
@@ -724,8 +728,7 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
                         (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
                     param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
                         (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
-                    param<ecpk_eclass_dir>(_imp->location / stringify(q.get<qpn_category>()) /
-                        (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
+                    param<ecpk_eclassdirs>(eclassdirs),
                     param<ecpk_portdir>(_imp->location),
                     param<ecpk_distdir>(_imp->location / stringify(q.get<qpn_category>()) /
                         (stringify(q.get<qpn_package>()) + "-" + stringify(v))),

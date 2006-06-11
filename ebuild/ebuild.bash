@@ -99,7 +99,11 @@ for var in ${save_vars} ; do
     eval "export save_var_${var}='${!var}'"
 done
 
-if [[ -n "${PALUDIS_PROFILE_DIR}" ]] ; then
+if [[ -n "${PALUDIS_PROFILE_DIRS}" ]] ; then
+    for var in ${PALUDIS_PROFILE_DIRS} ; do
+        ebuild_source_profile $(canonicalise "${var}")
+    done
+elif [[ -n "${PALUDIS_PROFILE_DIR}" ]] ; then
     ebuild_source_profile $(canonicalise "${PALUDIS_PROFILE_DIR}")
 fi
 

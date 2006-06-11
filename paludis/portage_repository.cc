@@ -121,14 +121,14 @@ namespace paludis
         /// Our base location.
         FSEntry location;
 
-        /// Our profile.
-        FSEntry profile;
+        /// Our profiles.
+        FSEntryCollection::Pointer profiles;
 
         /// Our cache.
         FSEntry cache;
 
         /// Eclass dir
-        FSEntry eclassdir;
+        FSEntryCollection::Pointer eclassdirs;
 
         /// Distfiles dir
         FSEntry distdir;
@@ -198,9 +198,6 @@ namespace paludis
         /// Old style virtuals name mapping.
         mutable VirtualsMap virtuals_map;
 
-        /// Have we loaded our profile yet?
-        mutable bool has_profile;
-
         /// Arch flags
         mutable UseFlagSet arch_list;
 
@@ -231,16 +228,20 @@ namespace paludis
         /// Destructor.
         ~Implementation();
 
-        /// Add a profile directory.
-        void add_profile(const FSEntry & f) const;
-
         /// Invalidate our cache.
         void invalidate() const;
 
         /// (Empty) provides map.
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
+        /// Load profiles, if we haven't already.
+        inline void need_profiles() const;
+
         private:
+            mutable bool has_profile;
+
+            void add_profile(const FSEntry & f) const;
+
             void add_profile_r(const FSEntry & f) const;
 
             /// Raw system lines.
@@ -252,9 +253,9 @@ Implementation<PortageRepository>::Implementation(const PortageRepositoryParams 
     db(p.get<prpk_package_database>()),
     env(p.get<prpk_environment>()),
     location(p.get<prpk_location>()),
-    profile(p.get<prpk_profile>()),
+    profiles(p.get<prpk_profiles>()),
     cache(p.get<prpk_cache>()),
-    eclassdir(p.get<prpk_eclassdir>()),
+    eclassdirs(p.get<prpk_eclassdirs>()),
     distdir(p.get<prpk_distdir>()),
     setsdir(p.get<prpk_setsdir>()),
     securitydir(p.get<prpk_securitydir>()),
@@ -266,11 +267,11 @@ Implementation<PortageRepository>::Implementation(const PortageRepositoryParams 
     has_category_names(false),
     has_repo_mask(false),
     has_virtuals(false),
-    has_profile(false),
     has_arch_list(false),
     has_mirrors(false),
     system_packages(new AllDepAtom),
-    system_tag(new GeneralSetDepTag("system"))
+    system_tag(new GeneralSetDepTag("system")),
+    has_profile(false)
 {
 }
 
@@ -503,6 +504,20 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
 }
 
 void
+Implementation<PortageRepository>::need_profiles() const
+{
+    if (has_profile)
+        return;
+
+    Context context("When loading profiles:");
+    for (FSEntryCollection::Iterator p(profiles->begin()), p_end(profiles->end()) ;
+            p != p_end ; ++p)
+        add_profile(*p);
+
+    has_profile = true;
+}
+
+void
 Implementation<PortageRepository>::invalidate() const
 {
     has_category_names = false;
@@ -542,9 +557,11 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(p))
 {
     _info.insert(std::make_pair(std::string("location"), stringify(_imp->location)));
-    _info.insert(std::make_pair(std::string("profile"), stringify(_imp->profile)));
+    _info.insert(std::make_pair(std::string("profiles"), join(_imp->profiles->begin(),
+                    _imp->profiles->end(), " ")));
+    _info.insert(std::make_pair(std::string("eclassdirs"), join(_imp->eclassdirs->begin(),
+                    _imp->eclassdirs->end(), " ")));
     _info.insert(std::make_pair(std::string("cache"), stringify(_imp->cache)));
-    _info.insert(std::make_pair(std::string("eclassdir"), stringify(_imp->eclassdir)));
     _info.insert(std::make_pair(std::string("distdir"), stringify(_imp->distdir)));
     _info.insert(std::make_pair(std::string("securitydir"), stringify(_imp->securitydir)));
     _info.insert(std::make_pair(std::string("setsdir"), stringify(_imp->setsdir)));
@@ -911,10 +928,15 @@ PortageRepository::do_version_metadata(
                 WhitespaceTokeniser::get_instance()->tokenise(
                         stringify(result->get_ebuild_interface()->get<evm_inherited>()),
                         std::back_inserter(inherits));
-                for (std::list<std::string>::const_iterator i(inherits.begin()),
-                        i_end(inherits.end()) ; i != i_end ; ++i)
-                    if ((_imp->eclassdir / (*i + ".eclass")).mtime() > cache_time)
-                        ok = false;
+                for (FSEntryCollection::Iterator e(_imp->eclassdirs->begin()),
+                        e_end(_imp->eclassdirs->end()) ; e != e_end ; ++e)
+                    for (std::list<std::string>::const_iterator i(inherits.begin()),
+                            i_end(inherits.end()) ; i != i_end ; ++i)
+                    {
+                        if ((*e / (*i + ".eclass")).exists())
+                            if (((*e / (*i + ".eclass"))).mtime() > cache_time)
+                                ok = false;
+                    }
             }
 
             if (! ok)
@@ -951,7 +973,7 @@ PortageRepository::do_version_metadata(
                             stringify(q.get<qpn_package>())),
                         param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
                             stringify(q.get<qpn_package>()) / "files"),
-                        param<ecpk_eclass_dir>(_imp->eclassdir),
+                        param<ecpk_eclassdirs>(_imp->eclassdirs),
                         param<ecpk_portdir>(_imp->location),
                         param<ecpk_distdir>(_imp->distdir),
                         param<ecpk_buildroot>(_imp->buildroot)
@@ -1020,12 +1042,7 @@ PortageRepository::do_query_profile_masks(const QualifiedPackageName &,
 UseFlagState
 PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
-    if (! _imp->has_profile)
-    {
-        Context context("When checking USE state for '" + stringify(f) + "':");
-        _imp->add_profile(_imp->profile.realpath());
-        _imp->has_profile = true;
-    }
+    _imp->need_profiles();
 
     UseMap::iterator p(_imp->use.end());
 
@@ -1040,12 +1057,7 @@ PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntr
 bool
 PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabaseEntry *e) const
 {
-    if (! _imp->has_profile)
-    {
-        Context context("When checking USE mask for '" + stringify(u) + "':");
-        _imp->add_profile(_imp->profile.realpath());
-        _imp->has_profile = true;
-    }
+    _imp->need_profiles();
 
     if (_imp->use_mask.end() != _imp->use_mask.find(u))
         return true;
@@ -1082,12 +1094,7 @@ PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabas
 bool
 PortageRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEntry *e) const
 {
-    if (! _imp->has_profile)
-    {
-        Context context("When checking USE force for '" + stringify(u) + "':");
-        _imp->add_profile(_imp->profile.realpath());
-        _imp->has_profile = true;
-    }
+    _imp->need_profiles();
 
     if (_imp->use_force.end() != _imp->use_force.find(u))
         return true;
@@ -1132,13 +1139,7 @@ PortageRepository::need_virtual_names() const
 
     try
     {
-        if (! _imp->has_profile)
-        {
-            Context context("When loading virtual names:");
-            _imp->add_profile(_imp->profile.realpath());
-            _imp->has_profile = true;
-        }
-
+        _imp->need_profiles();
         need_category_names();
 
         for (Environment::ProvideMapIterator p(_imp->env->begin_provide_map()),
@@ -1177,13 +1178,37 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("location") || ((location = m.find("location")->second)).empty())
         throw PortageRepositoryConfigurationError("Key 'location' not specified or empty");
 
-    std::string profile;
-    if (m.end() == m.find("profile") || ((profile = m.find("profile")->second)).empty())
-        throw PortageRepositoryConfigurationError("Key 'profile' not specified or empty");
+    FSEntryCollection::Pointer profiles(new FSEntryCollection);
+    if (m.end() != m.find("profiles"))
+        WhitespaceTokeniser::get_instance()->tokenise(m.find("profiles")->second,
+                create_inserter<FSEntry>(std::back_inserter(*profiles)));
+    if (m.end() != m.find("profile") && ! m.find("profile")->second.empty())
+    {
+        Log::get_instance()->message(ll_warning, "Key 'profile' in '" + location + "' is deprecated, "
+                "use 'profiles = " + m.find("profile")->second + "' instead");
+        if (profiles->empty())
+            profiles->append(m.find("profile")->second);
+        else
+            throw PortageRepositoryConfigurationError("Both 'profile' and 'profiles' keys are present");
+    }
+    if (profiles->empty())
+        throw PortageRepositoryConfigurationError("No profiles have been specified");
 
-    std::string eclassdir;
-    if (m.end() == m.find("eclassdir") || ((eclassdir = m.find("eclassdir")->second)).empty())
-        eclassdir = location + "/eclass";
+    FSEntryCollection::Pointer eclassdirs(new FSEntryCollection);
+    if (m.end() != m.find("eclassdirs"))
+        WhitespaceTokeniser::get_instance()->tokenise(m.find("eclassdirs")->second,
+                create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
+    if (m.end() != m.find("eclassdir") && ! m.find("eclassdir")->second.empty())
+    {
+        Log::get_instance()->message(ll_warning, "Key 'eclassdir' in '" + location + "' is deprecated, "
+                "use 'eclassdirs = " + m.find("eclassdir")->second + "' instead");
+        if (eclassdirs->empty())
+            eclassdirs->append(m.find("eclassdir")->second);
+        else
+            throw PortageRepositoryConfigurationError("Both 'eclassdir' and 'eclassdirs' keys are present");
+    }
+    if (eclassdirs->empty())
+        eclassdirs->append(location + "/eclass");
 
     std::string distdir;
     if (m.end() == m.find("distdir") || ((distdir = m.find("distdir")->second)).empty())
@@ -1225,9 +1250,9 @@ PortageRepository::make_portage_repository(
                         param<prpk_environment>(env),
                         param<prpk_package_database>(db),
                         param<prpk_location>(location),
-                        param<prpk_profile>(profile),
+                        param<prpk_profiles>(profiles),
                         param<prpk_cache>(cache),
-                        param<prpk_eclassdir>(eclassdir),
+                        param<prpk_eclassdirs>(eclassdirs),
                         param<prpk_distdir>(distdir),
                         param<prpk_securitydir>(securitydir),
                         param<prpk_setsdir>(setsdir),
@@ -1264,12 +1289,7 @@ PortageRepository::do_is_arch_flag(const UseFlagName & u) const
 bool
 PortageRepository::do_is_expand_flag(const UseFlagName & u) const
 {
-    if (! _imp->has_profile)
-    {
-        Context context("When checking USE_EXPAND list for '" + stringify(u) + "':");
-        _imp->add_profile(_imp->profile.realpath());
-        _imp->has_profile = true;
-    }
+    _imp->need_profiles();
 
     for (UseFlagSet::const_iterator i(_imp->expand_list.begin()),
             i_end(_imp->expand_list.end()) ; i != i_end ; ++i)
@@ -1335,11 +1355,7 @@ void
 PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v,
         const InstallOptions & o) const
 {
-    if (! _imp->has_profile)
-    {
-        _imp->add_profile(_imp->profile.realpath());
-        _imp->has_profile = true;
-    }
+    _imp->need_profiles();
 
     if (! _imp->root.is_directory())
         throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
@@ -1512,7 +1528,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                         stringify(q.get<qpn_package>())),
                     param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
                         stringify(q.get<qpn_package>()) / "files"),
-                    param<ecpk_eclass_dir>(_imp->eclassdir),
+                    param<ecpk_eclassdirs>(_imp->eclassdirs),
                     param<ecpk_portdir>(_imp->location),
                     param<ecpk_distdir>(_imp->distdir),
                     param<ecpk_buildroot>(_imp->buildroot)
@@ -1525,7 +1541,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                     param<ecfpk_expand_vars>(expand_vars),
                     param<ecfpk_flat_src_uri>(flat_src_uri),
                     param<ecfpk_root>(stringify(_imp->root) + "/"),
-                    param<ecfpk_profile>(stringify(_imp->profile)),
+                    param<ecfpk_profiles>(_imp->profiles),
                     param<ecfpk_no_fetch>(fetch_restrict)
                     )));
 
@@ -1542,7 +1558,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                         stringify(q.get<qpn_package>())),
                     param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
                         stringify(q.get<qpn_package>()) / "files"),
-                    param<ecpk_eclass_dir>(_imp->eclassdir),
+                    param<ecpk_eclassdirs>(_imp->eclassdirs),
                     param<ecpk_portdir>(_imp->location),
                     param<ecpk_distdir>(_imp->distdir),
                     param<ecpk_buildroot>(_imp->buildroot)
@@ -1554,7 +1570,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                             _imp->expand_list.end(), " ")),
                     param<ecipk_expand_vars>(expand_vars),
                     param<ecipk_root>(stringify(_imp->root) + "/"),
-                    param<ecipk_profile>(stringify(_imp->profile)),
+                    param<ecipk_profiles>(_imp->profiles),
                     param<ecipk_disable_cfgpro>(o.get<io_noconfigprotect>()),
                     param<ecipk_merge_only>(! metadata->get_ebuild_interface()->get<evm_virtual>().empty()),
                     param<ecipk_slot>(SlotName(metadata->get<vm_slot>()))
@@ -1725,19 +1741,11 @@ PortageRepository::do_package_set(const std::string & s) const
 {
     if ("system" == s)
     {
-        if (! _imp->has_profile)
-        {
-            Context c("When loading system packages list:");
-            _imp->add_profile(_imp->profile.realpath());
-            _imp->has_profile = true;
-        }
-
+        _imp->need_profiles();
         return _imp->system_packages;
     }
     else if ("security" == s)
-    {
         return do_security_set();
-    }
     else if ((_imp->setsdir / (s + ".conf")).exists())
     {
         GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s));
@@ -1883,11 +1891,7 @@ PortageRepository::update_news() const
 
             if (news.begin_display_if_keyword() != news.end_display_if_keyword())
             {
-                if (! _imp->has_profile)
-                {
-                    _imp->add_profile(_imp->profile.realpath());
-                    _imp->has_profile = true;
-                }
+                _imp->need_profiles();
 
                 bool local_show(false);
                 for (NewsFile::DisplayIfKeywordIterator i(news.begin_display_if_keyword()),
@@ -1900,14 +1904,18 @@ PortageRepository::update_news() const
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
                 bool local_show(false);
-                std::string profile(strip_leading_string(strip_trailing_string(
-                            strip_leading_string(stringify(_imp->profile.realpath()),
-                                stringify(_imp->location.realpath())), "/"), "/"));
-                Log::get_instance()->message(ll_debug, "Profile path is '" + profile + "'");
-                for (NewsFile::DisplayIfProfileIterator i(news.begin_display_if_profile()),
-                        i_end(news.end_display_if_profile()) ; i != i_end ; ++i)
-                    if (profile == *i)
-                        local_show = true;
+                for (FSEntryCollection::Iterator p(_imp->profiles->begin()),
+                        p_end(_imp->profiles->end()) ; p != p_end ; ++p)
+                {
+                    std::string profile(strip_leading_string(strip_trailing_string(
+                                strip_leading_string(stringify(p->realpath()),
+                                    stringify(p->realpath())), "/"), "/"));
+                    Log::get_instance()->message(ll_debug, "Profile path is '" + profile + "'");
+                    for (NewsFile::DisplayIfProfileIterator i(news.begin_display_if_profile()),
+                            i_end(news.end_display_if_profile()) ; i != i_end ; ++i)
+                        if (profile == *i)
+                            local_show = true;
+                }
                 show &= local_show;
             }
 
