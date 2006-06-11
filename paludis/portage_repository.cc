@@ -1171,8 +1171,10 @@ PortageRepository::make_portage_repository(
         const PackageDatabase * const db,
         const std::map<std::string, std::string> & m)
 {
-    Context context("When making Portage repository from repo_file '" +
-            (m.end() == m.find("repo_file") ? std::string("?") : m.find("repo_file")->second) + "':");
+    std::string repo_file(m.end() == m.find("repo_file") ? std::string("?") :
+            m.find("repo_file")->second);
+
+    Context context("When making Portage repository from repo_file '" + repo_file + "':");
 
     std::string location;
     if (m.end() == m.find("location") || ((location = m.find("location")->second)).empty())
@@ -1184,7 +1186,7 @@ PortageRepository::make_portage_repository(
                 create_inserter<FSEntry>(std::back_inserter(*profiles)));
     if (m.end() != m.find("profile") && ! m.find("profile")->second.empty())
     {
-        Log::get_instance()->message(ll_warning, "Key 'profile' in '" + location + "' is deprecated, "
+        Log::get_instance()->message(ll_warning, "Key 'profile' in '" + repo_file + "' is deprecated, "
                 "use 'profiles = " + m.find("profile")->second + "' instead");
         if (profiles->empty())
             profiles->append(m.find("profile")->second);
@@ -1200,7 +1202,7 @@ PortageRepository::make_portage_repository(
                 create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
     if (m.end() != m.find("eclassdir") && ! m.find("eclassdir")->second.empty())
     {
-        Log::get_instance()->message(ll_warning, "Key 'eclassdir' in '" + location + "' is deprecated, "
+        Log::get_instance()->message(ll_warning, "Key 'eclassdir' in '" + repo_file + "' is deprecated, "
                 "use 'eclassdirs = " + m.find("eclassdir")->second + "' instead");
         if (eclassdirs->empty())
             eclassdirs->append(m.find("eclassdir")->second);
