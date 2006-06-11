@@ -54,6 +54,12 @@ namespace paludis
 
         public:
             /**
+             * Issue with g++ 3.4.6: const_reference isn't defined via our std::iterator
+             * inherit, but it is needed by many standard algorithms.
+             */
+            typedef const T_ & const_reference;
+
+            /**
              * Constructor.
              */
             SequentialCollection()
@@ -114,6 +120,15 @@ namespace paludis
 
                 _items.push_back(v);
                 return true;
+            }
+
+            /**
+             * Append an item.
+             */
+            void push_back(const T_ & v)
+            {
+                if (end() == find(v))
+                    _items.push_back(v);
             }
 
             /**
