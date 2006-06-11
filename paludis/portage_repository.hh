@@ -144,10 +144,6 @@ namespace paludis
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual Contents::ConstPointer do_contents(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
             virtual bool do_query_repository_masks(const QualifiedPackageName &,
                     const VersionSpec &) const;
 

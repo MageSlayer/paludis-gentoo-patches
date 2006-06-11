@@ -991,13 +991,6 @@ PortageRepository::do_version_metadata(
     return result;
 }
 
-Contents::ConstPointer
-PortageRepository::do_contents(
-        const QualifiedPackageName &, const VersionSpec &) const
-{
-    return Contents::Pointer(new Contents);
-}
-
 bool
 PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, const VersionSpec & v) const
 {
