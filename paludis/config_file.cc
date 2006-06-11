@@ -311,30 +311,6 @@ KeyValueConfigFile::strip_quotes(const std::string & s) const
         return s;
 }
 
-AdvisoryLine::AdvisoryLine(const std::string & s) :
-    _line(s),
-    _is_range(false)
-{
-    WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(_tokens));
-
-    if ((_tokens.size() < 1) || (_tokens.size() > 2))
-        throw AdvisoryFileError("Wrong count of atoms on line.");
-
-    if (_tokens.size() == 2)
-    {
-        if (!(is_range_token(0) && is_range_token(1)))
-            throw AdvisoryFileError("Line must exactly contain 1 non-range atom or 2 range atoms.");
-
-        if (is_range_bigger(0) && is_range_bigger(1))
-            throw AdvisoryFileError("Broken range: Two bigger/bigger than atoms.");
-
-        if (is_range_smaller(0) && is_range_smaller(1))
-            throw AdvisoryFileError("Broken range: Two smaller/smaller than atoms.");
-
-        _is_range = true;
-    }
-}
-
 AdvisoryFileError::AdvisoryFileError(const std::string & msg,
         const std::string & filename) throw () :
     ConfigurationError("Advisory file error" +
@@ -419,9 +395,9 @@ AdvisoryFile::accept_line(const std::string & line) const
             || (key == "Reviewed-By"))
         {
             if (key == "Affected")
-                _affected.push_back(AdvisoryLine(value));
+                _affected.push_back(value);
             else if (key == "Unaffected")
-                _unaffected.push_back(AdvisoryLine(value));
+                _unaffected.push_back(value);
 
             if (!_entries[key].empty())
                 value = "\n" + value;
@@ -451,9 +427,6 @@ AdvisoryFile::sanitise()
 
     if (_entries["Reviewed-By"].empty())
             throw AdvisoryFileError("Missing mandatory key: 'Reviewed-by'.");
-
-    if ((_entries["Affected"].size() + _entries["Unaffected"].size()) == 0)
-            throw AdvisoryFileError("Missing either 'Affected' or 'Unaffected' key.");
 }
 
 NewsFile::NewsFile(const FSEntry & filename) :

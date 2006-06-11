@@ -41,6 +41,7 @@ CommandLine::CommandLine() :
     a_list_sync_protocols(&action_args_internal, "list-sync-protocols", '\0', "List available sync protocols"),
     a_list_repository_formats(&action_args_internal, "list-repository-formats", '\0', "List available repository formats"),
     a_list_dep_tag_categories(&action_args_internal, "list-dep-tag-categories", '\0', "List known dep tag categories"),
+    a_list_vulnerabilities(&action_args_internal, "list-vulnerabilities", '\0', "List known vulnerabilities"),
     a_update_news(&action_args_internal, "update-news", '\0', "Regenerate news.unread files"),
 
     general_args(this, "General options"),

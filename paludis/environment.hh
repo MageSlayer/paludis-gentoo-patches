@@ -95,7 +95,8 @@ namespace paludis
             /**
              * Local package set, or zero.
              */
-            virtual DepAtom::Pointer local_package_set(const std::string &) const
+            virtual DepAtom::Pointer local_package_set(const std::string &,
+                    const PackageSetOptions & = PackageSetOptions(false)) const
             {
                 return DepAtom::Pointer(0);
             }
@@ -200,7 +201,8 @@ namespace paludis
             /**
              * Fetch a named package set.
              */
-            DepAtom::Pointer package_set(const std::string &) const;
+            DepAtom::Pointer package_set(const std::string &,
+                    const PackageSetOptions & = PackageSetOptions(false)) const;
 
             /**
              * Add packages to world, if they are not there already, and if they are

@@ -24,6 +24,8 @@
 #include <list>
 #include <map>
 #include <paludis/paludis.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/visitor.hh>
 
 namespace p = paludis;
 
@@ -164,6 +166,151 @@ do_list_packages()
             std::setw(0) << " " << p::join(p->second.begin(), p->second.end(), ", ") << std::endl;
         std::cout << std::endl;
     }
+
+    return ret_code;
+}
+
+namespace
+{
+    /**
+    * Print dependency atoms as returned by do_package_set("security").
+    *
+    * \ingroup grpvulnerabilitiesprinter
+    */
+    class VulnerabilitiesPrinter :
+        public p::DepAtomVisitorTypes::ConstVisitor
+    {
+        private:
+            unsigned _size;
+
+        public:
+            /**
+             * Constructor.
+             */
+            VulnerabilitiesPrinter() :
+                _size(0)
+            {
+            }
+
+            /// \name Visit functions
+            ///{
+            void visit(const p::AllDepAtom * const);
+
+            void visit(const p::AnyDepAtom * const);
+
+            void visit(const p::UseDepAtom * const);
+
+            void visit(const p::PackageDepAtom * const);
+
+            void visit(const p::PlainTextDepAtom * const);
+
+            void visit(const p::BlockDepAtom * const);
+            ///}
+
+            /**
+             * Return number of visited atoms.
+             */
+            unsigned size() const
+            {
+                return _size;
+            }
+    };
+
+    void
+    VulnerabilitiesPrinter::visit(const p::AllDepAtom * const a)
+    {
+        std::for_each(a->begin(), a->end(), p::accept_visitor(this));
+    }
+
+    void
+    VulnerabilitiesPrinter::visit(const p::AnyDepAtom * const a)
+    {
+        std::for_each(a->begin(), a->end(), p::accept_visitor(this));
+    }
+
+    void
+    VulnerabilitiesPrinter::visit(const p::UseDepAtom * const a)
+    {
+        p::Log::get_instance()->message(p::ll_warning, "UseDepAtom encounter in do_package_set(\"security\").");
+        std::for_each(a->begin(), a->end(), p::accept_visitor(this));
+    }
+
+    void
+    VulnerabilitiesPrinter::visit(const p::PackageDepAtom * const a)
+    {
+        p::QualifiedPackageName q(a->package());
+
+        std::string c(p::stringify(q.get<p::qpn_category>()));
+        if (CommandLine::get_instance()->a_category.specified())
+            if (CommandLine::get_instance()->a_category.args_end() == std::find(
+                            CommandLine::get_instance()->a_category.args_begin(),
+                            CommandLine::get_instance()->a_category.args_end(),
+                            c))
+                    return;
+
+        std::string p(p::stringify(q.get<p::qpn_package>()));
+        if (CommandLine::get_instance()->a_package.specified())
+            if (CommandLine::get_instance()->a_package.args_end() == std::find(
+                            CommandLine::get_instance()->a_package.args_begin(),
+                            CommandLine::get_instance()->a_package.args_end(),
+                            p))
+                    return;
+
+        std::cout << "* " << colour(cl_package_name, p::stringify(q));
+        if (0 != a->tag())
+            std::cout << "-" << p::stringify(*a->version_spec_ptr());
+        if (0 != a->tag())
+            std::cout << " " << colour(cl_tag, "<" + a->tag()->short_text() + ">");
+        std::cout << std::endl;
+        ++_size;
+    }
+
+    void
+    VulnerabilitiesPrinter::visit(const p::PlainTextDepAtom * const)
+    {
+    }
+
+    void
+    VulnerabilitiesPrinter::visit(const p::BlockDepAtom * const)
+    {
+    }
+}
+
+int
+do_list_vulnerabilities()
+{
+    int ret_code = 0;
+
+    p::Context context("When performing list-vulnerabilities action from command line:");
+    p::Environment * const env(p::DefaultEnvironment::get_instance());
+    p::PackageSetOptions opts(true);
+
+    p::CompositeDepAtom::Pointer vulnerabilities(new p::AllDepAtom);
+
+    for (p::IndirectIterator<p::PackageDatabase::RepositoryIterator, const p::Repository>
+            r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+    {
+        if (CommandLine::get_instance()->a_repository.specified())
+            if (CommandLine::get_instance()->a_repository.args_end() == std::find(
+                        CommandLine::get_instance()->a_repository.args_begin(),
+                        CommandLine::get_instance()->a_repository.args_end(),
+                        stringify(r->name())))
+                continue;
+
+        if (! r->get_interface<p::repo_sets>())
+                continue;
+
+        p::DepAtom::Pointer dep = r->get_interface<p::repo_sets>()->package_set("security", opts);
+        if (0 != dep)
+            vulnerabilities->add_child(dep);
+    }
+
+    VulnerabilitiesPrinter vp;
+    std::for_each(vulnerabilities->begin(), vulnerabilities->end(), p::accept_visitor(&vp));
+
+    if (vp.size() == 0)
+        ret_code = 1;
 
     return ret_code;
 }

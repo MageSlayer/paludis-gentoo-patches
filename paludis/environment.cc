@@ -242,7 +242,7 @@ Environment::end_provide_map() const
 }
 
 DepAtom::Pointer
-Environment::package_set(const std::string & s) const
+Environment::package_set(const std::string & s, const PackageSetOptions & o) const
 {
     if (s == "everything" || s == "system" || s == "world" || s == "security")
     {
@@ -255,7 +255,7 @@ Environment::package_set(const std::string & s) const
             if (! (*r)->get_interface<repo_sets>())
                 continue;
 
-            DepAtom::Pointer add((*r)->get_interface<repo_sets>()->package_set(s));
+            DepAtom::Pointer add((*r)->get_interface<repo_sets>()->package_set(s, o));
             if (0 != add)
                 result->add_child(add);
 

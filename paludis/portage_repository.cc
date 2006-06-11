@@ -24,6 +24,7 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/ebuild.hh>
+#include <paludis/environment.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
@@ -1592,25 +1593,10 @@ namespace
         std::string s("=" + stringify(n) + "-" + stringify(v));
         return PackageDepAtom::Pointer(new PackageDepAtom(s));
     }
-
-    struct IsNotMemberOfCollection
-    {
-        PackageDatabaseEntryCollection::ConstPointer _c;
-        IsNotMemberOfCollection(const PackageDatabaseEntryCollection::ConstPointer & c) :
-            _c(c)
-        {
-        }
-
-        bool operator() (const PackageDatabaseEntry & e) const
-        {
-            bool result = (_c->find(e) == _c->end());
-            return result;
-        }
-    };
 }
 
 PackageDatabaseEntryCollection::Iterator
-PortageRepository::find_best(PackageDatabaseEntryCollection::Pointer & c, const PackageDatabaseEntry & e) const
+PortageRepository::find_best(PackageDatabaseEntryCollection & c, const PackageDatabaseEntry & e) const
 {
     Context local("When finding best update for '" + stringify(e.get<pde_name>()) + "-" +
             stringify(e.get<pde_version>()) + "':");
@@ -1618,7 +1604,7 @@ PortageRepository::find_best(PackageDatabaseEntryCollection::Pointer & c, const 
     QualifiedPackageName n(e.get<pde_name>());
     SlotName s(_imp->env->package_database()->fetch_repository(e.get<pde_repository>())->version_metadata(
                 e.get<pde_name>(), e.get<pde_version>())->get<vm_slot>());
-    PackageDatabaseEntryCollection::Iterator i(c->begin()), i_end(c->end()), i_best(c->end());
+    PackageDatabaseEntryCollection::Iterator i(c.begin()), i_end(c.end()), i_best(c.end());
     for ( ; i != i_end; ++i)
     {
         if (n != i->get<pde_name>())
@@ -1633,11 +1619,65 @@ PortageRepository::find_best(PackageDatabaseEntryCollection::Pointer & c, const 
     return i_best;
 }
 
+AdvisoryVisitor::AdvisoryVisitor(const Environment * const env, const CompositeDepAtom & a) :
+    _env(env),
+    _a(a)
+{
+    Context c("When flattening the AdvisoryFile line:");
+    std::for_each(a.begin(), a.end(), accept_visitor(this));
+    if (_atoms.size() == 2)
+    {
+        VersionOperatorValue v1(_atoms[0]->version_operator().value()),
+                v2(_atoms[1]->version_operator().value());
+
+        if ((v1 == vo_equal) || (v2 == vo_equal))
+            throw AdvisoryFileError("Broken line: Forbidden 'equal' atom in range");
+    }
+}
+
+void
+AdvisoryVisitor::visit(const AllDepAtom * a)
+{
+    std::for_each(a->begin(), a->end(), accept_visitor(this));
+}
+
+void
+AdvisoryVisitor::visit(const AnyDepAtom *)
+{
+    throw AdvisoryFileError("Unexpected AnyDepAtom in line");
+}
+
+void
+AdvisoryVisitor::visit(const UseDepAtom * a)
+{
+    if (_env->query_use(a->flag(), 0) ^ a->inverse())
+        std::for_each(a->begin(), a->end(), accept_visitor(this));
+}
+
+void
+AdvisoryVisitor::visit(const PackageDepAtom * a)
+{
+    _atoms.push_back(a);
+}
+
+void
+AdvisoryVisitor::visit(const PlainTextDepAtom *)
+{
+}
+
+void
+AdvisoryVisitor::visit(const BlockDepAtom *)
+{
+}
+
 DepAtom::Pointer
-PortageRepository::do_security_set() const
+PortageRepository::do_security_set(const PackageSetOptions & o) const
 {
     Context c("When building security package set:");
     AllDepAtom::Pointer security_packages(new AllDepAtom);
+
+    bool list_affected_only(o.get<pso_list_affected_only>());
+    InstallState affected_state(list_affected_only ? is_either : is_installed_only);
 
     if (!_imp->securitydir.is_directory())
         return DepAtom::Pointer(new AllDepAtom);
@@ -1650,87 +1690,127 @@ PortageRepository::do_security_set() const
     std::list<FSEntry>::const_iterator f(advisories.begin()),
         f_end(advisories.end());
 
+    std::set<std::pair<PackageDatabaseEntry, std::string> > affected;
+    PackageDatabaseEntryCollection unaffected;
+    std::map<std::string, std::string> advisory_map;
+
     for ( ; f != f_end; ++f)
     {
         Context c("When parsing security advisory '" + stringify(*f) + "':");
-        AdvisoryFile advisory(*f);
 
-        GLSADepTag::Pointer advisory_tag(new GLSADepTag(advisory.get("Id"),
-                    advisory.get("Title")));
-
-        PackageDatabaseEntryCollection::Pointer affected(new PackageDatabaseEntryCollection),
-                unaffected(new PackageDatabaseEntryCollection);
-        std::list<AdvisoryLine>::const_iterator u(advisory.begin_unaffected()), u_end(advisory.end_unaffected());
-        for ( ; u != u_end ; ++u)
+        try
         {
-            Context c("When parsing 'Unaffected:' line '" + u->line() + "':");
-            if (u->is_range())
-            {
-                PackageDepAtom::Pointer p(new PackageDepAtom((*u)[0]));
-                PackageDatabaseEntryCollection::ConstPointer c_one = _imp->db->query(p, is_either);
-                p.assign(new PackageDepAtom((*u)[1]));
-                PackageDatabaseEntryCollection::ConstPointer c_two = _imp->db->query(p, is_either);
-                std::set_intersection(c_one->begin(), c_one->end(), c_two->begin(), c_two->end(),
-                        filter_inserter(unaffected->inserter(), IsNotMemberOfCollection(unaffected)));
-            }
-            else
-            {
-                PackageDepAtom::Pointer p(new PackageDepAtom((*u)[0]));
-                PackageDatabaseEntryCollection::ConstPointer c = _imp->db->query(p, is_either);
-                std::copy(c->begin(), c->end(), filter_inserter(unaffected->inserter(), IsNotMemberOfCollection(unaffected)));
-            }
-        }
+            AdvisoryFile advisory(*f);
+            std::string advisory_id(advisory.get("Id"));
+            advisory_map[advisory_id] = advisory.get("Title");
 
-        std::list<AdvisoryLine>::const_iterator a(advisory.begin_affected()), a_end(advisory.end_affected());
-        for ( ; a != a_end ; ++a)
-        {
-            Context c("When parsing 'Affected:' line '" + a->line() + "':");
-            if (a->is_range())
+
+            AdvisoryFile::LineIterator a(advisory.begin_affected()), a_end(advisory.end_affected());
+            for ( ; a != a_end ; ++a)
             {
-                PackageDepAtom::Pointer p(new PackageDepAtom((*a)[0]));
-                PackageDatabaseEntryCollection::ConstPointer installed_one = _imp->db->query(p, is_installed_only);
-                PackageDatabaseEntryCollection::ConstPointer either_one = _imp->db->query(p, is_either);
-                p.assign(new PackageDepAtom((*a)[1]));
-                PackageDatabaseEntryCollection::ConstPointer installed_two = _imp->db->query(p, is_installed_only);
-                PackageDatabaseEntryCollection::ConstPointer either_two = _imp->db->query(p, is_either);
-                std::set_intersection(installed_one->begin(), installed_one->end(), installed_two->begin(), installed_two->end(),
-                        filter_inserter(affected->inserter(), IsNotMemberOfCollection(affected)));
-                PackageDatabaseEntryCollection::Iterator e(either_one->begin()), e_end(either_one->end());
-                for ( ; e != e_end; ++e)
+                Context c("When parsing line 'Affected: " + *a + "':");
+
+                CompositeDepAtom::ConstPointer line(PortageDepParser::parse(*a));
+                AdvisoryVisitor atoms(_imp->env, *line);
+
+                if ((0 == atoms.size()) || (2 < atoms.size()))
                 {
-                    IsNotMemberOfCollection f(either_two);
-                    if (f(*e))
+                    continue;
+                }
+
+                bool is_range(2 == atoms.size());
+
+                PackageDatabaseEntryCollection::ConstPointer affected_collection1(_imp->db->query(*atoms.at(0), affected_state));
+                PackageDatabaseEntryCollection::ConstPointer affected_collection2(new PackageDatabaseEntryCollection);
+                PackageDatabaseEntryCollection::Iterator p(affected_collection1->begin()), p_end(affected_collection1->end());
+
+                if (is_range)
+                    affected_collection2 = _imp->db->query(*atoms.at(1), affected_state);
+
+                for ( ; p != p_end ; ++p)
+                {
+                    if ((affected.end() != affected.find(std::make_pair(*p, advisory_id))))
                         continue;
-
-                    if (unaffected->find(*e) != unaffected->end())
-                        unaffected->erase(*e);
+                    if ((! is_range) || (affected_collection2->end() != affected_collection2->find(*p)))
+                        affected.insert(std::make_pair(*p, advisory_id));
                 }
             }
-            else
+
+            AdvisoryFile::LineIterator u(advisory.begin_unaffected()), u_end(advisory.end_unaffected());
+            for ( ; u != u_end ; ++u)
             {
-                PackageDepAtom::Pointer p(new PackageDepAtom((*a)[0]));
-                PackageDatabaseEntryCollection::ConstPointer c = _imp->db->query(p, is_installed_only);
-                std::copy(c->begin(), c->end(), filter_inserter(affected->inserter(), IsNotMemberOfCollection(affected)));
-                PackageDatabaseEntryCollection::Iterator e(c->begin()), e_end(c->end());
-                for ( ; e != e_end; ++e)
+                Context c("When parsing line 'Unaffected: " + *u + "':");
+
+                CompositeDepAtom::ConstPointer line(PortageDepParser::parse(*u));
+                AdvisoryVisitor atoms(_imp->env, *line);
+
+                if ((0 == atoms.size()) || (2 < atoms.size()))
                 {
-                    if (unaffected->find(*e) != unaffected->end())
-                        unaffected->erase(*e);
+                    continue;
+                }
+
+                bool is_range(2 == atoms.size());
+
+                PackageDatabaseEntryCollection::ConstPointer unaffected_collection1(_imp->db->query(*atoms.at(0), is_either));
+                PackageDatabaseEntryCollection::ConstPointer unaffected_collection2(new PackageDatabaseEntryCollection);
+                PackageDatabaseEntryCollection::Iterator p(unaffected_collection1->begin()), p_end(unaffected_collection1->end());
+
+                if (is_range)
+                    unaffected_collection2 = _imp->db->query(*atoms.at(1), is_either);
+
+                for ( ; p != p_end ; ++p)
+                {
+                    if ((! is_range) || (unaffected_collection2->end() != unaffected_collection2->find(*p)))
+                    {
+                        unaffected.insert(*p);
+                        std::set<std::pair<PackageDatabaseEntry, std::string> >::iterator
+                                a(affected.find(std::make_pair(*p, advisory_id)));
+                        if (a != affected.end())
+                            affected.erase(a);
+                    }
                 }
             }
         }
+        catch (const AdvisoryFileError & e)
+        {
+            Log::get_instance()->message(ll_warning, "Malformed advisory file '" + stringify(*f) + "': " + e.message());
+        }
+        catch (const InternalError & e)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message(ll_warning, "Exception caught while parsing advisory '" + stringify(*f) +
+                    "': " + e.message());
+        }
 
-        PackageDatabaseEntryCollection::Iterator i(affected->begin()), i_end(affected->end());
+    }
+
+    std::set<std::pair<PackageDatabaseEntry, std::string> >::const_iterator i(affected.begin()), i_end(affected.end());
+    if (list_affected_only)
+    {
         for ( ; i != i_end ; ++i)
         {
-            Context c("When finding best update for package '" + stringify(*i) + "':");
+            Context c("When creating adding vulnerable package '" + stringify(i->first) + "':");
 
-            PackageDatabaseEntryCollection::Iterator e = find_best(unaffected, *i);
-            if (e == unaffected->end())
-                throw AllMaskedError("No best update available for package '" + stringify(*i) + "':");
+            PackageDepAtom::Pointer p(make_atom(i->first));
+            p->set_tag(GLSADepTag::Pointer(new GLSADepTag(i->second, advisory_map[i->second])));
+            security_packages->add_child(p);
+        }
+    }
+    else
+    {
+        for ( ; i != i_end ; ++i)
+        {
+            Context c("When finding best update for package '" + stringify(i->first) + "', affected by '" + i->second + "':");
 
-            PackageDepAtom::Pointer p(make_atom(*e));
-            p->set_tag(advisory_tag);
+            PackageDatabaseEntryCollection::Iterator best = find_best(unaffected, i->first);
+            if (best == unaffected.end())
+                throw AllMaskedError("No best update available for package '" + stringify(i->first) + "':");
+
+            PackageDepAtom::Pointer p(make_atom(*best));
+            p->set_tag(GLSADepTag::Pointer(new GLSADepTag(i->second, advisory_map[i->second])));
             security_packages->add_child(p);
         }
     }
@@ -1739,7 +1819,7 @@ PortageRepository::do_security_set() const
 }
 
 DepAtom::Pointer
-PortageRepository::do_package_set(const std::string & s) const
+PortageRepository::do_package_set(const std::string & s, const PackageSetOptions & o) const
 {
     if ("system" == s)
     {
@@ -1747,7 +1827,7 @@ PortageRepository::do_package_set(const std::string & s) const
         return _imp->system_packages;
     }
     else if ("security" == s)
-        return do_security_set();
+        return do_security_set(o);
     else if ((_imp->setsdir / (s + ".conf")).exists())
     {
         GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s));

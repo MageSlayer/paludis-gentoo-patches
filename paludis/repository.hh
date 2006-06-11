@@ -79,6 +79,38 @@ namespace paludis
     typedef MakeSmartRecord<InstallOptionsTag>::Type InstallOptions;
 
     /**
+     * Keys for PackageSetOptions.
+     *
+     * \see PackageSetOptions
+     * \ingroup grprepository
+     */
+    enum PackageSetOptionsKeys
+    {
+        pso_list_affected_only,  ///< Only list affected packages in the set
+        last_pso
+    };
+
+    /**
+     * Tag for PackageSetOptions.
+     *
+     * \see PackageSetOptions
+     * \ingroup grprepository
+     */
+    struct PackageSetOptionsTag :
+        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
+        SmartRecordKeys<PackageSetOptionsKeys, last_pso>,
+        SmartRecordKey<pso_list_affected_only, bool>
+    {
+    };
+
+    /**
+     * Defines various options for package installation.
+     *
+     * \ingroup grprepository
+     */
+    typedef MakeSmartRecord<PackageSetOptionsTag>::Type PackageSetOptions;
+
+    /**
      * Capability keys for a repository.
      */
     enum RepositoryCapabilitiesKeys
@@ -592,15 +624,16 @@ namespace paludis
             /**
              * Override in descendents: package list.
              */
-            virtual DepAtom::Pointer do_package_set(const std::string & id) const = 0;
+            virtual DepAtom::Pointer do_package_set(const std::string & id, const PackageSetOptions & o) const = 0;
 
         public:
             /**
              * Fetch a package set.
              */
-            virtual DepAtom::Pointer package_set(const std::string & s) const
+            virtual DepAtom::Pointer package_set(const std::string & s,
+                    const PackageSetOptions & o = PackageSetOptions(false)) const
             {
-                return do_package_set(s);
+                return do_package_set(s, o);
             }
     };
 

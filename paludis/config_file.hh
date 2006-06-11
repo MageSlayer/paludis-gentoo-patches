@@ -308,56 +308,6 @@ namespace paludis
     };
 
     /**
-     * An AdvisoryLine represents one of the Affected: or Unaffected: lines in an AdvisoryFile.
-     *
-     * \ingroup grpadvisoryconfigfile
-     */
-    class AdvisoryLine
-    {
-        private:
-            enum RangeChars {
-                rc_is_bigger = '>',
-                rc_is_smaller = '<'
-            };
-            std::string _line;
-            std::vector<std::string> _tokens;
-            bool _is_range;
-
-        protected:
-            bool is_range_bigger(int i) const
-            {
-                return _tokens[i][0] == rc_is_bigger;
-            }
-
-            bool is_range_smaller(int i) const
-            {
-                return _tokens[i][0] == rc_is_smaller;
-            }
-
-            bool is_range_token(int i) const
-            {
-                return is_range_smaller(i) || is_range_bigger(i);
-            }
-
-        public:
-            AdvisoryLine(const std::string & s);
-            const std::string operator[] (int i) const
-            {
-                return _tokens[i];
-            }
-
-            const std::string & line() const
-            {
-                return _line;
-            }
-
-            bool is_range() const
-            {
-                return _is_range;
-            }
-    };
-
-    /**
      * An AdvisoryFile is a file containing all necessary information to
      * update one or more packages in order to avoid a security problem.
      *
@@ -374,8 +324,8 @@ namespace paludis
     {
         private:
             mutable std::map<std::string, std::string> _entries;
-            mutable std::list<AdvisoryLine> _affected;
-            mutable std::list<AdvisoryLine> _unaffected;
+            mutable std::list<std::string> _affected;
+            mutable std::list<std::string> _unaffected;
             mutable bool _end_of_header;
 
         protected:
@@ -428,7 +378,7 @@ namespace paludis
              * Iterator over our lines.
              */
             typedef std::map<std::string, std::string>::const_iterator EntriesIterator;
-            typedef std::list<AdvisoryLine>::const_iterator LineIterator;
+            typedef std::list<std::string>::const_iterator LineIterator;
 
             /**
              * Iterator to the start of our lines.
@@ -486,15 +436,6 @@ namespace paludis
                 return _entries[key];
             }
 
-            std::list<AdvisoryLine> & affected() const
-            {
-                return _affected;
-            }
-
-            std::list<AdvisoryLine> & unaffected() const
-            {
-                return _unaffected;
-            }
     };
 
     /**

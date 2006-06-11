@@ -116,9 +116,9 @@ namespace paludis
             void need_category_names() const;
             void need_version_names(const QualifiedPackageName &) const;
             void need_virtual_names() const;
-            PackageDatabaseEntryCollection::Iterator find_best(PackageDatabaseEntryCollection::Pointer & c,
+            PackageDatabaseEntryCollection::Iterator find_best(PackageDatabaseEntryCollection & c,
                     const PackageDatabaseEntry & e) const;
-            DepAtom::Pointer do_security_set() const;
+            DepAtom::Pointer do_security_set(const PackageSetOptions & o) const;
 
         protected:
             /**
@@ -171,7 +171,7 @@ namespace paludis
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
-            virtual DepAtom::Pointer do_package_set(const std::string & s) const;
+            virtual DepAtom::Pointer do_package_set(const std::string &, const PackageSetOptions &) const;
 
             virtual bool do_sync() const;
 
@@ -209,6 +209,66 @@ namespace paludis
 
             typedef CountedPtr<PortageRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const PortageRepository, count_policy::InternalCountTag> ConstPointer;
+    };
+
+    /**
+     * Class to convert AdvisoryFile lines to PackageDepAtom(s).
+     */
+    class AdvisoryVisitor :
+        private InstantiationPolicy<AdvisoryVisitor, instantiation_method::NonCopyableTag>,
+        public DepAtomVisitorTypes::ConstVisitor
+    {
+        private:
+            const Environment * const _env;
+
+            mutable const CompositeDepAtom & _a;
+
+            mutable std::vector<const PackageDepAtom *> _atoms;
+
+        protected:
+            ///\name Visit methods
+            ///{
+            void visit(const AllDepAtom *);
+            void visit(const AnyDepAtom *) PALUDIS_ATTRIBUTE((noreturn));
+            void visit(const UseDepAtom *);
+            void visit(const PlainTextDepAtom *);
+            void visit(const PackageDepAtom *);
+            void visit(const BlockDepAtom *);
+            ///}
+
+        public:
+            /**
+             * Constructor.
+             */
+            AdvisoryVisitor(const Environment * const env, const CompositeDepAtom & a);
+
+            /**
+             * Destructor.
+             */
+            ~AdvisoryVisitor()
+            {
+            }
+
+            /**
+             * Iterate over our dep atoms.
+             */
+            typedef std::vector<const PackageDepAtom *>::iterator Iterator;
+
+            /**
+             * Grab element by index.
+             */
+            const PackageDepAtom * at(std::vector<const PackageDepAtom *>::size_type n) const
+            {
+                return _atoms[n];
+            }
+
+            /**
+             * Return the number of atoms.
+             */
+            std::vector<const PackageDepAtom *>::size_type size() const
+            {
+                return _atoms.size();
+            }
     };
 
     /**

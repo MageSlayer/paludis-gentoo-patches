@@ -744,7 +744,7 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
 }
 
 DepAtom::Pointer
-VDBRepository::do_package_set(const std::string & s) const
+VDBRepository::do_package_set(const std::string & s, const PackageSetOptions &) const
 {
     Context context("When fetching package set '" + s + "' from '" +
             stringify(name()) + "':");

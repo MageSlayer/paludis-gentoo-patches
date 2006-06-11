@@ -442,7 +442,8 @@ DefaultEnvironment::hook_dirs() const
 }
 
 DepAtom::Pointer
-DefaultEnvironment::local_package_set(const std::string & s) const
+DefaultEnvironment::local_package_set(const std::string & s,
+        const PackageSetOptions &) const
 {
     Context context("When looking for package set '" + s + "' in default environment:");
 

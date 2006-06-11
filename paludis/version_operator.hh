@@ -105,6 +105,14 @@ namespace paludis
             }
 
             /**
+             * Return value.
+             */
+            VersionOperatorValue value() const
+            {
+                return _v;
+            }
+
+            /**
              * Return a pointer to member operator for VersionSpec that
              * corresponds to a particular operator.
              */
