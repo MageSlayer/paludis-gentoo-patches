@@ -20,7 +20,6 @@
 builtin_fetch()
 {
     local a nofetch unique_aa old_aa
-    local LOCAL_WGET=${WGET:-wget}
     for a in ${FLAT_SRC_URI} ; do
         local aa=${a##*/}
         hasq "${aa}" ${unique_aa} || unique_aa="${unique_aa} ${aa}"
@@ -41,9 +40,11 @@ builtin_fetch()
                     ebuild_section "Need to fetch ${aa}"
                     old_aa="${aa}"
                 fi
-                echo ${WGET_WRAPPER} ${LOCAL_WGET} ${EXTRA_WGET} -T 30 -t 1 -O "${DISTDIR}/${aa}" "${a}" 1>&2
-                if ! ${WGET_WRAPPER} ${LOCAL_WGET} ${EXTRA_WGET} -T 30 -t 1 -O "${DISTDIR}/${aa}" "${a}" ; then
-                    rm -f "${DISTDIR}/${aa}"
+                prg="${PALUDIS_EBUILD_DIR}/fetchers/do$(echo ${a%%://*} )"
+                if [[ -x "${prg}" ]] ; then
+                    ${prg} "${a}" "${DISTDIR}/${aa}"
+                else
+                    eerror "Don't know how to fetch '${a}'"
                 fi
             else
                 if ! [[ "${old_aa}" != "${aa}" ]] ; then

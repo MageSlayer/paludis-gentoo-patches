@@ -394,6 +394,7 @@ AC_OUTPUT(
 	doc/doxygen.conf
 	ebuild/Makefile
 	ebuild/digests/Makefile
+	ebuild/fetchers/Makefile
 	ebuild/utils/Makefile
 	ebuild/echo_functions.bash
 	eselect/Makefile
