@@ -127,6 +127,11 @@
  * \ingroup grprepository
  */
 
+/** \defgroup grpnothingrepository Nothing repository
+ *
+ * \ingroup grprepository
+ */
+
 /** \defgroup grpvdbrepository VDB repository
  *
  * \ingroup grprepository
