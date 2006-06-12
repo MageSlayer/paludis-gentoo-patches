@@ -18,13 +18,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <fstream>
 #include <paludis/config_file.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
+
+#include <fstream>
+#include <istream>
 
 /** \file
  * Implementation for config_file.hh classes.

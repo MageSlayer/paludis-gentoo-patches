@@ -20,12 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_CONFIG_FILE_HH
 #define PALUDIS_GUARD_PALUDIS_CONFIG_FILE_HH 1
 
-#include <istream>
+#include <paludis/util/exception.hh>
+#include <paludis/util/instantiation_policy.hh>
+
+#include <iosfwd>
 #include <list>
 #include <map>
-#include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <string>
 #include <vector>
 
@@ -37,6 +37,8 @@
 
 namespace paludis
 {
+    class FSEntry;
+
     /**
      * Thrown if an error occurs when reading a ConfigFile.
      *

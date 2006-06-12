@@ -23,8 +23,6 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/name.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/iterator.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/smart_record.hh>
 
@@ -139,51 +137,15 @@ namespace paludis
      * \ingroup grpdefaultconfig
      */
     class DefaultConfig :
-        public InstantiationPolicy<DefaultConfig, instantiation_method::SingletonAsNeededTag>
+        public InstantiationPolicy<DefaultConfig, instantiation_method::SingletonAsNeededTag>,
+        private PrivateImplementationPattern<DefaultConfig>
     {
         friend class InstantiationPolicy<DefaultConfig, instantiation_method::SingletonAsNeededTag>;
 
         private:
-            static std::string _config_suffix;
-            static bool _config_suffix_can_be_set;
-            std::string _paludis_command;
-            std::string _root;
-            std::string _config_dir;
-            std::string _bashrc_files;
-
             DefaultConfig();
 
             ~DefaultConfig();
-
-            std::list<RepositoryConfigEntry> _repos;
-
-            std::map<QualifiedPackageName, std::vector<
-                std::pair<PackageDepAtom::ConstPointer, KeywordName> > > _keywords;
-
-            const std::vector<std::pair<PackageDepAtom::ConstPointer, KeywordName> > _empty_keywords;
-
-            std::vector<KeywordName> _default_keywords;
-
-            std::map<QualifiedPackageName, std::vector<
-                std::pair<PackageDepAtom::ConstPointer, std::string> > > _licenses;
-
-            const std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > _empty_licenses;
-
-            std::vector<std::string> _default_licenses;
-
-            std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > _user_masks;
-
-            std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > _user_unmasks;
-
-            std::vector<PackageDepAtom::ConstPointer> _empty_masks;
-
-            std::map<QualifiedPackageName, std::vector<UseConfigEntry> > _use;
-
-            std::vector<UseConfigEntry> _empty_use;
-
-            std::vector<std::pair<UseFlagName, UseFlagState> > _default_use;
-
-            std::multimap<std::string, std::string> _mirrors;
 
         public:
             /**
@@ -195,10 +157,7 @@ namespace paludis
             /**
              * Get config suffix.
              */
-            static std::string config_suffix()
-            {
-                return _config_suffix;
-            }
+            static std::string config_suffix();
 
             ///\name Repositories
             ///{
@@ -211,18 +170,12 @@ namespace paludis
             /**
              * Iterator to the start of our repositories.
              */
-            RepositoryIterator begin_repositories() const
-            {
-                return _repos.begin();
-            }
+            RepositoryIterator begin_repositories() const;
 
             /**
              * Iterator to past the end of our repositories.
              */
-            RepositoryIterator end_repositories() const
-            {
-                return _repos.end();
-            }
+            RepositoryIterator end_repositories() const;
 
             ///}
 
@@ -239,29 +192,13 @@ namespace paludis
              * Iterator to the start of the package.keywords entries for a
              * particular package.
              */
-            PackageKeywordsIterator begin_package_keywords(const QualifiedPackageName & d) const
-            {
-                std::map<QualifiedPackageName, std::vector<
-                    std::pair<PackageDepAtom::ConstPointer, KeywordName> > >::const_iterator r;
-                if (_keywords.end() != ((r = _keywords.find(d))))
-                    return r->second.begin();
-                else
-                    return _empty_keywords.begin();
-            }
+            PackageKeywordsIterator begin_package_keywords(const QualifiedPackageName & d) const;
 
             /**
              * Iterator to past the end of the package.keywords entries for a
              * particular file.
              */
-            PackageKeywordsIterator end_package_keywords(const QualifiedPackageName & d) const
-            {
-                std::map<QualifiedPackageName, std::vector<
-                    std::pair<PackageDepAtom::ConstPointer, KeywordName> > >::const_iterator r;
-                if (_keywords.end() != ((r = _keywords.find(d))))
-                    return r->second.end();
-                else
-                    return _empty_keywords.end();
-            }
+            PackageKeywordsIterator end_package_keywords(const QualifiedPackageName & d) const;
 
             /**
              * Iterator over the default keywords entries.
@@ -271,18 +208,12 @@ namespace paludis
             /**
              * Iterator to the start of our default keywords entries.
              */
-            DefaultKeywordsIterator begin_default_keywords() const
-            {
-                return _default_keywords.begin();
-            }
+            DefaultKeywordsIterator begin_default_keywords() const;
 
             /**
              * Iterator to past the end of our default keywords entries.
              */
-            DefaultKeywordsIterator end_default_keywords() const
-            {
-                return _default_keywords.end();
-            }
+            DefaultKeywordsIterator end_default_keywords() const;
 
             ///}
 
@@ -299,29 +230,13 @@ namespace paludis
              * Iterator to the start of the licenses entries for a
              * particular package.
              */
-            PackageLicensesIterator begin_package_licenses(const QualifiedPackageName & d) const
-            {
-                std::map<QualifiedPackageName, std::vector<
-                    std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
-                if (_licenses.end() != ((r = _licenses.find(d))))
-                    return r->second.begin();
-                else
-                    return _empty_licenses.begin();
-            }
+            PackageLicensesIterator begin_package_licenses(const QualifiedPackageName & d) const;
 
             /**
              * Iterator to past the end of the licenses entries for a
              * particular file.
              */
-            PackageLicensesIterator end_package_licenses(const QualifiedPackageName & d) const
-            {
-                std::map<QualifiedPackageName, std::vector<
-                    std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
-                if (_licenses.end() != ((r = _licenses.find(d))))
-                    return r->second.end();
-                else
-                    return _empty_licenses.end();
-            }
+            PackageLicensesIterator end_package_licenses(const QualifiedPackageName & d) const;
 
             /**
              * Iterator over the default licenses entries.
@@ -331,18 +246,12 @@ namespace paludis
             /**
              * Iterator to the start of our default license entries.
              */
-            DefaultLicensesIterator begin_default_licenses() const
-            {
-                return _default_licenses.begin();
-            }
+            DefaultLicensesIterator begin_default_licenses() const;
 
             /**
              * Iterator to past the end of our default license entries.
              */
-            DefaultLicensesIterator end_default_licenses() const
-            {
-                return _default_licenses.end();
-            }
+            DefaultLicensesIterator end_default_licenses() const;
 
             ///}
 
@@ -358,26 +267,12 @@ namespace paludis
             /**
              * Iterator to the start of the user package masks.
              */
-            UserMasksIterator begin_user_masks(const QualifiedPackageName & d) const
-            {
-                std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
-                if (_user_masks.end() != ((r = _user_masks.find(d))))
-                    return r->second.begin();
-                else
-                    return _empty_masks.begin();
-            }
+            UserMasksIterator begin_user_masks(const QualifiedPackageName & d) const;
 
             /**
              * Iterator to past the end of the user package masks.
              */
-            UserMasksIterator end_user_masks(const QualifiedPackageName & d) const
-            {
-                std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
-                if (_user_masks.end() != ((r = _user_masks.find(d))))
-                    return r->second.end();
-                else
-                    return _empty_masks.end();
-            }
+            UserMasksIterator end_user_masks(const QualifiedPackageName & d) const;
 
             /**
              * Iterator over the user package unmasks.
@@ -388,26 +283,12 @@ namespace paludis
             /**
              * Iterator to the start of the user package unmasks.
              */
-            UserUnmasksIterator begin_user_unmasks(const QualifiedPackageName & d) const
-            {
-                std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
-                if (_user_unmasks.end() != ((r = _user_unmasks.find(d))))
-                    return r->second.begin();
-                else
-                    return _empty_masks.begin();
-            }
+            UserUnmasksIterator begin_user_unmasks(const QualifiedPackageName & d) const;
 
             /**
              * Iterator to past the end of the user package unmasks.
              */
-            UserUnmasksIterator end_user_unmasks(const QualifiedPackageName & d) const
-            {
-                std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
-                if (_user_unmasks.end() != ((r = _user_unmasks.find(d))))
-                    return r->second.end();
-                else
-                    return _empty_masks.end();
-            }
+            UserUnmasksIterator end_user_unmasks(const QualifiedPackageName & d) const;
 
             ///}
 
@@ -423,27 +304,13 @@ namespace paludis
              * Iterator to the start of the use configuration for a particular
              * package.
              */
-            UseConfigIterator begin_use_config(const QualifiedPackageName & q) const
-            {
-                std::map<QualifiedPackageName, std::vector<UseConfigEntry> >::const_iterator r;
-                if (_use.end() != ((r = _use.find(q))))
-                    return r->second.begin();
-                else
-                    return _empty_use.begin();
-            }
+            UseConfigIterator begin_use_config(const QualifiedPackageName & q) const;
 
             /**
              * Iterator to past the end of the use configuration for a
              * particular package.
              */
-            UseConfigIterator end_use_config(const QualifiedPackageName & q) const
-            {
-                std::map<QualifiedPackageName, std::vector<UseConfigEntry> >::const_iterator r;
-                if (_use.end() != ((r = _use.find(q))))
-                    return r->second.end();
-                else
-                    return _empty_use.end();
-            }
+            UseConfigIterator end_use_config(const QualifiedPackageName & q) const;
 
             /**
              * Iterator over the default use settings.
@@ -453,18 +320,13 @@ namespace paludis
             /**
              * Iterator to the start of the default use settings.
              */
-            DefaultUseIterator begin_default_use() const
-            {
-                return _default_use.begin();
-            }
+            DefaultUseIterator begin_default_use() const;
 
             /**
              * Iterator to past the end of the default use settings.
              */
-            DefaultUseIterator end_default_use() const
-            {
-                return _default_use.end();
-            }
+            DefaultUseIterator end_default_use() const;
+
             ///}
 
             /**
@@ -475,46 +337,28 @@ namespace paludis
             /**
              * The paludis command.
              */
-            std::string paludis_command() const
-            {
-                return _paludis_command;
-            }
+            std::string paludis_command() const;
 
             /**
              * Set the paludis command.
              */
-            void set_paludis_command(const std::string & s)
-            {
-                _paludis_command = s;
-            }
+            void set_paludis_command(const std::string & s);
 
             /**
              * The ROOT.
              */
-            std::string root() const
-            {
-                return _root;
-            }
+            std::string root() const;
 
             /**
              * The config directory.
              */
-            std::string config_dir() const
-            {
-                return _config_dir;
-            }
+            std::string config_dir() const;
 
             typedef std::multimap<std::string, std::string>::const_iterator MirrorIterator;
 
-            MirrorIterator begin_mirrors(const std::string & m) const
-            {
-                return _mirrors.lower_bound(m);
-            }
+            MirrorIterator begin_mirrors(const std::string & m) const;
 
-            MirrorIterator end_mirrors(const std::string & m) const
-            {
-                return _mirrors.upper_bound(m);
-            }
+            MirrorIterator end_mirrors(const std::string & m) const;
     };
 }
 

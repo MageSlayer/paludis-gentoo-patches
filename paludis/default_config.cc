@@ -32,6 +32,7 @@
 #include <fstream>
 #include <algorithm>
 #include <sstream>
+
 #include <ctype.h>
 
 /** \file
@@ -42,15 +43,66 @@
 
 using namespace paludis;
 
+namespace paludis
+{
+    template<>
+    struct Implementation<DefaultConfig> :
+        InternalCounted<DefaultConfig>,
+        InstantiationPolicy<DefaultConfig, instantiation_method::NonCopyableTag>
+    {
+        static std::string config_suffix;
+        static bool config_suffix_can_be_set;
+        std::string paludis_command;
+        std::string root;
+        std::string config_dir;
+        std::string bashrc_files;
+
+        std::list<RepositoryConfigEntry> repos;
+
+        std::map<QualifiedPackageName, std::vector<
+            std::pair<PackageDepAtom::ConstPointer, KeywordName> > > keywords;
+
+        const std::vector<std::pair<PackageDepAtom::ConstPointer, KeywordName> > empty_keywords;
+
+        std::vector<KeywordName> default_keywords;
+
+        std::map<QualifiedPackageName, std::vector<
+            std::pair<PackageDepAtom::ConstPointer, std::string> > > licenses;
+
+        const std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > empty_licenses;
+
+        std::vector<std::string> default_licenses;
+
+        std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > user_masks;
+
+        std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > user_unmasks;
+
+        std::vector<PackageDepAtom::ConstPointer> empty_masks;
+
+        std::map<QualifiedPackageName, std::vector<UseConfigEntry> > use;
+
+        std::vector<UseConfigEntry> empty_use;
+
+        std::vector<std::pair<UseFlagName, UseFlagState> > default_use;
+
+        std::multimap<std::string, std::string> mirrors;
+
+        Implementation() :
+            paludis_command("paludis")
+        {
+        }
+    };
+}
+
 DefaultConfigError::DefaultConfigError(const std::string & msg) throw () :
     ConfigurationError("Default configuration error: " + msg)
 {
 }
 
 DefaultConfig::DefaultConfig() :
-    _paludis_command("paludis")
+    PrivateImplementationPattern<DefaultConfig>(new Implementation<DefaultConfig>)
 {
-    _config_suffix_can_be_set = false;
+    _imp->config_suffix_can_be_set = false;
 
     Context context("When loading default configuration:");
 
@@ -60,8 +112,8 @@ DefaultConfig::DefaultConfig() :
     /* indirection */
     std::string root_prefix;
     std::string config_suffix;
-    if (! _config_suffix.empty())
-        config_suffix = "-" + _config_suffix;
+    if (! _imp->config_suffix.empty())
+        config_suffix = "-" + _imp->config_suffix;
 
     FSEntry config_dir(FSEntry(getenv_with_default("PALUDIS_HOME", getenv_or_error("HOME"))) /
             (".paludis" + config_suffix));
@@ -88,8 +140,8 @@ DefaultConfig::DefaultConfig() :
         }
     }
 
-    _root = root_prefix;
-    _config_dir = stringify(config_dir);
+    _imp->root = root_prefix;
+    _imp->config_dir = stringify(config_dir);
 
     std::map<std::string, std::string> conf_vars;
     conf_vars.insert(std::make_pair("ROOT", root_prefix));
@@ -132,13 +184,13 @@ DefaultConfig::DefaultConfig() :
             std::map<std::string, std::string> keys(k.begin(), k.end());
             keys["repo_file"] = stringify(*repo_file);
             keys["root"] = root_prefix;
-            _repos.push_back(RepositoryConfigEntry(format, importance, keys));
+            _imp->repos.push_back(RepositoryConfigEntry(format, importance, keys));
         }
 
-        if (_repos.empty())
+        if (_imp->repos.empty())
             throw DefaultConfigError("No repositories specified");
 
-        _repos.sort();
+        _imp->repos.sort();
     }
 
     /* keywords */
@@ -164,18 +216,18 @@ DefaultConfig::DefaultConfig() :
                     continue;
                 if ("*" == tokens.at(0))
                     std::copy(next(tokens.begin()), tokens.end(),
-                            create_inserter<KeywordName>(std::back_inserter(_default_keywords)));
+                            create_inserter<KeywordName>(std::back_inserter(_imp->default_keywords)));
                 else
                 {
                     PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
-                        _keywords[a->package()].push_back(std::make_pair(a, *t));
+                        _imp->keywords[a->package()].push_back(std::make_pair(a, *t));
                 }
             }
         }
 
-        if (_default_keywords.empty())
+        if (_imp->default_keywords.empty())
             throw DefaultConfigError("No default keywords specified (a keywords.conf file should "
                     "contain an entry in the form '* keyword')");
     }
@@ -202,18 +254,18 @@ DefaultConfig::DefaultConfig() :
                 if (tokens.empty())
                     continue;
                 if ("*" == tokens.at(0))
-                    std::copy(next(tokens.begin()), tokens.end(), std::back_inserter(_default_licenses));
+                    std::copy(next(tokens.begin()), tokens.end(), std::back_inserter(_imp->default_licenses));
                 else
                 {
                     PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
-                        _licenses[a->package()].push_back(std::make_pair(a, *t));
+                        _imp->licenses[a->package()].push_back(std::make_pair(a, *t));
                 }
             }
         }
 
-        if (_default_licenses.empty())
+        if (_imp->default_licenses.empty())
             throw DefaultConfigError("No default licenses specified (a licenses.conf file should "
                     "contain an entry in the form '* license license', or '* *' if you don't want any "
                     "license filtering)");
@@ -237,7 +289,7 @@ DefaultConfig::DefaultConfig() :
                     line != line_end ; ++line)
             {
                 PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
-                _user_masks[a->package()].push_back(a);
+                _imp->user_masks[a->package()].push_back(a);
             }
         }
     }
@@ -260,7 +312,7 @@ DefaultConfig::DefaultConfig() :
                     line != line_end ; ++line)
             {
                 PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
-                _user_unmasks[a->package()].push_back(a);
+                _imp->user_unmasks[a->package()].push_back(a);
             }
         }
     }
@@ -293,7 +345,7 @@ DefaultConfig::DefaultConfig() :
                             t != t_end ; ++t)
                     {
                         if ('-' == t->at(0))
-                            _default_use.push_back(std::make_pair(UseFlagName(
+                            _imp->default_use.push_back(std::make_pair(UseFlagName(
                                             prefix + t->substr(1)), use_disabled));
                         else if (':' == t->at(t->length() - 1))
                         {
@@ -303,7 +355,7 @@ DefaultConfig::DefaultConfig() :
                             prefix.append("_");
                         }
                         else
-                            _default_use.push_back(std::make_pair(UseFlagName(
+                            _imp->default_use.push_back(std::make_pair(UseFlagName(
                                             prefix + *t), use_enabled));
                     }
                 else
@@ -313,7 +365,7 @@ DefaultConfig::DefaultConfig() :
                             t != t_end ; ++t)
                     {
                         if ('-' == t->at(0))
-                            _use[a->package()].push_back(UseConfigEntry(
+                            _imp->use[a->package()].push_back(UseConfigEntry(
                                         a, UseFlagName(prefix + t->substr(1)), use_disabled));
                         else if (':' == t->at(t->length() - 1))
                         {
@@ -323,14 +375,14 @@ DefaultConfig::DefaultConfig() :
                             prefix.append("_");
                         }
                         else
-                            _use[a->package()].push_back(UseConfigEntry(
+                            _imp->use[a->package()].push_back(UseConfigEntry(
                                         a, UseFlagName(prefix + *t), use_enabled));
                     }
                 }
             }
         }
 
-        if (_default_keywords.empty())
+        if (_imp->default_keywords.empty())
             throw DefaultConfigError("No default keywords specified (a keywords.conf file should "
                     "contain an entry in the form '* keyword')");
     }
@@ -358,25 +410,25 @@ DefaultConfig::DefaultConfig() :
                     continue;
                 for (std::vector<std::string>::const_iterator mm(next(m.begin())),
                         mm_end(m.end()) ; mm != mm_end ; ++mm)
-                    _mirrors.insert(std::make_pair(m.at(0), *mm));
+                    _imp->mirrors.insert(std::make_pair(m.at(0), *mm));
             }
         }
     }
 
-    _bashrc_files = stringify(config_dir / "bashrc");
+    _imp->bashrc_files = stringify(config_dir / "bashrc");
 }
 
 DefaultConfig::~DefaultConfig()
 {
 }
 
-std::string DefaultConfig::_config_suffix;
-bool DefaultConfig::_config_suffix_can_be_set(true);
+std::string Implementation<DefaultConfig>::config_suffix;
+bool Implementation<DefaultConfig>::config_suffix_can_be_set(true);
 
 void
 DefaultConfig::set_config_suffix(const std::string & s)
 {
-    if (! _config_suffix_can_be_set)
+    if (! Implementation<DefaultConfig>::config_suffix_can_be_set)
         throw InternalError(PALUDIS_HERE, "DefaultConfig::set_config_suffix called after "
                 "DefaultConfig has been instantiated.");
 
@@ -392,12 +444,206 @@ DefaultConfig::set_config_suffix(const std::string & s)
         if ('-' == s.at(0) || '-' == s.at(s.length() - 1))
             throw DefaultConfigError("Invalid config suffix '" + s + "'");
 
-    _config_suffix = s;
+    Implementation<DefaultConfig>::config_suffix = s;
 }
 
 std::string
 DefaultConfig::bashrc_files() const
 {
-    return _bashrc_files;
+    return _imp->bashrc_files;
+}
+
+std::string
+DefaultConfig::config_suffix()
+{
+    return Implementation<DefaultConfig>::config_suffix;
+}
+
+DefaultConfig::RepositoryIterator
+DefaultConfig::begin_repositories() const
+{
+    return _imp->repos.begin();
+}
+
+DefaultConfig::RepositoryIterator
+DefaultConfig::end_repositories() const
+{
+    return _imp->repos.end();
+}
+
+DefaultConfig::PackageKeywordsIterator
+DefaultConfig::begin_package_keywords(const QualifiedPackageName & d) const
+{
+    std::map<QualifiedPackageName, std::vector<
+        std::pair<PackageDepAtom::ConstPointer, KeywordName> > >::const_iterator r;
+    if (_imp->keywords.end() != ((r = _imp->keywords.find(d))))
+        return r->second.begin();
+    else
+        return _imp->empty_keywords.begin();
+}
+
+DefaultConfig::PackageKeywordsIterator
+DefaultConfig::end_package_keywords(const QualifiedPackageName & d) const
+{
+    std::map<QualifiedPackageName, std::vector<
+        std::pair<PackageDepAtom::ConstPointer, KeywordName> > >::const_iterator r;
+    if (_imp->keywords.end() != ((r = _imp->keywords.find(d))))
+        return r->second.end();
+    else
+        return _imp->empty_keywords.end();
+}
+
+DefaultConfig::DefaultKeywordsIterator
+DefaultConfig::begin_default_keywords() const
+{
+    return _imp->default_keywords.begin();
+}
+
+DefaultConfig::DefaultKeywordsIterator
+DefaultConfig::end_default_keywords() const
+{
+    return _imp->default_keywords.end();
+}
+
+DefaultConfig::PackageLicensesIterator
+DefaultConfig::begin_package_licenses(const QualifiedPackageName & d) const
+{
+    std::map<QualifiedPackageName, std::vector<
+        std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
+    if (_imp->licenses.end() != ((r = _imp->licenses.find(d))))
+        return r->second.begin();
+    else
+        return _imp->empty_licenses.begin();
+}
+
+DefaultConfig::PackageLicensesIterator
+DefaultConfig::end_package_licenses(const QualifiedPackageName & d) const
+{
+    std::map<QualifiedPackageName, std::vector<
+        std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
+    if (_imp->licenses.end() != ((r = _imp->licenses.find(d))))
+        return r->second.end();
+    else
+        return _imp->empty_licenses.end();
+}
+
+DefaultConfig::DefaultLicensesIterator
+DefaultConfig::begin_default_licenses() const
+{
+    return _imp->default_licenses.begin();
+}
+
+DefaultConfig::DefaultLicensesIterator
+DefaultConfig::end_default_licenses() const
+{
+    return _imp->default_licenses.end();
+}
+
+DefaultConfig::UserMasksIterator
+DefaultConfig::begin_user_masks(const QualifiedPackageName & d) const
+{
+    std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
+    if (_imp->user_masks.end() != ((r = _imp->user_masks.find(d))))
+        return r->second.begin();
+    else
+        return _imp->empty_masks.begin();
+}
+
+DefaultConfig::UserMasksIterator
+DefaultConfig::end_user_masks(const QualifiedPackageName & d) const
+{
+    std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
+    if (_imp->user_masks.end() != ((r = _imp->user_masks.find(d))))
+        return r->second.end();
+    else
+        return _imp->empty_masks.end();
+}
+
+DefaultConfig::UserUnmasksIterator
+DefaultConfig::begin_user_unmasks(const QualifiedPackageName & d) const
+{
+    std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
+    if (_imp->user_unmasks.end() != ((r = _imp->user_unmasks.find(d))))
+        return r->second.begin();
+    else
+        return _imp->empty_masks.begin();
+}
+
+DefaultConfig::UserUnmasksIterator
+DefaultConfig::end_user_unmasks(const QualifiedPackageName & d) const
+{
+    std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
+    if (_imp->user_unmasks.end() != ((r = _imp->user_unmasks.find(d))))
+        return r->second.end();
+    else
+        return _imp->empty_masks.end();
+}
+
+DefaultConfig::UseConfigIterator
+DefaultConfig::begin_use_config(const QualifiedPackageName & q) const
+{
+    std::map<QualifiedPackageName, std::vector<UseConfigEntry> >::const_iterator r;
+    if (_imp->use.end() != ((r = _imp->use.find(q))))
+        return r->second.begin();
+    else
+        return _imp->empty_use.begin();
+}
+
+DefaultConfig::UseConfigIterator
+DefaultConfig::end_use_config(const QualifiedPackageName & q) const
+{
+    std::map<QualifiedPackageName, std::vector<UseConfigEntry> >::const_iterator r;
+    if (_imp->use.end() != ((r = _imp->use.find(q))))
+        return r->second.end();
+    else
+        return _imp->empty_use.end();
+}
+
+DefaultConfig::DefaultUseIterator
+DefaultConfig::begin_default_use() const
+{
+    return _imp->default_use.begin();
+}
+
+DefaultConfig::DefaultUseIterator
+DefaultConfig::end_default_use() const
+{
+    return _imp->default_use.end();
+}
+
+std::string
+DefaultConfig::paludis_command() const
+{
+    return _imp->paludis_command;
+}
+
+void
+DefaultConfig::set_paludis_command(const std::string & s)
+{
+    _imp->paludis_command = s;
+}
+
+std::string
+DefaultConfig::root() const
+{
+    return _imp->root;
+}
+
+std::string
+DefaultConfig::config_dir() const
+{
+    return _imp->config_dir;
+}
+
+DefaultConfig::MirrorIterator
+DefaultConfig::begin_mirrors(const std::string & m) const
+{
+    return _imp->mirrors.lower_bound(m);
+}
+
+DefaultConfig::MirrorIterator
+DefaultConfig::end_mirrors(const std::string & m) const
+{
+    return _imp->mirrors.upper_bound(m);
 }
 
