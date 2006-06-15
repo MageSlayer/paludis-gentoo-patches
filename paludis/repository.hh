@@ -451,6 +451,8 @@ namespace paludis
             {
                 return do_query_profile_masks(q, v);
             }
+
+            virtual ~MaskInterface() { }
     };
 
     /**
@@ -532,6 +534,8 @@ namespace paludis
             {
                 return do_is_expand_flag(u);
             }
+
+            virtual ~UseInterface() { }
     };
 
     /**
@@ -560,6 +564,8 @@ namespace paludis
             {
                 return do_contents(q, v);
             }
+
+            virtual ~InstalledInterface() { }
     };
 
     /**
@@ -585,6 +591,8 @@ namespace paludis
             {
                 do_install(q, v, i);
             }
+
+            virtual ~InstallableInterface() { }
     };
 
     /**
@@ -610,6 +618,8 @@ namespace paludis
             {
                 do_uninstall(q, v, i);
             }
+
+            virtual ~UninstallableInterface() { }
     };
 
     /**
@@ -635,6 +645,8 @@ namespace paludis
             {
                 return do_package_set(s, o);
             }
+
+            virtual ~SetsInterface() { }
     };
 
     /**
@@ -661,6 +673,8 @@ namespace paludis
             {
                 return do_sync();
             }
+
+            virtual ~SyncableInterface() { }
     };
 
     /**
@@ -681,6 +695,8 @@ namespace paludis
              * Remove this package from world, if it is present.
              */
             virtual void remove_from_world(const QualifiedPackageName &) const = 0;
+
+            virtual ~WorldInterface() { }
     };
 
     /**
@@ -698,6 +714,8 @@ namespace paludis
             virtual void update_news() const
             {
             }
+
+            virtual ~NewsInterface() { }
     };
 
     /**
