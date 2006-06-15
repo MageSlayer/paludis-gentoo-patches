@@ -1,0 +1,154 @@
+/* vim: set ft=cpp tw=80 sw=4 et spell spelllang=en : */
+
+/**
+\page SecurityAdvisoriesSpecs Handling of Security Advisories
+
+\version 1
+\author Danny van Dyk <kugelfang@gentoo.org>
+\author Stefan Cornelius <dercorny@gentoo.org>
+
+
+\section SecurityAdvisoriesSpecsAbstract Abstract
+
+This specification describes how security advisory files should be named,
+stored, structured and handled by Paludis.
+
+
+\section SecurityAdvisoriesSpecsNaming Naming
+
+The format of file names shall be
+\code
+    advisory-YYYYMM-XX.conf
+\endcode
+where XX is a unique ID that is increased with every GLSA in the month and
+YYYYMM is the usual date notation.
+
+
+\section SecurityAdvisoriesSpecsStorage Storage
+
+Security advisories shall be stored as text files in
+\code
+    ${repo}/metadata/security
+\endcode
+by default. Files within subdirectories shall not be parsed by Paludis. However,
+the user can change this path in the repository's configuration file. The key's
+name shall be <code>securitydir</code>.
+
+Once tree wide Manifest support (aka as Manifest2 support) will be implemented,
+all advisories should be listed by a Manifest file and checked against this
+manifest before parsing them.
+
+
+\section SecurityAdvisoriesSpecsStructure Structure
+
+The file format shall consist of a RFC 822 style header and a trailing text
+body. This document describes specification <code>0</code>. The following keys shall be
+understood by Paludis:
+
+The following keys are mandatory and must be unique in the advisory.
+Paludis shall throw an exception otherwise.
+
+<table>
+  <tr>
+    <td>Id</td>
+    <td>Unique identifier of this advisory. Must be in <code>YYYYMM-XX</code> format and
+    reflect the suffix of the advisory's file name.</td>
+  </tr>
+  <tr>
+    <td>Title</td>
+    <td>A string that describes the kind of vulnerability indicated by the advisory.</td>
+  </tr>
+  <tr>
+    <td>Access</td>
+    <td>Describes if if the vulnerability can be exploited by <code>local</code> or
+    <code>remote</code> users.</td>
+  </tr>
+  <tr>
+    <td>Last-Modified</td>
+    <td>A date string that describes when the advisory was changed.</td>
+  </tr>
+  <tr>
+    <td>Revision</td>
+    <td>The advisory's revision number. It must start with <code>1.0</code> and should be
+    increased by <code>0.1</code> whenever the advisory's metadata was changed
+    substantially.</td>
+  <tr>
+    <td>Severity</td>
+    <td>The severity of the vulnerabilities described by the advisory.
+    Supported values are <code>high</code>, <code>normal</code> and <code>low</code>.</td>
+  </tr>
+  <tr>
+    <td>Spec-Version</td>
+    <td>The version of the specification that the advisory applies to should be
+    referenced here. As of this specification, the only valid value is <code>1</code>.</td>
+  </tr>
+</table>
+
+\note The following keys can be specified more than once.
+
+<table>
+  <tr>
+    <td>Affected</td>
+    <td>A string of one dependency atom or two ranged dependency atoms. When two
+    dependency atoms are given, their intersection must not describe and empty
+    set of packages.</td>
+  </tr>
+  <tr>
+    <td>Bug-Id</td>
+    <td>Identifier of a bug report that is associated with this advisory.\n
+
+    Must be in format <code>DISTRO#YY</code>, where <code>DISTRO</code> is a unique string
+    describing the distribution that the bug report is filed against and <code>YY</code>
+    is the bug's local identifier.
+
+    There is no restriction on the values of <code>DISTRO</code> besides the uniqueness,
+    but each used distribution identifier should be listed along a short
+    description and/or URL of the associated bug tracker in the text file
+\code
+        ${repo}/metadata/security/bugtracker
+\endcode </td>
+  </tr>
+  <tr>
+    <td>CVE</td>
+    <td>A string of one CVE IDs in the format <code>CVE-XXXX-XXXX</code>. Historically,
+    there have been CVE references prefixed by CAN instead of CVE. These
+    are explicitly permitted by this specification, but are to be treated as
+    deprecated.</td>
+  </tr>
+  <tr>
+    <td>Reference</td>
+    <td>URL to a public web-based advisory, announcement or (possibly) exploit.
+    Optionally, a descriptive string can be prepended.</td>
+  </tr>
+  <tr>
+    <td>Restart</td>
+    <td>The name of a service or init script that should be restarted by
+    Paludis after the vulnerable package has been replaced.</td>
+  </tr>
+  <tr>
+    <td>Unaffected</td>
+    <td>A string of one dependency atom or two ranged dependency atoms. When two
+    dependency atoms are given, their intersection must not describe and empty
+    set of packages.</td>
+  </tr>
+</table>
+
+The text body shall be separated from the aforementioned header by an empty
+line. The contents of the text body is not subject of this advisory.
+
+Paludis shall provide an eselect module to display advisory texts.
+
+
+\section Handling Handling
+
+Paludis will parse security advisories when it builds the built-in
+package set <code>security</code> or when it is called with command line option
+<code>--list-vulnerabilities</code>. The later shall support all modifiers, which are
+respected by other <code>--list</code> actions.
+
+All packages that match the contents of at least one <code>Affected</code> item and that
+do not match any <code>Unaffected</code> item will be treated as vulnerable. Paludis shall
+then search for a package in the same slot that matches at least one
+<code>Unaffected</code> items and does not match any <code>Affected</code> item. If several
+package versions match this criterion, Paludis shall select the highest version.
+*/

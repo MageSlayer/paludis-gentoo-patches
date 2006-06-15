@@ -13,7 +13,8 @@ docfiles = \
 	doc_bootstrap_howto.doxygen \
 	doc_changelog.doxygen \
 	doc_portage_differences.doxygen \
-	doc_news.doxygen
+	doc_news.doxygen \
+	doc_security_advisories.doxygen
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css $(docfiles)
 

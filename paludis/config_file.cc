@@ -394,17 +394,19 @@ AdvisoryFile::accept_line(const std::string & line) const
         std::string key(line.substr(0, p)), value(line.substr(p + 1));
         normalise_line(key);
         normalise_line(value);
-        if ((key == "Affected") || (key == "Unaffected") || (key == "Bug-Id") || (key == "Url")
-            || (key == "Reviewed-By"))
+        if ((key == "Affected") || (key == "Bug-Id") || (key == "CVE") || (key == "Reference")
+            || (key == "Restart") || (key == "Unaffected"))
         {
             if (key == "Affected")
                 _affected.push_back(value);
             else if (key == "Unaffected")
                 _unaffected.push_back(value);
-
-            if (!_entries[key].empty())
-                value = "\n" + value;
-            _entries[key] += value;
+            else
+            {
+                if (! _entries[key].empty())
+                    value = "\n" + value;
+                _entries[key] += value;
+            }
         }
         else
         {
@@ -425,11 +427,20 @@ AdvisoryFile::sanitise()
     if (_entries["Title"].empty())
             throw AdvisoryFileError("Missing mandatory key: 'Title'.");
 
-    if (_entries["Committed-By"].empty())
-            throw AdvisoryFileError("Missing mandatory key: 'Committed-By'.");
+    if (_entries["Access"].empty())
+            throw AdvisoryFileError("Missing mandatory key: 'Access'.");
 
-    if (_entries["Reviewed-By"].empty())
-            throw AdvisoryFileError("Missing mandatory key: 'Reviewed-by'.");
+    if (_entries["Last-Modified"].empty())
+            throw AdvisoryFileError("Missing mandatory key: 'Last-Modified'.");
+
+    if (_entries["Revision"].empty())
+            throw AdvisoryFileError("Missing mandatory key: 'Revision'.");
+
+    if (_entries["Severity"].empty())
+            throw AdvisoryFileError("Missing mandatory key: 'Severity'.");
+
+    if (_entries["Spec-Version"].empty())
+            throw AdvisoryFileError("Missing mandatory key: 'Spec-Version'.");
 }
 
 NewsFile::NewsFile(const FSEntry & filename) :
