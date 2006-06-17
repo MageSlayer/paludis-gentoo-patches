@@ -23,7 +23,7 @@
 
 src_test()
 {
-    if [[ -f Makefile ]] ; then
+    if [[ -f Makefile ]] || [[ -f GNUmakefile ]] || [[ -f makefile ]] ; then
         echo "Makefile found, looking for potential test targets"
         if make -j1 -n check ; then
             echo "Found check target"
