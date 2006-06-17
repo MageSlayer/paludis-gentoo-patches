@@ -19,6 +19,7 @@
 
 #include <paludis/util/stringify.hh>
 #include <paludis/version_operator.hh>
+#include <paludis/version_spec.hh>
 
 /** \file
  * Implementation for VersionOperator.

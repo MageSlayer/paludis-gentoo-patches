@@ -20,11 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VERSION_SPEC_HH
 #define PALUDIS_GUARD_PALUDIS_VERSION_SPEC_HH 1
 
-#include <ostream>
 #include <paludis/util/comparison_policy.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/collection.hh>
+
+#include <iosfwd>
 #include <string>
 
 /** \file

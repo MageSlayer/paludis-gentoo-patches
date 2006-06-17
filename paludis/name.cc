@@ -19,6 +19,7 @@
 
 #include <paludis/name.hh>
 #include <paludis/util/stringify.hh>
+#include <ostream>
 
 /** \file
  * Implementation of name.hh things.

@@ -20,13 +20,14 @@
 #ifndef PALUDIS_GUARD_PALUDIS_NAME_HH
 #define PALUDIS_GUARD_PALUDIS_NAME_HH 1
 
-#include <ostream>
-#include <string>
+#include <paludis/util/collection.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/smart_record.hh>
-#include <paludis/util/collection.hh>
 #include <paludis/util/validated.hh>
+
+#include <string>
+#include <iosfwd>
 
 /** \file
  * Declarations for various Name classes.

@@ -25,7 +25,6 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/smart_record.hh>
 #include <paludis/dep_atom.hh>
-#include <set>
 #include <string>
 
 /** \file
