@@ -19,6 +19,7 @@
 
 #include <paludis/util/system.hh>
 #include <paludis/util/pstream.hh>
+#include <paludis/util/fs_entry.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -106,6 +107,27 @@ namespace test_cases
             TEST_CHECK(0 != run_command("false"));
         }
     } test_run_command;
+
+    /**
+     * \test Test run_command_in_directory.
+     *
+     * \ingroup grptestcases
+     */
+    struct RunCommandInDirectoryTest : TestCase
+    {
+        RunCommandInDirectoryTest() : TestCase("run_command_in_directory") { }
+
+        void run()
+        {
+            FSEntry dir("system_TEST_dir");
+            TEST_CHECK(dir.is_directory());
+
+            run_command_in_directory("touch in_directory", dir);
+            TEST_CHECK(FSEntry(dir / "in_directory").exists());
+            run_command_in_directory("rm in_directory", dir);
+            TEST_CHECK(! FSEntry(dir / "in_directory").exists());
+        }
+    } test_run_command_in_directory;
 
     /**
      * \test Test make_env_command.

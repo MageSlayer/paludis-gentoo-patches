@@ -20,6 +20,8 @@
 #include <cstdlib>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/stringify.hh>
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -35,8 +37,50 @@
 
 using namespace paludis;
 
+namespace
+{
+    /**
+     * Runs a command in a directory if needed, wait for it to terminate
+     * and return its exit status.
+     *
+     * \ingroup grpsystem
+     */
+    int
+    real_run_command(const std::string & cmd, const FSEntry * const fsentry)
+    {
+        pid_t child(fork());
+        if (0 == child)
+        {
+            if (fsentry)
+                if (-1 == chdir(stringify(*fsentry).c_str()))
+                    throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
+
+            Log::get_instance()->message(ll_debug, "execl /bin/sh -c " + cmd);
+            execl("/bin/sh", "sh", "-c", cmd.c_str(), static_cast<char *>(0));
+            throw RunCommandError("execl /bin/sh -c '" + cmd + "' failed:"
+                    + stringify(strerror(errno)));
+        }
+        else if (-1 == child)
+            throw RunCommandError("fork failed: " + stringify(strerror(errno)));
+        else
+        {
+            int status(-1);
+            if (-1 == wait(&status))
+                throw RunCommandError("wait failed: " + stringify(strerror(errno)));
+            return status;
+        }
+
+        throw InternalError(PALUDIS_HERE, "should never be reached");
+    }
+}
+
 GetenvError::GetenvError(const std::string & key) throw () :
     Exception("Environment variable '" + key + "' not set")
+{
+}
+
+RunCommandError::RunCommandError(const std::string & message) throw () :
+    Exception(message)
 {
 }
 
@@ -82,25 +126,13 @@ paludis::kernel_version()
 int
 paludis::run_command(const std::string & cmd)
 {
-    pid_t child(fork());
-    if (0 == child)
-    {
-        Log::get_instance()->message(ll_debug, "execl /bin/sh -c " + cmd);
-        execl("/bin/sh", "sh", "-c", cmd.c_str(), static_cast<char *>(0));
-        throw InternalError(PALUDIS_HERE, "execl /bin/sh -c '" + cmd + "' failed:"
-                + stringify(strerror(errno)));
-    }
-    else if (-1 == child)
-        throw InternalError(PALUDIS_HERE, "fork failed: " + stringify(strerror(errno)));
-    else
-    {
-        int status(-1);
-        if (-1 == wait(&status))
-            throw InternalError(PALUDIS_HERE, "wait failed: " + stringify(strerror(errno)));
-        return status;
-    }
+    return real_run_command(cmd, 0);
+}
 
-    throw InternalError(PALUDIS_HERE, "should never be reached");
+int
+paludis::run_command_in_directory(const std::string & cmd, const FSEntry & fsentry)
+{
+    return real_run_command(cmd, &fsentry);
 }
 
 MakeEnvCommand::MakeEnvCommand(const std::string & c,

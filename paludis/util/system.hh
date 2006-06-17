@@ -31,6 +31,8 @@
 
 namespace paludis
 {
+    class FSEntry;
+
     /**
      * Thrown if getenv_or_error fails.
      *
@@ -44,6 +46,21 @@ namespace paludis
              * Constructor.
              */
             GetenvError(const std::string & key) throw ();
+    };
+
+    /**
+     * Thrown if fork, wait or chdir fail when running a command.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grpsystem
+     */
+    class RunCommandError : public Exception
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            RunCommandError(const std::string & message) throw ();
     };
 
     /**
@@ -77,6 +94,14 @@ namespace paludis
      * \ingroup grpsystem
      */
     int run_command(const std::string & cmd);
+
+    /**
+     * Run a command in a directory, wait for it to terminate and return
+     * its exit status.
+     *
+     * \ingroup grpsystem
+     */
+    int run_command_in_directory(const std::string & cmd, const FSEntry & fsentry);
 
     /**
      * Make a command that's run in a particular environment.

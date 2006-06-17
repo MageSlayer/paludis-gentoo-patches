@@ -203,18 +203,19 @@ GitSyncer::sync(const SyncOptions &) const
     Context context("When performing sync via git from '" + _remote + "' to '"
             + _local + "':");
 
-    std::string cmd;
-    FSEntry git_dir(_local+"/.git");
+    FSEntry git_dir(_local + "/.git");
+    FSEntry repo_dir(_local);
+    int status;
 
-    if (FSEntry(_local).is_directory() && ! git_dir.is_directory())
+    if (repo_dir.is_directory() && ! git_dir.is_directory())
         throw SyncGitDirectoryExists(_local);
 
     if (git_dir.is_directory())
-        cmd = "cd '" + _local + "' && git pull";
+        status = run_command_in_directory("git pull", repo_dir);
     else
-        cmd = "git clone '"+ _remote + "' '" + _local + "'";
+        status = run_command("git clone '"+ _remote + "' '" + _local + "'");
 
-    if (0 != run_command(make_env_command(cmd)("LC_ALL", "C")))
+    if (0 != status)
         throw SyncFailedError(_local, _remote);
 }
 
