@@ -348,11 +348,22 @@ DepList::visit(const PackageDepAtom * const p)
                     return;
 
                 else if (_imp->drop_circular)
+                {
+                    if (_imp->current_package)
+                        Log::get_instance()->message(ll_warning, "Dropping circular dependency on " +
+                                stringify(_imp->current_package->get<dle_name>()) + "-" +
+                                stringify(_imp->current_package->get<dle_version>()));
                     return;
+                }
 
                 else if (_imp->current_package && _imp->drop_self_circular &&
                         match_package(_imp->environment, p, _imp->current_package))
+                {
+                    Log::get_instance()->message(ll_warning, "Dropping self-circular dependency on " +
+                            stringify(_imp->current_package->get<dle_name>()) + "-" +
+                            stringify(_imp->current_package->get<dle_version>()));
                     return;
+                }
 
                 else
                     throw CircularDependencyError(i, next(i));
@@ -501,6 +512,11 @@ DepList::visit(const PackageDepAtom * const p)
         {
             if (dlro_never == _imp->rdepend_post)
                 throw;
+            else if (_imp->current_package)
+                Log::get_instance()->message(ll_warning, "Couldn't resolve runtime dependencies "
+                        "for " + stringify(_imp->current_package->get<dle_name>()) + "-" +
+                        stringify(_imp->current_package->get<dle_version>()) + " as build dependencies, "
+                        "trying them as post dependencies");
         }
     }
 }
