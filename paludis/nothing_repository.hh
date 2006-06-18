@@ -24,7 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/smart_record.hh>
 
-/**
+/** \file
  * Declarations for the NothingRepository class.
  *
  * \ingroup grpnothingrepository
