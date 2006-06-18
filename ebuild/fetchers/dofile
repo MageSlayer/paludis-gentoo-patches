@@ -1,6 +1,6 @@
 #!/bin/bash
 
-shopt +s extglob
-echo cp "/${1#file:+(/)}" "${2}" 1>&2
-cp "/${1#file:+(/)}" "${2}"
+shopt -s extglob
+echo cp "/${1##file:+(/)}" "${2}" 1>&2
+cp "/${1##file:+(/)}" "${2}"
 
