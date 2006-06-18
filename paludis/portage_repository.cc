@@ -1416,6 +1416,13 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             }
             archives.append(" ");
 
+            /* add * mirror entries */
+            for (Environment::MirrorIterator
+                    m(_imp->env->begin_mirrors("*")),
+                    m_end(_imp->env->end_mirrors("*")) ;
+                    m != m_end ; ++m)
+                flat_src_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
+
             if (0 == (*ff)->text().compare(0, 9, "mirror://"))
             {
                 std::string mirror((*ff)->text().substr(9));
