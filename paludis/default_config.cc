@@ -45,6 +45,11 @@ using namespace paludis;
 
 namespace paludis
 {
+    /**
+     * Implementation data for DefaultConfig.
+     *
+     * \ingroup grpdefaultconfig
+     */
     template<>
     struct Implementation<DefaultConfig> :
         InternalCounted<DefaultConfig>,

@@ -23,6 +23,9 @@
 #include <paludis/paludis.hh>
 #include <iosfwd>
 
+/**
+ * Display licences.
+ */
 struct LicenceDisplayer :
     paludis::DepAtomVisitorTypes::ConstVisitor
 {

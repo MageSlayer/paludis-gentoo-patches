@@ -42,25 +42,50 @@ namespace paludis
      */
     namespace stringify_internals
     {
+        /**
+         * Check that T_ is a sane type to be stringified.
+         *
+         * \ingroup grpstringify
+         */
         template <typename T_>
         struct CheckType
         {
+            /// Yes, we are a sane type.
             enum { value = 0 } Value;
         };
 
+        /**
+         * Check that T_ is a sane type to be stringified, which it isn't
+         * if it's a pointer unless it's a char * pointer.
+         *
+         * \ingroup grpstringify
+         */
         template <typename T_>
         struct CheckType<T_ *>
         {
         };
 
+        /**
+         * Check that T_ is a sane type to be stringified, which it isn't
+         * if it's a CountedPtr.
+         *
+         * \ingroup grpstringify
+         */
         template <typename T_, typename U_, typename V_>
         struct CheckType<CountedPtr<T_, U_, V_> >
         {
         };
 
+        /**
+         * Check that T_ is a sane type to be stringified, which it isn't
+         * if it's a pointer unless it's a char * pointer.
+         *
+         * \ingroup grpstringify
+         */
         template <>
         struct CheckType<char *>
         {
+            /// Yes, we are a sane type.
             enum { value = 0 } Value;
         };
     }

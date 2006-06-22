@@ -38,7 +38,8 @@ namespace
      *
      * \ingroup grptestcases
      */
-    class MyClass : public InternalCounted<MyClass>
+    class MyClass :
+        public InternalCounted<MyClass>
     {
         private:
             int _v;
@@ -73,6 +74,11 @@ namespace
     };
 }
 
+/**
+ * Test InternalCounted class is stringifiable.
+ *
+ * \ingroup grptestcases
+ */
 std::ostream & operator<< (std::ostream & s, const MyClass & c)
 {
     s << c.value();

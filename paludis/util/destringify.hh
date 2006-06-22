@@ -139,12 +139,6 @@ namespace paludis
         return destringify_internals::Destringifier<Type_, Exception_>::do_destringify(s);
     }
 
-    /**
-     * Extract a value of some type from a string (overload with a default
-     * exception of DestringifyError).
-     *
-     * \ingroup grpdestringify
-     */
     template <typename Type_>
     Type_ destringify(const std::string & s)
     {

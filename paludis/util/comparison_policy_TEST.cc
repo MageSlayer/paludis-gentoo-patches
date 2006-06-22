@@ -28,6 +28,11 @@ using namespace test;
 
 namespace test_cases
 {
+    /**
+     * Test comparisons.
+     *
+     * \ingroup grptestcases
+     */
     struct ComparisonTest : TestCase
     {
         ComparisonTest() : TestCase("comparison") { }

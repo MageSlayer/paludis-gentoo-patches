@@ -142,6 +142,11 @@ namespace test_cases
         }
     } test_list_constructed_record;
 
+    /**
+     * \test Test a SmartRecord of pairs of items.
+     *
+     * \ingroup grptestcases
+     */
     struct PairTest : TestCase
     {
         PairTest() : TestCase("pair") { }

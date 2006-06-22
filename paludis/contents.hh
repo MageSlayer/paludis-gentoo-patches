@@ -40,6 +40,11 @@ namespace paludis
     struct ContentsSymEntry;
     struct ContentsMiscEntry;
 
+    /**
+     * Visit a contents heirarchy.
+     *
+     * \ingroup grpcontents
+     */
     typedef VisitorTypes<ContentsFileEntry *, ContentsDirEntry *,
             ContentsSymEntry *, ContentsMiscEntry *> ContentsVisitorTypes;
 

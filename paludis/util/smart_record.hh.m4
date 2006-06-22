@@ -124,6 +124,12 @@ namespace paludis
     struct SmartRecordKey;
 
 forloop(`idx', `0', max_record_size, `
+    /**
+     * Provides the key information typedefs for a MakeSmartRecord
+     * instantiation.
+     *
+     * \ingroup grprecords
+     */
     template <typename T_>
     struct SmartRecordKey<`'idx`', T_>
     {
@@ -138,47 +144,92 @@ forloop(`idx', `0', max_record_size, `
      */
     namespace smart_record_internals
     {
+        /**
+         * Internal use by SmartRecord: turn a string literal into a string.
+         *
+         * \ingroup grprecords
+         */
         template <typename T_>
         struct CharStarToString
         {
+            /// Our type, unconverted.
             typedef T_ Type;
         };
 
+        /**
+         * Internal use by SmartRecord: turn a string literal into a string.
+         *
+         * \ingroup grprecords
+         */
         template <unsigned i_>
         struct CharStarToString<char [i_]>
         {
+            /// We are a string.
             typedef std::string Type;
         };
 
+        /**
+         * Internal use by SmartRecord: turn a string literal into a string.
+         *
+         * \ingroup grprecords
+         */
         template <unsigned i_>
         struct CharStarToString<const char [i_]>
         {
+            /// We are a string.
             typedef std::string Type;
         };
 
+        /**
+         * Internal use by SmartRecord: turn a string literal into a string.
+         *
+         * \ingroup grprecords
+         */
         template <>
         struct CharStarToString<char *>
         {
+            /// We are a string.
             typedef std::string Type;
         };
 
+        /**
+         * Internal use by SmartRecord: tail of a list.
+         *
+         * \ingroup grprecords
+         */
         struct ParamListTail
         {
+            /// We have no children.
             static const unsigned list_length = 0;
         };
 
+        /**
+         * Internal use by SmartRecord: a list of parameters.
+         *
+         * \ingroup grprecords
+         */
         template <unsigned left_idx_, typename L_, typename R_>
         struct ParamList
         {
+            /// Our left index.
             static const unsigned left_idx = left_idx_;
+
+            /// Our left item.
             L_ left;
+
+            /// Type of our left item.
             typedef L_ LeftType;
 
+            /// Our right item.
             R_ right;
+
+            /// Type of our right item.
             typedef R_ RightType;
 
+            /// How long are we?
             static const unsigned list_length = 1 + RightType::list_length;
 
+            /// Constructor.
             ParamList(const L_ & l, const R_ & r) :
                 left(l),
                 right(r)
@@ -190,9 +241,19 @@ forloop(`idx', `0', max_record_size, `
         Result_
         find_list_entry(const ParamList<left_idx_, L_, R_> & list);
 
+        /**
+         * Find a list entry.
+         *
+         * \ingroup grprecords
+         */
         template <bool is_left, unsigned idx_, typename Result_, unsigned left_idx_, typename L_, typename R_>
         struct FindListEntry;
 
+        /**
+         * Find a list entry.
+         *
+         * \ingroup grprecords
+         */
         template <unsigned idx_, typename Result_, unsigned left_idx_, typename L_, typename R_>
         struct FindListEntry<true, idx_, Result_, left_idx_, L_, R_>
         {
@@ -202,6 +263,11 @@ forloop(`idx', `0', max_record_size, `
             }
         };
 
+        /**
+         * Find a list entry.
+         *
+         * \ingroup grprecords
+         */
         template <unsigned idx_, typename Result_, unsigned left_idx_, typename L_, typename R_>
         struct FindListEntry<false, idx_, Result_, left_idx_, L_, R_>
         {
@@ -211,6 +277,11 @@ forloop(`idx', `0', max_record_size, `
             }
         };
 
+        /**
+         * Find a list entry.
+         *
+         * \ingroup grprecords
+         */
         template <unsigned idx_, typename Result_, unsigned left_idx_, typename L_, typename R_>
         Result_
         find_list_entry(const ParamList<left_idx_, L_, R_> & list)
@@ -218,18 +289,32 @@ forloop(`idx', `0', max_record_size, `
             return FindListEntry<left_idx_ == idx_, idx_, Result_, left_idx_, L_, R_>()(list);
         }
 
+        /**
+         * A node in a param list.
+         *
+         * \ingroup grprecords
+         */
         template <unsigned idx_, typename T_>
         struct ParamListNode
         {
+            /// Our item.
             T_ value;
+
+            /// Our index.
             static const unsigned idx = idx_;
 
+            /// Constructor.
             ParamListNode(const T_ & t) :
                 value(t)
             {
             }
         };
 
+        /**
+         * Join param nodes.
+         *
+         * \ingroup grprecords
+         */
         template <unsigned left_idx_, typename T_, unsigned right_idx_, typename U_>
         ParamList<left_idx_, T_, ParamList<right_idx_, U_, ParamListTail> >
         operator, (const ParamListNode<left_idx_, T_> & t, const ParamListNode<right_idx_, U_> & u)
@@ -238,6 +323,11 @@ forloop(`idx', `0', max_record_size, `
                     ParamList<right_idx_, U_, ParamListTail>(u.value, ParamListTail()));
         }
 
+        /**
+         * Join param nodes.
+         *
+         * \ingroup grprecords
+         */
         template <unsigned left_idx_, typename T_, typename U_, unsigned right_idx_, typename V_>
         ParamList<left_idx_, V_, ParamList<right_idx_, T_, U_> >
         operator, (const ParamList<right_idx_, T_, U_> & t, const ParamListNode<left_idx_, V_> & u)
@@ -249,6 +339,11 @@ forloop(`idx', `0', max_record_size, `
         struct GetRecordKeyType;
 
 forloop(`idx', `0', max_record_size, `
+        /**
+         * Get the type of a particular key in a record.
+         *
+         * \ingroup grprecords
+         */
         template <typename Tag_>
         struct GetRecordKeyType<Tag_, `'idx`'>
         {
@@ -266,21 +361,35 @@ forloop(`idx', `0', max_record_size, `
         struct RecordKeyPointerGetter;
 
 forloop(`idx', `0', max_record_size, `
+        /**
+         * Handle fetching a record key.
+         *
+         * \ingroup grprecords
+         */
         template <typename Tag_, unsigned key_count_>
         struct RecordKeyGetter<Tag_, key_count_, `'idx`'>
         {
+            /**
+             * Fetch, const.
+             */
             static const typename GetRecordKeyType<Tag_, `'idx`'>::Type &
             do_get(const RecordBase<Tag_, key_count_> & r)
             {
                 return r._v`'idx`';
             }
 
+            /**
+             * Fetch, non const.
+             */
             static typename GetRecordKeyType<Tag_, `'idx`'>::Type &
             do_get(RecordBase<Tag_, key_count_> & r)
             {
                 return r._v`'idx`';
             }
 
+            /**
+             * Set.
+             */
             static void
             do_set(RecordBase<Tag_, key_count_> & r,
                 const typename GetRecordKeyType<Tag_, `'idx`'>::Type & v)
@@ -479,6 +588,11 @@ forloop(`idx', `0', max_record_size, `
         };
 
 forloop(`idx', `1', max_record_size, `
+        /**
+         * Base class for a SmartRecord.
+         *
+         * \ingroup grprecords
+         */
         template<typename Tag_>
         class RecordBase<Tag_, `'idx`'> : public RecordComparisonBase<Tag_, `'idx`',
               typename Tag_::ComparisonModeTag,
@@ -495,8 +609,10 @@ forloop(`idy', `0', decr(`'idx`'), `
 ')
 
             public:
+                /// Destructor.
                 ~RecordBase();
 
+                /// Constructor, from raw parameters.
                 RecordBase(
 ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
                         const typename Tag_::KeyType`'idy`' & p`'idy`',
@@ -510,6 +626,7 @@ ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
                 {
                 }
 
+                /// Copy constructor.
                 RecordBase(const RecordBase<Tag_, `'idx`'> & other) :
                     RecordComparisonBase<Tag_, `'idx`', typename Tag_::ComparisonModeTag,
                         typename Tag_::ComparisonMethodTag>(other),
@@ -520,6 +637,7 @@ ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
                 {
                 }
 
+                /// Assignment.
                 const RecordBase & operator= (const RecordBase<Tag_, `'idx`'> & other)
                 {
 forloop(`idy', `0', decr(idx), `
@@ -528,30 +646,36 @@ forloop(`idy', `0', decr(idx), `
                     return *this;
                 }
 
+                /// Fetch a key type.
                 template <typename Tag_::Keys k_>
                 struct GetKeyType
                 {
+                    /// The key type.
                     typedef typename GetRecordKeyType<Tag_, k_>::Type Type;
                 };
 
+                /// Fetch an item.
                 template <typename Tag_::Keys k_>
                 const typename GetRecordKeyType<Tag_, k_>::Type & get() const
                 {
                     return RecordKeyGetter<Tag_, `'idx`', k_>::do_get(*this);
                 }
 
+                /// Fetch an item.
                 template <typename Tag_::Keys k_>
                 typename GetRecordKeyType<Tag_, k_>::Type & get()
                 {
                     return RecordKeyGetter<Tag_, `'idx`', k_>::do_get(*this);
                 }
 
+                /// Set an item.
                 template <typename Tag_::Keys k_>
                 void set(const typename GetRecordKeyType<Tag_, k_>::Type & v)
                 {
                     return RecordKeyGetter<Tag_, `'idx`', k_>::do_set(*this, v);
                 }
 
+                /// Named parameters constructor.
                 template <typename List_>
                 static RecordBase
                 create(const List_ & list)
@@ -572,9 +696,17 @@ ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
 ')
 
 forloop(`idx', `0', max_record_size, `
+        /**
+         * Fetch a pointer to a record key.
+         *
+         * \ingroup grprecords
+         */
         template <typename Tag_, unsigned key_count_>
         struct RecordKeyPointerGetter<Tag_, key_count_, `'idx`'>
         {
+            /**
+             * Fetch the pointer.
+             */
             static typename GetRecordKeyType<Tag_, `'idx>::Type
             RecordBase<Tag_, key_count_>::* do_get_pointer()
             {
@@ -623,9 +755,16 @@ forloop(`idx', `0', max_record_size, `
         struct DoFullCompareByAll;
 
 forloop(`idx', `1', max_record_size, `
+        /**
+         * Mixin class for SmartRecord instances that are compared by all
+         * keys in order.
+         *
+         * \ingroup grprecords
+         */
         template <typename Tag_>
         struct DoFullCompareByAll<Tag_, `'idx`'>
         {
+            /// Do the comparison.
             static int do_compare(const RecordBase<Tag_, `'idx`'> * const a,
                     const RecordBase<Tag_, `'idx`'> * const b)
             {
@@ -653,6 +792,12 @@ forloop(`idy', `0', decr(`'idx`'), `
         struct DoEqualCompareByAll;
 
 forloop(`idx', `1', max_record_size, `
+        /**
+         * Mixin class for SmartRecord instances that are equal-compared by all
+         * keys in order.
+         *
+         * \ingroup grprecords
+         */
         template <typename Tag_>
         struct DoEqualCompareByAll<Tag_, `'idx`'>
         {

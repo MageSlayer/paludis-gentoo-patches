@@ -88,6 +88,7 @@ namespace
      */
     struct ArgIs
     {
+        /// The argument.
         const std::string arg;
 
         /// Constructor.
