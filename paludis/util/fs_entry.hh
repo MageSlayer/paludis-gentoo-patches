@@ -241,7 +241,7 @@ namespace paludis
              * \exception FSError If an error other than the directory already
              *   existing occurs.
              */
-            bool mkdir(mode_t mode = 0755);
+            bool mkdir(const mode_t mode = 0755);
 
             /**
              * Try to unlink.
@@ -253,6 +253,27 @@ namespace paludis
              *   existing occurs.
              */
             bool unlink();
+
+            /**
+             * Change our permissions.
+             *
+             * \exception FSError If the chown failed.
+             */
+            void chown(const uid_t owner, const gid_t group);
+
+            /**
+             * Fetch our owner.
+             *
+             * \exception FSError If we don't exist or the stat call fails.
+             */
+            uid_t owner() const;
+
+            /**
+             * Fetch our group.
+             *
+             * \exception FSError If we don't exist or the stat call fails.
+             */
+            gid_t group() const;
 
             /**
              * Return the current working directory

@@ -387,3 +387,33 @@ FSEntry::readlink() const
         throw FSError("readlink '" + _path + "' failed: " + ::strerror(errno));
     return buf;
 }
+
+void
+FSEntry::chown(const uid_t owner, const gid_t group)
+{
+    if (0 != ::chown(_path.c_str(), owner, group))
+        throw FSError("chown '" + _path + "' failed: " + ::strerror(errno));
+}
+
+uid_t
+FSEntry::owner() const
+{
+    _stat();
+
+    if (! _exists)
+        throw FSError("Filesystem entry '" + _path + "' does not exist");
+
+    return _stat_info->st_uid;
+}
+
+gid_t
+FSEntry::group() const
+{
+    _stat();
+
+    if (! _exists)
+        throw FSError("Filesystem entry '" + _path + "' does not exist");
+
+    return _stat_info->st_gid;
+}
+
