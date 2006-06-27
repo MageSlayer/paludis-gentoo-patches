@@ -378,3 +378,12 @@ FSEntry::unlink()
         throw FSError("unlink '" + _path + "' failed: " + ::strerror(e));
 }
 
+std::string
+FSEntry::readlink() const
+{
+    char buf[PATH_MAX + 1];
+    std::memset(buf, 0, PATH_MAX + 1);
+    if (-1 == ::readlink(_path.c_str(), buf, PATH_MAX))
+        throw FSError("readlink '" + _path + "' failed: " + ::strerror(errno));
+    return buf;
+}

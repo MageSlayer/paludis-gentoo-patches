@@ -206,6 +206,14 @@ namespace paludis
             FSEntry realpath() const;
 
             /**
+             * Return our destination, if we are a symlink.
+             *
+             * \exception FSError if we are not a symlink, or if the system call
+             * fails.
+             */
+            std::string readlink() const;
+
+            /**
              * Return the time the filesystem entry was created
              * \exception FSError if there was a problem accessing the filesystem entry
              */
