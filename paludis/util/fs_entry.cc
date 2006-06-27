@@ -199,6 +199,17 @@ FSEntry::has_permission(const FSUserGroup & user_group, const FSPermission & fs_
     throw InternalError(PALUDIS_HERE, "Unhandled FSUserGroup");
 }
 
+mode_t
+FSEntry::permissions() const
+{
+    _stat();
+
+    if (! _exists)
+        throw FSError("Filesystem entry '" + _path + "' does not exist");
+
+    return _stat_info->st_mode;
+}
+
 void
 FSEntry::_normalise()
 {
@@ -338,9 +349,9 @@ FSEntry::file_size() const
 }
 
 bool
-FSEntry::mkdir()
+FSEntry::mkdir(mode_t mode)
 {
-    if (0 == ::mkdir(_path.c_str(), 0755))
+    if (0 == ::mkdir(_path.c_str(), mode))
         return true;
 
     int e(errno);
@@ -352,5 +363,18 @@ FSEntry::mkdir()
     }
     else
         throw FSError("mkdir '" + _path + "' failed: " + ::strerror(e));
+}
+
+bool
+FSEntry::unlink()
+{
+    if (0 == ::unlink(_path.c_str()))
+        return true;
+
+    int e(errno);
+    if (e == ENOENT)
+        return false;
+    else
+        throw FSError("unlink '" + _path + "' failed: " + ::strerror(e));
 }
 

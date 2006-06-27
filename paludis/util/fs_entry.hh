@@ -177,10 +177,18 @@ namespace paludis
             bool is_symbolic_link() const;
 
             /**
-             * Check if filesystem entry has `perm` for `user_group`
+             * Check if filesystem entry has `perm` for `user_group`.
+             *
              * \exception FSError if there was a problem accessing the filesystem entry
              */
             bool has_permission(const FSUserGroup & user_group, const FSPermission & fs_perm) const;
+
+            /**
+             * Return the permissions for our item.
+             *
+             * \exception FSError if there was a problem accessing the filesystem entry
+             */
+            mode_t permissions() const;
 
             /**
              * Return the last part of our path (eg '/foo/bar' => 'bar').
@@ -225,7 +233,18 @@ namespace paludis
              * \exception FSError If an error other than the directory already
              *   existing occurs.
              */
-            bool mkdir();
+            bool mkdir(mode_t mode = 0755);
+
+            /**
+             * Try to unlink.
+             *
+             * \return True, if we succeeded, and false if we don't exist
+             *   already.
+             *
+             * \exception FSError If an error other than us already not
+             *   existing occurs.
+             */
+            bool unlink();
 
             /**
              * Return the current working directory
