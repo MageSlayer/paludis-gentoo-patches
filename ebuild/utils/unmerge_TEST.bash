@@ -18,7 +18,7 @@
 
 unmerge_empty_TEST()
 {
-    ${PALUDIS_EBUILD_DIR}/utils/merge "unmerge_TEST_dir/empty_src" \
+    ${TOP_BUILD_DIR}/ebuild/utils/merge "unmerge_TEST_dir/empty_src" \
         "unmerge_TEST_dir/empty_dst" \
         "unmerge_TEST_dir/empty_contents" 1>/dev/null
     test_return_code
@@ -38,7 +38,7 @@ unmerge_empty_TEST()
 
 unmerge_files_TEST()
 {
-    ${PALUDIS_EBUILD_DIR}/utils/merge "unmerge_TEST_dir/files_src" \
+    ${TOP_BUILD_DIR}/ebuild/utils/merge "unmerge_TEST_dir/files_src" \
         "unmerge_TEST_dir/files_dst" \
         "unmerge_TEST_dir/files_contents" 1>/dev/null
     test_return_code

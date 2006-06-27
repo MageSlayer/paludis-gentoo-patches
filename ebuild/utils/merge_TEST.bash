@@ -18,7 +18,7 @@
 
 merge_empty_TEST()
 {
-    ${PALUDIS_EBUILD_DIR}/utils/merge "merge_TEST_dir/empty_src" \
+    ${TOP_BUILD_DIR}/ebuild/utils/merge "merge_TEST_dir/empty_src" \
         "merge_TEST_dir/empty_dst" \
         "merge_TEST_dir/empty_contents" 1>/dev/null
     test_return_code
@@ -26,7 +26,7 @@ merge_empty_TEST()
 
 merge_files_TEST()
 {
-    ${PALUDIS_EBUILD_DIR}/utils/merge "merge_TEST_dir/files_src" \
+    ${TOP_BUILD_DIR}/ebuild/utils/merge "merge_TEST_dir/files_src" \
         "merge_TEST_dir/files_dst" \
         "merge_TEST_dir/files_contents" 1>/dev/null
     test_return_code
@@ -40,7 +40,7 @@ merge_files_TEST()
 
 merge_dirs_TEST()
 {
-    ${PALUDIS_EBUILD_DIR}/utils/merge "merge_TEST_dir/dirs_src" \
+    ${TOP_BUILD_DIR}/ebuild/utils/merge "merge_TEST_dir/dirs_src" \
         "merge_TEST_dir/dirs_dst" \
         "merge_TEST_dir/dirs_contents" 1>/dev/null
     test_return_code
@@ -61,7 +61,7 @@ merge_dirs_TEST()
 
 merge_dirs_over_TEST()
 {
-    ${PALUDIS_EBUILD_DIR}/utils/merge "merge_TEST_dir/dirs_over_src" \
+    ${TOP_BUILD_DIR}/ebuild/utils/merge "merge_TEST_dir/dirs_over_src" \
         "merge_TEST_dir/dirs_over_dst" \
         "merge_TEST_dir/dirs_over_contents" 1>/dev/null
     test_return_code
@@ -82,7 +82,7 @@ merge_dirs_over_TEST()
 
 merge_links_TEST()
 {
-    ${PALUDIS_EBUILD_DIR}/utils/merge "merge_TEST_dir/links_src" \
+    ${TOP_BUILD_DIR}/ebuild/utils/merge "merge_TEST_dir/links_src" \
         "merge_TEST_dir/links_dst" \
         "merge_TEST_dir/links_contents" 1>/dev/null
     test_return_code
@@ -100,7 +100,7 @@ merge_links_TEST()
 
 merge_links_over_TEST()
 {
-    ${PALUDIS_EBUILD_DIR}/utils/merge "merge_TEST_dir/links_over_src" \
+    ${TOP_BUILD_DIR}/ebuild/utils/merge "merge_TEST_dir/links_over_src" \
         "merge_TEST_dir/links_over_dst" \
         "merge_TEST_dir/links_over_contents" 1>/dev/null
     test_return_code
@@ -121,7 +121,7 @@ merge_links_over_TEST()
 }
 merge_links_over_dir_TEST()
 {
-    ! ${PALUDIS_EBUILD_DIR}/utils/merge "merge_TEST_dir/links_over_dir_src" \
+    ! ${TOP_BUILD_DIR}/ebuild/utils/merge "merge_TEST_dir/links_over_dir_src" \
         "merge_TEST_dir/links_over_dir_dst" \
         "merge_TEST_dir/links_over_dir_contents" &>/dev/null
     test_return_code

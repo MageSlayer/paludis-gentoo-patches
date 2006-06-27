@@ -33,7 +33,6 @@ libexecprog_SCRIPTS = \
 	fowners \
 	fperms \
 	getmtime \
-	merge \
 	newbin \
 	newconfd \
 	newdoc \
@@ -48,8 +47,20 @@ libexecprog_SCRIPTS = \
 	unmerge \
 	$(libexecprog_SCRIPTS_extra)
 
+libexecprog_PROGRAMS = merge
+AM_CXXFLAGS = -I$(top_srcdir)
+merge_SOURCES = merge.cc
+merge_DEFS= \
+	-DSYSCONFDIR=\"$(sysconfdir)\" \
+	-DLIBEXECDIR=\"$(libexecdir)\"
+merge_LDADD = \
+	$(top_builddir)/paludis/libpaludis.a \
+	$(top_builddir)/paludis/args/libpaludisargs.a \
+	$(top_builddir)/paludis/util/libpaludisutil.a
+
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_srcdir)/ebuild/`" \
+	TOP_BUILD_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/`" \
 	PALUDIS_EBUILD_LOG_LEVEL="silent" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/ebuild/utils/run_test.bash
