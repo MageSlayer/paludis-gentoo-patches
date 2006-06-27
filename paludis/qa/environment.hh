@@ -45,6 +45,9 @@ namespace paludis
         class QAEnvironment :
             public Environment
         {
+	    private:
+	        std::multimap<std::string, std::string> _mirrors;
+
             public:
                 QAEnvironment(const FSEntry & base);
 
@@ -54,6 +57,8 @@ namespace paludis
 
                 virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
 
+		virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
+
                 virtual bool query_user_masks(const PackageDatabaseEntry &) const;
 
                 virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
@@ -62,6 +67,11 @@ namespace paludis
                 {
                     return "";
                 }
+
+		virtual std::string hook_dirs() const
+		{
+		    return "";
+		}
 
                 virtual std::string paludis_command() const PALUDIS_ATTRIBUTE((noreturn))
                 {
@@ -73,6 +83,20 @@ namespace paludis
                 {
                     return UseFlagNameCollection::Pointer(new UseFlagNameCollection);
                 }
+
+		virtual MirrorIterator begin_mirrors(const std::string & mirror) const
+		{
+		    return _mirrors.end();
+		}
+
+		virtual MirrorIterator end_mirrors(const std::string & mirror) const
+		{
+		    return _mirrors.end();
+		}
+
+		virtual void perform_hook (const Hook & hook) const
+		{
+		}
         };
     }
 }

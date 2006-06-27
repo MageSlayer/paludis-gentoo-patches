@@ -24,8 +24,9 @@ using namespace paludis;
 using namespace paludis::qa;
 
 QAEnvironment::QAEnvironment(const FSEntry & base) :
-    Environment(PackageDatabase::Pointer(new PackageDatabase))
+    Environment(PackageDatabase::Pointer(new PackageDatabase(this)))
 {
+    MirrorIterator _mirrors;
     std::map<std::string, std::string> keys;
 
     keys.insert(std::make_pair(std::string("format"), std::string("portage")));
@@ -56,6 +57,12 @@ QAEnvironment::accept_keyword(const KeywordName &, const PackageDatabaseEntry * 
 }
 
 bool
+QAEnvironment::accept_license(const std::string &, const PackageDatabaseEntry * const) const
+{
+    return false;
+}
+
+bool
 QAEnvironment::query_user_masks(const PackageDatabaseEntry &) const
 {
     return false;
@@ -66,4 +73,3 @@ QAEnvironment::query_user_unmasks(const PackageDatabaseEntry &) const
 {
     return false;
 }
-
