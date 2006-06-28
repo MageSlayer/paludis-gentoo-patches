@@ -20,6 +20,7 @@
 builtin_tidyup()
 {
     if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" ]] ; then
+        echo rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" 1>&2
         rm -fr "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" || die "Couldn't remove work"
     fi
 }
