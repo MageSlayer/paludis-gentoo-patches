@@ -19,7 +19,7 @@
 
 builtin_fetch()
 {
-    [[ -d "${DISTDIR}" ]] || die "DISTDIR \"${D}\" is not a directory"
+    [[ -d "${DISTDIR}" ]] || die "DISTDIR \"${DISTDIR}\" is not a directory"
 
     local a nofetch unique_aa old_aa
     for a in ${FLAT_SRC_URI} ; do
