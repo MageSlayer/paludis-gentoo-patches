@@ -44,16 +44,19 @@ libexecprog_SCRIPTS = \
 	newlib.so \
 	newman \
 	newsbin \
-	unmerge \
 	$(libexecprog_SCRIPTS_extra)
 
-libexecprog_PROGRAMS = merge
+libexecprog_PROGRAMS = merge unmerge
 AM_CXXFLAGS = -I$(top_srcdir)
+
 merge_SOURCES = merge.cc
-merge_DEFS= \
-	-DSYSCONFDIR=\"$(sysconfdir)\" \
-	-DLIBEXECDIR=\"$(libexecdir)\"
 merge_LDADD = \
+	$(top_builddir)/paludis/libpaludis.a \
+	$(top_builddir)/paludis/args/libpaludisargs.a \
+	$(top_builddir)/paludis/util/libpaludisutil.a
+
+unmerge_SOURCES = unmerge.cc
+unmerge_LDADD = \
 	$(top_builddir)/paludis/libpaludis.a \
 	$(top_builddir)/paludis/args/libpaludisargs.a \
 	$(top_builddir)/paludis/util/libpaludisutil.a
