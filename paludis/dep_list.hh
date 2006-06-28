@@ -374,6 +374,11 @@ namespace paludis
              * Behaviour: set whether we reinstall first level deps.
              */
             void set_reinstall(const bool value);
+
+            /**
+             * Behaviour: set whether we upgrade unnecessarily.
+             */
+            void set_no_unnecessary_upgrades(const bool value);
     };
 }
 

@@ -109,6 +109,7 @@ namespace paludis
         bool drop_all;
         bool ignore_installed;
         bool reinstall;
+        bool no_unnecessary_upgrades;
         ///}
 
         ///\name Stack
@@ -332,6 +333,12 @@ DepList::visit(const PackageDepAtom * const p)
 
     PackageDatabaseEntryCollection::ConstPointer installed(
             _imp->environment->package_database()->query(*p, is_installed_only));
+
+    /* if we're installed and we don't want to upgrade unnecessarily,
+     * stop if we're not on a top level target */
+    if ((! installed->empty()) && (_imp->no_unnecessary_upgrades))
+        if (0 != _imp->current_package)
+            return;
 
     /* are we already on the merge list? */
     {
@@ -819,5 +826,11 @@ void
 DepList::set_reinstall(const bool value)
 {
     _imp->reinstall = value;
+}
+
+void
+DepList::set_no_unnecessary_upgrades(const bool value)
+{
+    _imp->no_unnecessary_upgrades = value;
 }
 

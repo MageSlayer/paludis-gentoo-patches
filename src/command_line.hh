@@ -193,6 +193,9 @@ class CommandLine :
         /// --dl-max-stack-depth
         paludis::args::IntegerArg a_dl_max_stack_depth;
 
+        /// --dl-no-unnecessary-upgrades
+        paludis::args::SwitchArg a_dl_no_unnecessary_upgrades;
+
         /// }
 
         /// \name List arguments

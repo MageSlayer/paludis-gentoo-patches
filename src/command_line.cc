@@ -78,6 +78,7 @@ CommandLine::CommandLine() :
     a_dl_ignore_installed(&dl_args, "dl-ignore-installed", 'e', "Ignore installed packages"),
     a_dl_no_recursive_deps(&dl_args, "dl-no-recursive-deps", '\0', "Don't check runtime dependencies for installed packages"),
     a_dl_max_stack_depth(&dl_args, "dl-max-stack-depth", '\0', "Maximum stack depth (default 100)"),
+    a_dl_no_unnecessary_upgrades(&dl_args, "dl-no-unnecessary-upgrades", 'U', "Don't upgrade installed packages except where necessary as a dependency of another package"),
 
     list_args(this, "List options"),
     a_repository(&list_args, "repository", '\0', "Matches with this repository name only"),

@@ -81,6 +81,7 @@ do_install()
     dep_list.set_ignore_installed(CommandLine::get_instance()->a_dl_ignore_installed.specified());
     dep_list.set_recursive_deps(! CommandLine::get_instance()->a_dl_no_recursive_deps.specified());
     dep_list.set_max_stack_depth(CommandLine::get_instance()->a_dl_max_stack_depth.argument());
+    dep_list.set_no_unnecessary_upgrades(CommandLine::get_instance()->a_dl_no_unnecessary_upgrades.specified());
 
     if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "always")
         dep_list.set_rdepend_post(p::dlro_always);
