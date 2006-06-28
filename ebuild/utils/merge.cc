@@ -201,6 +201,8 @@ namespace
                     + stringify(src_dir) + "' to '" + stringify(dst_dir) + "':");
 
         std::string root_str(stringify(root)), dst_dir_str(stringify(dst_dir.dirname()));
+        if (root_str == "/")
+            root_str.clear();
         if (0 != dst_dir_str.compare(0, root_str.length(), root_str))
             throw Failure("do_dir confused: '" + root_str + "' '" + dst_dir_str + "'");
 
@@ -236,6 +238,8 @@ namespace
                     + stringify(src) + "' to '" + stringify(dst) + "':");
 
         std::string root_str(stringify(root)), dst_dir_str(stringify(dst.dirname()));
+        if (root_str == "/")
+            root_str.clear();
         if (0 != dst_dir_str.compare(0, root_str.length(), root_str))
             throw Failure("do_obj confused: '" + root_str + "' '" + dst_dir_str + "'");
 
@@ -315,6 +319,8 @@ namespace
                     + stringify(src) + "' to '" + stringify(dst) + "':");
 
         std::string root_str(stringify(root)), dst_dir_str(stringify(dst.dirname()));
+        if (root_str == "/")
+            root_str.clear();
         if (0 != dst_dir_str.compare(0, root_str.length(), root_str))
             throw Failure("do_sym confused: '" + root_str + "' '" + dst_dir_str + "'");
 
