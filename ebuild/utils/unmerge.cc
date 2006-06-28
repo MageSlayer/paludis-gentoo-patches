@@ -17,6 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "merge_common.hh"
+
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -43,6 +45,8 @@
 #include <sys/types.h>
 
 using namespace paludis;
+using namespace merge;
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -51,52 +55,6 @@ using std::ifstream;
 namespace
 {
     int exit_status;
-
-    struct Failure
-    {
-        std::string message;
-
-        Failure(const std::string & m) :
-            message(m)
-        {
-        };
-    };
-
-    std::vector<std::string>
-    get_config_var(const std::string & var)
-    {
-        std::vector<std::string> result;
-        WhitespaceTokeniser::get_instance()->tokenise(getenv_with_default(var, ""),
-                std::back_inserter(result));
-        return result;
-    }
-
-    bool
-    is_config_protected(const FSEntry & root, const FSEntry & file)
-    {
-        static std::vector<std::string> cfg_pro(get_config_var("CONFIG_PROTECT")),
-            cfg_pro_mask(get_config_var("CONFIG_PROTECT_MASK"));
-
-        std::string file_str(stringify(file)), root_str(stringify(root));
-        if (0 != file_str.compare(0, root_str.length(), root_str))
-            throw Failure("is_config_protected confused: '" + root_str + "' '" + file_str + "'");
-        file_str.erase(0, root_str.length());
-        if (file_str.empty())
-            file_str = "/";
-
-        bool result(false);
-        for (std::vector<std::string>::const_iterator c(cfg_pro.begin()),
-                c_end(cfg_pro.end()) ; c != c_end && ! result ; ++c)
-            if (0 == fnmatch((*c + "/*").c_str(), file_str.c_str(), 0))
-                result = true;
-
-        for (std::vector<std::string>::const_iterator c(cfg_pro_mask.begin()),
-                c_end(cfg_pro_mask.end()) ; c != c_end && result ; ++c)
-            if (0 == fnmatch((*c + "/*").c_str(), file_str.c_str(), 0))
-                result = false;
-
-        return result;
-    }
 
     template <typename Iter_>
     void unmerge_contents(const FSEntry & root, const Iter_ begin, const Iter_ end)
