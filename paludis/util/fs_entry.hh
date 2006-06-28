@@ -273,6 +273,13 @@ namespace paludis
             void chown(const uid_t owner, const gid_t group);
 
             /**
+             * Change our permissions.
+             *
+             * \exception FSError If the chmod failed.
+             */
+            void chmod(const mode_t mode);
+
+            /**
              * Fetch our owner.
              *
              * \exception FSError If we don't exist or the stat call fails.

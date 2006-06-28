@@ -408,6 +408,13 @@ FSEntry::chown(const uid_t owner, const gid_t group)
         throw FSError("chown '" + _path + "' failed: " + ::strerror(errno));
 }
 
+void
+FSEntry::chmod(const mode_t mode)
+{
+    if (0 != ::chmod(_path.c_str(), mode))
+        throw FSError("chmod '" + _path + "' failed: " + ::strerror(errno));
+}
+
 uid_t
 FSEntry::owner() const
 {
