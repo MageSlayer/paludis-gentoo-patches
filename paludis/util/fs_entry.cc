@@ -378,6 +378,19 @@ FSEntry::unlink()
         throw FSError("unlink '" + _path + "' failed: " + ::strerror(e));
 }
 
+bool
+FSEntry::rmdir()
+{
+    if (0 == ::rmdir(_path.c_str()))
+        return true;
+
+    int e(errno);
+    if (e == ENOENT)
+        return false;
+    else
+        throw FSError("rmdir '" + _path + "' failed: " + ::strerror(e));
+}
+
 std::string
 FSEntry::readlink() const
 {

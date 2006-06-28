@@ -255,6 +255,17 @@ namespace paludis
             bool unlink();
 
             /**
+             * Try to rmdir.
+             *
+             * \return True, if we succeeded, and false if we don't exist
+             *   already.
+             *
+             * \exception FSError If an error other than us already not
+             *   existing occurs.
+             */
+            bool rmdir();
+
+            /**
              * Change our permissions.
              *
              * \exception FSError If the chown failed.
