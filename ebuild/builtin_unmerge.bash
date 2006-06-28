@@ -50,6 +50,9 @@ builtin_unmerge()
         CONFIG_PROTECT_MASK=${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK}
     fi
 
+    export CONFIG_PROTECT="${CONFIG_PROTECT}"
+    export CONFIG_PROTECT_MASK="${CONFIG_PROTECT_MASK}"
+
     ${PALUDIS_EBUILD_MODULES_DIR}/utils/unmerge "${ROOT}/" "${dbdir}/CONTENTS" \
         || die "unmerge failed"
 

@@ -38,6 +38,7 @@
 #include <cstdlib>
 #include <errno.h>
 #include <fcntl.h>
+#include <fnmatch.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -60,6 +61,42 @@ namespace
         {
         };
     };
+
+    std::vector<std::string>
+    get_config_var(const std::string & var)
+    {
+        std::vector<std::string> result;
+        WhitespaceTokeniser::get_instance()->tokenise(getenv_with_default(var, ""),
+                std::back_inserter(result));
+        return result;
+    }
+
+    bool
+    is_config_protected(const FSEntry & root, const FSEntry & file)
+    {
+        static std::vector<std::string> cfg_pro(get_config_var("CONFIG_PROTECT")),
+            cfg_pro_mask(get_config_var("CONFIG_PROTECT_MASK"));
+
+        std::string file_str(stringify(file)), root_str(stringify(root));
+        if (0 != file_str.compare(0, root_str.length(), root_str))
+            throw Failure("is_config_protected confused: '" + root_str + "' '" + file_str + "'");
+        file_str.erase(0, root_str.length());
+        if (file_str.empty())
+            file_str = "/";
+
+        bool result(false);
+        for (std::vector<std::string>::const_iterator c(cfg_pro.begin()),
+                c_end(cfg_pro.end()) ; c != c_end && ! result ; ++c)
+            if (0 == fnmatch((*c + "/*").c_str(), file_str.c_str(), 0))
+                result = true;
+
+        for (std::vector<std::string>::const_iterator c(cfg_pro_mask.begin()),
+                c_end(cfg_pro_mask.end()) ; c != c_end && result ; ++c)
+            if (0 == fnmatch((*c + "/*").c_str(), file_str.c_str(), 0))
+                result = false;
+
+        return result;
+    }
 
     template <typename Iter_>
     void unmerge_contents(const FSEntry & root, const Iter_ begin, const Iter_ end)
@@ -97,6 +134,8 @@ namespace
                     }
                     else if (strip_trailing(md5, "\n") != tokens.at(2))
                         cout << "--- [!md5 ] " << tokens.at(1) << endl;
+                    else if (is_config_protected(root, root / tokens.at(1)))
+                        cout << "--- [cfgpr] " << tokens.at(1) << endl;
                     else
                     {
                         cout << "<<<         " << tokens.at(1) << endl;
