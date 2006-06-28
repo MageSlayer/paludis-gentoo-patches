@@ -24,6 +24,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/tokeniser.hh>
 
 #include <algorithm>
 #include <fstream>
@@ -31,10 +32,12 @@
 #include <iostream>
 #include <iterator>
 #include <string>
+#include <vector>
 
 #include <cstdlib>
 #include <errno.h>
 #include <fcntl.h>
+#include <fnmatch.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -44,10 +47,95 @@ using std::cerr;
 using std::endl;
 using std::ifstream;
 using std::ofstream;
+using std::istreambuf_iterator;
+using std::ostreambuf_iterator;
+
 
 namespace
 {
     int exit_status;
+
+    struct Failure
+    {
+        std::string message;
+
+        Failure(const std::string & m) :
+            message(m)
+        {
+        };
+    };
+
+    std::vector<std::string>
+    get_config_var(const std::string & var)
+    {
+        std::vector<std::string> result;
+        WhitespaceTokeniser::get_instance()->tokenise(getenv_with_default(var, ""),
+                std::back_inserter(result));
+        return result;
+    }
+
+    bool
+    is_config_protected(const FSEntry & root, const FSEntry & file)
+    {
+        static std::vector<std::string> cfg_pro(get_config_var("CONFIG_PROTECT")),
+            cfg_pro_mask(get_config_var("CONFIG_PROTECT_MASK"));
+
+        std::string file_str(stringify(file)), root_str(stringify(root));
+        if (0 != file_str.compare(0, root_str.length(), root_str))
+            throw Failure("is_config_protected confused: '" + root_str + "' '" + file_str + "'");
+        file_str.erase(0, root_str.length());
+        if (file_str.empty())
+            file_str = "/";
+
+        bool result(false);
+        for (std::vector<std::string>::const_iterator c(cfg_pro.begin()),
+                c_end(cfg_pro.end()) ; c != c_end && ! result ; ++c)
+            if (0 == fnmatch((*c + "/*").c_str(), file_str.c_str(), 0))
+                result = true;
+
+        for (std::vector<std::string>::const_iterator c(cfg_pro_mask.begin()),
+                c_end(cfg_pro_mask.end()) ; c != c_end && result ; ++c)
+            if (0 == fnmatch((*c + "/*").c_str(), file_str.c_str(), 0))
+                result = false;
+
+        return result;
+    }
+
+    FSEntry
+    make_config_protect_name(const FSEntry & name, const FSEntry & file_to_install)
+    {
+        int n(0);
+
+        PStream our_md5command(getenv_or_error("PALUDIS_EBUILD_DIR") +
+                "/digests/domd5 '" + stringify(file_to_install) + "'");
+        std::string our_md5((istreambuf_iterator<char>(our_md5command)),
+                istreambuf_iterator<char>());
+        if (0 != our_md5command.exit_status())
+            throw Failure("Could not md5sum '" + stringify(name) + "'");
+
+        FSEntry result(name);
+        while (true)
+        {
+            if (! result.exists())
+                return result;
+            else if (result.is_regular_file())
+            {
+                PStream other_md5command(getenv_or_error("PALUDIS_EBUILD_DIR") +
+                        "/digests/domd5 '" + stringify(result) + "'");
+                std::string other_md5((istreambuf_iterator<char>(other_md5command)),
+                        istreambuf_iterator<char>());
+                if (0 != other_md5command.exit_status())
+                    throw Failure("Could not md5sum '" + stringify(result) + "'");
+                if (other_md5 == our_md5)
+                    return result;
+            }
+
+            std::stringstream s;
+            s << std::setw(4) << std::setfill('0') << std::right << n++;
+            result = FSEntry(stringify(name.dirname() / ("._cfg" + s.str() + "_"
+                            + name.basename())));
+        }
+    }
 
     /**
      * Output stream buffer class that's opened via an FD, so that we can avoid race
@@ -148,16 +236,6 @@ namespace
             }
     };
 
-    struct Failure
-    {
-        std::string message;
-
-        Failure(const std::string & m) :
-            message(m)
-        {
-        };
-    };
-
     void
     do_dir(const FSEntry & root, const FSEntry & src_dir,
             const FSEntry & dst_dir, ofstream * const contents)
@@ -185,6 +263,8 @@ namespace
             mode_t mode(src_dir.permissions());
             FSEntry(dst_dir).mkdir(mode);
             FSEntry(stringify(dst_dir)).chown(src_dir.owner(), src_dir.group());
+            /* the chmod is needed to pick up fancy set*id bits */
+            FSEntry(stringify(dst_dir)).chmod(src_dir.permissions());
         }
 
         *contents << "dir " << dst_dir_str.substr(root_str.length()) << "/" <<
@@ -198,36 +278,58 @@ namespace
         Context context("Installing object in root '" + stringify(root) + "' from '"
                     + stringify(src) + "' to '" + stringify(dst) + "':");
 
-        using std::istreambuf_iterator;
-        using std::ostreambuf_iterator;
-
         std::string root_str(stringify(root)), dst_dir_str(stringify(dst.dirname()));
         if (0 != dst_dir_str.compare(0, root_str.length(), root_str))
             throw Failure("do_obj confused: '" + root_str + "' '" + dst_dir_str + "'");
 
         cout << ">>> " << std::setw(5) << std::left << "[obj]" << " " <<
-            dst_dir_str.substr(root_str.length()) << "/" << dst.basename() << endl;
+            dst_dir_str.substr(root_str.length()) << "/" << dst.basename();
 
         if (dst.is_directory())
             throw Failure("Cannot overwrite directory '" + stringify(dst) + "' with a file");
         else
         {
+            FSEntry real_dst(dst);
+
             ifstream input_file(stringify(src).c_str());
             if (! input_file)
                 throw Failure("Cannot read '" + stringify(src) + "'");
 
             if (dst.exists())
-                FSEntry(dst).unlink();
+            {
+                if (is_config_protected(root, dst))
+                {
+                    real_dst = make_config_protect_name(dst, src);
+                    if (dst != real_dst)
+                        cout << " -> " << real_dst << endl;
+                    else
+                        cout << endl;
+                }
+                else
+                {
+                    FSEntry(dst).unlink();
+                    cout << endl;
+                }
+            }
+            else
+                cout << endl;
 
             /* FDHolder must be destroyed before we do the md5 thing, or the
              * disk write may not have synced. */
             {
-                FDHolder fd(::open(stringify(dst).c_str(), O_WRONLY | O_CREAT, src.permissions()));
+                FDHolder fd(::open(stringify(real_dst).c_str(), O_WRONLY | O_CREAT, src.permissions()));
                 if (-1 == fd)
-                    throw Failure("Cannot open '" + stringify(dst) + "' for write");
+                    throw Failure("Cannot open '" + stringify(real_dst) + "' for write");
 
                 if (0 != ::fchown(fd, src.owner(), src.group()))
-                    throw Failure("Cannot fchown '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+                    throw Failure("Cannot fchown '" + stringify(real_dst) + "': " +
+                            stringify(::strerror(errno)));
+
+                /* the chmod is needed for set*id bits, which are dropped by
+                 * umask in the ::open */
+                if (0 != ::fchmod(fd, src.permissions()))
+                    throw Failure("Cannot fchmod '" + stringify(real_dst) + "': " +
+                            stringify(::strerror(errno)));
 
                 FDOutputStream output_file(fd);
                 if (! output_file)
@@ -337,6 +439,11 @@ main(int argc, char * argv[])
             Log::get_instance()->set_log_level(ll_silent);
         else
             throw Failure("bad value for log level");
+
+        Log::get_instance()->message(ll_debug, "CONFIG_PROTECT is " + getenv_with_default(
+                    "CONFIG_PROTECT", "(unset)"));
+        Log::get_instance()->message(ll_debug, "CONFIG_PROTECT_MASK is " + getenv_with_default(
+                    "CONFIG_PROTECT_MASK", "(unset)"));
 
         FSEntry src(argv[1]), dst(argv[2]), contents(argv[3]);
 

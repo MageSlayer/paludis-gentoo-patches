@@ -45,6 +45,9 @@ builtin_merge()
         CONFIG_PROTECT_MASK=${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK}
     fi
 
+    export CONFIG_PROTECT="${CONFIG_PROTECT}"
+    export CONFIG_PROTECT_MASK="${CONFIG_PROTECT_MASK}"
+
     [[ -f "${EBUILD}" ]] && cp "${EBUILD}" ${dbdir}/
     local x e ee=
     for e in ${ECLASSDIRS:-${ECLASSDIR}} ; do
