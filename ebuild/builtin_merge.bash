@@ -74,13 +74,13 @@ builtin_merge()
     if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then
         install -d "${ROOT%/}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
         if [[ -d "${D}" ]] ; then
-            ${PALUDIS_EBUILD_MODULES_DIR}/utils/merge "${D%/}/" "${ROOT%/}/" "${dbdir}/CONTENTS" \
+            merge "${D%/}/" "${ROOT%/}/" "${dbdir}/CONTENTS" \
                 || die "merge failed"
         fi
     fi
 
     if [[ -n "${reinstall}" ]] ; then
-        ${PALUDIS_EBUILD_MODULES_DIR}/utils/unmerge "${ROOT%/}/" "${dbdir}/OLDCONTENTS" \
+        unmerge "${ROOT%/}/" "${dbdir}/OLDCONTENTS" \
             || die "unmerge failed"
         rm -f "${dbdir}/OLDCONTENTS"
     fi

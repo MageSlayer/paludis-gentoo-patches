@@ -55,6 +55,9 @@ diefunc()
     exit 249
 }
 
+if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
+    export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
+fi
 export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
 EBUILD_MODULES_DIR=$(canonicalise $(dirname $0 ) )
 [[ -d ${EBUILD_MODULES_DIR} ]] || die "${EBUILD_MODULES_DIR} is not a directory"
