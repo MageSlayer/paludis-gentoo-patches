@@ -4,6 +4,55 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.3.0 (in progress):
+    * Lots of internal code cleanup.
+
+    * Doxygen generated documentation is much cleaner. Documentation about
+    configuration file formats is now provided.
+
+    * The build directory for Portage format repositories is now configurable
+    using a parameter named 'buildroot'.
+
+    * .tar.Z files are now unpacked correctly.
+
+    * The 'date' command in ebuild global scope now works with a warning,
+    rather than being a hard failure.
+
+    * --pretend --install now displays detailed counts ('1 upgrade, 3 new')
+    rather than just a raw number.
+
+    * As part of the test suite, various full installs of test packages are
+    now performed.
+
+    * Multiple eclass directories and multiple profile directories can now
+    be specified for Portage format repositories. The 'eclassdir' and
+    'profiledir' keys are now deprecated in favour of 'eclassdirs' and
+    'profiledirs'.
+
+    * Added a --list-vulnerabilities commandline option, mostly for use by
+    tree maintainers.
+
+    * A new repository format named "nothing" is available. It does not
+    contain any packages, but supports a sync parameter to make automatically
+    syncing other directories simpler.
+
+    * Fetching is now handled via wrapper scripts. Support for file:/// URLs
+    has been added.
+
+    * If the user mirrors.conf file contains an entry with a mirror named '*',
+    first try fetching everything from that location.
+
+    * A warning is now emitted when dropping circular dependencies.
+
+    * The merge / unmerge code is now written in C++ rather than bash, and the
+    MD5 implementation is now internal rather than relying upon 'md5sum', which
+    works around problems when upgrading libc.
+
+    * A --dl-no-unnecessary-upgrades commandline option has been added.
+
+    * xterm titles are now updated for syncing, similar to previous behaviour
+    for installing.
+
 0.2.5:
     * Syncing via Git is possible (git://, git+http://, git+ssh://).
 
