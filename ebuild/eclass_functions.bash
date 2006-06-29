@@ -49,7 +49,7 @@ inherit()
     local e ee location=
     for e in "$@" ; do
         for ee in ${ECLASSDIRS:-${ECLASSDIR}} ; do
-            [[ -f "${ee}/${e}.eclass" ]] && location="${ECLASSDIR}/${e}.eclass"
+            [[ -f "${ee}/${e}.eclass" ]] && location="${ee}/${e}.eclass"
         done
         local old_ECLASS="${ECLASS}"
         export ECLASS="${e}"
