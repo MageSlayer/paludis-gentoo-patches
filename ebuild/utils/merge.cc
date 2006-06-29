@@ -19,6 +19,7 @@
 
 #include "merge_common.hh"
 
+#include <paludis/digests/md5.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -63,12 +64,10 @@ namespace
     {
         int n(0);
 
-        PStream our_md5command(getenv_or_error("PALUDIS_EBUILD_DIR") +
-                "/digests/domd5 '" + stringify(file_to_install) + "'");
-        std::string our_md5((istreambuf_iterator<char>(our_md5command)),
-                istreambuf_iterator<char>());
-        if (0 != our_md5command.exit_status())
-            throw Failure("Could not md5sum '" + stringify(name) + "'");
+        ifstream our_md5_file(stringify(file_to_install).c_str());
+        if (! our_md5_file)
+            throw Failure("Could not get md5 for '" + stringify(file_to_install) + "'");
+        MD5 our_md5(our_md5_file);
 
         FSEntry result(name);
         while (true)
@@ -77,13 +76,12 @@ namespace
                 return result;
             else if (result.is_regular_file())
             {
-                PStream other_md5command(getenv_or_error("PALUDIS_EBUILD_DIR") +
-                        "/digests/domd5 '" + stringify(result) + "'");
-                std::string other_md5((istreambuf_iterator<char>(other_md5command)),
-                        istreambuf_iterator<char>());
-                if (0 != other_md5command.exit_status())
-                    throw Failure("Could not md5sum '" + stringify(result) + "'");
-                if (other_md5 == our_md5)
+                ifstream other_md5_file(stringify(result).c_str());
+                if (! other_md5_file)
+                    throw Failure("Could not get md5 for '" + stringify(result) + "'");
+                MD5 other_md5(other_md5_file);
+
+                if (our_md5.hexsum() == other_md5.hexsum())
                     return result;
             }
 
@@ -300,13 +298,13 @@ namespace
                         ostreambuf_iterator<char>(output_file));
             }
 
-            PStream md5command(getenv_or_error("PALUDIS_EBUILD_DIR") +
-                    "/digests/domd5 '" + stringify(dst) + "'");
-            std::string md5((istreambuf_iterator<char>(md5command)), istreambuf_iterator<char>());
-            if (0 != md5command.exit_status())
-                throw Failure("Could not md5sum '" + stringify(dst) + "'");
+            ifstream dst_file(stringify(dst).c_str());
+            if (! dst_file)
+                throw Failure("Could not get md5 for '" + stringify(dst_file) + "'");
+            MD5 md5(dst_file);
+
             *contents << "obj " << dst_dir_str.substr(root_str.length()) << "/" <<
-                dst.basename() << " " << strip_trailing(md5, "\n") << " " <<
+                dst.basename() << " " << md5.hexsum() << " " <<
                 FSEntry(stringify(dst)).mtime() << endl;
         }
     }

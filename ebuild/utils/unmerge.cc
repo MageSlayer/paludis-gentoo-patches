@@ -19,6 +19,8 @@
 
 #include "merge_common.hh"
 
+#include <paludis/digests/md5.hh>
+
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -81,16 +83,14 @@ namespace
                     cout << "--- [!time] " << tokens.at(1) << endl;
                 else
                 {
-                    PStream md5command(getenv_or_error("PALUDIS_EBUILD_DIR") +
-                            "/digests/domd5 '" + stringify(root / tokens.at(1)) + "'");
-                    std::string md5((istreambuf_iterator<char>(md5command)), istreambuf_iterator<char>());
-                    if (0 != md5command.exit_status())
+                    ifstream md5_file(stringify(root / tokens.at(1)).c_str());
+                    if (! md5_file)
                     {
                         Log::get_instance()->message(ll_warning, "Couldn't get md5 for '" +
                                 stringify(root / tokens.at(1)) + "'");
                         cout << "--- [!md5?] " << tokens.at(1) << endl;
                     }
-                    else if (strip_trailing(md5, "\n") != tokens.at(2))
+                    else if (MD5(md5_file).hexsum() != tokens.at(2))
                         cout << "--- [!md5 ] " << tokens.at(1) << endl;
                     else if (is_config_protected(root, root / tokens.at(1)))
                         cout << "--- [cfgpr] " << tokens.at(1) << endl;
