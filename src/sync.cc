@@ -30,6 +30,7 @@
  */
 
 namespace p = paludis;
+using std::cerr;
 
 namespace
 {
@@ -40,6 +41,7 @@ namespace
         std::cout << colour(cl_heading, "Sync " + p::stringify(r->name())) << std::endl;
         try
         {
+            cerr << xterm_title("Syncing " + p::stringify(r->name()));
             if (r->get_interface<p::repo_syncable>() && r->get_interface<p::repo_syncable>()->sync())
                 std::cout << "Sync " << r->name() << " completed" << std::endl;
             else
