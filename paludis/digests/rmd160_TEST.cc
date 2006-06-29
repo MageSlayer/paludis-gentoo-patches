@@ -17,11 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "rmd160.hh"
+#include <paludis/digests/rmd160.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
 using namespace test;
+using namespace paludis;
 
 namespace
 {
@@ -68,7 +69,7 @@ namespace test_cases
         void run()
         {
             std::stringstream ss(data);
-            rmd160::RMD160 s(ss);
+            RMD160 s(ss);
             TEST_CHECK_EQUAL(s.hexsum(), expected);
         }
     };

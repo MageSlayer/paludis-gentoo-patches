@@ -17,9 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "md5.hh"
+#include <paludis/digests/md5.hh>
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
 
 int
 main(int argc, char * argv[])
@@ -38,12 +39,12 @@ main(int argc, char * argv[])
             std::cerr << argv[0] << ": could not open '" << argv[1] << "'" << std::endl;
             return EXIT_FAILURE;
         }
-        md5::MD5 sum(f);
+        paludis::MD5 sum(f);
         std::cout << sum.hexsum() << std::endl;
     }
     else
     {
-        md5::MD5 sum(std::cin);
+        paludis::MD5 sum(std::cin);
         std::cout << sum.hexsum() << std::endl;
     }
 

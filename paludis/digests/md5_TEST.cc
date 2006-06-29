@@ -17,10 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "md5.hh"
+#include <paludis/digests/md5.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
+using namespace paludis;
 using namespace test;
 
 namespace
@@ -68,7 +69,7 @@ namespace test_cases
         void run()
         {
             std::stringstream ss(data);
-            md5::MD5 s(ss);
+            MD5 s(ss);
             TEST_CHECK_EQUAL(s.hexsum(), expected);
         }
     };

@@ -17,9 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "sha256.hh"
+#include <paludis/digests/sha256.hh>
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
 
 int
 main(int argc, char * argv[])
@@ -38,12 +39,12 @@ main(int argc, char * argv[])
             std::cerr << argv[0] << ": could not open '" << argv[1] << "'" << std::endl;
             return EXIT_FAILURE;
         }
-        sha256::SHA256 sum(f);
+        paludis::SHA256 sum(f);
         std::cout << sum.hexsum() << std::endl;
     }
     else
     {
-        sha256::SHA256 sum(std::cin);
+        paludis::SHA256 sum(std::cin);
         std::cout << sum.hexsum() << std::endl;
     }
 

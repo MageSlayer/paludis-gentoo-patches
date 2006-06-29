@@ -20,8 +20,10 @@
 #include "rmd160.hh"
 #include <paludis/util/attributes.hh>
 #include <sstream>
+#include <istream>
+#include <iomanip>
 
-using namespace rmd160;
+using namespace paludis;
 
 /*
  * Implemented based upon the description at:
@@ -167,6 +169,24 @@ RMD160::hexsum() const
             _e(static_cast<unsigned int>(_h[j])) << std::flush;
 
     return result.str();
+}
+
+int
+RMD160::_get(std::istream & stream)
+{
+    char c;
+    if (stream.get(c))
+    {
+        _size += 8;
+        return static_cast<unsigned char>(c);
+    }
+    else if (! _done_one_pad)
+    {
+        _done_one_pad = true;
+        return 0x80;
+    }
+    else
+        return -1;
 }
 
 const uint8_t RMD160::_r[80] = {

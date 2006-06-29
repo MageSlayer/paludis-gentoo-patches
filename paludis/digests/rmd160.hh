@@ -17,46 +17,33 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_EBUILD_DIGESTS_SHA256_HH
-#define PALUDIS_GUARD_EBUILD_DIGESTS_SHA256_HH 1
+#ifndef PALUDIS_GUARD_EBUILD_DIGESTS_RMD160_HH
+#define PALUDIS_GUARD_EBUILD_DIGESTS_RMD160_HH 1
 
-#include <fstream>
-#include <iomanip>
+#include <iosfwd>
 #include <string>
 #include <inttypes.h>
+#include <paludis/util/attributes.hh>
 
-namespace sha256
+namespace paludis
 {
-    class SHA256
+    class RMD160
     {
         private:
-            static const uint32_t _k[64];
+            static const uint8_t _r[80], _rp[80];
+            static const uint8_t _s[80], _sp[80];
+            static const uint32_t _k[5], _kp[5];
 
-            uint32_t _h[8];
+            uint32_t _h[5];
             uint64_t _size;
             bool _done_one_pad;
 
             void _update(const uint8_t * const block);
 
-            inline int _get(std::istream & stream) __attribute__((always_inline))
-            {
-                char c;
-                if (stream.get(c))
-                {
-                    _size += 8;
-                    return static_cast<unsigned char>(c);
-                }
-                else if (! _done_one_pad)
-                {
-                    _done_one_pad = true;
-                    return 0x80;
-                }
-                else
-                    return -1;
-            }
+            inline int _get(std::istream & stream) PALUDIS_ATTRIBUTE((always_inline));
 
         public:
-            SHA256(std::istream & stream);
+            RMD160(std::istream & stream);
 
             std::string hexsum() const;
     };
@@ -64,3 +51,4 @@ namespace sha256
 }
 
 #endif
+

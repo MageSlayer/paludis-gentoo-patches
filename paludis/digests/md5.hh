@@ -20,12 +20,12 @@
 #ifndef PALUDIS_GUARD_EBUILD_DIGESTS_MD5_HH
 #define PALUDIS_GUARD_EBUILD_DIGESTS_MD5_HH 1
 
-#include <fstream>
-#include <iomanip>
+#include <iosfwd>
 #include <string>
 #include <inttypes.h>
+#include <paludis/util/attributes.hh>
 
-namespace md5
+namespace paludis
 {
     class MD5
     {
@@ -38,30 +38,13 @@ namespace md5
 
             void _update(const uint8_t * const block);
 
-            inline int _get(std::istream & stream) __attribute__((always_inline))
-            {
-                char c;
-                if (stream.get(c))
-                {
-                    _size += 8;
-                    return static_cast<unsigned char>(c);
-                }
-                else if (! _done_one_pad)
-                {
-                    _done_one_pad = true;
-                    return 0x80;
-                }
-                else
-                    return -1;
-            }
+            inline int _get(std::istream & stream) PALUDIS_ATTRIBUTE((always_inline));
 
         public:
             MD5(std::istream & stream);
 
             std::string hexsum() const;
     };
-
 }
-
 
 #endif

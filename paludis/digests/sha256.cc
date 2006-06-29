@@ -19,9 +19,11 @@
 
 #include "sha256.hh"
 #include <paludis/util/attributes.hh>
+#include <istream>
+#include <iomanip>
 #include <sstream>
 
-using namespace sha256;
+using namespace paludis;
 
 /*
  * Implemented based upon the description at:
@@ -186,9 +188,26 @@ SHA256::hexsum() const
     return result.str();
 }
 
+int
+SHA256::_get(std::istream & stream)
+{
+    char c;
+    if (stream.get(c))
+    {
+        _size += 8;
+        return static_cast<unsigned char>(c);
+    }
+    else if (! _done_one_pad)
+    {
+        _done_one_pad = true;
+        return 0x80;
+    }
+    else
+        return -1;
+}
 
 const uint32_t
-sha256::SHA256::_k[64] = {
+paludis::SHA256::_k[64] = {
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
     0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
     0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,

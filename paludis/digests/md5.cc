@@ -17,11 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "md5.hh"
-#include <paludis/util/attributes.hh>
+#include <paludis/digests/md5.hh>
 #include <sstream>
+#include <istream>
+#include <iomanip>
 
-using namespace md5;
+using namespace paludis;
 
 /*
  * Implemented based upon the description in RFC1321.
@@ -190,6 +191,24 @@ MD5::hexsum() const
             _e(static_cast<unsigned int>(_r[j])) << std::flush;
 
     return result.str();
+}
+
+int
+MD5::_get(std::istream & stream)
+{
+    char c;
+    if (stream.get(c))
+    {
+        _size += 8;
+        return static_cast<unsigned char>(c);
+    }
+    else if (! _done_one_pad)
+    {
+        _done_one_pad = true;
+        return 0x80;
+    }
+    else
+        return -1;
 }
 
 const uint8_t MD5::_s[64] = {

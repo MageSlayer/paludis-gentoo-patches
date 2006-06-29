@@ -17,11 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "sha256.hh"
+#include <paludis/digests/sha256.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
 using namespace test;
+using namespace paludis;
 
 namespace
 {
@@ -68,7 +69,7 @@ namespace test_cases
         void run()
         {
             std::stringstream ss(data);
-            sha256::SHA256 s(ss);
+            SHA256 s(ss);
             TEST_CHECK_EQUAL(s.hexsum(), expected);
         }
     };

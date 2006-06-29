@@ -9,43 +9,18 @@ libexecprog_PROGRAMS = \
 	dormd160 \
 	domd5
 
-dosha256_SOURCES = \
-	sha256.cc \
-	sha256.hh \
-	dosha256.cc
+dosha256_SOURCES = dosha256.cc
+dosha256_LDADD = $(top_builddir)/paludis/digests/libpaludisdigests.a
 
-dormd160_SOURCES = \
-	rmd160.cc \
-	rmd160.hh \
-	dormd160.cc
+dormd160_SOURCES = dormd160.cc
+dormd160_LDADD = $(top_builddir)/paludis/digests/libpaludisdigests.a
 
-domd5_SOURCES = \
-	md5.hh \
-	md5.cc \
-	domd5.cc
+domd5_SOURCES = domd5.cc
+domd5_LDADD = $(top_builddir)/paludis/digests/libpaludisdigests.a
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh
 
-TESTS = dosha256_TEST dormd160_TEST domd5_TEST
-EXTRA_DIST = $(libexecprog_SCRIPTS) dosha256_TEST.cc dormd160_TEST.cc domd5_TEST.cc
-
-check_SCRIPTS =
-check_PROGRAMS = $(TESTS)
-
 AM_CXXFLAGS = -I$(top_srcdir)
-
-dosha256_TEST_SOURCES = sha256.cc sha256.hh dosha256_TEST.cc
-dosha256_TEST_CXXFLAGS = -I$(top_srcdir)
-dosha256_TEST_LDADD = $(top_builddir)/test/libtest.a
-
-dormd160_TEST_SOURCES = rmd160.cc rmd160.hh dormd160_TEST.cc
-dormd160_TEST_CXXFLAGS = -I$(top_srcdir)
-dormd160_TEST_LDADD = $(top_builddir)/test/libtest.a
-
-domd5_TEST_SOURCES = md5.cc md5.hh md5_TEST.cc
-domd5_TEST_CXXFLAGS = -I$(top_srcdir)
-domd5_TEST_LDADD = $(top_builddir)/test/libtest.a
-
