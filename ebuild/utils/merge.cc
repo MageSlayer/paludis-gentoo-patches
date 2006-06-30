@@ -369,7 +369,7 @@ namespace
             else if (d->is_directory())
             {
                 do_dir(root, src_dir / d->basename(), dst_dir / d->basename(), contents);
-                merge_this(root, src_dir / d->basename(), dst_dir / d->basename(), contents);
+                merge_this(root, (src_dir / d->basename()).realpath(), (dst_dir / d->basename()).realpath(), contents);
             }
             else
                 throw Failure("Don't know how to merge '" + stringify(*d) + "'");
