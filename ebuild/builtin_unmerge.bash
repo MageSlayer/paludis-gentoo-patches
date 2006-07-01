@@ -56,6 +56,11 @@ builtin_unmerge()
     unmerge "${ROOT}/" "${dbdir}/CONTENTS" \
         || die "unmerge failed"
 
+    if ! /bin/sh -c 'echo Good, our shell is still usable' ; then
+        echo "Looks like our shell broke. Trying an ldconfig to fix it..."
+        ldconfig -r ${ROOT}
+    fi
+
     rm -fr "${dbdir}"
 }
 
