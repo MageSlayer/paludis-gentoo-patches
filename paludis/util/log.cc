@@ -107,7 +107,7 @@ Log::message(const LogLevel l, const std::string & s)
 
         } while (false);
 
-        *_imp->stream << s << std::endl;
+        *_imp->stream << Context::backtrace(" ") << s << std::endl;
     }
 }
 
