@@ -133,15 +133,47 @@ done
 
 ebuild_load_ebuild()
 {
+    ebuild_section "Loading ebuild"
+
+    if [[ -n "${PALUDIS_LOAD_ENVIRONMENT}" ]] ; then
+        bunzip2 < "${PALUDIS_LOAD_ENVIRONMENT}" > ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF} \
+            || die "Can't extract ${PALUDIS_LOAD_ENVIRONMENT}"
+
+        sed -i \
+            -e '/^diefunc ()/,/^}/d' \
+            -e '/^perform_hook ()/,/^}/d' \
+            -e '/^ROOTPATH=/d' \
+            -e '/^PATH=/d' \
+            -e '/^T=/d' \
+            -e '/^PALUDIS_TMPDIR=/d' \
+            -e '/^PALUDIS_EBUILD_LOG_LEVEL=/d' \
+            -e '/^PORTDIR=/d' \
+            -e '/^FILESDIR=/d' \
+            -e '/^ECLASSDIR=/d' \
+            -e '/^DISTDIR=/d' \
+            -e '/^PALUDIS_EBUILD_DIR=/d' \
+            -e '/^PALUDIS_COMMAND=/d' \
+            -e '/^ROOT=/d' \
+            "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}"
+
+        source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" &>/dev/null \
+            || die "Can't load saved environment"
+
+        echo rm "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" 1>&2
+        rm "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}"
+    fi
+
     export EBUILD="${1}"
     if [[ "${CATEGORY}" == "virtual" ]] ; then
         if [[ -f "${1}" ]] ; then
+            echo source ${1} 1>&2
             source ${1} || die "Error sourcing ebuild '${1}'"
         elif [[ -e "${1}" ]] ; then
             die "'${1}' exists but is not a regular file"
         fi
     else
         [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
+        echo source ${1} 1>&2
         source ${1} || die "Error sourcing ebuild '${1}'"
     fi
     [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"

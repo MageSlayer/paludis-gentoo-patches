@@ -47,6 +47,7 @@ namespace paludis
         vdbrpk_location,
         vdbrpk_root,
         vdbrpk_world,
+        vdbrpk_buildroot,
         last_vdbrpk
     };
 
@@ -63,7 +64,8 @@ namespace paludis
         SmartRecordKey<vdbrpk_package_database, const PackageDatabase *>,
         SmartRecordKey<vdbrpk_location, const FSEntry>,
         SmartRecordKey<vdbrpk_root, const FSEntry>,
-        SmartRecordKey<vdbrpk_world, const FSEntry>
+        SmartRecordKey<vdbrpk_world, const FSEntry>,
+        SmartRecordKey<vdbrpk_buildroot, const FSEntry>
     {
     };
 

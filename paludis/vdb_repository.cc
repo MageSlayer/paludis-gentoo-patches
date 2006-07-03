@@ -158,6 +158,34 @@ namespace
             }
         };
     };
+
+    /**
+     * Figure out the format of environment.bz2. If VDB_FORMAT is "paludis-1",
+     * or if there's no VDB_FORMAT and there're no lines with () and no =, it's
+     * an env dump. Otherwise it's a source file.
+     *
+     * \ingroup grpvdbrepository
+     */
+    bool is_full_env(const FSEntry & vdb_dir)
+    {
+        bool result(false);
+
+        if ((vdb_dir / "VDB_FORMAT").is_regular_file())
+        {
+            std::ifstream f(stringify(vdb_dir / "VDB_FORMAT").c_str());
+            if (! f)
+                throw EnvironmentVariableActionError("Could not read '" +
+                        stringify(vdb_dir / "VDB_FORMAT") + "'");
+            result = ("paludis-1" != strip_trailing_string(std::string(
+                            (std::istreambuf_iterator<char>(f)),
+                            std::istreambuf_iterator<char>()), "\n"));
+        }
+        else if (0 == run_command("bunzip2 < " + stringify(vdb_dir / "environment.bz2") +
+                    " | grep -q '^[^=]\\+()'"))
+            result = true;
+
+        return result;
+    }
 }
 
 namespace paludis
@@ -223,7 +251,7 @@ Implementation<VDBRepository>::Implementation(const VDBRepositoryParams & p) :
     env(p.get<vdbrpk_environment>()),
     location(p.get<vdbrpk_location>()),
     root(p.get<vdbrpk_root>()),
-    buildroot("/var/tmp/paludis"),
+    buildroot(p.get<vdbrpk_buildroot>()),
     world_file(p.get<vdbrpk_world>()),
     entries_valid(false),
     has_provide_map(false)
@@ -377,6 +405,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     _info.insert(std::make_pair(std::string("root"), stringify(_imp->root)));
     _info.insert(std::make_pair(std::string("format"), std::string("vdb")));
     _info.insert(std::make_pair(std::string("world"), stringify(_imp->world_file)));
+    _info.insert(std::make_pair(std::string("buildroot"), stringify(_imp->buildroot)));
 }
 
 VDBRepository::~VDBRepository()
@@ -655,12 +684,17 @@ VDBRepository::make_vdb_repository(
     if (m.end() == m.find("world") || ((world = m.find("world")->second)).empty())
         world = location + "/world";
 
+    std::string buildroot;
+    if (m.end() == m.find("buildroot") || ((buildroot = m.find("buildroot")->second)).empty())
+        buildroot = "/var/tmp/paludis";
+
     return CountedPtr<Repository>(new VDBRepository(VDBRepositoryParams::create((
                         param<vdbrpk_environment>(env),
                         param<vdbrpk_package_database>(db),
                         param<vdbrpk_location>(location),
                         param<vdbrpk_root>(root),
-                        param<vdbrpk_world>(world)))));
+                        param<vdbrpk_world>(world),
+                        param<vdbrpk_buildroot>(buildroot)))));
 }
 
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(
@@ -722,23 +756,28 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
     eclassdirs->append(FSEntry(_imp->location / stringify(q.get<qpn_category>()) /
                 (stringify(q.get<qpn_package>()) + "-" + stringify(v))));
 
+    FSEntry pkg_dir(_imp->location / stringify(q.get<qpn_category>()) /
+            (stringify(q.get<qpn_package>()) + "-" + stringify(v)));
+
+    CountedPtr<FSEntry, count_policy::ExternalCountTag> load_env(0);
+    if (is_full_env(pkg_dir))
+        load_env.assign(new FSEntry(pkg_dir / "environment.bz2"));
+
     EbuildUninstallCommand uninstall_cmd(EbuildCommandParams::create((
                     param<ecpk_environment>(_imp->env),
                     param<ecpk_db_entry>(&e),
-                    param<ecpk_ebuild_dir>(_imp->location / stringify(q.get<qpn_category>()) /
-                        (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
-                    param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
-                        (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
+                    param<ecpk_ebuild_dir>(pkg_dir),
+                    param<ecpk_files_dir>(pkg_dir),
                     param<ecpk_eclassdirs>(eclassdirs),
                     param<ecpk_portdir>(_imp->location),
-                    param<ecpk_distdir>(_imp->location / stringify(q.get<qpn_category>()) /
-                        (stringify(q.get<qpn_package>()) + "-" + stringify(v))),
+                    param<ecpk_distdir>(pkg_dir),
                     param<ecpk_buildroot>(_imp->buildroot)
                     )),
             EbuildUninstallCommandParams::create((
                     param<ecupk_root>(stringify(_imp->root) + "/"),
                     param<ecupk_disable_cfgpro>(o.get<io_noconfigprotect>()),
-                    param<ecupk_unmerge_only>(! metadata->get_ebuild_interface()->get<evm_virtual>().empty())
+                    param<ecupk_unmerge_only>(! metadata->get_ebuild_interface()->get<evm_virtual>().empty()),
+                    param<ecupk_load_environment>(load_env.raw_pointer())
                     )));
 
     uninstall_cmd();
@@ -968,26 +1007,7 @@ VDBRepository::get_environment_variable(
     }
     else if ((vdb_dir / "environment.bz2").is_regular_file())
     {
-        /* Figure out the format of environment.bz2. If VDB_FORMAT is "paludis-1",
-         * or if there's no VDB_FORMAT and there're no lines with () and no =,
-         * it's an env dump. Otherwise it's a source file. */
-        bool is_source_file(false);
-
-        if ((vdb_dir / "VDB_FORMAT").is_regular_file())
-        {
-            std::ifstream f(stringify(vdb_dir / "VDB_FORMAT").c_str());
-            if (! f)
-                throw EnvironmentVariableActionError("Could not read '" +
-                        stringify(vdb_dir / "VDB_FORMAT") + "'");
-            is_source_file = ("paludis-1" != strip_trailing_string(std::string(
-                            (std::istreambuf_iterator<char>(f)),
-                            std::istreambuf_iterator<char>()), "\n"));
-        }
-        else if (0 == run_command("bunzip2 < " + stringify(vdb_dir / "environment.bz2") +
-                    " | grep -q '^[^=]\\+()'"))
-            is_source_file = true;
-
-        if (is_source_file)
+        if (is_full_env(vdb_dir))
         {
             PStream p("bash -c '( bunzip2 < " + stringify(vdb_dir / "environment.bz2" ) +
                     " ; echo echo \\$" + var + " ) | bash 2>/dev/null'");

@@ -401,6 +401,7 @@ namespace paludis
         ecupk_root,
         ecupk_disable_cfgpro,
         ecupk_unmerge_only,
+        ecupk_load_environment,
         last_ecupk
     };
 
@@ -416,7 +417,8 @@ namespace paludis
         SmartRecordKeys<EbuildUninstallCommandParamsKeys, last_ecupk>,
         SmartRecordKey<ecupk_root, std::string>,
         SmartRecordKey<ecupk_disable_cfgpro, bool>,
-        SmartRecordKey<ecupk_unmerge_only, bool>
+        SmartRecordKey<ecupk_unmerge_only, bool>,
+        SmartRecordKey<ecupk_load_environment, const FSEntry * const>
     {
     };
 

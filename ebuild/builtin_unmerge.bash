@@ -22,10 +22,17 @@ builtin_unmerge()
     local dbdir="${ROOT}"/var/db/pkg/"${CATEGORY}/${PF}" entry
     [[ -d "${dbdir}" ]] || die "couldn't find pkg db directory (\"${dbdir}\")"
 
-    for v in CATEGORY CBUILD CFLAGS CHOST CXXFLAGS DEPEND DESCRIPTION EAPI \
+    for v in CATEGORY CBUILD CHOST DEPEND DESCRIPTION EAPI \
         FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
-        PROVIDE RDEPEND SLOT SRC_URI USE ; do
-        eval "${v}=\$(< ${dbdir}/${v} ) || die \"Load key ${v} failed\""
+        PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK \
+        VDB_FORMAT ASFLAGS CBUILD CC CFLAGS CHOST CTARGET CXX CXXFLAGS \
+        EXTRA_ECONF EXTRA_EINSTALL EXTRA_EMAKE LDFLAGS LIBCXXFLAGS \
+        REPOSITORY ; do
+        if [[ -f "${dbdir}/${v}" ]] ; then
+            eval "${v}=\$(< ${dbdir}/${v} ) || die \"Load key ${v} failed\""
+        else
+            eval "${v}="
+        fi
     done
 
     if [[ -f ${dbdir}/CONFIG_PROTECT ]]; then
@@ -35,6 +42,7 @@ builtin_unmerge()
         fi
     else
         eval $(bzcat "${dbdir}/environment.bz2" | while read line; do
+            line=${line//\'}
             if [[ ${line%%=*} == CONFIG_PROTECT ]]; then
                 echo "CONFIG_PROTECT='${line#*=} ${CONFIG_PROTECT}'"
             elif [[ ${line%%=*} == CONFIG_PROTECT_MASK ]]; then

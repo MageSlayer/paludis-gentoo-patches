@@ -39,6 +39,7 @@ END
 cat <<END > root/${SYSCONFDIR}/paludis/repositories/installed.conf
 location = \${ROOT}/var/db/pkg
 format = vdb
+buildroot = `pwd`/build
 END
 
 mkdir -p root/tmp
@@ -92,7 +93,16 @@ USERLAND=test
 KERNEL=test
 END
 
+cat <<"END" > eclass/myeclass.eclass || exit 1
+the_eclass_works()
+{
+    true
+}
+END
+
 cat <<"END" > test-category/target/target-1.ebuild || exit 1
+inherit myeclass
+
 DESCRIPTION="Test target"
 HOMEPAGE="http://paludis.berlios.de/"
 SRC_URI="http://invalid.domain/${P}.tar.gz"
@@ -101,9 +111,27 @@ IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
 
+pkg_setup() {
+    export VAR1=yes
+    VAR2=yes
+    local VAR3=yes
+}
+
 src_install() {
+    [[ "${VAR1}" == yes ]] || die
+    [[ "${VAR2}" == yes ]] || die
+    [[ "${VAR3}" == yes ]] && die
+
     dobin testbin
     dobin testbin${PV}
+}
+
+pkg_prerm() {
+    [[ "${VAR1}" == yes ]] || die
+    [[ "${VAR2}" == yes ]] || die
+    [[ "${VAR3}" == yes ]] && die
+
+    the_eclass_works || die
 }
 END
 

@@ -46,6 +46,8 @@ EXPORT_FUNCTIONS()
 
 inherit()
 {
+    [[ -n "${PALUDIS_SKIP_INHERIT}" ]] && return
+
     local e ee location=
     for e in "$@" ; do
         for ee in ${ECLASSDIRS:-${ECLASSDIR}} ; do

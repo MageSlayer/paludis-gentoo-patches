@@ -30,11 +30,17 @@ builtin_merge()
     install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
     install -d "${ROOT%/}"/var/db/pkg/.cache || die "couldn't make pkg db cache"
 
-    local v VDB_FORMAT="paludis-1"
-    for v in CATEGORY CBUILD CFLAGS CHOST CXXFLAGS DEPEND DESCRIPTION EAPI \
+    local v VDB_FORMAT="paludis-2"
+    for v in CATEGORY CBUILD CHOST DEPEND DESCRIPTION EAPI \
         FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
         PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK \
         VDB_FORMAT ; do
+        echo "${!v}" > "${dbdir}"/${v} || die "pkg db write ${v} failed"
+    done
+    for v in ASFLAGS CBUILD CC CFLAGS CHOST CTARGET CXX CXXFLAGS \
+        EXTRA_ECONF EXTRA_EINSTALL EXTRA_EMAKE LDFLAGS LIBCXXFLAGS \
+        REPOSITORY ; do
+        [[ -z "${!v}" ]] && continue
         echo "${!v}" > "${dbdir}"/${v} || die "pkg db write ${v} failed"
     done
 
@@ -49,18 +55,6 @@ builtin_merge()
     export CONFIG_PROTECT_MASK="${CONFIG_PROTECT_MASK}"
 
     [[ -f "${EBUILD}" ]] && cp "${EBUILD}" ${dbdir}/
-    local x e ee=
-    for e in ${ECLASSDIRS:-${ECLASSDIR}} ; do
-        ee="${e} ${ee}"
-    done
-    for i in ${INHERITED} ; do
-        for e in ${ee} ; do
-            if [[ -f "${e}/${i}".eclass ]] ; then
-                cp "${e}/${i}".eclass "${dbdir}/" || die "save eclass ${i} failed"
-                break
-            fi
-        done
-    done
 
     local reinstall=
     if [[ -f "${dbdir}/CONTENTS" ]] ; then
@@ -68,7 +62,7 @@ builtin_merge()
         reinstall="yes"
     fi
 
-    env | bzip2 > ${dbdir}/environment.bz2
+    ( set ; export -p | sed 's:^declare -rx:declare -x:' ) | bzip2 > ${dbdir}/environment.bz2
     > ${dbdir}/CONTENTS
 
     if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then

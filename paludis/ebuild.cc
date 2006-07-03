@@ -86,6 +86,7 @@ EbuildCommand::operator() ()
                 ("PF", stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_package>()) + "-" +
                  stringify(params.get<ecpk_db_entry>()->get<pde_version>()))
                 ("CATEGORY", stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_category>()))
+                ("REPOSITORY", stringify(params.get<ecpk_db_entry>()->get<pde_repository>()))
                 ("FILESDIR", stringify(params.get<ecpk_files_dir>()))
                 ("ECLASSDIR", stringify(*params.get<ecpk_eclassdirs>()->begin()))
                 ("ECLASSDIRS", join(params.get<ecpk_eclassdirs>()->begin(),
@@ -353,6 +354,11 @@ EbuildUninstallCommand::extend_command(const MakeEnvCommand & cmd)
             ("ROOT", uninstall_params.get<ecupk_root>())
             ("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK",
                 uninstall_params.get<ecupk_disable_cfgpro>() ? "/" : ""));
+
+    if (uninstall_params.get<ecupk_load_environment>())
+        result = result
+            ("PALUDIS_LOAD_ENVIRONMENT", stringify(*uninstall_params.get<ecupk_load_environment>()))
+            ("PALUDIS_SKIP_INHERIT", "yes");
 
     return result;
 }
