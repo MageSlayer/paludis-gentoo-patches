@@ -18,6 +18,7 @@
  */
 
 #include <paludis/dep_atom.hh>
+#include <paludis/util/log.hh>
 
 /** \file
  * Implementation for dep_atom.hh things.
@@ -186,7 +187,9 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
             if ('*' == s.at(s.length() - 1))
             {
                 if (_version_operator != vo_equal)
-                    throw PackageDepAtomError("Package dep atom '" + ss + "' uses * but not equals operator");
+                    Log::get_instance()->message(ll_qa, "Package dep atom '" + ss + "' uses * "
+                            "with operator '" + stringify(_version_operator) +
+                            "', pretending it uses the equals operator instead");
                 _version_operator = vo_equal_star;
                 _version_spec = CountedPtr<VersionSpec, count_policy::ExternalCountTag>(
                         new VersionSpec(s.substr(q, s.length() - q - 1)));
