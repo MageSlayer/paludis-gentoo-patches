@@ -110,6 +110,7 @@ namespace paludis
         public Repository::SyncableInterface,
         public Repository::NewsInterface,
         public Repository::SetsInterface,
+        public Repository::EnvironmentVariableInterface,
         private PrivateImplementationPattern<PortageRepository>
     {
         private:
@@ -202,6 +203,10 @@ namespace paludis
             virtual ProvideMapIterator end_provide_map() const;
 
             virtual void update_news() const;
+
+            virtual std::string get_environment_variable(
+                    const PackageDatabaseEntry & for_package,
+                    const std::string & var) const;
 
             typedef CountedPtr<PortageRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const PortageRepository, count_policy::InternalCountTag> ConstPointer;

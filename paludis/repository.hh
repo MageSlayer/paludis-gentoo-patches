@@ -124,6 +124,7 @@ namespace paludis
         repo_uninstallable,
         repo_use,
         repo_world,
+        repo_environment_variable,
         last_repo
     };
 
@@ -152,6 +153,7 @@ namespace paludis
             class UninstallableInterface;
             class UseInterface;
             class WorldInterface;
+            class EnvironmentVariableInterface;
 
         protected:
             /**
@@ -171,7 +173,8 @@ namespace paludis
                 SmartRecordKey<repo_syncable, SyncableInterface *>,
                 SmartRecordKey<repo_uninstallable, UninstallableInterface *>,
                 SmartRecordKey<repo_use, UseInterface *>,
-                SmartRecordKey<repo_world, WorldInterface *>
+                SmartRecordKey<repo_world, WorldInterface *>,
+                SmartRecordKey<repo_environment_variable, EnvironmentVariableInterface *>
             {
             };
 
@@ -719,6 +722,25 @@ namespace paludis
     };
 
     /**
+     * Interface for environment variable querying for repositories.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::EnvironmentVariableInterface
+    {
+        public:
+            /**
+             * Query an environment variable
+             */
+            virtual std::string get_environment_variable(
+                    const PackageDatabaseEntry & for_package,
+                    const std::string & var) const = 0;
+
+            virtual ~EnvironmentVariableInterface() { }
+    };
+
+    /**
      * Thrown if a repository of the specified type does not exist.
      *
      * \ingroup grpexceptions
@@ -792,6 +814,23 @@ namespace paludis
              */
             PackageUninstallActionError(const std::string & msg) throw ();
     };
+
+    /**
+     * Thrown if an environment variable query fails.
+     *
+     * \ingroup grprepository
+     * \ingroup grpexceptions
+     */
+    class EnvironmentVariableActionError :
+        public PackageActionError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            EnvironmentVariableActionError(const std::string & msg) throw ();
+    };
+
 
     class PackageDatabase;
 

@@ -19,6 +19,7 @@
 
 #include <paludis/ebuild.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/strip.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/environment.hh>
@@ -201,6 +202,42 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
 
         return false;
     }
+}
+
+EbuildVariableCommand::EbuildVariableCommand(const EbuildCommandParams & p,
+        const std::string & var) :
+    EbuildCommand(p),
+    _var(var)
+{
+}
+
+std::string
+EbuildVariableCommand::commands() const
+{
+    return "variable";
+}
+
+bool
+EbuildVariableCommand::failure()
+{
+    return EbuildCommand::failure();
+}
+
+MakeEnvCommand
+EbuildVariableCommand::extend_command(const MakeEnvCommand & cmd)
+{
+    return cmd("PALUDIS_VARIABLE", _var);
+}
+
+bool
+EbuildVariableCommand::do_run_command(const std::string & cmd)
+{
+    PStream prog(cmd);
+    _result = strip_trailing_string(
+            std::string((std::istreambuf_iterator<char>(prog)),
+                std::istreambuf_iterator<char>()), "\n");
+
+    return (0 == prog.exit_status());
 }
 
 std::string

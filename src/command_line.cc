@@ -38,6 +38,8 @@ CommandLine::CommandLine() :
     action_args_internal(this, "More actions (mostly for internal / script use)"),
     a_has_version(&action_args_internal, "has-version", '\0', "Check whether the specified atom is installed"),
     a_best_version(&action_args_internal, "best-version", '\0', "Display the best version of the specified atom"),
+    a_environment_variable(&action_args_internal, "environment-variable", '\0', "Display the value of an environment "
+            "variable for a particular package"),
     a_list_sync_protocols(&action_args_internal, "list-sync-protocols", '\0', "List available sync protocols"),
     a_list_repository_formats(&action_args_internal, "list-repository-formats", '\0', "List available repository formats"),
     a_list_dep_tag_categories(&action_args_internal, "list-dep-tag-categories", '\0', "List known dep tag categories"),

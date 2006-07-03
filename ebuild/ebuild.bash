@@ -187,7 +187,7 @@ ebuild_main()
 
     for action in $@ ; do
         case ${action} in
-            metadata|init|fetch|merge|unmerge|tidyup|strip)
+            metadata|variable|init|fetch|merge|unmerge|tidyup|strip)
                 ebuild_load_module builtin_${action}
             ;;
 
@@ -207,14 +207,16 @@ ebuild_main()
         esac
     done
 
-    if [[ $1 == metadata ]] ; then
-        for f in cut tr date ; do
-            eval "export ebuild_real_${f}=\"$(which $f )\""
-            eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
-        done
+    if [[ $1 == metadata ]] || [[ $1 == variable ]] ; then
         perform_hook ebuild_${action}_pre
-        PATH="" ebuild_load_ebuild "${ebuild}"
-        ebuild_f_metadata || die "${1} failed"
+        if [[ $1 != variable ]] || [[ -n "${ebuild}" ]] ; then
+            for f in cut tr date ; do
+                eval "export ebuild_real_${f}=\"$(which $f )\""
+                eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(which $f ) \"\$@\" ; }"
+            done
+            PATH="" ebuild_load_ebuild "${ebuild}"
+        fi
+        ebuild_f_${1} || die "${1} failed"
         perform_hook ebuild_${action}_post
     else
         ebuild_load_ebuild "${ebuild}"

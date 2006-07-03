@@ -76,7 +76,8 @@ FakeRepository::FakeRepository(const RepositoryName & name) :
                     param<repo_syncable>(static_cast<SyncableInterface *>(0)),
                     param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
                     param<repo_use>(this),
-                    param<repo_world>(static_cast<WorldInterface *>(0))
+                    param<repo_world>(static_cast<WorldInterface *>(0)),
+                    param<repo_environment_variable>(static_cast<EnvironmentVariableInterface *>(0))
                     ))),
     Repository::MaskInterface(),
     Repository::UseInterface(),

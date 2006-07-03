@@ -92,6 +92,9 @@ class CommandLine :
         /// --best-version
         paludis::args::SwitchArg a_best_version;
 
+        /// --environment-variable
+        paludis::args::SwitchArg a_environment_variable;
+
         /// --list-sync-protocols
         paludis::args::SwitchArg a_list_sync_protocols;
 

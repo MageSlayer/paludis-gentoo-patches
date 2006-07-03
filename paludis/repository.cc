@@ -60,6 +60,11 @@ PackageInstallActionError::PackageInstallActionError(const std::string & msg) th
 {
 }
 
+EnvironmentVariableActionError::EnvironmentVariableActionError(const std::string & msg) throw () :
+    PackageActionError("Environment variable query error: " + msg)
+{
+}
+
 PackageFetchActionError::PackageFetchActionError(const std::string & msg) throw () :
     PackageActionError("Fetch error: " + msg)
 {

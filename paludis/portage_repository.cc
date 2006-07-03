@@ -553,7 +553,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
                     param<repo_syncable>(this),
                     param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
                     param<repo_use>(this),
-                    param<repo_world>(static_cast<WorldInterface *>(0))
+                    param<repo_world>(static_cast<WorldInterface *>(0)),
+                    param<repo_environment_variable>(this)
                     ))),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(p))
 {
@@ -2027,5 +2028,37 @@ PortageRepository::update_news() const
                     + e.what() + ")");
         }
     }
+}
+
+std::string
+PortageRepository::get_environment_variable(
+        const PackageDatabaseEntry & for_package,
+        const std::string & var) const
+{
+    Context context("When fetching environment variable '" + var + "' from repository '"
+            + stringify(name()) + "':");
+
+    _imp->need_profiles();
+
+    QualifiedPackageName q(for_package.get<pde_name>());
+    EbuildVariableCommand cmd(EbuildCommandParams::create((
+                    param<ecpk_environment>(_imp->env),
+                    param<ecpk_db_entry>(&for_package),
+                    param<ecpk_ebuild_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        stringify(q.get<qpn_package>())),
+                    param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        stringify(q.get<qpn_package>()) / "files"),
+                    param<ecpk_eclassdirs>(_imp->eclassdirs),
+                    param<ecpk_portdir>(_imp->location),
+                    param<ecpk_distdir>(_imp->distdir),
+                    param<ecpk_buildroot>(_imp->buildroot)
+                    )),
+            var);
+
+    if (! cmd())
+        throw EnvironmentVariableActionError("Couldn't get environment variable '" +
+                stringify(var) + "' for package '" + stringify(for_package) + "'");
+
+    return cmd.result();
 }
 

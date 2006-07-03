@@ -203,6 +203,43 @@ namespace paludis
     };
 
     /**
+     * An EbuildVariableCommand is used to fetch the value of an environment
+     * variable for a particular ebuild in a PortageRepository.
+     *
+     * \ingroup grpebuildinterface
+     */
+    class EbuildVariableCommand :
+        public EbuildCommand
+    {
+        private:
+            std::string _result;
+            const std::string _var;
+
+        protected:
+            virtual std::string commands() const;
+
+            virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
+
+            virtual bool do_run_command(const std::string &);
+
+            virtual bool failure();
+
+        public:
+            /**
+             * Constructor.
+             */
+            EbuildVariableCommand(const EbuildCommandParams &, const std::string &);
+
+            /**
+             * Fetch our result.
+             */
+            std::string result() const
+            {
+                return _result;
+            }
+    };
+
+    /**
      * Keys for EbuildFetchCommandParams.
      *
      * \see EbuildFetchCommandParams

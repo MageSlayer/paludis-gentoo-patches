@@ -93,7 +93,8 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
                     param<repo_syncable>(this),
                     param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
                     param<repo_use>(static_cast<UseInterface *>(0)),
-                    param<repo_world>(static_cast<WorldInterface *>(0))
+                    param<repo_world>(static_cast<WorldInterface *>(0)),
+                    param<repo_environment_variable>(static_cast<EnvironmentVariableInterface *>(0))
                     ))),
     PrivateImplementationPattern<NothingRepository>(new Implementation<NothingRepository>(p))
 {

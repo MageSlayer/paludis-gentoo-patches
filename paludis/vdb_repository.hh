@@ -90,6 +90,7 @@ namespace paludis
         public Repository::UninstallableInterface,
         public Repository::SetsInterface,
         public Repository::WorldInterface,
+        public Repository::EnvironmentVariableInterface,
         public PrivateImplementationPattern<VDBRepository>
     {
         protected:
@@ -167,6 +168,10 @@ namespace paludis
             virtual void add_to_world(const QualifiedPackageName &) const;
 
             virtual void remove_from_world(const QualifiedPackageName &) const;
+
+            virtual std::string get_environment_variable(
+                    const PackageDatabaseEntry & for_package,
+                    const std::string & var) const;
 
             typedef CountedPtr<VDBRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const VDBRepository, count_policy::InternalCountTag> ConstPointer;

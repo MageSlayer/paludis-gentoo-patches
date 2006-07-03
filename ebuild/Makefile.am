@@ -13,6 +13,7 @@ libexecprog_SCRIPTS = \
 	builtin_strip.bash \
 	builtin_tidyup.bash \
 	builtin_unmerge.bash \
+	builtin_variable.bash \
 	ebuild.bash \
 	echo_functions.bash \
 	kernel_functions.bash \

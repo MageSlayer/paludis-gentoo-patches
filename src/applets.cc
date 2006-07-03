@@ -75,6 +75,43 @@ int do_best_version()
     return return_code;
 }
 
+int do_environment_variable()
+{
+    int return_code(0);
+
+    p::Context context("When performing environment-variable action from command line:");
+    p::Environment * const env(p::DefaultEnvironment::get_instance());
+
+    std::string atom_str(*CommandLine::get_instance()->begin_parameters());
+    std::string var_str(* p::next(CommandLine::get_instance()->begin_parameters()));
+    p::PackageDepAtom::Pointer atom(new p::PackageDepAtom(atom_str));
+
+    p::PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
+                atom, p::is_installed_only));
+
+    if (entries->empty())
+        entries = env->package_database()->query(atom, p::is_uninstalled_only);
+
+    if (entries->empty())
+        throw p::NoSuchPackageError(atom_str);
+
+    p::Repository::ConstPointer repo(env->package_database()->fetch_repository(
+                entries->begin()->get<p::pde_repository>()));
+    p::Repository::EnvironmentVariableInterface * env_if(
+            repo->get_interface<p::repo_environment_variable>());
+
+    if (! env_if)
+    {
+        std::cerr << "Repository '" << repo->name() <<
+            "' cannot be queried for environment variables" << std::endl;
+        return_code |= 1;
+    }
+    else
+        std::cout << env_if->get_environment_variable(*entries->begin(), var_str) << std::endl;
+
+    return return_code;
+}
+
 int do_list_repository_formats()
 {
     int return_code(1);

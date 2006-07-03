@@ -368,7 +368,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
                     param<repo_syncable>(static_cast<SyncableInterface *>(0)),
                     param<repo_uninstallable>(this),
                     param<repo_use>(this),
-                    param<repo_world>(this)
+                    param<repo_world>(this),
+                    param<repo_environment_variable>(this)
                     ))),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(p))
 {
@@ -938,3 +939,79 @@ VDBRepository::remove_from_world(const QualifiedPackageName & n) const
     std::copy(world_lines.begin(), world_lines.end(),
             std::ostream_iterator<std::string>(world_file, "\n"));
 }
+
+std::string
+VDBRepository::get_environment_variable(
+        const PackageDatabaseEntry & for_package,
+        const std::string & var) const
+{
+    Context context("When fetching environment variable '" + var + "' for '" +
+            stringify(for_package) + "':");
+
+    FSEntry vdb_dir(_imp->location / stringify(for_package.get<pde_name>().get<qpn_category>())
+            / (stringify(for_package.get<pde_name>().get<qpn_package>()) + "-" +
+                stringify(for_package.get<pde_version>())));
+
+    if (! vdb_dir.is_directory())
+        throw EnvironmentVariableActionError("Could not find VDB entry for '"
+                + stringify(for_package) + "'");
+
+    if ((vdb_dir / var).is_regular_file())
+    {
+        std::ifstream f(stringify(vdb_dir / var).c_str());
+        if (! f)
+            throw EnvironmentVariableActionError("Could not read '" +
+                    stringify(vdb_dir / var) + "'");
+        return strip_trailing_string(
+                std::string((std::istreambuf_iterator<char>(f)),
+                    std::istreambuf_iterator<char>()), "\n");
+    }
+    else if ((vdb_dir / "environment.bz2").is_regular_file())
+    {
+        /* Figure out the format of environment.bz2. If VDB_FORMAT is "paludis-1",
+         * or if there's no VDB_FORMAT and there're no lines with () and no =,
+         * it's an env dump. Otherwise it's a source file. */
+        bool is_source_file(false);
+
+        if ((vdb_dir / "VDB_FORMAT").is_regular_file())
+        {
+            std::ifstream f(stringify(vdb_dir / "VDB_FORMAT").c_str());
+            if (! f)
+                throw EnvironmentVariableActionError("Could not read '" +
+                        stringify(vdb_dir / "VDB_FORMAT") + "'");
+            is_source_file = ("paludis-1" != strip_trailing_string(std::string(
+                            (std::istreambuf_iterator<char>(f)),
+                            std::istreambuf_iterator<char>()), "\n"));
+        }
+        else if (0 == run_command("bunzip2 < " + stringify(vdb_dir / "environment.bz2") +
+                    " | grep -q '^[^=]\\+()'"))
+            is_source_file = true;
+
+        if (is_source_file)
+        {
+            PStream p("bash -c '( bunzip2 < " + stringify(vdb_dir / "environment.bz2" ) +
+                    " ; echo echo \\$" + var + " ) | bash 2>/dev/null'");
+            std::string result(strip_trailing_string(std::string(
+                            (std::istreambuf_iterator<char>(p)),
+                            std::istreambuf_iterator<char>()), "\n"));
+            if (0 != p.exit_status())
+                throw EnvironmentVariableActionError("Could not load environment.bz2");
+            return result;
+        }
+        else
+        {
+            PStream p("bunzip2 < " + stringify(vdb_dir / "environment.bz2" ));
+            KeyValueConfigFile k(&p);
+
+            if (0 != p.exit_status())
+                throw EnvironmentVariableActionError("Could not get variable '" + var +
+                        "' from environment.bz2 for '" + stringify(for_package) + "'");
+
+            return k.get(var);
+        }
+    }
+    else
+        throw EnvironmentVariableActionError("Could not get variable '" + var + "' for '"
+                + stringify(for_package) + "'");
+}
+
