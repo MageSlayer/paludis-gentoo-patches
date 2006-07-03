@@ -82,8 +82,7 @@ EbuildCommand::operator() ()
                 ("PV", stringify(params.get<ecpk_db_entry>()->get<pde_version>().remove_revision()))
                 ("PR", stringify(params.get<ecpk_db_entry>()->get<pde_version>().revision_only()))
                 ("PN", stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_package>()))
-                ("PVR", stringify(params.get<ecpk_db_entry>()->get<pde_version>().remove_revision()) + "-" +
-                 stringify(params.get<ecpk_db_entry>()->get<pde_version>().revision_only()))
+                ("PVR", stringify(params.get<ecpk_db_entry>()->get<pde_version>()))
                 ("PF", stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_package>()) + "-" +
                  stringify(params.get<ecpk_db_entry>()->get<pde_version>()))
                 ("CATEGORY", stringify(params.get<ecpk_db_entry>()->get<pde_name>().get<qpn_category>()))
