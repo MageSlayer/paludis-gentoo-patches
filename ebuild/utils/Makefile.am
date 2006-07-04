@@ -52,7 +52,9 @@ AM_CXXFLAGS = -I$(top_srcdir)
 merge_SOURCES = merge.cc merge_common.cc merge_common.hh
 merge_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.a \
-	$(top_builddir)/paludis/digests/libpaludisdigests.a
+	$(top_builddir)/paludis/digests/libpaludisdigests.a \
+	$(top_builddir)/paludis/selinux/libpaludisselinux.a \
+	$(DYNAMIC_LD_LIBS)
 
 unmerge_SOURCES = unmerge.cc merge_common.cc merge_common.hh
 unmerge_LDADD = \

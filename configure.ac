@@ -355,6 +355,52 @@ else
 fi
 dnl }}}
 
+dnl {{{ Check for dlopen symbol and set DYNAMIC_LD_LIBS.
+dnl
+dnl AM_DL()
+dnl
+
+AC_CHECK_LIB(c, dlopen,
+[DYNAMIC_LD_LIBS=""
+have_dl=yes])
+
+if test x$have_dl != "xyes"; then
+AC_CHECK_LIB(dl, dlopen,
+ [DYNAMIC_LD_LIBS="-ldl"
+  have_dl=yes])
+fi
+
+if test x$have_dl != "xyes"; then
+AC_MSG_ERROR(dynamic linker needed)
+fi
+
+AC_SUBST(DYNAMIC_LD_LIBS)
+
+dnl }}}
+
+dnl {{{ selinux support
+AC_MSG_CHECKING([whether to enable selinux support])
+AC_ARG_ENABLE([selinux],
+   AS_HELP_STRING([--enable-selinux], [Enable selinux support (default: check)]),
+   enable_selinux=$enableval,
+   enable_selinux=autodetect)
+AC_MSG_RESULT($enable_selinux)
+
+if test "x$enable_selinux" != "xno"; then
+   AC_CHECK_LIB([selinux],
+				[is_selinux_enabled],
+				found_selinux=yes,
+				found_selinux=no)
+   if test "x$enable_selinux" = "xyes" && test "x$found_selinux" != "xyes"; then
+      AC_MSG_ERROR([SElinux support requested but not found])
+   fi
+fi
+
+if test "x$found_selinux" = "xyes"; then
+   AC_DEFINE([HAVE_SELINUX], [1], [Build selinux support])
+fi
+dnl }}}
+
 dnl {{{ is sed gnu sed
 AC_MSG_CHECKING([if we need a sed wrapper])
 AC_SUBST([NEED_SED_WRAPPER])
@@ -408,6 +454,7 @@ AC_OUTPUT(
 	paludis/hashed_containers.hh
 	paludis/qa/Makefile
 	paludis/util/Makefile
+	paludis/selinux/Makefile
 	src/Makefile
 	src/qualudis/Makefile
 	test/Makefile

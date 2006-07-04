@@ -28,6 +28,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/selinux/security_context.hh>
 
 #include <algorithm>
 #include <fstream>
@@ -43,6 +44,8 @@
 #include <fnmatch.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#include "config.h"
 
 using namespace paludis;
 using namespace merge;
@@ -218,6 +221,17 @@ namespace
         else
         {
             mode_t mode(src_dir.permissions());
+
+#ifdef HAVE_SELINUX
+            CountedPtr<FSCreateCon, count_policy::ExternalCountTag> createcon(0);
+            if (MatchPathCon::get_instance()->good())
+            {
+                FSCreateCon *p = new FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()),
+                            mode));
+                createcon.assign(p);
+            }
+#endif
+
             FSEntry(dst_dir).mkdir(mode);
             FSEntry(stringify(dst_dir)).chown(src_dir.owner(), src_dir.group());
             /* the chmod is needed to pick up fancy set*id bits */
@@ -276,6 +290,13 @@ namespace
             /* FDHolder must be destroyed before we do the md5 thing, or the
              * disk write may not have synced. */
             {
+#ifdef HAVE_SELINUX
+                CountedPtr<FSCreateCon, count_policy::ExternalCountTag> createcon(0);
+                if (MatchPathCon::get_instance()->good())
+                    createcon.assign(new 
+                            FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()) + "/"
+                                    + dst.basename(), src.permissions())));
+#endif
                 FDHolder fd(::open(stringify(real_dst).c_str(), O_WRONLY | O_CREAT, src.permissions()));
                 if (-1 == fd)
                     throw Failure("Cannot open '" + stringify(real_dst) + "' for write");
@@ -334,6 +355,16 @@ namespace
                 FSEntry(dst).unlink();
         }
 
+#ifdef HAVE_SELINUX
+        // permissions() on a symlink does weird things, but matchpathcon only cares about the file type,
+        // so just pass S_IFLNK.
+        CountedPtr<FSCreateCon, count_policy::ExternalCountTag> createcon(0);
+        if (MatchPathCon::get_instance()->good())
+            createcon.assign(new 
+                    FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()) + "/"
+                            + dst.basename(), S_IFLNK)));
+#endif
+
         if (0 != ::symlink(src.readlink().c_str(), stringify(dst).c_str()))
         {
             Log::get_instance()->message(ll_warning, "Couldn't create symlink '"
@@ -381,6 +412,13 @@ int
 main(int argc, char * argv[])
 {
     Context context("In main program:");
+
+#ifdef HAVE_SELINUX
+    // If the MatchPathCon initialisation fails, don't attempt to match contexts when merging.
+    if (! MatchPathCon::get_instance()->good())
+        Log::get_instance()->message(ll_warning, "matchpathcon_init failed; not setting security contexts");
+#endif
+
     exit_status = 0;
     try
     {

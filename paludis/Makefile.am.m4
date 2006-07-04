@@ -40,7 +40,7 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	hashed_containers.hh.in testscriptlist
-SUBDIRS = digests util . args qa
+SUBDIRS = digests util . args qa selinux
 
 libpaludis_a_SOURCES = filelist
 
