@@ -31,8 +31,10 @@
 // I think the name explains it. C++ is picky about casting to function pointers.
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
 
-namespace {
-    class _libselinux {
+namespace
+{
+    class LibSELinux
+    {
         private:
             void *_handle;
 
@@ -44,13 +46,13 @@ namespace {
             int (*_matchpathcon_init)(const char *);
 
         public:
-            _libselinux() :
-                _handle(NULL), _freecon(NULL), _getcon(NULL),
-                _getfscreatecon(NULL), _setfscreatecon(NULL),
-                _matchpathcon(NULL), _matchpathcon_init(NULL)
+            LibSELinux() :
+                _handle(0), _freecon(0), _getcon(0),
+                _getfscreatecon(0), _setfscreatecon(0),
+                _matchpathcon(0), _matchpathcon_init(0)
             {
                 _handle = dlopen("libselinux.so", RTLD_LAZY | RTLD_LOCAL);
-                if (NULL != _handle)
+                if (0 != _handle)
                 {
                     _freecon = STUPID_CAST(void (*)(security_context_t), dlsym(_handle, "freecon"));
                     _getcon = STUPID_CAST(int (*)(security_context_t*), dlsym(_handle, "getcon"));
@@ -62,49 +64,49 @@ namespace {
                 }
             }
 
-            ~_libselinux()
+            ~LibSELinux()
             {
-                if (NULL != _handle)
+                if (0 != _handle)
                     dlclose(_handle);
             }
 
             void freecon(security_context_t c)
             {
-                if (NULL != _freecon)
+                if (0 != _freecon)
                     _freecon(c);
             }
 
             int getcon(security_context_t *c)
             {
-                if (NULL != _getcon)
+                if (0 != _getcon)
                     return _getcon(c);
                 return 0;
             }
 
             int getfscreatecon(security_context_t *c)
             {
-                if (NULL != _getfscreatecon)
+                if (0 != _getfscreatecon)
                     return _getfscreatecon(c);
                 return 0;
             }
 
             int setfscreatecon(security_context_t c)
             {
-                if (NULL != _setfscreatecon)
+                if (0 != _setfscreatecon)
                     return _setfscreatecon(c);
                 return 0;
             }
 
             int matchpathcon(const char *path, mode_t mode, security_context_t *con)
             {
-                if (NULL != _matchpathcon)
+                if (0 != _matchpathcon)
                     return _matchpathcon(path, mode, con);
                 return 0;
             }
 
             int matchpathcon_init(const char *path)
             {
-                if (NULL != _matchpathcon_init)
+                if (0 != _matchpathcon_init)
                     return _matchpathcon_init(path);
                 return 0;
             }
@@ -126,13 +128,13 @@ namespace paludis
 
         ~Implementation()
         {
-            if (NULL != _context)
+            if (0 != _context)
                 libselinux.freecon(_context);
         }
 
         void set(security_context_t newcon)
         {
-            if (NULL != _context)
+            if (0 != _context)
                 libselinux.freecon(_context);
 
             _context = newcon;
@@ -141,7 +143,7 @@ namespace paludis
 }
 
 SecurityContext::SecurityContext()
-    : PrivateImplementationPattern<SecurityContext>(new Implementation<SecurityContext>(NULL))
+    : PrivateImplementationPattern<SecurityContext>(new Implementation<SecurityContext>(0))
 {
 }
 
@@ -190,7 +192,7 @@ FSCreateCon::~FSCreateCon()
 
 MatchPathCon::MatchPathCon()
 {
-    if (0 != libselinux.matchpathcon_init(NULL))
+    if (0 != libselinux.matchpathcon_init(0))
     {
         _good=false;
 //        throw SELinuxException("Failed running matchpathcon_init.");
