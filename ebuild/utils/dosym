@@ -31,4 +31,8 @@ if [[ ${#} -ne 2 ]]; then
     exit 1
 fi
 
+if [[ ! -d ${2%/*} ]]; then
+    dodir ${2%/*}
+fi
+
 ln -snf "${1}" "${D}${2}"
