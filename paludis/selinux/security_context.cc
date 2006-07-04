@@ -44,12 +44,14 @@ namespace
             int (*_setfscreatecon)(security_context_t);
             int (*_matchpathcon)(const char *, mode_t, security_context_t*);
             int (*_matchpathcon_init)(const char *);
+            int (*_is_selinux_enabled)(void);
 
         public:
             LibSELinux() :
                 _handle(0), _freecon(0), _getcon(0),
                 _getfscreatecon(0), _setfscreatecon(0),
-                _matchpathcon(0), _matchpathcon_init(0)
+                _matchpathcon(0), _matchpathcon_init(0),
+                _is_selinux_enabled(0)
             {
                 _handle = dlopen("libselinux.so", RTLD_LAZY | RTLD_LOCAL);
                 if (0 != _handle)
@@ -61,6 +63,7 @@ namespace
                     _matchpathcon = STUPID_CAST(int (*) (const char *, mode_t, security_context_t *),
                             dlsym(_handle, "matchpathcon"));
                     _matchpathcon_init = STUPID_CAST(int (*) (const char *), dlsym(_handle, "matchpathcon_init"));
+                    _is_selinux_enabled = STUPID_CAST(int (*)(void), dlsym(_handle, "is_selinux_enabled"));
                 }
             }
 
@@ -72,42 +75,50 @@ namespace
 
             void freecon(security_context_t c)
             {
-                if (0 != _freecon)
+                if (0 != _freecon && is_selinux_enabled())
                     _freecon(c);
             }
 
             int getcon(security_context_t *c)
             {
-                if (0 != _getcon)
+                if (0 != _getcon && is_selinux_enabled())
                     return _getcon(c);
                 return 0;
             }
 
             int getfscreatecon(security_context_t *c)
             {
-                if (0 != _getfscreatecon)
+                if (0 != _getfscreatecon && is_selinux_enabled())
                     return _getfscreatecon(c);
                 return 0;
             }
 
             int setfscreatecon(security_context_t c)
             {
-                if (0 != _setfscreatecon)
+                if (0 != _setfscreatecon && is_selinux_enabled())
                     return _setfscreatecon(c);
                 return 0;
             }
 
             int matchpathcon(const char *path, mode_t mode, security_context_t *con)
             {
-                if (0 != _matchpathcon)
+                if (0 != _matchpathcon && is_selinux_enabled())
                     return _matchpathcon(path, mode, con);
                 return 0;
             }
 
             int matchpathcon_init(const char *path)
             {
-                if (0 != _matchpathcon_init)
+                if (0 != _matchpathcon_init && is_selinux_enabled())
                     return _matchpathcon_init(path);
+                return 0;
+            }
+
+            int is_selinux_enabled()
+            {
+                // Assume that if this returns an error we can't effectively use selinux.
+                if (0 != _is_selinux_enabled)
+                    return _is_selinux_enabled() > 0 ? 1 : 0;
                 return 0;
             }
     } libselinux;
