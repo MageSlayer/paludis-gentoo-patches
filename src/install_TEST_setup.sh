@@ -84,9 +84,9 @@ inherit foo
 
 DESCRIPTION="Test target"
 HOMEPAGE="http://paludis.berlios.de/"
-SRC_URI="http://invalid.domain/${P}.tar.gz"
+SRC_URI="http://invalid.domain/${P}.tar.gz oink? ( http://example.com/foo.tar.gz )"
 SLOT="0"
-IUSE=""
+IUSE="oink"
 LICENSE="GPL-2"
 KEYWORDS="test"
 
@@ -95,6 +95,14 @@ pkg_setup() {
     [[ -z "${TESTPROFILE_WAS_SOURCED}" ]] && die "testprofile not sourced"
     [[ -z "${ANOTHERTESTPROFILE_WAS_SOURCED}" ]] && die "anothertestprofile not sourced"
     [[ ${PROFILE_ORDERING:-0} != 2 ]] && die "bad profile source ordering"
+}
+
+src_unpack() {
+    hasq "${P}.tar.gz" ${A} || die
+    hasq "${P}.tar.gz" ${AA} || die
+    hasq "foo.tar.gz" ${A} && die
+    hasq "foo.tar.gz" ${AA} || die
+    unpack ${A}
 }
 
 src_compile() {

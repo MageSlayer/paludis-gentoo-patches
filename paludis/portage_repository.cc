@@ -1355,6 +1355,69 @@ PortageRepository::do_is_mirror(const std::string & s) const
     return _imp->mirrors.end() != _imp->mirrors.find(s);
 }
 
+namespace
+{
+    class AAFinder :
+        private InstantiationPolicy<AAFinder, instantiation_method::NonCopyableTag>,
+        protected DepAtomVisitorTypes::ConstVisitor
+    {
+        private:
+            mutable std::list<const StringDepAtom *> _atoms;
+
+        protected:
+            void visit(const AllDepAtom * a)
+            {
+                std::for_each(a->begin(), a->end(), accept_visitor(
+                            static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
+            }
+
+            void visit(const AnyDepAtom *) PALUDIS_ATTRIBUTE((noreturn))
+            {
+                throw InternalError(PALUDIS_HERE, "Found unexpected AnyDepAtom");
+            }
+
+            void visit(const UseDepAtom * a)
+            {
+                std::for_each(a->begin(), a->end(), accept_visitor(
+                            static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
+            }
+
+            void visit(const PlainTextDepAtom * a)
+            {
+                _atoms.push_back(a);
+            }
+
+            void visit(const PackageDepAtom * a)
+            {
+                _atoms.push_back(a);
+            }
+
+            void visit(const BlockDepAtom * a)
+            {
+                _atoms.push_back(a);
+            }
+
+        public:
+            AAFinder(const DepAtom::ConstPointer a)
+            {
+                a->accept(static_cast<DepAtomVisitorTypes::ConstVisitor *>(this));
+            }
+
+            typedef std::list<const StringDepAtom *>::const_iterator Iterator;
+
+            Iterator begin()
+            {
+                return _atoms.begin();
+            }
+
+            Iterator end() const
+            {
+                return _atoms.end();
+            }
+    };
+
+}
+
 void
 PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec & v,
         const InstallOptions & o) const
@@ -1395,13 +1458,14 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             (restricts.end() != std::find(restricts.begin(), restricts.end(), "nomirror"));
     }
 
-    std::string archives, flat_src_uri;
+    std::string archives, all_archives, flat_src_uri;
     {
         std::set<std::string> already_in_archives;
 
-        DepAtomFlattener f(_imp->env, &e,
-                PortageDepParser::parse(metadata->get_ebuild_interface()->get<evm_src_uri>(),
+        /* make A and FLAT_SRC_URI */
+        DepAtom::ConstPointer f_atom(PortageDepParser::parse(metadata->get_ebuild_interface()->get<evm_src_uri>(),
                     PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
+        DepAtomFlattener f(_imp->env, &e, f_atom);
 
         for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
         {
@@ -1478,6 +1542,35 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                     flat_src_uri.append(*m + "/" + (*ff)->text().substr(p + 1) + " ");
             }
         }
+
+        /* make AA */
+        DepAtom::ConstPointer g_atom(PortageDepParser::parse(
+                    metadata->get_ebuild_interface()->get<evm_src_uri>(),
+                    PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
+        AAFinder g(g_atom);
+        std::set<std::string> already_in_all_archives;
+
+        for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
+        {
+            std::string::size_type p((*gg)->text().rfind('/'));
+            if (std::string::npos == p)
+            {
+                if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text()))
+                {
+                    all_archives.append((*gg)->text());
+                    already_in_all_archives.insert((*gg)->text());
+                }
+            }
+            else
+            {
+                if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text().substr(p + 1)))
+                {
+                    all_archives.append((*gg)->text().substr(p + 1));
+                    already_in_all_archives.insert((*gg)->text().substr(p + 1));
+                }
+            }
+            all_archives.append(" ");
+        }
     }
 
     std::string use;
@@ -1532,6 +1625,13 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         expand_vars.insert(std::make_pair(stringify(*u), value));
     }
 
+    /* Strip trailing space. Some ebuilds rely upon this. From kde-meta.eclass:
+     *     [[ -n ${A/${TARBALL}/} ]] && unpack ${A/${TARBALL}/}
+     * Rather annoying.
+     */
+    archives = strip_trailing(archives, " ");
+    all_archives = strip_trailing(all_archives, " ");
+
     EbuildFetchCommand fetch_cmd(EbuildCommandParams::create((
                     param<ecpk_environment>(_imp->env),
                     param<ecpk_db_entry>(&e),
@@ -1546,6 +1646,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                     )),
             EbuildFetchCommandParams::create((
                     param<ecfpk_a>(archives),
+                    param<ecfpk_aa>(all_archives),
                     param<ecfpk_use>(use),
                     param<ecfpk_use_expand>(join(_imp->expand_list.begin(),
                             _imp->expand_list.end(), " ")),
@@ -1577,6 +1678,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             EbuildInstallCommandParams::create((
                     param<ecipk_use>(use),
                     param<ecipk_a>(archives),
+                    param<ecipk_aa>(all_archives),
                     param<ecipk_use_expand>(join(_imp->expand_list.begin(),
                             _imp->expand_list.end(), " ")),
                     param<ecipk_expand_vars>(expand_vars),

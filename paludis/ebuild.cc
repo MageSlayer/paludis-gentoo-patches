@@ -261,6 +261,7 @@ EbuildFetchCommand::extend_command(const MakeEnvCommand & cmd)
 {
     MakeEnvCommand result(cmd
             ("A", fetch_params.get<ecfpk_a>())
+            ("AA", fetch_params.get<ecfpk_aa>())
             ("USE", fetch_params.get<ecfpk_use>())
             ("USE_EXPAND", fetch_params.get<ecfpk_use_expand>())
             ("FLAT_SRC_URI", fetch_params.get<ecfpk_flat_src_uri>())
@@ -306,6 +307,7 @@ EbuildInstallCommand::extend_command(const MakeEnvCommand & cmd)
 {
     MakeEnvCommand result(cmd
             ("A", install_params.get<ecipk_a>())
+            ("AA", install_params.get<ecipk_aa>())
             ("USE", install_params.get<ecipk_use>())
             ("USE_EXPAND", install_params.get<ecipk_use_expand>())
             ("ROOT", install_params.get<ecipk_root>())

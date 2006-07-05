@@ -249,6 +249,7 @@ namespace paludis
     enum EbuildFetchCommandParamsKeys
     {
         ecfpk_a,
+        ecfpk_aa,
         ecfpk_use,
         ecfpk_use_expand,
         ecfpk_flat_src_uri,
@@ -270,6 +271,7 @@ namespace paludis
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<EbuildFetchCommandParamsKeys, last_ecfpk>,
         SmartRecordKey<ecfpk_a, std::string>,
+        SmartRecordKey<ecfpk_aa, std::string>,
         SmartRecordKey<ecfpk_use, std::string>,
         SmartRecordKey<ecfpk_use_expand, std::string>,
         SmartRecordKey<ecfpk_flat_src_uri, std::string>,
@@ -323,6 +325,7 @@ namespace paludis
     enum EbuildInstallCommandParamsKeys
     {
         ecipk_a,
+        ecipk_aa,
         ecipk_use,
         ecipk_use_expand,
         ecipk_root,
@@ -345,6 +348,7 @@ namespace paludis
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<EbuildInstallCommandParamsKeys, last_ecipk>,
         SmartRecordKey<ecipk_a, std::string>,
+        SmartRecordKey<ecipk_aa, std::string>,
         SmartRecordKey<ecipk_use, std::string>,
         SmartRecordKey<ecipk_use_expand, std::string>,
         SmartRecordKey<ecipk_root, std::string>,
