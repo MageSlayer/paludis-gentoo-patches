@@ -371,7 +371,7 @@ Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) con
     std::string slot(file_contents(location, p->name, p->version, "SLOT"));
     if (slot.empty())
     {
-        Log::get_instance()->message(ll_warning, "VDBRepository entry '" +
+        Log::get_instance()->message(ll_warning, lc_no_context, "VDBRepository entry '" +
                 stringify(p->name) + "-" + stringify(p->version) + "' in '" +
                 stringify(location) + "' has empty SLOT, setting to \"0\"");
         slot = "0";
@@ -526,7 +526,7 @@ VDBRepository::do_version_metadata(
 
     if (r.first == r.second)
     {
-        Log::get_instance()->message(ll_warning, "version lookup failed for request for '" +
+        Log::get_instance()->message(ll_warning, lc_context, "version lookup failed for request for '" +
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "'");
         return VersionMetadata::ConstPointer(new VersionMetadata(&PortageDepParser::parse_depend));
@@ -555,7 +555,8 @@ VDBRepository::do_contents(
 
     if (r.first == r.second)
     {
-        Log::get_instance()->message(ll_warning, "version lookup failed for request for '" +
+        Log::get_instance()->message(ll_warning, lc_context,
+                "version lookup failed for request for '" +
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "'");
         return Contents::ConstPointer(new Contents);
@@ -567,7 +568,8 @@ VDBRepository::do_contents(
             (stringify(q.get<qpn_package>()) + "-" + stringify(v)));
     if (! (f / "CONTENTS").is_regular_file())
     {
-        Log::get_instance()->message(ll_warning, "CONTENTS lookup failed for request for '" +
+        Log::get_instance()->message(ll_warning, lc_context,
+                "CONTENTS lookup failed for request for '" +
                 stringify(q) + "-" + stringify(v) + "' in vdb '" +
                 stringify(_imp->location) + "'");
         return result;
@@ -590,7 +592,7 @@ VDBRepository::do_contents(
 
         if (tokens.size() < 2)
         {
-            Log::get_instance()->message(ll_warning, "CONTENTS for '" +
+            Log::get_instance()->message(ll_warning, lc_no_context, "CONTENTS for '" +
                     stringify(q) + "-" + stringify(v) + "' in vdb '" +
                     stringify(_imp->location) + "' has broken line " +
                     stringify(line_number) + ", skipping");
@@ -607,7 +609,7 @@ VDBRepository::do_contents(
         {
             if (tokens.size() < 4)
             {
-                Log::get_instance()->message(ll_warning, "CONTENTS for '" +
+                Log::get_instance()->message(ll_warning, lc_no_context, "CONTENTS for '" +
                         stringify(q) + "-" + stringify(v) + "' in vdb '" +
                         stringify(_imp->location) + "' has broken sym line " +
                         stringify(line_number) + ", skipping");
@@ -825,7 +827,8 @@ VDBRepository::do_package_set(const std::string & s, const PackageSetOptions &) 
             }
         }
         else
-            Log::get_instance()->message(ll_warning, "World file '" + stringify(_imp->world_file) +
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "World file '" + stringify(_imp->world_file) +
                     "' doesn't exist");
 
         return result;
@@ -847,7 +850,7 @@ VDBRepository::begin_provide_map() const
     {
         Context context("When loading VDB PROVIDEs map:");
 
-        Log::get_instance()->message(ll_debug, "Starting VDB PROVIDEs map creation");
+        Log::get_instance()->message(ll_debug, lc_no_context, "Starting VDB PROVIDEs map creation");
 
         if (! _imp->entries_valid)
             _imp->load_entries();
@@ -876,7 +879,7 @@ VDBRepository::begin_provide_map() const
                     QualifiedPackageName pp((*p)->text());
 
                     if (pp.get<qpn_category>() != CategoryNamePart("virtual"))
-                        Log::get_instance()->message(ll_warning, "PROVIDE of non-virtual '"
+                        Log::get_instance()->message(ll_warning, lc_no_context, "PROVIDE of non-virtual '"
                                 + stringify(pp) + "' from '" + stringify(e->name) + "-"
                                 + stringify(e->version) + "' in '" + stringify(name())
                                 + "' will not work as expected");
@@ -890,13 +893,13 @@ VDBRepository::begin_provide_map() const
             }
             catch (const Exception & ee)
             {
-                Log::get_instance()->message(ll_warning, "Skipping VDB PROVIDE entry for '"
+                Log::get_instance()->message(ll_warning, lc_no_context, "Skipping VDB PROVIDE entry for '"
                         + stringify(e->name) + "-" + stringify(e->version) + "' due to exception '"
                         + stringify(ee.message()) + "' (" + stringify(ee.what()) + ")");
             }
         }
 
-        Log::get_instance()->message(ll_debug, "Done VDB PROVIDEs map creation");
+        Log::get_instance()->message(ll_debug, lc_no_context, "Done VDB PROVIDEs map creation");
 
         _imp->has_provide_map = true;
     }
@@ -932,7 +935,7 @@ VDBRepository::add_to_world(const QualifiedPackageName & n) const
     {
         std::ofstream world(stringify(_imp->world_file).c_str(), std::ios::out | std::ios::app);
         if (! world)
-            Log::get_instance()->message(ll_warning, "Cannot append to world file '"
+            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot append to world file '"
                     + stringify(_imp->world_file) + "', skipping world update");
         else
             world << n << std::endl;
@@ -950,7 +953,7 @@ VDBRepository::remove_from_world(const QualifiedPackageName & n) const
 
         if (! world_file)
         {
-            Log::get_instance()->message(ll_warning, "Cannot read world file '"
+            Log::get_instance()->message(ll_warning, lc_no_context, "Cannot read world file '"
                     + stringify(_imp->world_file) + "', skipping world update");
             return;
         }
@@ -961,7 +964,7 @@ VDBRepository::remove_from_world(const QualifiedPackageName & n) const
             if (strip_leading(strip_trailing(line, " \t"), "\t") != stringify(n))
                 world_lines.push_back(line);
             else
-                Log::get_instance()->message(ll_debug, "Removing line '"
+                Log::get_instance()->message(ll_debug, lc_no_context, "Removing line '"
                             + line + "' from world file '" + stringify(_imp->world_file));
         }
     }
@@ -970,7 +973,7 @@ VDBRepository::remove_from_world(const QualifiedPackageName & n) const
 
     if (! world_file)
     {
-        Log::get_instance()->message(ll_warning, "Cannot write world file '"
+        Log::get_instance()->message(ll_warning, lc_no_context, "Cannot write world file '"
                 + stringify(_imp->world_file) + "', skipping world update");
         return;
     }

@@ -157,7 +157,7 @@ VersionMetadata::ConstPointer
 NothingRepository::do_version_metadata(
         const QualifiedPackageName & q, const VersionSpec & v) const
 {
-    Log::get_instance()->message(ll_warning, "has_version failed for request for '" +
+    Log::get_instance()->message(ll_warning, lc_context, "has_version failed for request for '" +
             stringify(q) + "-" + stringify(v) + "' in repository '" +
             stringify(name()) + "'");
     return VersionMetadata::ConstPointer(new VersionMetadata::Ebuild(

@@ -326,8 +326,8 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
 
     if (! f.is_directory())
     {
-        Log::get_instance()->message(ll_warning, "Profile component '" + stringify(f) +
-                "' is not a directory");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Profile component '" + stringify(f) + "' is not a directory");
         return;
     }
 
@@ -340,8 +340,8 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
 
         if (it == it_end)
         {
-            Log::get_instance()->message(ll_warning, "Profile parent file in '" +
-                    stringify(f) + "' cannot be read");
+            Log::get_instance()->message(ll_warning, lc_context,
+                    "Profile parent file in '" + stringify(f) + "' cannot be read");
             return;
         }
 
@@ -497,7 +497,8 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
             else if ('-' == line->at(0) && '*' == line->at(1))
                 if (0==system_lines.erase(line->substr(2)))
                 {
-                    Log::get_instance()->message(ll_qa, "Trying to remove packages line '" + line->substr(2) +
+                    Log::get_instance()->message(ll_qa, lc_context,
+                            "Trying to remove packages line '" + line->substr(2) +
                             "' that doesn't exist.");
                 }
         }
@@ -702,7 +703,7 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
             }
             catch (const NameError & e)
             {
-                Log::get_instance()->message(ll_warning, "Skipping entry '" +
+                Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '" +
                         d->basename() + "' in category '" + stringify(c) + "' in repository '"
                         + stringify(name()) + "' (" + e.message() + ")");
             }
@@ -816,7 +817,7 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
             }
             catch (const NameError &)
             {
-                Log::get_instance()->message(ll_warning, "Skipping entry '"
+                Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '"
                         + stringify(*e) + "' for '" + stringify(n) + "' in repository '"
                         + stringify(name()) + "'");
             }
@@ -851,7 +852,7 @@ PortageRepository::fetch_repo_name(const std::string & location)
     catch (...)
     {
     }
-    Log::get_instance()->message(ll_qa, "Couldn't open repo_name file in '"
+    Log::get_instance()->message(ll_qa, lc_no_context, "Couldn't open repo_name file in '"
             + location + "/profiles/'. Falling back to a generated name.");
 
     std::string modified_location(FSEntry(location).basename());
@@ -872,7 +873,7 @@ PortageRepository::do_version_metadata(
 
     if (! has_version(q, v))
     {
-        Log::get_instance()->message(ll_warning, "has_version failed for request for '" +
+        Log::get_instance()->message(ll_warning, lc_context, "has_version failed for request for '" +
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "'");
         return VersionMetadata::ConstPointer(new VersionMetadata::Ebuild(
@@ -942,11 +943,12 @@ PortageRepository::do_version_metadata(
             }
 
             if (! ok)
-                Log::get_instance()->message(ll_warning, "Stale cache file at '"
+                Log::get_instance()->message(ll_warning, lc_no_context, "Stale cache file at '"
                         + stringify(cache_file) + "'");
         }
         else
-            Log::get_instance()->message(ll_warning, "Couldn't read the cache file at '"
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "Couldn't read the cache file at '"
                     + stringify(cache_file) + "'");
     }
     else if (_imp->virtuals_map.end() != ((vi = _imp->virtuals_map.find(q))))
@@ -964,7 +966,8 @@ PortageRepository::do_version_metadata(
     if (! ok)
     {
         if (_imp->cache.basename() != "empty")
-            Log::get_instance()->message(ll_warning, "No usable cache entry for '" + stringify(q) +
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "No usable cache entry for '" + stringify(q) +
                     "-" + stringify(v) + "' in '" + stringify(name()) + "'");
 
         PackageDatabaseEntry e(q, v, name());
@@ -981,7 +984,8 @@ PortageRepository::do_version_metadata(
                         param<ecpk_buildroot>(_imp->buildroot)
                         )));
         if (! cmd())
-            Log::get_instance()->message(ll_warning, "No usable metadata for '" + stringify(q)
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "No usable metadata for '" + stringify(q)
                     + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
 
         if (0 == ((result = cmd.metadata())))
@@ -1181,7 +1185,8 @@ PortageRepository::make_portage_repository(
                 create_inserter<FSEntry>(std::back_inserter(*profiles)));
     if (m.end() != m.find("profile") && ! m.find("profile")->second.empty())
     {
-        Log::get_instance()->message(ll_warning, "Key 'profile' in '" + repo_file + "' is deprecated, "
+        Log::get_instance()->message(ll_warning, lc_no_context,
+                "Key 'profile' in '" + repo_file + "' is deprecated, "
                 "use 'profiles = " + m.find("profile")->second + "' instead");
         if (profiles->empty())
             profiles->append(m.find("profile")->second);
@@ -1197,7 +1202,8 @@ PortageRepository::make_portage_repository(
                 create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
     if (m.end() != m.find("eclassdir") && ! m.find("eclassdir")->second.empty())
     {
-        Log::get_instance()->message(ll_warning, "Key 'eclassdir' in '" + repo_file + "' is deprecated, "
+        Log::get_instance()->message(ll_warning, lc_no_context,
+                "Key 'eclassdir' in '" + repo_file + "' is deprecated, "
                 "use 'eclassdirs = " + m.find("eclassdir")->second + "' instead");
         if (eclassdirs->empty())
             eclassdirs->append(m.find("eclassdir")->second);
@@ -1338,7 +1344,8 @@ PortageRepository::do_is_mirror(const std::string & s) const
             }
         }
         else
-            Log::get_instance()->message(ll_warning, "No thirdpartymirrors file found in '"
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "No thirdpartymirrors file found in '"
                     + stringify(_imp->location / "profiles") + "', so mirror:// SRC_URI "
                     "components cannot be fetched");
 
@@ -1774,7 +1781,8 @@ PortageRepository::do_security_set(const PackageSetOptions & o) const
         }
         catch (const AdvisoryFileError & e)
         {
-            Log::get_instance()->message(ll_warning, "Malformed advisory file '" + stringify(*f) + "': " + e.message());
+            Log::get_instance()->message(ll_warning, lc_context,
+                    "Malformed advisory file '" + stringify(*f) + "': " + e.message());
         }
         catch (const InternalError & e)
         {
@@ -1782,7 +1790,8 @@ PortageRepository::do_security_set(const PackageSetOptions & o) const
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message(ll_warning, "Exception caught while parsing advisory '" + stringify(*f) +
+            Log::get_instance()->message(ll_warning, lc_context,
+                    "Exception caught while parsing advisory '" + stringify(*f) +
                     "': " + e.message());
         }
 
@@ -1848,7 +1857,8 @@ PortageRepository::do_package_set(const std::string & s, const PackageSetOptions
 
             if (1 == tokens.size())
             {
-                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                Log::get_instance()->message(ll_warning, lc_context,
+                        "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
                 PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(0)));
                 atom->set_tag(tag);
@@ -1870,11 +1880,13 @@ PortageRepository::do_package_set(const std::string & s, const PackageSetOptions
                     result->add_child(p);
             }
             else
-                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                Log::get_instance()->message(ll_warning, lc_context,
+                        "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not start with '*' or '?' token, skipping");
 
             if (tokens.size() > 2)
-                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                Log::get_instance()->message(ll_warning, lc_context,
+                        "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' has trailing garbage");
         }
 
@@ -1993,7 +2005,8 @@ PortageRepository::update_news() const
                     std::string profile(strip_leading_string(strip_trailing_string(
                                 strip_leading_string(stringify(p->realpath()),
                                     stringify(p->realpath())), "/"), "/"));
-                    Log::get_instance()->message(ll_debug, "Profile path is '" + profile + "'");
+                    Log::get_instance()->message(ll_debug, lc_no_context,
+                            "Profile path is '" + profile + "'");
                     for (NewsFile::DisplayIfProfileIterator i(news.begin_display_if_profile()),
                             i_end(news.end_display_if_profile()) ; i != i_end ; ++i)
                         if (profile == *i)
@@ -2006,12 +2019,14 @@ PortageRepository::update_news() const
             {
                 std::ofstream s(stringify(skip_file).c_str(), std::ios::out | std::ios::app);
                 if (! s)
-                    Log::get_instance()->message(ll_warning, "Cannot append to news skip file '"
+                    Log::get_instance()->message(ll_warning, lc_no_context,
+                            "Cannot append to news skip file '"
                             + stringify(skip_file) + "', skipping news item '" + stringify(*d) + "'");
 
                 std::ofstream t(stringify(unread_file).c_str(), std::ios::out | std::ios::app);
                 if (! t)
-                    Log::get_instance()->message(ll_warning, "Cannot append to unread file '"
+                    Log::get_instance()->message(ll_warning, lc_no_context,
+                            "Cannot append to unread file '"
                             + stringify(unread_file) + "', skipping news item '" + stringify(*d) + "'");
 
                 if (s && t)
@@ -2023,7 +2038,8 @@ PortageRepository::update_news() const
         }
         catch (const ConfigFileError & e)
         {
-            Log::get_instance()->message(ll_warning, "Skipping news item '"
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "Skipping news item '"
                     + stringify(*d) + "' because of exception '" + e.message() + "' ("
                     + e.what() + ")");
         }

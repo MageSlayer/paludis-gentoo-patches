@@ -55,7 +55,7 @@ namespace
                 if (-1 == chdir(stringify(*fsentry).c_str()))
                     throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
 
-            Log::get_instance()->message(ll_debug, "execl /bin/sh -c " + cmd);
+            Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd);
             execl("/bin/sh", "sh", "-c", cmd.c_str(), static_cast<char *>(0));
             throw RunCommandError("execl /bin/sh -c '" + cmd + "' failed:"
                     + stringify(strerror(errno)));
@@ -173,8 +173,8 @@ paludis::make_sandbox_command(const std::string & cmd)
 #if HAVE_SANDBOX
     if (! getenv_with_default("SANDBOX_ACTIVE", "").empty())
     {
-        Log::get_instance()->message(ll_warning, "Already inside sandbox, not spawning "
-                "another sandbox instance");
+        Log::get_instance()->message(ll_warning, lc_no_context,
+                "Already inside sandbox, not spawning another sandbox instance");
         return cmd;
     }
     else

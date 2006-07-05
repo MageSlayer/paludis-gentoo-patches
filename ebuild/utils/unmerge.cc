@@ -74,7 +74,8 @@ namespace
             {
                 if (tokens.size() != 4)
                 {
-                    Log::get_instance()->message(ll_warning, "Malformed VDB entry '" + *cur + "'");
+                    Log::get_instance()->message(ll_warning, lc_no_context,
+                            "Malformed VDB entry '" + *cur + "'");
                     exit_status |= 4;
                 }
                 else if (! (root / tokens.at(1)).is_regular_file())
@@ -86,8 +87,8 @@ namespace
                     ifstream md5_file(stringify(root / tokens.at(1)).c_str());
                     if (! md5_file)
                     {
-                        Log::get_instance()->message(ll_warning, "Couldn't get md5 for '" +
-                                stringify(root / tokens.at(1)) + "'");
+                        Log::get_instance()->message(ll_warning, lc_no_context,
+                                "Couldn't get md5 for '" + stringify(root / tokens.at(1)) + "'");
                         cout << "--- [!md5?] " << tokens.at(1) << endl;
                     }
                     else if (MD5(md5_file).hexsum() != tokens.at(2))
@@ -105,7 +106,8 @@ namespace
             {
                 if (tokens.size() != 5)
                 {
-                    Log::get_instance()->message(ll_warning, "Malformed VDB entry '" + *cur + "'");
+                    Log::get_instance()->message(ll_warning, lc_no_context,
+                            "Malformed VDB entry '" + *cur + "'");
                     exit_status |= 4;
                 }
                 else if (! (root / tokens.at(1)).is_symbolic_link())
@@ -128,7 +130,8 @@ namespace
                 /* nothing */ ;
             else
             {
-                Log::get_instance()->message(ll_warning, "Skipping unknown VDB entry '" + *cur + "'");
+                Log::get_instance()->message(ll_warning, lc_no_context,
+                        "Skipping unknown VDB entry '" + *cur + "'");
                 exit_status |= 2;
             }
         }
@@ -150,7 +153,8 @@ namespace
             {
                 if (tokens.size() != 2)
                 {
-                    Log::get_instance()->message(ll_warning, "Malformed VDB entry '" + *cur + "'");
+                    Log::get_instance()->message(ll_warning, lc_no_context,
+                            "Malformed VDB entry '" + *cur + "'");
                     exit_status |= 8;
                 }
                 else if (! (root / tokens.at(1)).is_directory())

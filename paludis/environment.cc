@@ -345,7 +345,8 @@ Environment::add_appropriate_to_world(DepAtom::ConstPointer a) const
             i_end(w.items.end()) ; i != i_end ; ++i)
     {
         if (! package_database()->query(**i, is_installed_only)->empty())
-            Log::get_instance()->message(ll_debug, "Not adding '" + stringify(**i) +
+            Log::get_instance()->message(ll_debug, lc_no_context,
+                    "Not adding '" + stringify(**i) +
                     "' to world, because it is already installed");
         else
         {

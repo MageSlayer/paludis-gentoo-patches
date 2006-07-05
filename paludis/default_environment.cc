@@ -339,17 +339,17 @@ namespace
             FSEntry r(base);
             if (r.is_directory())
             {
-                Log::get_instance()->message(ll_debug, "Adding hook directory '"
+                Log::get_instance()->message(ll_debug, lc_no_context, "Adding hook directory '"
                         + base + "'");
                 result.push_back(r);
             }
             else
-                Log::get_instance()->message(ll_debug, "Skipping hook directory candidate '"
+                Log::get_instance()->message(ll_debug, lc_no_context, "Skipping hook directory candidate '"
                         + base + "'");
         }
         catch (const FSError & e)
         {
-            Log::get_instance()->message(ll_warning, "Caught exception '" +
+            Log::get_instance()->message(ll_warning, lc_no_context, "Caught exception '" +
                     e.message() + "' (" + e.what() + ") when checking hook "
                     "directory '" + base + "'");
         }
@@ -387,7 +387,7 @@ namespace
         {
             Context context("When running hook script '" + stringify(f) +
                     "' for hook '" + hook.name() + "':");
-            Log::get_instance()->message(ll_debug, "Starting hook script '" +
+            Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
                     stringify(f) + "' for '" + hook.name() + "'");
 
             MakeEnvCommand cmd(make_env_command("bash '" + stringify(f) + "'")
@@ -403,10 +403,10 @@ namespace
 
             int exit_status(run_command(cmd));
             if (0 == exit_status)
-                Log::get_instance()->message(ll_debug, "Hook '" + stringify(f)
+                Log::get_instance()->message(ll_debug, lc_no_context, "Hook '" + stringify(f)
                         + "' returned success '" + stringify(exit_status) + "'");
             else
-                Log::get_instance()->message(ll_warning, "Hook '" + stringify(f)
+                Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(f)
                         + "' returned failure '" + stringify(exit_status) + "'");
         }
     };
@@ -416,7 +416,7 @@ void
 DefaultEnvironment::perform_hook(const Hook & hook) const
 {
     Context context("When triggering hook '" + hook.name() + "'");
-    Log::get_instance()->message(ll_debug, "Starting hook '" + hook.name() + "'");
+    Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook '" + hook.name() + "'");
 
     const std::list<FSEntry> & hook_dirs(get_hook_dirs());
 
@@ -464,7 +464,7 @@ DefaultEnvironment::local_package_set(const std::string & s,
 
             if (1 == tokens.size())
             {
-                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
                 PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(0)));
                 atom->set_tag(tag);
@@ -486,11 +486,11 @@ DefaultEnvironment::local_package_set(const std::string & s,
                     result->add_child(p);
             }
             else
-                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not start with '*' or '?' token, skipping");
 
             if (tokens.size() > 2)
-                Log::get_instance()->message(ll_warning, "Line '" + *line + "' in set file '"
+                Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' has trailing garbage");
         }
 

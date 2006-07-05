@@ -213,7 +213,7 @@ namespace
         if (dst_dir.is_directory())
             /* nothing */;
         else if (dst_dir.is_symbolic_link() && dst_dir.realpath().is_directory())
-            Log::get_instance()->message(ll_qa, "Expected '" + stringify(dst_dir) +
+            Log::get_instance()->message(ll_qa, lc_no_context, "Expected '" + stringify(dst_dir) +
                     "' to be a directory or non-existent, but found a symlink to a directory");
         else if (dst_dir.exists())
             throw Failure("Expected '" + stringify(dst_dir) +
@@ -367,7 +367,7 @@ namespace
 
         if (0 != ::symlink(src.readlink().c_str(), stringify(dst).c_str()))
         {
-            Log::get_instance()->message(ll_warning, "Couldn't create symlink '"
+            Log::get_instance()->message(ll_warning, lc_no_context, "Couldn't create symlink '"
                     + src.readlink() + "' at '" + stringify(dst) + "'");
             exit_status |= 2;
         }
@@ -416,7 +416,8 @@ main(int argc, char * argv[])
 #ifdef HAVE_SELINUX
     // If the MatchPathCon initialisation fails, don't attempt to match contexts when merging.
     if (! MatchPathCon::get_instance()->good())
-        Log::get_instance()->message(ll_warning, "matchpathcon_init failed; not setting security contexts");
+        Log::get_instance()->message(ll_warning, lc_no_context,
+                "matchpathcon_init failed; not setting security contexts");
 #endif
 
     exit_status = 0;
@@ -439,10 +440,10 @@ main(int argc, char * argv[])
         else
             throw Failure("bad value for log level");
 
-        Log::get_instance()->message(ll_debug, "CONFIG_PROTECT is " + getenv_with_default(
-                    "CONFIG_PROTECT", "(unset)"));
-        Log::get_instance()->message(ll_debug, "CONFIG_PROTECT_MASK is " + getenv_with_default(
-                    "CONFIG_PROTECT_MASK", "(unset)"));
+        Log::get_instance()->message(ll_debug, lc_no_context,
+                "CONFIG_PROTECT is " + getenv_with_default("CONFIG_PROTECT", "(unset)"));
+        Log::get_instance()->message(ll_debug, lc_no_context,
+                "CONFIG_PROTECT_MASK is " + getenv_with_default("CONFIG_PROTECT_MASK", "(unset)"));
 
         FSEntry src(argv[1]), dst(argv[2]), contents(argv[3]);
 

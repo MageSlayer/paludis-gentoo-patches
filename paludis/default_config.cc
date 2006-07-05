@@ -127,7 +127,7 @@ DefaultConfig::DefaultConfig() :
     if (! config_dir.exists())
         throw DefaultConfigError("Can't find configuration directory");
 
-    Log::get_instance()->message(ll_debug, "DefaultConfig initial directory is '"
+    Log::get_instance()->message(ll_debug, lc_no_context, "DefaultConfig initial directory is '"
             + stringify(config_dir) + "'");
 
     if ((config_dir / "specpath").exists())
@@ -151,7 +151,7 @@ DefaultConfig::DefaultConfig() :
     std::map<std::string, std::string> conf_vars;
     conf_vars.insert(std::make_pair("ROOT", root_prefix));
 
-    Log::get_instance()->message(ll_debug, "DefaultConfig real directory is '"
+    Log::get_instance()->message(ll_debug, lc_no_context, "DefaultConfig real directory is '"
             + stringify(config_dir) + "', root prefix is '" + root_prefix +
             "', config suffix is '" + config_suffix + "'");
 

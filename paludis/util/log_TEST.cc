@@ -52,7 +52,7 @@ namespace test_cases
             Log::get_instance()->set_log_level(ll_debug);
 
             TEST_CHECK(s.str().empty());
-            Log::get_instance()->message(ll_debug, "one");
+            Log::get_instance()->message(ll_debug, lc_no_context, "one");
             TEST_CHECK(! s.str().empty());
             TEST_CHECK(std::string::npos != s.str().find("one"));
 
@@ -61,9 +61,9 @@ namespace test_cases
             TEST_CHECK(t.str().empty());
 
             Log::get_instance()->set_log_level(ll_warning);
-            Log::get_instance()->message(ll_debug, "two");
+            Log::get_instance()->message(ll_debug, lc_no_context, "two");
             TEST_CHECK(t.str().empty());
-            Log::get_instance()->message(ll_warning, "three");
+            Log::get_instance()->message(ll_warning, lc_no_context, "three");
             TEST_CHECK(! t.str().empty());
             TEST_CHECK(std::string::npos == t.str().find("one"));
             TEST_CHECK(std::string::npos == t.str().find("two"));

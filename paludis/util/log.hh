@@ -55,6 +55,18 @@ namespace paludis
     };
 
     /**
+     * Specifies whether a log message has context.
+     *
+     * \ingroup grplog
+     */
+    enum LogContext
+    {
+        lc_no_context,
+        lc_context,
+        last_lc
+    };
+
+    /**
      * Singleton class that handles log messages.
      *
      * \ingroup grplog
@@ -87,7 +99,7 @@ namespace paludis
             /**
              * Log a message at the specified level.
              */
-            void message(const LogLevel, const std::string &);
+            void message(const LogLevel, const LogContext, const std::string &);
 
             /**
              * Change the log stream.

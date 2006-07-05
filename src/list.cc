@@ -231,7 +231,8 @@ namespace
     void
     VulnerabilitiesPrinter::visit(const p::UseDepAtom * const a)
     {
-        p::Log::get_instance()->message(p::ll_warning, "UseDepAtom encounter in do_package_set(\"security\").");
+        p::Log::get_instance()->message(p::ll_warning, p::lc_no_context,
+                "UseDepAtom encounter in do_package_set(\"security\").");
         std::for_each(a->begin(), a->end(), p::accept_visitor(this));
     }
 

@@ -196,7 +196,7 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
         return true;
     else
     {
-        Log::get_instance()->message(ll_warning, "Could not generate cache for '"
+        Log::get_instance()->message(ll_warning, lc_context, "Could not generate cache for '"
                 + stringify(*params.get<ecpk_db_entry>()) + "'");
         _metadata->set<vm_eapi>("UNKNOWN");
 

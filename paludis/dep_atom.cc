@@ -187,7 +187,8 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
             if ('*' == s.at(s.length() - 1))
             {
                 if (_version_operator != vo_equal)
-                    Log::get_instance()->message(ll_qa, "Package dep atom '" + ss + "' uses * "
+                    Log::get_instance()->message(ll_qa, lc_context,
+                            "Package dep atom '" + ss + "' uses * "
                             "with operator '" + stringify(_version_operator) +
                             "', pretending it uses the equals operator instead");
                 _version_operator = vo_equal_star;

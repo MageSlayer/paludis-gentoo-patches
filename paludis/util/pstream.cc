@@ -64,8 +64,8 @@ PStreamInBuf::PStreamInBuf(const std::string & command) :
     _command(command),
     fd(popen(command.c_str(), "r"))
 {
-    Log::get_instance()->message(ll_debug, "popen " + command + " -> " + stringify(
-                fileno(fd)));
+    Log::get_instance()->message(ll_debug, lc_no_context,
+            "popen " + command + " -> " + stringify(fileno(fd)));
 
     if (0 == fd)
         throw PStreamError("popen('" + _command + "', 'r') failed: " +
@@ -79,7 +79,8 @@ PStreamInBuf::~PStreamInBuf()
     if (0 != fd)
     {
         int fdn = fileno(fd), x = pclose(fd);
-        Log::get_instance()->message(ll_debug, "pclose " + stringify(fdn) + " -> " + stringify(x));
+        Log::get_instance()->message(ll_debug, lc_no_context,
+                "pclose " + stringify(fdn) + " -> " + stringify(x));
     }
 }
 
@@ -91,8 +92,8 @@ PStreamInBuf::exit_status()
         int fdn = fileno(fd);
         _exit_status = pclose(fd);
         fd = 0;
-        Log::get_instance()->message(ll_debug, "manual pclose " + stringify(fdn) + " -> " + stringify(
-                    _exit_status));
+        Log::get_instance()->message(ll_debug, lc_no_context,
+                "manual pclose " + stringify(fdn) + " -> " + stringify(_exit_status));
     }
     return _exit_status;
 }

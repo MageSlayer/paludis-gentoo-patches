@@ -75,7 +75,7 @@ Log::log_level() const
 }
 
 void
-Log::message(const LogLevel l, const std::string & s)
+Log::message(const LogLevel l, const LogContext c, const std::string & s)
 {
     if (l >= _imp->log_level)
     {
@@ -107,7 +107,10 @@ Log::message(const LogLevel l, const std::string & s)
 
         } while (false);
 
-        *_imp->stream << Context::backtrace(" ") << s << std::endl;
+        if (lc_context == c)
+            *_imp->stream << Context::backtrace(" ") << s << std::endl;
+        else
+            *_imp->stream << s << std::endl;
     }
 }
 
@@ -146,4 +149,3 @@ Log::set_program_name(const std::string & s)
 {
     _imp->program_name = s;
 }
-

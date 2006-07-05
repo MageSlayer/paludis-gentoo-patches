@@ -290,7 +290,8 @@ do_install()
 
         if (max_count != new_count + upgrade_count + downgrade_count + new_slot_count +
                 rebuild_count)
-            p::Log::get_instance()->message(p::ll_warning, "Max count doesn't add up. This is a bug!");
+            p::Log::get_instance()->message(p::ll_warning, p::lc_no_context,
+                    "Max count doesn't add up. This is a bug!");
 
         cout << endl << "Total: " << max_count << (max_count == 1 ? " package" : " packages");
         if (max_count)

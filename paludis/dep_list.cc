@@ -357,7 +357,7 @@ DepList::visit(const PackageDepAtom * const p)
                 else if (_imp->drop_circular)
                 {
                     if (_imp->current_package)
-                        Log::get_instance()->message(ll_warning, "Dropping circular dependency on " +
+                        Log::get_instance()->message(ll_warning, lc_context, "Dropping circular dependency on " +
                                 stringify(_imp->current_package->get<dle_name>()) + "-" +
                                 stringify(_imp->current_package->get<dle_version>()));
                     return;
@@ -366,7 +366,7 @@ DepList::visit(const PackageDepAtom * const p)
                 else if (_imp->current_package && _imp->drop_self_circular &&
                         match_package(_imp->environment, p, _imp->current_package))
                 {
-                    Log::get_instance()->message(ll_warning, "Dropping self-circular dependency on " +
+                    Log::get_instance()->message(ll_warning, lc_context, "Dropping self-circular dependency on " +
                             stringify(_imp->current_package->get<dle_name>()) + "-" +
                             stringify(_imp->current_package->get<dle_version>()));
                     return;
@@ -520,7 +520,7 @@ DepList::visit(const PackageDepAtom * const p)
             if (dlro_never == _imp->rdepend_post)
                 throw;
             else if (_imp->current_package)
-                Log::get_instance()->message(ll_warning, "Couldn't resolve runtime dependencies "
+                Log::get_instance()->message(ll_warning, lc_context, "Couldn't resolve runtime dependencies "
                         "for " + stringify(_imp->current_package->get<dle_name>()) + "-" +
                         stringify(_imp->current_package->get<dle_version>()) + " as build dependencies, "
                         "trying them as post dependencies");
@@ -595,7 +595,7 @@ DepList::visit(const AnyDepAtom * const a)
     if (viable_children.empty())
     {
         if (_imp->current_package)
-            Log::get_instance()->message(ll_qa, "Package '" + stringify(*_imp->current_package)
+            Log::get_instance()->message(ll_qa, lc_context, "Package '" + stringify(*_imp->current_package)
                     + "' has suspicious || ( ) block that resolves to empty");
         return;
     }
@@ -675,7 +675,7 @@ DepList::visit(const BlockDepAtom * const d)
         {
             if (_imp->current_package->get<dle_name>() == ii->get<pde_name>())
             {
-                Log::get_instance()->message(ll_qa, "Package '" + stringify(*_imp->current_package)
+                Log::get_instance()->message(ll_qa, lc_context, "Package '" + stringify(*_imp->current_package)
                         + "' has suspicious block upon '!" + stringify(*d->blocked_atom()) + "'");
                 continue;
             }
@@ -704,7 +704,7 @@ DepList::visit(const BlockDepAtom * const d)
                 }
 
             if (skip)
-                Log::get_instance()->message(ll_qa, "Ignoring block on '" +
+                Log::get_instance()->message(ll_qa, lc_context, "Ignoring block on '" +
                         stringify(*(d->blocked_atom())) + "' in '" +
                         stringify(*_imp->current_package) +
                         "' which is blocked by installed package '" + stringify(*ii) +
@@ -729,7 +729,7 @@ DepList::visit(const BlockDepAtom * const d)
 
             if (*_imp->current_package == *m)
             {
-                Log::get_instance()->message(ll_qa, "Package '" + stringify(*_imp->current_package)
+                Log::get_instance()->message(ll_qa,lc_context,  "Package '" + stringify(*_imp->current_package)
                         + "' has suspicious block upon '!" + stringify(*d->blocked_atom()) + "'");
                 ++m;
                 continue;
@@ -759,7 +759,7 @@ DepList::visit(const BlockDepAtom * const d)
                 }
 
             if (skip)
-                Log::get_instance()->message(ll_qa, "Ignoring block on '" +
+                Log::get_instance()->message(ll_qa, lc_context, "Ignoring block on '" +
                         stringify(*(d->blocked_atom())) + "' in '" +
                         stringify(*_imp->current_package) +
                         "' which is blocked by pending package '" + stringify(*m) +
