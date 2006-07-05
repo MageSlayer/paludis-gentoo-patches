@@ -46,12 +46,41 @@ of every change, see the ChangeLog.
 
     * The merge / unmerge code is now written in C++ rather than bash, and the
     MD5 implementation is now internal rather than relying upon 'md5sum', which
-    works around problems when upgrading libc.
+    works around problems when upgrading libc. When upgrading and downgrading,
+    sh breakages due to library version changes are less likely to be a problem.
 
     * A --dl-no-unnecessary-upgrades commandline option has been added.
 
     * xterm titles are now updated for syncing, similar to previous behaviour
     for installing.
+
+    * Syncing via Subversion over HTTP (svn+http://) has been enabled.
+
+    * Use of * with operators other than equals in dep atoms is now a QA
+    warning rather than a fatal error.
+
+    * Some log messages include program context, to make finding the cause
+    of the problem simpler.
+
+    * An --environment-variable commandline option, which can be used to print
+    the value of an environment variable for an installed or uninstalled
+    package, has been added.
+
+    * PVR now behaves like it does for Portage.
+
+    * The repository whence a package originates is saved in VDB. Portage
+    compatible environment saving is now used. VDB_FORMAT is now "paludis-2".
+
+    * SELinux is supported.
+
+    * The behaviour of dosym when target directories don't exist has been
+    updated in line with newer Portage behaviour. dodir is now used as
+    necessary before calling ln.
+
+    * The AA variable is now supported for ebuilds. Trailing whitespace has
+    been stripped from A and AA for Portage compatibility.
+
+    * Backtraces are now displayed from 'die'.
 
 0.2.5:
     * Syncing via Git is possible (git://, git+http://, git+ssh://).
@@ -117,3 +146,5 @@ of every change, see the ChangeLog.
 
 0.2.0:
     Initial public release.
+
+.. vim: set tw=80 spell spelllang=en :
