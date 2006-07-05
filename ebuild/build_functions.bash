@@ -92,3 +92,8 @@ einstall()
     fi
 }
 
+unpack()
+{
+    dounpack ${@} || die "unpack failed"
+}
+

@@ -21,6 +21,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+die()
+{
+    echo "dounpack: error: $@" 1>&2
+    exit 123
+}
+
 unpack_one()
 {
     [[ -z "$1" ]] && die "Bad argument for unpack_one"
