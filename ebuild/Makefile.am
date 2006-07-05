@@ -34,7 +34,6 @@ libexecprog_SCRIPTS = \
 	src_install.bash \
 	src_test.bash \
 	src_unpack.bash \
-	unpack_functions.bash \
 	usage_error.bash
 
 TESTS_ENVIRONMENT = env \

@@ -44,6 +44,7 @@ libexecprog_SCRIPTS = \
 	newlib.so \
 	newman \
 	newsbin \
+	unpack \
 	$(libexecprog_SCRIPTS_extra)
 
 libexecprog_PROGRAMS = merge unmerge

@@ -77,7 +77,6 @@ ebuild_load_module list_functions
 ebuild_load_module multilib_functions
 ebuild_load_module install_functions
 ebuild_load_module build_functions
-ebuild_load_module unpack_functions
 ebuild_load_module eclass_functions
 
 ebuild_source_profile()

@@ -21,18 +21,6 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-unpack()
-{
-    [[ -z "$@" ]] && die "No arguments given to unpack"
-
-    for x in "$@" ; do
-        x=$(echo $x )
-        echo ">>> Unpacking ${x} to ${PWD}"
-        [[ "${x:0:2}" == "./" ]] || x="${DISTDIR}/${x}"
-        unpack_one "${x}"
-    done
-}
-
 unpack_one()
 {
     [[ -z "$1" ]] && die "Bad argument for unpack_one"
@@ -90,4 +78,14 @@ unpack_one()
     esac
 
 }
+
+[[ -z "$@" ]] && die "No arguments given to unpack"
+
+for x in "$@" ; do
+    x=$(echo $x )
+    echo ">>> Unpacking ${x} to ${PWD}"
+    [[ "${x:0:2}" == "./" ]] || x="${DISTDIR}/${x}"
+    unpack_one "${x}"
+done
+
 
