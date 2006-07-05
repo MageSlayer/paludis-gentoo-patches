@@ -47,9 +47,18 @@ diefunc()
     local func="$1" line="$2"
     shift 2
     echo 1>&2
-    echo "ERROR in ${CATEGORY:-?}/${PF:-?}:" 1>&2
+    echo "!!! ERROR in ${CATEGORY:-?}/${PF:-?}:" 1>&2
     echo "!!! In ${func:-?} at line ${line:-?}" 1>&2
     echo "!!! ${*:-(no message provided)}" 1>&2
+    echo 1>&2
+
+    echo "!!! Call stack:" 1>&2
+    for (( n = 1 ; n < ${#FUNCNAME[@]} ; ++n )) ; do
+        funcname=${FUNCNAME[${n}]}
+        sourcefile=$(basename ${BASH_SOURCE[${n}]})
+        lineno=${BASH_LINENO[$(( n - 1 ))]}
+        echo "!!!    * ${funcname} (${sourcefile}:${lineno})" 1>&2
+    done
     echo 1>&2
 
     kill ${EBUILD_KILL_PID}
