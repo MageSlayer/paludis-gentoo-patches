@@ -33,6 +33,8 @@ if [[ ${#} -ne 2 ]]; then
     exit 1
 fi
 
+ebuild_notice "qa" "${0} is retarded. Don't use it; use newins instead."
+
 rm -rf "${T}/${2}"
 cp "${1}" "${T}/${2}"
 doins "${T}/${2}"
