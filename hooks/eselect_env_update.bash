@@ -24,5 +24,4 @@ echo
 einfo "Regenerating environment..."
 eselect env update || exit 1
 einfo "Done regenerating environment"
-echo
 

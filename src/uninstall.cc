@@ -148,6 +148,8 @@ do_uninstall()
     }
     env->perform_hook(p::Hook("uninstall_all_post")("TARGETS", join(unmerge->begin(), unmerge->end(), " ")));
 
+    cout << endl;
+
     return return_code;
 }
 

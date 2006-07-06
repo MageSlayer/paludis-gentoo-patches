@@ -42,7 +42,6 @@ done
 if [[ ${count} -gt 0 ]] ; then
     [[ -z "${done_echo}" ]] && echo ; done_echo=yes
     ewarn "You have ${count} unread news items"
-    echo
 elif [[ "${HOOK/pretend}" == "${HOOK}" ]] ; then
     [[ -z "${done_echo}" ]] && echo ; done_echo=yes
     einfo "No unread news items found"
