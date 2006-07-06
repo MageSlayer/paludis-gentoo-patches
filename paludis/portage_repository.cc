@@ -205,6 +205,9 @@ namespace paludis
         /// Expand flags
         mutable UseFlagSet expand_list;
 
+        /// Expand hidden flags
+        mutable UseFlagSet expand_hidden_list;
+
         /// Do we have arch_list?
         mutable bool has_arch_list;
 
@@ -372,6 +375,10 @@ Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
                 make_defaults_f.get("USE_EXPAND"), create_inserter<UseFlagName>(
                     std::inserter(expand_list, expand_list.begin())));
 
+        WhitespaceTokeniser::get_instance()->tokenise(
+                make_defaults_f.get("USE_EXPAND_HIDDEN"), create_inserter<UseFlagName>(
+                    std::inserter(expand_hidden_list, expand_hidden_list.begin())));
+
         for (KeyValueConfigFile::Iterator k(make_defaults_f.begin()),
                 k_end(make_defaults_f.end()) ; k != k_end ; ++k)
             profile_env[k->first] = k->second;
@@ -536,6 +543,7 @@ Implementation<PortageRepository>::invalidate() const
     has_profile = false;
     arch_list.clear();
     expand_list.clear();
+    expand_hidden_list.clear();
     has_arch_list = false;
     has_mirrors = false;
     mirrors.clear();
@@ -1306,6 +1314,39 @@ PortageRepository::do_is_expand_flag(const UseFlagName & u) const
             return true;
 
     return false;
+}
+
+bool
+PortageRepository::do_is_expand_hidden_flag(const UseFlagName & u) const
+{
+    _imp->need_profiles();
+
+    for (UseFlagSet::const_iterator i(_imp->expand_hidden_list.begin()),
+            i_end(_imp->expand_hidden_list.end()) ; i != i_end ; ++i)
+        if (0 == strncasecmp(
+                    stringify(u).c_str(),
+                    (stringify(*i) + "_").c_str(),
+                    stringify(*i).length() + 1))
+            return true;
+
+    return false;
+}
+
+std::string::size_type
+PortageRepository::do_expand_flag_delim_pos(const UseFlagName & u) const
+{
+    _imp->need_profiles();
+
+    for (UseFlagSet::const_iterator i(_imp->expand_list.begin()),
+            i_end(_imp->expand_list.end()) ; i != i_end ; ++i)
+        if (0 == strncasecmp(
+                    stringify(u).c_str(),
+                    (stringify(*i) + "_").c_str(),
+                    stringify(*i).length() + 1))
+            return stringify(*i).length();
+
+    throw InternalError(PALUDIS_HERE, "Use flag '" +
+            stringify(u) + "' not an expand flag?");
 }
 
 bool

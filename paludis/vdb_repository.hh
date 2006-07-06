@@ -127,6 +127,8 @@ namespace paludis
             virtual bool do_is_arch_flag(const UseFlagName &) const;
 
             virtual bool do_is_expand_flag(const UseFlagName &) const;
+            virtual bool do_is_expand_hidden_flag(const UseFlagName &) const;
+            virtual std::string::size_type do_expand_flag_delim_pos(const UseFlagName &) const;
 
             virtual bool do_is_licence(const std::string &) const;
 

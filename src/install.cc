@@ -256,9 +256,15 @@ do_install()
                 p::WhitespaceTokeniser::get_instance()->tokenise(
                         dep->get<p::dle_metadata>()->get_ebuild_interface()->get<p::evm_iuse>(),
                         p::create_inserter<p::UseFlagName>(std::inserter(iuse, iuse.end())));
+
+
+                /* display normal use flags first */
                 for (std::set<p::UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
                         i != i_end ; ++i)
                 {
+                    if (use_interface->is_expand_flag(*i))
+                        continue;
+
                     if (env->query_use(*i, &p))
                     {
                         if (use_interface && use_interface->query_use_force(*i, &p))
@@ -272,6 +278,40 @@ do_install()
                             cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");
                         else
                             cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));
+                    }
+                }
+
+                /* now display expand flags */
+                p::UseFlagName old_expand_name("OFTEN_NOT_BEEN_ON_BOATS");
+                for (std::set<p::UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
+                        i != i_end ; ++i)
+                {
+                    if ((! use_interface->is_expand_flag(*i)) ||
+                            (use_interface->is_expand_hidden_flag(*i)))
+                        continue;
+
+                    p::UseFlagName expand_name(use_interface->expand_flag_name(*i)),
+                        expand_value(use_interface->expand_flag_value(*i));
+
+                    if (expand_name != old_expand_name)
+                    {
+                        cout << " " << expand_name << ":";
+                        old_expand_name = expand_name;
+                    }
+
+                    if (env->query_use(*i, &p))
+                    {
+                        if (use_interface && use_interface->query_use_force(*i, &p))
+                            cout << " " << colour(cl_flag_on, "(" + p::stringify(expand_value) + ")");
+                        else
+                            cout << " " << colour(cl_flag_on, expand_value);
+                    }
+                    else
+                    {
+                        if (use_interface && use_interface->query_use_mask(*i, &p))
+                            cout << " " << colour(cl_flag_off, "(-" + p::stringify(expand_value) + ")");
+                        else
+                            cout << " " << colour(cl_flag_off, "-" + p::stringify(expand_value));
                     }
                 }
             }

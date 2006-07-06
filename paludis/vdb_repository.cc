@@ -728,6 +728,18 @@ VDBRepository::do_is_expand_flag(const UseFlagName &) const
 }
 
 bool
+VDBRepository::do_is_expand_hidden_flag(const UseFlagName &) const
+{
+    return false;
+}
+
+std::string::size_type
+VDBRepository::do_expand_flag_delim_pos(const UseFlagName &) const
+{
+    return 0;
+}
+
+bool
 VDBRepository::do_is_licence(const std::string &) const
 {
     return false;

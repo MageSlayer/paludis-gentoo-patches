@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repository.hh>
+#include <ctype.h>
 
 /** \file
  * Implementation of Repository.
@@ -99,5 +100,14 @@ RepositoryInfo::ConstPointer
 Repository::info(bool) const
 {
     return _info;
+}
+
+UseFlagName
+Repository::UseInterface::expand_flag_name(const UseFlagName & u) const
+{
+    std::string upper_u;
+    std::transform(u.data().begin(), u.data().end(), std::back_inserter(upper_u),
+                &::toupper);
+    return UseFlagName(upper_u.substr(0, do_expand_flag_delim_pos(u)));
 }
 

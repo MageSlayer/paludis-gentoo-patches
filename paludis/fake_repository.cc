@@ -229,6 +229,19 @@ FakeRepository::do_is_expand_flag(const UseFlagName &) const
     return false;
 }
 
+
+bool
+FakeRepository::do_is_expand_hidden_flag(const UseFlagName &) const
+{
+    return false;
+}
+
+std::string::size_type
+FakeRepository::do_expand_flag_delim_pos(const UseFlagName &) const
+{
+    return 0;
+}
+
 bool
 FakeRepository::do_is_licence(const std::string &) const
 {

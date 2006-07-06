@@ -535,6 +535,19 @@ namespace paludis
              */
             virtual bool do_is_expand_flag(const UseFlagName &) const = 0;
 
+            /**
+             * Override in descendents: is this an expand flag that should be
+             * ignored?
+             */
+            virtual bool do_is_expand_hidden_flag(const UseFlagName &) const = 0;
+
+            /**
+             * Override in descendents: for a UseFlagName where is_expand_flag
+             * is true, return the position of the delimiting underscore that
+             * splits name and value.
+             */
+            virtual std::string::size_type do_expand_flag_delim_pos(const UseFlagName &) const = 0;
+
         public:
             /**
              * Query the state of the specified use flag.
@@ -579,6 +592,30 @@ namespace paludis
             bool is_expand_flag(const UseFlagName & u) const
             {
                 return do_is_expand_flag(u);
+            }
+
+            /**
+             * Query whether the specified use flag is an expand flag that
+             * is ignored in visible output.
+             */
+            bool is_expand_hidden_flag(const UseFlagName & u) const
+            {
+                return do_is_expand_hidden_flag(u);
+            }
+
+            /**
+             * Fetch the expand flag name for a given use flag where
+             * is_expand_flag returns true.
+             */
+            UseFlagName expand_flag_name(const UseFlagName & u) const;
+
+            /**
+             * Fetch the expand flag value for a given use flag where
+             * is_expand_flag returns true.
+             */
+            UseFlagName expand_flag_value(const UseFlagName & u) const
+            {
+                return UseFlagName(stringify(u).substr(do_expand_flag_delim_pos(u) + 1));
             }
 
             virtual ~UseInterface() { }
