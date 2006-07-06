@@ -38,7 +38,7 @@ namespace paludis
 
             void _update(const uint8_t * const block);
 
-            inline int _get(std::istream & stream) PALUDIS_ATTRIBUTE((always_inline));
+            inline int _get(std::istream & stream);
 
         public:
             MD5(std::istream & stream);
