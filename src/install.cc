@@ -59,6 +59,18 @@ namespace
             cout << endl;
         }
     };
+
+    void
+    world_add_callback(const p::PackageDepAtom * const p)
+    {
+        cout << "* adding " << *p << endl;
+    }
+
+    void
+    world_skip_callback(const p::PackageDepAtom * const p, const std::string & why)
+    {
+        cout << "* skipping " << *p << " (" << why << ")" << endl;
+    }
 }
 
 int
@@ -96,12 +108,12 @@ do_install()
     if (CommandLine::get_instance()->a_fetch.specified())
         opts.set<p::io_fetchonly>(true);
 
+    bool had_set_targets(false), had_pkg_targets(false);
     try
     {
         CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
             q_end(CommandLine::get_instance()->end_parameters());
 
-        bool had_set_targets(false), had_pkg_targets(false);
         for ( ; q != q_end ; ++q)
         {
             p::DepAtom::Pointer s(0);
@@ -134,10 +146,6 @@ do_install()
 
         if (had_set_targets)
             dep_list.set_reinstall(false);
-        else if ((! CommandLine::get_instance()->a_pretend.specified()) &&
-                (! opts.get<p::io_fetchonly>()))
-            if (! CommandLine::get_instance()->a_preserve_world.specified())
-                env->add_appropriate_to_world(targets);
     }
     catch (const p::AmbiguousPackageNameError & e)
     {
@@ -495,6 +503,19 @@ do_install()
                 }
             }
         }
+
+        if ((! had_set_targets) &&
+                (! CommandLine::get_instance()->a_pretend.specified()) &&
+                (! opts.get<p::io_fetchonly>()))
+        {
+            cout << endl << colour(cl_heading, "Updating world file") << endl << endl;
+            if (! CommandLine::get_instance()->a_preserve_world.specified())
+                env->add_appropriate_to_world(targets, &world_add_callback,
+                        &world_skip_callback);
+            else
+                cout << "* --preserve-world was specified, skipping world adds" << endl;
+        }
+
 
         if (opts.get<p::io_fetchonly>())
             env->perform_hook(p::Hook("fetch_all_post")("TARGETS", p::join(

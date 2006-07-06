@@ -303,6 +303,21 @@ namespace
         /// Matches
         std::list<const PackageDepAtom *> items;
 
+        void (* add_callback)(const PackageDepAtom *);
+        void (* skip_callback)(const PackageDepAtom *, const std::string & why);
+
+        bool inside_any;
+        bool inside_use;
+
+        WorldTargetFinder(void (* a)(const PackageDepAtom *),
+                void (* s)(const PackageDepAtom *, const std::string &)) :
+            add_callback(a),
+            skip_callback(s),
+            inside_any(false),
+            inside_use(false)
+        {
+        }
+
         ///\name Visit methods
         ///{
         void visit(const AllDepAtom * a)
@@ -310,12 +325,16 @@ namespace
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
-        void visit(const AnyDepAtom *)
+        void visit(const AnyDepAtom * a)
         {
+            Save<bool> save_inside_any(&inside_any, true);
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
-        void visit(const UseDepAtom *)
+        void visit(const UseDepAtom * a)
         {
+            Save<bool> save_inside_use(&inside_use, true);
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
         void visit(const PlainTextDepAtom *)
@@ -324,8 +343,32 @@ namespace
 
         void visit(const PackageDepAtom * a)
         {
-            if (! (a->slot_ptr() || a->version_spec_ptr()))
+            if (inside_any)
+            {
+                if (skip_callback)
+                    (*skip_callback)(a, "inside || ( ) block");
+            }
+            else if (inside_use)
+            {
+                if (skip_callback)
+                    (*skip_callback)(a, "inside use? ( ) block");
+            }
+            else if (a->slot_ptr())
+            {
+                if (skip_callback)
+                    (*skip_callback)(a, ":slot restrictions");
+            }
+            else if (a->version_spec_ptr())
+            {
+                if (skip_callback)
+                    (*skip_callback)(a, "version restrictions");
+            }
+            else
+            {
                 items.push_back(a);
+                if (add_callback)
+                    (*add_callback)(a);
+            }
         }
 
         void visit(const BlockDepAtom *)
@@ -337,32 +380,28 @@ namespace
 }
 
 void
-Environment::add_appropriate_to_world(DepAtom::ConstPointer a) const
+Environment::add_appropriate_to_world(DepAtom::ConstPointer a,
+        void (* add_callback)(const PackageDepAtom *),
+        void (* skip_callback)(const PackageDepAtom *, const std::string & why)) const
 {
-    WorldTargetFinder w;
+    WorldTargetFinder w(add_callback, skip_callback);
     a->accept(&w);
     for (std::list<const PackageDepAtom *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
     {
-        if (! package_database()->query(**i, is_installed_only)->empty())
-            Log::get_instance()->message(ll_debug, lc_no_context,
-                    "Not adding '" + stringify(**i) +
-                    "' to world, because it is already installed");
-        else
-        {
-            for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
-                    r_end(package_database()->end_repositories()) ;
-                    r != r_end ; ++r)
-                if ((*r)->get_interface<repo_world>())
-                    (*r)->get_interface<repo_world>()->add_to_world((*i)->package());
-        }
+        for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+                r_end(package_database()->end_repositories()) ;
+                r != r_end ; ++r)
+            if ((*r)->get_interface<repo_world>())
+                (*r)->get_interface<repo_world>()->add_to_world((*i)->package());
     }
 }
 
 void
-Environment::remove_appropriate_from_world(DepAtom::ConstPointer a) const
+Environment::remove_appropriate_from_world(DepAtom::ConstPointer a,
+        void (* remove_callback)(const PackageDepAtom *)) const
 {
-    WorldTargetFinder w;
+    WorldTargetFinder w(0, 0);
     a->accept(&w);
     for (std::list<const PackageDepAtom *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
@@ -372,6 +411,9 @@ Environment::remove_appropriate_from_world(DepAtom::ConstPointer a) const
                 r != r_end ; ++r)
             if ((*r)->get_interface<repo_world>())
                 (*r)->get_interface<repo_world>()->remove_from_world((*i)->package());
+
+        if (remove_callback)
+            (*remove_callback)(*i);
     }
 }
 

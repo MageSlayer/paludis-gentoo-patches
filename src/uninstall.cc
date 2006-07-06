@@ -32,6 +32,14 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
+namespace
+{
+    void world_remove_callback(const p::PackageDepAtom * const p)
+    {
+        cout << "* removing " << *p << endl;
+    }
+}
+
 int
 do_uninstall()
 {
@@ -97,6 +105,7 @@ do_uninstall()
     if (CommandLine::get_instance()->a_pretend.specified())
         return return_code;
 
+    cout << endl << colour(cl_heading, "Updating world file") << endl << endl;
     if (! CommandLine::get_instance()->a_preserve_world.specified())
     {
         p::AllDepAtom::Pointer all(new p::AllDepAtom);
@@ -104,8 +113,10 @@ do_uninstall()
                 t_end(targets.end()) ; t != t_end ; ++t)
             all->add_child(*t);
 
-        env->remove_appropriate_from_world(all);
+        env->remove_appropriate_from_world(all, &world_remove_callback);
     }
+    else
+        cout << "* --preserve-world was specified, skipping world removes" << endl;
 
     p::InstallOptions opts(false, false);
     if (CommandLine::get_instance()->a_no_config_protection.specified())

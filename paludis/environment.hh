@@ -208,12 +208,16 @@ namespace paludis
              * Add packages to world, if they are not there already, and if they are
              * not a restricted atom.
              */
-            void add_appropriate_to_world(DepAtom::ConstPointer) const;
+            void
+            add_appropriate_to_world(DepAtom::ConstPointer a,
+                    void (* add_callback)(const PackageDepAtom *) = 0,
+                    void (* skip_callback)(const PackageDepAtom *, const std::string &) = 0) const;
 
             /**
              * Remove packages from world, if they are there.
              */
-            void remove_appropriate_from_world(DepAtom::ConstPointer) const;
+            void remove_appropriate_from_world(DepAtom::ConstPointer,
+                    void (* remove_callback)(const PackageDepAtom *) = 0) const;
 
             /**
              * Perform a hook.
