@@ -71,6 +71,12 @@ AllMaskedError::AllMaskedError(const std::string & query) throw () :
 {
 }
 
+UseRequirementsNotMetError::UseRequirementsNotMetError(const std::string & query) throw () :
+    DepListError("Error searching for '" + query + "': use requirements are not met"),
+    _query(query)
+{
+}
+
 BlockError::BlockError(const std::string & msg) throw () :
     DepListError("Block: " + msg)
 {
@@ -439,6 +445,16 @@ DepList::visit(const PackageDepAtom * const p)
             }
             else
                 return;
+        }
+        else if (p->use_requirements_ptr())
+        {
+            /* if we *could* have a match except for the AllMaskedError,
+             * throw a UseRequirementsNotMetError error instead. */
+            if (! _imp->environment->package_database()->query(
+                        p->without_use_requirements(), is_either)->empty())
+                throw UseRequirementsNotMetError(stringify(*p));
+            else
+                throw AllMaskedError(stringify(*p));
         }
         else
             throw AllMaskedError(stringify(*p));

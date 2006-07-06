@@ -386,6 +386,11 @@ namespace paludis
             {
                 _tag = s;
             }
+
+            /**
+             * Fetch a copy of ourself without the USE requirements.
+             */
+            Pointer without_use_requirements() const;
     };
 
     /**

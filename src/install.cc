@@ -628,6 +628,20 @@ do_install()
 
         return 1;
     }
+    catch (const p::UseRequirementsNotMetError & e)
+    {
+        cout << endl;
+        cerr << "DepList USE requirements not met error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ") << e.message() << endl;
+        cerr << endl;
+        cerr << "This error usually indicates that one of the packages you are trying to" << endl;
+        cerr << "install requires that another package be built with particular USE flags" << endl;
+        cerr << "enabled or disabled. You may be able to work around this restriction by" << endl;
+        cerr << "adjusting your use.conf." << endl;
+        cerr << endl;
+
+        return_code |= 1;
+    }
     catch (const p::DepListStackTooDeepError & e)
     {
         cout << endl;

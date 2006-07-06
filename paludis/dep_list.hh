@@ -193,6 +193,40 @@ namespace paludis
     };
 
     /**
+     * Thrown if all versions of a particular atom are masked,
+     * but would not be if use requirements were not in effect.
+     *
+     * \ingroup grpdepresolver
+     * \ingroup grpexceptions
+     */
+    class UseRequirementsNotMetError : public DepListError
+    {
+        private:
+            std::string _query;
+
+        public:
+            /**
+             * Constructor.
+             */
+            UseRequirementsNotMetError(const std::string & query) throw ();
+
+            /**
+             * Destructor.
+             */
+            virtual ~UseRequirementsNotMetError() throw ()
+            {
+            }
+
+            /**
+             * Our query.
+             */
+            const std::string & query() const
+            {
+                return _query;
+            }
+    };
+
+    /**
      * Thrown if a block is encountered.
      *
      * \ingroup grpdepresolver

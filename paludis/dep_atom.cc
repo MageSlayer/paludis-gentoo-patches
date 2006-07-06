@@ -278,3 +278,12 @@ UseRequirements::state(const UseFlagName & u) const
     return i->second;
 }
 
+PackageDepAtom::Pointer
+PackageDepAtom::without_use_requirements() const
+{
+    std::string s(text());
+    if (std::string::npos != s.find('['))
+        s.erase(s.find('['));
+    return Pointer(new PackageDepAtom(s));
+}
+
