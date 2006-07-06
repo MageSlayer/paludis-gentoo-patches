@@ -559,24 +559,27 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
                     ))),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(p))
 {
-    _info.insert(std::make_pair(std::string("location"), stringify(_imp->location)));
-    _info.insert(std::make_pair(std::string("profiles"), join(_imp->profiles->begin(),
-                    _imp->profiles->end(), " ")));
-    _info.insert(std::make_pair(std::string("eclassdirs"), join(_imp->eclassdirs->begin(),
-                    _imp->eclassdirs->end(), " ")));
-    _info.insert(std::make_pair(std::string("cache"), stringify(_imp->cache)));
-    _info.insert(std::make_pair(std::string("distdir"), stringify(_imp->distdir)));
-    _info.insert(std::make_pair(std::string("securitydir"), stringify(_imp->securitydir)));
-    _info.insert(std::make_pair(std::string("setsdir"), stringify(_imp->setsdir)));
-    _info.insert(std::make_pair(std::string("newsdir"), stringify(_imp->newsdir)));
-    _info.insert(std::make_pair(std::string("format"), std::string("portage")));
-    _info.insert(std::make_pair(std::string("root"), stringify(_imp->root)));
-    _info.insert(std::make_pair(std::string("buildroot"), stringify(_imp->buildroot)));
-    if (! _imp->sync.empty())
-        _info.insert(std::make_pair(std::string("sync"), _imp->sync));
-    if (! _imp->sync_exclude.empty())
-        _info.insert(std::make_pair(std::string("sync_exclude"), _imp->sync_exclude));
+    // the info_vars and info_pkgs info is only added on demand, since it's
+    // fairly slow to calculate.
+    RepositoryInfoSection config_info("Configuration information");
 
+    config_info.add_kv("location", stringify(_imp->location));
+    config_info.add_kv("profiles", join(_imp->profiles->begin(),
+                _imp->profiles->end(), " "));
+    config_info.add_kv("eclassdirs", join(_imp->eclassdirs->begin(),
+                _imp->eclassdirs->end(), " "));
+    config_info.add_kv("cache", stringify(_imp->cache));
+    config_info.add_kv("distdir", stringify(_imp->distdir));
+    config_info.add_kv("securitydir", stringify(_imp->securitydir));
+    config_info.add_kv("setsdir", stringify(_imp->setsdir));
+    config_info.add_kv("newsdir", stringify(_imp->newsdir));
+    config_info.add_kv("format", "portage");
+    config_info.add_kv("root", stringify(_imp->root));
+    config_info.add_kv("buildroot", stringify(_imp->buildroot));
+    config_info.add_kv("sync", _imp->sync);
+    config_info.add_kv("sync_exclude", _imp->sync_exclude);
+
+    _info->add_section(config_info);
 }
 
 PortageRepository::~PortageRepository()
@@ -2178,5 +2181,75 @@ PortageRepository::get_environment_variable(
                 stringify(var) + "' for package '" + stringify(for_package) + "'");
 
     return cmd.result();
+}
+
+RepositoryInfo::ConstPointer
+PortageRepository::info(bool verbose) const
+{
+    RepositoryInfo::ConstPointer result_non_verbose(Repository::info(verbose));
+    if (! verbose)
+        return result_non_verbose;
+
+    RepositoryInfo::Pointer result(new RepositoryInfo);
+
+    for (RepositoryInfo::SectionIterator s(result_non_verbose->begin_sections()),
+            s_end(result_non_verbose->end_sections()) ; s != s_end ; ++s)
+        result->add_section(*s);
+
+    std::set<std::string> info_pkgs;
+    if ((_imp->location / "profiles" / "info_pkgs").exists())
+    {
+        LineConfigFile vars(_imp->location / "profiles" / "info_pkgs");
+        info_pkgs.insert(vars.begin(), vars.end());
+    }
+
+    if (! info_pkgs.empty())
+    {
+        RepositoryInfoSection package_info("Package information");
+        for (std::set<std::string>::const_iterator i(info_pkgs.begin()),
+                i_end(info_pkgs.end()) ; i != i_end ; ++i)
+        {
+            PackageDatabaseEntryCollection::ConstPointer q(_imp->env->package_database()->query(
+                        PackageDepAtom::ConstPointer(new PackageDepAtom(*i)), is_installed_only));
+            if (q->empty())
+                package_info.add_kv(*i, "(none)");
+            else
+            {
+                std::set<VersionSpec> versions;
+                std::transform(q->begin(), q->end(), std::inserter(versions, versions.end()),
+                        std::mem_fun_ref(&PackageDatabaseEntry::get<pde_version>));
+                package_info.add_kv(*i, join(versions.begin(), versions.end(), ", "));
+            }
+        }
+
+        result->add_section(package_info);
+    }
+
+    std::set<std::string> info_vars;
+    if ((_imp->location / "profiles" / "info_vars").exists())
+    {
+        LineConfigFile vars(_imp->location / "profiles" / "info_vars");
+        info_vars.insert(vars.begin(), vars.end());
+    }
+
+    if (! info_vars.empty() && ! info_pkgs.empty() &&
+            ! version_specs(QualifiedPackageName(*info_pkgs.begin()))->empty())
+    {
+        PackageDatabaseEntry e(QualifiedPackageName(*info_pkgs.begin()),
+                *version_specs(QualifiedPackageName(*info_pkgs.begin()))->last(),
+                name());
+        RepositoryInfoSection variable_info("Variable information");
+        for (std::set<std::string>::const_iterator i(info_vars.begin()),
+                i_end(info_vars.end()) ; i != i_end ; ++i)
+            variable_info.add_kv(*i, get_environment_variable(e, *i));
+
+        result->add_section(variable_info);
+    }
+    else if (! info_vars.empty())
+        Log::get_instance()->message(ll_warning, lc_no_context,
+                "Skipping info_vars for '" + stringify(name()) +
+                "' because info_pkgs is not usable");
+
+    return result;
 }
 

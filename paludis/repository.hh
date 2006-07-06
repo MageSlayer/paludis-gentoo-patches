@@ -129,6 +129,68 @@ namespace paludis
     };
 
     /**
+     * A section of information about a Repository.
+     *
+     * \see RepositoryInfo
+     * \ingroup grprepository
+     */
+    class RepositoryInfoSection
+    {
+        private:
+            std::string _heading;
+            std::map<std::string, std::string> _kvs;
+
+        public:
+            RepositoryInfoSection(const std::string & heading);
+
+            std::string heading() const
+            {
+                return _heading;
+            }
+
+            typedef std::map<std::string, std::string>::const_iterator KeyValueIterator;
+
+            KeyValueIterator begin_kvs() const
+            {
+                return _kvs.begin();
+            }
+
+            KeyValueIterator end_kvs() const
+            {
+                return _kvs.end();
+            }
+
+            RepositoryInfoSection & add_kv(const std::string &, const std::string &);
+    };
+
+    /**
+     * Information about a Repository, for the end user.
+     *
+     * \ingroup grprepository
+     */
+    class RepositoryInfo :
+        public InternalCounted<RepositoryInfo>
+    {
+        private:
+            std::list<RepositoryInfoSection> _sections;
+
+        public:
+            typedef std::list<RepositoryInfoSection>::const_iterator SectionIterator;
+
+            SectionIterator begin_sections() const
+            {
+                return _sections.begin();
+            }
+
+            SectionIterator end_sections() const
+            {
+                return _sections.end();
+            }
+
+            RepositoryInfo & add_section(const RepositoryInfoSection &);
+    };
+
+    /**
      * A Repository provides a representation of a physical repository to a
      * PackageDatabase.
      *
@@ -194,9 +256,9 @@ namespace paludis
 
         protected:
             /**
-             * Our repository information.
+             * Our information.
              */
-            std::map<std::string, std::string> _info;
+            mutable RepositoryInfo::Pointer _info;
 
             /**
              * Constructor.
@@ -264,6 +326,8 @@ namespace paludis
             ///}
 
         public:
+            virtual RepositoryInfo::ConstPointer info(bool verbose) const;
+
             ///\name Interface queries
             ///{
 
@@ -357,27 +421,6 @@ namespace paludis
                     const VersionSpec & v) const
             {
                 return do_version_metadata(q, v);
-            }
-
-            /**
-             * Iterator to information about our repository.
-             */
-            typedef std::map<std::string, std::string>::const_iterator InfoIterator;
-
-            /**
-             * Start of repository information.
-             */
-            InfoIterator begin_info() const
-            {
-                return _info.begin();
-            }
-
-            /**
-             * Past the end of repository information.
-             */
-            InfoIterator end_info() const
-            {
-                return _info.end();
             }
 
             /**

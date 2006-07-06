@@ -80,6 +80,9 @@ class CommandLine :
         /// --version
         paludis::args::SwitchArg a_version;
 
+        /// --info
+        paludis::args::SwitchArg a_info;
+
         /// --help
         paludis::args::SwitchArg a_help;
 

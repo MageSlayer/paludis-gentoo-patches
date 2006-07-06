@@ -31,7 +31,8 @@ Repository::Repository(
         const RepositoryName & name,
         const RepositoryCapabilities & caps) :
     _name(name),
-    _caps(caps)
+    _caps(caps),
+    _info(new RepositoryInfo)
 {
 }
 
@@ -73,5 +74,30 @@ PackageFetchActionError::PackageFetchActionError(const std::string & msg) throw 
 PackageUninstallActionError::PackageUninstallActionError(const std::string & msg) throw () :
     PackageActionError("Uninstall error: " + msg)
 {
+}
+
+RepositoryInfo &
+RepositoryInfo::add_section(const RepositoryInfoSection & s)
+{
+    _sections.push_back(s);
+    return *this;
+}
+
+RepositoryInfoSection::RepositoryInfoSection(const std::string & heading) :
+    _heading(heading)
+{
+}
+
+RepositoryInfoSection &
+RepositoryInfoSection::add_kv(const std::string & k, const std::string & v)
+{
+    _kvs.insert(std::make_pair(k, v));
+    return *this;
+}
+
+RepositoryInfo::ConstPointer
+Repository::info(bool) const
+{
+    return _info;
 }
 

@@ -33,6 +33,7 @@ CommandLine::CommandLine() :
     a_contents(&action_args, "contents", 'k', "Display contents of a package"),
     a_owner(&action_args, "owner", 'o', "Display the owner of a file"),
     a_version(&action_args,  "version",      'V', "Display program version"),
+    a_info(&action_args, "info", 'I', "Display program version and system information"),
     a_help(&action_args,     "help",         'h', "Display program help"),
 
     action_args_internal(this, "More actions (mostly for internal / script use)"),

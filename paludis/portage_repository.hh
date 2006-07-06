@@ -173,6 +173,8 @@ namespace paludis
             virtual bool do_sync() const;
 
         public:
+            virtual RepositoryInfo::ConstPointer info(bool verbose) const;
+
             /**
              * Constructor.
              */

@@ -98,11 +98,12 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
                     ))),
     PrivateImplementationPattern<NothingRepository>(new Implementation<NothingRepository>(p))
 {
-    if (! _imp->sync.empty())
-        _info.insert(std::make_pair(std::string("sync"), _imp->sync));
-    if (! _imp->sync_exclude.empty())
-        _info.insert(std::make_pair(std::string("sync_exclude"), _imp->sync_exclude));
-    _info.insert(std::make_pair(std::string("location"), stringify(_imp->location)));
+    RepositoryInfoSection config_info("Configuration information");
+    config_info.add_kv("sync", _imp->sync);
+    config_info.add_kv("sync_exclude", _imp->sync_exclude);
+    config_info.add_kv("location", stringify(_imp->location));
+
+    _info->add_section(config_info);
 }
 catch (const NameError & e)
 {

@@ -52,11 +52,17 @@ do_list_repositories()
 
         std::cout << "* " << colour(cl_package_name, r->name()) << std::endl;
 
-        for (p::Repository::InfoIterator i(r->begin_info()), i_end(r->end_info()) ; i != i_end ; ++i)
-            std::cout << "    " << std::setw(22) << std::left << (p::stringify(i->first) + ":")
-                << std::setw(0) << " " << i->second << std::endl;
-
-        std::cout << std::endl;
+        p::RepositoryInfo::ConstPointer ii(r->info(false));
+        for (p::RepositoryInfo::SectionIterator i(ii->begin_sections()),
+                i_end(ii->end_sections()) ; i != i_end ; ++i)
+        {
+            std::cout << "    " << colour(cl_heading, i->heading() + ":") << std::endl;
+            for (p::RepositoryInfoSection::KeyValueIterator k(i->begin_kvs()),
+                    k_end(i->end_kvs()) ; k != k_end ; ++k)
+                std::cout << "        " << std::setw(22) << std::left << (p::stringify(k->first) + ":")
+                    << std::setw(0) << " " << k->second << std::endl;
+            std::cout << std::endl;
+        }
     }
 
     return ret_code;

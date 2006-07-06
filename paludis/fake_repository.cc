@@ -83,7 +83,10 @@ FakeRepository::FakeRepository(const RepositoryName & name) :
     Repository::UseInterface(),
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>)
 {
-    _info.insert(std::make_pair(std::string("format"), std::string("fake")));
+    RepositoryInfoSection config_info("Configuration information");
+    config_info.add_kv("format", "fake");
+
+    _info->add_section(config_info);
 }
 
 FakeRepository::~FakeRepository()

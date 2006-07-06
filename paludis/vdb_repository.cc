@@ -401,11 +401,15 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
                     ))),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(p))
 {
-    _info.insert(std::make_pair(std::string("location"), stringify(_imp->location)));
-    _info.insert(std::make_pair(std::string("root"), stringify(_imp->root)));
-    _info.insert(std::make_pair(std::string("format"), std::string("vdb")));
-    _info.insert(std::make_pair(std::string("world"), stringify(_imp->world_file)));
-    _info.insert(std::make_pair(std::string("buildroot"), stringify(_imp->buildroot)));
+    RepositoryInfoSection config_info("Configuration information");
+
+    config_info.add_kv("location", stringify(_imp->location));
+    config_info.add_kv("root", stringify(_imp->root));
+    config_info.add_kv("format", "vdb");
+    config_info.add_kv("world", stringify(_imp->world_file));
+    config_info.add_kv("buildroot", stringify(_imp->buildroot));
+
+    _info->add_section(config_info);
 }
 
 VDBRepository::~VDBRepository()

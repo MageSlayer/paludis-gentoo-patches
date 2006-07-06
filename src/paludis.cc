@@ -34,6 +34,7 @@
 #include <paludis/util/util.hh>
 
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <cstdlib>
 
@@ -52,6 +53,71 @@ struct DoVersion
 {
 };
 #endif
+
+namespace
+{
+    void display_version()
+    {
+        cout << PALUDIS_PACKAGE << " " << PALUDIS_VERSION_MAJOR << "."
+            << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO;
+        if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
+            cout << " svn " << PALUDIS_SUBVERSION_REVISION;
+        cout << endl << endl;
+        cout << "Built by " << PALUDIS_BUILD_USER << "@" << PALUDIS_BUILD_HOST
+            << " on " << PALUDIS_BUILD_DATE << endl;
+        cout << "CXX:         " << PALUDIS_BUILD_CXX
+#if defined(__ICC)
+            << " " << __ICC
+#elif defined(__VERSION__)
+            << " " << __VERSION__
+#endif
+            << endl;
+        cout << "CXXFLAGS:    " << PALUDIS_BUILD_CXXFLAGS << endl;
+        cout << "LDFLAGS:     " << PALUDIS_BUILD_LDFLAGS << endl;
+        cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
+        cout << "LIBEXECDIR:  " << LIBEXECDIR << endl;
+        cout << "stdlib:      "
+#if defined(__GLIBCXX__)
+#  define XSTRINGIFY(x) #x
+#  define STRINGIFY(x) XSTRINGIFY(x)
+            << "GNU libstdc++ " << STRINGIFY(__GLIBCXX__)
+#endif
+            << endl;
+
+        cout << "libebt:      " << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR
+            << "." << LIBEBT_VERSION_MICRO << endl;
+#if HAVE_SANDBOX
+        cout << "sandbox:     enabled" << endl;
+#else
+        cout << "sandbox:     disabled" << endl;
+#endif
+    }
+
+    void display_info()
+    {
+        p::Environment * const env(p::DefaultEnvironment::get_instance());
+
+        for (p::IndirectIterator<p::PackageDatabase::RepositoryIterator, const p::Repository>
+                r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
+                r != r_end ; ++r)
+        {
+            cout << "Repository " << colour(cl_package_name, r->name()) << ":" << endl;
+
+            p::RepositoryInfo::ConstPointer ii(r->info(true));
+            for (p::RepositoryInfo::SectionIterator i(ii->begin_sections()),
+                    i_end(ii->end_sections()) ; i != i_end ; ++i)
+            {
+                cout << "    " << colour(cl_heading, i->heading() + ":") << endl;
+                for (p::RepositoryInfoSection::KeyValueIterator k(i->begin_kvs()),
+                        k_end(i->end_kvs()) ; k != k_end ; ++k)
+                    cout << "        " << std::setw(22) << std::left << (p::stringify(k->first) + ":")
+                        << std::setw(0) << " " << k->second << endl;
+                cout << endl;
+            }
+        }
+
+    }
+}
 
 int
 main(int argc, char *argv[])
@@ -102,6 +168,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_has_version.specified() +
                     CommandLine::get_instance()->a_update_news.specified() +
                     CommandLine::get_instance()->a_environment_variable.specified() +
+                    CommandLine::get_instance()->a_info.specified() +
                     CommandLine::get_instance()->a_best_version.specified()))
         {
             if ((1 == std::distance(CommandLine::get_instance()->begin_parameters(),
@@ -162,15 +229,37 @@ main(int argc, char *argv[])
 
         /* these actions do need DefaultConfig */
 
-        std::string paludis_command(argv[0]);
-        if (CommandLine::get_instance()->a_config_suffix.specified())
+        try
         {
-            p::DefaultConfig::set_config_suffix(CommandLine::get_instance()->a_config_suffix.argument());
-            paludis_command.append(" --config-suffix " +
-                    CommandLine::get_instance()->a_config_suffix.argument());
+            std::string paludis_command(argv[0]);
+            if (CommandLine::get_instance()->a_config_suffix.specified())
+            {
+                p::DefaultConfig::set_config_suffix(CommandLine::get_instance()->a_config_suffix.argument());
+                paludis_command.append(" --config-suffix " +
+                        CommandLine::get_instance()->a_config_suffix.argument());
+            }
+            paludis_command.append(" --log-level " + CommandLine::get_instance()->a_log_level.argument());
+            p::DefaultConfig::get_instance()->set_paludis_command(paludis_command);
         }
-        paludis_command.append(" --log-level " + CommandLine::get_instance()->a_log_level.argument());
-        p::DefaultConfig::get_instance()->set_paludis_command(paludis_command);
+        catch (const p::DefaultConfigError & e)
+        {
+            if (CommandLine::get_instance()->a_info.specified())
+            {
+                display_version();
+                cout << endl;
+                cout << "Cannot complete --info output due to configuration exception" << endl;
+            }
+            throw;
+        }
+
+        if (CommandLine::get_instance()->a_info.specified())
+        {
+            display_version();
+            cout << endl;
+            display_info();
+            cout << endl;
+            return EXIT_SUCCESS;
+        }
 
         if (CommandLine::get_instance()->a_query.specified())
         {
@@ -280,39 +369,7 @@ main(int argc, char *argv[])
     }
     catch (const DoVersion &)
     {
-        cout << PALUDIS_PACKAGE << " " << PALUDIS_VERSION_MAJOR << "."
-            << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO;
-        if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
-            cout << " svn " << PALUDIS_SUBVERSION_REVISION;
-        cout << endl << endl;
-        cout << "Built by " << PALUDIS_BUILD_USER << "@" << PALUDIS_BUILD_HOST
-            << " on " << PALUDIS_BUILD_DATE << endl;
-        cout << "CXX:         " << PALUDIS_BUILD_CXX
-#if defined(__ICC)
-            << " " << __ICC
-#elif defined(__VERSION__)
-            << " " << __VERSION__
-#endif
-            << endl;
-        cout << "CXXFLAGS:    " << PALUDIS_BUILD_CXXFLAGS << endl;
-        cout << "LDFLAGS:     " << PALUDIS_BUILD_LDFLAGS << endl;
-        cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
-        cout << "LIBEXECDIR:  " << LIBEXECDIR << endl;
-        cout << "stdlib:      "
-#if defined(__GLIBCXX__)
-#  define XSTRINGIFY(x) #x
-#  define STRINGIFY(x) XSTRINGIFY(x)
-            << "GNU libstdc++ " << STRINGIFY(__GLIBCXX__)
-#endif
-            << endl;
-
-        cout << "libebt:      " << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR
-            << "." << LIBEBT_VERSION_MICRO << endl;
-#if HAVE_SANDBOX
-        cout << "sandbox:     enabled" << endl;
-#else
-        cout << "sandbox:     disabled" << endl;
-#endif
+        display_version();
         cout << endl;
         cout << "Paludis comes with ABSOLUTELY NO WARRANTY. Paludis is free software, and you" << endl;
         cout << "are welcome to redistribute it under the terms of the GNU General Public" << endl;
