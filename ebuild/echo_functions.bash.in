@@ -58,6 +58,11 @@ einfo()
     PALUDIS_LAST_E_CMD=einfo
 }
 
+elog()
+{
+    einfo "$@"
+}
+
 ewarn()
 {
     echo -e " ${COLOUR_WARN}*${COLOUR_NORMAL} $*"
