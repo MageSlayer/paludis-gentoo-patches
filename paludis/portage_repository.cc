@@ -2216,8 +2216,13 @@ PortageRepository::info(bool verbose) const
             else
             {
                 std::set<VersionSpec> versions;
-                std::transform(q->begin(), q->end(), std::inserter(versions, versions.end()),
-                        std::mem_fun_ref(&PackageDatabaseEntry::get<pde_version>));
+
+                /* don't use std::transform, it breaks g++4.1 */
+                // std::transform(q->begin(), q->end(), std::inserter(versions, versions.end()),
+                //        std::mem_fun_ref(&PackageDatabaseEntry::get<pde_version>));
+                for (PackageDatabaseEntryCollection::Iterator qq(q->begin()), qq_end(q->end()) ;
+                        qq != qq_end ; ++qq)
+                    versions.insert(qq->get<pde_version>());
                 package_info.add_kv(*i, join(versions.begin(), versions.end(), ", "));
             }
         }
