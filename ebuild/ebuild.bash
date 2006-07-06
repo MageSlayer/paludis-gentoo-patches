@@ -142,8 +142,6 @@ done
 
 ebuild_load_ebuild()
 {
-    ebuild_section "Loading ebuild"
-
     if [[ -n "${PALUDIS_LOAD_ENVIRONMENT}" ]] ; then
         bunzip2 < "${PALUDIS_LOAD_ENVIRONMENT}" > ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF} \
             || die "Can't extract ${PALUDIS_LOAD_ENVIRONMENT}"
