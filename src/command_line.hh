@@ -62,15 +62,6 @@ class CommandLine :
         /// --sync
         paludis::args::SwitchArg a_sync;
 
-        /// --list-repositories
-        paludis::args::SwitchArg a_list_repositories;
-
-        /// --list-categories
-        paludis::args::SwitchArg a_list_categories;
-
-        /// --list-packages
-        paludis::args::SwitchArg a_list_packages;
-
         /// --contents
         paludis::args::SwitchArg a_contents;
 
@@ -97,6 +88,15 @@ class CommandLine :
 
         /// --environment-variable
         paludis::args::SwitchArg a_environment_variable;
+
+        /// --list-repositories
+        paludis::args::SwitchArg a_list_repositories;
+
+        /// --list-categories
+        paludis::args::SwitchArg a_list_categories;
+
+        /// --list-packages
+        paludis::args::SwitchArg a_list_packages;
 
         /// --list-sync-protocols
         paludis::args::SwitchArg a_list_sync_protocols;
