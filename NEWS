@@ -4,7 +4,7 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-0.3.0 (in progress):
+0.4.0:
     * Lots of internal code cleanup.
 
     * Doxygen generated documentation is much cleaner. Documentation about
@@ -13,13 +13,9 @@ of every change, see the ChangeLog.
     * The build directory for Portage format repositories is now configurable
     using a parameter named 'buildroot'.
 
-    * .tar.Z files are now unpacked correctly.
-
-    * The 'date' command in ebuild global scope now works with a warning,
-    rather than being a hard failure.
-
     * --pretend --install now displays detailed counts ('1 upgrade, 3 new')
-    rather than just a raw number.
+    rather than just a raw number. USE_EXPAND flags are displayed in a much
+    more useful manner.
 
     * As part of the test suite, various full installs of test packages are
     now performed.
@@ -29,8 +25,12 @@ of every change, see the ChangeLog.
     'profiledir' keys are now deprecated in favour of 'eclassdirs' and
     'profiledirs'.
 
-    * Added a --list-vulnerabilities commandline option, mostly for use by
-    tree maintainers.
+    * New commandline options: --list-vulnerabilities, mostly for use by
+    tree maintainers; --dl-no-unnecessary-upgrades, for avoiding upgrades of
+    dependencies; --environment-variable which can be used to print
+    the value of an environment variable for an installed or uninstalled
+    package; similarly, --configuration-variable can be used to get a repository
+    configuration variable; --info, as per portage.
 
     * A new repository format named "nothing" is available. It does not
     contain any packages, but supports a sync parameter to make automatically
@@ -49,38 +49,35 @@ of every change, see the ChangeLog.
     works around problems when upgrading libc. When upgrading and downgrading,
     sh breakages due to library version changes are less likely to be a problem.
 
-    * A --dl-no-unnecessary-upgrades commandline option has been added.
-
     * xterm titles are now updated for syncing, similar to previous behaviour
     for installing.
 
     * Syncing via Subversion over HTTP (svn+http://) has been enabled.
 
-    * Use of * with operators other than equals in dep atoms is now a QA
-    warning rather than a fatal error.
+    * Improved Portage compatibility: .tar.Z files are now unpacked correctly;
+    the 'date' command in ebuild global scope now works with a warning, rather
+    than being a hard failure; use of * with operators other than equals in dep
+    atoms is now a QA warning rather than a fatal error; PVR and AA are
+    supported, and A and AA do not include extra whitespace; dosym now calls
+    dodir as necessary as per Portage 2.1; elog is available.
 
     * Some log messages include program context, to make finding the cause
     of the problem simpler.
-
-    * An --environment-variable commandline option, which can be used to print
-    the value of an environment variable for an installed or uninstalled
-    package, has been added.
-
-    * PVR now behaves like it does for Portage.
 
     * The repository whence a package originates is saved in VDB. Portage
     compatible environment saving is now used. VDB_FORMAT is now "paludis-2".
 
     * SELinux is supported.
 
-    * The behaviour of dosym when target directories don't exist has been
-    updated in line with newer Portage behaviour. dodir is now used as
-    necessary before calling ln.
-
-    * The AA variable is now supported for ebuilds. Trailing whitespace has
-    been stripped from A and AA for Portage compatibility.
-
     * Backtraces are now displayed from 'die'.
+
+    * World file updates are now carried out for packages that are unrestricted
+    except where --preserve-world is specified, regardless of whether the
+    package was previously installed. World updates are carried out after
+    packages are installed rather than before.
+
+    * Dependency errors due to [use] requirements now have more friendly error
+    messages.
 
 0.2.5:
     * Syncing via Git is possible (git://, git+http://, git+ssh://).
