@@ -120,6 +120,95 @@ For filtering, the format is similar to the keywords and use files:
 app-editors/vim-core vim
 \endverbatim
 
+\section ConfigurationFilesMirrorsConf The mirrors.conf File
+
+Mirrors and downloading can be controlled via <code>mirrors.conf</code>. Each
+line takes the form <code>mirrorname http://mirror/blah/ http://another.mirror/</code>.
+A special mirror named <code>*</code>, if present, will be consulted <em>before</em>
+any other location for all files. For example:
+
+\verbatim
+* file:///mnt/nfs/distfiles
+gentoo http://gentoo.blueyonder.co.uk/distfiles
+\endverbatim
+
+\section ConfigurationFilesBashrc The bashrc File
+
+Paludis will source <code>bashrc</code> when doing ebuild work. This file
+can be used to set environment variables (<code>CHOST</code>, <code>CFLAGS</code>
+and so on), but <em>cannot</em> be used to change metadata-affecting variables
+such as <code>USE</code> or <code>LINGUAS</code>.
+
+\section ConfigurationFilesRepositories The repositories/ Files
+
+Each file named <code>*.conf</code> in the <code>repositories/</code> subdirectory
+creates a repository for Paludis. This is a key = value format file, and the special
+variable <code>${ROOT}</code> is defined based upon <code>specpath</code>. All
+files must define a <code>format =</code> key; depending upon the value used, other
+optional and mandatory keys are available.
+
+\subsection ConfigurationFilesRepositoriesPortage portage Format Repositories
+
+\note The name <code>portage</code> is used here to refer to repositories in the
+format used by the <code>gentoo-portage</code> (or <code>gentoo-x86</code>) tree.
+The name is far from ideal...
+
+The following keys are available for <code>format = portage</code>:
+
+- <code>location</code> (mandatory), which points to the location of the
+  tree.
+- <code>profiles</code> (mandatory), which should be a space separated list of
+  directories used for profile data. Later directories have priority.
+- <code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which controls
+  the temporary directory used by Paludis for compiling software.
+- <code>cache</code> (default: <code>${location}/metadata/cache</code>), which
+  controls the location of the metadata cache for a repository. It should be set
+  to <code>/var/empty</code> if there is no metadata cache available.
+- <code>distdir</code> (default: <code>${location}/distfiles</code>), which
+  controls where downloaded files are saved.
+- <code>eclassdirs</code> (default: <code>${location}/eclass</code>), which
+  is a space separated list of locations of eclasses. The value of ECLASSDIR
+  is taken from the <em>first</em> entry, but eclasses from later entries are
+  favoured.
+- <code>newsdir</code> (default: <code>${location}/metadata/news</code>), which
+  controls where GLEP 42 news items are located.
+- <code>securitydir</code> (default: <code>${location}/metadata/security</code>),
+  which controls where security advisories are located.
+- <code>setsdir</code> (default: <code>${location}/sets</code>), which controls
+  where package set files are located.
+- <code>sync</code> (default: empty), which controls how the repository is
+  synced. Typically values are in the form <code>rsync://rsync.europe.gentoo.org/gentoo-portage</code>
+  or <code>svn://svn.berlios.de/paludis/overlay</code>. Use
+  <code>paludis --list-sync-protocols</code> to see supported protocols.
+- <code>sync_exclude</code> (default: empty), which can point to a file that
+  contains a list of directories to exclude when syncing via
+  <code>rsync://</code>.
+
+\subsection ConfigurationFilesRepositoriesVDB vdb Format Repositories
+
+You should have exactly one VDB format repository. It holds packages that have
+been installed from a <code>portage</code> format repository.
+
+The following keys are available for <code>format = vdb</code>:
+
+- <code>location</code> (mandatory), which <strong>must</strong> be set to
+  <code>${ROOT}/var/db/pkg</code>.
+- <code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which is
+  used as a temporary directory when carrying out uninstall operations,
+- <code>world</code> (default: <code>${location}/world</code>), which is used
+  for the world file.
+
+\subsection ConfigurationFilesRepositoriesNothing nothing Format Repositories
+
+Usually you won't have any <code>nothing</code> repositories. They are used as
+a convenience when certain locations have to be synced at <code>--sync</code>
+time; they do not contain any packages.
+
+The following keys are available for <code>format = vdb</code>:
+
+- <code>location</code> (mandatory).
+- <code>sync</code> (default: empty), as per <code>format = portage</code>.
+- <code>sync_exclude</code> (default: empty), idem.
 */
 
 

@@ -5,14 +5,16 @@
 
 \section BootstrapHowtoMain How to make a Paludis chroot
 
-\warning READ EVERYTHING CAREFULLY, OR YOU WILL BREAK YOUR SYSTEM!
-
 <b>THIS WILL PROBABLY NOT ACTUALLY WORK!</b> Paludis is at the very
 early alpha stage.  It can sometimes install things, if you're very lucky, and
 if you're really lucky it might let you upgrade or uninstall them too. There are
 zillions of things that are not implemented. There are zillions of things that
 Paludis does differently from Portage -- some of these are intentional, some are
 not.
+
+<b>You may encounter problems!</b> Paludis is still undergoing heavy development,
+and although it's getting to be fairly reliable, there are still issues. Most
+ebuild authors don't test their code with both package managers.
 
 You should join the <code>\#paludis</code> channel on Freenode. If you're doing
 anything development-related, you should probably also ask to be allowed to
@@ -215,7 +217,7 @@ thing). The Paludis overlay is optional but recommended.
 cat <<"END" > /mychroot/etc/paludis/repositories/gentoo.conf
 location = ${ROOT}/var/paludis/repositories/gentoo/
 sync = rsync://rsync.europe.gentoo.org/gentoo-portage/
-profile = ${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
+profiles = ${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
 format = portage
 END
 
@@ -227,8 +229,8 @@ END
 cat <<"END" > /mychroot/etc/paludis/repositories/paludis-overlay.conf
 location = ${ROOT}/var/paludis/repositories/paludis-overlay/
 sync = svn://svn.berlios.de/paludis/overlay
-profile = ${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
-eclassdir = ${ROOT}/var/paludis/repositories/gentoo/eclass
+profiles = ${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
+eclassdirs = ${ROOT}/var/paludis/repositories/gentoo/eclass
 distdir = ${ROOT}/var/paludis/repositories/gentoo/distfiles
 cache = /var/empty
 format = portage
@@ -309,9 +311,7 @@ paludis --install app-editors/vim
 paludis --uninstall app-editors/nano
 \endverbatim
 
-If you're especially crazy you can tar up your chroot and use it like a stage 3
-when installing a system. This has worked at least once for one person, but
-note that there was a full moon at the time.
+You can also tar up the system and use it as a stage3 or NFS root image.
 
 */
 

@@ -8,11 +8,13 @@ This is the documentation for Paludis, the other package manager. It is availabl
 
 \section userdocs For End Users
 
-You shouldn't be touching Paludis at the moment. Paludis will delete all your
-files, then delete everyone else's files, then rape your dog. Go away.
+Paludis is still undergoing heavy development. It is not a mature solution, and
+still has quite a few missing features. You <b>will</b> run into bugs if you use
+Paludis (some of which may leave your system unusable). Most ebuild authors do
+not test their code with both package managers.
 
-If you're still here, read \link BootstrapHowto the Bootstrap HOWTO \endlink for
-how to break your system or possibly set up a chroot. You may also like to read
+If you find this acceptable, read \link BootstrapHowto the Bootstrap HOWTO
+\endlink for how to set up a chroot or make a stage. You may also like to read
 about \link PortageDifferences some of the differences between Paludis and
 Portage\endlink.
 
@@ -34,15 +36,10 @@ checkout</a>, and reading the \link PortageDifferences Paludis and Portage
 differences \endlink document.
 
 It's best to start by skimming over the main program to get a feel for how
-everything fits together. Useful files:
+everything fits together. The interface code is kept in the src/ directory,
+and library code is in paludis/ .
 
-- src/paludis.cc The main program.
-- src/query.cc The --query action handler.
-- src/install.cc The --install action handler.
-- src/applets.cc Various small action handlers.
-- src/list.cc The --list action handlers
-
-After that, the following classes are good places to begin:
+The following classes are good places to begin:
 
 - paludis::DefaultEnvironment provides a representation of the default
   operating environment.
