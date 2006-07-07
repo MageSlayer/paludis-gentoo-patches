@@ -227,7 +227,8 @@ SecurityContext::ConstPointer MatchPathCon::match(const std::string & path, mode
     security_context_t context;
     if (0 != libselinux.matchpathcon(path.c_str(), mode, &context))
     {
-        Log::get_instance()->message(ll_warning, "Couldn't get default security context for '" + path + "'.");
+        Log::get_instance()->message(ll_warning, lc_no_context,
+                "Couldn't get default security context for '" + path + "'.");
 //        throw SELinuxException("Couldn't get default security context for '" + path + "'.");
     }
     else
