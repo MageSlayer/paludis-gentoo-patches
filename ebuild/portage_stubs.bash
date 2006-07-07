@@ -71,3 +71,8 @@ debug-print-function()
     :
 }
 
+debug-print-section()
+{
+    :
+}
+
