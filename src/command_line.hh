@@ -89,6 +89,9 @@ class CommandLine :
         /// --environment-variable
         paludis::args::SwitchArg a_environment_variable;
 
+        /// --configuration-variable
+        paludis::args::SwitchArg a_configuration_variable;
+
         /// --list-repositories
         paludis::args::SwitchArg a_list_repositories;
 

@@ -112,6 +112,34 @@ int do_environment_variable()
     return return_code;
 }
 
+int do_configuration_variable()
+{
+    int return_code(0);
+
+    p::Context context("When performing configuration-variable action from command line:");
+    p::Environment * const env(p::DefaultEnvironment::get_instance());
+
+    std::string repo_str(*CommandLine::get_instance()->begin_parameters());
+    std::string var_str(* p::next(CommandLine::get_instance()->begin_parameters()));
+
+    p::RepositoryInfo::ConstPointer info(env->package_database()->fetch_repository(
+                p::RepositoryName(repo_str))->info(false));
+
+    return_code = 1;
+    for (p::RepositoryInfo::SectionIterator s(info->begin_sections()),
+            s_end(info->end_sections()) ; s != s_end ; ++s)
+        for (p::RepositoryInfoSection::KeyValueIterator k(s->begin_kvs()),
+                k_end(s->end_kvs()) ; k != k_end ; ++k)
+            if (var_str == k->first)
+            {
+                std::cout << k->second << std::endl;
+                return_code = 0;
+                break;
+            }
+
+    return return_code;
+}
+
 int do_list_repository_formats()
 {
     int return_code(1);

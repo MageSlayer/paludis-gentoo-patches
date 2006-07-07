@@ -35,6 +35,9 @@ int do_best_version();
 /// Handle --environment-variable.
 int do_environment_variable();
 
+/// Handle --configuration-variable.
+int do_configuration_variable();
+
 /// Handle --list-repository-formats
 int do_list_repository_formats();
 

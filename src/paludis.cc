@@ -168,6 +168,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_has_version.specified() +
                     CommandLine::get_instance()->a_update_news.specified() +
                     CommandLine::get_instance()->a_environment_variable.specified() +
+                    CommandLine::get_instance()->a_configuration_variable.specified() +
                     CommandLine::get_instance()->a_info.specified() +
                     CommandLine::get_instance()->a_best_version.specified()))
         {
@@ -355,6 +356,15 @@ main(int argc, char *argv[])
                 throw DoHelp("environment-variable action takes exactly two parameters (depatom var)");
 
             return do_environment_variable();
+        }
+
+        if (CommandLine::get_instance()->a_configuration_variable.specified())
+        {
+            if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters()))
+                throw DoHelp("configuration-variable action takes exactly two parameters (depatom var)");
+
+            return do_configuration_variable();
         }
 
         if (CommandLine::get_instance()->a_update_news.specified())
