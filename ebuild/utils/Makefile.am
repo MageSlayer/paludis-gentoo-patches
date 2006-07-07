@@ -45,6 +45,13 @@ libexecprog_SCRIPTS = \
 	newlib.so \
 	newman \
 	newsbin \
+	prepall \
+	prepallstrip \
+	prepstrip \
+	prepallman \
+	prepman \
+	prepallinfo \
+	prepinfo \
 	$(libexecprog_SCRIPTS_extra)
 
 libexecprog_PROGRAMS = merge unmerge
@@ -75,7 +82,7 @@ check_SCRIPTS = $(TESTS) \
 	unmerge_TEST_setup.sh unmerge_TEST_cleanup.sh
 
 EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash \
-	newlib.so.in newlib.a.in dolib.so.in dolib.a.in
+	newlib.so.in newlib.a.in dolib.so.in dolib.a.in prep.in
 
 newlib.a : newlib.a.in
 	cat $< > $@
@@ -91,6 +98,27 @@ dolib.a : dolib.a.in
 
 sed : sed.in
 	cat $< > $@
+
+prepall: prep.in
+	cat $< >$@
+
+prepallstrip: prep.in
+	cat $< >$@
+
+prepstrip: prep.in
+	cat $< >$@
+
+prepallman: prep.in
+	cat $< >$@
+
+prepman: prep.in
+	cat $< >$@
+
+prepallinfo: prep.in
+	cat $< >$@
+
+prepinfo: prep.in
+	cat $< >$@
 
 check_PROGRAMS =
 
