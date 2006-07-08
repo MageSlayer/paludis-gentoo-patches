@@ -1,5 +1,4 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a sed
 
 libexecprogdir = $(libexecdir)/paludis/utils
 
@@ -81,8 +80,12 @@ check_SCRIPTS = $(TESTS) \
 	merge_TEST_setup.sh merge_TEST_cleanup.sh \
 	unmerge_TEST_setup.sh unmerge_TEST_cleanup.sh
 
+prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman prepinfo
+
 EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash \
 	newlib.so.in newlib.a.in dolib.so.in dolib.a.in prep.in
+
+CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a sed $(prep_scripts)
 
 newlib.a : newlib.a.in
 	cat $< > $@
@@ -99,26 +102,8 @@ dolib.a : dolib.a.in
 sed : sed.in
 	cat $< > $@
 
-prepall: prep.in
-	cat $< >$@
-
-prepallstrip: prep.in
-	cat $< >$@
-
-prepstrip: prep.in
-	cat $< >$@
-
-prepallman: prep.in
-	cat $< >$@
-
-prepman: prep.in
-	cat $< >$@
-
-prepallinfo: prep.in
-	cat $< >$@
-
-prepinfo: prep.in
-	cat $< >$@
+$(prep_scripts) : prep.in
+	cat $< > $@
 
 check_PROGRAMS =
 
