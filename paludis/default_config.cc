@@ -94,11 +94,14 @@ namespace paludis
 
         Implementation();
     };
-}
 
-Implementation<DefaultConfig>::Implementation() :
-    paludis_command("paludis")
-{
+    Implementation<DefaultConfig>::Implementation() :
+        paludis_command("paludis")
+    {
+    }
+
+    std::string Implementation<DefaultConfig>::config_suffix;
+    bool Implementation<DefaultConfig>::config_suffix_can_be_set(true);
 }
 
 DefaultConfigError::DefaultConfigError(const std::string & msg) throw () :
@@ -428,9 +431,6 @@ DefaultConfig::DefaultConfig() :
 DefaultConfig::~DefaultConfig()
 {
 }
-
-std::string Implementation<DefaultConfig>::config_suffix;
-bool Implementation<DefaultConfig>::config_suffix_can_be_set(true);
 
 void
 DefaultConfig::set_config_suffix(const std::string & s)

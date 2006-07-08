@@ -251,304 +251,304 @@ namespace paludis
             /// Raw system lines.
             mutable std::set<std::string> system_lines;
     };
-}
 
-Implementation<PortageRepository>::Implementation(const PortageRepositoryParams & p) :
-    db(p.get<prpk_package_database>()),
-    env(p.get<prpk_environment>()),
-    location(p.get<prpk_location>()),
-    profiles(p.get<prpk_profiles>()),
-    cache(p.get<prpk_cache>()),
-    eclassdirs(p.get<prpk_eclassdirs>()),
-    distdir(p.get<prpk_distdir>()),
-    setsdir(p.get<prpk_setsdir>()),
-    securitydir(p.get<prpk_securitydir>()),
-    newsdir(p.get<prpk_newsdir>()),
-    sync(p.get<prpk_sync>()),
-    sync_exclude(p.get<prpk_sync_exclude>()),
-    root(p.get<prpk_root>()),
-    buildroot(p.get<prpk_buildroot>()),
-    has_category_names(false),
-    has_repo_mask(false),
-    has_virtuals(false),
-    has_arch_list(false),
-    has_mirrors(false),
-    system_packages(new AllDepAtom),
-    system_tag(new GeneralSetDepTag("system")),
-    has_profile(false)
-{
-}
-
-Implementation<PortageRepository>::~Implementation()
-{
-}
-
-void
-Implementation<PortageRepository>::add_profile(const FSEntry & f) const
-{
-    Context context("When setting profile from directory '" + stringify(f) + "':");
-
-    add_profile_r(f);
-
-    for (UseFlagSet::const_iterator x(expand_list.begin()), x_end(expand_list.end()) ;
-            x != x_end ; ++x)
+    Implementation<PortageRepository>::Implementation(const PortageRepositoryParams & p) :
+        db(p.get<prpk_package_database>()),
+        env(p.get<prpk_environment>()),
+        location(p.get<prpk_location>()),
+        profiles(p.get<prpk_profiles>()),
+        cache(p.get<prpk_cache>()),
+        eclassdirs(p.get<prpk_eclassdirs>()),
+        distdir(p.get<prpk_distdir>()),
+        setsdir(p.get<prpk_setsdir>()),
+        securitydir(p.get<prpk_securitydir>()),
+        newsdir(p.get<prpk_newsdir>()),
+        sync(p.get<prpk_sync>()),
+        sync_exclude(p.get<prpk_sync_exclude>()),
+        root(p.get<prpk_root>()),
+        buildroot(p.get<prpk_buildroot>()),
+        has_category_names(false),
+        has_repo_mask(false),
+        has_virtuals(false),
+        has_arch_list(false),
+        has_mirrors(false),
+        system_packages(new AllDepAtom),
+        system_tag(new GeneralSetDepTag("system")),
+        has_profile(false)
     {
-        std::list<std::string> uses;
-        WhitespaceTokeniser::get_instance()->tokenise(profile_env[stringify(*x)], std::back_inserter(uses));
-        for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
-                u != u_end ; ++u)
+    }
+
+    Implementation<PortageRepository>::~Implementation()
+    {
+    }
+
+    void
+    Implementation<PortageRepository>::add_profile(const FSEntry & f) const
+    {
+        Context context("When setting profile from directory '" + stringify(f) + "':");
+
+        add_profile_r(f);
+
+        for (UseFlagSet::const_iterator x(expand_list.begin()), x_end(expand_list.end()) ;
+                x != x_end ; ++x)
         {
-            std::string lower_x;
-            std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
-                    &::tolower);
-            use[UseFlagName(lower_x + "_" + *u)] = use_enabled;
+            std::list<std::string> uses;
+            WhitespaceTokeniser::get_instance()->tokenise(profile_env[stringify(*x)], std::back_inserter(uses));
+            for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
+                    u != u_end ; ++u)
+            {
+                std::string lower_x;
+                std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
+                        &::tolower);
+                use[UseFlagName(lower_x + "_" + *u)] = use_enabled;
+            }
         }
+
+        for (std::set<std::string>::iterator it(system_lines.begin()), it_end(system_lines.end());
+                it != it_end; ++it)
+        {
+            Context context_atom("When parsing package '" + *it + "':");
+            PackageDepAtom::Pointer atom(new PackageDepAtom(*it));
+            atom->set_tag(system_tag);
+            system_packages->add_child(atom);
+        }
+
+        std::string arch(profile_env["ARCH"]);
+        if (arch.empty())
+            throw PortageRepositoryConfigurationError("ARCH variable is unset for repository at '"
+                    + stringify(location) + "'");
+
+        use[UseFlagName(arch)] = use_enabled;
     }
 
-    for (std::set<std::string>::iterator it(system_lines.begin()), it_end(system_lines.end());
-            it != it_end; ++it)
+    void
+    Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
     {
-        Context context_atom("When parsing package '" + *it + "':");
-        PackageDepAtom::Pointer atom(new PackageDepAtom(*it));
-        atom->set_tag(system_tag);
-        system_packages->add_child(atom);
-    }
+        Context context("When reading profile directory '" + stringify(f) + "':");
 
-    std::string arch(profile_env["ARCH"]);
-    if (arch.empty())
-        throw PortageRepositoryConfigurationError("ARCH variable is unset for repository at '"
-                + stringify(location) + "'");
-
-    use[UseFlagName(arch)] = use_enabled;
-}
-
-void
-Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
-{
-    Context context("When reading profile directory '" + stringify(f) + "':");
-
-    if (! f.is_directory())
-    {
-        Log::get_instance()->message(ll_warning, lc_context,
-                "Profile component '" + stringify(f) + "' is not a directory");
-        return;
-    }
-
-    if ((f / "parent").exists())
-    {
-        Context context_local("When reading parent file:");
-
-        LineConfigFile parent(f / "parent");
-        LineConfigFile::Iterator it = parent.begin(), it_end = parent.end();
-
-        if (it == it_end)
+        if (! f.is_directory())
         {
             Log::get_instance()->message(ll_warning, lc_context,
-                    "Profile parent file in '" + stringify(f) + "' cannot be read");
+                    "Profile component '" + stringify(f) + "' is not a directory");
             return;
         }
 
-        for ( ; it != it_end; ++it)
+        if ((f / "parent").exists())
         {
-            add_profile_r((f / (*it)).realpath());
-        }
+            Context context_local("When reading parent file:");
 
-    }
+            LineConfigFile parent(f / "parent");
+            LineConfigFile::Iterator it = parent.begin(), it_end = parent.end();
 
-    if ((f / "make.defaults").exists())
-    {
-        Context context_local("When reading make.defaults file:");
-
-        KeyValueConfigFile make_defaults_f(f / "make.defaults");
-        std::deque<std::string> uses;
-        WhitespaceTokeniser::get_instance()->tokenise(make_defaults_f.get("USE"), std::back_inserter(uses));
-        for (std::deque<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
-                u != u_end ; ++u)
-        {
-            if ('-' == u->at(0))
-                use[UseFlagName(u->substr(1))] = use_disabled;
-            else
-                use[UseFlagName(*u)] = use_enabled;
-        }
-
-        WhitespaceTokeniser::get_instance()->tokenise(
-                make_defaults_f.get("USE_EXPAND"), create_inserter<UseFlagName>(
-                    std::inserter(expand_list, expand_list.begin())));
-
-        WhitespaceTokeniser::get_instance()->tokenise(
-                make_defaults_f.get("USE_EXPAND_HIDDEN"), create_inserter<UseFlagName>(
-                    std::inserter(expand_hidden_list, expand_hidden_list.begin())));
-
-        for (KeyValueConfigFile::Iterator k(make_defaults_f.begin()),
-                k_end(make_defaults_f.end()) ; k != k_end ; ++k)
-            profile_env[k->first] = k->second;
-    }
-
-    if ((f / "use.mask").exists())
-    {
-        Context context_local("When reading use.mask file:");
-
-        LineConfigFile use_mask_f(f / "use.mask");
-        for (LineConfigFile::Iterator line(use_mask_f.begin()), line_end(use_mask_f.end()) ;
-                line != line_end ; ++line)
-            if ('-' == line->at(0))
-                use_mask.erase(UseFlagName(line->substr(1)));
-            else
-                use_mask.insert(UseFlagName(*line));
-    }
-
-    if ((f / "package.use.mask").exists())
-    {
-        Context context_local("When reading package use.mask file:");
-
-        LineConfigFile package_use_mask_f(f / "package.use.mask");
-        for (LineConfigFile::Iterator line(package_use_mask_f.begin()), line_end(package_use_mask_f.end());
-                line != line_end; ++line)
-        {
-            std::deque<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-            if (tokens.size() < 2)
-                continue;
-
-            std::deque<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
-            PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
-            QualifiedPackageName p(d->package());
-
-            PackageUseMaskMap::iterator i = package_use_mask.find(p);
-            if (package_use_mask.end() == i)
-                i = package_use_mask.insert(make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >())).first;
-
-            for ( ; t != t_end; ++t)
+            if (it == it_end)
             {
-                (*i).second.push_back(std::make_pair(d, UseFlagName(*t)));
+                Log::get_instance()->message(ll_warning, lc_context,
+                        "Profile parent file in '" + stringify(f) + "' cannot be read");
+                return;
             }
-        }
-    }
 
-    if ((f / "use.force").exists())
-    {
-        Context context_local("When reading use.force file:");
-
-        LineConfigFile use_force_f(f / "use.force");
-        for (LineConfigFile::Iterator line(use_force_f.begin()), line_end(use_force_f.end());
-                line != line_end; ++line)
-        {
-            if ('-' == line->at(0))
-                use_force.erase(UseFlagName(line->substr(1)));
-            else
-                use_force.insert(UseFlagName(*line));
-        }
-    }
-
-    if ((f / "package.use.force").exists())
-    {
-        Context context_local("When reading package use.force file:");
-
-        LineConfigFile package_use_force_f(f / "package.use.force");
-        for (LineConfigFile::Iterator line(package_use_force_f.begin()), line_end(package_use_force_f.end());
-                line != line_end; ++line)
-        {
-            std::deque<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-            if (tokens.size() < 2)
-                continue;
-
-            std::deque<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
-            PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
-            QualifiedPackageName p(d->package());
-
-            PackageUseMaskMap::iterator i = package_use_force.find(p);
-            if (package_use_force.end() == i)
-                i = package_use_force.insert(make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >())).first;
-
-            for ( ; t != t_end; ++t)
+            for ( ; it != it_end; ++it)
             {
-                (*i).second.push_back(std::make_pair(d, UseFlagName(*t)));
+                add_profile_r((f / (*it)).realpath());
             }
+
         }
-    }
 
-    if ((f / "virtuals").exists())
-    {
-        Context context_local("When reading virtuals file:");
-
-        LineConfigFile virtuals_f(f / "virtuals");
-        for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
-                line != line_end ; ++line)
+        if ((f / "make.defaults").exists())
         {
-            std::deque<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-            if (tokens.size() < 2)
-                continue;
-            virtuals_map.erase(QualifiedPackageName(tokens[0]));
-            virtuals_map.insert(std::make_pair(QualifiedPackageName(tokens[0]),
-                        PackageDepAtom::Pointer(new PackageDepAtom(tokens[1]))));
+            Context context_local("When reading make.defaults file:");
+
+            KeyValueConfigFile make_defaults_f(f / "make.defaults");
+            std::deque<std::string> uses;
+            WhitespaceTokeniser::get_instance()->tokenise(make_defaults_f.get("USE"), std::back_inserter(uses));
+            for (std::deque<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
+                    u != u_end ; ++u)
+            {
+                if ('-' == u->at(0))
+                    use[UseFlagName(u->substr(1))] = use_disabled;
+                else
+                    use[UseFlagName(*u)] = use_enabled;
+            }
+
+            WhitespaceTokeniser::get_instance()->tokenise(
+                    make_defaults_f.get("USE_EXPAND"), create_inserter<UseFlagName>(
+                        std::inserter(expand_list, expand_list.begin())));
+
+            WhitespaceTokeniser::get_instance()->tokenise(
+                    make_defaults_f.get("USE_EXPAND_HIDDEN"), create_inserter<UseFlagName>(
+                        std::inserter(expand_hidden_list, expand_hidden_list.begin())));
+
+            for (KeyValueConfigFile::Iterator k(make_defaults_f.begin()),
+                    k_end(make_defaults_f.end()) ; k != k_end ; ++k)
+                profile_env[k->first] = k->second;
         }
-    }
 
-    if ((f / "packages").exists())
-    {
-        Context context_local("When reading packages file:");
-
-        LineConfigFile virtuals_f(f / "packages");
-        for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
-                line != line_end ; ++line)
+        if ((f / "use.mask").exists())
         {
-            if (line->empty())
-                continue;
+            Context context_local("When reading use.mask file:");
 
-            Context context_line("When reading line '" + *line + "':");
+            LineConfigFile use_mask_f(f / "use.mask");
+            for (LineConfigFile::Iterator line(use_mask_f.begin()), line_end(use_mask_f.end()) ;
+                    line != line_end ; ++line)
+                if ('-' == line->at(0))
+                    use_mask.erase(UseFlagName(line->substr(1)));
+                else
+                    use_mask.insert(UseFlagName(*line));
+        }
 
-            if ('*' == line->at(0))
-                system_lines.insert(line->substr(1));
-            else if ('-' == line->at(0) && '*' == line->at(1))
-                if (0==system_lines.erase(line->substr(2)))
+        if ((f / "package.use.mask").exists())
+        {
+            Context context_local("When reading package use.mask file:");
+
+            LineConfigFile package_use_mask_f(f / "package.use.mask");
+            for (LineConfigFile::Iterator line(package_use_mask_f.begin()), line_end(package_use_mask_f.end());
+                    line != line_end; ++line)
+            {
+                std::deque<std::string> tokens;
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+                if (tokens.size() < 2)
+                    continue;
+
+                std::deque<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
+                PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
+                QualifiedPackageName p(d->package());
+
+                PackageUseMaskMap::iterator i = package_use_mask.find(p);
+                if (package_use_mask.end() == i)
+                    i = package_use_mask.insert(make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >())).first;
+
+                for ( ; t != t_end; ++t)
                 {
-                    Log::get_instance()->message(ll_qa, lc_context,
-                            "Trying to remove packages line '" + line->substr(2) +
-                            "' that doesn't exist.");
+                    (*i).second.push_back(std::make_pair(d, UseFlagName(*t)));
                 }
+            }
+        }
+
+        if ((f / "use.force").exists())
+        {
+            Context context_local("When reading use.force file:");
+
+            LineConfigFile use_force_f(f / "use.force");
+            for (LineConfigFile::Iterator line(use_force_f.begin()), line_end(use_force_f.end());
+                    line != line_end; ++line)
+            {
+                if ('-' == line->at(0))
+                    use_force.erase(UseFlagName(line->substr(1)));
+                else
+                    use_force.insert(UseFlagName(*line));
+            }
+        }
+
+        if ((f / "package.use.force").exists())
+        {
+            Context context_local("When reading package use.force file:");
+
+            LineConfigFile package_use_force_f(f / "package.use.force");
+            for (LineConfigFile::Iterator line(package_use_force_f.begin()), line_end(package_use_force_f.end());
+                    line != line_end; ++line)
+            {
+                std::deque<std::string> tokens;
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+                if (tokens.size() < 2)
+                    continue;
+
+                std::deque<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
+                PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
+                QualifiedPackageName p(d->package());
+
+                PackageUseMaskMap::iterator i = package_use_force.find(p);
+                if (package_use_force.end() == i)
+                    i = package_use_force.insert(make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >())).first;
+
+                for ( ; t != t_end; ++t)
+                {
+                    (*i).second.push_back(std::make_pair(d, UseFlagName(*t)));
+                }
+            }
+        }
+
+        if ((f / "virtuals").exists())
+        {
+            Context context_local("When reading virtuals file:");
+
+            LineConfigFile virtuals_f(f / "virtuals");
+            for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
+                    line != line_end ; ++line)
+            {
+                std::deque<std::string> tokens;
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+                if (tokens.size() < 2)
+                    continue;
+                virtuals_map.erase(QualifiedPackageName(tokens[0]));
+                virtuals_map.insert(std::make_pair(QualifiedPackageName(tokens[0]),
+                            PackageDepAtom::Pointer(new PackageDepAtom(tokens[1]))));
+            }
+        }
+
+        if ((f / "packages").exists())
+        {
+            Context context_local("When reading packages file:");
+
+            LineConfigFile virtuals_f(f / "packages");
+            for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
+                    line != line_end ; ++line)
+            {
+                if (line->empty())
+                    continue;
+
+                Context context_line("When reading line '" + *line + "':");
+
+                if ('*' == line->at(0))
+                    system_lines.insert(line->substr(1));
+                else if ('-' == line->at(0) && '*' == line->at(1))
+                    if (0==system_lines.erase(line->substr(2)))
+                    {
+                        Log::get_instance()->message(ll_qa, lc_context,
+                                "Trying to remove packages line '" + line->substr(2) +
+                                "' that doesn't exist.");
+                    }
+            }
         }
     }
-}
 
-void
-Implementation<PortageRepository>::need_profiles() const
-{
-    if (has_profile)
-        return;
+    void
+    Implementation<PortageRepository>::need_profiles() const
+    {
+        if (has_profile)
+            return;
 
-    Context context("When loading profiles:");
-    for (FSEntryCollection::Iterator p(profiles->begin()), p_end(profiles->end()) ;
-            p != p_end ; ++p)
-        add_profile(*p);
+        Context context("When loading profiles:");
+        for (FSEntryCollection::Iterator p(profiles->begin()), p_end(profiles->end()) ;
+                p != p_end ; ++p)
+            add_profile(*p);
 
-    has_profile = true;
-}
+        has_profile = true;
+    }
 
-void
-Implementation<PortageRepository>::invalidate() const
-{
-    has_category_names = false;
-    category_names.clear();
-    package_names.clear();
-    version_specs.clear();
-    metadata.clear();
-    repo_mask.clear();
-    has_repo_mask = false;
-    use_mask.clear();
-    use.clear();
-    has_virtuals = false;
-    virtuals_map.clear();
-    has_profile = false;
-    arch_list.clear();
-    expand_list.clear();
-    expand_hidden_list.clear();
-    has_arch_list = false;
-    has_mirrors = false;
-    mirrors.clear();
-    profile_env.clear();
-    system_packages = AllDepAtom::Pointer(0);
+    void
+    Implementation<PortageRepository>::invalidate() const
+    {
+        has_category_names = false;
+        category_names.clear();
+        package_names.clear();
+        version_specs.clear();
+        metadata.clear();
+        repo_mask.clear();
+        has_repo_mask = false;
+        use_mask.clear();
+        use.clear();
+        has_virtuals = false;
+        virtuals_map.clear();
+        has_profile = false;
+        arch_list.clear();
+        expand_list.clear();
+        expand_hidden_list.clear();
+        has_arch_list = false;
+        has_mirrors = false;
+        mirrors.clear();
+        profile_env.clear();
+        system_packages = AllDepAtom::Pointer(0);
+    }
 }
 
 PortageRepository::PortageRepository(const PortageRepositoryParams & p) :

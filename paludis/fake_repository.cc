@@ -61,11 +61,11 @@ namespace paludis
         /// Constructor.
         Implementation();
     };
-}
 
-Implementation<FakeRepository>::Implementation() :
-    category_names(new CategoryNamePartCollection)
-{
+    Implementation<FakeRepository>::Implementation() :
+        category_names(new CategoryNamePartCollection)
+    {
+    }
 }
 
 FakeRepository::FakeRepository(const RepositoryName & name) :

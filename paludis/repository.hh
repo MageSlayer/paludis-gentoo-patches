@@ -141,25 +141,31 @@ namespace paludis
             std::map<std::string, std::string> _kvs;
 
         public:
+            /// Constructor.
             RepositoryInfoSection(const std::string & heading);
 
+            /// Our heading.
             std::string heading() const
             {
                 return _heading;
             }
 
+            /// Iterate over our key/values.
             typedef std::map<std::string, std::string>::const_iterator KeyValueIterator;
 
+            /// Start of our key/values.
             KeyValueIterator begin_kvs() const
             {
                 return _kvs.begin();
             }
 
+            /// End of our key/values.
             KeyValueIterator end_kvs() const
             {
                 return _kvs.end();
             }
 
+            /// Add a key/value pair.
             RepositoryInfoSection & add_kv(const std::string &, const std::string &);
     };
 
@@ -175,18 +181,22 @@ namespace paludis
             std::list<RepositoryInfoSection> _sections;
 
         public:
+            /// Iterator over our sections.
             typedef std::list<RepositoryInfoSection>::const_iterator SectionIterator;
 
+            /// Start of our sections.
             SectionIterator begin_sections() const
             {
                 return _sections.begin();
             }
 
+            /// End of our sections.
             SectionIterator end_sections() const
             {
                 return _sections.end();
             }
 
+            /// Add a section.
             RepositoryInfo & add_section(const RepositoryInfoSection &);
     };
 

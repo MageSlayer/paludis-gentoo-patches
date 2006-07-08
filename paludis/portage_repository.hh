@@ -197,11 +197,6 @@ namespace paludis
              */
             ~PortageRepository();
 
-            virtual bool installed() const
-            {
-                return false;
-            }
-
             virtual void invalidate() const;
 
             virtual ProvideMapIterator begin_provide_map() const;

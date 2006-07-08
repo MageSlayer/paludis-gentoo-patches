@@ -62,14 +62,17 @@ namespace paludis
             std::string _name;
 
         protected:
+            /// Constructor.
             ContentsEntry(const std::string & name) :
                 _name(name)
             {
             }
 
         public:
+            /// Destructor.
             virtual ~ContentsEntry();
 
+            /// Our name.
             std::string name() const
             {
                 return _name;
@@ -86,6 +89,7 @@ namespace paludis
         public Visitable<ContentsFileEntry, ContentsVisitorTypes>
     {
         public:
+            /// Constructor.
             ContentsFileEntry(const std::string & name);
     };
 
@@ -99,6 +103,7 @@ namespace paludis
         public Visitable<ContentsDirEntry, ContentsVisitorTypes>
     {
         public:
+            /// Constructor.
             ContentsDirEntry(const std::string & name);
     };
 
@@ -112,6 +117,7 @@ namespace paludis
         public Visitable<ContentsMiscEntry, ContentsVisitorTypes>
     {
         public:
+            /// Constructor.
             ContentsMiscEntry(const std::string & name);
     };
 
@@ -128,8 +134,10 @@ namespace paludis
             std::string _target;
 
         public:
+            /// Constructor.
             ContentsSymEntry(const std::string & name, const std::string & target);
 
+            /// Our target (as per readlink).
             std::string target() const
             {
                 return _target;
@@ -151,18 +159,22 @@ namespace paludis
         public:
             Contents();
 
+            /// Add a new entry.
             void add(ContentsEntry::ConstPointer c)
             {
                 _c.push_back(c);
             }
 
+            /// Iterator over our entries.
             typedef std::list<ContentsEntry::ConstPointer>::const_iterator Iterator;
 
+            /// Start of our entries.
             Iterator begin() const
             {
                 return _c.begin();
             }
 
+            /// End of our entries.
             Iterator end() const
             {
                 return _c.end();

@@ -303,12 +303,19 @@ namespace
         /// Matches
         std::list<const PackageDepAtom *> items;
 
+        /// Callback for adding world file entries, may be 0.
         void (* add_callback)(const PackageDepAtom *);
+
+        /// Callback for skipping world file adds, may be 0.
         void (* skip_callback)(const PackageDepAtom *, const std::string & why);
 
+        /// Are we inside a || ( ) group?
         bool inside_any;
+
+        /// Are we inside a use? ( ) group?
         bool inside_use;
 
+        /// Constructor.
         WorldTargetFinder(void (* a)(const PackageDepAtom *),
                 void (* s)(const PackageDepAtom *, const std::string &)) :
             add_callback(a),

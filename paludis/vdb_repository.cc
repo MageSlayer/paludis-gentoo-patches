@@ -188,6 +188,47 @@ namespace
     }
 }
 
+namespace
+{
+    /**
+     * Fetch the contents of a VDB file.
+     *
+     * \ingroup grpvdbrepository
+     */
+    std::string
+    file_contents(const FSEntry & location, const QualifiedPackageName & name,
+            const VersionSpec & v, const std::string & key)
+    {
+        Context context("When loading VDBRepository entry for '" + stringify(name)
+                + "-" + stringify(v) + "' key '" + key + "' from '" + stringify(location) + "':");
+
+        FSEntry f(location / stringify(name.get<qpn_category>()) /
+                (stringify(name.get<qpn_package>()) + "-" + stringify(v)));
+        if (! (f / key).is_regular_file())
+            return "";
+
+        std::ifstream ff(stringify(f / key).c_str());
+        if (! ff)
+            throw VDBRepositoryKeyReadError("Could not read '" + stringify(f / key) + "'");
+        return strip_leading(strip_trailing(std::string((std::istreambuf_iterator<char>(ff)),
+                        std::istreambuf_iterator<char>()), " \t\n"), " \t\n");
+    }
+
+    /**
+     * Filter if a USE flag is a -flag.
+     *
+     * \ingroup grpvdbrepository
+     */
+    struct IsPositiveFlag
+    {
+        bool operator() (const std::string & f) const
+        {
+            return 0 != f.compare(0, 1, "-");
+        }
+    };
+}
+
+
 namespace paludis
 {
     /**
@@ -244,145 +285,105 @@ namespace paludis
         /// Invalidate.
         void invalidate() const;
     };
-}
 
-Implementation<VDBRepository>::Implementation(const VDBRepositoryParams & p) :
-    db(p.get<vdbrpk_package_database>()),
-    env(p.get<vdbrpk_environment>()),
-    location(p.get<vdbrpk_location>()),
-    root(p.get<vdbrpk_root>()),
-    buildroot(p.get<vdbrpk_buildroot>()),
-    world_file(p.get<vdbrpk_world>()),
-    entries_valid(false),
-    has_provide_map(false)
-{
-}
-
-Implementation<VDBRepository>::~Implementation()
-{
-}
-
-void
-Implementation<VDBRepository>::load_entries() const
-{
-    Context context("When loading VDBRepository entries from '" +
-            stringify(location) + "':");
-
-    entries.clear();
-    entries_valid = true;
-    try
+    Implementation<VDBRepository>::Implementation(const VDBRepositoryParams & p) :
+        db(p.get<vdbrpk_package_database>()),
+        env(p.get<vdbrpk_environment>()),
+        location(p.get<vdbrpk_location>()),
+        root(p.get<vdbrpk_root>()),
+        buildroot(p.get<vdbrpk_buildroot>()),
+        world_file(p.get<vdbrpk_world>()),
+        entries_valid(false),
+        has_provide_map(false)
     {
-        for (DirIterator cat_i(location), cat_iend ; cat_i != cat_iend ; ++cat_i)
-        {
-            if (! cat_i->is_directory())
-                continue;
-
-            for (DirIterator pkg_i(*cat_i), pkg_iend ; pkg_i != pkg_iend ; ++pkg_i)
-            {
-                PackageDepAtom atom("=" + cat_i->basename() + "/" + pkg_i->basename());
-                entries.push_back(VDBEntry(atom.package(), *atom.version_spec_ptr()));
-            }
-        }
-
-        std::sort(entries.begin(), entries.end());
     }
-    catch (...)
+
+    Implementation<VDBRepository>::~Implementation()
+    {
+    }
+
+    void
+    Implementation<VDBRepository>::load_entries() const
+    {
+        Context context("When loading VDBRepository entries from '" +
+                stringify(location) + "':");
+
+        entries.clear();
+        entries_valid = true;
+        try
+        {
+            for (DirIterator cat_i(location), cat_iend ; cat_i != cat_iend ; ++cat_i)
+            {
+                if (! cat_i->is_directory())
+                    continue;
+
+                for (DirIterator pkg_i(*cat_i), pkg_iend ; pkg_i != pkg_iend ; ++pkg_i)
+                {
+                    PackageDepAtom atom("=" + cat_i->basename() + "/" + pkg_i->basename());
+                    entries.push_back(VDBEntry(atom.package(), *atom.version_spec_ptr()));
+                }
+            }
+
+            std::sort(entries.begin(), entries.end());
+        }
+        catch (...)
+        {
+            entries_valid = false;
+            throw;
+        }
+    }
+
+    void
+    Implementation<VDBRepository>::invalidate() const
     {
         entries_valid = false;
-        throw;
-    }
-}
+        entries.clear();
 
-void
-Implementation<VDBRepository>::invalidate() const
-{
-    entries_valid = false;
-    entries.clear();
-
-    has_provide_map = false;
-    provide_map.clear();
-}
-
-namespace
-{
-    /**
-     * Fetch the contents of a VDB file.
-     *
-     * \ingroup grpvdbrepository
-     */
-    std::string
-    file_contents(const FSEntry & location, const QualifiedPackageName & name,
-            const VersionSpec & v, const std::string & key)
-    {
-        Context context("When loading VDBRepository entry for '" + stringify(name)
-                + "-" + stringify(v) + "' key '" + key + "' from '" + stringify(location) + "':");
-
-        FSEntry f(location / stringify(name.get<qpn_category>()) /
-                (stringify(name.get<qpn_package>()) + "-" + stringify(v)));
-        if (! (f / key).is_regular_file())
-            return "";
-
-        std::ifstream ff(stringify(f / key).c_str());
-        if (! ff)
-            throw VDBRepositoryKeyReadError("Could not read '" + stringify(f / key) + "'");
-        return strip_leading(strip_trailing(std::string((std::istreambuf_iterator<char>(ff)),
-                        std::istreambuf_iterator<char>()), " \t\n"), " \t\n");
+        has_provide_map = false;
+        provide_map.clear();
     }
 
-    /**
-     * Filter if a USE flag is a -flag.
-     *
-     * \ingroup grpvdbrepository
-     */
-    struct IsPositiveFlag
+    void
+    Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) const
     {
-        bool operator() (const std::string & f) const
+        Context context("When loading VDBRepository entry for '" + stringify(p->name)
+                + "-" + stringify(p->version) + "' from '" + stringify(location) + "':");
+
+        p->metadata = VersionMetadata::Pointer(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
+        p->metadata->get<vm_deps>().set<vmd_build_depend_string>(
+                file_contents(location, p->name, p->version, "DEPEND"));
+        p->metadata->get<vm_deps>().set<vmd_run_depend_string>(
+                file_contents(location, p->name, p->version, "RDEPEND"));
+        p->metadata->set<vm_license>(file_contents(location, p->name, p->version, "LICENSE"));
+        p->metadata->get_ebuild_interface()->set<evm_keywords>("*");
+        p->metadata->get_ebuild_interface()->set<evm_inherited>(
+                file_contents(location, p->name, p->version, "INHERITED"));
+        p->metadata->get_ebuild_interface()->set<evm_iuse>(
+                file_contents(location, p->name, p->version, "IUSE"));
+        p->metadata->get<vm_deps>().set<vmd_post_depend_string>(
+                file_contents(location, p->name, p->version, "PDEPEND"));
+        p->metadata->get_ebuild_interface()->set<evm_provide>(
+                file_contents(location, p->name, p->version, "PROVIDE"));
+        p->metadata->set<vm_eapi>(file_contents(location, p->name, p->version, "EAPI"));
+        p->metadata->set<vm_homepage>(file_contents(location, p->name, p->version, "HOMEPAGE"));
+        p->metadata->set<vm_description>(file_contents(location, p->name, p->version, "DESCRIPTION"));
+
+        std::string slot(file_contents(location, p->name, p->version, "SLOT"));
+        if (slot.empty())
         {
-            return 0 != f.compare(0, 1, "-");
+            Log::get_instance()->message(ll_warning, lc_no_context, "VDBRepository entry '" +
+                    stringify(p->name) + "-" + stringify(p->version) + "' in '" +
+                    stringify(location) + "' has empty SLOT, setting to \"0\"");
+            slot = "0";
         }
-    };
-}
+        p->metadata->set<vm_slot>(SlotName(slot));
 
-void
-Implementation<VDBRepository>::load_entry(std::vector<VDBEntry>::iterator p) const
-{
-    Context context("When loading VDBRepository entry for '" + stringify(p->name)
-            + "-" + stringify(p->version) + "' from '" + stringify(location) + "':");
-
-    p->metadata = VersionMetadata::Pointer(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
-    p->metadata->get<vm_deps>().set<vmd_build_depend_string>(
-            file_contents(location, p->name, p->version, "DEPEND"));
-    p->metadata->get<vm_deps>().set<vmd_run_depend_string>(
-            file_contents(location, p->name, p->version, "RDEPEND"));
-    p->metadata->set<vm_license>(file_contents(location, p->name, p->version, "LICENSE"));
-    p->metadata->get_ebuild_interface()->set<evm_keywords>("*");
-    p->metadata->get_ebuild_interface()->set<evm_inherited>(
-            file_contents(location, p->name, p->version, "INHERITED"));
-    p->metadata->get_ebuild_interface()->set<evm_iuse>(
-            file_contents(location, p->name, p->version, "IUSE"));
-    p->metadata->get<vm_deps>().set<vmd_post_depend_string>(
-            file_contents(location, p->name, p->version, "PDEPEND"));
-    p->metadata->get_ebuild_interface()->set<evm_provide>(
-            file_contents(location, p->name, p->version, "PROVIDE"));
-    p->metadata->set<vm_eapi>(file_contents(location, p->name, p->version, "EAPI"));
-    p->metadata->set<vm_homepage>(file_contents(location, p->name, p->version, "HOMEPAGE"));
-    p->metadata->set<vm_description>(file_contents(location, p->name, p->version, "DESCRIPTION"));
-
-    std::string slot(file_contents(location, p->name, p->version, "SLOT"));
-    if (slot.empty())
-    {
-        Log::get_instance()->message(ll_warning, lc_no_context, "VDBRepository entry '" +
-                stringify(p->name) + "-" + stringify(p->version) + "' in '" +
-                stringify(location) + "' has empty SLOT, setting to \"0\"");
-        slot = "0";
+        std::string raw_use(file_contents(location, p->name, p->version, "USE"));
+        p->use.clear();
+        WhitespaceTokeniser::get_instance()->tokenise(raw_use,
+                filter_inserter(create_inserter<UseFlagName>(
+                        std::inserter(p->use, p->use.begin())), IsPositiveFlag()));
     }
-    p->metadata->set<vm_slot>(SlotName(slot));
-
-    std::string raw_use(file_contents(location, p->name, p->version, "USE"));
-    p->use.clear();
-    WhitespaceTokeniser::get_instance()->tokenise(raw_use,
-            filter_inserter(create_inserter<UseFlagName>(
-                    std::inserter(p->use, p->use.begin())), IsPositiveFlag()));
 }
 
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :

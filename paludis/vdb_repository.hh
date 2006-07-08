@@ -158,11 +158,6 @@ namespace paludis
              */
             ~VDBRepository();
 
-            virtual bool installed() const
-            {
-                return true;
-            }
-
             virtual void invalidate() const;
 
             virtual ProvideMapIterator begin_provide_map() const;

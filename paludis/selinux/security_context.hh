@@ -30,7 +30,7 @@
 /** \file
  * Declarations for SecurityContext and associated classes.
  *
- * \ingroup grpfilesystem
+ * \ingroup grplibpaludisselinux
  */
 
 namespace paludis {
@@ -39,10 +39,14 @@ namespace paludis {
 
     /**
      * Error class for SELinux-related functions
+     *
+     * \ingroup grplibpaludisselinux
+     * \ingroup grpexceptions
      */
     class SELinuxException : public Exception
     {
         public:
+            /// Constructor.
             SELinuxException(const std::string & message)
                 : Exception(message)
             { }
@@ -50,6 +54,8 @@ namespace paludis {
 
     /**
      * Security context class. Wraps security_context_t.
+     *
+     * \ingroup grplibpaludisselinux
      */
     class SecurityContext : private PrivateImplementationPattern<SecurityContext>,
                             private InstantiationPolicy<SecurityContext, instantiation_method::NonCopyableTag>,
@@ -88,6 +94,8 @@ namespace paludis {
 
     /**
      * A SecurityContext can be written to a stream.
+     *
+     * \ingroup grplibpaludisselinux
      */
     std::ostream& operator<<(std::ostream&, const SecurityContext &);
 
@@ -99,6 +107,8 @@ namespace paludis {
      *
      * Note that this operation is not thread-safe. Any multi-threaded code calling it must use a
      * critical section to ensure the desired behaviour.
+     *
+     * \ingroup grplibpaludisselinux
      */
     class FSCreateCon
     {
@@ -120,6 +130,8 @@ namespace paludis {
 
     /**
      * Wrapper class around matchpathcon().
+     *
+     * \ingroup grplibpaludisselinux
      */
     class MatchPathCon : public InstantiationPolicy<MatchPathCon, instantiation_method::SingletonAsNeededTag>
     {

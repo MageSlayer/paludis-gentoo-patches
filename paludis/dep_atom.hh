@@ -257,28 +257,34 @@ namespace paludis
             std::map<UseFlagName, UseFlagState> _reqs;
 
         public:
+            /// Iterator over our USE requirements.
             typedef std::map<UseFlagName, UseFlagState>::const_iterator Iterator;
 
+            /// Start of our USE requirements.
             Iterator begin() const
             {
                 return _reqs.begin();
             }
 
+            /// End of our USE requirements.
             Iterator end() const
             {
                 return _reqs.end();
             }
 
+            /// Find the requirement for a particular USE flag.
             Iterator find(const UseFlagName & u) const
             {
                 return _reqs.find(u);
             }
 
+            /// Insert a new requirement.
             bool insert(const UseFlagName & u, UseFlagState s)
             {
                 return _reqs.insert(std::make_pair(u, s)).second;
             }
 
+            /// What state is desired for a particular use flag?
             UseFlagState state(const UseFlagName &) const;
     };
 

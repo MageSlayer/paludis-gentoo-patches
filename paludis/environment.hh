@@ -47,22 +47,28 @@ namespace paludis
             std::string _name;
 
         public:
+            /// Constructor.
             Hook(const std::string & name);
 
+            /// Perform the hook.
             Hook operator() (const std::string & key, const std::string & value) const;
 
+            /// Iterate over extra environment data.
             typedef std::map<std::string, std::string>::const_iterator Iterator;
 
+            /// Start of extra environment data.
             Iterator begin() const
             {
                 return _extra_env.begin();
             }
 
+            /// End of extra environment data.
             Iterator end() const
             {
                 return _extra_env.end();
             }
 
+            /// Our name.
             std::string name() const
             {
                 return _name;

@@ -36,36 +36,36 @@ namespace paludis
     namespace instantiation_method
     {
         /**
-         * Cannot be copie
+         * Cannot be copied or assigned to.
          *
-         * \ingroup grpinstanced or assigned to.
+         * \ingroup grpinstance
          */
         struct NonCopyableTag
         {
         };
 
         /**
-         * Cannot be instantia
+         * Cannot be instantiated
          *
-         * \ingroup grpinstanceted.
+         * \ingroup grpinstance
          */
         struct NonInstantiableTag
         {
         };
 
         /**
-         * Single instance cre
+         * Single instance created at startup.
          *
-         * \ingroup grpinstanceated at startup.
+         * \ingroup grpinstance
          */
         struct SingletonAtStartupTag
         {
         };
 
         /**
-         * Single instance cre
+         * Single instance created when needed.
          *
-         * \ingroup grpinstanceated when needed.
+         * \ingroup grpinstance
          */
         struct SingletonAsNeededTag
         {

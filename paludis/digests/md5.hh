@@ -27,6 +27,11 @@
 
 namespace paludis
 {
+    /**
+     * MD5 digest class.
+     *
+     * \ingroup grplibpaludisdigests
+     */
     class MD5
     {
         private:
@@ -41,8 +46,14 @@ namespace paludis
             inline int _get(std::istream & stream);
 
         public:
+            /**
+             * Constructor.
+             */
             MD5(std::istream & stream);
 
+            /**
+             * Our checksum, as a string of hex characters.
+             */
             std::string hexsum() const;
     };
 }

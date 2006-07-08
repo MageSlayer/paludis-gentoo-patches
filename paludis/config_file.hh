@@ -374,9 +374,13 @@ namespace paludis
             ~AdvisoryFile();
 
             /**
-             * Iterator over our lines.
+             * Iterator over our entries.
              */
             typedef std::map<std::string, std::string>::const_iterator EntriesIterator;
+
+            /**
+             * Iterator over our lines.
+             */
             typedef std::list<std::string>::const_iterator LineIterator;
 
             /**
@@ -460,37 +464,64 @@ namespace paludis
              */
             NewsFile(const FSEntry & filename);
 
+            /**
+             * Iterator over display-if-installed headers.
+             */
             typedef std::list<std::string>::const_iterator DisplayIfInstalledIterator;
 
+            /**
+             * Start of our display-if-installed headers.
+             */
             DisplayIfInstalledIterator begin_display_if_installed() const
             {
                 return _display_if_installed.begin();
             }
 
+            /**
+             * End of our display-if-installed headers.
+             */
             DisplayIfInstalledIterator end_display_if_installed() const
             {
                 return _display_if_installed.end();
             }
 
+            /**
+             * Iterator over display-if-keyword headers.
+             */
             typedef std::list<std::string>::const_iterator DisplayIfKeywordIterator;
 
+            /**
+             * Start of our display-if-keyword headers.
+             */
             DisplayIfKeywordIterator begin_display_if_keyword() const
             {
                 return _display_if_keyword.begin();
             }
 
+            /**
+             * End of our display-if-keyword headers.
+             */
             DisplayIfKeywordIterator end_display_if_keyword() const
             {
                 return _display_if_keyword.end();
             }
 
+            /**
+             * Iterator over display-if-profile headers.
+             */
             typedef std::list<std::string>::const_iterator DisplayIfProfileIterator;
 
+            /**
+             * Start of our display-if-profile headers.
+             */
             DisplayIfProfileIterator begin_display_if_profile() const
             {
                 return _display_if_profile.begin();
             }
 
+            /**
+             * End of our display-if-profile headers.
+             */
             DisplayIfProfileIterator end_display_if_profile() const
             {
                 return _display_if_profile.end();

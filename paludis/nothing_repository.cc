@@ -68,18 +68,18 @@ namespace paludis
         /// Destructor.
         ~Implementation();
     };
-}
 
-Implementation<NothingRepository>::Implementation(const NothingRepositoryParams & p) :
-    name(p.get<nrpk_name>()),
-    location(p.get<nrpk_location>()),
-    sync(p.get<nrpk_sync>()),
-    sync_exclude(p.get<nrpk_sync_exclude>())
-{
-}
+    Implementation<NothingRepository>::Implementation(const NothingRepositoryParams & p) :
+        name(p.get<nrpk_name>()),
+        location(p.get<nrpk_location>()),
+        sync(p.get<nrpk_sync>()),
+        sync_exclude(p.get<nrpk_sync_exclude>())
+    {
+    }
 
-Implementation<NothingRepository>::~Implementation()
-{
+    Implementation<NothingRepository>::~Implementation()
+    {
+    }
 }
 
 NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
