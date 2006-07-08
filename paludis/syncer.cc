@@ -82,8 +82,8 @@ namespace
                 _local(local),
                 _remote(remote)
             {
-	        if (0 == _remote.compare(0, 8, "svn+http", 0, 8))
-		    _remote = _remote.erase(0, 4);
+                if (0 == _remote.compare(0, 8, "svn+http", 0, 8))
+                    _remote = _remote.erase(0, 4);
             }
 
         public:
