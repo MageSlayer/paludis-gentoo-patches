@@ -225,9 +225,7 @@ namespace paludis
                 public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N9_>::Type>
             {
                 protected:
-                    ~ConstVisitor()
-                    {
-                    }
+                    ~ConstVisitor();
             };
 
             /**
@@ -245,11 +243,37 @@ namespace paludis
                 public visitor_internals::Visits<N9_>
             {
                 protected:
-                    ~Visitor()
-                    {
-                    }
+                    ~Visitor();
             };
     };
+
+    template <
+        typename N1_,
+        typename N2_,
+        typename N3_,
+        typename N4_,
+        typename N5_,
+        typename N6_,
+        typename N7_,
+        typename N8_,
+        typename N9_>
+    VisitorTypes<N1_, N2_, N3_, N4_, N5_, N6_, N7_, N8_, N9_>::ConstVisitor::~ConstVisitor()
+    {
+    }
+
+    template <
+        typename N1_,
+        typename N2_,
+        typename N3_,
+        typename N4_,
+        typename N5_,
+        typename N6_,
+        typename N7_,
+        typename N8_,
+        typename N9_>
+    VisitorTypes<N1_, N2_, N3_, N4_, N5_, N6_, N7_, N8_, N9_>::Visitor::~Visitor()
+    {
+    }
 
     /**
      * Functor: simplify calling accept on a visitor when we have a container of

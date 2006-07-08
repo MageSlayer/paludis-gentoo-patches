@@ -286,10 +286,7 @@ namespace paludis
             /**
              * Fetch the specified key, or a blank string.
              */
-            std::string get(const std::string & key) const
-            {
-                return _entries[key];
-            }
+            std::string get(const std::string & key) const;
     };
 
     /**

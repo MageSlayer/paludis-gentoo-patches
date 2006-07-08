@@ -471,3 +471,10 @@ NewsFile::accept_line(const std::string & line) const
         }
     }
 }
+
+std::string
+KeyValueConfigFile::get(const std::string & key) const
+{
+    return _entries[key];
+}
+

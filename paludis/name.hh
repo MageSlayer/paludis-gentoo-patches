@@ -177,35 +177,27 @@ namespace paludis
             /**
              * Constructor.
              */
-            QualifiedPackageName(const CategoryNamePart & c, const PackageNamePart & p) :
-                MakeSmartRecord<QualifiedPackageNameTag>::Type(c, p)
-            {
-            }
+            QualifiedPackageName(const CategoryNamePart & c, const PackageNamePart & p);
 
             /**
              * Copy constructor.
              */
-            QualifiedPackageName(const QualifiedPackageName & other) :
-                MakeSmartRecord<QualifiedPackageNameTag>::Type(other)
-            {
-            }
+            QualifiedPackageName(const QualifiedPackageName & other);
 
             /**
              * Constructor, from a raw string.
              */
-            explicit QualifiedPackageName(const std::string & s) :
-                MakeSmartRecord<QualifiedPackageNameTag>::Type(_make_parent(s))
-            {
-            }
+            explicit QualifiedPackageName(const std::string & s);
 
             /**
              * Assignment.
              */
-            const QualifiedPackageName & operator= (const QualifiedPackageName & other)
-            {
-                MakeSmartRecord<QualifiedPackageNameTag>::Type::operator= (other);
-                return *this;
-            }
+            const QualifiedPackageName & operator= (const QualifiedPackageName & other);
+
+            /**
+             * Destructor.
+             */
+            ~QualifiedPackageName();
     };
 
     /**

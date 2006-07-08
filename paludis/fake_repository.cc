@@ -59,11 +59,13 @@ namespace paludis
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
         /// Constructor.
-        Implementation() :
-            category_names(new CategoryNamePartCollection)
-        {
-        }
+        Implementation();
     };
+}
+
+Implementation<FakeRepository>::Implementation() :
+    category_names(new CategoryNamePartCollection)
+{
 }
 
 FakeRepository::FakeRepository(const RepositoryName & name) :

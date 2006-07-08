@@ -627,15 +627,7 @@ ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
                 }
 
                 /// Copy constructor.
-                RecordBase(const RecordBase<Tag_, `'idx`'> & other) :
-                    RecordComparisonBase<Tag_, `'idx`', typename Tag_::ComparisonModeTag,
-                        typename Tag_::ComparisonMethodTag>(other),
-ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
-                    _v`'idy`'(other._v`'idy`'),
-') ')
-                    _v`'decr(idx)`'(other._v`'decr(idx)`')
-                {
-                }
+                RecordBase(const RecordBase<Tag_, `'idx`'> & other);
 
                 /// Assignment.
                 const RecordBase & operator= (const RecordBase<Tag_, `'idx`'> & other)
@@ -678,16 +670,32 @@ forloop(`idy', `0', decr(idx), `
                 /// Named parameters constructor.
                 template <typename List_>
                 static RecordBase
-                create(const List_ & list)
-                {
-                    return RecordBase(
-ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
-                            find_list_entry<`'idy`', typename Tag_::KeyType`'idy`'>(list),
-') ')
-                            find_list_entry<`'decr(idx)`', typename Tag_::KeyType`'decr(idx)`'>(list)
-                            );
-                }
+                create(const List_ & list);
         };
+
+        template<typename Tag_>
+        RecordBase<Tag_, `'idx`'>::RecordBase(const RecordBase<Tag_, `'idx`'> & other) :
+            RecordComparisonBase<Tag_, `'idx`', typename Tag_::ComparisonModeTag,
+                typename Tag_::ComparisonMethodTag>(other),
+ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
+            _v`'idy`'(other._v`'idy`'),
+') ')
+            _v`'decr(idx)`'(other._v`'decr(idx)`')
+        {
+        }
+
+        template<typename Tag_>
+        template<typename List_>
+        RecordBase<Tag_, `'idx`'>
+        RecordBase<Tag_, `'idx`'>::create(const List_ & list)
+        {
+            return RecordBase(
+ifelse(idx, `1', `', `forloop(`idy', `0', decr(decr(idx)), `
+                    find_list_entry<`'idy`', typename Tag_::KeyType`'idy`'>(list),
+') ')
+                    find_list_entry<`'decr(idx)`', typename Tag_::KeyType`'decr(idx)`'>(list)
+                    );
+        }
 
         template<typename Tag_>
         RecordBase<Tag_, `'idx`'>::~RecordBase()
@@ -766,26 +774,32 @@ forloop(`idx', `1', max_record_size, `
         {
             /// Do the comparison.
             static int do_compare(const RecordBase<Tag_, `'idx`'> * const a,
-                    const RecordBase<Tag_, `'idx`'> * const b)
-            {
-forloop(`idy', `0', decr(`'idx`'), `
-                switch (compare(
-                        RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*a),
-                        RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*b)))
-                {
-                    case -1:
-                        return -1;
-                    case 1:
-                        return 1;
-                    case 0:
-                        break;
-                    default:
-                        throw InternalError(PALUDIS_HERE, "Bad value from compare");
-                }
-')
-                return 0;
-            }
+                    const RecordBase<Tag_, `'idx`'> * const b);
         };
+
+        template <typename Tag_>
+        int
+        DoFullCompareByAll<Tag_, `'idx`'>::do_compare(
+            const RecordBase<Tag_, `'idx`'> * const a,
+            const RecordBase<Tag_, `'idx`'> * const b)
+        {
+forloop(`idy', `0', decr(`'idx`'), `
+            switch (compare(
+                    RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*a),
+                    RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*b)))
+            {
+                case -1:
+                    return -1;
+                case 1:
+                    return 1;
+                case 0:
+                    break;
+                default:
+                    throw InternalError(PALUDIS_HERE, "Bad value from compare");
+            }
+')
+            return 0;
+        }
 ')
 
         template <typename Tag_, unsigned key_count_>
@@ -802,16 +816,22 @@ forloop(`idx', `1', max_record_size, `
         struct DoEqualCompareByAll<Tag_, `'idx`'>
         {
             static bool do_compare(const RecordBase<Tag_, `'idx`'> * const a,
-                    const RecordBase<Tag_, `'idx`'> * const b)
-            {
-forloop(`idy', `0', decr(`'idx`'), `
-                if (RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*a) !=
-                        RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*b))
-                    return false;
-')
-                return true;
-            }
+                    const RecordBase<Tag_, `'idx`'> * const b);
         };
+
+        template <typename Tag_>
+        bool
+        DoEqualCompareByAll<Tag_, `'idx`'>::do_compare(
+            const RecordBase<Tag_, `'idx`'> * const a,
+            const RecordBase<Tag_, `'idx`'> * const b)
+        {
+forloop(`idy', `0', decr(`'idx`'), `
+            if (RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*a) !=
+                    RecordKeyGetter<Tag_, `'idx`', `'idy`'>::do_get(*b))
+                return false;
+')
+            return true;
+        }
 ')
 
         template <typename Tag_, unsigned key_count_>

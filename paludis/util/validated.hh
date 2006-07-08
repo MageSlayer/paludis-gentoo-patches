@@ -50,29 +50,12 @@ namespace paludis
             /**
              * Copy constructor (no validation needed).
              */
-            Validated(const Validated<ValidatedDataType_, Validator_> & other) :
-                ComparisonPolicy<
-                    Validated<ValidatedDataType_, Validator_>,
-                    comparison_mode::FullComparisonTag,
-                    comparison_method::CompareByMemberTag<ValidatedDataType_> >
-                        (other),
-                _value(other._value)
-            {
-            }
+            Validated(const Validated<ValidatedDataType_, Validator_> & other);
 
             /**
              * Constructor (validation needed).
              */
-            explicit Validated(const ValidatedDataType_ & value) :
-                ComparisonPolicy<
-                    Validated<ValidatedDataType_, Validator_>,
-                    comparison_mode::FullComparisonTag,
-                    comparison_method::CompareByMemberTag<ValidatedDataType_> >
-                        (&Validated<ValidatedDataType_, Validator_>::_value),
-                _value(value)
-            {
-                Validator_::validate(_value);
-            }
+            explicit Validated(const ValidatedDataType_ & value);
 
             /**
              * Assignment (no validation needed).
@@ -93,6 +76,31 @@ namespace paludis
                 return _value;
             }
     };
+
+
+    template <typename ValidatedDataType_, typename Validator_>
+    Validated<ValidatedDataType_, Validator_>::Validated(
+            const Validated<ValidatedDataType_, Validator_> & other) :
+        ComparisonPolicy<
+            Validated<ValidatedDataType_, Validator_>,
+            comparison_mode::FullComparisonTag,
+            comparison_method::CompareByMemberTag<ValidatedDataType_> >
+                (other),
+        _value(other._value)
+    {
+    }
+
+    template <typename ValidatedDataType_, typename Validator_>
+    Validated<ValidatedDataType_, Validator_>::Validated(const ValidatedDataType_ & value) :
+        ComparisonPolicy<
+            Validated<ValidatedDataType_, Validator_>,
+            comparison_mode::FullComparisonTag,
+            comparison_method::CompareByMemberTag<ValidatedDataType_> >
+                (&Validated<ValidatedDataType_, Validator_>::_value),
+        _value(value)
+    {
+        Validator_::validate(_value);
+    }
 
     /**
      * Writing a Validated instance to a stream is done by its data.

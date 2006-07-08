@@ -264,6 +264,11 @@ StringDepAtom::StringDepAtom(const std::string & s) :
 {
 }
 
+StringDepAtom::~StringDepAtom()
+{
+}
+
+
 PlainTextDepAtom::PlainTextDepAtom(const std::string & s) :
     StringDepAtom(s)
 {

@@ -271,3 +271,29 @@ KeywordNameValidator::validate(const std::string & s)
     throw KeywordNameError(s);
 }
 
+QualifiedPackageName::QualifiedPackageName(const CategoryNamePart & c, const PackageNamePart & p) :
+    MakeSmartRecord<QualifiedPackageNameTag>::Type(c, p)
+{
+}
+
+QualifiedPackageName::QualifiedPackageName(const QualifiedPackageName & other) :
+    MakeSmartRecord<QualifiedPackageNameTag>::Type(other)
+{
+}
+
+QualifiedPackageName::QualifiedPackageName(const std::string & s) :
+    MakeSmartRecord<QualifiedPackageNameTag>::Type(_make_parent(s))
+{
+}
+
+QualifiedPackageName::~QualifiedPackageName()
+{
+}
+
+const QualifiedPackageName &
+QualifiedPackageName::operator= (const QualifiedPackageName & other)
+{
+    MakeSmartRecord<QualifiedPackageNameTag>::Type::operator= (other);
+    return *this;
+}
+

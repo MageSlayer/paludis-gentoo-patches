@@ -494,12 +494,7 @@ namespace paludis
             /**
              * Destructor.
              */
-            ~CountedPtr()
-            {
-                if (0 != this->_ptr)
-                    if (0 == --(*this->_ptr->reference_count_pointer()))
-                        delete this->_ptr;
-            }
+            ~CountedPtr();
 
             /**
              * Assignment, from another CountedPtr.
@@ -546,6 +541,14 @@ namespace paludis
                     return 0;
             }
     };
+
+    template <typename T_, typename DereferencePolicy_>
+    CountedPtr<T_, count_policy::InternalCountTag, DereferencePolicy_>::~CountedPtr()
+    {
+        if (0 != this->_ptr)
+            if (0 == --(*this->_ptr->reference_count_pointer()))
+                delete this->_ptr;
+    }
 }
 
 #include <paludis/util/instantiation_policy.hh>

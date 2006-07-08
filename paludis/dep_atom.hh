@@ -230,6 +230,11 @@ namespace paludis
              */
             StringDepAtom(const std::string &);
 
+            /**
+             * Destructor.
+             */
+            ~StringDepAtom();
+
         public:
             /**
              * Fetch our text.

@@ -383,33 +383,36 @@ namespace
         {
         }
 
-        void operator() (const FSEntry & f) const
-        {
-            Context context("When running hook script '" + stringify(f) +
-                    "' for hook '" + hook.name() + "':");
-            Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
-                    stringify(f) + "' for '" + hook.name() + "'");
-
-            MakeEnvCommand cmd(make_env_command("bash '" + stringify(f) + "'")
-                    ("ROOT", DefaultConfig::get_instance()->root())
-                    ("HOOK", hook.name())
-                    ("HOOK_LOG_LEVEL", Log::get_instance()->log_level_string())
-                    ("HOOK_CONFIG_SUFFIX", DefaultConfig::config_suffix())
-                    ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                    ("PALUDIS_COMMAND", paludis_command));
-
-            for (Hook::Iterator h(hook.begin()), h_end(hook.end()) ; h != h_end ; ++h)
-                cmd = cmd(h->first, h->second);
-
-            int exit_status(run_command(cmd));
-            if (0 == exit_status)
-                Log::get_instance()->message(ll_debug, lc_no_context, "Hook '" + stringify(f)
-                        + "' returned success '" + stringify(exit_status) + "'");
-            else
-                Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(f)
-                        + "' returned failure '" + stringify(exit_status) + "'");
-        }
+        void operator() (const FSEntry & f) const;
     };
+
+    void
+    Hooker::operator() (const FSEntry & f) const
+    {
+        Context context("When running hook script '" + stringify(f) +
+                "' for hook '" + hook.name() + "':");
+        Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
+                stringify(f) + "' for '" + hook.name() + "'");
+
+        MakeEnvCommand cmd(make_env_command("bash '" + stringify(f) + "'")
+                ("ROOT", DefaultConfig::get_instance()->root())
+                ("HOOK", hook.name())
+                ("HOOK_LOG_LEVEL", Log::get_instance()->log_level_string())
+                ("HOOK_CONFIG_SUFFIX", DefaultConfig::config_suffix())
+                ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                ("PALUDIS_COMMAND", paludis_command));
+
+        for (Hook::Iterator h(hook.begin()), h_end(hook.end()) ; h != h_end ; ++h)
+            cmd = cmd(h->first, h->second);
+
+        int exit_status(run_command(cmd));
+        if (0 == exit_status)
+            Log::get_instance()->message(ll_debug, lc_no_context, "Hook '" + stringify(f)
+                    + "' returned success '" + stringify(exit_status) + "'");
+        else
+            Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(f)
+                    + "' returned failure '" + stringify(exit_status) + "'");
+    }
 }
 
 void

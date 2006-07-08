@@ -92,11 +92,13 @@ namespace paludis
 
         std::multimap<std::string, std::string> mirrors;
 
-        Implementation() :
-            paludis_command("paludis")
-        {
-        }
+        Implementation();
     };
+}
+
+Implementation<DefaultConfig>::Implementation() :
+    paludis_command("paludis")
+{
 }
 
 DefaultConfigError::DefaultConfigError(const std::string & msg) throw () :
