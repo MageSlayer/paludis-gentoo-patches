@@ -216,11 +216,6 @@
  * \ingroup grplibpaludisutil
  */
 
-/** \defgroup grpcontainerentries Container entries
- *
- * \ingroup grplibpaludisutil
- */
-
 /** \defgroup grppointers Pointers
  *
  * \ingroup grplibpaludisutil
