@@ -1,9 +1,3 @@
-#if 0
-ifdef(`__gnu__',`',`errprint(`This is not GNU m4...
-')m4exit(1)') include(`misc/generated-file.txt')
-dnl vim: set ft=cpp et sw=4 sts=4 :
-#endif
-
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
  *
@@ -133,6 +127,9 @@ namespace paludis
     class ComparisonPolicy<OurType_, comparison_mode::NoComparisonTag, ComparisonMethodTag_>
     {
         public:
+            ///\name Comparison policy tags
+            ///\{
+
             /// Our comparison mode.
             typedef comparison_mode::NoComparisonTag ComparisonPolicyModeTag;
 
@@ -141,6 +138,8 @@ namespace paludis
 
             /// Our comparison policy.
             typedef ComparisonPolicy<OurType_, ComparisonPolicyModeTag, ComparisonPolicyMethodTag> ComparisonPolicyType;
+
+            ///\}
     };
 
     /**
@@ -157,6 +156,9 @@ namespace paludis
             const MemberType_ OurType_::* const _v;
 
         public:
+            ///\name Comparison policy tags
+            ///\{
+
             /// Our comparison mode.
             typedef comparison_mode::EqualityComparisonTag ComparisonPolicyModeTag;
 
@@ -166,28 +168,38 @@ namespace paludis
             /// Our comparison policy.
             typedef ComparisonPolicy<OurType_, ComparisonPolicyModeTag, ComparisonPolicyMethodTag> ComparisonPolicyType;
 
-            /// Constructor.
+            ///\}
+
+            ///\name Basic operations
+            ///\{
+
             ComparisonPolicy(const MemberType_ OurType_::* const v) :
                 _v(v)
             {
             }
 
-            /// Copy constructor.
             ComparisonPolicy(const ComparisonPolicy & other) :
                 _v(other._v)
             {
             }
 
-define(`make_operator', `
-            /// $1 operator.
-            bool operator$1 (const OurType_ & other) const
-            {
-                return static_cast<const OurType_ *>(this)->*_v $1 other.*(
-                        (static_cast<const ComparisonPolicyType *>(&other))->_v);
+            ///\}
+
+            ///\name Comparison operators
+            ///\{
+
+#undef PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR
+#define PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(op) \
+            bool operator op (const OurType_ & other) const \
+            { \
+                return static_cast<const OurType_ *>(this)->*_v op other.*( \
+                        (static_cast<const ComparisonPolicyType *>(&other))->_v); \
             }
-')
-make_operator(`==')
-make_operator(`!=')
+
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(==)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(!=)
+
+            ///\}
 
     };
 
@@ -205,6 +217,9 @@ make_operator(`!=')
             bool (OurType_::* const _v)(const OurType_ &) const;
 
         public:
+            ///\name Comparison policy tags
+            ///\{
+
             /// Our comparison mode.
             typedef comparison_mode::EqualityComparisonTag ComparisonPolicyModeTag;
 
@@ -214,29 +229,37 @@ make_operator(`!=')
             /// Our comparison policy.
             typedef ComparisonPolicy<OurType_, ComparisonPolicyModeTag, ComparisonPolicyMethodTag> ComparisonPolicyType;
 
-            /// Constructor.
+            ///\}
+
+            ///\name Basic operations
+            ///\{
+
             ComparisonPolicy(bool (OurType_::* const v)(const OurType_ &) const) :
                 _v(v)
             {
             }
 
-            /// Copy constructor.
             ComparisonPolicy(const ComparisonPolicy & other) :
                 _v(other._v)
             {
             }
 
-            /// Equal operator.
+            ///\}
+
+            ///\name Comparison operators
+            ///\{
+
             bool operator== (const OurType_ & other) const
             {
                 return (static_cast<const OurType_ *>(this)->*_v)(other);
             }
 
-            /// Not equal operator.
             bool operator!= (const OurType_ & other) const
             {
                 return ! (static_cast<const OurType_ *>(this)->*_v)(other);
             }
+
+            ///\}
     };
 
     /**
@@ -253,6 +276,9 @@ make_operator(`!=')
             const MemberType_ OurType_::* const _v;
 
         public:
+            ///\name Comparison policy tags
+            ///\{
+
             /// Our comparison mode.
             typedef comparison_mode::FullComparisonTag ComparisonPolicyModeTag;
 
@@ -262,33 +288,42 @@ make_operator(`!=')
             /// Our comparison policy.
             typedef ComparisonPolicy<OurType_, ComparisonPolicyModeTag, ComparisonPolicyMethodTag> ComparisonPolicyType;
 
-            /// Constructor.
+            ///\}
+
+            ///\name Basic operations
+            ///\{
+
             ComparisonPolicy(const MemberType_ OurType_::* const v) :
                 _v(v)
             {
             }
 
-            /// Copy constructor.
             ComparisonPolicy(const ComparisonPolicy & other) :
                 _v(other._v)
             {
             }
 
-define(`make_operator', `
-            /// $1 operator.
-            bool operator$1 (const OurType_ & other) const
-            {
-                return static_cast<const OurType_ *>(this)->*_v $1 other.*(
-                        (static_cast<const ComparisonPolicyType *>(&other))->_v);
-            }
-')
-make_operator(`==')
-make_operator(`!=')
-make_operator(`<=')
-make_operator(`>=')
-make_operator(`<')
-make_operator(`>')
+            ///\}
 
+            ///\name Comparison operators
+            ///\{
+
+#undef PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR
+#define PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(op) \
+            bool operator op (const OurType_ & other) const \
+            { \
+                return static_cast<const OurType_ *>(this)->*_v op other.*( \
+                        (static_cast<const ComparisonPolicyType *>(&other))->_v); \
+            }
+
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(==)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(!=)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(<=)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(>=)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(<)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(>)
+
+            ///\}
     };
 
     /**
@@ -305,6 +340,9 @@ make_operator(`>')
             int (OurType_::* const _v)(const OurType_ &) const;
 
         public:
+            ///\name Comparison policy tags
+            //\{
+
             /// Our comparison mode.
             typedef comparison_mode::FullComparisonTag ComparisonPolicyModeTag;
 
@@ -314,32 +352,41 @@ make_operator(`>')
             /// Our comparison policy.
             typedef ComparisonPolicy<OurType_, ComparisonPolicyModeTag, ComparisonPolicyMethodTag> ComparisonPolicyType;
 
-            /// Constructor.
+            ///\}
+
+            ///\name Basic operations
+            ///\{
+
             ComparisonPolicy(int (OurType_::* v)(const OurType_ &) const) :
                 _v(v)
             {
             }
 
-            /// Copy constructor.
             ComparisonPolicy(const ComparisonPolicy & other) :
                 _v(other._v)
             {
             }
 
-define(`make_operator', `
-            /// $1 operator.
-            bool operator$1 (const OurType_ & other) const
-            {
-                return (static_cast<const OurType_ *>(this)->*_v)(other) $1 0;
-            }
-')
-make_operator(`==')
-make_operator(`!=')
-make_operator(`<=')
-make_operator(`>=')
-make_operator(`<')
-make_operator(`>')
+            ///\}
 
+            ///\name Comparison operators
+            ///\{
+
+#undef PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR
+#define PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(op) \
+            bool operator op (const OurType_ & other) const \
+            { \
+                return (static_cast<const OurType_ *>(this)->*_v)(other) op 0; \
+            }
+
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(==)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(!=)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(<=)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(>=)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(<)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(>)
+
+            ///\}
     };
 
     /**
@@ -356,6 +403,9 @@ make_operator(`>')
             MemberType_ (OurType_::* const _v)() const;
 
         public:
+            ///\name Comparison policy tags
+            ///\{
+
             /// Our comparison mode.
             typedef comparison_mode::EqualityComparisonTag ComparisonPolicyModeTag;
 
@@ -365,27 +415,37 @@ make_operator(`>')
             /// Our comparison policy.
             typedef ComparisonPolicy<OurType_, ComparisonPolicyModeTag, ComparisonPolicyMethodTag> ComparisonPolicyType;
 
-            /// Constructor.
+            ///\}
+
+            ///\name Basic operations
+            ///\{
+
             ComparisonPolicy(MemberType_ (OurType_::* const v)() const) :
                 _v(v)
             {
             }
 
-            /// Copy constructor.
             ComparisonPolicy(const ComparisonPolicy & other) :
                 _v(other._v)
             {
             }
 
-define(`make_operator', `
-            /// $1 operator.
-            bool operator$1 (const OurType_ & other) const
-            {
-                return (static_cast<const OurType_ *>(this)->*_v)() $1 (other.*other._v)();
+            ///\}
+
+            ///\name Comparison operators
+            ///\{
+
+#undef PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR
+#define PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(op) \
+            bool operator op (const OurType_ & other) const \
+            { \
+                return (static_cast<const OurType_ *>(this)->*_v)() op (other.*other._v)(); \
             }
-')
-make_operator(`==')
-make_operator(`!=')
+
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(==)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(!=)
+
+            ///\}
     };
 
     /**
@@ -402,6 +462,9 @@ make_operator(`!=')
             MemberType_ (OurType_::* const _v)() const;
 
         public:
+            ///\name Comparison policy tags
+            ///\{
+
             /// Our comparison mode.
             typedef comparison_mode::FullComparisonTag ComparisonPolicyModeTag;
 
@@ -411,34 +474,44 @@ make_operator(`!=')
             /// Our comparison policy.
             typedef ComparisonPolicy<OurType_, ComparisonPolicyModeTag, ComparisonPolicyMethodTag> ComparisonPolicyType;
 
-            /// Constructor.
+            ///\}
+
+            ///\name Basic operations
+            ///\{
+
             ComparisonPolicy(MemberType_ (OurType_::* const v)() const) :
                 _v(v)
             {
             }
 
-            /// Copy constructor.
             ComparisonPolicy(const ComparisonPolicy & other) :
                 _v(other._v)
             {
             }
 
-define(`make_operator', `
-            /// $1 operator.
-            bool operator$1 (const OurType_ & other) const
-            {
-                return ((static_cast<const OurType_ *>(this)->*_v)()) $1
-                    ((other.*(static_cast<const OurType_ *>(&other)->_v))());
-            }
-')
-make_operator(`==')
-make_operator(`!=')
-make_operator(`>=')
-make_operator(`<=')
-make_operator(`>')
-make_operator(`<')
+            ///\}
 
+            ///\name Comparison operators
+            ///\{
+
+#undef PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR
+#define PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(op) \
+            bool operator op (const OurType_ & other) const \
+            { \
+                return ((static_cast<const OurType_ *>(this)->*_v)()) op \
+                    ((other.*(static_cast<const OurType_ *>(&other)->_v))()); \
+            }
+
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(==)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(!=)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(<=)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(>=)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(<)
+            PALUDIS_COMPARISON_POLICY_MAKE_OPERATOR(>)
+
+            ///\}
     };
 }
 
 #endif
+

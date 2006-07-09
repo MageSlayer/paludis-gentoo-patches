@@ -29,13 +29,13 @@ include(`paludis/util/files.m4')
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in Makefile.am paludis.hh smart_record.hh \
-	hashed_containers.hh comparison_policy.hh util.hh
+	hashed_containers.hh util.hh
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS=\
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\"
 EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 smart_record.hh.m4 \
-	comparison_policy.hh.m4 testscriptlist test_extras.cc
+	testscriptlist test_extras.cc
 SUBDIRS = .
 
 libpaludisutil_a_SOURCES = filelist
@@ -58,9 +58,6 @@ Makefile.am : Makefile.am.m4 files.m4
 
 smart_record.hh : smart_record.hh.m4
 	$(top_srcdir)/misc/do_m4.bash smart_record.hh
-
-comparison_policy.hh : comparison_policy.hh.m4
-	$(top_srcdir)/misc/do_m4.bash comparison_policy.hh
 
 util.hh : util.hh.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash util.hh

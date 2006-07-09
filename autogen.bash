@@ -32,7 +32,6 @@ misc/do_m4.bash paludis/qa/qa.hh || exit $?
 misc/do_m4.bash paludis/util/util.hh || exit $?
 misc/do_m4.bash paludis/util/Makefile.am || exit $?
 misc/do_m4.bash paludis/util/smart_record.hh || exit $?
-misc/do_m4.bash paludis/util/comparison_policy.hh || exit $?
 misc/do_m4.bash hooks/Makefile.am || exit $?
 run mkdir -p config
 run $(get libtoolize 1.5 ) --copy --force --automake
