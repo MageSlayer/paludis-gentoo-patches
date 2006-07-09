@@ -59,6 +59,9 @@ namespace paludis
              */
             typedef const T_ & const_reference;
 
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor.
              */
@@ -73,34 +76,32 @@ namespace paludis
             {
             }
 
-            /**
-             * Our iterator type.
-             */
+            ///\}
+
+            ///\name Iterate over our items
+            ///\{
+
             typedef typename std::list<T_>::const_iterator Iterator;
 
-            /**
-             * Iterator to the start of our items.
-             */
             Iterator begin() const
             {
                 return _items.begin();
             }
 
-            /**
-             * Iterator to one past our last item.
-             */
             Iterator end() const
             {
                 return _items.end();
             }
 
-            /**
-             * Iterator to our last item.
-             */
             Iterator last() const
             {
                 return _items.begin() == _items.end() ? _items.end() : --(_items.end());
             }
+
+            ///\}
+
+            ///\name Finding items
+            ///\{
 
             /**
              * Return an Iterator to an item, or end() if there's no match.
@@ -109,6 +110,11 @@ namespace paludis
             {
                 return std::find(_items.begin(), _items.end(), v);
             }
+
+            ///\}
+
+            ///\name Adding and modifying items
+            ///\{
 
             /**
              * Append an item, return whether we succeeded.
@@ -131,6 +137,11 @@ namespace paludis
                     _items.push_back(v);
             }
 
+            ///\}
+
+            ///\name Queries
+            ///\{
+
             /**
              * Are we empty?
              */
@@ -138,6 +149,8 @@ namespace paludis
             {
                 return _items.empty();
             }
+
+            ///\}
     };
 
     /**
@@ -157,65 +170,46 @@ namespace paludis
             std::set<T_> _items;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             SortedCollection()
             {
             }
 
-            /**
-             * Destructor.
-             */
             virtual ~SortedCollection()
             {
             }
 
-            /**
-             * Our iterator type.
-             */
+            ///\}
+
+            ///\name Iterate over our items
+            ///\{
+
             typedef typename std::set<T_>::const_iterator Iterator;
 
-            /**
-             * Iterator to the start of our items.
-             */
             Iterator begin() const
             {
                 return _items.begin();
             }
 
-            /**
-             * Iterator to one past our last item.
-             */
             Iterator end() const
             {
                 return _items.end();
             }
 
-            /**
-             * Our reverse iterator type.
-             */
             typedef typename std::set<T_>::const_reverse_iterator ReverseIterator;
 
-            /**
-             * Reverse iterator to the start of our items.
-             */
             ReverseIterator rbegin() const
             {
                 return _items.rbegin();
             }
 
-            /**
-             * Reverse iterator to one past our last item.
-             */
             ReverseIterator rend() const
             {
                 return _items.rend();
             }
 
-            /**
-             * Iterator to our last item.
-             */
             Iterator last() const
             {
                 Iterator result(_items.end());
@@ -224,13 +218,20 @@ namespace paludis
                 return result;
             }
 
-            /**
-             * Return an Iterator to an item, or end() if there's no match.
-             */
+            ///\}
+
+            ///\name Finding items
+            ///\{
+
             Iterator find(const T_ & v) const
             {
                 return _items.find(v);
             }
+
+            ///\}
+
+            ///\name Adding, removing and modifying items
+            ///\{
 
             /**
              * Insert an item, return whether we succeeded.
@@ -261,6 +262,24 @@ namespace paludis
             }
 
             /**
+             * Our insert iterator type.
+             */
+            typedef typename std::insert_iterator<std::set<T_> > Inserter;
+
+            /**
+             * Fetch an inserter.
+             */
+            Inserter inserter()
+            {
+                return std::inserter(_items, _items.begin());
+            }
+
+            ///\}
+
+            ///\name Queries
+            ///\{
+
+            /**
              * Are we empty?
              */
             bool empty() const
@@ -276,18 +295,7 @@ namespace paludis
                 return _items.size();
             }
 
-            /**
-             * Our insert iterator type.
-             */
-            typedef typename std::insert_iterator<std::set<T_> > Inserter;
-
-            /**
-             * Fetch an inserter.
-             */
-            Inserter inserter()
-            {
-                return std::inserter(_items, _items.begin());
-            }
+            ///\}
     };
 }
 

@@ -24,7 +24,6 @@
 #include <paludis/dep_tag.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/composite_pattern.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
@@ -64,7 +63,6 @@ namespace paludis
      */
     class DepAtom :
         public virtual VisitableInterface<DepAtomVisitorTypes>,
-        public virtual Composite<DepAtom, CompositeDepAtom>,
         private InstantiationPolicy<DepAtom, instantiation_method::NonCopyableTag>,
         public InternalCounted<DepAtom>
     {
@@ -91,8 +89,7 @@ namespace paludis
      * \ingroup grpdepatoms
      */
     class CompositeDepAtom :
-        public DepAtom,
-        public virtual Composite<DepAtom, CompositeDepAtom>
+        public DepAtom
     {
         private:
             std::list<DepAtom::ConstPointer> _children;
