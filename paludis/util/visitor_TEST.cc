@@ -18,7 +18,6 @@
  */
 
 #include <algorithm>
-#include <paludis/util/deleter.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/visitor.hh>
 #include <test/test_framework.hh>
@@ -36,78 +35,101 @@ using namespace test;
 
 #ifndef DOXYGEN
 
-class Node;
-class FooNode;
-class BarNode;
-
-typedef VisitorTypes<FooNode *, BarNode *> NodeVisitorTypes;
-
-struct Node :
-    virtual VisitableInterface<NodeVisitorTypes>
+namespace
 {
-};
-
-struct FooNode :
-    Node,
-    Visitable<FooNode, NodeVisitorTypes>
-{
-    std::string c_foo() const
+    class Deleter
     {
-        return "c_foo";
-    }
+        public:
+            /**
+             * Constructor.
+             */
+            Deleter()
+            {
+            }
 
-    std::string foo()
+            /**
+             * Delete an item.
+             */
+            template <typename T_>
+            void operator() (T_ t)
+            {
+                delete t;
+            }
+    };
+
+    class Node;
+    class FooNode;
+    class BarNode;
+
+    typedef VisitorTypes<FooNode *, BarNode *> NodeVisitorTypes;
+
+    struct Node :
+        virtual VisitableInterface<NodeVisitorTypes>
     {
-        return "foo";
-    }
-};
+    };
 
-struct BarNode :
-    Node,
-    Visitable<BarNode, NodeVisitorTypes>
-{
-    std::string c_bar() const
+    struct FooNode :
+        Node,
+        Visitable<FooNode, NodeVisitorTypes>
     {
-        return "c_bar";
-    }
+        std::string c_foo() const
+        {
+            return "c_foo";
+        }
 
-    std::string bar()
+        std::string foo()
+        {
+            return "foo";
+        }
+    };
+
+    struct BarNode :
+        Node,
+        Visitable<BarNode, NodeVisitorTypes>
     {
-        return "bar";
-    }
-};
+        std::string c_bar() const
+        {
+            return "c_bar";
+        }
 
-struct NodeCVisitor :
-    NodeVisitorTypes::ConstVisitor
-{
-    std::string r;
+        std::string bar()
+        {
+            return "bar";
+        }
+    };
 
-    virtual void visit(const FooNode * const f)
+    struct NodeCVisitor :
+        NodeVisitorTypes::ConstVisitor
     {
-        r.append(f->c_foo());
-    }
+        std::string r;
 
-    virtual void visit(const BarNode * const b)
+        virtual void visit(const FooNode * const f)
+        {
+            r.append(f->c_foo());
+        }
+
+        virtual void visit(const BarNode * const b)
+        {
+            r.append(b->c_bar());
+        }
+    };
+
+    struct NodeVisitor :
+        NodeVisitorTypes::Visitor
     {
-        r.append(b->c_bar());
-    }
-};
+        std::string r;
 
-struct NodeVisitor :
-    NodeVisitorTypes::Visitor
-{
-    std::string r;
+        virtual void visit(FooNode * const f)
+        {
+            r.append(f->foo());
+        }
 
-    virtual void visit(FooNode * const f)
-    {
-        r.append(f->foo());
-    }
-
-    virtual void visit(BarNode * const b)
-    {
-        r.append(b->bar());
-    }
-};
+        virtual void visit(BarNode * const b)
+        {
+            r.append(b->bar());
+        }
+    };
+}
 
 #endif
 

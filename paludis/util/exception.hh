@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_EXCEPTION_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/stringify.hh>
 
 #include <string>
 #include <exception>
@@ -144,15 +143,19 @@ namespace paludis
              */
             ConfigurationError(const std::string & msg) throw ();
     };
-}
 
-/** \def PALUDIS_HERE
- * Expands to the current function name, file and line, for use with
- * paludis::InternalError.
- *
- * \ingroup grpexceptions
- */
-#define PALUDIS_HERE (paludis::stringify(__PRETTY_FUNCTION__) + " at " + \
-        paludis::stringify(__FILE__) + ":" + paludis::stringify(__LINE__))
+    template <typename T_>
+    std::string
+    stringify(const T_ & item);
+
+    /** \def PALUDIS_HERE
+     * Expands to the current function name, file and line, for use with
+     * paludis::InternalError.
+     *
+     * \ingroup grpexceptions
+     */
+#define PALUDIS_HERE (std::string(__PRETTY_FUNCTION__) + " at " + \
+        std::string(__FILE__) + ":" + paludis::stringify(__LINE__))
+}
 
 #endif

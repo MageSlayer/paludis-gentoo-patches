@@ -31,49 +31,70 @@
 
 using namespace paludis;
 
+namespace paludis
+{
+    template<>
+    struct Implementation<DirIterator> :
+        InternalCounted<Implementation<DirIterator> >
+    {
+        FSEntry base;
+        bool ignore_dotfiles;
+        CountedPtr<std::set<FSEntry>, count_policy::ExternalCountTag> items;
+        std::set<FSEntry>::iterator iter;
+
+        Implementation(const FSEntry & b, bool i, CountedPtr<std::set<FSEntry>,
+                count_policy::ExternalCountTag> ii) :
+            base(b),
+            ignore_dotfiles(i),
+            items(ii)
+        {
+        }
+    };
+}
+
 DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) throw () :
     FSError("Error opening directory '" + stringify(location) + "': " + strerror(errno_value))
 {
 }
 
 DirIterator::DirIterator(const FSEntry & base, bool ignore_dotfiles) :
-    _base(base),
-    _ignore_dotfiles(ignore_dotfiles),
-    _items(new std::set<FSEntry>)
+    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(
+                base, ignore_dotfiles, CountedPtr<std::set<FSEntry>,
+                count_policy::ExternalCountTag>(new std::set<FSEntry>)))
 {
-    DIR * d(opendir(stringify(base).c_str()));
+    DIR * d(opendir(stringify(_imp->base).c_str()));
     if (0 == d)
-        throw DirOpenError(base, errno);
+        throw DirOpenError(_imp->base, errno);
 
     struct dirent * de;
     while (0 != ((de = readdir(d))))
-        if (ignore_dotfiles)
+        if (_imp->ignore_dotfiles)
         {
             if ('.' != de->d_name[0])
-                _items->insert(_base / std::string(de->d_name));
+                _imp->items->insert(_imp->base / std::string(de->d_name));
         }
         else if (! (de->d_name[0] == '.' &&
                     (de->d_name[1] == '\0' || (de->d_name[1] == '.' && de->d_name[2] == '\0'))))
-            _items->insert(_base / std::string(de->d_name));
+            _imp->items->insert(_imp->base / std::string(de->d_name));
 
-    _iter = _items->begin();
+    _imp->iter = _imp->items->begin();
 
     closedir(d);
 }
 
 DirIterator::DirIterator(const DirIterator & other) :
-    _base(other._base),
-    _ignore_dotfiles(other._ignore_dotfiles),
-    _items(other._items),
-    _iter(other._iter)
+    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(
+                other._imp->base, other._imp->ignore_dotfiles, other._imp->items))
 {
+    _imp->iter = other._imp->iter;
 }
 
 DirIterator::DirIterator() :
-    _base(""),
-    _items(new std::set<FSEntry>),
-    _iter(_items->end())
+    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(
+                FSEntry(""), true, CountedPtr<std::set<FSEntry>,
+                count_policy::ExternalCountTag>(new std::set<FSEntry>)))
 {
+    _imp->iter = _imp->items->end();
 }
 
 DirIterator::~DirIterator()
@@ -85,9 +106,10 @@ DirIterator::operator= (const DirIterator & other)
 {
     if (this != &other)
     {
-        _base = other._base;
-        _items = other._items;
-        _iter = other._iter;
+        _imp->base = other._imp->base;
+        _imp->items = other._imp->items;
+        _imp->iter = other._imp->iter;
+        _imp->ignore_dotfiles = other._imp->ignore_dotfiles;
     }
     return *this;
 }
@@ -95,19 +117,19 @@ DirIterator::operator= (const DirIterator & other)
 const FSEntry &
 DirIterator::operator* () const
 {
-    return *_iter;
+    return *_imp->iter;
 }
 
 const FSEntry *
 DirIterator::operator-> () const
 {
-    return &*_iter;
+    return &*_imp->iter;
 }
 
 DirIterator &
 DirIterator::operator++ ()
 {
-    ++_iter;
+    ++_imp->iter;
     return *this;
 }
 
@@ -115,24 +137,24 @@ DirIterator
 DirIterator::operator++ (int)
 {
     DirIterator c(*this);
-    _iter++;
+    _imp->iter++;
     return c;
 }
 
 bool
 DirIterator::operator== (const DirIterator & other) const
 {
-    if (other._iter == other._items->end())
-        return _iter == _items->end();
+    if (other._imp->iter == other._imp->items->end())
+        return _imp->iter == _imp->items->end();
 
-    if (_iter == _items->end())
-        return other._iter == other._items->end();
+    if (_imp->iter == _imp->items->end())
+        return other._imp->iter == other._imp->items->end();
 
-    if (other._items != _items)
+    if (other._imp->items != _imp->items)
         throw InternalError(PALUDIS_HERE,
                 "comparing two different DirIterators.");
 
-    return other._iter == _iter;
+    return other._imp->iter == _imp->iter;
 }
 
 bool

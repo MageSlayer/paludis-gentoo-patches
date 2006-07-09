@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <list>
 #include <paludis/util/counted_ptr.hh>
-#include <paludis/util/deleter.hh>
 #include <paludis/util/iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -35,6 +34,29 @@ using namespace paludis;
  *
  * \ingroup grptestcases
  */
+
+namespace
+{
+    class Deleter
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            Deleter()
+            {
+            }
+
+            /**
+             * Delete an item.
+             */
+            template <typename T_>
+            void operator() (T_ t)
+            {
+                delete t;
+            }
+    };
+}
 
 namespace test_cases
 {

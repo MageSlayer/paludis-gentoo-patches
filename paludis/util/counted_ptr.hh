@@ -41,10 +41,12 @@ namespace paludis
     class CountedPtrError : public Exception
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             CountedPtrError() throw ();
+
+            ///\}
     };
 
     /**
@@ -138,9 +140,9 @@ namespace paludis
                  */
                 T_ * _ptr;
 
-                /**
-                 * Constructor.
-                 */
+                ///\name Basic operations
+                ///\{
+
                 CountedPtrBase(T_ * ptr) :
                     ComparisonPolicy<CountedPtrBase<T_, dereference_policy::UncheckedDereferenceTag>,
                         comparison_mode::EqualityComparisonTag,
@@ -150,46 +152,35 @@ namespace paludis
                 {
                 }
 
-                /**
-                 * Destructor.
-                 */
                 ~CountedPtrBase()
                 {
                 }
 
+                ///\}
+
             public:
-                /**
-                 * Dereference operator (const).
-                 */
+                ///\name Dereference operators
+                ///\{
+
                 inline const T_ & operator* () const;
-
-                /**
-                 * Dereference to member operator (const).
-                 */
                 inline const T_ * operator-> () const;
-
-                /**
-                 * Dereference operator (non const).
-                 */
                 T_ & operator* ();
-
-                /**
-                 * Dereference to member operator (non const).
-                 */
                 T_ * operator-> ();
-
-                /**
-                 * Not null?
-                 */
-                operator bool() const
-                {
-                    return _ptr;
-                }
 
                 /**
                  * Fetch our raw pointer.
                  */
                 T_ * raw_pointer() const
+                {
+                    return _ptr;
+                }
+
+                ///\}
+
+                /**
+                 * Not null?
+                 */
+                operator bool() const
                 {
                     return _ptr;
                 }
@@ -240,9 +231,9 @@ namespace paludis
                  */
                 T_ * _ptr;
 
-                /**
-                 * Constructor.
-                 */
+                ///\name Basic operations
+                ///\{
+
                 CountedPtrBase(T_ * ptr) :
                     ComparisonPolicy<CountedPtrBase<T_, dereference_policy::CheckedDereferenceTag>,
                         comparison_mode::EqualityComparisonTag,
@@ -252,46 +243,35 @@ namespace paludis
                 {
                 }
 
-                /**
-                 * Destructor.
-                 */
                 ~CountedPtrBase()
                 {
                 }
 
+                ///\}
+
             public:
-                /**
-                 * Dereference operator (const).
-                 */
+                ///\name Dereference operators
+                ///\{
+
                 inline const T_ & operator* () const;
-
-                /**
-                 * Dereference to member operator (const).
-                 */
                 inline const T_ * operator-> () const;
-
-                /**
-                 * Dereference operator (non const).
-                 */
                 T_ & operator* ();
-
-                /**
-                 * Dereference to member operator (non const).
-                 */
                 T_ * operator-> ();
-
-                /**
-                 * Not null?
-                 */
-                operator bool() const
-                {
-                    return _ptr;
-                }
 
                 /**
                  * Fetch our raw pointer.
                  */
                 T_ * raw_pointer() const
+                {
+                    return _ptr;
+                }
+
+                ///\}
+
+                /**
+                 * Not null?
+                 */
+                operator bool() const
                 {
                     return _ptr;
                 }
@@ -360,18 +340,15 @@ namespace paludis
             unsigned * _ref_count;
 
         public:
-            /**
-             * Constructor, from a raw pointer.
-             */
+            ///\name Basic operations
+            ///\{
+
             explicit CountedPtr(T_ * const ptr) :
                 counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(ptr),
                 _ref_count(new unsigned(1))
             {
             }
 
-            /**
-             * Constructor, from another CountedPtr.
-             */
             CountedPtr(const CountedPtr & other) :
                 counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(other.raw_pointer()),
                 _ref_count(other._ref_count)
@@ -391,9 +368,6 @@ namespace paludis
                 ++*_ref_count;
             }
 
-            /**
-             * Destructor.
-             */
             ~CountedPtr()
             {
                 if (0 == --(*_ref_count))
@@ -439,6 +413,11 @@ namespace paludis
                 return operator= (CountedPtr<T_, count_policy::ExternalCountTag>(0));
             }
 
+            ///\}
+
+            ///\name Pointer operations
+            ///\{
+
             /**
              * Fetch our reference count pointer.
              */
@@ -446,6 +425,8 @@ namespace paludis
             {
                 return _ref_count;
             }
+
+            ///\}
     };
 
     /**
@@ -458,9 +439,9 @@ namespace paludis
         public counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>
     {
         public:
-            /**
-             * Constructor, from a raw pointer.
-             */
+            ///\name Basic operations
+            ///\{
+
             explicit CountedPtr(T_ * const ptr) :
                 counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(ptr)
             {
@@ -468,9 +449,6 @@ namespace paludis
                     ++*this->_ptr->reference_count_pointer();
             }
 
-            /**
-             * Constructor, from another CountedPtr.
-             */
             CountedPtr(const CountedPtr & other) :
                 counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(other._ptr)
             {
@@ -491,14 +469,8 @@ namespace paludis
                     ++*this->_ptr->reference_count_pointer();
             }
 
-            /**
-             * Destructor.
-             */
             ~CountedPtr();
 
-            /**
-             * Assignment, from another CountedPtr.
-             */
             const CountedPtr & operator= (const CountedPtr & other)
             {
                 if (other._ptr != this->_ptr)
@@ -530,6 +502,11 @@ namespace paludis
                 return operator= (CountedPtr<T_, count_policy::InternalCountTag>(0));
             }
 
+            ///\}
+
+            ///\name Pointer operations
+            ///\{
+
             /**
              * Fetch our reference count pointer.
              */
@@ -540,6 +517,8 @@ namespace paludis
                 else
                     return 0;
             }
+
+            ///\}
     };
 
     template <typename T_, typename DereferencePolicy_>
@@ -569,22 +548,24 @@ namespace paludis
             mutable unsigned _ref_count;
 
         protected:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             InternalCounted() :
                 _ref_count(0)
             {
             }
 
-            /**
-             * Destructor.
-             */
             ~InternalCounted()
             {
             }
 
+            ///\}
+
         public:
+            ///\name Pointer types
+            ///\{
+
             /**
              * A CountedPtr to us.
              */
@@ -595,6 +576,11 @@ namespace paludis
              */
             typedef CountedPtr<const T_, count_policy::InternalCountTag, DereferencePolicy_> ConstPointer;
 
+            ///\}
+
+            ///\name Pointer operations
+            ///\{
+
             /**
              * Fetch a pointer to our reference count (may be zero).
              */
@@ -602,6 +588,8 @@ namespace paludis
             {
                 return & _ref_count;
             }
+
+            ///\}
     };
 }
 

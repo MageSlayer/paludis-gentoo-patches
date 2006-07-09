@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <paludis/util/exception.hh>
 #include <paludis/util/smart_record.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
 #include <limits>

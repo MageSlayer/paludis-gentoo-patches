@@ -41,10 +41,12 @@ namespace paludis
     class DestringifyError : public Exception
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             DestringifyError(const std::string & str) throw ();
+
+            ///\}
     };
 
     /**
@@ -112,7 +114,7 @@ namespace paludis
                     i = Destringifier<int, Exception_>::do_destringify(s);
                     return i > 0;
                 }
-                catch (DestringifyError &)
+                catch (const DestringifyError &)
                 {
                     bool b;
                     std::istringstream ss(s);

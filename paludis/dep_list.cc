@@ -21,7 +21,6 @@
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/match_package.hh>
-#include <paludis/util/container_entry.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>

@@ -23,6 +23,7 @@
 #include <iterator>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <set>
 
 /** \file
@@ -42,10 +43,12 @@ namespace paludis
     class DirOpenError : public FSError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             DirOpenError(const FSEntry & location, const int errno_value) throw ();
+
+            ///\}
     };
 
     /**
@@ -57,24 +60,20 @@ namespace paludis
      *
      * \ingroup grpfilesystem
      */
-    class DirIterator : public std::iterator<std::forward_iterator_tag, FSEntry>
+    class DirIterator :
+        public std::iterator<std::forward_iterator_tag, FSEntry>,
+        private PrivateImplementationPattern<DirIterator>
     {
-        private:
-            FSEntry _base;
-            bool _ignore_dotfiles;
-            CountedPtr<std::set<FSEntry>, count_policy::ExternalCountTag> _items;
-            std::set<FSEntry>::iterator _iter;
-
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor, to an FSEntry which must be a directory, with an
              * option to not ignore dotfiles.
              */
             explicit DirIterator(const FSEntry & base, bool ignore_dotfiles = true);
 
-            /**
-             * Copy constructor.
-             */
             DirIterator(const DirIterator & other);
 
             /**
@@ -82,45 +81,36 @@ namespace paludis
              */
             DirIterator();
 
-            /**
-             * Destructor.
-             */
             ~DirIterator();
 
-            /**
-             * Assign.
-             */
             const DirIterator & operator= (const DirIterator & other);
 
-            /**
-             * Dereference.
-             */
+            ///\}
+
+            ///\name Dereference operators
+            ///\{
+
             const FSEntry & operator* () const;
 
-            /**
-             * Dereference.
-             */
             const FSEntry * operator-> () const;
 
-            /**
-             * Increment.
-             */
-            DirIterator & operator++ ();
+            ///\}
 
-            /**
-             * Increment.
-             */
+            ///\name Increment, decrement operators
+            ///\{
+
+            DirIterator & operator++ ();
             DirIterator operator++ (int);
 
-            /**
-             * Compare.
-             */
-            bool operator== (const DirIterator & other) const;
+            ///\}
 
-            /**
-             * Inverse compare.
-             */
+            ///\name Comparison operators
+            ///\{
+
+            bool operator== (const DirIterator & other) const;
             bool operator!= (const DirIterator & other) const;
+
+            ///\}
     };
 }
 

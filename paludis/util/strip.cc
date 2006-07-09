@@ -19,6 +19,7 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/stringify.hh>
 
 /** \file
  * Implementation of strip things.
