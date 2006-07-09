@@ -178,9 +178,11 @@ namespace paludis
                 ///\}
 
                 /**
-                 * Not null?
+                 * Return whether we are null. We use const void * rather than bool
+                 * here to avoid bool -> int conversion weirdness. See \ref
+                 * TCppPL 21.3.3.
                  */
-                operator bool() const
+                operator const void * () const
                 {
                     return _ptr;
                 }
@@ -269,9 +271,11 @@ namespace paludis
                 ///\}
 
                 /**
-                 * Not null?
+                 * Return whether we are null. We use const void * rather than bool
+                 * here to avoid bool -> int conversion weirdness. See \ref
+                 * TCppPL 21.3.3.
                  */
-                operator bool() const
+                operator const void * () const
                 {
                     return _ptr;
                 }
