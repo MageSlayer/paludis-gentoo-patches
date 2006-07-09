@@ -110,9 +110,9 @@ namespace paludis
             Iter_ _i;
 
         public:
-            /**
-             * Constructor, from a base iterator.
-             */
+            ///\name Basic operations
+            ///\{
+
             IndirectIterator(const Iter_ & i) :
                 Comparisons<typename std::iterator_traits<Iter_>::iterator_category, Iter_, Value_>::Type(
                         &IndirectIterator<Iter_, Value_>::_i),
@@ -120,9 +120,6 @@ namespace paludis
             {
             }
 
-            /**
-             * Copy constructor.
-             */
             IndirectIterator(const IndirectIterator & other) :
                 Comparisons<typename std::iterator_traits<Iter_>::iterator_category, Iter_, Value_>::Type(
                         &IndirectIterator<Iter_, Value_>::_i),
@@ -130,65 +127,56 @@ namespace paludis
             {
             }
 
-            /**
-             * Assignment.
-             */
             const IndirectIterator & operator= (const IndirectIterator & other)
             {
                 _i = other._i;
                 return *this;
             }
 
-            /**
-             * Dereference.
-             */
+            ///\}
+
+            ///\name Dereference operators
+            ///\{
+
             Value_ & operator*()
             {
                 return **_i;
             }
 
-            /**
-             * Dereference arrow.
-             */
             Value_ * operator->()
             {
                 return &**_i;
             }
 
-            /**
-             * Dereference, const.
-             */
             const Value_ & operator*() const
             {
                 return **_i;
             }
 
-            /**
-             * Dereference arrow, const.
-             */
             const Value_ * operator->() const
             {
                 return &**_i;
             }
 
-            /**
-             * Increment.
-             */
+            ///\}
+
+            ///\name Increment, decrement operators
+            ///\{
+
             IndirectIterator & operator++ ()
             {
                 ++_i;
                 return *this;
             }
 
-            /**
-             * Increment.
-             */
             IndirectIterator operator++ (int)
             {
                 IndirectIterator tmp(*this);
                 ++_i;
                 return tmp;
             }
+
+            ///\}
     };
 
     /**
@@ -223,27 +211,21 @@ namespace paludis
              */
             typedef typename Iter_::container_type container_type;
 
-            /**
-             * Constructor, from an iterator.
-             */
+            ///\name Basic operations
+            ///\{
+
             FilterInsertIterator(const Iter_ & i, const Pred_ & p) :
                 _i(i),
                 _p(p)
             {
             }
 
-            /**
-             * Copy constructor.
-             */
             FilterInsertIterator(const FilterInsertIterator & other) :
                 _i(other._i),
                 _p(other._p)
             {
             }
 
-            /**
-             * Assignment.
-             */
             template <typename T_>
             const FilterInsertIterator & operator= (const T_ value)
             {
@@ -252,42 +234,39 @@ namespace paludis
                 return *this;
             }
 
-            /**
-             * Destructor.
-             */
             ~FilterInsertIterator();
 
-            /**
-             * Dereference.
-             */
+            ///
+
+            ///\name Dereference operators
+            ///\{
+
             FilterInsertIterator & operator* ()
             {
                 return *this;
             }
 
-            /**
-             * Dereference arrow.
-             */
             FilterInsertIterator * operator-> ()
             {
                 return this;
             }
 
-            /**
-             * Increment.
-             */
+            ///\}
+
+            ///\name Increment, decrement operators
+            ///\{
+
             FilterInsertIterator & operator++ ()
             {
                 return *this;
             }
 
-            /**
-             * Increment.
-             */
             FilterInsertIterator & operator++ (int)
             {
                 return *this;
             }
+
+            ///\}
     };
 
     template <typename Iter_, typename Pred_>
@@ -332,27 +311,20 @@ namespace paludis
                 typedef typename Trans_::argument_type value_type;
             };
 
-            /**
-             * Constructor, from an iterator.
-             */
+            ///\name Basic operations
+            ///\{
             TransformInsertIterator(const Iter_ & i, const Trans_ & t = Trans_()) :
                 _i(i),
                 _t(t)
             {
             }
 
-            /**
-             * Copy constructor.
-             */
             TransformInsertIterator(const TransformInsertIterator & other) :
                 _i(other._i),
                 _t(other._t)
             {
             }
 
-            /**
-             * Assignment.
-             */
             template <typename T_>
             const TransformInsertIterator & operator= (const T_ value)
             {
@@ -360,37 +332,37 @@ namespace paludis
                 return *this;
             }
 
-            /**
-             * Dereference.
-             */
+            ///\}
+
+            ///\name Dereference operators
+            ///\{
+
             TransformInsertIterator & operator* ()
             {
                 return *this;
             }
 
-            /**
-             * Dereference arrow.
-             */
             TransformInsertIterator * operator-> ()
             {
                 return this;
             }
 
-            /**
-             * Increment.
-             */
+            ///\}
+
+            ///\name Increment, decrement operators
+            ///\{
+
             TransformInsertIterator & operator++ ()
             {
                 return *this;
             }
 
-            /**
-             * Increment.
-             */
             TransformInsertIterator & operator++ (int)
             {
                 return *this;
             }
+
+            ///\}
 
     };
 
@@ -462,25 +434,19 @@ namespace paludis
                 typedef Type_ value_type;
             };
 
-            /**
-             * Constructor, from an iterator.
-             */
+            ///\name Basic operations
+            ///\{
+
             CreateInsertIterator(const Iter_ & i) :
                 _i(i)
             {
             }
 
-            /**
-             * Copy constructor.
-             */
             CreateInsertIterator(const CreateInsertIterator & other) :
                 _i(other._i)
             {
             }
 
-            /**
-             * Assignment.
-             */
             template <typename T_>
             const CreateInsertIterator & operator= (const T_ value)
             {
@@ -488,37 +454,37 @@ namespace paludis
                 return *this;
             }
 
-            /**
-             * Dereference.
-             */
+            ///\}
+
+            ///\name Dereference operators
+            ///\{
+
             CreateInsertIterator & operator* ()
             {
                 return *this;
             }
 
-            /**
-             * Dereference arrow.
-             */
             CreateInsertIterator * operator-> ()
             {
                 return this;
             }
 
-            /**
-             * Increment.
-             */
+            ///\}
+
+            ///\name Increment, decrement operators
+            ///\{
+
             CreateInsertIterator & operator++ ()
             {
                 return *this;
             }
 
-            /**
-             * Increment.
-             */
             CreateInsertIterator & operator++ (int)
             {
                 return *this;
             }
+
+            ///\}
     };
 
     /**

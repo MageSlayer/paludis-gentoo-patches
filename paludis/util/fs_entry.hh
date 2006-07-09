@@ -46,10 +46,12 @@ namespace paludis
     class FSError : public Exception
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             FSError(const std::string & message) throw ();
+
+            ///\}
     };
 
     /**
@@ -110,25 +112,21 @@ namespace paludis
             void _stat() const;
 
         public:
-            /**
-             * Constructor, from a path.
-             */
+            ///\name Basic operations
+            ///\{
+
             FSEntry(const std::string & path);
 
-            /**
-             * Copy constructor.
-             */
             FSEntry(const FSEntry & other);
 
-            /**
-             * Destructor.
-             */
             ~FSEntry();
 
-            /**
-             * Assignment, from another FSEntry.
-             */
             const FSEntry & operator= (const FSEntry & other);
+
+            ///\}
+
+            ///\name Modification operations
+            ///\{
 
             /**
              * Join with another FSEntry.
@@ -152,6 +150,22 @@ namespace paludis
             {
                 return operator/= (FSEntry(rhs));
             }
+
+            /**
+             * Return the last part of our path (eg '/foo/bar' => 'bar').
+             */
+            std::string basename() const;
+
+            /**
+             * Return the first part of our path (eg '/foo/bar' => '/foo').
+             */
+            FSEntry dirname() const;
+
+
+            ///\}
+
+            ///\name Filesystem queries
+            ///\{
 
             /**
              * Does a filesystem entry exist at our location?
@@ -191,16 +205,6 @@ namespace paludis
             mode_t permissions() const;
 
             /**
-             * Return the last part of our path (eg '/foo/bar' => 'bar').
-             */
-            std::string basename() const;
-
-            /**
-             * Return the first part of our path (eg '/foo/bar' => '/foo').
-             */
-            FSEntry dirname() const;
-
-            /**
              * Return the canonicalised version of our path.
              */
             FSEntry realpath() const;
@@ -231,6 +235,30 @@ namespace paludis
              * \exception FSError if we don't have a size.
              */
             off_t file_size() const;
+
+            /**
+             * Fetch our owner.
+             *
+             * \exception FSError If we don't exist or the stat call fails.
+             */
+            uid_t owner() const;
+
+            /**
+             * Fetch our group.
+             *
+             * \exception FSError If we don't exist or the stat call fails.
+             */
+            gid_t group() const;
+
+            /**
+             * Return the current working directory
+             */
+            static FSEntry cwd();
+
+            ///\}
+
+            ///\name Filesystem operations
+            ///\{
 
             /**
              * Try to make a directory.
@@ -279,24 +307,7 @@ namespace paludis
              */
             void chmod(const mode_t mode);
 
-            /**
-             * Fetch our owner.
-             *
-             * \exception FSError If we don't exist or the stat call fails.
-             */
-            uid_t owner() const;
-
-            /**
-             * Fetch our group.
-             *
-             * \exception FSError If we don't exist or the stat call fails.
-             */
-            gid_t group() const;
-
-            /**
-             * Return the current working directory
-             */
-            static FSEntry cwd();
+            ///\}
     };
 
     /**

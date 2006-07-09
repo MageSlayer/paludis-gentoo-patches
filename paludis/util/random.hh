@@ -45,11 +45,16 @@ namespace paludis
             static const uint32_t _m = 1771875;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /// Constructor, with a seed.
             Random(uint32_t seed);
 
             /// Constructor, with a magic random seed.
             Random();
+
+            ///\}
 
             /// Fetch a random number in (0, max]
             template <typename DiffType_>

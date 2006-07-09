@@ -46,10 +46,12 @@ namespace paludis
     class PStreamError : public Exception
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             PStreamError(const std::string & message) throw ();
+
+            ///\}
     };
 
     /**
@@ -99,6 +101,9 @@ namespace paludis
             virtual int_type underflow();
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor.
              *
@@ -106,10 +111,9 @@ namespace paludis
              */
             PStreamInBuf(const std::string & command);
 
-            /**
-             * Destructor.
-             */
             ~PStreamInBuf();
+
+            ///\}
 
             /**
              * What was our command?
@@ -167,6 +171,9 @@ namespace paludis
         public std::istream
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor.
              *
@@ -179,6 +186,8 @@ namespace paludis
                 std::istream(&buf)
             {
             }
+
+            ///\}
 
             /**
              * What is our exit status?

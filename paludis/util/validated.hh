@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VALIDATED_HH
 #define PALUDIS_GUARD_PALUDIS_VALIDATED_HH 1
 
-#include <ostream>
+#include <iosfwd>
 #include <paludis/util/comparison_policy.hh>
 
 /** \file
@@ -47,6 +47,9 @@ namespace paludis
             ValidatedDataType_ _value;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Copy constructor (no validation needed).
              */
@@ -66,6 +69,8 @@ namespace paludis
                 _value = other._value;
                 return *this;
             }
+
+            ///\}
 
             /**
              * Fetch to our ValidatedDataType_. This should not be a cast

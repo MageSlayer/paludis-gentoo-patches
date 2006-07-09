@@ -96,6 +96,9 @@ namespace paludis
             const InstantiationPolicy & operator= (const InstantiationPolicy &);
 
         protected:
+            ///\name Basic operations
+            ///\{
+
             ~InstantiationPolicy()
             {
             }
@@ -103,6 +106,8 @@ namespace paludis
             InstantiationPolicy()
             {
             }
+
+            ///\}
     };
 
     /**
@@ -119,11 +124,16 @@ namespace paludis
             const InstantiationPolicy & operator= (const InstantiationPolicy &);
 
         protected:
+            ///\name Basic operations
+            ///\{
+
             InstantiationPolicy();
 
             ~InstantiationPolicy()
             {
             }
+
+            ///\}
     };
 }
 
@@ -148,11 +158,19 @@ namespace paludis
             static CountedPtr<OurType_, count_policy::ExternalCountTag> _instance;
 
         protected:
+            ///\name Basic operations
+            ///\{
+
             InstantiationPolicy()
             {
             }
 
+            ///\}
+
         public:
+            ///\name Singleton operations
+            ///\{
+
             /**
              * Fetch our instance.
              */
@@ -160,6 +178,8 @@ namespace paludis
             {
                 return _instance.raw_pointer();
             }
+
+            ///\}
     };
 
     template <typename OurType_>
@@ -184,15 +204,25 @@ namespace paludis
             static OurType_ * _instance;
 
         protected:
+            ///\name Basic operations
+            ///\{
+
             InstantiationPolicy()
             {
             }
 
+            ///\}
+
         public:
+            ///\name Singleton operations
+            ///\{
+
             /**
              * Fetch our instance.
              */
             static OurType_ * get_instance();
+
+            ///\}
     };
 
     template<typename OurType_>

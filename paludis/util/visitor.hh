@@ -81,18 +81,25 @@ namespace paludis
         class Visits
         {
             protected:
-                /**
-                 * Destructor.
-                 */
+                ///\name Basic operations
+                ///\{
+
                 virtual ~Visits()
                 {
                 }
 
+                ///\}
+
             public:
+                ///\name Visitor operations
+                ///\{
+
                 /**
                  * Visit a node of the specified type.
                  */
                 virtual void visit(NodePtrType_ const) = 0;
+
+                ///\}
         };
 
         /**
@@ -104,12 +111,14 @@ namespace paludis
         class Visits<const visitor_internals::NoType<n_> * >
         {
             protected:
-                /**
-                 * Destructor.
-                 */
+                ///\name Basic operations
+                ///\{
+
                 ~Visits()
                 {
                 }
+
+                ///\}
         };
 
         /**
@@ -121,9 +130,14 @@ namespace paludis
         class Visits<visitor_internals::NoType<n_> * >
         {
             protected:
+                ///\name Basic operations
+                ///\{
+
                 ~Visits()
                 {
                 }
+
+                ///\}
         };
     }
 
@@ -145,6 +159,9 @@ namespace paludis
             }
 
         public:
+            ///\name Visitor operations
+            ///\{
+
             /**
              * Accept a visitor.
              */
@@ -154,6 +171,8 @@ namespace paludis
              * Accept a constant visitor.
              */
             virtual void accept(typename VisitorType_::ConstVisitor * const) const = 0;
+
+            ///\}
     };
 
     /**
@@ -167,14 +186,19 @@ namespace paludis
         public virtual VisitableInterface<VisitorType_>
     {
         protected:
-            /**
-             * Destructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             virtual ~Visitable()
             {
             }
 
+            ///\}
+
         public:
+            ///\name Visitor operations
+            ///\{
+
             virtual void accept(typename VisitorType_::Visitor * const v)
             {
                 static_cast<visitor_internals::Visits<OurType_ *> *>(v)->visit(
@@ -186,6 +210,8 @@ namespace paludis
                 static_cast<visitor_internals::Visits<const OurType_ *> *>(v)->visit(
                         static_cast<const OurType_ *>(this));
             }
+
+            ///\}
     };
 
     /**
@@ -225,7 +251,12 @@ namespace paludis
                 public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N9_>::Type>
             {
                 protected:
+                    ///\name Basic operations
+                    ///\{
+
                     ~ConstVisitor();
+
+                    ///\}
             };
 
             /**
@@ -243,7 +274,12 @@ namespace paludis
                 public visitor_internals::Visits<N9_>
             {
                 protected:
+                    ///\name Basic operations
+                    ///\{
+
                     ~Visitor();
+
+                    ///\}
             };
     };
 
@@ -288,13 +324,15 @@ namespace paludis
             VisitorPointer_ * const _p;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             AcceptVisitor(VisitorPointer_ * const p) :
                 _p(p)
             {
             }
+
+            ///\}
 
             /**
              * Operator.

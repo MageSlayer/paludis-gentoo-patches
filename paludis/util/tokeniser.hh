@@ -165,13 +165,15 @@ namespace paludis
             const std::basic_string<Char_> _delims;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             Tokeniser(const std::basic_string<Char_> & delims) :
                 _delims(delims)
             {
             }
+
+            ///\}
 
             /**
              * Do the tokenisation.

@@ -27,6 +27,18 @@ using namespace paludis;
  * \ingroup grpfilesystem
  */
 
+IsFileWithExtension::IsFileWithExtension(const std::string & ext) :
+    _prefix(""),
+    _ext(ext)
+{
+}
+
+IsFileWithExtension::IsFileWithExtension(const std::string & prefix, const std::string & ext) :
+    _prefix(prefix),
+    _ext(ext)
+{
+}
+
 bool
 IsFileWithExtension::operator() (const FSEntry & f) const
 {

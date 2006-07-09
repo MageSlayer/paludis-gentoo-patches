@@ -42,10 +42,12 @@ namespace paludis
     class GetenvError : public Exception
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             GetenvError(const std::string & key) throw ();
+
+            ///\}
     };
 
     /**
@@ -113,10 +115,12 @@ namespace paludis
             std::string args;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             explicit MakeEnvCommand(const std::string &, const std::string &);
+
+            ///\}
 
             /**
              * Add some environment.

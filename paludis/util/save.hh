@@ -46,6 +46,9 @@ namespace paludis
             const T_ _value;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor.
              */
@@ -72,6 +75,8 @@ namespace paludis
             {
                 *_ptr = _value;
             }
+
+            ///\}
     };
 }
 

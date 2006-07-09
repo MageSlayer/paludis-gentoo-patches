@@ -54,7 +54,7 @@ namespace paludis
         struct ThrowException
         {
             /**
-             * Internal use: provide handle_not_found.
+             * Internal use: provide handle_not_found.
              *
              * \ingroup grpvc
              */

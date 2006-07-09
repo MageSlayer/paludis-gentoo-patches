@@ -78,13 +78,15 @@ namespace paludis
             const std::string _second;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             StripAdapter(const std::string & second) :
                 _second(second)
             {
             }
+
+            ///\}
 
             /**
              * Operation.

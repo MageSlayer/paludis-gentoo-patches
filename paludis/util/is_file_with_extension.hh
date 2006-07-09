@@ -50,20 +50,12 @@ namespace paludis
             /**
              * Constructor.
              */
-            IsFileWithExtension(const std::string & ext) :
-                _prefix(""),
-                _ext(ext)
-            {
-            }
+            IsFileWithExtension(const std::string & ext);
 
             /**
              * Constructor.
              */
-            IsFileWithExtension(const std::string & prefix, const std::string & ext) :
-                _prefix(prefix),
-                _ext(ext)
-            {
-            }
+            IsFileWithExtension(const std::string & prefix, const std::string & ext);
 
             /**
              * Operator.
