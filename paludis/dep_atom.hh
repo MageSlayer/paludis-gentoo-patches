@@ -70,16 +70,23 @@ namespace paludis
             DepAtom();
 
         public:
-            /**
-             * Destructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             virtual ~DepAtom();
+
+            ///\}
+
+            ///\name Upcasts
+            ///\{
 
             /**
              * Return us as a UseDepAtom, or 0 if we are not a
              * UseDepAtom.
              */
             virtual const UseDepAtom * as_use_dep_atom() const;
+
+            ///\}
     };
 
     /**
@@ -95,47 +102,45 @@ namespace paludis
             std::list<DepAtom::ConstPointer> _children;
 
         protected:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             CompositeDepAtom();
 
+            ///\}
+
         public:
+            ///\name Modify our children
+            ///\{
+
             /**
              * Append a child to our collection.
              */
             virtual void add_child(DepAtom::ConstPointer);
 
-            /**
-             * Iterator for iterating over our children.
-             */
+            ///\}
+
+            ///\name Iterate over our children
+            ///\{
+
             typedef std::list<DepAtom::ConstPointer>::const_iterator Iterator;
 
-            /**
-             * Iterator to the start of our children.
-             */
             Iterator begin() const
             {
                 return _children.begin();
             }
 
-            /**
-             * Iterator to past the end of our children.
-             */
             Iterator end() const
             {
                 return _children.end();
             }
 
-            /**
-             * A non-constant smart pointer to ourself.
-             */
+            ///\name Pointer types
+            ///\{
             typedef CountedPtr<CompositeDepAtom, count_policy::InternalCountTag> Pointer;
 
-            /**
-             * A constant smart pointer to ourself.
-             */
             typedef CountedPtr<const CompositeDepAtom, count_policy::InternalCountTag> ConstPointer;
+            ///\}
     };
 
     /**
@@ -148,10 +153,12 @@ namespace paludis
         public Visitable<AnyDepAtom, DepAtomVisitorTypes>
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             AnyDepAtom();
+
+            ///\}
     };
 
     /**
@@ -165,10 +172,12 @@ namespace paludis
         public Visitable<AllDepAtom, DepAtomVisitorTypes>
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             AllDepAtom();
+
+            ///\}
     };
 
     /**
@@ -185,10 +194,12 @@ namespace paludis
             const bool _inverse;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             UseDepAtom(const UseFlagName &, bool);
+
+            ///\}
 
             /**
              * Fetch our use flag name.
@@ -222,15 +233,14 @@ namespace paludis
             const std::string _str;
 
         protected:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             StringDepAtom(const std::string &);
 
-            /**
-             * Destructor.
-             */
             ~StringDepAtom();
+
+            ///\}
 
         public:
             /**
@@ -254,20 +264,22 @@ namespace paludis
             std::map<UseFlagName, UseFlagState> _reqs;
 
         public:
-            /// Iterator over our USE requirements.
+            ///\name Iterate over our USE requirements
+            ///\{
+
             typedef std::map<UseFlagName, UseFlagState>::const_iterator Iterator;
 
-            /// Start of our USE requirements.
             Iterator begin() const
             {
                 return _reqs.begin();
             }
 
-            /// End of our USE requirements.
             Iterator end() const
             {
                 return _reqs.end();
             }
+
+            ///\}
 
             /// Find the requirement for a particular USE flag.
             Iterator find(const UseFlagName & u) const
@@ -306,6 +318,9 @@ namespace paludis
             DepTag::ConstPointer _tag;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor, no version or SLOT restrictions.
              */
@@ -316,10 +331,9 @@ namespace paludis
              */
             PackageDepAtom(const std::string &);
 
-            /**
-             * Destructor.
-             */
             ~PackageDepAtom();
+
+            ///\}
 
             /**
              * Fetch the package name.
@@ -369,6 +383,9 @@ namespace paludis
                 return _use_requirements;
             }
 
+            ///\name Pointer types
+            ///\{
+
             /**
              * A non-constant smart pointer to ourself.
              */
@@ -378,6 +395,8 @@ namespace paludis
              * A constant smart pointer to ourself.
              */
             typedef CountedPtr<const PackageDepAtom, count_policy::InternalCountTag> ConstPointer;
+
+            ///\}
 
             /**
              * Fetch our tag.
@@ -412,10 +431,15 @@ namespace paludis
         public Visitable<PlainTextDepAtom, DepAtomVisitorTypes>
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             PlainTextDepAtom(const std::string &);
+
+            ///\}
+
+            ///\name Pointer types
+            ///\{
 
             /**
              * A non-constant smart pointer to ourself.
@@ -426,6 +450,8 @@ namespace paludis
              * A constant smart pointer to ourself.
              */
             typedef CountedPtr<const PlainTextDepAtom, count_policy::InternalCountTag> ConstPointer;
+
+            ///\}
     };
 
     /**
@@ -438,10 +464,12 @@ namespace paludis
         public Exception
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             PackageDepAtomError(const std::string & msg) throw ();
+
+            ///\}
     };
 
     /**
@@ -466,10 +494,15 @@ namespace paludis
             PackageDepAtom::ConstPointer _atom;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor, with blocking atom.
              */
             BlockDepAtom(PackageDepAtom::ConstPointer atom);
+
+            ///\}
 
             /**
              * Fetch the atom we're blocking.
@@ -478,6 +511,9 @@ namespace paludis
             {
                 return _atom;
             }
+
+            ///\name Pointer operations
+            ///\{
 
             /**
              * A non-constant smart pointer to ourself.
@@ -488,6 +524,8 @@ namespace paludis
              * A constant smart pointer to ourself.
              */
             typedef CountedPtr<const BlockDepAtom, count_policy::InternalCountTag> ConstPointer;
+
+            ///\}
     };
 
 }

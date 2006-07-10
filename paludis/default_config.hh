@@ -159,172 +159,85 @@ namespace paludis
              */
             static std::string config_suffix();
 
-            ///\name Repositories
+            ///\name Iterate over our repositories
             ///{
 
-            /**
-             * An iterator for our repositories.
-             */
             typedef std::list<RepositoryConfigEntry>::const_iterator RepositoryIterator;
 
-            /**
-             * Iterator to the start of our repositories.
-             */
             RepositoryIterator begin_repositories() const;
 
-            /**
-             * Iterator to past the end of our repositories.
-             */
             RepositoryIterator end_repositories() const;
 
             ///}
 
-            ///\name Keywords
+            ///\name Iterate over our default and per-package keywords
             ///{
 
-            /**
-             * Iterate over our package.keywords entries.
-             */
             typedef std::vector<std::pair<PackageDepAtom::ConstPointer, KeywordName> >::const_iterator
                 PackageKeywordsIterator;
 
-            /**
-             * Iterator to the start of the package.keywords entries for a
-             * particular package.
-             */
             PackageKeywordsIterator begin_package_keywords(const QualifiedPackageName & d) const;
 
-            /**
-             * Iterator to past the end of the package.keywords entries for a
-             * particular file.
-             */
             PackageKeywordsIterator end_package_keywords(const QualifiedPackageName & d) const;
 
-            /**
-             * Iterator over the default keywords entries.
-             */
             typedef std::vector<KeywordName>::const_iterator DefaultKeywordsIterator;
 
-            /**
-             * Iterator to the start of our default keywords entries.
-             */
             DefaultKeywordsIterator begin_default_keywords() const;
 
-            /**
-             * Iterator to past the end of our default keywords entries.
-             */
             DefaultKeywordsIterator end_default_keywords() const;
 
             ///}
 
-            ///\name Licenses
+            ///\name Iterate over our default and per-package licenses
             ///{
 
-            /**
-             * Iterate over our licenses entries.
-             */
             typedef std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> >::const_iterator
                 PackageLicensesIterator;
 
-            /**
-             * Iterator to the start of the licenses entries for a
-             * particular package.
-             */
             PackageLicensesIterator begin_package_licenses(const QualifiedPackageName & d) const;
 
-            /**
-             * Iterator to past the end of the licenses entries for a
-             * particular file.
-             */
             PackageLicensesIterator end_package_licenses(const QualifiedPackageName & d) const;
 
-            /**
-             * Iterator over the default licenses entries.
-             */
             typedef std::vector<std::string>::const_iterator DefaultLicensesIterator;
 
-            /**
-             * Iterator to the start of our default license entries.
-             */
             DefaultLicensesIterator begin_default_licenses() const;
 
-            /**
-             * Iterator to past the end of our default license entries.
-             */
             DefaultLicensesIterator end_default_licenses() const;
 
             ///}
 
-            ///\name Masks
+            ///\name Iterate over our masks and unmasks
             ///{
 
-            /**
-             * Iterator over user package masks.
-             */
             typedef IndirectIterator<std::vector<PackageDepAtom::ConstPointer>::const_iterator,
                     const PackageDepAtom> UserMasksIterator;
 
-            /**
-             * Iterator to the start of the user package masks.
-             */
             UserMasksIterator begin_user_masks(const QualifiedPackageName & d) const;
 
-            /**
-             * Iterator to past the end of the user package masks.
-             */
             UserMasksIterator end_user_masks(const QualifiedPackageName & d) const;
 
-            /**
-             * Iterator over the user package unmasks.
-             */
             typedef IndirectIterator<std::vector<PackageDepAtom::ConstPointer>::const_iterator,
                     const PackageDepAtom> UserUnmasksIterator;
 
-            /**
-             * Iterator to the start of the user package unmasks.
-             */
             UserUnmasksIterator begin_user_unmasks(const QualifiedPackageName & d) const;
 
-            /**
-             * Iterator to past the end of the user package unmasks.
-             */
             UserUnmasksIterator end_user_unmasks(const QualifiedPackageName & d) const;
 
             ///}
 
-            ///\name Use
+            ///\name Iterate over our default and per-package use flags
             ///{
 
-            /**
-             * Iterator to the start of the use configuration.
-             */
             typedef std::vector<UseConfigEntry>::const_iterator UseConfigIterator;
 
-            /**
-             * Iterator to the start of the use configuration for a particular
-             * package.
-             */
             UseConfigIterator begin_use_config(const QualifiedPackageName & q) const;
 
-            /**
-             * Iterator to past the end of the use configuration for a
-             * particular package.
-             */
             UseConfigIterator end_use_config(const QualifiedPackageName & q) const;
 
-            /**
-             * Iterator over the default use settings.
-             */
             typedef std::vector<std::pair<UseFlagName, UseFlagState> >::const_iterator DefaultUseIterator;
 
-            /**
-             * Iterator to the start of the default use settings.
-             */
             DefaultUseIterator begin_default_use() const;
 
-            /**
-             * Iterator to past the end of the default use settings.
-             */
             DefaultUseIterator end_default_use() const;
 
             ///}
@@ -354,11 +267,16 @@ namespace paludis
              */
             std::string config_dir() const;
 
+            ///\name Iterate over our mirrors
+            ///\{
+
             typedef std::multimap<std::string, std::string>::const_iterator MirrorIterator;
 
             MirrorIterator begin_mirrors(const std::string & m) const;
 
             MirrorIterator end_mirrors(const std::string & m) const;
+
+            ///\}
     };
 }
 

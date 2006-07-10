@@ -48,10 +48,12 @@ namespace paludis
     class ConfigFileError : public ConfigurationError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             ConfigFileError(const std::string & message) throw ();
+
+            ///\}
     };
 
     /**
@@ -100,6 +102,9 @@ namespace paludis
              */
             void need_lines() const;
 
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor.
              */
@@ -115,6 +120,8 @@ namespace paludis
              */
             ConfigFile(const FSEntry & filename);
 
+            ///\}
+
             /**
              * Our filename, or blank if unknown.
              */
@@ -124,10 +131,12 @@ namespace paludis
             }
 
         public:
-            /**
-             * Destructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             virtual ~ConfigFile();
+
+            ///\}
     };
 
     /**
@@ -145,6 +154,9 @@ namespace paludis
             void accept_line(const std::string &) const;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor, from a stream.
              */
@@ -160,26 +172,24 @@ namespace paludis
              */
             LineConfigFile(const FSEntry & filename);
 
-            /**
-             * Iterator over our lines.
-             */
+            ///\}
+
+            ///\name Iterate over our lines
+            ///\{
+
             typedef std::list<std::string>::const_iterator Iterator;
 
-            /**
-             * Iterator to the start of our lines.
-             */
             Iterator begin() const
             {
                 return _lines.begin();
             }
 
-            /**
-             * Iterator to past the end of our lines.
-             */
             Iterator end() const
             {
                 return _lines.end();
             }
+
+            ///\}
     };
 
     /**
@@ -192,11 +202,13 @@ namespace paludis
     class KeyValueConfigFileError : public ConfigurationError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             KeyValueConfigFileError(const std::string & message,
                     const std::string & filename = "") throw ();
+
+            ///\}
     };
 
     /**
@@ -224,6 +236,9 @@ namespace paludis
             std::string strip_quotes(const std::string &) const;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor, from a stream.
              */
@@ -257,31 +272,26 @@ namespace paludis
             KeyValueConfigFile(const FSEntry & filename,
                     const std::map<std::string, std::string> &);
 
-            /**
-             * Destructor.
-             */
             ~KeyValueConfigFile();
 
-            /**
-             * Iterator over our key/values.
-             */
+            ///\}
+
+            ///\name Iterate over our key/values
+            ///\{
+
             typedef std::map<std::string, std::string>::const_iterator Iterator;
 
-            /**
-             * Start of our key/values.
-             */
             Iterator begin() const
             {
                 return _entries.begin();
             }
 
-            /**
-             * Past the end of our key/values.
-             */
             Iterator end() const
             {
                 return _entries.end();
             }
+
+            ///\}
 
             /**
              * Fetch the specified key, or a blank string.
@@ -299,11 +309,13 @@ namespace paludis
     class AdvisoryFileError : public ConfigurationError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             AdvisoryFileError(const std::string & message,
                     const std::string & filename = "") throw ();
+
+            ///\}
     };
 
     /**
@@ -329,12 +341,16 @@ namespace paludis
 
         protected:
             void accept_line(const std::string &) const;
+
             /**
              * Ensure that the AdvisoryFile contains all mandatory items.
              */
             void sanitise();
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor, from a stream.
              */
@@ -368,68 +384,53 @@ namespace paludis
             AdvisoryFile(const FSEntry & filename,
                     const std::map<std::string, std::string> &);
 
-            /**
-             * Destructor.
-             */
             ~AdvisoryFile();
 
-            /**
-             * Iterator over our entries.
-             */
+            ///\}
+
+            ///\name Iterate over our entries
+            ///\{
+
             typedef std::map<std::string, std::string>::const_iterator EntriesIterator;
 
-            /**
-             * Iterator over our lines.
-             */
-            typedef std::list<std::string>::const_iterator LineIterator;
-
-            /**
-             * Iterator to the start of our lines.
-             */
             EntriesIterator begin() const
             {
                 return _entries.begin();
             }
 
-            /**
-             * Iterator to past the end of our lines.
-             */
             EntriesIterator end() const
             {
                 return _entries.end();
             }
 
-            /**
-             * Iterator to the start of our Affected: lines.
-             */
+            ///\}
+
+            ///\name Iterate over our Affected: and Unaffected: lines.
+            ///\{
+
+            typedef std::list<std::string>::const_iterator LineIterator;
+
             LineIterator begin_affected() const
             {
                 return _affected.begin();
             }
 
-            /**
-             * Iterator to past the end of our Affected: lines.
-             */
             LineIterator end_affected() const
             {
                 return _affected.end();
             }
 
-            /**
-             * Iterator to the start of our Unaffected: lines.
-             */
             LineIterator begin_unaffected() const
             {
                 return _unaffected.begin();
             }
 
-            /**
-             * Iterator to past the end of our Unaffected: lines.
-             */
             LineIterator end_unaffected() const
             {
                 return _unaffected.end();
             }
+
+            ///\}
 
             /**
              * Fetch the specified key, or a blank string.
@@ -444,7 +445,7 @@ namespace paludis
     /**
      * A NewsFile represents a GLEP 42 news file.
      *
-     * \ingroup grpconfigfile
+     * \ingroup grpnewconfigfile
      */
     class NewsFile :
         protected ConfigFile
@@ -459,73 +460,66 @@ namespace paludis
             void accept_line(const std::string &) const;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             /**
              * Constructor, from a filename.
              */
             NewsFile(const FSEntry & filename);
 
-            /**
-             * Iterator over display-if-installed headers.
-             */
+            ///\}
+
+            ///\name Iterate over our Display-If-Installed headers
+            ///\{
+
             typedef std::list<std::string>::const_iterator DisplayIfInstalledIterator;
 
-            /**
-             * Start of our display-if-installed headers.
-             */
             DisplayIfInstalledIterator begin_display_if_installed() const
             {
                 return _display_if_installed.begin();
             }
 
-            /**
-             * End of our display-if-installed headers.
-             */
             DisplayIfInstalledIterator end_display_if_installed() const
             {
                 return _display_if_installed.end();
             }
 
-            /**
-             * Iterator over display-if-keyword headers.
-             */
+            ///\}
+
+            ///\name Iterate over our Display-If-Keyword headers
+            ///\{
+
             typedef std::list<std::string>::const_iterator DisplayIfKeywordIterator;
 
-            /**
-             * Start of our display-if-keyword headers.
-             */
             DisplayIfKeywordIterator begin_display_if_keyword() const
             {
                 return _display_if_keyword.begin();
             }
 
-            /**
-             * End of our display-if-keyword headers.
-             */
             DisplayIfKeywordIterator end_display_if_keyword() const
             {
                 return _display_if_keyword.end();
             }
 
-            /**
-             * Iterator over display-if-profile headers.
-             */
+            ///\}
+
+            ///\name Iterate over our Display-If-Profile headers
+            ///\{
+
             typedef std::list<std::string>::const_iterator DisplayIfProfileIterator;
 
-            /**
-             * Start of our display-if-profile headers.
-             */
             DisplayIfProfileIterator begin_display_if_profile() const
             {
                 return _display_if_profile.begin();
             }
 
-            /**
-             * End of our display-if-profile headers.
-             */
             DisplayIfProfileIterator end_display_if_profile() const
             {
                 return _display_if_profile.end();
             }
+
+            ///\}
     };
 }
 

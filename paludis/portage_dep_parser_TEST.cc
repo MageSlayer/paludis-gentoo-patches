@@ -31,6 +31,89 @@ using namespace paludis;
  * \ingroup grptestcases
  */
 
+#ifndef DOXYGEN
+namespace
+{
+    class DepAtomDumper :
+        public DepAtomVisitorTypes::ConstVisitor,
+        private InstantiationPolicy<DepAtomDumper, instantiation_method::NonCopyableTag>
+    {
+        private:
+            std::ostream * const _o;
+
+        public:
+            DepAtomDumper(std::ostream * const o);
+
+            void visit(const AllDepAtom * const);
+
+            void visit(const AnyDepAtom * const);
+
+            void visit(const UseDepAtom * const);
+
+            void visit(const PackageDepAtom * const);
+
+            void visit(const PlainTextDepAtom * const);
+
+            void visit(const BlockDepAtom * const);
+    };
+
+    DepAtomDumper::DepAtomDumper(std::ostream * const o) :
+        _o(o)
+    {
+    }
+
+    void
+    DepAtomDumper::visit(const AllDepAtom * const a)
+    {
+        *_o << "<all>";
+        std::for_each(a->begin(), a->end(), accept_visitor(this));
+        *_o << "</all>";
+    }
+
+    void
+    DepAtomDumper::visit(const AnyDepAtom * const a)
+    {
+        *_o << "<any>";
+        std::for_each(a->begin(), a->end(), accept_visitor(this));
+        *_o << "</any>";
+    }
+
+    void
+    DepAtomDumper::visit(const UseDepAtom * const a)
+    {
+        *_o << "<use flag=\"" << a->flag() << "\" inverse=\""
+            << (a->inverse() ? "true" : "false") << "\">";
+        std::for_each(a->begin(), a->end(), accept_visitor(this));
+        *_o << "</use>";
+    }
+
+    void
+    DepAtomDumper::visit(const PackageDepAtom * const p)
+    {
+        *_o << "<package";
+        if (p->slot_ptr())
+            *_o << " slot=\"" << *p->slot_ptr() << "\"";
+        if (p->version_spec_ptr())
+            *_o << " version=\"" << p->version_operator() << *p->version_spec_ptr() << "\"";
+        *_o << ">" << p->package() << "</package>";
+    }
+
+    void
+    DepAtomDumper::visit(const PlainTextDepAtom * const t)
+    {
+        *_o << "<text>" << t->text() << "</text>";
+    }
+
+    void
+    DepAtomDumper::visit(const BlockDepAtom * const b)
+    {
+        *_o << "<block>";
+        b->blocked_atom()->accept(this);
+        *_o << "</block>";
+    }
+}
+#endif
+
 namespace test_cases
 {
     /**

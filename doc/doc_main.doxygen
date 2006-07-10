@@ -85,6 +85,11 @@
  * \ingroup grpconfigfile
  */
 
+/** \defgroup grpnewsconfigfile News file
+ *
+ * \ingroup grpconfigfile
+ */
+
 // ----- grpenvironment Subgroups -----
 
 /** \defgroup grpdefaultenvironment Default environment
