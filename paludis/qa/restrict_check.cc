@@ -41,11 +41,12 @@ RestrictCheck::operator() (const EbuildCheckData & e) const
         PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                 e.get<ecd_environment>()->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                e.get<ecd_environment>()->package_database()->fetch_repository(
+                        ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
         std::set<std::string> restricts;
         Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-        tokeniser.tokenise(metadata->get(vmk_restrict),
+        tokeniser.tokenise(metadata->get_ebuild_interface()->get<evm_restrict>(),
                 std::inserter(restricts, restricts.begin()));
 
         static std::set<std::string> allowed_restricts;

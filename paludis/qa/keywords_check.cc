@@ -37,7 +37,8 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
         PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                 e.get<ecd_environment>()->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                e.get<ecd_environment>()->package_database()->fetch_repository(
+                        ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
         try
         {
@@ -56,7 +57,7 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
             result << Message(qal_major, "Bad entries in KEYWORDS");
         }
 
-        if (! metadata->get(vmk_e_keywords).empty())
+        if (! metadata->get_ebuild_interface()->get<evm_keywords>().empty())
             result << Message(qal_major, "KEYWORDS was altered by an eclass");
     }
     catch (const InternalError &)

@@ -1,7 +1,8 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
+ * Copyright (c) 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk> and
+ * David Morgan <david.morgan@wadham.oxford.ac.uk>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,8 +46,8 @@ namespace paludis
         class QAEnvironment :
             public Environment
         {
-	    private:
-	        std::multimap<std::string, std::string> _mirrors;
+            private:
+                std::multimap<std::string, std::string> _mirrors;
 
             public:
                 QAEnvironment(const FSEntry & base);
@@ -57,7 +58,7 @@ namespace paludis
 
                 virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
 
-		virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
+                virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
 
                 virtual bool query_user_masks(const PackageDatabaseEntry &) const;
 
@@ -68,10 +69,10 @@ namespace paludis
                     return "";
                 }
 
-		virtual std::string hook_dirs() const
-		{
-		    return "";
-		}
+                virtual std::string hook_dirs() const
+                {
+                    return "";
+                }
 
                 virtual std::string paludis_command() const PALUDIS_ATTRIBUTE((noreturn))
                 {
@@ -84,19 +85,19 @@ namespace paludis
                     return UseFlagNameCollection::Pointer(new UseFlagNameCollection);
                 }
 
-		virtual MirrorIterator begin_mirrors(const std::string & mirror) const
-		{
-		    return _mirrors.end();
-		}
+                virtual MirrorIterator begin_mirrors(const std::string & mirror) const
+                {
+                    return _mirrors.end();
+                }
 
-		virtual MirrorIterator end_mirrors(const std::string & mirror) const
-		{
-		    return _mirrors.end();
-		}
+                virtual MirrorIterator end_mirrors(const std::string & mirror) const
+                {
+                    return _mirrors.end();
+                }
 
-		virtual void perform_hook (const Hook & hook) const
-		{
-		}
+                virtual void perform_hook (const Hook & hook) const
+                {
+                }
         };
     }
 }

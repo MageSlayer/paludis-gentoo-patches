@@ -18,6 +18,7 @@
  */
 
 #include <paludis/qa/create_metadata_check.hh>
+#include <paludis/portage_dep_parser.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -37,9 +38,9 @@ CreateMetadataCheck::operator() (const EbuildCheckData & e) const
         PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                 e.get<ecd_environment>()->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
-        if ("UNKNOWN" == metadata->get(vmk_eapi))
+        if ("UNKNOWN" == metadata->get<vm_eapi>())
             result << Message(qal_fatal, "Couldn't generate metadata");
     }
     catch (const InternalError &)

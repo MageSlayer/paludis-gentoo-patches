@@ -18,7 +18,7 @@
  */
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/pdepend_overlap_check.hh>
 #include <paludis/util/join.hh>
 
@@ -81,16 +81,17 @@ PdependOverlapCheck::operator() (const EbuildCheckData & e) const
         PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                 e.get<ecd_environment>()->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                e.get<ecd_environment>()->package_database()->fetch_repository(
+                        ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
         Collector pdepend_collector;
-        std::string pdepend(metadata->get(vmk_pdepend));
-        DepParser::parse(pdepend)->accept(&pdepend_collector);
+        std::string pdepend(metadata->get<vm_deps>().get<vmd_post_depend_string>());
+        PortageDepParser::parse(pdepend)->accept(&pdepend_collector);
 
         {
             Collector depend_collector;
-            std::string depend(metadata->get(vmk_depend));
-            DepParser::parse(depend)->accept(&depend_collector);
+            std::string depend(metadata->get<vm_deps>().get<vmd_build_depend_string>());
+            PortageDepParser::parse(depend)->accept(&depend_collector);
 
             std::set<QualifiedPackageName> overlap;
             std::set_intersection(depend_collector.result.begin(), depend_collector.result.end(),
@@ -104,8 +105,8 @@ PdependOverlapCheck::operator() (const EbuildCheckData & e) const
 
         {
             Collector rdepend_collector;
-            std::string rdepend(metadata->get(vmk_rdepend));
-            DepParser::parse(rdepend)->accept(&rdepend_collector);
+            std::string rdepend(metadata->get<vm_deps>().get<vmd_run_depend_string>());
+            PortageDepParser::parse(rdepend)->accept(&rdepend_collector);
 
             std::set<QualifiedPackageName> overlap;
             std::set_intersection(rdepend_collector.result.begin(), rdepend_collector.result.end(),

@@ -18,7 +18,7 @@
  */
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/dep_packages_check.hh>
 
 using namespace paludis;
@@ -87,7 +87,8 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                 e.get<ecd_environment>()->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                e.get<ecd_environment>()->package_database()->fetch_repository(
+                        ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
         static std::set<QualifiedPackageName> suspicious_depend;
         if (suspicious_depend.empty())
@@ -96,8 +97,8 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         }
 
         Checker depend_checker(result, "DEPEND", suspicious_depend);
-        std::string depend(metadata->get(vmk_depend));
-        DepParser::parse(depend)->accept(&depend_checker);
+        std::string depend(metadata->get<vm_deps>().get<vmd_build_depend_string>());
+        PortageDepParser::parse(depend)->accept(&depend_checker);
 
         static std::set<QualifiedPackageName> suspicious_rdepend;
         if (suspicious_rdepend.empty())
@@ -121,8 +122,8 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         }
 
         Checker rdepend_checker(result, "RDEPEND", suspicious_rdepend);
-        std::string rdepend(metadata->get(vmk_rdepend));
-        DepParser::parse(rdepend)->accept(&rdepend_checker);
+        std::string rdepend(metadata->get<vm_deps>().get<vmd_run_depend_string>());
+        PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
     }
     catch (const InternalError &)
     {

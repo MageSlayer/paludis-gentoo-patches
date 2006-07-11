@@ -18,7 +18,7 @@
  */
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/extract_check.hh>
 #include <paludis/util/tokeniser.hh>
 
@@ -90,12 +90,13 @@ ExtractCheck::operator() (const EbuildCheckData & e) const
             PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                     e.get<ecd_environment>()->package_database()->favourite_repository());
             VersionMetadata::ConstPointer metadata(
-                    e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                    e.get<ecd_environment>()->package_database()->fetch_repository(
+                        ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
             Checker checker;
-            DepParser::parse(metadata->get(vmk_src_uri),
-                    DepParserPolicy<PlainTextDepAtom, false>::get_instance())->accept(&checker);
-            DepParser::parse(metadata->get(vmk_depend))->accept(&checker);
+            PortageDepParser::parse(metadata->get_ebuild_interface()->get<evm_src_uri>(),
+                    PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance())->accept(&checker);
+            PortageDepParser::parse(metadata->get<vm_deps>().get<vmd_build_depend_string>())->accept(&checker);
 
             if (checker.need_zip && ! checker.have_zip)
                 result << Message(qal_major, "Found .zip in SRC_URI but app-arch/unzip is not in DEPEND");

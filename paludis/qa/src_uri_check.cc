@@ -18,7 +18,7 @@
  */
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/src_uri_check.hh>
 #include <paludis/util/tokeniser.hh>
 
@@ -135,19 +135,20 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
             PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                     e.get<ecd_environment>()->package_database()->favourite_repository());
             VersionMetadata::ConstPointer metadata(
-                    e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                    e.get<ecd_environment>()->package_database()->fetch_repository(
+                        ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
-            std::string src_uri(metadata->get(vmk_src_uri));
+            std::string src_uri(metadata->get_ebuild_interface()->get<evm_src_uri>());
 
             DepAtom::ConstPointer src_uri_parts(0);
             try
             {
-                src_uri_parts = DepParser::parse(src_uri,
-                        DepParserPolicy<PlainTextDepAtom, false>::get_instance());
+                src_uri_parts = PortageDepParser::parse(src_uri,
+                        PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance());
 
                 std::set<std::string> restricts;
                 Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-                tokeniser.tokenise(metadata->get(vmk_restrict),
+                tokeniser.tokenise(metadata->get_ebuild_interface()->get<evm_restrict>(),
                         std::inserter(restricts, restricts.begin()));
 
                 bool fetch_restrict(restricts.end() != restricts.find("fetch"));

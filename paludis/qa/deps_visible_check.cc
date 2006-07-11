@@ -19,7 +19,7 @@
 
 #include <paludis/qa/deps_visible_check.hh>
 
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_atom.hh>
 
 using namespace paludis;
@@ -99,23 +99,24 @@ DepsVisibleCheck::operator() (const EbuildCheckData & e) const
         PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                 e.get<ecd_environment>()->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                e.get<ecd_environment>()->package_database()->fetch_repository(
+                        ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
         if (e.get<ecd_environment>()->mask_reasons(ee).any())
             result << Message(qal_skip, "Masked, so skipping checks");
         else
         {
             Checker depend_checker(result, "DEPEND", e.get<ecd_environment>());
-            std::string depend(metadata->get(vmk_depend));
-            DepParser::parse(depend)->accept(&depend_checker);
+            std::string depend(metadata->get<vm_deps>().get<vmd_build_depend_string>());
+            PortageDepParser::parse(depend)->accept(&depend_checker);
 
             Checker rdepend_checker(result, "RDEPEND", e.get<ecd_environment>());
-            std::string rdepend(metadata->get(vmk_rdepend));
-            DepParser::parse(rdepend)->accept(&rdepend_checker);
+            std::string rdepend(metadata->get<vm_deps>().get<vmd_run_depend_string>());
+            PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
 
             Checker pdepend_checker(result, "PDEPEND", e.get<ecd_environment>());
-            std::string pdepend(metadata->get(vmk_pdepend));
-            DepParser::parse(pdepend)->accept(&pdepend_checker);
+            std::string pdepend(metadata->get<vm_deps>().get<vmd_post_depend_string>());
+            PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
         }
     }
     catch (const InternalError &)

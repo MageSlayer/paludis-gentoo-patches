@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/parse_deps_check.hh>
 
 using namespace paludis;
@@ -38,12 +38,13 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
         PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                 e.get<ecd_environment>()->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                e.get<ecd_environment>()->package_database()->fetch_repository(
+                        ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
         try
         {
-            std::string depend(metadata->get(vmk_depend));
-            DepParser::parse(depend);
+            std::string depend(metadata->get<vm_deps>().get<vmd_build_depend_string>());
+            PortageDepParser::parse(depend);
         }
         catch (const Exception & e)
         {
@@ -53,8 +54,8 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
 
         try
         {
-            std::string rdepend(metadata->get(vmk_rdepend));
-            DepParser::parse(rdepend);
+            std::string rdepend(metadata->get<vm_deps>().get<vmd_run_depend_string>());
+            PortageDepParser::parse(rdepend);
         }
         catch (const Exception & e)
         {
@@ -64,8 +65,8 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
 
         try
         {
-            std::string pdepend(metadata->get(vmk_pdepend));
-            DepParser::parse(pdepend);
+            std::string pdepend(metadata->get<vm_deps>().get<vmd_post_depend_string>());
+            PortageDepParser::parse(pdepend);
         }
         catch (const Exception & e)
         {

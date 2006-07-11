@@ -18,7 +18,7 @@
  */
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/license_check.hh>
 #include <paludis/util/tokeniser.hh>
 
@@ -95,15 +95,17 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
             PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                     e.get<ecd_environment>()->package_database()->favourite_repository());
             VersionMetadata::ConstPointer metadata(
-                    e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                    e.get<ecd_environment>()->package_database()->fetch_repository(
+                        ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
-            std::string license(metadata->get(vmk_license));
+
+            std::string license(metadata->get<vm_license>());
 
             DepAtom::ConstPointer license_parts(0);
             try
             {
-                license_parts = DepParser::parse(license,
-                        DepParserPolicy<PlainTextDepAtom, true>::get_instance());
+                license_parts = PortageDepParser::parse(license,
+                        PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance());
 
                 Checker checker(result, e.get<ecd_environment>());
                 license_parts->accept(&checker);

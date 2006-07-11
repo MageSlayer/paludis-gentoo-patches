@@ -18,8 +18,7 @@
  */
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_parser.hh>
-#include <paludis/dep_parser.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/dep_flags_check.hh>
 
 using namespace paludis;
@@ -109,35 +108,39 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
         PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
                 e.get<ecd_environment>()->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_metadata(ee));
+                e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
         std::set<UseFlagName> iuse(metadata->begin_iuse(), metadata->end_iuse());
         iuse.insert(UseFlagName("bootstrap"));
         iuse.insert(UseFlagName("build"));
 
         Checker depend_checker(result, "DEPEND", e.get<ecd_environment>(), iuse);
-        std::string depend(metadata->get(vmk_depend));
-        DepParser::parse(depend)->accept(&depend_checker);
+        std::string depend(metadata->get<vm_deps>().get<vmd_build_depend_string>());
+        PortageDepParser::parse(depend)->accept(&depend_checker);
 
         Checker rdepend_checker(result, "RDEPEND", e.get<ecd_environment>(), iuse);
-        std::string rdepend(metadata->get(vmk_rdepend));
-        DepParser::parse(rdepend)->accept(&rdepend_checker);
+        std::string rdepend(metadata->get<vm_deps>().get<vmd_run_depend_string>());
+        PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
 
         Checker pdepend_checker(result, "PDEPEND", e.get<ecd_environment>(), iuse);
-        std::string pdepend(metadata->get(vmk_pdepend));
-        DepParser::parse(pdepend)->accept(&pdepend_checker);
+        std::string pdepend(metadata->get<vm_deps>().get<vmd_post_depend_string>());
+        PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
 
         Checker provide_checker(result, "PROVIDE", e.get<ecd_environment>(), iuse);
-        std::string provide(metadata->get(vmk_provide));
-        DepParser::parse(provide, DepParserPolicy<PackageDepAtom, false>::get_instance())->accept(&provide_checker);
+        std::string provide(metadata->get_ebuild_interface()->provide());
+        PortageDepParser::parse(provide, PortageDepParserPolicy<PackageDepAtom, false>::get_instance())->accept(&provide_checker);
 
         Checker license_checker(result, "LICENSE", e.get<ecd_environment>(), iuse);
-        std::string license(metadata->get(vmk_license));
-        DepParser::parse(license, DepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&license_checker);
+        std::string license(metadata->get<vm_license>());
+        PortageDepParser::parse(license, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&license_checker);
 
         Checker src_uri_checker(result, "SRC_URI", e.get<ecd_environment>(), iuse);
-        std::string src_uri(metadata->get(vmk_src_uri));
-        DepParser::parse(src_uri, DepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&src_uri_checker);
+        if (metadata->get_ebuild_interface() == 0)
+            result << Message(qal_fatal, "Couldn't generate metadata");
+
+        std::string src_uri(metadata->get_ebuild_interface()->get<evm_src_uri>());
+
+        PortageDepParser::parse(src_uri, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&src_uri_checker);
     }
     catch (const InternalError &)
     {
