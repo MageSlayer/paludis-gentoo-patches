@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "src/colour.hh"
-#include "src/sync.hh"
+#include "colour.hh"
+#include "sync.hh"
 #include <functional>
 #include <iomanip>
 #include <iostream>

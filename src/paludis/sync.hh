@@ -17,35 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "src/colour.hh"
-#include "src/news.hh"
-#include <functional>
-#include <iomanip>
-#include <iostream>
-#include <paludis/paludis.hh>
-#include <string>
+#ifndef PALUDIS_GUARD_SRC_SYNC_HH
+#define PALUDIS_GUARD_SRC_SYNC_HH 1
+
+#include "command_line.hh"
 
 /** \file
- * Handle the --update-news action for the main paludis program.
+ * Declaration for the do_sync function.
  */
 
-namespace p = paludis;
+/// Handle --sync.
+int do_sync();
 
-int
-do_update_news()
-{
-    int return_code(0);
-
-    p::Context context("When performing update-news action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
-
-    for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
-            r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
-        if ((*r)->get_interface<p::repo_news>())
-            (*r)->get_interface<p::repo_news>()->update_news();
-
-    return return_code;
-}
-
-
+#endif
 

@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_COLOUR_HH
 #define PALUDIS_GUARD_SRC_COLOUR_HH 1
 
-#include "src/command_line.hh"
+#include "command_line.hh"
 #include <paludis/util/stringify.hh>
 #include <config.h>
 #include <string>

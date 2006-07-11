@@ -17,16 +17,18 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_QUERY_HH
-#define PALUDIS_GUARD_SRC_QUERY_HH 1
+#ifndef PALUDIS_GUARD_SRC_NEWS_HH
+#define PALUDIS_GUARD_SRC_NEWS_HH 1
 
-#include "src/command_line.hh"
+#include "command_line.hh"
 
 /** \file
- * Declaration for the do_query function.
+ * Declaration for the do_update_news function.
  */
 
-/// Handle --query.
-int do_query();
+/// Handle --update-news.
+int do_update_news();
 
 #endif
+
+

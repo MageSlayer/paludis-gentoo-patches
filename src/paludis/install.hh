@@ -17,17 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_SYNC_HH
-#define PALUDIS_GUARD_SRC_SYNC_HH 1
+#ifndef PALUDIS_GUARD_SRC_DEPGRAPH_HH
+#define PALUDIS_GUARD_SRC_DEPGRAPH_HH 1
 
-#include "src/command_line.hh"
+#include "command_line.hh"
 
 /** \file
- * Declaration for the do_sync function.
+ * Declaration for the do_install function.
  */
 
-/// Handle --sync.
-int do_sync();
+/// Handle --install.
+int do_install();
 
 #endif
-

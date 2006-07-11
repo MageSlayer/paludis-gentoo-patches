@@ -17,35 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_APPLETS_HH
-#define PALUDIS_GUARD_SRC_APPLETS_HH 1
+#ifndef PALUDIS_GUARD_SRC_QUERY_HH
+#define PALUDIS_GUARD_SRC_QUERY_HH 1
 
-#include "src/command_line.hh"
+#include "command_line.hh"
 
 /** \file
- * Declaration for small do_* functions.
+ * Declaration for the do_query function.
  */
 
-/// Handle --has-version.
-int do_has_version();
-
-/// Handle --best-version.
-int do_best_version();
-
-/// Handle --environment-variable.
-int do_environment_variable();
-
-/// Handle --configuration-variable.
-int do_configuration_variable();
-
-/// Handle --list-repository-formats
-int do_list_repository_formats();
-
-/// Handle --list-sync-protocols
-int do_list_sync_protocols();
-
-/// Handle --list-dep-tag-categories
-int do_list_dep_tag_categories();
+/// Handle --query.
+int do_query();
 
 #endif
-

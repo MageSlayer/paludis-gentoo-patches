@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "src/applets.hh"
-#include "src/colour.hh"
+#include "applets.hh"
+#include "colour.hh"
 #include <functional>
 #include <iomanip>
 #include <iostream>

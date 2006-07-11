@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_UNINSTALL_HH
 #define PALUDIS_GUARD_SRC_UNINSTALL_HH 1
 
-#include "src/command_line.hh"
+#include "command_line.hh"
 
 /** \file
  * Declaration for the do_uninstall function.

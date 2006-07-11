@@ -17,17 +17,17 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "src/applets.hh"
-#include "src/colour.hh"
-#include "src/command_line.hh"
-#include "src/contents.hh"
-#include "src/install.hh"
-#include "src/list.hh"
-#include "src/news.hh"
-#include "src/owner.hh"
-#include "src/query.hh"
-#include "src/sync.hh"
-#include "src/uninstall.hh"
+#include "applets.hh"
+#include "colour.hh"
+#include "command_line.hh"
+#include "contents.hh"
+#include "install.hh"
+#include "list.hh"
+#include "news.hh"
+#include "owner.hh"
+#include "query.hh"
+#include "sync.hh"
+#include "uninstall.hh"
 #include "config.h"
 
 #include <paludis/paludis.hh>

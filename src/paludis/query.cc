@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "src/colour.hh"
-#include "src/query.hh"
-#include "src/licence.hh"
+#include "colour.hh"
+#include "query.hh"
+#include "licence.hh"
 #include <functional>
 #include <iomanip>
 #include <iostream>

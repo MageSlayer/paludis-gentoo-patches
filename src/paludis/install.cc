@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "src/colour.hh"
-#include "src/install.hh"
-#include "src/licence.hh"
+#include "colour.hh"
+#include "install.hh"
+#include "licence.hh"
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <paludis/util/iterator.hh>

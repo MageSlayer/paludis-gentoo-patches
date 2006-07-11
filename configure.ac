@@ -456,6 +456,7 @@ AC_OUTPUT(
 	paludis/util/Makefile
 	paludis/selinux/Makefile
 	src/Makefile
+	src/paludis/Makefile
 	src/qualudis/Makefile
 	test/Makefile
 	)
