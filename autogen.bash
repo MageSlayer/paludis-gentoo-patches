@@ -18,10 +18,15 @@ run() {
 }
 
 get() {
-    type ${1}-${2}    &>/dev/null && echo ${1}-${2}    && return
-    type ${1}${2//.}  &>/dev/null && echo ${1}${2//.}  && return
-    type ${1}         &>/dev/null && echo ${1}         && return
-    echo "Could not find ${1} ${2}" 1>&2
+    local p=${1} v=
+    shift
+
+    for v in ${@} ; do
+        type ${p}-${v}    &>/dev/null && echo ${p}-${v}    && return
+        type ${p}${v//.}  &>/dev/null && echo ${p}${v//.}  && return
+    done
+    type ${p}         &>/dev/null && echo ${p}         && return
+    echo "Could not find ${p}" 1>&2
     kill $KILL_PID
 }
 
@@ -37,7 +42,7 @@ run mkdir -p config
 run $(get libtoolize 1.5 ) --copy --force --automake
 rm -f config.cache
 run $(get aclocal 1.9 )
-run $(get autoheader 2.59 )
-run $(get autoconf 2.59 )
+run $(get autoheader 2.60 2.59 )
+run $(get autoconf 2.60 2.59 )
 run $(get automake 1.9 ) -a --copy
 
