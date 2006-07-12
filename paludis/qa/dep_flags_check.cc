@@ -143,7 +143,7 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
 
         Checker src_uri_checker(result, "SRC_URI", e.get<ecd_environment>(), iuse);
         if (metadata->get_ebuild_interface() == 0)
-            result << Message(qal_fatal, "Couldn't generate metadata");
+            result << Message(qal_fatal, "Not an ebuild");
 
         std::string src_uri(metadata->get_ebuild_interface()->get<evm_src_uri>());
 

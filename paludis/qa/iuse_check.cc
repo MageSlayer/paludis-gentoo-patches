@@ -21,6 +21,7 @@
 #include <set>
 #include <algorithm>
 #include <paludis/util/join.hh>
+#include <paludis/util/tokeniser.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -44,7 +45,10 @@ IuseCheck::operator() (const EbuildCheckData & e) const
 
         try
         {
-            std::set<UseFlagName> iuse(metadata->begin_iuse(), metadata->end_iuse());
+            std::set<UseFlagName> iuse;
+            WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
+                get<evm_iuse>(), create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
+
 
             static std::set<UseFlagName> iuse_blacklist;
             if (iuse_blacklist.empty())

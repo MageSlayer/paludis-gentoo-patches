@@ -18,6 +18,7 @@
  */
 
 #include <paludis/qa/keywords_check.hh>
+#include <paludis/util/tokeniser.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -41,7 +42,10 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
 
         try
         {
-            std::set<KeywordName> keywords(metadata->begin_keywords(), metadata->end_keywords());
+            //std::set<KeywordName> keywords(metadata->begin_keywords(), metadata->end_keywords());
+            std::set<KeywordName> keywords;
+            WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
+                get<evm_keywords>(), create_inserter<KeywordName>(std::inserter(keywords, keywords.begin())));
 
             if (keywords.end() != keywords.find(KeywordName("-*")) &&
                     keywords.size() == 1)

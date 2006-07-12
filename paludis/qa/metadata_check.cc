@@ -47,7 +47,7 @@ MetadataCheck::operator() (const FSEntry & f) const
 
         dtd /= "cache";
         if (! dtd.exists())
-            if (0 != mkdir(stringify(dtd).c_str(), 0755))
+            if (0 != dtd.mkdir(0755))
                 throw ConfigurationError("~/.paludis/cache/ does not exist and cannot be created");
 
         dtd /= "metadata.dtd";

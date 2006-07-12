@@ -44,7 +44,7 @@ namespace
         void visit(const PackageDepAtom * const p)
         {
             bool found(false);
-            PackageDatabaseEntryCollection::Pointer matches(env->package_database()->query(p,
+            PackageDatabaseEntryCollection::Pointer matches(env->package_database()->query(PackageDepAtom::Pointer(new PackageDepAtom(p->package())),
                         is_either));
             for (PackageDatabaseEntryCollection::ReverseIterator m(matches->rbegin()),
                     m_end(matches->rend()) ; m != m_end ; ++m)
