@@ -36,7 +36,7 @@ namespace
 {
     void world_remove_callback(const p::PackageDepAtom * const p)
     {
-        cout << "* removing " << *p << endl;
+        cout << "* removing " << colour(cl_package_name, stringify(*p)) << endl;
     }
 }
 

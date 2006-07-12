@@ -63,13 +63,14 @@ namespace
     void
     world_add_callback(const p::PackageDepAtom * const p)
     {
-        cout << "* adding " << *p << endl;
+        cout << "* adding " << colour(cl_package_name, stringify(*p)) << endl;
     }
 
     void
     world_skip_callback(const p::PackageDepAtom * const p, const std::string & why)
     {
-        cout << "* skipping " << *p << " (" << why << ")" << endl;
+        cout << "* skipping " << colour(cl_package_name, stringify(*p))
+            << " (" << why << ")" << endl;
     }
 }
 
