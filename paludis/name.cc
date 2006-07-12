@@ -166,10 +166,12 @@ CategoryNamePartValidator::validate(const std::string & s)
 {
     /* this gets called a lot, make it fast */
 
+    // Allow . because crossdev can create, for example,
+    // cross-i686-unknown-freebsd6.0   --spb
     static const std::string allowed_chars(
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "0123456789-+_");
+            "0123456789-+_.");
 
     do
     {
