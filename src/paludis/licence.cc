@@ -49,9 +49,9 @@ void
 LicenceDisplayer::visit(const paludis::PlainTextDepAtom * atom)
 {
     if (env->accept_license(atom->text(), db_entry))
-        stream << colour(cl_green, atom->text());
+        stream << colour(cl_not_masked, atom->text());
     else
-        stream << colour(cl_red, "(" + atom->text() + ")!");
+        stream << colour(cl_masked, "(" + atom->text() + ")!");
     stream << " ";
 }
 

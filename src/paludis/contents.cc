@@ -73,7 +73,7 @@ do_one_contents_entry(
         std::for_each(contents->begin(), contents->end(), accept_visitor(&d));
     }
     else
-        cout << "    " << colour(cl_red, "(unknown)") << endl;
+        cout << "    " << colour(cl_error, "(unknown)") << endl;
 
     cout << endl;
 }

@@ -41,25 +41,34 @@ enum Colour
 
 #if PALUDIS_COLOUR_PINK==1
     cl_package_name  = cl_bold_pink,
+    cl_repository_name = cl_pink,
     cl_flag_on       = cl_pink,
     cl_flag_off      = cl_red,
     cl_slot          = cl_blue,
     cl_visible       = cl_flag_on,
     cl_masked        = cl_flag_off,
+    cl_not_masked    = cl_flag_on,
     cl_heading       = cl_bold_pink,
     cl_updatemode    = cl_yellow,
     cl_tag           = cl_yellow,
+    cl_key_name      = cl_pink,
 #else
     cl_package_name  = cl_bold_blue,
+    cl_repository_name = cl_blue,
     cl_flag_on       = cl_green,
     cl_flag_off      = cl_red,
     cl_slot          = cl_blue,
     cl_visible       = cl_flag_on,
     cl_masked        = cl_flag_off,
+    cl_not_masked    = cl_flag_on,
     cl_heading       = cl_bold_green,
     cl_updatemode    = cl_yellow,
     cl_tag           = cl_yellow,
+    cl_key_name      = cl_blue,
 #endif
+
+    cl_error         = cl_bold_red,
+
     cl_file          = cl_none,
     cl_dir           = cl_blue,
     cl_sym           = cl_pink,

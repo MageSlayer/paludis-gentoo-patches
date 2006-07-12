@@ -101,7 +101,7 @@ namespace
                 r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
                 r != r_end ; ++r)
         {
-            cout << "Repository " << colour(cl_package_name, r->name()) << ":" << endl;
+            cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
 
             p::RepositoryInfo::ConstPointer ii(r->info(true));
             for (p::RepositoryInfo::SectionIterator i(ii->begin_sections()),

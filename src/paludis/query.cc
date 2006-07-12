@@ -338,22 +338,22 @@ int do_query()
             switch (m)
             {
                 case p::mr_keyword:
-                    cout << "* " << colour(cl_yellow, "K") << ": keyword";
+                    cout << "* " << colour(cl_masked, "K") << ": keyword";
                     break;
                 case p::mr_user_mask:
-                    cout << "* " << colour(cl_yellow, "U") << ": user mask";
+                    cout << "* " << colour(cl_masked, "U") << ": user mask";
                     break;
                 case p::mr_profile_mask:
-                    cout << "* " << colour(cl_yellow, "P") << ": profile mask";
+                    cout << "* " << colour(cl_masked, "P") << ": profile mask";
                     break;
                 case p::mr_repository_mask:
-                    cout << "* " << colour(cl_yellow, "R") << ": repository mask";
+                    cout << "* " << colour(cl_masked, "R") << ": repository mask";
                     break;
                 case p::mr_eapi:
-                    cout << "* " << colour(cl_yellow, "E") << ": EAPI";
+                    cout << "* " << colour(cl_masked, "E") << ": EAPI";
                     break;
                 case p::mr_license:
-                    cout << "* " << colour(cl_yellow, "L") << ": licence";
+                    cout << "* " << colour(cl_masked, "L") << ": licence";
                     break;
 
                 case p::last_mr:

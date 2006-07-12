@@ -76,15 +76,15 @@ do_uninstall()
                 env->package_database()->query(*t, p::is_installed_only));
         if (r->empty())
         {
-            cout << "* No match for " << colour(cl_red, **t) << endl;
+            cout << "* No match for " << colour(cl_masked, **t) << endl;
             ok = false;
         }
         else if (r->size() > 1)
         {
-            cout << "* Multiple matches for " << colour(cl_red, **t) << ":" << endl;
+            cout << "* Multiple matches for " << colour(cl_masked, **t) << ":" << endl;
             for (p::PackageDatabaseEntryCollection::Iterator p(r->begin()),
                     p_end(r->end()) ; p != p_end ; ++p)
-                cout << "  * " << *p << endl;
+                cout << "  * " << colour(cl_package_name, *p) << endl;
             ok = false;
         }
         else

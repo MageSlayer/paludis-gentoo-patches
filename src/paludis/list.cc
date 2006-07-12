@@ -50,7 +50,7 @@ do_list_repositories()
 
         ret_code = 0;
 
-        std::cout << "* " << colour(cl_package_name, r->name()) << std::endl;
+        std::cout << "* " << colour(cl_repository_name, r->name()) << std::endl;
 
         p::RepositoryInfo::ConstPointer ii(r->info(false));
         for (p::RepositoryInfo::SectionIterator i(ii->begin_sections()),

@@ -43,13 +43,13 @@ namespace
     {
         void visit(const p::GLSADepTag * const tag)
         {
-            cout << "* " << colour(cl_yellow, tag->short_text()) << ": "
+            cout << "* " << colour(cl_tag, tag->short_text()) << ": "
                 << tag->glsa_title() << endl;
         }
 
         void visit(const p::GeneralSetDepTag * const tag)
         {
-            cout << "* " << colour(cl_yellow, tag->short_text());
+            cout << "* " << colour(cl_tag, tag->short_text());
             if (tag->short_text() == "world")
                 cout << ":      " << "Packages that have been explicitly installed";
             else if (tag->short_text() == "everything")
@@ -626,7 +626,7 @@ do_install()
                                             pp->get<p::pde_repository>())->version_metadata(
                                             pp->get<p::pde_name>(), pp->get<p::pde_version>())->get<p::vm_eapi>());
 
-                                cerr << " ( " << colour(cl_red, eapi_str) << " )";
+                                cerr << " ( " << colour(cl_masked, eapi_str) << " )";
                             }
                             else if (p::mr_license == mm)
                             {
@@ -651,7 +651,7 @@ do_install()
                                             p::create_inserter<p::KeywordName>(
                                                 std::inserter(keywords, keywords.end())));
 
-                                    cerr << " ( " << colour(cl_red, p::join(keywords.begin(),
+                                    cerr << " ( " << colour(cl_masked, p::join(keywords.begin(),
                                                     keywords.end(), " ")) << " )";
                                 }
                             }
