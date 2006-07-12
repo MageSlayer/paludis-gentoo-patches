@@ -27,9 +27,6 @@ class QualudisCommandLine :
         /// Action arguments.
         paludis::args::ArgsGroup action_args;
 
-        /// --check
-        paludis::args::SwitchArg a_check;
-
         /// --describe
         paludis::args::SwitchArg a_describe;
 
@@ -46,6 +43,9 @@ class QualudisCommandLine :
 
         /// Check options.
         paludis::args::ArgsGroup check_options;
+
+        /// --qa-checks
+        paludis::args::StringSetArg a_qa_checks;
 
         /// --verbose
         paludis::args::SwitchArg a_verbose;

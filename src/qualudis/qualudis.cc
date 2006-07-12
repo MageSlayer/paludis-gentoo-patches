@@ -155,6 +155,13 @@ namespace
         for (std::list<std::string>::const_iterator i(checks.begin()),
                 i_end(checks.end()) ; i != i_end ; ++i)
         {
+            if (QualudisCommandLine::get_instance()->a_qa_checks.specified())
+                if (QualudisCommandLine::get_instance()->a_qa_checks.args_end() == std::find(
+                            QualudisCommandLine::get_instance()->a_qa_checks.args_begin(),
+                            QualudisCommandLine::get_instance()->a_qa_checks.args_end(),
+                            *i))
+                    continue;
+
             try
             {
                 Context context("When performing check '" + stringify(*i) + "':");
@@ -432,14 +439,6 @@ int main(int argc, char *argv[])
         if (QualudisCommandLine::get_instance()->a_version.specified())
             throw DoVersion();
 
-        if (QualudisCommandLine::get_instance()->a_check.specified())
-        {
-            if (! QualudisCommandLine::get_instance()->empty())
-                throw DoHelp("check action takes no parameters");
-
-            return do_check(FSEntry::cwd()) ? EXIT_SUCCESS : EXIT_FAILURE;
-        }
-
         if (QualudisCommandLine::get_instance()->a_describe.specified())
         {
             if (! QualudisCommandLine::get_instance()->empty())
@@ -493,6 +492,8 @@ int main(int argc, char *argv[])
             }
             return EXIT_SUCCESS;
         }
+        else
+            return do_check(FSEntry::cwd()) ? EXIT_SUCCESS : EXIT_FAILURE;
 
         throw InternalError(__PRETTY_FUNCTION__, "no action?");
     }

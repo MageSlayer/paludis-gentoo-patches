@@ -23,12 +23,12 @@ QualudisCommandLine::QualudisCommandLine() :
     ArgsHandler(),
 
     action_args(this, "Actions (specify exactly one)"),
-    a_check(&action_args,    "check",        'c', "Check the current directory"),
     a_describe(&action_args, "describe",     'd', "Describe checks"),
     a_version(&action_args,  "version",      'V', "Display program version"),
     a_help(&action_args,     "help",         'h', "Display program help"),
 
-    check_options(this, "Options for --check"),
+    check_options(this, "Options for general checks"),
+    a_qa_checks(&check_options, "qa-check", 'c', "Only perform given check."),
     a_verbose(&check_options, "verbose", 'v', "Be verbose"),
     a_log_level(&check_options, "log-level", 'L', "Specify the log level",
             paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
