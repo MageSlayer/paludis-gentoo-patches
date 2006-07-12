@@ -20,6 +20,7 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/dep_flags_check.hh>
+#include <paludis/util/tokeniser.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -59,8 +60,13 @@ namespace
 
         void visit(const UseDepAtom * const u)
         {
-            if (env->package_database()->fetch_repository(env->package_database()->
-                        favourite_repository())->is_arch_flag(u->flag()))
+            Repository::ConstPointer r(env->package_database()->fetch_repository(env->package_database()->
+                        favourite_repository()));
+
+            if (! r->get_interface<repo_use>())
+                throw InternalError("Confused: Repository does not have a UseInterface.");
+
+            if (r->get_interface<repo_use>()->is_arch_flag(u->flag()))
             {
                 if (role == "DEPEND" || role == "RDEPEND" || role == "PDEPEND")
                 {
@@ -72,8 +78,7 @@ namespace
                     result << Message(qal_major, "Arch flag '" + stringify(u->flag()) +
                             "' in " + role);
             }
-            else if (env->package_database()->fetch_repository(env->package_database()->
-                        favourite_repository())->is_expand_flag(u->flag()))
+            else if (r->get_interface<repo_use>()->is_expand_flag(u->flag()))
             {
             }
             else if (iuse.end() == iuse.find(u->flag()))
@@ -110,7 +115,9 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
         VersionMetadata::ConstPointer metadata(
                 e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
 
-        std::set<UseFlagName> iuse(metadata->begin_iuse(), metadata->end_iuse());
+        std::set<UseFlagName> iuse;
+        WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
+                get<evm_iuse>(), create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
         iuse.insert(UseFlagName("bootstrap"));
         iuse.insert(UseFlagName("build"));
 
@@ -127,7 +134,7 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
         PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
 
         Checker provide_checker(result, "PROVIDE", e.get<ecd_environment>(), iuse);
-        std::string provide(metadata->get_ebuild_interface()->provide());
+        std::string provide(metadata->get_ebuild_interface()->get<evm_provide>());
         PortageDepParser::parse(provide, PortageDepParserPolicy<PackageDepAtom, false>::get_instance())->accept(&provide_checker);
 
         Checker license_checker(result, "LICENSE", e.get<ecd_environment>(), iuse);
@@ -158,7 +165,7 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
 const std::string &
 DepFlagsCheck::identifier()
 {
-    static const std::string id("dep flags");
+    static const std::string id("dep_flags");
     return id;
 }
 
