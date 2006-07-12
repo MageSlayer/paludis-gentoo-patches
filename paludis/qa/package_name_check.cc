@@ -56,7 +56,7 @@ PackageNameCheck::operator() (const FSEntry & d) const
 const std::string &
 PackageNameCheck::identifier()
 {
-    static const std::string id("package name");
+    static const std::string id("package_name");
     return id;
 }
 

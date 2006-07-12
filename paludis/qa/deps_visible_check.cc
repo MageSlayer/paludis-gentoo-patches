@@ -134,7 +134,7 @@ DepsVisibleCheck::operator() (const EbuildCheckData & e) const
 const std::string &
 DepsVisibleCheck::identifier()
 {
-    static const std::string id("deps visible");
+    static const std::string id("deps_visible");
     return id;
 }
 

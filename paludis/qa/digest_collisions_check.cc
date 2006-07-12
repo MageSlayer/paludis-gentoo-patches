@@ -98,7 +98,7 @@ DigestCollisionsCheck::operator() (const FSEntry & d) const
 const std::string &
 DigestCollisionsCheck::identifier()
 {
-    static const std::string id("digest collisions");
+    static const std::string id("digest_collisions");
     return id;
 }
 

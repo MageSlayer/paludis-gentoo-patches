@@ -140,7 +140,7 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
 const std::string &
 DepPackagesCheck::identifier()
 {
-    static const std::string id("depend packages");
+    static const std::string id("depend_packages");
     return id;
 }
 

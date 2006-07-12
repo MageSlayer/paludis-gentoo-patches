@@ -134,7 +134,7 @@ PdependOverlapCheck::operator() (const EbuildCheckData & e) const
 const std::string &
 PdependOverlapCheck::identifier()
 {
-    static const std::string id("pdepend overlap");
+    static const std::string id("pdepend_overlap");
     return id;
 }
 

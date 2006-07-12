@@ -48,7 +48,7 @@ HasMiscFilesCheck::operator() (const FSEntry & d) const
 const std::string &
 HasMiscFilesCheck::identifier()
 {
-    static const std::string id("has misc files");
+    static const std::string id("has_misc_files");
     return id;
 }
 

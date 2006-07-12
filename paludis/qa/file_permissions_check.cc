@@ -54,7 +54,7 @@ FilePermissionsCheck::operator() (const FSEntry & f) const
 const std::string &
 FilePermissionsCheck::identifier()
 {
-    static const std::string id("file permissions");
+    static const std::string id("file_permissions");
     return id;
 }
 

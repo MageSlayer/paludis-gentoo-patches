@@ -131,7 +131,7 @@ DepsExistCheck::operator() (const EbuildCheckData & e) const
 const std::string &
 DepsExistCheck::identifier()
 {
-    static const std::string id("deps exist");
+    static const std::string id("deps_exist");
     return id;
 }
 

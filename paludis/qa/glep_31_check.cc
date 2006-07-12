@@ -120,7 +120,7 @@ Glep31Check::operator() (const FSEntry & f) const
 const std::string &
 Glep31Check::identifier()
 {
-    static const std::string id("glep 31");
+    static const std::string id("glep_31");
     return id;
 }
 

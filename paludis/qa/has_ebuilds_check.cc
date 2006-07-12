@@ -44,7 +44,7 @@ HasEbuildsCheck::operator() (const FSEntry & d) const
 const std::string &
 HasEbuildsCheck::identifier()
 {
-    static const std::string id("has ebuilds");
+    static const std::string id("has_ebuilds");
     return id;
 }
 

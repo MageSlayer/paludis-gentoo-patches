@@ -89,7 +89,7 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
 const std::string &
 ParseDepsCheck::identifier()
 {
-    static const std::string id("parse deps");
+    static const std::string id("parse_deps");
     return id;
 }
 

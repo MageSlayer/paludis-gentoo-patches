@@ -135,7 +135,7 @@ DepAnyCheck::operator() (const EbuildCheckData & e) const
 const std::string &
 DepAnyCheck::identifier()
 {
-    static const std::string id("any deps");
+    static const std::string id("any_deps");
     return id;
 }
 

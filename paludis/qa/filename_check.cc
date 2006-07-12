@@ -46,8 +46,7 @@ FileNameCheck::operator() (const FSEntry & f) const
 const std::string &
 FileNameCheck::identifier()
 {
-    static const std::string id("file name");
+    static const std::string id("filename");
     return id;
 }
-
 

@@ -81,7 +81,7 @@ FilesDirSizeCheck::operator() (const FSEntry & d) const
 const std::string &
 FilesDirSizeCheck::identifier()
 {
-    static const std::string id("files dir size");
+    static const std::string id("files_dir_size");
     return id;
 }
 

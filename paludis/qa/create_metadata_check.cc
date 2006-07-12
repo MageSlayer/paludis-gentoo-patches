@@ -59,7 +59,7 @@ CreateMetadataCheck::operator() (const EbuildCheckData & e) const
 const std::string &
 CreateMetadataCheck::identifier()
 {
-    static const std::string id("create metadata");
+    static const std::string id("create_metadata");
     return id;
 }
 
