@@ -18,7 +18,7 @@
  */
 
 #include <algorithm>
-#include <paludis/qa/ebuild_count.hh>
+#include <paludis/qa/ebuild_count_check.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 
