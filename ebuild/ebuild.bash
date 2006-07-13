@@ -161,6 +161,7 @@ ebuild_load_ebuild()
             -e '/^PALUDIS_EBUILD_DIR=/d' \
             -e '/^PALUDIS_COMMAND=/d' \
             -e '/^ROOT=/d' \
+            -e '/^SANDBOX/d' \
             "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}"
 
         source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" &>/dev/null \
