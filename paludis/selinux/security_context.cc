@@ -19,6 +19,7 @@
  */
 
 #include <paludis/util/log.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/selinux/security_context.hh>
 
 #include "config.h"
