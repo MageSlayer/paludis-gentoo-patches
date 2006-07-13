@@ -149,19 +149,19 @@ ebuild_load_ebuild()
         sed -i \
             -e '/^diefunc ()/,/^}/d' \
             -e '/^perform_hook ()/,/^}/d' \
-            -e '/^ROOTPATH=/d' \
-            -e '/^PATH=/d' \
-            -e '/^T=/d' \
-            -e '/^PALUDIS_TMPDIR=/d' \
-            -e '/^PALUDIS_EBUILD_LOG_LEVEL=/d' \
-            -e '/^PORTDIR=/d' \
-            -e '/^FILESDIR=/d' \
-            -e '/^ECLASSDIR=/d' \
-            -e '/^DISTDIR=/d' \
-            -e '/^PALUDIS_EBUILD_DIR=/d' \
-            -e '/^PALUDIS_COMMAND=/d' \
-            -e '/^ROOT=/d' \
-            -e '/^SANDBOX/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?ROOTPATH=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?PATH=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?T=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?PALUDIS_TMPDIR=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?PALUDIS_EBUILD_LOG_LEVEL=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?PORTDIR=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?FILESDIR=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?ECLASSDIR=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?DISTDIR=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?PALUDIS_EBUILD_DIR=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?PALUDIS_COMMAND=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?ROOT=/d' \
+            -e '/^\(declare[^A-Z]\+ \)\?SANDBOX/d' \
             "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}"
 
         source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" &>/dev/null \
