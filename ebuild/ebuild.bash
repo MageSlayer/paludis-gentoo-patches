@@ -149,6 +149,7 @@ ebuild_load_ebuild()
         sed -i \
             -e '/^diefunc ()/,/^}/d' \
             -e '/^perform_hook ()/,/^}/d' \
+            -e '/^inherit ()/,/^}/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?ROOTPATH=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PATH=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?T=/d' \
