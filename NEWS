@@ -4,6 +4,12 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.4.2:
+    * CONFIG_PROTECT now works as expected for ROOT=/.
+
+    * Unmerging Portage-installed packages with ROOT=/ will no longer have
+    strange eclass issues.
+
 0.4.1:
     * Unmerging Portage-installed packages with ROOT=/ will no longer trigger
     sandbox problems.
