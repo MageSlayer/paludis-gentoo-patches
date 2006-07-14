@@ -55,7 +55,7 @@ diefunc()
     echo "!!! Call stack:" 1>&2
     for (( n = 1 ; n < ${#FUNCNAME[@]} ; ++n )) ; do
         funcname=${FUNCNAME[${n}]}
-        sourcefile=$(basename ${BASH_SOURCE[${n}]})
+        sourcefile=${BASH_SOURCE[${n}]}
         lineno=${BASH_LINENO[$(( n - 1 ))]}
         echo "!!!    * ${funcname} (${sourcefile}:${lineno})" 1>&2
     done
