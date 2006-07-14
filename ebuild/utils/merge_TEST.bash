@@ -119,6 +119,7 @@ merge_links_over_TEST()
     [[ -L "merge_TEST_dir/links_over_dst/link_to_three" ]] ; test_return_code
     test_equality "$(< merge_TEST_dir/links_over_dst/link_to_three)" "contents of three"
 }
+
 merge_links_over_dir_TEST()
 {
     ! ${TOP_BUILD_DIR}/ebuild/utils/merge "merge_TEST_dir/links_over_dir_src" \
@@ -127,4 +128,96 @@ merge_links_over_dir_TEST()
     test_return_code
 }
 
+merge_config_protect_TEST()
+{
+    export CONFIG_PROTECT=/dir
+
+    ${TOP_BUILD_DIR}/ebuild/utils/merge "merge_TEST_dir/config_pro_src" \
+        "merge_TEST_dir/config_pro_dst" \
+        "merge_TEST_dir/config_pro_contents" 1>/dev/null
+    test_return_code
+
+    echo -n "[one]"
+
+    [[ -f merge_TEST_dir/config_pro_dst/dir/one ]] ; test_return_code
+    [[ -f merge_TEST_dir/config_pro_dst/dir/._cfg0000_one ]] ; test_return_code
+    ! [[ -f merge_TEST_dir/config_pro_dst/dir/._cfg0001_one ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/config_pro_dst/dir/one)" "i am a fish"
+    test_equality "$(< merge_TEST_dir/config_pro_dst/dir/._cfg0000_one)" "contents of one"
+
+    echo -n "[two]"
+
+    [[ -f merge_TEST_dir/config_pro_dst/dir/two ]] ; test_return_code
+    ! [[ -f merge_TEST_dir/config_pro_dst/dir/._cfg0000_two ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/config_pro_dst/dir/two)" "contents of two"
+
+    echo -n "[three]"
+
+    [[ -f merge_TEST_dir/config_pro_dst/dir/three ]] ; test_return_code
+    [[ -f merge_TEST_dir/config_pro_dst/dir/._cfg0000_three ]] ; test_return_code
+    [[ -f merge_TEST_dir/config_pro_dst/dir/._cfg0001_three ]] ; test_return_code
+    [[ -f merge_TEST_dir/config_pro_dst/dir/._cfg0002_three ]] ; test_return_code
+    ! [[ -f merge_TEST_dir/config_pro_dst/dir/._cfg0003_three ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/config_pro_dst/dir/three)" "i am a fish"
+    test_equality "$(< merge_TEST_dir/config_pro_dst/dir/._cfg0000_three)" "i am a dish"
+    test_equality "$(< merge_TEST_dir/config_pro_dst/dir/._cfg0001_three)" "i am a fist"
+    test_equality "$(< merge_TEST_dir/config_pro_dst/dir/._cfg0002_three)" "contents of three"
+
+    echo -n "[four]"
+
+    [[ -f merge_TEST_dir/config_pro_dst/dir/four ]] ; test_return_code
+    [[ -f merge_TEST_dir/config_pro_dst/dir/._cfg0000_four ]] ; test_return_code
+    [[ -f merge_TEST_dir/config_pro_dst/dir/._cfg0001_four ]] ; test_return_code
+    ! [[ -f merge_TEST_dir/config_pro_dst/dir/._cfg0002_four ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/config_pro_dst/dir/four)" "i am a fish"
+    test_equality "$(< merge_TEST_dir/config_pro_dst/dir/._cfg0000_four)" "contents of four"
+    test_equality "$(< merge_TEST_dir/config_pro_dst/dir/._cfg0001_four)" "i am a fist"
+}
+
+merge_config_protect_noroot_TEST()
+{
+    export CONFIG_PROTECT=$(${PALUDIS_EBUILD_DIR}/utils/canonicalise `pwd` )/merge_TEST_dir/noroot_dst/dir
+
+    ${TOP_BUILD_DIR}/ebuild/utils/merge "merge_TEST_dir/config_pro_noroot_src" \
+        "/" \
+        "merge_TEST_dir/config_pro_slash_root_contents" 1>/dev/null
+    test_return_code
+
+    echo -n "[one]"
+
+    [[ -f merge_TEST_dir/noroot_dst/dir/one ]] ; test_return_code
+    [[ -f merge_TEST_dir/noroot_dst/dir/._cfg0000_one ]] ; test_return_code
+    ! [[ -f merge_TEST_dir/noroot_dst/dir/._cfg0001_one ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/noroot_dst/dir/one)" "i am a fish"
+    test_equality "$(< merge_TEST_dir/noroot_dst/dir/._cfg0000_one)" "contents of one"
+
+    echo -n "[two]"
+
+    [[ -f merge_TEST_dir/noroot_dst/dir/two ]] ; test_return_code
+    ! [[ -f merge_TEST_dir/noroot_dst/dir/._cfg0000_two ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/noroot_dst/dir/two)" "contents of two"
+
+    echo -n "[three]"
+
+    [[ -f merge_TEST_dir/noroot_dst/dir/three ]] ; test_return_code
+    [[ -f merge_TEST_dir/noroot_dst/dir/._cfg0000_three ]] ; test_return_code
+    [[ -f merge_TEST_dir/noroot_dst/dir/._cfg0001_three ]] ; test_return_code
+    [[ -f merge_TEST_dir/noroot_dst/dir/._cfg0002_three ]] ; test_return_code
+    ! [[ -f merge_TEST_dir/noroot_dst/dir/._cfg0003_three ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/noroot_dst/dir/three)" "i am a fish"
+    test_equality "$(< merge_TEST_dir/noroot_dst/dir/._cfg0000_three)" "i am a dish"
+    test_equality "$(< merge_TEST_dir/noroot_dst/dir/._cfg0001_three)" "i am a fist"
+    test_equality "$(< merge_TEST_dir/noroot_dst/dir/._cfg0002_three)" "contents of three"
+
+    echo -n "[four]"
+
+    [[ -f merge_TEST_dir/noroot_dst/dir/four ]] ; test_return_code
+    [[ -f merge_TEST_dir/noroot_dst/dir/._cfg0000_four ]] ; test_return_code
+    [[ -f merge_TEST_dir/noroot_dst/dir/._cfg0001_four ]] ; test_return_code
+    ! [[ -f merge_TEST_dir/noroot_dst/dir/._cfg0002_four ]] ; test_return_code
+    test_equality "$(< merge_TEST_dir/noroot_dst/dir/four)" "i am a fish"
+    test_equality "$(< merge_TEST_dir/noroot_dst/dir/._cfg0000_four)" "contents of four"
+    test_equality "$(< merge_TEST_dir/noroot_dst/dir/._cfg0001_four)" "i am a fist"
+
+}
 

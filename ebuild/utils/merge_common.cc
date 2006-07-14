@@ -66,6 +66,8 @@ merge::is_config_protected(const FSEntry & root, const FSEntry & file)
     file_str.erase(0, root_str.length());
     if (file_str.empty())
         file_str = "/";
+    if ('/' != file_str.at(0))
+        file_str = "/" + file_str;
 
     bool result(false);
     for (std::vector<std::string>::const_iterator c(cfg_pro.begin()),

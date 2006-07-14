@@ -42,3 +42,33 @@ ln -s three merge_TEST_dir/links_over_dir_src/link_to_three
 mkdir merge_TEST_dir/links_over_dir_dst/link_to_two
 echo "existing file" > merge_TEST_dir/links_over_dir_dst/link_to_three
 
+mkdir -p merge_TEST_dir/{config_pro_src/dir,config_pro_dst/dir} || exit 6
+echo "contents of one" > merge_TEST_dir/config_pro_src/dir/one
+echo "contents of two" > merge_TEST_dir/config_pro_src/dir/two
+echo "contents of three" > merge_TEST_dir/config_pro_src/dir/three
+echo "contents of four" > merge_TEST_dir/config_pro_src/dir/four
+echo "i am a fish" > merge_TEST_dir/config_pro_dst/dir/one
+echo "contents of two" > merge_TEST_dir/config_pro_dst/dir/two
+echo "i am a fish" > merge_TEST_dir/config_pro_dst/dir/three
+echo "i am a dish" > merge_TEST_dir/config_pro_dst/dir/._cfg0000_three
+echo "i am a fist" > merge_TEST_dir/config_pro_dst/dir/._cfg0001_three
+echo "i am a fish" > merge_TEST_dir/config_pro_dst/dir/four
+echo "contents of four" > merge_TEST_dir/config_pro_dst/dir/._cfg0000_four
+echo "i am a fist" > merge_TEST_dir/config_pro_dst/dir/._cfg0001_four
+
+d=merge_TEST_dir/config_pro_noroot_src/$(${PALUDIS_EBUILD_DIR}/utils/canonicalise `pwd` )/merge_TEST_dir/noroot_dst/dir
+mkdir -p "${d}" || exit 7
+mkdir -p merge_TEST_dir/noroot_dst/dir || exit 7
+echo "contents of one" > ${d}/one
+echo "contents of two" > ${d}/two
+echo "contents of three" > ${d}/three
+echo "contents of four" > ${d}/four
+echo "i am a fish" > merge_TEST_dir/noroot_dst/dir/one
+echo "contents of two" > merge_TEST_dir/noroot_dst/dir/two
+echo "i am a fish" > merge_TEST_dir/noroot_dst/dir/three
+echo "i am a dish" > merge_TEST_dir/noroot_dst/dir/._cfg0000_three
+echo "i am a fist" > merge_TEST_dir/noroot_dst/dir/._cfg0001_three
+echo "i am a fish" > merge_TEST_dir/noroot_dst/dir/four
+echo "contents of four" > merge_TEST_dir/noroot_dst/dir/._cfg0000_four
+echo "i am a fist" > merge_TEST_dir/noroot_dst/dir/._cfg0001_four
+
