@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#include <paludis/nothing_repository.hh>
+#include <paludis/repositories/nothing/nothing_repository.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/dir_iterator.hh>

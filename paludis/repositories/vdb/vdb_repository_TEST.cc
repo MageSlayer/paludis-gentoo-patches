@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/vdb_repository.hh>
+#include <paludis/repositories/vdb/vdb_repository.hh>
 #include <paludis/test_environment.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

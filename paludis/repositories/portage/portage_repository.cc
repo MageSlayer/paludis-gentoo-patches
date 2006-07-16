@@ -30,7 +30,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/portage_repository.hh>
+#include <paludis/repositories/portage/portage_repository.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>

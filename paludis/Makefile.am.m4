@@ -9,10 +9,13 @@ define(`headerlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
-$1_TEST_LDADD = $(top_builddir)/paludis/util/test_extras.o \
+$1_TEST_LDADD = \
+	ihateautomake.o \
+	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludis.a \
-	$(top_builddir)/paludis/util/libpaludisutil.a
+	libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
@@ -30,7 +33,7 @@ addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 
 include(`paludis/files.m4')
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda ihateautomake.cc ihateautomake.o
 MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh \
 	hashed_containers.hh
 AM_CXXFLAGS = -I$(top_srcdir)
@@ -40,9 +43,10 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	hashed_containers.hh.in testscriptlist
-SUBDIRS = digests util . args qa selinux
+SUBDIRS = digests util . repositories args qa selinux
 
-libpaludis_a_SOURCES = filelist
+libpaludis_la_SOURCES = filelist
+libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 TESTS = testlist
 
@@ -54,7 +58,7 @@ TESTS_ENVIRONMENT = env \
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
-lib_LIBRARIES = libpaludis.a
+lib_LTLIBRARIES = libpaludis.la
 paludis_includedir = $(includedir)/paludis/
 paludis_include_HEADERS = headerlist
 
@@ -66,4 +70,7 @@ paludis.hh : paludis.hh.m4 files.m4
 
 comparison_policy.hh : comparison_policy.hh.m4
 	$(top_srcdir)/misc/do_m4.bash comparison_policy.hh.m4
+
+ihateautomake.cc : all
+	touch $@
 

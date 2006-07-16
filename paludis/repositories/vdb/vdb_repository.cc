@@ -17,6 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/repositories/vdb/vdb_repository.hh>
+
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/portage_dep_parser.hh>
@@ -25,7 +27,6 @@
 #include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
-#include <paludis/vdb_repository.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>

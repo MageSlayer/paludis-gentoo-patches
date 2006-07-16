@@ -22,9 +22,12 @@ paludis_SOURCES = \
 	paludis.cc
 
 paludis_LDADD = \
-	$(top_builddir)/paludis/libpaludis.a \
-	$(top_builddir)/paludis/args/libpaludisargs.a \
-	$(top_builddir)/paludis/util/libpaludisutil.a
+	$(top_builddir)/paludis/repositories/nothing/libpaludisnothingrepository.la \
+	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
+	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

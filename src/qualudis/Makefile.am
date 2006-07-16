@@ -16,10 +16,13 @@ qualudis_SOURCES = \
 	qualudis.cc
 
 qualudis_LDADD = \
-	$(top_builddir)/paludis/args/libpaludisargs.a \
-	$(top_builddir)/paludis/qa/libpaludisqa.a \
-	$(top_builddir)/paludis/libpaludis.a \
-	$(top_builddir)/paludis/util/libpaludisutil.a
+	$(top_builddir)/paludis/repositories/nothing/libpaludisnothingrepository.la \
+	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
+	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la \
+	$(top_builddir)/paludis/qa/libpaludisqa.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la
 
 TESTS_ENVIRONMENT = env TEST_SCRIPT_DIR="$(srcdir)/" bash $(top_srcdir)/test/run_test.sh bash
 TESTS = version_TEST

@@ -18,7 +18,7 @@
  */
 
 #include <map>
-#include <paludis/fake_repository.hh>
+#include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/portage_dep_parser.hh>

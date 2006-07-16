@@ -7,11 +7,13 @@ paludis_selinux_includedir = $(includedir)/paludis/selinux/
 paludis_selinux_include_HEADERS = \
 	security_context.hh
 
-libpaludisselinux_a_SOURCES = \
+libpaludisselinux_la_SOURCES = \
 	$(paludis_selinux_include_HEADERS) \
 	security_context.cc
 
-lib_LIBRARIES = libpaludisselinux.a
+libpaludisselinux_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+lib_LTLIBRARIES = libpaludisselinux.la
 
 TESTS =
 EXTRA_DIST =

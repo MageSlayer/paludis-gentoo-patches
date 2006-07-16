@@ -6,15 +6,19 @@ AC_INIT([paludis/paludis.hh])
 AC_CONFIG_AUX_DIR(config)
 
 VERSION_MAJOR=0
-VERSION_MINOR=4
-VERSION_MICRO=2
+VERSION_MINOR=5
+VERSION_MICRO=0
 VERSION_FULL="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_MICRO"
 VERSION="$VERSION_FULL"
+VERSION_LIB_CURRENT=`expr 100 '*' $VERSION_MAJOR + $VERSION_MINOR`
+VERSION_LIB_REVISION="$VERSION_MICRO"
 
 AC_SUBST([VERSION_MAJOR])
 AC_SUBST([VERSION_MINOR])
 AC_SUBST([VERSION_MICRO])
 AC_SUBST([VERSION_FULL])
+AC_SUBST([VERSION_LIB_CURRENT])
+AC_SUBST([VERSION_LIB_REVISION])
 
 AM_INIT_AUTOMAKE(paludis, [$VERSION_FULL])
 dnl }}}
@@ -24,7 +28,7 @@ AC_LANG([C++])
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
 dnl }}}
 
@@ -453,8 +457,13 @@ AC_OUTPUT(
 	paludis/digests/Makefile
 	paludis/hashed_containers.hh
 	paludis/qa/Makefile
-	paludis/util/Makefile
+	paludis/repositories/Makefile
+	paludis/repositories/fake/Makefile
+	paludis/repositories/nothing/Makefile
+	paludis/repositories/portage/Makefile
+	paludis/repositories/vdb/Makefile
 	paludis/selinux/Makefile
+	paludis/util/Makefile
 	src/Makefile
 	src/paludis/Makefile
 	src/qualudis/Makefile

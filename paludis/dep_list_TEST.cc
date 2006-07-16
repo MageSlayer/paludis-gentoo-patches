@@ -19,6 +19,7 @@
 
 #include <deque>
 #include <paludis/paludis.hh>
+#include <paludis/repositories/fake/fake_repository.hh>
 #include <string>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

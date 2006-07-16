@@ -58,15 +58,15 @@ AM_CXXFLAGS = -I$(top_srcdir)
 
 merge_SOURCES = merge.cc merge_common.cc merge_common.hh
 merge_LDADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.a \
-	$(top_builddir)/paludis/digests/libpaludisdigests.a \
-	$(top_builddir)/paludis/selinux/libpaludisselinux.a \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/digests/libpaludisdigests.la \
+	$(top_builddir)/paludis/selinux/libpaludisselinux.la \
 	$(DYNAMIC_LD_LIBS)
 
 unmerge_SOURCES = unmerge.cc merge_common.cc merge_common.hh
 unmerge_LDADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.a \
-	$(top_builddir)/paludis/digests/libpaludisdigests.a
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/digests/libpaludisdigests.la
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_srcdir)/ebuild/`" \
