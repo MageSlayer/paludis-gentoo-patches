@@ -8,7 +8,7 @@ mkdir "valid-cat" || exit 4
 mkdir "valid-cat/valid-pkg" || exit 5
 mkdir "valid-cat/invalid-pkg..." || exit 6
 
-mkdir "invalid-cat..." || exit 7
-mkdir "invalid-cat.../valid-pkg" || exit 8
-mkdir "invalid-cat.../invalid-pkg..." || exit 9
+mkdir "invalid-cat!" || exit 7
+mkdir "invalid-cat!/valid-pkg" || exit 8
+mkdir "invalid-cat!/invalid-pkg..." || exit 9
 
