@@ -55,7 +55,7 @@ namespace test_cases
             TEST_CHECK(e.exists());
             TEST_CHECK(e.is_directory());
 
-            FSEntry f1(e / "invalid-cat..." / "valid-pkg");
+            FSEntry f1(e / "invalid-cat!" / "valid-pkg");
             TEST_CHECK(f1.exists());
             CheckResult r1((*(*PackageDirCheckMaker::get_instance()->find_maker(
                             PackageNameCheck::identifier()))())(f1));
