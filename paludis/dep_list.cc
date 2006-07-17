@@ -30,7 +30,6 @@
 
 #include <algorithm>
 #include <functional>
-#include <deque>
 #include <vector>
 #include <set>
 
@@ -653,7 +652,7 @@ DepList::visit(const AnyDepAtom * const a)
     }
 
     /* try to merge each of our viable children in turn. */
-    std::deque<std::string> errors;
+    std::list<std::string> errors;
     for (CompositeDepAtom::Iterator i(viable_children.begin()), i_end(viable_children.end()) ;
             i != i_end ; ++i)
     {

@@ -117,27 +117,6 @@ int main(int, char **)
 	])
 dnl }}}
 
-dnl {{{ check for broken std::deque<NoDefaultConstructor>
-AC_MSG_CHECKING([for a usable std::deque<NoDefaultConstructor>])
-AC_COMPILE_IFELSE([
-#include <deque>
-struct NoDefaultConstructor
-{
-	NoDefaultConstructor(int);
-};
-int main(int, char **)
-{
-	std::deque<NoDefaultConstructor> d, e;
-	d = e;
-}
-],
-	[AC_MSG_RESULT([yes])],
-	[
-	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your std::deque doesn't work])
-	])
-dnl }}}
-
 dnl {{{ check for hashes
 have_tr1_hashes=0
 have_ext_hashes=0
@@ -342,7 +321,7 @@ AC_SUBST([HAVE_DOT])
 AM_CONDITIONAL([HAVE_DOT], test "x$HAVE_DOT" = "xyes")
 dnl }}}
 
-{{{ check for whether to build qa stuff
+dnl {{{ check for whether to build qa stuff
 AC_MSG_CHECKING([whether to build QA tools])
 AC_ARG_ENABLE([qa],
 			  [  --enable-qa             Build QA things (qualudis) (maybe broken)],

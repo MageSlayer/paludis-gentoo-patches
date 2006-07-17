@@ -17,12 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <deque>
 #include <paludis/paludis.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
-#include <string>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <string>
+#include <list>
 
 using namespace paludis;
 using namespace test;
@@ -41,7 +41,7 @@ namespace test_cases
         protected:
             TestEnvironment env;
             FakeRepository::Pointer repo;
-            std::deque<std::string> expected;
+            std::list<std::string> expected;
             std::string merge_target;
             bool done_populate;
 #endif
@@ -79,7 +79,7 @@ namespace test_cases
                 TEST_CHECK(true);
 
                 unsigned n(0);
-                std::deque<std::string>::const_iterator exp(expected.begin());
+                std::list<std::string>::const_iterator exp(expected.begin());
                 DepList::Iterator got(d.begin());
                 while (true)
                 {

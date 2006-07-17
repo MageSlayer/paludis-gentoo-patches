@@ -51,7 +51,6 @@
 #include <functional>
 #include <algorithm>
 #include <vector>
-#include <deque>
 #include <limits>
 
 #include <strings.h>
@@ -74,7 +73,7 @@ namespace paludis
     typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
 
     /// Map for repository masks.
-    typedef MakeHashedMap<QualifiedPackageName, std::deque<PackageDepAtom::ConstPointer> >::Type RepositoryMaskMap;
+    typedef MakeHashedMap<QualifiedPackageName, std::list<PackageDepAtom::ConstPointer> >::Type RepositoryMaskMap;
 
     /// Map for categories.
     typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
@@ -360,9 +359,9 @@ namespace paludis
             Context context_local("When reading make.defaults file:");
 
             KeyValueConfigFile make_defaults_f(f / "make.defaults");
-            std::deque<std::string> uses;
+            std::list<std::string> uses;
             WhitespaceTokeniser::get_instance()->tokenise(make_defaults_f.get("USE"), std::back_inserter(uses));
-            for (std::deque<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
+            for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                     u != u_end ; ++u)
             {
                 if ('-' == u->at(0))
@@ -405,12 +404,12 @@ namespace paludis
             for (LineConfigFile::Iterator line(package_use_mask_f.begin()), line_end(package_use_mask_f.end());
                     line != line_end; ++line)
             {
-                std::deque<std::string> tokens;
+                std::list<std::string> tokens;
                 WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
                 if (tokens.size() < 2)
                     continue;
 
-                std::deque<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
+                std::list<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
                 PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
                 QualifiedPackageName p(d->package());
 
@@ -448,12 +447,12 @@ namespace paludis
             for (LineConfigFile::Iterator line(package_use_force_f.begin()), line_end(package_use_force_f.end());
                     line != line_end; ++line)
             {
-                std::deque<std::string> tokens;
+                std::list<std::string> tokens;
                 WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
                 if (tokens.size() < 2)
                     continue;
 
-                std::deque<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
+                std::list<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
                 PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
                 QualifiedPackageName p(d->package());
 
@@ -476,7 +475,7 @@ namespace paludis
             for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
                     line != line_end ; ++line)
             {
-                std::deque<std::string> tokens;
+                std::vector<std::string> tokens;
                 WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
                 if (tokens.size() < 2)
                     continue;
@@ -1035,7 +1034,7 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
     if (_imp->repo_mask.end() == r)
         return false;
     else
-        for (IndirectIterator<std::deque<PackageDepAtom::ConstPointer>::const_iterator, const PackageDepAtom>
+        for (IndirectIterator<std::list<PackageDepAtom::ConstPointer>::const_iterator, const PackageDepAtom>
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
             if (match_package(_imp->env, *k, PackageDatabaseEntry(q, v, name())))
                 return true;

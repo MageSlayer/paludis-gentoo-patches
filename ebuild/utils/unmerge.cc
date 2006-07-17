@@ -36,8 +36,8 @@
 #include <iostream>
 #include <iterator>
 #include <string>
-#include <deque>
 #include <vector>
+#include <list>
 
 #include <cstdlib>
 #include <errno.h>
@@ -204,7 +204,7 @@ main(int argc, char * argv[])
         if (! contents_file)
             throw Failure(stringify(contents) + ": not readable");
 
-        std::deque<std::string> lines;
+        std::list<std::string> lines;
         std::string line;
         while (std::getline(contents_file, line))
             lines.push_back(line);
