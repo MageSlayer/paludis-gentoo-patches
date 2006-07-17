@@ -19,6 +19,7 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
+#include <list>
 
 /** \file
  * Implementation of dep_atom_flattener.hh.

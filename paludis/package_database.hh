@@ -38,10 +38,7 @@
 #include <paludis/contents.hh>
 
 #include <iosfwd>
-#include <algorithm>
-#include <functional>
-#include <iterator>
-#include <list>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Declarations for the PackageDatabase class and related utilities.
@@ -93,67 +90,45 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grppackagedatabase
      */
-    class AmbiguousPackageNameError : public PackageDatabaseLookupError
+    class AmbiguousPackageNameError :
+        public PackageDatabaseLookupError
     {
         private:
+            struct NameData;
+            NameData * const _name_data;
+
             std::string _name;
-            std::list<std::string> _names;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             template <typename I_>
             AmbiguousPackageNameError(const std::string & name,
                     I_ begin, const I_ end) throw ();
 
-            /**
-             * Destructor.
-             */
-            virtual ~AmbiguousPackageNameError() throw ()
-            {
-            }
+            AmbiguousPackageNameError(const AmbiguousPackageNameError &);
+
+            virtual ~AmbiguousPackageNameError() throw ();
+
+            ///\}
 
             /**
              * The name of the package.
              */
-            const std::string & name() const
-            {
-                return _name;
-            }
+            const std::string & name() const;
 
-            /**
-             * Iterator over possible matches.
-             */
-            typedef std::list<std::string>::const_iterator OptionsIterator;
+            ///\name Iterate over possible matches
+            ///\{
 
-            /**
-             * Start of our options.
-             */
-            OptionsIterator begin_options() const
-            {
-                return _names.begin();
-            }
+            typedef libwrapiter::ForwardIterator<AmbiguousPackageNameError,
+                    const std::string> OptionsIterator;
 
-            /**
-             * Past the end of our options.
-             */
-            OptionsIterator end_options() const
-            {
-                return _names.end();
-            }
+            OptionsIterator begin_options() const;
+            OptionsIterator end_options() const;
+
+            ///\}
     };
-
-    template <typename I_>
-    AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & name,
-            I_ begin, const I_ end) throw () :
-        PackageDatabaseLookupError("Ambiguous package name '" + name + "' (candidates are " +
-            join(begin, end, ", ") + ")"),
-        _name(name)
-    {
-        std::transform(begin, end, std::back_inserter(_names),
-                &stringify<typename std::iterator_traits<I_>::value_type>);
-    }
 
     /**
      * Thrown if a Repository with the same name as an existing member is added
@@ -322,20 +297,17 @@ namespace paludis
             const RepositoryName & better_repository(const RepositoryName &,
                     const RepositoryName &) const;
 
-            /**
-             * Iterate over all of our repositories.
-             */
-            typedef std::list<Repository::ConstPointer>::const_iterator RepositoryIterator;
+            ///\name Iterate over our repositories
+            ///\{
 
-            /**
-             * Iterator to the start of our repositories.
-             */
+            typedef libwrapiter::ForwardIterator<PackageDatabase,
+                    const Repository::ConstPointer> RepositoryIterator;
+
             RepositoryIterator begin_repositories() const;
 
-            /**
-             * Iterator to past the end of our repositories.
-             */
             RepositoryIterator end_repositories() const;
+
+            ///\}
     };
 }
 

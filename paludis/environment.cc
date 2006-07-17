@@ -25,6 +25,7 @@
 #include <paludis/util/tokeniser.hh>
 
 #include <set>
+#include <list>
 
 /** \file
  * Implementation of Environment.

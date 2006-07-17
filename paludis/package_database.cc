@@ -73,6 +73,56 @@ NoSuchVersionError::NoSuchVersionError(const std::string & name,
 {
 }
 
+struct AmbiguousPackageNameError::NameData
+{
+    std::string name;
+    std::list<std::string> names;
+};
+
+
+template <typename I_>
+AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & name,
+        I_ begin, const I_ end) throw () :
+    PackageDatabaseLookupError("Ambiguous package name '" + name + "' (candidates are " +
+            join(begin, end, ", ") + ")"),
+    _name_data(new NameData)
+{
+    _name_data->name = name;
+    std::transform(begin, end, std::back_inserter(_name_data->names),
+            &stringify<typename std::iterator_traits<I_>::value_type>);
+}
+
+AmbiguousPackageNameError::AmbiguousPackageNameError(const AmbiguousPackageNameError & other) :
+    PackageDatabaseLookupError(other),
+    _name_data(new NameData)
+{
+    _name_data->name = other._name_data->name;
+    _name_data->names = other._name_data->names;
+}
+
+AmbiguousPackageNameError::~AmbiguousPackageNameError() throw ()
+{
+    delete _name_data;
+}
+
+AmbiguousPackageNameError::OptionsIterator
+AmbiguousPackageNameError::begin_options() const
+{
+    return OptionsIterator(_name_data->names.begin());
+}
+
+AmbiguousPackageNameError::OptionsIterator
+AmbiguousPackageNameError::end_options() const
+{
+    return OptionsIterator(_name_data->names.end());
+}
+
+const std::string &
+AmbiguousPackageNameError::name() const
+{
+    return _name_data->name;
+}
+
 namespace paludis
 {
     /**
@@ -93,6 +143,7 @@ namespace paludis
         const Environment * environment;
     };
 }
+
 PackageDatabase::PackageDatabase(const Environment * const e) :
     PrivateImplementationPattern<PackageDatabase>(new Implementation<PackageDatabase>)
 {
@@ -236,11 +287,12 @@ PackageDatabase::query(PackageDepAtom::ConstPointer a, const InstallState s) con
 PackageDatabase::RepositoryIterator
 PackageDatabase::begin_repositories() const
 {
-    return _imp->repositories.begin();
+    return RepositoryIterator(_imp->repositories.begin());
 }
 
 PackageDatabase::RepositoryIterator
 PackageDatabase::end_repositories() const
 {
-    return _imp->repositories.end();
+    return RepositoryIterator(_imp->repositories.end());
 }
+
