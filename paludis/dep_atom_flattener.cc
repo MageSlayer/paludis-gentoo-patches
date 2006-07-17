@@ -28,14 +28,40 @@
 
 using namespace paludis;
 
+namespace paludis
+{
+    template<>
+    struct Implementation<DepAtomFlattener> :
+        InternalCounted<Implementation<DepAtomFlattener> >
+    {
+        const Environment * const env;
+
+        const PackageDatabaseEntry * const pkg;
+
+        DepAtom::ConstPointer a;
+
+        mutable std::list<const StringDepAtom *> atoms;
+
+        mutable bool done;
+
+        Implementation(const Environment * const e,
+                const PackageDatabaseEntry * const p,
+                DepAtom::ConstPointer aa) :
+            env(e),
+            pkg(p),
+            a(aa),
+            done(false)
+        {
+        }
+    };
+}
+
 DepAtomFlattener::DepAtomFlattener(
         const Environment * const env,
         const PackageDatabaseEntry * const pkg,
         DepAtom::ConstPointer a) :
-    _env(env),
-    _pkg(pkg),
-    _a(a),
-    _done(false)
+    PrivateImplementationPattern<DepAtomFlattener>(new Implementation<DepAtomFlattener>(
+                env, pkg, a))
 {
 }
 
@@ -46,13 +72,19 @@ DepAtomFlattener::~DepAtomFlattener()
 DepAtomFlattener::Iterator
 DepAtomFlattener::begin()
 {
-    if (! _done)
+    if (! _imp->done)
     {
-        _a->accept(static_cast<DepAtomVisitorTypes::ConstVisitor *>(this));
-        _done = true;
+        _imp->a->accept(static_cast<DepAtomVisitorTypes::ConstVisitor *>(this));
+        _imp->done = true;
     }
 
-    return _atoms.begin();
+    return Iterator(_imp->atoms.begin());
+}
+
+DepAtomFlattener::Iterator
+DepAtomFlattener::end() const
+{
+    return Iterator(_imp->atoms.end());
 }
 
 void DepAtomFlattener::visit(const AllDepAtom * a)
@@ -68,23 +100,23 @@ void DepAtomFlattener::visit(const AnyDepAtom *)
 
 void DepAtomFlattener::visit(const UseDepAtom * u)
 {
-    if (_env->query_use(u->flag(), _pkg) ^ u->inverse())
+    if (_imp->env->query_use(u->flag(), _imp->pkg) ^ u->inverse())
         std::for_each(u->begin(), u->end(), accept_visitor(
                     static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
 }
 
 void DepAtomFlattener::visit(const PlainTextDepAtom * p)
 {
-    _atoms.push_back(p);
+    _imp->atoms.push_back(p);
 }
 
 void DepAtomFlattener::visit(const PackageDepAtom * p)
 {
-    _atoms.push_back(p);
+    _imp->atoms.push_back(p);
 }
 
 void DepAtomFlattener::visit(const BlockDepAtom * p)
 {
-    _atoms.push_back(p);
+    _imp->atoms.push_back(p);
 }
 

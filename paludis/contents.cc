@@ -18,6 +18,7 @@
  */
 
 #include "contents.hh"
+#include <list>
 
 /** \file
  * Implementation for Contents classes.
@@ -52,7 +53,40 @@ ContentsSymEntry::ContentsSymEntry(const std::string & name, const std::string &
 {
 }
 
-Contents::Contents()
+namespace paludis
 {
+    template<>
+    struct Implementation<Contents> :
+        InternalCounted<Implementation<Contents> >
+    {
+        std::list<ContentsEntry::ConstPointer> c;
+    };
+}
+
+Contents::Contents() :
+    PrivateImplementationPattern<Contents>(new Implementation<Contents>())
+{
+}
+
+Contents::~Contents()
+{
+}
+
+void
+Contents::add(ContentsEntry::ConstPointer c)
+{
+    _imp->c.push_back(c);
+}
+
+Contents::Iterator
+Contents::begin() const
+{
+    return Iterator(_imp->c.begin());
+}
+
+Contents::Iterator
+Contents::end() const
+{
+    return Iterator(_imp->c.end());
 }
 

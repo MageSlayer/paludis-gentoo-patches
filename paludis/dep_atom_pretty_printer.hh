@@ -20,9 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_PRETTY_PRINTER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_PRETTY_PRINTER_HH 1
 
-#include <ostream>
+#include <iosfwd>
 #include <paludis/dep_atom.hh>
-#include <sstream>
 
 /** \file
  * Declarations for the DepAtomPrettyPrinter class.

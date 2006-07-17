@@ -40,9 +40,6 @@ namespace paludis
      */
     class TestEnvironment : public Environment
     {
-        private:
-            std::multimap<std::string, std::string> _mirrors;
-
         public:
             /**
              * Constructor.
@@ -75,24 +72,15 @@ namespace paludis
             }
 
             virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
-                    const std::string &, const PackageDatabaseEntry *) const
-            {
-                return UseFlagNameCollection::Pointer(new UseFlagNameCollection);
-            }
+                    const std::string &, const PackageDatabaseEntry *) const;
 
             virtual void perform_hook(const Hook &) const
             {
             }
 
-            virtual MirrorIterator begin_mirrors(const std::string &) const
-            {
-                return _mirrors.end();
-            }
+            virtual MirrorIterator begin_mirrors(const std::string &) const;
 
-            virtual MirrorIterator end_mirrors(const std::string &) const
-            {
-                return _mirrors.end();
-            }
+            virtual MirrorIterator end_mirrors(const std::string &) const;
     };
 }
 

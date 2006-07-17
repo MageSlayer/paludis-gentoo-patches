@@ -27,14 +27,16 @@
 #include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/iterator.hh>
+
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/system.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 
 #include <fstream>
@@ -403,13 +405,13 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
                     ))),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(p))
 {
-    RepositoryInfoSection config_info("Configuration information");
+    RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
 
-    config_info.add_kv("location", stringify(_imp->location));
-    config_info.add_kv("root", stringify(_imp->root));
-    config_info.add_kv("format", "vdb");
-    config_info.add_kv("world", stringify(_imp->world_file));
-    config_info.add_kv("buildroot", stringify(_imp->buildroot));
+    config_info->add_kv("location", stringify(_imp->location));
+    config_info->add_kv("root", stringify(_imp->root));
+    config_info->add_kv("format", "vdb");
+    config_info->add_kv("world", stringify(_imp->world_file));
+    config_info->add_kv("buildroot", stringify(_imp->buildroot));
 
     _info->add_section(config_info);
 }
@@ -456,7 +458,7 @@ VDBRepository::do_category_names() const
     if (! _imp->entries_valid)
         _imp->load_entries();
 
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection);
+    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
 
     for (std::vector<VDBEntry>::const_iterator c(_imp->entries.begin()), c_end(_imp->entries.end()) ;
             c != c_end ; ++c)
@@ -475,7 +477,7 @@ VDBRepository::do_package_names(const CategoryNamePart & c) const
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection);
+    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
 
     std::pair<std::vector<VDBEntry>::const_iterator, std::vector<VDBEntry>::const_iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), c,
@@ -493,7 +495,7 @@ VDBRepository::do_version_specs(const QualifiedPackageName & n) const
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
-    VersionSpecCollection::Pointer result(new VersionSpecCollection);
+    VersionSpecCollection::Pointer result(new VersionSpecCollection::Concrete);
 
     std::pair<std::vector<VDBEntry>::const_iterator, std::vector<VDBEntry>::const_iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), n,
@@ -772,7 +774,7 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
 
     PackageDatabaseEntry e(q, v, name());
 
-    FSEntryCollection::Pointer eclassdirs(new FSEntryCollection);
+    FSEntryCollection::Pointer eclassdirs(new FSEntryCollection::Concrete);
     eclassdirs->append(FSEntry(_imp->location / stringify(q.get<qpn_category>()) /
                 (stringify(q.get<qpn_package>()) + "-" + stringify(v))));
 

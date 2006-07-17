@@ -20,12 +20,13 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH 1
 
-#include <list>
 #include <paludis/dep_atom.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/instantiation_policy.hh>
+
+#include <libwrapiter/libwrapiter.hh>
 
 /** \file
  * Declarations for DepAtomFlattener.
@@ -46,19 +47,9 @@ namespace paludis
      */
     class DepAtomFlattener :
         private InstantiationPolicy<DepAtomFlattener, instantiation_method::NonCopyableTag>,
-        protected DepAtomVisitorTypes::ConstVisitor
+        protected DepAtomVisitorTypes::ConstVisitor,
+        private PrivateImplementationPattern<DepAtomFlattener>
     {
-        private:
-            const Environment * const _env;
-
-            const PackageDatabaseEntry * const _pkg;
-
-            DepAtom::ConstPointer _a;
-
-            mutable std::list<const StringDepAtom *> _atoms;
-
-            mutable bool _done;
-
         protected:
             ///\name Visit methods
             ///{
@@ -71,35 +62,27 @@ namespace paludis
             ///}
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             DepAtomFlattener(const Environment * const,
                     const PackageDatabaseEntry * const,
                     const DepAtom::ConstPointer);
 
-            /**
-             * Destructor.
-             */
             ~DepAtomFlattener();
 
-            /**
-             * Iterate over our dep atoms.
-             */
-            typedef std::list<const StringDepAtom *>::const_iterator Iterator;
+            ///\}
 
-            /**
-             * Iterator to the start of our dep atoms.
-             */
+            ///\name Iterate over our dep atoms
+            ///{
+
+            typedef libwrapiter::ForwardIterator<DepAtomFlattener, const StringDepAtom *> Iterator;
+
             Iterator begin();
 
-            /**
-             * Iterator to past the end of our dep atoms.
-             */
-            Iterator end() const
-            {
-                return _atoms.end();
-            }
+            Iterator end() const;
+
+            ///\}
     };
 }
 

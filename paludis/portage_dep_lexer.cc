@@ -22,6 +22,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/tokeniser.hh>
 #include <vector>
+#include <list>
 
 /** \file
  * Implementation of dep_lexer.hh things.
@@ -30,6 +31,16 @@
  */
 
 using namespace paludis;
+
+namespace paludis
+{
+    template<>
+    struct Implementation<PortageDepLexer> :
+        InternalCounted<Implementation<PortageDepLexer> >
+    {
+        std::list<std::pair<PortageDepLexerLexeme, std::string> > tokens;
+    };
+}
 
 DepStringLexError::DepStringLexError(const std::string & dep_string,
         const std::string & message) throw () :
@@ -42,7 +53,8 @@ DepStringError::DepStringError(const std::string & d, const std::string & m) thr
 {
 }
 
-PortageDepLexer::PortageDepLexer(const std::string & s)
+PortageDepLexer::PortageDepLexer(const std::string & s) :
+    PrivateImplementationPattern<PortageDepLexer>(new Implementation<PortageDepLexer>)
 {
     Context context("When lexing dependency string '" + s + "':");
 
@@ -57,23 +69,39 @@ PortageDepLexer::PortageDepLexer(const std::string & s)
             continue;
 
         if (*t == "||")
-            _tokens.push_back(std::make_pair(dpl_double_bar, *t));
+            _imp->tokens.push_back(std::make_pair(dpl_double_bar, *t));
         else if ('|' == (*t)[0])
             throw DepStringLexError(s, "'|' should be followed by '|'");
         else if (*t == "(")
-            _tokens.push_back(std::make_pair(dpl_open_paren, *t));
+            _imp->tokens.push_back(std::make_pair(dpl_open_paren, *t));
         else if ('(' == (*t)[0])
             throw DepStringLexError(s, "'(' should be followed by whitespace");
         else if (*t == ")")
-            _tokens.push_back(std::make_pair(dpl_close_paren, *t));
+            _imp->tokens.push_back(std::make_pair(dpl_close_paren, *t));
         else if (')' == (*t)[0])
             throw DepStringLexError(s, "')' should be followed by whitespace");
         else if (std::string::npos == t->find_first_not_of(" \t\n"))
-            _tokens.push_back(std::make_pair(dpl_whitespace, *t));
+            _imp->tokens.push_back(std::make_pair(dpl_whitespace, *t));
         else if ('?' == (*t)[t->length() - 1])
-            _tokens.push_back(std::make_pair(dpl_use_flag, *t));
+            _imp->tokens.push_back(std::make_pair(dpl_use_flag, *t));
         else
-            _tokens.push_back(std::make_pair(dpl_text, *t));
+            _imp->tokens.push_back(std::make_pair(dpl_text, *t));
     }
+}
+
+PortageDepLexer::~PortageDepLexer()
+{
+}
+
+PortageDepLexer::Iterator
+PortageDepLexer::begin() const
+{
+    return Iterator(_imp->tokens.begin());
+}
+
+PortageDepLexer::Iterator
+PortageDepLexer::end() const
+{
+    return Iterator(_imp->tokens.end());
 }
 

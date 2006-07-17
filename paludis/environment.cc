@@ -24,6 +24,8 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/tokeniser.hh>
 
+#include <set>
+
 /** \file
  * Implementation of Environment.
  *

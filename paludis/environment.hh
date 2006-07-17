@@ -34,6 +34,11 @@
 
 namespace paludis
 {
+    struct EnvironmentMirrorIteratorTag;
+
+    typedef libwrapiter::ForwardIterator<EnvironmentMirrorIteratorTag,
+            const std::pair<const std::string, std::string> > EnvironmentMirrorIterator;
+
     /**
      * Represents the data for an Environment hook call.
      *
@@ -192,7 +197,7 @@ namespace paludis
             /**
              * Iterator over named mirror entries.
              */
-            typedef std::multimap<std::string, std::string>::const_iterator MirrorIterator;
+            typedef EnvironmentMirrorIterator MirrorIterator;
 
             /**
              * Iterator to the start of our mirrors.

@@ -20,6 +20,7 @@
 #include "config.h"
 
 #include <paludis/repositories/nothing/nothing_repository.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -98,10 +99,10 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
                     ))),
     PrivateImplementationPattern<NothingRepository>(new Implementation<NothingRepository>(p))
 {
-    RepositoryInfoSection config_info("Configuration information");
-    config_info.add_kv("sync", _imp->sync);
-    config_info.add_kv("sync_exclude", _imp->sync_exclude);
-    config_info.add_kv("location", stringify(_imp->location));
+    RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
+    config_info->add_kv("sync", _imp->sync);
+    config_info->add_kv("sync_exclude", _imp->sync_exclude);
+    config_info->add_kv("location", stringify(_imp->location));
 
     _info->add_section(config_info);
 }
@@ -130,21 +131,21 @@ NothingRepository::do_has_package_named(const QualifiedPackageName &) const
 CategoryNamePartCollection::ConstPointer
 NothingRepository::do_category_names() const
 {
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection);
+    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
     return result;
 }
 
 QualifiedPackageNameCollection::ConstPointer
 NothingRepository::do_package_names(const CategoryNamePart &) const
 {
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection);
+    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
     return result;
 }
 
 VersionSpecCollection::ConstPointer
 NothingRepository::do_version_specs(const QualifiedPackageName &) const
 {
-    return VersionSpecCollection::Pointer(new VersionSpecCollection);
+    return VersionSpecCollection::Pointer(new VersionSpecCollection::Concrete);
 }
 
 bool

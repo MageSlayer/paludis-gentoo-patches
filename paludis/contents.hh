@@ -26,6 +26,8 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <string>
 
+#include <libwrapiter/libwrapiter.hh>
+
 /** \file
  * Declarations for the Contents classes.
  *
@@ -175,39 +177,29 @@ namespace paludis
      */
     class Contents :
         private InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>,
+        private PrivateImplementationPattern<Contents>,
         public InternalCounted<Contents>
     {
-        private:
-            std::list<ContentsEntry::ConstPointer> _c;
-
         public:
             ///\name Basic operations
             ///\{
 
             Contents();
+            ~Contents();
 
             ///\}
 
             /// Add a new entry.
-            void add(ContentsEntry::ConstPointer c)
-            {
-                _c.push_back(c);
-            }
+            void add(ContentsEntry::ConstPointer c);
 
             ///\name Iterate over our entries
             ///\{
 
-            typedef std::list<ContentsEntry::ConstPointer>::const_iterator Iterator;
+            typedef libwrapiter::ForwardIterator<Contents, const ContentsEntry::ConstPointer> Iterator;
 
-            Iterator begin() const
-            {
-                return _c.begin();
-            }
+            Iterator begin() const;
 
-            Iterator end() const
-            {
-                return _c.end();
-            }
+            Iterator end() const;
 
             ///\}
     };

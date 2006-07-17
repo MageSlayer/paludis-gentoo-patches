@@ -28,6 +28,7 @@
 
 #include <fstream>
 #include <istream>
+#include <list>
 
 /** \file
  * Implementation for config_file.hh classes.
@@ -147,28 +148,57 @@ ConfigFile::skip_line(const std::string & s) const
     return (s.empty() || '#' == s.at(0));
 }
 
+namespace paludis
+{
+    template<>
+    struct Implementation<LineConfigFile> :
+        InternalCounted<Implementation<LineConfigFile> >
+    {
+        mutable std::list<std::string> lines;
+    };
+}
+
 LineConfigFile::LineConfigFile(std::istream * const s) :
-    ConfigFile(s)
+    ConfigFile(s),
+    PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>)
 {
     need_lines();
 }
 
 LineConfigFile::LineConfigFile(const std::string & filename) :
-    ConfigFile(filename)
+    ConfigFile(filename),
+    PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>)
 {
     need_lines();
 }
 
 LineConfigFile::LineConfigFile(const FSEntry & filename) :
-    ConfigFile(filename)
+    ConfigFile(filename),
+    PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>)
 {
     need_lines();
+}
+
+LineConfigFile::~LineConfigFile()
+{
 }
 
 void
 LineConfigFile::accept_line(const std::string & s) const
 {
-    _lines.push_back(s);
+    _imp->lines.push_back(s);
+}
+
+LineConfigFile::Iterator
+LineConfigFile::begin() const
+{
+    return Iterator(_imp->lines.begin());
+}
+
+LineConfigFile::Iterator
+LineConfigFile::end() const
+{
+    return Iterator(_imp->lines.end());
 }
 
 KeyValueConfigFileError::KeyValueConfigFileError(const std::string & msg,
@@ -178,20 +208,33 @@ KeyValueConfigFileError::KeyValueConfigFileError(const std::string & msg,
 {
 }
 
+namespace paludis
+{
+    template <>
+    struct Implementation<KeyValueConfigFile> :
+        InternalCounted<Implementation<KeyValueConfigFile> >
+    {
+        mutable std::map<std::string, std::string> entries;
+    };
+}
+
 KeyValueConfigFile::KeyValueConfigFile(std::istream * const s) :
-    ConfigFile(s)
+    ConfigFile(s),
+    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
     need_lines();
 }
 
 KeyValueConfigFile::KeyValueConfigFile(const std::string & filename) :
-    ConfigFile(filename)
+    ConfigFile(filename),
+    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
     need_lines();
 }
 
 KeyValueConfigFile::KeyValueConfigFile(const FSEntry & filename) :
-    ConfigFile(filename)
+    ConfigFile(filename),
+    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
     need_lines();
 }
@@ -199,24 +242,27 @@ KeyValueConfigFile::KeyValueConfigFile(const FSEntry & filename) :
 KeyValueConfigFile::KeyValueConfigFile(std::istream * const s,
         const std::map<std::string, std::string> & m) :
     ConfigFile(s),
-    _entries(m.begin(), m.end())
+    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
+    _imp->entries.insert(m.begin(), m.end());
     need_lines();
 }
 
 KeyValueConfigFile::KeyValueConfigFile(const std::string & filename,
         const std::map<std::string, std::string> & m) :
     ConfigFile(filename),
-    _entries(m.begin(), m.end())
+    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
+    _imp->entries.insert(m.begin(), m.end());
     need_lines();
 }
 
 KeyValueConfigFile::KeyValueConfigFile(const FSEntry & filename,
         const std::map<std::string, std::string> & m) :
     ConfigFile(filename),
-    _entries(m.begin(), m.end())
+    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
+    _imp->entries.insert(m.begin(), m.end());
     need_lines();
 }
 
@@ -229,13 +275,13 @@ KeyValueConfigFile::accept_line(const std::string & line) const
 {
     std::string::size_type p(line.find('='));
     if (std::string::npos == p)
-        _entries[line] = "";
+        _imp->entries[line] = "";
     else
     {
         std::string key(line.substr(0, p)), value(line.substr(p + 1));
         normalise_line(key);
         normalise_line(value);
-        _entries[key] = replace_variables(strip_quotes(value));
+        _imp->entries[key] = replace_variables(strip_quotes(value));
     }
 }
 
@@ -314,6 +360,18 @@ KeyValueConfigFile::strip_quotes(const std::string & s) const
         return s;
 }
 
+KeyValueConfigFile::Iterator
+KeyValueConfigFile::begin() const
+{
+    return Iterator(_imp->entries.begin());
+}
+
+KeyValueConfigFile::Iterator
+KeyValueConfigFile::end() const
+{
+    return Iterator(_imp->entries.end());
+}
+
 AdvisoryFileError::AdvisoryFileError(const std::string & msg,
         const std::string & filename) throw () :
     ConfigurationError("Advisory file error" +
@@ -321,9 +379,27 @@ AdvisoryFileError::AdvisoryFileError(const std::string & msg,
 {
 }
 
+namespace paludis
+{
+    template<>
+    struct Implementation<AdvisoryFile> :
+        InternalCounted<Implementation<AdvisoryFile> >
+    {
+        mutable std::map<std::string, std::string> entries;
+        mutable std::list<std::string> affected;
+        mutable std::list<std::string> unaffected;
+        mutable bool end_of_header;
+
+        Implementation() :
+            end_of_header(false)
+        {
+        }
+    };
+}
+
 AdvisoryFile::AdvisoryFile(std::istream * const s) :
     ConfigFile(s),
-    _end_of_header(false)
+    PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
 {
     need_lines();
     sanitise();
@@ -331,7 +407,7 @@ AdvisoryFile::AdvisoryFile(std::istream * const s) :
 
 AdvisoryFile::AdvisoryFile(const std::string & filename) :
     ConfigFile(filename),
-    _end_of_header(false)
+    PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
 {
     need_lines();
     sanitise();
@@ -339,7 +415,7 @@ AdvisoryFile::AdvisoryFile(const std::string & filename) :
 
 AdvisoryFile::AdvisoryFile(const FSEntry & filename) :
     ConfigFile(filename),
-    _end_of_header(false)
+    PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
 {
     need_lines();
     sanitise();
@@ -348,9 +424,9 @@ AdvisoryFile::AdvisoryFile(const FSEntry & filename) :
 AdvisoryFile::AdvisoryFile(std::istream * const s,
         const std::map<std::string, std::string> & m) :
     ConfigFile(s),
-    _entries(m.begin(), m.end()),
-    _end_of_header(false)
+    PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
 {
+    _imp->entries.insert(m.begin(), m.end());
     need_lines();
     sanitise();
 }
@@ -358,9 +434,9 @@ AdvisoryFile::AdvisoryFile(std::istream * const s,
 AdvisoryFile::AdvisoryFile(const std::string & filename,
         const std::map<std::string, std::string> & m) :
     ConfigFile(filename),
-    _entries(m.begin(), m.end()),
-    _end_of_header(false)
+    PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
 {
+    _imp->entries.insert(m.begin(), m.end());
     need_lines();
     sanitise();
 }
@@ -368,9 +444,9 @@ AdvisoryFile::AdvisoryFile(const std::string & filename,
 AdvisoryFile::AdvisoryFile(const FSEntry & filename,
         const std::map<std::string, std::string> & m) :
     ConfigFile(filename),
-    _entries(m.begin(), m.end()),
-    _end_of_header(false)
+    PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
 {
+    _imp->entries.insert(m.begin(), m.end());
     need_lines();
     sanitise();
 }
@@ -384,10 +460,10 @@ AdvisoryFile::accept_line(const std::string & line) const
 {
     std::string::size_type p(line.find(':'));
 
-    if ((std::string::npos == p) || (_end_of_header))
+    if ((std::string::npos == p) || (_imp->end_of_header))
     {
-        _entries["Description"] += line + "\n";
-        _end_of_header = true;
+        _imp->entries["Description"] += line + "\n";
+        _imp->end_of_header = true;
     }
     else
     {
@@ -398,20 +474,20 @@ AdvisoryFile::accept_line(const std::string & line) const
             || (key == "Restart") || (key == "Unaffected"))
         {
             if (key == "Affected")
-                _affected.push_back(value);
+                _imp->affected.push_back(value);
             else if (key == "Unaffected")
-                _unaffected.push_back(value);
+                _imp->unaffected.push_back(value);
             else
             {
-                if (! _entries[key].empty())
+                if (! _imp->entries[key].empty())
                     value = "\n" + value;
-                _entries[key] += value;
+                _imp->entries[key] += value;
             }
         }
         else
         {
-            if (_entries[key].empty())
-                _entries[key] = value;
+            if (_imp->entries[key].empty())
+                _imp->entries[key] = value;
             else
                 throw AdvisoryFileError("When adding value for key '" + key + "': Duplicate key found.");
         }
@@ -421,60 +497,160 @@ AdvisoryFile::accept_line(const std::string & line) const
 void
 AdvisoryFile::sanitise()
 {
-    if (_entries["Id"].empty())
+    if (_imp->entries["Id"].empty())
         throw AdvisoryFileError("Missing mandatory key: 'Id'.");
 
-    if (_entries["Title"].empty())
+    if (_imp->entries["Title"].empty())
             throw AdvisoryFileError("Missing mandatory key: 'Title'.");
 
-    if (_entries["Access"].empty())
+    if (_imp->entries["Access"].empty())
             throw AdvisoryFileError("Missing mandatory key: 'Access'.");
 
-    if (_entries["Last-Modified"].empty())
+    if (_imp->entries["Last-Modified"].empty())
             throw AdvisoryFileError("Missing mandatory key: 'Last-Modified'.");
 
-    if (_entries["Revision"].empty())
+    if (_imp->entries["Revision"].empty())
             throw AdvisoryFileError("Missing mandatory key: 'Revision'.");
 
-    if (_entries["Severity"].empty())
+    if (_imp->entries["Severity"].empty())
             throw AdvisoryFileError("Missing mandatory key: 'Severity'.");
 
-    if (_entries["Spec-Version"].empty())
+    if (_imp->entries["Spec-Version"].empty())
             throw AdvisoryFileError("Missing mandatory key: 'Spec-Version'.");
+}
+
+AdvisoryFile::EntriesIterator
+AdvisoryFile::begin() const
+{
+    return EntriesIterator(_imp->entries.begin());
+}
+
+AdvisoryFile::EntriesIterator
+AdvisoryFile::end() const
+{
+    return EntriesIterator(_imp->entries.end());
+}
+
+AdvisoryFile::LineIterator
+AdvisoryFile::begin_affected() const
+{
+    return LineIterator(_imp->affected.begin());
+}
+
+AdvisoryFile::LineIterator
+AdvisoryFile::end_affected() const
+{
+    return LineIterator(_imp->affected.end());
+}
+
+AdvisoryFile::LineIterator
+AdvisoryFile::begin_unaffected() const
+{
+    return LineIterator(_imp->unaffected.begin());
+}
+
+AdvisoryFile::LineIterator
+AdvisoryFile::end_unaffected() const
+{
+    return LineIterator(_imp->unaffected.end());
+}
+
+std::string
+AdvisoryFile::get(const std::string & key) const
+{
+    return _imp->entries[key];
+}
+
+namespace paludis
+{
+    template<>
+    struct Implementation<NewsFile> :
+        InternalCounted<Implementation<NewsFile> >
+    {
+        mutable bool in_header;
+        mutable std::list<std::string> display_if_installed;
+        mutable std::list<std::string> display_if_keyword;
+        mutable std::list<std::string> display_if_profile;
+
+        Implementation() :
+            in_header(true)
+        {
+        }
+    };
 }
 
 NewsFile::NewsFile(const FSEntry & filename) :
     ConfigFile(filename),
-    _in_header(true)
+    PrivateImplementationPattern<NewsFile>(new Implementation<NewsFile>)
 {
     need_lines();
+}
+
+NewsFile::~NewsFile()
+{
 }
 
 void
 NewsFile::accept_line(const std::string & line) const
 {
-    if (_in_header)
+    if (_imp->in_header)
     {
         std::string::size_type p(line.find(':'));
         if (std::string::npos == p)
-            _in_header = false;
+            _imp->in_header = false;
         else
         {
             std::string k(strip_leading(strip_trailing(line.substr(0, p), " \t\n"), " \t\n"));
             std::string v(strip_leading(strip_trailing(line.substr(p + 1), " \t\n"), " \t\n"));
             if (k == "Display-If-Installed")
-                _display_if_installed.push_back(v);
+                _imp->display_if_installed.push_back(v);
             else if (k == "Display-If-Keyword")
-                _display_if_keyword.push_back(v);
+                _imp->display_if_keyword.push_back(v);
             if (k == "Display-If-Profile")
-                _display_if_profile.push_back(v);
+                _imp->display_if_profile.push_back(v);
         }
     }
+}
+
+NewsFile::DisplayIfInstalledIterator
+NewsFile::begin_display_if_installed() const
+{
+    return DisplayIfInstalledIterator(_imp->display_if_installed.begin());
+}
+
+NewsFile::DisplayIfInstalledIterator
+NewsFile::end_display_if_installed() const
+{
+    return DisplayIfInstalledIterator(_imp->display_if_installed.end());
+}
+
+NewsFile::DisplayIfKeywordIterator
+NewsFile::begin_display_if_keyword() const
+{
+    return DisplayIfKeywordIterator(_imp->display_if_keyword.begin());
+}
+
+NewsFile::DisplayIfKeywordIterator
+NewsFile::end_display_if_keyword() const
+{
+    return DisplayIfKeywordIterator(_imp->display_if_keyword.end());
+}
+
+NewsFile::DisplayIfProfileIterator
+NewsFile::begin_display_if_profile() const
+{
+    return DisplayIfProfileIterator(_imp->display_if_profile.begin());
+}
+
+NewsFile::DisplayIfProfileIterator
+NewsFile::end_display_if_profile() const
+{
+    return DisplayIfProfileIterator(_imp->display_if_profile.end());
 }
 
 std::string
 KeyValueConfigFile::get(const std::string & key) const
 {
-    return _entries[key];
+    return _imp->entries[key];
 }
 

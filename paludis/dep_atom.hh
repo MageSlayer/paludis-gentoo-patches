@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_HH 1
 
-#include <list>
 #include <paludis/dep_tag.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
@@ -29,7 +28,8 @@
 #include <paludis/util/visitor.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
-#include <map>
+
+#include <libwrapiter/libwrapiter.hh>
 
 /** \file
  * Declarations for the DepAtom classes.
@@ -96,11 +96,9 @@ namespace paludis
      * \ingroup grpdepatoms
      */
     class CompositeDepAtom :
-        public DepAtom
+        public DepAtom,
+        private PrivateImplementationPattern<CompositeDepAtom>
     {
-        private:
-            std::list<DepAtom::ConstPointer> _children;
-
         protected:
             ///\name Basic operations
             ///\{
@@ -110,6 +108,13 @@ namespace paludis
             ///\}
 
         public:
+            ///\name Basic operations
+            ///\{
+
+            ~CompositeDepAtom();
+
+            ///\}
+
             ///\name Modify our children
             ///\{
 
@@ -123,17 +128,11 @@ namespace paludis
             ///\name Iterate over our children
             ///\{
 
-            typedef std::list<DepAtom::ConstPointer>::const_iterator Iterator;
+            typedef libwrapiter::ForwardIterator<CompositeDepAtom, const DepAtom::ConstPointer> Iterator;
 
-            Iterator begin() const
-            {
-                return _children.begin();
-            }
+            Iterator begin() const;
 
-            Iterator end() const
-            {
-                return _children.end();
-            }
+            Iterator end() const;
 
             ///\name Pointer types
             ///\{
@@ -258,40 +257,34 @@ namespace paludis
      * \ingroup grpdepatoms
      */
     class UseRequirements :
-        public InternalCounted<UseRequirements>
+        public InternalCounted<UseRequirements>,
+        private PrivateImplementationPattern<UseRequirements>
     {
-        private:
-            std::map<UseFlagName, UseFlagState> _reqs;
-
         public:
+            ///\name Basic operations
+            ///\{
+
+            UseRequirements();
+            ~UseRequirements();
+
+            ///\}
+
             ///\name Iterate over our USE requirements
             ///\{
 
-            typedef std::map<UseFlagName, UseFlagState>::const_iterator Iterator;
+            typedef libwrapiter::ForwardIterator<UseRequirements,
+                    const std::pair<const UseFlagName, UseFlagState> > Iterator;
 
-            Iterator begin() const
-            {
-                return _reqs.begin();
-            }
-
-            Iterator end() const
-            {
-                return _reqs.end();
-            }
+            Iterator begin() const;
+            Iterator end() const;
 
             ///\}
 
             /// Find the requirement for a particular USE flag.
-            Iterator find(const UseFlagName & u) const
-            {
-                return _reqs.find(u);
-            }
+            Iterator find(const UseFlagName & u) const;
 
             /// Insert a new requirement.
-            bool insert(const UseFlagName & u, UseFlagState s)
-            {
-                return _reqs.insert(std::make_pair(u, s)).second;
-            }
+            bool insert(const UseFlagName & u, UseFlagState s);
 
             /// What state is desired for a particular use flag?
             UseFlagState state(const UseFlagName &) const;

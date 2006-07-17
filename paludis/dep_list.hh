@@ -20,13 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_HH 1
 
-#include <algorithm>
-#include <bitset>
-#include <deque>
-#include <iterator>
-#include <list>
-#include <ostream>
-#include <set>
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/name.hh>
@@ -35,6 +28,12 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/smart_record.hh>
 #include <paludis/version_spec.hh>
+
+#include <iosfwd>
+#include <bitset>
+#include <set>
+
+#include <libwrapiter/libwrapiter.hh>
 
 namespace paludis
 {
@@ -117,10 +116,12 @@ namespace paludis
     class DepListError : public Exception
     {
         protected:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             DepListError(const std::string &) throw ();
+
+            ///\}
     };
 
     /**
@@ -132,10 +133,12 @@ namespace paludis
     class DepListStackTooDeepError : public DepListError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             DepListStackTooDeepError(int level) throw ();
+
+            ///\}
     };
 
     /**
@@ -147,16 +150,15 @@ namespace paludis
     class NoResolvableOptionError : public DepListError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             NoResolvableOptionError() throw ();
 
-            /**
-             * Constructor with failure reasons.
-             */
             template <typename I_>
             NoResolvableOptionError(I_ i, I_ end) throw ();
+
+            ///\}
     };
 
     /**
@@ -171,17 +173,16 @@ namespace paludis
             std::string _query;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             AllMaskedError(const std::string & query) throw ();
 
-            /**
-             * Destructor.
-             */
             virtual ~AllMaskedError() throw ()
             {
             }
+
+            ///\}
 
             /**
              * Our query.
@@ -205,17 +206,16 @@ namespace paludis
             std::string _query;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             UseRequirementsNotMetError(const std::string & query) throw ();
 
-            /**
-             * Destructor.
-             */
             virtual ~UseRequirementsNotMetError() throw ()
             {
             }
+
+            ///\}
 
             /**
              * Our query.
@@ -235,10 +235,12 @@ namespace paludis
     class BlockError : public DepListError
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             BlockError(const std::string & msg) throw ();
+
+            ///\}
     };
 
     /**
@@ -253,16 +255,13 @@ namespace paludis
             unsigned _cycle_size;
 
         public:
-            /**
-             * Constructor, from a sequence of the items causing the circular
-             * dependency.
-             */
+            ///\name Basic operations
+            ///\{
+
             template <typename I_>
-            CircularDependencyError(I_ begin, const I_ end) throw () :
-                DepListError("Circular dependency: " + join(begin, end, " -> ")),
-                _cycle_size(std::distance(begin, end))
-            {
-            }
+            CircularDependencyError(I_ begin, const I_ end) throw ();
+
+            ///\}
 
             /**
              * How large is our circular dependency cycle?
@@ -334,20 +333,14 @@ namespace paludis
             ///}
 
         public:
-            /**
-             * Iterator for our children.
-             */
-            typedef std::list<DepListEntry>::const_iterator Iterator;
+            ///\name Basic operations
+            ///\{
 
-            /**
-             * Constructor.
-             */
             DepList(const Environment * const);
 
-            /**
-             * Destructor.
-             */
             virtual ~DepList();
+
+            ///\}
 
             /**
              * Add the packages required to resolve an additional dependency
@@ -355,15 +348,19 @@ namespace paludis
              */
             void add(DepAtom::ConstPointer);
 
-            /**
-             * Start of our dependency list.
-             */
+            ///\name Iterate over our dependency list entries.
+            ///\{
+
+            typedef libwrapiter::ForwardIterator<DepList, const DepListEntry> Iterator;
+
             Iterator begin() const;
 
-            /**
-             * One past the end of our dependency list.
-             */
             Iterator end() const;
+
+            ///\}
+
+            ///\name Behaviour options
+            ///\{
 
             /**
              * Behaviour: determines when RDEPEND entries can be treated as PDEPEND.
@@ -413,6 +410,8 @@ namespace paludis
              * Behaviour: set whether we upgrade unnecessarily.
              */
             void set_no_unnecessary_upgrades(const bool value);
+
+            ///\}
     };
 }
 

@@ -25,6 +25,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/collection_concrete.hh>
 
 /** \file
  * Handle the --install action for the main paludis program.
@@ -502,7 +503,7 @@ do_install()
                             p::is_installed_only));
 
                 // don't clean the thing we just installed
-                p::PackageDatabaseEntryCollection clean_list;
+                p::PackageDatabaseEntryCollection::Concrete clean_list;
                 for (p::PackageDatabaseEntryCollection::Iterator c(collision_list->begin()),
                         c_end(collision_list->end()) ; c != c_end ; ++c)
                     if (dep->get<p::dle_version>() != c->get<p::pde_version>())

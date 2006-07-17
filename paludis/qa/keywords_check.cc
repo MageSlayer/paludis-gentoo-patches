@@ -19,6 +19,7 @@
 
 #include <paludis/qa/keywords_check.hh>
 #include <paludis/util/tokeniser.hh>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::qa;

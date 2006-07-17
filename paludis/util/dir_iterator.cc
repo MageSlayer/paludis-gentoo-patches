@@ -22,6 +22,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <sys/types.h>
+#include <set>
 
 /** \file
  * Implementation of paludis::DirIterator.

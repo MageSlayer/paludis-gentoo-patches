@@ -22,12 +22,13 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+
+#include <libwrapiter/libwrapiter.hh>
 
 #include <iosfwd>
-#include <list>
-#include <map>
 #include <string>
-#include <vector>
+#include <map>
 
 /** \file
  * Declarations for the ConfigFile classes.
@@ -145,11 +146,10 @@ namespace paludis
      *
      * \ingroup grplineconfigfile
      */
-    class LineConfigFile : protected ConfigFile
+    class LineConfigFile :
+        protected ConfigFile,
+        private PrivateImplementationPattern<LineConfigFile>
     {
-        private:
-            mutable std::list<std::string> _lines;
-
         protected:
             void accept_line(const std::string &) const;
 
@@ -172,22 +172,18 @@ namespace paludis
              */
             LineConfigFile(const FSEntry & filename);
 
+            ~LineConfigFile();
+
             ///\}
 
             ///\name Iterate over our lines
             ///\{
 
-            typedef std::list<std::string>::const_iterator Iterator;
+            typedef libwrapiter::ForwardIterator<LineConfigFile, const std::string> Iterator;
 
-            Iterator begin() const
-            {
-                return _lines.begin();
-            }
+            Iterator begin() const;
 
-            Iterator end() const
-            {
-                return _lines.end();
-            }
+            Iterator end() const;
 
             ///\}
     };
@@ -217,11 +213,10 @@ namespace paludis
      *
      * \ingroup grpkvconfigfile
      */
-    class KeyValueConfigFile : protected ConfigFile
+    class KeyValueConfigFile :
+        protected ConfigFile,
+        private PrivateImplementationPattern<KeyValueConfigFile>
     {
-        private:
-            mutable std::map<std::string, std::string> _entries;
-
         protected:
             void accept_line(const std::string &) const;
 
@@ -279,17 +274,12 @@ namespace paludis
             ///\name Iterate over our key/values
             ///\{
 
-            typedef std::map<std::string, std::string>::const_iterator Iterator;
+            typedef libwrapiter::ForwardIterator<KeyValueConfigFile,
+                    std::pair<const std::string, std::string> > Iterator;
 
-            Iterator begin() const
-            {
-                return _entries.begin();
-            }
+            Iterator begin() const;
 
-            Iterator end() const
-            {
-                return _entries.end();
-            }
+            Iterator end() const;
 
             ///\}
 
@@ -331,14 +321,10 @@ namespace paludis
      * \ingroup grpadvisoryconfigfile
      */
 
-    class AdvisoryFile : protected ConfigFile
+    class AdvisoryFile :
+        protected ConfigFile,
+        private PrivateImplementationPattern<AdvisoryFile>
     {
-        private:
-            mutable std::map<std::string, std::string> _entries;
-            mutable std::list<std::string> _affected;
-            mutable std::list<std::string> _unaffected;
-            mutable bool _end_of_header;
-
         protected:
             void accept_line(const std::string &) const;
 
@@ -391,54 +377,34 @@ namespace paludis
             ///\name Iterate over our entries
             ///\{
 
-            typedef std::map<std::string, std::string>::const_iterator EntriesIterator;
+            typedef libwrapiter::ForwardIterator<AdvisoryFile,
+                    std::pair<const std::string, std::string> > EntriesIterator;
 
-            EntriesIterator begin() const
-            {
-                return _entries.begin();
-            }
+            EntriesIterator begin() const;
 
-            EntriesIterator end() const
-            {
-                return _entries.end();
-            }
+            EntriesIterator end() const;
 
             ///\}
 
             ///\name Iterate over our Affected: and Unaffected: lines.
             ///\{
 
-            typedef std::list<std::string>::const_iterator LineIterator;
+            typedef libwrapiter::ForwardIterator<AdvisoryFile, std::string> LineIterator;
 
-            LineIterator begin_affected() const
-            {
-                return _affected.begin();
-            }
+            LineIterator begin_affected() const;
 
-            LineIterator end_affected() const
-            {
-                return _affected.end();
-            }
+            LineIterator end_affected() const;
 
-            LineIterator begin_unaffected() const
-            {
-                return _unaffected.begin();
-            }
+            LineIterator begin_unaffected() const;
 
-            LineIterator end_unaffected() const
-            {
-                return _unaffected.end();
-            }
+            LineIterator end_unaffected() const;
 
             ///\}
 
             /**
              * Fetch the specified key, or a blank string.
              */
-            std::string get(const std::string & key) const
-            {
-                return _entries[key];
-            }
+            std::string get(const std::string & key) const;
 
     };
 
@@ -448,14 +414,9 @@ namespace paludis
      * \ingroup grpnewconfigfile
      */
     class NewsFile :
-        protected ConfigFile
+        protected ConfigFile,
+        private PrivateImplementationPattern<NewsFile>
     {
-        private:
-            mutable bool _in_header;
-            mutable std::list<std::string> _display_if_installed;
-            mutable std::list<std::string> _display_if_keyword;
-            mutable std::list<std::string> _display_if_profile;
-
         protected:
             void accept_line(const std::string &) const;
 
@@ -468,56 +429,52 @@ namespace paludis
              */
             NewsFile(const FSEntry & filename);
 
+            ~NewsFile();
+
             ///\}
 
             ///\name Iterate over our Display-If-Installed headers
             ///\{
 
-            typedef std::list<std::string>::const_iterator DisplayIfInstalledIterator;
+            /// Tag for DisplayIfInstalledIterator.
+            struct DisplayIfInstalledIteratorTag;
 
-            DisplayIfInstalledIterator begin_display_if_installed() const
-            {
-                return _display_if_installed.begin();
-            }
+            typedef libwrapiter::ForwardIterator<DisplayIfInstalledIteratorTag,
+                    const std::string> DisplayIfInstalledIterator;
 
-            DisplayIfInstalledIterator end_display_if_installed() const
-            {
-                return _display_if_installed.end();
-            }
+            DisplayIfInstalledIterator begin_display_if_installed() const;
+
+            DisplayIfInstalledIterator end_display_if_installed() const;
 
             ///\}
 
             ///\name Iterate over our Display-If-Keyword headers
             ///\{
 
-            typedef std::list<std::string>::const_iterator DisplayIfKeywordIterator;
+            /// Tag for DisplayIfKeywordIterator.
+            struct DisplayIfKeywordIteratorTag;
 
-            DisplayIfKeywordIterator begin_display_if_keyword() const
-            {
-                return _display_if_keyword.begin();
-            }
+            typedef libwrapiter::ForwardIterator<DisplayIfKeywordIteratorTag,
+                    const std::string> DisplayIfKeywordIterator;
 
-            DisplayIfKeywordIterator end_display_if_keyword() const
-            {
-                return _display_if_keyword.end();
-            }
+            DisplayIfKeywordIterator begin_display_if_keyword() const;
+
+            DisplayIfKeywordIterator end_display_if_keyword() const;
 
             ///\}
 
             ///\name Iterate over our Display-If-Profile headers
             ///\{
 
-            typedef std::list<std::string>::const_iterator DisplayIfProfileIterator;
+            /// Tag for DisplayIfProfileIterator.
+            struct DisplayIfProfileIteratorTag;
 
-            DisplayIfProfileIterator begin_display_if_profile() const
-            {
-                return _display_if_profile.begin();
-            }
+            typedef libwrapiter::ForwardIterator<DisplayIfProfileIteratorTag,
+                    const std::string> DisplayIfProfileIterator;
 
-            DisplayIfProfileIterator end_display_if_profile() const
-            {
-                return _display_if_profile.end();
-            }
+            DisplayIfProfileIterator begin_display_if_profile() const;
+
+            DisplayIfProfileIterator end_display_if_profile() const;
 
             ///\}
     };

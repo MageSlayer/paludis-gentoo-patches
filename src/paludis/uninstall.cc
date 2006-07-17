@@ -21,6 +21,7 @@
 #include "uninstall.hh"
 #include <iostream>
 #include <paludis/paludis.hh>
+#include <paludis/util/collection_concrete.hh>
 
 /** \file
  * Handle the --uninstall action for the main paludis program.
@@ -68,7 +69,7 @@ do_uninstall()
     }
 
     bool ok(true);
-    p::PackageDatabaseEntryCollection::Pointer unmerge(new p::PackageDatabaseEntryCollection);
+    p::PackageDatabaseEntryCollection::Pointer unmerge(new p::PackageDatabaseEntryCollection::Concrete);
     for (std::list<p::PackageDepAtom::Pointer>::iterator t(targets.begin()), t_end(targets.end()) ;
             t != t_end ; ++t)
     {

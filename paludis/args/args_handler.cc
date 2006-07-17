@@ -20,6 +20,7 @@
 #include "args.hh"
 #include "args_dumper.hh"
 #include <algorithm>
+#include <sstream>
 #include <paludis/util/system.hh>
 
 /** \file

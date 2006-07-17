@@ -21,10 +21,10 @@
 #define PALUDIS_GUARD_PALUDIS_EXCEPTION_HH 1
 
 #include <paludis/util/attributes.hh>
-
+#include <libwrapiter/libwrapiter.hh>
 #include <string>
 #include <exception>
-#include <libebt/libebt.hh>
+
 
 /** \file
  * Declaration for the Exception base class, the InternalError exception
@@ -49,7 +49,30 @@ namespace paludis
      *
      * \ingroup grpexceptions
      */
-    typedef libebt::BacktraceContext<PaludisBacktraceTag> Context;
+    class Context
+    {
+        private:
+            Context(const Context &);
+            const Context & operator= (const Context &);
+
+            struct ContextData;
+            ContextData * const _context_data;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            Context(const std::string &);
+
+            ~Context();
+
+            ///\}
+
+            /**
+             * Current context (forwards to libebt).
+             */
+            static std::string backtrace(const std::string & delim);
+    };
 
     /**
      * Base exception class.
@@ -57,28 +80,42 @@ namespace paludis
      * \ingroup grpexceptions
      */
     class Exception :
-        public std::exception,
-        public libebt::Backtraceable<PaludisBacktraceTag>
+        public std::exception
     {
         private:
             const std::string _message;
+            struct ContextData;
+            ContextData * const _context_data;
+
+            const Exception & operator= (const Exception &);
 
         protected:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             Exception(const std::string & message) throw ();
 
+            Exception(const Exception &);
+
+            ///\}
+
         public:
-            /**
-             * Destructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             virtual ~Exception() throw () PALUDIS_ATTRIBUTE((nothrow));
+
+            ///\}
 
             /**
              * Return our descriptive error message.
              */
             const std::string & message() const throw () PALUDIS_ATTRIBUTE((nothrow));
+
+            /**
+             * Make a backtrace.
+             */
+            std::string backtrace(const std::string & delim) const;
     };
 
     /**

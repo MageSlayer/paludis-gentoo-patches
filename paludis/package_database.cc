@@ -22,6 +22,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/collection_concrete.hh>
 
 #include <list>
 #include <map>
@@ -121,7 +122,7 @@ QualifiedPackageName
 PackageDatabase::fetch_unique_qualified_package_name(
         const PackageNamePart & p) const
 {
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection);
+    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
 
     IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
         r(_imp->repositories.begin()),
@@ -146,7 +147,7 @@ PackageDatabase::fetch_unique_qualified_package_name(
 PackageDatabaseEntryCollection::Pointer
 PackageDatabase::_do_query(const PackageDepAtom & a, const InstallState installed_state) const
 {
-    PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection);
+    PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection::Concrete);
 
     IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
         r(_imp->repositories.begin()),

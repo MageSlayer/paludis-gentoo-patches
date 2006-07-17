@@ -46,9 +46,6 @@ namespace paludis
         class QAEnvironment :
             public Environment
         {
-            private:
-                std::multimap<std::string, std::string> _mirrors;
-
             public:
                 QAEnvironment(const FSEntry & base);
 
@@ -80,22 +77,13 @@ namespace paludis
                 }
 
                 virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
-                        const std::string &, const PackageDatabaseEntry *) const
-                {
-                    return UseFlagNameCollection::Pointer(new UseFlagNameCollection);
-                }
+                        const std::string &, const PackageDatabaseEntry *) const;
 
-                virtual MirrorIterator begin_mirrors(const std::string & mirror) const
-                {
-                    return _mirrors.end();
-                }
+                virtual MirrorIterator begin_mirrors(const std::string & mirror) const;
 
-                virtual MirrorIterator end_mirrors(const std::string & mirror) const
-                {
-                    return _mirrors.end();
-                }
+                virtual MirrorIterator end_mirrors(const std::string & mirror) const;
 
-                virtual void perform_hook (const Hook & hook) const
+                virtual void perform_hook (const Hook &) const
                 {
                 }
         };

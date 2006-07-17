@@ -10,6 +10,7 @@ dnl on this file at present...
 
 add(`attributes',                        `hh')
 add(`collection',                        `hh')
+add(`collection_concrete',               `hhx')
 add(`compare',                           `hh')
 add(`comparison_policy',                 `hh', `test')
 add(`counted_ptr',                       `hh', `cc', `test')

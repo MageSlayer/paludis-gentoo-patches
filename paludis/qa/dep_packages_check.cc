@@ -20,6 +20,7 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/dep_packages_check.hh>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::qa;

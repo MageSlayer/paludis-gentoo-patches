@@ -56,9 +56,9 @@ do_list_repositories()
         for (p::RepositoryInfo::SectionIterator i(ii->begin_sections()),
                 i_end(ii->end_sections()) ; i != i_end ; ++i)
         {
-            std::cout << "    " << colour(cl_heading, i->heading() + ":") << std::endl;
-            for (p::RepositoryInfoSection::KeyValueIterator k(i->begin_kvs()),
-                    k_end(i->end_kvs()) ; k != k_end ; ++k)
+            std::cout << "    " << colour(cl_heading, (*i)->heading() + ":") << std::endl;
+            for (p::RepositoryInfoSection::KeyValueIterator k((*i)->begin_kvs()),
+                    k_end((*i)->end_kvs()) ; k != k_end ; ++k)
                 std::cout << "        " << std::setw(22) << std::left << (p::stringify(k->first) + ":")
                     << std::setw(0) << " " << k->second << std::endl;
             std::cout << std::endl;

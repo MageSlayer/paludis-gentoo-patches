@@ -26,6 +26,9 @@
 #include <iostream>
 #include <algorithm>
 
+#include <libebt/libebt.hh>
+#include <libwrapiter/libwrapiter.hh>
+
 #include "qualudis_command_line.hh"
 #include "config.h"
 
@@ -528,6 +531,9 @@ int main(int argc, char *argv[])
 
         cout << "libebt:      " << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR
             << "." << LIBEBT_VERSION_MICRO << endl;
+        cout << "libwrapiter: " << LIBWRAPITER_VERSION_MAJOR << "." << LIBWRAPITER_VERSION_MINOR
+            << "." << LIBWRAPITER_VERSION_MICRO << endl;
+
         cout << endl;
         cout << "Paludis comes with ABSOLUTELY NO WARRANTY. Paludis is free software, and you" << endl;
         cout << "are welcome to redistribute it under the terms of the GNU General Public" << endl;

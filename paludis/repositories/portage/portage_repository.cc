@@ -32,6 +32,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/repositories/portage/portage_repository.hh>
 #include <paludis/syncer.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -569,23 +570,23 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
 {
     // the info_vars and info_pkgs info is only added on demand, since it's
     // fairly slow to calculate.
-    RepositoryInfoSection config_info("Configuration information");
+    RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
 
-    config_info.add_kv("location", stringify(_imp->location));
-    config_info.add_kv("profiles", join(_imp->profiles->begin(),
+    config_info->add_kv("location", stringify(_imp->location));
+    config_info->add_kv("profiles", join(_imp->profiles->begin(),
                 _imp->profiles->end(), " "));
-    config_info.add_kv("eclassdirs", join(_imp->eclassdirs->begin(),
+    config_info->add_kv("eclassdirs", join(_imp->eclassdirs->begin(),
                 _imp->eclassdirs->end(), " "));
-    config_info.add_kv("cache", stringify(_imp->cache));
-    config_info.add_kv("distdir", stringify(_imp->distdir));
-    config_info.add_kv("securitydir", stringify(_imp->securitydir));
-    config_info.add_kv("setsdir", stringify(_imp->setsdir));
-    config_info.add_kv("newsdir", stringify(_imp->newsdir));
-    config_info.add_kv("format", "portage");
-    config_info.add_kv("root", stringify(_imp->root));
-    config_info.add_kv("buildroot", stringify(_imp->buildroot));
-    config_info.add_kv("sync", _imp->sync);
-    config_info.add_kv("sync_exclude", _imp->sync_exclude);
+    config_info->add_kv("cache", stringify(_imp->cache));
+    config_info->add_kv("distdir", stringify(_imp->distdir));
+    config_info->add_kv("securitydir", stringify(_imp->securitydir));
+    config_info->add_kv("setsdir", stringify(_imp->setsdir));
+    config_info->add_kv("newsdir", stringify(_imp->newsdir));
+    config_info->add_kv("format", "portage");
+    config_info->add_kv("root", stringify(_imp->root));
+    config_info->add_kv("buildroot", stringify(_imp->buildroot));
+    config_info->add_kv("sync", _imp->sync);
+    config_info->add_kv("sync_exclude", _imp->sync_exclude);
 
     _info->add_section(config_info);
 }
@@ -674,7 +675,7 @@ PortageRepository::do_category_names() const
 
     need_category_names();
 
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection);
+    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
     CategoryMap::const_iterator i(_imp->category_names.begin()),
         i_end(_imp->category_names.end());
     for ( ; i != i_end ; ++i)
@@ -697,7 +698,7 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
         need_virtual_names();
 
     if (_imp->category_names.end() == _imp->category_names.find(c))
-        return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection);
+        return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection::Concrete);
 
     if ((_imp->location / stringify(c)).is_directory())
         for (DirIterator d(_imp->location / stringify(c)), d_end ; d != d_end ; ++d)
@@ -722,11 +723,11 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
 
     _imp->category_names[c] = true;
 
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection);
+    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
 
     std::copy(_imp->package_names.begin(), _imp->package_names.end(),
             transform_inserter(filter_inserter(result->inserter(), CategoryFilter(c)),
-                    SelectFirst<QualifiedPackageName, bool>()));
+                    SelectFirst<const QualifiedPackageName, bool>()));
 
     return result;
 }
@@ -743,7 +744,7 @@ PortageRepository::do_version_specs(const QualifiedPackageName & n) const
         return _imp->version_specs.find(n)->second;
     }
     else
-        return VersionSpecCollection::Pointer(new VersionSpecCollection);
+        return VersionSpecCollection::Pointer(new VersionSpecCollection::Concrete);
 }
 
 bool
@@ -792,7 +793,7 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
     Context context("When loading versions for '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
-    VersionSpecCollection::Pointer v(new VersionSpecCollection);
+    VersionSpecCollection::Pointer v(new VersionSpecCollection::Concrete);
 
     FSEntry path(_imp->location / stringify(n.get<qpn_category>()) /
             stringify(n.get<qpn_package>()));
@@ -1190,7 +1191,7 @@ PortageRepository::make_portage_repository(
     if (m.end() == m.find("location") || ((location = m.find("location")->second)).empty())
         throw PortageRepositoryConfigurationError("Key 'location' not specified or empty");
 
-    FSEntryCollection::Pointer profiles(new FSEntryCollection);
+    FSEntryCollection::Pointer profiles(new FSEntryCollection::Concrete);
     if (m.end() != m.find("profiles"))
         WhitespaceTokeniser::get_instance()->tokenise(m.find("profiles")->second,
                 create_inserter<FSEntry>(std::back_inserter(*profiles)));
@@ -1207,7 +1208,7 @@ PortageRepository::make_portage_repository(
     if (profiles->empty())
         throw PortageRepositoryConfigurationError("No profiles have been specified");
 
-    FSEntryCollection::Pointer eclassdirs(new FSEntryCollection);
+    FSEntryCollection::Pointer eclassdirs(new FSEntryCollection::Concrete);
     if (m.end() != m.find("eclassdirs"))
         WhitespaceTokeniser::get_instance()->tokenise(m.find("eclassdirs")->second,
                 create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
@@ -1845,7 +1846,7 @@ PortageRepository::do_security_set(const PackageSetOptions & o) const
         f_end(advisories.end());
 
     std::set<std::pair<PackageDatabaseEntry, std::string> > affected;
-    PackageDatabaseEntryCollection unaffected;
+    PackageDatabaseEntryCollection::Concrete unaffected;
     std::map<std::string, std::string> advisory_map;
 
     for ( ; f != f_end; ++f)
@@ -1874,9 +1875,12 @@ PortageRepository::do_security_set(const PackageSetOptions & o) const
 
                 bool is_range(2 == atoms.size());
 
-                PackageDatabaseEntryCollection::ConstPointer affected_collection1(_imp->db->query(*atoms.at(0), affected_state));
-                PackageDatabaseEntryCollection::ConstPointer affected_collection2(new PackageDatabaseEntryCollection);
-                PackageDatabaseEntryCollection::Iterator p(affected_collection1->begin()), p_end(affected_collection1->end());
+                PackageDatabaseEntryCollection::ConstPointer affected_collection1(
+                        _imp->db->query(*atoms.at(0), affected_state));
+                PackageDatabaseEntryCollection::ConstPointer affected_collection2(
+                        new PackageDatabaseEntryCollection::Concrete);
+                PackageDatabaseEntryCollection::Iterator p(affected_collection1->begin()),
+                    p_end(affected_collection1->end());
 
                 if (is_range)
                     affected_collection2 = _imp->db->query(*atoms.at(1), affected_state);
@@ -1905,9 +1909,12 @@ PortageRepository::do_security_set(const PackageSetOptions & o) const
 
                 bool is_range(2 == atoms.size());
 
-                PackageDatabaseEntryCollection::ConstPointer unaffected_collection1(_imp->db->query(*atoms.at(0), is_either));
-                PackageDatabaseEntryCollection::ConstPointer unaffected_collection2(new PackageDatabaseEntryCollection);
-                PackageDatabaseEntryCollection::Iterator p(unaffected_collection1->begin()), p_end(unaffected_collection1->end());
+                PackageDatabaseEntryCollection::ConstPointer unaffected_collection1(_imp->db->query(
+                            *atoms.at(0), is_either));
+                PackageDatabaseEntryCollection::ConstPointer unaffected_collection2(
+                        new PackageDatabaseEntryCollection::Concrete);
+                PackageDatabaseEntryCollection::Iterator p(unaffected_collection1->begin()),
+                    p_end(unaffected_collection1->end());
 
                 if (is_range)
                     unaffected_collection2 = _imp->db->query(*atoms.at(1), is_either);
@@ -2246,14 +2253,14 @@ PortageRepository::info(bool verbose) const
 
     if (! info_pkgs.empty())
     {
-        RepositoryInfoSection package_info("Package information");
+        RepositoryInfoSection::Pointer package_info(new RepositoryInfoSection("Package information"));
         for (std::set<std::string>::const_iterator i(info_pkgs.begin()),
                 i_end(info_pkgs.end()) ; i != i_end ; ++i)
         {
             PackageDatabaseEntryCollection::ConstPointer q(_imp->env->package_database()->query(
                         PackageDepAtom::ConstPointer(new PackageDepAtom(*i)), is_installed_only));
             if (q->empty())
-                package_info.add_kv(*i, "(none)");
+                package_info->add_kv(*i, "(none)");
             else
             {
                 std::set<VersionSpec> versions;
@@ -2264,7 +2271,7 @@ PortageRepository::info(bool verbose) const
                 for (PackageDatabaseEntryCollection::Iterator qq(q->begin()), qq_end(q->end()) ;
                         qq != qq_end ; ++qq)
                     versions.insert(qq->get<pde_version>());
-                package_info.add_kv(*i, join(versions.begin(), versions.end(), ", "));
+                package_info->add_kv(*i, join(versions.begin(), versions.end(), ", "));
             }
         }
 
@@ -2284,10 +2291,10 @@ PortageRepository::info(bool verbose) const
         PackageDatabaseEntry e(QualifiedPackageName(*info_pkgs.begin()),
                 *version_specs(QualifiedPackageName(*info_pkgs.begin()))->last(),
                 name());
-        RepositoryInfoSection variable_info("Variable information");
+        RepositoryInfoSection::Pointer variable_info(new RepositoryInfoSection("Variable information"));
         for (std::set<std::string>::const_iterator i(info_vars.begin()),
                 i_end(info_vars.end()) ; i != i_end ; ++i)
-            variable_info.add_kv(*i, get_environment_variable(e, *i));
+            variable_info->add_kv(*i, get_environment_variable(e, *i));
 
         result->add_section(variable_info);
     }

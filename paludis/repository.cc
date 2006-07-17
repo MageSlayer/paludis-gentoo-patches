@@ -18,6 +18,8 @@
  */
 
 #include <paludis/repository.hh>
+#include <map>
+#include <list>
 #include <ctype.h>
 
 /** \file
@@ -77,22 +79,63 @@ PackageUninstallActionError::PackageUninstallActionError(const std::string & msg
 {
 }
 
-RepositoryInfo &
-RepositoryInfo::add_section(const RepositoryInfoSection & s)
+namespace paludis
 {
-    _sections.push_back(s);
+    template<>
+    struct Implementation<RepositoryInfoSection> :
+        InternalCounted<Implementation<RepositoryInfoSection> >
+    {
+        std::string heading;
+        std::map<std::string, std::string> kvs;
+    };
+
+    template<>
+    struct Implementation<RepositoryInfo> :
+        InternalCounted<Implementation<RepositoryInfo> >
+    {
+        std::list<RepositoryInfoSection::ConstPointer> sections;
+    };
+}
+
+RepositoryInfo &
+RepositoryInfo::add_section(RepositoryInfoSection::ConstPointer s)
+{
+    _imp->sections.push_back(s);
     return *this;
 }
 
 RepositoryInfoSection::RepositoryInfoSection(const std::string & heading) :
-    _heading(heading)
+    PrivateImplementationPattern<RepositoryInfoSection>(new Implementation<RepositoryInfoSection>)
 {
+    _imp->heading = heading;
+}
+
+RepositoryInfoSection::~RepositoryInfoSection()
+{
+}
+
+std::string
+RepositoryInfoSection::heading() const
+{
+    return _imp->heading;
+}
+
+RepositoryInfoSection::KeyValueIterator
+RepositoryInfoSection::begin_kvs() const
+{
+    return KeyValueIterator(_imp->kvs.begin());
+}
+
+RepositoryInfoSection::KeyValueIterator
+RepositoryInfoSection::end_kvs() const
+{
+    return KeyValueIterator(_imp->kvs.end());
 }
 
 RepositoryInfoSection &
 RepositoryInfoSection::add_kv(const std::string & k, const std::string & v)
 {
-    _kvs.insert(std::make_pair(k, v));
+    _imp->kvs.insert(std::make_pair(k, v));
     return *this;
 }
 
@@ -100,6 +143,27 @@ RepositoryInfo::ConstPointer
 Repository::info(bool) const
 {
     return _info;
+}
+
+RepositoryInfo::RepositoryInfo() :
+    PrivateImplementationPattern<RepositoryInfo>(new Implementation<RepositoryInfo>)
+{
+}
+
+RepositoryInfo::~RepositoryInfo()
+{
+}
+
+RepositoryInfo::SectionIterator
+RepositoryInfo::begin_sections() const
+{
+    return SectionIterator(_imp->sections.begin());
+}
+
+RepositoryInfo::SectionIterator
+RepositoryInfo::end_sections() const
+{
+    return SectionIterator(_imp->sections.end());
 }
 
 UseFlagName

@@ -20,12 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SEQUENTIAL_COLLECTION_HH
 #define PALUDIS_GUARD_PALUDIS_SEQUENTIAL_COLLECTION_HH 1
 
-#include <algorithm>
-#include <list>
-#include <set>
-#include <iterator>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <iterator>
+#include <libwrapiter/libwrapiter.hh>
 
 /** \file
  * Various wrappers around collections of items, for convenience and
@@ -40,6 +38,9 @@ namespace paludis
      * Wrapper around a std::list of a particular item. Multiple items
      * with the same value are disallowed.
      *
+     * This item cannot be constructed. Use SequentialCollection::Concrete,
+     * which requires including paludis/util/collection_concrete.hh .
+     *
      * \ingroup grpcollections
      */
     template <typename T_>
@@ -47,12 +48,21 @@ namespace paludis
         private InstantiationPolicy<SequentialCollection<T_>, instantiation_method::NonCopyableTag>,
         public InternalCounted<SequentialCollection<T_> >,
         public std::iterator<typename std::iterator_traits<
-            typename std::list<T_>::const_iterator>::iterator_category, T_>
+            typename libwrapiter::ForwardIterator<SequentialCollection<T_>, const T_> >::iterator_category, T_>
     {
-        private:
-            std::list<T_> _items;
+        protected:
+            ///\name Basic operations
+            ///\{
+
+            SequentialCollection()
+            {
+            }
+
+            ///\}
 
         public:
+            class Concrete;
+
             /**
              * Issue with g++ 3.4.6: const_reference isn't defined via our std::iterator
              * inherit, but it is needed by many standard algorithms.
@@ -62,16 +72,6 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            /**
-             * Constructor.
-             */
-            SequentialCollection()
-            {
-            }
-
-            /**
-             * Destructor.
-             */
             virtual ~SequentialCollection()
             {
             }
@@ -81,22 +81,13 @@ namespace paludis
             ///\name Iterate over our items
             ///\{
 
-            typedef typename std::list<T_>::const_iterator Iterator;
+            typedef libwrapiter::ForwardIterator<SequentialCollection<T_>, const T_> Iterator;
 
-            Iterator begin() const
-            {
-                return _items.begin();
-            }
+            virtual Iterator begin() const = 0;
 
-            Iterator end() const
-            {
-                return _items.end();
-            }
+            virtual Iterator end() const = 0;
 
-            Iterator last() const
-            {
-                return _items.begin() == _items.end() ? _items.end() : --(_items.end());
-            }
+            virtual Iterator last() const = 0;
 
             ///\}
 
@@ -106,10 +97,7 @@ namespace paludis
             /**
              * Return an Iterator to an item, or end() if there's no match.
              */
-            Iterator find(const T_ & v) const
-            {
-                return std::find(_items.begin(), _items.end(), v);
-            }
+            virtual Iterator find(const T_ & v) const = 0;
 
             ///\}
 
@@ -119,23 +107,12 @@ namespace paludis
             /**
              * Append an item, return whether we succeeded.
              */
-            bool append(T_ v)
-            {
-                if (end() != find(v))
-                    return false;
-
-                _items.push_back(v);
-                return true;
-            }
+            virtual bool append(T_ v) = 0;
 
             /**
              * Append an item.
              */
-            void push_back(const T_ & v)
-            {
-                if (end() == find(v))
-                    _items.push_back(v);
-            }
+            virtual void push_back(const T_ & v) = 0;
 
             ///\}
 
@@ -145,17 +122,16 @@ namespace paludis
             /**
              * Are we empty?
              */
-            bool empty() const
-            {
-                return _items.empty();
-            }
+            virtual bool empty() const = 0;
 
             ///\}
     };
 
     /**
-     * Wrapper around a std::set of a particular item. May be changed at some
-     * point to support template find.
+     * Wrapper around a std::set of a particular item.
+     *
+     * This item cannot be constructed. Use SortedCollection::Concrete,
+     * which requires including paludis/util/collection_concrete.hh .
      *
      * \ingroup grpcollections
      */
@@ -164,18 +140,23 @@ namespace paludis
         private InstantiationPolicy<SortedCollection<T_>, instantiation_method::NonCopyableTag>,
         public InternalCounted<SortedCollection<T_> >,
         public std::iterator<typename std::iterator_traits<
-            typename std::set<T_>::const_iterator>::iterator_category, T_>
+            typename libwrapiter::ForwardIterator<SequentialCollection<T_>, const T_> >::iterator_category, T_>
     {
-        private:
-            std::set<T_> _items;
-
-        public:
+        protected:
             ///\name Basic operations
             ///\{
 
             SortedCollection()
             {
             }
+
+            ///\}
+
+        public:
+            class Concrete;
+
+            ///\name Basic operations
+            ///\{
 
             virtual ~SortedCollection()
             {
@@ -186,47 +167,27 @@ namespace paludis
             ///\name Iterate over our items
             ///\{
 
-            typedef typename std::set<T_>::const_iterator Iterator;
+            typedef libwrapiter::ForwardIterator<SortedCollection<T_>, const T_> Iterator;
 
-            Iterator begin() const
-            {
-                return _items.begin();
-            }
+            virtual Iterator begin() const = 0;
 
-            Iterator end() const
-            {
-                return _items.end();
-            }
+            virtual Iterator end() const = 0;
 
-            typedef typename std::set<T_>::const_reverse_iterator ReverseIterator;
+            struct ReverseTag;
+            typedef libwrapiter::ForwardIterator<ReverseTag, const T_> ReverseIterator;
 
-            ReverseIterator rbegin() const
-            {
-                return _items.rbegin();
-            }
+            virtual ReverseIterator rbegin() const = 0;
 
-            ReverseIterator rend() const
-            {
-                return _items.rend();
-            }
+            virtual ReverseIterator rend() const = 0;
 
-            Iterator last() const
-            {
-                Iterator result(_items.end());
-                if (result != _items.begin())
-                    --result;
-                return result;
-            }
+            virtual Iterator last() const = 0;
 
             ///\}
 
             ///\name Finding items
             ///\{
 
-            Iterator find(const T_ & v) const
-            {
-                return _items.find(v);
-            }
+            virtual Iterator find(const T_ & v) const = 0;
 
             ///\}
 
@@ -236,43 +197,27 @@ namespace paludis
             /**
              * Insert an item, return whether we succeeded.
              */
-            bool insert(const T_ & v)
-            {
-                return _items.insert(v).second;
-            }
+            virtual bool insert(const T_ & v) = 0;
 
             /**
              * Erase an item, return whether we succeeded.
              */
-            bool erase(const T_ & v)
-            {
-                return 0 != _items.erase(v);
-            }
+            virtual bool erase(const T_ & v) = 0;
 
             /**
              * Insert all items from another container.
              */
-            bool merge(typename SortedCollection<T_>::ConstPointer o)
-            {
-                bool result(true);
-                Iterator o_begin(o->begin()), o_end(o->end());
-                for ( ; o_begin != o_end ; ++o_begin)
-                    result &= insert(*o_begin);
-                return result;
-            }
+            virtual bool merge(typename SortedCollection<T_>::ConstPointer o) = 0;
 
             /**
              * Our insert iterator type.
              */
-            typedef typename std::insert_iterator<std::set<T_> > Inserter;
+            typedef libwrapiter::OutputIterator<SortedCollection<T_>, T_> Inserter;
 
             /**
              * Fetch an inserter.
              */
-            Inserter inserter()
-            {
-                return std::inserter(_items, _items.begin());
-            }
+            virtual Inserter inserter() = 0;
 
             ///\}
 
@@ -282,18 +227,12 @@ namespace paludis
             /**
              * Are we empty?
              */
-            bool empty() const
-            {
-                return _items.empty();
-            }
+            virtual bool empty() const = 0;
 
             /**
              * How big are we?
              */
-            unsigned size() const
-            {
-                return _items.size();
-            }
+            virtual unsigned size() const = 0;
 
             ///\}
     };

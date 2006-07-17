@@ -26,8 +26,6 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/smart_record.hh>
 
-#include <map>
-#include <vector>
 #include <string>
 
 /** \file
@@ -38,6 +36,11 @@
 
 namespace paludis
 {
+    struct EnvironmentMirrorIteratorTag;
+
+    typedef libwrapiter::ForwardIterator<EnvironmentMirrorIteratorTag,
+            const std::pair<const std::string, std::string> > EnvironmentMirrorIterator;
+
     /**
      * A DefaultConfigError is thrown if a configuration error is encountered
      * by DefaultConfig.
@@ -162,7 +165,7 @@ namespace paludis
             ///\name Iterate over our repositories
             ///{
 
-            typedef std::list<RepositoryConfigEntry>::const_iterator RepositoryIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const RepositoryConfigEntry> RepositoryIterator;
 
             RepositoryIterator begin_repositories() const;
 
@@ -173,14 +176,14 @@ namespace paludis
             ///\name Iterate over our default and per-package keywords
             ///{
 
-            typedef std::vector<std::pair<PackageDepAtom::ConstPointer, KeywordName> >::const_iterator
-                PackageKeywordsIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig,
+                    const std::pair<PackageDepAtom::ConstPointer, KeywordName> > PackageKeywordsIterator;
 
             PackageKeywordsIterator begin_package_keywords(const QualifiedPackageName & d) const;
 
             PackageKeywordsIterator end_package_keywords(const QualifiedPackageName & d) const;
 
-            typedef std::vector<KeywordName>::const_iterator DefaultKeywordsIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const KeywordName> DefaultKeywordsIterator;
 
             DefaultKeywordsIterator begin_default_keywords() const;
 
@@ -191,14 +194,14 @@ namespace paludis
             ///\name Iterate over our default and per-package licenses
             ///{
 
-            typedef std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> >::const_iterator
-                PackageLicensesIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig,
+                    const std::pair<PackageDepAtom::ConstPointer, std::string> > PackageLicensesIterator;
 
             PackageLicensesIterator begin_package_licenses(const QualifiedPackageName & d) const;
 
             PackageLicensesIterator end_package_licenses(const QualifiedPackageName & d) const;
 
-            typedef std::vector<std::string>::const_iterator DefaultLicensesIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const std::string> DefaultLicensesIterator;
 
             DefaultLicensesIterator begin_default_licenses() const;
 
@@ -209,15 +212,13 @@ namespace paludis
             ///\name Iterate over our masks and unmasks
             ///{
 
-            typedef IndirectIterator<std::vector<PackageDepAtom::ConstPointer>::const_iterator,
-                    const PackageDepAtom> UserMasksIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const PackageDepAtom> UserMasksIterator;
 
             UserMasksIterator begin_user_masks(const QualifiedPackageName & d) const;
 
             UserMasksIterator end_user_masks(const QualifiedPackageName & d) const;
 
-            typedef IndirectIterator<std::vector<PackageDepAtom::ConstPointer>::const_iterator,
-                    const PackageDepAtom> UserUnmasksIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const PackageDepAtom> UserUnmasksIterator;
 
             UserUnmasksIterator begin_user_unmasks(const QualifiedPackageName & d) const;
 
@@ -228,13 +229,14 @@ namespace paludis
             ///\name Iterate over our default and per-package use flags
             ///{
 
-            typedef std::vector<UseConfigEntry>::const_iterator UseConfigIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const UseConfigEntry> UseConfigIterator;
 
             UseConfigIterator begin_use_config(const QualifiedPackageName & q) const;
 
             UseConfigIterator end_use_config(const QualifiedPackageName & q) const;
 
-            typedef std::vector<std::pair<UseFlagName, UseFlagState> >::const_iterator DefaultUseIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig,
+                    const std::pair<UseFlagName, UseFlagState> > DefaultUseIterator;
 
             DefaultUseIterator begin_default_use() const;
 
@@ -270,7 +272,7 @@ namespace paludis
             ///\name Iterate over our mirrors
             ///\{
 
-            typedef std::multimap<std::string, std::string>::const_iterator MirrorIterator;
+            typedef EnvironmentMirrorIterator MirrorIterator;
 
             MirrorIterator begin_mirrors(const std::string & m) const;
 

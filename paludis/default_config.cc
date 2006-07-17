@@ -32,6 +32,7 @@
 #include <fstream>
 #include <algorithm>
 #include <sstream>
+#include <list>
 
 #include <ctype.h>
 
@@ -469,13 +470,13 @@ DefaultConfig::config_suffix()
 DefaultConfig::RepositoryIterator
 DefaultConfig::begin_repositories() const
 {
-    return _imp->repos.begin();
+    return RepositoryIterator(_imp->repos.begin());
 }
 
 DefaultConfig::RepositoryIterator
 DefaultConfig::end_repositories() const
 {
-    return _imp->repos.end();
+    return RepositoryIterator(_imp->repos.end());
 }
 
 DefaultConfig::PackageKeywordsIterator
@@ -484,9 +485,9 @@ DefaultConfig::begin_package_keywords(const QualifiedPackageName & d) const
     std::map<QualifiedPackageName, std::vector<
         std::pair<PackageDepAtom::ConstPointer, KeywordName> > >::const_iterator r;
     if (_imp->keywords.end() != ((r = _imp->keywords.find(d))))
-        return r->second.begin();
+        return PackageKeywordsIterator(r->second.begin());
     else
-        return _imp->empty_keywords.begin();
+        return PackageKeywordsIterator(_imp->empty_keywords.begin());
 }
 
 DefaultConfig::PackageKeywordsIterator
@@ -495,21 +496,21 @@ DefaultConfig::end_package_keywords(const QualifiedPackageName & d) const
     std::map<QualifiedPackageName, std::vector<
         std::pair<PackageDepAtom::ConstPointer, KeywordName> > >::const_iterator r;
     if (_imp->keywords.end() != ((r = _imp->keywords.find(d))))
-        return r->second.end();
+        return PackageKeywordsIterator(r->second.end());
     else
-        return _imp->empty_keywords.end();
+        return PackageKeywordsIterator(_imp->empty_keywords.end());
 }
 
 DefaultConfig::DefaultKeywordsIterator
 DefaultConfig::begin_default_keywords() const
 {
-    return _imp->default_keywords.begin();
+    return DefaultKeywordsIterator(_imp->default_keywords.begin());
 }
 
 DefaultConfig::DefaultKeywordsIterator
 DefaultConfig::end_default_keywords() const
 {
-    return _imp->default_keywords.end();
+    return DefaultKeywordsIterator(_imp->default_keywords.end());
 }
 
 DefaultConfig::PackageLicensesIterator
@@ -518,9 +519,9 @@ DefaultConfig::begin_package_licenses(const QualifiedPackageName & d) const
     std::map<QualifiedPackageName, std::vector<
         std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
     if (_imp->licenses.end() != ((r = _imp->licenses.find(d))))
-        return r->second.begin();
+        return PackageLicensesIterator(r->second.begin());
     else
-        return _imp->empty_licenses.begin();
+        return PackageLicensesIterator(_imp->empty_licenses.begin());
 }
 
 DefaultConfig::PackageLicensesIterator
@@ -529,21 +530,21 @@ DefaultConfig::end_package_licenses(const QualifiedPackageName & d) const
     std::map<QualifiedPackageName, std::vector<
         std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
     if (_imp->licenses.end() != ((r = _imp->licenses.find(d))))
-        return r->second.end();
+        return PackageLicensesIterator(r->second.end());
     else
-        return _imp->empty_licenses.end();
+        return PackageLicensesIterator(_imp->empty_licenses.end());
 }
 
 DefaultConfig::DefaultLicensesIterator
 DefaultConfig::begin_default_licenses() const
 {
-    return _imp->default_licenses.begin();
+    return DefaultLicensesIterator(_imp->default_licenses.begin());
 }
 
 DefaultConfig::DefaultLicensesIterator
 DefaultConfig::end_default_licenses() const
 {
-    return _imp->default_licenses.end();
+    return DefaultLicensesIterator(_imp->default_licenses.end());
 }
 
 DefaultConfig::UserMasksIterator
@@ -551,9 +552,9 @@ DefaultConfig::begin_user_masks(const QualifiedPackageName & d) const
 {
     std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
     if (_imp->user_masks.end() != ((r = _imp->user_masks.find(d))))
-        return r->second.begin();
+        return UserMasksIterator(indirect_iterator<const PackageDepAtom>(r->second.begin()));
     else
-        return _imp->empty_masks.begin();
+        return UserMasksIterator(indirect_iterator<const PackageDepAtom>(_imp->empty_masks.begin()));
 }
 
 DefaultConfig::UserMasksIterator
@@ -561,9 +562,9 @@ DefaultConfig::end_user_masks(const QualifiedPackageName & d) const
 {
     std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
     if (_imp->user_masks.end() != ((r = _imp->user_masks.find(d))))
-        return r->second.end();
+        return UserMasksIterator(indirect_iterator<const PackageDepAtom>(r->second.end()));
     else
-        return _imp->empty_masks.end();
+        return UserMasksIterator(indirect_iterator<const PackageDepAtom>(_imp->empty_masks.end()));
 }
 
 DefaultConfig::UserUnmasksIterator
@@ -571,9 +572,9 @@ DefaultConfig::begin_user_unmasks(const QualifiedPackageName & d) const
 {
     std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
     if (_imp->user_unmasks.end() != ((r = _imp->user_unmasks.find(d))))
-        return r->second.begin();
+        return UserUnmasksIterator(indirect_iterator<const PackageDepAtom>(r->second.begin()));
     else
-        return _imp->empty_masks.begin();
+        return UserUnmasksIterator(indirect_iterator<const PackageDepAtom>(_imp->empty_masks.begin()));
 }
 
 DefaultConfig::UserUnmasksIterator
@@ -581,9 +582,9 @@ DefaultConfig::end_user_unmasks(const QualifiedPackageName & d) const
 {
     std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
     if (_imp->user_unmasks.end() != ((r = _imp->user_unmasks.find(d))))
-        return r->second.end();
+        return UserUnmasksIterator(indirect_iterator<const PackageDepAtom>(r->second.end()));
     else
-        return _imp->empty_masks.end();
+        return UserUnmasksIterator(indirect_iterator<const PackageDepAtom>(_imp->empty_masks.end()));
 }
 
 DefaultConfig::UseConfigIterator
@@ -591,9 +592,9 @@ DefaultConfig::begin_use_config(const QualifiedPackageName & q) const
 {
     std::map<QualifiedPackageName, std::vector<UseConfigEntry> >::const_iterator r;
     if (_imp->use.end() != ((r = _imp->use.find(q))))
-        return r->second.begin();
+        return UseConfigIterator(r->second.begin());
     else
-        return _imp->empty_use.begin();
+        return UseConfigIterator(_imp->empty_use.begin());
 }
 
 DefaultConfig::UseConfigIterator
@@ -601,21 +602,21 @@ DefaultConfig::end_use_config(const QualifiedPackageName & q) const
 {
     std::map<QualifiedPackageName, std::vector<UseConfigEntry> >::const_iterator r;
     if (_imp->use.end() != ((r = _imp->use.find(q))))
-        return r->second.end();
+        return UseConfigIterator(r->second.end());
     else
-        return _imp->empty_use.end();
+        return UseConfigIterator(_imp->empty_use.end());
 }
 
 DefaultConfig::DefaultUseIterator
 DefaultConfig::begin_default_use() const
 {
-    return _imp->default_use.begin();
+    return DefaultUseIterator(_imp->default_use.begin());
 }
 
 DefaultConfig::DefaultUseIterator
 DefaultConfig::end_default_use() const
 {
-    return _imp->default_use.end();
+    return DefaultUseIterator(_imp->default_use.end());
 }
 
 std::string
@@ -645,12 +646,12 @@ DefaultConfig::config_dir() const
 DefaultConfig::MirrorIterator
 DefaultConfig::begin_mirrors(const std::string & m) const
 {
-    return _imp->mirrors.lower_bound(m);
+    return MirrorIterator(_imp->mirrors.lower_bound(m));
 }
 
 DefaultConfig::MirrorIterator
 DefaultConfig::end_mirrors(const std::string & m) const
 {
-    return _imp->mirrors.upper_bound(m);
+    return MirrorIterator(_imp->mirrors.upper_bound(m));
 }
 

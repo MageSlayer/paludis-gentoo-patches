@@ -213,6 +213,26 @@ int main(int, char **)
 	 AC_MSG_ERROR([libebt (http://libebt.berlios.de/) is required])])
 dnl }}}
 
+dnl {{{ we need libwrapiter.
+dnl don't use AC_CHECK_HEADER, it does silly things
+AC_MSG_CHECKING([for libwrapiter])
+AC_COMPILE_IFELSE([
+#include <libwrapiter/libwrapiter.hh>
+#include <string>
+struct C {
+	typedef libwrapiter::ForwardIterator<C, int> Iterator;
+	Iterator begin();
+	Iterator end();
+};
+int main(int, char **)
+{
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([libwrapiter (http://libwrapiter.berlios.de/) is required])])
+dnl }}}
+
 dnl {{{ check for various misc functions.
 dnl It's probably possible to make many of these optional rather than
 dnl hard requirements. If any of these fail for you, send patches.

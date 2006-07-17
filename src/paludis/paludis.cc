@@ -33,6 +33,9 @@
 #include <paludis/paludis.hh>
 #include <paludis/util/util.hh>
 
+#include <libebt/libebt.hh>
+#include <libwrapiter/libwrapiter.hh>
+
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -86,6 +89,8 @@ namespace
 
         cout << "libebt:      " << LIBEBT_VERSION_MAJOR << "." << LIBEBT_VERSION_MINOR
             << "." << LIBEBT_VERSION_MICRO << endl;
+        cout << "libwrapiter: " << LIBWRAPITER_VERSION_MAJOR << "." << LIBWRAPITER_VERSION_MINOR
+            << "." << LIBWRAPITER_VERSION_MICRO << endl;
 #if HAVE_SANDBOX
         cout << "sandbox:     enabled" << endl;
 #else
@@ -107,9 +112,9 @@ namespace
             for (p::RepositoryInfo::SectionIterator i(ii->begin_sections()),
                     i_end(ii->end_sections()) ; i != i_end ; ++i)
             {
-                cout << "    " << colour(cl_heading, i->heading() + ":") << endl;
-                for (p::RepositoryInfoSection::KeyValueIterator k(i->begin_kvs()),
-                        k_end(i->end_kvs()) ; k != k_end ; ++k)
+                cout << "    " << colour(cl_heading, (*i)->heading() + ":") << endl;
+                for (p::RepositoryInfoSection::KeyValueIterator k((*i)->begin_kvs()),
+                        k_end((*i)->end_kvs()) ; k != k_end ; ++k)
                     cout << "        " << std::setw(22) << std::left << (p::stringify(k->first) + ":")
                         << std::setw(0) << " " << k->second << endl;
                 cout << endl;
@@ -126,8 +131,6 @@ main(int argc, char *argv[])
 
     try
     {
-        context.change_context("When parsing command line arguments:");
-
         CommandLine::get_instance()->run(argc, argv);
 
         if (CommandLine::get_instance()->a_help.specified())

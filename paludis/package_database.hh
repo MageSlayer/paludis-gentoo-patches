@@ -37,10 +37,11 @@
 #include <paludis/package_database_entry.hh>
 #include <paludis/contents.hh>
 
-#include <ostream>
+#include <iosfwd>
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <list>
 
 /** \file
  * Declarations for the PackageDatabase class and related utilities.

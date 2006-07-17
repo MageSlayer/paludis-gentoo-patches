@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <iostream>
 #include <paludis/paludis.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <string>
 
 /** \file
@@ -90,7 +91,7 @@ void do_one_query(
     cout << endl;
 
     /* find all repository names. */
-    p::RepositoryNameCollection repo_names;
+    p::RepositoryNameCollection::Concrete repo_names;
     p::PackageDatabaseEntryCollection::Iterator e(entries->begin()), e_end(entries->end());
     for ( ; e != e_end ; ++e)
         repo_names.append(e->get<p::pde_repository>());

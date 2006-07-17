@@ -24,7 +24,6 @@
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <set>
 
 /** \file
  * Declarations for paludis::DirIterator.

@@ -20,10 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_PARSER_LEXER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_PARSER_LEXER_HH 1
 
-#include <list>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <string>
+
+#include <libwrapiter/libwrapiter.hh>
 
 /** \file
  * Declarations for the PortageDepLexer class.
@@ -93,37 +95,29 @@ namespace paludis
      * \ingroup grpdeplexer
      */
     class PortageDepLexer :
-        private InstantiationPolicy<PortageDepLexer, instantiation_method::NonCopyableTag>
+        private InstantiationPolicy<PortageDepLexer, instantiation_method::NonCopyableTag>,
+        private PrivateImplementationPattern<PortageDepLexer>
     {
-        private:
-            std::list<std::pair<PortageDepLexerLexeme, std::string> > _tokens;
-
         public:
-            /**
-             * Iterator for our tokens.
-             */
-            typedef std::list<std::pair<PortageDepLexerLexeme, std::string> >::const_iterator Iterator;
+            ///\name Iterate over our items
+            ///\{
 
-            /**
-             * Iterator to the start of our tokens.
-             */
-            Iterator begin() const
-            {
-                return _tokens.begin();
-            }
+            typedef libwrapiter::ForwardIterator<PortageDepLexer,
+                    const std::pair<PortageDepLexerLexeme, std::string> > Iterator;
 
-            /**
-             * Iterator to the end of our tokens.
-             */
-            Iterator end() const
-            {
-                return _tokens.end();
-            }
+            Iterator begin() const;
 
-            /**
-             * Constructor.
-             */
+            Iterator end() const;
+
+            ///\}
+
+            ///\name Basic operations
+            ///\{
+
             PortageDepLexer(const std::string &);
+            ~PortageDepLexer();
+
+            ///\}
     };
 }
 

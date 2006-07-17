@@ -21,6 +21,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/pdepend_overlap_check.hh>
 #include <paludis/util/join.hh>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::qa;

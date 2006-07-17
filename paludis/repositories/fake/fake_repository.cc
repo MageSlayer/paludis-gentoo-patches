@@ -20,6 +20,7 @@
 #include <map>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/portage_dep_parser.hh>
 
@@ -63,7 +64,7 @@ namespace paludis
     };
 
     Implementation<FakeRepository>::Implementation() :
-        category_names(new CategoryNamePartCollection)
+        category_names(new CategoryNamePartCollection::Concrete)
     {
     }
 }
@@ -85,8 +86,8 @@ FakeRepository::FakeRepository(const RepositoryName & name) :
     Repository::UseInterface(),
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>)
 {
-    RepositoryInfoSection config_info("Configuration information");
-    config_info.add_kv("format", "fake");
+    RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
+    config_info->add_kv("format", "fake");
 
     _info->add_section(config_info);
 }
@@ -120,7 +121,7 @@ FakeRepository::do_package_names(const CategoryNamePart & c) const
 {
     if (! has_category_named(c))
         throw InternalError(PALUDIS_HERE, "no category named " + stringify(c));
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection);
+    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
     PackageNamePartCollection::Iterator p(_imp->package_names.find(c)->second->begin()),
         p_end(_imp->package_names.find(c)->second->end());
     for ( ; p != p_end ; ++p)
@@ -153,7 +154,7 @@ void
 FakeRepository::add_category(const CategoryNamePart & c)
 {
     _imp->category_names->insert(c);
-    _imp->package_names.insert(std::make_pair(c, new PackageNamePartCollection));
+    _imp->package_names.insert(std::make_pair(c, new PackageNamePartCollection::Concrete));
 }
 
 void
@@ -161,7 +162,7 @@ FakeRepository::add_package(const QualifiedPackageName & q)
 {
     add_category(q.get<qpn_category>());
     _imp->package_names.find(q.get<qpn_category>())->second->insert(q.get<qpn_package>());
-    _imp->versions.insert(std::make_pair(q, new VersionSpecCollection));
+    _imp->versions.insert(std::make_pair(q, new VersionSpecCollection::Concrete));
 }
 
 VersionMetadata::Pointer

@@ -18,8 +18,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <map>
 #include <paludis/qa/environment.hh>
+#include <paludis/util/collection_concrete.hh>
+#include <map>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -27,7 +28,6 @@ using namespace paludis::qa;
 QAEnvironment::QAEnvironment(const FSEntry & base) :
     Environment(PackageDatabase::Pointer(new PackageDatabase(this)))
 {
-    MirrorIterator _mirrors;
     std::map<std::string, std::string> keys;
 
     keys.insert(std::make_pair(std::string("format"), std::string("portage")));
@@ -74,3 +74,27 @@ QAEnvironment::query_user_unmasks(const PackageDatabaseEntry &) const
 {
     return false;
 }
+
+namespace
+{
+    static const std::multimap<std::string, std::string> qa_environment_mirrors;
+}
+
+QAEnvironment::MirrorIterator
+QAEnvironment::begin_mirrors(const std::string &) const
+{
+    return MirrorIterator(qa_environment_mirrors.begin());
+}
+
+QAEnvironment::MirrorIterator
+QAEnvironment::end_mirrors(const std::string &) const
+{
+    return MirrorIterator(qa_environment_mirrors.end());
+}
+
+UseFlagNameCollection::Pointer
+QAEnvironment::query_enabled_use_matching(const std::string &, const PackageDatabaseEntry *) const
+{
+    return UseFlagNameCollection::Pointer(new UseFlagNameCollection::Concrete);
+}
+

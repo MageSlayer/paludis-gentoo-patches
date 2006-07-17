@@ -31,8 +31,10 @@
 #include <paludis/package_database_entry.hh>
 #include <paludis/contents.hh>
 
-#include <map>
 #include <string>
+#include <map>
+
+#include <libwrapiter/libwrapiter.hh>
 
 /** \file
  * Declarations for the Repository class.
@@ -134,36 +136,34 @@ namespace paludis
      * \see RepositoryInfo
      * \ingroup grprepository
      */
-    class RepositoryInfoSection
+    class RepositoryInfoSection :
+        public InternalCounted<RepositoryInfoSection>,
+        private PrivateImplementationPattern<RepositoryInfoSection>
     {
-        private:
-            std::string _heading;
-            std::map<std::string, std::string> _kvs;
-
         public:
-            /// Constructor.
+            ///\name Basic operations
+            ///\{
+
             RepositoryInfoSection(const std::string & heading);
 
+            ~RepositoryInfoSection();
+
+            ///\}
+
             /// Our heading.
-            std::string heading() const
-            {
-                return _heading;
-            }
+            std::string heading() const;
 
-            /// Iterate over our key/values.
-            typedef std::map<std::string, std::string>::const_iterator KeyValueIterator;
+            ///\name Iterate over our key/values
+            ///\{
 
-            /// Start of our key/values.
-            KeyValueIterator begin_kvs() const
-            {
-                return _kvs.begin();
-            }
+            typedef libwrapiter::ForwardIterator<RepositoryInfoSection,
+                    const std::pair<const std::string, std::string> > KeyValueIterator;
 
-            /// End of our key/values.
-            KeyValueIterator end_kvs() const
-            {
-                return _kvs.end();
-            }
+            KeyValueIterator begin_kvs() const;
+
+            KeyValueIterator end_kvs() const;
+
+            ///\}
 
             /// Add a key/value pair.
             RepositoryInfoSection & add_kv(const std::string &, const std::string &);
@@ -175,29 +175,32 @@ namespace paludis
      * \ingroup grprepository
      */
     class RepositoryInfo :
-        public InternalCounted<RepositoryInfo>
+        public InternalCounted<RepositoryInfo>,
+        private PrivateImplementationPattern<RepositoryInfo>
     {
-        private:
-            std::list<RepositoryInfoSection> _sections;
-
         public:
-            /// Iterator over our sections.
-            typedef std::list<RepositoryInfoSection>::const_iterator SectionIterator;
+            ///\name Basic operations
+            ///\{
 
-            /// Start of our sections.
-            SectionIterator begin_sections() const
-            {
-                return _sections.begin();
-            }
+            RepositoryInfo();
+            ~RepositoryInfo();
 
-            /// End of our sections.
-            SectionIterator end_sections() const
-            {
-                return _sections.end();
-            }
+            ///\}
+
+            ///\name Iterator over our sections
+            ///\{
+
+            typedef libwrapiter::ForwardIterator<RepositoryInfo,
+                    const RepositoryInfoSection::ConstPointer> SectionIterator;
+
+            SectionIterator begin_sections() const;
+
+            SectionIterator end_sections() const;
+
+            ///\}
 
             /// Add a section.
-            RepositoryInfo & add_section(const RepositoryInfoSection &);
+            RepositoryInfo & add_section(RepositoryInfoSection::ConstPointer);
     };
 
     /**

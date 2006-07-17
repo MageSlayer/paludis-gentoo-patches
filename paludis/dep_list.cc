@@ -81,6 +81,13 @@ BlockError::BlockError(const std::string & msg) throw () :
 {
 }
 
+template <typename I_>
+CircularDependencyError::CircularDependencyError(I_ begin, const I_ end) throw () :
+    DepListError("Circular dependency: " + join(begin, end, " -> ")),
+    _cycle_size(std::distance(begin, end))
+{
+}
+
 namespace paludis
 {
     /**
@@ -295,13 +302,13 @@ DepList::_add_in_role_raw(const DepAtom * const atom, const std::string & role)
 DepList::Iterator
 DepList::begin() const
 {
-    return _imp->merge_list.begin();
+    return Iterator(_imp->merge_list.begin());
 }
 
 DepList::Iterator
 DepList::end() const
 {
-    return _imp->merge_list.end();
+    return Iterator(_imp->merge_list.end());
 }
 
 void
@@ -509,8 +516,7 @@ DepList::visit(const PackageDepAtom * const p)
     Save<std::list<DepListEntry>::iterator> old_merge_list_insert_pos(
             &_imp->merge_list_insert_pos, merge_entry);
 
-    context.change_context("When resolving package dependency '" + stringify(*p) +
-            "' -> '" + stringify(*merge_entry) + "':");
+    Context resolved_context("Dependency resolution is '" + stringify(*merge_entry) + "':");
 
     /* new current package */
     Save<const DepListEntry *> old_current_package(&_imp->current_package,

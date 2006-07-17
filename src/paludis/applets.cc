@@ -128,8 +128,8 @@ int do_configuration_variable()
     return_code = 1;
     for (p::RepositoryInfo::SectionIterator s(info->begin_sections()),
             s_end(info->end_sections()) ; s != s_end ; ++s)
-        for (p::RepositoryInfoSection::KeyValueIterator k(s->begin_kvs()),
-                k_end(s->end_kvs()) ; k != k_end ; ++k)
+        for (p::RepositoryInfoSection::KeyValueIterator k((*s)->begin_kvs()),
+                k_end((*s)->end_kvs()) ; k != k_end ; ++k)
             if (var_str == k->first)
             {
                 std::cout << k->second << std::endl;

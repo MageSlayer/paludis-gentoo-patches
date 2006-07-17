@@ -20,6 +20,9 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/util/log.hh>
 
+#include <list>
+#include <map>
+
 /** \file
  * Implementation for dep_atom.hh things.
  *
@@ -42,14 +45,41 @@ DepAtom::as_use_dep_atom() const
     return 0;
 }
 
-CompositeDepAtom::CompositeDepAtom()
+namespace paludis
+{
+    template<>
+    struct Implementation<CompositeDepAtom> :
+        InternalCounted<Implementation<CompositeDepAtom> >
+    {
+        std::list<DepAtom::ConstPointer> children;
+    };
+}
+
+CompositeDepAtom::CompositeDepAtom() :
+    PrivateImplementationPattern<CompositeDepAtom>(new Implementation<CompositeDepAtom>)
+{
+}
+
+CompositeDepAtom::~CompositeDepAtom()
 {
 }
 
 void
 CompositeDepAtom::add_child(DepAtom::ConstPointer c)
 {
-    _children.push_back(c);
+    _imp->children.push_back(c);
+}
+
+CompositeDepAtom::Iterator
+CompositeDepAtom::begin() const
+{
+    return Iterator(_imp->children.begin());
+}
+
+CompositeDepAtom::Iterator
+CompositeDepAtom::end() const
+{
+    return Iterator(_imp->children.end());
 }
 
 AnyDepAtom::AnyDepAtom()
@@ -272,6 +302,49 @@ StringDepAtom::~StringDepAtom()
 PlainTextDepAtom::PlainTextDepAtom(const std::string & s) :
     StringDepAtom(s)
 {
+}
+
+namespace paludis
+{
+    template<>
+    struct Implementation<UseRequirements> :
+        InternalCounted<Implementation<UseRequirements> >
+    {
+        std::map<UseFlagName, UseFlagState> reqs;
+    };
+}
+
+UseRequirements::UseRequirements() :
+    PrivateImplementationPattern<UseRequirements>(new Implementation<UseRequirements>)
+{
+}
+
+UseRequirements::~UseRequirements()
+{
+}
+
+UseRequirements::Iterator
+UseRequirements::begin() const
+{
+    return Iterator(_imp->reqs.begin());
+}
+
+UseRequirements::Iterator
+UseRequirements::end() const
+{
+    return Iterator(_imp->reqs.end());
+}
+
+UseRequirements::Iterator
+UseRequirements::find(const UseFlagName & u) const
+{
+    return Iterator(_imp->reqs.find(u));
+}
+
+bool
+UseRequirements::insert(const UseFlagName & u, UseFlagState s)
+{
+    return _imp->reqs.insert(std::make_pair(u, s)).second;
 }
 
 UseFlagState

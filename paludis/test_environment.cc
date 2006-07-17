@@ -18,6 +18,9 @@
  */
 
 #include <paludis/test_environment.hh>
+#include <paludis/util/collection_concrete.hh>
+#include <map>
+#include <string>
 
 /** \file
  * Implementation of TestEnvironment.
@@ -60,5 +63,28 @@ bool
 TestEnvironment::query_user_unmasks(const PackageDatabaseEntry &) const
 {
     return false;
+}
+
+namespace
+{
+    static const std::multimap<std::string, std::string> test_environment_mirrors;
+}
+
+TestEnvironment::MirrorIterator
+TestEnvironment::begin_mirrors(const std::string &) const
+{
+    return MirrorIterator(test_environment_mirrors.begin());
+}
+
+TestEnvironment::MirrorIterator
+TestEnvironment::end_mirrors(const std::string &) const
+{
+    return MirrorIterator(test_environment_mirrors.end());
+}
+
+UseFlagNameCollection::Pointer
+TestEnvironment::query_enabled_use_matching(const std::string &, const PackageDatabaseEntry *) const
+{
+    return UseFlagNameCollection::Pointer(new UseFlagNameCollection::Concrete);
 }
 

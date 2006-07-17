@@ -24,6 +24,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
@@ -273,7 +274,7 @@ UseFlagNameCollection::Pointer
 DefaultEnvironment::query_enabled_use_matching(const std::string & prefix,
         const PackageDatabaseEntry * e) const
 {
-    UseFlagNameCollection::Pointer result(new UseFlagNameCollection);
+    UseFlagNameCollection::Pointer result(new UseFlagNameCollection::Concrete);
 
     for (DefaultConfig::DefaultUseIterator
             u(DefaultConfig::get_instance()->begin_default_use()),

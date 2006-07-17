@@ -21,6 +21,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/dep_flags_check.hh>
 #include <paludis/util/tokeniser.hh>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -64,7 +65,7 @@ namespace
                         favourite_repository()));
 
             if (! r->get_interface<repo_use>())
-                throw InternalError("Confused: Repository does not have a UseInterface.");
+                throw InternalError(PALUDIS_HERE, "Confused: Repository does not have a UseInterface.");
 
             if (r->get_interface<repo_use>()->is_arch_flag(u->flag()))
             {
