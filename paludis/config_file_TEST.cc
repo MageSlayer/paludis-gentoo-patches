@@ -20,6 +20,7 @@
 #include <paludis/config_file.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <sstream>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -234,10 +235,11 @@ namespace test_cases
             TEST_CHECK_EQUAL(ff.get("z"), "foofoo\\$");
 
             std::stringstream t;
-            std::map<std::string, std::string> t_defs;
-            t_defs.insert(std::make_pair("a", "moo"));
-            t_defs.insert(std::make_pair("d", "bar"));
-            t_defs.insert(std::make_pair("e", "baz"));
+            AssociativeCollection<std::string, std::string>::Pointer t_defs(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            t_defs->insert("a", "moo");
+            t_defs->insert("d", "bar");
+            t_defs->insert("e", "baz");
             t << "a=foo" << std::endl;
             t << "b=$a" << std::endl;
             t << "c=$d" << std::endl;

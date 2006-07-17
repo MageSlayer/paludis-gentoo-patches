@@ -31,9 +31,8 @@
 
 #include <iosfwd>
 #include <bitset>
-#include <set>
 
-#include <libwrapiter/libwrapiter.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 namespace paludis
 {
@@ -89,7 +88,7 @@ namespace paludis
         SmartRecordKey<dle_metadata, VersionMetadata::ConstPointer>,
         SmartRecordKey<dle_repository, RepositoryName>,
         SmartRecordKey<dle_flags, DepListEntryFlags>,
-        SmartRecordKey<dle_tag, std::set<DepTag::ConstPointer, DepTag::Comparator> >
+        SmartRecordKey<dle_tag, SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Pointer>
     {
     };
 

@@ -29,6 +29,7 @@
 #include <fstream>
 #include <istream>
 #include <list>
+#include <map>
 
 /** \file
  * Implementation for config_file.hh classes.
@@ -240,29 +241,29 @@ KeyValueConfigFile::KeyValueConfigFile(const FSEntry & filename) :
 }
 
 KeyValueConfigFile::KeyValueConfigFile(std::istream * const s,
-        const std::map<std::string, std::string> & m) :
+        AssociativeCollection<std::string, std::string>::ConstPointer m) :
     ConfigFile(s),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
-    _imp->entries.insert(m.begin(), m.end());
+    _imp->entries.insert(m->begin(), m->end());
     need_lines();
 }
 
 KeyValueConfigFile::KeyValueConfigFile(const std::string & filename,
-        const std::map<std::string, std::string> & m) :
+        AssociativeCollection<std::string, std::string>::ConstPointer m) :
     ConfigFile(filename),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
-    _imp->entries.insert(m.begin(), m.end());
+    _imp->entries.insert(m->begin(), m->end());
     need_lines();
 }
 
 KeyValueConfigFile::KeyValueConfigFile(const FSEntry & filename,
-        const std::map<std::string, std::string> & m) :
+        AssociativeCollection<std::string, std::string>::ConstPointer m) :
     ConfigFile(filename),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
-    _imp->entries.insert(m.begin(), m.end());
+    _imp->entries.insert(m->begin(), m->end());
     need_lines();
 }
 
@@ -421,6 +422,7 @@ AdvisoryFile::AdvisoryFile(const FSEntry & filename) :
     sanitise();
 }
 
+#if 0
 AdvisoryFile::AdvisoryFile(std::istream * const s,
         const std::map<std::string, std::string> & m) :
     ConfigFile(s),
@@ -450,6 +452,7 @@ AdvisoryFile::AdvisoryFile(const FSEntry & filename,
     need_lines();
     sanitise();
 }
+#endif
 
 AdvisoryFile::~AdvisoryFile()
 {

@@ -22,6 +22,7 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/name.hh>
+#include <paludis/util/collection.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/smart_record.hh>
@@ -85,7 +86,7 @@ namespace paludis
         SmartRecordKeys<RepositoryConfigEntryKeys, last_rce>,
         SmartRecordKey<rce_format, std::string>,
         SmartRecordKey<rce_importance, unsigned>,
-        SmartRecordKey<rce_keys, std::map<std::string, std::string> >
+        SmartRecordKey<rce_keys, AssociativeCollection<std::string, std::string>::Pointer >
     {
     };
 

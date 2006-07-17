@@ -170,28 +170,28 @@ CountedPtr<Repository>
 NothingRepository::make_nothing_repository(
         const Environment * const,
         const PackageDatabase * const,
-        const std::map<std::string, std::string> & m)
+        AssociativeCollection<std::string, std::string>::ConstPointer m)
 {
-    std::string repo_file(m.end() == m.find("repo_file") ? std::string("?") :
-            m.find("repo_file")->second);
+    std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
+            m->find("repo_file")->second);
 
     Context context("When making Nothing repository from repo_file '" + repo_file + "':");
 
     std::string location;
-    if (m.end() == m.find("location") || ((location = m.find("location")->second)).empty())
+    if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
         throw NothingRepositoryConfigurationError("Key 'location' not specified or empty");
 
     std::string sync;
-    if (m.end() == m.find("sync") || ((sync = m.find("sync")->second)).empty())
+    if (m->end() == m->find("sync") || ((sync = m->find("sync")->second)).empty())
         ; // nothing
 
     std::string name;
-    if (m.end() == m.find("name") || ((name = m.find("name")->second)).empty())
+    if (m->end() == m->find("name") || ((name = m->find("name")->second)).empty())
         throw NothingRepositoryConfigurationError("Key 'name' not specified or empty in '"
                 + repo_file + "'");
 
     std::string sync_exclude;
-    if (m.end() == m.find("sync_exclude") || ((sync_exclude = m.find("sync_exclude")->second)).empty())
+    if (m->end() == m->find("sync_exclude") || ((sync_exclude = m->find("sync_exclude")->second)).empty())
         ; // nothing
 
     return CountedPtr<Repository>(new NothingRepository(NothingRepositoryParams::create((

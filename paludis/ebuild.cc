@@ -270,9 +270,9 @@ EbuildFetchCommand::extend_command(const MakeEnvCommand & cmd)
             ("PALUDIS_PROFILE_DIRS", join(fetch_params.get<ecfpk_profiles>()->begin(),
                                           fetch_params.get<ecfpk_profiles>()->end(), " ")));
 
-    for (std::map<std::string, std::string>::const_iterator
-            i(fetch_params.get<ecfpk_expand_vars>().begin()),
-            j(fetch_params.get<ecfpk_expand_vars>().end()) ; i != j ; ++i)
+    for (AssociativeCollection<std::string, std::string>::Iterator
+            i(fetch_params.get<ecfpk_expand_vars>()->begin()),
+            j(fetch_params.get<ecfpk_expand_vars>()->end()) ; i != j ; ++i)
         result = result(i->first, i->second);
 
     return result;
@@ -318,9 +318,9 @@ EbuildInstallCommand::extend_command(const MakeEnvCommand & cmd)
                                           install_params.get<ecipk_profiles>()->end(), " "))
             ("SLOT", stringify(install_params.get<ecipk_slot>())));
 
-    for (std::map<std::string, std::string>::const_iterator
-            i(install_params.get<ecipk_expand_vars>().begin()),
-            j(install_params.get<ecipk_expand_vars>().end()) ; i != j ; ++i)
+    for (AssociativeCollection<std::string, std::string>::Iterator
+            i(install_params.get<ecipk_expand_vars>()->begin()),
+            j(install_params.get<ecipk_expand_vars>()->end()) ; i != j ; ++i)
         result = result(i->first, i->second);
 
     return result;

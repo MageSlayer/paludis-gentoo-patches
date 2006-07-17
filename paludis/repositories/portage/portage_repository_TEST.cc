@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <test/test_framework.hh>
@@ -46,10 +47,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo1"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo1/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo1");
+            keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "test-repo-1");
@@ -68,10 +70,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo2"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo2/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo2");
+            keys->insert("profile", "portage_repository_TEST_dir/repo2/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo2");
@@ -90,10 +93,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo3"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo3/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo3");
+            keys->insert("profile", "portage_repository_TEST_dir/repo3/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo3");
@@ -112,10 +116,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo1"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo1/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo1");
+            keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -143,10 +148,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo1"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo1/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo1");
+            keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -176,10 +182,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo4"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo4/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo4");
+            keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -215,10 +222,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo4"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo4/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo4");
+            keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -258,10 +266,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo4"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo4/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo4");
+            keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -310,10 +319,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo5"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo5/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo5");
+            keys->insert("profile", "portage_repository_TEST_dir/repo5/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -343,10 +353,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo4"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo4/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo4");
+            keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -386,10 +397,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo4"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo4/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo4");
+            keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -428,10 +440,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo8"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo8/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo8");
+            keys->insert("profile", "portage_repository_TEST_dir/repo8/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -470,10 +483,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo6"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo6/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo6");
+            keys->insert("profile", "portage_repository_TEST_dir/repo6/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -511,10 +525,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo7"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo7/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo7");
+            keys->insert("profile", "portage_repository_TEST_dir/repo7/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -547,10 +562,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo7"));
-            keys.insert(std::make_pair("profile",  "portage_repository_TEST_dir/repo7/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo7");
+            keys->insert("profile", "portage_repository_TEST_dir/repo7/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -577,10 +593,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format", "portage"));
-            keys.insert(std::make_pair("location", "portage_repository_TEST_dir/repo9"));
-            keys.insert(std::make_pair("profile", "portage_repository_TEST_dir/repo9/profiles/profile"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo9");
+            keys->insert("profile", "portage_repository_TEST_dir/repo9/profiles/profile");
             PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
                         &env, env.package_database().raw_pointer(), keys));
 

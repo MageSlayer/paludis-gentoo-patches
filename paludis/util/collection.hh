@@ -22,8 +22,9 @@
 
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <iterator>
 #include <libwrapiter/libwrapiter.hh>
+#include <iterator>
+#include <functional>
 
 /** \file
  * Various wrappers around collections of items, for convenience and
@@ -135,12 +136,12 @@ namespace paludis
      *
      * \ingroup grpcollections
      */
-    template <typename T_>
+    template <typename T_, typename C_ = std::less<T_> >
     class SortedCollection :
-        private InstantiationPolicy<SortedCollection<T_>, instantiation_method::NonCopyableTag>,
-        public InternalCounted<SortedCollection<T_> >,
+        private InstantiationPolicy<SortedCollection<T_, C_>, instantiation_method::NonCopyableTag>,
+        public InternalCounted<SortedCollection<T_, C_> >,
         public std::iterator<typename std::iterator_traits<
-            typename libwrapiter::ForwardIterator<SequentialCollection<T_>, const T_> >::iterator_category, T_>
+            typename libwrapiter::ForwardIterator<SortedCollection<T_, C_>, const T_> >::iterator_category, T_>
     {
         protected:
             ///\name Basic operations
@@ -167,7 +168,7 @@ namespace paludis
             ///\name Iterate over our items
             ///\{
 
-            typedef libwrapiter::ForwardIterator<SortedCollection<T_>, const T_> Iterator;
+            typedef libwrapiter::ForwardIterator<SortedCollection<T_, C_>, const T_> Iterator;
 
             virtual Iterator begin() const = 0;
 
@@ -207,12 +208,12 @@ namespace paludis
             /**
              * Insert all items from another container.
              */
-            virtual bool merge(typename SortedCollection<T_>::ConstPointer o) = 0;
+            virtual bool merge(typename SortedCollection<T_, C_>::ConstPointer o) = 0;
 
             /**
              * Our insert iterator type.
              */
-            typedef libwrapiter::OutputIterator<SortedCollection<T_>, T_> Inserter;
+            typedef libwrapiter::OutputIterator<SortedCollection<T_, C_>, T_> Inserter;
 
             /**
              * Fetch an inserter.
@@ -233,6 +234,89 @@ namespace paludis
              * How big are we?
              */
             virtual unsigned size() const = 0;
+
+            ///\}
+    };
+
+    /**
+     * Wrapper around a std::map of a particular item.
+     *
+     * This item cannot be constructed. Use AssociativeCollection::Concrete,
+     * which requires including paludis/util/collection_concrete.hh .
+     *
+     * \ingroup grpcollections
+     */
+    template <typename K_, typename V_>
+    class AssociativeCollection :
+        private InstantiationPolicy<AssociativeCollection<K_, V_>, instantiation_method::NonCopyableTag>,
+        public InternalCounted<AssociativeCollection<K_, V_> >,
+        public std::iterator<typename std::iterator_traits<
+            typename libwrapiter::ForwardIterator<AssociativeCollection<K_, V_>,
+            const std::pair<const K_, V_> > >::iterator_category, const std::pair<const K_, V_> >
+    {
+        protected:
+            ///\name Basic operations
+            ///\{
+
+            AssociativeCollection()
+            {
+            }
+
+            ///\}
+
+        public:
+            class Concrete;
+
+            ///\name Basic operations
+            ///\{
+
+            virtual ~AssociativeCollection()
+            {
+            }
+
+            ///\}
+
+            ///\name Iterate over our items
+            ///\{
+
+            typedef libwrapiter::ForwardIterator<AssociativeCollection<K_, V_>,
+                    const std::pair<const K_, V_> > Iterator;
+
+            virtual Iterator begin() const = 0;
+
+            virtual Iterator end() const = 0;
+
+            ///\}
+
+            ///\name Finding items
+            ///\{
+
+            virtual Iterator find(const K_ & v) const = 0;
+
+            ///\}
+
+            ///\name Adding, removing and modifying items
+            ///\{
+
+            /**
+             * Insert an item, return whether we succeeded.
+             */
+            virtual bool insert(const K_ & k, const V_ & v) = 0;
+
+            /**
+             * Erase an item, return whether we succeeded.
+             */
+            virtual bool erase(const K_ & k) = 0;
+
+            ///\}
+
+            ///\name Queries
+            ///\{
+
+            /**
+             * Are we empty?
+             */
+            virtual bool empty() const = 0;
 
             ///\}
     };

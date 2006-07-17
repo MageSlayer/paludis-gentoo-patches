@@ -82,6 +82,12 @@ Exception::~Exception() throw ()
     delete _context_data;
 }
 
+bool
+Exception::empty() const
+{
+    return _context_data->empty();
+}
+
 const std::string &
 Exception::message() const throw ()
 {

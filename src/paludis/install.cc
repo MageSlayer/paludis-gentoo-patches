@@ -319,12 +319,12 @@ do_install()
             }
 
             /* display tag, add tag to our post display list */
-            if (! dep->get<p::dle_tag>().empty())
+            if (! dep->get<p::dle_tag>()->empty())
             {
                 std::string tag_titles;
-                for (std::set<p::DepTag::ConstPointer, p::DepTag::Comparator>::const_iterator
-                        tag(dep->get<p::dle_tag>().begin()),
-                        tag_end(dep->get<p::dle_tag>().end()) ;
+                for (p::SortedCollection<p::DepTag::ConstPointer, p::DepTag::Comparator>::Iterator
+                        tag(dep->get<p::dle_tag>()->begin()),
+                        tag_end(dep->get<p::dle_tag>()->end()) ;
                         tag != tag_end ; ++tag)
                 {
                     all_tags.insert(*tag);

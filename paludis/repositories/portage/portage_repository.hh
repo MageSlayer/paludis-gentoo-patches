@@ -190,7 +190,7 @@ namespace paludis
             static CountedPtr<Repository> make_portage_repository(
                     const Environment * const env,
                     const PackageDatabase * const db,
-                    const std::map<std::string, std::string> &);
+                    AssociativeCollection<std::string, std::string>::ConstPointer m);
 
             /**
              * Destructor.

@@ -24,9 +24,9 @@
 #include <paludis/util/smart_record.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/collection.hh>
 #include <paludis/package_database.hh>
 #include <string>
-#include <map>
 
 /** \file
  * Declarations for the EbuildCommand classes.
@@ -277,7 +277,7 @@ namespace paludis
         SmartRecordKey<ecfpk_flat_src_uri, std::string>,
         SmartRecordKey<ecfpk_root, std::string>,
         SmartRecordKey<ecfpk_profiles, FSEntryCollection::ConstPointer>,
-        SmartRecordKey<ecfpk_expand_vars, std::map<std::string, std::string> >,
+        SmartRecordKey<ecfpk_expand_vars, AssociativeCollection<std::string, std::string>::ConstPointer>,
         SmartRecordKey<ecfpk_no_fetch, bool>
     {
     };
@@ -353,7 +353,7 @@ namespace paludis
         SmartRecordKey<ecipk_use_expand, std::string>,
         SmartRecordKey<ecipk_root, std::string>,
         SmartRecordKey<ecipk_profiles, FSEntryCollection::ConstPointer>,
-        SmartRecordKey<ecipk_expand_vars, std::map<std::string, std::string> >,
+        SmartRecordKey<ecipk_expand_vars, AssociativeCollection<std::string, std::string>::ConstPointer>,
         SmartRecordKey<ecipk_disable_cfgpro, bool>,
         SmartRecordKey<ecipk_merge_only, bool>,
         SmartRecordKey<ecipk_slot, SlotName>

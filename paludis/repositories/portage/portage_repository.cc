@@ -1180,28 +1180,28 @@ CountedPtr<Repository>
 PortageRepository::make_portage_repository(
         const Environment * const env,
         const PackageDatabase * const db,
-        const std::map<std::string, std::string> & m)
+        AssociativeCollection<std::string, std::string>::ConstPointer m)
 {
-    std::string repo_file(m.end() == m.find("repo_file") ? std::string("?") :
-            m.find("repo_file")->second);
+    std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
+            m->find("repo_file")->second);
 
     Context context("When making Portage repository from repo_file '" + repo_file + "':");
 
     std::string location;
-    if (m.end() == m.find("location") || ((location = m.find("location")->second)).empty())
+    if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
         throw PortageRepositoryConfigurationError("Key 'location' not specified or empty");
 
     FSEntryCollection::Pointer profiles(new FSEntryCollection::Concrete);
-    if (m.end() != m.find("profiles"))
-        WhitespaceTokeniser::get_instance()->tokenise(m.find("profiles")->second,
+    if (m->end() != m->find("profiles"))
+        WhitespaceTokeniser::get_instance()->tokenise(m->find("profiles")->second,
                 create_inserter<FSEntry>(std::back_inserter(*profiles)));
-    if (m.end() != m.find("profile") && ! m.find("profile")->second.empty())
+    if (m->end() != m->find("profile") && ! m->find("profile")->second.empty())
     {
         Log::get_instance()->message(ll_warning, lc_no_context,
                 "Key 'profile' in '" + repo_file + "' is deprecated, "
-                "use 'profiles = " + m.find("profile")->second + "' instead");
+                "use 'profiles = " + m->find("profile")->second + "' instead");
         if (profiles->empty())
-            profiles->append(m.find("profile")->second);
+            profiles->append(m->find("profile")->second);
         else
             throw PortageRepositoryConfigurationError("Both 'profile' and 'profiles' keys are present");
     }
@@ -1209,16 +1209,16 @@ PortageRepository::make_portage_repository(
         throw PortageRepositoryConfigurationError("No profiles have been specified");
 
     FSEntryCollection::Pointer eclassdirs(new FSEntryCollection::Concrete);
-    if (m.end() != m.find("eclassdirs"))
-        WhitespaceTokeniser::get_instance()->tokenise(m.find("eclassdirs")->second,
+    if (m->end() != m->find("eclassdirs"))
+        WhitespaceTokeniser::get_instance()->tokenise(m->find("eclassdirs")->second,
                 create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
-    if (m.end() != m.find("eclassdir") && ! m.find("eclassdir")->second.empty())
+    if (m->end() != m->find("eclassdir") && ! m->find("eclassdir")->second.empty())
     {
         Log::get_instance()->message(ll_warning, lc_no_context,
                 "Key 'eclassdir' in '" + repo_file + "' is deprecated, "
-                "use 'eclassdirs = " + m.find("eclassdir")->second + "' instead");
+                "use 'eclassdirs = " + m->find("eclassdir")->second + "' instead");
         if (eclassdirs->empty())
-            eclassdirs->append(m.find("eclassdir")->second);
+            eclassdirs->append(m->find("eclassdir")->second);
         else
             throw PortageRepositoryConfigurationError("Both 'eclassdir' and 'eclassdirs' keys are present");
     }
@@ -1226,39 +1226,39 @@ PortageRepository::make_portage_repository(
         eclassdirs->append(location + "/eclass");
 
     std::string distdir;
-    if (m.end() == m.find("distdir") || ((distdir = m.find("distdir")->second)).empty())
+    if (m->end() == m->find("distdir") || ((distdir = m->find("distdir")->second)).empty())
         distdir = location + "/distfiles";
 
     std::string setsdir;
-    if (m.end() == m.find("setsdir") || ((setsdir = m.find("setsdir")->second)).empty())
+    if (m->end() == m->find("setsdir") || ((setsdir = m->find("setsdir")->second)).empty())
         setsdir = location + "/sets";
 
     std::string securitydir;
-    if (m.end() == m.find("securitydir") || ((securitydir = m.find("securitydir")->second)).empty())
+    if (m->end() == m->find("securitydir") || ((securitydir = m->find("securitydir")->second)).empty())
         securitydir = location + "/metadata/security";
 
     std::string newsdir;
-    if (m.end() == m.find("newsdir") || ((newsdir = m.find("newsdir")->second)).empty())
+    if (m->end() == m->find("newsdir") || ((newsdir = m->find("newsdir")->second)).empty())
         newsdir = location + "/metadata/news";
 
     std::string cache;
-    if (m.end() == m.find("cache") || ((cache = m.find("cache")->second)).empty())
+    if (m->end() == m->find("cache") || ((cache = m->find("cache")->second)).empty())
         cache = location + "/metadata/cache";
 
     std::string sync;
-    if (m.end() == m.find("sync") || ((sync = m.find("sync")->second)).empty())
+    if (m->end() == m->find("sync") || ((sync = m->find("sync")->second)).empty())
         ; // nothing
 
     std::string sync_exclude;
-    if (m.end() == m.find("sync_exclude") || ((sync_exclude = m.find("sync_exclude")->second)).empty())
+    if (m->end() == m->find("sync_exclude") || ((sync_exclude = m->find("sync_exclude")->second)).empty())
         ; // nothing
 
     std::string root;
-    if (m.end() == m.find("root") || ((root = m.find("root")->second)).empty())
+    if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
         root = "/";
 
     std::string buildroot;
-    if (m.end() == m.find("buildroot") || ((buildroot = m.find("buildroot")->second)).empty())
+    if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
     return CountedPtr<Repository>(new PortageRepository(PortageRepositoryParams::create((
@@ -1652,7 +1652,8 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
             use += stringify(*uu) + " ";
     }
 
-    std::map<std::string, std::string> expand_vars;
+    AssociativeCollection<std::string, std::string>::Pointer expand_vars(
+            new AssociativeCollection<std::string, std::string>::Concrete);
     for (UseFlagSet::const_iterator u(_imp->expand_list.begin()),
             u_end(_imp->expand_list.end()) ; u != u_end ; ++u)
     {
@@ -1667,7 +1668,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                 xx != xx_end ; ++xx)
             value.append(stringify(*xx).erase(0, stringify(*u).length() + 1) + " ");
 
-        expand_vars.insert(std::make_pair(stringify(*u), value));
+        expand_vars->insert(stringify(*u), value);
     }
 
     /* Strip trailing space. Some ebuilds rely upon this. From kde-meta.eclass:

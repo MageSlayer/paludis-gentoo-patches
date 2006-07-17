@@ -20,15 +20,15 @@
 #ifndef PALUDIS_GUARD_PALUDIS_CONFIG_FILE_HH
 #define PALUDIS_GUARD_PALUDIS_CONFIG_FILE_HH 1
 
+#include <paludis/util/collection.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
-#include <libwrapiter/libwrapiter.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 #include <iosfwd>
 #include <string>
-#include <map>
 
 /** \file
  * Declarations for the ConfigFile classes.
@@ -253,19 +253,19 @@ namespace paludis
              * Constructor, from a stream, with defaults.
              */
             KeyValueConfigFile(std::istream * const,
-                    const std::map<std::string, std::string> &);
+                    AssociativeCollection<std::string, std::string>::ConstPointer);
 
             /**
              * Constructor, from a filename, with defaults.
              */
             KeyValueConfigFile(const std::string & filename,
-                    const std::map<std::string, std::string> &);
+                    AssociativeCollection<std::string, std::string>::ConstPointer);
 
             /**
              * Constructor, from a filename, with defaults.
              */
             KeyValueConfigFile(const FSEntry & filename,
-                    const std::map<std::string, std::string> &);
+                    AssociativeCollection<std::string, std::string>::ConstPointer);
 
             ~KeyValueConfigFile();
 
@@ -352,23 +352,25 @@ namespace paludis
              */
             AdvisoryFile(const FSEntry & filename);
 
+#if 0
             /**
              * Constructor, from a stream, with defaults.
              */
             AdvisoryFile(std::istream * const,
-                    const std::map<std::string, std::string> &);
+                    AssociativeCollection<std::string, std::string>::ConstPointer);
 
             /**
              * Constructor, from a filename, with defaults.
              */
             AdvisoryFile(const std::string & filename,
-                    const std::map<std::string, std::string> &);
+                    AssociativeCollection<std::string, std::string>::ConstPointer);
 
             /**
              * Constructor, from a filename, with defaults.
              */
             AdvisoryFile(const FSEntry & filename,
-                    const std::map<std::string, std::string> &);
+                    AssociativeCollection<std::string, std::string>::ConstPointer);
+#endif
 
             ~AdvisoryFile();
 

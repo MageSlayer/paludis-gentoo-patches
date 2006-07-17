@@ -29,7 +29,7 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 
-#include <libwrapiter/libwrapiter.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Declarations for the DepAtom classes.

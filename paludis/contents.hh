@@ -26,7 +26,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <string>
 
-#include <libwrapiter/libwrapiter.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Declarations for the Contents classes.

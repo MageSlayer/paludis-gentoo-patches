@@ -19,6 +19,7 @@
 
 #include <paludis/config_file.hh>
 #include <paludis/default_config.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/iterator.hh>
@@ -33,6 +34,7 @@
 #include <algorithm>
 #include <sstream>
 #include <list>
+#include <map>
 
 #include <ctype.h>
 
@@ -154,8 +156,9 @@ DefaultConfig::DefaultConfig() :
     _imp->root = root_prefix;
     _imp->config_dir = stringify(config_dir);
 
-    std::map<std::string, std::string> conf_vars;
-    conf_vars.insert(std::make_pair("ROOT", root_prefix));
+    AssociativeCollection<std::string, std::string>::Pointer conf_vars(
+            new AssociativeCollection<std::string, std::string>::Concrete);
+    conf_vars->insert("ROOT", root_prefix);
 
     Log::get_instance()->message(ll_debug, lc_no_context, "DefaultConfig real directory is '"
             + stringify(config_dir) + "', root prefix is '" + root_prefix +
@@ -192,9 +195,15 @@ DefaultConfig::DefaultConfig() :
             if (! k.get("importance").empty())
                 importance = destringify<int>(k.get("importance"));
 
-            std::map<std::string, std::string> keys(k.begin(), k.end());
-            keys["repo_file"] = stringify(*repo_file);
-            keys["root"] = root_prefix;
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete(k.begin(), k.end()));
+
+            keys->erase("repo_file");
+            keys->insert("repo_file", stringify(*repo_file));
+
+            keys->erase("root");
+            keys->insert("root", root_prefix);
+
             _imp->repos.push_back(RepositoryConfigEntry(format, importance, keys));
         }
 

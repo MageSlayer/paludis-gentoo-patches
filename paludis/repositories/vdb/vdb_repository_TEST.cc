@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/vdb/vdb_repository.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/test_environment.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -45,9 +46,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "vdb"));
-            keys.insert(std::make_pair("location", "vdb_repository_TEST_dir/repo1"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "vdb");
+            keys->insert("location", "vdb_repository_TEST_dir/repo1");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
                         &env, env.package_database().raw_pointer(), keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "installed");
@@ -66,9 +68,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "vdb"));
-            keys.insert(std::make_pair("location", "vdb_repository_TEST_dir/repo1"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "vdb");
+            keys->insert("location", "vdb_repository_TEST_dir/repo1");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
@@ -90,9 +93,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::map<std::string, std::string> keys;
-            keys.insert(std::make_pair("format",   "vdb"));
-            keys.insert(std::make_pair("location", "vdb_repository_TEST_dir/repo1"));
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "vdb");
+            keys->insert("location", "vdb_repository_TEST_dir/repo1");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
                         &env, env.package_database().raw_pointer(), keys));
 

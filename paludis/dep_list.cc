@@ -21,6 +21,7 @@
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/match_package.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
@@ -31,6 +32,7 @@
 #include <functional>
 #include <deque>
 #include <vector>
+#include <set>
 
 using namespace paludis;
 
@@ -389,7 +391,7 @@ DepList::visit(const PackageDepAtom * const p)
             }
 
             if (p->tag())
-                i->get<dle_tag>().insert(p->tag());
+                i->get<dle_tag>()->insert(p->tag());
             return;
         }
     }
@@ -429,9 +431,10 @@ DepList::visit(const PackageDepAtom * const p)
     }
 
     std::list<DepListEntry>::iterator merge_entry;
-    std::set<DepTag::ConstPointer, DepTag::Comparator> tags;
+    SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Pointer tags(
+            new SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Concrete);
     if (p->tag())
-        tags.insert(p->tag());
+        tags->insert(p->tag());
     if (! match)
     {
         if (! installed->empty())
@@ -509,7 +512,8 @@ DepList::visit(const PackageDepAtom * const p)
             _imp->merge_list.insert(next(merge_entry),
                     DepListEntry(pp.package(), merge_entry->get<dle_version>(),
                         p_metadata, merge_entry->get<dle_repository>(), flags,
-                        std::set<DepTag::ConstPointer, DepTag::Comparator>()));
+                        SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Pointer(
+                            new SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Concrete)));
         }
     }
 

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_EXCEPTION_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <libwrapiter/libwrapiter.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <string>
 #include <exception>
 
@@ -116,6 +116,11 @@ namespace paludis
              * Make a backtrace.
              */
             std::string backtrace(const std::string & delim) const;
+
+            /**
+             * Is our backtrace empty?
+             */
+            bool empty() const;
     };
 
     /**

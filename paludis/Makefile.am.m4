@@ -74,5 +74,5 @@ comparison_policy.hh : comparison_policy.hh.m4
 	$(top_srcdir)/misc/do_m4.bash comparison_policy.hh.m4
 
 ihateautomake.cc : all
-	touch $@
+	test -f $@ || touch $@
 

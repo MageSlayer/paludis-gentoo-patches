@@ -23,6 +23,7 @@
 #include <paludis/util/collection.hh>
 #include <list>
 #include <set>
+#include <map>
 #include <algorithm>
 
 /** \file
@@ -111,12 +112,12 @@ namespace paludis
      * \see SortedCollection
      * \ingroup grpcollections
      */
-    template <typename T_>
-    class SortedCollection<T_>::Concrete :
-        public SortedCollection<T_>
+    template <typename T_, typename C_ = std::less<T_> >
+    class SortedCollection<T_, C_>::Concrete :
+        public SortedCollection<T_, C_>
     {
         private:
-            std::set<T_> _items;
+            std::set<T_, C_> _items;
 
         public:
             ///\name Basic operations
@@ -154,7 +155,7 @@ namespace paludis
 
             virtual Iterator last() const
             {
-                typename std::set<T_>::const_iterator result(_items.end());
+                typename std::set<T_, C_>::const_iterator result(_items.end());
                 if (result != _items.begin())
                     --result;
                 return Iterator(result);
@@ -175,7 +176,7 @@ namespace paludis
                 return 0 != _items.erase(v);
             }
 
-            virtual bool merge(typename SortedCollection<T_>::ConstPointer o)
+            virtual bool merge(typename SortedCollection<T_, C_>::ConstPointer o)
             {
                 bool result(true);
                 Iterator o_begin(o->begin()), o_end(o->end());
@@ -197,6 +198,70 @@ namespace paludis
             virtual unsigned size() const
             {
                 return _items.size();
+            }
+    };
+
+    /**
+     * Concrete implementation for an AssociativeCollection.
+     *
+     * \see AssociativeCollection
+     * \ingroup grpcollections
+     */
+    template <typename K_, typename V_>
+    class AssociativeCollection<K_, V_>::Concrete :
+        public AssociativeCollection<K_, V_>
+    {
+        private:
+            std::map<K_, V_> _items;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            Concrete()
+            {
+            }
+
+            template <typename I_>
+            Concrete(const I_ & b, const I_ & b_end) :
+                _items(b, b_end)
+            {
+            }
+
+            virtual ~Concrete()
+            {
+            }
+
+            ///\}
+
+            virtual Iterator begin() const
+            {
+                return Iterator(_items.begin());
+            }
+
+            virtual Iterator end() const
+            {
+                return Iterator(_items.end());
+            }
+
+            virtual Iterator find(const K_ & v) const
+            {
+                return Iterator(_items.find(v));
+            }
+
+            virtual bool insert(const K_ & k, const V_ & v)
+            {
+                return _items.insert(std::make_pair(k, v)).second;
+            }
+
+            virtual bool erase(const K_ & k)
+            {
+                return 0 != _items.erase(k);
+            }
+
+            virtual bool empty() const
+            {
+                return _items.empty();
             }
     };
 }

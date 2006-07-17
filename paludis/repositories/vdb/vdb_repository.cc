@@ -677,25 +677,25 @@ CountedPtr<Repository>
 VDBRepository::make_vdb_repository(
         const Environment * const env,
         const PackageDatabase * const db,
-        const std::map<std::string, std::string> & m)
+        AssociativeCollection<std::string, std::string>::ConstPointer m)
 {
     Context context("When making VDB repository from repo_file '" +
-            (m.end() == m.find("repo_file") ? std::string("?") : m.find("repo_file")->second) + "':");
+            (m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second) + "':");
 
     std::string location;
-    if (m.end() == m.find("location") || ((location = m.find("location")->second)).empty())
+    if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
         throw VDBRepositoryConfigurationError("Key 'location' not specified or empty");
 
     std::string root;
-    if (m.end() == m.find("root") || ((root = m.find("root")->second)).empty())
+    if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
         root = "/";
 
     std::string world;
-    if (m.end() == m.find("world") || ((world = m.find("world")->second)).empty())
+    if (m->end() == m->find("world") || ((world = m->find("world")->second)).empty())
         world = location + "/world";
 
     std::string buildroot;
-    if (m.end() == m.find("buildroot") || ((buildroot = m.find("buildroot")->second)).empty())
+    if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
     return CountedPtr<Repository>(new VDBRepository(VDBRepositoryParams::create((

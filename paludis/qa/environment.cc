@@ -28,13 +28,14 @@ using namespace paludis::qa;
 QAEnvironment::QAEnvironment(const FSEntry & base) :
     Environment(PackageDatabase::Pointer(new PackageDatabase(this)))
 {
-    std::map<std::string, std::string> keys;
+    AssociativeCollection<std::string, std::string>::Pointer keys(
+            new AssociativeCollection<std::string, std::string>::Concrete);
 
-    keys.insert(std::make_pair(std::string("format"), std::string("portage")));
-    keys.insert(std::make_pair(std::string("importace"), "1"));
-    keys.insert(std::make_pair(std::string("location"), stringify(base)));
-    keys.insert(std::make_pair(std::string("cache"), "/var/empty"));
-    keys.insert(std::make_pair(std::string("profile"), stringify(base / "profiles" / "base")));
+    keys->insert("format", "portage");
+    keys->insert("importace", "1");
+    keys->insert("location", stringify(base));
+    keys->insert("cache", "/var/empty");
+    keys->insert("profile", stringify(base / "profiles" / "base"));
 
     package_database()->add_repository(
             RepositoryMaker::get_instance()->find_maker("portage")(this,

@@ -34,7 +34,7 @@
 #include <string>
 #include <map>
 
-#include <libwrapiter/libwrapiter.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Declarations for the Repository class.
@@ -934,7 +934,7 @@ namespace paludis
      */
     typedef VirtualConstructor<std::string,
             Repository::Pointer (*) (const Environment * const, const PackageDatabase * const,
-                    const std::map<std::string, std::string> &),
+                    AssociativeCollection<std::string, std::string>::ConstPointer),
             virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> > RepositoryMaker;
 }
 
