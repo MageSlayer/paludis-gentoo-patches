@@ -112,8 +112,7 @@ ArgsHandler::dump_to_stream(std::ostream & s) const
     {
         s << (*g)->name() << ":" << std::endl;
 
-        std::for_each((*g)->_args_options.begin(), (*g)->_args_options.end(),
-                accept_visitor(&dump));
+        std::for_each((*g)->begin(), (*g)->end(), accept_visitor(&dump));
 
         s << std::endl;
     }

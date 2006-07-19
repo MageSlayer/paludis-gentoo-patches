@@ -18,6 +18,7 @@
  */
 
 #include "args.hh"
+#include <list>
 
 /** \file
  * Implementation for ArgsGroup.
@@ -27,7 +28,18 @@
 
 using namespace paludis::args;
 
+namespace paludis
+{
+    template<>
+    struct Implementation<ArgsGroup> :
+        InternalCounted<ArgsGroup>
+    {
+        std::list<ArgsOption *> args_options;
+    };
+}
+
 ArgsGroup::ArgsGroup(ArgsHandler * h, const std::string & name) :
+    PrivateImplementationPattern<ArgsGroup>(new Implementation<ArgsGroup>),
     _name(name),
     _handler(h)
 {
@@ -38,10 +50,22 @@ void
 ArgsGroup::add(ArgsOption * const value)
 {
     /// \bug Should check for uniqueness of short and long names.
-    _args_options.push_back(value);
+    _imp->args_options.push_back(value);
 }
 
 ArgsGroup::~ArgsGroup()
 {
+}
+
+ArgsGroup::Iterator
+ArgsGroup::begin() const
+{
+    return Iterator(_imp->args_options.begin());
+}
+
+ArgsGroup::Iterator
+ArgsGroup::end() const
+{
+    return Iterator(_imp->args_options.end());
 }
 

@@ -37,7 +37,7 @@ ArgsOption::ArgsOption(ArgsGroup * const g, const std::string & long_name,
     _specified(false)
 {
     g->add(this);
-    g->_handler->add_option(this, long_name, short_name);
+    g->handler()->add_option(this, long_name, short_name);
 }
 
 ArgsOption::~ArgsOption()

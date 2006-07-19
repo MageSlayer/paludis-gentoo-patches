@@ -20,9 +20,12 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_GROUP_HH
 #define PALUDIS_GUARD_ARGS_ARGS_GROUP_HH 1
 
-#include <list>
 #include <paludis/args/args_option.hh>
+#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <string>
+
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Declaration for ArgsGroup.
@@ -42,39 +45,45 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class ArgsGroup
+        class ArgsGroup :
+            private PrivateImplementationPattern<ArgsGroup>,
+            private InstantiationPolicy<ArgsGroup, instantiation_method::NonCopyableTag>
         {
-            friend class ArgsHandler;
-            friend class ArgsOption;
-
             private:
-                ArgsGroup(const ArgsGroup &);
-
-                void operator= (const ArgsGroup &);
-
                 const std::string _name;
-
-                std::list<ArgsOption *> _args_options;
 
                 ArgsHandler * _handler;
 
-            protected:
+            public:
+                ArgsHandler * handler()
+                {
+                    return _handler;
+                }
+
                 /**
                  * Add an ArgsOption instance (called by the ArgsOption
                  * constructor).
                  */
                 void add(ArgsOption * const value);
 
-            public:
-                /**
-                 * Constructor.
-                 */
+                ///\name Iterate over our ArgsOptions.
+                ///\{
+
+                typedef libwrapiter::ForwardIterator<ArgsGroup, ArgsOption * const> Iterator;
+
+                Iterator begin() const;
+                Iterator end() const;
+
+                ///\}
+
+                ///\name Basic operations
+                ///\{
+
                 ArgsGroup(ArgsHandler * h, const std::string & name);
 
-                /**
-                 * Destructor.
-                 */
                 ~ArgsGroup();
+
+                ///\}
 
                 /**
                  * Fetch our name.

@@ -21,7 +21,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ARGS_ARGS_DUMPER_HH
 #define PALUDIS_GUARD_PALUDIS_ARGS_ARGS_DUMPER_HH 1
 
-#include <ostream>
+#include <iosfwd>
 #include <paludis/args/args_visitor.hh>
 #include <paludis/util/visitor.hh>
 
