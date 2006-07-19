@@ -97,7 +97,8 @@ ebuild_source_profile()
     fi
 
     if [[ -f ${1}/make.defaults ]] ; then
-        eval "$(sed -e 's/^\([a-zA-Z0-9\-_]\+=\)/export \1/' ${1}/make.defaults )" || die "Couldn't source ${1}/make.defaults"
+        eval "$(sed -e 's/^\([a-zA-Z0-9\-_]\+=\)/export \1/' ${1}/make.defaults )" \
+            || die "Couldn't source ${1}/make.defaults"
     fi
 
     if [[ -f ${1}/bashrc ]] ; then
@@ -220,6 +221,11 @@ perform_hook()
 
 ebuild_main()
 {
+    if ! [[ -e /proc/self ]] ; then
+        ebuild_notice "warning" "/proc appears to be unmounted or unreadable."
+        ebuild_notice "warning" "This will cause problems."
+    fi
+
     local action ebuild="$1"
     shift
 
