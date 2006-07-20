@@ -20,6 +20,10 @@
 
 #include "config.h"
 
+#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/portage/portage_repository_profile.hh>
+#include <paludis/repositories/portage/portage_repository_exceptions.hh>
+
 #include <paludis/config_file.hh>
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
@@ -30,7 +34,6 @@
 #include <paludis/package_database.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -66,11 +69,10 @@ using namespace paludis;
 
 namespace paludis
 {
+    typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
+
     /// Map for versions.
     typedef MakeHashedMap<QualifiedPackageName, VersionSpecCollection::Pointer>::Type VersionsMap;
-
-    /// Map for virtuals.
-    typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
 
     /// Map for repository masks.
     typedef MakeHashedMap<QualifiedPackageName, std::list<PackageDepAtom::ConstPointer> >::Type RepositoryMaskMap;
@@ -81,19 +83,6 @@ namespace paludis
     /// Map for packages.
     typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
 
-    /// Map for USE flags.
-    typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseMap;
-
-    /// Map for USE masking.
-    typedef MakeHashedSet<UseFlagName>::Type UseMaskSet;
-
-    /// Map for package USE masking.
-    typedef MakeHashedMap<QualifiedPackageName,
-            std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> > >::Type PackageUseMaskMap;
-
-    /// Map for USE flag sets.
-    typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
-
     /// Map for mirrors.
     typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
 
@@ -101,8 +90,8 @@ namespace paludis
     typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>,
             VersionMetadata::Pointer>::Type MetadataMap;
 
-    /// Map for profile environment.
-    typedef MakeHashedMap<std::string, std::string>::Type ProfileEnvMap;
+    /// Map for virtuals.
+    typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
 
     /**
      * Implementation data for a PortageRepository.
@@ -122,8 +111,8 @@ namespace paludis
         /// Our base location.
         FSEntry location;
 
-        /// Our profiles.
-        FSEntryCollection::Pointer profiles;
+        /// Our profile locations.
+        FSEntryCollection::Pointer profile_locations;
 
         /// Our cache.
         FSEntry cache;
@@ -178,35 +167,11 @@ namespace paludis
         /// Have repository mask?
         mutable bool has_repo_mask;
 
-        /// Use mask.
-        mutable UseMaskSet use_mask;
-
-        /// Package use mask.
-        mutable PackageUseMaskMap package_use_mask;
-
-        /// Use force.
-        mutable UseMaskSet use_force;
-
-        /// Package use force.
-        mutable PackageUseMaskMap package_use_force;
-
-        /// Use.
-        mutable UseMap use;
-
         /// Have virtual names?
         mutable bool has_virtuals;
 
-        /// Old style virtuals name mapping.
-        mutable VirtualsMap virtuals_map;
-
         /// Arch flags
         mutable UseFlagSet arch_list;
-
-        /// Expand flags
-        mutable UseFlagSet expand_list;
-
-        /// Expand hidden flags
-        mutable UseFlagSet expand_hidden_list;
 
         /// Do we have arch_list?
         mutable bool has_arch_list;
@@ -216,15 +181,6 @@ namespace paludis
 
         /// Mirrors.
         mutable MirrorMap mirrors;
-
-        /// Profile env vars.
-        mutable ProfileEnvMap profile_env;
-
-        /// System packages.
-        mutable AllDepAtom::Pointer system_packages;
-
-        /// Tag for system packages.
-        mutable GeneralSetDepTag::Pointer system_tag;
 
         /// Constructor.
         Implementation(const PortageRepositoryParams &);
@@ -241,22 +197,21 @@ namespace paludis
         /// Load profiles, if we haven't already.
         inline void need_profiles() const;
 
-        private:
-            mutable bool has_profile;
+        /// Our profile.
+        mutable PortageRepositoryProfile::Pointer profile_ptr;
 
-            void add_profile(const FSEntry & f) const;
+        /// Our virtuals
+        mutable VirtualsMap our_virtuals;
 
-            void add_profile_r(const FSEntry & f) const;
-
-            /// Raw system lines.
-            mutable std::set<std::string> system_lines;
+        /// Have we loaded our virtuals?
+        bool has_our_virtuals;
     };
 
     Implementation<PortageRepository>::Implementation(const PortageRepositoryParams & p) :
         db(p.get<prpk_package_database>()),
         env(p.get<prpk_environment>()),
         location(p.get<prpk_location>()),
-        profiles(p.get<prpk_profiles>()),
+        profile_locations(p.get<prpk_profiles>()),
         cache(p.get<prpk_cache>()),
         eclassdirs(p.get<prpk_eclassdirs>()),
         distdir(p.get<prpk_distdir>()),
@@ -272,9 +227,8 @@ namespace paludis
         has_virtuals(false),
         has_arch_list(false),
         has_mirrors(false),
-        system_packages(new AllDepAtom),
-        system_tag(new GeneralSetDepTag("system")),
-        has_profile(false)
+        profile_ptr(0),
+        has_our_virtuals(false)
     {
     }
 
@@ -283,251 +237,18 @@ namespace paludis
     }
 
     void
-    Implementation<PortageRepository>::add_profile(const FSEntry & f) const
-    {
-        Context context("When setting profile from directory '" + stringify(f) + "':");
-
-        add_profile_r(f);
-
-        for (UseFlagSet::const_iterator x(expand_list.begin()), x_end(expand_list.end()) ;
-                x != x_end ; ++x)
-        {
-            std::list<std::string> uses;
-            WhitespaceTokeniser::get_instance()->tokenise(profile_env[stringify(*x)], std::back_inserter(uses));
-            for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
-                    u != u_end ; ++u)
-            {
-                std::string lower_x;
-                std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
-                        &::tolower);
-                use[UseFlagName(lower_x + "_" + *u)] = use_enabled;
-            }
-        }
-
-        for (std::set<std::string>::iterator it(system_lines.begin()), it_end(system_lines.end());
-                it != it_end; ++it)
-        {
-            Context context_atom("When parsing package '" + *it + "':");
-            PackageDepAtom::Pointer atom(new PackageDepAtom(*it));
-            atom->set_tag(system_tag);
-            system_packages->add_child(atom);
-        }
-
-        std::string arch(profile_env["ARCH"]);
-        if (arch.empty())
-            throw PortageRepositoryConfigurationError("ARCH variable is unset for repository at '"
-                    + stringify(location) + "'");
-
-        use[UseFlagName(arch)] = use_enabled;
-    }
-
-    void
-    Implementation<PortageRepository>::add_profile_r(const FSEntry & f) const
-    {
-        Context context("When reading profile directory '" + stringify(f) + "':");
-
-        if (! f.is_directory())
-        {
-            Log::get_instance()->message(ll_warning, lc_context,
-                    "Profile component '" + stringify(f) + "' is not a directory");
-            return;
-        }
-
-        if ((f / "parent").exists())
-        {
-            Context context_local("When reading parent file:");
-
-            LineConfigFile parent(f / "parent");
-            LineConfigFile::Iterator it = parent.begin(), it_end = parent.end();
-
-            if (it == it_end)
-            {
-                Log::get_instance()->message(ll_warning, lc_context,
-                        "Profile parent file in '" + stringify(f) + "' cannot be read");
-                return;
-            }
-
-            for ( ; it != it_end; ++it)
-            {
-                add_profile_r((f / (*it)).realpath());
-            }
-
-        }
-
-        if ((f / "make.defaults").exists())
-        {
-            Context context_local("When reading make.defaults file:");
-
-            KeyValueConfigFile make_defaults_f(f / "make.defaults");
-            std::list<std::string> uses;
-            WhitespaceTokeniser::get_instance()->tokenise(make_defaults_f.get("USE"), std::back_inserter(uses));
-            for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
-                    u != u_end ; ++u)
-            {
-                if ('-' == u->at(0))
-                    use[UseFlagName(u->substr(1))] = use_disabled;
-                else
-                    use[UseFlagName(*u)] = use_enabled;
-            }
-
-            WhitespaceTokeniser::get_instance()->tokenise(
-                    make_defaults_f.get("USE_EXPAND"), create_inserter<UseFlagName>(
-                        std::inserter(expand_list, expand_list.begin())));
-
-            WhitespaceTokeniser::get_instance()->tokenise(
-                    make_defaults_f.get("USE_EXPAND_HIDDEN"), create_inserter<UseFlagName>(
-                        std::inserter(expand_hidden_list, expand_hidden_list.begin())));
-
-            for (KeyValueConfigFile::Iterator k(make_defaults_f.begin()),
-                    k_end(make_defaults_f.end()) ; k != k_end ; ++k)
-                profile_env[k->first] = k->second;
-        }
-
-        if ((f / "use.mask").exists())
-        {
-            Context context_local("When reading use.mask file:");
-
-            LineConfigFile use_mask_f(f / "use.mask");
-            for (LineConfigFile::Iterator line(use_mask_f.begin()), line_end(use_mask_f.end()) ;
-                    line != line_end ; ++line)
-                if ('-' == line->at(0))
-                    use_mask.erase(UseFlagName(line->substr(1)));
-                else
-                    use_mask.insert(UseFlagName(*line));
-        }
-
-        if ((f / "package.use.mask").exists())
-        {
-            Context context_local("When reading package use.mask file:");
-
-            LineConfigFile package_use_mask_f(f / "package.use.mask");
-            for (LineConfigFile::Iterator line(package_use_mask_f.begin()), line_end(package_use_mask_f.end());
-                    line != line_end; ++line)
-            {
-                std::list<std::string> tokens;
-                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-                if (tokens.size() < 2)
-                    continue;
-
-                std::list<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
-                PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
-                QualifiedPackageName p(d->package());
-
-                PackageUseMaskMap::iterator i = package_use_mask.find(p);
-                if (package_use_mask.end() == i)
-                    i = package_use_mask.insert(make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >())).first;
-
-                for ( ; t != t_end; ++t)
-                {
-                    (*i).second.push_back(std::make_pair(d, UseFlagName(*t)));
-                }
-            }
-        }
-
-        if ((f / "use.force").exists())
-        {
-            Context context_local("When reading use.force file:");
-
-            LineConfigFile use_force_f(f / "use.force");
-            for (LineConfigFile::Iterator line(use_force_f.begin()), line_end(use_force_f.end());
-                    line != line_end; ++line)
-            {
-                if ('-' == line->at(0))
-                    use_force.erase(UseFlagName(line->substr(1)));
-                else
-                    use_force.insert(UseFlagName(*line));
-            }
-        }
-
-        if ((f / "package.use.force").exists())
-        {
-            Context context_local("When reading package use.force file:");
-
-            LineConfigFile package_use_force_f(f / "package.use.force");
-            for (LineConfigFile::Iterator line(package_use_force_f.begin()), line_end(package_use_force_f.end());
-                    line != line_end; ++line)
-            {
-                std::list<std::string> tokens;
-                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-                if (tokens.size() < 2)
-                    continue;
-
-                std::list<std::string>::iterator t=tokens.begin(), t_end=tokens.end();
-                PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
-                QualifiedPackageName p(d->package());
-
-                PackageUseMaskMap::iterator i = package_use_force.find(p);
-                if (package_use_force.end() == i)
-                    i = package_use_force.insert(make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >())).first;
-
-                for ( ; t != t_end; ++t)
-                {
-                    (*i).second.push_back(std::make_pair(d, UseFlagName(*t)));
-                }
-            }
-        }
-
-        if ((f / "virtuals").exists())
-        {
-            Context context_local("When reading virtuals file:");
-
-            LineConfigFile virtuals_f(f / "virtuals");
-            for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
-                    line != line_end ; ++line)
-            {
-                std::vector<std::string> tokens;
-                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-                if (tokens.size() < 2)
-                    continue;
-                virtuals_map.erase(QualifiedPackageName(tokens[0]));
-                virtuals_map.insert(std::make_pair(QualifiedPackageName(tokens[0]),
-                            PackageDepAtom::Pointer(new PackageDepAtom(tokens[1]))));
-            }
-        }
-
-        if ((f / "packages").exists())
-        {
-            Context context_local("When reading packages file:");
-
-            LineConfigFile virtuals_f(f / "packages");
-            for (LineConfigFile::Iterator line(virtuals_f.begin()), line_end(virtuals_f.end()) ;
-                    line != line_end ; ++line)
-            {
-                if (line->empty())
-                    continue;
-
-                Context context_line("When reading line '" + *line + "':");
-
-                if ('*' == line->at(0))
-                    system_lines.insert(line->substr(1));
-                else if ('-' == line->at(0) && '*' == line->at(1))
-                    if (0==system_lines.erase(line->substr(2)))
-                    {
-                        Log::get_instance()->message(ll_qa, lc_context,
-                                "Trying to remove packages line '" + line->substr(2) +
-                                "' that doesn't exist.");
-                    }
-            }
-        }
-    }
-
-    void
     Implementation<PortageRepository>::need_profiles() const
     {
-        if (has_profile)
+        if (profile_ptr)
             return;
 
-        Context context("When loading profiles:");
-        for (FSEntryCollection::Iterator p(profiles->begin()), p_end(profiles->end()) ;
-                p != p_end ; ++p)
-            add_profile(*p);
-
-        has_profile = true;
+        profile_ptr.assign(new PortageRepositoryProfile(env, *profile_locations));
     }
 
     void
     Implementation<PortageRepository>::invalidate() const
     {
+        profile_ptr.zero();
         has_category_names = false;
         category_names.clear();
         package_names.clear();
@@ -535,19 +256,11 @@ namespace paludis
         metadata.clear();
         repo_mask.clear();
         has_repo_mask = false;
-        use_mask.clear();
-        use.clear();
         has_virtuals = false;
-        virtuals_map.clear();
-        has_profile = false;
         arch_list.clear();
-        expand_list.clear();
-        expand_hidden_list.clear();
         has_arch_list = false;
         has_mirrors = false;
         mirrors.clear();
-        profile_env.clear();
-        system_packages = AllDepAtom::Pointer(0);
     }
 }
 
@@ -572,8 +285,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
 
     config_info->add_kv("location", stringify(_imp->location));
-    config_info->add_kv("profiles", join(_imp->profiles->begin(),
-                _imp->profiles->end(), " "));
+    config_info->add_kv("profiles", join(_imp->profile_locations->begin(),
+                _imp->profile_locations->end(), " "));
     config_info->add_kv("eclassdirs", join(_imp->eclassdirs->begin(),
                 _imp->eclassdirs->end(), " "));
     config_info->add_kv("cache", stringify(_imp->cache));
@@ -798,8 +511,7 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
             stringify(n.get<qpn_package>()));
     if (CategoryNamePart("virtual") == n.get<qpn_category>() && ! path.exists())
     {
-        VirtualsMap::iterator i(
-                _imp->virtuals_map.find(n));
+        VirtualsMap::iterator i(_imp->our_virtuals.find(n));
         need_version_names(i->second->package());
 
         VersionSpecCollection::ConstPointer versions(version_specs(i->second->package()));
@@ -898,7 +610,7 @@ PortageRepository::do_version_metadata(
     cache_file /= stringify(q.get<qpn_package>()) + "-" + stringify(v);
 
     bool ok(false);
-    VirtualsMap::iterator vi(_imp->virtuals_map.end());
+    VirtualsMap::iterator vi(_imp->our_virtuals.end());
     if (cache_file.is_regular_file())
     {
         std::ifstream cache(stringify(cache_file).c_str());
@@ -962,7 +674,7 @@ PortageRepository::do_version_metadata(
                     "Couldn't read the cache file at '"
                     + stringify(cache_file) + "'");
     }
-    else if (_imp->virtuals_map.end() != ((vi = _imp->virtuals_map.find(q))))
+    else if (_imp->our_virtuals.end() != ((vi = _imp->our_virtuals.find(q))))
     {
         VersionMetadata::ConstPointer m(version_metadata(vi->second->package(), v));
         result->set<vm_slot>(m->get<vm_slot>());
@@ -1050,94 +762,25 @@ PortageRepository::do_query_profile_masks(const QualifiedPackageName &,
 }
 
 UseFlagState
-PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
+PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry *) const
 {
     _imp->need_profiles();
-
-    UseMap::iterator p(_imp->use.end());
-
-    if (query_use_mask(f, e))
-        return use_disabled;
-    else if (_imp->use.end() == ((p = _imp->use.find(f))))
-        return use_unspecified;
-    else
-        return p->second;
+    return _imp->profile_ptr->use_state_ignoring_masks(f);
 }
 
 bool
 PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabaseEntry *e) const
 {
     _imp->need_profiles();
-
-    if (_imp->use_mask.end() != _imp->use_mask.find(u))
-        return true;
-
-    if (0 == e)
-        return false;
-
-    PackageUseMaskMap::iterator it = _imp->package_use_mask.find(e->get<pde_name>());
-    if (_imp->package_use_mask.end() == it)
-        return false;
-
-    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator i = it->second.begin(),
-            i_end = it->second.end(); i != i_end; ++i)
-    {
-        static bool recursive(false);
-        if (recursive)
-        {
-            if (i->first->use_requirements_ptr())
-                continue;
-            if (match_package(_imp->env, i->first, e) && u == i->second)
-                return true;
-        }
-        else
-        {
-            Save<bool> save_recursive(&recursive, true);
-            if (match_package(_imp->env, i->first, e) && u == i->second)
-                return true;
-        }
-    }
-
-    return false;
+    return _imp->profile_ptr->use_masked(u, e);
 }
 
 bool
 PortageRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEntry *e) const
 {
     _imp->need_profiles();
-
-    if (_imp->use_force.end() != _imp->use_force.find(u))
-        return true;
-
-    if (0 == e)
-        return false;
-
-    PackageUseMaskMap::iterator it = _imp->package_use_force.find(e->get<pde_name>());
-    if (_imp->package_use_mask.end() == it)
-        return false;
-
-    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator i = it->second.begin(),
-            i_end = it->second.end(); i != i_end; ++i)
-    {
-        static bool recursive(false);
-        if (recursive)
-        {
-            if (i->first->use_requirements_ptr())
-                continue;
-            if (match_package(_imp->env, i->first, e) && u == i->second)
-                return true;
-        }
-        else
-        {
-            Save<bool> save_recursive(&recursive, true);
-            if (match_package(_imp->env, i->first, e) && u == i->second)
-                return true;
-        }
-    }
-
-    return false;
+    return _imp->profile_ptr->use_forced(u, e);
 }
-
 
 void
 PortageRepository::need_virtual_names() const
@@ -1152,19 +795,24 @@ PortageRepository::need_virtual_names() const
         _imp->need_profiles();
         need_category_names();
 
+        // don't use std::copy!
+        for (PortageRepositoryProfile::VirtualsIterator i(_imp->profile_ptr->begin_virtuals()),
+                i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
+            _imp->our_virtuals.insert(*i);
+
         for (Environment::ProvideMapIterator p(_imp->env->begin_provide_map()),
                 p_end(_imp->env->end_provide_map()) ; p != p_end ; ++p)
         {
             if (! has_package_named(p->second))
                 continue;
 
-            _imp->virtuals_map.erase(p->first);
-            _imp->virtuals_map.insert(std::make_pair(p->first, PackageDepAtom::Pointer(
+            _imp->our_virtuals.erase(p->first);
+            _imp->our_virtuals.insert(std::make_pair(p->first, PackageDepAtom::Pointer(
                             new PackageDepAtom(p->second))));
         }
 
         for (VirtualsMap::const_iterator
-                v(_imp->virtuals_map.begin()), v_end(_imp->virtuals_map.end()) ;
+                v(_imp->our_virtuals.begin()), v_end(_imp->our_virtuals.end()) ;
                 v != v_end ; ++v)
             _imp->package_names.insert(std::make_pair(v->first, false));
     }
@@ -1277,12 +925,6 @@ PortageRepository::make_portage_repository(
                         param<prpk_buildroot>(buildroot)))));
 }
 
-PortageRepositoryConfigurationError::PortageRepositoryConfigurationError(
-        const std::string & msg) throw () :
-    ConfigurationError("Portage repository configuration error: " + msg)
-{
-}
-
 bool
 PortageRepository::do_is_arch_flag(const UseFlagName & u) const
 {
@@ -1305,8 +947,8 @@ PortageRepository::do_is_expand_flag(const UseFlagName & u) const
 {
     _imp->need_profiles();
 
-    for (UseFlagSet::const_iterator i(_imp->expand_list.begin()),
-            i_end(_imp->expand_list.end()) ; i != i_end ; ++i)
+    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
+            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
         if (0 == strncasecmp(
                     stringify(u).c_str(),
                     (stringify(*i) + "_").c_str(),
@@ -1321,8 +963,8 @@ PortageRepository::do_is_expand_hidden_flag(const UseFlagName & u) const
 {
     _imp->need_profiles();
 
-    for (UseFlagSet::const_iterator i(_imp->expand_hidden_list.begin()),
-            i_end(_imp->expand_hidden_list.end()) ; i != i_end ; ++i)
+    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
+            i_end(_imp->profile_ptr->end_use_expand_hidden()) ; i != i_end ; ++i)
         if (0 == strncasecmp(
                     stringify(u).c_str(),
                     (stringify(*i) + "_").c_str(),
@@ -1337,8 +979,8 @@ PortageRepository::do_expand_flag_delim_pos(const UseFlagName & u) const
 {
     _imp->need_profiles();
 
-    for (UseFlagSet::const_iterator i(_imp->expand_list.begin()),
-            i_end(_imp->expand_list.end()) ; i != i_end ; ++i)
+    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
+            i_end(_imp->profile_ptr->end_use_expand_hidden()) ; i != i_end ; ++i)
         if (0 == strncasecmp(
                     stringify(u).c_str(),
                     (stringify(*i) + "_").c_str(),
@@ -1628,16 +1270,17 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                 use += (*iuse_it).data() + " ";
     }
 
-    use += _imp->profile_env["ARCH"] + " ";
-    for (UseFlagSet::const_iterator x(_imp->expand_list.begin()),
-            x_end(_imp->expand_list.end()) ; x != x_end ; ++x)
+    use += _imp->profile_ptr->environment_variable("ARCH") + " ";
+    for (PortageRepositoryProfile::UseExpandIterator x(_imp->profile_ptr->begin_use_expand()),
+            x_end(_imp->profile_ptr->end_use_expand()) ; x != x_end ; ++x)
     {
         std::string lower_x;
         std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
                 &::tolower);
 
         std::list<std::string> uses;
-        WhitespaceTokeniser::get_instance()->tokenise(_imp->profile_env[stringify(*x)],
+        WhitespaceTokeniser::get_instance()->tokenise(
+                _imp->profile_ptr->environment_variable(stringify(*x)),
                 std::back_inserter(uses));
 
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
@@ -1653,8 +1296,9 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 
     AssociativeCollection<std::string, std::string>::Pointer expand_vars(
             new AssociativeCollection<std::string, std::string>::Concrete);
-    for (UseFlagSet::const_iterator u(_imp->expand_list.begin()),
-            u_end(_imp->expand_list.end()) ; u != u_end ; ++u)
+    for (PortageRepositoryProfile::UseExpandIterator
+            u(_imp->profile_ptr->begin_use_expand()),
+            u_end(_imp->profile_ptr->end_use_expand()) ; u != u_end ; ++u)
     {
         std::string prefix;
         std::transform(u->data().begin(), u->data().end(), std::back_inserter(prefix),
@@ -1693,12 +1337,13 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                     param<ecfpk_a>(archives),
                     param<ecfpk_aa>(all_archives),
                     param<ecfpk_use>(use),
-                    param<ecfpk_use_expand>(join(_imp->expand_list.begin(),
-                            _imp->expand_list.end(), " ")),
+                    param<ecfpk_use_expand>(join(
+                            _imp->profile_ptr->begin_use_expand(),
+                            _imp->profile_ptr->end_use_expand(), " ")),
                     param<ecfpk_expand_vars>(expand_vars),
                     param<ecfpk_flat_src_uri>(flat_src_uri),
                     param<ecfpk_root>(stringify(_imp->root) + "/"),
-                    param<ecfpk_profiles>(_imp->profiles),
+                    param<ecfpk_profiles>(_imp->profile_locations),
                     param<ecfpk_no_fetch>(fetch_restrict)
                     )));
 
@@ -1724,11 +1369,12 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                     param<ecipk_use>(use),
                     param<ecipk_a>(archives),
                     param<ecipk_aa>(all_archives),
-                    param<ecipk_use_expand>(join(_imp->expand_list.begin(),
-                            _imp->expand_list.end(), " ")),
+                    param<ecipk_use_expand>(join(
+                            _imp->profile_ptr->begin_use_expand(),
+                            _imp->profile_ptr->end_use_expand(), " ")),
                     param<ecipk_expand_vars>(expand_vars),
                     param<ecipk_root>(stringify(_imp->root) + "/"),
-                    param<ecipk_profiles>(_imp->profiles),
+                    param<ecipk_profiles>(_imp->profile_locations),
                     param<ecipk_disable_cfgpro>(o.get<io_noconfigprotect>()),
                     param<ecipk_merge_only>(! metadata->get_ebuild_interface()->get<evm_virtual>().empty()),
                     param<ecipk_slot>(SlotName(metadata->get<vm_slot>()))
@@ -1987,7 +1633,7 @@ PortageRepository::do_package_set(const std::string & s, const PackageSetOptions
     if ("system" == s)
     {
         _imp->need_profiles();
-        return _imp->system_packages;
+        return _imp->profile_ptr->system_packages();
     }
     else if ("security" == s)
         return do_security_set(o);
@@ -2144,7 +1790,7 @@ PortageRepository::update_news() const
                 bool local_show(false);
                 for (NewsFile::DisplayIfKeywordIterator i(news.begin_display_if_keyword()),
                         i_end(news.end_display_if_keyword()) ; i != i_end ; ++i)
-                    if (_imp->profile_env["ARCH"] == *i)
+                    if (_imp->profile_ptr->environment_variable("ARCH") == *i)
                         local_show = true;
                 show &= local_show;
             }
@@ -2152,8 +1798,8 @@ PortageRepository::update_news() const
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
                 bool local_show(false);
-                for (FSEntryCollection::Iterator p(_imp->profiles->begin()),
-                        p_end(_imp->profiles->end()) ; p != p_end ; ++p)
+                for (FSEntryCollection::Iterator p(_imp->profile_locations->begin()),
+                        p_end(_imp->profile_locations->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(
                                 strip_leading_string(stringify(p->realpath()),

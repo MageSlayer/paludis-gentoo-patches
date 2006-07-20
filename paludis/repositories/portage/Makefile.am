@@ -10,10 +10,19 @@ DEFS= \
 
 paludis_repositories_libdir = $(libdir)
 paludis_repositories_lib_LTLIBRARIES = libpaludisportagerepository.la
-libpaludisportagerepository_la_SOURCES = portage_repository.cc portage_repository.hh
-libpaludisportagerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 paludis_repositories_portage_includedir = $(includedir)/paludis/repositories/portage/
-paludis_repositories_portage_include_HEADERS = portage_repository.hh
+libpaludisportagerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+paludis_repositories_portage_include_HEADERS = \
+	portage_repository.hh \
+	portage_repository_profile.hh \
+	portage_repository_exceptions.hh
+
+libpaludisportagerepository_la_SOURCES = \
+	portage_repository.cc \
+	portage_repository_profile.cc \
+	portage_repository_exceptions.cc \
+	$(paludis_repositories_portage_include_HEADERS)
 
 TESTS = portage_repository_TEST
 

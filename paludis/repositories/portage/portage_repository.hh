@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PORTAGE_REPOSITORY_HH
 #define PALUDIS_GUARD_PALUDIS_PORTAGE_REPOSITORY_HH 1
 
-#include <map>
 #include <paludis/repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -271,22 +270,6 @@ namespace paludis
             {
                 return _atoms.size();
             }
-    };
-
-    /**
-     * Thrown if invalid parameters are provided for
-     * PortageRepository::make_portage_repository.
-     *
-     * \ingroup grpexceptions
-     * \ingroup grpportagerepository
-     */
-    class PortageRepositoryConfigurationError : public ConfigurationError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            PortageRepositoryConfigurationError(const std::string & msg) throw ();
     };
 
     /**
