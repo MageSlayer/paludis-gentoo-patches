@@ -93,6 +93,14 @@ namespace paludis
 
             ///\}
 
+            ///\name Masks
+            ///\{
+
+            bool profile_masked(const QualifiedPackageName &, const VersionSpec &,
+                    const RepositoryName &) const;
+
+            ///\}
+
             ///\name System package set
             ///\{
 

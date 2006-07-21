@@ -755,10 +755,11 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
 }
 
 bool
-PortageRepository::do_query_profile_masks(const QualifiedPackageName &,
-        const VersionSpec &) const
+PortageRepository::do_query_profile_masks(const QualifiedPackageName & n,
+        const VersionSpec & v) const
 {
-    return false;
+    _imp->need_profiles();
+    return _imp->profile_ptr->profile_masked(n, v, name());
 }
 
 UseFlagState

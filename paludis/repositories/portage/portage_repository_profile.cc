@@ -61,6 +61,7 @@ namespace paludis
             typedef MakeHashedMap<QualifiedPackageName,
                     std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> > >::Type PackageUseMaskMap;
             typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
+            typedef MakeHashedMap<QualifiedPackageName, std::list<PackageDepAtom::ConstPointer> >::Type PackageMaskMap;
 
             ///\}
 
@@ -74,6 +75,7 @@ namespace paludis
                     const std::string & mask_or_force, PackageUseMaskMap & set);
             void load_profile_packages(const FSEntry & dir);
             void load_profile_virtuals(const FSEntry & dir);
+            void load_profile_package_mask(const FSEntry & dir);
 
             void add_use_expand_to_use();
             void load_system_packages();
@@ -121,6 +123,13 @@ namespace paludis
             ///\{
 
             VirtualsMap virtuals;
+
+            ///\}
+
+            ///\name Masks
+            ///\{
+
+            PackageMaskMap package_mask;
 
             ///\}
 
@@ -178,6 +187,7 @@ Implementation<PortageRepositoryProfile>::load_profile_directory_recursively(con
     load_profile_package_use_mask_or_force(dir, "force", package_use_force);
     load_profile_packages(dir);
     load_profile_virtuals(dir);
+    load_profile_package_mask(dir);
 }
 
 void
@@ -393,6 +403,23 @@ Implementation<PortageRepositoryProfile>::load_profile_virtuals(const FSEntry & 
     }
 }
 
+void
+Implementation<PortageRepositoryProfile>::load_profile_package_mask(const FSEntry & dir)
+{
+    Context context("When loading package.mask file in '" + stringify(dir) + "':");
+
+    if (! (dir / "package.mask").exists())
+        return;
+
+    LineConfigFile file(dir / "package.mask");
+    for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
+            line != line_end ; ++line)
+    {
+        PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
+        package_mask[a->package()].push_back(a);
+    }
+}
+
 bool
 Implementation<PortageRepositoryProfile>::use_mask_or_force(
         const UseFlagName & u, const PackageDatabaseEntry * const e, const std::string & mask_or_force,
@@ -581,5 +608,25 @@ PortageRepositoryProfile::VirtualsIterator
 PortageRepositoryProfile::end_virtuals() const
 {
     return VirtualsIterator(_imp->virtuals.end());
+}
+
+bool
+PortageRepositoryProfile::profile_masked(const QualifiedPackageName & n,
+        const VersionSpec & v, const RepositoryName & r) const
+{
+    Implementation<PortageRepositoryProfile>::PackageMaskMap::const_iterator rr(
+            _imp->package_mask.find(n));
+    if (_imp->package_mask.end() == rr)
+        return false;
+    else
+    {
+        PackageDatabaseEntry dbe(n, v, r);
+        for (std::list<PackageDepAtom::ConstPointer>::const_iterator k(rr->second.begin()),
+                k_end(rr->second.end()) ; k != k_end ; ++k)
+            if (match_package(_imp->env, **k, dbe))
+                return true;
+    }
+
+    return false;
 }
 
