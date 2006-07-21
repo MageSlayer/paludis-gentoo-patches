@@ -108,7 +108,7 @@ Log::message(const LogLevel l, const LogContext c, const std::string & s)
         } while (false);
 
         if (lc_context == c)
-            *_imp->stream << Context::backtrace(" ") << s << std::endl;
+            *_imp->stream << Context::backtrace("\n  ... ") << s << std::endl;
         else
             *_imp->stream << s << std::endl;
     }
