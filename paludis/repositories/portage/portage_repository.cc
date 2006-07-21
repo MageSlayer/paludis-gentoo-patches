@@ -980,8 +980,8 @@ PortageRepository::do_expand_flag_delim_pos(const UseFlagName & u) const
 {
     _imp->need_profiles();
 
-    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
-            i_end(_imp->profile_ptr->end_use_expand_hidden()) ; i != i_end ; ++i)
+    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
+            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
         if (0 == strncasecmp(
                     stringify(u).c_str(),
                     (stringify(*i) + "_").c_str(),
