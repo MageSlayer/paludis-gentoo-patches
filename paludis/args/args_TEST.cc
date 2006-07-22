@@ -54,22 +54,37 @@ struct CommandLine : public ArgsHandler
 
     CommandLine();
     ~CommandLine();
+
+    std::string app_name() const
+    {
+        return "args_TEST";
+    }
+
+    std::string app_synopsis() const
+    {
+        return "tests for args";
+    }
+
+    std::string app_description() const
+    {
+        return "Tests args";
+    }
 };
 
 CommandLine::CommandLine() :
-    group_one(this, "Group one"),
+    group_one(this, "Group one", "Description of group one"),
     arg_foo(&group_one, "foo", 'f', "Enable foo"),
     arg_bar(&group_one, "bar", 'b', "Enable bar"),
     arg_dummy(&group_one, "dummy", 'd', "Enable something else"),
 
-    group_two(this, "Group two"),
+    group_two(this, "Group two", "Description of group two"),
     arg_baz(&group_two, "baz", 'z', "Enable baz"),
     arg_other_baz(&arg_baz, "other-baz"),
     arg_something(&group_two, "something", 's', "Value of something"),
     arg_somenum(&group_two, "num", 'n', "Some number"),
     arg_enum(&group_two, "enum", 'e', "One of three", EnumArg::EnumArgOptions("one", "Option one")("two", "option two")("three", "option three"), "two"),
 
-    group_three(this, "Group three"),
+    group_three(this, "Group three", "Description of group three"),
     arg_other_enum(&group_three, "something", '\0', "Blah.", EnumArg::EnumArgOptions("a", "A")("b", "B")("c", "C"), "b"),
     arg_stringset(&group_three, "stringset", 't', "A StringSet.")
 {
