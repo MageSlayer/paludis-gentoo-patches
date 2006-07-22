@@ -35,6 +35,10 @@ ArgsHandler::ArgsHandler()
 {
 }
 
+ArgsHandler::~ArgsHandler()
+{
+}
+
 void
 ArgsHandler::add(ArgsGroup * const g)
 {

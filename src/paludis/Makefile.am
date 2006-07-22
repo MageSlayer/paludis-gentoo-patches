@@ -5,6 +5,21 @@ DEFS= \
 SUBDIRS = .
 
 bin_PROGRAMS = paludis
+noinst_PROGRAMS = man-paludis
+
+man_MANS = paludis.1
+
+paludis.1 : man-paludis
+	./man-paludis | tee $@ | sed -e 's/^/    /'
+
+man_paludis_SOURCES = \
+	man_paludis.cc \
+	command_line.hh \
+	command_line.cc
+
+man_paludis_LDADD = \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la
 
 paludis_SOURCES = \
 	applets.hh           applets.cc           \
@@ -46,6 +61,6 @@ EXTRA_DIST = $(TESTS) \
 	install_TEST_setup.sh install_TEST_cleanup.sh \
 	upgrade_TEST_setup.sh upgrade_TEST_cleanup.sh
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda $(man_MANS)
 MAINTAINERCLEANFILES = Makefile.in
 

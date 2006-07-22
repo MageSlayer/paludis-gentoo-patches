@@ -1,5 +1,3 @@
-CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno *.gcda
-MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
@@ -10,6 +8,22 @@ SUBDIRS = .
 if ENABLE_QA
 
 bin_PROGRAMS = qualudis
+noinst_PROGRAMS = man-qualudis
+man_MANS = qualudis.1
+
+qualudis.1 : man-qualudis
+	./man-qualudis | tee $@ | sed -e 's/^/    /'
+
+man_qualudis_SOURCES = \
+	man_qualudis.cc \
+	qualudis_command_line.hh \
+	qualudis_command_line.cc
+
+man_qualudis_LDADD = \
+	$(top_builddir)/paludis/qa/libpaludisqa.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la
 
 qualudis_SOURCES = \
 	qualudis_command_line.hh      qualudis_command_line.cc      \
@@ -31,4 +45,7 @@ version_TEST :
 	echo -e "#!/bin/sh\n./qualudis --version" > $@
 
 endif
+
+CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno *.gcda $(man_MANS)
+MAINTAINERCLEANFILES = Makefile.in
 

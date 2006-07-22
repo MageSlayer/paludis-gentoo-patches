@@ -49,11 +49,20 @@ namespace paludis
             private:
                 std::list<ArgsGroup *> _groups;
                 std::list<std::string> _parameters;
+                std::list<std::string> _usage_lines;
 
                 std::map<std::string, ArgsOption *> _longopts;
                 std::map<char, ArgsOption *> _shortopts;
 
             protected:
+                /**
+                 * Add a new usage line.
+                 */
+                void add_usage_line(const std::string & l)
+                {
+                    _usage_lines.push_back(l);
+                }
+
                 /**
                  * Add an new ArgsGroup (called by the ArgsGroup constructor).
                  */
@@ -65,45 +74,41 @@ namespace paludis
                 void dump_to_stream(std::ostream & s) const;
 
             public:
-                /**
-                 * Constructor.
-                 */
+                ///\name Basic operations
+                ///\{
+
                 ArgsHandler();
+
+                virtual ~ArgsHandler();
+
+                ///\}
 
                 /**
                  * Parse command line arguments.
                  */
                 void run(const int, const char * const * const);
 
-                /**
-                 * Iterate over our parameters (non - and -- switches and their
-                 * values).
-                 */
+                ///\name Iterate over our parameters (non - and -- switches and their values)
+                ///\{
+
                 typedef std::list<std::string>::const_iterator ParametersIterator;
 
-                /**
-                 * Pointer to the start of our parameters.
-                 */
                 ParametersIterator begin_parameters() const
                 {
                     return _parameters.begin();
                 }
 
-                /**
-                 * Pointer to past the end of our parameters.
-                 */
                 ParametersIterator end_parameters() const
                 {
                     return _parameters.end();
                 }
 
-                /**
-                 * Do we have no parameters?
-                 */
                 bool empty() const
                 {
                     return _parameters.empty();
                 }
+
+                ///\}
 
                 /**
                  * Add an ArgsOption instance.
@@ -115,6 +120,67 @@ namespace paludis
                         _shortopts[short_name] = opt;
                 }
 
+                ///\name About our application (for documentation)
+                ///\{
+
+                /**
+                 * What is our application name?
+                 */
+                virtual std::string app_name() const = 0;
+
+                /**
+                 * What is our application's Unix manual section?
+                 */
+                virtual std::string man_section() const
+                {
+                    return "1";
+                }
+
+                /**
+                 * One line synopsis of what our application is.
+                 */
+                virtual std::string app_synopsis() const = 0;
+
+                /**
+                 * Long description of what our application is.
+                 */
+                virtual std::string app_description() const = 0;
+
+                ///\}
+
+                ///\name Iterate over our usage lines (for documentation)
+                ///\{
+
+                typedef std::list<std::string>::const_iterator UsageLineIterator;
+
+                UsageLineIterator begin_usage_lines() const
+                {
+                    return _usage_lines.begin();
+                }
+
+                UsageLineIterator end_usage_lines() const
+                {
+                    return _usage_lines.end();
+                }
+
+                ///\}
+
+                ///\name Iterate over our groups
+                ///\{
+
+                typedef std::list<ArgsGroup *>::const_iterator ArgsGroupsIterator;
+
+                ArgsGroupsIterator begin_args_groups() const
+                {
+                    return _groups.begin();
+                }
+
+                ArgsGroupsIterator end_args_groups() const
+                {
+                    return _groups.end();
+                }
+
+                ///\}
         };
 
         /**

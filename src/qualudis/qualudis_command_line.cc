@@ -22,12 +22,17 @@
 QualudisCommandLine::QualudisCommandLine() :
     ArgsHandler(),
 
-    action_args(this, "Actions (specify exactly one)"),
+    action_args(this, "Actions",
+            "Selects which basic action to perform. Up to one action should "
+            "be specified. If no action is specified, the directories specifed "
+            "on the command line (or, if none, the current directory) are "
+            "checked."),
     a_describe(&action_args, "describe",     'd', "Describe checks"),
     a_version(&action_args,  "version",      'V', "Display program version"),
     a_help(&action_args,     "help",         'h', "Display program help"),
 
-    check_options(this, "Options for general checks"),
+    check_options(this, "Options for general checks",
+            "Options relevant for the --owner actions."),
     a_qa_checks(&check_options, "qa-check", 'c', "Only perform given check."),
     a_verbose(&check_options, "verbose", 'v', "Be verbose"),
     a_log_level(&check_options, "log-level", 'L', "Specify the log level",
@@ -46,9 +51,30 @@ QualudisCommandLine::QualudisCommandLine() :
 
     message_level(paludis::qa::qal_info)
 {
+    add_usage_line("[ options ] [ directories ... ]");
 }
 
 QualudisCommandLine::~QualudisCommandLine()
 {
 }
 
+std::string
+QualudisCommandLine::app_name() const
+{
+    return "qualudis";
+}
+
+std::string
+QualudisCommandLine::app_synopsis() const
+{
+    return "A QA tool for ebuilds";
+}
+
+std::string
+QualudisCommandLine::app_description() const
+{
+    return
+        "qualudis is a QA assistant for ebuilds and ebuild repositories. It checks for "
+        "many common and potential mistakes and displays a summary of its findings. It "
+        "can also be used to commit changes to a repository's VCS.";
+}

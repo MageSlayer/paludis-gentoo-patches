@@ -21,8 +21,17 @@ class QualudisCommandLine :
         ~QualudisCommandLine();
 
     public:
-        /// \name Action arguments
-        ///{
+        ///\name Program information
+        ///\{
+
+        virtual std::string app_name() const;
+        virtual std::string app_synopsis() const;
+        virtual std::string app_description() const;
+
+        ///\}
+
+        ///\name Action arguments
+        ///\{
 
         /// Action arguments.
         paludis::args::ArgsGroup action_args;
@@ -36,10 +45,10 @@ class QualudisCommandLine :
         /// --help
         paludis::args::SwitchArg a_help;
 
-        ///}
+        ///\}
 
-        /// \name Check options
-        ///{
+        ///\name Check options
+        ///\{
 
         /// Check options.
         paludis::args::ArgsGroup check_options;
@@ -58,7 +67,7 @@ class QualudisCommandLine :
 
         paludis::qa::QALevel message_level;
 
-        ///}
+        ///\}
 };
 
 

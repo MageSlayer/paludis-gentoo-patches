@@ -44,6 +44,15 @@ class CommandLine :
         ~CommandLine();
 
     public:
+        ///\name Program information
+        ///\{
+
+        virtual std::string app_name() const;
+        virtual std::string app_synopsis() const;
+        virtual std::string app_description() const;
+
+        ///\}
+
         /// \name Action arguments
         ///{
 

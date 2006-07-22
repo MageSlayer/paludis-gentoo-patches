@@ -51,6 +51,7 @@ namespace paludis
         {
             private:
                 const std::string _name;
+                const std::string _description;
 
                 ArgsHandler * _handler;
 
@@ -79,7 +80,8 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                ArgsGroup(ArgsHandler * h, const std::string & name);
+                ArgsGroup(ArgsHandler * h, const std::string & name,
+                        const std::string & description);
 
                 ~ArgsGroup();
 
@@ -91,6 +93,14 @@ namespace paludis
                 const std::string & name() const
                 {
                     return _name;
+                }
+
+                /**
+                 * Fetch our description.
+                 */
+                const std::string & description() const
+                {
+                    return _description;
                 }
 
                 /**

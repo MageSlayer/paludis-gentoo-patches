@@ -22,7 +22,9 @@
 CommandLine::CommandLine() :
     ArgsHandler(),
 
-    action_args(this, "Actions (specify exactly one)"),
+    action_args(this, "Actions",
+            "Selects which basic action to perform. Exactly one action should "
+            "be specified."),
     a_query(&action_args,     "query",        'q',  "Query for package information"),
     a_install(&action_args,   "install",      'i',  "Install one or more packages"),
     a_uninstall(&action_args, "uninstall",    'u',  "Uninstall one or more packages"),
@@ -33,7 +35,8 @@ CommandLine::CommandLine() :
     a_info(&action_args, "info", 'I', "Display program version and system information"),
     a_help(&action_args,     "help",         'h', "Display program help"),
 
-    action_args_internal(this, "More actions (mostly for internal / script use)"),
+    action_args_internal(this, "More actions",
+            "Additional actions, mostly for script and internal use."),
     a_has_version(&action_args_internal, "has-version", '\0', "Check whether the specified atom is installed"),
     a_best_version(&action_args_internal, "best-version", '\0', "Display the best version of the specified atom"),
     a_environment_variable(&action_args_internal, "environment-variable", '\0', "Display the value of an environment "
@@ -44,12 +47,14 @@ CommandLine::CommandLine() :
     a_list_categories(&action_args_internal, "list-categories", '\0', "List available categories"),
     a_list_packages(&action_args_internal, "list-packages", '\0', "List available packages"),
     a_list_sync_protocols(&action_args_internal, "list-sync-protocols", '\0', "List available sync protocols"),
-    a_list_repository_formats(&action_args_internal, "list-repository-formats", '\0', "List available repository formats"),
+    a_list_repository_formats(&action_args_internal, "list-repository-formats", '\0',
+            "List available repository formats"),
     a_list_dep_tag_categories(&action_args_internal, "list-dep-tag-categories", '\0', "List known dep tag categories"),
     a_list_vulnerabilities(&action_args_internal, "list-vulnerabilities", '\0', "List known vulnerabilities"),
     a_update_news(&action_args_internal, "update-news", '\0', "Regenerate news.unread files"),
 
-    general_args(this, "General options"),
+    general_args(this, "General options",
+            "Options which are relevant for most or all actions."),
     a_log_level(&general_args, "log-level",  '\0', "Specify the log level",
             paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
             ("qa",      "Show QA messages and warnings only")
@@ -60,18 +65,21 @@ CommandLine::CommandLine() :
     a_no_color(&a_no_colour, "no-color"),
     a_config_suffix(&general_args, "config-suffix", 'c', "Config directory suffix"),
 
-    query_args(this, "Query options"),
+    query_args(this, "Query options",
+            "Options which are relevant for --query."),
     a_show_slot(&query_args,        "show-slot",    'S', "Show SLOTs"),
     a_show_deps(&query_args,        "show-deps",    'D', "Show dependencies"),
     a_show_metadata(&query_args,    "show-metadata", 'M', "Show raw metadata"),
 
-    install_args(this, "Install, Uninstall options"),
+    install_args(this, "Install, Uninstall options",
+            "Options which are relevant for --install or --uninstall."),
     a_pretend(&install_args, "pretend", 'p', "Pretend only"),
     a_preserve_world(&install_args, "preserve-world", '1', "Don't modify the world file"),
     a_no_config_protection(&install_args, "no-config-protection", '\0', "Disable config file protection (dangerous)"),
     a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
 
-    dl_args(this, "DepList behaviour (use with caution)"),
+    dl_args(this, "DepList behaviour",
+            "Modify dependency list generation behaviour. Use with caution."),
     a_dl_rdepend_post(&dl_args, "dl-rdepend-post", '\0', "Treat RDEPEND like PDEPEND", 
         paludis::args::EnumArg::EnumArgOptions("always", "Always")
         ("never", "Never")
@@ -81,19 +89,47 @@ CommandLine::CommandLine() :
     a_dl_drop_circular(&dl_args, "dl-drop-circular", '\0', "Drop circular dependencies"),
     a_dl_drop_all(&dl_args, "dl-drop-all", '0', "Drop all dependencies"),
     a_dl_ignore_installed(&dl_args, "dl-ignore-installed", 'e', "Ignore installed packages"),
-    a_dl_no_recursive_deps(&dl_args, "dl-no-recursive-deps", '\0', "Don't check runtime dependencies for installed packages"),
+    a_dl_no_recursive_deps(&dl_args, "dl-no-recursive-deps", '\0',
+            "Don't check runtime dependencies for installed packages"),
     a_dl_max_stack_depth(&dl_args, "dl-max-stack-depth", '\0', "Maximum stack depth (default 100)"),
-    a_dl_no_unnecessary_upgrades(&dl_args, "dl-no-unnecessary-upgrades", 'U', "Don't upgrade installed packages except where necessary as a dependency of another package"),
+    a_dl_no_unnecessary_upgrades(&dl_args, "dl-no-unnecessary-upgrades", 'U',
+            "Don't upgrade installed packages except where necessary as a dependency of another package"),
 
-    list_args(this, "List options"),
+    list_args(this, "List options",
+            "Options relevant for one or more of the --list actions."),
     a_repository(&list_args, "repository", '\0', "Matches with this repository name only"),
     a_category(&list_args,   "category",   '\0', "Matches with this category name only"),
     a_package(&list_args,    "package",    '\0', "Matches with this package name only"),
 
-    owner_args(this, "Owner options"),
+    owner_args(this, "Owner options",
+            "Options relevant for the --owner actions."),
     a_full_match(&owner_args, "full-match", '\0', "Match whole filename")
 {
     a_dl_max_stack_depth.set_argument(100);
+
+    add_usage_line("[ -q | --query ] [ query options ] [ targets ]");
+    add_usage_line("[ -i | --install ] [ install options ] [ targets ]");
+}
+
+std::string
+CommandLine::app_name() const
+{
+    return "paludis";
+}
+
+std::string
+CommandLine::app_synopsis() const
+{
+    return "The other package mangler";
+}
+
+std::string
+CommandLine::app_description() const
+{
+    return
+        "paludis is the command line interface used to handle packages. It can query and "
+        "install packages, update repositories and display information about packages "
+        "already installed on a system.";
 }
 
 CommandLine::~CommandLine()
