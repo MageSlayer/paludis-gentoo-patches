@@ -215,20 +215,43 @@ namespace paludis
             DepAtom::Pointer package_set(const std::string &,
                     const PackageSetOptions & = PackageSetOptions(false)) const;
 
+            class WorldCallbacks
+            {
+                protected:
+                    WorldCallbacks()
+                    {
+                    }
+
+                public:
+                    virtual ~WorldCallbacks()
+                    {
+                    }
+
+                    virtual void add_callback(const PackageDepAtom *)
+                    {
+                    }
+
+                    virtual void skip_callback(const PackageDepAtom *,
+                            const std::string &)
+                    {
+                    }
+
+                    virtual void remove_callback(const PackageDepAtom *)
+                    {
+                    }
+            };
+
             /**
              * Add packages to world, if they are not there already, and if they are
              * not a restricted atom.
              */
             void
-            add_appropriate_to_world(DepAtom::ConstPointer a,
-                    void (* add_callback)(const PackageDepAtom *) = 0,
-                    void (* skip_callback)(const PackageDepAtom *, const std::string &) = 0) const;
+            add_appropriate_to_world(DepAtom::ConstPointer a, WorldCallbacks * const) const;
 
             /**
              * Remove packages from world, if they are there.
              */
-            void remove_appropriate_from_world(DepAtom::ConstPointer,
-                    void (* remove_callback)(const PackageDepAtom *) = 0) const;
+            void remove_appropriate_from_world(DepAtom::ConstPointer, WorldCallbacks * const) const;
 
             /**
              * Perform a hook.

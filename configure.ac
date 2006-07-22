@@ -461,6 +461,7 @@ AC_OUTPUT(
 	paludis/repositories/portage/Makefile
 	paludis/repositories/vdb/Makefile
 	paludis/selinux/Makefile
+	paludis/tasks/Makefile
 	paludis/util/Makefile
 	src/Makefile
 	src/paludis/Makefile

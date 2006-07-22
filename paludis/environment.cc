@@ -306,11 +306,8 @@ namespace
         /// Matches
         std::list<const PackageDepAtom *> items;
 
-        /// Callback for adding world file entries, may be 0.
-        void (* add_callback)(const PackageDepAtom *);
-
-        /// Callback for skipping world file adds, may be 0.
-        void (* skip_callback)(const PackageDepAtom *, const std::string & why);
+        /// Callback object pointer, may be 0.
+        Environment::WorldCallbacks * const w;
 
         /// Are we inside a || ( ) group?
         bool inside_any;
@@ -319,10 +316,8 @@ namespace
         bool inside_use;
 
         /// Constructor.
-        WorldTargetFinder(void (* a)(const PackageDepAtom *),
-                void (* s)(const PackageDepAtom *, const std::string &)) :
-            add_callback(a),
-            skip_callback(s),
+        WorldTargetFinder(Environment::WorldCallbacks * const ww) :
+            w(ww),
             inside_any(false),
             inside_use(false)
         {
@@ -355,29 +350,29 @@ namespace
         {
             if (inside_any)
             {
-                if (skip_callback)
-                    (*skip_callback)(a, "inside || ( ) block");
+                if (w)
+                    w->skip_callback(a, "inside || ( ) block");
             }
             else if (inside_use)
             {
-                if (skip_callback)
-                    (*skip_callback)(a, "inside use? ( ) block");
+                if (w)
+                    w->skip_callback(a, "inside use? ( ) block");
             }
             else if (a->slot_ptr())
             {
-                if (skip_callback)
-                    (*skip_callback)(a, ":slot restrictions");
+                if (w)
+                    w->skip_callback(a, ":slot restrictions");
             }
             else if (a->version_spec_ptr())
             {
-                if (skip_callback)
-                    (*skip_callback)(a, "version restrictions");
+                if (w)
+                    w->skip_callback(a, "version restrictions");
             }
             else
             {
                 items.push_back(a);
-                if (add_callback)
-                    (*add_callback)(a);
+                if (w)
+                    w->add_callback(a);
             }
         }
 
@@ -391,10 +386,9 @@ namespace
 
 void
 Environment::add_appropriate_to_world(DepAtom::ConstPointer a,
-        void (* add_callback)(const PackageDepAtom *),
-        void (* skip_callback)(const PackageDepAtom *, const std::string & why)) const
+        Environment::WorldCallbacks * const ww) const
 {
-    WorldTargetFinder w(add_callback, skip_callback);
+    WorldTargetFinder w(ww);
     a->accept(&w);
     for (std::list<const PackageDepAtom *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
@@ -409,9 +403,9 @@ Environment::add_appropriate_to_world(DepAtom::ConstPointer a,
 
 void
 Environment::remove_appropriate_from_world(DepAtom::ConstPointer a,
-        void (* remove_callback)(const PackageDepAtom *)) const
+        Environment::WorldCallbacks * const ww) const
 {
-    WorldTargetFinder w(0, 0);
+    WorldTargetFinder w(ww);
     a->accept(&w);
     for (std::list<const PackageDepAtom *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
@@ -422,8 +416,7 @@ Environment::remove_appropriate_from_world(DepAtom::ConstPointer a,
             if ((*r)->get_interface<repo_world>())
                 (*r)->get_interface<repo_world>()->remove_from_world((*i)->package());
 
-        if (remove_callback)
-            (*remove_callback)(*i);
+        ww->remove_callback(*i);
     }
 }
 

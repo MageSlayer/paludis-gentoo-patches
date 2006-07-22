@@ -35,10 +35,14 @@ using std::endl;
 
 namespace
 {
-    void world_remove_callback(const p::PackageDepAtom * const p)
+    struct WorldCallbacks :
+        public p::Environment::WorldCallbacks
     {
-        cout << "* removing " << colour(cl_package_name, stringify(*p)) << endl;
-    }
+        void remove_callback(const p::PackageDepAtom * const p)
+        {
+            cout << "* removing " << colour(cl_package_name, stringify(*p)) << endl;
+        }
+    };
 }
 
 int
@@ -114,7 +118,8 @@ do_uninstall()
                 t_end(targets.end()) ; t != t_end ; ++t)
             all->add_child(*t);
 
-        env->remove_appropriate_from_world(all, &world_remove_callback);
+        WorldCallbacks w;
+        env->remove_appropriate_from_world(all, &w);
     }
     else
         cout << "* --preserve-world was specified, skipping world removes" << endl;

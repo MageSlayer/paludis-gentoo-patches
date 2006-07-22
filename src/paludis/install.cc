@@ -20,18 +20,19 @@
 #include "colour.hh"
 #include "install.hh"
 #include "licence.hh"
+
 #include <iostream>
-#include <paludis/paludis.hh>
-#include <paludis/util/iterator.hh>
-#include <paludis/util/tokeniser.hh>
+#include <set>
+
+#include <paludis/tasks/install_task.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/collection_concrete.hh>
+#include <paludis/util/tokeniser.hh>
 
 /** \file
  * Handle the --install action for the main paludis program.
  */
 
-namespace p = paludis;
+using namespace paludis;
 
 using std::cerr;
 using std::cout;
@@ -40,15 +41,15 @@ using std::endl;
 namespace
 {
     struct TagDisplayer :
-        p::DepTagVisitorTypes::ConstVisitor
+        DepTagVisitorTypes::ConstVisitor
     {
-        void visit(const p::GLSADepTag * const tag)
+        void visit(const GLSADepTag * const tag)
         {
             cout << "* " << colour(cl_tag, tag->short_text()) << ": "
                 << tag->glsa_title() << endl;
         }
 
-        void visit(const p::GeneralSetDepTag * const tag)
+        void visit(const GeneralSetDepTag * const tag)
         {
             cout << "* " << colour(cl_tag, tag->short_text());
             if (tag->short_text() == "world")
@@ -62,344 +63,245 @@ namespace
     };
 
     void
-    world_add_callback(const p::PackageDepAtom * const p)
+    world_add_callback(const PackageDepAtom * const p)
     {
         cout << "* adding " << colour(cl_package_name, stringify(*p)) << endl;
     }
 
     void
-    world_skip_callback(const p::PackageDepAtom * const p, const std::string & why)
+    world_skip_callback(const PackageDepAtom * const p, const std::string & why)
     {
         cout << "* skipping " << colour(cl_package_name, stringify(*p))
             << " (" << why << ")" << endl;
     }
-}
 
-int
-do_install()
-{
-    int return_code(0);
-
-    p::Context context("When performing install action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
-
-    cout << colour(cl_heading, "These packages will be installed:") << endl << endl;
-
-    p::CompositeDepAtom::Pointer targets(new p::AllDepAtom);
-
-    p::DepList dep_list(env);
-
-    dep_list.set_drop_self_circular(CommandLine::get_instance()->a_dl_drop_self_circular.specified());
-    dep_list.set_drop_circular(CommandLine::get_instance()->a_dl_drop_circular.specified());
-    dep_list.set_drop_all(CommandLine::get_instance()->a_dl_drop_all.specified());
-    dep_list.set_ignore_installed(CommandLine::get_instance()->a_dl_ignore_installed.specified());
-    dep_list.set_recursive_deps(! CommandLine::get_instance()->a_dl_no_recursive_deps.specified());
-    dep_list.set_max_stack_depth(CommandLine::get_instance()->a_dl_max_stack_depth.argument());
-    dep_list.set_no_unnecessary_upgrades(CommandLine::get_instance()->a_dl_no_unnecessary_upgrades.specified());
-
-    if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "always")
-        dep_list.set_rdepend_post(p::dlro_always);
-    else if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "never")
-        dep_list.set_rdepend_post(p::dlro_never);
-    else
-        dep_list.set_rdepend_post(p::dlro_as_needed);
-
-    p::InstallOptions opts(false, false);
-    if (CommandLine::get_instance()->a_no_config_protection.specified())
-        opts.set<p::io_noconfigprotect>(true);
-    if (CommandLine::get_instance()->a_fetch.specified())
-        opts.set<p::io_fetchonly>(true);
-
-    bool had_set_targets(false), had_pkg_targets(false);
-    try
+    class OurInstallTask :
+        public InstallTask
     {
-        CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
-            q_end(CommandLine::get_instance()->end_parameters());
+        private:
+            int _current_count, _max_count, _new_count, _upgrade_count,
+                _downgrade_count, _new_slot_count, _rebuild_count;
 
-        for ( ; q != q_end ; ++q)
-        {
-            p::DepAtom::Pointer s(0);
-            if (s = ((env->package_set(*q))))
+            std::set<DepTag::ConstPointer, DepTag::Comparator> _all_tags;
+
+        public:
+            OurInstallTask() :
+                InstallTask(DefaultEnvironment::get_instance()),
+                _current_count(0),
+                _max_count(0),
+                _new_count(0),
+                _upgrade_count(0),
+                _downgrade_count(0),
+                _new_slot_count(0),
+                _rebuild_count(0)
             {
-                if (had_set_targets)
-                    throw DoHelp("You should not specify more than one set target.");
-
-                had_set_targets = true;
-                targets->add_child(s);
             }
-            else
-            {
-                had_pkg_targets = true;
 
-                /* we might have a dep atom, but we might just have a simple package name
-                 * without a category. either should work. also allow full atoms, to make
-                 * it easy to test things like '|| ( foo/bar foo/baz )'. */
-                if (std::string::npos != q->find('/'))
-                    targets->add_child(p::PortageDepParser::parse(*q));
-                else
-                    targets->add_child(p::DepAtom::Pointer(new p::PackageDepAtom(
-                                    env->package_database()->fetch_unique_qualified_package_name(
-                                        p::PackageNamePart(*q)))));
+            void on_build_deplist_pre()
+            {
+                cout << "Building dependency list... " << std::flush;
             }
-        }
 
-        if (had_set_targets && had_pkg_targets)
-            throw DoHelp("You should not specify set and package targets at the same time.");
-
-        if (had_set_targets)
-            dep_list.set_reinstall(false);
-    }
-    catch (const p::AmbiguousPackageNameError & e)
-    {
-        cout << endl;
-        cerr << "Query error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ");
-        cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
-        for (p::AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
-                o_end(e.end_options()) ; o != o_end ; ++o)
-            cerr << "    * " << colour(cl_package_name, *o) << endl;
-        cerr << endl;
-        return 1;
-    }
-
-    try
-    {
-        dep_list.add(targets);
-
-        int current_count(0), max_count(0), new_count(0), upgrade_count(0),
-            downgrade_count(0), new_slot_count(0), rebuild_count(0);
-
-        if (CommandLine::get_instance()->a_pretend.specified())
-            env->perform_hook(p::Hook("install_pretend_pre")("TARGETS", p::join(
-                            CommandLine::get_instance()->begin_parameters(),
-                            CommandLine::get_instance()->end_parameters(), " ")));
-
-        std::set<p::DepTag::ConstPointer, p::DepTag::Comparator> all_tags;
-
-        for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
-                dep != dep_end ; ++dep)
-        {
-            p::Context loop_context("When displaying DepList entry '" + stringify(*dep) + "':");
-
-            /* display name */
-            cout << "* " << colour(cl_package_name, dep->get<p::dle_name>());
-
-            /* display version, unless it's 0 and our category is "virtual" */
-            if ((p::VersionSpec("0") != dep->get<p::dle_version>()) ||
-                    p::CategoryNamePart("virtual") != dep->get<p::dle_name>().get<p::qpn_category>())
-                cout << "-" << dep->get<p::dle_version>();
-
-            /* display repository, unless it's our main repository */
-            if (env->package_database()->favourite_repository() != dep->get<p::dle_repository>())
-                cout << "::" << dep->get<p::dle_repository>();
-
-            /* display slot name, unless it's 0 */
-            if (p::SlotName("0") != dep->get<p::dle_metadata>()->get<p::vm_slot>())
-                cout << colour(cl_slot, " {:" + p::stringify(
-                            dep->get<p::dle_metadata>()->get<p::vm_slot>()) + "}");
-
-            /* indicate [U], [S] or [N]. display existing version, if we're
-             * already installed */
-            p::PackageDatabaseEntryCollection::Pointer existing(env->package_database()->
-                    query(p::PackageDepAtom::Pointer(new p::PackageDepAtom(p::stringify(
-                                    dep->get<p::dle_name>()))), p::is_installed_only));
-
-            if (existing->empty())
+            virtual void on_build_deplist_post()
             {
-                cout << colour(cl_updatemode, " [N]");
-                ++new_count;
-                ++max_count;
+                cout << "done" << endl;
             }
-            else
+
+            virtual void on_build_cleanlist_pre(const DepListEntry & d)
             {
-                existing = env->package_database()->query(p::PackageDepAtom::Pointer(
-                            new p::PackageDepAtom(p::stringify(dep->get<p::dle_name>()) + ":" +
-                                stringify(dep->get<p::dle_metadata>()->get<p::vm_slot>()))),
-                        p::is_installed_only);
-                if (existing->empty())
-                {
-                    cout << colour(cl_updatemode, " [S]");
-                    ++new_slot_count;
-                    ++max_count;
-                }
-                else if (existing->last()->get<p::pde_version>() < dep->get<p::dle_version>())
-                {
-                    cout << colour(cl_updatemode, " [U " + p::stringify(
-                                existing->last()->get<p::pde_version>()) + "]");
-                    ++upgrade_count;
-                    ++max_count;
-                }
-                else if (existing->last()->get<p::pde_version>() > dep->get<p::dle_version>())
-                {
-                    cout << colour(cl_updatemode, " [D " + p::stringify(
-                                existing->last()->get<p::pde_version>()) + "]");
-                    ++downgrade_count;
-                    ++max_count;
-                }
+                cout << endl << colour(cl_heading, "Cleaning stale versions after installing " +
+                        stringify(d.get<dle_name>()) + "-" + stringify(d.get<dle_version>()) +
+                        "::" + stringify(d.get<dle_repository>())) << endl << endl;
+            }
+
+            virtual void on_build_cleanlist_post(const DepListEntry &)
+            {
+            }
+
+            virtual void on_clean_all_pre(const DepListEntry &,
+                    const PackageDatabaseEntryCollection & c)
+            {
+                if (c.empty())
+                    cout << "* No cleaning required" << endl;
                 else
                 {
-                    cout << colour(cl_updatemode, " [R]");
-                    ++rebuild_count;
-                    ++max_count;
+                    for (PackageDatabaseEntryCollection::Iterator cc(c.begin()),
+                            cc_end(c.end()) ; cc != cc_end ; ++cc)
+                        cout << "* " << colour(cl_package_name, *cc) << endl;
                 }
+                cout << endl;
             }
 
-            /* fetch db entry */
-            p::PackageDatabaseEntry p(p::PackageDatabaseEntry(dep->get<p::dle_name>(),
-                        dep->get<p::dle_version>(), dep->get<p::dle_repository>()));
-
-            /* display USE flags */
-            if (dep->get<p::dle_metadata>()->get_ebuild_interface())
+            virtual void on_clean_pre(const DepListEntry &,
+                    const PackageDatabaseEntry & c)
             {
-                const p::Repository::UseInterface * const use_interface(
-                        env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
-                        get_interface<p::repo_use>());
-                std::set<p::UseFlagName> iuse;
-                p::WhitespaceTokeniser::get_instance()->tokenise(
-                        dep->get<p::dle_metadata>()->get_ebuild_interface()->get<p::evm_iuse>(),
-                        p::create_inserter<p::UseFlagName>(std::inserter(iuse, iuse.end())));
+                cout << colour(cl_heading, "Cleaning " + stringify(c)) << endl << endl;
 
-
-                /* display normal use flags first */
-                for (std::set<p::UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
-                        i != i_end ; ++i)
-                {
-                    if (use_interface->is_expand_flag(*i))
-                        continue;
-
-                    if (env->query_use(*i, &p))
-                    {
-                        if (use_interface && use_interface->query_use_force(*i, &p))
-                            cout << " " << colour(cl_flag_on, "(" + p::stringify(*i) + ")");
-                        else
-                            cout << " " << colour(cl_flag_on, *i);
-                    }
-                    else
-                    {
-                        if (use_interface && use_interface->query_use_mask(*i, &p))
-                            cout << " " << colour(cl_flag_off, "(-" + p::stringify(*i) + ")");
-                        else
-                            cout << " " << colour(cl_flag_off, "-" + p::stringify(*i));
-                    }
-                }
-
-                /* now display expand flags */
-                p::UseFlagName old_expand_name("OFTEN_NOT_BEEN_ON_BOATS");
-                for (std::set<p::UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
-                        i != i_end ; ++i)
-                {
-                    if ((! use_interface->is_expand_flag(*i)) ||
-                            (use_interface->is_expand_hidden_flag(*i)))
-                        continue;
-
-                    p::UseFlagName expand_name(use_interface->expand_flag_name(*i)),
-                        expand_value(use_interface->expand_flag_value(*i));
-
-                    if (expand_name != old_expand_name)
-                    {
-                        cout << " " << expand_name << ":";
-                        old_expand_name = expand_name;
-                    }
-
-                    if (env->query_use(*i, &p))
-                    {
-                        if (use_interface && use_interface->query_use_force(*i, &p))
-                            cout << " " << colour(cl_flag_on, "(" + p::stringify(expand_value) + ")");
-                        else
-                            cout << " " << colour(cl_flag_on, expand_value);
-                    }
-                    else
-                    {
-                        if (use_interface && use_interface->query_use_mask(*i, &p))
-                            cout << " " << colour(cl_flag_off, "(-" + p::stringify(expand_value) + ")");
-                        else
-                            cout << " " << colour(cl_flag_off, "-" + p::stringify(expand_value));
-                    }
-                }
+                cerr << xterm_title("(" + stringify(_current_count) + " of " +
+                        stringify(_max_count) + ") Cleaning " + stringify(c));
             }
 
-            /* display tag, add tag to our post display list */
-            if (! dep->get<p::dle_tag>()->empty())
+            virtual void on_clean_post(const DepListEntry &,
+                    const PackageDatabaseEntry &)
             {
-                std::string tag_titles;
-                for (p::SortedCollection<p::DepTag::ConstPointer, p::DepTag::Comparator>::Iterator
-                        tag(dep->get<p::dle_tag>()->begin()),
-                        tag_end(dep->get<p::dle_tag>()->end()) ;
-                        tag != tag_end ; ++tag)
-                {
-                    all_tags.insert(*tag);
-                    tag_titles.append((*tag)->short_text());
-                    tag_titles.append(",");
-                }
-                tag_titles.erase(tag_titles.length() - 1);
-                cout << " " << colour(cl_tag, "<" + tag_titles + ">");
             }
 
-            cout << endl;
-        }
+            virtual void on_clean_all_post(const DepListEntry &,
+                    const PackageDatabaseEntryCollection &)
+            {
+            }
 
-        if (max_count != new_count + upgrade_count + downgrade_count + new_slot_count +
-                rebuild_count)
-            p::Log::get_instance()->message(p::ll_warning, p::lc_no_context,
+            virtual void on_display_merge_list_pre()
+            {
+                cout << endl << colour(cl_heading, "These packages will be installed:")
+                    << endl << endl;
+            }
+
+            virtual void on_display_merge_list_post();
+            virtual void on_display_merge_list_entry(const DepListEntry &);
+
+            virtual void on_fetch_all_pre()
+            {
+            }
+
+            virtual void on_fetch_pre(const DepListEntry & d)
+            {
+                cout << colour(cl_heading, "Fetching " +
+                        stringify(d.get<dle_name>()) + "-" + stringify(d.get<dle_version>()) +
+                        "::" + stringify(d.get<dle_repository>())) << endl << endl;
+
+                cerr << xterm_title("(" + stringify(++_current_count) + " of " +
+                        stringify(_max_count) + ") Fetching " +
+                        stringify(d.get<dle_name>()) + "-" + stringify(d.get<dle_version>()) +
+                        "::" + stringify(d.get<dle_repository>()));
+            }
+
+            virtual void on_fetch_post(const DepListEntry &)
+            {
+            }
+
+            virtual void on_fetch_all_post()
+            {
+            }
+
+            virtual void on_install_all_pre()
+            {
+            }
+
+            virtual void on_install_pre(const DepListEntry & d)
+            {
+                cout << endl << colour(cl_heading, "Installing " +
+                        stringify(d.get<dle_name>()) + "-" + stringify(d.get<dle_version>()) +
+                        "::" + stringify(d.get<dle_repository>())) << endl << endl;
+
+                cerr << xterm_title("(" + stringify(++_current_count) + " of " +
+                        stringify(_max_count) + ") Installing " +
+                        stringify(d.get<dle_name>()) + "-" + stringify(d.get<dle_version>()) +
+                        "::" + stringify(d.get<dle_repository>()));
+            }
+
+            virtual void on_install_post(const DepListEntry &)
+            {
+            }
+
+            virtual void on_install_all_post()
+            {
+            }
+
+            virtual void on_update_world_pre()
+            {
+                cout << endl << colour(cl_heading, "Updating world file") << endl << endl;
+            }
+
+            virtual void on_update_world(const PackageDepAtom & a)
+            {
+                cout << "* adding " << colour(cl_package_name, a.package()) << endl;
+            }
+
+            virtual void on_update_world_skip(const PackageDepAtom & a, const std::string & s)
+            {
+                cout << "* skipping " << colour(cl_package_name, a.package()) << " ("
+                    << s << ")" << endl;
+            }
+
+            virtual void on_update_world_post()
+            {
+                cout << endl;
+            }
+
+            virtual void on_preserve_world()
+            {
+                cout << endl << colour(cl_heading, "Updating world file") << endl << endl;
+                cout << "* --preserve-world was specified, skipping world changes" << endl;
+                cout << endl;
+            }
+    };
+
+    void
+    OurInstallTask::on_display_merge_list_post()
+    {
+        if (_max_count != _new_count + _upgrade_count + _downgrade_count + _new_slot_count +
+                _rebuild_count)
+            Log::get_instance()->message(ll_warning, lc_no_context,
                     "Max count doesn't add up. This is a bug!");
 
-        cout << endl << "Total: " << max_count << (max_count == 1 ? " package" : " packages");
-        if (max_count)
+        cout << endl << "Total: " << _max_count << (_max_count == 1 ? " package" : " packages");
+        if (_max_count)
         {
             bool need_comma(false);
             cout << " (";
-            if (new_count)
+            if (_new_count)
             {
-                cout << new_count << " new";
+                cout << _new_count << " new";
                 need_comma = true;
             }
-            if (upgrade_count)
+            if (_upgrade_count)
             {
                 if (need_comma)
                     cout << ", ";
-                cout << upgrade_count << (upgrade_count == 1 ? " upgrade" : " upgrades");
+                cout << _upgrade_count << (_upgrade_count == 1 ? " upgrade" : " upgrades");
                 need_comma = true;
             }
-            if (downgrade_count)
+            if (_downgrade_count)
             {
                 if (need_comma)
                     cout << ", ";
-                cout << downgrade_count << (downgrade_count == 1 ? " downgrade" : " downgrades");
+                cout << _downgrade_count << (_downgrade_count == 1 ? " downgrade" : " downgrades");
                 need_comma = true;
             }
-            if (new_slot_count)
+            if (_new_slot_count)
             {
                 if (need_comma)
                     cout << ", ";
-                cout << new_slot_count << (new_slot_count == 1 ? " in new slot" : " in new slots");
+                cout << _new_slot_count << (_new_slot_count == 1 ? " in new slot" : " in new slots");
                 need_comma = true;
             }
-            if (rebuild_count)
+            if (_rebuild_count)
             {
                 if (need_comma)
                     cout << ", ";
-                cout << rebuild_count << (rebuild_count == 1 ? " rebuild" : " rebuilds");
+                cout << _rebuild_count << (_rebuild_count == 1 ? " rebuild" : " rebuilds");
                 need_comma = true;
             }
             cout << ")";
         }
         cout << endl << endl;
 
-        if (CommandLine::get_instance()->a_pretend.specified() && ! all_tags.empty())
+        if (CommandLine::get_instance()->a_pretend.specified() && ! _all_tags.empty())
         {
             TagDisplayer tag_displayer;
 
             std::set<std::string> tag_categories;
             std::transform(
-                    p::indirect_iterator<const p::DepTag>(all_tags.begin()),
-                    p::indirect_iterator<const p::DepTag>(all_tags.end()),
+                    indirect_iterator<const DepTag>(_all_tags.begin()),
+                    indirect_iterator<const DepTag>(_all_tags.end()),
                     std::inserter(tag_categories, tag_categories.begin()),
-                    std::mem_fun_ref(&p::DepTag::category));
+                    std::mem_fun_ref(&DepTag::category));
 
             for (std::set<std::string>::iterator cat(tag_categories.begin()),
                     cat_end(tag_categories.end()) ; cat != cat_end ; ++cat)
             {
-                p::DepTagCategory::ConstPointer c(p::DepTagCategoryMaker::get_instance()->
+                DepTagCategory::ConstPointer c(DepTagCategoryMaker::get_instance()->
                         find_maker(*cat)());
 
                 if (! c->title().empty())
@@ -407,8 +309,8 @@ do_install()
                 if (! c->pre_text().empty())
                     cout << c->pre_text() << endl << endl;
 
-                for (std::set<p::DepTag::ConstPointer, p::DepTag::Comparator>::const_iterator
-                        t(all_tags.begin()), t_end(all_tags.end()) ;
+                for (std::set<DepTag::ConstPointer, DepTag::Comparator>::const_iterator
+                        t(_all_tags.begin()), t_end(_all_tags.end()) ;
                         t != t_end ; ++t)
                 {
                     if ((*t)->category() != *cat)
@@ -421,156 +323,223 @@ do_install()
                     cout << c->post_text() << endl << endl;
             }
         }
+    }
 
-        if (CommandLine::get_instance()->a_pretend.specified())
+    void
+    OurInstallTask::on_display_merge_list_entry(const DepListEntry & d)
+    {
+        Context context("When displaying entry '" + stringify(d) + "':");
+
+        cout << "* " << colour(cl_package_name, d.get<dle_name>());
+
+        /* display version, unless it's 0 and our category is "virtual" */
+        if ((VersionSpec("0") != d.get<dle_version>()) ||
+                CategoryNamePart("virtual") != d.get<dle_name>().get<qpn_category>())
+            cout << "-" << d.get<dle_version>();
+
+        /* display repository, unless it's our main repository */
+        if (DefaultEnvironment::get_instance()->package_database()->favourite_repository() != d.get<dle_repository>())
+            cout << "::" << d.get<dle_repository>();
+
+        /* display slot name, unless it's 0 */
+        if (SlotName("0") != d.get<dle_metadata>()->get<vm_slot>())
+            cout << colour(cl_slot, " {:" + stringify(
+                        d.get<dle_metadata>()->get<vm_slot>()) + "}");
+
+        /* indicate [U], [S] or [N]. display existing version, if we're
+         * already installed */
+        PackageDatabaseEntryCollection::Pointer existing(DefaultEnvironment::get_instance()->package_database()->
+                query(PackageDepAtom::Pointer(new PackageDepAtom(stringify(
+                                d.get<dle_name>()))), is_installed_only));
+
+        if (existing->empty())
         {
-            env->perform_hook(p::Hook("install_pretend_post")("TARGETS", p::join(
-                            CommandLine::get_instance()->begin_parameters(),
-                            CommandLine::get_instance()->end_parameters(), " ")));
-            return return_code;
+            cout << colour(cl_updatemode, " [N]");
+            ++_new_count;
+            ++_max_count;
+        }
+        else
+        {
+            existing = DefaultEnvironment::get_instance()->package_database()->query(PackageDepAtom::Pointer(
+                        new PackageDepAtom(stringify(d.get<dle_name>()) + ":" +
+                            stringify(d.get<dle_metadata>()->get<vm_slot>()))),
+                    is_installed_only);
+            if (existing->empty())
+            {
+                cout << colour(cl_updatemode, " [S]");
+                ++_new_slot_count;
+                ++_max_count;
+            }
+            else if (existing->last()->get<pde_version>() < d.get<dle_version>())
+            {
+                cout << colour(cl_updatemode, " [U " + stringify(
+                            existing->last()->get<pde_version>()) + "]");
+                ++_upgrade_count;
+                ++_max_count;
+            }
+            else if (existing->last()->get<pde_version>() > d.get<dle_version>())
+            {
+                cout << colour(cl_updatemode, " [D " + stringify(
+                            existing->last()->get<pde_version>()) + "]");
+                ++_downgrade_count;
+                ++_max_count;
+            }
+            else
+            {
+                cout << colour(cl_updatemode, " [R]");
+                ++_rebuild_count;
+                ++_max_count;
+            }
         }
 
-        if (opts.get<p::io_fetchonly>())
-            env->perform_hook(p::Hook("fetch_all_pre")("TARGETS", p::join(
-                            CommandLine::get_instance()->begin_parameters(),
-                            CommandLine::get_instance()->end_parameters(), " ")));
-        else
-            env->perform_hook(p::Hook("install_all_pre")("TARGETS", p::join(
-                            CommandLine::get_instance()->begin_parameters(),
-                            CommandLine::get_instance()->end_parameters(), " ")));
+        /* fetch db entry */
+        PackageDatabaseEntry p(PackageDatabaseEntry(d.get<dle_name>(),
+                    d.get<dle_version>(), d.get<dle_repository>()));
 
-        for (p::DepList::Iterator dep(dep_list.begin()), dep_end(dep_list.end()) ;
-                dep != dep_end ; ++dep)
+        /* display USE flags */
+        if (d.get<dle_metadata>()->get_ebuild_interface())
         {
-            std::string cpvr = p::stringify(dep->get<p::dle_name>()) + "-" +
-                p::stringify(dep->get<p::dle_version>()) + "::" +
-                p::stringify(dep->get<p::dle_repository>());
+            const Repository::UseInterface * const use_interface(
+                    DefaultEnvironment::get_instance()->package_database()->fetch_repository(d.get<dle_repository>())->
+                    get_interface<repo_use>());
+            std::set<UseFlagName> iuse;
+            WhitespaceTokeniser::get_instance()->tokenise(
+                    d.get<dle_metadata>()->get_ebuild_interface()->get<evm_iuse>(),
+                    create_inserter<UseFlagName>(std::inserter(iuse, iuse.end())));
 
-            if (opts.get<p::io_fetchonly>())
+
+            /* display normal use flags first */
+            for (std::set<UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
+                    i != i_end ; ++i)
             {
-                cout << endl << colour(cl_heading, "Fetching " + cpvr) << endl << endl;
+                if (use_interface->is_expand_flag(*i))
+                    continue;
 
-                // TODO: some way to reset this properly would be nice.
-                cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
-                        p::stringify(max_count) + ") Fetching " + cpvr);
- 
-            }
-            else
-            {
-                cout << endl << colour(cl_heading,
-                        "Installing " + cpvr) << endl << endl;
-
-                // TODO: some way to reset this properly would be nice.
-                cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
-                        p::stringify(max_count) + ") Installing " + cpvr);
-            }
-
-            if (opts.get<p::io_fetchonly>())
-                env->perform_hook(p::Hook("fetch_pre")("TARGET", cpvr));
-            else
-                env->perform_hook(p::Hook("install_pre")("TARGET", cpvr));
-
-            const p::Repository::InstallableInterface * const installable_interface(
-                    env->package_database()->fetch_repository(dep->get<p::dle_repository>())->
-                    get_interface<p::repo_installable>());
-            if (! installable_interface)
-                throw p::InternalError(PALUDIS_HERE, "Trying to install from a non-installable repository");
-            installable_interface->install(dep->get<p::dle_name>(), dep->get<p::dle_version>(), opts);
-
-            if (opts.get<p::io_fetchonly>())
-                env->perform_hook(p::Hook("fetch_post")("TARGET", cpvr));
-            else
-                env->perform_hook(p::Hook("install_post")("TARGET", cpvr));
-
-            if (! opts.get<p::io_fetchonly>())
-            {
-                // figure out if we need to unmerge anything
-                cout << endl << colour(cl_heading,
-                        "Cleaning stale versions after installing " + cpvr) << endl << endl;
-
-                // manually invalidate any installed repos, they're probably
-                // wrong now
-                for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
-                        r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
-                    if ((*r)->get_interface<p::repo_installed>())
-                        (*r)->invalidate();
-
-                // look for packages with the same name in the same slot
-                p::PackageDatabaseEntryCollection::Pointer collision_list(env->package_database()->query(
-                            p::PackageDepAtom::Pointer(new p::PackageDepAtom(
-                                    p::stringify(dep->get<p::dle_name>()) + ":" +
-                                    p::stringify(dep->get<p::dle_metadata>()->get<p::vm_slot>()))),
-                            p::is_installed_only));
-
-                // don't clean the thing we just installed
-                p::PackageDatabaseEntryCollection::Concrete clean_list;
-                for (p::PackageDatabaseEntryCollection::Iterator c(collision_list->begin()),
-                        c_end(collision_list->end()) ; c != c_end ; ++c)
-                    if (dep->get<p::dle_version>() != c->get<p::pde_version>())
-                        clean_list.insert(*c);
-
-                if (clean_list.empty())
+                if (DefaultEnvironment::get_instance()->query_use(*i, &p))
                 {
-                    cout << "* No cleaning required" << endl;
+                    if (use_interface && use_interface->query_use_force(*i, &p))
+                        cout << " " << colour(cl_flag_on, "(" + stringify(*i) + ")");
+                    else
+                        cout << " " << colour(cl_flag_on, *i);
                 }
                 else
                 {
-                    for (p::PackageDatabaseEntryCollection::Iterator c(clean_list.begin()),
-                            c_end(clean_list.end()) ; c != c_end ; ++c)
-                        cout << "* " << colour(cl_package_name, *c) << endl;
-                    cout << endl;
+                    if (use_interface && use_interface->query_use_mask(*i, &p))
+                        cout << " " << colour(cl_flag_off, "(-" + stringify(*i) + ")");
+                    else
+                        cout << " " << colour(cl_flag_off, "-" + stringify(*i));
+                }
+            }
 
-                    p::PackageDatabaseEntryCollection::Iterator c(clean_list.begin()),
-                        c_end(clean_list.end());
-                    env->perform_hook(p::Hook("uninstall_all_pre")("TARGETS", p::join(c, c_end, " ")));
-                    for ( ; c != c_end ; ++c)
-                    {
-                        cout << endl << colour(cl_heading, "Cleaning " + p::stringify(*c)) << endl << endl;
+            /* now display expand flags */
+            UseFlagName old_expand_name("OFTEN_NOT_BEEN_ON_BOATS");
+            for (std::set<UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
+                    i != i_end ; ++i)
+            {
+                if ((! use_interface->is_expand_flag(*i)) ||
+                        (use_interface->is_expand_hidden_flag(*i)))
+                    continue;
 
-                        // TODO: some way to reset this properly would be nice.
-                        cerr << xterm_title("(" + p::stringify(current_count) + " of " +
-                                p::stringify(max_count) + ") Cleaning " + cpvr + ": " + stringify(*c));
+                UseFlagName expand_name(use_interface->expand_flag_name(*i)),
+                    expand_value(use_interface->expand_flag_value(*i));
 
-                        env->perform_hook(p::Hook("uninstall_pre")("TARGET", stringify(*c)));
+                if (expand_name != old_expand_name)
+                {
+                    cout << " " << expand_name << ":";
+                    old_expand_name = expand_name;
+                }
 
-                        const p::Repository::UninstallableInterface * const uninstall_interface(
-                                env->package_database()->fetch_repository(c->get<p::pde_repository>())->
-                                get_interface<p::repo_uninstallable>());
-                        if (! uninstall_interface)
-                            throw p::InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
-                        uninstall_interface->uninstall(c->get<p::pde_name>(), c->get<p::pde_version>(), opts);
-                        env->perform_hook(p::Hook("uninstall_post")("TARGET", stringify(*c)));
-                    }
-                    env->perform_hook(p::Hook("uninstall_all_pre")("TARGETS", p::join(c, c_end, " ")));
+                if (DefaultEnvironment::get_instance()->query_use(*i, &p))
+                {
+                    if (use_interface && use_interface->query_use_force(*i, &p))
+                        cout << " " << colour(cl_flag_on, "(" + stringify(expand_value) + ")");
+                    else
+                        cout << " " << colour(cl_flag_on, expand_value);
+                }
+                else
+                {
+                    if (use_interface && use_interface->query_use_mask(*i, &p))
+                        cout << " " << colour(cl_flag_off, "(-" + stringify(expand_value) + ")");
+                    else
+                        cout << " " << colour(cl_flag_off, "-" + stringify(expand_value));
                 }
             }
         }
 
-        if ((! had_set_targets) &&
-                (! CommandLine::get_instance()->a_pretend.specified()) &&
-                (! opts.get<p::io_fetchonly>()))
+        /* display tag, add tag to our post display list */
+        if (! d.get<dle_tag>()->empty())
         {
-            cout << endl << colour(cl_heading, "Updating world file") << endl << endl;
-            if (! CommandLine::get_instance()->a_preserve_world.specified())
-                env->add_appropriate_to_world(targets, &world_add_callback,
-                        &world_skip_callback);
-            else
-                cout << "* --preserve-world was specified, skipping world adds" << endl;
+            std::string tag_titles;
+            for (SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Iterator
+                    tag(d.get<dle_tag>()->begin()),
+                    tag_end(d.get<dle_tag>()->end()) ;
+                    tag != tag_end ; ++tag)
+            {
+                _all_tags.insert(*tag);
+                tag_titles.append((*tag)->short_text());
+                tag_titles.append(",");
+            }
+            tag_titles.erase(tag_titles.length() - 1);
+            cout << " " << colour(cl_tag, "<" + tag_titles + ">");
         }
-
-
-        if (opts.get<p::io_fetchonly>())
-            env->perform_hook(p::Hook("fetch_all_post")("TARGETS", p::join(
-                            CommandLine::get_instance()->begin_parameters(),
-                            CommandLine::get_instance()->end_parameters(), " ")));
-        else
-            env->perform_hook(p::Hook("install_all_post")("TARGETS", p::join(
-                            CommandLine::get_instance()->begin_parameters(),
-                            CommandLine::get_instance()->end_parameters(), " ")));
 
         cout << endl;
     }
-    catch (const p::PackageInstallActionError & e)
+}
+
+int
+do_install()
+{
+    int return_code(0);
+
+    Context context("When performing install action from command line:");
+
+    OurInstallTask task;
+
+    task.set_drop_self_circular(CommandLine::get_instance()->a_dl_drop_self_circular.specified());
+    task.set_drop_circular(CommandLine::get_instance()->a_dl_drop_circular.specified());
+    task.set_drop_all(CommandLine::get_instance()->a_dl_drop_all.specified());
+    task.set_ignore_installed(CommandLine::get_instance()->a_dl_ignore_installed.specified());
+    task.set_recursive_deps(! CommandLine::get_instance()->a_dl_no_recursive_deps.specified());
+    task.set_max_stack_depth(CommandLine::get_instance()->a_dl_max_stack_depth.argument());
+    task.set_no_unnecessary_upgrades(CommandLine::get_instance()->a_dl_no_unnecessary_upgrades.specified());
+
+    if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "always")
+        task.set_rdepend_post(dlro_always);
+    else if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "never")
+        task.set_rdepend_post(dlro_never);
+    else
+        task.set_rdepend_post(dlro_as_needed);
+
+    task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());
+    task.set_fetch_only(CommandLine::get_instance()->a_fetch.specified());
+    task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
+    task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
+
+    try
+    {
+
+        for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+                q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
+            task.add_target(*q);
+
+        task.execute();
+
+        cout << endl;
+    }
+    catch (const AmbiguousPackageNameError & e)
+    {
+        cout << endl;
+        cerr << "Query error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ");
+        cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
+        for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+                o_end(e.end_options()) ; o != o_end ; ++o)
+            cerr << "    * " << colour(cl_package_name, *o) << endl;
+        cerr << endl;
+        return 1;
+    }
+    catch (const PackageInstallActionError & e)
     {
         cout << endl;
         cerr << "Install error:" << endl;
@@ -579,7 +548,7 @@ do_install()
 
         return_code |= 1;
     }
-    catch (const p::NoSuchPackageError & e)
+    catch (const NoSuchPackageError & e)
     {
         cout << endl;
         cerr << "Query error:" << endl;
@@ -587,13 +556,14 @@ do_install()
         cerr << "No such package '" << e.name() << "'" << endl;
         return 1;
     }
-    catch (const p::AllMaskedError & e)
+    catch (const AllMaskedError & e)
     {
         try
         {
-            p::PackageDatabaseEntryCollection::ConstPointer p(env->package_database()->query(
-                        p::PackageDepAtom::ConstPointer(new p::PackageDepAtom(e.query())),
-                        p::is_uninstalled_only));
+            PackageDatabaseEntryCollection::ConstPointer p(
+                    DefaultEnvironment::get_instance()->package_database()->query(
+                        PackageDepAtom::ConstPointer(new PackageDepAtom(e.query())),
+                        is_uninstalled_only));
             if (p->empty())
             {
                 cout << endl;
@@ -607,52 +577,54 @@ do_install()
                 cerr << "Query error:" << endl;
                 cerr << "  * " << e.backtrace("\n  * ");
                 cerr << "All versions of '" << e.query() << "' are masked. Candidates are:" << endl;
-                for (p::PackageDatabaseEntryCollection::Iterator pp(p->begin()), pp_end(p->end()) ;
+                for (PackageDatabaseEntryCollection::Iterator pp(p->begin()), pp_end(p->end()) ;
                         pp != pp_end ; ++pp)
                 {
                     cerr << "    * " << colour(cl_package_name, *pp) << ": Masked by ";
 
                     bool need_comma(false);
-                    p::MaskReasons m(env->mask_reasons(*pp));
+                    MaskReasons m(DefaultEnvironment::get_instance()->mask_reasons(*pp));
                     for (unsigned mm = 0 ; mm < m.size() ; ++mm)
                         if (m[mm])
                         {
                             if (need_comma)
                                 cerr << ", ";
-                            cerr << p::MaskReason(mm);
+                            cerr << MaskReason(mm);
 
-                            if (p::mr_eapi == mm)
+                            if (mr_eapi == mm)
                             {
-                                std::string eapi_str(env->package_database()->fetch_repository(
-                                            pp->get<p::pde_repository>())->version_metadata(
-                                            pp->get<p::pde_name>(), pp->get<p::pde_version>())->get<p::vm_eapi>());
+                                std::string eapi_str(DefaultEnvironment::get_instance()->
+                                        package_database()->fetch_repository(
+                                            pp->get<pde_repository>())->version_metadata(
+                                            pp->get<pde_name>(), pp->get<pde_version>())->get<vm_eapi>());
 
                                 cerr << " ( " << colour(cl_masked, eapi_str) << " )";
                             }
-                            else if (p::mr_license == mm)
+                            else if (mr_license == mm)
                             {
                                 cerr << " ";
 
-                                LicenceDisplayer ld(cerr, env, &*pp);
-                                env->package_database()->fetch_repository(
-                                        pp->get<p::pde_repository>())->version_metadata(
-                                        pp->get<p::pde_name>(), pp->get<p::pde_version>())->license()->
+                                LicenceDisplayer ld(cerr, DefaultEnvironment::get_instance(), &*pp);
+                                DefaultEnvironment::get_instance()->package_database()->fetch_repository(
+                                        pp->get<pde_repository>())->version_metadata(
+                                        pp->get<pde_name>(), pp->get<pde_version>())->license()->
                                         accept(&ld);
                             }
-                            else if (p::mr_keyword == mm)
+                            else if (mr_keyword == mm)
                             {
-                                p::VersionMetadata::ConstPointer m(env->package_database()->fetch_repository(
-                                            pp->get<p::pde_repository>())->version_metadata(
-                                            pp->get<p::pde_name>(), pp->get<p::pde_version>()));
+                                VersionMetadata::ConstPointer m(DefaultEnvironment::get_instance()->
+                                        package_database()->fetch_repository(
+                                            pp->get<pde_repository>())->version_metadata(
+                                            pp->get<pde_name>(), pp->get<pde_version>()));
                                 if (m->get_ebuild_interface())
                                 {
-                                    std::set<p::KeywordName> keywords;
-                                    p::WhitespaceTokeniser::get_instance()->tokenise(
-                                            m->get_ebuild_interface()->get<p::evm_keywords>(),
-                                            p::create_inserter<p::KeywordName>(
+                                    std::set<KeywordName> keywords;
+                                    WhitespaceTokeniser::get_instance()->tokenise(
+                                            m->get_ebuild_interface()->get<evm_keywords>(),
+                                            create_inserter<KeywordName>(
                                                 std::inserter(keywords, keywords.end())));
 
-                                    cerr << " ( " << colour(cl_masked, p::join(keywords.begin(),
+                                    cerr << " ( " << colour(cl_masked, join(keywords.begin(),
                                                     keywords.end(), " ")) << " )";
                                 }
                             }
@@ -670,7 +642,7 @@ do_install()
 
         return 1;
     }
-    catch (const p::UseRequirementsNotMetError & e)
+    catch (const UseRequirementsNotMetError & e)
     {
         cout << endl;
         cerr << "DepList USE requirements not met error:" << endl;
@@ -684,7 +656,7 @@ do_install()
 
         return_code |= 1;
     }
-    catch (const p::DepListStackTooDeepError & e)
+    catch (const DepListStackTooDeepError & e)
     {
         cout << endl;
         cerr << "DepList stack too deep error:" << endl;
@@ -696,13 +668,33 @@ do_install()
 
         return_code |= 1;
     }
-    catch (const p::DepListError & e)
+    catch (const DepListError & e)
     {
         cout << endl;
         cerr << "Dependency error:" << endl;
         cerr << "  * " << e.backtrace("\n  * ") << e.message() << " ("
             << e.what() << ")" << endl;
         cerr << endl;
+
+        return_code |= 1;
+    }
+    catch (const HadBothPackageAndSetTargets &)
+    {
+        cout << endl;
+        cerr << "Error: both package sets and packages were specified." << endl;
+        cerr << endl;
+        cerr << "Package sets (like 'system' and 'world') cannot be installed at the same time" << endl;
+        cerr << "as ordinary packages." << endl;
+
+        return_code |= 1;
+    }
+    catch (const MultipleSetTargetsSpecified &)
+    {
+        cout << endl;
+        cerr << "Error: multiple package sets were specified." << endl;
+        cerr << endl;
+        cerr << "Package sets (like 'system' and 'world') must be installed individually," << endl;
+        cerr << "without any other sets or packages." << endl;
 
         return_code |= 1;
     }
