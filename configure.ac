@@ -210,6 +210,16 @@ int main(int, char **)
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([libwrapiter (http://libwrapiter.berlios.de/) is required])])
+AC_MSG_CHECKING([libwrapiter version])
+AC_COMPILE_IFELSE([
+#include <libwrapiter/libwrapiter.hh>
+#if LIBWRAPITER_VERSION < 200
+#  error libwrapiter 0.2 or later required
+#endif
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([libwrapiter version must be at least 0.2])])
 dnl }}}
 
 dnl {{{ check for various misc functions.
