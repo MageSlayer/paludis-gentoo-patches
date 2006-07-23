@@ -19,6 +19,8 @@
 
 #include "args.hh"
 #include "bad_value.hh"
+#include <set>
+#include <vector>
 
 /** \file
  * Implementation for ArgsOption.
@@ -67,10 +69,39 @@ StringArg::StringArg(ArgsGroup * const g, const std::string & long_name,
 {
 }
 
+namespace paludis
+{
+    template<>
+    struct Implementation<StringSetArg> :
+        InternalCounted<Implementation<StringSetArg> >
+    {
+        std::set<std::string> args;
+    };
+}
+
 StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & long_name,
         const char short_name, const std::string & description) :
-    ArgsOption(g, long_name, short_name, description)
+    ArgsOption(g, long_name, short_name, description),
+    PrivateImplementationPattern<StringSetArg>(new Implementation<StringSetArg>)
 {
+}
+
+StringSetArg::Iterator
+StringSetArg::args_begin() const
+{
+    return Iterator(_imp->args.begin());
+}
+
+StringSetArg::Iterator
+StringSetArg::args_end() const
+{
+    return Iterator(_imp->args.end());
+}
+
+void
+StringSetArg::add_argument(const std::string & arg)
+{
+    _imp->args.insert(arg);
 }
 
 IntegerArg::IntegerArg(ArgsGroup * const group, const std::string& long_name, 
@@ -105,10 +136,27 @@ namespace
     };
 }
 
+namespace paludis
+{
+    template<>
+    struct Implementation<EnumArg> :
+        InternalCounted<Implementation<EnumArg> >
+    {
+        std::vector<std::pair<std::string, std::string> > allowed_args;
+    };
+
+    template<>
+    struct Implementation<EnumArg::EnumArgOptions> :
+        InternalCounted<Implementation<EnumArg::EnumArgOptions> >
+    {
+        std::vector<std::pair<std::string, std::string> > options;
+    };
+}
+
 void EnumArg::set_argument(const std::string & arg)
 {
-    if (_allowed_args.end() == std::find_if(_allowed_args.begin(),
-                _allowed_args.end(), ArgIs(arg)))
+    if (_imp->allowed_args.end() == std::find_if(_imp->allowed_args.begin(),
+                _imp->allowed_args.end(), ArgIs(arg)))
         throw (BadValue("--" + long_name(), arg));
 
     _argument = arg;
@@ -118,17 +166,46 @@ EnumArg::~EnumArg()
 {
 }
 
-EnumArg::EnumArgOptions::EnumArgOptions(std::string opt, std::string desc)
+EnumArg::EnumArgOptions::EnumArgOptions(std::string opt, std::string desc) :
+    PrivateImplementationPattern<EnumArgOptions>(new Implementation<EnumArgOptions>)
 {
-    _options.push_back(std::make_pair(opt, desc));
+    _imp->options.push_back(std::make_pair(opt, desc));
 }
 
 EnumArg::EnumArgOptions & EnumArg::EnumArgOptions::operator() (std::string opt, std::string desc)
 {
-    _options.push_back(std::make_pair(opt, desc));
+    _imp->options.push_back(std::make_pair(opt, desc));
     return *this;
 }
 
 EnumArg::EnumArgOptions::~EnumArgOptions()
 {
 }
+
+EnumArg::EnumArg(ArgsGroup * const group, const std::string & long_name,
+        const char short_name, const std::string & description,
+        const EnumArgOptions & opts, const std::string & default_arg) :
+    ArgsOption(group, long_name, short_name, description),
+    PrivateImplementationPattern<EnumArg>(new Implementation<EnumArg>),
+    _argument(default_arg),
+    _default_arg(default_arg)
+{
+    _imp->allowed_args = opts._imp->options;
+}
+
+EnumArg::AllowedArgIterator
+EnumArg::begin_allowed_args() const
+{
+    return AllowedArgIterator(_imp->allowed_args.begin());
+}
+
+EnumArg::AllowedArgIterator
+EnumArg::end_allowed_args() const
+{
+    return AllowedArgIterator(_imp->allowed_args.end());
+}
+
+StringSetArg::~StringSetArg()
+{
+}
+

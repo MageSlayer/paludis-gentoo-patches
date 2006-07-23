@@ -20,11 +20,14 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_HANDLER_HH
 #define PALUDIS_GUARD_ARGS_ARGS_HANDLER_HH 1
 
-#include <map>
-#include <ostream>
 #include <paludis/args/args_group.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+
+#include <iosfwd>
 #include <string>
+
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Declaration for ArgsHandler.
@@ -41,27 +44,18 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class ArgsHandler : private InstantiationPolicy<ArgsHandler, instantiation_method::NonCopyableTag>
+        class ArgsHandler :
+            private InstantiationPolicy<ArgsHandler, instantiation_method::NonCopyableTag>,
+            private PrivateImplementationPattern<ArgsHandler>
         {
             friend class ArgsGroup;
             friend std::ostream & operator<< (std::ostream &, const ArgsHandler &);
-
-            private:
-                std::list<ArgsGroup *> _groups;
-                std::list<std::string> _parameters;
-                std::list<std::string> _usage_lines;
-
-                std::map<std::string, ArgsOption *> _longopts;
-                std::map<char, ArgsOption *> _shortopts;
 
             protected:
                 /**
                  * Add a new usage line.
                  */
-                void add_usage_line(const std::string & l)
-                {
-                    _usage_lines.push_back(l);
-                }
+                void add_usage_line(const std::string & l);
 
                 /**
                  * Add an new ArgsGroup (called by the ArgsGroup constructor).
@@ -91,34 +85,21 @@ namespace paludis
                 ///\name Iterate over our parameters (non - and -- switches and their values)
                 ///\{
 
-                typedef std::list<std::string>::const_iterator ParametersIterator;
+                typedef libwrapiter::ForwardIterator<ArgsHandler, const std::string> ParametersIterator;
 
-                ParametersIterator begin_parameters() const
-                {
-                    return _parameters.begin();
-                }
+                ParametersIterator begin_parameters() const;
 
-                ParametersIterator end_parameters() const
-                {
-                    return _parameters.end();
-                }
+                ParametersIterator end_parameters() const;
 
-                bool empty() const
-                {
-                    return _parameters.empty();
-                }
+                bool empty() const;
 
                 ///\}
 
                 /**
                  * Add an ArgsOption instance.
                  */
-                void add_option(ArgsOption *opt, const std::string long_name, const char short_name = '\0')
-                {
-                    _longopts[long_name] = opt;
-                    if (short_name != '\0')
-                        _shortopts[short_name] = opt;
-                }
+                void add_option(ArgsOption * const, const std::string & long_name,
+                        const char short_name = '\0');
 
                 ///\name About our application (for documentation)
                 ///\{
@@ -151,34 +132,22 @@ namespace paludis
                 ///\name Iterate over our usage lines (for documentation)
                 ///\{
 
-                typedef std::list<std::string>::const_iterator UsageLineIterator;
+                typedef libwrapiter::ForwardIterator<ArgsHandler, const std::string> UsageLineIterator;
 
-                UsageLineIterator begin_usage_lines() const
-                {
-                    return _usage_lines.begin();
-                }
+                UsageLineIterator begin_usage_lines() const;
 
-                UsageLineIterator end_usage_lines() const
-                {
-                    return _usage_lines.end();
-                }
+                UsageLineIterator end_usage_lines() const;
 
                 ///\}
 
                 ///\name Iterate over our groups
                 ///\{
 
-                typedef std::list<ArgsGroup *>::const_iterator ArgsGroupsIterator;
+                typedef libwrapiter::ForwardIterator<ArgsHandler, ArgsGroup * const> ArgsGroupsIterator;
 
-                ArgsGroupsIterator begin_args_groups() const
-                {
-                    return _groups.begin();
-                }
+                ArgsGroupsIterator begin_args_groups() const;
 
-                ArgsGroupsIterator end_args_groups() const
-                {
-                    return _groups.end();
-                }
+                ArgsGroupsIterator end_args_groups() const;
 
                 ///\}
         };

@@ -21,9 +21,10 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_VISITOR_HH
 #define PALUDIS_GUARD_ARGS_ARGS_VISITOR_HH 1
 
-#include <list>
 #include <paludis/util/visitor.hh>
 #include <string>
+
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Declaration for ArgsVisitor
@@ -59,7 +60,7 @@ namespace paludis
         class ArgsVisitor : public ArgsVisitorTypes::Visitor
         {
             private:
-                std::list<std::string>::iterator *_args_index, _args_end;
+                libwrapiter::ForwardIterator<ArgsVisitor, std::string> * _args_index, _args_end;
 
                 const std::string& get_param(const ArgsOption * const);
 
@@ -67,7 +68,8 @@ namespace paludis
                 /**
                  * Constructor
                  */
-                ArgsVisitor(std::list<std::string>::iterator *, std::list<std::string>::iterator);
+                ArgsVisitor(libwrapiter::ForwardIterator<ArgsVisitor, std::string> *,
+                        libwrapiter::ForwardIterator<ArgsVisitor, std::string>);
 
                 /// Visit an ArgsOption.
                 void visit(ArgsOption * const);

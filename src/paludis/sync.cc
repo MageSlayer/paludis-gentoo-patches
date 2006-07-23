@@ -24,6 +24,7 @@
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <string>
+#include <set>
 
 /** \file
  * Handle the --sync action for the main paludis program.

@@ -19,8 +19,8 @@
 #include "args_option.hh"
 #include "bad_value.hh"
 #include "missing_value.hh"
-#include <paludis/util/visitor.hh>
 
+#include <paludis/util/visitor.hh>
 #include <paludis/util/destringify.hh>
 
 #include <sstream>
@@ -34,12 +34,13 @@
 using namespace paludis;
 using namespace args;
 
-ArgsVisitor::ArgsVisitor(std::list<std::string>::iterator *ai, 
-        std::list<std::string>::iterator ae) : _args_index(ai), _args_end(ae)
+ArgsVisitor::ArgsVisitor(libwrapiter::ForwardIterator<ArgsVisitor, std::string> * ai,
+        libwrapiter::ForwardIterator<ArgsVisitor, std::string> ae) : _args_index(ai), _args_end(ae)
 {
 }
 
-const std::string& ArgsVisitor::get_param(const ArgsOption * const arg)
+const std::string &
+ArgsVisitor::get_param(const ArgsOption * const arg)
 {
     if (++(*_args_index) == _args_end)
     {

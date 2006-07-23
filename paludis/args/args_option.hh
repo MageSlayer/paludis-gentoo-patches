@@ -22,9 +22,7 @@
 #define PALUDIS_GUARD_ARGS_ARGS_OPTION_HH 1
 
 #include <paludis/args/args_visitor.hh>
-#include <set>
-#include <string>
-#include <vector>
+#include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
  * Declaration for ArgsOption.
@@ -175,38 +173,37 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class StringSetArg : public ArgsOption, public Visitable<StringSetArg, ArgsVisitorTypes>
+        class StringSetArg :
+            public ArgsOption,
+            public Visitable<StringSetArg, ArgsVisitorTypes>,
+            private PrivateImplementationPattern<StringSetArg>
         {
-            private:
-                std::set<std::string> _args;
-
             public:
+                ///\name Basic operations
+                ///\{
 
-                /**
-                 * Type used to iterate over specified args.
-                 */
-                typedef std::set<std::string>::const_iterator Iterator;
-
-                /**
-                 * Constructor
-                 */
                 StringSetArg(ArgsGroup * const, const std::string & long_name,
                         const char short_name, const std::string & description);
 
-                /**
-                 * Retrieve an iterator to the first arg
-                 */
-                Iterator args_begin() const { return _args.begin(); }
+                ~StringSetArg();
+
+                ///\}
+
+                ///\name Iterate over our args.
+                ///\{
+
+                typedef libwrapiter::ForwardIterator<StringArg, const std::string> Iterator;
+
+                Iterator args_begin() const;
+
+                Iterator args_end() const;
+
+                ///\}
 
                 /**
-                 * Retrieve an iterator one past the last arg
+                 * Add an argument to the set.
                  */
-                Iterator args_end() const { return _args.end(); }
-
-                /**
-                 * Add an argument to the set returned by [ args_begin(), args_end() )
-                 */
-                void add_argument(const std::string & arg) { _args.insert(arg); }
+                void add_argument(const std::string & arg);
         };
 
 
@@ -269,10 +266,12 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class EnumArg : public ArgsOption, public Visitable<EnumArg, ArgsVisitorTypes>
+        class EnumArg :
+            public ArgsOption,
+            public Visitable<EnumArg, ArgsVisitorTypes>,
+            private PrivateImplementationPattern<EnumArg>
         {
             private:
-                const std::vector<std::pair<std::string, std::string> > _allowed_args;
                 std::string _argument;
                 const std::string _default_arg;
 
@@ -284,11 +283,10 @@ namespace paludis
                  *
                  * \ingroup grplibpaludisargs
                  */
-                class EnumArgOptions
+                class EnumArgOptions :
+                    private PrivateImplementationPattern<EnumArgOptions>
                 {
-                    private:
-                        friend class EnumArg;
-                        std::vector<std::pair<std::string, std::string> > _options;
+                    friend class EnumArg;
 
                     public:
                         /**
@@ -304,7 +302,7 @@ namespace paludis
                         /**
                          * Adds another (option, description) pair.
                          */
-                        EnumArgOptions& operator() (const std::string, const std::string);
+                        EnumArgOptions & operator() (const std::string, const std::string);
                 };
 
                 /**
@@ -312,19 +310,17 @@ namespace paludis
                  */
                 EnumArg(ArgsGroup * const group, const std::string & long_name,
                         const char short_name, const std::string & description,
-                        const EnumArgOptions & opts, const std::string & default_arg) :
-                    ArgsOption(group, long_name, short_name, description),
-                    _allowed_args(opts._options), _argument(default_arg), 
-                    _default_arg(default_arg)
-                {
-                }
+                        const EnumArgOptions & opts, const std::string & default_arg);
 
                 ~EnumArg();
 
                 /**
                  * Fetch the argument that was given to this option.
                  */
-                const std::string & argument() const { return _argument; }
+                const std::string & argument() const
+                {
+                    return _argument;
+                }
 
                 /**
                  * Set the argument returned by argument(), having verified that
@@ -335,23 +331,22 @@ namespace paludis
                 /**
                  * Fetch the default option, as specified to the constructor.
                  */
-                const std::string & default_arg() const { return _default_arg; }
+                const std::string & default_arg() const
+                {
+                    return _default_arg;
+                }
 
-                /**
-                 * Type used to iterate over valid arguments to this option
-                 */
-                typedef std::vector<std::pair<std::string, std::string> >::const_iterator AllowedArgIterator;
+                ///\name Iterate over our allowed arguments and associated descriptions
+                ///\{
 
-                /**
-                 * Returns an iterator pointing to a pair containing the first valid argument,
-                 * and its description.
-                 */
-                AllowedArgIterator begin_allowed_args() const { return _allowed_args.begin(); }
+                typedef libwrapiter::ForwardIterator<EnumArg,
+                        const std::pair<std::string, std::string> > AllowedArgIterator;
 
-                /**
-                 * Returns an iterator pointing just beyond the last valid argument.
-                 */
-                AllowedArgIterator end_allowed_args() const { return _allowed_args.end(); }
+                AllowedArgIterator begin_allowed_args() const;
+
+                AllowedArgIterator end_allowed_args() const;
+
+                ///\}
         };
     }
 }

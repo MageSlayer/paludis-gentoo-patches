@@ -19,9 +19,11 @@
 
 #include "args.hh"
 #include "args_dumper.hh"
+#include <paludis/util/system.hh>
 #include <algorithm>
 #include <sstream>
-#include <paludis/util/system.hh>
+#include <list>
+#include <map>
 
 /** \file
  * Implementation for ArgsHandler.
@@ -31,7 +33,23 @@
 
 using namespace paludis::args;
 
-ArgsHandler::ArgsHandler()
+namespace paludis
+{
+    template<>
+    struct Implementation<ArgsHandler> :
+        InternalCounted<Implementation<ArgsHandler> >
+    {
+        std::list<ArgsGroup *> groups;
+        std::list<std::string> parameters;
+        std::list<std::string> usage_lines;
+
+        std::map<std::string, ArgsOption *> longopts;
+        std::map<char, ArgsOption *> shortopts;
+    };
+}
+
+ArgsHandler::ArgsHandler() :
+    PrivateImplementationPattern<ArgsHandler>(new Implementation<ArgsHandler>)
 {
 }
 
@@ -40,10 +58,16 @@ ArgsHandler::~ArgsHandler()
 }
 
 void
+ArgsHandler::add_usage_line(const std::string & l)
+{
+    _imp->usage_lines.push_back(l);
+}
+
+void
 ArgsHandler::add(ArgsGroup * const g)
 {
     /// \bug Should check for name uniqueness.
-    _groups.push_back(g);
+    _imp->groups.push_back(g);
 }
 
 void
@@ -64,7 +88,7 @@ ArgsHandler::run(const int argc, const char * const * const argv)
 
     args.insert(args.end(), &argv[1], &argv[argc]);
 
-    std::list<std::string>::iterator argit = args.begin(), arge = args.end();
+    libwrapiter::ForwardIterator<ArgsVisitor, std::string> argit(args.begin()), arge(args.end());
 
     ArgsVisitor visitor(&argit, arge);
 
@@ -80,8 +104,8 @@ ArgsHandler::run(const int argc, const char * const * const argv)
         else if (0 == arg.compare(0, 2, "--"))
         {
             arg.erase(0, 2);
-            std::map<std::string, ArgsOption*>::iterator it = _longopts.find(arg);
-            if (it == _longopts.end())
+            std::map<std::string, ArgsOption *>::iterator it = _imp->longopts.find(arg);
+            if (it == _imp->longopts.end())
                 throw BadArgument("--" + arg);
             (*it).second->accept(&visitor);
         }
@@ -90,8 +114,8 @@ ArgsHandler::run(const int argc, const char * const * const argv)
             arg.erase(0, 1);
             for (std::string::iterator c = arg.begin(); c != arg.end(); ++c)
             {
-                std::map<char, ArgsOption*>::iterator it = _shortopts.find(*c);
-                if (it == _shortopts.end())
+                std::map<char, ArgsOption *>::iterator it = _imp->shortopts.find(*c);
+                if (it == _imp->shortopts.end())
                 {
                     throw BadArgument(std::string("-") + *c);
                 }
@@ -100,18 +124,19 @@ ArgsHandler::run(const int argc, const char * const * const argv)
         }
         else
         {
-            _parameters.push_back(arg);
+            _imp->parameters.push_back(arg);
         }
     }
 
-    _parameters.insert(_parameters.end(), argit, args.end());
+    _imp->parameters.insert(_imp->parameters.end(),
+            argit, libwrapiter::ForwardIterator<ArgsVisitor, std::string>(args.end()));
 }
 
 void
 ArgsHandler::dump_to_stream(std::ostream & s) const
 {
     ArgsDumper dump(s);
-    std::list<ArgsGroup *>::const_iterator g(_groups.begin()), g_end(_groups.end());
+    std::list<ArgsGroup *>::const_iterator g(_imp->groups.begin()), g_end(_imp->groups.end());
     for ( ; g != g_end ; ++g)
     {
         s << (*g)->name() << ":" << std::endl;
@@ -122,12 +147,61 @@ ArgsHandler::dump_to_stream(std::ostream & s) const
     }
 }
 
-#ifndef DOXYGEN
+ArgsHandler::ParametersIterator
+ArgsHandler::begin_parameters() const
+{
+    return ParametersIterator(_imp->parameters.begin());
+}
+
+ArgsHandler::ParametersIterator
+ArgsHandler::end_parameters() const
+{
+    return ParametersIterator(_imp->parameters.end());
+}
+
+bool
+ArgsHandler::empty() const
+{
+    return _imp->parameters.empty();
+}
+
 std::ostream &
 paludis::args::operator<< (std::ostream & s, const ArgsHandler & h)
 {
     h.dump_to_stream(s);
     return s;
 }
-#endif
+
+void
+ArgsHandler::add_option(ArgsOption * const opt, const std::string & long_name,
+        const char short_name)
+{
+    _imp->longopts[long_name] = opt;
+    if (short_name != '\0')
+        _imp->shortopts[short_name] = opt;
+}
+
+ArgsHandler::UsageLineIterator
+ArgsHandler::begin_usage_lines() const
+{
+    return UsageLineIterator(_imp->usage_lines.begin());
+}
+
+ArgsHandler::UsageLineIterator
+ArgsHandler::end_usage_lines() const
+{
+    return UsageLineIterator(_imp->usage_lines.end());
+}
+
+ArgsHandler::ArgsGroupsIterator
+ArgsHandler::begin_args_groups() const
+{
+    return ArgsGroupsIterator(_imp->groups.begin());
+}
+
+ArgsHandler::ArgsGroupsIterator
+ArgsHandler::end_args_groups() const
+{
+    return ArgsGroupsIterator(_imp->groups.end());
+}
 
