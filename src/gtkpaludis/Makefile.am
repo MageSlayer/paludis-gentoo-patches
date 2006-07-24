@@ -5,7 +5,9 @@ AM_CXXFLAGS = -I$(top_srcdir) \
 
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
-	-DLIBEXECDIR=\"$(libexecdir)\"
+	-DLIBEXECDIR=\"$(libexecdir)\" \
+	-DGLIBMM_EXCEPTIONS_ENABLED=1
+
 SUBDIRS = .
 
 if ENABLE_GTK
@@ -16,6 +18,7 @@ gtkpaludis_SOURCES = \
 	command_line.cc     command_line.hh \
 	browse_tree.cc      browse_tree.hh \
 	information_tree.cc information_tree.hh \
+	message_window.cc   message_window.hh \
 	main_window.cc      main_window.hh \
 	gtkpaludis.cc
 
