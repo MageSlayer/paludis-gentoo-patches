@@ -62,19 +62,6 @@ namespace
         }
     };
 
-    void
-    world_add_callback(const PackageDepAtom * const p)
-    {
-        cout << "* adding " << colour(cl_package_name, stringify(*p)) << endl;
-    }
-
-    void
-    world_skip_callback(const PackageDepAtom * const p, const std::string & why)
-    {
-        cout << "* skipping " << colour(cl_package_name, stringify(*p))
-            << " (" << why << ")" << endl;
-    }
-
     class OurInstallTask :
         public InstallTask
     {
@@ -518,7 +505,6 @@ do_install()
 
     try
     {
-
         for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
                 q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
             task.add_target(*q);

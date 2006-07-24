@@ -19,15 +19,17 @@
 
 #include "colour.hh"
 #include "uninstall.hh"
+
+#include <paludis/default_environment.hh>
+#include <paludis/tasks/uninstall_task.hh>
+
 #include <iostream>
-#include <paludis/paludis.hh>
-#include <paludis/util/collection_concrete.hh>
 
 /** \file
  * Handle the --uninstall action for the main paludis program.
  */
 
-namespace p = paludis;
+using namespace paludis;
 
 using std::cerr;
 using std::cout;
@@ -35,13 +37,93 @@ using std::endl;
 
 namespace
 {
-    struct WorldCallbacks :
-        public p::Environment::WorldCallbacks
+    class OurUninstallTask :
+        public UninstallTask
     {
-        void remove_callback(const p::PackageDepAtom * const p)
-        {
-            cout << "* removing " << colour(cl_package_name, stringify(*p)) << endl;
-        }
+        private:
+            int _count, _current_count;
+
+        public:
+            OurUninstallTask() :
+                UninstallTask(DefaultEnvironment::get_instance()),
+                _count(0),
+                _current_count(0)
+            {
+            };
+
+            virtual void on_build_unmergelist_pre()
+            {
+                cout << "Building unmerge list... " << std::flush;
+            }
+
+            virtual void on_build_unmergelist_post()
+            {
+                cout << "done" << endl;
+            }
+
+            virtual void on_display_unmerge_list_pre()
+            {
+                cout << endl << colour(cl_heading, "These packages will be uninstalled:")
+                    << endl << endl;
+            }
+
+            virtual void on_display_unmerge_list_post()
+            {
+                cout << endl << endl <<
+                    "Total: " << _count << (_count == 1 ? " package" : " packages") << endl;
+            }
+
+            virtual void on_display_unmerge_list_entry(const PackageDatabaseEntry & d)
+            {
+                cout << "* " << colour(cl_package_name, stringify(d)) << endl;
+                ++_count;
+            }
+
+            virtual void on_uninstall_all_pre()
+            {
+            }
+
+            virtual void on_uninstall_pre(const PackageDatabaseEntry & d)
+            {
+                cout << endl << colour(cl_heading, "Uninstalling " +
+                        stringify(d.get<pde_name>()) + "-" + stringify(d.get<pde_version>()) +
+                        "::" + stringify(d.get<pde_repository>())) << endl << endl;
+
+                cerr << xterm_title("(" + stringify(++_current_count) + " of " +
+                        stringify(_count) + ") Installing " +
+                        stringify(d.get<pde_name>()) + "-" + stringify(d.get<pde_version>()) +
+                        "::" + stringify(d.get<pde_repository>()));
+            }
+
+            virtual void on_uninstall_post(const PackageDatabaseEntry &)
+            {
+            }
+
+            virtual void on_uninstall_all_post()
+            {
+            }
+
+            virtual void on_update_world_pre()
+            {
+                cout << endl << colour(cl_heading, "Updating world file") << endl << endl;
+            }
+
+            virtual void on_update_world(const PackageDepAtom & a)
+            {
+                cout << "* removing " << colour(cl_package_name, a.package()) << endl;
+            }
+
+            virtual void on_update_world_post()
+            {
+                cout << endl;
+            }
+
+            virtual void on_preserve_world()
+            {
+                cout << endl << colour(cl_heading, "Updating world file") << endl << endl;
+                cout << "* --preserve-world was specified, skipping world changes" << endl;
+                cout << endl;
+            }
     };
 }
 
@@ -50,111 +132,53 @@ do_uninstall()
 {
     int return_code(0);
 
-    p::Context context("When performing uninstall action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
+    Context context("When performing uninstall action from command line:");
 
-    cout << colour(cl_heading, "These packages will be uninstalled:") << endl << endl;
+    OurUninstallTask task;
 
-    std::list<p::PackageDepAtom::Pointer> targets;
+    task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
+    task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());
+    task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
 
-    CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
-        q_end(CommandLine::get_instance()->end_parameters());
-
-    for ( ; q != q_end ; ++q)
+    try
     {
-        /* we might have a dep atom, but we might just have a simple package name
-         * without a category. either should work. */
-        if (std::string::npos != q->find('/'))
-            targets.push_back(p::PackageDepAtom::Pointer(new p::PackageDepAtom(*q)));
-        else
-            targets.push_back(p::PackageDepAtom::Pointer(new p::PackageDepAtom(
-                            env->package_database()->fetch_unique_qualified_package_name(
-                                p::PackageNamePart(*q)))));
-    }
+        for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+                q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
+            task.add_target(*q);
 
-    bool ok(true);
-    p::PackageDatabaseEntryCollection::Pointer unmerge(new p::PackageDatabaseEntryCollection::Concrete);
-    for (std::list<p::PackageDepAtom::Pointer>::iterator t(targets.begin()), t_end(targets.end()) ;
-            t != t_end ; ++t)
+        task.execute();
+
+        cout << endl;
+    }
+    catch (const AmbiguousUnmergeTargetError & e)
     {
-        p::PackageDatabaseEntryCollection::ConstPointer r(
-                env->package_database()->query(*t, p::is_installed_only));
-        if (r->empty())
-        {
-            cout << "* No match for " << colour(cl_masked, **t) << endl;
-            ok = false;
-        }
-        else if (r->size() > 1)
-        {
-            cout << "* Multiple matches for " << colour(cl_masked, **t) << ":" << endl;
-            for (p::PackageDatabaseEntryCollection::Iterator p(r->begin()),
-                    p_end(r->end()) ; p != p_end ; ++p)
-                cout << "  * " << colour(cl_package_name, *p) << endl;
-            ok = false;
-        }
-        else
-        {
-            cout << "* " << colour(cl_package_name, *r->begin()) << endl;
-            unmerge->insert(*r->begin());
-        }
+        cout << endl;
+        cerr << "Query error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ");
+        cerr << "Ambiguous unmerge target '" << e.target() << "'. Did you mean:" << endl;
+        for (AmbiguousUnmergeTargetError::Iterator o(e.begin()),
+                o_end(e.end()) ; o != o_end ; ++o)
+            cerr << "    * =" << colour(cl_package_name, *o) << endl;
+        cerr << endl;
+        return 1;
     }
-
-    int current_count = 0, max_count = std::distance(unmerge->begin(), unmerge->end());
-
-    cout << endl << "Total: " << max_count <<
-        (max_count == 1 ? " package" : " packages") << endl << endl;
-
-    if (! ok)
-        return 1 | return_code;
-
-    if (CommandLine::get_instance()->a_pretend.specified())
-        return return_code;
-
-    cout << endl << colour(cl_heading, "Updating world file") << endl << endl;
-    if (! CommandLine::get_instance()->a_preserve_world.specified())
+    catch (const PackageUninstallActionError & e)
     {
-        p::AllDepAtom::Pointer all(new p::AllDepAtom);
-        for (std::list<p::PackageDepAtom::Pointer>::const_iterator t(targets.begin()),
-                t_end(targets.end()) ; t != t_end ; ++t)
-            all->add_child(*t);
+        cout << endl;
+        cerr << "Uninstall error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ");
+        cerr << e.message() << endl;
 
-        WorldCallbacks w;
-        env->remove_appropriate_from_world(all, &w);
+        return_code |= 1;
     }
-    else
-        cout << "* --preserve-world was specified, skipping world removes" << endl;
-
-    p::InstallOptions opts(false, false);
-    if (CommandLine::get_instance()->a_no_config_protection.specified())
-        opts.set<p::io_noconfigprotect>(true);
-
-    env->perform_hook(p::Hook("uninstall_all_pre")("TARGETS", join(unmerge->begin(), unmerge->end(), " ")));
-    for (p::PackageDatabaseEntryCollection::Iterator pkg(unmerge->begin()), pkg_end(unmerge->end()) ;
-            pkg != pkg_end ; ++pkg)
+    catch (const NoSuchPackageError & e)
     {
-        std::string cpvr = p::stringify(pkg->get<p::pde_name>()) + "-" +
-            p::stringify(pkg->get<p::pde_version>()) + "::" +
-            p::stringify(pkg->get<p::pde_repository>());
-
-        cout << endl << colour(cl_heading,
-                "Uninstalling " + cpvr) << endl << endl;
-
-        // TODO: some way to reset this properly would be nice.
-        cerr << xterm_title("(" + p::stringify(++current_count) + " of " +
-                p::stringify(max_count) + ") Uninstalling " + cpvr);
-
-        env->perform_hook(p::Hook("uninstall_pre")("TARGET", cpvr));
-        const p::Repository::UninstallableInterface * const uninstall_interface(
-                env->package_database()->fetch_repository(pkg->get<p::pde_repository>())->
-                get_interface<p::repo_uninstallable>());
-        if (! uninstall_interface)
-            throw p::InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
-        uninstall_interface->uninstall(pkg->get<p::pde_name>(), pkg->get<p::pde_version>(), opts);
-        env->perform_hook(p::Hook("uninstall_post")("TARGET", cpvr));
+        cout << endl;
+        cerr << "Query error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ");
+        cerr << "No such package '" << e.name() << "'" << endl;
+        return 1;
     }
-    env->perform_hook(p::Hook("uninstall_all_post")("TARGETS", join(unmerge->begin(), unmerge->end(), " ")));
-
-    cout << endl;
 
     return return_code;
 }
