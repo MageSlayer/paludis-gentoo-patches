@@ -232,6 +232,9 @@ AC_CHECK_FUNCS([popen],    [], [AC_MSG_ERROR([I need popen])])
 dnl }}}
 
 dnl {{{ check for cxxflags
+PALUDIS_CXXFLAGS=
+PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST=
+PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS=
 AC_MSG_CHECKING([whether our compiler is iccy])
 AC_COMPILE_IFELSE([
 #ifndef __ICC
@@ -241,10 +244,9 @@ AC_COMPILE_IFELSE([
 	[cxx_compiler_icc=yes],
 	[cxx_compiler_icc=no])
 AC_MSG_RESULT([${cxx_compiler_icc}])
-
 AC_DEFUN([CHECK_CXXFLAG], [
 	save_CXXFLAGS=$CXXFLAGS
-	CXXFLAGS="$CXXFLAGS $1 -Werror"
+	CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS $1 -Werror"
 	AC_COMPILE_IFELSE([
 #include <string>
 #include <iostream>
@@ -258,11 +260,10 @@ int main(int, char **)
 	[cxxflag_success=no])
 	CXXFLAGS="$save_CXXFLAGS"
 	if test "x$cxxflag_success" = "xyes" ; then
-		CXXFLAGS="$CXXFLAGS $1"
+		PALUDIS_CXXFLAGS="$PALUDIS_CXXFLAGS $1"
 		cxxflags_message="${cxxflags_message} $1"
 	fi
 	])
-
 AC_MSG_CHECKING([for appropriate compiler flags])
 if test "x${cxx_compiler_icc}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wall])
@@ -281,7 +282,13 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 		CHECK_CXXFLAG([-W])
 	fi
 	CHECK_CXXFLAG([-Wold-style-cast])
+	if test "x$cxxflag_success" = "xyes" ; then
+		PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST=-Wno-old-style-cast
+	fi
 	CHECK_CXXFLAG([-Wredundant-decls])
+	if test "x$cxxflag_success" = "xyes" ; then
+		PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS=-Wno-redundant-decls
+	fi
 	CHECK_CXXFLAG([-Wstrict-null-sentinel])
 	CHECK_CXXFLAG([-Wmissing-noreturn])
 	CHECK_CXXFLAG([-Woverloaded-virtual])
@@ -290,6 +297,9 @@ else
 	CHECK_CXXFLAG([-Wall])
 fi
 AC_MSG_RESULT([${cxxflags_message}])
+AC_SUBST([PALUDIS_CXXFLAGS])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS])
 dnl }}}
 
 dnl {{{ sandbox
@@ -413,6 +423,23 @@ if test "x$found_selinux" = "xyes"; then
 fi
 dnl }}}
 
+dnl {{{ gtk support
+AC_MSG_CHECKING([whether to build the gtk+ client])
+AC_ARG_ENABLE([gtk],
+   AS_HELP_STRING([--enable-gtk], [Enable gtk+ client (default: disable)]),
+   enable_gtk=$enableval,
+   enable_gtk=no)
+AC_MSG_RESULT($enable_gtk)
+
+if test "x$enable_gtk" = "xyes"; then
+	PKG_CHECK_MODULES(DEPS, [gtkmm-2.4 >= 2.6.0])
+	AC_SUBST(DEPS_CFLAGS)
+	AC_SUBST(DEPS_LIBS)
+fi
+
+AM_CONDITIONAL([ENABLE_GTK], test "x$enable_gtk" = "xyes")
+dnl }}}
+
 dnl {{{ is sed gnu sed
 AC_MSG_CHECKING([if we need a sed wrapper])
 AC_SUBST([NEED_SED_WRAPPER])
@@ -475,6 +502,7 @@ AC_OUTPUT(
 	paludis/util/Makefile
 	src/Makefile
 	src/paludis/Makefile
+	src/gtkpaludis/Makefile
 	src/qualudis/Makefile
 	test/Makefile
 	)

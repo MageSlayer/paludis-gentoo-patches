@@ -32,7 +32,7 @@ include(`paludis/util/files.m4')
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in Makefile.am paludis.hh smart_record.hh \
 	hashed_containers.hh util.hh
-AM_CXXFLAGS = -I$(top_srcdir)
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 DEFS=\
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\"

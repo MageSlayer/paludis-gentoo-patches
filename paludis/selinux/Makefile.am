@@ -20,6 +20,6 @@ EXTRA_DIST =
 
 check_PROGRAMS = $(TESTS)
 
-AM_CXXFLAGS = -I$(top_srcdir)
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 

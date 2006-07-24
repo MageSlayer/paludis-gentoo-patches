@@ -54,7 +54,7 @@ libexecprog_SCRIPTS = \
 	$(libexecprog_SCRIPTS_extra)
 
 libexecprog_PROGRAMS = merge unmerge
-AM_CXXFLAGS = -I$(top_srcdir)
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 merge_SOURCES = merge.cc merge_common.cc merge_common.hh
 merge_LDADD = \

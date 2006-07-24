@@ -38,7 +38,7 @@ include(`paludis/files.m4')
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda ihateautomake.cc ihateautomake.o
 MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh \
 	hashed_containers.hh
-AM_CXXFLAGS = -I$(top_srcdir)
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \

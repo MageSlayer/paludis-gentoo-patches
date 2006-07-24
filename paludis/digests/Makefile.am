@@ -26,7 +26,7 @@ EXTRA_DIST = sha256_TEST.cc rmd160_TEST.cc md5_TEST.cc
 
 check_PROGRAMS = $(TESTS)
 
-AM_CXXFLAGS = -I$(top_srcdir)
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 sha256_TEST_SOURCES = sha256_TEST.cc
 sha256_TEST_CXXFLAGS = -I$(top_srcdir)
