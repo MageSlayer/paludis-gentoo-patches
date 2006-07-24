@@ -221,6 +221,16 @@
  * \ingroup grplibpaludisutil
  */
 
+/** \defgroup grppipe Pipes
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpfdotputstream FD Output
+ *
+ * \ingroup grplibpaludisutil
+ */
+
 /** \defgroup grppointers Pointers
  *
  * \ingroup grplibpaludisutil

@@ -21,6 +21,7 @@
 
 #include <paludis/digests/md5.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
@@ -94,76 +95,6 @@ namespace
                             + name.basename())));
         }
     }
-
-    /**
-     * Output stream buffer class that's opened via an FD, so that we can avoid race
-     * conditions that would be present on the non-Unix-specific standard file
-     * stream classes.
-     *
-     * See \ref TCppSL Ch. 13.13 for what we're doing here. The buffer code is
-     * based upon the "io/outbuf2.hpp" example in section 13.13.3.
-     */
-    class FDOutputStreamBuf :
-        public std::streambuf
-    {
-        protected:
-            int fd;
-
-            virtual int_type
-            overflow(int_type c)
-            {
-                if (c != EOF)
-                {
-                    char z = c;
-                    if (1 != write(fd, &z, 1))
-                        return EOF;
-                }
-                return c;
-            }
-
-            virtual std::streamsize
-            xsputn(const char * s, std::streamsize num)
-            {
-                return write(fd, s, num);
-            }
-
-        public:
-            FDOutputStreamBuf(const int f) :
-                fd(f)
-            {
-            }
-    };
-
-    /**
-     * Member from base initialisation for FDOutputStream.
-     */
-    class FDOutputStreamBase
-    {
-        protected:
-            FDOutputStreamBuf buf;
-
-        public:
-            FDOutputStreamBase(const int fd) :
-                buf(fd)
-            {
-            }
-    };
-    /**
-     * Output stream buffer class that's opened via an FD, so that we can avoid race
-     * conditions that would be present on the non-Unix-specific standard file
-     * stream classes.
-     */
-    class FDOutputStream :
-        protected FDOutputStreamBase,
-        public std::ostream
-    {
-        public:
-            FDOutputStream(const int fd) :
-                FDOutputStreamBase(fd),
-                std::ostream(&buf)
-        {
-        }
-    };
 
     /**
      * RAII holder for a file descriptor.
