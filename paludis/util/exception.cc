@@ -60,7 +60,7 @@ Context::backtrace(const std::string & delim)
 }
 
 struct Exception::ContextData :
-    public libebt::Backtraceable<Context>
+    public libebt::Backtraceable<ContextTag>
 {
 };
 

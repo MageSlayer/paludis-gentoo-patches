@@ -36,15 +36,6 @@
 namespace paludis
 {
     /**
-     * Context tag for libebt.
-     *
-     * \ingroup grpexceptions
-     */
-    struct PaludisBacktraceTag
-    {
-    };
-
-    /**
      * Backtrace context class.
      *
      * \ingroup grpexceptions
