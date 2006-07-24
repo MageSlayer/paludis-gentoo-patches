@@ -1,5 +1,5 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
-MAINTAINERCLEANFILES = Makefile.in Makefile.am
+MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir)
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
