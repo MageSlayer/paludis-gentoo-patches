@@ -50,7 +50,8 @@ namespace paludis
         Gtk::Entry search_box;
         Gtk::Button search_button;
 
-        Gtk::HPaned middle_pane;
+        Gtk::VPaned browse_information_messages_pane;
+        Gtk::HPaned browse_information_pane;
 
         Gtk::Frame information_frame;
         Gtk::ScrolledWindow information_window;
@@ -93,13 +94,17 @@ MainWindow::MainWindow() :
     add(_imp->main_container);
 
     _imp->main_container.pack_start(_imp->search_container, Gtk::PACK_SHRINK);
+    _imp->main_container.pack_end(_imp->browse_information_messages_pane, Gtk::PACK_EXPAND_WIDGET);
+
     _imp->search_container.pack_start(_imp->search_label, Gtk::PACK_SHRINK);
     _imp->search_container.pack_start(_imp->search_box);
     _imp->search_container.pack_end(_imp->search_button, Gtk::PACK_SHRINK);
 
-    _imp->main_container.pack_start(_imp->middle_pane, Gtk::PACK_EXPAND_WIDGET);
-    _imp->middle_pane.pack1(_imp->browse_frame);
-    _imp->middle_pane.pack2(_imp->information_frame);
+    _imp->browse_information_messages_pane.pack1(_imp->browse_information_pane);
+    _imp->browse_information_messages_pane.pack2(_imp->messages_frame);
+
+    _imp->browse_information_pane.pack1(_imp->browse_frame);
+    _imp->browse_information_pane.pack2(_imp->information_frame);
 
     _imp->browse_frame.add(_imp->browse_window);
     _imp->browse_window.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
@@ -111,7 +116,6 @@ MainWindow::MainWindow() :
     _imp->information_window.set_border_width(5);
     _imp->information_window.add(_imp->information_tree);
 
-    _imp->main_container.pack_end(_imp->messages_frame, Gtk::PACK_SHRINK);
     _imp->messages_frame.add(_imp->messages_window);
     _imp->messages_window.set_border_width(5);
     _imp->messages_window.add(_imp->messages);
