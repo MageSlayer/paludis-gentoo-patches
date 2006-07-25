@@ -106,6 +106,22 @@ namespace paludis
     int run_command_in_directory(const std::string & cmd, const FSEntry & fsentry);
 
     /**
+     * Set the stderr and close for stdout fds used by run_command and
+     * run_command_in_directory.
+     *
+     * \ingroup grpsystem
+     */
+    void set_run_command_stdout_fds(const int, const int);
+
+    /**
+     * Set the stderr and close for stderr fds used by run_command and
+     * run_command_in_directory.
+     *
+     * \ingroup grpsystem
+     */
+    void set_run_command_stderr_fds(const int, const int);
+
+    /**
      * Make a command that's run in a particular environment.
      */
     class MakeEnvCommand

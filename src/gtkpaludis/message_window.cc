@@ -41,11 +41,13 @@ namespace paludis
         InternalCounted<Implementation<MessageWindow> >
     {
         Pipe log_pipe;
-        Pipe cmd_stderr_pipe;
+        Pipe command_stdout_pipe;
+        Pipe command_stderr_pipe;
 
         MessageWindow * const owner;
         Glib::RefPtr<Glib::IOChannel> log_connection;
-        Glib::RefPtr<Glib::IOChannel> cmd_stderr_connection;
+        Glib::RefPtr<Glib::IOChannel> command_stdout_connection;
+        Glib::RefPtr<Glib::IOChannel> command_stderr_connection;
         FDOutputStream stream;
 
         Implementation(MessageWindow * const o);
@@ -54,16 +56,21 @@ namespace paludis
     Implementation<MessageWindow>::Implementation(MessageWindow * const o) :
         owner(o),
         log_connection(Glib::IOChannel::create_from_fd(log_pipe.read_fd())),
-        cmd_stderr_connection(Glib::IOChannel::create_from_fd(cmd_stderr_pipe.read_fd())),
+        command_stdout_connection(Glib::IOChannel::create_from_fd(command_stdout_pipe.read_fd())),
+        command_stderr_connection(Glib::IOChannel::create_from_fd(command_stderr_pipe.read_fd())),
         stream(log_pipe.write_fd())
     {
         Glib::signal_io().connect(sigc::mem_fun(*owner, &MessageWindow::on_log_read),
                 log_pipe.read_fd(), Glib::IO_IN);
 
-        Glib::signal_io().connect(sigc::mem_fun(*owner, &MessageWindow::on_cmd_stderr_read),
-                cmd_stderr_pipe.read_fd(), Glib::IO_IN);
+        Glib::signal_io().connect(sigc::mem_fun(*owner, &MessageWindow::on_command_stdout_read),
+                command_stdout_pipe.read_fd(), Glib::IO_IN);
+        Glib::signal_io().connect(sigc::mem_fun(*owner, &MessageWindow::on_command_stderr_read),
+                command_stderr_pipe.read_fd(), Glib::IO_IN);
 
-        PStream::set_stderr_fd(cmd_stderr_pipe.write_fd(), cmd_stderr_pipe.read_fd());
+        PStream::set_stderr_fd(command_stderr_pipe.write_fd(), command_stderr_pipe.read_fd());
+        set_run_command_stdout_fds(command_stdout_pipe.write_fd(), command_stdout_pipe.read_fd());
+        set_run_command_stderr_fds(command_stderr_pipe.write_fd(), command_stderr_pipe.read_fd());
 
         Log::get_instance()->set_log_stream(&stream);
         Log::get_instance()->message(ll_debug, lc_no_context, "Message window initialised");
@@ -96,13 +103,28 @@ MessageWindow::on_log_read(Glib::IOCondition io_condition)
 }
 
 bool
-MessageWindow::on_cmd_stderr_read(Glib::IOCondition io_condition)
+MessageWindow::on_command_stdout_read(Glib::IOCondition io_condition)
 {
     if (0 == io_condition & Glib::IO_IN)
         return false;
 
     Glib::ustring buf;
-    _imp->cmd_stderr_connection->read_line(buf);
+    _imp->command_stdout_connection->read_line(buf);
+
+    get_buffer()->insert(get_buffer()->end(), buf);
+    scroll_to(get_buffer()->create_mark(get_buffer()->end()), 0.0, 0.0, 1.0);
+
+    return true;
+}
+
+bool
+MessageWindow::on_command_stderr_read(Glib::IOCondition io_condition)
+{
+    if (0 == io_condition & Glib::IO_IN)
+        return false;
+
+    Glib::ustring buf;
+    _imp->command_stderr_connection->read_line(buf);
 
     get_buffer()->insert(get_buffer()->end(), buf);
     scroll_to(get_buffer()->create_mark(get_buffer()->end()), 0.0, 0.0, 1.0);

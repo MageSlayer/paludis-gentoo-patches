@@ -39,6 +39,12 @@ using namespace paludis;
 
 namespace
 {
+    static int stdout_write_fd = -1;
+    static int stdout_close_fd = -1;
+
+    static int stderr_write_fd = -1;
+    static int stderr_close_fd = -1;
+
     /**
      * Runs a command in a directory if needed, wait for it to terminate
      * and return its exit status.
@@ -54,6 +60,30 @@ namespace
             if (fsentry)
                 if (-1 == chdir(stringify(*fsentry).c_str()))
                     throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
+
+            if (-1 != stdout_write_fd)
+            {
+                Log::get_instance()->message(ll_debug, lc_no_context, "dup2 " +
+                        stringify(stdout_write_fd) + " 2");
+
+                if (-1 == dup2(stdout_write_fd, 1))
+                    throw RunCommandError("dup2 failed");
+
+                if (-1 != stdout_close_fd)
+                        close(stdout_close_fd);
+            }
+
+            if (-1 != stderr_write_fd)
+            {
+                Log::get_instance()->message(ll_debug, lc_no_context, "dup2 " +
+                        stringify(stderr_write_fd) + " 2");
+
+                if (-1 == dup2(stderr_write_fd, 2))
+                    throw RunCommandError("dup2 failed");
+
+                if (-1 != stderr_close_fd)
+                        close(stderr_close_fd);
+            }
 
             Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd);
             execl("/bin/sh", "sh", "-c", cmd.c_str(), static_cast<char *>(0));
@@ -72,6 +102,20 @@ namespace
 
         throw InternalError(PALUDIS_HERE, "should never be reached");
     }
+}
+
+void
+paludis::set_run_command_stdout_fds(const int w, const int c)
+{
+    stdout_write_fd = w;
+    stdout_close_fd = c;
+}
+
+void
+paludis::set_run_command_stderr_fds(const int w, const int c)
+{
+    stderr_write_fd = w;
+    stderr_close_fd = c;
 }
 
 GetenvError::GetenvError(const std::string & key) throw () :

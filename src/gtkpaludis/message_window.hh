@@ -35,7 +35,8 @@ namespace paludis
             virtual ~MessageWindow();
 
             bool on_log_read(Glib::IOCondition);
-            bool on_cmd_stderr_read(Glib::IOCondition);
+            bool on_command_stdout_read(Glib::IOCondition);
+            bool on_command_stderr_read(Glib::IOCondition);
     };
 }
 
