@@ -25,6 +25,7 @@
 #include <limits>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/pipe.hh>
 #include <streambuf>
 #include <string>
 
@@ -70,15 +71,19 @@ namespace paludis
         private InstantiationPolicy<PStreamInBuf, instantiation_method::NonCopyableTag>
     {
         private:
+            Pipe stdout_pipe;
+
             const std::string _command;
 
             int _exit_status;
+
+            pid_t child;
 
         protected:
             /**
              * Our file descriptor.
              */
-            FILE * fd;
+            int fd;
 
             /**
              * At most how many characters can we put back?
@@ -170,6 +175,10 @@ namespace paludis
         protected pstream_internals::PStreamInBufBase,
         public std::istream
     {
+        private:
+            static int _stderr_fd;
+            static int _stderr_close_fd;
+
         public:
             ///\name Basic operations
             ///\{
@@ -196,6 +205,22 @@ namespace paludis
             {
                 return buf.exit_status();
             }
+
+            /**
+             * Set a file descriptors to use for stderr and close on stderr
+             * (for all PStream instances).
+             */
+            static void set_stderr_fd(const int, const int);
+
+            /**
+             * File descriptor to use for stderr.
+             */
+            static const int & stderr_fd;
+
+            /**
+             * File descriptor to close for stderr.
+             */
+            static const int & stderr_close_fd;
     };
 }
 

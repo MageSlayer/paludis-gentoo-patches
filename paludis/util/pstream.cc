@@ -17,10 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <cstring>
-#include <errno.h>
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
+
+#include <cstring>
+#include <errno.h>
+#include <sys/utsname.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 /** \file
  * Implementation for PStream.
@@ -38,9 +42,6 @@ PStreamError::PStreamError(const std::string & message) throw () :
 PStreamInBuf::int_type
 PStreamInBuf::underflow()
 {
-    if (0 == fd)
-        return EOF;
-
     if (gptr() < egptr())
         return *gptr();
 
@@ -50,7 +51,7 @@ PStreamInBuf::underflow()
     std::memmove(buffer + putback_size - num_putback,
             gptr() - num_putback, num_putback);
 
-    size_t n = fread(buffer + putback_size, 1, buffer_size - putback_size, fd);
+    ssize_t n = read(fd, buffer + putback_size, buffer_size - putback_size);
     if (n <= 0)
         return EOF;
 
@@ -60,16 +61,42 @@ PStreamInBuf::underflow()
     return *gptr();
 }
 
-PStreamInBuf::PStreamInBuf(const std::string & command) :
-    _command(command),
-    fd(popen(command.c_str(), "r"))
+PStreamInBuf::PStreamInBuf(const std::string & cmd) :
+    _command(cmd),
+    child(fork())
 {
-    Log::get_instance()->message(ll_debug, lc_no_context,
-            "popen " + command + " -> " + stringify(fileno(fd)));
+    if (0 == child)
+    {
+        Log::get_instance()->message(ll_debug, lc_no_context, "dup2 " +
+                stringify(stdout_pipe.write_fd()) + " 1");
+        if (-1 == dup2(stdout_pipe.write_fd(), 1))
+            throw PStreamError("dup2 failed");
+        close(stdout_pipe.read_fd());
 
-    if (0 == fd)
-        throw PStreamError("popen('" + _command + "', 'r') failed: " +
-                std::strerror(errno));
+        if (-1 != PStream::stderr_fd)
+        {
+            Log::get_instance()->message(ll_debug, lc_no_context, "dup2 " +
+                    stringify(PStream::stderr_fd) + " 2");
+
+            if (-1 == dup2(PStream::stderr_fd, 2))
+                throw PStreamError("dup2 failed");
+
+            if (-1 != PStream::stderr_close_fd)
+                    close(PStream::stderr_close_fd);
+        }
+
+        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd);
+        execl("/bin/sh", "sh", "-c", cmd.c_str(), static_cast<char *>(0));
+        throw PStreamError("execl /bin/sh -c '" + cmd + "' failed:"
+                + stringify(strerror(errno)));
+    }
+    else if (-1 == child)
+        throw PStreamError("fork failed: " + stringify(strerror(errno)));
+    else
+    {
+        close(stdout_pipe.write_fd());
+        fd = stdout_pipe.read_fd();
+    }
 
     setg(buffer + putback_size, buffer + putback_size, buffer + putback_size);
 }
@@ -78,7 +105,8 @@ PStreamInBuf::~PStreamInBuf()
 {
     if (0 != fd)
     {
-        int fdn = fileno(fd), x = pclose(fd);
+        int fdn(fd), x;
+        waitpid(child, &x, 0);
         Log::get_instance()->message(ll_debug, lc_no_context,
                 "pclose " + stringify(fdn) + " -> " + stringify(x));
     }
@@ -89,11 +117,25 @@ PStreamInBuf::exit_status()
 {
     if (0 != fd)
     {
-        int fdn = fileno(fd);
-        _exit_status = pclose(fd);
+        int fdn(fd);
+        waitpid(child, &_exit_status, 0);
         fd = 0;
         Log::get_instance()->message(ll_debug, lc_no_context,
                 "manual pclose " + stringify(fdn) + " -> " + stringify(_exit_status));
     }
     return _exit_status;
 }
+
+void
+PStream::set_stderr_fd(const int fd, const int fd2)
+{
+    _stderr_fd = fd;
+    _stderr_close_fd = fd2;
+}
+
+int PStream::_stderr_fd(-1);
+const int & PStream::stderr_fd(_stderr_fd);
+
+int PStream::_stderr_close_fd(-1);
+const int & PStream::stderr_close_fd(_stderr_close_fd);
+
