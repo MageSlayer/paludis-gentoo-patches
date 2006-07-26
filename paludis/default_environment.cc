@@ -143,6 +143,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 
     /* check use: package database config */
     if (repo->get_interface<repo_use>())
+    {
         switch (repo->get_interface<repo_use>()->query_use(f, e))
         {
             case use_disabled:
@@ -153,7 +154,12 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
                 return true;
         }
 
-    throw InternalError(PALUDIS_HERE, "bad state");
+        throw InternalError(PALUDIS_HERE, "bad state");
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool
