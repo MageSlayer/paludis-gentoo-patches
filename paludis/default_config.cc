@@ -115,12 +115,13 @@ DefaultConfigError::DefaultConfigError(const std::string & msg) throw () :
 DefaultConfig::DefaultConfig() :
     PrivateImplementationPattern<DefaultConfig>(new Implementation<DefaultConfig>)
 {
-    _imp->config_suffix_can_be_set = false;
-
     Context context("When loading default configuration:");
 
     if (! getenv_with_default("PALUDIS_SKIP_CONFIG", "").empty())
+    {
+        _imp->config_suffix_can_be_set = false;
         return;
+    }
 
     /* indirection */
     std::string root_prefix;
@@ -436,6 +437,8 @@ DefaultConfig::DefaultConfig() :
     }
 
     _imp->bashrc_files = stringify(config_dir / "bashrc");
+
+    _imp->config_suffix_can_be_set = false;
 }
 
 DefaultConfig::~DefaultConfig()
