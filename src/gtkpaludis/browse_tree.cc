@@ -19,6 +19,7 @@
 
 #include "browse_tree.hh"
 #include "information_tree.hh"
+#include "main_window.hh"
 
 #include <gtkmm/treestore.h>
 #include <gtkmm/menu.h>
@@ -305,6 +306,7 @@ namespace paludis
     struct Implementation<BrowseTree> :
         InternalCounted<Implementation<BrowseTree> >
     {
+        MainWindow * const main_window;
         InformationTree * const information_tree;
 
         BrowseTreeColumns columns;
@@ -314,7 +316,8 @@ namespace paludis
 
         pid_t paludis_child;
 
-        Implementation(InformationTree * const i) :
+        Implementation(MainWindow * const m, InformationTree * const i) :
+            main_window(m),
             information_tree(i),
             paludis_child(-1)
         {
@@ -326,8 +329,10 @@ namespace paludis
     };
 }
 
-BrowseTree::BrowseTree(InformationTree * const information_tree) :
-    PrivateImplementationPattern<BrowseTree>(new Implementation<BrowseTree>(information_tree))
+BrowseTree::BrowseTree(MainWindow * const main_window,
+        InformationTree * const information_tree) :
+    PrivateImplementationPattern<BrowseTree>(new Implementation<BrowseTree>(
+                main_window, information_tree))
 {
     _imp->model = Gtk::TreeStore::create(_imp->columns);
     set_model(_imp->model);
@@ -384,6 +389,8 @@ BrowseTree::on_menu_sync()
         Gtk::TreeModel::iterator i(selection->get_selected());
         if (i)
         {
+            _imp->main_window->set_children_sensitive(false);
+
             pid_t child(fork());
             if (0 == child)
             {
@@ -446,6 +453,7 @@ BrowseTree::on_child_process_timer()
                         + " exited with failure code " + stringify(status));
 
             _imp->paludis_child = -1;
+            _imp->main_window->set_children_sensitive(true);
             return false;
     }
 }

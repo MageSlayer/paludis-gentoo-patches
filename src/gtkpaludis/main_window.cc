@@ -65,24 +65,24 @@ namespace paludis
         Gtk::ScrolledWindow messages_window;
         MessageWindow messages;
 
-        Implementation();
+        Implementation(MainWindow * const main_window);
     };
 }
 
-Implementation<MainWindow>::Implementation() :
+Implementation<MainWindow>::Implementation(MainWindow * const main_window) :
     main_container(false, 5),
     search_container(false, 5),
     search_label(" Search: "),
     search_button(Gtk::Stock::FIND),
     information_frame(" Information: "),
     browse_frame(" Browse: "),
-    browse_tree(&information_tree),
+    browse_tree(main_window, &information_tree),
     messages_frame(" Messages: ")
 {
 }
 
 MainWindow::MainWindow() :
-    PrivateImplementationPattern<MainWindow>(new Implementation<MainWindow>)
+    PrivateImplementationPattern<MainWindow>(new Implementation<MainWindow>(this))
 {
     set_title("gtkPaludis " + stringify(PALUDIS_VERSION_MAJOR) + "." +
             stringify(PALUDIS_VERSION_MINOR) + "." +
@@ -126,5 +126,14 @@ MainWindow::MainWindow() :
 
 MainWindow::~MainWindow()
 {
+}
+
+void
+MainWindow::set_children_sensitive(bool value)
+{
+    _imp->browse_tree.set_sensitive(value);
+    _imp->information_tree.set_sensitive(value);
+    _imp->search_box.set_sensitive(value);
+    _imp->search_button.set_sensitive(value);
 }
 

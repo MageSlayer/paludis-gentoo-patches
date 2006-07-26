@@ -32,6 +32,8 @@ namespace paludis
         public:
             MainWindow();
             virtual ~MainWindow();
+
+            void set_children_sensitive(bool value);
     };
 }
 

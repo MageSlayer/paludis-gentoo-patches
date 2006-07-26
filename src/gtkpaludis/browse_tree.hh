@@ -26,13 +26,14 @@
 namespace paludis
 {
     class InformationTree;
+    class MainWindow;
 
     class BrowseTree :
         public Gtk::TreeView,
         private PrivateImplementationPattern<BrowseTree>
     {
         public:
-            BrowseTree(InformationTree * const);
+            BrowseTree(MainWindow * const, InformationTree * const);
             ~BrowseTree();
 
             virtual void on_changed();
