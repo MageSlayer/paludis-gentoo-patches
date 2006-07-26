@@ -19,8 +19,13 @@
 
 #include "browse_tree.hh"
 #include "information_tree.hh"
+
 #include <gtkmm/treestore.h>
+#include <gtkmm/menu.h>
+#include <gtkmm/messagedialog.h>
+
 #include <paludis/default_environment.hh>
+#include <paludis/syncer.hh>
 
 using namespace paludis;
 
@@ -46,6 +51,10 @@ namespace
             virtual ~BrowseTreeDisplayData();
 
             virtual void display(InformationTree * const information_tree) const = 0;
+
+            virtual void sync() const
+            {
+            }
 
             virtual void need_children(
                     Glib::RefPtr<Gtk::TreeStore> model,
@@ -254,6 +263,15 @@ namespace
             {
                 information_tree->show_repository(_r);
             }
+
+            virtual void sync() const
+            {
+                Repository::ConstPointer repo(
+                        DefaultEnvironment::get_instance()->package_database()->fetch_repository(_r));
+                if (repo->get_interface<repo_syncable>())
+                    repo->get_interface<repo_syncable>()->sync();
+            }
+
     };
 }
 
@@ -287,6 +305,8 @@ namespace paludis
 
         BrowseTreeColumns columns;
         Glib::RefPtr<Gtk::TreeStore> model;
+
+        Gtk::Menu popup_menu;
 
         Implementation(InformationTree * const i) :
             information_tree(i)
@@ -322,7 +342,12 @@ BrowseTree::BrowseTree(InformationTree * const information_tree) :
     }
 
     append_column("Item", _imp->columns.col_item);
-    get_selection()->signal_changed().connect(sigc::mem_fun(*this, &BrowseTree::on_treeview_changed));
+    get_selection()->signal_changed().connect(sigc::mem_fun(*this, &BrowseTree::on_changed));
+
+    /* popup menu */
+    _imp->popup_menu.items().push_back(Gtk::Menu_Helpers::MenuElem("_Sync",
+                sigc::mem_fun(*this, &BrowseTree::on_menu_sync)));
+    _imp->popup_menu.accelerate(*this);
 }
 
 BrowseTree::~BrowseTree()
@@ -330,7 +355,7 @@ BrowseTree::~BrowseTree()
 }
 
 void
-BrowseTree::on_treeview_changed()
+BrowseTree::on_changed()
 {
     Gtk::TreeModel::iterator i(get_selection()->get_selected());
     if (i)
@@ -341,5 +366,37 @@ BrowseTree::on_treeview_changed()
         BrowseTreeDisplayData::Pointer(row[_imp->columns.col_data])->display(
                 _imp->information_tree);
     }
+}
+
+void
+BrowseTree::on_menu_sync()
+{
+    Glib::RefPtr<Gtk::TreeView::Selection> selection(get_selection());
+    if (selection)
+    {
+        Gtk::TreeModel::iterator i(selection->get_selected());
+        if (i)
+            try
+            {
+                BrowseTreeDisplayData::Pointer((*i)[_imp->columns.col_data])->sync();
+            }
+            catch (const SyncFailedError & e)
+            {
+                Gtk::MessageDialog dialog("Sync failed", false, Gtk::MESSAGE_ERROR);
+                dialog.set_secondary_text(e.message());
+                dialog.run();
+            }
+    }
+}
+
+bool
+BrowseTree::on_button_press_event(GdkEventButton * event)
+{
+    bool result(TreeView::on_button_press_event(event));
+
+    if (event->type == GDK_BUTTON_PRESS && event->button == 3)
+        _imp->popup_menu.popup(event->button, event->time);
+
+    return result;
 }
 

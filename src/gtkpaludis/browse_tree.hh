@@ -35,7 +35,10 @@ namespace paludis
             BrowseTree(InformationTree * const);
             ~BrowseTree();
 
-            virtual void on_treeview_changed();
+            virtual void on_changed();
+            virtual void on_menu_sync();
+
+            virtual bool on_button_press_event(GdkEventButton *);
     };
 }
 
