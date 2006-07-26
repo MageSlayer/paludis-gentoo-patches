@@ -25,7 +25,11 @@
 #include <gtkmm/messagedialog.h>
 
 #include <paludis/default_environment.hh>
+#include <paludis/util/log.hh>
 #include <paludis/syncer.hh>
+
+#include <sys/types.h>
+#include <sys/wait.h>
 
 using namespace paludis;
 
@@ -308,8 +312,11 @@ namespace paludis
 
         Gtk::Menu popup_menu;
 
+        pid_t paludis_child;
+
         Implementation(InformationTree * const i) :
-            information_tree(i)
+            information_tree(i),
+            paludis_child(-1)
         {
         }
 
@@ -376,16 +383,31 @@ BrowseTree::on_menu_sync()
     {
         Gtk::TreeModel::iterator i(selection->get_selected());
         if (i)
-            try
+        {
+            pid_t child(fork());
+            if (0 == child)
             {
-                BrowseTreeDisplayData::Pointer((*i)[_imp->columns.col_data])->sync();
+                try
+                {
+                    BrowseTreeDisplayData::Pointer((*i)[_imp->columns.col_data])->sync();
+                    _exit(0);
+                }
+                catch (const SyncFailedError & e)
+                {
+                    _exit(1);
+                }
             }
-            catch (const SyncFailedError & e)
+            else if (-1 == child)
+                throw InternalError(PALUDIS_HERE, "fork failed");
+            else
             {
-                Gtk::MessageDialog dialog("Sync failed", false, Gtk::MESSAGE_ERROR);
-                dialog.set_secondary_text(e.message());
-                dialog.run();
+                Log::get_instance()->message(ll_debug, lc_no_context,
+                        "Forked child process " + stringify(child));
+                _imp->paludis_child = child;
+                Glib::signal_timeout().connect(sigc::mem_fun(*this,
+                            &BrowseTree::on_child_process_timer), 50);
             }
+        }
     }
 }
 
@@ -398,5 +420,33 @@ BrowseTree::on_button_press_event(GdkEventButton * event)
         _imp->popup_menu.popup(event->button, event->time);
 
     return result;
+}
+
+bool
+BrowseTree::on_child_process_timer()
+{
+    if (-1 == _imp->paludis_child)
+        return false;
+
+    int status(-1);
+    switch (waitpid(_imp->paludis_child, &status, WNOHANG))
+    {
+        case 0:
+            return true;
+
+        case -1:
+            throw InternalError(PALUDIS_HERE, "bad value -1 from waitpid");
+
+        default:
+            if (0 == status)
+                Log::get_instance()->message(ll_debug, lc_no_context, "child " + stringify(_imp->paludis_child)
+                        + " exited with success");
+            else
+                Log::get_instance()->message(ll_debug, lc_no_context, "child " + stringify(_imp->paludis_child)
+                        + " exited with failure code " + stringify(status));
+
+            _imp->paludis_child = -1;
+            return false;
+    }
 }
 

@@ -39,6 +39,7 @@ namespace paludis
             virtual void on_menu_sync();
 
             virtual bool on_button_press_event(GdkEventButton *);
+            virtual bool on_child_process_timer();
     };
 }
 
