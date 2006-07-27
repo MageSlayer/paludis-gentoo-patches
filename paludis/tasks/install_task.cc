@@ -284,7 +284,15 @@ InstallTask::execute()
         if (! installable_interface)
             throw InternalError(PALUDIS_HERE, "Trying to install from a non-installable repository");
 
-        installable_interface->install(dep->get<dle_name>(), dep->get<dle_version>(), _imp->install_options);
+        try
+        {
+            installable_interface->install(dep->get<dle_name>(), dep->get<dle_version>(), _imp->install_options);
+        }
+        catch (const PackageInstallActionError & e)
+        {
+            _imp->env->perform_hook(Hook("install_fail")("TARGET", cpvr)("MESSAGE", e.message()));
+            throw;
+        }
 
         /* we've fetched / installed one item */
         if (_imp->install_options.get<io_fetchonly>())
@@ -344,7 +352,16 @@ InstallTask::execute()
                     get_interface<repo_uninstallable>());
             if (! uninstall_interface)
                 throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
-            uninstall_interface->uninstall(c->get<pde_name>(), c->get<pde_version>(), _imp->install_options);
+
+            try
+            {
+                uninstall_interface->uninstall(c->get<pde_name>(), c->get<pde_version>(), _imp->install_options);
+            }
+            catch (const PackageUninstallActionError & e)
+            {
+                _imp->env->perform_hook(Hook("uninstall_fail")("TARGET", stringify(*c))("MESSAGE", e.message()));
+                throw;
+            }
 
             on_clean_post(*dep, *c);
             _imp->env->perform_hook(Hook("uninstall_post")("TARGET", stringify(*c)));

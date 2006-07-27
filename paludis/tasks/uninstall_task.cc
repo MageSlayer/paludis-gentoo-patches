@@ -181,7 +181,16 @@ UninstallTask::execute()
                 get_interface<repo_uninstallable>());
         if (! uninstall_interface)
             throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
-        uninstall_interface->uninstall(i->get<pde_name>(), i->get<pde_version>(), _imp->install_options);
+
+        try
+        {
+            uninstall_interface->uninstall(i->get<pde_name>(), i->get<pde_version>(), _imp->install_options);
+        }
+        catch (const PackageUninstallActionError & e)
+        {
+            _imp->env->perform_hook(Hook("uninstall_fail")("TARGET", cpvr)("MESSAGE", e.message()));
+            throw;
+        }
 
         on_uninstall_post(*i);
         _imp->env->perform_hook(Hook("uninstall_post")("TARGET", cpvr));

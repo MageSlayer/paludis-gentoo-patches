@@ -39,6 +39,10 @@ namespace
     {
         int return_code(0);
 
+        p::Context context("When performing sync action for '"
+	     + p::stringify(r->name()) + "': ");
+        p::Environment * const env(p::DefaultEnvironment::get_instance());
+
         std::cout << colour(cl_heading, "Sync " + p::stringify(r->name())) << std::endl;
         try
         {
@@ -56,6 +60,7 @@ namespace
             std::cerr << "  * " << e.backtrace("\n  * ") << e.message() << std::endl;
             std::cerr << std::endl;
             std::cout << "Sync " << r->name() << " failed" << std::endl;
+            env->perform_hook(p::Hook("sync_fail")("TARGET", stringify((*r)->name())));
         }
 
         return return_code;

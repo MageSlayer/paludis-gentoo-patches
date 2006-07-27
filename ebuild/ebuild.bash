@@ -260,14 +260,20 @@ ebuild_main()
             done
             PATH="" ebuild_load_ebuild "${ebuild}"
         fi
-        ebuild_f_${1} || die "${1} failed"
+        if ! ebuild_f_${1} ; then
+            perform_hook ebuild_${action}_fail
+            die "${1} failed"
+        fi
         perform_hook ebuild_${action}_post
     else
         ebuild_load_ebuild "${ebuild}"
         for action in $@ ; do
             export EBUILD_PHASE="${action}"
             perform_hook ebuild_${action}_pre
-            ebuild_f_${action} || die "${action} failed"
+            if ! ebuild_f_${action} ; then
+                perform_hook ebuild_${action}_fail
+                die "${action} failed"
+            fi
             if [[ ${action} == "init" ]] ; then
                 ebuild_load_ebuild "${ebuild}"
             fi
