@@ -34,6 +34,7 @@ export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/selinux/context"
 export SANDBOX_ON="1"
 
 shopt -s expand_aliases
+shopt -s extglob
 
 EBUILD_KILL_PID=$$
 alias die='diefunc "$FUNCNAME" "$LINENO"'
