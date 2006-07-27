@@ -77,8 +77,10 @@ namespace
             << endl;
         cout << "CXXFLAGS:    " << PALUDIS_BUILD_CXXFLAGS << endl;
         cout << "LDFLAGS:     " << PALUDIS_BUILD_LDFLAGS << endl;
-        cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
+        cout << "DATADIR:     " << DATADIR << endl;
+        cout << "LIBDIR:      " << LIBDIR << endl;
         cout << "LIBEXECDIR:  " << LIBEXECDIR << endl;
+        cout << "SYSCONFDIR:  " << SYSCONFDIR << endl;
         cout << "stdlib:      "
 #if defined(__GLIBCXX__)
 #  define XSTRINGIFY(x) #x

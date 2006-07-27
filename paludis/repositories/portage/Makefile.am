@@ -5,10 +5,10 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
-	-DDATADIR=\"$(datadir)\"
+	-DDATADIR=\"$(datadir)\" \
+	-DLIBDIR=\"$(libdir)\"
 
-
-paludis_repositories_libdir = $(libdir)
+paludis_repositories_libdir = $(libdir)/paludis/repositories
 paludis_repositories_lib_LTLIBRARIES = libpaludisportagerepository.la
 paludis_repositories_portage_includedir = $(includedir)/paludis/repositories/portage/
 libpaludisportagerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
@@ -33,7 +33,8 @@ portage_repository_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	libpaludisportagerepository.la \
 	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
 
 portage_repository_TEST_CXXFLAGS = -I$(top_srcdir)
 
@@ -49,5 +50,6 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
+	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	bash $(top_srcdir)/test/run_test.sh
 

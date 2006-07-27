@@ -1,7 +1,10 @@
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
-	-DLIBEXECDIR=\"$(libexecdir)\"
+	-DDATADIR=\"$(datadir)\" \
+	-DLIBEXECDIR=\"$(libexecdir)\" \
+	-DLIBDIR=\"$(libdir)\"
+
 SUBDIRS = .
 
 bin_PROGRAMS = paludis
@@ -19,7 +22,8 @@ man_paludis_SOURCES = \
 
 man_paludis_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
 
 paludis_SOURCES = \
 	applets.hh           applets.cc           \
@@ -37,19 +41,18 @@ paludis_SOURCES = \
 	paludis.cc
 
 paludis_LDADD = \
-	$(top_builddir)/paludis/repositories/nothing/libpaludisnothingrepository.la \
-	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
-	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la \
 	$(top_builddir)/paludis/tasks/libpaludistasks.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_srcdir)/ebuild/`" \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/ebuild/`" \
+	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	SYSCONFDIR="$(sysconfdir)" \
 	bash $(top_srcdir)/test/run_test.sh bash
 

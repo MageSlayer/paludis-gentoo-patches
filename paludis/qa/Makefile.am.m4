@@ -15,7 +15,8 @@ $1_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	libpaludisqa.la \
 	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
@@ -40,6 +41,7 @@ TESTS = testlist
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
+	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh
 

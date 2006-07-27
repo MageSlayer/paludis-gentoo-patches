@@ -15,7 +15,8 @@ $1_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(DYNAMIC_LD_LIBS)
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
@@ -42,7 +43,8 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
-	-DDATADIR=\"$(datadir)\"
+	-DDATADIR=\"$(datadir)\" \
+	-DLIBDIR=\"$(libdir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	hashed_containers.hh.in testscriptlist
 SUBDIRS = digests util . repositories args qa selinux tasks
@@ -55,6 +57,7 @@ TESTS = testlist
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
 	PALUDIS_SKIP_CONFIG="yes" \
+	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh
 

@@ -23,14 +23,12 @@ gtkpaludis_SOURCES = \
 	gtkpaludis.cc
 
 gtkpaludis_LDADD = \
-	$(top_builddir)/paludis/repositories/nothing/libpaludisnothingrepository.la \
-	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
-	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la \
 	$(top_builddir)/paludis/tasks/libpaludistasks.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(DEPS_LIBS)
+	$(DEPS_LIBS) \
+	$(DYNAMIC_LD_LIBS)
 
 INCLUDES = $(DEPS_CFLAGS)
 

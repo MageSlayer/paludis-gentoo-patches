@@ -7,7 +7,7 @@ DEFS= \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DDATADIR=\"$(datadir)\"
 
-paludis_repositories_libdir = $(libdir)
+paludis_repositories_libdir = $(libdir)/paludis/repositories
 paludis_repositories_lib_LTLIBRARIES = libpaludisnothingrepository.la
 libpaludisnothingrepository_la_SOURCES = nothing_repository.cc nothing_repository.hh
 libpaludisnothingrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
