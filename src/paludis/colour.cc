@@ -29,3 +29,14 @@ bool use_colour()
 
     return result;
 }
+
+bool use_xterm_titles()
+{
+    static bool result(
+            (0 != paludis::getenv_with_default("TERM", "").compare(0, 4, "dumb")) &&
+            (0 != paludis::getenv_with_default("TERM", "").compare(0, 5, "linux")));
+
+    return result;
+}
+
+

@@ -76,6 +76,7 @@ enum Colour
 };
 
 bool use_colour() PALUDIS_ATTRIBUTE((pure));
+bool use_xterm_titles() PALUDIS_ATTRIBUTE((pure));
 
 template <typename T_>
 std::string colour(Colour colour, const T_ & s)
@@ -93,7 +94,7 @@ std::string colour(Colour colour, const T_ & s)
 template <typename T_>
 std::string xterm_title(const T_ & s)
 {
-    if (CommandLine::get_instance()->a_no_color.specified() || ! use_colour())
+    if (CommandLine::get_instance()->a_no_color.specified() || ! use_colour() || ! use_xterm_titles())
         return "";
     else
         return "\x1b]2;" + paludis::stringify(s) + "\x07";
