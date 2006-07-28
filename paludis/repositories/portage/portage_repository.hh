@@ -157,9 +157,6 @@ namespace paludis
             ///\name Information about PortageRepository
             ///\{
 
-            FSEntry news_skip_file() const;
-            FSEntry news_unread_file() const;
-
             std::string profile_variable(const std::string &) const;
 
             typedef libwrapiter::ForwardIterator<PortageRepository, std::pair<

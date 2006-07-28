@@ -44,11 +44,18 @@ namespace paludis
         const PortageRepository * const portage_repository;
         const PortageRepositoryParams params;
 
+        const FSEntry skip_file;
+        const FSEntry unread_file;
+
         Implementation(const Environment * const e, const PortageRepository * const p,
                 const PortageRepositoryParams & k) :
             environment(e),
             portage_repository(p),
-            params(k)
+            params(k),
+            skip_file(params.get<prpk_root>() / "var" / "lib" / "paludis" / "news" /
+                    ("news-" + stringify(portage_repository->name()) + ".skip")),
+            unread_file(params.get<prpk_root>() / "var" / "lib" / "paludis" / "news" /
+                    ("news-" + stringify(portage_repository->name()) + ".unread"))
         {
         }
     };
@@ -76,11 +83,11 @@ PortageRepositoryNews::update_news() const
 
     std::set<std::string> skip;
 
-    if (_imp->portage_repository->news_skip_file().is_regular_file())
+    if (_imp->skip_file.is_regular_file())
     {
         Context local_context("When handling news skip file '" + stringify(
-                _imp->portage_repository->news_skip_file()) + "':");
-        LineConfigFile s(_imp->portage_repository->news_skip_file());
+                _imp->skip_file) + "':");
+        LineConfigFile s(_imp->skip_file);
         std::copy(s.begin(), s.end(), std::inserter(skip, skip.end()));
     }
 
@@ -143,20 +150,20 @@ PortageRepositoryNews::update_news() const
 
             if (show)
             {
-                std::ofstream s(stringify(_imp->portage_repository->news_skip_file()).c_str(),
+                std::ofstream s(stringify(_imp->skip_file).c_str(),
                         std::ios::out | std::ios::app);
                 if (! s)
                     Log::get_instance()->message(ll_warning, lc_no_context,
                             "Cannot append to news skip file '"
-                            + stringify(_imp->portage_repository->news_skip_file()) +
+                            + stringify(_imp->skip_file) +
                             "', skipping news item '" + stringify(*d) + "'");
 
-                std::ofstream t(stringify(_imp->portage_repository->news_unread_file()).c_str(),
+                std::ofstream t(stringify(_imp->unread_file).c_str(),
                         std::ios::out | std::ios::app);
                 if (! t)
                     Log::get_instance()->message(ll_warning, lc_no_context,
                             "Cannot append to unread file '"
-                            + stringify(_imp->portage_repository->news_unread_file()) +
+                            + stringify(_imp->unread_file) +
                             "', skipping news item '" + stringify(*d) + "'");
 
                 if (s && t)

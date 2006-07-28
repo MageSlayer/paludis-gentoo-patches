@@ -1453,20 +1453,6 @@ PortageRepository::info(bool verbose) const
     return result;
 }
 
-FSEntry
-PortageRepository::news_skip_file() const
-{
-    return FSEntry(_imp->root / "var" / "lib" / "paludis" / "news" /
-            ("news-" + stringify(name()) + ".skip"));
-}
-
-FSEntry
-PortageRepository::news_unread_file() const
-{
-    return FSEntry(_imp->root / "var" / "lib" / "paludis" / "news" /
-            ("news-" + stringify(name()) + ".unread"));
-}
-
 std::string
 PortageRepository::profile_variable(const std::string & s) const
 {
