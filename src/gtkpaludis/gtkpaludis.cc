@@ -43,6 +43,50 @@ namespace
     {
     };
 
+    struct GtkInitFailed : Exception
+    {
+        GtkInitFailed() :
+            Exception ("Couldn't initialize gtk")
+        {
+        }
+    };
+
+    class TryMain : public Gtk::Main
+    {
+        static bool _gtkmm_initialized;
+
+    public:
+        TryMain(int& argc, char**& argv) :
+            Gtk::Main()
+        {
+            _gtkmm_initialized = gtk_init_check(&argc, &argv);
+        }
+
+        bool initialized() const
+        {
+            return _gtkmm_initialized;
+        }
+
+        static void run(Gtk::Window& window)
+        {
+            if (! _gtkmm_initialized)
+                throw GtkInitFailed();
+    
+            Gtk::Main::run(window);
+        }
+
+        static void run()
+        {
+            if (! _gtkmm_initialized)
+                throw GtkInitFailed();
+    
+            Gtk::Main::run();
+        }
+    };
+
+
+    bool TryMain::_gtkmm_initialized;
+
     void display_version()
     {
         cout << "gtkpaludis " << PALUDIS_VERSION_MAJOR << "."
@@ -86,8 +130,10 @@ namespace
 int
 main(int argc, char * argv[])
 {
+
     Context context("In main program:");
-    Gtk::Main gui_kit(argc, argv);
+
+    TryMain gui_kit(argc, argv);
 
     try
     {
@@ -138,8 +184,12 @@ main(int argc, char * argv[])
 
         {
             Context context_local("When displaying main window:");
+
+            if (! gui_kit.initialized())
+                throw GtkInitFailed();
+    
             MainWindow main_window;
-            Gtk::Main::run(main_window);
+            TryMain::run(main_window);
         }
     }
     catch (const DoVersion &)
@@ -174,26 +224,65 @@ main(int argc, char * argv[])
             return EXIT_FAILURE;
         }
     }
+    catch (GtkInitFailed & e)
+    {
+        cout << endl;
+        cerr << "Unhandled exception:" << endl
+            << "  * " << e.backtrace("\n  * ")
+            << e.message() << " (" << e.what() << ")\n" << endl;
+
+        cerr << "Try adjust DISPLAY environment variable or pass --display option\n" << endl;
+
+        return EXIT_FAILURE;
+    }
     catch (const Exception & e)
     {
-        Gtk::MessageDialog dialog("Unhandled exception", false, Gtk::MESSAGE_ERROR);
-        dialog.set_secondary_text(
-                "- " + e.backtrace("\n- ") + e.message() + " (" + e.what() + ")");
-        dialog.run();
+        if (gui_kit.initialized())
+        {
+            Gtk::Main::init_gtkmm_internals();
+            Gtk::MessageDialog dialog("Unhandled exception", false, Gtk::MESSAGE_ERROR);
+            dialog.set_secondary_text(
+                    "- " + e.backtrace("\n- ") + e.message() + " (" + e.what() + ")");
+            dialog.run();
+        }
+        else
+        {
+            cout << endl;
+            cerr << "Unhandled exception:" << endl
+                << "  * " << e.backtrace("\n  * ")
+                << e.message() << " (" << e.what() << ")" << endl;
+        }
         return EXIT_FAILURE;
     }
     catch (const std::exception & e)
     {
-        Gtk::MessageDialog dialog("Unhandled exception", false, Gtk::MESSAGE_ERROR);
-        dialog.set_secondary_text("Unhandled exception (" + stringify(e.what()) + ")");
-        dialog.run();
+        if (gui_kit.initialized())
+        {
+            Gtk::MessageDialog dialog("Unhandled exception", false, Gtk::MESSAGE_ERROR);
+            dialog.set_secondary_text("Unhandled exception (" + stringify(e.what()) + ")");
+            dialog.run();
+        }
+        else
+        {
+            cout << endl;
+            cerr << "Unhandled exception:" << endl
+                << "  * " << e.what() << endl;
+        }
         return EXIT_FAILURE;
     }
     catch (...)
     {
-        Gtk::MessageDialog dialog("Unhandled exception", false, Gtk::MESSAGE_ERROR);
-        dialog.set_secondary_text("Unhandled exception (unknown type)");
-        dialog.run();
+        if (gui_kit.initialized())
+        {
+            Gtk::MessageDialog dialog("Unhandled exception", false, Gtk::MESSAGE_ERROR);
+            dialog.set_secondary_text("Unhandled exception (unknown type)");
+            dialog.run();
+        }
+        else
+        {        cout << endl;
+                 cerr << "Unhandled exception:" << endl
+                     << "  * Unknown exception type. Ouch..." << endl;
+        }
         return EXIT_FAILURE;
     }
 
