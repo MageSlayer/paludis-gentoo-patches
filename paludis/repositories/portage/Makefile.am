@@ -18,7 +18,9 @@ paludis_repositories_portage_include_HEADERS = \
 	portage_repository_profile.hh \
 	portage_repository_exceptions.hh \
 	portage_repository_news.hh \
-	portage_repository_sets.hh
+	portage_repository_sets.hh \
+	portage_repository_metadata.hh \
+	portage_repository_ebuild_metadata.hh
 
 libpaludisportagerepository_la_SOURCES = \
 	portage_repository.cc \
@@ -26,6 +28,8 @@ libpaludisportagerepository_la_SOURCES = \
 	portage_repository_exceptions.cc \
 	portage_repository_news.cc \
 	portage_repository_sets.cc \
+	portage_repository_metadata.cc \
+	portage_repository_ebuild_metadata.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
 TESTS = portage_repository_TEST

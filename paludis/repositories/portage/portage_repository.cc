@@ -25,6 +25,7 @@
 #include <paludis/repositories/portage/portage_repository_news.hh>
 #include <paludis/repositories/portage/portage_repository_sets.hh>
 #include <paludis/repositories/portage/portage_repository_exceptions.hh>
+#include <paludis/repositories/portage/portage_repository_ebuild_metadata.hh>
 
 #include <paludis/config_file.hh>
 #include <paludis/dep_atom.hh>
@@ -208,6 +209,9 @@ namespace paludis
         /// Our sets handler.
         mutable PortageRepositorySets::Pointer sets_ptr;
 
+        /// Our metadata handler.
+        mutable PortageRepositoryMetadata::Pointer metadata_ptr;
+
         /// Our virtuals
         mutable VirtualsMap our_virtuals;
 
@@ -238,6 +242,7 @@ namespace paludis
         profile_ptr(0),
         news_ptr(0),
         sets_ptr(0),
+        metadata_ptr(new PortageRepositoryEbuildMetadata(cache, location)),
         has_our_virtuals(false)
     {
     }
@@ -428,7 +433,7 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
             if (! d->is_directory())
                 continue;
             if (DirIterator() == std::find_if(DirIterator(*d), DirIterator(),
-                        IsFileWithExtension(".ebuild")))
+                        IsFileWithExtension(_imp->metadata_ptr->file_extension())))
                 continue;
 
             try
@@ -539,13 +544,14 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
     {
         for (DirIterator e(path), e_end ; e != e_end ; ++e)
         {
-            if (! IsFileWithExtension(stringify(n.get<qpn_package>()) + "-", ".ebuild")(*e))
+            if (! IsFileWithExtension(stringify(n.get<qpn_package>()) + "-",
+                        _imp->metadata_ptr->file_extension())(*e))
                 continue;
 
             try
             {
                 v->insert(strip_leading_string(
-                            strip_trailing_string(e->basename(), ".ebuild"),
+                            strip_trailing_string(e->basename(), _imp->metadata_ptr->file_extension()),
                             stringify(n.get<qpn_package>()) + "-"));
             }
             catch (const NameError &)
@@ -613,118 +619,7 @@ PortageRepository::do_version_metadata(
                     PortageDepParser::parse_depend));
     }
 
-    VersionMetadata::Pointer result(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
-
-    FSEntry cache_file(_imp->cache);
-    cache_file /= stringify(q.get<qpn_category>());
-    cache_file /= stringify(q.get<qpn_package>()) + "-" + stringify(v);
-
-    bool ok(false);
-    VirtualsMap::iterator vi(_imp->our_virtuals.end());
-    if (cache_file.is_regular_file())
-    {
-        std::ifstream cache(stringify(cache_file).c_str());
-        std::string line;
-
-        if (cache)
-        {
-            std::getline(cache, line); result->get<vm_deps>().set<vmd_build_depend_string>(line);
-            std::getline(cache, line); result->get<vm_deps>().set<vmd_run_depend_string>(line);
-            std::getline(cache, line); result->set<vm_slot>(SlotName(line));
-            std::getline(cache, line); result->get_ebuild_interface()->set<evm_src_uri>(line);
-            std::getline(cache, line); result->get_ebuild_interface()->set<evm_restrict>(line);
-            std::getline(cache, line); result->set<vm_homepage>(line);
-            std::getline(cache, line); result->set<vm_license>(line);
-            std::getline(cache, line); result->set<vm_description>(line);
-            std::getline(cache, line); result->get_ebuild_interface()->set<evm_keywords>(line);
-            std::getline(cache, line); result->get_ebuild_interface()->set<evm_inherited>(line);
-            std::getline(cache, line); result->get_ebuild_interface()->set<evm_iuse>(line);
-            std::getline(cache, line);
-            std::getline(cache, line); result->get<vm_deps>().set<vmd_post_depend_string>(line);
-            std::getline(cache, line); result->get_ebuild_interface()->set<evm_provide>(line);
-            std::getline(cache, line); result->set<vm_eapi>(line);
-            result->get_ebuild_interface()->set<evm_virtual>("");
-
-            // check mtimes
-            time_t cache_time(cache_file.mtime());
-            ok = true;
-
-            if ((_imp->location / stringify(q.get<qpn_category>()) /
-                        stringify(q.get<qpn_package>()) /
-                        (stringify(q.get<qpn_package>()) + "-" + stringify(v)
-                            + ".ebuild")).mtime() > cache_time)
-                ok = false;
-            else
-            {
-                FSEntry timestamp(_imp->location / "metadata" / "timestamp");
-                if (timestamp.exists())
-                    cache_time = timestamp.mtime();
-
-                std::list<std::string> inherits;
-                WhitespaceTokeniser::get_instance()->tokenise(
-                        stringify(result->get_ebuild_interface()->get<evm_inherited>()),
-                        std::back_inserter(inherits));
-                for (FSEntryCollection::Iterator e(_imp->eclassdirs->begin()),
-                        e_end(_imp->eclassdirs->end()) ; e != e_end ; ++e)
-                    for (std::list<std::string>::const_iterator i(inherits.begin()),
-                            i_end(inherits.end()) ; i != i_end ; ++i)
-                    {
-                        if ((*e / (*i + ".eclass")).exists())
-                            if (((*e / (*i + ".eclass"))).mtime() > cache_time)
-                                ok = false;
-                    }
-            }
-
-            if (! ok)
-                Log::get_instance()->message(ll_warning, lc_no_context, "Stale cache file at '"
-                        + stringify(cache_file) + "'");
-        }
-        else
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Couldn't read the cache file at '"
-                    + stringify(cache_file) + "'");
-    }
-    else if (_imp->our_virtuals.end() != ((vi = _imp->our_virtuals.find(q))))
-    {
-        VersionMetadata::ConstPointer m(version_metadata(vi->second->package(), v));
-        result->set<vm_slot>(m->get<vm_slot>());
-        result->get_ebuild_interface()->set<evm_keywords>(m->get_ebuild_interface()->get<evm_keywords>());
-        result->set<vm_eapi>(m->get<vm_eapi>());
-        result->get_ebuild_interface()->set<evm_virtual>(stringify(vi->second->package()));
-        result->get<vm_deps>().set<vmd_build_depend_string>(
-                "=" + stringify(vi->second->package()) + "-" + stringify(v));
-        ok = true;
-    }
-
-    if (! ok)
-    {
-        if (_imp->cache.basename() != "empty")
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "No usable cache entry for '" + stringify(q) +
-                    "-" + stringify(v) + "' in '" + stringify(name()) + "'");
-
-        PackageDatabaseEntry e(q, v, name());
-        EbuildMetadataCommand cmd(EbuildCommandParams::create((
-                        param<ecpk_environment>(_imp->env),
-                        param<ecpk_db_entry>(&e),
-                        param<ecpk_ebuild_dir>(_imp->location / stringify(q.get<qpn_category>()) /
-                            stringify(q.get<qpn_package>())),
-                        param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
-                            stringify(q.get<qpn_package>()) / "files"),
-                        param<ecpk_eclassdirs>(_imp->eclassdirs),
-                        param<ecpk_portdir>(_imp->location),
-                        param<ecpk_distdir>(_imp->distdir),
-                        param<ecpk_buildroot>(_imp->buildroot)
-                        )));
-        if (! cmd())
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "No usable metadata for '" + stringify(q)
-                    + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
-
-        if (0 == ((result = cmd.metadata())))
-            throw InternalError(PALUDIS_HERE, "cmd.metadata() is zero pointer???");
-    }
-
+    VersionMetadata::Pointer result(_imp->metadata_ptr->generate_version_metadata(q, v));
     _imp->metadata.insert(std::make_pair(std::make_pair(q, v), result));
     return result;
 }
