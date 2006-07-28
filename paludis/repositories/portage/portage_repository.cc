@@ -22,6 +22,8 @@
 
 #include <paludis/repositories/portage/portage_repository.hh>
 #include <paludis/repositories/portage/portage_repository_profile.hh>
+#include <paludis/repositories/portage/portage_repository_news.hh>
+#include <paludis/repositories/portage/portage_repository_sets.hh>
 #include <paludis/repositories/portage/portage_repository_exceptions.hh>
 
 #include <paludis/config_file.hh>
@@ -197,8 +199,14 @@ namespace paludis
         /// Load profiles, if we haven't already.
         inline void need_profiles() const;
 
-        /// Our profile.
+        /// Our profile handler.
         mutable PortageRepositoryProfile::Pointer profile_ptr;
+
+        /// Our news handler.
+        mutable PortageRepositoryNews::Pointer news_ptr;
+
+        /// Our sets handler.
+        mutable PortageRepositorySets::Pointer sets_ptr;
 
         /// Our virtuals
         mutable VirtualsMap our_virtuals;
@@ -228,6 +236,8 @@ namespace paludis
         has_arch_list(false),
         has_mirrors(false),
         profile_ptr(0),
+        news_ptr(0),
+        sets_ptr(0),
         has_our_virtuals(false)
     {
     }
@@ -1384,316 +1394,19 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     install_cmd();
 }
 
-namespace
-{
-    inline
-    PackageDepAtom::Pointer make_atom(const PackageDatabaseEntry & e)
-    {
-        QualifiedPackageName n(e.get<pde_name>());
-        VersionSpec v(e.get<pde_version>());
-
-        std::string s("=" + stringify(n) + "-" + stringify(v));
-        return PackageDepAtom::Pointer(new PackageDepAtom(s));
-    }
-}
-
-PackageDatabaseEntryCollection::Iterator
-PortageRepository::find_best(PackageDatabaseEntryCollection & c, const PackageDatabaseEntry & e) const
-{
-    Context local("When finding best update for '" + stringify(e.get<pde_name>()) + "-" +
-            stringify(e.get<pde_version>()) + "':");
-    // Find an entry in c that matches e best. e is not in c.
-    QualifiedPackageName n(e.get<pde_name>());
-    SlotName s(_imp->env->package_database()->fetch_repository(e.get<pde_repository>())->version_metadata(
-                e.get<pde_name>(), e.get<pde_version>())->get<vm_slot>());
-    PackageDatabaseEntryCollection::Iterator i(c.begin()), i_end(c.end()), i_best(c.end());
-    for ( ; i != i_end; ++i)
-    {
-        if (n != i->get<pde_name>())
-            continue;
-        if (s != _imp->env->package_database()->fetch_repository(i->get<pde_repository>())->version_metadata(
-                    i->get<pde_name>(), i->get<pde_version>())->get<vm_slot>())
-            continue;
-
-        i_best = i;
-    }
-
-    return i_best;
-}
-
-AdvisoryVisitor::AdvisoryVisitor(const Environment * const env, const CompositeDepAtom & a) :
-    _env(env),
-    _a(a)
-{
-    Context c("When flattening the AdvisoryFile line:");
-    std::for_each(a.begin(), a.end(), accept_visitor(this));
-    if (_atoms.size() == 2)
-    {
-        VersionOperatorValue v1(_atoms[0]->version_operator().value()),
-                v2(_atoms[1]->version_operator().value());
-
-        if ((v1 == vo_equal) || (v2 == vo_equal))
-            throw AdvisoryFileError("Broken line: Forbidden 'equal' atom in range");
-    }
-}
-
-void
-AdvisoryVisitor::visit(const AllDepAtom * a)
-{
-    std::for_each(a->begin(), a->end(), accept_visitor(this));
-}
-
-void
-AdvisoryVisitor::visit(const AnyDepAtom *)
-{
-    throw AdvisoryFileError("Unexpected AnyDepAtom in line");
-}
-
-void
-AdvisoryVisitor::visit(const UseDepAtom * a)
-{
-    if (_env->query_use(a->flag(), 0) ^ a->inverse())
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-}
-
-void
-AdvisoryVisitor::visit(const PackageDepAtom * a)
-{
-    _atoms.push_back(a);
-}
-
-void
-AdvisoryVisitor::visit(const PlainTextDepAtom *)
-{
-}
-
-void
-AdvisoryVisitor::visit(const BlockDepAtom *)
-{
-}
-
-DepAtom::Pointer
-PortageRepository::do_security_set(const PackageSetOptions & o) const
-{
-    Context c("When building security package set:");
-    AllDepAtom::Pointer security_packages(new AllDepAtom);
-
-    bool list_affected_only(o.get<pso_list_affected_only>());
-    InstallState affected_state(list_affected_only ? is_either : is_installed_only);
-
-    if (!_imp->securitydir.is_directory())
-        return DepAtom::Pointer(new AllDepAtom);
-
-    std::list<FSEntry> advisories;
-    std::copy(DirIterator(_imp->securitydir), DirIterator(),
-        filter_inserter(std::back_inserter(advisories),
-        IsFileWithExtension("advisory-", ".conf")));
-
-    std::list<FSEntry>::const_iterator f(advisories.begin()),
-        f_end(advisories.end());
-
-    std::set<std::pair<PackageDatabaseEntry, std::string> > affected;
-    PackageDatabaseEntryCollection::Concrete unaffected;
-    std::map<std::string, std::string> advisory_map;
-
-    for ( ; f != f_end; ++f)
-    {
-        Context c("When parsing security advisory '" + stringify(*f) + "':");
-
-        try
-        {
-            AdvisoryFile advisory(*f);
-            std::string advisory_id(advisory.get("Id"));
-            advisory_map[advisory_id] = advisory.get("Title");
-
-
-            AdvisoryFile::LineIterator a(advisory.begin_affected()), a_end(advisory.end_affected());
-            for ( ; a != a_end ; ++a)
-            {
-                Context c("When parsing line 'Affected: " + *a + "':");
-
-                CompositeDepAtom::ConstPointer line(PortageDepParser::parse(*a));
-                AdvisoryVisitor atoms(_imp->env, *line);
-
-                if ((0 == atoms.size()) || (2 < atoms.size()))
-                {
-                    continue;
-                }
-
-                bool is_range(2 == atoms.size());
-
-                PackageDatabaseEntryCollection::ConstPointer affected_collection1(
-                        _imp->db->query(*atoms.at(0), affected_state));
-                PackageDatabaseEntryCollection::ConstPointer affected_collection2(
-                        new PackageDatabaseEntryCollection::Concrete);
-                PackageDatabaseEntryCollection::Iterator p(affected_collection1->begin()),
-                    p_end(affected_collection1->end());
-
-                if (is_range)
-                    affected_collection2 = _imp->db->query(*atoms.at(1), affected_state);
-
-                for ( ; p != p_end ; ++p)
-                {
-                    if ((affected.end() != affected.find(std::make_pair(*p, advisory_id))))
-                        continue;
-                    if ((! is_range) || (affected_collection2->end() != affected_collection2->find(*p)))
-                        affected.insert(std::make_pair(*p, advisory_id));
-                }
-            }
-
-            AdvisoryFile::LineIterator u(advisory.begin_unaffected()), u_end(advisory.end_unaffected());
-            for ( ; u != u_end ; ++u)
-            {
-                Context c("When parsing line 'Unaffected: " + *u + "':");
-
-                CompositeDepAtom::ConstPointer line(PortageDepParser::parse(*u));
-                AdvisoryVisitor atoms(_imp->env, *line);
-
-                if ((0 == atoms.size()) || (2 < atoms.size()))
-                {
-                    continue;
-                }
-
-                bool is_range(2 == atoms.size());
-
-                PackageDatabaseEntryCollection::ConstPointer unaffected_collection1(_imp->db->query(
-                            *atoms.at(0), is_either));
-                PackageDatabaseEntryCollection::ConstPointer unaffected_collection2(
-                        new PackageDatabaseEntryCollection::Concrete);
-                PackageDatabaseEntryCollection::Iterator p(unaffected_collection1->begin()),
-                    p_end(unaffected_collection1->end());
-
-                if (is_range)
-                    unaffected_collection2 = _imp->db->query(*atoms.at(1), is_either);
-
-                for ( ; p != p_end ; ++p)
-                {
-                    if ((! is_range) || (unaffected_collection2->end() != unaffected_collection2->find(*p)))
-                    {
-                        unaffected.insert(*p);
-                        std::set<std::pair<PackageDatabaseEntry, std::string> >::iterator
-                                a(affected.find(std::make_pair(*p, advisory_id)));
-                        if (a != affected.end())
-                            affected.erase(a);
-                    }
-                }
-            }
-        }
-        catch (const AdvisoryFileError & e)
-        {
-            Log::get_instance()->message(ll_warning, lc_context,
-                    "Malformed advisory file '" + stringify(*f) + "': " + e.message());
-        }
-        catch (const InternalError & e)
-        {
-            throw;
-        }
-        catch (const Exception & e)
-        {
-            Log::get_instance()->message(ll_warning, lc_context,
-                    "Exception caught while parsing advisory '" + stringify(*f) +
-                    "': " + e.message());
-        }
-
-    }
-
-    std::set<std::pair<PackageDatabaseEntry, std::string> >::const_iterator i(affected.begin()), i_end(affected.end());
-    if (list_affected_only)
-    {
-        for ( ; i != i_end ; ++i)
-        {
-            Context c("When creating adding vulnerable package '" + stringify(i->first) + "':");
-
-            PackageDepAtom::Pointer p(make_atom(i->first));
-            p->set_tag(GLSADepTag::Pointer(new GLSADepTag(i->second, advisory_map[i->second])));
-            security_packages->add_child(p);
-        }
-    }
-    else
-    {
-        for ( ; i != i_end ; ++i)
-        {
-            Context c("When finding best update for package '" + stringify(i->first) + "', affected by '" + i->second + "':");
-
-            PackageDatabaseEntryCollection::Iterator best = find_best(unaffected, i->first);
-            if (best == unaffected.end())
-                throw AllMaskedError("No best update available for package '" + stringify(i->first) + "':");
-
-            PackageDepAtom::Pointer p(make_atom(*best));
-            p->set_tag(GLSADepTag::Pointer(new GLSADepTag(i->second, advisory_map[i->second])));
-            security_packages->add_child(p);
-        }
-    }
-
-    return security_packages;
-}
-
 DepAtom::Pointer
 PortageRepository::do_package_set(const std::string & s, const PackageSetOptions & o) const
 {
-    if ("system" == s)
+    if (! _imp->sets_ptr)
+        _imp->sets_ptr.assign(new PortageRepositorySets(_imp->env, this));
+
+    if (s == "system")
     {
         _imp->need_profiles();
         return _imp->profile_ptr->system_packages();
     }
-    else if ("security" == s)
-        return do_security_set(o);
-    else if ((_imp->setsdir / (s + ".conf")).exists())
-    {
-        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s));
 
-        FSEntry ff(_imp->setsdir / (s + ".conf"));
-        Context context("When loading package set '" + s + "' from '" + stringify(ff) + "':");
-
-        AllDepAtom::Pointer result(new AllDepAtom);
-        LineConfigFile f(ff);
-        for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
-                line != line_end ; ++line)
-        {
-            std::vector<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-            if (tokens.empty())
-                continue;
-
-            if (1 == tokens.size())
-            {
-                Log::get_instance()->message(ll_warning, lc_context,
-                        "Line '" + *line + "' in set file '"
-                        + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(0)));
-                atom->set_tag(tag);
-                result->add_child(atom);
-            }
-            else if ("*" == tokens.at(0))
-            {
-                PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(1)));
-                atom->set_tag(tag);
-                result->add_child(atom);
-            }
-            else if ("?" == tokens.at(0))
-            {
-                PackageDepAtom::Pointer p(new PackageDepAtom(tokens.at(1)));
-                p->set_tag(tag);
-                if (! _imp->env->package_database()->query(
-                            PackageDepAtom::Pointer(new PackageDepAtom(p->package())),
-                            is_installed_only)->empty())
-                    result->add_child(p);
-            }
-            else
-                Log::get_instance()->message(ll_warning, lc_context,
-                        "Line '" + *line + "' in set file '"
-                        + stringify(ff) + "' does not start with '*' or '?' token, skipping");
-
-            if (tokens.size() > 2)
-                Log::get_instance()->message(ll_warning, lc_context,
-                        "Line '" + *line + "' in set file '"
-                        + stringify(ff) + "' has trailing garbage");
-        }
-
-        return result;
-    }
-    else
-        return DepAtom::Pointer(0);
+    return _imp->sets_ptr->package_set(s, o);
 }
 
 bool
@@ -1737,113 +1450,10 @@ PortageRepository::end_provide_map() const
 void
 PortageRepository::update_news() const
 {
-    Context context("When updating news for repository '" + stringify(name()) + "':");
+    if (! _imp->news_ptr)
+        _imp->news_ptr.assign(new PortageRepositoryNews(_imp->env, this));
 
-    if (! _imp->newsdir.is_directory())
-        return;
-
-    std::set<std::string> skip;
-    FSEntry
-        skip_file(_imp->root / "var" / "lib" / "paludis" / "news" /
-                ("news-" + stringify(name()) + ".skip")),
-        unread_file(_imp->root / "var" / "lib" / "paludis" / "news" /
-                ("news-" + stringify(name()) + ".unread"));
-
-    if (skip_file.is_regular_file())
-    {
-        Context local_context("When handling news skip file '" + stringify(skip_file) + "':");
-        LineConfigFile s(skip_file);
-        std::copy(s.begin(), s.end(), std::inserter(skip, skip.end()));
-    }
-
-    for (DirIterator d(_imp->newsdir), d_end ; d != d_end ; ++d)
-    {
-        Context local_context("When handling news entry '" + stringify(*d) + "':");
-
-        if (! d->is_directory())
-            continue;
-        if (! (*d / (d->basename() + ".en.txt")).is_regular_file())
-            continue;
-
-        if (skip.end() != skip.find(d->basename()))
-            continue;
-
-        try
-        {
-            NewsFile news(*d / (d->basename() + ".en.txt"));
-            bool show(true);
-
-            if (news.begin_display_if_installed() != news.end_display_if_installed())
-            {
-                bool local_show(false);
-                for (NewsFile::DisplayIfInstalledIterator i(news.begin_display_if_installed()),
-                        i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
-                    if (! _imp->env->package_database()->query(PackageDepAtom::Pointer(
-                                    new PackageDepAtom(*i)), is_installed_only)->empty())
-                        local_show = true;
-                show &= local_show;
-            }
-
-            if (news.begin_display_if_keyword() != news.end_display_if_keyword())
-            {
-                _imp->need_profiles();
-
-                bool local_show(false);
-                for (NewsFile::DisplayIfKeywordIterator i(news.begin_display_if_keyword()),
-                        i_end(news.end_display_if_keyword()) ; i != i_end ; ++i)
-                    if (_imp->profile_ptr->environment_variable("ARCH") == *i)
-                        local_show = true;
-                show &= local_show;
-            }
-
-            if (news.begin_display_if_profile() != news.end_display_if_profile())
-            {
-                bool local_show(false);
-                for (FSEntryCollection::Iterator p(_imp->profile_locations->begin()),
-                        p_end(_imp->profile_locations->end()) ; p != p_end ; ++p)
-                {
-                    std::string profile(strip_leading_string(strip_trailing_string(
-                                strip_leading_string(stringify(p->realpath()),
-                                    stringify(p->realpath())), "/"), "/"));
-                    Log::get_instance()->message(ll_debug, lc_no_context,
-                            "Profile path is '" + profile + "'");
-                    for (NewsFile::DisplayIfProfileIterator i(news.begin_display_if_profile()),
-                            i_end(news.end_display_if_profile()) ; i != i_end ; ++i)
-                        if (profile == *i)
-                            local_show = true;
-                }
-                show &= local_show;
-            }
-
-            if (show)
-            {
-                std::ofstream s(stringify(skip_file).c_str(), std::ios::out | std::ios::app);
-                if (! s)
-                    Log::get_instance()->message(ll_warning, lc_no_context,
-                            "Cannot append to news skip file '"
-                            + stringify(skip_file) + "', skipping news item '" + stringify(*d) + "'");
-
-                std::ofstream t(stringify(unread_file).c_str(), std::ios::out | std::ios::app);
-                if (! t)
-                    Log::get_instance()->message(ll_warning, lc_no_context,
-                            "Cannot append to unread file '"
-                            + stringify(unread_file) + "', skipping news item '" + stringify(*d) + "'");
-
-                if (s && t)
-                {
-                    s << d->basename() << std::endl;
-                    t << d->basename() << std::endl;
-                }
-            }
-        }
-        catch (const ConfigFileError & e)
-        {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Skipping news item '"
-                    + stringify(*d) + "' because of exception '" + e.message() + "' ("
-                    + e.what() + ")");
-        }
-    }
+    _imp->news_ptr->update_news();
 }
 
 std::string
@@ -1951,5 +1561,51 @@ PortageRepository::info(bool verbose) const
                 "' because info_pkgs is not usable");
 
     return result;
+}
+
+FSEntry
+PortageRepository::news_dir() const
+{
+    return _imp->newsdir;
+}
+
+FSEntry
+PortageRepository::news_skip_file() const
+{
+    return FSEntry(_imp->root / "var" / "lib" / "paludis" / "news" /
+            ("news-" + stringify(name()) + ".skip"));
+}
+
+FSEntry
+PortageRepository::news_unread_file() const
+{
+    return FSEntry(_imp->root / "var" / "lib" / "paludis" / "news" /
+            ("news-" + stringify(name()) + ".unread"));
+}
+
+std::string
+PortageRepository::profile_variable(const std::string & s) const
+{
+    _imp->need_profiles();
+
+    return _imp->profile_ptr->environment_variable(s);
+}
+
+FSEntryCollection::ConstPointer
+PortageRepository::profile_locations() const
+{
+    return _imp->profile_locations;
+}
+
+FSEntry
+PortageRepository::sets_dir() const
+{
+    return _imp->setsdir;
+}
+
+FSEntry
+PortageRepository::security_dir() const
+{
+    return _imp->securitydir;
 }
 

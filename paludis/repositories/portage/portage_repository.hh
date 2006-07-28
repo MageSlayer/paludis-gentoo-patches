@@ -35,6 +35,8 @@
 namespace paludis
 {
     class PackageDatabase;
+    class PortageRepositoryProfile;
+    class PortageRepositoryNews;
 
     /**
      * Keys for PortageRepositoryParams.
@@ -118,7 +120,6 @@ namespace paludis
             void need_virtual_names() const;
             PackageDatabaseEntryCollection::Iterator find_best(PackageDatabaseEntryCollection & c,
                     const PackageDatabaseEntry & e) const;
-            DepAtom::Pointer do_security_set(const PackageSetOptions & o) const;
 
         protected:
             /**
@@ -210,66 +211,22 @@ namespace paludis
 
             typedef CountedPtr<PortageRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const PortageRepository, count_policy::InternalCountTag> ConstPointer;
-    };
 
-    /**
-     * Class to convert AdvisoryFile lines to PackageDepAtom(s).
-     */
-    class AdvisoryVisitor :
-        private InstantiationPolicy<AdvisoryVisitor, instantiation_method::NonCopyableTag>,
-        public DepAtomVisitorTypes::ConstVisitor
-    {
-        private:
-            const Environment * const _env;
+            ///\name Information about PortageRepository
+            ///\{
 
-            mutable const CompositeDepAtom & _a;
+            FSEntry news_dir() const;
+            FSEntry news_skip_file() const;
+            FSEntry news_unread_file() const;
 
-            mutable std::vector<const PackageDepAtom *> _atoms;
+            std::string profile_variable(const std::string &) const;
 
-        protected:
-            ///\name Visit methods
-            ///{
-            void visit(const AllDepAtom *);
-            void visit(const AnyDepAtom *) PALUDIS_ATTRIBUTE((noreturn));
-            void visit(const UseDepAtom *);
-            void visit(const PlainTextDepAtom *);
-            void visit(const PackageDepAtom *);
-            void visit(const BlockDepAtom *);
-            ///}
+            FSEntryCollection::ConstPointer profile_locations() const;
 
-        public:
-            /**
-             * Constructor.
-             */
-            AdvisoryVisitor(const Environment * const env, const CompositeDepAtom & a);
+            FSEntry sets_dir() const;
+            FSEntry security_dir() const;
 
-            /**
-             * Destructor.
-             */
-            ~AdvisoryVisitor()
-            {
-            }
-
-            /**
-             * Iterate over our dep atoms.
-             */
-            typedef std::vector<const PackageDepAtom *>::iterator Iterator;
-
-            /**
-             * Grab element by index.
-             */
-            const PackageDepAtom * at(std::vector<const PackageDepAtom *>::size_type n) const
-            {
-                return _atoms[n];
-            }
-
-            /**
-             * Return the number of atoms.
-             */
-            std::vector<const PackageDepAtom *>::size_type size() const
-            {
-                return _atoms.size();
-            }
+            ///\}
     };
 
     /**

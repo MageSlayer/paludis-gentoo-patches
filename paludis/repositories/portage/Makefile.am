@@ -16,12 +16,16 @@ libpaludisportagerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VE
 paludis_repositories_portage_include_HEADERS = \
 	portage_repository.hh \
 	portage_repository_profile.hh \
-	portage_repository_exceptions.hh
+	portage_repository_exceptions.hh \
+	portage_repository_news.hh \
+	portage_repository_sets.hh
 
 libpaludisportagerepository_la_SOURCES = \
 	portage_repository.cc \
 	portage_repository_profile.cc \
 	portage_repository_exceptions.cc \
+	portage_repository_news.cc \
+	portage_repository_sets.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
 TESTS = portage_repository_TEST
