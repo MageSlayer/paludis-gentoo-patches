@@ -374,15 +374,18 @@ InstallTask::execute()
     }
 
     /* update world */
-    if (! _imp->preserve_world)
+    if (! _imp->had_set_targets)
     {
-        on_update_world_pre();
-        WorldCallbacks w(this);
-        _imp->env->add_appropriate_to_world(_imp->targets, &w);
-        on_update_world_post();
+        if (! _imp->preserve_world)
+        {
+            on_update_world_pre();
+            WorldCallbacks w(this);
+            _imp->env->add_appropriate_to_world(_imp->targets, &w);
+            on_update_world_post();
+        }
+        else
+            on_preserve_world();
     }
-    else
-        on_preserve_world();
 
     /* we've fetched / installed the entire list */
     if (_imp->install_options.get<io_fetchonly>())
