@@ -204,7 +204,7 @@ Usually you won't have any <code>nothing</code> repositories. They are used as
 a convenience when certain locations have to be synced at <code>--sync</code>
 time; they do not contain any packages.
 
-The following keys are available for <code>format = vdb</code>:
+The following keys are available for <code>format = nothing</code>:
 
 - <code>location</code> (mandatory).
 - <code>sync</code> (default: empty), as per <code>format = portage</code>.
