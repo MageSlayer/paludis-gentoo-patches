@@ -50,7 +50,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            PortageRepositoryNews(const Environment * const, const PortageRepository * const);
+            PortageRepositoryNews(const Environment * const, const PortageRepository * const,
+                    const PortageRepositoryParams &);
             ~PortageRepositoryNews();
 
             ///\}

@@ -53,7 +53,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            PortageRepositorySets(const Environment * const env, const PortageRepository * const);
+            PortageRepositorySets(const Environment * const env, const PortageRepository * const,
+                    const PortageRepositoryParams &);
             ~PortageRepositorySets();
 
             ///\}

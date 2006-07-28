@@ -24,6 +24,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/smart_record.hh>
+#include <paludis/repositories/portage/portage_repository_params.hh>
 #include <string>
 
 /** \file
@@ -37,65 +38,6 @@ namespace paludis
     class PackageDatabase;
     class PortageRepositoryProfile;
     class PortageRepositoryNews;
-
-    /**
-     * Keys for PortageRepositoryParams.
-     *
-     * \see PortageRepositoryParams
-     * \ingroup grpportagerepository
-     */
-    enum PortageRepositoryParamsKeys
-    {
-        prpk_environment,
-        prpk_package_database,
-        prpk_location,
-        prpk_profiles,
-        prpk_cache,
-        prpk_distdir,
-        prpk_eclassdirs,
-        prpk_setsdir,
-        prpk_securitydir,
-        prpk_newsdir,
-        prpk_sync,
-        prpk_sync_exclude,
-        prpk_root,
-        prpk_buildroot,
-        last_prpk
-    };
-
-    /**
-     * Tag for PortageRepositoryParams.
-     *
-     * \see PortageRepositoryParams
-     * \ingroup grpportagerepository
-     */
-    struct PortageRepositoryParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<PortageRepositoryParamsKeys, last_prpk>,
-        SmartRecordKey<prpk_environment, const Environment *>,
-        SmartRecordKey<prpk_package_database, const PackageDatabase *>,
-        SmartRecordKey<prpk_location, const FSEntry>,
-        SmartRecordKey<prpk_profiles, FSEntryCollection::Pointer>,
-        SmartRecordKey<prpk_cache, const FSEntry>,
-        SmartRecordKey<prpk_distdir, const FSEntry>,
-        SmartRecordKey<prpk_eclassdirs, FSEntryCollection::Pointer>,
-        SmartRecordKey<prpk_setsdir, const FSEntry>,
-        SmartRecordKey<prpk_securitydir, const FSEntry>,
-        SmartRecordKey<prpk_newsdir, const FSEntry>,
-        SmartRecordKey<prpk_sync, const std::string>,
-        SmartRecordKey<prpk_sync_exclude, const std::string>,
-        SmartRecordKey<prpk_root, const FSEntry>,
-        SmartRecordKey<prpk_buildroot, const FSEntry>
-    {
-    };
-
-    /**
-     * Constructor parameters for PortageRepository.
-     *
-     * \see PortageRepository
-     * \ingroup grpportagerepository
-     */
-    typedef MakeSmartRecord<PortageRepositoryParamsTag>::Type PortageRepositoryParams;
 
     /**
      * A PortageRepository is a Repository that handles the layout used by
@@ -215,16 +157,16 @@ namespace paludis
             ///\name Information about PortageRepository
             ///\{
 
-            FSEntry news_dir() const;
             FSEntry news_skip_file() const;
             FSEntry news_unread_file() const;
 
             std::string profile_variable(const std::string &) const;
 
-            FSEntryCollection::ConstPointer profile_locations() const;
+            typedef libwrapiter::ForwardIterator<PortageRepository, std::pair<
+                const QualifiedPackageName, PackageDepAtom::ConstPointer> > OurVirtualsIterator;
 
-            FSEntry sets_dir() const;
-            FSEntry security_dir() const;
+            OurVirtualsIterator end_our_virtuals() const;
+            OurVirtualsIterator find_our_virtuals(const QualifiedPackageName &) const;
 
             ///\}
     };

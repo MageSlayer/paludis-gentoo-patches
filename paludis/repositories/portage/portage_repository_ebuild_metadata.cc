@@ -18,8 +18,11 @@
  */
 
 #include <paludis/repositories/portage/portage_repository_ebuild_metadata.hh>
+#include <paludis/repositories/portage/portage_repository.hh>
 
+#include <paludis/ebuild.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/version_metadata.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
@@ -35,22 +38,25 @@ namespace paludis
     struct Implementation<PortageRepositoryEbuildMetadata> :
         InternalCounted<Implementation<PortageRepositoryEbuildMetadata> >
     {
-        FSEntry cache_dir;
-        FSEntry ebuild_dir;
+        const Environment * const environment;
+        PortageRepository * const portage_repository;
+        const PortageRepositoryParams params;
 
-        Implementation(const FSEntry & c, const FSEntry & e) :
-            cache_dir(c),
-            ebuild_dir(e)
+        Implementation(const Environment * const e, PortageRepository * const p,
+                const PortageRepositoryParams & k) :
+            environment(e),
+            portage_repository(p),
+            params(k)
         {
         }
     };
 }
 
-PortageRepositoryEbuildMetadata::PortageRepositoryEbuildMetadata(const FSEntry & c,
-        const FSEntry & e) :
+PortageRepositoryEbuildMetadata::PortageRepositoryEbuildMetadata(
+        const Environment * const e, PortageRepository * const p, const PortageRepositoryParams & k) :
     PortageRepositoryMetadata(".ebuild"),
     PrivateImplementationPattern<PortageRepositoryEbuildMetadata>(new
-            Implementation<PortageRepositoryEbuildMetadata>(c, e))
+            Implementation<PortageRepositoryEbuildMetadata>(e, p, k))
 {
 }
 
@@ -64,12 +70,12 @@ PortageRepositoryEbuildMetadata::generate_version_metadata(const QualifiedPackag
 {
     VersionMetadata::Pointer result(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
 
-    FSEntry cache_file(_imp->cache_dir);
+    FSEntry cache_file(_imp->params.get<prpk_cache>());
     cache_file /= stringify(q.get<qpn_category>());
     cache_file /= stringify(q.get<qpn_package>()) + "-" + stringify(v);
 
     bool ok(false);
-    VirtualsMap::iterator vi(_imp->our_virtuals.end());
+    PortageRepository::OurVirtualsIterator vi(_imp->portage_repository->end_our_virtuals());
     if (cache_file.is_regular_file())
     {
         std::ifstream cache(stringify(cache_file).c_str());
@@ -98,14 +104,14 @@ PortageRepositoryEbuildMetadata::generate_version_metadata(const QualifiedPackag
             time_t cache_time(cache_file.mtime());
             ok = true;
 
-            if ((_imp->ebuild_dir / stringify(q.get<qpn_category>()) /
+            if ((_imp->params.get<prpk_location>() / stringify(q.get<qpn_category>()) /
                         stringify(q.get<qpn_package>()) /
                         (stringify(q.get<qpn_package>()) + "-" + stringify(v)
                             + ".ebuild")).mtime() > cache_time)
                 ok = false;
             else
             {
-                FSEntry timestamp(_imp->ebuild_dir / "metadata" / "timestamp");
+                FSEntry timestamp(_imp->params.get<prpk_location>() / "metadata" / "timestamp");
                 if (timestamp.exists())
                     cache_time = timestamp.mtime();
 
@@ -113,8 +119,8 @@ PortageRepositoryEbuildMetadata::generate_version_metadata(const QualifiedPackag
                 WhitespaceTokeniser::get_instance()->tokenise(
                         stringify(result->get_ebuild_interface()->get<evm_inherited>()),
                         std::back_inserter(inherits));
-                for (FSEntryCollection::Iterator e(_imp->eclassdirs->begin()),
-                        e_end(_imp->eclassdirs->end()) ; e != e_end ; ++e)
+                for (FSEntryCollection::Iterator e(_imp->params.get<prpk_eclassdirs>()->begin()),
+                        e_end(_imp->params.get<prpk_eclassdirs>()->end()) ; e != e_end ; ++e)
                     for (std::list<std::string>::const_iterator i(inherits.begin()),
                             i_end(inherits.end()) ; i != i_end ; ++i)
                     {
@@ -133,9 +139,11 @@ PortageRepositoryEbuildMetadata::generate_version_metadata(const QualifiedPackag
                     "Couldn't read the cache file at '"
                     + stringify(cache_file) + "'");
     }
-    else if (_imp->our_virtuals.end() != ((vi = _imp->our_virtuals.find(q))))
+    else if (_imp->portage_repository->end_our_virtuals() !=
+            ((vi = _imp->portage_repository->find_our_virtuals(q))))
     {
-        VersionMetadata::ConstPointer m(version_metadata(vi->second->package(), v));
+        VersionMetadata::ConstPointer m(_imp->portage_repository->version_metadata(
+                    vi->second->package(), v));
         result->set<vm_slot>(m->get<vm_slot>());
         result->get_ebuild_interface()->set<evm_keywords>(m->get_ebuild_interface()->get<evm_keywords>());
         result->set<vm_eapi>(m->get<vm_eapi>());
@@ -147,28 +155,28 @@ PortageRepositoryEbuildMetadata::generate_version_metadata(const QualifiedPackag
 
     if (! ok)
     {
-        if (_imp->cache.basename() != "empty")
+        if (_imp->params.get<prpk_cache>().basename() != "empty")
             Log::get_instance()->message(ll_warning, lc_no_context,
                     "No usable cache entry for '" + stringify(q) +
-                    "-" + stringify(v) + "' in '" + stringify(name()) + "'");
+                    "-" + stringify(v) + "' in '" + stringify(_imp->portage_repository->name()) + "'");
 
-        PackageDatabaseEntry e(q, v, name());
+        PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
         EbuildMetadataCommand cmd(EbuildCommandParams::create((
-                        param<ecpk_environment>(_imp->env),
+                        param<ecpk_environment>(_imp->environment),
                         param<ecpk_db_entry>(&e),
-                        param<ecpk_ebuild_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        param<ecpk_ebuild_dir>(_imp->params.get<prpk_location>() / stringify(q.get<qpn_category>()) /
                             stringify(q.get<qpn_package>())),
-                        param<ecpk_files_dir>(_imp->location / stringify(q.get<qpn_category>()) /
+                        param<ecpk_files_dir>(_imp->params.get<prpk_location>() / stringify(q.get<qpn_category>()) /
                             stringify(q.get<qpn_package>()) / "files"),
-                        param<ecpk_eclassdirs>(_imp->eclassdirs),
-                        param<ecpk_portdir>(_imp->location),
-                        param<ecpk_distdir>(_imp->distdir),
-                        param<ecpk_buildroot>(_imp->buildroot)
+                        param<ecpk_eclassdirs>(_imp->params.get<prpk_eclassdirs>()),
+                        param<ecpk_portdir>(_imp->params.get<prpk_location>()),
+                        param<ecpk_distdir>(_imp->params.get<prpk_distdir>()),
+                        param<ecpk_buildroot>(_imp->params.get<prpk_buildroot>())
                         )));
         if (! cmd())
             Log::get_instance()->message(ll_warning, lc_no_context,
                     "No usable metadata for '" + stringify(q)
-                    + "-" + stringify(v) + "' in '" + stringify(name()) + "'");
+                    + "-" + stringify(v) + "' in '" + stringify(_imp->portage_repository->name()) + "'");
 
         if (0 == ((result = cmd.metadata())))
             throw InternalError(PALUDIS_HERE, "cmd.metadata() is zero pointer???");

@@ -157,17 +157,21 @@ namespace paludis
     {
         const Environment * const environment;
         const PortageRepository * const portage_repository;
+        const PortageRepositoryParams params;
 
-        Implementation(const Environment * const e, const PortageRepository * const p) :
+        Implementation(const Environment * const e, const PortageRepository * const p,
+                const PortageRepositoryParams & k) :
             environment(e),
-            portage_repository(p)
+            portage_repository(p),
+            params(k)
         {
         }
     };
 }
 
-PortageRepositorySets::PortageRepositorySets(const Environment * const e, const PortageRepository * const p) :
-    PrivateImplementationPattern<PortageRepositorySets>(new Implementation<PortageRepositorySets>(e, p))
+PortageRepositorySets::PortageRepositorySets(const Environment * const e, const PortageRepository * const p,
+        const PortageRepositoryParams & k) :
+    PrivateImplementationPattern<PortageRepositorySets>(new Implementation<PortageRepositorySets>(e, p, k))
 {
 }
 
@@ -183,11 +187,11 @@ PortageRepositorySets::package_set(const std::string & s, const PackageSetOption
         throw InternalError(PALUDIS_HERE, "system set should've been handled by PortageRepository");
     else if ("security" == s)
         return security_set(o);
-    else if ((_imp->portage_repository->sets_dir() / (s + ".conf")).exists())
+    else if ((_imp->params.get<prpk_setsdir>() / (s + ".conf")).exists())
     {
         GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s));
 
-        FSEntry ff(_imp->portage_repository->sets_dir() / (s + ".conf"));
+        FSEntry ff(_imp->params.get<prpk_setsdir>() / (s + ".conf"));
         Context context("When loading package set '" + s + "' from '" + stringify(ff) + "':");
 
         AllDepAtom::Pointer result(new AllDepAtom);
@@ -289,11 +293,11 @@ PortageRepositorySets::security_set(const PackageSetOptions & o) const
     bool list_affected_only(o.get<pso_list_affected_only>());
     InstallState affected_state(list_affected_only ? is_either : is_installed_only);
 
-    if (!_imp->portage_repository->security_dir().is_directory())
+    if (!_imp->params.get<prpk_securitydir>().is_directory())
         return DepAtom::Pointer(new AllDepAtom);
 
     std::list<FSEntry> advisories;
-    std::copy(DirIterator(_imp->portage_repository->security_dir()), DirIterator(),
+    std::copy(DirIterator(_imp->params.get<prpk_securitydir>()), DirIterator(),
         filter_inserter(std::back_inserter(advisories),
         IsFileWithExtension("advisory-", ".conf")));
 

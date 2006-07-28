@@ -186,7 +186,7 @@ namespace paludis
         mutable MirrorMap mirrors;
 
         /// Constructor.
-        Implementation(const PortageRepositoryParams &);
+        Implementation(PortageRepository * const, const PortageRepositoryParams &);
 
         /// Destructor.
         ~Implementation();
@@ -219,7 +219,8 @@ namespace paludis
         bool has_our_virtuals;
     };
 
-    Implementation<PortageRepository>::Implementation(const PortageRepositoryParams & p) :
+    Implementation<PortageRepository>::Implementation(PortageRepository * const repo,
+            const PortageRepositoryParams & p) :
         db(p.get<prpk_package_database>()),
         env(p.get<prpk_environment>()),
         location(p.get<prpk_location>()),
@@ -240,9 +241,9 @@ namespace paludis
         has_arch_list(false),
         has_mirrors(false),
         profile_ptr(0),
-        news_ptr(0),
-        sets_ptr(0),
-        metadata_ptr(new PortageRepositoryEbuildMetadata(cache, location)),
+        news_ptr(new PortageRepositoryNews(env, repo, p)),
+        sets_ptr(new PortageRepositorySets(env, repo, p)),
+        metadata_ptr(new PortageRepositoryEbuildMetadata(env, repo, p)),
         has_our_virtuals(false)
     {
     }
@@ -293,7 +294,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
                     param<repo_world>(static_cast<WorldInterface *>(0)),
                     param<repo_environment_variable>(this)
                     ))),
-    PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(p))
+    PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
 {
     // the info_vars and info_pkgs info is only added on demand, since it's
     // fairly slow to calculate.
@@ -1292,9 +1293,6 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 DepAtom::Pointer
 PortageRepository::do_package_set(const std::string & s, const PackageSetOptions & o) const
 {
-    if (! _imp->sets_ptr)
-        _imp->sets_ptr.assign(new PortageRepositorySets(_imp->env, this));
-
     if (s == "system")
     {
         _imp->need_profiles();
@@ -1345,9 +1343,6 @@ PortageRepository::end_provide_map() const
 void
 PortageRepository::update_news() const
 {
-    if (! _imp->news_ptr)
-        _imp->news_ptr.assign(new PortageRepositoryNews(_imp->env, this));
-
     _imp->news_ptr->update_news();
 }
 
@@ -1459,12 +1454,6 @@ PortageRepository::info(bool verbose) const
 }
 
 FSEntry
-PortageRepository::news_dir() const
-{
-    return _imp->newsdir;
-}
-
-FSEntry
 PortageRepository::news_skip_file() const
 {
     return FSEntry(_imp->root / "var" / "lib" / "paludis" / "news" /
@@ -1486,21 +1475,17 @@ PortageRepository::profile_variable(const std::string & s) const
     return _imp->profile_ptr->environment_variable(s);
 }
 
-FSEntryCollection::ConstPointer
-PortageRepository::profile_locations() const
+PortageRepository::OurVirtualsIterator
+PortageRepository::end_our_virtuals() const
 {
-    return _imp->profile_locations;
+    need_virtual_names();
+    return OurVirtualsIterator(_imp->our_virtuals.end());
 }
 
-FSEntry
-PortageRepository::sets_dir() const
+PortageRepository::OurVirtualsIterator
+PortageRepository::find_our_virtuals(const QualifiedPackageName & q) const
 {
-    return _imp->setsdir;
-}
-
-FSEntry
-PortageRepository::security_dir() const
-{
-    return _imp->securitydir;
+    need_virtual_names();
+    return OurVirtualsIterator(_imp->our_virtuals.find(q));
 }
 

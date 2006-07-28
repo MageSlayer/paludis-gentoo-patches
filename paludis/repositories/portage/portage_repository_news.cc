@@ -42,17 +42,21 @@ namespace paludis
     {
         const Environment * const environment;
         const PortageRepository * const portage_repository;
+        const PortageRepositoryParams params;
 
-        Implementation(const Environment * const e, const PortageRepository * const p) :
+        Implementation(const Environment * const e, const PortageRepository * const p,
+                const PortageRepositoryParams & k) :
             environment(e),
-            portage_repository(p)
+            portage_repository(p),
+            params(k)
         {
         }
     };
 }
 
-PortageRepositoryNews::PortageRepositoryNews(const Environment * const e, const PortageRepository * const p) :
-    PrivateImplementationPattern<PortageRepositoryNews>(new Implementation<PortageRepositoryNews>(e, p))
+PortageRepositoryNews::PortageRepositoryNews(const Environment * const e, const PortageRepository * const p,
+        const PortageRepositoryParams & k) :
+    PrivateImplementationPattern<PortageRepositoryNews>(new Implementation<PortageRepositoryNews>(e, p, k))
 {
 }
 
@@ -64,10 +68,10 @@ void
 PortageRepositoryNews::update_news() const
 {
     Context context("When updating news at location '" +
-            stringify(_imp->portage_repository->news_dir()) + "' for repository '" +
+            stringify(_imp->params.get<prpk_newsdir>()) + "' for repository '" +
             stringify(_imp->portage_repository->name()) + "':");
 
-    if (! _imp->portage_repository->news_dir().is_directory())
+    if (! _imp->params.get<prpk_newsdir>().is_directory())
         return;
 
     std::set<std::string> skip;
@@ -80,7 +84,7 @@ PortageRepositoryNews::update_news() const
         std::copy(s.begin(), s.end(), std::inserter(skip, skip.end()));
     }
 
-    for (DirIterator d(_imp->portage_repository->news_dir()), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.get<prpk_newsdir>()), d_end ; d != d_end ; ++d)
     {
         Context local_context("When handling news entry '" + stringify(*d) + "':");
 
@@ -121,7 +125,7 @@ PortageRepositoryNews::update_news() const
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
                 bool local_show(false);
-                FSEntryCollection::ConstPointer c(_imp->portage_repository->profile_locations());
+                FSEntryCollection::ConstPointer c(_imp->params.get<prpk_profiles>());
                 for (FSEntryCollection::Iterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(

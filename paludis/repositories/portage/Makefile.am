@@ -18,6 +18,7 @@ paludis_repositories_portage_include_HEADERS = \
 	portage_repository_profile.hh \
 	portage_repository_exceptions.hh \
 	portage_repository_news.hh \
+	portage_repository_params.hh \
 	portage_repository_sets.hh \
 	portage_repository_metadata.hh \
 	portage_repository_ebuild_metadata.hh

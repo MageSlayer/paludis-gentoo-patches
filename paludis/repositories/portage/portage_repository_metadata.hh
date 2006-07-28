@@ -39,7 +39,7 @@ namespace paludis
         public InternalCounted<PortageRepositoryMetadata>
     {
         private:
-            const std::string & _ext;
+            const std::string _ext;
 
         protected:
             PortageRepositoryMetadata(const std::string & ext);

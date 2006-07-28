@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_EBUILD_METADATA_HH 1
 
 #include <paludis/repositories/portage/portage_repository_metadata.hh>
+#include <paludis/repositories/portage/portage_repository_params.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
@@ -32,13 +33,16 @@
 namespace paludis
 {
     class FSEntry;
+    class PortageRepository;
 
     class PortageRepositoryEbuildMetadata :
         public PortageRepositoryMetadata,
         private PrivateImplementationPattern<PortageRepositoryEbuildMetadata>
     {
         public:
-            PortageRepositoryEbuildMetadata(const FSEntry & cache_dir, const FSEntry & ebuild_dir);
+            PortageRepositoryEbuildMetadata(const Environment * const,
+                    PortageRepository * const portage_repository,
+                    const PortageRepositoryParams &);
 
             virtual ~PortageRepositoryEbuildMetadata();
 
