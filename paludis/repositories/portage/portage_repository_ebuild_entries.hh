@@ -49,6 +49,10 @@ namespace paludis
             virtual VersionMetadata::Pointer generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
+            virtual std::string get_environment_variable(const QualifiedPackageName &,
+                    const VersionSpec &, const std::string & var,
+                    PortageRepositoryProfile::ConstPointer) const;
+
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &, PortageRepositoryProfile::ConstPointer) const;
     };

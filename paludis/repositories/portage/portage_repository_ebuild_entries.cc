@@ -526,3 +526,31 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
     install_cmd();
 }
 
+std::string
+PortageRepositoryEbuildEntries::get_environment_variable(const QualifiedPackageName & q,
+        const VersionSpec & v, const std::string & var,
+        PortageRepositoryProfile::ConstPointer) const
+{
+    PackageDatabaseEntry for_package(q, v, _imp->portage_repository->name());
+
+    EbuildVariableCommand cmd(EbuildCommandParams::create((
+                    param<ecpk_environment>(_imp->params.get<prpk_environment>()),
+                    param<ecpk_db_entry>(&for_package),
+                    param<ecpk_ebuild_dir>(_imp->params.get<prpk_location>() / stringify(q.get<qpn_category>()) /
+                        stringify(q.get<qpn_package>())),
+                    param<ecpk_files_dir>(_imp->params.get<prpk_location>() / stringify(q.get<qpn_category>()) /
+                        stringify(q.get<qpn_package>()) / "files"),
+                    param<ecpk_eclassdirs>(_imp->params.get<prpk_eclassdirs>()),
+                    param<ecpk_portdir>(_imp->params.get<prpk_location>()),
+                    param<ecpk_distdir>(_imp->params.get<prpk_distdir>()),
+                    param<ecpk_buildroot>(_imp->params.get<prpk_buildroot>())
+                    )),
+            var);
+
+    if (! cmd())
+        throw EnvironmentVariableActionError("Couldn't get environment variable '" +
+                stringify(var) + "' for package '" + stringify(for_package) + "'");
+
+    return cmd.result();
+}
+
