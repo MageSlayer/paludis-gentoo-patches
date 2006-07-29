@@ -554,3 +554,10 @@ PortageRepositoryEbuildEntries::get_environment_variable(const QualifiedPackageN
     return cmd.result();
 }
 
+PortageRepositoryEbuildEntries::Pointer
+PortageRepositoryEbuildEntries::make_portage_repository_ebuild_entries(
+        const Environment * const e, PortageRepository * const r, const PortageRepositoryParams & p)
+{
+    return Pointer(new PortageRepositoryEbuildEntries(e, r, p));
+}
+

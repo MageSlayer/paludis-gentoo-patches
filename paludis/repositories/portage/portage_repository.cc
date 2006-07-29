@@ -25,12 +25,11 @@
 #include <paludis/repositories/portage/portage_repository_news.hh>
 #include <paludis/repositories/portage/portage_repository_sets.hh>
 #include <paludis/repositories/portage/portage_repository_exceptions.hh>
-#include <paludis/repositories/portage/portage_repository_ebuild_entries.hh>
+#include <paludis/repositories/portage/portage_repository_entries.hh>
 
 #include <paludis/config_file.hh>
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
-#include <paludis/ebuild.hh>
 #include <paludis/environment.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
@@ -191,7 +190,8 @@ namespace paludis
         profile_ptr(0),
         news_ptr(new PortageRepositoryNews(params.get<prpk_environment>(), repo, p)),
         sets_ptr(new PortageRepositorySets(params.get<prpk_environment>(), repo, p)),
-        entries_ptr(new PortageRepositoryEbuildEntries(params.get<prpk_environment>(), repo, p)),
+        entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
+                    params.get<prpk_entry_format>())(params.get<prpk_environment>(), repo, p)),
         has_our_virtuals(false)
     {
     }
@@ -760,6 +760,7 @@ PortageRepository::make_portage_repository(
         buildroot = "/var/tmp/paludis";
 
     return CountedPtr<Repository>(new PortageRepository(PortageRepositoryParams::create((
+                        param<prpk_entry_format>("ebuild"),
                         param<prpk_environment>(env),
                         param<prpk_package_database>(db),
                         param<prpk_location>(location),

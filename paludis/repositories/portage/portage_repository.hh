@@ -173,6 +173,8 @@ namespace paludis
 
     /**
      * Register PortageRepository.
+     *
+     * \ingroup grpportagerepository
      */
     static const RepositoryMaker::RegisterMaker register_portage_repository(
             "portage", &PortageRepository::make_portage_repository);

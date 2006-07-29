@@ -40,6 +40,10 @@ namespace paludis
         private PrivateImplementationPattern<PortageRepositoryEbuildEntries>
     {
         public:
+            static PortageRepositoryEbuildEntries::Pointer
+                make_portage_repository_ebuild_entries(const Environment * const,
+                        PortageRepository * const, const PortageRepositoryParams &);
+
             PortageRepositoryEbuildEntries(const Environment * const,
                     PortageRepository * const portage_repository,
                     const PortageRepositoryParams &);
@@ -56,6 +60,16 @@ namespace paludis
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &, PortageRepositoryProfile::ConstPointer) const;
     };
+
+    /**
+     * Register PortageRepositoryEbuildEntries.
+     *
+     * \ingroup grpportagerepository
+     */
+    static const PortageRepositoryEntriesMaker::RegisterMaker register_portage_repository_ebuild_entries(
+            "ebuild", &PortageRepositoryEbuildEntries::make_portage_repository_ebuild_entries);
+
+
 }
 
 #endif

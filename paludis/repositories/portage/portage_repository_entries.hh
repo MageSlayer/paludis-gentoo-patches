@@ -26,7 +26,9 @@
 #include <paludis/version_metadata.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/virtual_constructor.hh>
 #include <paludis/repositories/portage/portage_repository_profile.hh>
+#include <paludis/repositories/portage/portage_repository_params.hh>
 #include <string>
 
 /** \file
@@ -37,6 +39,9 @@
 
 namespace paludis
 {
+    class PortageRepository;
+    class Environment;
+
     class PortageRepositoryEntries :
         public InternalCounted<PortageRepositoryEntries>
     {
@@ -64,6 +69,33 @@ namespace paludis
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &, PortageRepositoryProfile::ConstPointer) const = 0;
     };
+
+    /**
+     * Thrown if a repository of the specified type does not exist.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grprepository
+     */
+    class NoSuchPortageRepositoryEntriesType : public ConfigurationError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            NoSuchPortageRepositoryEntriesType(const std::string & format) throw ();
+    };
+
+    /**
+     * Virtual constructor for PortageRepositoryEntries.
+     *
+     * \ingroup grprepository
+     */
+    typedef VirtualConstructor<std::string,
+            PortageRepositoryEntries::Pointer (*) (const Environment * const, PortageRepository * const,
+                    const PortageRepositoryParams &),
+            virtual_constructor_not_found::ThrowException<NoSuchPortageRepositoryEntriesType> >
+                PortageRepositoryEntriesMaker;
+
 }
 
 #endif

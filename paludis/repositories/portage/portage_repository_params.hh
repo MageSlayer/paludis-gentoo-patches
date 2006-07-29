@@ -42,6 +42,7 @@ namespace paludis
      */
     enum PortageRepositoryParamsKeys
     {
+        prpk_entry_format,
         prpk_environment,
         prpk_package_database,
         prpk_location,
@@ -68,6 +69,7 @@ namespace paludis
     struct PortageRepositoryParamsTag :
         SmartRecordTag<comparison_mode::NoComparisonTag, void>,
         SmartRecordKeys<PortageRepositoryParamsKeys, last_prpk>,
+        SmartRecordKey<prpk_entry_format, const std::string>,
         SmartRecordKey<prpk_environment, const Environment *>,
         SmartRecordKey<prpk_package_database, const PackageDatabase *>,
         SmartRecordKey<prpk_location, const FSEntry>,

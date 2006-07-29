@@ -30,3 +30,9 @@ PortageRepositoryEntries::~PortageRepositoryEntries()
 {
 }
 
+NoSuchPortageRepositoryEntriesType::NoSuchPortageRepositoryEntriesType(const std::string & format) throw ():
+    ConfigurationError("No available maker for Portage repository entries type '" + format + "'")
+{
+}
+
+
