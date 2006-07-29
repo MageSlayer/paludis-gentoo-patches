@@ -20,12 +20,12 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_EBUILD_METADATA_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_EBUILD_METADATA_HH 1
 
-#include <paludis/repositories/portage/portage_repository_metadata.hh>
+#include <paludis/repositories/portage/portage_repository_entries.hh>
 #include <paludis/repositories/portage/portage_repository_params.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
- * Declaration for the PortageRepositoryEbuildMetadata class.
+ * Declaration for the PortageRepositoryEbuildEntries class.
  *
  * \ingroup grpportagerepository
  */
@@ -35,16 +35,16 @@ namespace paludis
     class FSEntry;
     class PortageRepository;
 
-    class PortageRepositoryEbuildMetadata :
-        public PortageRepositoryMetadata,
-        private PrivateImplementationPattern<PortageRepositoryEbuildMetadata>
+    class PortageRepositoryEbuildEntries :
+        public PortageRepositoryEntries,
+        private PrivateImplementationPattern<PortageRepositoryEbuildEntries>
     {
         public:
-            PortageRepositoryEbuildMetadata(const Environment * const,
+            PortageRepositoryEbuildEntries(const Environment * const,
                     PortageRepository * const portage_repository,
                     const PortageRepositoryParams &);
 
-            virtual ~PortageRepositoryEbuildMetadata();
+            virtual ~PortageRepositoryEbuildEntries();
 
             virtual VersionMetadata::Pointer generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const;

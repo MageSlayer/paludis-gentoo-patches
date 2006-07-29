@@ -28,24 +28,24 @@
 #include <string>
 
 /** \file
- * Declaration for the PortageRepositoryMetadata class.
+ * Declaration for the PortageRepositoryEntries class.
  *
  * \ingroup grpportagerepository
  */
 
 namespace paludis
 {
-    class PortageRepositoryMetadata :
-        public InternalCounted<PortageRepositoryMetadata>
+    class PortageRepositoryEntries :
+        public InternalCounted<PortageRepositoryEntries>
     {
         private:
             const std::string _ext;
 
         protected:
-            PortageRepositoryMetadata(const std::string & ext);
+            PortageRepositoryEntries(const std::string & ext);
 
         public:
-            virtual ~PortageRepositoryMetadata();
+            virtual ~PortageRepositoryEntries();
 
             std::string file_extension() const
             {

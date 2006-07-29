@@ -25,7 +25,7 @@
 #include <paludis/repositories/portage/portage_repository_news.hh>
 #include <paludis/repositories/portage/portage_repository_sets.hh>
 #include <paludis/repositories/portage/portage_repository_exceptions.hh>
-#include <paludis/repositories/portage/portage_repository_ebuild_metadata.hh>
+#include <paludis/repositories/portage/portage_repository_ebuild_entries.hh>
 
 #include <paludis/config_file.hh>
 #include <paludis/dep_atom.hh>
@@ -171,7 +171,7 @@ namespace paludis
         mutable PortageRepositorySets::Pointer sets_ptr;
 
         /// Our metadata handler.
-        mutable PortageRepositoryMetadata::Pointer metadata_ptr;
+        mutable PortageRepositoryEntries::Pointer entries_ptr;
 
         /// Our virtuals
         mutable VirtualsMap our_virtuals;
@@ -191,7 +191,7 @@ namespace paludis
         profile_ptr(0),
         news_ptr(new PortageRepositoryNews(params.get<prpk_environment>(), repo, p)),
         sets_ptr(new PortageRepositorySets(params.get<prpk_environment>(), repo, p)),
-        metadata_ptr(new PortageRepositoryEbuildMetadata(params.get<prpk_environment>(), repo, p)),
+        entries_ptr(new PortageRepositoryEbuildEntries(params.get<prpk_environment>(), repo, p)),
         has_our_virtuals(false)
     {
     }
@@ -383,7 +383,7 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
             if (! d->is_directory())
                 continue;
             if (DirIterator() == std::find_if(DirIterator(*d), DirIterator(),
-                        IsFileWithExtension(_imp->metadata_ptr->file_extension())))
+                        IsFileWithExtension(_imp->entries_ptr->file_extension())))
                 continue;
 
             try
@@ -495,13 +495,13 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
         for (DirIterator e(path), e_end ; e != e_end ; ++e)
         {
             if (! IsFileWithExtension(stringify(n.get<qpn_package>()) + "-",
-                        _imp->metadata_ptr->file_extension())(*e))
+                        _imp->entries_ptr->file_extension())(*e))
                 continue;
 
             try
             {
                 v->insert(strip_leading_string(
-                            strip_trailing_string(e->basename(), _imp->metadata_ptr->file_extension()),
+                            strip_trailing_string(e->basename(), _imp->entries_ptr->file_extension()),
                             stringify(n.get<qpn_package>()) + "-"));
             }
             catch (const NameError &)
@@ -569,7 +569,7 @@ PortageRepository::do_version_metadata(
                     PortageDepParser::parse_depend));
     }
 
-    VersionMetadata::Pointer result(_imp->metadata_ptr->generate_version_metadata(q, v));
+    VersionMetadata::Pointer result(_imp->entries_ptr->generate_version_metadata(q, v));
     _imp->metadata.insert(std::make_pair(std::make_pair(q, v), result));
     return result;
 }

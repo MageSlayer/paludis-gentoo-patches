@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/portage/portage_repository_ebuild_metadata.hh>
+#include <paludis/repositories/portage/portage_repository_ebuild_entries.hh>
 #include <paludis/repositories/portage/portage_repository.hh>
 
 #include <paludis/ebuild.hh>
@@ -35,8 +35,8 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<PortageRepositoryEbuildMetadata> :
-        InternalCounted<Implementation<PortageRepositoryEbuildMetadata> >
+    struct Implementation<PortageRepositoryEbuildEntries> :
+        InternalCounted<Implementation<PortageRepositoryEbuildEntries> >
     {
         const Environment * const environment;
         PortageRepository * const portage_repository;
@@ -52,20 +52,20 @@ namespace paludis
     };
 }
 
-PortageRepositoryEbuildMetadata::PortageRepositoryEbuildMetadata(
+PortageRepositoryEbuildEntries::PortageRepositoryEbuildEntries(
         const Environment * const e, PortageRepository * const p, const PortageRepositoryParams & k) :
-    PortageRepositoryMetadata(".ebuild"),
-    PrivateImplementationPattern<PortageRepositoryEbuildMetadata>(new
-            Implementation<PortageRepositoryEbuildMetadata>(e, p, k))
+    PortageRepositoryEntries(".ebuild"),
+    PrivateImplementationPattern<PortageRepositoryEbuildEntries>(new
+            Implementation<PortageRepositoryEbuildEntries>(e, p, k))
 {
 }
 
-PortageRepositoryEbuildMetadata::~PortageRepositoryEbuildMetadata()
+PortageRepositoryEbuildEntries::~PortageRepositoryEbuildEntries()
 {
 }
 
 VersionMetadata::Pointer
-PortageRepositoryEbuildMetadata::generate_version_metadata(const QualifiedPackageName & q,
+PortageRepositoryEbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
         const VersionSpec & v) const
 {
     VersionMetadata::Pointer result(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));

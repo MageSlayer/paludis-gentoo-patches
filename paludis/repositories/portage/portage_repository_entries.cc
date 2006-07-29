@@ -17,16 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "portage_repository_metadata.hh"
+#include "portage_repository_entries.hh"
 
 using namespace paludis;
 
-PortageRepositoryMetadata::PortageRepositoryMetadata(const std::string & ext) :
+PortageRepositoryEntries::PortageRepositoryEntries(const std::string & ext) :
     _ext(ext)
 {
 }
 
-PortageRepositoryMetadata::~PortageRepositoryMetadata()
+PortageRepositoryEntries::~PortageRepositoryEntries()
 {
 }
 
