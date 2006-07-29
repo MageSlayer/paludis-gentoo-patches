@@ -87,7 +87,7 @@ namespace paludis
     typedef MakeHashedMap<QualifiedPackageName, bool>::Type PackagesMap;
 
     /// Map for mirrors.
-    typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
+    typedef MakeHashedMultiMap<std::string, std::string>::Type MirrorMap;
 
     /// Map for metadata.
     typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>,
@@ -241,7 +241,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
                     param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
                     param<repo_use>(this),
                     param<repo_world>(static_cast<WorldInterface *>(0)),
-                    param<repo_environment_variable>(this)
+                    param<repo_environment_variable>(this),
+                    param<repo_mirrors>(this)
                     ))),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
 {
@@ -854,8 +855,8 @@ PortageRepository::do_is_licence(const std::string & s) const
     return l.exists() && l.is_regular_file();
 }
 
-bool
-PortageRepository::do_is_mirror(const std::string & s) const
+void
+PortageRepository::need_mirrors() const
 {
     if (! _imp->has_mirrors)
     {
@@ -873,9 +874,9 @@ PortageRepository::do_is_mirror(const std::string & s) const
                     std::random_shuffle(next(entries.begin()), entries.end(), r);
                     if (entries.size() > 6)
                         entries.resize(6);
-                    _imp->mirrors.insert(std::make_pair(
-                                entries.at(0),
-                                std::list<std::string>(next(entries.begin()), entries.end())));
+                    for (std::vector<std::string>::const_iterator e(next(entries.begin())),
+                            e_end(entries.end()) ; e != e_end ; ++e)
+                        _imp->mirrors.insert(std::make_pair(entries.at(0), *e));
                 }
             }
         }
@@ -887,8 +888,6 @@ PortageRepository::do_is_mirror(const std::string & s) const
 
         _imp->has_mirrors = true;
     }
-
-    return _imp->mirrors.end() != _imp->mirrors.find(s);
 }
 
 namespace
@@ -1051,11 +1050,11 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                         m != m_end ; ++m)
                     flat_src_uri.append(m->second + "/" + mirror.substr(q + 1) + " ");
 
-                for (std::list<std::string>::iterator
-                        m(_imp->mirrors.find(mirror.substr(0, q))->second.begin()),
-                        m_end(_imp->mirrors.find(mirror.substr(0, q))->second.end()) ;
+                for (MirrorsIterator
+                        m(begin_mirrors(mirror.substr(0, q))),
+                        m_end(end_mirrors(mirror.substr(0, q))) ;
                         m != m_end ; ++m)
-                    flat_src_uri.append(*m + "/" + mirror.substr(q + 1) + " ");
+                    flat_src_uri.append(m->second + "/" + mirror.substr(q + 1) + " ");
             }
             else
                 flat_src_uri.append((*ff)->text());
@@ -1063,7 +1062,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 
             /* add mirror://gentoo/ entries */
             std::string master_mirror(strip_trailing_string(stringify(name()), "x-"));
-            if (is_mirror(master_mirror) && ! no_mirror)
+            if (! no_mirror && is_mirror(master_mirror))
             {
                 for (Environment::MirrorIterator
                         m(_imp->params.get<prpk_environment>()->begin_mirrors(master_mirror)),
@@ -1071,11 +1070,10 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
                         m != m_end ; ++m)
                     flat_src_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
 
-                for (std::list<std::string>::iterator
-                        m(_imp->mirrors.find(master_mirror)->second.begin()),
-                        m_end(_imp->mirrors.find(master_mirror)->second.end()) ;
+                for (MirrorsIterator
+                        m(begin_mirrors(master_mirror)), m_end(end_mirrors(master_mirror)) ;
                         m != m_end ; ++m)
-                    flat_src_uri.append(*m + "/" + (*ff)->text().substr(p + 1) + " ");
+                    flat_src_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
             }
         }
 
@@ -1419,4 +1417,19 @@ PortageRepository::find_our_virtuals(const QualifiedPackageName & q) const
     need_virtual_names();
     return OurVirtualsIterator(_imp->our_virtuals.find(q));
 }
+
+PortageRepository::MirrorsIterator
+PortageRepository::begin_mirrors(const std::string & s) const
+{
+    need_mirrors();
+    return MirrorsIterator(_imp->mirrors.equal_range(s).first);
+}
+
+PortageRepository::MirrorsIterator
+PortageRepository::end_mirrors(const std::string & s) const
+{
+    need_mirrors();
+    return MirrorsIterator(_imp->mirrors.equal_range(s).second);
+}
+
 

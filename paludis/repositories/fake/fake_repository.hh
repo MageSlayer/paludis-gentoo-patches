@@ -83,8 +83,6 @@ namespace paludis
 
             virtual bool do_is_licence(const std::string &) const;
 
-            virtual bool do_is_mirror(const std::string &) const;
-
         public:
             /**
              * Constructor.

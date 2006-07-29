@@ -127,6 +127,7 @@ namespace paludis
         repo_use,
         repo_world,
         repo_environment_variable,
+        repo_mirrors,
         last_repo
     };
 
@@ -229,6 +230,7 @@ namespace paludis
             class UseInterface;
             class WorldInterface;
             class EnvironmentVariableInterface;
+            class MirrorInterface;
 
         protected:
             /**
@@ -249,6 +251,7 @@ namespace paludis
                 SmartRecordKey<repo_uninstallable, UninstallableInterface *>,
                 SmartRecordKey<repo_use, UseInterface *>,
                 SmartRecordKey<repo_world, WorldInterface *>,
+                SmartRecordKey<repo_mirrors, MirrorInterface *>,
                 SmartRecordKey<repo_environment_variable, EnvironmentVariableInterface *>
             {
             };
@@ -330,11 +333,6 @@ namespace paludis
              * Override in descendents: is this a licence?
              */
             virtual bool do_is_licence(const std::string &) const = 0;
-
-            /**
-             * Override in descendents: is this a mirror?
-             */
-            virtual bool do_is_mirror(const std::string &) const = 0;
 
             ///}
 
@@ -442,14 +440,6 @@ namespace paludis
             bool is_license(const std::string & u) const
             {
                 return do_is_licence(u);
-            }
-
-            /**
-             * Query whether the specified item is a mirror.
-             */
-            bool is_mirror(const std::string & u) const
-            {
-                return do_is_mirror(u);
             }
 
             /**
@@ -831,6 +821,35 @@ namespace paludis
                     const std::string & var) const = 0;
 
             virtual ~EnvironmentVariableInterface() { }
+    };
+
+    /**
+     * Interface for mirror querying for repositories.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class Repository::MirrorInterface
+    {
+        public:
+            ///\name Iterate over our mirrors
+            ///\{
+
+            typedef libwrapiter::ForwardIterator<MirrorInterface,
+                    const std::pair<const std::string, std::string> > MirrorsIterator;
+
+            virtual MirrorsIterator begin_mirrors(const std::string & s) const = 0;
+            virtual MirrorsIterator end_mirrors(const std::string & s) const = 0;
+
+            /**
+             * Is the named item a mirror?
+             */
+            bool is_mirror(const std::string & s) const
+            {
+                return begin_mirrors(s) != end_mirrors(s);
+            }
+
+            virtual ~MirrorInterface() { }
     };
 
     /**

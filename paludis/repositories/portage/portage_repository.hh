@@ -54,12 +54,14 @@ namespace paludis
         public Repository::NewsInterface,
         public Repository::SetsInterface,
         public Repository::EnvironmentVariableInterface,
+        public Repository::MirrorInterface,
         private PrivateImplementationPattern<PortageRepository>
     {
         private:
             void need_category_names() const;
             void need_version_names(const QualifiedPackageName &) const;
             void need_virtual_names() const;
+            void need_mirrors() const;
             PackageDatabaseEntryCollection::Iterator find_best(PackageDatabaseEntryCollection & c,
                     const PackageDatabaseEntry & e) const;
 
@@ -109,8 +111,6 @@ namespace paludis
 
             virtual bool do_is_licence(const std::string &) const;
 
-            virtual bool do_is_mirror(const std::string &) const;
-
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
@@ -150,6 +150,9 @@ namespace paludis
             virtual std::string get_environment_variable(
                     const PackageDatabaseEntry & for_package,
                     const std::string & var) const;
+
+            virtual MirrorsIterator begin_mirrors(const std::string & s) const;
+            virtual MirrorsIterator end_mirrors(const std::string & s) const;
 
             typedef CountedPtr<PortageRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const PortageRepository, count_policy::InternalCountTag> ConstPointer;

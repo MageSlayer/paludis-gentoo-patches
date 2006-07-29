@@ -95,7 +95,8 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
                     param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
                     param<repo_use>(static_cast<UseInterface *>(0)),
                     param<repo_world>(static_cast<WorldInterface *>(0)),
-                    param<repo_environment_variable>(static_cast<EnvironmentVariableInterface *>(0))
+                    param<repo_environment_variable>(static_cast<EnvironmentVariableInterface *>(0)),
+                    param<repo_mirrors>(static_cast<MirrorInterface *>(0))
                     ))),
     PrivateImplementationPattern<NothingRepository>(new Implementation<NothingRepository>(p))
 {
@@ -209,12 +210,6 @@ NothingRepositoryConfigurationError::NothingRepositoryConfigurationError(
 
 bool
 NothingRepository::do_is_licence(const std::string &) const
-{
-    return false;
-}
-
-bool
-NothingRepository::do_is_mirror(const std::string &) const
 {
     return false;
 }

@@ -401,7 +401,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
                     param<repo_uninstallable>(this),
                     param<repo_use>(this),
                     param<repo_world>(this),
-                    param<repo_environment_variable>(this)
+                    param<repo_environment_variable>(this),
+                    param<repo_mirrors>(static_cast<MirrorInterface *>(0))
                     ))),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(p))
 {
@@ -740,12 +741,6 @@ VDBRepository::do_expand_flag_delim_pos(const UseFlagName &) const
 
 bool
 VDBRepository::do_is_licence(const std::string &) const
-{
-    return false;
-}
-
-bool
-VDBRepository::do_is_mirror(const std::string &) const
 {
     return false;
 }

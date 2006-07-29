@@ -78,8 +78,9 @@ namespace
                     else
                     {
                         mirror_host.erase(p);
-                        if (! env->package_database()->fetch_repository(
-                                    env->package_database()->favourite_repository())->is_mirror(mirror_host))
+                        Repository::MirrorInterface * m(env->package_database()->fetch_repository(
+                                    env->package_database()->favourite_repository())->get_interface<repo_mirrors>());
+                        if ((! m) || (! m->is_mirror(mirror_host)))
                             result << Message(qal_major, "Unknown mirror for '" + a->text() + "'");
                     }
                 }
