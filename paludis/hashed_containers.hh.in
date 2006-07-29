@@ -110,6 +110,32 @@ namespace paludis
     };
 
     /**
+     * Make a hashed map of some kind from Key_ to Value_.
+     *
+     * \ingroup grphashedcontainers
+     */
+    template <typename Key_, typename Value_>
+    struct MakeHashedMultiMap
+    {
+#if PALUDIS_HAVE_TR1_HASHES
+        /// Our map type.
+        typedef std::tr1::unordered_multimap<Key_, Value_, CRCHash<Key_> > Type;
+
+#elif PALUDIS_HAVE_EXT_HASHES
+        /// Our map type.
+        typedef __gnu_cxx::hash_multimap<Key_, Value_, CRCHash<Key_> > Type;
+
+#elif PALUDIS_HAVE_STD_HASHES
+        /// Our map type.
+        typedef std::hash_multimap<Key_, Value_, CRCHash<Key_> > Type;
+
+#else
+        /// Our map type.
+        typedef std::multimap<Key_, Value_> Type;
+#endif
+    };
+
+    /**
      * Make a hashed set of some kind of Key_.
      *
      * \ingroup grphashedcontainers
@@ -132,6 +158,32 @@ namespace paludis
 #else
         /// Our set type.
         typedef std::set<Key_> Type;
+#endif
+    };
+
+    /**
+     * Make a hashed set of some kind of Key_.
+     *
+     * \ingroup grphashedcontainers
+     */
+    template <typename Key_>
+    struct MakeHashedMultiSet
+    {
+#if PALUDIS_HAVE_TR1_HASHES
+        /// Our set type.
+        typedef std::tr1::unordered_multiset<Key_, CRCHash<Key_> > Type;
+
+#elif PALUDIS_HAVE_EXT_HASHES
+        /// Our set type.
+        typedef __gnu_cxx::hash_multiset<Key_, CRCHash<Key_> > Type;
+
+#elif PALUDIS_HAVE_STD_HASHES
+        /// Our set type.
+        typedef std::hash_multiset<Key_, CRCHash<Key_> > Type;
+
+#else
+        /// Our set type.
+        typedef std::multiset<Key_> Type;
 #endif
     };
 
