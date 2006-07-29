@@ -533,12 +533,7 @@ VDBRepository::do_version_metadata(
                         q, v), VDBEntry::CompareVersion()));
 
     if (r.first == r.second)
-    {
-        Log::get_instance()->message(ll_warning, lc_context, "version lookup failed for request for '" +
-                stringify(q) + "-" + stringify(v) + "' in repository '" +
-                stringify(name()) + "'");
-        return VersionMetadata::ConstPointer(new VersionMetadata(&PortageDepParser::parse_depend));
-    }
+        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
     else
     {
         if (! r.first->metadata)

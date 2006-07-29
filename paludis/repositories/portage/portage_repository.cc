@@ -561,13 +561,7 @@ PortageRepository::do_version_metadata(
             "-" + stringify(v) + "':");
 
     if (! has_version(q, v))
-    {
-        Log::get_instance()->message(ll_warning, lc_context, "has_version failed for request for '" +
-                stringify(q) + "-" + stringify(v) + "' in repository '" +
-                stringify(name()) + "'");
-        return VersionMetadata::ConstPointer(new VersionMetadata::Ebuild(
-                    PortageDepParser::parse_depend));
-    }
+        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
 
     VersionMetadata::Pointer result(_imp->entries_ptr->generate_version_metadata(q, v));
     _imp->metadata.insert(std::make_pair(std::make_pair(q, v), result));
