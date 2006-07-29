@@ -48,6 +48,9 @@ namespace paludis
 
             virtual VersionMetadata::Pointer generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const;
+
+            virtual void install(const QualifiedPackageName &, const VersionSpec &,
+                    const InstallOptions &, PortageRepositoryProfile::ConstPointer) const;
     };
 }
 

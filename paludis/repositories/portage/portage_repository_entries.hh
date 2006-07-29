@@ -21,10 +21,12 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_METADATA_HH 1
 
 #include <paludis/name.hh>
+#include <paludis/repository.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/repositories/portage/portage_repository_profile.hh>
 #include <string>
 
 /** \file
@@ -54,6 +56,9 @@ namespace paludis
 
             virtual VersionMetadata::Pointer generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const = 0;
+
+            virtual void install(const QualifiedPackageName &, const VersionSpec &,
+                    const InstallOptions &, PortageRepositoryProfile::ConstPointer) const = 0;
     };
 }
 
