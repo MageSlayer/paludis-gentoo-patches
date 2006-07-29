@@ -499,11 +499,10 @@ namespace test_cases
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
                 TEST_CHECK_EQUAL(m->get<vm_description>(), "the-description");
 
-                m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"));
-                TEST_CHECK_EQUAL(m->get<vm_description>(), "");
-
-                m = repo->version_metadata(QualifiedPackageName("cat-two/pkg-one"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->get<vm_description>(), "");
+                TEST_CHECK_THROWS(repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2")),
+                        NoSuchPackageError);
+                TEST_CHECK_THROWS(repo->version_metadata(QualifiedPackageName("cat-two/pkg-one"), VersionSpec("1")),
+                        NoSuchPackageError);
             }
         }
     } test_portage_repository_metadata_cached;
