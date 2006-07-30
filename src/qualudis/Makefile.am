@@ -11,21 +11,6 @@ bin_PROGRAMS = qualudis
 noinst_PROGRAMS = man-qualudis
 man_MANS = qualudis.1
 
-qualudis.1 : man-qualudis
-	./man-qualudis | tee $@ | sed -e 's/^/    /'
-
-man_qualudis_SOURCES = \
-	man_qualudis.cc \
-	qualudis_command_line.hh \
-	qualudis_command_line.cc
-
-man_qualudis_LDADD = \
-	$(top_builddir)/paludis/qa/libpaludisqa.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/args/libpaludisargs.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(DYNAMIC_LD_LIBS)
-
 qualudis_SOURCES = \
 	qualudis_command_line.hh      qualudis_command_line.cc      \
 	qualudis.cc
@@ -49,6 +34,23 @@ version_TEST :
 
 endif
 
-CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno *.gcda $(man_MANS)
+qualudis.1 : man-qualudis
+	./man-qualudis | tee $@ | sed -e 's/^/    /'
+
+man_qualudis_SOURCES = \
+	man_qualudis.cc \
+	qualudis_command_line.hh \
+	qualudis_command_line.cc
+
+man_qualudis_LDADD = \
+	$(top_builddir)/paludis/qa/libpaludisqa.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
+
+CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno *.gcda
+DISTCLEANFILES = $(man_MANS)
 MAINTAINERCLEANFILES = Makefile.in
+EXTRA_DIST = $(man_MANS)
 

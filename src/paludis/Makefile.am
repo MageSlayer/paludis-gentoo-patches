@@ -60,10 +60,13 @@ TESTS = version_TEST help_TEST list_sync_formats_TEST \
 	list_repository_formats_TEST list_dep_tag_categories_TEST \
 	exception_TEST install_TEST upgrade_TEST
 
-EXTRA_DIST = $(TESTS) \
+EXTRA_DIST = \
+	$(man_MANS) \
+	$(TESTS) \
 	install_TEST_setup.sh install_TEST_cleanup.sh \
 	upgrade_TEST_setup.sh upgrade_TEST_cleanup.sh
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda $(man_MANS)
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+DISTCLEANFILES = $(man_MANS)
 MAINTAINERCLEANFILES = Makefile.in
 
