@@ -20,6 +20,7 @@
 #include "test_framework.hh"
 #include <algorithm>
 #include <iostream>
+#include <list>
 #include <paludis/util/attributes.hh>
 #include <unistd.h>
 
@@ -74,14 +75,25 @@ test::set_exception_to_debug_string(std::string (*f) (const std::exception &))
     DebugStringHolder::get_instance()->set(f);
 }
 
-std::list<std::string>
-TestMessageSuffix::_suffixes;
+namespace paludis
+{
+    template<>
+    struct Implementation<TestMessageSuffix> :
+        InternalCounted<Implementation<TestMessageSuffix> >
+    {
+        static std::list<std::string> suffixes;
+    };
+
+    std::list<std::string> Implementation<TestMessageSuffix>::suffixes;
+}
 
 std::string
 TestMessageSuffix::suffixes()
 {
     std::string result;
-    std::list<std::string>::const_iterator i(_suffixes.begin()), end(_suffixes.end());
+    std::list<std::string>::const_iterator i(paludis::Implementation<TestMessageSuffix>::suffixes.begin()),
+        end(paludis::Implementation<TestMessageSuffix>::suffixes.end());
+
     while (i != end)
     {
         result += *i++;
@@ -91,25 +103,37 @@ TestMessageSuffix::suffixes()
     return result;
 }
 
-TestMessageSuffix::TestMessageSuffix(const std::string & s, bool write)
+TestMessageSuffix::TestMessageSuffix(const std::string & s, bool write) :
+    paludis::PrivateImplementationPattern<TestMessageSuffix>(
+            new paludis::Implementation<TestMessageSuffix>)
 {
-    _suffixes.push_back(s);
+    paludis::Implementation<TestMessageSuffix>::suffixes.push_back(s);
     if (write)
         std::cout << "[" << s << "]" << std::flush;
 }
 
-struct TestCase::Impl
+TestMessageSuffix::~TestMessageSuffix()
 {
-    const std::string name;
+    paludis::Implementation<TestMessageSuffix>::suffixes.pop_back();
+}
 
-    Impl(const std::string & the_name) :
-        name(the_name)
+namespace paludis
+{
+    template<>
+    struct Implementation<TestCase> :
+        InternalCounted<Implementation<TestCase> >
     {
-    }
-};
+        const std::string name;
+
+        Implementation(const std::string & the_name) :
+            name(the_name)
+        {
+        }
+    };
+}
 
 TestCase::TestCase(const std::string & name) :
-    _impl(new Impl(name))
+    paludis::PrivateImplementationPattern<TestCase>(new paludis::Implementation<TestCase>(name))
 {
     TestCaseList::register_test_case(this);
 }
@@ -153,7 +177,7 @@ TestCase::call_run()
 std::string
 TestCase::name() const
 {
-    return _impl->name;
+    return _imp->name;
 }
 
 TestFailedException::TestFailedException(const char * const function, const char * const file,
@@ -169,12 +193,28 @@ TestFailedException::~TestFailedException() throw ()
 {
 }
 
+namespace
+{
+    std::list<TestCase *> *
+    get_test_case_list()
+    {
+        static std::list<TestCase *> l;
+        return &l;
+    }
+}
+
 TestCaseList::TestCaseList()
 {
 }
 
 TestCaseList::~TestCaseList()
 {
+}
+
+void
+TestCaseList::register_test_case(TestCase * const t)
+{
+    get_test_case_list()->push_back(t);
 }
 
 class RunTest
@@ -246,11 +286,11 @@ RunTest::operator() (TestCase * test_case) const
 bool
 TestCaseList::run_tests()
 {
-    bool had_a_failure(_get_test_case_list().empty());
+    bool had_a_failure(get_test_case_list()->empty());
 
     std::for_each(
-            TestCaseList::_get_test_case_list().begin(),
-            TestCaseList::_get_test_case_list().end(),
+            get_test_case_list()->begin(),
+            get_test_case_list()->end(),
             RunTest(&had_a_failure));
 
     return ! had_a_failure;

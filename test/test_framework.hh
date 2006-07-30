@@ -20,10 +20,8 @@
 #ifndef PALUDIS_GUARD_TEST_TEST_FRAMEWORK_HH
 #define PALUDIS_GUARD_TEST_TEST_FRAMEWORK_HH 1
 
-#include <list>
-#include <memory>
 #include <paludis/util/stringify.hh>
-#include <sstream>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <string>
 
 /** \file
@@ -39,11 +37,9 @@ namespace test
      *
      * \ingroup Test
      */
-    class TestMessageSuffix
+    class TestMessageSuffix :
+        paludis::PrivateImplementationPattern<TestMessageSuffix>
     {
-        private:
-            static std::list<std::string> _suffixes;
-
         public:
             /**
              * Constructor.
@@ -53,10 +49,7 @@ namespace test
             /**
              * Destructor.
              */
-            ~TestMessageSuffix()
-            {
-                _suffixes.pop_back();
-            }
+            ~TestMessageSuffix();
 
             /**
              * Our suffixes.
@@ -69,12 +62,9 @@ namespace test
      *
      * \ingroup Test
      */
-    class TestCase
+    class TestCase :
+        private paludis::PrivateImplementationPattern<TestCase>
     {
-        private:
-            struct Impl;
-            std::auto_ptr<Impl> _impl;
-
         protected:
             /**
              * Check that a given assertion is true.
@@ -176,20 +166,11 @@ namespace test
             TestCaseList();
             ~TestCaseList();
 
-            static std::list<TestCase *> & _get_test_case_list()
-            {
-                static std::list<TestCase *> l;
-                return l;
-            }
-
         public:
             /**
              * Register a TestCase instance.
              */
-            inline static void register_test_case(TestCase * const test_case)
-            {
-                _get_test_case_list().push_back(test_case);
-            }
+            static void register_test_case(TestCase * const test_case);
 
             /**
              * Run all tests.
