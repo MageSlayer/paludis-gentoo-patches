@@ -17,7 +17,8 @@ paludis_args_include_HEADERS = \
 	args_visitor.hh   \
 	bad_value.hh      \
 	missing_value.hh  \
-	args_dumper.hh
+	args_dumper.hh    \
+	man.hh
 
 libpaludisargs_la_SOURCES = $(paludis_args_include_HEADERS) \
 	args.cc \
@@ -29,7 +30,8 @@ libpaludisargs_la_SOURCES = $(paludis_args_include_HEADERS) \
 	args_visitor.cc \
 	bad_value.cc \
 	missing_value.cc \
-	args_dumper.cc
+	args_dumper.cc \
+	man.cc
 
 libpaludisargs_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 

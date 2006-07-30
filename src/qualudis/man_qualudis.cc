@@ -18,6 +18,7 @@
  */
 
 #include "qualudis_command_line.hh"
+#include <paludis/args/man.hh>
 #include "config.h"
 
 #include <iostream>
@@ -29,42 +30,7 @@ using std::endl;
 int
 main(int, char *[])
 {
-    cout << ".TH \"" << QualudisCommandLine::get_instance()->app_name() << "\" "
-        << QualudisCommandLine::get_instance()->man_section() << endl;
-
-    cout << ".SH NAME" << endl;
-    cout << QualudisCommandLine::get_instance()->app_name() << " \\- "
-        << QualudisCommandLine::get_instance()->app_synopsis() << endl;
-
-    cout << ".SH SYNOPSIS" << endl;
-
-    for (QualudisCommandLine::UsageLineIterator u(QualudisCommandLine::get_instance()->begin_usage_lines()),
-            u_end(QualudisCommandLine::get_instance()->end_usage_lines()) ; u != u_end ; ++u)
-        cout << ".B " << QualudisCommandLine::get_instance()->app_name() << " " << *u << endl << endl;
-
-    cout << ".SH DESCRIPTION" << endl;
-    cout << QualudisCommandLine::get_instance()->app_description() << endl;
-
-    cout << ".SH OPTIONS" << endl;
-
-    for (QualudisCommandLine::ArgsGroupsIterator a(QualudisCommandLine::get_instance()->begin_args_groups()),
-            a_end(QualudisCommandLine::get_instance()->end_args_groups()) ; a != a_end ; ++a)
-    {
-        cout << ".SS \"" << (*a)->name() << "\"" << endl;
-        cout << (*a)->description() << endl;
-
-        for (paludis::args::ArgsGroup::Iterator b((*a)->begin()), b_end((*a)->end()) ;
-                b != b_end ; ++b)
-        {
-            cout << ".TP" << endl;
-            cout << ".B \"";
-            if ((*b)->short_name())
-                cout << "\\-" << (*b)->short_name() << " , ";
-            cout << "\\-\\-" << (*b)->long_name() << "\"" << endl;
-            cout << (*b)->description() << endl;
-        }
-    }
-
+    paludis::args::generate_man(cout, QualudisCommandLine::get_instance());
     return EXIT_SUCCESS;
 }
 

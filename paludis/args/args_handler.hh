@@ -58,6 +58,11 @@ namespace paludis
                 void add_usage_line(const std::string & l);
 
                 /**
+                 * Add a new environment line.
+                 */
+                void add_enviromnent_variable(const std::string & e, const std::string & desc);
+
+                /**
                  * Add an new ArgsGroup (called by the ArgsGroup constructor).
                  */
                 void add(ArgsGroup * const);
@@ -137,6 +142,18 @@ namespace paludis
                 UsageLineIterator begin_usage_lines() const;
 
                 UsageLineIterator end_usage_lines() const;
+
+                ///\}
+
+                ///\name Iterate over our environment lines (for documentation)
+                ///\{
+
+                typedef libwrapiter::ForwardIterator<ArgsHandler,
+                        const std::pair<std::string, std::string> > EnvironmentLineIterator;
+
+                EnvironmentLineIterator begin_environment_lines() const;
+
+                EnvironmentLineIterator end_environment_lines() const;
 
                 ///\}
 

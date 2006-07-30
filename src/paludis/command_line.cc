@@ -107,8 +107,38 @@ CommandLine::CommandLine() :
 {
     a_dl_max_stack_depth.set_argument(100);
 
-    add_usage_line("[ -q | --query ] [ query options ] [ targets ]");
-    add_usage_line("[ -i | --install ] [ install options ] [ targets ]");
+    add_usage_line("--query [query options] target ...");
+    add_usage_line("--install [install options] target ...");
+    add_usage_line("--sync [target (leave blank for all)]");
+    add_usage_line("--contents target ...");
+    add_usage_line("--owner [owner options] files ...");
+    add_usage_line("--version");
+    add_usage_line("--info");
+    add_usage_line("--help");
+
+    add_usage_line("--has-version atom");
+    add_usage_line("--best-version atom");
+    add_usage_line("--environment-variable atom variable");
+    add_usage_line("--configuration-variable repository variable");
+    add_usage_line("--list-repositories [--repository repo1 --repository repo2 ...]");
+    add_usage_line("--list-categories [--repository repo1 ... --category cat1 --category cat2 ...]");
+    add_usage_line("--list-packages [--repository repo1 ... --category cat1 ... --package pkg1 --package pkg2 ...]");
+    add_usage_line("--list-sync-protocols");
+    add_usage_line("--list-repository-formats");
+    add_usage_line("--list-dep-tag-categories");
+    add_usage_line("--list-vulnerabilities [--repository repo1 ...]");
+    add_usage_line("--update-news");
+
+    add_enviromnent_variable("PALUDIS_HOME", "Overrides the home directory used when searching "
+            "for configuration files etc.");
+    add_enviromnent_variable("PALUDIS_NO_GLOBAL_HOOKS", "Don't use global hooks. Mostly for "
+            "internal and test case use.");
+    add_enviromnent_variable("PALUDIS_SKIP_CONFIG", "Don't load configuration. Mostly for "
+            "internal and test case use.");
+    add_enviromnent_variable("PALUDIS_EBUILD_DIR", "Where to look for ebuild.bash and related "
+            "utilities.");
+    add_enviromnent_variable("PALUDIS_REPOSITORY_SO_DIR", "Where to look for repository .so "
+            "files.");
 }
 
 std::string

@@ -17,19 +17,21 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "command_line.hh"
-#include <paludis/args/man.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_ARGS_MAN_HH
+#define PALUDIS_GUARD_PALUDIS_ARGS_MAN_HH 1
 
-#include <iostream>
-#include <cstdlib>
+#include <paludis/args/args.hh>
+#include <iosfwd>
 
-using std::cout;
-using std::endl;
-
-int
-main(int, char *[])
+namespace paludis
 {
-    paludis::args::generate_man(cout, CommandLine::get_instance());
-    return EXIT_SUCCESS;
+    namespace args
+    {
+        /**
+         * Write a man page to an ostream.
+         */
+        void generate_man(std::ostream &, const ArgsHandler * const h);
+    }
 }
 
+#endif
