@@ -19,111 +19,111 @@
 
 #include "colour.hh"
 #include "sync.hh"
-#include <functional>
+#include <paludis/tasks/sync_task.hh>
+#include <paludis/default_environment.hh>
+#include <paludis/syncer.hh>
 #include <iomanip>
 #include <iostream>
-#include <paludis/paludis.hh>
 #include <string>
-#include <set>
 
 /** \file
  * Handle the --sync action for the main paludis program.
  */
 
-namespace p = paludis;
+using namespace paludis;
 using std::cerr;
+using std::cout;
+using std::endl;
 
 namespace
 {
-    int do_one_sync(p::Repository::ConstPointer r)
+    class OurSyncTask :
+        public SyncTask
     {
-        int return_code(0);
+        private:
+            int _return_code;
 
-        p::Context context("When performing sync action for '"
-             + p::stringify(r->name()) + "': ");
-        p::Environment * const env(p::DefaultEnvironment::get_instance());
+        public:
+            OurSyncTask() :
+                SyncTask(DefaultEnvironment::get_instance()),
+                _return_code(0)
+            {
+            }
 
-        std::cout << colour(cl_heading, "Sync " + p::stringify(r->name())) << std::endl;
-        try
-        {
-            cerr << xterm_title("Syncing " + p::stringify(r->name()));
-            if (r->get_interface<p::repo_syncable>() && r->get_interface<p::repo_syncable>()->sync())
-                std::cout << "Sync " << r->name() << " completed" << std::endl;
-            else
-                std::cout << "Sync " << r->name() << " skipped" << std::endl;
-        }
-        catch (const p::SyncFailedError & e)
-        {
-            return_code |= 1;
-            std::cout << std::endl;
-            std::cerr << "Sync error:" << std::endl;
-            std::cerr << "  * " << e.backtrace("\n  * ") << e.message() << std::endl;
-            std::cerr << std::endl;
-            std::cout << "Sync " << r->name() << " failed" << std::endl;
-            env->perform_hook(p::Hook("sync_fail")("TARGET", stringify(r->name())));
-        }
+            virtual void on_sync_all_pre();
+            virtual void on_sync_pre(const RepositoryName &);
+            virtual void on_sync_post(const RepositoryName &);
+            virtual void on_sync_skip(const RepositoryName &);
+            virtual void on_sync_fail(const RepositoryName &, const SyncFailedError &);
+            virtual void on_sync_succeed(const RepositoryName &);
+            virtual void on_sync_all_post();
 
-        return return_code;
+            int return_code() const
+            {
+                return _return_code;
+            }
+    };
+
+    void
+    OurSyncTask::on_sync_all_pre()
+    {
+    }
+
+    void
+    OurSyncTask::on_sync_pre(const RepositoryName & r)
+    {
+        cout << colour(cl_heading, "Sync " + stringify(r)) << endl;
+        cerr << xterm_title("Syncing " + stringify(r));
+    }
+
+    void
+    OurSyncTask::on_sync_post(const RepositoryName &)
+    {
+    }
+
+    void
+    OurSyncTask::on_sync_skip(const RepositoryName & r)
+    {
+        cout << "Sync " << r << " skipped" << endl;
+    }
+
+    void
+    OurSyncTask::on_sync_succeed(const RepositoryName & r)
+    {
+        cout << "Sync " << r << " completed" << endl;
+    }
+
+    void
+    OurSyncTask::on_sync_fail(const RepositoryName & r, const SyncFailedError & e)
+    {
+        _return_code |= 1;
+        cout << endl;
+        cerr << "Sync error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ") << e.message() << endl;
+        cerr << endl;
+        cout << "Sync " << r << " failed" << endl;
+    }
+
+    void
+    OurSyncTask::on_sync_all_post()
+    {
+        cout << endl;
     }
 }
 
 int do_sync()
 {
-    int return_code(0);
+    Context context("When performing sync action from command line:");
 
-    p::Context context("When performing sync action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
+    OurSyncTask task;
 
-    if (CommandLine::get_instance()->empty())
-    {
-        std::string targets;
-        for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
-                r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
-            targets.append(stringify((*r)->name()) + " ");
+    for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+            q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
+        task.add_target(*q);
 
-        env->perform_hook(p::Hook("sync_all_pre")("TARGETS", targets));
-        for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
-                r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
-        {
-            env->perform_hook(p::Hook("sync_pre")("TARGET", stringify((*r)->name())));
-            return_code |= do_one_sync(*r);
-            env->perform_hook(p::Hook("sync_post")("TARGET", stringify((*r)->name())));
-        }
-        env->perform_hook(p::Hook("sync_all_post")("TARGETS", targets));
-    }
-    else
-    {
-        std::set<p::RepositoryName> repo_names;
-        std::copy(CommandLine::get_instance()->begin_parameters(),
-                CommandLine::get_instance()->end_parameters(),
-                p::create_inserter<p::RepositoryName>(std::inserter(
-                        repo_names, repo_names.begin())));
+    task.execute();
 
-        env->perform_hook(p::Hook("sync_all_pre")("TARGETS", p::join(
-                        CommandLine::get_instance()->begin_parameters(),
-                        CommandLine::get_instance()->end_parameters(), " ")));
-        for (std::set<p::RepositoryName>::iterator r(repo_names.begin()), r_end(repo_names.end()) ;
-                r != r_end ; ++r)
-        {
-            try
-            {
-                env->perform_hook(p::Hook("sync_pre")("TARGET", stringify(*r)));
-                return_code |= do_one_sync(env->package_database()->fetch_repository(*r));
-                env->perform_hook(p::Hook("sync_post")("TARGET", stringify(*r)));
-            }
-            catch (const p::NoSuchRepositoryError & e)
-            {
-                return_code |= 1;
-                std::cerr << "No such repository '" << *r << "'" << std::endl;
-                std::cout << "Sync " << *r << " failed" << std::endl;
-            }
-        }
-        env->perform_hook(p::Hook("sync_all_post")("TARGETS", p::join(
-                        CommandLine::get_instance()->begin_parameters(),
-                        CommandLine::get_instance()->end_parameters(), " ")));
-    }
-
-    return return_code;
+    return task.return_code();
 }
 
 

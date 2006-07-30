@@ -20,6 +20,7 @@
 #include "browse_tree.hh"
 #include "information_tree.hh"
 #include "main_window.hh"
+#include "sync.hh"
 
 #include <gtkmm/treestore.h>
 #include <gtkmm/menu.h>
@@ -271,10 +272,9 @@ namespace
 
             virtual void sync() const
             {
-                Repository::ConstPointer repo(
-                        DefaultEnvironment::get_instance()->package_database()->fetch_repository(_r));
-                if (repo->get_interface<repo_syncable>())
-                    repo->get_interface<repo_syncable>()->sync();
+                OurSyncTask task;
+                task.add_target(stringify(_r));
+                task.execute();
             }
 
     };

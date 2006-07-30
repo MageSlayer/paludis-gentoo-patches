@@ -22,9 +22,11 @@ lib_LIBRARIES = libpaludistasks.a
 paludis_tasks_includedir = $(includedir)/paludis/tasks
 paludis_tasks_include_HEADERS = \
 	install_task.hh \
-	uninstall_task.hh
+	uninstall_task.hh \
+	sync_task.hh
 
 libpaludistasks_a_SOURCES = $(paludis_tasks_include_HEADERS) \
 	install_task.cc \
-	uninstall_task.cc
+	uninstall_task.cc \
+	sync_task.cc
 

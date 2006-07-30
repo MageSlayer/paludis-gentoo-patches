@@ -187,9 +187,8 @@ main(int argc, char * argv[])
 
             if (! gui_kit.initialized())
                 throw GtkInitFailed();
-    
-            MainWindow main_window;
-            TryMain::run(main_window);
+
+            TryMain::run(*MainWindow::get_instance());
         }
     }
     catch (const DoVersion &)

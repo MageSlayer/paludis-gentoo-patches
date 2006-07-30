@@ -17,28 +17,33 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_MAIN_WINDOW_HH
-#define PALUDIS_GUARD_SRC_GTKPALUDIS_MAIN_WINDOW_HH 1
+#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_SYNC_HH
+#define PALUDIS_GUARD_SRC_GTKPALUDIS_SYNC_HH 1
 
-#include <gtkmm/window.h>
+#include <paludis/tasks/sync_task.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
 
 namespace paludis
 {
-    class MainWindow :
-        public Gtk::Window,
-        private PrivateImplementationPattern<MainWindow>,
-        public InstantiationPolicy<MainWindow, instantiation_method::SingletonAsNeededTag>
+    class OurSyncTask :
+        public SyncTask,
+        private PrivateImplementationPattern<OurSyncTask>
     {
-        friend class InstantiationPolicy<MainWindow, instantiation_method::SingletonAsNeededTag>;
-
-        private:
-            MainWindow();
-            virtual ~MainWindow();
-
         public:
-            void set_children_sensitive(bool value);
+            OurSyncTask();
+            ~OurSyncTask();
+
+            virtual void on_sync_all_pre();
+            virtual void on_sync_pre(const RepositoryName &);
+            virtual void on_sync_post(const RepositoryName &);
+            virtual void on_sync_skip(const RepositoryName &);
+            virtual void on_sync_fail(const RepositoryName &, const SyncFailedError &);
+            virtual void on_sync_succeed(const RepositoryName &);
+            virtual void on_sync_all_post();
+
+            typedef libwrapiter::ForwardIterator<OurSyncTask, const std::string> FailedIterator;
+            FailedIterator begin_failed() const;
+            FailedIterator end_failed() const;
     };
 }
 

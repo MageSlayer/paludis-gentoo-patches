@@ -20,6 +20,7 @@ gtkpaludis_SOURCES = \
 	information_tree.cc information_tree.hh \
 	message_window.cc   message_window.hh \
 	main_window.cc      main_window.hh \
+	sync.cc             sync.hh \
 	gtkpaludis.cc
 
 gtkpaludis_LDADD = \
