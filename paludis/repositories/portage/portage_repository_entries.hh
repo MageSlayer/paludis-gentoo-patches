@@ -42,6 +42,11 @@ namespace paludis
     class PortageRepository;
     class Environment;
 
+    /**
+     * Handle entries (for example, ebuilds) in a PortageRepository.
+     *
+     * \ingroup grpportagerepository
+     */
     class PortageRepositoryEntries :
         public InternalCounted<PortageRepositoryEntries>
     {
@@ -49,19 +54,39 @@ namespace paludis
             const std::string _ext;
 
         protected:
+            ///\name Basic operations
+            ///\{
+
+            /// Constructor, with our file extension
             PortageRepositoryEntries(const std::string & ext);
 
+            ///\}
+
         public:
+            ///\name Basic operations
+            ///\{
+
             virtual ~PortageRepositoryEntries();
 
+            ///\}
+
+            /**
+             * Return our file extension, including the dot.
+             */
             std::string file_extension() const
             {
                 return _ext;
             }
 
+            /**
+             * Generate version metadata.
+             */
             virtual VersionMetadata::Pointer generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const = 0;
 
+            /**
+             * Fetch an environment variable.
+             */
             virtual std::string get_environment_variable(const QualifiedPackageName &,
                     const VersionSpec &, const std::string & var,
                     PortageRepositoryProfile::ConstPointer) const = 0;

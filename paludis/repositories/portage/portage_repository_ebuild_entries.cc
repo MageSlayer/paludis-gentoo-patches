@@ -39,6 +39,11 @@ using namespace paludis;
 
 namespace paludis
 {
+    /**
+     * Implementation data for PortageRepositoryEbuildEntries.
+     *
+     * \ingroup grpportagerepository
+     */
     template<>
     struct Implementation<PortageRepositoryEbuildEntries> :
         InternalCounted<Implementation<PortageRepositoryEbuildEntries> >

@@ -35,6 +35,11 @@ namespace paludis
     class FSEntry;
     class PortageRepository;
 
+    /**
+     * PortageRepositoryEntries handler for ebuilds.
+     *
+     * \ingroup grpportagerepository
+     */
     class PortageRepositoryEbuildEntries :
         public PortageRepositoryEntries,
         private PrivateImplementationPattern<PortageRepositoryEbuildEntries>

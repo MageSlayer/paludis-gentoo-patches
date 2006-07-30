@@ -34,6 +34,11 @@ using namespace paludis;
 
 namespace paludis
 {
+    /**
+     * Implementation data for PortageDepLexer.
+     *
+     * \ingroup grpdeplexer
+     */
     template<>
     struct Implementation<PortageDepLexer> :
         InternalCounted<Implementation<PortageDepLexer> >

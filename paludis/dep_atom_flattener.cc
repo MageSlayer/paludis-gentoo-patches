@@ -31,6 +31,11 @@ using namespace paludis;
 
 namespace paludis
 {
+    /**
+     * Implementation data for DepAtomFlattener.
+     *
+     * \ingroup grpdepatomflattener
+     */
     template<>
     struct Implementation<DepAtomFlattener> :
         InternalCounted<Implementation<DepAtomFlattener> >

@@ -30,6 +30,11 @@ using namespace paludis::args;
 
 namespace paludis
 {
+    /**
+     * Implementation data for ArgsGroup.
+     *
+     * \ingroup grplibpaludisargs
+     */
     template<>
     struct Implementation<ArgsGroup> :
         InternalCounted<ArgsGroup>

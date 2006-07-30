@@ -55,6 +55,11 @@ ContentsSymEntry::ContentsSymEntry(const std::string & name, const std::string &
 
 namespace paludis
 {
+    /**
+     * Implementation data for Contents.
+     *
+     * \ingroup grpcontents
+     */
     template<>
     struct Implementation<Contents> :
         InternalCounted<Implementation<Contents> >

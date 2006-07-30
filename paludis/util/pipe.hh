@@ -42,9 +42,17 @@ namespace paludis
             int _fds[2];
 
         public:
+            ///\name Basic operations
+            ///\{
+
             Pipe();
 
             ~Pipe();
+
+            ///\}
+
+            ///\name File descriptors
+            ///\{
 
             int read_fd() const
             {
@@ -55,6 +63,8 @@ namespace paludis
             {
                 return _fds[1];
             }
+
+            ///\}
     };
 
 }

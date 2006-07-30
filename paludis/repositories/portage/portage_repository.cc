@@ -71,6 +71,7 @@ using namespace paludis;
 
 namespace paludis
 {
+    /// Set of use flags.
     typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
 
     /// Map for versions.

@@ -151,6 +151,11 @@ AdvisoryVisitor::visit(const BlockDepAtom *)
 
 namespace paludis
 {
+    /**
+     * Implementation data for PortageRepositorySets.
+     *
+     * \ingroup grpportagerepository
+     */
     template<>
     struct Implementation<PortageRepositorySets> :
         InternalCounted<Implementation<PortageRepositorySets> >

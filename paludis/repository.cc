@@ -81,6 +81,11 @@ PackageUninstallActionError::PackageUninstallActionError(const std::string & msg
 
 namespace paludis
 {
+    /**
+     * Implementation data for RepositoryInfoSection.
+     *
+     * \ingroup grprepository
+     */
     template<>
     struct Implementation<RepositoryInfoSection> :
         InternalCounted<Implementation<RepositoryInfoSection> >
@@ -89,6 +94,11 @@ namespace paludis
         std::map<std::string, std::string> kvs;
     };
 
+    /**
+     * Implementation data for RepositoryInfo.
+     *
+     * \ingroup grprepository
+     */
     template<>
     struct Implementation<RepositoryInfo> :
         InternalCounted<Implementation<RepositoryInfo> >

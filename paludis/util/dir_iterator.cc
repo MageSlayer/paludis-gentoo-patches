@@ -34,6 +34,11 @@ using namespace paludis;
 
 namespace paludis
 {
+    /**
+     * Implementation data for DirIterator.
+     *
+     * \ingroup grpfilesystem
+     */
     template<>
     struct Implementation<DirIterator> :
         InternalCounted<Implementation<DirIterator> >

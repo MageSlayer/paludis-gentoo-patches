@@ -151,6 +151,11 @@ ConfigFile::skip_line(const std::string & s) const
 
 namespace paludis
 {
+    /**
+     * Implementation data for LineConfigFile.
+     *
+     * \ingroup grplineconfigfile
+     */
     template<>
     struct Implementation<LineConfigFile> :
         InternalCounted<Implementation<LineConfigFile> >
@@ -211,6 +216,11 @@ KeyValueConfigFileError::KeyValueConfigFileError(const std::string & msg,
 
 namespace paludis
 {
+    /**
+     * Implementation data for KeyValueConfigFile.
+     *
+     * \ingroup grpkvconfigfile
+     */
     template <>
     struct Implementation<KeyValueConfigFile> :
         InternalCounted<Implementation<KeyValueConfigFile> >
@@ -382,6 +392,11 @@ AdvisoryFileError::AdvisoryFileError(const std::string & msg,
 
 namespace paludis
 {
+    /**
+     * Implementation data for AdvisoryFile.
+     *
+     * \ingroup grpadvisoryconfigfile
+     */
     template<>
     struct Implementation<AdvisoryFile> :
         InternalCounted<Implementation<AdvisoryFile> >

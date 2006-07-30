@@ -47,6 +47,11 @@ DepAtom::as_use_dep_atom() const
 
 namespace paludis
 {
+    /**
+     * Implementation data for CompositeDepAtom.
+     *
+     * \ingroup grpdepatoms
+     */
     template<>
     struct Implementation<CompositeDepAtom> :
         InternalCounted<Implementation<CompositeDepAtom> >
@@ -306,6 +311,11 @@ PlainTextDepAtom::PlainTextDepAtom(const std::string & s) :
 
 namespace paludis
 {
+    /**
+     * Implementation data for UseRequirements.
+     *
+     * \ingroup grpdepatoms
+     */
     template<>
     struct Implementation<UseRequirements> :
         InternalCounted<Implementation<UseRequirements> >

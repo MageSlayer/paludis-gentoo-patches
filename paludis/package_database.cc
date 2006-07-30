@@ -73,12 +73,19 @@ NoSuchVersionError::NoSuchVersionError(const std::string & name,
 {
 }
 
+/**
+ * Name data for an AmbiguousPackageNameError.
+ *
+ * \ingroup grpexceptions
+ */
 struct AmbiguousPackageNameError::NameData
 {
+    /// Our query name
     std::string name;
+
+    /// Our match names
     std::list<std::string> names;
 };
-
 
 template <typename I_>
 AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & name,

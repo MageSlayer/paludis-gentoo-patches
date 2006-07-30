@@ -215,27 +215,52 @@ namespace paludis
             DepAtom::Pointer package_set(const std::string &,
                     const PackageSetOptions & = PackageSetOptions(false)) const;
 
+            /**
+             * Subclass for callbacks used by add_appropriate_to_world and
+             * remove_appropriate_from_world.
+             *
+             * \ingroup grpenvironment
+             */
             class WorldCallbacks
             {
                 protected:
+                    ///\name Basic operations
+                    ///\{
+
                     WorldCallbacks()
                     {
                     }
 
+                    ///\}
+
                 public:
+                    ///\name Basic operations
+                    ///\{
+
                     virtual ~WorldCallbacks()
                     {
                     }
 
+                    ///\}
+
+                    /**
+                     * Called when adding an entry to world.
+                     */
                     virtual void add_callback(const PackageDepAtom *)
                     {
                     }
 
+                    /**
+                     * Called when skipping adding an entry to world.
+                     */
                     virtual void skip_callback(const PackageDepAtom *,
                             const std::string &)
                     {
                     }
 
+                    /**
+                     * Called when removing an entry to world.
+                     */
                     virtual void remove_callback(const PackageDepAtom *)
                     {
                     }

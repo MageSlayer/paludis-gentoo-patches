@@ -36,6 +36,11 @@ using namespace paludis;
 
 namespace paludis
 {
+    /**
+     * Implementation data for PortageRepositoryNews.
+     *
+     * \ingroup grpportagerepository
+     */
     template<>
     struct Implementation<PortageRepositoryNews> :
         InternalCounted<Implementation<PortageRepositoryNews> >
@@ -186,6 +191,11 @@ PortageRepositoryNews::update_news() const
 
 namespace paludis
 {
+    /**
+     * Implementation data for NewsFile.
+     *
+     * \ingroup grpnewsconfigfile
+     */
     template<>
     struct Implementation<NewsFile> :
         InternalCounted<Implementation<NewsFile> >

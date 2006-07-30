@@ -58,10 +58,15 @@ namespace paludis
             }
 
         public:
+            ///\name Basic operations
+            ///\{
+
             FDOutputStreamBuf(const int f) :
                 fd(f)
             {
             }
+
+            ///\}
     };
 
     /**
@@ -75,10 +80,15 @@ namespace paludis
             FDOutputStreamBuf buf;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             FDOutputStreamBase(const int fd) :
                 buf(fd)
             {
             }
+
+            ///\}
     };
 
     /**
@@ -91,11 +101,16 @@ namespace paludis
         public std::ostream
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             FDOutputStream(const int fd) :
                 FDOutputStreamBase(fd),
                 std::ostream(&buf)
-        {
-        }
+            {
+            }
+
+            ///\}
     };
 }
 
