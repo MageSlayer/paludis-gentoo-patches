@@ -112,6 +112,14 @@ namespace paludis
                 return DepAtom::Pointer(0);
             }
 
+            /**
+             * Change our package database.
+             */
+            void change_package_database(PackageDatabase::Pointer _p)
+            {
+                _package_database = _p;
+            }
+
         public:
             /**
              * Does the user want the specified USE flag set for a
