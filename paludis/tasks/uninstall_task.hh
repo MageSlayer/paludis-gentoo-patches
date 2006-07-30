@@ -69,11 +69,18 @@ namespace paludis
         PrivateImplementationPattern<UninstallTask>,
         InstantiationPolicy<UninstallTask, instantiation_method::NonCopyableTag>
     {
-        public:
+        protected:
             ///\name Basic operations
             ///\{
 
             UninstallTask(Environment * const env);
+
+            ///\}
+
+        public:
+            ///\name Basic operations
+            ///\{
+
             virtual ~UninstallTask();
 
             ///\}

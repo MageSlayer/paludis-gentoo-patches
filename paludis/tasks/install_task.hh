@@ -46,11 +46,18 @@ namespace paludis
         PrivateImplementationPattern<InstallTask>,
         InstantiationPolicy<InstallTask, instantiation_method::NonCopyableTag>
     {
-        public:
+        protected:
             ///\name Basic operations
             ///\{
 
             InstallTask(Environment * const env);
+
+            ///\}
+
+        public:
+            ///\name Basic operations
+            ///\{
+
             virtual ~InstallTask();
 
             ///\}

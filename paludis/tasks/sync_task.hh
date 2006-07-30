@@ -33,11 +33,18 @@ namespace paludis
         PrivateImplementationPattern<SyncTask>,
         InstantiationPolicy<SyncTask, instantiation_method::NonCopyableTag>
     {
-        public:
+        protected:
             ///\name Basic operations
             ///\{
 
             SyncTask(Environment * const env);
+
+            ///\}
+
+        public:
+            ///\name Basic operations
+            ///\{
+
             virtual ~SyncTask();
 
             ///\}
