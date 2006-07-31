@@ -30,6 +30,45 @@ using namespace paludis;
 
 namespace
 {
+    class PaludisRepositorySoDirNotADirectoryError :
+        public Exception
+    {
+        public:
+            PaludisRepositorySoDirNotADirectoryError() throw () :
+                Exception("PALUDIS_REPOSITORY_SO_DIR not a directory")
+            {
+            }
+    };
+
+    class PaludisRepositorySoDirCannotDlopenError :
+        public Exception
+    {
+        private:
+            std::string _file, _dlerr;
+            mutable std::string _what;
+
+        public:
+            PaludisRepositorySoDirCannotDlopenError(const std::string & file,
+                    const std::string & e) throw () :
+                Exception("Cannot dlopen a repository. so file"),
+                _file(file),
+                _dlerr(e)
+            {
+            }
+
+            ~PaludisRepositorySoDirCannotDlopenError() throw ()
+            {
+            }
+
+            const char * what() const throw ()
+            {
+                if (_what.empty())
+                    _what = std::string(Exception::what()) +
+                        ": Cannot dlopen repository .so file '" + _file + "': '" + _dlerr + "'";
+                return _what.c_str();
+            }
+    };
+
     struct RepositorySoLoader
     {
         RepositorySoLoader();
@@ -49,8 +88,7 @@ RepositorySoLoader::RepositorySoLoader()
                 LIBDIR "/paludis/repositories"));
 
     if (! so_dir.is_directory())
-        throw InternalError(PALUDIS_HERE, "PALUDIS_REPOSITORY_SO_DIR '" + stringify(so_dir)
-                + "' is not a directory");
+        throw PaludisRepositorySoDirNotADirectoryError();
 
     load_dir(so_dir);
 }
@@ -71,7 +109,7 @@ RepositorySoLoader::load_dir(const FSEntry & so_dir)
         if (dl)
             dl_opened.push_back(dl);
         else
-            throw InternalError(PALUDIS_HERE, "Can't dlopen " + stringify(*d));
+            throw PaludisRepositorySoDirCannotDlopenError(stringify(*d), dlerror());
     }
 
     if ((so_dir / ".libs").is_directory())
