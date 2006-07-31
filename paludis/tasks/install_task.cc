@@ -374,7 +374,7 @@ InstallTask::execute()
     }
 
     /* update world */
-    if (! _imp->had_set_targets)
+    if ((! _imp->had_set_targets) && (! _imp->install_options.get<io_fetchonly>()))
     {
         if (! _imp->preserve_world)
         {
