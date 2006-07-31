@@ -45,6 +45,8 @@ portageq()
             shift ; shift
             best_version "$@"
         fi
+    elif [[ "$1" == "vdb_path" ]] ; then
+        vdb_path
     else
         eerror "Error emulating 'portageq $@':"
         die "portageq emulation for $1 not implemented"
@@ -54,6 +56,11 @@ portageq()
 best_version()
 {
     ${PALUDIS_COMMAND} --best-version "$@"
+}
+
+vdb_path()
+{
+    ${PALUDIS_COMMAND} --configuration-variable installed location
 }
 
 check_KV()
