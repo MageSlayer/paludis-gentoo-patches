@@ -340,11 +340,51 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
 }
 
 std::string
-PortageRepositoryEbinEntries::get_environment_variable(const QualifiedPackageName &,
-        const VersionSpec &, const std::string &,
+PortageRepositoryEbinEntries::get_environment_variable(const QualifiedPackageName & q,
+        const VersionSpec & v, const std::string & s,
         PortageRepositoryProfile::ConstPointer) const
 {
-    return "todo";
+    VersionMetadata::ConstPointer metadata(_imp->portage_repository->version_metadata(q, v));
+
+    if (s == "DEPEND")
+        return metadata->get<vm_deps>().get<vmd_build_depend_string>();
+    if (s == "RDEPEND")
+        return metadata->get<vm_deps>().get<vmd_run_depend_string>();
+    if (s == "PDEPEND")
+        return metadata->get<vm_deps>().get<vmd_post_depend_string>();
+
+    if (s == "SLOT")
+        return stringify(metadata->get<vm_slot>());
+    if (s == "LICENSE")
+        return metadata->get<vm_license>();
+    if (s == "EAPI")
+        return metadata->get<vm_eapi>();
+    if (s == "HOMEPAGE")
+        return metadata->get<vm_homepage>();
+    if (s == "DESCRIPTION")
+        return metadata->get<vm_description>();
+
+    if (s == "PROVIDE")
+        return metadata->get_ebuild_interface()->get<evm_provide>();
+    if (s == "SRC_URI")
+        return metadata->get_ebuild_interface()->get<evm_src_uri>();
+    if (s == "RESTRICT")
+        return metadata->get_ebuild_interface()->get<evm_restrict>();
+    if (s == "KEYWORDS")
+        return metadata->get_ebuild_interface()->get<evm_keywords>();
+    if (s == "IUSE")
+        return metadata->get_ebuild_interface()->get<evm_iuse>();
+    if (s == "VIRTUAL")
+        return metadata->get_ebuild_interface()->get<evm_inherited>();
+
+    if (s == "BIN_URI")
+        return metadata->get_ebin_interface()->get<ebvm_bin_uri>();
+    if (s == "SRC_REPOSITORY")
+        return stringify(metadata->get_ebin_interface()->get<ebvm_src_repository>());
+
+    PackageDatabaseEntry for_package(q, v, _imp->portage_repository->name());
+    throw EnvironmentVariableActionError("Couldn't get environment variable '" +
+            stringify(s) + "' for package '" + stringify(for_package) + "'");
 }
 
 PortageRepositoryEbinEntries::Pointer

@@ -170,7 +170,7 @@ EbinInstallCommand::commands() const
     if (install_params.get<ebcipk_merge_only>())
         return "merge";
     else
-        return "init_bin unpack_bin setup preinst merge postinst tidyup";
+        return "init_bin unpack_bin setup strip preinst merge postinst tidyup";
 }
 
 bool
@@ -209,4 +209,5 @@ EbinInstallCommand::EbinInstallCommand(const EbinCommandParams & p,
     install_params(f)
 {
 }
+
 
