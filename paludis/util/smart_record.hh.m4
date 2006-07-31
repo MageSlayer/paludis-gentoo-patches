@@ -20,7 +20,7 @@ dnl vim: set ft=cpp et sw=4 sts=4 :
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-define(`max_record_size', `15')
+define(`max_record_size', `18')
 define(`forloop', `pushdef(`$1', `$2')_forloop(`$1', `$2', `$3', `$4')popdef(`$1')')
 define(`_forloop', `$4`'ifelse($1, `$3', , `define(`$1', incr($1))_forloop(`$1', `$2', `$3', `$4')')')
 #endif
