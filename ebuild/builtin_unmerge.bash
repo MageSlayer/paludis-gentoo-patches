@@ -19,7 +19,11 @@
 
 builtin_unmerge()
 {
-    local dbdir="$(vdb_path )/${CATEGORY}/${PF}" entry
+    local v=$(vdb_path)
+    if [[ -z "${v}" ]] ; then
+        v=${ROOT}/var/db/pkg
+    fi
+    local dbdir="${v}/${CATEGORY}/${PF}" entry
     [[ -d "${dbdir}" ]] || die "couldn't find pkg db directory (\"${dbdir}\")"
 
     for v in CATEGORY CBUILD CHOST DEPEND DESCRIPTION EAPI \
