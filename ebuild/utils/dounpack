@@ -54,13 +54,13 @@ unpack_one()
             ;;
 
         *.gz|*.Z|*.z)
-            echo gzip -dc "${1}" > ${WORKDIR}/$(basename "${1%.*}" ) 1>&2
-            gzip -dc "${1}" > ${WORKDIR}/$(basename "${1%.*}" ) || die "Couldn't unpack ${1}"
+            echo gzip -dc "${1}" > ${UNPACKTODIR}/$(basename "${1%.*}" ) 1>&2
+            gzip -dc "${1}" > ${UNPACKTODIR}/$(basename "${1%.*}" ) || die "Couldn't unpack ${1}"
             ;;
 
         *.bz2)
-            echo bzip2 -dc "${1}" > ${WORKDIR}/$(basename "${1%.*}" ) 1>&2
-            bzip2 -dc "${1}" > ${WORKDIR}/$(basename "${1%.*}" ) || die "Couldn't unpack ${1}"
+            echo bzip2 -dc "${1}" > ${UNPACKTODIR}/$(basename "${1%.*}" ) 1>&2
+            bzip2 -dc "${1}" > ${UNPACKTODIR}/$(basename "${1%.*}" ) || die "Couldn't unpack ${1}"
             ;;
 
         *.rar|*.RAR)
@@ -85,12 +85,23 @@ unpack_one()
 
 }
 
+export UNPACKFROMDIR="${DISTDIR}"
+export UNPACKTODIR="${PWD}"
+
+if [[ "${1}" == "--binary" ]] ; then
+    export UNPACKFROMDIR="${PKGDIR}"
+    export UNPACKTODIR="${IMAGE}"
+    shift
+fi
+
 [[ -z "$@" ]] && die "No arguments given to unpack"
 
 for x in "$@" ; do
     x=$(echo $x )
-    echo ">>> Unpacking ${x} to ${PWD}"
-    [[ "${x:0:2}" == "./" ]] || x="${DISTDIR}/${x}"
+    echo ">>> Unpacking ${x} to ${UNPACKTODIR}"
+    [[ "${x:0:2}" == "./" ]] || x="${UNPACKFROMDIR}/${x}"
+    mkdir -p ${UNPACKTODIR}
+    cd ${UNPACKTODIR}
     unpack_one "${x}"
 done
 

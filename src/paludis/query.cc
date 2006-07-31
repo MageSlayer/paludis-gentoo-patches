@@ -210,6 +210,14 @@ void do_one_query(
             cout << "    " << std::setw(22) << std::left << "VIRTUAL:" << std::setw(0) <<
                  " " << metadata->get_ebuild_interface()->get<p::evm_virtual>() << endl;
         }
+
+        if (metadata->get_ebin_interface())
+        {
+            cout << "    " << std::setw(22) << std::left << "BIN_URI:" << std::setw(0) <<
+                 " " << metadata->get_ebin_interface()->get<p::ebvm_bin_uri>() << endl;
+            cout << "    " << std::setw(22) << std::left << "SRC_REPOSITORY:" << std::setw(0) <<
+                 " " << metadata->get_ebin_interface()->get<p::ebvm_src_repository>() << endl;
+        }
     }
     else
     {

@@ -59,8 +59,15 @@ VersionMetadataDeps::post_depend() const
 }
 
 VersionMetadata::Ebuild::Ebuild(ParserFunction f) :
-    VersionMetadata(f, &_e),
+    VersionMetadata(f, &_e, 0),
     _e()
+{
+}
+
+VersionMetadata::Ebin::Ebin(ParserFunction f) :
+    VersionMetadata(f, &_e, &_eb),
+    _e(),
+    _eb()
 {
 }
 
@@ -82,7 +89,8 @@ VersionMetadata::VersionMetadata(ParserFunction p) :
 {
 }
 
-VersionMetadata::VersionMetadata(ParserFunction p, EbuildVersionMetadata * ebuild_if) :
+VersionMetadata::VersionMetadata(ParserFunction p, EbuildVersionMetadata * ebuild_if,
+        EbinVersionMetadata * ebin_if) :
     MakeSmartRecord<VersionMetadataTag>::Type(MakeSmartRecord<VersionMetadataTag>::Type::create((
                     param<vm_slot>(SlotName("unset")),
                     param<vm_deps>(VersionMetadataDeps(p)),
@@ -92,7 +100,8 @@ VersionMetadata::VersionMetadata(ParserFunction p, EbuildVersionMetadata * ebuil
                     param<vm_eapi>("UNSET"),
                     param<vm_license>("")
                     ))),
-    _ebuild_if(ebuild_if)
+    _ebuild_if(ebuild_if),
+    _ebin_if(ebin_if)
 {
 }
 
@@ -106,6 +115,13 @@ EbuildVersionMetadata::EbuildVersionMetadata() :
                         param<evm_inherited>(""),
                         param<evm_provide>(""),
                         param<evm_virtual>("")))))
+{
+}
+
+EbinVersionMetadata::EbinVersionMetadata() :
+    MakeSmartRecord<EbinVersionMetadataTag>::Type((EbinVersionMetadata::create((
+                        param<ebvm_bin_uri>(""),
+                        param<ebvm_src_repository>(RepositoryName("unset"))))))
 {
 }
 

@@ -198,6 +198,49 @@ namespace paludis
     };
 
     /**
+     * Key for EbinVersionMetadata.
+     *
+     * \see EbinVersionMetadata
+     * \ingroup grpversions
+     */
+    enum EbinVersionMetadataKey
+    {
+        ebvm_bin_uri,         ///< BIN_URI
+        ebvm_src_repository,  ///< SRC_REPOSITORY
+        last_ebvm             ///< number of items
+    };
+
+    /**
+     * Tag for EbinVersionMetadata.
+     *
+     * \see EbinVersionMetadata
+     * \ingroup grpversions
+     */
+    struct EbinVersionMetadataTag :
+        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
+        SmartRecordKeys<EbinVersionMetadataKey, last_ebvm>,
+        SmartRecordKey<ebvm_bin_uri, std::string>,
+        SmartRecordKey<ebvm_src_repository, RepositoryName>
+    {
+    };
+
+    /**
+     * Version metadata for an ebin.
+     *
+     * \ingroup grpversions
+     * \see VersionMetadata
+     */
+    class EbinVersionMetadata :
+        public MakeSmartRecord<EbinVersionMetadataTag>::Type
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            EbinVersionMetadata();
+    };
+
+    /**
      * Version metadata.
      *
      * \ingroup grpversions
@@ -209,12 +252,14 @@ namespace paludis
     {
         private:
             EbuildVersionMetadata * _ebuild_if;
+            EbinVersionMetadata * _ebin_if;
 
         protected:
             /**
              * Constructor.
              */
-            VersionMetadata(ParserFunction, EbuildVersionMetadata * ebuild_if);
+            VersionMetadata(ParserFunction, EbuildVersionMetadata * ebuild_if,
+                    EbinVersionMetadata * ebin_if);
 
         public:
             /**
@@ -245,12 +290,32 @@ namespace paludis
                 return _ebuild_if;
             }
 
+
+            /**
+             * Fetch our ebin interface, or 0.
+             */
+            EbinVersionMetadata *
+            get_ebin_interface()
+            {
+                return _ebin_if;
+            }
+
+            /**
+             * Fetch our ebin interface, or 0.
+             */
+            const EbinVersionMetadata *
+            get_ebin_interface() const
+            {
+                return _ebin_if;
+            }
+
             /**
              * Fetch our licence, as a dep atom structure.
              */
             DepAtom::ConstPointer license() const;
 
             class Ebuild;
+            class Ebin;
     };
 
     /**
@@ -280,6 +345,36 @@ namespace paludis
              * Const pointer to us.
              */
             typedef CountedPtr<const VersionMetadata::Ebuild, count_policy::InternalCountTag> ConstPointer;
+    };
+
+    /**
+     * VersionMetadata subclass, for ebins.
+     *
+     * \ingroup grpversions
+     * \see VersionMetadata
+     */
+    class VersionMetadata::Ebin :
+        public VersionMetadata
+    {
+        private:
+            EbuildVersionMetadata _e;
+            EbinVersionMetadata _eb;
+
+        public:
+            /**
+             * Constructor.
+             */
+            Ebin(ParserFunction);
+
+            /**
+             * Pointer to us.
+             */
+            typedef CountedPtr<VersionMetadata::Ebin, count_policy::InternalCountTag> Pointer;
+
+            /**
+             * Const pointer to us.
+             */
+            typedef CountedPtr<const VersionMetadata::Ebin, count_policy::InternalCountTag> ConstPointer;
     };
 }
 

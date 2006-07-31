@@ -153,6 +153,11 @@
  * \ingroup grprepository
  */
 
+/** \defgroup grpebininterface Ebin interface
+ *
+ * \ingroup grprepository
+ */
+
 /** \defgroup grpsyncer Sync protocol handler classes
  *
  * \ingroup grprepository

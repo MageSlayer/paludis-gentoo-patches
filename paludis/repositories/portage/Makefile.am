@@ -21,7 +21,10 @@ paludis_repositories_portage_include_HEADERS = \
 	portage_repository_params.hh \
 	portage_repository_sets.hh \
 	portage_repository_entries.hh \
-	portage_repository_ebuild_entries.hh
+	portage_repository_ebuild_entries.hh \
+	portage_repository_ebin_entries.hh \
+	make_ebuild_repository.hh \
+	make_ebin_repository.hh
 
 libpaludisportagerepository_la_SOURCES = \
 	portage_repository.cc \
@@ -31,6 +34,9 @@ libpaludisportagerepository_la_SOURCES = \
 	portage_repository_sets.cc \
 	portage_repository_entries.cc \
 	portage_repository_ebuild_entries.cc \
+	portage_repository_ebin_entries.cc \
+	make_ebuild_repository.cc \
+	make_ebin_repository.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
 TESTS = portage_repository_TEST

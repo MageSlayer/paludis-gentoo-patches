@@ -127,14 +127,6 @@ namespace paludis
             PortageRepository(const PortageRepositoryParams &);
 
             /**
-             * Virtual constructor.
-             */
-            static CountedPtr<Repository> make_portage_repository(
-                    const Environment * const env,
-                    const PackageDatabase * const db,
-                    AssociativeCollection<std::string, std::string>::ConstPointer m);
-
-            /**
              * Destructor.
              */
             ~PortageRepository();
@@ -170,15 +162,6 @@ namespace paludis
 
             ///\}
     };
-
-    /**
-     * Register PortageRepository.
-     *
-     * \ingroup grpportagerepository
-     */
-    static const RepositoryMaker::RegisterMaker register_portage_repository(
-            "portage", &PortageRepository::make_portage_repository);
-
 }
 
 #endif

@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/portage/make_ebuild_repository.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/test_environment.hh>
 #include <paludis/util/system.hh>
@@ -52,7 +53,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo1");
             keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "test-repo-1");
         }
@@ -75,7 +76,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo2");
             keys->insert("profile", "portage_repository_TEST_dir/repo2/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo2");
         }
@@ -98,7 +99,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo3");
             keys->insert("profile", "portage_repository_TEST_dir/repo3/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo3");
         }
@@ -121,7 +122,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo1");
             keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -153,7 +154,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo1");
             keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -187,7 +188,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -227,7 +228,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             repo->package_names(CategoryNamePart("cat-one"));
@@ -271,7 +272,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             QualifiedPackageNameCollection::ConstPointer names(0);
@@ -324,7 +325,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo5");
             keys->insert("profile", "portage_repository_TEST_dir/repo5/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             QualifiedPackageNameCollection::ConstPointer names(0);
@@ -358,7 +359,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -402,7 +403,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -445,7 +446,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo8");
             keys->insert("profile", "portage_repository_TEST_dir/repo8/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -488,7 +489,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo6");
             keys->insert("profile", "portage_repository_TEST_dir/repo6/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -529,7 +530,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo7");
             keys->insert("profile", "portage_repository_TEST_dir/repo7/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -566,7 +567,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo7");
             keys->insert("profile", "portage_repository_TEST_dir/repo7/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -597,7 +598,7 @@ namespace test_cases
             keys->insert("format", "portage");
             keys->insert("location", "portage_repository_TEST_dir/repo9");
             keys->insert("profile", "portage_repository_TEST_dir/repo9/profiles/profile");
-            PortageRepository::Pointer repo(PortageRepository::make_portage_repository(
+            PortageRepository::Pointer repo(make_ebuild_repository(
                         &env, env.package_database().raw_pointer(), keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
