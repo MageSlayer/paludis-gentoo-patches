@@ -25,10 +25,10 @@ builtin_merge()
     local olddotglob=$?
     shopt -s dotglob
 
-    local dbdir="${ROOT%/}"/var/db/pkg/"${CATEGORY}/${PF}"
+    local dbdir="$(vdb_path )/${CATEGORY}/${PF}"
     ebuild_section "Writing VDB entry to '${dbdir}'..."
     install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
-    install -d "${ROOT%/}"/var/db/pkg/.cache || die "couldn't make pkg db cache"
+    install -d $(vdb_path )"/${CATEGORY}/${PF}"/.cache || die "couldn't make pkg db cache"
 
     local v VDB_FORMAT="paludis-2"
     for v in CATEGORY CBUILD CHOST DEPEND DESCRIPTION EAPI \

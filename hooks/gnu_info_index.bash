@@ -24,13 +24,14 @@ echo
 einfo "Checking whether the GNU info directory needs updating..."
 
 regen_info_dirs=
+vdb_loc=$(${PALUDIS_COMMAND} --configuration-variable installed location )
 for info_path in ${INFOPATH/:/ } ; do
     info_path="${ROOT%/}/${info_path}"
     [[ -d "${info_path}" ]] || continue
     info_time=$(getmtime "${info_path}" )
 
-    if [[ -f "${ROOT}/var/db/pkg/.cache/info_time_cache" ]] ; then
-        info_time_cache=$(getmtime "${ROOT}"/var/db/pkg/.cache/info_time_cache )
+    if [[ -f "${vdb_loc}/.cache/info_time_cache" ]] ; then
+        info_time_cache=$(getmtime "${vdb_loc}"/.cache/info_time_cache )
         [[ "${info_time}" -le "${info_time_cache}" ]] && continue
     fi
 
@@ -71,7 +72,7 @@ for info_path in ${regen_info_dirs} ; do
     done
 done
 
-touch "${ROOT}/var/db/pkg/.cache/info_time_cache"
+touch "${vdb_loc}/.cache/info_time_cache"
 
 if [[ ${bad_count} -gt 0 ]] ; then
     ewarn "Processed $(( good_count + bad_count )) info files, with ${bad_count} errors"

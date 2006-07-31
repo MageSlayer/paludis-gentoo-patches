@@ -19,7 +19,7 @@
 
 builtin_unmerge()
 {
-    local dbdir="${ROOT}"/var/db/pkg/"${CATEGORY}/${PF}" entry
+    local dbdir="$(vdb_path )/${CATEGORY}/${PF}" entry
     [[ -d "${dbdir}" ]] || die "couldn't find pkg db directory (\"${dbdir}\")"
 
     for v in CATEGORY CBUILD CHOST DEPEND DESCRIPTION EAPI \
