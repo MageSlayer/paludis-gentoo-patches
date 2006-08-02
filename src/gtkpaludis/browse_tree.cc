@@ -21,6 +21,7 @@
 #include "information_tree.hh"
 #include "main_window.hh"
 #include "sync.hh"
+#include "vtemm/reaper.hh"
 
 #include <gtkmm/treestore.h>
 #include <gtkmm/menu.h>
@@ -32,6 +33,7 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <iostream>
 
 using namespace paludis;
 
@@ -355,6 +357,7 @@ BrowseTree::BrowseTree(MainWindow * const main_window,
 
     append_column("Item", _imp->columns.col_item);
     get_selection()->signal_changed().connect(sigc::mem_fun(*this, &BrowseTree::on_changed));
+    Vte::Reaper::get_instance()->signal_child_exited().connect(sigc::mem_fun(*this, &BrowseTree::on_child_process_exited));
 
     /* popup menu */
     _imp->popup_menu.items().push_back(Gtk::Menu_Helpers::MenuElem("_Sync",
@@ -411,8 +414,7 @@ BrowseTree::on_menu_sync()
                 Log::get_instance()->message(ll_debug, lc_no_context,
                         "Forked child process " + stringify(child));
                 _imp->paludis_child = child;
-                Glib::signal_timeout().connect(sigc::mem_fun(*this,
-                            &BrowseTree::on_child_process_timer), 50);
+                Vte::Reaper::get_instance()->add_child(child);
             }
         }
     }
@@ -429,32 +431,20 @@ BrowseTree::on_button_press_event(GdkEventButton * event)
     return result;
 }
 
-bool
-BrowseTree::on_child_process_timer()
+void
+BrowseTree::on_child_process_exited(int, int status)
 {
     if (-1 == _imp->paludis_child)
-        return false;
+        return;
 
-    int status(-1);
-    switch (waitpid(_imp->paludis_child, &status, WNOHANG))
-    {
-        case 0:
-            return true;
+    if (0 == status)
+        Log::get_instance()->message(ll_debug, lc_no_context, "child " + stringify(_imp->paludis_child)
+                 + " exited with success");
+    else
+        Log::get_instance()->message(ll_debug, lc_no_context, "child " + stringify(_imp->paludis_child)
+                 + " exited with failure code " + stringify(status));
 
-        case -1:
-            throw InternalError(PALUDIS_HERE, "bad value -1 from waitpid");
-
-        default:
-            if (0 == status)
-                Log::get_instance()->message(ll_debug, lc_no_context, "child " + stringify(_imp->paludis_child)
-                        + " exited with success");
-            else
-                Log::get_instance()->message(ll_debug, lc_no_context, "child " + stringify(_imp->paludis_child)
-                        + " exited with failure code " + stringify(status));
-
-            _imp->paludis_child = -1;
-            _imp->main_window->set_children_sensitive(true);
-            return false;
-    }
+    _imp->paludis_child = -1;
+    _imp->main_window->set_children_sensitive(true);
 }
 

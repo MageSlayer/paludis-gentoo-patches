@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaran.mccreesh@blueyonder.co.uk>
+ * Copyright (c) 2006 Piotr Rak <piotr.rak@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,31 +17,34 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_BROWSE_TREE_HH
-#define PALUDIS_GUARD_SRC_GTKPALUDIS_BROWSE_TREE_HH 1
-
-#include <gtkmm/treeview.h>
+#include <sys/types.h>
+#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <glibmm/object.h>
+#include <sigc++/sigc++.h>
 
-namespace paludis
+_DEFS(vtemm,vte)
+_PINCLUDE(glibmm/private/object_p.h)
+
+namespace Vte
 {
-    class InformationTree;
-    class MainWindow;
+    class Reaper :
+        public Glib::Object,
+        public paludis::InstantiationPolicy<Reaper, paludis::instantiation_method::SingletonAsNeededTag>
 
-    class BrowseTree :
-        public Gtk::TreeView,
-        private PrivateImplementationPattern<BrowseTree>
     {
-        public:
-            BrowseTree(MainWindow * const, InformationTree * const);
-            ~BrowseTree();
+        friend class paludis::InstantiationPolicy<Reaper, paludis::instantiation_method::SingletonAsNeededTag>;
 
-            virtual void on_changed();
-            virtual void on_menu_sync();
+        sigc::signal<void, int, int> _signal_child_exited;
+        
+        _CLASS_GOBJECT(Reaper,VteReaper,VTE_REAPER,Glib::Object,GObject)
 
-            virtual bool on_button_press_event(GdkEventButton *);
-            virtual void on_child_process_exited(int, int);
+        Reaper();
+
+    public:
+
+        int add_child(GPid pid);
+        sigc::signal<void, int, int>& signal_child_exited();
+
     };
 }
-
-#endif

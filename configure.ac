@@ -225,10 +225,14 @@ dnl }}}
 dnl {{{ check for various misc functions.
 dnl It's probably possible to make many of these optional rather than
 dnl hard requirements. If any of these fail for you, send patches.
-AC_CHECK_FUNCS([alarm],    [], [AC_MSG_ERROR([I need alarm])])
-AC_CHECK_FUNCS([strerror], [], [AC_MSG_ERROR([I need strerror])])
-AC_CHECK_FUNCS([signal],   [], [AC_MSG_ERROR([I need signal])])
-AC_CHECK_FUNCS([popen],    [], [AC_MSG_ERROR([I need popen])])
+AC_CHECK_FUNCS([alarm],        [], [AC_MSG_ERROR([I need alarm])])
+AC_CHECK_FUNCS([strerror],     [], [AC_MSG_ERROR([I need strerror])])
+AC_CHECK_FUNCS([signal],       [], [AC_MSG_ERROR([I need signal])])
+AC_CHECK_FUNCS([popen],        [], [AC_MSG_ERROR([I need popen])])
+AC_CHECK_FUNCS([posix_openpt], [], [AC_MSG_ERROR([I need posix_openpt])])
+AC_CHECK_FUNCS([ptsname],      [], [AC_MSG_ERROR([I need ptsname])])
+AC_CHECK_FUNCS([grantpt],      [], [AC_MSG_ERROR([I need grantpt])])
+AC_CHECK_FUNCS([unlockpt],     [], [AC_MSG_ERROR([I need unlockpt])])
 dnl }}}
 
 dnl {{{ check for cxxflags
@@ -432,7 +436,12 @@ AC_ARG_ENABLE([gtk],
 AC_MSG_RESULT($enable_gtk)
 
 if test "x$enable_gtk" = "xyes"; then
-	PKG_CHECK_MODULES(DEPS, [gtkmm-2.4 >= 2.6.0])
+	GLIBMM_LIBDIR=`pkg-config --variable=libdir glibmm-2.4`
+	GMMPROC_DIR=$GLIBMM_LIBDIR/glibmm-2.4/proc
+	AC_SUBST(GMMPROC_DIR)
+	GMMPROC=$GMMPROC_DIR/gmmproc
+	AC_SUBST(GMMPROC)
+	PKG_CHECK_MODULES(DEPS, [gtkmm-2.4 >= 2.6.0 glibmm-2.4 >= 2.6.0 pangomm-1.4 gdkmm-2.4 vte >= 0.12.1])
 	AC_SUBST(DEPS_CFLAGS)
 	AC_SUBST(DEPS_LIBS)
 fi
@@ -503,6 +512,9 @@ AC_OUTPUT(
 	src/Makefile
 	src/paludis/Makefile
 	src/gtkpaludis/Makefile
+	src/gtkpaludis/vtemm/Makefile
+	src/gtkpaludis/vtemm/converts/Makefile
+	src/gtkpaludis/vtemm/defs/Makefile
 	src/qualudis/Makefile
 	test/Makefile
 	)

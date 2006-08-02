@@ -20,7 +20,7 @@
 #include "main_window.hh"
 #include "browse_tree.hh"
 #include "information_tree.hh"
-#include "message_window.hh"
+#include "vte_message_window.hh"
 
 #include <paludis/about.hh>
 #include <paludis/util/stringify.hh>
@@ -63,7 +63,7 @@ namespace paludis
 
         Gtk::Frame messages_frame;
         Gtk::ScrolledWindow messages_window;
-        MessageWindow messages;
+        VteMessageWindow vte_messages;
 
         Implementation(MainWindow * const main_window);
     };
@@ -118,7 +118,7 @@ MainWindow::MainWindow() :
 
     _imp->messages_frame.add(_imp->messages_window);
     _imp->messages_window.set_border_width(5);
-    _imp->messages_window.add(_imp->messages);
+    _imp->messages_window.add(_imp->vte_messages);
     _imp->messages_window.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
     show_all_children();
