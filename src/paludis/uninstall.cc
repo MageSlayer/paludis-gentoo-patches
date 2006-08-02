@@ -90,7 +90,7 @@ namespace
                         "::" + stringify(d.get<pde_repository>())) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
-                        stringify(_count) + ") Installing " +
+                        stringify(_count) + ") Uninstalling " +
                         stringify(d.get<pde_name>()) + "-" + stringify(d.get<pde_version>()) +
                         "::" + stringify(d.get<pde_repository>()));
             }
