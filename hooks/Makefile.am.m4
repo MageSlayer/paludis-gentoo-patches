@@ -21,7 +21,7 @@ installhookcommonprog_SCRIPTS = \
 installhookinstallallpost_SCRIPTS = \
 	find_config_updates.bash
 
-installvarlibpaludisnews_SCRIPTS = \
+installvarlibpaludisnews_DATA = \
 	.keep
 
 TESTS_ENVIRONMENT = env \
@@ -44,7 +44,7 @@ check_PROGRAMS =
 
 define(`userhook', `
 installuserhooks$1dir = $(datadir)/paludis/hooks/$1
-installuserhooks$1_SCRIPTS = .keep')
+installuserhooks$1_DATA = .keep')
 
 userhook(`install_pre')
 userhook(`install_fail')
@@ -124,7 +124,7 @@ userhook(`ebuild_postrm_post')
 
 define(`systemhook', `
 installsystemhooks$1dir = $(libexecdir)/paludis/hooks/$1
-installsystemhooks$1_SCRIPTS = .keep')
+installsystemhooks$1_DATA = .keep')
 
 systemhook(`install_pre')
 systemhook(`install_post')
