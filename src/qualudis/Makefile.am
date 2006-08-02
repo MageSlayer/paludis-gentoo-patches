@@ -5,11 +5,13 @@ DEFS= \
 	-DBIGTEMPDIR=\"/var/tmp\"
 SUBDIRS = .
 
+man_pages = qualudis.1
+
 if ENABLE_QA
 
 bin_PROGRAMS = qualudis
 noinst_PROGRAMS = man-qualudis
-man_MANS = qualudis.1
+man_MANS = $(man_pages)
 
 qualudis_SOURCES = \
 	qualudis_command_line.hh      qualudis_command_line.cc      \
@@ -43,14 +45,12 @@ man_qualudis_SOURCES = \
 	qualudis_command_line.cc
 
 man_qualudis_LDADD = \
-	$(top_builddir)/paludis/qa/libpaludisqa.la \
-	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
 
 CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno *.gcda
-DISTCLEANFILES = $(man_MANS)
+DISTCLEANFILES = $(man_pages)
 MAINTAINERCLEANFILES = Makefile.in
-EXTRA_DIST = $(man_MANS)
+EXTRA_DIST = $(man_pages)
 

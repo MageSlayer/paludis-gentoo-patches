@@ -4,7 +4,7 @@
 #define PALUDIS_GUARD_SRC_QUALUDIS_QUALUDIS_COMMAND_LINE_HH 1
 
 #include <paludis/args/args.hh>
-#include <paludis/qa/qa.hh>
+#include <paludis/qa/message.hh>
 #include <paludis/util/instantiation_policy.hh>
 
 class QualudisCommandLine :

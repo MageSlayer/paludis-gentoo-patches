@@ -1,9 +1,21 @@
-CLEANFILES = *~ done-check gmon.out *.gcov *.gcno *.gcda
+CLEANFILES = *~ done-check gmon.out *.gcov *.gcno *.gcda automake-deps-hack.tmp
 MAINTAINERCLEANFILES = Makefile.in configure config/* aclocal.m4 \
 			config.h config.h.in INSTALL COPYING
 AUTOMAKE_OPTIONS = dist-bzip2 no-dist-gzip std-options
-EXTRA_DIST = autogen.bash
+EXTRA_DIST = autogen.bash automake-deps-hack.tmp
 SUBDIRS = misc test paludis ebuild src doc hooks eselect
+
+DISTCHECK_CONFIGURE_FLAGS = --enable-qa
+
+automake-deps-hack.tmp :
+	make -C paludis/util
+	make -C paludis/args
+	make -C src/paludis paludis.1
+	make -C src/qualudis qualudis.1
+	touch $@
+
+dist-hook :
+	rm $(distdir)/automake-deps-hack.tmp
 
 doxygen :
 	$(MAKE) -C doc doxygen
