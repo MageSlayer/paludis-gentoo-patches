@@ -47,7 +47,7 @@ QualudisCommandLine::QualudisCommandLine() :
             ("minor", "Show minor and upwards")
             ("major", "Show major and upwards")
             ("fatal", "Show only fatals"),
-            "warning"),
+            "info"),
 
     message_level(paludis::qa::qal_info)
 {
