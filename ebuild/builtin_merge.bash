@@ -34,8 +34,8 @@ builtin_merge()
     install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
     install -d "${v}/${CATEGORY}/${PF}"/.cache || die "couldn't make pkg db cache"
 
-    local v VDB_FORMAT="paludis-2"
-    for v in CATEGORY CBUILD CHOST DEPEND DESCRIPTION EAPI \
+    local v VDB_FORMAT="paludis-2" COUNTER="0"
+    for v in CATEGORY CBUILD CHOST COUNTER DEPEND DESCRIPTION EAPI \
         FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
         PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK \
         VDB_FORMAT ; do
