@@ -103,7 +103,7 @@ namespace paludis
         FDOutputStream stream;
 
         Implementation(VteMessageWindow *o);
-        
+
     };
 
     Implementation<VteMessageWindow>::Implementation(VteMessageWindow* o) :
