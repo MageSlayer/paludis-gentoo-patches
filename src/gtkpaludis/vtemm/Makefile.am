@@ -22,7 +22,12 @@ if ENABLE_GTK
 
 BUILT_SOURCES = terminal_widget.hh reaper.hh $(vte_generated_sources)
 
-terminal_widget.hh terminal_widget.cc : terminal_widget.hg terminal_widget.ccg
+# automake is rather weird on this one...
+automake-deps-hack.tmp :
+	$(MAKE) -C defs
+	touch $@
+
+terminal_widget.hh terminal_widget.cc : terminal_widget.hg terminal_widget.ccg automake-deps-hack.tmp
 	mkdir -p private
 	@GMMPROC@ --unwrapped -I converts --defs defs terminal_widget . .
 	sed -e 's@/\* vim: set @/* vim: set ro @' < ./terminal_widget.h > ./terminal_widget.hh
@@ -36,7 +41,7 @@ terminal_widget.hh terminal_widget.cc : terminal_widget.hg terminal_widget.ccg
 	rm ./terminal_widget.cc.tmp
 	mv ./private/terminal_widget_p.h ./private/terminal_widget_p.hh
 
-reaper.hh reaper.cc : reaper.hg reaper.ccg
+reaper.hh reaper.cc : reaper.hg reaper.ccg automake-deps-hack.tmp
 	mkdir -p private
 	@GMMPROC@ --unwrapped -I converts --defs defs reaper . .
 	sed -e 's@/\* vim: set @/* vim: set ro @' < ./reaper.h > ./reaper.hh
@@ -62,6 +67,6 @@ clean-local :
 
 endif
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda $(vte_generated_sources)
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda $(vte_generated_sources) automake-deps-hack.tmp
 MAINTAINERCLEANFILES = Makefile.in
 
