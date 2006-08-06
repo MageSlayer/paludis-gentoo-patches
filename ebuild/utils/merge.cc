@@ -103,10 +103,12 @@ namespace
     {
         private:
             const int _fd;
+            const bool _sync;
 
         public:
-            FDHolder(const int fd) :
-                _fd(fd)
+            FDHolder(const int fd, bool sync = true) :
+                _fd(fd),
+                _sync(sync)
             {
             }
 
@@ -114,7 +116,8 @@ namespace
             {
                 if (-1 != _fd)
                 {
-                    ::fsync(_fd);
+                    if (_sync)
+                        ::fsync(_fd);
                     ::close(_fd);
                 }
             }
@@ -174,6 +177,15 @@ namespace
     }
 
     void
+    copy_file_contents(int input_fd, int fd)
+    {
+        char buf[4096];
+        ssize_t count;
+        while ((count = read(input_fd, buf, 4096)) > 0)
+            write(fd, buf, 4096);
+    }
+
+    void
     do_obj(const FSEntry & root, const FSEntry & src,
             const FSEntry & dst, ofstream * const contents)
     {
@@ -195,8 +207,8 @@ namespace
         {
             FSEntry real_dst(dst);
 
-            ifstream input_file(stringify(src).c_str());
-            if (! input_file)
+            FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
+            if (-1 == input_fd)
                 throw Failure("Cannot read '" + stringify(src) + "'");
 
             if (dst.exists())
@@ -242,12 +254,7 @@ namespace
                     throw Failure("Cannot fchmod '" + stringify(real_dst) + "': " +
                             stringify(::strerror(errno)));
 
-                FDOutputStream output_file(fd);
-                if (! output_file)
-                    throw Failure("Cannot write '" + stringify(dst) + "'");
-
-                std::copy((istreambuf_iterator<char>(input_file)), istreambuf_iterator<char>(),
-                        ostreambuf_iterator<char>(output_file));
+                copy_file_contents(input_fd, fd);
             }
 
             ifstream dst_file(stringify(dst).c_str());
