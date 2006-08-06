@@ -182,7 +182,7 @@ namespace
         char buf[4096];
         ssize_t count;
         while ((count = read(input_fd, buf, 4096)) > 0)
-            write(fd, buf, 4096);
+            write(fd, buf, count);
     }
 
     void
