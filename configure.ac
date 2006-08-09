@@ -484,6 +484,7 @@ dnl {{{ output
 AM_CONFIG_HEADER(config.h)
 AC_OUTPUT(
 	Makefile
+	cran/Makefile
 	doc/Makefile
 	doc/doxygen.conf
 	ebuild/Makefile
@@ -502,6 +503,7 @@ AC_OUTPUT(
 	paludis/hashed_containers.hh
 	paludis/qa/Makefile
 	paludis/repositories/Makefile
+	paludis/repositories/cran/Makefile
 	paludis/repositories/fake/Makefile
 	paludis/repositories/nothing/Makefile
 	paludis/repositories/portage/Makefile

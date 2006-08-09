@@ -132,7 +132,7 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
                 e.get<pde_repository>())->version_metadata(e.get<pde_name>(), e.get<pde_version>()));
 
     if (metadata->get<vm_eapi>() != "0" && metadata->get<vm_eapi>() != ""
-            && metadata->get<vm_eapi>() != "paludis-1")
+            && metadata->get<vm_eapi>() != "paludis-1" && metadata->get<vm_eapi>() != "CRAN-0")
         result.set(mr_eapi);
     else
     {

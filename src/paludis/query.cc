@@ -195,6 +195,18 @@ void do_one_query(
         cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
             " " << metadata->get<p::vm_deps>().get<p::vmd_post_depend_string>() << endl;
 
+        if (metadata->get_cran_interface())
+        {
+            cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
+                " " << metadata->get_cran_interface()->get<p::cranvm_keywords>() << endl;
+            cout << "    " << std::setw(22) << std::left << "PACKAGE:" << std::setw(0) <<
+                " " << metadata->get_cran_interface()->get<p::cranvm_package>() << endl;
+            cout << "    " << std::setw(22) << std::left << "VERSION:" << std::setw(0) <<
+                " " << metadata->get_cran_interface()->get<p::cranvm_version>() << endl;
+            cout << "    " << std::setw(22) << std::left << "IS_BUNDLE:" << std::setw(0) <<
+                " " << std::boolalpha << metadata->get_cran_interface()->get<p::cranvm_is_bundle>() << endl;
+        }
+
         if (metadata->get_ebuild_interface())
         {
             cout << "    " << std::setw(22) << std::left << "IUSE:" << std::setw(0) <<

@@ -190,12 +190,50 @@ namespace paludis
              * Constructor.
              */
             EbuildVersionMetadata();
-
             /**
              * PROVIDE, as a dep atom.
              */
             DepAtom::ConstPointer provide() const;
     };
+
+    /**
+     * Key for CRANVersionMetadata.
+     *
+     * \see CRANVersionMetadata
+     * \ingroup grpversions
+     */
+    enum CRANVersionMetadataKey
+    {
+        cranvm_keywords,
+        cranvm_package,
+        cranvm_version,
+        cranvm_is_bundle,
+        last_cranvm
+    };
+
+    /**
+     * Tag for CRANVersionMetadata.
+     *
+     * \see CRANVersionMetadata
+     * \ingroup grpversions
+     */
+    struct CRANVersionMetadataTag :
+        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
+        SmartRecordKeys<CRANVersionMetadataKey, last_cranvm>,
+        SmartRecordKey<cranvm_keywords, std::string>,
+        SmartRecordKey<cranvm_package, std::string>,
+        SmartRecordKey<cranvm_version, std::string>,
+        SmartRecordKey<cranvm_is_bundle, bool>
+    {
+    };
+
+    /**
+     * Version metadata for a CRAN package.
+     *
+     * \ingroup grpversions
+     * \see VersionMetadata
+     */
+    typedef MakeSmartRecord<CRANVersionMetadataTag>::Type CRANVersionMetadata;
 
     /**
      * Key for EbinVersionMetadata.
@@ -251,6 +289,7 @@ namespace paludis
         public InternalCounted<VersionMetadata>
     {
         private:
+            CRANVersionMetadata * _cran_if;
             EbuildVersionMetadata * _ebuild_if;
             EbinVersionMetadata * _ebin_if;
 
@@ -258,7 +297,8 @@ namespace paludis
             /**
              * Constructor.
              */
-            VersionMetadata(ParserFunction, EbuildVersionMetadata * ebuild_if,
+            VersionMetadata(ParserFunction, CRANVersionMetadata * cran_if,
+                    EbuildVersionMetadata * ebuild_if,
                     EbinVersionMetadata * ebin_if);
 
         public:
@@ -271,6 +311,27 @@ namespace paludis
              * Destructor.
              */
             virtual ~VersionMetadata();
+
+            /**
+             * Fetch out CRAN interface, or 0.
+             */
+            CRANVersionMetadata *
+            get_cran_interface()
+            {
+                return _cran_if;
+            }
+
+            /**
+             * Fetch out CRAN interface, or 0.
+             */
+            const CRANVersionMetadata *
+            get_cran_interface() const
+            {
+                return _cran_if;
+            }
+
+
+            class CRAN;
 
             /**
              * Fetch our ebuild interface, or 0.
@@ -290,6 +351,7 @@ namespace paludis
                 return _ebuild_if;
             }
 
+            class Ebuild;
 
             /**
              * Fetch our ebin interface, or 0.
@@ -313,12 +375,39 @@ namespace paludis
              * Fetch our licence, as a dep atom structure.
              */
             DepAtom::ConstPointer license() const;
-
-            class Ebuild;
             class Ebin;
     };
 
     /**
+     * VersionMetadata subclass, for CRAN repositories.
+     *
+     * \ingroup grpversions
+     * \see VersionMetadata
+     */
+    class VersionMetadata::CRAN :
+        public VersionMetadata
+    {
+        private:
+            CRANVersionMetadata _c;
+
+        public:
+            /**
+             * Constructor.
+             */
+            CRAN(ParserFunction);
+
+            /**
+             * Pointer to us.
+             */
+            typedef CountedPtr<VersionMetadata::CRAN, count_policy::InternalCountTag> Pointer;
+
+            /**
+             * Const pointer to us.
+             */
+            typedef CountedPtr<const VersionMetadata::Ebuild, count_policy::InternalCountTag> ConstPointer;
+    };
+
+   /**
      * VersionMetadata subclass, for ebuilds.
      *
      * \ingroup grpversions

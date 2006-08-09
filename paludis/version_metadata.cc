@@ -58,14 +58,24 @@ VersionMetadataDeps::post_depend() const
     return get<vmd_parser>()(get<vmd_post_depend_string>());
 }
 
+VersionMetadata::CRAN::CRAN(ParserFunction f) :
+    VersionMetadata(f, &_c, 0, 0),
+    _c(CRANVersionMetadata::create((
+                    param<cranvm_keywords>(""),
+                    param<cranvm_package>(""),
+                    param<cranvm_version>(""),
+                    param<cranvm_is_bundle>(false))))
+{
+}
+
 VersionMetadata::Ebuild::Ebuild(ParserFunction f) :
-    VersionMetadata(f, &_e, 0),
+    VersionMetadata(f, 0, &_e, 0),
     _e()
 {
 }
 
 VersionMetadata::Ebin::Ebin(ParserFunction f) :
-    VersionMetadata(f, &_e, &_eb),
+    VersionMetadata(f, 0, &_e, &_eb),
     _e(),
     _eb()
 {
@@ -85,11 +95,15 @@ VersionMetadata::VersionMetadata(ParserFunction p) :
                     param<vm_eapi>("UNSET"),
                     param<vm_license>("")
                     ))),
-    _ebuild_if(0)
+    _cran_if(0),
+    _ebuild_if(0),
+    _ebin_if(0)
 {
 }
 
-VersionMetadata::VersionMetadata(ParserFunction p, EbuildVersionMetadata * ebuild_if,
+VersionMetadata::VersionMetadata(ParserFunction p,
+        CRANVersionMetadata * cran_if,
+        EbuildVersionMetadata * ebuild_if,
         EbinVersionMetadata * ebin_if) :
     MakeSmartRecord<VersionMetadataTag>::Type(MakeSmartRecord<VersionMetadataTag>::Type::create((
                     param<vm_slot>(SlotName("unset")),
@@ -100,8 +114,9 @@ VersionMetadata::VersionMetadata(ParserFunction p, EbuildVersionMetadata * ebuil
                     param<vm_eapi>("UNSET"),
                     param<vm_license>("")
                     ))),
-    _ebuild_if(ebuild_if),
-    _ebin_if(ebin_if)
+     _cran_if(cran_if),
+     _ebuild_if(ebuild_if),
+     _ebin_if(ebin_if)
 {
 }
 
@@ -138,4 +153,3 @@ VersionMetadata::license() const
     return PortageDepParser::parse(get<vm_license>(), PortageDepParserPolicy<PlainTextDepAtom,
             true>::get_instance());
 }
-
