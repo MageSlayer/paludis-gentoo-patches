@@ -187,6 +187,11 @@ namespace test
      * Change the function used to get a string description of an exception.
      */
     void set_exception_to_debug_string(std::string (*) (const std::exception &));
+
+    /**
+     * Fetch the function used to get a string description of an exception.
+     */
+    std::string (* get_exception_to_debug_string()) (const std::exception &);
 }
 
 /**
@@ -194,9 +199,20 @@ namespace test
  */
 #define TEST_CHECK_EQUAL(a, b) \
     do { \
-        check(__PRETTY_FUNCTION__, __FILE__, __LINE__, a == b, \
-                "Expected '" #a "' to equal '" + paludis::stringify(b) + \
-                "' but got '" + paludis::stringify(a) + "'"); \
+        try { \
+            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, a == b, \
+                    "Expected '" #a "' to equal '" + paludis::stringify(b) + \
+                    "' but got '" + paludis::stringify(a) + "'"); \
+        } catch (const TestFailedException &) { \
+            throw; \
+        } catch (const std::exception & e) { \
+            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
+                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(e) + \
+                    " inside a TEST_CHECK_EQUAL block"); \
+        } catch (...) { \
+            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
+                    "Test threw unexpected unknown exception inside a TEST_CHECK_EQUAL block"); \
+        } \
     } while (false)
 
 /**
@@ -204,9 +220,20 @@ namespace test
  */
 #define TEST_CHECK_STRINGIFY_EQUAL(a, b) \
     do { \
-        check(__PRETTY_FUNCTION__, __FILE__, __LINE__, paludis::stringify(a) == paludis::stringify(b), \
-                "Expected '" #a "' to equal '" + paludis::stringify(b) + \
-                "' but got '" + paludis::stringify(a) + "'"); \
+        try { \
+            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, paludis::stringify(a) == paludis::stringify(b), \
+                    "Expected '" #a "' to equal '" + paludis::stringify(b) + \
+                    "' but got '" + paludis::stringify(a) + "'"); \
+        } catch (const TestFailedException &) { \
+            throw; \
+        } catch (const std::exception & e) { \
+            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
+                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(e) + \
+                    " inside a TEST_CHECK_STRINGIFY_EQUAL block"); \
+        } catch (...) { \
+            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
+                    "Test threw unexpected unknown exception inside a TEST_CHECK_STRINGIFY_EQUAL block"); \
+        } \
     } while (false)
 
 /**
@@ -214,8 +241,19 @@ namespace test
  */
 #define TEST_CHECK(a) \
     do { \
-        check(__PRETTY_FUNCTION__, __FILE__, __LINE__, a, \
-                "Check '" #a "' failed"); \
+        try { \
+            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, a, \
+                    "Check '" #a "' failed"); \
+        } catch (const TestFailedException &) { \
+            throw; \
+        } catch (const std::exception & e) { \
+            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
+                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(e) + \
+                    " inside a TEST_CHECK block"); \
+        } catch (...) { \
+            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
+                    "Test threw unexpected unknown exception inside a TEST_CHECK block"); \
+        } \
     } while (false)
 
 /**
@@ -224,11 +262,22 @@ namespace test
 #define TEST_CHECK_THROWS(a, b) \
     do { \
         try { \
-            a; \
-            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, false, \
-                    "Expected exception of type '" #b "' not thrown"); \
-        } catch (b &) { \
-            TEST_CHECK(true); \
+            try { \
+                a; \
+                check(__PRETTY_FUNCTION__, __FILE__, __LINE__, false, \
+                        "Expected exception of type '" #b "' not thrown"); \
+            } catch (b &) { \
+                TEST_CHECK(true); \
+            } \
+        } catch (const TestFailedException &) { \
+            throw; \
+        } catch (const std::exception & e) { \
+            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
+                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(e) + \
+                    " inside a TEST_CHECK_THROWS block"); \
+        } catch (...) { \
+            throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
+                    "Test threw unexpected unknown exception inside a TEST_CHECK_THROWS block"); \
         } \
     } while (false)
 

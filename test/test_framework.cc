@@ -75,6 +75,11 @@ test::set_exception_to_debug_string(std::string (*f) (const std::exception &))
     DebugStringHolder::get_instance()->set(f);
 }
 
+std::string (* test::get_exception_to_debug_string()) (const std::exception &)
+{
+    return DebugStringHolder::get_instance()->get();
+}
+
 namespace paludis
 {
     template<>
