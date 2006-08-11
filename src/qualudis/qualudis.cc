@@ -83,13 +83,13 @@ namespace
 
         for (qa::CheckResult::Iterator i(r.begin()), i_end(r.end()) ; i != i_end ; ++i)
         {
-            if (i->get<qa::mk_level>() < QualudisCommandLine::get_instance()->message_level)
+            if (i->level < QualudisCommandLine::get_instance()->message_level)
                 continue;
 
             bool show(true);
             do
             {
-                switch (i->get<qa::mk_level>())
+                switch (i->level)
                 {
                     case qa::qal_info:
                         display_header_once(&done_out, r);
@@ -132,7 +132,7 @@ namespace
             while (false);
 
             if (show)
-                cout << i->get<qa::mk_msg>() << endl;
+                cout << i->msg << endl;
         }
     }
 

@@ -35,11 +35,13 @@
 
 using namespace paludis;
 
+#include <paludis/dep_list_entry-sr.cc>
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const DepListEntry & e)
 {
-    s << e.get<dle_name>() << "-" << e.get<dle_version>() << ":"
-        << e.get<dle_metadata>()->get<vm_slot>() << "::" << e.get<dle_repository>();
+    s << e.name << "-" << e.version << ":"
+        << e.metadata->slot << "::" << e.repository;
     return s;
 }
 
@@ -166,7 +168,7 @@ namespace
     {
         bool operator() (const DepListEntry & e) const
         {
-            return e.get<dle_flags>()[dlef_skip];
+            return e.flags[dlef_skip];
         }
     };
 }
@@ -188,29 +190,29 @@ DepList::add(DepAtom::ConstPointer atom)
         _imp->merge_list_insert_pos = _imp->merge_list.end();
         while (i != _imp->merge_list.end())
         {
-            if (! i->get<dle_flags>()[dlef_has_predeps] && ! _imp->drop_all)
+            if (! i->flags[dlef_has_predeps] && ! _imp->drop_all)
                 throw InternalError(PALUDIS_HERE, "dle_has_predeps not set for " + stringify(*i));
 
-            else if (! i->get<dle_flags>()[dlef_has_trypredeps] && ! _imp->drop_all)
+            else if (! i->flags[dlef_has_trypredeps] && ! _imp->drop_all)
             {
                 Save<const DepListEntry *> save_current_package(
                         &_imp->current_package, &*i);
                 _add_in_role(_imp->environment->package_database()->fetch_repository(
-                            i->get<dle_repository>())->version_metadata(
-                            i->get<dle_name>(), i->get<dle_version>())->get<vm_deps>().run_depend(),
+                            i->repository)->version_metadata(
+                            i->name, i->version)->deps.run_depend(),
                         "runtime dependencies");
-                i->get<dle_flags>().set(dlef_has_trypredeps);
+                i->flags.set(dlef_has_trypredeps);
             }
 
-            else if (! i->get<dle_flags>()[dlef_has_postdeps] && ! _imp->drop_all)
+            else if (! i->flags[dlef_has_postdeps] && ! _imp->drop_all)
             {
                 Save<const DepListEntry *> save_current_package(
                         &_imp->current_package, &*i);
                 _add_in_role(_imp->environment->package_database()->fetch_repository(
-                            i->get<dle_repository>())->version_metadata(
-                            i->get<dle_name>(), i->get<dle_version>())->get<vm_deps>().post_depend(),
+                            i->repository)->version_metadata(
+                            i->name, i->version)->deps.post_depend(),
                         "post dependencies");
-                i->get<dle_flags>().set(dlef_has_postdeps);
+                i->flags.set(dlef_has_postdeps);
             }
             else
                 ++i;
@@ -362,7 +364,7 @@ DepList::visit(const PackageDepAtom * const p)
                             DepListEntryMatcher(_imp->environment, *p)))))
         {
             /* what's our status? */
-            if (! i->get<dle_flags>()[dlef_has_predeps])
+            if (! i->flags[dlef_has_predeps])
             {
                 if (! installed->empty())
                     return;
@@ -371,8 +373,8 @@ DepList::visit(const PackageDepAtom * const p)
                 {
                     if (_imp->current_package)
                         Log::get_instance()->message(ll_warning, lc_context, "Dropping circular dependency on " +
-                                stringify(_imp->current_package->get<dle_name>()) + "-" +
-                                stringify(_imp->current_package->get<dle_version>()));
+                                stringify(_imp->current_package->name) + "-" +
+                                stringify(_imp->current_package->version));
                     return;
                 }
 
@@ -380,8 +382,8 @@ DepList::visit(const PackageDepAtom * const p)
                         match_package(_imp->environment, p, _imp->current_package))
                 {
                     Log::get_instance()->message(ll_warning, lc_context, "Dropping self-circular dependency on " +
-                            stringify(_imp->current_package->get<dle_name>()) + "-" +
-                            stringify(_imp->current_package->get<dle_version>()));
+                            stringify(_imp->current_package->name) + "-" +
+                            stringify(_imp->current_package->version));
                     return;
                 }
 
@@ -390,7 +392,7 @@ DepList::visit(const PackageDepAtom * const p)
             }
 
             if (p->tag())
-                i->get<dle_tag>()->insert(p->tag());
+                i->tag->insert(p->tag());
             return;
         }
     }
@@ -416,7 +418,7 @@ DepList::visit(const PackageDepAtom * const p)
         /// \todo SLOTs?
         if ((! _imp->ignore_installed) && ((0 != _imp->current_package) || (! _imp->reinstall)))
             if (! installed->empty())
-                if (e->get<pde_version>() <= installed->last()->get<pde_version>())
+                if (e->version <= installed->last()->version)
                     continue;
 
         /* check masks */
@@ -424,7 +426,7 @@ DepList::visit(const PackageDepAtom * const p)
             continue;
 
         metadata = _imp->environment->package_database()->fetch_repository(
-                e->get<pde_repository>())->version_metadata(e->get<pde_name>(), e->get<pde_version>());
+                e->repository)->version_metadata(e->name, e->version);
         match = &*e;
         break;
     }
@@ -441,15 +443,15 @@ DepList::visit(const PackageDepAtom * const p)
             if (_imp->recursive_deps)
             {
                 metadata = _imp->environment->package_database()->fetch_repository(
-                        installed->last()->get<pde_repository>())->version_metadata(
-                        installed->last()->get<pde_name>(), installed->last()->get<pde_version>());
+                        installed->last()->repository)->version_metadata(
+                        installed->last()->name, installed->last()->version);
                 DepListEntryFlags flags;
                 flags.set(dlef_has_predeps);
                 flags.set(dlef_skip);
                 merge_entry = _imp->merge_list.insert(_imp->merge_list_insert_pos,
-                        DepListEntry(installed->last()->get<pde_name>(),
-                            installed->last()->get<pde_version>(), metadata,
-                            installed->last()->get<pde_repository>(), flags, tags));
+                        DepListEntry(installed->last()->name,
+                            installed->last()->version, metadata,
+                            installed->last()->repository, flags, tags));
             }
             else
                 return;
@@ -471,12 +473,12 @@ DepList::visit(const PackageDepAtom * const p)
     {
         DepListEntryFlags flags;
         merge_entry = _imp->merge_list.insert(_imp->merge_list_insert_pos,
-                DepListEntry(match->get<pde_name>(), match->get<pde_version>(),
-                    metadata, match->get<pde_repository>(), flags, tags));
+                DepListEntry(match->name, match->version,
+                    metadata, match->repository, flags, tags));
     }
 
     /* if we provide things, also insert them. */
-    if ((metadata->get_ebuild_interface()) && ! merge_entry->get<dle_flags>()[dlef_skip])
+    if ((metadata->get_ebuild_interface()) && ! merge_entry->flags[dlef_skip])
     {
         DepAtom::ConstPointer provide(metadata->get_ebuild_interface()->provide());
 
@@ -485,9 +487,9 @@ DepList::visit(const PackageDepAtom * const p)
         if (_imp->current_package)
             e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
                     new PackageDatabaseEntry(
-                        _imp->current_package->get<dle_name>(),
-                        _imp->current_package->get<dle_version>(),
-                        _imp->current_package->get<dle_repository>()));
+                        _imp->current_package->name,
+                        _imp->current_package->version,
+                        _imp->current_package->repository));
 
         DepAtomFlattener f(_imp->environment, e.raw_pointer(), provide);
 
@@ -500,17 +502,17 @@ DepList::visit(const PackageDepAtom * const p)
                 continue;
 
             VersionMetadata::Pointer p_metadata(new VersionMetadata::Ebuild(
-                        merge_entry->get<dle_metadata>()->get<vm_deps>().get<vmd_parser>()));
-            p_metadata->set<vm_slot>(merge_entry->get<dle_metadata>()->get<vm_slot>());
-            p_metadata->get_ebuild_interface()->set<evm_virtual>(stringify(merge_entry->get<dle_name>()));
+                        merge_entry->metadata->deps.parser));
+            p_metadata->slot = merge_entry->metadata->slot;
+            p_metadata->get_ebuild_interface()->virtual_for = stringify(merge_entry->name);
 
             DepListEntryFlags flags;
             flags.set(dlef_has_predeps);
             flags.set(dlef_has_trypredeps);
             flags.set(dlef_has_postdeps);
             _imp->merge_list.insert(next(merge_entry),
-                    DepListEntry(pp.package(), merge_entry->get<dle_version>(),
-                        p_metadata, merge_entry->get<dle_repository>(), flags,
+                    DepListEntry(pp.package(), merge_entry->version,
+                        p_metadata, merge_entry->repository, flags,
                         SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Pointer(
                             new SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Concrete)));
         }
@@ -526,18 +528,18 @@ DepList::visit(const PackageDepAtom * const p)
             &*merge_entry);
 
     /* merge depends */
-    if ((! merge_entry->get<dle_flags>()[dlef_has_predeps]) && ! (_imp->drop_all))
-        _add_in_role(metadata->get<vm_deps>().build_depend(), "build dependencies");
-    merge_entry->get<dle_flags>().set(dlef_has_predeps);
+    if ((! merge_entry->flags[dlef_has_predeps]) && ! (_imp->drop_all))
+        _add_in_role(metadata->deps.build_depend(), "build dependencies");
+    merge_entry->flags.set(dlef_has_predeps);
 
     /* merge rdepends */
-    if (! merge_entry->get<dle_flags>()[dlef_has_trypredeps] && dlro_always != _imp->rdepend_post
+    if (! merge_entry->flags[dlef_has_trypredeps] && dlro_always != _imp->rdepend_post
             && ! _imp->drop_all)
     {
         try
         {
-            _add_in_role(metadata->get<vm_deps>().run_depend(), "runtime dependencies");
-            merge_entry->get<dle_flags>().set(dlef_has_trypredeps);
+            _add_in_role(metadata->deps.run_depend(), "runtime dependencies");
+            merge_entry->flags.set(dlef_has_trypredeps);
         }
         catch (const CircularDependencyError &)
         {
@@ -545,8 +547,8 @@ DepList::visit(const PackageDepAtom * const p)
                 throw;
             else if (_imp->current_package)
                 Log::get_instance()->message(ll_warning, lc_context, "Couldn't resolve runtime dependencies "
-                        "for " + stringify(_imp->current_package->get<dle_name>()) + "-" +
-                        stringify(_imp->current_package->get<dle_version>()) + " as build dependencies, "
+                        "for " + stringify(_imp->current_package->name) + "-" +
+                        stringify(_imp->current_package->version) + " as build dependencies, "
                         "trying them as post dependencies");
         }
     }
@@ -560,9 +562,9 @@ DepList::visit(const UseDepAtom * const u)
     if (_imp->current_package)
         e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
                 new PackageDatabaseEntry(
-                    _imp->current_package->get<dle_name>(),
-                    _imp->current_package->get<dle_version>(),
-                    _imp->current_package->get<dle_repository>()));
+                    _imp->current_package->name,
+                    _imp->current_package->version,
+                    _imp->current_package->repository));
 
     if (_imp->environment->query_use(u->flag(), e.raw_pointer()) ^ u->inverse())
         std::for_each(u->begin(), u->end(), std::bind1st(std::mem_fun(&DepList::_add), this));
@@ -582,9 +584,9 @@ struct IsViable :
         if (_impl.current_package)
             e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
                     new PackageDatabaseEntry(
-                        _impl.current_package->get<dle_name>(),
-                        _impl.current_package->get<dle_version>(),
-                        _impl.current_package->get<dle_repository>()));
+                        _impl.current_package->name,
+                        _impl.current_package->version,
+                        _impl.current_package->repository));
     }
 
     bool operator() (DepAtom::ConstPointer a)
@@ -697,7 +699,7 @@ DepList::visit(const BlockDepAtom * const d)
         for (PackageDatabaseEntryCollection::Iterator ii(installed->begin()),
                 ii_end(installed->end()) ; ii != ii_end ; ++ii)
         {
-            if (_imp->current_package->get<dle_name>() == ii->get<pde_name>())
+            if (_imp->current_package->name == ii->name)
             {
                 Log::get_instance()->message(ll_qa, lc_context, "Package '" + stringify(*_imp->current_package)
                         + "' has suspicious block upon '!" + stringify(*d->blocked_atom()) + "'");
@@ -705,16 +707,16 @@ DepList::visit(const BlockDepAtom * const d)
             }
 
             DepAtom::ConstPointer provide(new AllDepAtom);
-            if (_imp->current_package->get<dle_metadata>()->get_ebuild_interface())
-                provide = _imp->current_package->get<dle_metadata>()->get_ebuild_interface()->provide();
+            if (_imp->current_package->metadata->get_ebuild_interface())
+                provide = _imp->current_package->metadata->get_ebuild_interface()->provide();
 
             CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
             e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
                     new PackageDatabaseEntry(
-                        _imp->current_package->get<dle_name>(),
-                        _imp->current_package->get<dle_version>(),
-                        _imp->current_package->get<dle_repository>()));
+                        _imp->current_package->name,
+                        _imp->current_package->version,
+                        _imp->current_package->repository));
 
             DepAtomFlattener f(_imp->environment, e.raw_pointer(), provide);
 
@@ -760,16 +762,16 @@ DepList::visit(const BlockDepAtom * const d)
             }
 
             DepAtom::ConstPointer provide(new AllDepAtom);
-            if (_imp->current_package->get<dle_metadata>()->get_ebuild_interface())
-                provide = _imp->current_package->get<dle_metadata>()->get_ebuild_interface()->provide();
+            if (_imp->current_package->metadata->get_ebuild_interface())
+                provide = _imp->current_package->metadata->get_ebuild_interface()->provide();
 
             CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> e(0);
 
             e = CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>(
                     new PackageDatabaseEntry(
-                        _imp->current_package->get<dle_name>(),
-                        _imp->current_package->get<dle_version>(),
-                        _imp->current_package->get<dle_repository>()));
+                        _imp->current_package->name,
+                        _imp->current_package->version,
+                        _imp->current_package->repository));
 
             DepAtomFlattener f(_imp->environment, e.raw_pointer(), provide);
 

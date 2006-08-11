@@ -150,11 +150,11 @@ InformationTree::show_version(const RepositoryName & r, const QualifiedPackageNa
 
     Gtk::TreeModel::Row description_row(*(_imp->model->append()));
     description_row[_imp->columns.col_key] = "description";
-    description_row[_imp->columns.col_value] = metadata->get<vm_description>();
+    description_row[_imp->columns.col_value] = metadata->description;
 
     Gtk::TreeModel::Row homepage_row(*(_imp->model->append()));
     description_row[_imp->columns.col_key] = "homepage";
-    description_row[_imp->columns.col_value] = metadata->get<vm_homepage>();
+    description_row[_imp->columns.col_value] = metadata->homepage;
 
     set_model(_imp->model);
 }

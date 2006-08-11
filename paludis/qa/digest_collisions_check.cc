@@ -23,7 +23,6 @@
 #include <paludis/qa/digest_collisions_check.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/smart_record.hh>
 #include <paludis/util/tokeniser.hh>
 
 using namespace paludis;
@@ -31,23 +30,7 @@ using namespace paludis::qa;
 
 namespace
 {
-    enum DigestDataKeys
-    {
-        de_md5,
-        de_owner
-    };
-
-    struct DigestDataTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<DigestDataKeys, 2>,
-        SmartRecordKey<de_md5, std::string>,
-        SmartRecordKey<de_owner, FSEntry>
-    {
-    };
-
-    typedef MakeSmartRecord<DigestDataTag>::Type DigestData;
-
-    static MakeHashedMap<std::string, DigestData>::Type digests;
+    static MakeHashedMap<std::string, std::pair<std::string, FSEntry> >::Type digests;
 }
 
 DigestCollisionsCheck::DigestCollisionsCheck()
@@ -78,17 +61,17 @@ DigestCollisionsCheck::operator() (const FSEntry & d) const
             if ("MD5" != entries.at(0))
                 continue;
 
-            MakeHashedMap<std::string, DigestData>::Type::iterator existing(
+            MakeHashedMap<std::string, std::pair<std::string, FSEntry> >::Type::iterator existing(
                     digests.find(entries.at(2)));
             if (digests.end() != existing)
             {
-                if (entries.at(1) != existing->second.get<de_md5>())
+                if (entries.at(1) != existing->second.first)
                     result << Message(qal_major, "Digest conflict on '" + entries.at(2) +
                             "' in '" + stringify(*i) +
-                            "' (original was '" + stringify(existing->second.get<de_owner>()) + "')");
+                            "' (original was '" + stringify(existing->second.second) + "')");
             }
             else
-                digests.insert(std::make_pair(entries.at(2), DigestData(entries.at(1), *i)));
+                digests.insert(std::make_pair(entries.at(2), std::make_pair(entries.at(1), *i)));
         }
     }
 

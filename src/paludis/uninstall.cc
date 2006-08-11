@@ -86,13 +86,13 @@ namespace
             virtual void on_uninstall_pre(const PackageDatabaseEntry & d)
             {
                 cout << endl << colour(cl_heading, "Uninstalling " +
-                        stringify(d.get<pde_name>()) + "-" + stringify(d.get<pde_version>()) +
-                        "::" + stringify(d.get<pde_repository>())) << endl << endl;
+                        stringify(d.name) + "-" + stringify(d.version) +
+                        "::" + stringify(d.repository)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
                         stringify(_count) + ") Uninstalling " +
-                        stringify(d.get<pde_name>()) + "-" + stringify(d.get<pde_version>()) +
-                        "::" + stringify(d.get<pde_repository>()));
+                        stringify(d.name) + "-" + stringify(d.version) +
+                        "::" + stringify(d.repository));
             }
 
             virtual void on_uninstall_post(const PackageDatabaseEntry &)

@@ -30,6 +30,8 @@
 
 using namespace paludis;
 
+#include <paludis/syncer-sr.cc>
+
 NoSuchSyncerError::NoSuchSyncerError(const std::string & format) throw () :
     SyncFailedError("No such syncer for format '" + format + "'")
 {
@@ -182,8 +184,8 @@ RsyncSyncer::sync(const SyncOptions & opts) const
     FSEntry(_local).mkdir();
 
     std::string exclude;
-    if (! opts.get<so_excludefrom>().empty())
-        exclude = "--exclude-from " + std::string(opts.get<so_excludefrom>()) + " ";
+    if (! opts.exclude_from.empty())
+        exclude = "--exclude-from " + opts.exclude_from + " ";
 
     std::string cmd("rsync --recursive --links --safe-links --perms --times "
             "--compress --force --whole-file --delete --delete-after --stats "

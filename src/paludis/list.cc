@@ -162,7 +162,7 @@ do_list_packages()
             if (CommandLine::get_instance()->a_package.args_end() == std::find(
                         CommandLine::get_instance()->a_package.args_begin(),
                         CommandLine::get_instance()->a_package.args_end(),
-                        stringify(p->first.get<p::qpn_package>())))
+                        stringify(p->first.package)))
                 continue;
 
         ret_code = 0;
@@ -247,7 +247,7 @@ namespace
     {
         p::QualifiedPackageName q(a->package());
 
-        std::string c(p::stringify(q.get<p::qpn_category>()));
+        std::string c(p::stringify(q.category));
         if (CommandLine::get_instance()->a_category.specified())
             if (CommandLine::get_instance()->a_category.args_end() == std::find(
                             CommandLine::get_instance()->a_category.args_begin(),
@@ -255,7 +255,7 @@ namespace
                             c))
                     return;
 
-        std::string p(p::stringify(q.get<p::qpn_package>()));
+        std::string p(p::stringify(q.package));
         if (CommandLine::get_instance()->a_package.specified())
             if (CommandLine::get_instance()->a_package.args_end() == std::find(
                             CommandLine::get_instance()->a_package.args_begin(),
@@ -305,10 +305,10 @@ do_list_vulnerabilities()
                         stringify(r->name())))
                 continue;
 
-        if (! r->get_interface<p::repo_sets>())
+        if (! r->sets_interface)
                 continue;
 
-        p::DepAtom::Pointer dep = r->get_interface<p::repo_sets>()->package_set("security", opts);
+        p::DepAtom::Pointer dep = r->sets_interface->package_set("security", opts);
         if (0 != dep)
             vulnerabilities->add_child(dep);
     }

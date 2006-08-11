@@ -30,11 +30,13 @@
 
 using namespace paludis;
 
+#include <paludis/repository-sr.cc>
+
 Repository::Repository(
         const RepositoryName & name,
         const RepositoryCapabilities & caps) :
+    RepositoryCapabilities(caps),
     _name(name),
-    _caps(caps),
     _info(new RepositoryInfo)
 {
 }
@@ -177,7 +179,7 @@ RepositoryInfo::end_sections() const
 }
 
 UseFlagName
-Repository::UseInterface::expand_flag_name(const UseFlagName & u) const
+RepositoryUseInterface::expand_flag_name(const UseFlagName & u) const
 {
     std::string upper_u;
     std::transform(u.data().begin(), u.data().end(), std::back_inserter(upper_u),

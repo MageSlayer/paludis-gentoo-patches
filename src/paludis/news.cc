@@ -41,8 +41,8 @@ do_update_news()
 
     for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
-        if ((*r)->get_interface<p::repo_news>())
-            (*r)->get_interface<p::repo_news>()->update_news();
+        if ((*r)->news_interface)
+            (*r)->news_interface->update_news();
 
     return return_code;
 }

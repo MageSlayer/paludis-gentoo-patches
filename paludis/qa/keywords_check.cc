@@ -31,22 +31,22 @@ KeywordsCheck::KeywordsCheck()
 CheckResult
 KeywordsCheck::operator() (const EbuildCheckData & e) const
 {
-    CheckResult result(stringify(e.get<ecd_name>()) + "-" + stringify(e.get<ecd_version>()),
+    CheckResult result(stringify(e.name) + "-" + stringify(e.version),
             identifier());
 
     try
     {
-        PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
-                e.get<ecd_environment>()->package_database()->favourite_repository());
+        PackageDatabaseEntry ee(e.name, e.version,
+                e.environment->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
+                e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         try
         {
             //std::set<KeywordName> keywords(metadata->begin_keywords(), metadata->end_keywords());
             std::set<KeywordName> keywords;
             WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
-                get<evm_keywords>(), create_inserter<KeywordName>(std::inserter(keywords, keywords.begin())));
+                keywords, create_inserter<KeywordName>(std::inserter(keywords, keywords.begin())));
 
             if (keywords.end() != keywords.find(KeywordName("-*")) &&
                     keywords.size() == 1)
@@ -61,7 +61,7 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
             result << Message(qal_major, "Bad entries in KEYWORDS");
         }
 
-        if (! metadata->get_ebuild_interface()->get<evm_keywords>().empty())
+        if (! metadata->get_ebuild_interface()->keywords.empty())
             result << Message(qal_major, "KEYWORDS was altered by an eclass");
     }
     catch (const InternalError &)

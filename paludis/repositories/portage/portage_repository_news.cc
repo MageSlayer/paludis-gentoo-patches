@@ -57,9 +57,9 @@ namespace paludis
             environment(e),
             portage_repository(p),
             params(k),
-            skip_file(params.get<prpk_root>() / "var" / "lib" / "paludis" / "news" /
+            skip_file(params.root / "var" / "lib" / "paludis" / "news" /
                     ("news-" + stringify(portage_repository->name()) + ".skip")),
-            unread_file(params.get<prpk_root>() / "var" / "lib" / "paludis" / "news" /
+            unread_file(params.root / "var" / "lib" / "paludis" / "news" /
                     ("news-" + stringify(portage_repository->name()) + ".unread"))
         {
         }
@@ -80,10 +80,10 @@ void
 PortageRepositoryNews::update_news() const
 {
     Context context("When updating news at location '" +
-            stringify(_imp->params.get<prpk_newsdir>()) + "' for repository '" +
+            stringify(_imp->params.newsdir) + "' for repository '" +
             stringify(_imp->portage_repository->name()) + "':");
 
-    if (! _imp->params.get<prpk_newsdir>().is_directory())
+    if (! _imp->params.newsdir.is_directory())
         return;
 
     std::set<std::string> skip;
@@ -96,7 +96,7 @@ PortageRepositoryNews::update_news() const
         std::copy(s.begin(), s.end(), std::inserter(skip, skip.end()));
     }
 
-    for (DirIterator d(_imp->params.get<prpk_newsdir>()), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.newsdir), d_end ; d != d_end ; ++d)
     {
         Context local_context("When handling news entry '" + stringify(*d) + "':");
 
@@ -137,7 +137,7 @@ PortageRepositoryNews::update_news() const
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
                 bool local_show(false);
-                FSEntryCollection::ConstPointer c(_imp->params.get<prpk_profiles>());
+                FSEntryCollection::ConstPointer c(_imp->params.profiles);
                 for (FSEntryCollection::Iterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(

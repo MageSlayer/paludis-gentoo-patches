@@ -81,43 +81,42 @@ PortageRepositoryEbinEntries::generate_version_metadata(const QualifiedPackageNa
 {
     VersionMetadata::Pointer result(new VersionMetadata::Ebin(PortageDepParser::parse_depend));
 
-    FSEntry ebin_file(_imp->params.get<prpk_location>());
-    ebin_file /= stringify(q.get<qpn_category>());
-    ebin_file /= stringify(q.get<qpn_package>());
-    ebin_file /= (stringify(q.get<qpn_package>()) + "-" + stringify(v) + ".ebin");
+    FSEntry ebin_file(_imp->params.location);
+    ebin_file /= stringify(q.category);
+    ebin_file /= stringify(q.package);
+    ebin_file /= (stringify(q.package) + "-" + stringify(v) + ".ebin");
 
     PortageRepository::OurVirtualsIterator vi(_imp->portage_repository->end_our_virtuals());
     if (ebin_file.is_regular_file())
     {
         KeyValueConfigFile f(ebin_file);
-        result->get<vm_deps>().set<vmd_build_depend_string>(f.get("depend"));
-        result->get<vm_deps>().set<vmd_run_depend_string>(f.get("rdepend"));
-        result->get<vm_deps>().set<vmd_post_depend_string>(f.get("pdepend"));
-        result->set<vm_slot>(SlotName(f.get("slot")));
-        result->set<vm_license>(f.get("license"));
-        result->set<vm_eapi>(f.get("eapi"));
-        result->set<vm_homepage>(f.get("homepage"));
-        result->set<vm_description>(f.get("description"));
-        result->get_ebuild_interface()->set<evm_provide>(f.get("provide"));
-        result->get_ebuild_interface()->set<evm_restrict>(f.get("restrict"));
-        result->get_ebuild_interface()->set<evm_keywords>(f.get("keywords"));
-        result->get_ebuild_interface()->set<evm_iuse>(f.get("iuse"));
-        result->get_ebuild_interface()->set<evm_virtual>(f.get("virtual"));
-        result->get_ebuild_interface()->set<evm_inherited>(f.get("inherited"));
-        result->get_ebin_interface()->set<ebvm_bin_uri>(f.get("bin_uri"));
-        result->get_ebin_interface()->set<ebvm_src_repository>(RepositoryName(f.get("src_repository")));
+        result->deps.build_depend_string = f.get("depend");
+        result->deps.run_depend_string = f.get("rdepend");
+        result->deps.post_depend_string = f.get("pdepend");
+        result->slot = SlotName(f.get("slot"));
+        result->license_string = f.get("license");
+        result->eapi = f.get("eapi");
+        result->homepage = f.get("homepage");
+        result->description = f.get("description");
+        result->get_ebuild_interface()->provide_string = f.get("provide");
+        result->get_ebuild_interface()->restrict_string = f.get("restrict");
+        result->get_ebuild_interface()->keywords = f.get("keywords");
+        result->get_ebuild_interface()->iuse = f.get("iuse");
+        result->get_ebuild_interface()->virtual_for = f.get("virtual");
+        result->get_ebuild_interface()->inherited = f.get("inherited");
+        result->get_ebin_interface()->bin_uri = f.get("bin_uri");
+        result->get_ebin_interface()->src_repository = RepositoryName(f.get("src_repository"));
     }
     else if (_imp->portage_repository->end_our_virtuals() !=
             ((vi = _imp->portage_repository->find_our_virtuals(q))))
     {
         VersionMetadata::ConstPointer m(_imp->portage_repository->version_metadata(
                     vi->second->package(), v));
-        result->set<vm_slot>(m->get<vm_slot>());
-        result->get_ebuild_interface()->set<evm_keywords>(m->get_ebuild_interface()->get<evm_keywords>());
-        result->set<vm_eapi>(m->get<vm_eapi>());
-        result->get_ebuild_interface()->set<evm_virtual>(stringify(vi->second->package()));
-        result->get<vm_deps>().set<vmd_build_depend_string>(
-                "=" + stringify(vi->second->package()) + "-" + stringify(v));
+        result->slot = m->slot;
+        result->get_ebuild_interface()->keywords = m->get_ebuild_interface()->keywords;
+        result->eapi = m->eapi;
+        result->get_ebuild_interface()->virtual_for = (stringify(vi->second->package()));
+        result->deps.build_depend_string = "=" + stringify(vi->second->package()) + "-" + stringify(v);
     }
     else
         throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, _imp->portage_repository->name())));
@@ -133,11 +132,11 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
     VersionMetadata::ConstPointer metadata(0);
     if (! _imp->portage_repository->has_version(q, v))
     {
-        if (q.get<qpn_category>() == CategoryNamePart("virtual"))
+        if (q.category == CategoryNamePart("virtual"))
         {
             VersionMetadata::Ebin::Pointer m(new VersionMetadata::Ebin(PortageDepParser::parse_depend));
-            m->set<vm_slot>(SlotName("0"));
-            m->get_ebuild_interface()->set<evm_virtual>(" ");
+            m->slot = SlotName("0");
+            m->get_ebuild_interface()->virtual_for = " ";
             metadata = m;
         }
         else
@@ -154,9 +153,9 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
         std::set<std::string> already_in_binaries;
 
         /* make B */
-        DepAtom::ConstPointer f_atom(PortageDepParser::parse(metadata->get_ebin_interface()->get<ebvm_bin_uri>(),
+        DepAtom::ConstPointer f_atom(PortageDepParser::parse(metadata->get_ebin_interface()->bin_uri,
                     PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
-        DepAtomFlattener f(_imp->params.get<prpk_environment>(), &e, f_atom);
+        DepAtomFlattener f(_imp->params.environment, &e, f_atom);
 
         for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
         {
@@ -181,8 +180,8 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
 
             /* add * mirror entries */
             for (Environment::MirrorIterator
-                    m(_imp->params.get<prpk_environment>()->begin_mirrors("*")),
-                    m_end(_imp->params.get<prpk_environment>()->end_mirrors("*")) ;
+                    m(_imp->params.environment->begin_mirrors("*")),
+                    m_end(_imp->params.environment->end_mirrors("*")) ;
                     m != m_end ; ++m)
                 flat_bin_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
 
@@ -201,12 +200,12 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
                             mirror.substr(0, q) + "'");
 
                 for (Environment::MirrorIterator
-                        m(_imp->params.get<prpk_environment>()->begin_mirrors(mirror.substr(0, q))),
-                        m_end(_imp->params.get<prpk_environment>()->end_mirrors(mirror.substr(0, q))) ;
+                        m(_imp->params.environment->begin_mirrors(mirror.substr(0, q))),
+                        m_end(_imp->params.environment->end_mirrors(mirror.substr(0, q))) ;
                         m != m_end ; ++m)
                     flat_bin_uri.append(m->second + "/" + mirror.substr(q + 1) + " ");
 
-                for (Repository::MirrorInterface::MirrorsIterator
+                for (RepositoryMirrorsInterface::MirrorsIterator
                         m(_imp->portage_repository->begin_mirrors(mirror.substr(0, q))),
                         m_end(_imp->portage_repository->end_mirrors(mirror.substr(0, q))) ;
                         m != m_end ; ++m)
@@ -221,12 +220,12 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
             if (_imp->portage_repository->is_mirror(master_mirror))
             {
                 for (Environment::MirrorIterator
-                        m(_imp->params.get<prpk_environment>()->begin_mirrors(master_mirror)),
-                        m_end(_imp->params.get<prpk_environment>()->end_mirrors(master_mirror)) ;
+                        m(_imp->params.environment->begin_mirrors(master_mirror)),
+                        m_end(_imp->params.environment->end_mirrors(master_mirror)) ;
                         m != m_end ; ++m)
                     flat_bin_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
 
-                for (Repository::MirrorInterface::MirrorsIterator
+                for (RepositoryMirrorsInterface::MirrorsIterator
                         m(_imp->portage_repository->begin_mirrors(master_mirror)),
                         m_end(_imp->portage_repository->end_mirrors(master_mirror)) ;
                         m != m_end ; ++m)
@@ -239,10 +238,10 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
     {
         std::set<UseFlagName> iuse;
         WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
-                get<evm_iuse>(), create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
+                iuse, create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
         for (std::set<UseFlagName>::const_iterator iuse_it(iuse.begin()), iuse_end(iuse.end()) ;
                 iuse_it != iuse_end; ++iuse_it)
-            if (_imp->params.get<prpk_environment>()->query_use(*iuse_it, &e))
+            if (_imp->params.environment->query_use(*iuse_it, &e))
                 use += (*iuse_it).data() + " ";
     }
 
@@ -263,7 +262,7 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
                 u != u_end ; ++u)
             use += lower_x + "_" + *u + " ";
 
-        UseFlagNameCollection::Pointer u(_imp->params.get<prpk_environment>()->query_enabled_use_matching(
+        UseFlagNameCollection::Pointer u(_imp->params.environment->query_enabled_use_matching(
                     lower_x + "_", &e));
         for (UseFlagNameCollection::Iterator uu(u->begin()), uu_end(u->end()) ;
                 uu != uu_end ; ++uu)
@@ -280,7 +279,7 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
                 &::tolower);
         prefix.append("_");
 
-        UseFlagNameCollection::Pointer x(_imp->params.get<prpk_environment>()->query_enabled_use_matching(prefix, &e));
+        UseFlagNameCollection::Pointer x(_imp->params.environment->query_enabled_use_matching(prefix, &e));
         std::string value;
         for (UseFlagNameCollection::Iterator xx(x->begin()), xx_end(x->end()) ;
                 xx != xx_end ; ++xx)
@@ -291,50 +290,48 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
 
     binaries = strip_trailing(binaries, " ");
 
-    EbinFetchCommand fetch_cmd(EbinCommandParams::create((
-                    param<ebcpk_environment>(_imp->params.get<prpk_environment>()),
-                    param<ebcpk_db_entry>(&e),
-                    param<ebcpk_src_repository>(metadata->get_ebin_interface()->get<ebvm_src_repository>()),
-                    param<ebcpk_ebin_dir>(_imp->params.get<prpk_location>() / stringify(q.get<qpn_category>()) /
-                        stringify(q.get<qpn_package>())),
-                    param<ebcpk_pkgdir>(_imp->params.get<prpk_pkgdir>()),
-                    param<ebcpk_buildroot>(_imp->params.get<prpk_buildroot>())
-                    )),
-            EbinFetchCommandParams::create((
-                    param<ebcfpk_b>(binaries),
-                    param<ebcfpk_flat_bin_uri>(flat_bin_uri),
-                    param<ebcfpk_root>(stringify(_imp->params.get<prpk_root>()) + "/"),
-                    param<ebcfpk_profiles>(_imp->params.get<prpk_profiles>())
-                    )));
+    EbinFetchCommand fetch_cmd(EbinCommandParams::create()
+            .environment(_imp->params.environment)
+            .db_entry(&e)
+            .src_repository(metadata->get_ebin_interface()->src_repository)
+            .ebin_dir(_imp->params.location / stringify(q.category) /
+                        stringify(q.package))
+            .pkgdir(_imp->params.pkgdir)
+            .buildroot(_imp->params.buildroot),
 
-    if (metadata->get_ebuild_interface()->get<evm_virtual>().empty())
+            EbinFetchCommandParams::create()
+                .b(binaries)
+                .flat_bin_uri(flat_bin_uri)
+                .root(stringify(_imp->params.root) + "/")
+                .profiles(_imp->params.profiles));
+
+    if (metadata->get_ebuild_interface()->virtual_for.empty())
         fetch_cmd();
 
-    if (o.get<io_fetchonly>())
+    if (o.fetch_only)
         return;
 
-    EbinInstallCommand install_cmd(EbinCommandParams::create((
-                    param<ebcpk_environment>(_imp->params.get<prpk_environment>()),
-                    param<ebcpk_db_entry>(&e),
-                    param<ebcpk_src_repository>(metadata->get_ebin_interface()->get<ebvm_src_repository>()),
-                    param<ebcpk_ebin_dir>(_imp->params.get<prpk_location>() / stringify(q.get<qpn_category>()) /
-                        stringify(q.get<qpn_package>())),
-                    param<ebcpk_pkgdir>(_imp->params.get<prpk_pkgdir>()),
-                    param<ebcpk_buildroot>(_imp->params.get<prpk_buildroot>())
-                    )),
-            EbinInstallCommandParams::create((
-                    param<ebcipk_b>(binaries),
-                    param<ebcipk_use>(use),
-                    param<ebcipk_use_expand>(join(
+    EbinInstallCommand install_cmd(EbinCommandParams::create()
+            .environment(_imp->params.environment)
+            .db_entry(&e)
+            .src_repository(metadata->get_ebin_interface()->src_repository)
+            .ebin_dir(_imp->params.location / stringify(q.category) /
+                        stringify(q.package))
+            .pkgdir(_imp->params.pkgdir)
+            .buildroot(_imp->params.buildroot),
+
+            EbinInstallCommandParams::create()
+            .b(binaries)
+            .use(use)
+            .use_expand(join(
                             p->begin_use_expand(),
-                            p->end_use_expand(), " ")),
-                    param<ebcipk_expand_vars>(expand_vars),
-                    param<ebcipk_root>(stringify(_imp->params.get<prpk_root>()) + "/"),
-                    param<ebcipk_profiles>(_imp->params.get<prpk_profiles>()),
-                    param<ebcipk_disable_cfgpro>(o.get<io_noconfigprotect>()),
-                    param<ebcipk_merge_only>(! metadata->get_ebuild_interface()->get<evm_virtual>().empty()),
-                    param<ebcipk_slot>(SlotName(metadata->get<vm_slot>()))
-                    )));
+                            p->end_use_expand(), " "))
+            .expand_vars(expand_vars)
+            .root(stringify(_imp->params.root) + "/")
+            .profiles(_imp->params.profiles)
+            .disable_cfgpro(o.no_config_protect)
+            .merge_only(! metadata->get_ebuild_interface()->virtual_for.empty())
+            .slot(SlotName(metadata->slot)));
 
     install_cmd();
 }
@@ -347,40 +344,40 @@ PortageRepositoryEbinEntries::get_environment_variable(const QualifiedPackageNam
     VersionMetadata::ConstPointer metadata(_imp->portage_repository->version_metadata(q, v));
 
     if (s == "DEPEND")
-        return metadata->get<vm_deps>().get<vmd_build_depend_string>();
+        return metadata->deps.build_depend_string;
     if (s == "RDEPEND")
-        return metadata->get<vm_deps>().get<vmd_run_depend_string>();
+        return metadata->deps.run_depend_string;
     if (s == "PDEPEND")
-        return metadata->get<vm_deps>().get<vmd_post_depend_string>();
+        return metadata->deps.post_depend_string;
 
     if (s == "SLOT")
-        return stringify(metadata->get<vm_slot>());
+        return stringify(metadata->slot);
     if (s == "LICENSE")
-        return metadata->get<vm_license>();
+        return metadata->license_string;
     if (s == "EAPI")
-        return metadata->get<vm_eapi>();
+        return metadata->eapi;
     if (s == "HOMEPAGE")
-        return metadata->get<vm_homepage>();
+        return metadata->homepage;
     if (s == "DESCRIPTION")
-        return metadata->get<vm_description>();
+        return metadata->description;
 
     if (s == "PROVIDE")
-        return metadata->get_ebuild_interface()->get<evm_provide>();
+        return metadata->get_ebuild_interface()->provide_string;
     if (s == "SRC_URI")
-        return metadata->get_ebuild_interface()->get<evm_src_uri>();
+        return metadata->get_ebuild_interface()->src_uri;
     if (s == "RESTRICT")
-        return metadata->get_ebuild_interface()->get<evm_restrict>();
+        return metadata->get_ebuild_interface()->restrict_string;
     if (s == "KEYWORDS")
-        return metadata->get_ebuild_interface()->get<evm_keywords>();
+        return metadata->get_ebuild_interface()->keywords;
     if (s == "IUSE")
-        return metadata->get_ebuild_interface()->get<evm_iuse>();
+        return metadata->get_ebuild_interface()->iuse;
     if (s == "VIRTUAL")
-        return metadata->get_ebuild_interface()->get<evm_inherited>();
+        return metadata->get_ebuild_interface()->inherited;
 
     if (s == "BIN_URI")
-        return metadata->get_ebin_interface()->get<ebvm_bin_uri>();
+        return metadata->get_ebin_interface()->bin_uri;
     if (s == "SRC_REPOSITORY")
-        return stringify(metadata->get_ebin_interface()->get<ebvm_src_repository>());
+        return stringify(metadata->get_ebin_interface()->src_repository);
 
     PackageDatabaseEntry for_package(q, v, _imp->portage_repository->name());
     throw EnvironmentVariableActionError("Couldn't get environment variable '" +

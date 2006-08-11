@@ -1,0 +1,32 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_InstallOptions()
+{
+    key no_config_protect bool
+    key fetch_only bool
+}
+
+make_class_PackageSetOptions()
+{
+    key list_affected_only bool
+}
+
+make_class_RepositoryCapabilities()
+{
+    key installable_interface "RepositoryInstallableInterface *"
+    key installed_interface "RepositoryInstalledInterface *"
+    key mask_interface "RepositoryMaskInterface *"
+    key news_interface "RepositoryNewsInterface *"
+    key sets_interface "RepositorySetsInterface *"
+    key syncable_interface "RepositorySyncableInterface *"
+    key uninstallable_interface "RepositoryUninstallableInterface *"
+    key use_interface "RepositoryUseInterface *"
+    key world_interface "RepositoryWorldInterface *"
+    key mirrors_interface "RepositoryMirrorsInterface *"
+    key environment_variable_interface "RepositoryEnvironmentVariableInterface *"
+
+    allow_named_args
+}
+
+

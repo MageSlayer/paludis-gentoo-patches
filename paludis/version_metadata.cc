@@ -31,40 +31,38 @@
 
 using namespace paludis;
 
-VersionMetadataDeps::VersionMetadataDeps(ParserFunction p) :
-    MakeSmartRecord<VersionMetadataDepsTag>::Type(MakeSmartRecord<VersionMetadataDepsTag>::Type::create((
-                    param<vmd_build_depend_string>(""),
-                    param<vmd_run_depend_string>(""),
-                    param<vmd_post_depend_string>(""),
-                    param<vmd_parser>(p))))
-{
-}
+#include <paludis/version_metadata-sr.cc>
 
 DepAtom::ConstPointer
 VersionMetadataDeps::build_depend() const
 {
-    return get<vmd_parser>()(get<vmd_build_depend_string>());
+    return parser(build_depend_string);
 }
 
 DepAtom::ConstPointer
 VersionMetadataDeps::run_depend() const
 {
-    return get<vmd_parser>()(get<vmd_run_depend_string>());
+    return parser(run_depend_string);
 }
 
 DepAtom::ConstPointer
 VersionMetadataDeps::post_depend() const
 {
-    return get<vmd_parser>()(get<vmd_post_depend_string>());
+    return parser(post_depend_string);
+}
+
+VersionMetadataDeps::VersionMetadataDeps(const ParserFunction & p) :
+    parser(p)
+{
 }
 
 VersionMetadata::CRAN::CRAN(ParserFunction f) :
     VersionMetadata(f, &_c, 0, 0),
-    _c(CRANVersionMetadata::create((
-                    param<cranvm_keywords>(""),
-                    param<cranvm_package>(""),
-                    param<cranvm_version>(""),
-                    param<cranvm_is_bundle>(false))))
+    _c(CRANVersionMetadata::create()
+            .keywords("")
+            .package("")
+            .version("")
+            .is_bundle(false))
 {
 }
 
@@ -86,15 +84,13 @@ VersionMetadata::~VersionMetadata()
 }
 
 VersionMetadata::VersionMetadata(ParserFunction p) :
-    MakeSmartRecord<VersionMetadataTag>::Type(MakeSmartRecord<VersionMetadataTag>::Type::create((
-                    param<vm_slot>(SlotName("unset")),
-                    param<vm_deps>(VersionMetadataDeps(p)),
-                    param<vm_homepage>(""),
-                    param<vm_license>(""),
-                    param<vm_description>(""),
-                    param<vm_eapi>("UNSET"),
-                    param<vm_license>("")
-                    ))),
+    VersionMetadataBase(VersionMetadataBase::create()
+            .slot(SlotName("unset"))
+            .deps(VersionMetadataDeps(p))
+            .homepage("")
+            .license_string("")
+            .description("")
+            .eapi("")),
     _cran_if(0),
     _ebuild_if(0),
     _ebin_if(0)
@@ -105,15 +101,13 @@ VersionMetadata::VersionMetadata(ParserFunction p,
         CRANVersionMetadata * cran_if,
         EbuildVersionMetadata * ebuild_if,
         EbinVersionMetadata * ebin_if) :
-    MakeSmartRecord<VersionMetadataTag>::Type(MakeSmartRecord<VersionMetadataTag>::Type::create((
-                    param<vm_slot>(SlotName("unset")),
-                    param<vm_deps>(VersionMetadataDeps(p)),
-                    param<vm_homepage>(""),
-                    param<vm_license>(""),
-                    param<vm_description>(""),
-                    param<vm_eapi>("UNSET"),
-                    param<vm_license>("")
-                    ))),
+    VersionMetadataBase(VersionMetadataBase::create()
+            .slot(SlotName("unset"))
+            .deps(VersionMetadataDeps(p))
+            .homepage("")
+            .license_string("")
+            .description("")
+            .eapi("")),
      _cran_if(cran_if),
      _ebuild_if(ebuild_if),
      _ebin_if(ebin_if)
@@ -121,35 +115,32 @@ VersionMetadata::VersionMetadata(ParserFunction p,
 }
 
 EbuildVersionMetadata::EbuildVersionMetadata() :
-    MakeSmartRecord<EbuildVersionMetadataTag>::Type((EbuildVersionMetadata::create((
-                        param<evm_src_uri>(""),
-                        param<evm_restrict>(""),
-                        param<evm_keywords>(""),
-                        param<evm_inherited>(""),
-                        param<evm_iuse>(""),
-                        param<evm_inherited>(""),
-                        param<evm_provide>(""),
-                        param<evm_virtual>("")))))
+    provide_string(""),
+    src_uri(""),
+    restrict_string(""),
+    keywords(""),
+    iuse(""),
+    virtual_for(""),
+    inherited("")
 {
 }
 
 EbinVersionMetadata::EbinVersionMetadata() :
-    MakeSmartRecord<EbinVersionMetadataTag>::Type((EbinVersionMetadata::create((
-                        param<ebvm_bin_uri>(""),
-                        param<ebvm_src_repository>(RepositoryName("unset"))))))
+    bin_uri(""),
+    src_repository(RepositoryName("unset"))
 {
 }
 
 DepAtom::ConstPointer
 EbuildVersionMetadata::provide() const
 {
-    return PortageDepParser::parse(get<evm_provide>(), PortageDepParserPolicy<PackageDepAtom,
+    return PortageDepParser::parse(provide_string, PortageDepParserPolicy<PackageDepAtom,
             false>::get_instance());
 }
 
 DepAtom::ConstPointer
 VersionMetadata::license() const
 {
-    return PortageDepParser::parse(get<vm_license>(), PortageDepParserPolicy<PlainTextDepAtom,
+    return PortageDepParser::parse(license_string, PortageDepParserPolicy<PlainTextDepAtom,
             true>::get_instance());
 }

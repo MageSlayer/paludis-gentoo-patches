@@ -189,10 +189,10 @@ namespace paludis
         has_arch_list(false),
         has_mirrors(false),
         profile_ptr(0),
-        news_ptr(new PortageRepositoryNews(params.get<prpk_environment>(), repo, p)),
-        sets_ptr(new PortageRepositorySets(params.get<prpk_environment>(), repo, p)),
+        news_ptr(new PortageRepositoryNews(params.environment, repo, p)),
+        sets_ptr(new PortageRepositorySets(params.environment, repo, p)),
         entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
-                    params.get<prpk_entry_format>())(params.get<prpk_environment>(), repo, p)),
+                    params.entry_format)(params.environment, repo, p)),
         has_our_virtuals(false)
     {
     }
@@ -208,7 +208,7 @@ namespace paludis
             return;
 
         profile_ptr.assign(new PortageRepositoryProfile(
-                    params.get<prpk_environment>(), *params.get<prpk_profiles>()));
+                    params.environment, *params.profiles));
     }
 
     void
@@ -231,42 +231,42 @@ namespace paludis
 }
 
 PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
-    Repository(PortageRepository::fetch_repo_name(stringify(p.get<prpk_location>())),
-            RepositoryCapabilities::create((
-                    param<repo_mask>(this),
-                    param<repo_installable>(this),
-                    param<repo_installed>(static_cast<InstalledInterface *>(0)),
-                    param<repo_news>(this),
-                    param<repo_sets>(this),
-                    param<repo_syncable>(this),
-                    param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
-                    param<repo_use>(this),
-                    param<repo_world>(static_cast<WorldInterface *>(0)),
-                    param<repo_environment_variable>(this),
-                    param<repo_mirrors>(this)
-                    ))),
+    Repository(PortageRepository::fetch_repo_name(stringify(p.location)),
+            RepositoryCapabilities::create()
+            .mask_interface(this)
+            .installable_interface(this)
+            .installed_interface(0)
+            .news_interface(this)
+            .sets_interface(this)
+            .syncable_interface(this)
+            .uninstallable_interface(0)
+            .use_interface(this)
+            .world_interface(0)
+            .environment_variable_interface(this)
+            .mirrors_interface(this)
+            ),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
 {
     // the info_vars and info_pkgs info is only added on demand, since it's
     // fairly slow to calculate.
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
 
-    config_info->add_kv("location", stringify(_imp->params.get<prpk_location>()));
-    config_info->add_kv("profiles", join(_imp->params.get<prpk_profiles>()->begin(),
-                _imp->params.get<prpk_profiles>()->end(), " "));
-    config_info->add_kv("eclassdirs", join(_imp->params.get<prpk_eclassdirs>()->begin(),
-                _imp->params.get<prpk_eclassdirs>()->end(), " "));
-    config_info->add_kv("cache", stringify(_imp->params.get<prpk_cache>()));
-    config_info->add_kv("distdir", stringify(_imp->params.get<prpk_distdir>()));
-    config_info->add_kv("pkgdir", stringify(_imp->params.get<prpk_pkgdir>()));
-    config_info->add_kv("securitydir", stringify(_imp->params.get<prpk_securitydir>()));
-    config_info->add_kv("setsdir", stringify(_imp->params.get<prpk_setsdir>()));
-    config_info->add_kv("newsdir", stringify(_imp->params.get<prpk_newsdir>()));
+    config_info->add_kv("location", stringify(_imp->params.location));
+    config_info->add_kv("profiles", join(_imp->params.profiles->begin(),
+                _imp->params.profiles->end(), " "));
+    config_info->add_kv("eclassdirs", join(_imp->params.eclassdirs->begin(),
+                _imp->params.eclassdirs->end(), " "));
+    config_info->add_kv("cache", stringify(_imp->params.cache));
+    config_info->add_kv("distdir", stringify(_imp->params.distdir));
+    config_info->add_kv("pkgdir", stringify(_imp->params.pkgdir));
+    config_info->add_kv("securitydir", stringify(_imp->params.securitydir));
+    config_info->add_kv("setsdir", stringify(_imp->params.setsdir));
+    config_info->add_kv("newsdir", stringify(_imp->params.newsdir));
     config_info->add_kv("format", "portage");
-    config_info->add_kv("root", stringify(_imp->params.get<prpk_root>()));
-    config_info->add_kv("buildroot", stringify(_imp->params.get<prpk_buildroot>()));
-    config_info->add_kv("sync", _imp->params.get<prpk_sync>());
-    config_info->add_kv("sync_exclude", _imp->params.get<prpk_sync_exclude>());
+    config_info->add_kv("root", stringify(_imp->params.root));
+    config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
+    config_info->add_kv("sync", _imp->params.sync);
+    config_info->add_kv("sync_exclude", _imp->params.sync_exclude);
 
     _info->add_section(config_info);
 }
@@ -294,10 +294,10 @@ PortageRepository::do_has_package_named(const QualifiedPackageName & q) const
 
     need_category_names();
 
-    if (q.get<qpn_category>() == CategoryNamePart("virtual"))
+    if (q.category == CategoryNamePart("virtual"))
         need_virtual_names();
 
-    CategoryMap::iterator cat_iter(_imp->category_names.find(q.get<qpn_category>()));
+    CategoryMap::iterator cat_iter(_imp->category_names.find(q.category));
 
     if (_imp->category_names.end() == cat_iter)
         return false;
@@ -311,9 +311,9 @@ PortageRepository::do_has_package_named(const QualifiedPackageName & q) const
                 _imp->package_names.end())
             return true;
 
-        FSEntry fs(_imp->params.get<prpk_location>());
-        fs /= stringify(q.get<qpn_category>());
-        fs /= stringify(q.get<qpn_package>());
+        FSEntry fs(_imp->params.location);
+        fs /= stringify(q.category);
+        fs /= stringify(q.package);
         if (! fs.is_directory())
             return false;
         _imp->package_names.insert(std::make_pair(q, false));
@@ -343,7 +343,7 @@ namespace
         /// Predicate.
         bool operator() (const QualifiedPackageName & a) const
         {
-            return a.get<qpn_category>() == category;
+            return a.category == category;
         }
     };
 }
@@ -380,8 +380,8 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
     if (_imp->category_names.end() == _imp->category_names.find(c))
         return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection::Concrete);
 
-    if ((_imp->params.get<prpk_location>() / stringify(c)).is_directory())
-        for (DirIterator d(_imp->params.get<prpk_location>() / stringify(c)), d_end ; d != d_end ; ++d)
+    if ((_imp->params.location / stringify(c)).is_directory())
+        for (DirIterator d(_imp->params.location / stringify(c)), d_end ; d != d_end ; ++d)
         {
             if (! d->is_directory())
                 continue;
@@ -452,7 +452,7 @@ PortageRepository::need_category_names() const
 
     Context context("When loading category names for " + stringify(name()) + ":");
 
-    LineConfigFile cats(_imp->params.get<prpk_location>() / "profiles" / "categories");
+    LineConfigFile cats(_imp->params.location / "profiles" / "categories");
 
     for (LineConfigFile::Iterator line(cats.begin()), line_end(cats.end()) ;
             line != line_end ; ++line)
@@ -464,7 +464,7 @@ PortageRepository::need_category_names() const
 void
 PortageRepository::need_version_names(const QualifiedPackageName & n) const
 {
-    if (n.get<qpn_category>() == CategoryNamePart("virtual"))
+    if (n.category == CategoryNamePart("virtual"))
         need_virtual_names();
 
     if (_imp->package_names[n])
@@ -475,9 +475,9 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
 
     VersionSpecCollection::Pointer v(new VersionSpecCollection::Concrete);
 
-    FSEntry path(_imp->params.get<prpk_location>() / stringify(n.get<qpn_category>()) /
-            stringify(n.get<qpn_package>()));
-    if (CategoryNamePart("virtual") == n.get<qpn_category>() && ! path.exists())
+    FSEntry path(_imp->params.location / stringify(n.category) /
+            stringify(n.package));
+    if (CategoryNamePart("virtual") == n.category && ! path.exists())
     {
         VirtualsMap::iterator i(_imp->our_virtuals.find(n));
         need_version_names(i->second->package());
@@ -487,7 +487,7 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
                 vv != vv_end ; ++vv)
         {
             PackageDatabaseEntry e(i->second->package(), *vv, name());
-            if (! match_package(_imp->params.get<prpk_environment>(), i->second, e))
+            if (! match_package(_imp->params.environment, i->second, e))
                 continue;
 
             v->insert(*vv);
@@ -497,7 +497,7 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
     {
         for (DirIterator e(path), e_end ; e != e_end ; ++e)
         {
-            if (! IsFileWithExtension(stringify(n.get<qpn_package>()) + "-",
+            if (! IsFileWithExtension(stringify(n.package) + "-",
                         _imp->entries_ptr->file_extension())(*e))
                 continue;
 
@@ -505,7 +505,7 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
             {
                 v->insert(strip_leading_string(
                             strip_trailing_string(e->basename(), _imp->entries_ptr->file_extension()),
-                            stringify(n.get<qpn_package>()) + "-"));
+                            stringify(n.package) + "-"));
             }
             catch (const NameError &)
             {
@@ -579,7 +579,7 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
         Context context("When querying repository mask for '" + stringify(q) + "-"
                 + stringify(v) + "':");
 
-        FSEntry fff(_imp->params.get<prpk_location>() / "profiles" / "package.mask");
+        FSEntry fff(_imp->params.location / "profiles" / "package.mask");
         if (fff.exists())
         {
             LineConfigFile ff(fff);
@@ -600,7 +600,7 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
     else
         for (IndirectIterator<std::list<PackageDepAtom::ConstPointer>::const_iterator, const PackageDepAtom>
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(_imp->params.get<prpk_environment>(), *k, PackageDatabaseEntry(q, v, name())))
+            if (match_package(_imp->params.environment, *k, PackageDatabaseEntry(q, v, name())))
                 return true;
 
     return false;
@@ -653,8 +653,8 @@ PortageRepository::need_virtual_names() const
                 i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
             _imp->our_virtuals.insert(*i);
 
-        for (Environment::ProvideMapIterator p(_imp->params.get<prpk_environment>()->begin_provide_map()),
-                p_end(_imp->params.get<prpk_environment>()->end_provide_map()) ; p != p_end ; ++p)
+        for (Environment::ProvideMapIterator p(_imp->params.environment->begin_provide_map()),
+                p_end(_imp->params.environment->end_provide_map()) ; p != p_end ; ++p)
         {
             if (! has_package_named(p->second))
                 continue;
@@ -683,7 +683,7 @@ PortageRepository::do_is_arch_flag(const UseFlagName & u) const
     {
         Context context("When checking arch list for '" + stringify(u) + "':");
 
-        LineConfigFile archs(_imp->params.get<prpk_location>() / "profiles" / "arch.list");
+        LineConfigFile archs(_imp->params.location / "profiles" / "arch.list");
         std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(
                     std::inserter(_imp->arch_list, _imp->arch_list.begin())));
 
@@ -745,7 +745,7 @@ PortageRepository::do_expand_flag_delim_pos(const UseFlagName & u) const
 bool
 PortageRepository::do_is_licence(const std::string & s) const
 {
-    FSEntry l(_imp->params.get<prpk_location>());
+    FSEntry l(_imp->params.location);
     l /= "licenses";
 
     if (! l.is_directory())
@@ -760,9 +760,9 @@ PortageRepository::need_mirrors() const
 {
     if (! _imp->has_mirrors)
     {
-        if ((_imp->params.get<prpk_location>() / "profiles" / "thirdpartymirrors").exists())
+        if ((_imp->params.location / "profiles" / "thirdpartymirrors").exists())
         {
-            LineConfigFile mirrors(_imp->params.get<prpk_location>() / "profiles" / "thirdpartymirrors");
+            LineConfigFile mirrors(_imp->params.location / "profiles" / "thirdpartymirrors");
             for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
             {
                 std::vector<std::string> entries;
@@ -783,7 +783,7 @@ PortageRepository::need_mirrors() const
         else
             Log::get_instance()->message(ll_warning, lc_no_context,
                     "No thirdpartymirrors file found in '"
-                    + stringify(_imp->params.get<prpk_location>() / "profiles") + "', so mirror:// SRC_URI "
+                    + stringify(_imp->params.location / "profiles") + "', so mirror:// SRC_URI "
                     "components cannot be fetched");
 
         _imp->has_mirrors = true;
@@ -796,9 +796,9 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 {
     _imp->need_profiles();
 
-    if (! _imp->params.get<prpk_root>().is_directory())
+    if (! _imp->params.root.is_directory())
         throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' since root ('" + stringify(_imp->params.get<prpk_root>()) + "') isn't a directory");
+                + stringify(v) + "' since root ('" + stringify(_imp->params.root) + "') isn't a directory");
 
     _imp->entries_ptr->install(q, v, o, _imp->profile_ptr);
 }
@@ -820,18 +820,18 @@ PortageRepository::do_sync() const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
-    if (_imp->params.get<prpk_sync>().empty())
+    if (_imp->params.sync.empty())
         return false;
 
-    std::string::size_type p(_imp->params.get<prpk_sync>().find("://")), q(_imp->params.get<prpk_sync>().find(":"));
+    std::string::size_type p(_imp->params.sync.find("://")), q(_imp->params.sync.find(":"));
     if (std::string::npos == p)
-        throw NoSuchSyncerError(_imp->params.get<prpk_sync>());
+        throw NoSuchSyncerError(_imp->params.sync);
 
-    SyncOptions opts(_imp->params.get<prpk_sync_exclude>());
+    SyncOptions opts(_imp->params.sync_exclude);
 
-    SyncerMaker::get_instance()->find_maker(_imp->params.get<prpk_sync>().substr(0, std::min(p, q)))(
-            stringify(_imp->params.get<prpk_location>()),
-            _imp->params.get<prpk_sync>().substr(q < p ? q + 1 : 0))->sync(opts);
+    SyncerMaker::get_instance()->find_maker(_imp->params.sync.substr(0, std::min(p, q)))(
+            stringify(_imp->params.location),
+            _imp->params.sync.substr(q < p ? q + 1 : 0))->sync(opts);
 
     return true;
 }
@@ -870,8 +870,8 @@ PortageRepository::get_environment_variable(
 
     _imp->need_profiles();
 
-    return _imp->entries_ptr->get_environment_variable(for_package.get<pde_name>(),
-            for_package.get<pde_version>(), var, _imp->profile_ptr);
+    return _imp->entries_ptr->get_environment_variable(for_package.name,
+            for_package.version, var, _imp->profile_ptr);
 }
 
 RepositoryInfo::ConstPointer
@@ -888,9 +888,9 @@ PortageRepository::info(bool verbose) const
         result->add_section(*s);
 
     std::set<std::string> info_pkgs;
-    if ((_imp->params.get<prpk_location>() / "profiles" / "info_pkgs").exists())
+    if ((_imp->params.location / "profiles" / "info_pkgs").exists())
     {
-        LineConfigFile vars(_imp->params.get<prpk_location>() / "profiles" / "info_pkgs");
+        LineConfigFile vars(_imp->params.location / "profiles" / "info_pkgs");
         info_pkgs.insert(vars.begin(), vars.end());
     }
 
@@ -901,7 +901,7 @@ PortageRepository::info(bool verbose) const
                 i_end(info_pkgs.end()) ; i != i_end ; ++i)
         {
             PackageDatabaseEntryCollection::ConstPointer q(
-                    _imp->params.get<prpk_environment>()->package_database()->query(
+                    _imp->params.environment->package_database()->query(
                         PackageDepAtom::ConstPointer(new PackageDepAtom(*i)), is_installed_only));
             if (q->empty())
                 package_info->add_kv(*i, "(none)");
@@ -914,7 +914,7 @@ PortageRepository::info(bool verbose) const
                 //        std::mem_fun_ref(&PackageDatabaseEntry::get<pde_version>));
                 for (PackageDatabaseEntryCollection::Iterator qq(q->begin()), qq_end(q->end()) ;
                         qq != qq_end ; ++qq)
-                    versions.insert(qq->get<pde_version>());
+                    versions.insert(qq->version);
                 package_info->add_kv(*i, join(versions.begin(), versions.end(), ", "));
             }
         }
@@ -923,9 +923,9 @@ PortageRepository::info(bool verbose) const
     }
 
     std::set<std::string> info_vars;
-    if ((_imp->params.get<prpk_location>() / "profiles" / "info_vars").exists())
+    if ((_imp->params.location / "profiles" / "info_vars").exists())
     {
-        LineConfigFile vars(_imp->params.get<prpk_location>() / "profiles" / "info_vars");
+        LineConfigFile vars(_imp->params.location / "profiles" / "info_vars");
         info_vars.insert(vars.begin(), vars.end());
     }
 

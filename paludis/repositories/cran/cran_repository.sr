@@ -1,0 +1,18 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_CRANRepositoryParams()
+{
+    key environment "const Environment *"
+    key package_database "const PackageDatabase *"
+    key location FSEntry
+    key distdir FSEntry
+    key mirror std::string
+    key sync std::string
+    key buildroot FSEntry
+    key root FSEntry
+    key library FSEntry
+
+    allow_named_args
+}
+

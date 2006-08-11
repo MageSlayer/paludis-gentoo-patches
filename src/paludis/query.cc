@@ -81,7 +81,7 @@ void do_one_query(
     const p::PackageDatabaseEntry display_entry(*preferred_entries->last());
 
     /* match! display it. */
-    cout << "* " << colour(cl_package_name, entries->begin()->get<p::pde_name>());
+    cout << "* " << colour(cl_package_name, entries->begin()->name);
     if (atom->version_spec_ptr())
         cout << " (" << atom->version_operator() << *atom->version_spec_ptr() << ")";
     if (atom->slot_ptr())
@@ -94,7 +94,7 @@ void do_one_query(
     p::RepositoryNameCollection::Concrete repo_names;
     p::PackageDatabaseEntryCollection::Iterator e(entries->begin()), e_end(entries->end());
     for ( ; e != e_end ; ++e)
-        repo_names.append(e->get<p::pde_repository>());
+        repo_names.append(e->repository);
 
     /* display versions, by repository. */
     p::RepositoryNameCollection::Iterator r(repo_names.begin()), r_end(repo_names.end());
@@ -105,15 +105,15 @@ void do_one_query(
 
         std::string old_slot;
         for (e = entries->begin() ; e != e_end ; ++e)
-            if (e->get<p::pde_repository>() == *r)
+            if (e->repository == *r)
             {
                 p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
-                            e->get<p::pde_repository>())->version_metadata(e->get<p::pde_name>(),
-                            e->get<p::pde_version>()));
+                            e->repository)->version_metadata(e->name,
+                            e->version));
                 if (CommandLine::get_instance()->a_show_slot.specified())
                 {
                     /* show the slot, if we're about to move onto a new slot */
-                    std::string slot_name(stringify(metadata->get<p::vm_slot>()));
+                    std::string slot_name(stringify(metadata->slot));
                     if (old_slot.empty())
                         old_slot = slot_name;
                     else if (old_slot != slot_name)
@@ -124,7 +124,7 @@ void do_one_query(
                 const p::MaskReasons masks(env->mask_reasons(*e));
 
                 if (masks.none())
-                    cout << colour(cl_visible, e->get<p::pde_version>());
+                    cout << colour(cl_visible, e->version);
                 else
                 {
                     std::string reasons;
@@ -159,7 +159,7 @@ void do_one_query(
                         }
                     }
                     mask_reasons_to_explain |= masks;
-                    cout << colour(cl_masked, "(" + stringify(e->get<p::pde_version>()) + ")" + reasons);
+                    cout << colour(cl_masked, "(" + stringify(e->version) + ")" + reasons);
                 }
 
                 if (*e == display_entry)
@@ -176,72 +176,72 @@ void do_one_query(
 
     /* display metadata */
     p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
-                display_entry.get<p::pde_repository>())->version_metadata(
-                display_entry.get<p::pde_name>(), display_entry.get<p::pde_version>()));
+                display_entry.repository)->version_metadata(
+                display_entry.name, display_entry.version));
 
     if (CommandLine::get_instance()->a_show_metadata.specified())
     {
         cout << "    " << std::setw(22) << std::left << "DESCRIPTION:" << std::setw(0) <<
-            " " << metadata->get<p::vm_description>() << endl;
+            " " << metadata->description << endl;
         cout << "    " << std::setw(22) << std::left << "HOMEPAGE:" << std::setw(0) <<
-            " " << metadata->get<p::vm_homepage>() << endl;
+            " " << metadata->homepage << endl;
         cout << "    " << std::setw(22) << std::left << "LICENSE:" << std::setw(0) <<
-            " " << metadata->get<p::vm_license>() << endl;
+            " " << metadata->license_string << endl;
 
         cout << "    " << std::setw(22) << std::left << "DEPEND:" << std::setw(0) <<
-            " " << metadata->get<p::vm_deps>().get<p::vmd_build_depend_string>() << endl;
+            " " << metadata->deps.build_depend_string << endl;
         cout << "    " << std::setw(22) << std::left << "RDEPEND:" << std::setw(0) <<
-            " " << metadata->get<p::vm_deps>().get<p::vmd_run_depend_string>() << endl;
+            " " << metadata->deps.run_depend_string << endl;
         cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
-            " " << metadata->get<p::vm_deps>().get<p::vmd_post_depend_string>() << endl;
+            " " << metadata->deps.post_depend_string << endl;
 
         if (metadata->get_cran_interface())
         {
             cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
-                " " << metadata->get_cran_interface()->get<p::cranvm_keywords>() << endl;
+                " " << metadata->get_cran_interface()->keywords << endl;
             cout << "    " << std::setw(22) << std::left << "PACKAGE:" << std::setw(0) <<
-                " " << metadata->get_cran_interface()->get<p::cranvm_package>() << endl;
+                " " << metadata->get_cran_interface()->package << endl;
             cout << "    " << std::setw(22) << std::left << "VERSION:" << std::setw(0) <<
-                " " << metadata->get_cran_interface()->get<p::cranvm_version>() << endl;
+                " " << metadata->get_cran_interface()->version << endl;
             cout << "    " << std::setw(22) << std::left << "IS_BUNDLE:" << std::setw(0) <<
-                " " << std::boolalpha << metadata->get_cran_interface()->get<p::cranvm_is_bundle>() << endl;
+                " " << std::boolalpha << metadata->get_cran_interface()->is_bundle << endl;
         }
 
         if (metadata->get_ebuild_interface())
         {
             cout << "    " << std::setw(22) << std::left << "IUSE:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->get<p::evm_iuse>() << endl;
+                " " << metadata->get_ebuild_interface()->iuse << endl;
             cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->get<p::evm_keywords>() << endl;
+                " " << metadata->get_ebuild_interface()->keywords << endl;
             cout << "    " << std::setw(22) << std::left << "PROVIDE:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->get<p::evm_provide>() << endl;
+                " " << metadata->get_ebuild_interface()->provide_string << endl;
             cout << "    " << std::setw(22) << std::left << "RESTRICT:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->get<p::evm_restrict>() << endl;
+                " " << metadata->get_ebuild_interface()->restrict_string << endl;
             cout << "    " << std::setw(22) << std::left << "SRC_URI:" << std::setw(0) <<
-                 " " << metadata->get_ebuild_interface()->get<p::evm_src_uri>() << endl;
+                 " " << metadata->get_ebuild_interface()->src_uri << endl;
             cout << "    " << std::setw(22) << std::left << "VIRTUAL:" << std::setw(0) <<
-                 " " << metadata->get_ebuild_interface()->get<p::evm_virtual>() << endl;
+                 " " << metadata->get_ebuild_interface()->virtual_for << endl;
         }
 
         if (metadata->get_ebin_interface())
         {
             cout << "    " << std::setw(22) << std::left << "BIN_URI:" << std::setw(0) <<
-                 " " << metadata->get_ebin_interface()->get<p::ebvm_bin_uri>() << endl;
+                 " " << metadata->get_ebin_interface()->bin_uri << endl;
             cout << "    " << std::setw(22) << std::left << "SRC_REPOSITORY:" << std::setw(0) <<
-                 " " << metadata->get_ebin_interface()->get<p::ebvm_src_repository>() << endl;
+                 " " << metadata->get_ebin_interface()->src_repository << endl;
         }
     }
     else
     {
-        if (! metadata->get<p::vm_homepage>().empty())
+        if (! metadata->homepage.empty())
             cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
-                " " << metadata->get<p::vm_homepage>() << endl;
+                " " << metadata->homepage << endl;
 
-        if (! metadata->get<p::vm_description>().empty())
+        if (! metadata->description.empty())
             cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
-                " " << metadata->get<p::vm_description>() << endl;
+                " " << metadata->description << endl;
 
-        if (! metadata->get<p::vm_license>().empty())
+        if (! metadata->license_string.empty())
         {
             cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) << " ";
             LicenceDisplayer d(cout, env, &display_entry);
@@ -251,40 +251,40 @@ void do_one_query(
 
         if (CommandLine::get_instance()->a_show_deps.specified())
         {
-            if (! metadata->get<p::vm_deps>().get<p::vmd_build_depend_string>().empty())
+            if (! metadata->deps.build_depend_string.empty())
             {
                 p::DepAtomPrettyPrinter p_depend(12);
-                metadata->get<p::vm_deps>().build_depend()->accept(&p_depend);
+                metadata->deps.build_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Build dependencies:" << std::setw(0)
                     << endl << p_depend;
             }
 
-            if (! metadata->get<p::vm_deps>().get<p::vmd_run_depend_string>().empty())
+            if (! metadata->deps.run_depend_string.empty())
             {
                 p::DepAtomPrettyPrinter p_depend(12);
-                metadata->get<p::vm_deps>().run_depend()->accept(&p_depend);
+                metadata->deps.run_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Runtime dependencies:" << std::setw(0)
                     << endl << p_depend;
             }
 
-            if (! metadata->get<p::vm_deps>().get<p::vmd_post_depend_string>().empty())
+            if (! metadata->deps.post_depend_string.empty())
             {
                 p::DepAtomPrettyPrinter p_depend(12);
-                metadata->get<p::vm_deps>().post_depend()->accept(&p_depend);
+                metadata->deps.post_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Post dependencies:" << std::setw(0)
                     << endl << p_depend;
             }
         }
 
         if (metadata->get_ebuild_interface() && ! metadata->get_ebuild_interface()->
-                get<p::evm_virtual>().empty())
+                virtual_for.empty())
             cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->get<p::evm_virtual>() << endl;
+                " " << metadata->get_ebuild_interface()->virtual_for << endl;
 
         if (metadata->get_ebuild_interface() && ! metadata->get_ebuild_interface()->
-                get<p::evm_provide>().empty())
+                provide_string.empty())
             cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->get<p::evm_provide>() << endl;
+                " " << metadata->get_ebuild_interface()->provide_string << endl;
     }
 
 

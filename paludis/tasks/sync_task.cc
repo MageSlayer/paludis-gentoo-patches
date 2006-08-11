@@ -82,7 +82,7 @@ SyncTask::execute()
         {
             Repository::ConstPointer rr(_imp->env->package_database()->fetch_repository(*r));
 
-            if (rr->get_interface<repo_syncable>() && rr->get_interface<repo_syncable>()->sync())
+            if (rr->syncable_interface && rr->syncable_interface->sync())
                 on_sync_succeed(*r);
             else
                 on_sync_skip(*r);

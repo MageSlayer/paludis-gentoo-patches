@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_EBUILD_HH 1
 
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/smart_record.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/collection.hh>
@@ -59,33 +58,7 @@ namespace paludis
     class Environment;
     class MakeEnvCommand;
 
-    /**
-     * Tag for EbuildCommandParams.
-     *
-     * \see EbuildCommandParams.
-     *
-     * \ingroup grpebuildinterface
-     */
-    struct EbuildCommandParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<EbuildCommandParamsKeys, last_ecpk>,
-        SmartRecordKey<ecpk_environment, const Environment *>,
-        SmartRecordKey<ecpk_db_entry, const PackageDatabaseEntry *>,
-        SmartRecordKey<ecpk_ebuild_dir, const FSEntry>,
-        SmartRecordKey<ecpk_files_dir, const FSEntry>,
-        SmartRecordKey<ecpk_eclassdirs, FSEntryCollection::ConstPointer>,
-        SmartRecordKey<ecpk_portdir, const FSEntry>,
-        SmartRecordKey<ecpk_distdir, const FSEntry>,
-        SmartRecordKey<ecpk_buildroot, const FSEntry>
-    {
-    };
-
-    /**
-     * Parameters for EbuildCommand's constructor.
-     *
-     * \ingroup grpebuildinterface
-     */
-    typedef MakeSmartRecord<EbuildCommandParamsTag>::Type EbuildCommandParams;
+#include <paludis/ebuild-sr.hh>
 
     /**
      * An EbuildCommand is the base class from which specific ebuild
@@ -240,56 +213,6 @@ namespace paludis
     };
 
     /**
-     * Keys for EbuildFetchCommandParams.
-     *
-     * \see EbuildFetchCommandParams
-     *
-     * \ingroup grpebuildinterface
-     */
-    enum EbuildFetchCommandParamsKeys
-    {
-        ecfpk_a,
-        ecfpk_aa,
-        ecfpk_use,
-        ecfpk_use_expand,
-        ecfpk_flat_src_uri,
-        ecfpk_root,
-        ecfpk_profiles,
-        ecfpk_expand_vars,
-        ecfpk_no_fetch,
-        last_ecfpk
-    };
-
-    /**
-     * Tag for EbuildFetchCommandParams.
-     *
-     * \see EbuildFetchCommandParams
-     *
-     * \ingroup grpebuildinterface
-     */
-    struct EbuildFetchCommandParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<EbuildFetchCommandParamsKeys, last_ecfpk>,
-        SmartRecordKey<ecfpk_a, std::string>,
-        SmartRecordKey<ecfpk_aa, std::string>,
-        SmartRecordKey<ecfpk_use, std::string>,
-        SmartRecordKey<ecfpk_use_expand, std::string>,
-        SmartRecordKey<ecfpk_flat_src_uri, std::string>,
-        SmartRecordKey<ecfpk_root, std::string>,
-        SmartRecordKey<ecfpk_profiles, FSEntryCollection::ConstPointer>,
-        SmartRecordKey<ecfpk_expand_vars, AssociativeCollection<std::string, std::string>::ConstPointer>,
-        SmartRecordKey<ecfpk_no_fetch, bool>
-    {
-    };
-
-    /**
-     * Parameters for EbuildFetchCommand's constructor.
-     *
-     * \ingroup grpebuildinterface
-     */
-    typedef MakeSmartRecord<EbuildFetchCommandParamsTag>::Type EbuildFetchCommandParams;
-
-    /**
      * An EbuildFetchCommand is used to download and verify the digests for a
      * particular ebuild in a PortageRepository. On failure it throws.
      *
@@ -316,58 +239,6 @@ namespace paludis
     };
 
     /**
-     * Keys for EbuildInstallCommandParams.
-     *
-     * \see EbuildInstallCommandParams
-     *
-     * \ingroup grpebuildinterface
-     */
-    enum EbuildInstallCommandParamsKeys
-    {
-        ecipk_a,
-        ecipk_aa,
-        ecipk_use,
-        ecipk_use_expand,
-        ecipk_root,
-        ecipk_profiles,
-        ecipk_expand_vars,
-        ecipk_disable_cfgpro,
-        ecipk_merge_only,
-        ecipk_slot,
-        last_ecipk
-    };
-
-    /**
-     * Tag for EbuildInstallCommandParams.
-     *
-     * \see EbuildInstallCommandParams
-     *
-     * \ingroup grpebuildinterface
-     */
-    struct EbuildInstallCommandParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<EbuildInstallCommandParamsKeys, last_ecipk>,
-        SmartRecordKey<ecipk_a, std::string>,
-        SmartRecordKey<ecipk_aa, std::string>,
-        SmartRecordKey<ecipk_use, std::string>,
-        SmartRecordKey<ecipk_use_expand, std::string>,
-        SmartRecordKey<ecipk_root, std::string>,
-        SmartRecordKey<ecipk_profiles, FSEntryCollection::ConstPointer>,
-        SmartRecordKey<ecipk_expand_vars, AssociativeCollection<std::string, std::string>::ConstPointer>,
-        SmartRecordKey<ecipk_disable_cfgpro, bool>,
-        SmartRecordKey<ecipk_merge_only, bool>,
-        SmartRecordKey<ecipk_slot, SlotName>
-    {
-    };
-
-    /**
-     * Parameters for EbuildInstallCommand's constructor.
-     *
-     * \ingroup grpebuildinterface
-     */
-    typedef MakeSmartRecord<EbuildInstallCommandParamsTag>::Type EbuildInstallCommandParams;
-
-    /**
      * An EbuildInstallCommand is used to install an ebuild from a
      * PortageRepository. On failure it throws.
      *
@@ -392,46 +263,6 @@ namespace paludis
              */
             EbuildInstallCommand(const EbuildCommandParams &, const EbuildInstallCommandParams &);
     };
-
-    /**
-     * Keys for EbuildUninstallCommandParams.
-     *
-     * \see EbuildUninstallCommandParams
-     *
-     * \ingroup grpebuildinterface
-     */
-    enum EbuildUninstallCommandParamsKeys
-    {
-        ecupk_root,
-        ecupk_disable_cfgpro,
-        ecupk_unmerge_only,
-        ecupk_load_environment,
-        last_ecupk
-    };
-
-    /**
-     * Tags for EbuildUninstallCommandParams.
-     *
-     * \see EbuildUninstallCommandParams
-     *
-     * \ingroup grpebuildinterface
-     */
-    struct EbuildUninstallCommandParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<EbuildUninstallCommandParamsKeys, last_ecupk>,
-        SmartRecordKey<ecupk_root, std::string>,
-        SmartRecordKey<ecupk_disable_cfgpro, bool>,
-        SmartRecordKey<ecupk_unmerge_only, bool>,
-        SmartRecordKey<ecupk_load_environment, const FSEntry * const>
-    {
-    };
-
-    /**
-     * Parameters for EbuildUninstallCommand's constructor.
-     *
-     * \ingroup grpebuildinterface
-     */
-    typedef MakeSmartRecord<EbuildUninstallCommandParamsTag>::Type EbuildUninstallCommandParams;
 
     /**
      * An EbuildUninstallCommand is used to uninstall a package in a VDBRepository.

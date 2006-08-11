@@ -33,26 +33,26 @@ match_package_internals::do_match(
         const PackageDepAtom * const atom,
         const PackageDatabaseEntry * const entry)
 {
-    if (atom->package() != entry->get<pde_name>())
+    if (atom->package() != entry->name)
         return false;
 
-    if (atom->version_spec_ptr() && ! (((entry->get<pde_version>()).*
+    if (atom->version_spec_ptr() && ! (((entry->version).*
                     (atom->version_operator().as_version_spec_operator()))
                 (*atom->version_spec_ptr())))
         return false;
 
     if (atom->repository_ptr())
-        if (*atom->repository_ptr() != entry->get<pde_repository>())
+        if (*atom->repository_ptr() != entry->repository)
             return false;
 
     if (atom->slot_ptr() || atom->use_requirements_ptr())
     {
         VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
-                    entry->get<pde_repository>())->version_metadata(
-                    entry->get<pde_name>(), entry->get<pde_version>()));
+                    entry->repository)->version_metadata(
+                    entry->name, entry->version));
 
         if (atom->slot_ptr())
-            if (*atom->slot_ptr() != SlotName(metadata->get<vm_slot>()))
+            if (*atom->slot_ptr() != SlotName(metadata->slot))
                 return false;
 
         if (atom->use_requirements_ptr())
@@ -89,24 +89,24 @@ match_package_internals::do_match(
         const PackageDepAtom * const atom,
         const DepListEntry * const entry)
 {
-    if (atom->package() != entry->get<dle_name>())
+    if (atom->package() != entry->name)
         return false;
 
-    if (atom->version_spec_ptr() && ! (((entry->get<dle_version>()).*
+    if (atom->version_spec_ptr() && ! (((entry->version).*
                     (atom->version_operator().as_version_spec_operator()))
                 (*atom->version_spec_ptr())))
         return false;
 
-    if (atom->repository_ptr() && (*atom->repository_ptr() != entry->get<dle_repository>()))
+    if (atom->repository_ptr() && (*atom->repository_ptr() != entry->repository))
         return false;
 
-    if (atom->slot_ptr() && (*atom->slot_ptr() != entry->get<dle_metadata>()->get<vm_slot>()))
+    if (atom->slot_ptr() && (*atom->slot_ptr() != entry->metadata->slot))
         return false;
 
     if (atom->use_requirements_ptr())
     {
-        PackageDatabaseEntry e(entry->get<dle_name>(), entry->get<dle_version>(),
-                entry->get<dle_repository>());
+        PackageDatabaseEntry e(entry->name, entry->version,
+                entry->repository);
 
         for (UseRequirements::Iterator u(atom->use_requirements_ptr()->begin()),
                 u_end(atom->use_requirements_ptr()->end()) ; u != u_end ; ++u)

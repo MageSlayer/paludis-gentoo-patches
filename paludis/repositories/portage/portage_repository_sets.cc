@@ -192,11 +192,11 @@ PortageRepositorySets::package_set(const std::string & s, const PackageSetOption
         throw InternalError(PALUDIS_HERE, "system set should've been handled by PortageRepository");
     else if ("security" == s)
         return security_set(o);
-    else if ((_imp->params.get<prpk_setsdir>() / (s + ".conf")).exists())
+    else if ((_imp->params.setsdir / (s + ".conf")).exists())
     {
         GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s));
 
-        FSEntry ff(_imp->params.get<prpk_setsdir>() / (s + ".conf"));
+        FSEntry ff(_imp->params.setsdir / (s + ".conf"));
         Context context("When loading package set '" + s + "' from '" + stringify(ff) + "':");
 
         AllDepAtom::Pointer result(new AllDepAtom);
@@ -255,8 +255,8 @@ namespace
     inline
     PackageDepAtom::Pointer make_atom(const PackageDatabaseEntry & e)
     {
-        QualifiedPackageName n(e.get<pde_name>());
-        VersionSpec v(e.get<pde_version>());
+        QualifiedPackageName n(e.name);
+        VersionSpec v(e.version);
 
         std::string s("=" + stringify(n) + "-" + stringify(v));
         return PackageDepAtom::Pointer(new PackageDepAtom(s));
@@ -266,20 +266,20 @@ namespace
 PackageDatabaseEntryCollection::Iterator
 PortageRepositorySets::find_best(PackageDatabaseEntryCollection & c, const PackageDatabaseEntry & e) const
 {
-    Context local("When finding best update for '" + stringify(e.get<pde_name>()) + "-" +
-            stringify(e.get<pde_version>()) + "':");
+    Context local("When finding best update for '" + stringify(e.name) + "-" +
+            stringify(e.version) + "':");
     // Find an entry in c that matches e best. e is not in c.
-    QualifiedPackageName n(e.get<pde_name>());
+    QualifiedPackageName n(e.name);
     SlotName s(_imp->environment->package_database()->fetch_repository(
-                e.get<pde_repository>())->version_metadata(e.get<pde_name>(), e.get<pde_version>())->get<vm_slot>());
+                e.repository)->version_metadata(e.name, e.version)->slot);
     PackageDatabaseEntryCollection::Iterator i(c.begin()), i_end(c.end()), i_best(c.end());
     for ( ; i != i_end; ++i)
     {
-        if (n != i->get<pde_name>())
+        if (n != i->name)
             continue;
         if (s != _imp->environment->package_database()->fetch_repository(
-                    i->get<pde_repository>())->version_metadata(
-                    i->get<pde_name>(), i->get<pde_version>())->get<vm_slot>())
+                    i->repository)->version_metadata(
+                    i->name, i->version)->slot)
             continue;
 
         i_best = i;
@@ -295,14 +295,14 @@ PortageRepositorySets::security_set(const PackageSetOptions & o) const
     Context c("When building security package set:");
     AllDepAtom::Pointer security_packages(new AllDepAtom);
 
-    bool list_affected_only(o.get<pso_list_affected_only>());
+    bool list_affected_only(o.list_affected_only);
     InstallState affected_state(list_affected_only ? is_either : is_installed_only);
 
-    if (!_imp->params.get<prpk_securitydir>().is_directory())
+    if (!_imp->params.securitydir.is_directory())
         return DepAtom::Pointer(new AllDepAtom);
 
     std::list<FSEntry> advisories;
-    std::copy(DirIterator(_imp->params.get<prpk_securitydir>()), DirIterator(),
+    std::copy(DirIterator(_imp->params.securitydir), DirIterator(),
         filter_inserter(std::back_inserter(advisories),
         IsFileWithExtension("advisory-", ".conf")));
 

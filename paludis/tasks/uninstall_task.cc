@@ -67,7 +67,7 @@ UninstallTask::set_pretend(const bool v)
 void
 UninstallTask::set_no_config_protect(const bool v)
 {
-    _imp->install_options.set<io_noconfigprotect>(v);
+    _imp->install_options.no_config_protect = v;
 }
 
 void
@@ -169,22 +169,22 @@ UninstallTask::execute()
     for (PackageDatabaseEntryCollection::Iterator i(unmerge->begin()),
             i_end(unmerge->end()) ; i != i_end ; ++i)
     {
-        std::string cpvr(stringify(i->get<pde_name>()) + "-" +
-            stringify(i->get<pde_version>()) + "::" +
-            stringify(i->get<pde_repository>()));
+        std::string cpvr(stringify(i->name) + "-" +
+            stringify(i->version) + "::" +
+            stringify(i->repository));
 
         _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr));
         on_uninstall_pre(*i);
 
-        const Repository::UninstallableInterface * const uninstall_interface(
-                _imp->env->package_database()->fetch_repository(i->get<pde_repository>())->
-                get_interface<repo_uninstallable>());
+        const RepositoryUninstallableInterface * const uninstall_interface(
+                _imp->env->package_database()->fetch_repository(i->repository)->
+                uninstallable_interface);
         if (! uninstall_interface)
             throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
 
         try
         {
-            uninstall_interface->uninstall(i->get<pde_name>(), i->get<pde_version>(), _imp->install_options);
+            uninstall_interface->uninstall(i->name, i->version, _imp->install_options);
         }
         catch (const PackageUninstallActionError & e)
         {

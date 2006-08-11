@@ -1,0 +1,13 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_CRANInstalledRepositoryParams()
+{
+    key environment "const Environment *"
+    key package_database "const PackageDatabase *"
+    key location FSEntry
+    key root FSEntry
+    key world FSEntry
+    allow_named_args
+}
+

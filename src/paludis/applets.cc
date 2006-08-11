@@ -67,8 +67,8 @@ int do_best_version()
     {
         // don't include repo, it breaks built_with_use and the like.
         std::string entry(
-                stringify(entries->last()->get<p::pde_name>()) + "-" +
-                stringify(entries->last()->get<p::pde_version>()));
+                stringify(entries->last()->name) + "-" +
+                stringify(entries->last()->version));
         std::cout << entry << std::endl;
     }
 
@@ -96,9 +96,9 @@ int do_environment_variable()
         throw p::NoSuchPackageError(atom_str);
 
     p::Repository::ConstPointer repo(env->package_database()->fetch_repository(
-                entries->begin()->get<p::pde_repository>()));
-    p::Repository::EnvironmentVariableInterface * env_if(
-            repo->get_interface<p::repo_environment_variable>());
+                entries->begin()->repository));
+    p::RepositoryEnvironmentVariableInterface * env_if(
+            repo->environment_variable_interface);
 
     if (! env_if)
     {

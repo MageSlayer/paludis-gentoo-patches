@@ -36,7 +36,7 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
     if (! f.is_regular_file())
     {
         Log::get_instance()->message(ll_warning, lc_context, "Unexpected irregular file: '" + stringify(f) + "'.");
-        metadata->set<vm_eapi>("INVALID");
+        metadata->eapi = "INVALID";
 
         return;
     }
@@ -45,9 +45,9 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
     LineConfigFile::Iterator l(file.begin()), l_end(file.end());
 
     // Fill in default values
-    metadata->set<vm_slot>(SlotName("0"));
-    metadata->set<vm_eapi>("CRAN-0");
-    metadata->get_cran_interface()->set<cranvm_keywords>(std::string("*"));
+    metadata->slot = SlotName("0");
+    metadata->eapi = "CRAN-0";
+    metadata->get_cran_interface()->keywords = std::string("*");
 
     std::string key;
     for ( ; l != l_end ; ++l)
@@ -68,8 +68,8 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
 
         if ("Package" == key)
         {
-            metadata->get_cran_interface()->set<cranvm_package>(value);
-            metadata->set<vm_homepage>("http://cran.r-project.org/src/contrib/Descriptions/" + value + ".html");
+            metadata->get_cran_interface()->package = value;
+            metadata->homepage = "http://cran.r-project.org/src/contrib/Descriptions/" + value + ".html";
             CRANDescription::normalise_name(value);
             if (n != value)
                 Log::get_instance()->message(ll_warning, lc_context, "Inconsistent package name in file '" +
@@ -77,17 +77,17 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
         }
         else if ("Bundle" == key)
         {
-            metadata->get_cran_interface()->set<cranvm_is_bundle>(true);
+            metadata->get_cran_interface()->is_bundle = true;
         }
         else if ("Version" == key)
         {
-            metadata->get_cran_interface()->set<cranvm_version>(value);
+            metadata->get_cran_interface()->version = value;
             normalise_version(value);
             version = VersionSpec(value);
         }
         else if ("Title" == key)
         {
-            metadata->set<vm_description>(value);
+            metadata->description = value;
         }
         else if ("Depends" == key)
         {
@@ -95,8 +95,8 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
                 value = "R";
             else
                 value.append(", R");
-            metadata->get<vm_deps>().set<vmd_build_depend_string>(value);
-            metadata->get<vm_deps>().set<vmd_run_depend_string>(value);
+            metadata->deps.build_depend_string = value;
+            metadata->deps.run_depend_string = value;
         }
     }
 }

@@ -128,13 +128,13 @@ InstallTask::set_no_unnecessary_upgrades(const bool value)
 void
 InstallTask::set_no_config_protect(const bool value)
 {
-    _imp->install_options.set<io_noconfigprotect>(value);
+    _imp->install_options.no_config_protect = value;
 }
 
 void
 InstallTask::set_fetch_only(const bool value)
 {
-    _imp->install_options.set<io_fetchonly>(value);
+    _imp->install_options.fetch_only = value;
 }
 
 void
@@ -244,7 +244,7 @@ InstallTask::execute()
     }
 
     /* we're about to fetch / install the entire list */
-    if (_imp->install_options.get<io_fetchonly>())
+    if (_imp->install_options.fetch_only)
     {
         _imp->env->perform_hook(Hook("fetch_all_pre")("TARGETS", join(
                         _imp->raw_targets.begin(), _imp->raw_targets.end(), " ")));
@@ -261,12 +261,12 @@ InstallTask::execute()
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
-        std::string cpvr(stringify(dep->get<dle_name>()) + "-" +
-                stringify(dep->get<dle_version>()) + "::" +
-                stringify(dep->get<dle_repository>()));
+        std::string cpvr(stringify(dep->name) + "-" +
+                stringify(dep->version) + "::" +
+                stringify(dep->repository));
 
         /* we're about to fetch / install one item */
-        if (_imp->install_options.get<io_fetchonly>())
+        if (_imp->install_options.fetch_only)
         {
             _imp->env->perform_hook(Hook("fetch_pre")("TARGET", cpvr));
             on_fetch_pre(*dep);
@@ -278,15 +278,15 @@ InstallTask::execute()
         }
 
         /* fetch / install one item */
-        const Repository::InstallableInterface * const installable_interface(
-                _imp->env->package_database()->fetch_repository(dep->get<dle_repository>())->
-                get_interface<repo_installable>());
+        const RepositoryInstallableInterface * const installable_interface(
+                _imp->env->package_database()->fetch_repository(dep->repository)->
+                installable_interface);
         if (! installable_interface)
             throw InternalError(PALUDIS_HERE, "Trying to install from a non-installable repository");
 
         try
         {
-            installable_interface->install(dep->get<dle_name>(), dep->get<dle_version>(), _imp->install_options);
+            installable_interface->install(dep->name, dep->version, _imp->install_options);
         }
         catch (const PackageInstallActionError & e)
         {
@@ -295,7 +295,7 @@ InstallTask::execute()
         }
 
         /* we've fetched / installed one item */
-        if (_imp->install_options.get<io_fetchonly>())
+        if (_imp->install_options.fetch_only)
         {
             on_fetch_post(*dep);
             _imp->env->perform_hook(Hook("fetch_post")("TARGET", cpvr));
@@ -306,7 +306,7 @@ InstallTask::execute()
             _imp->env->perform_hook(Hook("install_post")("TARGET", cpvr));
         }
 
-        if (_imp->install_options.get<io_fetchonly>())
+        if (_imp->install_options.fetch_only)
             continue;
 
         /* figure out whether we need to unmerge (clean) anything */
@@ -316,21 +316,21 @@ InstallTask::execute()
         // wrong now
         for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
                 r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
-            if ((*r)->get_interface<repo_installed>())
+            if ((*r)->installed_interface)
                 (*r)->invalidate();
 
         // look for packages with the same name in the same slot
         PackageDatabaseEntryCollection::Pointer collision_list(_imp->env->package_database()->query(
                     PackageDepAtom::Pointer(new PackageDepAtom(
-                            stringify(dep->get<dle_name>()) + ":" +
-                            stringify(dep->get<dle_metadata>()->get<vm_slot>()))),
+                            stringify(dep->name) + ":" +
+                            stringify(dep->metadata->slot))),
                     is_installed_only));
 
         // don't clean the thing we just installed
         PackageDatabaseEntryCollection::Concrete clean_list;
         for (PackageDatabaseEntryCollection::Iterator c(collision_list->begin()),
                 c_end(collision_list->end()) ; c != c_end ; ++c)
-            if (dep->get<dle_version>() != c->get<pde_version>())
+            if (dep->version != c->version)
                 clean_list.insert(*c);
 
         on_build_cleanlist_post(*dep);
@@ -347,15 +347,15 @@ InstallTask::execute()
             _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", stringify(*c)));
             on_clean_pre(*dep, *c);
 
-            const Repository::UninstallableInterface * const uninstall_interface(
-                    _imp->env->package_database()->fetch_repository(c->get<pde_repository>())->
-                    get_interface<repo_uninstallable>());
+            const RepositoryUninstallableInterface * const uninstall_interface(
+                    _imp->env->package_database()->fetch_repository(c->repository)->
+                    uninstallable_interface);
             if (! uninstall_interface)
                 throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
 
             try
             {
-                uninstall_interface->uninstall(c->get<pde_name>(), c->get<pde_version>(), _imp->install_options);
+                uninstall_interface->uninstall(c->name, c->version, _imp->install_options);
             }
             catch (const PackageUninstallActionError & e)
             {
@@ -374,7 +374,7 @@ InstallTask::execute()
     }
 
     /* update world */
-    if ((! _imp->had_set_targets) && (! _imp->install_options.get<io_fetchonly>()))
+    if ((! _imp->had_set_targets) && (! _imp->install_options.fetch_only))
     {
         if (! _imp->preserve_world)
         {
@@ -388,7 +388,7 @@ InstallTask::execute()
     }
 
     /* we've fetched / installed the entire list */
-    if (_imp->install_options.get<io_fetchonly>())
+    if (_imp->install_options.fetch_only)
     {
         on_fetch_all_post();
         _imp->env->perform_hook(Hook("fetch_all_post")("TARGETS", join(

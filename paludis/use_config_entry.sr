@@ -1,0 +1,10 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_UseConfigEntry()
+{
+    key dep_atom PackageDepAtom::ConstPointer
+    key flag_name UseFlagName
+    key flag_state UseFlagState
+}
+

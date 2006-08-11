@@ -34,8 +34,8 @@ namespace test_cases
         void run()
         {
             Message m(qal_minor, "Test");
-            TEST_CHECK_EQUAL(m.get<mk_level>(), qal_minor);
-            TEST_CHECK_EQUAL(m.get<mk_msg>(), "Test");
+            TEST_CHECK_EQUAL(m.level, qal_minor);
+            TEST_CHECK_EQUAL(m.msg, "Test");
         }
     } test_message;
 }

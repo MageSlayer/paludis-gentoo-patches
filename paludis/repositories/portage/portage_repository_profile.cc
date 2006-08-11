@@ -434,7 +434,7 @@ Implementation<PortageRepositoryProfile>::use_mask_or_force(
     if (0 == e)
         return false;
 
-    PackageUseMaskMap::const_iterator i(package.find(e->get<pde_name>()));
+    PackageUseMaskMap::const_iterator i(package.find(e->name));
     if (package.end() == i)
         return false;
 

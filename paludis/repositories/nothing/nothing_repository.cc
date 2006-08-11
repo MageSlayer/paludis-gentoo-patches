@@ -37,6 +37,8 @@
 
 using namespace paludis;
 
+#include <paludis/repositories/nothing/nothing_repository-sr.cc>
+
 namespace paludis
 {
     /**
@@ -71,10 +73,10 @@ namespace paludis
     };
 
     Implementation<NothingRepository>::Implementation(const NothingRepositoryParams & p) :
-        name(p.get<nrpk_name>()),
-        location(p.get<nrpk_location>()),
-        sync(p.get<nrpk_sync>()),
-        sync_exclude(p.get<nrpk_sync_exclude>())
+        name(p.name),
+        location(p.location),
+        sync(p.sync),
+        sync_exclude(p.sync_exclude)
     {
     }
 
@@ -84,20 +86,19 @@ namespace paludis
 }
 
 NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
-    Repository(RepositoryName(p.get<nrpk_name>()),
-            RepositoryCapabilities::create((
-                    param<repo_mask>(static_cast<MaskInterface *>(0)),
-                    param<repo_installable>(static_cast<InstallableInterface *>(0)),
-                    param<repo_installed>(static_cast<InstalledInterface *>(0)),
-                    param<repo_news>(static_cast<NewsInterface *>(0)),
-                    param<repo_sets>(static_cast<SetsInterface *>(0)),
-                    param<repo_syncable>(this),
-                    param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
-                    param<repo_use>(static_cast<UseInterface *>(0)),
-                    param<repo_world>(static_cast<WorldInterface *>(0)),
-                    param<repo_environment_variable>(static_cast<EnvironmentVariableInterface *>(0)),
-                    param<repo_mirrors>(static_cast<MirrorInterface *>(0))
-                    ))),
+    Repository(RepositoryName(p.name),
+            RepositoryCapabilities::create()
+            .mask_interface(0)
+            .installable_interface(0)
+            .installed_interface(0)
+            .news_interface(0)
+            .sets_interface(0)
+            .syncable_interface(this)
+            .uninstallable_interface(0)
+            .use_interface(0)
+            .world_interface(0)
+            .environment_variable_interface(0)
+            .mirrors_interface(0)),
     PrivateImplementationPattern<NothingRepository>(new Implementation<NothingRepository>(p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -109,7 +110,7 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
 }
 catch (const NameError & e)
 {
-    Context context("When making Nothing repository '" + p.get<nrpk_name>() + "':");
+    Context context("When making Nothing repository '" + p.name + "':");
     throw NothingRepositoryConfigurationError("Caught NameError: " + e.message());
 }
 
@@ -195,11 +196,11 @@ NothingRepository::make_nothing_repository(
     if (m->end() == m->find("sync_exclude") || ((sync_exclude = m->find("sync_exclude")->second)).empty())
         ; // nothing
 
-    return CountedPtr<Repository>(new NothingRepository(NothingRepositoryParams::create((
-                        param<nrpk_name>(name),
-                        param<nrpk_location>(location),
-                        param<nrpk_sync>(sync),
-                        param<nrpk_sync_exclude>(sync_exclude)))));
+    return CountedPtr<Repository>(new NothingRepository(NothingRepositoryParams::create()
+                .name(name)
+                .location(location)
+                .sync(sync)
+                .sync_exclude(sync_exclude)));
 }
 
 NothingRepositoryConfigurationError::NothingRepositoryConfigurationError(

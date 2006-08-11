@@ -1,0 +1,25 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_PortageRepositoryParams()
+{
+    key entry_format std::string
+    key environment "const Environment *"
+    key package_database "const PackageDatabase *"
+    key location FSEntry
+    key profiles FSEntryCollection::ConstPointer
+    key cache FSEntry
+    key distdir FSEntry
+    key pkgdir FSEntry
+    key eclassdirs FSEntryCollection::ConstPointer
+    key setsdir FSEntry
+    key securitydir FSEntry
+    key newsdir FSEntry
+    key sync std::string
+    key sync_exclude std::string
+    key root FSEntry
+    key buildroot FSEntry
+
+    allow_named_args
+}
+

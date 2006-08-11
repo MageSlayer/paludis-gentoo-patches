@@ -63,6 +63,8 @@
 
 using namespace paludis;
 
+#include <paludis/repositories/cran/cran_repository-sr.cc>
+
 namespace paludis
 {
     /// Map for versions.
@@ -147,15 +149,15 @@ namespace paludis
 }
 
 Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p) :
-    db(p.get<cranrpk_package_database>()),
-    env(p.get<cranrpk_environment>()),
-    location(p.get<cranrpk_location>()),
-    distdir(p.get<cranrpk_distdir>()),
-    mirror(p.get<cranrpk_mirror>()),
-    sync(p.get<cranrpk_sync>()),
-    buildroot(p.get<cranrpk_buildroot>()),
-    root(p.get<cranrpk_root>()),
-    library(p.get<cranrpk_library>()),
+    db(p.package_database),
+    env(p.environment),
+    location(p.location),
+    distdir(p.distdir),
+    mirror(p.mirror),
+    sync(p.sync),
+    buildroot(p.buildroot),
+    root(p.root),
+    library(p.library),
     has_packages(false),
     has_mirrors(false)
 {
@@ -178,20 +180,19 @@ Implementation<CRANRepository>::invalidate() const
 
 
 CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
-    Repository(CRANRepository::fetch_repo_name(stringify(p.get<cranrpk_location>())),
-            RepositoryCapabilities::create((
-                    param<repo_mask>(static_cast<MaskInterface *>(0)),
-                    param<repo_installable>(this),
-                    param<repo_installed>(static_cast<InstalledInterface *>(0)),
-                    param<repo_news>(static_cast<NewsInterface *>(0)),
-                    param<repo_sets>(this),
-                    param<repo_syncable>(this),
-                    param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
-                    param<repo_use>(static_cast<UseInterface *>(0)),
-                    param<repo_world>(static_cast<WorldInterface *>(0)),
-                    param<repo_environment_variable>(static_cast<EnvironmentVariableInterface *>(0)),
-                    param<repo_mirrors>(static_cast<MirrorInterface *>(0))
-                    ))),
+    Repository(CRANRepository::fetch_repo_name(stringify(p.location)),
+            RepositoryCapabilities::create()
+            .mask_interface(0)
+            .installable_interface(this)
+            .installed_interface(0)
+            .news_interface(0)
+            .sets_interface(this)
+            .syncable_interface(this)
+            .uninstallable_interface(0)
+            .use_interface(0)
+            .world_interface(0)
+            .environment_variable_interface(0)
+            .mirrors_interface(0)),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -228,7 +229,7 @@ CRANRepository::do_has_package_named(const QualifiedPackageName & q) const
 
     need_packages();
 
-    if (! do_has_category_named(q.get<qpn_category>()))
+    if (! do_has_category_named(q.category))
         return false;
 
     return _imp->package_names.end() != _imp->package_names.find(q);
@@ -365,13 +366,13 @@ CRANRepository::need_packages() const
 
                 CRANDescription d(*i, FSEntry(_imp->location / std::string(last_package_name + ".DESCRIPTION")));
 
-                std::string dep(d.metadata->get<vm_deps>().get<vmd_build_depend_string>());
-                std::string pkg(d.metadata->get_cran_interface()->get<cranvm_package>());
+                std::string dep(d.metadata->deps.build_depend_string);
+                std::string pkg(d.metadata->get_cran_interface()->package);
                 if ("" == dep)
                     dep = pkg;
                 else
                     dep += "," + pkg;
-                d.metadata->get<vm_deps>().set<vmd_build_depend_string>(dep);
+                d.metadata->deps.build_depend_string = dep;
 
                 _imp->package_names[d.name] = true;
                 _imp->metadata.insert(std::make_pair(std::make_pair(d.name, d.version), d.metadata));
@@ -408,7 +409,7 @@ CRANRepository::do_version_metadata(
     VersionMetadata::Pointer result(new VersionMetadata(CRANDepParser::parse));
 
     FSEntry d(_imp->location);
-    PackageNamePart p(q.get<qpn_package>());
+    PackageNamePart p(q.package);
     std::string n(stringify(p));
     CRANDescription::denormalise_name(n);
     d /= n + ".DESCRIPTION";
@@ -424,7 +425,7 @@ CRANRepository::do_version_metadata(
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "': File '" + n + ".DESCRIPTION' not present.");
         VersionMetadata::Pointer result(new VersionMetadata(CRANDepParser::parse));
-        result->set<vm_eapi>("UNKNOWN");
+        result->eapi = "UNKNOWN";
     }
 
     _imp->metadata.insert(std::make_pair(std::make_pair(q, v), result));
@@ -475,16 +476,16 @@ CRANRepository::make_cran_repository(
     if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
         root = "/";
 
-    return CountedPtr<Repository>(new CRANRepository(CRANRepositoryParams::create((
-                        param<cranrpk_environment>(env),
-                        param<cranrpk_package_database>(db),
-                        param<cranrpk_location>(location),
-                        param<cranrpk_distdir>(distdir),
-                        param<cranrpk_sync>(sync),
-                        param<cranrpk_buildroot>(buildroot),
-                        param<cranrpk_root>(root),
-                        param<cranrpk_library>(library),
-                        param<cranrpk_mirror>(mirror)))));
+    return CountedPtr<Repository>(new CRANRepository(CRANRepositoryParams::create()
+                .environment(env)
+                .package_database(db)
+                .location(location)
+                .distdir(distdir)
+                .sync(sync)
+                .buildroot(buildroot)
+                .root(root)
+                .library(library)
+                .mirror(mirror)));
 }
 
 CRANRepositoryConfigurationError::CRANRepositoryConfigurationError(
@@ -503,12 +504,11 @@ void
 CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         const InstallOptions &o) const
 {
-    PackageNamePart pn(q.get<qpn_package>());
+    PackageNamePart pn(q.package);
     CategoryNamePart c("cran");
     VersionMetadata::ConstPointer vm(do_version_metadata(q, vn));
-    std::string p(vm->get_cran_interface()->get<cranvm_package>());
-    std::string v(vm->get_cran_interface()->get<cranvm_version>());
-
+    std::string p(vm->get_cran_interface()->package);
+    std::string v(vm->get_cran_interface()->version);
 
     MakeEnvCommand cmd(LIBEXECDIR "/paludis/cran.bash fetch", "");
     cmd = cmd("CATEGORY", "cran");
@@ -525,7 +525,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     if (0 != run_command(cmd))
         throw PackageInstallActionError("Couldn't fetch sources for '" + stringify(q) + "-" + stringify(vn) + "'");
 
-    if (o.get<io_fetchonly>())
+    if (o.fetch_only)
         return;
 
     std::string image(stringify(_imp->buildroot / stringify(q) / "image"));

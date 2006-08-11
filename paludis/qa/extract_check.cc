@@ -80,22 +80,22 @@ ExtractCheck::ExtractCheck()
 CheckResult
 ExtractCheck::operator() (const EbuildCheckData & e) const
 {
-    CheckResult result(stringify(e.get<ecd_name>()) + "-" + stringify(e.get<ecd_version>()),
+    CheckResult result(stringify(e.name) + "-" + stringify(e.version),
             identifier());
 
     try
     {
         do
         {
-            PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
-                    e.get<ecd_environment>()->package_database()->favourite_repository());
+            PackageDatabaseEntry ee(e.name, e.version,
+                    e.environment->package_database()->favourite_repository());
             VersionMetadata::ConstPointer metadata(
-                    e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
+                    e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
             Checker checker;
-            PortageDepParser::parse(metadata->get_ebuild_interface()->get<evm_src_uri>(),
+            PortageDepParser::parse(metadata->get_ebuild_interface()->src_uri,
                     PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance())->accept(&checker);
-            PortageDepParser::parse(metadata->get<vm_deps>().get<vmd_build_depend_string>())->accept(&checker);
+            PortageDepParser::parse(metadata->deps.build_depend_string)->accept(&checker);
 
             if (checker.need_zip && ! checker.have_zip)
                 result << Message(qal_major, "Found .zip in SRC_URI but app-arch/unzip is not in DEPEND");

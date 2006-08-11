@@ -34,7 +34,7 @@ using namespace paludis;
 std::size_t
 CRCHash<QualifiedPackageName>::operator() (const QualifiedPackageName & val) const
 {
-    const std::string & s1(val.get<qpn_category>().data()), s2(val.get<qpn_package>().data());
+    const std::string & s1(val.category.data()), s2(val.package.data());
     std::size_t h(0);
 
     for (std::string::size_type t(0) ; t < s1.length() ; ++t)
@@ -76,8 +76,8 @@ std::size_t
 CRCHash<std::pair<QualifiedPackageName, VersionSpec> >::operator() (
         const std::pair<QualifiedPackageName, VersionSpec> & val) const
 {
-    const std::string & s1(val.first.get<qpn_category>().data()),
-          s2(val.first.get<qpn_package>().data());
+    const std::string & s1(val.first.category.data()),
+          s2(val.first.package.data());
 
     std::size_t h(0);
 

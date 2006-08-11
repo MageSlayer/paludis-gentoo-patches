@@ -33,21 +33,21 @@ IuseCheck::IuseCheck()
 CheckResult
 IuseCheck::operator() (const EbuildCheckData & e) const
 {
-    CheckResult result(stringify(e.get<ecd_name>()) + "-" + stringify(e.get<ecd_version>()),
+    CheckResult result(stringify(e.name) + "-" + stringify(e.version),
             identifier());
 
     try
     {
-        PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
-                e.get<ecd_environment>()->package_database()->favourite_repository());
+        PackageDatabaseEntry ee(e.name, e.version,
+                e.environment->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
+                e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         try
         {
             std::set<UseFlagName> iuse;
             WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
-                get<evm_iuse>(), create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
+                iuse, create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
 
 
             static std::set<UseFlagName> iuse_blacklist;

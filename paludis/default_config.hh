@@ -25,7 +25,7 @@
 #include <paludis/util/collection.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/smart_record.hh>
+#include <paludis/util/sr.hh>
 
 #include <string>
 
@@ -58,81 +58,8 @@ namespace paludis
             DefaultConfigError(const std::string & msg) throw ();
     };
 
-    /**
-     * Keys for RepositoryConfigEntry.
-     *
-     * \see RepositoryConfigEntry
-     *
-     * \ingroup grpdefaultconfig
-     */
-    enum RepositoryConfigEntryKeys
-    {
-        rce_format,         ///< Our format
-        rce_importance,     ///< Our importance, higher being more important
-        rce_keys,           ///< Our key/value data
-        last_rce            ///< Number of entries
-    };
-
-    /**
-     * Tag for RepositoryConfigEntry.
-     *
-     * \see RepositoryConfigEntry
-     *
-     * \ingroup grpdefaultconfig
-     */
-    struct RepositoryConfigEntryTag :
-        SmartRecordTag<comparison_mode::FullComparisonTag,
-            comparison_method::SmartRecordCompareByKeyTag<rce_importance> >,
-        SmartRecordKeys<RepositoryConfigEntryKeys, last_rce>,
-        SmartRecordKey<rce_format, std::string>,
-        SmartRecordKey<rce_importance, unsigned>,
-        SmartRecordKey<rce_keys, AssociativeCollection<std::string, std::string>::Pointer >
-    {
-    };
-
-    /**
-     * Holds an entry in a DefaultConfig's repository configuration data.
-     *
-     * \ingroup grpdefaultconfig
-     */
-    typedef MakeSmartRecord<RepositoryConfigEntryTag>::Type RepositoryConfigEntry;
-
-    /**
-     * Keys for UseConfigEntry.
-     *
-     * \see UseConfigEntry
-     *
-     * \ingroup grpdefaultconfig
-     */
-    enum UseConfigEntryKeys
-    {
-        uce_dep_atom,       ///< A dependency atom
-        uce_flag_name,      ///< The use flag name
-        uce_flag_state      ///< The use flag state
-    };
-
-    /**
-     * Tag for UseConfigEntry.
-     *
-     * \see UseConfigEntry
-     *
-     * \ingroup grpdefaultconfig
-     */
-    struct UseConfigEntryTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<UseConfigEntryKeys, 3>,
-        SmartRecordKey<uce_dep_atom, PackageDepAtom::ConstPointer>,
-        SmartRecordKey<uce_flag_name, UseFlagName>,
-        SmartRecordKey<uce_flag_state, UseFlagState>
-    {
-    };
-
-    /**
-     * An entry in a DefaultConfig's use configuration data.
-     *
-     * \ingroup grpdefaultconfig
-     */
-    typedef MakeSmartRecord<UseConfigEntryTag>::Type UseConfigEntry;
+#include <paludis/repository_config_entry-sr.hh>
+#include <paludis/use_config_entry-sr.hh>
 
     /**
      * DefaultConfig is used by DefaultEnvironment to access the user's

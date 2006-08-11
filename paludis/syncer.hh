@@ -33,37 +33,8 @@
 
 namespace paludis
 {
-    /**
-     * Keys for SyncOptions.
-     *
-     * \see SyncOptions
-     * \ingroup grpsyncer
-     */
-    enum SyncOptionsKeys
-    {
-        so_excludefrom,     ///< Filename from which to take a list of excluded files
-        so_last             ///< Number of keys.
-    };
 
-    /**
-     * Tag for SyncOptions.
-     *
-     * \see SyncOptions
-     * \ingroup grpsyncer
-     */
-    struct SyncOptionsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<SyncOptionsKeys, so_last>,
-        SmartRecordKey<so_excludefrom, std::string>
-    {
-    };
-
-    /**
-     * Defines options to be passed to the syncer.
-     *
-     * \ingroup grpsyncer
-     */
-    typedef MakeSmartRecord<SyncOptionsTag>::Type SyncOptions;
+#include <paludis/syncer-sr.hh>
 
     /**
      * A Syncer subclass handles syncing Repository instances.

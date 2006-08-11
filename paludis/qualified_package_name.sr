@@ -1,0 +1,15 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_QualifiedPackageName()
+{
+    key category CategoryNamePart
+    key package PackageNamePart
+
+    comparison_operators all all
+
+    extra_constructors <<END
+        QualifiedPackageName(const std::string &);
+END
+}
+

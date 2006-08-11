@@ -1,4 +1,5 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+DISTCLEANFILES = cran_repository-sr.hh cran_repository-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
@@ -17,13 +18,15 @@ paludis_repositories_cran_include_HEADERS = \
 	cran_description.hh \
 	cran_dep_parser.hh \
 	cran_repository.hh \
-	cran_installed_repository.hh
+	cran_repository-sr.hh \
+	cran_installed_repository.hh \
+	cran_installed_repository-sr.hh
 
 libpaludiscranrepository_la_SOURCES = \
 	cran_description.cc \
 	cran_dep_parser.cc \
 	cran_repository.cc \
-	cran_installed_repository.cc
+	cran_installed_repository.cc \
 	$(paludis_repositories_cran_include_HEADERS)
 
 TESTS = cran_dep_parser_TEST cran_repository_TEST
@@ -53,7 +56,19 @@ cran_repository_TEST_CXXFLAGS = -I$(top_srcdir)
 EXTRA_DIST = \
 	cran_repository_TEST.cc \
 	cran_repository_TEST_setup.sh \
-	cran_repository_TEST_cleanup.sh
+	cran_repository_TEST_cleanup.sh \
+	cran_repository.sr \
+	cran_repository-sr.hh \
+	cran_repository-sr.cc \
+	cran_installed_repository.sr \
+	cran_installed_repository-sr.hh \
+	cran_installed_repository-sr.cc
+
+BUILT_SOURCES = \
+	cran_repository-sr.hh \
+	cran_repository-sr.cc \
+	cran_installed_repository-sr.hh \
+	cran_installed_repository-sr.cc
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = cran_repository_TEST_setup.sh cran_repository_TEST_cleanup.sh
@@ -64,4 +79,16 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	bash $(top_srcdir)/test/run_test.sh
+
+cran_repository-sr.hh : cran_repository.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/cran_repository.sr > $@
+
+cran_repository-sr.cc : cran_repository.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/cran_repository.sr > $@
+
+cran_installed_repository-sr.hh : cran_installed_repository.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/cran_installed_repository.sr > $@
+
+cran_installed_repository-sr.cc : cran_installed_repository.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/cran_installed_repository.sr > $@
 

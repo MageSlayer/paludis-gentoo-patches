@@ -78,8 +78,8 @@ namespace
                     else
                     {
                         mirror_host.erase(p);
-                        Repository::MirrorInterface * m(env->package_database()->fetch_repository(
-                                    env->package_database()->favourite_repository())->get_interface<repo_mirrors>());
+                        RepositoryMirrorsInterface * m(env->package_database()->fetch_repository(
+                                    env->package_database()->favourite_repository())->mirrors_interface);
                         if ((! m) || (! m->is_mirror(mirror_host)))
                             result << Message(qal_major, "Unknown mirror for '" + a->text() + "'");
                     }
@@ -127,19 +127,19 @@ SrcUriCheck::SrcUriCheck()
 CheckResult
 SrcUriCheck::operator() (const EbuildCheckData & e) const
 {
-    CheckResult result(stringify(e.get<ecd_name>()) + "-" + stringify(e.get<ecd_version>()),
+    CheckResult result(stringify(e.name) + "-" + stringify(e.version),
             identifier());
 
     try
     {
         do
         {
-            PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
-                    e.get<ecd_environment>()->package_database()->favourite_repository());
+            PackageDatabaseEntry ee(e.name, e.version,
+                    e.environment->package_database()->favourite_repository());
             VersionMetadata::ConstPointer metadata(
-                    e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
+                    e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-            std::string src_uri(metadata->get_ebuild_interface()->get<evm_src_uri>());
+            std::string src_uri(metadata->get_ebuild_interface()->src_uri);
 
             DepAtom::ConstPointer src_uri_parts(0);
             try
@@ -149,11 +149,11 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
 
                 std::set<std::string> restricts;
                 Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-                tokeniser.tokenise(metadata->get_ebuild_interface()->get<evm_restrict>(),
+                tokeniser.tokenise(metadata->get_ebuild_interface()->restrict_string,
                         std::inserter(restricts, restricts.begin()));
 
                 bool fetch_restrict(restricts.end() != restricts.find("fetch"));
-                Checker checker(result, fetch_restrict, e.get<ecd_environment>());
+                Checker checker(result, fetch_restrict, e.environment);
                 src_uri_parts->accept(&checker);
             }
             catch (const DepStringError & e)

@@ -42,6 +42,7 @@
 
 using namespace paludis;
 
+#include <paludis/repositories/cran/cran_installed_repository-sr.cc>
 
 namespace paludis
 {
@@ -96,11 +97,11 @@ namespace paludis
 }
 
 Implementation<CRANInstalledRepository>::Implementation(const CRANInstalledRepositoryParams & p) :
-    db(p.get<craninstrpk_package_database>()),
-    env(p.get<craninstrpk_environment>()),
-    location(p.get<craninstrpk_location>()),
-    root(p.get<craninstrpk_root>()),
-    world_file(p.get<craninstrpk_world>()),
+    db(p.package_database),
+    env(p.environment),
+    location(p.location),
+    root(p.root),
+    world_file(p.world),
     entries_valid(false)
 {
 }
@@ -155,19 +156,18 @@ Implementation<CRANInstalledRepository>::invalidate() const
 
 CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryParams & p) :
     Repository(RepositoryName("cran_installed"),
-            RepositoryCapabilities::create((
-                    param<repo_mask>(static_cast<MaskInterface *>(0)),
-                    param<repo_installable>(static_cast<InstallableInterface *>(0)),
-                    param<repo_installed>(this),
-                    param<repo_news>(static_cast<NewsInterface *>(0)),
-                    param<repo_sets>(this),
-                    param<repo_syncable>(static_cast<SyncableInterface *>(0)),
-                    param<repo_uninstallable>(this),
-                    param<repo_use>(static_cast<UseInterface *>(0)),
-                    param<repo_world>(this),
-                    param<repo_environment_variable>(static_cast<EnvironmentVariableInterface *>(0)),
-                    param<repo_mirrors>(static_cast<MirrorInterface *>(0))
-                    ))),
+            RepositoryCapabilities::create()
+            .mask_interface(0)
+            .installable_interface(0)
+            .installed_interface(this)
+            .news_interface(0)
+            .sets_interface(this)
+            .syncable_interface(0)
+            .uninstallable_interface(this)
+            .use_interface(0)
+            .world_interface(this)
+            .environment_variable_interface(0)
+            .mirrors_interface(0)),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -195,7 +195,7 @@ CRANInstalledRepository::do_has_package_named(const QualifiedPackageName & q) co
     Context context("When checking for package '" + stringify(q) +
             "' in " + stringify(name()) + ":");
 
-    if (! do_has_category_named(q.get<qpn_category>()))
+    if (! do_has_category_named(q.category))
         return false;
 
     if (! _imp->entries_valid)
@@ -282,12 +282,12 @@ CRANInstalledRepository::do_version_metadata(
     VersionMetadata::Pointer result(0);
 
     FSEntry d(_imp->location);
-    d /= stringify(q.get<qpn_package>());
+    d /= stringify(q.package);
     d /= "DESCRIPTION";
 
     if (d.is_regular_file())
     {
-        CRANDescription description(stringify(q.get<qpn_package>()), d);
+        CRANDescription description(stringify(q.package), d);
         result = description.metadata;
     }
     else
@@ -296,7 +296,7 @@ CRANInstalledRepository::do_version_metadata(
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "': No DESCRIPTION file present.");
         result.assign(new VersionMetadata(CRANDepParser::parse));
-        result->set<vm_eapi>("UNKNOWN");
+        result->eapi = "UNKNOWN";
         return result;
     }
 
@@ -319,7 +319,7 @@ CRANInstalledRepository::do_contents(
     if (! has_version(q, v)) 
         return result;
 
-    std::string pn = stringify(q.get<qpn_package>());
+    std::string pn = stringify(q.package);
     CRANDescription::normalise_name(pn);
     FSEntry f(_imp->location / "paludis" / pn / "CONTENTS");
     if (! f.is_regular_file())
@@ -401,12 +401,12 @@ CRANInstalledRepository::make_cran_installed_repository(
     if (m->end() == m->find("world") || ((world = m->find("world")->second)).empty())
         world = location + "/world";
 
-    return CountedPtr<Repository>(new CRANInstalledRepository(CRANInstalledRepositoryParams::create((
-                        param<craninstrpk_environment>(env),
-                        param<craninstrpk_package_database>(db),
-                        param<craninstrpk_location>(location),
-                        param<craninstrpk_root>(root),
-                        param<craninstrpk_world>(world)))));
+    return CountedPtr<Repository>(new CRANInstalledRepository(CRANInstalledRepositoryParams::create()
+                .environment(env)
+                .package_database(db)
+                .location(location)
+                .root(root)
+                .world(world)));
 }
 
 CRANInstalledRepositoryConfigurationError::CRANInstalledRepositoryConfigurationError(
@@ -435,13 +435,11 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
     VersionMetadata::ConstPointer vm(do_version_metadata(q, v));
 
     MakeEnvCommand cmd(LIBEXECDIR "/paludis/cran.bash unmerge", "");
-    cmd = cmd("PN", vm->get_cran_interface()->get<cranvm_package>());
+    cmd = cmd("PN", vm->get_cran_interface()->package);
     cmd = cmd("PV", stringify(v));
     cmd = cmd("PALUDIS_CRAN_LIBRARY", stringify(_imp->location));
     cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));
     cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
-
-
 
     if (0 != run_command(cmd))
         throw PackageUninstallActionError("Couldn't unmerge '" + stringify(q) + "-" + stringify(v) + "'");

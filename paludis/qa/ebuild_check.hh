@@ -25,7 +25,6 @@
 #include <paludis/qa/check_result.hh>
 #include <paludis/qa/environment.hh>
 #include <paludis/util/counted_ptr.hh>
-#include <paludis/util/smart_record.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/version_spec.hh>
 
@@ -33,24 +32,8 @@ namespace paludis
 {
     namespace qa
     {
-        enum EbuildCheckDataKeys
-        {
-            ecd_name,
-            ecd_version,
-            ecd_environment,
-            last_ecd
-        };
 
-        struct EbuildCheckDataTag :
-            SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-            SmartRecordKeys<EbuildCheckDataKeys, last_ecd>,
-            SmartRecordKey<ecd_name, QualifiedPackageName>,
-            SmartRecordKey<ecd_version, VersionSpec>,
-            SmartRecordKey<ecd_environment, const Environment *>
-        {
-        };
-
-        typedef MakeSmartRecord<EbuildCheckDataTag>::Type EbuildCheckData;
+#include <paludis/qa/ebuild_check-sr.hh>
 
         class EbuildCheck :
             public Check,

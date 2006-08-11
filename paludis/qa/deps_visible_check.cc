@@ -91,30 +91,30 @@ DepsVisibleCheck::DepsVisibleCheck()
 CheckResult
 DepsVisibleCheck::operator() (const EbuildCheckData & e) const
 {
-    CheckResult result(stringify(e.get<ecd_name>()) + "-" + stringify(e.get<ecd_version>()),
+    CheckResult result(stringify(e.name) + "-" + stringify(e.version),
             identifier());
 
     try
     {
-        PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
-                e.get<ecd_environment>()->package_database()->favourite_repository());
+        PackageDatabaseEntry ee(e.name, e.version,
+                e.environment->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
+                e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-        if (e.get<ecd_environment>()->mask_reasons(ee).any())
+        if (e.environment->mask_reasons(ee).any())
             result << Message(qal_skip, "Masked, so skipping checks");
         else
         {
-            Checker depend_checker(result, "DEPEND", e.get<ecd_environment>());
-            std::string depend(metadata->get<vm_deps>().get<vmd_build_depend_string>());
+            Checker depend_checker(result, "DEPEND", e.environment);
+            std::string depend(metadata->deps.build_depend_string);
             PortageDepParser::parse(depend)->accept(&depend_checker);
 
-            Checker rdepend_checker(result, "RDEPEND", e.get<ecd_environment>());
-            std::string rdepend(metadata->get<vm_deps>().get<vmd_run_depend_string>());
+            Checker rdepend_checker(result, "RDEPEND", e.environment);
+            std::string rdepend(metadata->deps.run_depend_string);
             PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
 
-            Checker pdepend_checker(result, "PDEPEND", e.get<ecd_environment>());
-            std::string pdepend(metadata->get<vm_deps>().get<vmd_post_depend_string>());
+            Checker pdepend_checker(result, "PDEPEND", e.environment);
+            std::string pdepend(metadata->deps.post_depend_string);
             PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
         }
     }

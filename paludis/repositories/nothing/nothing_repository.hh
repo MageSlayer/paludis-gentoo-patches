@@ -22,7 +22,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/smart_record.hh>
+#include <paludis/util/fs_entry.hh>
 
 /** \file
  * Declarations for the NothingRepository class.
@@ -33,46 +33,8 @@
 namespace paludis
 {
     class PackageDatabase;
-    class FSEntry;
 
-    /**
-     * Keys for NothingRepositoryParams.
-     *
-     * \see NothingRepositoryParams
-     * \ingroup grpnothingrepository
-     */
-    enum NothingRepositoryParamsKeys
-    {
-        nrpk_name,
-        nrpk_location,
-        nrpk_sync,
-        nrpk_sync_exclude,
-        last_nrpk
-    };
-
-    /**
-     * Tag for NothingRepositoryParams.
-     *
-     * \see NothingRepositoryParams
-     * \ingroup grpnothingrepository
-     */
-    struct NothingRepositoryParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<NothingRepositoryParamsKeys, last_nrpk>,
-        SmartRecordKey<nrpk_location, const FSEntry>,
-        SmartRecordKey<nrpk_name, const std::string>,
-        SmartRecordKey<nrpk_sync, const std::string>,
-        SmartRecordKey<nrpk_sync_exclude, const std::string>
-    {
-    };
-
-    /**
-     * Constructor parameters for NothingRepository.
-     *
-     * \see NothingRepository
-     * \ingroup grpnothingrepository
-     */
-    typedef MakeSmartRecord<NothingRepositoryParamsTag>::Type NothingRepositoryParams;
+#include <paludis/repositories/nothing/nothing_repository-sr.hh>
 
     /**
      * A NothingRepository is a Repository that has no content, but can be
@@ -82,7 +44,7 @@ namespace paludis
      */
     class NothingRepository :
         public Repository,
-        public Repository::SyncableInterface,
+        public RepositorySyncableInterface,
         private PrivateImplementationPattern<NothingRepository>
     {
         protected:

@@ -39,6 +39,6 @@ CheckResult::most_severe_level() const
 {
     QALevel result(static_cast<QALevel>(0));
     for (Iterator i(begin()), i_end(end()) ; i != i_end ; ++i)
-        result = std::max(result, i->get<mk_level>());
+        result = std::max(result, i->level);
     return result;
 }

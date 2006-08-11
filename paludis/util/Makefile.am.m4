@@ -30,13 +30,13 @@ addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 include(`paludis/util/files.m4')
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
-MAINTAINERCLEANFILES = Makefile.in Makefile.am paludis.hh smart_record.hh \
+MAINTAINERCLEANFILES = Makefile.in Makefile.am paludis.hh \
 	hashed_containers.hh util.hh
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 DEFS=\
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\"
-EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 smart_record.hh.m4 \
+EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 \
 	testscriptlist test_extras.cc
 SUBDIRS = .
 
@@ -58,9 +58,6 @@ paludis_util_include_HEADERS = headerlist
 
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am
-
-smart_record.hh : smart_record.hh.m4
-	$(top_srcdir)/misc/do_m4.bash smart_record.hh
 
 util.hh : util.hh.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash util.hh

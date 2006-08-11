@@ -80,15 +80,15 @@ DepPackagesCheck::DepPackagesCheck()
 CheckResult
 DepPackagesCheck::operator() (const EbuildCheckData & e) const
 {
-    CheckResult result(stringify(e.get<ecd_name>()) + "-" + stringify(e.get<ecd_version>()),
+    CheckResult result(stringify(e.name) + "-" + stringify(e.version),
             identifier());
 
     try
     {
-        PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
-                e.get<ecd_environment>()->package_database()->favourite_repository());
+        PackageDatabaseEntry ee(e.name, e.version,
+                e.environment->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
+                e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         static std::set<QualifiedPackageName> suspicious_depend;
         if (suspicious_depend.empty())
@@ -97,7 +97,7 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         }
 
         Checker depend_checker(result, "DEPEND", suspicious_depend);
-        std::string depend(metadata->get<vm_deps>().get<vmd_build_depend_string>());
+        std::string depend(metadata->deps.build_depend_string);
         PortageDepParser::parse(depend)->accept(&depend_checker);
 
         static std::set<QualifiedPackageName> suspicious_rdepend;
@@ -122,7 +122,7 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         }
 
         Checker rdepend_checker(result, "RDEPEND", suspicious_rdepend);
-        std::string rdepend(metadata->get<vm_deps>().get<vmd_run_depend_string>());
+        std::string rdepend(metadata->deps.run_depend_string);
         PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
     }
     catch (const InternalError &)

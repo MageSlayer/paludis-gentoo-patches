@@ -52,6 +52,8 @@
 
 using namespace paludis;
 
+#include <paludis/repositories/vdb/vdb_repository-sr.cc>
+
 namespace
 {
     /**
@@ -100,12 +102,12 @@ namespace
         {
             bool operator() (const CategoryNamePart & c, const VDBEntry & e) const
             {
-                return c < e.name.get<qpn_category>();
+                return c < e.name.category;
             }
 
             bool operator() (const VDBEntry & e, const CategoryNamePart & c) const
             {
-                return e.name.get<qpn_category>() < c;
+                return e.name.category < c;
             }
         };
 
@@ -205,8 +207,8 @@ namespace
         Context context("When loading VDBRepository entry for '" + stringify(name)
                 + "-" + stringify(v) + "' key '" + key + "' from '" + stringify(location) + "':");
 
-        FSEntry f(location / stringify(name.get<qpn_category>()) /
-                (stringify(name.get<qpn_package>()) + "-" + stringify(v)));
+        FSEntry f(location / stringify(name.category) /
+                (stringify(name.package) + "-" + stringify(v)));
         if (! (f / key).is_regular_file())
             return "";
 
@@ -290,12 +292,12 @@ namespace paludis
     };
 
     Implementation<VDBRepository>::Implementation(const VDBRepositoryParams & p) :
-        db(p.get<vdbrpk_package_database>()),
-        env(p.get<vdbrpk_environment>()),
-        location(p.get<vdbrpk_location>()),
-        root(p.get<vdbrpk_root>()),
-        buildroot(p.get<vdbrpk_buildroot>()),
-        world_file(p.get<vdbrpk_world>()),
+        db(p.package_database),
+        env(p.environment),
+        location(p.location),
+        root(p.root),
+        buildroot(p.buildroot),
+        world_file(p.world),
         entries_valid(false),
         has_provide_map(false)
     {
@@ -353,23 +355,21 @@ namespace paludis
                 + "-" + stringify(p->version) + "' from '" + stringify(location) + "':");
 
         p->metadata = VersionMetadata::Pointer(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
-        p->metadata->get<vm_deps>().set<vmd_build_depend_string>(
-                file_contents(location, p->name, p->version, "DEPEND"));
-        p->metadata->get<vm_deps>().set<vmd_run_depend_string>(
-                file_contents(location, p->name, p->version, "RDEPEND"));
-        p->metadata->set<vm_license>(file_contents(location, p->name, p->version, "LICENSE"));
-        p->metadata->get_ebuild_interface()->set<evm_keywords>("*");
-        p->metadata->get_ebuild_interface()->set<evm_inherited>(
-                file_contents(location, p->name, p->version, "INHERITED"));
-        p->metadata->get_ebuild_interface()->set<evm_iuse>(
-                file_contents(location, p->name, p->version, "IUSE"));
-        p->metadata->get<vm_deps>().set<vmd_post_depend_string>(
-                file_contents(location, p->name, p->version, "PDEPEND"));
-        p->metadata->get_ebuild_interface()->set<evm_provide>(
-                file_contents(location, p->name, p->version, "PROVIDE"));
-        p->metadata->set<vm_eapi>(file_contents(location, p->name, p->version, "EAPI"));
-        p->metadata->set<vm_homepage>(file_contents(location, p->name, p->version, "HOMEPAGE"));
-        p->metadata->set<vm_description>(file_contents(location, p->name, p->version, "DESCRIPTION"));
+        p->metadata->deps.build_depend_string = file_contents(location, p->name, p->version, "DEPEND");
+        p->metadata->deps.run_depend_string = file_contents(location, p->name, p->version, "RDEPEND");
+        p->metadata->license_string = file_contents(location, p->name, p->version, "LICENSE");
+        p->metadata->get_ebuild_interface()->keywords = "*";
+        p->metadata->get_ebuild_interface()->inherited =
+                file_contents(location, p->name, p->version, "INHERITED");
+        p->metadata->get_ebuild_interface()->iuse =
+                file_contents(location, p->name, p->version, "IUSE");
+        p->metadata->deps.post_depend_string =
+                file_contents(location, p->name, p->version, "PDEPEND");
+        p->metadata->get_ebuild_interface()->provide_string =
+                file_contents(location, p->name, p->version, "PROVIDE");
+        p->metadata->eapi = file_contents(location, p->name, p->version, "EAPI");
+        p->metadata->homepage = file_contents(location, p->name, p->version, "HOMEPAGE");
+        p->metadata->description = file_contents(location, p->name, p->version, "DESCRIPTION");
 
         std::string slot(file_contents(location, p->name, p->version, "SLOT"));
         if (slot.empty())
@@ -379,7 +379,7 @@ namespace paludis
                     stringify(location) + "' has empty SLOT, setting to \"0\"");
             slot = "0";
         }
-        p->metadata->set<vm_slot>(SlotName(slot));
+        p->metadata->slot = SlotName(slot);
 
         std::string raw_use(file_contents(location, p->name, p->version, "USE"));
         p->use.clear();
@@ -391,19 +391,19 @@ namespace paludis
 
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     Repository(RepositoryName("installed"),
-            RepositoryCapabilities::create((
-                    param<repo_installable>(static_cast<InstallableInterface *>(0)),
-                    param<repo_installed>(this),
-                    param<repo_mask>(static_cast<MaskInterface *>(0)),
-                    param<repo_news>(static_cast<NewsInterface *>(0)),
-                    param<repo_sets>(this),
-                    param<repo_syncable>(static_cast<SyncableInterface *>(0)),
-                    param<repo_uninstallable>(this),
-                    param<repo_use>(this),
-                    param<repo_world>(this),
-                    param<repo_environment_variable>(this),
-                    param<repo_mirrors>(static_cast<MirrorInterface *>(0))
-                    ))),
+            RepositoryCapabilities::create()
+            .installable_interface(0)
+            .installed_interface(this)
+            .mask_interface(0)
+            .news_interface(0)
+            .sets_interface(this)
+            .syncable_interface(0)
+            .uninstallable_interface(this)
+            .use_interface(this)
+            .world_interface(this)
+            .environment_variable_interface(this)
+            .mirrors_interface(0)
+            ),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -463,7 +463,7 @@ VDBRepository::do_category_names() const
 
     for (std::vector<VDBEntry>::const_iterator c(_imp->entries.begin()), c_end(_imp->entries.end()) ;
             c != c_end ; ++c)
-        result->insert(c->name.get<qpn_category>());
+        result->insert(c->name.category);
 
     return result;
 }
@@ -568,8 +568,8 @@ VDBRepository::do_contents(
 
     Contents::Pointer result(new Contents);
 
-    FSEntry f(_imp->location / stringify(q.get<qpn_category>()) /
-            (stringify(q.get<qpn_package>()) + "-" + stringify(v)));
+    FSEntry f(_imp->location / stringify(q.category) /
+            (stringify(q.package) + "-" + stringify(v)));
     if (! (f / "CONTENTS").is_regular_file())
     {
         Log::get_instance()->message(ll_warning, lc_context,
@@ -635,12 +635,12 @@ VDBRepository::do_query_use(const UseFlagName & f,
     if (! _imp->entries_valid)
         _imp->load_entries();
 
-    if (e->get<pde_repository>() == name())
+    if (e->repository == name())
     {
 
         std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
             r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
-                            e->get<pde_name>(), e->get<pde_version>()), VDBEntry::CompareVersion()));
+                            e->name, e->version), VDBEntry::CompareVersion()));
 
         if (r.first == r.second)
             return use_unspecified;
@@ -694,13 +694,13 @@ VDBRepository::make_vdb_repository(
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
-    return CountedPtr<Repository>(new VDBRepository(VDBRepositoryParams::create((
-                        param<vdbrpk_environment>(env),
-                        param<vdbrpk_package_database>(db),
-                        param<vdbrpk_location>(location),
-                        param<vdbrpk_root>(root),
-                        param<vdbrpk_world>(world),
-                        param<vdbrpk_buildroot>(buildroot)))));
+    return CountedPtr<Repository>(new VDBRepository(VDBRepositoryParams::create()
+                .environment(env)
+                .package_database(db)
+                .location(location)
+                .root(root)
+                .world(world)
+                .buildroot(buildroot)));
 }
 
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(
@@ -765,32 +765,31 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
     PackageDatabaseEntry e(q, v, name());
 
     FSEntryCollection::Pointer eclassdirs(new FSEntryCollection::Concrete);
-    eclassdirs->append(FSEntry(_imp->location / stringify(q.get<qpn_category>()) /
-                (stringify(q.get<qpn_package>()) + "-" + stringify(v))));
+    eclassdirs->append(FSEntry(_imp->location / stringify(q.category) /
+                (stringify(q.package) + "-" + stringify(v))));
 
-    FSEntry pkg_dir(_imp->location / stringify(q.get<qpn_category>()) /
-            (stringify(q.get<qpn_package>()) + "-" + stringify(v)));
+    FSEntry pkg_dir(_imp->location / stringify(q.category) /
+            (stringify(q.package) + "-" + stringify(v)));
 
     CountedPtr<FSEntry, count_policy::ExternalCountTag> load_env(0);
     if (is_full_env(pkg_dir))
         load_env.assign(new FSEntry(pkg_dir / "environment.bz2"));
 
-    EbuildUninstallCommand uninstall_cmd(EbuildCommandParams::create((
-                    param<ecpk_environment>(_imp->env),
-                    param<ecpk_db_entry>(&e),
-                    param<ecpk_ebuild_dir>(pkg_dir),
-                    param<ecpk_files_dir>(pkg_dir),
-                    param<ecpk_eclassdirs>(eclassdirs),
-                    param<ecpk_portdir>(_imp->location),
-                    param<ecpk_distdir>(pkg_dir),
-                    param<ecpk_buildroot>(_imp->buildroot)
-                    )),
-            EbuildUninstallCommandParams::create((
-                    param<ecupk_root>(stringify(_imp->root) + "/"),
-                    param<ecupk_disable_cfgpro>(o.get<io_noconfigprotect>()),
-                    param<ecupk_unmerge_only>(! metadata->get_ebuild_interface()->get<evm_virtual>().empty()),
-                    param<ecupk_load_environment>(load_env.raw_pointer())
-                    )));
+    EbuildUninstallCommand uninstall_cmd(EbuildCommandParams::create()
+            .environment(_imp->env)
+            .db_entry(&e)
+            .ebuild_dir(pkg_dir)
+            .files_dir(pkg_dir)
+            .eclassdirs(eclassdirs)
+            .portdir(_imp->location)
+            .distdir(pkg_dir)
+            .buildroot(_imp->buildroot),
+
+            EbuildUninstallCommandParams::create()
+            .root(stringify(_imp->root) + "/")
+            .disable_cfgpro(o.no_config_protect)
+            .unmerge_only(! metadata->get_ebuild_interface()->virtual_for.empty())
+            .load_environment(load_env.raw_pointer()));
 
     uninstall_cmd();
 }
@@ -875,7 +874,7 @@ VDBRepository::begin_provide_map() const
             {
                 if (! e->metadata)
                     _imp->load_entry(e);
-                const std::string provide_str(e->metadata->get_ebuild_interface()->get<evm_provide>());
+                const std::string provide_str(e->metadata->get_ebuild_interface()->provide_string);
                 if (provide_str.empty())
                     continue;
 
@@ -888,7 +887,7 @@ VDBRepository::begin_provide_map() const
                 {
                     QualifiedPackageName pp((*p)->text());
 
-                    if (pp.get<qpn_category>() != CategoryNamePart("virtual"))
+                    if (pp.category != CategoryNamePart("virtual"))
                         Log::get_instance()->message(ll_warning, lc_no_context, "PROVIDE of non-virtual '"
                                 + stringify(pp) + "' from '" + stringify(e->name) + "-"
                                 + stringify(e->version) + "' in '" + stringify(name())
@@ -1000,9 +999,9 @@ VDBRepository::get_environment_variable(
     Context context("When fetching environment variable '" + var + "' for '" +
             stringify(for_package) + "':");
 
-    FSEntry vdb_dir(_imp->location / stringify(for_package.get<pde_name>().get<qpn_category>())
-            / (stringify(for_package.get<pde_name>().get<qpn_package>()) + "-" +
-                stringify(for_package.get<pde_version>())));
+    FSEntry vdb_dir(_imp->location / stringify(for_package.name.category)
+            / (stringify(for_package.name.package) + "-" +
+                stringify(for_package.version)));
 
     if (! vdb_dir.is_directory())
         throw EnvironmentVariableActionError("Could not find VDB entry for '"

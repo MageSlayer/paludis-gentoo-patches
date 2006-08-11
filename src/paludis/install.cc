@@ -97,8 +97,8 @@ namespace
             virtual void on_build_cleanlist_pre(const DepListEntry & d)
             {
                 cout << endl << colour(cl_heading, "Cleaning stale versions after installing " +
-                        stringify(d.get<dle_name>()) + "-" + stringify(d.get<dle_version>()) +
-                        "::" + stringify(d.get<dle_repository>())) << endl << endl;
+                        stringify(d.name) + "-" + stringify(d.version) +
+                        "::" + stringify(d.repository)) << endl << endl;
             }
 
             virtual void on_build_cleanlist_post(const DepListEntry &)
@@ -154,13 +154,13 @@ namespace
             virtual void on_fetch_pre(const DepListEntry & d)
             {
                 cout << colour(cl_heading, "Fetching " +
-                        stringify(d.get<dle_name>()) + "-" + stringify(d.get<dle_version>()) +
-                        "::" + stringify(d.get<dle_repository>())) << endl << endl;
+                        stringify(d.name) + "-" + stringify(d.version) +
+                        "::" + stringify(d.repository)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
                         stringify(_max_count) + ") Fetching " +
-                        stringify(d.get<dle_name>()) + "-" + stringify(d.get<dle_version>()) +
-                        "::" + stringify(d.get<dle_repository>()));
+                        stringify(d.name) + "-" + stringify(d.version) +
+                        "::" + stringify(d.repository));
             }
 
             virtual void on_fetch_post(const DepListEntry &)
@@ -178,13 +178,13 @@ namespace
             virtual void on_install_pre(const DepListEntry & d)
             {
                 cout << endl << colour(cl_heading, "Installing " +
-                        stringify(d.get<dle_name>()) + "-" + stringify(d.get<dle_version>()) +
-                        "::" + stringify(d.get<dle_repository>())) << endl << endl;
+                        stringify(d.name) + "-" + stringify(d.version) +
+                        "::" + stringify(d.repository)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
                         stringify(_max_count) + ") Installing " +
-                        stringify(d.get<dle_name>()) + "-" + stringify(d.get<dle_version>()) +
-                        "::" + stringify(d.get<dle_repository>()));
+                        stringify(d.name) + "-" + stringify(d.version) +
+                        "::" + stringify(d.repository));
             }
 
             virtual void on_install_post(const DepListEntry &)
@@ -317,27 +317,27 @@ namespace
     {
         Context context("When displaying entry '" + stringify(d) + "':");
 
-        cout << "* " << colour(cl_package_name, d.get<dle_name>());
+        cout << "* " << colour(cl_package_name, d.name);
 
         /* display version, unless it's 0 and our category is "virtual" */
-        if ((VersionSpec("0") != d.get<dle_version>()) ||
-                CategoryNamePart("virtual") != d.get<dle_name>().get<qpn_category>())
-            cout << "-" << d.get<dle_version>();
+        if ((VersionSpec("0") != d.version) ||
+                CategoryNamePart("virtual") != d.name.category)
+            cout << "-" << d.version;
 
         /* display repository, unless it's our main repository */
-        if (DefaultEnvironment::get_instance()->package_database()->favourite_repository() != d.get<dle_repository>())
-            cout << "::" << d.get<dle_repository>();
+        if (DefaultEnvironment::get_instance()->package_database()->favourite_repository() != d.repository)
+            cout << "::" << d.repository;
 
         /* display slot name, unless it's 0 */
-        if (SlotName("0") != d.get<dle_metadata>()->get<vm_slot>())
+        if (SlotName("0") != d.metadata->slot)
             cout << colour(cl_slot, " {:" + stringify(
-                        d.get<dle_metadata>()->get<vm_slot>()) + "}");
+                        d.metadata->slot) + "}");
 
         /* indicate [U], [S] or [N]. display existing version, if we're
          * already installed */
         PackageDatabaseEntryCollection::Pointer existing(DefaultEnvironment::get_instance()->package_database()->
                 query(PackageDepAtom::Pointer(new PackageDepAtom(stringify(
-                                d.get<dle_name>()))), is_installed_only));
+                                d.name))), is_installed_only));
 
         if (existing->empty())
         {
@@ -348,8 +348,8 @@ namespace
         else
         {
             existing = DefaultEnvironment::get_instance()->package_database()->query(PackageDepAtom::Pointer(
-                        new PackageDepAtom(stringify(d.get<dle_name>()) + ":" +
-                            stringify(d.get<dle_metadata>()->get<vm_slot>()))),
+                        new PackageDepAtom(stringify(d.name) + ":" +
+                            stringify(d.metadata->slot))),
                     is_installed_only);
             if (existing->empty())
             {
@@ -357,17 +357,17 @@ namespace
                 ++_new_slot_count;
                 ++_max_count;
             }
-            else if (existing->last()->get<pde_version>() < d.get<dle_version>())
+            else if (existing->last()->version < d.version)
             {
                 cout << colour(cl_updatemode, " [U " + stringify(
-                            existing->last()->get<pde_version>()) + "]");
+                            existing->last()->version) + "]");
                 ++_upgrade_count;
                 ++_max_count;
             }
-            else if (existing->last()->get<pde_version>() > d.get<dle_version>())
+            else if (existing->last()->version > d.version)
             {
                 cout << colour(cl_updatemode, " [D " + stringify(
-                            existing->last()->get<pde_version>()) + "]");
+                            existing->last()->version) + "]");
                 ++_downgrade_count;
                 ++_max_count;
             }
@@ -380,18 +380,18 @@ namespace
         }
 
         /* fetch db entry */
-        PackageDatabaseEntry p(PackageDatabaseEntry(d.get<dle_name>(),
-                    d.get<dle_version>(), d.get<dle_repository>()));
+        PackageDatabaseEntry p(PackageDatabaseEntry(d.name,
+                    d.version, d.repository));
 
         /* display USE flags */
-        if (d.get<dle_metadata>()->get_ebuild_interface())
+        if (d.metadata->get_ebuild_interface())
         {
-            const Repository::UseInterface * const use_interface(
-                    DefaultEnvironment::get_instance()->package_database()->fetch_repository(d.get<dle_repository>())->
-                    get_interface<repo_use>());
+            const RepositoryUseInterface * const use_interface(
+                    DefaultEnvironment::get_instance()->package_database()->
+                    fetch_repository(d.repository)->use_interface);
             std::set<UseFlagName> iuse;
             WhitespaceTokeniser::get_instance()->tokenise(
-                    d.get<dle_metadata>()->get_ebuild_interface()->get<evm_iuse>(),
+                    d.metadata->get_ebuild_interface()->iuse,
                     create_inserter<UseFlagName>(std::inserter(iuse, iuse.end())));
 
 
@@ -454,12 +454,12 @@ namespace
         }
 
         /* display tag, add tag to our post display list */
-        if (! d.get<dle_tag>()->empty())
+        if (! d.tag->empty())
         {
             std::string tag_titles;
             for (SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Iterator
-                    tag(d.get<dle_tag>()->begin()),
-                    tag_end(d.get<dle_tag>()->end()) ;
+                    tag(d.tag->begin()),
+                    tag_end(d.tag->end()) ;
                     tag != tag_end ; ++tag)
             {
                 _all_tags.insert(*tag);
@@ -581,8 +581,8 @@ do_install()
                             {
                                 std::string eapi_str(DefaultEnvironment::get_instance()->
                                         package_database()->fetch_repository(
-                                            pp->get<pde_repository>())->version_metadata(
-                                            pp->get<pde_name>(), pp->get<pde_version>())->get<vm_eapi>());
+                                            pp->repository)->version_metadata(
+                                            pp->name, pp->version)->eapi);
 
                                 cerr << " ( " << colour(cl_masked, eapi_str) << " )";
                             }
@@ -592,21 +592,21 @@ do_install()
 
                                 LicenceDisplayer ld(cerr, DefaultEnvironment::get_instance(), &*pp);
                                 DefaultEnvironment::get_instance()->package_database()->fetch_repository(
-                                        pp->get<pde_repository>())->version_metadata(
-                                        pp->get<pde_name>(), pp->get<pde_version>())->license()->
+                                        pp->repository)->version_metadata(
+                                        pp->name, pp->version)->license()->
                                         accept(&ld);
                             }
                             else if (mr_keyword == mm)
                             {
                                 VersionMetadata::ConstPointer m(DefaultEnvironment::get_instance()->
                                         package_database()->fetch_repository(
-                                            pp->get<pde_repository>())->version_metadata(
-                                            pp->get<pde_name>(), pp->get<pde_version>()));
+                                            pp->repository)->version_metadata(
+                                            pp->name, pp->version));
                                 if (m->get_ebuild_interface())
                                 {
                                     std::set<KeywordName> keywords;
                                     WhitespaceTokeniser::get_instance()->tokenise(
-                                            m->get_ebuild_interface()->get<evm_keywords>(),
+                                            m->get_ebuild_interface()->keywords,
                                             create_inserter<KeywordName>(
                                                 std::inserter(keywords, keywords.end())));
 

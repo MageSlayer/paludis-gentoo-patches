@@ -83,7 +83,7 @@ do_one_owner(
     for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        if (! (*r)->get_interface<p::repo_installed>())
+        if (! (*r)->installed_interface)
             continue;
 
         p::CategoryNamePartCollection::ConstPointer cats((*r)->category_names());
@@ -99,7 +99,7 @@ do_one_owner(
                         v_end(vers->end()) ; v != v_end ; ++v)
                 {
                     p::PackageDatabaseEntry e(*p, *v, (*r)->name());
-                    p::Contents::ConstPointer contents((*r)->get_interface<p::repo_installed>()->
+                    p::Contents::ConstPointer contents((*r)->installed_interface->
                             contents(*p, *v));
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
                     std::for_each(contents->begin(), contents->end(), accept_visitor(&d));

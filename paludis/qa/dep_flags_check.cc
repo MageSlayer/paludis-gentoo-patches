@@ -64,10 +64,10 @@ namespace
             Repository::ConstPointer r(env->package_database()->fetch_repository(env->package_database()->
                         favourite_repository()));
 
-            if (! r->get_interface<repo_use>())
+            if (! r->use_interface)
                 throw InternalError(PALUDIS_HERE, "Confused: Repository does not have a UseInterface.");
 
-            if (r->get_interface<repo_use>()->is_arch_flag(u->flag()))
+            if (r->use_interface->is_arch_flag(u->flag()))
             {
                 if (role == "DEPEND" || role == "RDEPEND" || role == "PDEPEND")
                 {
@@ -79,7 +79,7 @@ namespace
                     result << Message(qal_major, "Arch flag '" + stringify(u->flag()) +
                             "' in " + role);
             }
-            else if (r->get_interface<repo_use>()->is_expand_flag(u->flag()))
+            else if (r->use_interface->is_expand_flag(u->flag()))
             {
             }
             else if (iuse.end() == iuse.find(u->flag()))
@@ -106,47 +106,47 @@ DepFlagsCheck::DepFlagsCheck()
 CheckResult
 DepFlagsCheck::operator() (const EbuildCheckData & e) const
 {
-    CheckResult result(stringify(e.get<ecd_name>()) + "-" + stringify(e.get<ecd_version>()),
+    CheckResult result(stringify(e.name) + "-" + stringify(e.version),
             identifier());
 
     try
     {
-        PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
-                e.get<ecd_environment>()->package_database()->favourite_repository());
+        PackageDatabaseEntry ee(e.name, e.version,
+                e.environment->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
+                e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         std::set<UseFlagName> iuse;
         WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
-                get<evm_iuse>(), create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
+                iuse, create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
         iuse.insert(UseFlagName("bootstrap"));
         iuse.insert(UseFlagName("build"));
 
-        Checker depend_checker(result, "DEPEND", e.get<ecd_environment>(), iuse);
-        std::string depend(metadata->get<vm_deps>().get<vmd_build_depend_string>());
+        Checker depend_checker(result, "DEPEND", e.environment, iuse);
+        std::string depend(metadata->deps.build_depend_string);
         PortageDepParser::parse(depend)->accept(&depend_checker);
 
-        Checker rdepend_checker(result, "RDEPEND", e.get<ecd_environment>(), iuse);
-        std::string rdepend(metadata->get<vm_deps>().get<vmd_run_depend_string>());
+        Checker rdepend_checker(result, "RDEPEND", e.environment, iuse);
+        std::string rdepend(metadata->deps.run_depend_string);
         PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
 
-        Checker pdepend_checker(result, "PDEPEND", e.get<ecd_environment>(), iuse);
-        std::string pdepend(metadata->get<vm_deps>().get<vmd_post_depend_string>());
+        Checker pdepend_checker(result, "PDEPEND", e.environment, iuse);
+        std::string pdepend(metadata->deps.post_depend_string);
         PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
 
-        Checker provide_checker(result, "PROVIDE", e.get<ecd_environment>(), iuse);
-        std::string provide(metadata->get_ebuild_interface()->get<evm_provide>());
+        Checker provide_checker(result, "PROVIDE", e.environment, iuse);
+        std::string provide(metadata->get_ebuild_interface()->provide_string);
         PortageDepParser::parse(provide, PortageDepParserPolicy<PackageDepAtom, false>::get_instance())->accept(&provide_checker);
 
-        Checker license_checker(result, "LICENSE", e.get<ecd_environment>(), iuse);
-        std::string license(metadata->get<vm_license>());
+        Checker license_checker(result, "LICENSE", e.environment, iuse);
+        std::string license(metadata->license_string);
         PortageDepParser::parse(license, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&license_checker);
 
-        Checker src_uri_checker(result, "SRC_URI", e.get<ecd_environment>(), iuse);
+        Checker src_uri_checker(result, "SRC_URI", e.environment, iuse);
         if (metadata->get_ebuild_interface() == 0)
             result << Message(qal_fatal, "Not an ebuild");
 
-        std::string src_uri(metadata->get_ebuild_interface()->get<evm_src_uri>());
+        std::string src_uri(metadata->get_ebuild_interface()->src_uri);
 
         PortageDepParser::parse(src_uri, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&src_uri_checker);
     }

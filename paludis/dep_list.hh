@@ -26,7 +26,6 @@
 #include <paludis/environment.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/smart_record.hh>
 #include <paludis/version_spec.hh>
 
 #include <iosfwd>
@@ -36,23 +35,6 @@
 
 namespace paludis
 {
-    /**
-     * Keys for a DepListEntry.
-     *
-     * \see DepListEntry
-     * \ingroup grpdepresolver
-     */
-    enum DepListEntryKeys
-    {
-        dle_name,            ///< Package name
-        dle_version,         ///< Package version
-        dle_metadata,        ///< Package SLOT
-        dle_repository,      ///< Repository name
-        dle_flags,           ///< Flags
-        dle_tag,             ///< Our tag
-        last_dle             ///< Number of entries
-    };
-
     /**
      * Flags for a DepListEntry.
      *
@@ -75,29 +57,7 @@ namespace paludis
      */
     typedef std::bitset<last_dlef> DepListEntryFlags;
 
-    /**
-     * Tag for a DepListEntry.
-     *
-     * \ingroup grpdepresolver
-     */
-    struct DepListEntryTag :
-        SmartRecordTag<comparison_mode::EqualityComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
-        SmartRecordKeys<DepListEntryKeys, last_dle>,
-        SmartRecordKey<dle_name, QualifiedPackageName>,
-        SmartRecordKey<dle_version, VersionSpec>,
-        SmartRecordKey<dle_metadata, VersionMetadata::ConstPointer>,
-        SmartRecordKey<dle_repository, RepositoryName>,
-        SmartRecordKey<dle_flags, DepListEntryFlags>,
-        SmartRecordKey<dle_tag, SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Pointer>
-    {
-    };
-
-    /**
-     * A DepListEntry represents an entry in a DepList.
-     *
-     * \ingroup grpdepresolver
-     */
-    typedef MakeSmartRecord<DepListEntryTag>::Type DepListEntry;
+#include <paludis/dep_list_entry-sr.hh>
 
     /**
      * A DepListEntry can be written to a stream.

@@ -23,7 +23,6 @@
 #include <paludis/repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/smart_record.hh>
 #include <paludis/repositories/portage/portage_repository_params.hh>
 #include <string>
 
@@ -47,14 +46,14 @@ namespace paludis
      */
     class PortageRepository :
         public Repository,
-        public Repository::MaskInterface,
-        public Repository::UseInterface,
-        public Repository::InstallableInterface,
-        public Repository::SyncableInterface,
-        public Repository::NewsInterface,
-        public Repository::SetsInterface,
-        public Repository::EnvironmentVariableInterface,
-        public Repository::MirrorInterface,
+        public RepositoryMaskInterface,
+        public RepositoryUseInterface,
+        public RepositoryInstallableInterface,
+        public RepositorySyncableInterface,
+        public RepositoryNewsInterface,
+        public RepositorySetsInterface,
+        public RepositoryEnvironmentVariableInterface,
+        public RepositoryMirrorsInterface,
         private PrivateImplementationPattern<PortageRepository>
     {
         private:

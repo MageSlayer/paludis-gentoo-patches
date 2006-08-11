@@ -34,10 +34,12 @@
 
 using namespace paludis;
 
+#include "package_database_entry-sr.cc"
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const PackageDatabaseEntry & v)
 {
-    s << v.get<pde_name>() << "-" << v.get<pde_version>() << "::" << v.get<pde_repository>();
+    s << v.name << "-" << v.version << "::" << v.repository;
     return s;
 }
 
@@ -212,13 +214,13 @@ PackageDatabase::_do_query(const PackageDepAtom & a, const InstallState installe
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
     {
-        if ((installed_state == is_installed_only) && ! r->get_interface<repo_installed>())
+        if ((installed_state == is_installed_only) && ! r->installed_interface)
             continue;
 
-        if ((installed_state == is_uninstalled_only) && r->get_interface<repo_installed>())
+        if ((installed_state == is_uninstalled_only) && r->installed_interface)
             continue;
 
-        if (! r->has_category_named(a.package().get<qpn_category>()))
+        if (! r->has_category_named(a.package().category))
             continue;
 
         if (! r->has_package_named(a.package()))

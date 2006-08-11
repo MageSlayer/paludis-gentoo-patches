@@ -23,7 +23,6 @@
 #include <paludis/repository.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/smart_record.hh>
 #include <paludis/util/fs_entry.hh>
 
 /** \file
@@ -34,48 +33,8 @@
 
 namespace paludis
 {
-    /**
-     * Keys for VDBRepositoryParams
-     *
-     * \see VDBRepositoryParams
-     * \ingroup grpvdbrepository
-     */
-    enum VDBRepositoryParamsKeys
-    {
-        vdbrpk_environment,
-        vdbrpk_package_database,
-        vdbrpk_location,
-        vdbrpk_root,
-        vdbrpk_world,
-        vdbrpk_buildroot,
-        last_vdbrpk
-    };
 
-    /**
-     * Tag for VDBRepositoryParams.
-     *
-     * \see VDBRepositoryParams
-     * \ingroup grpvdbrepository
-     */
-    struct VDBRepositoryParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<VDBRepositoryParamsKeys, last_vdbrpk>,
-        SmartRecordKey<vdbrpk_environment, const Environment *>,
-        SmartRecordKey<vdbrpk_package_database, const PackageDatabase *>,
-        SmartRecordKey<vdbrpk_location, const FSEntry>,
-        SmartRecordKey<vdbrpk_root, const FSEntry>,
-        SmartRecordKey<vdbrpk_world, const FSEntry>,
-        SmartRecordKey<vdbrpk_buildroot, const FSEntry>
-    {
-    };
-
-    /**
-     * Constructor parameters for VDBRepository.
-     *
-     * \see VDBRepository
-     * \ingroup grpvdbrepository
-     */
-    typedef MakeSmartRecord<VDBRepositoryParamsTag>::Type VDBRepositoryParams;
+#include <paludis/repositories/vdb/vdb_repository-sr.hh>
 
     /**
      * A VDBRepository represents the /var/db/pkg database used for
@@ -87,12 +46,12 @@ namespace paludis
      */
     class VDBRepository :
         public Repository,
-        public Repository::InstalledInterface,
-        public Repository::UseInterface,
-        public Repository::UninstallableInterface,
-        public Repository::SetsInterface,
-        public Repository::WorldInterface,
-        public Repository::EnvironmentVariableInterface,
+        public RepositoryInstalledInterface,
+        public RepositoryUseInterface,
+        public RepositoryUninstallableInterface,
+        public RepositorySetsInterface,
+        public RepositoryWorldInterface,
+        public RepositoryEnvironmentVariableInterface,
         public PrivateImplementationPattern<VDBRepository>
     {
         protected:

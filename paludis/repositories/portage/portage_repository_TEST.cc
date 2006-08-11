@@ -498,7 +498,7 @@ namespace test_cases
                 VersionMetadata::ConstPointer m(0);
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->get<vm_description>(), "the-description");
+                TEST_CHECK_EQUAL(m->description, "the-description");
 
                 TEST_CHECK_THROWS(repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2")),
                         NoSuchPackageError);
@@ -539,8 +539,8 @@ namespace test_cases
                 VersionMetadata::ConstPointer m(0);
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->get<vm_description>(), "The Description");
-                TEST_CHECK_EQUAL(m->get<vm_eapi>(), "0");
+                TEST_CHECK_EQUAL(m->description, "The Description");
+                TEST_CHECK_EQUAL(m->eapi, "0");
             }
         }
     } test_portage_repository_metadata_uncached;
@@ -576,7 +576,7 @@ namespace test_cases
                 VersionMetadata::ConstPointer m(0);
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->get<vm_eapi>(), "UNKNOWN");
+                TEST_CHECK_EQUAL(m->eapi, "UNKNOWN");
             }
         }
     } test_portage_repository_metadata_unparsable;

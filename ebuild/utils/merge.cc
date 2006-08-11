@@ -67,22 +67,24 @@ namespace
     make_config_protect_name(const FSEntry & name, const FSEntry & file_to_install)
     {
         int n(0);
+        std::string file_to_install_name(stringify(file_to_install));
 
-        ifstream our_md5_file(stringify(file_to_install).c_str());
+        ifstream our_md5_file(file_to_install_name.c_str());
         if (! our_md5_file)
-            throw Failure("Could not get md5 for '" + stringify(file_to_install) + "'");
+            throw Failure("Could not get md5 for '" + file_to_install_name + "'");
         MD5 our_md5(our_md5_file);
 
         FSEntry result(name);
+        std::string result_name(stringify(name));
         while (true)
         {
             if (! result.exists())
                 return result;
             else if (result.is_regular_file())
             {
-                ifstream other_md5_file(stringify(result).c_str());
+                ifstream other_md5_file(result_name.c_str());
                 if (! other_md5_file)
-                    throw Failure("Could not get md5 for '" + stringify(result) + "'");
+                    throw Failure("Could not get md5 for '" + result_name + "'");
                 MD5 other_md5(other_md5_file);
 
                 if (our_md5.hexsum() == other_md5.hexsum())
@@ -93,6 +95,7 @@ namespace
             s << std::setw(4) << std::setfill('0') << std::right << n++;
             result = FSEntry(stringify(name.dirname() / ("._cfg" + s.str() + "_"
                             + name.basename())));
+            result_name = stringify(result);
         }
     }
 
@@ -132,10 +135,11 @@ namespace
     do_dir(const FSEntry & root, const FSEntry & src_dir,
             const FSEntry & dst_dir, ofstream * const contents)
     {
-        Context context("Installing directory in root '" + stringify(root) + "' from '"
+        std::string root_str(stringify(root)), dst_dir_str(stringify(dst_dir.dirname()));
+
+        Context context("Installing directory in root '" + root_str + "' from '"
                     + stringify(src_dir) + "' to '" + stringify(dst_dir) + "':");
 
-        std::string root_str(stringify(root)), dst_dir_str(stringify(dst_dir.dirname()));
         if (root_str == "/")
             root_str.clear();
         if (0 != dst_dir_str.compare(0, root_str.length(), root_str))
@@ -166,10 +170,11 @@ namespace
             }
 #endif
 
-            FSEntry(dst_dir).mkdir(mode);
-            FSEntry(stringify(dst_dir)).chown(src_dir.owner(), src_dir.group());
+            FSEntry dst_dir_copy(dst_dir);
+            dst_dir_copy.mkdir(mode);
+            dst_dir_copy.chown(src_dir.owner(), src_dir.group());
             /* the chmod is needed to pick up fancy set*id bits */
-            FSEntry(stringify(dst_dir)).chmod(src_dir.permissions());
+            dst_dir_copy.chmod(src_dir.permissions());
         }
 
         *contents << "dir " << dst_dir_str.substr(root_str.length()) << "/" <<
@@ -189,10 +194,12 @@ namespace
     do_obj(const FSEntry & root, const FSEntry & src,
             const FSEntry & dst, ofstream * const contents)
     {
-        Context context("Installing object in root '" + stringify(root) + "' from '"
+        std::string root_str(stringify(root)), dst_dir_str(stringify(dst.dirname())),
+            src_str(stringify(src));
+
+        Context context("Installing object in root '" + root_str + "' from '"
                     + stringify(src) + "' to '" + stringify(dst) + "':");
 
-        std::string root_str(stringify(root)), dst_dir_str(stringify(dst.dirname()));
         if (root_str == "/")
             root_str.clear();
         if (0 != dst_dir_str.compare(0, root_str.length(), root_str))
@@ -207,9 +214,9 @@ namespace
         {
             FSEntry real_dst(dst);
 
-            FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
+            FDHolder input_fd(::open(src_str.c_str(), O_RDONLY), false);
             if (-1 == input_fd)
-                throw Failure("Cannot read '" + stringify(src) + "'");
+                throw Failure("Cannot read '" + src_str + "'");
 
             if (dst.exists())
             {
@@ -272,10 +279,11 @@ namespace
     do_sym(const FSEntry & root, const FSEntry & src,
             const FSEntry & dst, ofstream * const contents)
     {
-        Context context("Installing symlink in root '" + stringify(root) + "' from '"
+        std::string root_str(stringify(root)), dst_dir_str(stringify(dst.dirname()));
+
+        Context context("Installing symlink in root '" + root_str + "' from '"
                     + stringify(src) + "' to '" + stringify(dst) + "':");
 
-        std::string root_str(stringify(root)), dst_dir_str(stringify(dst.dirname()));
         if (root_str == "/")
             root_str.clear();
         if (0 != dst_dir_str.compare(0, root_str.length(), root_str))

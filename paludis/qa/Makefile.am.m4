@@ -7,6 +7,9 @@ if ENABLE_QA
 
 define(`filelist', `')dnl
 define(`testlist', `')dnl
+define(`srlist', `')dnl
+define(`srcleanlist', `')dnl
+define(`srheaderlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
@@ -23,9 +26,20 @@ define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.
 define(`addhh', `define(`filelist', filelist `$1.hh')')dnl
 define(`addcc', `define(`filelist', filelist `$1.cc')')dnl
 define(`addimpl', `define(`filelist', filelist `$1-impl.hh')')dnl
+define(`addsr', `define(`srlist', srlist `$1.sr')dnl
+define(`srcleanlist', srcleanlist `$1-sr.hh $1-sr.cc')dnl
+define(`srheaderlist', srheaderlist `$1-sr.hh')dnl
+$1-sr.hh : $1.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $`'(srcdir)/$1.sr > $`'@
+
+$1-sr.cc : $1.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $`'(srcdir)/$1.sr > $`'@
+
+')dnl
 define(`addthis', `dnl
 ifelse(`$2', `hh', `addhh(`$1')', `')dnl
 ifelse(`$2', `cc', `addcc(`$1')', `')dnl
+ifelse(`$2', `sr', `addsr(`$1')', `')dnl
 ifelse(`$2', `impl', `addimpl(`$1')', `')dnl
 ifelse(`$2', `test', `addtest(`$1')', `')dnl
 ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
@@ -59,9 +73,12 @@ qa.hh : qa.hh.m4 files.m4
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in Makefile.am qa.hh
+DISTCLEANFILES = srcleanlist
+BUILT_SOURCES = srcleanlist
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DBIGTEMPDIR=\"/var/tmp\"
-EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist
+EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist srlist srcleanlist
+

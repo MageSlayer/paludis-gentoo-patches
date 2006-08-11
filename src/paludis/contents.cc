@@ -62,13 +62,13 @@ do_one_contents_entry(
 {
     cout << "* " << colour(cl_package_name, e) << endl;
 
-    const p::Repository::InstalledInterface * const installed_interface(
-            env->package_database()->fetch_repository(e.get<p::pde_repository>())->
-            get_interface<p::repo_installed>());
+    const p::RepositoryInstalledInterface * const installed_interface(
+            env->package_database()->fetch_repository(e.repository)->
+            installed_interface);
     if (installed_interface)
     {
         p::Contents::ConstPointer contents(installed_interface->contents(
-                    e.get<p::pde_name>(), e.get<p::pde_version>()));
+                    e.name, e.version));
         ContentsDisplayer d;
         std::for_each(contents->begin(), contents->end(), accept_visitor(&d));
     }

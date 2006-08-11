@@ -23,7 +23,6 @@
 #include <paludis/repository.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/smart_record.hh>
 #include <paludis/util/fs_entry.hh>
 
 /** \file
@@ -35,46 +34,8 @@
 
 namespace paludis
 {
-    /**
-     * Keys for CRANInstalledRepositoryParams
-     *
-     * \see CRANInstalledRepositoryParams
-     * \ingroup grpcraninstrepository
-     */
-    enum CRANInstalledRepositoryParamsKeys
-    {
-        craninstrpk_environment,
-        craninstrpk_package_database,
-        craninstrpk_location,
-        craninstrpk_root,
-        craninstrpk_world,
-        last_craninstrpk
-    };
 
-    /**
-     * Tag for CRANInstalledRepositoryParams.
-     *
-     * \see CRANInstalledRepositoryParams
-     * \ingroup grpcraninstrepository
-     */
-    struct CRANInstalledRepositoryParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<CRANInstalledRepositoryParamsKeys, last_craninstrpk>,
-        SmartRecordKey<craninstrpk_environment, const Environment *>,
-        SmartRecordKey<craninstrpk_package_database, const PackageDatabase *>,
-        SmartRecordKey<craninstrpk_location, const FSEntry>,
-        SmartRecordKey<craninstrpk_root, const FSEntry>,
-        SmartRecordKey<craninstrpk_world, const FSEntry>
-    {
-    };
-
-    /**
-     * Constructor parameters for CRANInstalledRepository.
-     *
-     * \see CRANInstalledRepository
-     * \ingroup grpcraninstrepository
-     */
-    typedef MakeSmartRecord<CRANInstalledRepositoryParamsTag>::Type CRANInstalledRepositoryParams;
+#include <paludis/repositories/cran/cran_installed_repository-sr.hh>
 
     /**
      * A CRANInstalledRepository represents the database used for
@@ -84,10 +45,10 @@ namespace paludis
      */
     class CRANInstalledRepository :
         public Repository,
-        public Repository::InstalledInterface,
-        public Repository::UninstallableInterface,
-        public Repository::SetsInterface,
-        public Repository::WorldInterface,
+        public RepositoryInstalledInterface,
+        public RepositoryUninstallableInterface,
+        public RepositorySetsInterface,
+        public RepositoryWorldInterface,
         public PrivateImplementationPattern<CRANInstalledRepository>
     {
         protected:

@@ -22,3 +22,5 @@
 using namespace paludis;
 using namespace paludis::qa;
 
+#include <paludis/qa/message-sr.cc>
+

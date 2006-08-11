@@ -1,0 +1,14 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_NothingRepositoryParams()
+{
+    key location FSEntry
+    key name std::string
+    key sync std::string
+    key sync_exclude std::string
+
+    allow_named_args
+}
+
+

@@ -110,23 +110,23 @@ paludis::make_ebuild_repository(
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
-    return CountedPtr<Repository>(new PortageRepository(PortageRepositoryParams::create((
-                        param<prpk_entry_format>("ebuild"),
-                        param<prpk_environment>(env),
-                        param<prpk_package_database>(db),
-                        param<prpk_location>(location),
-                        param<prpk_profiles>(profiles),
-                        param<prpk_cache>(cache),
-                        param<prpk_eclassdirs>(eclassdirs),
-                        param<prpk_distdir>(distdir),
-                        param<prpk_pkgdir>(FSEntry("/var/empty")),
-                        param<prpk_securitydir>(securitydir),
-                        param<prpk_setsdir>(setsdir),
-                        param<prpk_newsdir>(newsdir),
-                        param<prpk_sync>(sync),
-                        param<prpk_sync_exclude>(sync_exclude),
-                        param<prpk_root>(root),
-                        param<prpk_buildroot>(buildroot)))));
+    return CountedPtr<Repository>(new PortageRepository(PortageRepositoryParams::create()
+                .entry_format("ebuild")
+                .environment(env)
+                .package_database(db)
+                .location(location)
+                .profiles(profiles)
+                .cache(cache)
+                .eclassdirs(eclassdirs)
+                .distdir(distdir)
+                .pkgdir(FSEntry("/var/empty"))
+                .securitydir(securitydir)
+                .setsdir(setsdir)
+                .newsdir(newsdir)
+                .sync(sync)
+                .sync_exclude(sync_exclude)
+                .root(root)
+                .buildroot(buildroot)));
 }
 
 CountedPtr<Repository>

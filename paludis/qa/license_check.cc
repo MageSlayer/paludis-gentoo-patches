@@ -85,20 +85,20 @@ LicenseCheck::LicenseCheck()
 CheckResult
 LicenseCheck::operator() (const EbuildCheckData & e) const
 {
-    CheckResult result(stringify(e.get<ecd_name>()) + "-" + stringify(e.get<ecd_version>()),
+    CheckResult result(stringify(e.name) + "-" + stringify(e.version),
             identifier());
 
     try
     {
         do
         {
-            PackageDatabaseEntry ee(e.get<ecd_name>(), e.get<ecd_version>(),
-                    e.get<ecd_environment>()->package_database()->favourite_repository());
+            PackageDatabaseEntry ee(e.name, e.version,
+                    e.environment->package_database()->favourite_repository());
             VersionMetadata::ConstPointer metadata(
-                    e.get<ecd_environment>()->package_database()->fetch_repository(ee.get<pde_repository>())->version_metadata(ee.get<pde_name>(), ee.get<pde_version>()));
+                    e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
 
-            std::string license(metadata->get<vm_license>());
+            std::string license(metadata->license_string);
 
             DepAtom::ConstPointer license_parts(0);
             try
@@ -106,7 +106,7 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
                 license_parts = PortageDepParser::parse(license,
                         PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance());
 
-                Checker checker(result, e.get<ecd_environment>());
+                Checker checker(result, e.environment);
                 license_parts->accept(&checker);
             }
             catch (const DepStringError & e)

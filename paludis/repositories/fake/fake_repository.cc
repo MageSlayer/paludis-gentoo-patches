@@ -70,21 +70,21 @@ namespace paludis
 }
 
 FakeRepository::FakeRepository(const RepositoryName & name) :
-    Repository(name, RepositoryCapabilities::create((
-                    param<repo_installable>(static_cast<InstallableInterface *>(0)),
-                    param<repo_installed>(static_cast<InstalledInterface *>(0)),
-                    param<repo_mask>(this),
-                    param<repo_news>(static_cast<NewsInterface *>(0)),
-                    param<repo_sets>(static_cast<SetsInterface *>(0)),
-                    param<repo_syncable>(static_cast<SyncableInterface *>(0)),
-                    param<repo_uninstallable>(static_cast<UninstallableInterface *>(0)),
-                    param<repo_use>(this),
-                    param<repo_world>(static_cast<WorldInterface *>(0)),
-                    param<repo_environment_variable>(static_cast<EnvironmentVariableInterface *>(0)),
-                    param<repo_mirrors>(static_cast<MirrorInterface *>(0))
-                    ))),
-    Repository::MaskInterface(),
-    Repository::UseInterface(),
+    Repository(name, RepositoryCapabilities::create()
+            .installable_interface(0)
+            .installed_interface(0)
+            .mask_interface(this)
+            .news_interface(0)
+            .sets_interface(0)
+            .syncable_interface(0)
+            .uninstallable_interface(0)
+            .use_interface(this)
+            .world_interface(0)
+            .environment_variable_interface(0)
+            .mirrors_interface(0)
+            ),
+    RepositoryMaskInterface(),
+    RepositoryUseInterface(),
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>)
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -106,9 +106,9 @@ FakeRepository::do_has_category_named(const CategoryNamePart & c) const
 bool
 FakeRepository::do_has_package_named(const QualifiedPackageName & q) const
 {
-    return has_category_named(q.get<qpn_category>()) &&
-        (_imp->package_names.find(q.get<qpn_category>())->second->end() !=
-         _imp->package_names.find(q.get<qpn_category>())->second->find(q.get<qpn_package>()));
+    return has_category_named(q.category) &&
+        (_imp->package_names.find(q.category)->second->end() !=
+         _imp->package_names.find(q.category)->second->find(q.package));
 }
 
 CategoryNamePartCollection::ConstPointer
@@ -133,7 +133,7 @@ FakeRepository::do_package_names(const CategoryNamePart & c) const
 VersionSpecCollection::ConstPointer
 FakeRepository::do_version_specs(const QualifiedPackageName & n) const
 {
-    if (! has_category_named(n.get<qpn_category>()))
+    if (! has_category_named(n.category))
         throw InternalError(PALUDIS_HERE, "no category");
     if (! has_package_named(n))
         throw InternalError(PALUDIS_HERE, "no package");
@@ -143,7 +143,7 @@ FakeRepository::do_version_specs(const QualifiedPackageName & n) const
 bool
 FakeRepository::do_has_version(const QualifiedPackageName & q, const VersionSpec & v) const
 {
-    if (! has_category_named(q.get<qpn_category>()))
+    if (! has_category_named(q.category))
         throw InternalError(PALUDIS_HERE, "no category");
     if (! has_package_named(q))
         throw InternalError(PALUDIS_HERE, "no package");
@@ -161,8 +161,8 @@ FakeRepository::add_category(const CategoryNamePart & c)
 void
 FakeRepository::add_package(const QualifiedPackageName & q)
 {
-    add_category(q.get<qpn_category>());
-    _imp->package_names.find(q.get<qpn_category>())->second->insert(q.get<qpn_package>());
+    add_category(q.category);
+    _imp->package_names.find(q.category)->second->insert(q.package);
     _imp->versions.insert(std::make_pair(q, new VersionSpecCollection::Concrete));
 }
 
@@ -175,9 +175,9 @@ FakeRepository::add_version(const QualifiedPackageName & q, const VersionSpec & 
             std::make_pair(stringify(q) + "-" + stringify(v),
                 VersionMetadata::Pointer(new VersionMetadata::Ebuild(PortageDepParser::parse_depend))));
     VersionMetadata::Pointer r(_imp->metadata.find(stringify(q) + "-" + stringify(v))->second);
-    r->set<vm_slot>(SlotName("0"));
-    r->set<vm_eapi>("0");
-    r->get_ebuild_interface()->set<evm_keywords>("test");
+    r->slot = SlotName("0");
+    r->eapi = "0";
+    r->get_ebuild_interface()->keywords = "test";
     return r;
 }
 

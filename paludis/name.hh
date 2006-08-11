@@ -23,7 +23,7 @@
 #include <paludis/util/collection.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/smart_record.hh>
+#include <paludis/util/sr.hh>
 #include <paludis/util/validated.hh>
 
 #include <string>
@@ -131,74 +131,7 @@ namespace paludis
      */
     typedef SortedCollection<CategoryNamePart> CategoryNamePartCollection;
 
-    /**
-     * Keys for a QualifiedPackageName.
-     *
-     * \ingroup grpnames
-     *
-     * \see QualifiedPackageName
-     */
-    enum QualifiedPackageNameKeys
-    {
-        qpn_category,         ///< The CategoryNamePart part
-        qpn_package,          ///< The PackageNamePart part
-        last_qpn              ///< Number of values
-    };
-
-    /**
-     * Tags for a QualifiedPackageName.
-     *
-     * \ingroup grpnames
-     *
-     * \see QualifiedPackageName
-     */
-    struct QualifiedPackageNameTag :
-        SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
-        SmartRecordKeys<QualifiedPackageNameKeys, last_qpn>,
-        SmartRecordKey<qpn_category, CategoryNamePart>,
-        SmartRecordKey<qpn_package, PackageNamePart>
-    {
-    };
-
-    /**
-     * A QualifiedPackageName instance holds a CategoryNamePart and
-     * a PackageNamePart.
-     *
-     * \ingroup grpnames
-     */
-    class QualifiedPackageName :
-        public MakeSmartRecord<QualifiedPackageNameTag>::Type
-    {
-        private:
-            static MakeSmartRecord<QualifiedPackageNameTag>::Type _make_parent(
-                    const std::string & s);
-
-        public:
-            /**
-             * Constructor.
-             */
-            QualifiedPackageName(const CategoryNamePart & c, const PackageNamePart & p);
-
-            /**
-             * Copy constructor.
-             */
-            QualifiedPackageName(const QualifiedPackageName & other);
-
-            /**
-             * Constructor, from a raw string.
-             */
-            explicit QualifiedPackageName(const std::string & s);
-
-            /**
-             * Assignment.
-             */
-            const QualifiedPackageName & operator= (const QualifiedPackageName & other);
-
-            /**
-             * Destructor.
-             */
-            ~QualifiedPackageName();
-    };
+#include <paludis/qualified_package_name-sr.hh>
 
     /**
      * Output a QualifiedPackageName to a stream.

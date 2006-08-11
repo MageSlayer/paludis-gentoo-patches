@@ -25,6 +25,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/sr.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
@@ -46,90 +47,19 @@ namespace paludis
 {
     class Environment;
 
-    /**
-     * Keys for InstallOptions.
-     *
-     * \see InstallOptions
-     * \ingroup grprepository
-     */
-    enum InstallOptionsKeys
-    {
-        io_noconfigprotect,     ///< Disable config protection
-        io_fetchonly,           ///< Fetch only
-        last_io                 ///< Number of entries
-    };
+    class RepositoryInstallableInterface;
+    class RepositoryInstalledInterface;
+    class RepositoryMaskInterface;
+    class RepositoryNewsInterface;
+    class RepositorySetsInterface;
+    class RepositorySyncableInterface;
+    class RepositoryUninstallableInterface;
+    class RepositoryUseInterface;
+    class RepositoryWorldInterface;
+    class RepositoryEnvironmentVariableInterface;
+    class RepositoryMirrorsInterface;
 
-    /**
-     * Tag for InstallOptions.
-     *
-     * \see InstallOptions
-     * \ingroup grprepository
-     */
-    struct InstallOptionsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<InstallOptionsKeys, last_io>,
-        SmartRecordKey<io_noconfigprotect, bool>,
-        SmartRecordKey<io_fetchonly, bool>
-    {
-    };
-
-    /**
-     * Defines various options for package installation.
-     *
-     * \ingroup grprepository
-     */
-    typedef MakeSmartRecord<InstallOptionsTag>::Type InstallOptions;
-
-    /**
-     * Keys for PackageSetOptions.
-     *
-     * \see PackageSetOptions
-     * \ingroup grprepository
-     */
-    enum PackageSetOptionsKeys
-    {
-        pso_list_affected_only,  ///< Only list affected packages in the set
-        last_pso
-    };
-
-    /**
-     * Tag for PackageSetOptions.
-     *
-     * \see PackageSetOptions
-     * \ingroup grprepository
-     */
-    struct PackageSetOptionsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<PackageSetOptionsKeys, last_pso>,
-        SmartRecordKey<pso_list_affected_only, bool>
-    {
-    };
-
-    /**
-     * Defines various options for package installation.
-     *
-     * \ingroup grprepository
-     */
-    typedef MakeSmartRecord<PackageSetOptionsTag>::Type PackageSetOptions;
-
-    /**
-     * Capability keys for a repository.
-     */
-    enum RepositoryCapabilitiesKeys
-    {
-        repo_installable,
-        repo_installed,
-        repo_mask,
-        repo_news,
-        repo_sets,
-        repo_syncable,
-        repo_uninstallable,
-        repo_use,
-        repo_world,
-        repo_environment_variable,
-        repo_mirrors,
-        last_repo
-    };
+#include <paludis/repository-sr.hh>
 
     /**
      * A section of information about a Repository.
@@ -217,58 +147,11 @@ namespace paludis
      */
     class Repository :
         private InstantiationPolicy<Repository, instantiation_method::NonCopyableTag>,
-        public InternalCounted<Repository>
+        public InternalCounted<Repository>,
+        public RepositoryCapabilities
     {
-        public:
-            class InstallableInterface;
-            class InstalledInterface;
-            class MaskInterface;
-            class NewsInterface;
-            class SetsInterface;
-            class SyncableInterface;
-            class UninstallableInterface;
-            class UseInterface;
-            class WorldInterface;
-            class EnvironmentVariableInterface;
-            class MirrorInterface;
-
-        protected:
-            /**
-             * Tag for RepositoryCapabilities.
-             *
-             * \see RepositoryCapabilities
-             * \ingroup grprepository
-             */
-            struct RepositoryCapabilitiesTag :
-                SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-                SmartRecordKeys<RepositoryCapabilitiesKeys, last_repo>,
-                SmartRecordKey<repo_installable, InstallableInterface *>,
-                SmartRecordKey<repo_installed, InstalledInterface *>,
-                SmartRecordKey<repo_mask, MaskInterface *>,
-                SmartRecordKey<repo_news, NewsInterface *>,
-                SmartRecordKey<repo_sets, SetsInterface *>,
-                SmartRecordKey<repo_syncable, SyncableInterface *>,
-                SmartRecordKey<repo_uninstallable, UninstallableInterface *>,
-                SmartRecordKey<repo_use, UseInterface *>,
-                SmartRecordKey<repo_world, WorldInterface *>,
-                SmartRecordKey<repo_mirrors, MirrorInterface *>,
-                SmartRecordKey<repo_environment_variable, EnvironmentVariableInterface *>
-            {
-            };
-
-            /**
-             * Holds pointers to upcast ourself to different capability interfaces. Each entry
-             * is either a this pointer or a zero pointer.
-             *
-             * \see Repository
-             * \ingroup grprepository
-             */
-            typedef MakeSmartRecord<RepositoryCapabilitiesTag>::Type RepositoryCapabilities;
-
         private:
             const RepositoryName _name;
-
-            RepositoryCapabilities _caps;
 
         protected:
             /**
@@ -338,31 +221,6 @@ namespace paludis
 
         public:
             virtual RepositoryInfo::ConstPointer info(bool verbose) const;
-
-            ///\name Interface queries
-            ///{
-
-            /**
-             * Fetch an interface.
-             */
-            template <RepositoryCapabilitiesKeys k_>
-            typename RepositoryCapabilities::GetKeyType<k_>::Type
-            get_interface()
-            {
-                return _caps.get<k_>();
-            }
-
-            /**
-             * Fetch an interface, const.
-             */
-            template <RepositoryCapabilitiesKeys k_>
-            const typename RepositoryCapabilities::GetKeyType<k_>::Type
-            get_interface() const
-            {
-                return _caps.get<k_>();
-            }
-
-            ///}
 
             /**
              * Destructor.
@@ -469,7 +327,7 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::MaskInterface
+    class RepositoryMaskInterface
     {
         protected:
             /**
@@ -501,7 +359,7 @@ namespace paludis
                 return do_query_profile_masks(q, v);
             }
 
-            virtual ~MaskInterface() { }
+            virtual ~RepositoryMaskInterface() { }
     };
 
     /**
@@ -510,7 +368,7 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::UseInterface
+    class RepositoryUseInterface
     {
         protected:
             /**
@@ -621,7 +479,7 @@ namespace paludis
                 return UseFlagName(stringify(u).substr(do_expand_flag_delim_pos(u) + 1));
             }
 
-            virtual ~UseInterface() { }
+            virtual ~RepositoryUseInterface() { }
     };
 
     /**
@@ -630,7 +488,7 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::InstalledInterface
+    class RepositoryInstalledInterface
     {
         protected:
             /**
@@ -651,7 +509,7 @@ namespace paludis
                 return do_contents(q, v);
             }
 
-            virtual ~InstalledInterface() { }
+            virtual ~RepositoryInstalledInterface() { }
     };
 
     /**
@@ -660,7 +518,7 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::InstallableInterface
+    class RepositoryInstallableInterface
     {
         protected:
             /**
@@ -678,7 +536,7 @@ namespace paludis
                 do_install(q, v, i);
             }
 
-            virtual ~InstallableInterface() { }
+            virtual ~RepositoryInstallableInterface() { }
     };
 
     /**
@@ -687,7 +545,7 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::UninstallableInterface
+    class RepositoryUninstallableInterface
     {
         protected:
             /**
@@ -705,7 +563,7 @@ namespace paludis
                 do_uninstall(q, v, i);
             }
 
-            virtual ~UninstallableInterface() { }
+            virtual ~RepositoryUninstallableInterface() { }
     };
 
     /**
@@ -714,7 +572,7 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::SetsInterface
+    class RepositorySetsInterface
     {
         protected:
             /**
@@ -732,7 +590,7 @@ namespace paludis
                 return do_package_set(s, o);
             }
 
-            virtual ~SetsInterface() { }
+            virtual ~RepositorySetsInterface() { }
     };
 
     /**
@@ -741,7 +599,7 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::SyncableInterface
+    class RepositorySyncableInterface
     {
         protected:
             /**
@@ -760,7 +618,7 @@ namespace paludis
                 return do_sync();
             }
 
-            virtual ~SyncableInterface() { }
+            virtual ~RepositorySyncableInterface() { }
     };
 
     /**
@@ -769,7 +627,7 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::WorldInterface
+    class RepositoryWorldInterface
     {
         public:
             /**
@@ -782,7 +640,7 @@ namespace paludis
              */
             virtual void remove_from_world(const QualifiedPackageName &) const = 0;
 
-            virtual ~WorldInterface() { }
+            virtual ~RepositoryWorldInterface() { }
     };
 
     /**
@@ -791,7 +649,7 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::NewsInterface
+    class RepositoryNewsInterface
     {
         public:
             /**
@@ -801,7 +659,7 @@ namespace paludis
             {
             }
 
-            virtual ~NewsInterface() { }
+            virtual ~RepositoryNewsInterface() { }
     };
 
     /**
@@ -810,7 +668,7 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::EnvironmentVariableInterface
+    class RepositoryEnvironmentVariableInterface
     {
         public:
             /**
@@ -820,7 +678,7 @@ namespace paludis
                     const PackageDatabaseEntry & for_package,
                     const std::string & var) const = 0;
 
-            virtual ~EnvironmentVariableInterface() { }
+            virtual ~RepositoryEnvironmentVariableInterface() { }
     };
 
     /**
@@ -829,13 +687,13 @@ namespace paludis
      * \see Repository
      * \ingroup grprepository
      */
-    class Repository::MirrorInterface
+    class RepositoryMirrorsInterface
     {
         public:
             ///\name Iterate over our mirrors
             ///\{
 
-            typedef libwrapiter::ForwardIterator<MirrorInterface,
+            typedef libwrapiter::ForwardIterator<RepositoryMirrorsInterface,
                     const std::pair<const std::string, std::string> > MirrorsIterator;
 
             virtual MirrorsIterator begin_mirrors(const std::string & s) const = 0;
@@ -849,7 +707,7 @@ namespace paludis
                 return begin_mirrors(s) != end_mirrors(s);
             }
 
-            virtual ~MirrorInterface() { }
+            virtual ~RepositoryMirrorsInterface() { }
     };
 
     /**

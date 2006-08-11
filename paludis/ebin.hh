@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_EBIN_HH 1
 
 #include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/smart_record.hh>
+#include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/collection.hh>
@@ -36,52 +36,10 @@
 
 namespace paludis
 {
-    /**
-     * Keys for EbinCommandParams.
-     *
-     * \see EbinCommandParams
-     *
-     * \ingroup grpebininterface
-     */
-    enum EbinCommandParamsKeys
-    {
-        ebcpk_ebin_dir,
-        ebcpk_environment,
-        ebcpk_db_entry,
-        ebcpk_src_repository,
-        ebcpk_pkgdir,
-        ebcpk_buildroot,
-        last_ebcpk
-    };
-
     class Environment;
     class MakeEnvCommand;
 
-    /**
-     * Tag for EbinCommandParams.
-     *
-     * \see EbinCommandParams.
-     *
-     * \ingroup grpebininterface
-     */
-    struct EbinCommandParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<EbinCommandParamsKeys, last_ebcpk>,
-        SmartRecordKey<ebcpk_ebin_dir, const FSEntry>,
-        SmartRecordKey<ebcpk_environment, const Environment *>,
-        SmartRecordKey<ebcpk_db_entry, const PackageDatabaseEntry *>,
-        SmartRecordKey<ebcpk_src_repository, const RepositoryName>,
-        SmartRecordKey<ebcpk_pkgdir, const FSEntry>,
-        SmartRecordKey<ebcpk_buildroot, const FSEntry>
-    {
-    };
-
-    /**
-     * Parameters for EbinCommand's constructor.
-     *
-     * \ingroup grpebininterface
-     */
-    typedef MakeSmartRecord<EbinCommandParamsTag>::Type EbinCommandParams;
+#include <paludis/ebin-sr.hh>
 
     /**
      * An EbinCommand is the base class from which specific ebin
@@ -162,46 +120,6 @@ namespace paludis
     };
 
     /**
-     * Keys for EbinFetchCommandParams.
-     *
-     * \see EbinFetchCommandParams
-     *
-     * \ingroup grpebininterface
-     */
-    enum EbinFetchCommandParamsKeys
-    {
-        ebcfpk_b,
-        ebcfpk_flat_bin_uri,
-        ebcfpk_root,
-        ebcfpk_profiles,
-        last_ebcfpk
-    };
-
-    /**
-     * Tag for EbinFetchCommandParams.
-     *
-     * \see EbinFetchCommandParams
-     *
-     * \ingroup grpebininterface
-     */
-    struct EbinFetchCommandParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<EbinFetchCommandParamsKeys, last_ebcfpk>,
-        SmartRecordKey<ebcfpk_b, std::string>,
-        SmartRecordKey<ebcfpk_flat_bin_uri, std::string>,
-        SmartRecordKey<ebcfpk_root, std::string>,
-        SmartRecordKey<ebcfpk_profiles, FSEntryCollection::ConstPointer>
-    {
-    };
-
-    /**
-     * Parameters for EbinFetchCommand's constructor.
-     *
-     * \ingroup grpebininterface
-     */
-    typedef MakeSmartRecord<EbinFetchCommandParamsTag>::Type EbinFetchCommandParams;
-
-    /**
      * An EbinFetchCommand is used to download and verify the digests for a
      * particular ebin in a PortageRepository. On failure it throws.
      *
@@ -226,56 +144,6 @@ namespace paludis
              */
             EbinFetchCommand(const EbinCommandParams &, const EbinFetchCommandParams &);
     };
-
-    /**
-     * Keys for EbinInstallCommandParams.
-     *
-     * \see EbinInstallCommandParams
-     *
-     * \ingroup grpebininterface
-     */
-    enum EbinInstallCommandParamsKeys
-    {
-        ebcipk_b,
-        ebcipk_use,
-        ebcipk_use_expand,
-        ebcipk_root,
-        ebcipk_profiles,
-        ebcipk_expand_vars,
-        ebcipk_disable_cfgpro,
-        ebcipk_merge_only,
-        ebcipk_slot,
-        last_ebcipk
-    };
-
-    /**
-     * Tag for EbinInstallCommandParams.
-     *
-     * \see EbinInstallCommandParams
-     *
-     * \ingroup grpebininterface
-     */
-    struct EbinInstallCommandParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<EbinInstallCommandParamsKeys, last_ebcipk>,
-        SmartRecordKey<ebcipk_b, std::string>,
-        SmartRecordKey<ebcipk_use, std::string>,
-        SmartRecordKey<ebcipk_use_expand, std::string>,
-        SmartRecordKey<ebcipk_root, std::string>,
-        SmartRecordKey<ebcipk_profiles, FSEntryCollection::ConstPointer>,
-        SmartRecordKey<ebcipk_expand_vars, AssociativeCollection<std::string, std::string>::ConstPointer>,
-        SmartRecordKey<ebcipk_disable_cfgpro, bool>,
-        SmartRecordKey<ebcipk_merge_only, bool>,
-        SmartRecordKey<ebcipk_slot, SlotName>
-    {
-    };
-
-    /**
-     * Parameters for EbinInstallCommand's constructor.
-     *
-     * \ingroup grpebininterface
-     */
-    typedef MakeSmartRecord<EbinInstallCommandParamsTag>::Type EbinInstallCommandParams;
 
     /**
      * An EbinInstallCommand is used to install an ebin from a

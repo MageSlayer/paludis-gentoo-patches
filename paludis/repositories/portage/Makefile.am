@@ -1,4 +1,5 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+DISTCLEANFILES = portage_repository-sr.hh portage_repository-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
@@ -19,6 +20,7 @@ paludis_repositories_portage_include_HEADERS = \
 	portage_repository_exceptions.hh \
 	portage_repository_news.hh \
 	portage_repository_params.hh \
+	portage_repository_params-sr.hh \
 	portage_repository_sets.hh \
 	portage_repository_entries.hh \
 	portage_repository_ebuild_entries.hh \
@@ -35,6 +37,7 @@ libpaludisportagerepository_la_SOURCES = \
 	portage_repository_entries.cc \
 	portage_repository_ebuild_entries.cc \
 	portage_repository_ebin_entries.cc \
+	portage_repository_params.cc \
 	make_ebuild_repository.cc \
 	make_ebin_repository.cc \
 	$(paludis_repositories_portage_include_HEADERS)
@@ -56,7 +59,14 @@ portage_repository_TEST_CXXFLAGS = -I$(top_srcdir)
 EXTRA_DIST = \
 	portage_repository_TEST.cc \
 	portage_repository_TEST_setup.sh \
-	portage_repository_TEST_cleanup.sh
+	portage_repository_TEST_cleanup.sh \
+	portage_repository_params-sr.hh \
+	portage_repository_params-sr.cc \
+	portage_repository_params.sr
+
+BUILT_SOURCES = \
+	portage_repository_params-sr.hh \
+	portage_repository_params-sr.cc
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = portage_repository_TEST_setup.sh portage_repository_TEST_cleanup.sh
@@ -67,4 +77,11 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	bash $(top_srcdir)/test/run_test.sh
+
+portage_repository_params-sr.hh : portage_repository_params.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/portage_repository_params.sr > $@
+
+portage_repository_params-sr.cc : portage_repository_params.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/portage_repository_params.sr > $@
+
 

@@ -43,8 +43,8 @@ DefaultEnvironment::DefaultEnvironment() :
     for (DefaultConfig::RepositoryIterator r(DefaultConfig::get_instance()->begin_repositories()),
             r_end(DefaultConfig::get_instance()->end_repositories()) ; r != r_end ; ++r)
         package_database()->add_repository(
-                RepositoryMaker::get_instance()->find_maker(r->get<rce_format>())(
-                    this, package_database().raw_pointer(), r->get<rce_keys>()));
+                RepositoryMaker::get_instance()->find_maker(r->format)(
+                    this, package_database().raw_pointer(), r->keys));
 }
 
 DefaultEnvironment::~DefaultEnvironment()
@@ -56,12 +56,12 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 {
     /* first check package database use masks... */
     const Repository * const repo((e ?
-                package_database()->fetch_repository(e->get<pde_repository>()) :
+                package_database()->fetch_repository(e->repository) :
                 package_database()->fetch_repository(package_database()->favourite_repository())
                 ).raw_pointer());
 
-    if (repo->get_interface<repo_use>())
-        if (repo->get_interface<repo_use>()->query_use_mask(f, e))
+    if (repo->use_interface)
+        if (repo->use_interface->query_use_mask(f, e))
             return false;
 
     /* check use: per package user config */
@@ -70,17 +70,17 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         UseFlagState s(use_unspecified);
 
         for (DefaultConfig::UseConfigIterator
-                u(DefaultConfig::get_instance()->begin_use_config(e->get<pde_name>())),
-                u_end(DefaultConfig::get_instance()->end_use_config(e->get<pde_name>())) ;
+                u(DefaultConfig::get_instance()->begin_use_config(e->name)),
+                u_end(DefaultConfig::get_instance()->end_use_config(e->name)) ;
                 u != u_end ; ++u)
         {
-            if (f != u->get<uce_flag_name>())
+            if (f != u->flag_name)
                 continue;
 
-            if (! match_package(this, *u->get<uce_dep_atom>(), *e))
+            if (! match_package(this, *u->dep_atom, *e))
                 continue;
 
-            switch (u->get<uce_flag_state>())
+            switch (u->flag_state)
             {
                 case use_enabled:
                     s = use_enabled;
@@ -142,9 +142,9 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
     } while (false);
 
     /* check use: package database config */
-    if (repo->get_interface<repo_use>())
+    if (repo->use_interface)
     {
-        switch (repo->get_interface<repo_use>()->query_use(f, e))
+        switch (repo->use_interface->query_use(f, e))
         {
             case use_disabled:
             case use_unspecified:
@@ -175,8 +175,8 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
 
     if (d)
         for (DefaultConfig::PackageKeywordsIterator
-                k(DefaultConfig::get_instance()->begin_package_keywords(d->get<pde_name>())),
-                k_end(DefaultConfig::get_instance()->end_package_keywords(d->get<pde_name>())) ;
+                k(DefaultConfig::get_instance()->begin_package_keywords(d->name)),
+                k_end(DefaultConfig::get_instance()->end_package_keywords(d->name)) ;
                 k != k_end ; ++k)
         {
             if (! match_package(this, k->first, d))
@@ -206,8 +206,8 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
 
     if (d)
         for (DefaultConfig::PackageLicensesIterator
-                k(DefaultConfig::get_instance()->begin_package_licenses(d->get<pde_name>())),
-                k_end(DefaultConfig::get_instance()->end_package_licenses(d->get<pde_name>())) ;
+                k(DefaultConfig::get_instance()->begin_package_licenses(d->name)),
+                k_end(DefaultConfig::get_instance()->end_package_licenses(d->name)) ;
                 k != k_end ; ++k)
         {
             if (! match_package(this, k->first, d))
@@ -234,8 +234,8 @@ bool
 DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
 {
     for (DefaultConfig::UserMasksIterator
-            k(DefaultConfig::get_instance()->begin_user_masks(d.get<pde_name>())),
-            k_end(DefaultConfig::get_instance()->end_user_masks(d.get<pde_name>())) ;
+            k(DefaultConfig::get_instance()->begin_user_masks(d.name)),
+            k_end(DefaultConfig::get_instance()->end_user_masks(d.name)) ;
             k != k_end ; ++k)
     {
         if (! match_package(this, *k, d))
@@ -251,8 +251,8 @@ bool
 DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
 {
     for (DefaultConfig::UserMasksIterator
-            k(DefaultConfig::get_instance()->begin_user_unmasks(d.get<pde_name>())),
-            k_end(DefaultConfig::get_instance()->end_user_unmasks(d.get<pde_name>())) ;
+            k(DefaultConfig::get_instance()->begin_user_unmasks(d.name)),
+            k_end(DefaultConfig::get_instance()->end_user_unmasks(d.name)) ;
             k != k_end ; ++k)
     {
         if (! match_package(this, *k, d))
@@ -308,24 +308,24 @@ DefaultEnvironment::query_enabled_use_matching(const std::string & prefix,
     if (e)
     {
         for (DefaultConfig::UseConfigIterator
-                u(DefaultConfig::get_instance()->begin_use_config(e->get<pde_name>())),
-                u_end(DefaultConfig::get_instance()->end_use_config(e->get<pde_name>())) ;
+                u(DefaultConfig::get_instance()->begin_use_config(e->name)),
+                u_end(DefaultConfig::get_instance()->end_use_config(e->name)) ;
                 u != u_end ; ++u)
         {
-            if (0 != u->get<uce_flag_name>().data().compare(0, prefix.length(), prefix))
+            if (0 != u->flag_name.data().compare(0, prefix.length(), prefix))
                 continue;
 
-            if (! match_package(this, *u->get<uce_dep_atom>(), *e))
+            if (! match_package(this, *u->dep_atom, *e))
                 continue;
 
-            switch (u->get<uce_flag_state>())
+            switch (u->flag_state)
             {
                 case use_enabled:
-                    result->insert(u->get<uce_flag_name>());
+                    result->insert(u->flag_name);
                     break;
 
                 case use_disabled:
-                    result->erase(u->get<uce_flag_name>());
+                    result->erase(u->flag_name);
                     break;
 
                 case use_unspecified:

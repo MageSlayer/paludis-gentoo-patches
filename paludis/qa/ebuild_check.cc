@@ -22,6 +22,8 @@
 using namespace paludis;
 using namespace paludis::qa;
 
+#include <paludis/qa/ebuild_check-sr.cc>
+
 EbuildCheck::EbuildCheck()
 {
 }

@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QA_MESSAGE_HH
 #define PALUDIS_GUARD_PALUDIS_QA_MESSAGE_HH 1
 
-#include <paludis/util/smart_record.hh>
 #include <string>
 
 /** \file
@@ -43,22 +42,8 @@ namespace paludis
             qal_fatal
         };
 
-        enum MessageKeys
-        {
-            mk_level,
-            mk_msg,
-            last_mk
-        };
+#include <paludis/qa/message-sr.hh>
 
-        struct MessageTag :
-            SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-            SmartRecordKeys<MessageKeys, last_mk>,
-            SmartRecordKey<mk_level, QALevel>,
-            SmartRecordKey<mk_msg, std::string>
-        {
-        };
-
-        typedef MakeSmartRecord<MessageTag>::Type Message;
     }
 }
 

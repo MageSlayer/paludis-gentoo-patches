@@ -20,40 +20,13 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_ENTRY_HH
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_ENTRY_HH 1
 
-#include <paludis/util/smart_record.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 
 namespace paludis
 {
-    /**
-     * Keys in a PackageDatabaseEntry.
-     */
-    enum PackageDatabaseEntryKeys
-    {
-        pde_name,              ///< Our package
-        pde_version,           ///< Our version
-        pde_repository,        ///< Our repository
-        last_pde               ///< Number of items
-    };
 
-    /**
-     * Tag for a PackageDatabaseEntry.
-     */
-    struct PackageDatabaseEntryTag :
-        SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
-        SmartRecordKeys<PackageDatabaseEntryKeys, last_pde>,
-        SmartRecordKey<pde_name, QualifiedPackageName>,
-        SmartRecordKey<pde_version, VersionSpec>,
-        SmartRecordKey<pde_repository, RepositoryName>
-    {
-    };
-
-    /**
-     * A PackageDatabaseEntry holds a QualifiedPackageName, a VersionSpec and a
-     * RepositoryName, and is fully comparable.
-     */
-    typedef MakeSmartRecord<PackageDatabaseEntryTag>::Type PackageDatabaseEntry;
+#include <paludis/package_database_entry-sr.hh>
 
     /**
      * A collection of PackageDatabaseEntry instances.

@@ -39,8 +39,8 @@ namespace paludis
      */
     class FakeRepository :
         public Repository,
-        public Repository::MaskInterface,
-        public Repository::UseInterface,
+        public RepositoryMaskInterface,
+        public RepositoryUseInterface,
         private PrivateImplementationPattern<FakeRepository>
     {
         protected:

@@ -23,7 +23,6 @@
 #include <paludis/repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/smart_record.hh>
 #include <string>
 
 /** \file
@@ -36,54 +35,7 @@ namespace paludis
 {
     class PackageDatabase;
 
-    /**
-     * Keys for PortageRepositoryParams.
-     *
-     * \see PortageRepositoryParams
-     * \ingroup grpportagerepository
-     */
-    enum CRANRepositoryParamsKeys
-    {
-        cranrpk_environment,
-        cranrpk_package_database,
-        cranrpk_location,
-        cranrpk_distdir,
-        cranrpk_mirror,
-        cranrpk_sync,
-        cranrpk_buildroot,
-        cranrpk_root,
-        cranrpk_library,
-        last_cranrpk
-    };
-
-    /**
-     * Tag for CRANRepositoryParams.
-     *
-     * \see CRANRepositoryParams
-     * \ingroup grpcranrepository
-     */
-    struct CRANRepositoryParamsTag :
-        SmartRecordTag<comparison_mode::NoComparisonTag, void>,
-        SmartRecordKeys<CRANRepositoryParamsKeys, last_cranrpk>,
-        SmartRecordKey<cranrpk_environment, const Environment *>,
-        SmartRecordKey<cranrpk_package_database, const PackageDatabase *>,
-        SmartRecordKey<cranrpk_location, const FSEntry>,
-        SmartRecordKey<cranrpk_distdir, const FSEntry>,
-        SmartRecordKey<cranrpk_mirror, const std::string>,
-        SmartRecordKey<cranrpk_sync, const std::string>,
-        SmartRecordKey<cranrpk_buildroot, const FSEntry>,
-        SmartRecordKey<cranrpk_root, const FSEntry>,
-        SmartRecordKey<cranrpk_library, const FSEntry>
-    {
-    };
-
-    /**
-     * Constructor parameters for CRANRepository.
-     *
-     * \see CRANRepository
-     * \ingroup grpcranrepository
-     */
-    typedef MakeSmartRecord<CRANRepositoryParamsTag>::Type CRANRepositoryParams;
+#include <paludis/repositories/cran/cran_repository-sr.hh>
 
     /**
      * A CRANRepository is a Repository that handles the layout used by
@@ -93,9 +45,9 @@ namespace paludis
      */
     class CRANRepository :
         public Repository,
-        public Repository::InstallableInterface,
-        public Repository::SyncableInterface,
-        public Repository::SetsInterface,
+        public RepositoryInstallableInterface,
+        public RepositorySyncableInterface,
+        public RepositorySetsInterface,
         private PrivateImplementationPattern<CRANRepository>
     {
         private:

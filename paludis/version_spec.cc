@@ -19,7 +19,6 @@
 
 #include <algorithm>
 #include <paludis/util/exception.hh>
-#include <paludis/util/smart_record.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/version_spec.hh>
 #include <vector>
@@ -60,37 +59,9 @@ namespace
         scm
     };
 
-    /**
-     * Keys for a Part.
-     *
-     * \see Part
-     * \ingroup grpversions
-     */
-    enum PartKeys
-    {
-        part_kind,
-        part_value,
-        last_part
-    };
+#include <paludis/version_spec-sr.hh>
+#include <paludis/version_spec-sr.cc>
 
-    /**
-     * Tag for a Part.
-     *
-     * \see Part
-     * \ingroup grpversions
-     */
-    struct PartTag :
-        SmartRecordTag<comparison_mode::FullComparisonTag, comparison_method::SmartRecordCompareByAllTag>,
-        SmartRecordKeys<PartKeys, last_part>,
-        SmartRecordKey<part_kind, PartKind>,
-        SmartRecordKey<part_value, unsigned long>
-    {
-    };
-
-    /**
-     * An entry in a VersionSpec data vector.
-     */
-    typedef MakeSmartRecord<PartTag>::Type Part;
 }
 
 namespace paludis
@@ -156,7 +127,7 @@ VersionSpec::VersionSpec(const std::string & text) :
 
         while (_imp->parts.size() > 1)
         {
-            if (0 == _imp->parts[_imp->parts.size() - 1].get<part_value>())
+            if (0 == _imp->parts[_imp->parts.size() - 1].value)
                 _imp->parts.pop_back();
             else
                 break;
@@ -251,8 +222,8 @@ VersionSpec::VersionSpec(const std::string & text) :
         {
             for (std::vector<Part>::iterator i(_imp->parts.begin()),
                     i_end(_imp->parts.end()) ; i != i_end ; ++i)
-                if (std::numeric_limits<unsigned long>::max() == i->get<part_value>())
-                    i->set<part_value>(0);
+                if (std::numeric_limits<unsigned long>::max() == i->value)
+                    i->value = 0;
         }
     }
 
@@ -336,11 +307,11 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
     while (true)
     {
         const Part * p1(v1 == v1_end ? &end_part : &*v1++);
-        while (p1 != &end_part && p1->get<part_kind>() == revision)
+        while (p1 != &end_part && p1->kind == revision)
             p1 = (v1 == v1_end ? &end_part : &*v1++);
 
         const Part * p2(v2 == v2_end ? &end_part : &*v2++);
-        while (p2 != &end_part && p2->get<part_kind>() == revision)
+        while (p2 != &end_part && p2->kind == revision)
             p2 = (v2 == v2_end ? &end_part : &*v2++);
 
         if (&end_part == p1 && &end_part == p2)
@@ -365,7 +336,7 @@ VersionSpec::hash_value() const
     /// \todo Improve this;
     if (_imp->parts.empty())
         return 0;
-    return _imp->parts[0].get<part_value>();
+    return _imp->parts[0].value;
 }
 
 namespace
@@ -379,7 +350,7 @@ namespace
     {
         bool operator() (const Part & p) const
         {
-            return p.get<part_kind>() == revision;
+            return p.kind == revision;
         }
     };
 }
@@ -409,7 +380,7 @@ VersionSpec::revision_only() const
     std::vector<Part>::const_iterator r(std::find_if(_imp->parts.begin(),
                 _imp->parts.end(), IsRevisionPart()));
     if (r != _imp->parts.end())
-        return "r" + stringify(r->get<part_value>());
+        return "r" + stringify(r->value);
     else
         return "r0";
 }

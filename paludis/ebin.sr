@@ -1,0 +1,40 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_EbinCommandParams()
+{
+    key ebin_dir "FSEntry"
+    key environment "const Environment *"
+    key db_entry "const PackageDatabaseEntry *"
+    key src_repository "RepositoryName"
+    key pkgdir "FSEntry"
+    key buildroot "FSEntry"
+
+    allow_named_args
+}
+
+make_class_EbinFetchCommandParams()
+{
+    key b std::string
+    key flat_bin_uri std::string
+    key root std::string
+    key profiles FSEntryCollection::ConstPointer
+
+    allow_named_args
+}
+
+make_class_EbinInstallCommandParams()
+{
+    key b std::string
+    key use std::string
+    key use_expand std::string
+    key root std::string
+    key profiles FSEntryCollection::ConstPointer
+    key expand_vars "AssociativeCollection<std::string, std::string>::ConstPointer"
+    key disable_cfgpro bool
+    key merge_only bool
+    key slot SlotName
+
+    allow_named_args
+}
+

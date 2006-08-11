@@ -215,7 +215,7 @@ namespace
                         pkg != pkg_end ; ++pkg)
                 {
                     Gtk::TreeModel::Row pkg_row = *(model->append(us->children()));
-                    pkg_row[columns.col_item] = stringify(pkg->get<qpn_package>());
+                    pkg_row[columns.col_item] = stringify(pkg->package);
                     pkg_row[columns.col_data] = BrowseTreeDisplayData::Pointer(
                             new BrowseTreeDisplayPackageData(_r, *pkg));
                 }
