@@ -3,8 +3,6 @@ ifdef(`__gnu__',`',`errprint(`This is not GNU m4...
 
 dnl vim: set ft=m4 noet :
 
-if ENABLE_QA
-
 define(`filelist', `')dnl
 define(`testlist', `')dnl
 define(`srlist', `')dnl
@@ -47,6 +45,8 @@ define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
 addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 
 include(`paludis/qa/files.m4')
+
+if ENABLE_QA
 
 libpaludisqa_la_SOURCES = filelist
 libpaludisqa_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
