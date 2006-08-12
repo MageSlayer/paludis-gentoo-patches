@@ -227,7 +227,7 @@ you know what you do.
 
 The following keys are available for <code>format = cran_installed</code>:
 
-- <code>location</code> (mandator>, which should be set to <code>${ROOT}/usr/${libdir}/R/library</code>, unless
+- <code>location</code> (mandatory), which should be set to <code>${ROOT}/usr/${libdir}/R/library</code>, unless
 you know what you do. This must point to the same directory as <code>library</code> for <code>format = cran</code>.
 
 */
