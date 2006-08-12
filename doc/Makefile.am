@@ -6,7 +6,6 @@ docfiles = \
 	doc_mainpage.doxygen \
 	doc_coding_standards.doxygen \
 	doc_namespaces.doxygen \
-	doc_directories.doxygen \
 	doc_references.doxygen \
 	doc_licence.doxygen \
 	doc_authors.doxygen \

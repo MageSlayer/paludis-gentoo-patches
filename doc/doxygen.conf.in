@@ -452,7 +452,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT = ../paludis ../paludis/args ../paludis/util ../paludis/digests ../paludis/selinux ../paludis/repositories ../paludis/repositories/nothing ../paludis/repositories/portage ../paludis/repositories/vdb ../paludis/repositories/fake ../test ../doc ../src
+INPUT = ../paludis ../paludis/args ../paludis/util ../paludis/digests ../paludis/selinux ../paludis/repositories ../paludis/repositories/nothing ../paludis/repositories/portage ../paludis/repositories/vdb ../paludis/repositories/fake ../test ../doc ../src ../src/paludis ../src/qualudis
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -461,7 +461,7 @@ INPUT = ../paludis ../paludis/args ../paludis/util ../paludis/digests ../paludis
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx 
 # *.hpp *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm
 
-FILE_PATTERNS          = *.hh *.cc *.doxygen
+FILE_PATTERNS          = *.hh *.doxygen
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 

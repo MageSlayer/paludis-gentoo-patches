@@ -26,6 +26,12 @@ using namespace paludis;
 
 namespace
 {
+    /**
+     * \name Test utilities
+     * \ingroup grptestcases
+     * \{
+     */
+
     unsigned char dehex_c(unsigned char c)
     {
         if (c >= '0' && c <= '9')
@@ -49,10 +55,20 @@ namespace
         }
         return result;
     }
+
+    /**
+     * \}
+     */
 }
 
 namespace test_cases
 {
+    /**
+     * \name Test cases for paludis::digests::RMD160
+     * \ingroup grptestcases
+     * \{
+     */
+
     struct RMD160TestCase : TestCase
     {
         std::string data;
@@ -92,5 +108,9 @@ namespace test_cases
     RMD160TestCase t_8("one million times a",
             std::string(1000000, 'a'),
             "52783243c1697bdbe16d37f97f68f08325dc1528");
+
+    /**
+     * \}
+     */
 }
 

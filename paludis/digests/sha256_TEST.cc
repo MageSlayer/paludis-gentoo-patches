@@ -24,8 +24,20 @@
 using namespace test;
 using namespace paludis;
 
+/** \file
+ * Test cases for paludis::digests::SHA256.
+ *
+ * \ingroup grptestcases
+ */
+
 namespace
 {
+    /**
+     * \name Test utilities
+     * \ingroup grptestcases
+     * \{
+     */
+
     unsigned char dehex_c(unsigned char c)
     {
         if (c >= '0' && c <= '9')
@@ -49,10 +61,20 @@ namespace
         }
         return result;
     }
+
+    /**
+     * \}
+     */
 }
 
 namespace test_cases
 {
+    /**
+     * \name Test cases for paludis::digests::SHA256
+     * \ingroup grptestcases
+     * \{
+     */
+
     struct SHA256TestCase : TestCase
     {
         std::string data;
@@ -416,5 +438,9 @@ namespace test_cases
                 "c5452bbbf09317b50c5c9fb1997553d2bbc29bb4"
                 "2f5748ad"), "105a60865830ac3a371d3843324d4bb5fa8ec0e0"
             "2ddaa389ad8da4f10215c454");
+
+    /**
+     * \}
+     */
 }
 

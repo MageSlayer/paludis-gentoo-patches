@@ -26,6 +26,12 @@ using namespace test;
 
 namespace
 {
+    /**
+     * \name Test utilities
+     * \ingroup grptestcases
+     * \{
+     */
+
     unsigned char dehex_c(unsigned char c)
     {
         if (c >= '0' && c <= '9')
@@ -49,10 +55,20 @@ namespace
         }
         return result;
     }
+
+    /**
+     * \}
+     */
 }
 
 namespace test_cases
 {
+    /**
+     * \name Test cases for paludis::digests::MD5
+     * \ingroup grptestcases
+     * \{
+     */
+
     struct MD5TestCase : TestCase
     {
         std::string data;
@@ -89,6 +105,10 @@ namespace test_cases
     MD5TestCase t_8("one million times a",
             std::string(1000000, 'a'),
             "7707d6ae4e027c70eea2a935c2296f21");
+
+    /**
+     * \}
+     */
 }
 
 

@@ -57,6 +57,11 @@ while read a ; do
         want_named_args=yes
     }
 
+    doxygen_comment()
+    {
+        :
+    }
+
     key()
     {
         want_keys=( "${want_keys[@]}" "$1" )
@@ -76,15 +81,8 @@ while read a ; do
         want_comparison_fields=( ${want_keys[@]} )
     fi
 
-    extra_constructors()
+    doxygen_comment()
     {
-        echo
-        cat
-    }
-
-    extra_methods()
-    {
-        echo
         cat
     }
 
@@ -101,6 +99,27 @@ while read a ; do
     comparison_operators()
     {
         :
+    }
+
+
+    make_class_${a}
+
+    doxygen_comment()
+    {
+        :
+    }
+
+
+    extra_constructors()
+    {
+        echo
+        cat
+    }
+
+    extra_methods()
+    {
+        echo
+        cat
     }
 
     if [[ "${what_to_make}" == "--header" ]] ; then
@@ -181,25 +200,38 @@ while read a ; do
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
                 n=${want_keys[${k}]}
                 t=${want_key_types[${k}]}
+                echo "        /**"
+                echo "         * Holds the named parameter construction value for ${a}.${n}"
+                echo "         */"
                 echo "        class Param_${n}"
                 echo "        {"
                 echo "            private:"
                 echo "                Param_${n}();"
                 echo
                 echo "            public:"
+                echo "                /// The value"
                 echo "                $(make_const_ref "${t}" ) ${n};"
+                echo
+                echo "                ///\\name Basic operations"
+                echo "                ///\\{"
                 echo
                 echo "                Param_${n}(const Empty &, $(make_const_ref "${t}" ) value_for_${n}) :"
                 echo "                    ${n}(value_for_${n})"
                 echo "                {"
                 echo "                }"
                 echo
+                echo "                /// Constructor"
                 echo "                Param_${n}(const Empty &, const Param_${n} & other) :"
                 echo "                    ${n}(other.${n})"
                 echo "                {"
                 echo "                }"
+                echo
+                echo "                ///\\}"
                 echo "        };"
                 echo
+                echo "        /**"
+                echo "         * Provides the ${n} method for ${a} named parameters."
+                echo "         */"
                 echo "        template <typename Before_, typename After_>"
                 echo "        class ParamNeeded_${n}"
                 echo "        {"
@@ -207,6 +239,9 @@ while read a ; do
                 echo "                const Before_ & _before;"
                 echo
                 echo "            public:"
+                echo "                ///\\name Basic operations"
+                echo "                ///\\{"
+                echo
                 echo "                After_"
                 echo "                ${n}($(make_const_ref "${t}" ) value_for_${n})"
                 echo "                {"
@@ -230,10 +265,15 @@ while read a ; do
                 echo "                    _before(before)"
                 echo "                {"
                 echo "                }"
+                echo
+                echo "                ///\\}"
                 echo "        };"
                 echo
             done
 
+            echo "        /**"
+            echo "         * Handle named parameters for ${a}."
+            echo "         */"
             echo "        template <"
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
                 echo -n "            bool has_${want_keys[${k}]}_"
@@ -283,6 +323,9 @@ while read a ; do
             echo "                Params();"
             echo
             echo "            public:"
+            echo "                ///\\name Basic operations"
+            echo "                ///\\{"
+            echo
             echo "                Params("
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
                 n=${want_keys[${k}]}
@@ -347,9 +390,12 @@ while read a ; do
             echo "                        );"
             echo "                }"
             echo
+            echo "                ///\\}"
+            echo
             echo "        };"
             echo
 
+            echo "            /// Create, via named parameters"
             echo -n "                static Params<"
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
                 echo -n "false"
@@ -358,8 +404,6 @@ while read a ; do
                 fi
             done
             echo "> create();"
-
-            echo "        ///\\}"
             echo
         fi
 
