@@ -23,6 +23,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/compare.hh>
 
 #include <list>
 #include <map>

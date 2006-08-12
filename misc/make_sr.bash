@@ -467,10 +467,15 @@ while read a ; do
                 echo "${a}::compare(const ${a} & other) const"
                 echo "{"
                 for (( k = 0 ; k < ${#want_comparison_fields[@]} ; k++ )) ; do
-                    echo "    if (${want_comparison_fields[${k}]} < other.${want_comparison_fields[${k}]})"
-                    echo "        return -1;"
-                    echo "    if (${want_comparison_fields[${k}]} > other.${want_comparison_fields[${k}]})"
-                    echo "        return 1;"
+                    w=${want_comparison_fields[${k}]}
+                    echo "    switch (paludis::compare(${w}, other.${w}))"
+                    echo "    {"
+                    echo "        case -1:"
+                    echo "            return -1;"
+                    echo "        case 1:"
+                    echo "            return 1;"
+                    echo "    }"
+                    echo
                 done
                 echo "    return 0;"
                 echo "}"

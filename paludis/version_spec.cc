@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <paludis/util/compare.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/version_spec.hh>
