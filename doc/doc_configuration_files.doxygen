@@ -209,6 +209,27 @@ The following keys are available for <code>format = nothing</code>:
 - <code>location</code> (mandatory).
 - <code>sync</code> (default: empty), as per <code>format = portage</code>.
 - <code>sync_exclude</code> (default: empty), idem.
+
+\subsection ConfigurationFilesRepositoriesCRAN CRAN Format Repositories
+
+The following keys are available for <code>format = cran</code>:
+
+- <code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which controls
+  the temporary directory used by Paludis for compiling software.
+- <code>distdir</code> (default: <code>${location}/distfiles</code>), which
+  controls where downloaded files are saved.
+- <code>library</code> (mandatory), which should be set to <code>${ROOT}/usr/${libdir}/R/library</code>, unless
+you know what you do.
+- <code>location</code> (mandatory), which points to the location of the CRAN tree.
+- <code>sync</code> (default: empty), as per <code>format = portage</code>.
+
+\subsection ConfigurationFilesRepositoriesCRANInstalled CRAN Installed Format Repositories
+
+The following keys are available for <code>format = cran_installed</code>:
+
+- <code>location</code> (mandator>, which should be set to <code>${ROOT}/usr/${libdir}/R/library</code>, unless
+you know what you do. This must point to the same directory as <code>library</code> for <code>format = cran</code>.
+
 */
 
 
