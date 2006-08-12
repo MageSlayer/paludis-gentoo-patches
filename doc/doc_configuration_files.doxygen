@@ -219,7 +219,7 @@ The following keys are available for <code>format = cran</code>:
 - <code>distdir</code> (default: <code>${location}/distfiles</code>), which
   controls where downloaded files are saved.
 - <code>library</code> (mandatory), which should be set to <code>${ROOT}/usr/${libdir}/R/library</code>, unless
-you know what you do.
+you know what you're doing.
 - <code>location</code> (mandatory), which points to the location of the CRAN tree.
 - <code>sync</code> (default: empty), as per <code>format = portage</code>.
 
@@ -228,7 +228,7 @@ you know what you do.
 The following keys are available for <code>format = cran_installed</code>:
 
 - <code>location</code> (mandatory), which should be set to <code>${ROOT}/usr/${libdir}/R/library</code>, unless
-you know what you do. This must point to the same directory as <code>library</code> for <code>format = cran</code>.
+you know what you're doing. This must point to the same directory as <code>library</code> for <code>format = cran</code>.
 
 */
 
