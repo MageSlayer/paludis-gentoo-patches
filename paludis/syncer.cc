@@ -84,7 +84,7 @@ namespace
                 _local(local),
                 _remote(remote)
             {
-                if (0 == _remote.compare(0, 8, "svn+http", 0, 8))
+                if ((0 == _remote.compare(0, 8, "svn+http", 0, 8)) || (0 == _remote.compare(0, 9, "svn+https", 0, 9)))
                     _remote = _remote.erase(0, 4);
             }
 
@@ -152,6 +152,14 @@ namespace
      * \ingroup grpsyncer
      */
     static const SyncerMaker::RegisterMaker register_svnplushttp_syncer("svn+http", &SvnSyncer::make);
+
+    /**
+     * Register svn+https:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
+    static const SyncerMaker::RegisterMaker register_svnplushttps_syncer("svn+https", &SvnSyncer::make);
+
 
     /**
      * Register git:// protocol.
