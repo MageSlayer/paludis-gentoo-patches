@@ -11,5 +11,13 @@ make_class_QualifiedPackageName()
     extra_constructors <<END
         QualifiedPackageName(const std::string &);
 END
+
+    doxygen_comment << "END"
+        /**
+         * Represents a category plus package name.
+         *
+         * \ingroup grpnames
+         */
+END
 }
 

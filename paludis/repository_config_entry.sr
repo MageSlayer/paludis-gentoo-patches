@@ -6,6 +6,16 @@ make_class_RepositoryConfigEntry()
     key format std::string
     key importance unsigned
     key keys "AssociativeCollection<std::string, std::string>::Pointer"
+
+    doxygen_comment << "END"
+        /**
+         * Represents a DefaultConfig repository config file.
+         *
+         * \see DefaultConfig
+         * \ingroup grpdefaultconfig
+         */
+END
+
     comparison_operators all importance
 }
 

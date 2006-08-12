@@ -13,6 +13,15 @@ make_class_CRANRepositoryParams()
     key root FSEntry
     key library FSEntry
 
+    doxygen_comment << "END"
+        /**
+         * Parameters used to create a CRANRepository
+         *
+         * \see CRANRepository
+         * \ingroup grpcranrepository
+         */
+END
+
     allow_named_args
 }
 

@@ -7,6 +7,16 @@ make_class_PackageDatabaseEntry()
     key version VersionSpec
     key repository RepositoryName
 
+    doxygen_comment << "END"
+        /**
+         * Holds an entry in a PackageDatabase, and used to identify a
+         * specific version of a package in a particular repository.
+         *
+         * \see PackageDatabase
+         * \ingroup grppackagedatabase
+         */
+END
+
     comparison_operators all all
 }
 

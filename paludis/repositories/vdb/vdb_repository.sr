@@ -10,6 +10,15 @@ make_class_VDBRepositoryParams()
     key world FSEntry
     key buildroot FSEntry
 
+    doxygen_comment << "END"
+        /**
+         * Parameters used to create a VDBRepository
+         *
+         * \see VDBRepository
+         * \ingroup grpvdbrepository
+         */
+END
+
     allow_named_args
 }
 

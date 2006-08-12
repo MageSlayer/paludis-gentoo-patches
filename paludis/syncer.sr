@@ -4,5 +4,14 @@
 make_class_SyncOptions()
 {
     key exclude_from std::string
+
+    doxygen_comment << "END"
+        /**
+         * Options used by Syncer.
+         *
+         * \see Syncer
+         * \ingroup grpsyncer
+         */
+END
 }
 

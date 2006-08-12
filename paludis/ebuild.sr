@@ -12,6 +12,15 @@ make_class_EbuildCommandParams()
     key distdir FSEntry
     key buildroot FSEntry
 
+    doxygen_comment << "END"
+        /**
+         * Parameters for an EbuildCommand.
+         *
+         * \see EbuildCommand
+         * \ingroup grpebuildinterface
+         */
+END
+
     allow_named_args
 }
 
@@ -26,6 +35,15 @@ make_class_EbuildFetchCommandParams()
     key profiles FSEntryCollection::ConstPointer
     key expand_vars "AssociativeCollection<std::string, std::string>::ConstPointer"
     key no_fetch bool
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for an EbuildFetchCommand.
+         *
+         * \see EbuildFetchCommand
+         * \ingroup grpebuildinterface
+         */
+END
 
     allow_named_args
 }
@@ -43,6 +61,15 @@ make_class_EbuildInstallCommandParams()
     key merge_only bool
     key slot SlotName
 
+    doxygen_comment << "END"
+        /**
+         * Parameters for an EbuildInstallCommand.
+         *
+         * \see EbuildInstallCommand
+         * \ingroup grpebuildinterface
+         */
+END
+
     allow_named_args
 }
 
@@ -52,6 +79,15 @@ make_class_EbuildUninstallCommandParams()
     key disable_cfgpro bool
     key unmerge_only bool
     key load_environment "const FSEntry *"
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for an EbuildUninstallCommand.
+         *
+         * \see EbuildUninstallCommand
+         * \ingroup grpebuildinterface
+         */
+END
 
     allow_named_args
 }

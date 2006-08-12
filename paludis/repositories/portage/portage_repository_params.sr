@@ -20,6 +20,15 @@ make_class_PortageRepositoryParams()
     key root FSEntry
     key buildroot FSEntry
 
+    doxygen_comment << "END"
+        /**
+         * Parameters used to create a PortageRepository
+         *
+         * \see PortageRepository
+         * \ingroup grpportagerepository
+         */
+END
+
     allow_named_args
 }
 

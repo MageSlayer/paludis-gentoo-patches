@@ -148,6 +148,16 @@
  * \ingroup grprepository
  */
 
+/** \defgroup grpcranrepository CRAN repository
+ *
+ * \ingroup grprepository
+ */
+
+/** \defgroup grpcraninstrepository CRAN installed repository
+ *
+ * \ingroup grprepository
+ */
+
 /** \defgroup grpebuildinterface Ebuild interface
  *
  * \ingroup grprepository

@@ -10,6 +10,15 @@ make_class_EbinCommandParams()
     key pkgdir "FSEntry"
     key buildroot "FSEntry"
 
+    doxygen_comment << "END"
+        /**
+         * Parameters for an EbinCommand.
+         *
+         * \see EbinCommand
+         * \ingroup grpebininterface
+         */
+END
+
     allow_named_args
 }
 
@@ -19,6 +28,15 @@ make_class_EbinFetchCommandParams()
     key flat_bin_uri std::string
     key root std::string
     key profiles FSEntryCollection::ConstPointer
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for an EbinFetchCommand.
+         *
+         * \see EbinFetchCommand
+         * \ingroup grpebininterface
+         */
+END
 
     allow_named_args
 }
@@ -34,6 +52,15 @@ make_class_EbinInstallCommandParams()
     key disable_cfgpro bool
     key merge_only bool
     key slot SlotName
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for an EbinInstallCommand.
+         *
+         * \see EbinInstallCommand
+         * \ingroup grpebininterface
+         */
+END
 
     allow_named_args
 }

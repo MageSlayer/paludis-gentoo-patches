@@ -10,6 +10,15 @@ make_class_DepListEntry()
     key flags DepListEntryFlags
     key tag "SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Pointer"
 
+    doxygen_comment << "END"
+        /**
+         * Holds a single entry in a DepList.
+         *
+         * \see DepList
+         * \ingroup grpdepresolver
+         */
+END
+
     comparison_operators equality all
 }
 

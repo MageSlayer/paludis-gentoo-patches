@@ -8,6 +8,16 @@ make_class_CRANInstalledRepositoryParams()
     key location FSEntry
     key root FSEntry
     key world FSEntry
+
+    doxygen_comment << "END"
+        /**
+         * Parameters used to create a CRANInstalledRepository
+         *
+         * \see CRANInstalledRepository
+         * \ingroup grpcraninstrepository
+         */
+END
+
     allow_named_args
 }
 

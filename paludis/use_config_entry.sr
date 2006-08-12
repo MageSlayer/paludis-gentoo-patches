@@ -6,5 +6,14 @@ make_class_UseConfigEntry()
     key dep_atom PackageDepAtom::ConstPointer
     key flag_name UseFlagName
     key flag_state UseFlagState
+
+    doxygen_comment << "END"
+        /**
+         * Represents a DefaultConfig package use configuration entry.
+         *
+         * \see DefaultConfig
+         * \ingroup grpdefaultconfig
+         */
+END
 }
 

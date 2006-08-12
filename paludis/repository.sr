@@ -5,11 +5,29 @@ make_class_InstallOptions()
 {
     key no_config_protect bool
     key fetch_only bool
+
+    doxygen_comment << "END"
+        /**
+         * Options for the Repository::install method.
+         *
+         * \see Repository
+         * \ingroup grprepository
+         */
+END
 }
 
 make_class_PackageSetOptions()
 {
     key list_affected_only bool
+
+    doxygen_comment << "END"
+        /**
+         * Options for the Repository::package_set method.
+         *
+         * \see Repository
+         * \ingroup grprepository
+         */
+END
 }
 
 make_class_RepositoryCapabilities()
@@ -25,6 +43,15 @@ make_class_RepositoryCapabilities()
     key world_interface "RepositoryWorldInterface *"
     key mirrors_interface "RepositoryMirrorsInterface *"
     key environment_variable_interface "RepositoryEnvironmentVariableInterface *"
+
+    doxygen_comment << "END"
+        /**
+         * Optional interfaces that may be provided by a Repository.
+         *
+         * \see Repository
+         * \ingroup grprepository
+         */
+END
 
     allow_named_args
 }
