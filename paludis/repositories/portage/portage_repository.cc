@@ -295,11 +295,6 @@ PortageRepository::do_has_package_named(const QualifiedPackageName & q) const
 
     need_category_names();
 
-#if 0
-    if (q.category == CategoryNamePart("virtual"))
-        need_virtual_names();
-#endif
-
     CategoryMap::iterator cat_iter(_imp->category_names.find(q.category));
 
     if (_imp->category_names.end() == cat_iter)
@@ -377,10 +372,6 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
             + "' in " + stringify(name()) + ":");
 
     need_category_names();
-#if 0
-    if (c == CategoryNamePart("virtual"))
-        need_virtual_names();
-#endif
 
     if (_imp->category_names.end() == _imp->category_names.find(c))
         return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection::Concrete);
@@ -469,11 +460,6 @@ PortageRepository::need_category_names() const
 void
 PortageRepository::need_version_names(const QualifiedPackageName & n) const
 {
-#if 0
-    if (n.category == CategoryNamePart("virtual"))
-        need_virtual_names();
-#endif
-
     if (_imp->package_names[n])
         return;
 
@@ -484,42 +470,24 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
 
     FSEntry path(_imp->params.location / stringify(n.category) /
             stringify(n.package));
-    if (CategoryNamePart("virtual") == n.category && ! path.exists())
+
+    for (DirIterator e(path), e_end ; e != e_end ; ++e)
     {
-        VirtualsMap::iterator i(_imp->our_virtuals.find(n));
-        need_version_names(i->second->package());
+        if (! IsFileWithExtension(stringify(n.package) + "-",
+                    _imp->entries_ptr->file_extension())(*e))
+            continue;
 
-        VersionSpecCollection::ConstPointer versions(version_specs(i->second->package()));
-        for (VersionSpecCollection::Iterator vv(versions->begin()), vv_end(versions->end()) ;
-                vv != vv_end ; ++vv)
+        try
         {
-            PackageDatabaseEntry e(i->second->package(), *vv, name());
-            if (! match_package(_imp->params.environment, i->second, e))
-                continue;
-
-            v->insert(*vv);
+            v->insert(strip_leading_string(
+                        strip_trailing_string(e->basename(), _imp->entries_ptr->file_extension()),
+                        stringify(n.package) + "-"));
         }
-    }
-    else
-    {
-        for (DirIterator e(path), e_end ; e != e_end ; ++e)
+        catch (const NameError &)
         {
-            if (! IsFileWithExtension(stringify(n.package) + "-",
-                        _imp->entries_ptr->file_extension())(*e))
-                continue;
-
-            try
-            {
-                v->insert(strip_leading_string(
-                            strip_trailing_string(e->basename(), _imp->entries_ptr->file_extension()),
-                            stringify(n.package) + "-"));
-            }
-            catch (const NameError &)
-            {
-                Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '"
-                        + stringify(*e) + "' for '" + stringify(n) + "' in repository '"
-                        + stringify(name()) + "'");
-            }
+            Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '"
+                    + stringify(*e) + "' for '" + stringify(n) + "' in repository '"
+                    + stringify(name()) + "'");
         }
     }
 
