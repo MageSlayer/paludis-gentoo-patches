@@ -17,14 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "fake_repository.hh"
+#include "fake_installed_repository.hh"
 
 using namespace paludis;
 
-FakeRepository::FakeRepository(const RepositoryName & name) :
+FakeInstalledRepository::FakeInstalledRepository(const RepositoryName & name) :
     FakeRepositoryBase(name, RepositoryCapabilities::create()
-            .installable_interface(this)
-            .installed_interface(0)
+            .installable_interface(0)
+            .installed_interface(this)
             .mask_interface(this)
             .news_interface(0)
             .sets_interface(0)
@@ -39,9 +39,11 @@ FakeRepository::FakeRepository(const RepositoryName & name) :
 {
 }
 
-void
-FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &,
-        const InstallOptions &) const
+Contents::ConstPointer
+FakeInstalledRepository::do_contents(const QualifiedPackageName &,
+        const VersionSpec &) const
 {
+    Contents::ConstPointer result(new Contents);
+    return result;
 }
 

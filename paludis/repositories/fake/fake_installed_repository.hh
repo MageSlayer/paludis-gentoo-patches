@@ -17,31 +17,25 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "fake_repository.hh"
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_FAKE_FAKE_INSTALLED_REPOSITORY_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_FAKE_FAKE_INSTALLED_REPOSITORY_HH 1
 
-using namespace paludis;
+#include <paludis/repositories/fake/fake_repository_base.hh>
 
-FakeRepository::FakeRepository(const RepositoryName & name) :
-    FakeRepositoryBase(name, RepositoryCapabilities::create()
-            .installable_interface(this)
-            .installed_interface(0)
-            .mask_interface(this)
-            .news_interface(0)
-            .sets_interface(0)
-            .syncable_interface(0)
-            .uninstallable_interface(0)
-            .use_interface(this)
-            .world_interface(0)
-            .mirrors_interface(0)
-            .environment_variable_interface(0)
-            .provides_interface(0)
-            .virtuals_interface(0))
+namespace paludis
 {
+    class FakeInstalledRepository :
+        public FakeRepositoryBase,
+        public RepositoryInstalledInterface
+    {
+        protected:
+            virtual Contents::ConstPointer do_contents(
+                    const QualifiedPackageName &,
+                    const VersionSpec &) const;
+
+        public:
+            FakeInstalledRepository(const RepositoryName &);
+    };
 }
 
-void
-FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &,
-        const InstallOptions &) const
-{
-}
-
+#endif

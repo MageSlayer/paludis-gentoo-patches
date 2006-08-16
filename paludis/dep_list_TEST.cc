@@ -19,6 +19,7 @@
 
 #include <paludis/paludis.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
+#include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>
@@ -1373,5 +1374,33 @@ namespace test_cases
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
         }
     } test_dep_list_transactional_add_post;
+
+    /**
+     * \test Test DepList transactional forced downgrade of installed package behaviour.
+     *
+     * \ingroup Test
+     */
+    struct DepListTestCaseForcedDowngradeOfInstalled : TestCase
+    {
+        DepListTestCaseForcedDowngradeOfInstalled() : TestCase("dep list forced downgrade of installed") { }
+
+        void run()
+        {
+            TestEnvironment env;
+
+            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            env.package_database()->add_repository(repo);
+            repo->add_version("cat", "one", "1");
+
+            FakeInstalledRepository::Pointer installed_repo(
+                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+            env.package_database()->add_repository(installed_repo);
+            installed_repo->add_version("cat", "one", "2");
+
+            DepList d(&env);
+            d.add(PortageDepParser::parse("cat/one"));
+            TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "), "cat/one-1:0::repo");
+        }
+    } test_dep_list_forced_downgrade_of_installed;
 }
 
