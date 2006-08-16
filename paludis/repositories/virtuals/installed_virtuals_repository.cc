@@ -57,7 +57,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .news_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
-            .uninstallable_interface(0)
+            .uninstallable_interface(this)
             .mirrors_interface(0)
             .environment_variable_interface(0)
             .world_interface(0)
