@@ -70,11 +70,13 @@ NoSuchRepositoryError::NoSuchRepositoryError(const std::string & name) throw () 
 {
 }
 
+#if 0
 NoSuchVersionError::NoSuchVersionError(const std::string & name,
         const VersionSpec & version) throw () :
     PackageDatabaseLookupError("No version of '" + name + "' named '" + stringify(version) + "'")
 {
 }
+#endif
 
 /**
  * Name data for an AmbiguousPackageNameError.
@@ -282,10 +284,12 @@ PackageDatabase::better_repository(const RepositoryName & r1,
 RepositoryName
 PackageDatabase::favourite_repository() const
 {
-    if (_imp->repositories.empty())
-        return RepositoryName("unnamed");
-    else
-        return (*_imp->repositories.begin())->name();
+    for (RepositoryIterator r(_imp->repositories.begin()), r_end(_imp->repositories.end()) ;
+            r != r_end ; ++r)
+        if ((*r)->can_be_favourite_repository())
+            return (*r)->name();
+
+    return RepositoryName("unnamed");
 }
 
 PackageDatabaseEntryCollection::Pointer

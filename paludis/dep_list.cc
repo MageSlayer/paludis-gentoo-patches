@@ -501,20 +501,38 @@ DepList::visit(const PackageDepAtom * const p)
                         DepListEntryMatcher(_imp->environment, pp)))
                 continue;
 
+#if 0
             VersionMetadata::Pointer p_metadata(new VersionMetadata::Ebuild(
                         merge_entry->metadata->deps.parser));
             p_metadata->slot = merge_entry->metadata->slot;
             p_metadata->get_ebuild_interface()->virtual_for = stringify(merge_entry->name);
+#else
+            VersionMetadata::ConstPointer p_metadata(0);
+            try
+            {
+                p_metadata = _imp->environment->package_database()->fetch_repository(RepositoryName(
+                            "virtuals"))->version_metadata(pp.package(), merge_entry->version);
+            }
+            catch (const NoSuchPackageError & e)
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Error '" + stringify(e.message()) + "' ("
+                        + stringify(e.what()) + ") when looking for virtual '" + stringify(pp.package())
+                        + "' for merge entry '" + stringify(*merge_entry));
+            }
+#endif
 
-            DepListEntryFlags flags;
-            flags.set(dlef_has_predeps);
-            flags.set(dlef_has_trypredeps);
-            flags.set(dlef_has_postdeps);
-            _imp->merge_list.insert(next(merge_entry),
-                    DepListEntry(pp.package(), merge_entry->version,
-                        p_metadata, merge_entry->repository, flags,
-                        SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Pointer(
-                            new SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Concrete)));
+            if (p_metadata)
+            {
+                DepListEntryFlags flags;
+                flags.set(dlef_has_predeps);
+                flags.set(dlef_has_trypredeps);
+                flags.set(dlef_has_postdeps);
+                _imp->merge_list.insert(next(merge_entry),
+                        DepListEntry(pp.package(), merge_entry->version,
+                            p_metadata, merge_entry->repository, flags,
+                            SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Pointer(
+                                new SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Concrete)));
+            }
         }
     }
 

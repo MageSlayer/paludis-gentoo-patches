@@ -216,6 +216,12 @@ DefaultConfig::DefaultConfig() :
         if (_imp->repos.empty())
             throw DefaultConfigError("No repositories specified");
 
+        /* add virtuals repositories */
+        _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1,
+                    AssociativeCollection<std::string, std::string>::Pointer(0)));
+        _imp->repos.push_back(RepositoryConfigEntry("virtuals", -2,
+                    AssociativeCollection<std::string, std::string>::Pointer(0)));
+
         _imp->repos.sort();
     }
 

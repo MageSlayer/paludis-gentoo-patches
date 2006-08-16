@@ -169,10 +169,7 @@ EbinFetchCommand::EbinFetchCommand(const EbinCommandParams & p,
 std::string
 EbinInstallCommand::commands() const
 {
-    if (install_params.merge_only)
-        return "merge";
-    else
-        return "init_bin unpack_bin setup strip preinst merge postinst tidyup";
+    return "init_bin unpack_bin setup strip preinst merge postinst tidyup";
 }
 
 bool

@@ -58,6 +58,8 @@ namespace paludis
     class RepositoryWorldInterface;
     class RepositoryEnvironmentVariableInterface;
     class RepositoryMirrorsInterface;
+    class RepositoryProvidesInterface;
+    class RepositoryVirtualsInterface;
 
 #include <paludis/repository-sr.hh>
 
@@ -306,19 +308,12 @@ namespace paludis
             virtual void invalidate() const = 0;
 
             /**
-             * Our provide map iterator type.
+             * Are we allowed to be favourite repository?
              */
-            typedef std::map<QualifiedPackageName, QualifiedPackageName>::const_iterator ProvideMapIterator;
-
-            /**
-             * Start of our provide map.
-             */
-            virtual ProvideMapIterator begin_provide_map() const = 0;
-
-            /**
-             * Past the end of our provide map.
-             */
-            virtual ProvideMapIterator end_provide_map() const = 0;
+            virtual bool can_be_favourite_repository() const
+            {
+                return true;
+            }
     };
 
     /**
@@ -708,6 +703,44 @@ namespace paludis
             }
 
             virtual ~RepositoryMirrorsInterface() { }
+    };
+
+    /**
+     * Interface for repositories that define virtuals.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class RepositoryVirtualsInterface
+    {
+        public:
+            typedef SortedCollection<RepositoryVirtualsEntry> VirtualsCollection;
+
+            virtual VirtualsCollection::ConstPointer virtual_packages() const = 0;
+
+            virtual VersionMetadata::ConstPointer virtual_package_version_metadata(
+                    const RepositoryVirtualsEntry &, const VersionSpec & v) const = 0;
+
+            virtual ~RepositoryVirtualsInterface() { }
+    };
+
+    /**
+     * Interface for repositories that provide packages.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     */
+    class RepositoryProvidesInterface
+    {
+        public:
+            typedef SortedCollection<RepositoryProvidesEntry> ProvidesCollection;
+
+            virtual ProvidesCollection::ConstPointer provided_packages() const = 0;
+
+            virtual VersionMetadata::ConstPointer provided_package_version_metadata(
+                    const RepositoryProvidesEntry &) const = 0;
+
+            virtual ~RepositoryProvidesInterface() { }
     };
 
     /**

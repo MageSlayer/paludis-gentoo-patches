@@ -54,12 +54,12 @@ namespace paludis
         public RepositorySetsInterface,
         public RepositoryEnvironmentVariableInterface,
         public RepositoryMirrorsInterface,
+        public RepositoryVirtualsInterface,
         private PrivateImplementationPattern<PortageRepository>
     {
         private:
             void need_category_names() const;
             void need_version_names(const QualifiedPackageName &) const;
-            void need_virtual_names() const;
             void need_mirrors() const;
             PackageDatabaseEntryCollection::Iterator find_best(PackageDatabaseEntryCollection & c,
                     const PackageDatabaseEntry & e) const;
@@ -117,6 +117,11 @@ namespace paludis
 
             virtual bool do_sync() const;
 
+            virtual VirtualsCollection::ConstPointer virtual_packages() const;
+
+            virtual VersionMetadata::ConstPointer virtual_package_version_metadata(
+                    const RepositoryVirtualsEntry &, const VersionSpec & v) const;
+
         public:
             virtual RepositoryInfo::ConstPointer info(bool verbose) const;
 
@@ -131,10 +136,6 @@ namespace paludis
             ~PortageRepository();
 
             virtual void invalidate() const;
-
-            virtual ProvideMapIterator begin_provide_map() const;
-
-            virtual ProvideMapIterator end_provide_map() const;
 
             virtual void update_news() const;
 
@@ -155,9 +156,6 @@ namespace paludis
 
             typedef libwrapiter::ForwardIterator<PortageRepository, std::pair<
                 const QualifiedPackageName, PackageDepAtom::ConstPointer> > OurVirtualsIterator;
-
-            OurVirtualsIterator end_our_virtuals() const;
-            OurVirtualsIterator find_our_virtuals(const QualifiedPackageName &) const;
 
             ///\}
     };

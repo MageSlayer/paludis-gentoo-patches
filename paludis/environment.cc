@@ -136,6 +136,13 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
         result.set(mr_eapi);
     else
     {
+        if (metadata->get_virtual_interface())
+        {
+            result |= mask_reasons(metadata->get_virtual_interface()->virtual_for);
+            if (result.any())
+                result.set(mr_by_association);
+        }
+
         if (metadata->get_ebuild_interface())
         {
             std::set<KeywordName> keywords;
@@ -151,25 +158,6 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
                     result.reset(mr_keyword);
                     break;
                 }
-
-            if (! metadata->get_ebuild_interface()->virtual_for.empty())
-            {
-                QualifiedPackageName n(metadata->get_ebuild_interface()->virtual_for);
-
-                PackageDatabaseEntry ee(n, e.version, e.repository);
-                std::set<KeywordName> keywords;
-                WhitespaceTokeniser::get_instance()->tokenise(
-                        metadata->get_ebuild_interface()->keywords,
-                        create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
-
-                for (std::set<KeywordName>::const_iterator i(keywords.begin()),
-                        i_end(keywords.end()) ; i != i_end ; ++i)
-                    if (accept_keyword(*i, &ee))
-                    {
-                        result.reset(mr_keyword);
-                        break;
-                    }
-            }
         }
 
         LicenceChecker lc(this, &e);
@@ -194,54 +182,11 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
                 if (repo->mask_interface->query_repository_masks(e.name,
                             e.version))
                     result.set(mr_repository_mask);
-
-                if (metadata->get_ebuild_interface())
-                    if (! metadata->get_ebuild_interface()->virtual_for.empty())
-                    {
-                        QualifiedPackageName n(metadata->get_ebuild_interface()->virtual_for);
-
-                        if (repo->mask_interface->query_profile_masks(n,
-                                    e.version))
-                            result.set(mr_profile_mask);
-
-                        if (repo->mask_interface->query_repository_masks(n,
-                                    e.version))
-                            result.set(mr_repository_mask);
-                    }
             }
         }
     }
 
     return result;
-}
-
-Environment::ProvideMapIterator
-Environment::begin_provide_map() const
-{
-    if (! _has_provide_map)
-    {
-        Context context("When scanning for PROVIDEs:");
-
-        for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
-                r_end(package_database()->end_repositories()) ; r != r_end ; ++r)
-        {
-            if (! (*r)->installed_interface)
-                continue;
-
-            std::copy((*r)->begin_provide_map(), (*r)->end_provide_map(),
-                    std::inserter(_provide_map, _provide_map.begin()));
-        }
-
-        _has_provide_map = true;
-    }
-
-    return _provide_map.begin();
-}
-
-Environment::ProvideMapIterator
-Environment::end_provide_map() const
-{
-    return _provide_map.end();
 }
 
 DepAtom::Pointer

@@ -185,7 +185,6 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
         _metadata->deps.post_depend_string = f.get("PDEPEND");
         _metadata->get_ebuild_interface()->provide_string = f.get("PROVIDE");
         _metadata->eapi = f.get("EAPI");
-        _metadata->get_ebuild_interface()->virtual_for = "";
 
         if (0 == prog.exit_status())
             ok = true;
@@ -290,11 +289,8 @@ EbuildFetchCommand::EbuildFetchCommand(const EbuildCommandParams & p,
 std::string
 EbuildInstallCommand::commands() const
 {
-    if (install_params.merge_only)
-        return "merge";
-    else
-        return "init setup unpack compile test install strip preinst "
-            "merge postinst tidyup";
+    return "init setup unpack compile test install strip preinst "
+        "merge postinst tidyup";
 }
 
 bool

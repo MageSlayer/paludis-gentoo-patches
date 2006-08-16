@@ -57,7 +57,7 @@ VersionMetadataDeps::VersionMetadataDeps(const ParserFunction & p) :
 }
 
 VersionMetadata::CRAN::CRAN(ParserFunction f) :
-    VersionMetadata(f, &_c, 0, 0),
+    VersionMetadata(f, &_c, 0, 0, 0),
     _c(CRANVersionMetadata::create()
             .keywords("")
             .package("")
@@ -67,13 +67,13 @@ VersionMetadata::CRAN::CRAN(ParserFunction f) :
 }
 
 VersionMetadata::Ebuild::Ebuild(ParserFunction f) :
-    VersionMetadata(f, 0, &_e, 0),
+    VersionMetadata(f, 0, &_e, 0, 0),
     _e()
 {
 }
 
 VersionMetadata::Ebin::Ebin(ParserFunction f) :
-    VersionMetadata(f, 0, &_e, &_eb),
+    VersionMetadata(f, 0, &_e, &_eb, 0),
     _e(),
     _eb()
 {
@@ -93,14 +93,16 @@ VersionMetadata::VersionMetadata(ParserFunction p) :
             .eapi("")),
     _cran_if(0),
     _ebuild_if(0),
-    _ebin_if(0)
+    _ebin_if(0),
+    _virtual_if(0)
 {
 }
 
 VersionMetadata::VersionMetadata(ParserFunction p,
         CRANVersionMetadata * cran_if,
         EbuildVersionMetadata * ebuild_if,
-        EbinVersionMetadata * ebin_if) :
+        EbinVersionMetadata * ebin_if,
+        VirtualMetadata * virtual_if) :
     VersionMetadataBase(VersionMetadataBase::create()
             .slot(SlotName("unset"))
             .deps(VersionMetadataDeps(p))
@@ -110,7 +112,8 @@ VersionMetadata::VersionMetadata(ParserFunction p,
             .eapi("")),
      _cran_if(cran_if),
      _ebuild_if(ebuild_if),
-     _ebin_if(ebin_if)
+     _ebin_if(ebin_if),
+     _virtual_if(virtual_if)
 {
 }
 
@@ -120,7 +123,6 @@ EbuildVersionMetadata::EbuildVersionMetadata() :
     restrict_string(""),
     keywords(""),
     iuse(""),
-    virtual_for(""),
     inherited("")
 {
 }
@@ -144,3 +146,10 @@ VersionMetadata::license() const
     return PortageDepParser::parse(license_string, PortageDepParserPolicy<PlainTextDepAtom,
             true>::get_instance());
 }
+
+VersionMetadata::Virtual::Virtual(ParserFunction p, const PackageDatabaseEntry & e) :
+    VersionMetadata(p, 0, 0, 0, &_v),
+    _v(e)
+{
+}
+

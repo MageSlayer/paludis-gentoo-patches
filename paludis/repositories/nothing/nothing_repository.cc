@@ -98,7 +98,9 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
             .use_interface(0)
             .world_interface(0)
             .environment_variable_interface(0)
-            .mirrors_interface(0)),
+            .mirrors_interface(0)
+            .virtuals_interface(0)
+            .provides_interface(0)),
     PrivateImplementationPattern<NothingRepository>(new Implementation<NothingRepository>(p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -238,17 +240,5 @@ NothingRepository::do_sync() const
 void
 NothingRepository::invalidate() const
 {
-}
-
-Repository::ProvideMapIterator
-NothingRepository::begin_provide_map() const
-{
-    return _imp->provide_map.begin();
-}
-
-Repository::ProvideMapIterator
-NothingRepository::end_provide_map() const
-{
-    return _imp->provide_map.end();
 }
 

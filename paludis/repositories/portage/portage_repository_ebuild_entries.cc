@@ -85,7 +85,6 @@ PortageRepositoryEbuildEntries::generate_version_metadata(const QualifiedPackage
     cache_file /= stringify(q.package) + "-" + stringify(v);
 
     bool ok(false);
-    PortageRepository::OurVirtualsIterator vi(_imp->portage_repository->end_our_virtuals());
     if (cache_file.is_regular_file())
     {
         std::ifstream cache(stringify(cache_file).c_str());
@@ -108,7 +107,6 @@ PortageRepositoryEbuildEntries::generate_version_metadata(const QualifiedPackage
             std::getline(cache, line); result->deps.post_depend_string = line;
             std::getline(cache, line); result->get_ebuild_interface()->provide_string = line;
             std::getline(cache, line); result->eapi = line;
-            result->get_ebuild_interface()->virtual_for = "";
 
             // check mtimes
             time_t cache_time(cache_file.mtime());
@@ -148,18 +146,6 @@ PortageRepositoryEbuildEntries::generate_version_metadata(const QualifiedPackage
             Log::get_instance()->message(ll_warning, lc_no_context,
                     "Couldn't read the cache file at '"
                     + stringify(cache_file) + "'");
-    }
-    else if (_imp->portage_repository->end_our_virtuals() !=
-            ((vi = _imp->portage_repository->find_our_virtuals(q))))
-    {
-        VersionMetadata::ConstPointer m(_imp->portage_repository->version_metadata(
-                    vi->second->package(), v));
-        result->slot = m->slot;
-        result->get_ebuild_interface()->keywords = m->get_ebuild_interface()->keywords;
-        result->eapi = m->eapi;
-        result->get_ebuild_interface()->virtual_for = stringify(vi->second->package());
-        result->deps.build_depend_string = "=" + stringify(vi->second->package()) + "-" + stringify(v);
-        ok = true;
     }
 
     if (! ok)
@@ -262,22 +248,13 @@ void
 PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         const InstallOptions & o, PortageRepositoryProfile::ConstPointer p) const
 {
-    VersionMetadata::ConstPointer metadata(0);
     if (! _imp->portage_repository->has_version(q, v))
     {
-        if (q.category == CategoryNamePart("virtual"))
-        {
-            VersionMetadata::Ebuild::Pointer m(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
-            m->slot = SlotName("0");
-            m->get_ebuild_interface()->virtual_for = " ";
-            metadata = m;
-        }
-        else
-            throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                    + stringify(v) + "' since has_version failed");
+        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                + stringify(v) + "' since has_version failed");
     }
-    else
-        metadata = _imp->portage_repository->version_metadata(q, v);
+
+    VersionMetadata::ConstPointer metadata(_imp->portage_repository->version_metadata(q, v));
 
     PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
 
@@ -491,8 +468,7 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
             .profiles(_imp->params.profiles)
             .no_fetch(fetch_restrict));
 
-    if (metadata->get_ebuild_interface()->virtual_for.empty())
-        fetch_cmd();
+    fetch_cmd();
 
     if (o.fetch_only)
         return;
@@ -518,7 +494,6 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
                     .root(stringify(_imp->params.root) + "/")
                     .profiles(_imp->params.profiles)
                     .disable_cfgpro(o.no_config_protect)
-                    .merge_only(! metadata->get_ebuild_interface()->virtual_for.empty())
                     .slot(SlotName(metadata->slot)));
 
     install_cmd();

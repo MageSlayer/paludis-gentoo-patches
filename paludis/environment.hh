@@ -188,21 +188,6 @@ namespace paludis
             virtual ~Environment();
 
             /**
-             * Iterator over our provide map.
-             */
-            typedef std::map<QualifiedPackageName, QualifiedPackageName>::const_iterator ProvideMapIterator;
-
-            /**
-             * Iterator to the start of our provide map.
-             */
-            ProvideMapIterator begin_provide_map() const;
-
-            /**
-             * Iterator to past the end of our provide map.
-             */
-            ProvideMapIterator end_provide_map() const;
-
-            /**
              * Iterator over named mirror entries.
              */
             typedef EnvironmentMirrorIterator MirrorIterator;

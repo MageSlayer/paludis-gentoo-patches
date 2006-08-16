@@ -91,10 +91,6 @@ namespace paludis
 
             virtual void invalidate() const;
 
-            virtual ProvideMapIterator begin_provide_map() const;
-
-            virtual ProvideMapIterator end_provide_map() const;
-
             typedef CountedPtr<NothingRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const NothingRepository, count_policy::InternalCountTag> ConstPointer;
     };

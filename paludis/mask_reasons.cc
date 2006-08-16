@@ -59,6 +59,10 @@ paludis::operator<< (std::ostream & s, const MaskReason & r)
                 s << "license";
                 continue;
 
+            case mr_by_association:
+                s << "by association";
+                continue;
+
             case last_mr:
                 ;
         }

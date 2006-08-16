@@ -50,7 +50,6 @@ make_class_EbinInstallCommandParams()
     key profiles FSEntryCollection::ConstPointer
     key expand_vars "AssociativeCollection<std::string, std::string>::ConstPointer"
     key disable_cfgpro bool
-    key merge_only bool
     key slot SlotName
 
     doxygen_comment << "END"

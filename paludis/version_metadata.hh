@@ -25,6 +25,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/dep_atom.hh>
+#include <paludis/package_database_entry.hh>
 #include <string>
 
 /** \file
@@ -58,6 +59,7 @@ namespace paludis
             CRANVersionMetadata * _cran_if;
             EbuildVersionMetadata * _ebuild_if;
             EbinVersionMetadata * _ebin_if;
+            VirtualMetadata * _virtual_if;
 
         protected:
             /**
@@ -65,7 +67,8 @@ namespace paludis
              */
             VersionMetadata(ParserFunction, CRANVersionMetadata * cran_if,
                     EbuildVersionMetadata * ebuild_if,
-                    EbinVersionMetadata * ebin_if);
+                    EbinVersionMetadata * ebin_if,
+                    VirtualMetadata * virtual_if);
 
         public:
             /**
@@ -95,7 +98,6 @@ namespace paludis
             {
                 return _cran_if;
             }
-
 
             class CRAN;
 
@@ -137,11 +139,32 @@ namespace paludis
                 return _ebin_if;
             }
 
+            class Ebin;
+
+            /**
+             * Fetch our virtual interface, or 0.
+             */
+            VirtualMetadata *
+            get_virtual_interface()
+            {
+                return _virtual_if;
+            }
+
+            /**
+             * Fetch our virtual interface, or 0.
+             */
+            const VirtualMetadata *
+            get_virtual_interface() const
+            {
+                return _virtual_if;
+            }
+
+            class Virtual;
+
             /**
              * Fetch our licence, as a dep atom structure.
              */
             DepAtom::ConstPointer license() const;
-            class Ebin;
     };
 
     /**
@@ -230,6 +253,35 @@ namespace paludis
              * Const pointer to us.
              */
             typedef CountedPtr<const VersionMetadata::Ebin, count_policy::InternalCountTag> ConstPointer;
+    };
+
+    /**
+     * VersionMetadata subclass, for virtuals.
+     *
+     * \ingroup grpversions
+     * \see VersionMetadata
+     */
+    class VersionMetadata::Virtual :
+        public VersionMetadata
+    {
+        private:
+            VirtualMetadata _v;
+
+        public:
+            /**
+             * Constructor.
+             */
+            Virtual(ParserFunction, const PackageDatabaseEntry &);
+
+            /**
+             * Pointer to us.
+             */
+            typedef CountedPtr<VersionMetadata::Virtual, count_policy::InternalCountTag> Pointer;
+
+            /**
+             * Const pointer to us.
+             */
+            typedef CountedPtr<const VersionMetadata::Virtual, count_policy::InternalCountTag> ConstPointer;
     };
 }
 

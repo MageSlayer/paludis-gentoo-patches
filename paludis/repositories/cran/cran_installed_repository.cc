@@ -167,7 +167,9 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .use_interface(0)
             .world_interface(this)
             .environment_variable_interface(0)
-            .mirrors_interface(0)),
+            .mirrors_interface(0)
+            .virtuals_interface(0)
+            .provides_interface(0)),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -501,18 +503,6 @@ void
 CRANInstalledRepository::invalidate() const
 {
     _imp->invalidate();
-}
-
-Repository::ProvideMapIterator
-CRANInstalledRepository::begin_provide_map() const
-{
-    return _imp->provide_map.end();
-}
-
-Repository::ProvideMapIterator
-CRANInstalledRepository::end_provide_map() const
-{
-    return _imp->provide_map.end();
 }
 
 void

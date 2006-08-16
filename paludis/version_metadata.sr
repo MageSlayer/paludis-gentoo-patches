@@ -49,7 +49,6 @@ make_class_EbuildVersionMetadata()
     key restrict_string std::string
     key keywords std::string
     key iuse std::string
-    key virtual_for std::string
     key inherited std::string
 
     extra_constructors <<END
@@ -84,5 +83,10 @@ make_class_EbinVersionMetadata()
     extra_constructors <<END
             EbinVersionMetadata();
 END
+}
+
+make_class_VirtualMetadata()
+{
+    key virtual_for PackageDatabaseEntry
 }
 

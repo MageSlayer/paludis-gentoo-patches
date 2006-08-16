@@ -244,7 +244,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .world_interface(0)
             .environment_variable_interface(this)
             .mirrors_interface(this)
-            ),
+            .virtuals_interface(this)
+            .provides_interface(0)),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
 {
     // the info_vars and info_pkgs info is only added on demand, since it's
@@ -294,8 +295,10 @@ PortageRepository::do_has_package_named(const QualifiedPackageName & q) const
 
     need_category_names();
 
+#if 0
     if (q.category == CategoryNamePart("virtual"))
         need_virtual_names();
+#endif
 
     CategoryMap::iterator cat_iter(_imp->category_names.find(q.category));
 
@@ -374,8 +377,10 @@ PortageRepository::do_package_names(const CategoryNamePart & c) const
             + "' in " + stringify(name()) + ":");
 
     need_category_names();
+#if 0
     if (c == CategoryNamePart("virtual"))
         need_virtual_names();
+#endif
 
     if (_imp->category_names.end() == _imp->category_names.find(c))
         return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection::Concrete);
@@ -464,8 +469,10 @@ PortageRepository::need_category_names() const
 void
 PortageRepository::need_version_names(const QualifiedPackageName & n) const
 {
+#if 0
     if (n.category == CategoryNamePart("virtual"))
         need_virtual_names();
+#endif
 
     if (_imp->package_names[n])
         return;
@@ -635,47 +642,6 @@ PortageRepository::do_query_use_force(const UseFlagName & u, const PackageDataba
     return _imp->profile_ptr->use_forced(u, e);
 }
 
-void
-PortageRepository::need_virtual_names() const
-{
-    if (_imp->has_virtuals)
-        return;
-
-    _imp->has_virtuals = true;
-
-    try
-    {
-        _imp->need_profiles();
-        need_category_names();
-
-        // don't use std::copy!
-        for (PortageRepositoryProfile::VirtualsIterator i(_imp->profile_ptr->begin_virtuals()),
-                i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
-            _imp->our_virtuals.insert(*i);
-
-        for (Environment::ProvideMapIterator p(_imp->params.environment->begin_provide_map()),
-                p_end(_imp->params.environment->end_provide_map()) ; p != p_end ; ++p)
-        {
-            if (! has_package_named(p->second))
-                continue;
-
-            _imp->our_virtuals.erase(p->first);
-            _imp->our_virtuals.insert(std::make_pair(p->first, PackageDepAtom::Pointer(
-                            new PackageDepAtom(p->second))));
-        }
-
-        for (VirtualsMap::const_iterator
-                v(_imp->our_virtuals.begin()), v_end(_imp->our_virtuals.end()) ;
-                v != v_end ; ++v)
-            _imp->package_names.insert(std::make_pair(v->first, false));
-    }
-    catch (...)
-    {
-        _imp->has_virtuals = false;
-        throw;
-    }
-}
-
 bool
 PortageRepository::do_is_arch_flag(const UseFlagName & u) const
 {
@@ -842,18 +808,6 @@ PortageRepository::invalidate() const
     _imp->invalidate();
 }
 
-Repository::ProvideMapIterator
-PortageRepository::begin_provide_map() const
-{
-    return _imp->provide_map.begin();
-}
-
-Repository::ProvideMapIterator
-PortageRepository::end_provide_map() const
-{
-    return _imp->provide_map.end();
-}
-
 void
 PortageRepository::update_news() const
 {
@@ -958,20 +912,6 @@ PortageRepository::profile_variable(const std::string & s) const
     return _imp->profile_ptr->environment_variable(s);
 }
 
-PortageRepository::OurVirtualsIterator
-PortageRepository::end_our_virtuals() const
-{
-    need_virtual_names();
-    return OurVirtualsIterator(_imp->our_virtuals.end());
-}
-
-PortageRepository::OurVirtualsIterator
-PortageRepository::find_our_virtuals(const QualifiedPackageName & q) const
-{
-    need_virtual_names();
-    return OurVirtualsIterator(_imp->our_virtuals.find(q));
-}
-
 PortageRepository::MirrorsIterator
 PortageRepository::begin_mirrors(const std::string & s) const
 {
@@ -986,4 +926,55 @@ PortageRepository::end_mirrors(const std::string & s) const
     return MirrorsIterator(_imp->mirrors.equal_range(s).second);
 }
 
+PortageRepository::VirtualsCollection::ConstPointer
+PortageRepository::virtual_packages() const
+{
+    Context context("When loading virtual packages for repository '" +
+            stringify(name()) + "'");
+
+    Log::get_instance()->message(ll_debug, lc_context, "Loading virtual packages for repository '"
+            + stringify(name()) + "'");
+
+    _imp->need_profiles();
+    need_category_names();
+
+    VirtualsCollection::Pointer result(new VirtualsCollection::Concrete);
+
+    for (PortageRepositoryProfile::VirtualsIterator i(_imp->profile_ptr->begin_virtuals()),
+            i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
+    {
+        if (stringify(i->second->package()) != stringify(*i->second))
+            Log::get_instance()->message(ll_qa, lc_context, "Stripping virtual '"
+                    + stringify(i->first) + "' provider '" + stringify(*i->second) + "' to '" +
+                    stringify(i->second->package()) + "'");
+
+        result->insert(RepositoryVirtualsEntry::create()
+                .provided_by_name(i->second->package())
+                .virtual_name(i->first));
+    }
+
+    Log::get_instance()->message(ll_debug, lc_context, "Loaded " + stringify(result->size()) +
+            " virtual packages for repository '" + stringify(name()) + "'");
+
+    return result;
+}
+
+VersionMetadata::ConstPointer
+PortageRepository::virtual_package_version_metadata(const RepositoryVirtualsEntry & p,
+        const VersionSpec & v) const
+{
+    VersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, v));
+    VersionMetadata::Virtual::Pointer result(new VersionMetadata::Virtual(
+                PortageDepParser::parse_depend, PackageDatabaseEntry(p.provided_by_name, v, name())));
+
+    result->slot = m->slot;
+    result->license_string = m->license_string;
+    result->eapi = m->eapi;
+    result->deps = VersionMetadataDeps(&PortageDepParser::parse_depend,
+            "=" + stringify(p.provided_by_name) + "-" + stringify(v),
+            "=" + stringify(p.provided_by_name) + "-" + stringify(v), "");
+
+    return result;
+
+}
 

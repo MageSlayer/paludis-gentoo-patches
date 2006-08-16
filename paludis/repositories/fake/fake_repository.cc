@@ -82,7 +82,8 @@ FakeRepository::FakeRepository(const RepositoryName & name) :
             .world_interface(0)
             .environment_variable_interface(0)
             .mirrors_interface(0)
-            ),
+            .virtuals_interface(0)
+            .provides_interface(0)),
     RepositoryMaskInterface(),
     RepositoryUseInterface(),
     PrivateImplementationPattern<FakeRepository>(new Implementation<FakeRepository>)
@@ -255,17 +256,5 @@ FakeRepository::do_is_licence(const std::string &) const
 void
 FakeRepository::invalidate() const
 {
-}
-
-Repository::ProvideMapIterator
-FakeRepository::begin_provide_map() const
-{
-    return _imp->provide_map.begin();
-}
-
-Repository::ProvideMapIterator
-FakeRepository::end_provide_map() const
-{
-    return _imp->provide_map.end();
 }
 

@@ -154,6 +154,9 @@ void do_one_query(
                             case p::mr_license:
                                 reasons.append("L");
                                 break;
+                            case p::mr_by_association:
+                                reasons.append("A");
+                                break;
                             case p::last_mr:
                                 break;
                         }
@@ -219,8 +222,6 @@ void do_one_query(
                 " " << metadata->get_ebuild_interface()->restrict_string << endl;
             cout << "    " << std::setw(22) << std::left << "SRC_URI:" << std::setw(0) <<
                  " " << metadata->get_ebuild_interface()->src_uri << endl;
-            cout << "    " << std::setw(22) << std::left << "VIRTUAL:" << std::setw(0) <<
-                 " " << metadata->get_ebuild_interface()->virtual_for << endl;
         }
 
         if (metadata->get_ebin_interface())
@@ -275,11 +276,6 @@ void do_one_query(
                     << endl << p_depend;
             }
         }
-
-        if (metadata->get_ebuild_interface() && ! metadata->get_ebuild_interface()->
-                virtual_for.empty())
-            cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->virtual_for << endl;
 
         if (metadata->get_ebuild_interface() && ! metadata->get_ebuild_interface()->
                 provide_string.empty())
@@ -375,6 +371,9 @@ int do_query()
                     break;
                 case p::mr_license:
                     cout << "* " << colour(cl_masked, "L") << ": licence";
+                    break;
+                case p::mr_by_association:
+                    cout << "* " << colour(cl_masked, "A") << ": by association";
                     break;
 
                 case p::last_mr:

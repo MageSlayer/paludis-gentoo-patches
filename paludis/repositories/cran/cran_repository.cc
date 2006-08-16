@@ -192,7 +192,9 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             .use_interface(0)
             .world_interface(0)
             .environment_variable_interface(0)
-            .mirrors_interface(0)),
+            .mirrors_interface(0)
+            .provides_interface(0)
+            .virtuals_interface(0)),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -609,17 +611,5 @@ void
 CRANRepository::invalidate() const
 {
     _imp->invalidate();
-}
-
-Repository::ProvideMapIterator
-CRANRepository::begin_provide_map() const
-{
-    return _imp->provide_map.end();
-}
-
-Repository::ProvideMapIterator
-CRANRepository::end_provide_map() const
-{
-    return _imp->provide_map.end();
 }
 

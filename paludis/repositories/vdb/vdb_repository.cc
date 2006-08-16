@@ -30,7 +30,9 @@
 
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/fast_unique_copy.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pstream.hh>
@@ -109,6 +111,37 @@ namespace
             {
                 return e.name.category < c;
             }
+
+            bool operator() (const VDBEntry & e, const VDBEntry & c) const
+            {
+                return e.name.category < c.name.category;
+            }
+        };
+
+        /**
+         * Extract category from a VDBEntry.
+         *
+         * \ingroup grpvdbrepository
+         */
+        struct ExtractCategory
+        {
+            CategoryNamePart operator() (const VDBEntry & e) const
+            {
+                return e.name.category;
+            }
+        };
+
+        /**
+         * Extract package from a VDBEntry.
+         *
+         * \ingroup grpvdbrepository
+         */
+        struct ExtractPackage
+        {
+            QualifiedPackageName operator() (const VDBEntry & e) const
+            {
+                return e.name;
+            }
         };
 
         /**
@@ -126,6 +159,11 @@ namespace
             bool operator() (const VDBEntry & e, const QualifiedPackageName & c) const
             {
                 return e.name < c;
+            }
+
+            bool operator() (const VDBEntry & e, const VDBEntry & c) const
+            {
+                return e.name < c.name;
             }
         };
 
@@ -190,6 +228,18 @@ namespace
             result = true;
 
         return result;
+    }
+
+    /**
+     * Figure out whether there's an ebuild present (won't be the case for
+     * virtual things installed using early paludis versions).
+     *
+     * \ingroup grpvdbrepository
+     */
+    bool is_ebuilded(const FSEntry & vdb_dir)
+    {
+        return ! std::count_if(DirIterator(vdb_dir), DirIterator(),
+                IsFileWithExtension(".ebuild"));
     }
 }
 
@@ -275,12 +325,6 @@ namespace paludis
         /// Load metadata for one entry.
         void load_entry(std::vector<VDBEntry>::iterator) const;
 
-        /// Do we have provide map loaded?
-        mutable bool has_provide_map;
-
-        /// Provide map.
-        mutable std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
-
         /// Constructor.
         Implementation(const VDBRepositoryParams &);
 
@@ -298,8 +342,7 @@ namespace paludis
         root(p.root),
         buildroot(p.buildroot),
         world_file(p.world),
-        entries_valid(false),
-        has_provide_map(false)
+        entries_valid(false)
     {
     }
 
@@ -343,9 +386,6 @@ namespace paludis
     {
         entries_valid = false;
         entries.clear();
-
-        has_provide_map = false;
-        provide_map.clear();
     }
 
     void
@@ -403,7 +443,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .world_interface(this)
             .environment_variable_interface(this)
             .mirrors_interface(0)
-            ),
+            .provides_interface(this)
+            .virtuals_interface(0)),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -461,9 +502,15 @@ VDBRepository::do_category_names() const
 
     CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
 
+#if 0
     for (std::vector<VDBEntry>::const_iterator c(_imp->entries.begin()), c_end(_imp->entries.end()) ;
             c != c_end ; ++c)
         result->insert(c->name.category);
+#else
+    fast_unique_copy(_imp->entries.begin(), _imp->entries.end(),
+            transform_inserter(result->inserter(), VDBEntry::ExtractCategory()),
+            VDBEntry::CompareCategory());
+#endif
 
     return result;
 }
@@ -483,9 +530,13 @@ VDBRepository::do_package_names(const CategoryNamePart & c) const
     std::pair<std::vector<VDBEntry>::const_iterator, std::vector<VDBEntry>::const_iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), c,
                     VDBEntry::CompareCategory()));
-
+#if 0
     for ( ; r.first != r.second ; ++(r.first))
         result->insert(r.first->name);
+#endif
+    fast_unique_copy(r.first, r.second,
+            transform_inserter(result->inserter(), VDBEntry::ExtractPackage()),
+            VDBEntry::ComparePackage());
 
     return result;
 }
@@ -788,7 +839,7 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
             EbuildUninstallCommandParams::create()
             .root(stringify(_imp->root) + "/")
             .disable_cfgpro(o.no_config_protect)
-            .unmerge_only(! metadata->get_ebuild_interface()->virtual_for.empty())
+            .unmerge_only(is_ebuilded(pkg_dir))
             .load_environment(load_env.raw_pointer()));
 
     uninstall_cmd();
@@ -850,76 +901,6 @@ void
 VDBRepository::invalidate() const
 {
     _imp->invalidate();
-}
-
-Repository::ProvideMapIterator
-VDBRepository::begin_provide_map() const
-{
-    if (! _imp->has_provide_map)
-    {
-        Context context("When loading VDB PROVIDEs map:");
-
-        Log::get_instance()->message(ll_debug, lc_no_context, "Starting VDB PROVIDEs map creation");
-
-        if (! _imp->entries_valid)
-            _imp->load_entries();
-
-        for (std::vector<VDBEntry>::iterator e(_imp->entries.begin()),
-                e_end(_imp->entries.end()) ; e != e_end ; ++e)
-        {
-            Context loop_context("When loading VDB PROVIDEs entry for '"
-                    + stringify(e->name) + "-" + stringify(e->version) + "':");
-
-            try
-            {
-                if (! e->metadata)
-                    _imp->load_entry(e);
-                const std::string provide_str(e->metadata->get_ebuild_interface()->provide_string);
-                if (provide_str.empty())
-                    continue;
-
-                DepAtom::ConstPointer provide(PortageDepParser::parse(provide_str,
-                            PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
-                PackageDatabaseEntry dbe(e->name, e->version, name());
-                DepAtomFlattener f(_imp->env, &dbe, provide);
-
-                for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
-                {
-                    QualifiedPackageName pp((*p)->text());
-
-                    if (pp.category != CategoryNamePart("virtual"))
-                        Log::get_instance()->message(ll_warning, lc_no_context, "PROVIDE of non-virtual '"
-                                + stringify(pp) + "' from '" + stringify(e->name) + "-"
-                                + stringify(e->version) + "' in '" + stringify(name())
-                                + "' will not work as expected");
-
-                    _imp->provide_map.insert(std::make_pair(pp, e->name));
-                }
-            }
-            catch (const InternalError &)
-            {
-                throw;
-            }
-            catch (const Exception & ee)
-            {
-                Log::get_instance()->message(ll_warning, lc_no_context, "Skipping VDB PROVIDE entry for '"
-                        + stringify(e->name) + "-" + stringify(e->version) + "' due to exception '"
-                        + stringify(ee.message()) + "' (" + stringify(ee.what()) + ")");
-            }
-        }
-
-        Log::get_instance()->message(ll_debug, lc_no_context, "Done VDB PROVIDEs map creation");
-
-        _imp->has_provide_map = true;
-    }
-
-    return _imp->provide_map.begin();
-}
-
-Repository::ProvideMapIterator
-VDBRepository::end_provide_map() const
-{
-    return _imp->provide_map.end();
 }
 
 void
@@ -1045,5 +1026,84 @@ VDBRepository::get_environment_variable(
     else
         throw EnvironmentVariableActionError("Could not get variable '" + var + "' for '"
                 + stringify(for_package) + "'");
+}
+
+RepositoryProvidesInterface::ProvidesCollection::ConstPointer
+VDBRepository::provided_packages() const
+{
+    Context context("When loading VDB PROVIDEs map:");
+
+    Log::get_instance()->message(ll_debug, lc_no_context, "Starting VDB PROVIDEs map creation");
+
+    ProvidesCollection::Pointer result(new ProvidesCollection::Concrete);
+
+    if (! _imp->entries_valid)
+        _imp->load_entries();
+
+    for (std::vector<VDBEntry>::iterator e(_imp->entries.begin()),
+            e_end(_imp->entries.end()) ; e != e_end ; ++e)
+    {
+        Context loop_context("When loading VDB PROVIDEs entry for '"
+                + stringify(e->name) + "-" + stringify(e->version) + "':");
+
+        try
+        {
+            if (! e->metadata)
+                _imp->load_entry(e);
+            const std::string provide_str(e->metadata->get_ebuild_interface()->provide_string);
+            if (provide_str.empty())
+                continue;
+
+            DepAtom::ConstPointer provide(PortageDepParser::parse(provide_str,
+                        PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
+            PackageDatabaseEntry dbe(e->name, e->version, name());
+            DepAtomFlattener f(_imp->env, &dbe, provide);
+
+            for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+            {
+                QualifiedPackageName pp((*p)->text());
+
+                if (pp.category != CategoryNamePart("virtual"))
+                    Log::get_instance()->message(ll_warning, lc_no_context, "PROVIDE of non-virtual '"
+                            + stringify(pp) + "' from '" + stringify(e->name) + "-"
+                            + stringify(e->version) + "' in '" + stringify(name())
+                            + "' will not work as expected");
+
+                result->insert(RepositoryProvidesEntry::create()
+                        .virtual_name(pp)
+                        .version(e->version)
+                        .provided_by_name(e->name));
+            }
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & ee)
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "Skipping VDB PROVIDE entry for '"
+                    + stringify(e->name) + "-" + stringify(e->version) + "' due to exception '"
+                    + stringify(ee.message()) + "' (" + stringify(ee.what()) + ")");
+        }
+    }
+
+    Log::get_instance()->message(ll_debug, lc_no_context, "Done VDB PROVIDEs map creation");
+
+    return result;
+}
+
+VersionMetadata::ConstPointer
+VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry & p) const
+{
+    VersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, p.version));
+    VersionMetadata::Pointer result(new VersionMetadata(PortageDepParser::parse_depend));
+
+    result->slot = m->slot;
+    result->license_string = m->license_string;
+    result->eapi = m->eapi;
+    result->deps = VersionMetadataDeps(&PortageDepParser::parse_depend,
+            stringify(p.provided_by_name), stringify(p.provided_by_name), "");
+
+    return result;
 }
 

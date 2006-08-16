@@ -134,10 +134,6 @@ namespace paludis
             typedef CountedPtr<const FakeRepository, count_policy::InternalCountTag> ConstPointer;
 
             virtual void invalidate() const;
-
-            virtual ProvideMapIterator begin_provide_map() const;
-
-            virtual ProvideMapIterator end_provide_map() const;
     };
 }
 

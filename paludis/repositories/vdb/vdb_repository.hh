@@ -52,6 +52,7 @@ namespace paludis
         public RepositorySetsInterface,
         public RepositoryWorldInterface,
         public RepositoryEnvironmentVariableInterface,
+        public RepositoryProvidesInterface,
         public PrivateImplementationPattern<VDBRepository>
     {
         protected:
@@ -117,10 +118,6 @@ namespace paludis
 
             virtual void invalidate() const;
 
-            virtual ProvideMapIterator begin_provide_map() const;
-
-            virtual ProvideMapIterator end_provide_map() const;
-
             virtual void add_to_world(const QualifiedPackageName &) const;
 
             virtual void remove_from_world(const QualifiedPackageName &) const;
@@ -128,6 +125,11 @@ namespace paludis
             virtual std::string get_environment_variable(
                     const PackageDatabaseEntry & for_package,
                     const std::string & var) const;
+
+            virtual ProvidesCollection::ConstPointer provided_packages() const;
+
+            virtual VersionMetadata::ConstPointer provided_package_version_metadata(
+                    const RepositoryProvidesEntry &) const;
 
             typedef CountedPtr<VDBRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const VDBRepository, count_policy::InternalCountTag> ConstPointer;

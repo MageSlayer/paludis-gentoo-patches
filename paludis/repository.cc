@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repository.hh>
+#include <paludis/util/compare.hh>
 #include <map>
 #include <list>
 #include <ctype.h>

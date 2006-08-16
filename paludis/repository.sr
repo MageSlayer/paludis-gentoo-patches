@@ -43,6 +43,8 @@ make_class_RepositoryCapabilities()
     key world_interface "RepositoryWorldInterface *"
     key mirrors_interface "RepositoryMirrorsInterface *"
     key environment_variable_interface "RepositoryEnvironmentVariableInterface *"
+    key provides_interface "RepositoryProvidesInterface *"
+    key virtuals_interface "RepositoryVirtualsInterface *"
 
     doxygen_comment << "END"
         /**
@@ -56,4 +58,22 @@ END
     allow_named_args
 }
 
+make_class_RepositoryProvidesEntry()
+{
+    key virtual_name QualifiedPackageName
+    key version VersionSpec
+    key provided_by_name QualifiedPackageName
+
+    allow_named_args
+    comparison_operators all all
+}
+
+make_class_RepositoryVirtualsEntry()
+{
+    key virtual_name QualifiedPackageName
+    key provided_by_name QualifiedPackageName
+
+    allow_named_args
+    comparison_operators all all
+}
 
