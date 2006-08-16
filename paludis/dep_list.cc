@@ -529,7 +529,7 @@ DepList::visit(const PackageDepAtom * const p)
                 flags.set(dlef_has_postdeps);
                 _imp->merge_list.insert(next(merge_entry),
                         DepListEntry(pp.package(), merge_entry->version,
-                            p_metadata, merge_entry->repository, flags,
+                            p_metadata, RepositoryName("virtuals"), flags,
                             SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Pointer(
                                 new SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Concrete)));
             }
