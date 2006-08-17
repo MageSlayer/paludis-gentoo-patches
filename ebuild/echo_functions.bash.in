@@ -61,6 +61,9 @@ einfo()
 elog()
 {
     einfo "$@"
+    if [[ -n "${PALUDIS_ELOG_FILE}" ]] ; then
+        echo "$@" >> "${PALUDIS_ELOG_FILE}"
+    fi
 }
 
 ewarn()
