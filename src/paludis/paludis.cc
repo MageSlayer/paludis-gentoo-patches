@@ -129,7 +129,7 @@ namespace
 int
 main(int argc, char *argv[])
 {
-    p::Context context("In main program:");
+    p::Context context("In program " + p::join(argv, argv + argc, " ") + ":");
 
     try
     {
