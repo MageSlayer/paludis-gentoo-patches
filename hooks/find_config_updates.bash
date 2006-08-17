@@ -26,8 +26,9 @@ einfo "Searching for configuration files requiring action..."
 dir_count=0
 for dir in /etc ${CONFIG_PROTECT} ; do
     [[ -d "${ROOT%/}/${dir}" ]] || continue
-    if [[ -n $(find "${ROOT%/}/${dir}" -iname '._cfg????_*' ) ]] ; then
-        einfo "Found files in ${ROOT%/}/${dir}"
+    c=$(find "${ROOT%/}/${dir}" -iname '._cfg????_*' | wc -l )
+    if [[ ${c} -gt 0 ]] ; then
+        einfo "Found ${c} files in ${ROOT%%+(/)}/${dir}"
         dir_count=$((dir_count + 1))
     fi
 done
