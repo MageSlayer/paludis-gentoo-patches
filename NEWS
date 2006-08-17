@@ -4,6 +4,32 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.5 branch (in progress):
+    * elog will now write to PALUDIS_ELOG_FILE, if defined, as well as
+    displaying on screen.
+
+    * Virtuals are now handled entirely dynamically and are not written to vdb.
+
+    * Support for CRAN (the Comprehensive R Archive Network) repositories is now
+    available.
+
+    * Work has been started on a Gtk+ client.
+
+    * Support for binary packages.
+
+    * Manual (man) pages are now provided.
+
+    * Logic for complex operations such as installing and uninstalling has been
+    moved out of the client code and into separate task classes.
+
+    * Hooks are now available for failed operations.
+
+    * Repository formats are now dynamically loaded from .so files rather than
+    being compiled in.
+
+    * libwrapiter is now used to simplify iterator interfaces and reduce compile
+    times.
+
 0.4.2:
     * CONFIG_PROTECT now works as expected for ROOT=/.
 
