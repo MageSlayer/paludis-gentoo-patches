@@ -67,7 +67,10 @@ namespace
     {
         private:
             int _current_count, _max_count, _new_count, _upgrade_count,
-                _downgrade_count, _new_slot_count, _rebuild_count;
+                _downgrade_count, _new_slot_count, _rebuild_count,
+                _current_virtual_count, _max_virtual_count, _new_virtual_count,
+                _upgrade_virtual_count, _downgrade_virtual_count,
+                _new_slot_virtual_count, _rebuild_virtual_count;
 
             std::set<DepTag::ConstPointer, DepTag::Comparator> _all_tags;
 
@@ -80,7 +83,14 @@ namespace
                 _upgrade_count(0),
                 _downgrade_count(0),
                 _new_slot_count(0),
-                _rebuild_count(0)
+                _rebuild_count(0),
+                _current_virtual_count(0),
+                _max_virtual_count(0),
+                _new_virtual_count(0),
+                _upgrade_virtual_count(0),
+                _downgrade_virtual_count(0),
+                _new_slot_virtual_count(0),
+                _rebuild_virtual_count(0)
             {
             }
 
@@ -232,6 +242,11 @@ namespace
             Log::get_instance()->message(ll_warning, lc_no_context,
                     "Max count doesn't add up. This is a bug!");
 
+        if (_max_virtual_count != _new_virtual_count + _upgrade_virtual_count +
+                _downgrade_virtual_count + _new_slot_virtual_count + _rebuild_virtual_count)
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "Max virtuals count doesn't add up. This is a bug!");
+
         cout << endl << "Total: " << _max_count << (_max_count == 1 ? " package" : " packages");
         if (_max_count)
         {
@@ -268,6 +283,51 @@ namespace
                 if (need_comma)
                     cout << ", ";
                 cout << _rebuild_count << (_rebuild_count == 1 ? " rebuild" : " rebuilds");
+                need_comma = true;
+            }
+            cout << ")";
+        }
+
+        if (_max_virtual_count)
+        {
+            cout << " and " << _max_virtual_count << (_max_virtual_count == 1
+                    ? " virtual" : " virtuals");
+            bool need_comma(false);
+            cout << " (";
+            if (_new_virtual_count)
+            {
+                cout << _new_virtual_count << " new";
+                need_comma = true;
+            }
+            if (_upgrade_virtual_count)
+            {
+                if (need_comma)
+                    cout << ", ";
+                cout << _upgrade_virtual_count << (_upgrade_virtual_count == 1 ? " upgrade" : " upgrades");
+                need_comma = true;
+            }
+            if (_downgrade_virtual_count)
+            {
+                if (need_comma)
+                    cout << ", ";
+                cout << _downgrade_virtual_count << (_downgrade_virtual_count == 1 ?
+                        " downgrade" : " downgrades");
+                need_comma = true;
+            }
+            if (_new_slot_virtual_count)
+            {
+                if (need_comma)
+                    cout << ", ";
+                cout << _new_slot_virtual_count << (_new_slot_virtual_count == 1 ?
+                        " in new slot" : " in new slots");
+                need_comma = true;
+            }
+            if (_rebuild_virtual_count)
+            {
+                if (need_comma)
+                    cout << ", ";
+                cout << _rebuild_virtual_count << (_rebuild_virtual_count == 1 ?
+                        " rebuild" : " rebuilds");
                 need_comma = true;
             }
             cout << ")";
@@ -342,8 +402,16 @@ namespace
         if (existing->empty())
         {
             cout << colour(cl_updatemode, " [N]");
-            ++_new_count;
-            ++_max_count;
+            if (d.metadata->get_virtual_interface())
+            {
+                ++_new_virtual_count;
+                ++_max_virtual_count;
+            }
+            else
+            {
+                ++_new_count;
+                ++_max_count;
+            }
         }
         else
         {
@@ -354,28 +422,61 @@ namespace
             if (existing->empty())
             {
                 cout << colour(cl_updatemode, " [S]");
-                ++_new_slot_count;
-                ++_max_count;
+                if (d.metadata->get_virtual_interface())
+                {
+                    ++_new_slot_virtual_count;
+                    ++_max_virtual_count;
+                }
+                else
+                {
+                    ++_new_slot_count;
+                    ++_max_count;
+                }
             }
             else if (existing->last()->version < d.version)
             {
                 cout << colour(cl_updatemode, " [U " + stringify(
                             existing->last()->version) + "]");
-                ++_upgrade_count;
-                ++_max_count;
+                if (d.metadata->get_virtual_interface())
+                {
+                    ++_upgrade_virtual_count;
+                    ++_max_virtual_count;
+                }
+                else
+                {
+                    ++_upgrade_count;
+                    ++_max_count;
+                }
             }
             else if (existing->last()->version > d.version)
             {
                 cout << colour(cl_updatemode, " [D " + stringify(
                             existing->last()->version) + "]");
-                ++_downgrade_count;
-                ++_max_count;
+                if (d.metadata->get_virtual_interface())
+                {
+                    ++_downgrade_virtual_count;
+                    ++_max_virtual_count;
+                }
+                else
+                {
+                    ++_downgrade_count;
+                    ++_max_count;
+                }
+
             }
             else
             {
                 cout << colour(cl_updatemode, " [R]");
-                ++_rebuild_count;
-                ++_max_count;
+                if (d.metadata->get_virtual_interface())
+                {
+                    ++_rebuild_virtual_count;
+                    ++_max_virtual_count;
+                }
+                else
+                {
+                    ++_rebuild_count;
+                    ++_max_count;
+                }
             }
         }
 
