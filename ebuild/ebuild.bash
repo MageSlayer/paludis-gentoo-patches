@@ -165,6 +165,7 @@ ebuild_load_ebuild()
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_COMMAND=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?ROOT=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?SANDBOX/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?LD_/d' \
             "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}"
 
         source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" &>/dev/null \
