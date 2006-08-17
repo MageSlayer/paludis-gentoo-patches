@@ -32,7 +32,7 @@ builtin_merge()
     local dbdir="${v}/${CATEGORY}/${PF}"
     ebuild_section "Writing VDB entry to '${dbdir}'..."
     install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
-    install -d "${v}/${CATEGORY}/".cache || die "couldn't make pkg db cache"
+    install -d "${v}/".cache || die "couldn't make pkg db cache"
 
     local v VDB_FORMAT="paludis-2" COUNTER="0"
     for v in CATEGORY CBUILD CHOST COUNTER DEPEND DESCRIPTION EAPI \
