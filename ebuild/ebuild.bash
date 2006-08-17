@@ -33,6 +33,8 @@ export SANDBOX_WRITE="${SANDBOX_WRITE}:${PALUDIS_TMPDIR}:/var/cache"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/selinux/context"
 export SANDBOX_ON="1"
 
+export PALUDIS_HOME="${PALUDIS_HOME:-${HOME}}"
+
 shopt -s expand_aliases
 shopt -s extglob
 
@@ -163,6 +165,7 @@ ebuild_load_ebuild()
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?DISTDIR=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_EBUILD_DIR=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_COMMAND=/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_HOME=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?ROOT=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?SANDBOX/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?LD_/d' \

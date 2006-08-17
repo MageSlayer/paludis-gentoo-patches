@@ -135,11 +135,12 @@ DefaultConfig::DefaultConfig() :
         config_suffix = "-" + _imp->config_suffix;
 
     FSEntry config_dir(FSEntry(getenv_with_default("PALUDIS_HOME", getenv_or_error("HOME"))) /
-            (".paludis" + config_suffix));
+            (".paludis" + config_suffix)), old_config_dir(config_dir);
     if (! config_dir.exists())
         config_dir = (FSEntry(SYSCONFDIR) / ("paludis" + config_suffix));
     if (! config_dir.exists())
-        throw DefaultConfigError("Can't find configuration directory");
+        throw DefaultConfigError("Can't find configuration directory (tried '"
+                + stringify(old_config_dir) + "', '" + stringify(config_dir) + "')");
 
     Log::get_instance()->message(ll_debug, lc_no_context, "DefaultConfig initial directory is '"
             + stringify(config_dir) + "'");
