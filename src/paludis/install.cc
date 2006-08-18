@@ -20,6 +20,7 @@
 #include "colour.hh"
 #include "install.hh"
 #include "licence.hh"
+#include "use.hh"
 
 #include <iostream>
 #include <set>
@@ -485,74 +486,7 @@ namespace
                     d.version, d.repository));
 
         /* display USE flags */
-        if (d.metadata->get_ebuild_interface())
-        {
-            const RepositoryUseInterface * const use_interface(
-                    DefaultEnvironment::get_instance()->package_database()->
-                    fetch_repository(d.repository)->use_interface);
-            std::set<UseFlagName> iuse;
-            WhitespaceTokeniser::get_instance()->tokenise(
-                    d.metadata->get_ebuild_interface()->iuse,
-                    create_inserter<UseFlagName>(std::inserter(iuse, iuse.end())));
-
-
-            /* display normal use flags first */
-            for (std::set<UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
-                    i != i_end ; ++i)
-            {
-                if (use_interface->is_expand_flag(*i))
-                    continue;
-
-                if (DefaultEnvironment::get_instance()->query_use(*i, &p))
-                {
-                    if (use_interface && use_interface->query_use_force(*i, &p))
-                        cout << " " << colour(cl_flag_on, "(" + stringify(*i) + ")");
-                    else
-                        cout << " " << colour(cl_flag_on, *i);
-                }
-                else
-                {
-                    if (use_interface && use_interface->query_use_mask(*i, &p))
-                        cout << " " << colour(cl_flag_off, "(-" + stringify(*i) + ")");
-                    else
-                        cout << " " << colour(cl_flag_off, "-" + stringify(*i));
-                }
-            }
-
-            /* now display expand flags */
-            UseFlagName old_expand_name("OFTEN_NOT_BEEN_ON_BOATS");
-            for (std::set<UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
-                    i != i_end ; ++i)
-            {
-                if ((! use_interface->is_expand_flag(*i)) ||
-                        (use_interface->is_expand_hidden_flag(*i)))
-                    continue;
-
-                UseFlagName expand_name(use_interface->expand_flag_name(*i)),
-                    expand_value(use_interface->expand_flag_value(*i));
-
-                if (expand_name != old_expand_name)
-                {
-                    cout << " " << expand_name << ":";
-                    old_expand_name = expand_name;
-                }
-
-                if (DefaultEnvironment::get_instance()->query_use(*i, &p))
-                {
-                    if (use_interface && use_interface->query_use_force(*i, &p))
-                        cout << " " << colour(cl_flag_on, "(" + stringify(expand_value) + ")");
-                    else
-                        cout << " " << colour(cl_flag_on, expand_value);
-                }
-                else
-                {
-                    if (use_interface && use_interface->query_use_mask(*i, &p))
-                        cout << " " << colour(cl_flag_off, "(-" + stringify(expand_value) + ")");
-                    else
-                        cout << " " << colour(cl_flag_off, "-" + stringify(expand_value));
-                }
-            }
-        }
+        std::cout << make_pretty_use_flags_string(DefaultEnvironment::get_instance(), p, d.metadata);
 
         /* display tag, add tag to our post display list */
         if (! d.tag->empty())

@@ -20,6 +20,7 @@
 #include "colour.hh"
 #include "query.hh"
 #include "licence.hh"
+#include "use.hh"
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -277,10 +278,17 @@ void do_one_query(
             }
         }
 
-        if (metadata->get_ebuild_interface() && ! metadata->get_ebuild_interface()->
-                provide_string.empty())
-            cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->provide_string << endl;
+        if (metadata->get_ebuild_interface())
+        {
+            if (! metadata->get_ebuild_interface()->provide_string.empty())
+                cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
+                    " " << metadata->get_ebuild_interface()->provide_string << endl;
+
+            if (! metadata->get_ebuild_interface()->iuse.empty())
+                cout << "    " << std::setw(22) << std::left << "Use flags:" << std::setw(0) <<
+                    " " << make_pretty_use_flags_string(p::DefaultEnvironment::get_instance(),
+                            display_entry, metadata) << endl;
+        }
 
         if (metadata->get_virtual_interface())
             cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
