@@ -32,54 +32,26 @@
  * Handle the --query action for the main paludis program.
  */
 
-namespace p = paludis;
+using namespace paludis;
 using std::cout;
 using std::cerr;
 using std::endl;
 
-namespace
-{
-    struct CannotQueryPackageSet
-    {
-        const std::string query;
-
-        CannotQueryPackageSet(const std::string & q) :
-            query(q)
-        {
-        }
-    };
-}
-
-void do_one_query(
-        const p::Environment * const env,
+void do_one_package_query(
+        const Environment * const env,
         const std::string & q,
-        p::MaskReasons & mask_reasons_to_explain)
+        MaskReasons & mask_reasons_to_explain,
+        PackageDepAtom::Pointer atom)
 {
-    p::Context local_context("When handling query '" + q + "':");
-
-    /* we might have a dep atom, but we might just have a simple package name
-     * without a category. either should work. */
-    p::PackageDepAtom::Pointer atom(0);
-    if (std::string::npos == q.find('/'))
-    {
-        if (0 != env->package_set(q))
-            throw CannotQueryPackageSet(q);
-        else
-            atom.assign(new p::PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
-                            p::PackageNamePart(q))));
-    }
-    else
-        atom.assign(new p::PackageDepAtom(q));
-
-    p::PackageDatabaseEntryCollection::ConstPointer
-        entries(env->package_database()->query(atom, p::is_either)),
-        preferred_entries(env->package_database()->query(atom, p::is_installed_only));
+    PackageDatabaseEntryCollection::ConstPointer
+        entries(env->package_database()->query(atom, is_either)),
+        preferred_entries(env->package_database()->query(atom, is_installed_only));
     if (entries->empty())
-        throw p::NoSuchPackageError(q);
+        throw NoSuchPackageError(q);
     if (preferred_entries->empty())
         preferred_entries = entries;
 
-    const p::PackageDatabaseEntry display_entry(*preferred_entries->last());
+    const PackageDatabaseEntry display_entry(*preferred_entries->last());
 
     /* match! display it. */
     cout << "* " << colour(cl_package_name, entries->begin()->name);
@@ -92,23 +64,23 @@ void do_one_query(
     cout << endl;
 
     /* find all repository names. */
-    p::RepositoryNameCollection::Concrete repo_names;
-    p::PackageDatabaseEntryCollection::Iterator e(entries->begin()), e_end(entries->end());
+    RepositoryNameCollection::Concrete repo_names;
+    PackageDatabaseEntryCollection::Iterator e(entries->begin()), e_end(entries->end());
     for ( ; e != e_end ; ++e)
         repo_names.append(e->repository);
 
     /* display versions, by repository. */
-    p::RepositoryNameCollection::Iterator r(repo_names.begin()), r_end(repo_names.end());
+    RepositoryNameCollection::Iterator r(repo_names.begin()), r_end(repo_names.end());
     for ( ; r != r_end ; ++r)
     {
         cout << "    " << std::setw(22) << std::left <<
-            (p::stringify(*r) + ":") << std::setw(0) << " ";
+            (stringify(*r) + ":") << std::setw(0) << " ";
 
         std::string old_slot;
         for (e = entries->begin() ; e != e_end ; ++e)
             if (e->repository == *r)
             {
-                p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
+                VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
                             e->repository)->version_metadata(e->name,
                             e->version));
                 if (CommandLine::get_instance()->a_show_slot.specified())
@@ -122,43 +94,43 @@ void do_one_query(
                     old_slot = slot_name;
                 }
 
-                const p::MaskReasons masks(env->mask_reasons(*e));
+                const MaskReasons masks(env->mask_reasons(*e));
 
                 if (masks.none())
                     cout << colour(cl_visible, e->version);
                 else
                 {
                     std::string reasons;
-                    for (p::MaskReason m(p::MaskReason(0)) ; m < p::last_mr ;
-                            m = p::MaskReason(static_cast<int>(m) + 1))
+                    for (MaskReason m(MaskReason(0)) ; m < last_mr ;
+                            m = MaskReason(static_cast<int>(m) + 1))
                     {
                         if (! masks.test(m))
                             continue;
 
                         switch (m)
                         {
-                            case p::mr_keyword:
+                            case mr_keyword:
                                 reasons.append("K");
                                 break;
-                            case p::mr_user_mask:
+                            case mr_user_mask:
                                 reasons.append("U");
                                 break;
-                            case p::mr_profile_mask:
+                            case mr_profile_mask:
                                 reasons.append("P");
                                 break;
-                            case p::mr_repository_mask:
+                            case mr_repository_mask:
                                 reasons.append("R");
                                 break;
-                            case p::mr_eapi:
+                            case mr_eapi:
                                 reasons.append("E");
                                 break;
-                            case p::mr_license:
+                            case mr_license:
                                 reasons.append("L");
                                 break;
-                            case p::mr_by_association:
+                            case mr_by_association:
                                 reasons.append("A");
                                 break;
-                            case p::last_mr:
+                            case last_mr:
                                 break;
                         }
                     }
@@ -179,7 +151,7 @@ void do_one_query(
     }
 
     /* display metadata */
-    p::VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
+    VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
                 display_entry.repository)->version_metadata(
                 display_entry.name, display_entry.version));
 
@@ -255,7 +227,7 @@ void do_one_query(
         {
             if (! metadata->deps.build_depend_string.empty())
             {
-                p::DepAtomPrettyPrinter p_depend(12);
+                DepAtomPrettyPrinter p_depend(12);
                 metadata->deps.build_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Build dependencies:" << std::setw(0)
                     << endl << p_depend;
@@ -263,7 +235,7 @@ void do_one_query(
 
             if (! metadata->deps.run_depend_string.empty())
             {
-                p::DepAtomPrettyPrinter p_depend(12);
+                DepAtomPrettyPrinter p_depend(12);
                 metadata->deps.run_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Runtime dependencies:" << std::setw(0)
                     << endl << p_depend;
@@ -271,7 +243,7 @@ void do_one_query(
 
             if (! metadata->deps.post_depend_string.empty())
             {
-                p::DepAtomPrettyPrinter p_depend(12);
+                DepAtomPrettyPrinter p_depend(12);
                 metadata->deps.post_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Post dependencies:" << std::setw(0)
                     << endl << p_depend;
@@ -286,7 +258,7 @@ void do_one_query(
 
             if (! metadata->get_ebuild_interface()->iuse.empty())
                 cout << "    " << std::setw(22) << std::left << "Use flags:" << std::setw(0) <<
-                    " " << make_pretty_use_flags_string(p::DefaultEnvironment::get_instance(),
+                    " " << make_pretty_use_flags_string(DefaultEnvironment::get_instance(),
                             display_entry, metadata) << endl;
         }
 
@@ -300,14 +272,53 @@ void do_one_query(
     cout << endl;
 }
 
+void do_one_set_query(
+        const Environment * const,
+        const std::string & q,
+        MaskReasons &,
+        DepAtom::Pointer set)
+{
+    cout << "* " << colour(cl_package_name, q) << endl;
+    DepAtomPrettyPrinter packages(12);
+    set->accept(&packages);
+    cout << "    " << std::setw(22) << std::left << "Packages:" << std::setw(0)
+        << endl << packages << endl;
+}
+
+void do_one_query(
+        const Environment * const env,
+        const std::string & q,
+        MaskReasons & mask_reasons_to_explain)
+{
+    Context local_context("When handling query '" + q + "':");
+
+    /* we might have a dep atom, but we might just have a simple package name
+     * without a category. or it might be a set... all should work. */
+    PackageDepAtom::Pointer atom(0);
+    DepAtom::Pointer set(0);
+    if (std::string::npos == q.find('/'))
+    {
+        if (0 == ((set = env->package_set(q))))
+            atom.assign(new PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
+                            PackageNamePart(q))));
+    }
+    else
+        atom.assign(new PackageDepAtom(q));
+
+    if (atom)
+        do_one_package_query(env, q, mask_reasons_to_explain, atom);
+    else
+        do_one_set_query(env, q, mask_reasons_to_explain, set);
+}
+
 int do_query()
 {
     int return_code(0);
 
-    p::Context context("When performing query action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
+    Context context("When performing query action from command line:");
+    Environment * const env(DefaultEnvironment::get_instance());
 
-    p::MaskReasons mask_reasons_to_explain;
+    MaskReasons mask_reasons_to_explain;
 
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());
@@ -317,25 +328,18 @@ int do_query()
         {
             do_one_query(env, *q, mask_reasons_to_explain);
         }
-        catch (const p::AmbiguousPackageNameError & e)
+        catch (const AmbiguousPackageNameError & e)
         {
             cout << endl;
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
-            for (p::AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+            for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
                     o_end(e.end_options()) ; o != o_end ; ++o)
                 cerr << "    * " << colour(cl_package_name, *o) << endl;
             cerr << endl;
         }
-        catch (const CannotQueryPackageSet & e)
-        {
-            cout << endl;
-            cerr << "Query error:" << endl;
-            cerr << "  * Target '" << e.query << "' is a set, not a package." << endl;
-            cerr << endl;
-        }
-        catch (const p::NameError & e)
+        catch (const NameError & e)
         {
             return_code |= 1;
             cout << endl;
@@ -343,7 +347,7 @@ int do_query()
             cerr << "  * " << e.backtrace("\n  * ") << e.message() << endl;
             cerr << endl;
         }
-        catch (const p::PackageDatabaseLookupError & e)
+        catch (const PackageDatabaseLookupError & e)
         {
             return_code |= 1;
             cout << endl;
@@ -358,37 +362,37 @@ int do_query()
         cout << colour(cl_heading, "Key to mask reasons:") << endl << endl;
 
         /* use for/case to get compiler warnings when new mr_ are added */
-        for (p::MaskReason m(p::MaskReason(0)) ; m < p::last_mr ;
-                m = p::MaskReason(static_cast<int>(m) + 1))
+        for (MaskReason m(MaskReason(0)) ; m < last_mr ;
+                m = MaskReason(static_cast<int>(m) + 1))
         {
             if (! mask_reasons_to_explain.test(m))
                 continue;
 
             switch (m)
             {
-                case p::mr_keyword:
+                case mr_keyword:
                     cout << "* " << colour(cl_masked, "K") << ": keyword";
                     break;
-                case p::mr_user_mask:
+                case mr_user_mask:
                     cout << "* " << colour(cl_masked, "U") << ": user mask";
                     break;
-                case p::mr_profile_mask:
+                case mr_profile_mask:
                     cout << "* " << colour(cl_masked, "P") << ": profile mask";
                     break;
-                case p::mr_repository_mask:
+                case mr_repository_mask:
                     cout << "* " << colour(cl_masked, "R") << ": repository mask";
                     break;
-                case p::mr_eapi:
+                case mr_eapi:
                     cout << "* " << colour(cl_masked, "E") << ": EAPI";
                     break;
-                case p::mr_license:
+                case mr_license:
                     cout << "* " << colour(cl_masked, "L") << ": licence";
                     break;
-                case p::mr_by_association:
+                case mr_by_association:
                     cout << "* " << colour(cl_masked, "A") << ": by association";
                     break;
 
-                case p::last_mr:
+                case last_mr:
                     break;
             }
 
