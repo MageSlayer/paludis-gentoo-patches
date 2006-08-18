@@ -1096,7 +1096,9 @@ VersionMetadata::ConstPointer
 VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry & p) const
 {
     VersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, p.version));
-    VersionMetadata::Pointer result(new VersionMetadata(PortageDepParser::parse_depend));
+    VersionMetadata::Virtual::Pointer result(new VersionMetadata::Virtual(
+                PortageDepParser::parse_depend, PackageDatabaseEntry(p.provided_by_name,
+                    p.version, name())));
 
     result->slot = m->slot;
     result->license_string = m->license_string;
