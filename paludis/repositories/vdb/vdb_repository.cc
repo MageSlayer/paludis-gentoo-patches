@@ -709,15 +709,15 @@ VDBRepository::do_query_use(const UseFlagName & f,
 }
 
 bool
-VDBRepository::do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const
+VDBRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabaseEntry * e) const
 {
-    return false;
+    return use_disabled == do_query_use(u, e);
 }
 
 bool
-VDBRepository::do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const
+VDBRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEntry * e) const
 {
-    return false;
+    return use_enabled == do_query_use(u, e);
 }
 
 CountedPtr<Repository>
