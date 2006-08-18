@@ -281,6 +281,10 @@ void do_one_query(
                 provide_string.empty())
             cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
                 " " << metadata->get_ebuild_interface()->provide_string << endl;
+
+        if (metadata->get_virtual_interface())
+            cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
+                " " << metadata->get_virtual_interface()->virtual_for << endl;
     }
 
 
