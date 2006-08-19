@@ -189,8 +189,11 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
         if (0 == prog.exit_status())
             ok = true;
     }
-    catch (const NameError &)
+    catch (const NameError & e)
     {
+        Log::get_instance()->message(ll_warning, lc_context, "Caught exception '" +
+                stringify(e.message()) + "' (" + stringify(e.what()) +
+                ") when generating cache for '" + stringify(*params.db_entry) + "'");
     }
 
     if (ok)
