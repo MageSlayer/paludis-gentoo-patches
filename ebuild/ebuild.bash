@@ -30,7 +30,7 @@ export SANDBOX_PREDICT="${SANDBOX_PREDICT}/proc/self/maps:/dev/console:/dev/rand
 export SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}"
 export SANDBOX_WRITE="${SANDBOX_WRITE}/dev/shm:/dev/stdout:/dev/stderr:/dev/null:/dev/tty"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:${PALUDIS_TMPDIR}:/var/cache"
-export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/selinux/context"
+export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/proc/self/task:/selinux/context"
 export SANDBOX_ON="1"
 
 export PALUDIS_HOME="${PALUDIS_HOME:-${HOME}}"
