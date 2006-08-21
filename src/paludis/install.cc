@@ -136,7 +136,7 @@ namespace
                 cout << colour(cl_heading, "Cleaning " + stringify(c)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(_current_count) + " of " +
-                        stringify(_max_count) + ") Cleaning " + stringify(c));
+                        stringify(_max_count + _max_virtual_count) + ") Cleaning " + stringify(c));
             }
 
             virtual void on_clean_post(const DepListEntry &,
@@ -169,7 +169,7 @@ namespace
                         "::" + stringify(d.repository)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
-                        stringify(_max_count) + ") Fetching " +
+                        stringify(_max_count + _max_virtual_count) + ") Fetching " +
                         stringify(d.name) + "-" + stringify(d.version) +
                         "::" + stringify(d.repository));
             }
