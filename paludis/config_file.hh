@@ -99,6 +99,12 @@ namespace paludis
             virtual void accept_line(const std::string &) const = 0;
 
             /**
+             * Called when we've read in all our lines. By default, does
+             * nothing. Can be used for further validation.
+             */
+            virtual void done_reading_lines() const;
+
+            /**
              * If we have not done so already, read in our lines.
              */
             void need_lines() const;
@@ -217,6 +223,9 @@ namespace paludis
         protected ConfigFile,
         private PrivateImplementationPattern<KeyValueConfigFile>
     {
+        private:
+            bool quotes_are_balanced(const std::string &) const;
+
         protected:
             void accept_line(const std::string &) const;
 
@@ -229,6 +238,8 @@ namespace paludis
              * Handle quote removal.
              */
             std::string strip_quotes(const std::string &) const;
+
+            virtual void done_reading_lines() const;
 
         public:
             ///\name Basic operations

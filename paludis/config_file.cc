@@ -135,6 +135,12 @@ ConfigFile::need_lines() const
         throw ConfigFileError("Line-continuation needs a continuation.");
 
     _has_lines = true;
+    done_reading_lines();
+}
+
+void
+ConfigFile::done_reading_lines() const
+{
 }
 
 void
@@ -226,6 +232,8 @@ namespace paludis
         InternalCounted<Implementation<KeyValueConfigFile> >
     {
         mutable std::map<std::string, std::string> entries;
+        mutable std::string accum;
+        mutable std::string accum_key;
     };
 }
 
@@ -284,16 +292,52 @@ KeyValueConfigFile::~KeyValueConfigFile()
 void
 KeyValueConfigFile::accept_line(const std::string & line) const
 {
-    std::string::size_type p(line.find('='));
-    if (std::string::npos == p)
-        _imp->entries[line] = "";
+    if (! _imp->accum.empty())
+    {
+        std::string value(line);
+        normalise_line(value);
+
+        if (value.empty())
+            return;
+
+        _imp->accum += " ";
+        _imp->accum += value;
+
+        if (value.at(value.length() - 1) == _imp->accum.at(0))
+        {
+            _imp->entries[_imp->accum_key] = replace_variables(strip_quotes(_imp->accum));
+            _imp->accum.clear();
+            _imp->accum_key.clear();
+        }
+    }
     else
     {
-        std::string key(line.substr(0, p)), value(line.substr(p + 1));
-        normalise_line(key);
-        normalise_line(value);
-        _imp->entries[key] = replace_variables(strip_quotes(value));
+        std::string::size_type p(line.find('='));
+        if (std::string::npos == p)
+            _imp->entries[line] = "";
+        else
+        {
+            std::string key(line.substr(0, p)), value(line.substr(p + 1));
+            normalise_line(key);
+            normalise_line(value);
+            if (quotes_are_balanced(value))
+                _imp->entries[key] = replace_variables(strip_quotes(value));
+            else
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Line continuations should "
+                        "be indicated with a backslash");
+                _imp->accum = value;
+                _imp->accum_key = key;
+            }
+        }
     }
+}
+
+void
+KeyValueConfigFile::done_reading_lines() const
+{
+    if (! _imp->accum.empty())
+        throw KeyValueConfigFileError("Unterminated multiline quoted string");
 }
 
 std::string
@@ -369,6 +413,24 @@ KeyValueConfigFile::strip_quotes(const std::string & s) const
     }
     else
         return s;
+}
+
+bool
+KeyValueConfigFile::quotes_are_balanced(const std::string & s) const
+{
+    if (s.empty())
+        return false;
+
+    if (std::string::npos != std::string("'\"").find(s[0]))
+    {
+        if (s.length() < 2)
+            return false;
+        if (s[s.length() - 1] != s[0])
+            return false;
+        return true;
+    }
+    else
+        return true;
 }
 
 KeyValueConfigFile::Iterator

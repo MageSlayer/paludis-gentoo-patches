@@ -214,6 +214,27 @@ namespace test_cases
     } test_key_value_config_file;
 
     /**
+     * \test Test KeyValueConfigFile continuations.
+     *
+     * \ingroup grptestcases
+     */
+    struct KeyValueConfigFileContinuationsTest : TestCase
+    {
+        KeyValueConfigFileContinuationsTest() : TestCase("key value config file continuations") { }
+
+        void run()
+        {
+            std::stringstream s;
+            s << "one='first" << std::endl;
+            s << " first " << std::endl;
+            s << "first'" << std::endl;
+            KeyValueConfigFile ff(&s);
+
+            TEST_CHECK_EQUAL(ff.get("one"), "first first first");
+        }
+    } test_key_value_config_file_continuations;
+
+    /**
      * \test Test KeyValueConfigFile variables.
      *
      * \ingroup grptestcases
@@ -301,6 +322,10 @@ namespace test_cases
             std::stringstream s8;
             s8 << "x=blah \\" << std::endl << "# foo" << std::endl;
             TEST_CHECK_THROWS(KeyValueConfigFile ff(&s8), ConfigurationError);
+
+            std::stringstream s9;
+            s9 << "x='blah" << std::endl << "blah" << std::endl;
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s9), ConfigurationError);
         }
     } test_key_value_config_file_errors;
 }
