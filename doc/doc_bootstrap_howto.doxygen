@@ -31,7 +31,7 @@ subscribe to the <code>paludis-sekrit</code> mailing list.
 
 Install Paludis locally, being sure to configure <code>sysconfdir</code> as
 <code>/etc</code> to avoid confusion later on. There're ebuilds in the tree, or in
-<a href="http://svn.berlios.de/viewcvs/paludis/overlay/sys-apps/paludis/">
+<a href="http://svn.pioto.org/viewvc/paludis/overlay/">
 the Paludis overlay</a> if you need SVN ebuilds.
 
 You'll need libebt, eselect and Subversion. You'll also need either g++-3.4,
@@ -228,7 +228,7 @@ END
 
 cat <<"END" > /mychroot/etc/paludis/repositories/paludis-overlay.conf
 location = ${ROOT}/var/paludis/repositories/paludis-overlay/
-sync = svn://svn.berlios.de/paludis/overlay
+sync = svn://svn.pioto.org/paludis/overlay
 profiles = ${ROOT}/var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
 eclassdirs = ${ROOT}/var/paludis/repositories/gentoo/eclass
 distdir = ${ROOT}/var/paludis/repositories/gentoo/distfiles

@@ -178,7 +178,7 @@ The following keys are available for <code>format = portage</code>:
   where package set files are located.
 - <code>sync</code> (default: empty), which controls how the repository is
   synced. Typically values are in the form <code>rsync://rsync.europe.gentoo.org/gentoo-portage</code>
-  or <code>svn://svn.berlios.de/paludis/overlay</code>. Use
+  or <code>svn://svn.pioto.org/paludis/overlay</code>. Use
   <code>paludis --list-sync-protocols</code> to see supported protocols.
 - <code>sync_exclude</code> (default: empty), which can point to a file that
   contains a list of directories to exclude when syncing via

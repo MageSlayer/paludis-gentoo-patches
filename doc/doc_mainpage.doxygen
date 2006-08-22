@@ -31,8 +31,8 @@ IRC channel. Read the howto for more details.
 \section developerdocs For Developers
 
 Start by getting a
-<a href="https://developer.berlios.de/svn/?group_id=6360">Subversion
-checkout</a>, and reading the \link PortageDifferences Paludis and Portage
+<a href="http://svn.pioto.org/viewvc/paludis/">Subversion
+checkout</a> of <code>trunk/</code>, and reading the \link PortageDifferences Paludis and Portage
 differences \endlink document.
 
 It's best to start by skimming over the main program to get a feel for how
