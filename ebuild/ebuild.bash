@@ -32,6 +32,7 @@ export SANDBOX_WRITE="${SANDBOX_WRITE}/dev/shm:/dev/stdout:/dev/stderr:/dev/null
 export SANDBOX_WRITE="${SANDBOX_WRITE}:${PALUDIS_TMPDIR}:/var/cache"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/proc/self/task:/selinux/context"
 export SANDBOX_ON="1"
+export REAL_CHOST="${CHOST}"
 
 export PALUDIS_HOME="${PALUDIS_HOME:-${HOME}}"
 
