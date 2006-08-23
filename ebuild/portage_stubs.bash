@@ -65,7 +65,7 @@ vdb_path()
 
 check_KV()
 {
-    die "check_KV not implenented"
+    die "check_KV not implemented"
 }
 
 debug-print()
