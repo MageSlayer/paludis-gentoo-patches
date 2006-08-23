@@ -34,8 +34,6 @@ export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/proc/self/task:/selinux/
 export SANDBOX_ON="1"
 export REAL_CHOST="${CHOST}"
 
-export PALUDIS_HOME="${PALUDIS_HOME:-${HOME}}"
-
 shopt -s expand_aliases
 shopt -s extglob
 
@@ -91,6 +89,8 @@ ebuild_load_module multilib_functions
 ebuild_load_module install_functions
 ebuild_load_module build_functions
 ebuild_load_module eclass_functions
+
+export PALUDIS_HOME="$(canonicalise ${PALUDIS_HOME:-${HOME}} )"
 
 ebuild_source_profile()
 {
