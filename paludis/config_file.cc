@@ -419,7 +419,7 @@ bool
 KeyValueConfigFile::quotes_are_balanced(const std::string & s) const
 {
     if (s.empty())
-        return false;
+        return true;
 
     if (std::string::npos != std::string("'\"").find(s[0]))
     {
