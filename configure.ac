@@ -519,6 +519,7 @@ AC_OUTPUT(
 	src/gtkpaludis/vtemm/converts/Makefile
 	src/gtkpaludis/vtemm/defs/Makefile
 	src/qualudis/Makefile
+	src/archtool/Makefile
 	test/Makefile
 	)
 dnl }}}

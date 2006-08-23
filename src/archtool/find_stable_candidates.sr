@@ -1,0 +1,12 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_SlotsEntry()
+{
+    key our_version VersionSpec
+    key best_version VersionSpec
+
+    allow_named_args
+}
+
+
