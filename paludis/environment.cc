@@ -23,6 +23,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/collection_concrete.hh>
 
 #include <set>
 #include <list>
@@ -376,5 +377,79 @@ Hook::operator() (const std::string & k, const std::string & v) const
     Hook result(*this);
     result._extra_env.insert(std::make_pair(k, v));
     return result;
+}
+
+bool
+Environment::query_use(const UseFlagName &, const PackageDatabaseEntry *) const
+{
+    return false;
+}
+
+UseFlagNameCollection::Pointer
+Environment::query_enabled_use_matching(const std::string &, const PackageDatabaseEntry *) const
+{
+    return UseFlagNameCollection::Pointer(new UseFlagNameCollection::Concrete);
+}
+
+bool
+Environment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const) const
+{
+    if (keyword == KeywordName("*"))
+        return true;
+
+    return false;
+}
+
+bool
+Environment::accept_license(const std::string &, const PackageDatabaseEntry * const) const
+{
+    return false;
+}
+
+bool
+Environment::query_user_masks(const PackageDatabaseEntry &) const
+{
+    return false;
+}
+
+bool
+Environment::query_user_unmasks(const PackageDatabaseEntry &) const
+{
+    return false;
+}
+
+std::string
+Environment::bashrc_files() const
+{
+    return "";
+}
+
+
+std::string
+Environment::hook_dirs() const
+{
+    return "";
+}
+
+namespace
+{
+    static const std::multimap<std::string, std::string> environment_mirrors;
+}
+
+Environment::MirrorIterator
+Environment::begin_mirrors(const std::string &) const
+{
+    return MirrorIterator(environment_mirrors.begin());
+}
+
+Environment::MirrorIterator
+Environment::end_mirrors(const std::string &) const
+{
+    return MirrorIterator(environment_mirrors.end());
+}
+
+void
+Environment::perform_hook(const Hook &) const
+{
 }
 

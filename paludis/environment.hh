@@ -124,25 +124,33 @@ namespace paludis
             /**
              * Does the user want the specified USE flag set for a
              * particular package?
+             *
+             * Default behaviour: all USE flags turned off.
              */
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
+            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
 
             /**
              * Fetch a list of enabled USE flags that start with a given prefix,
              * for USE_EXPAND.
+             *
+             * Default behaviour: no USE flags.
              */
             virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
-                    const std::string & prefix, const PackageDatabaseEntry *) const = 0;
+                    const std::string & prefix, const PackageDatabaseEntry *) const;
 
             /**
              * Is the specified KEYWORD accepted?
+             *
+             * Default behaviour: only "*" accepted.
              */
-            virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const = 0;
+            virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
 
             /**
              * Is the specified LICENSE accepted?
+             *
+             * Default behaviour: no.
              */
-            virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const = 0;
+            virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
 
             /**
              * Fetch the masks for a particular package.
@@ -151,13 +159,17 @@ namespace paludis
 
             /**
              * Are there any user masks on a package?
+             *
+             * Default behaviour: no.
              */
-            virtual bool query_user_masks(const PackageDatabaseEntry &) const = 0;
+            virtual bool query_user_masks(const PackageDatabaseEntry &) const;
 
             /**
              * Are there any user unmasks on a package?
+             *
+             * Default behaviour: no.
              */
-            virtual bool query_user_unmasks(const PackageDatabaseEntry &) const = 0;
+            virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
 
             /**
              * Fetch our package database.
@@ -169,13 +181,17 @@ namespace paludis
 
             /**
              * Our bashrc files.
+             *
+             * Default behaviour: none.
              */
-            virtual std::string bashrc_files() const = 0;
+            virtual std::string bashrc_files() const;
 
             /**
              * Our hook directories.
+             *
+             * Default behaviour: none.
              */
-            virtual std::string hook_dirs() const = 0;
+            virtual std::string hook_dirs() const;
 
             /**
              * How to run paludis.
@@ -194,13 +210,19 @@ namespace paludis
 
             /**
              * Iterator to the start of our mirrors.
+             *
+             * Default behaviour: no mirrors. If specialising, also do
+             * Environment::end_mirrors.
              */
-            virtual MirrorIterator begin_mirrors(const std::string & mirror) const = 0;
+            virtual MirrorIterator begin_mirrors(const std::string & mirror) const;
 
             /**
              * Iterator to past the end of our mirrors.
+             *
+             * Default behaviour: no mirrors. If specialising, also do
+             * Environment::begin_mirrors.
              */
-            virtual MirrorIterator end_mirrors(const std::string & mirror) const = 0;
+            virtual MirrorIterator end_mirrors(const std::string & mirror) const;
 
             /**
              * Fetch a named package set.
@@ -273,8 +295,10 @@ namespace paludis
 
             /**
              * Perform a hook.
+             *
+             * Default behaviour: nothing happens.
              */
-            virtual void perform_hook(const Hook & hook) const = 0;
+            virtual void perform_hook(const Hook & hook) const;
     };
 }
 
