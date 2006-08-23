@@ -195,25 +195,6 @@ namespace paludis
             NoSuchRepositoryError(const std::string & name) throw ();
     };
 
-#if 0
-    /**
-     * Thrown if there is no Version in a PackageDatabase with the given
-     * name.
-     *
-     * \ingroup grpexceptions
-     * \ingroup grppackagedatabase
-     */
-    class NoSuchVersionError : public PackageDatabaseLookupError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            NoSuchVersionError(const std::string & pkg_name,
-                    const VersionSpec & version) throw ();
-    };
-#endif
-
     /**
      * Do we want installed, uninstalled or either when querying?
      *
