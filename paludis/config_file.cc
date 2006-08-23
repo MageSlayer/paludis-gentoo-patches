@@ -499,38 +499,6 @@ AdvisoryFile::AdvisoryFile(const FSEntry & filename) :
     sanitise();
 }
 
-#if 0
-AdvisoryFile::AdvisoryFile(std::istream * const s,
-        const std::map<std::string, std::string> & m) :
-    ConfigFile(s),
-    PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
-{
-    _imp->entries.insert(m.begin(), m.end());
-    need_lines();
-    sanitise();
-}
-
-AdvisoryFile::AdvisoryFile(const std::string & filename,
-        const std::map<std::string, std::string> & m) :
-    ConfigFile(filename),
-    PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
-{
-    _imp->entries.insert(m.begin(), m.end());
-    need_lines();
-    sanitise();
-}
-
-AdvisoryFile::AdvisoryFile(const FSEntry & filename,
-        const std::map<std::string, std::string> & m) :
-    ConfigFile(filename),
-    PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
-{
-    _imp->entries.insert(m.begin(), m.end());
-    need_lines();
-    sanitise();
-}
-#endif
-
 AdvisoryFile::~AdvisoryFile()
 {
 }
