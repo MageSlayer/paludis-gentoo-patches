@@ -70,14 +70,6 @@ NoSuchRepositoryError::NoSuchRepositoryError(const std::string & name) throw () 
 {
 }
 
-#if 0
-NoSuchVersionError::NoSuchVersionError(const std::string & name,
-        const VersionSpec & version) throw () :
-    PackageDatabaseLookupError("No version of '" + name + "' named '" + stringify(version) + "'")
-{
-}
-#endif
-
 /**
  * Name data for an AmbiguousPackageNameError.
  *
