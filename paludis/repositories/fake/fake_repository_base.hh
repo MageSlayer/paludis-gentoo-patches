@@ -77,7 +77,7 @@ namespace paludis
 
             virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const;
 
-            virtual bool do_is_arch_flag(const UseFlagName &) const;
+            virtual UseFlagNameCollection::ConstPointer do_arch_flags() const;
 
             virtual bool do_is_expand_flag(const UseFlagName &) const;
             virtual bool do_is_expand_hidden_flag(const UseFlagName &) const;

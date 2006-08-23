@@ -209,10 +209,10 @@ FakeRepositoryBase::do_query_use_force(const UseFlagName &, const PackageDatabas
     return false;
 }
 
-bool
-FakeRepositoryBase::do_is_arch_flag(const UseFlagName &) const
+UseFlagNameCollection::ConstPointer
+FakeRepositoryBase::do_arch_flags() const
 {
-    return false;
+    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
 }
 
 bool

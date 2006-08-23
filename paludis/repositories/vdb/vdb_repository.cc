@@ -767,12 +767,6 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 }
 
 bool
-VDBRepository::do_is_arch_flag(const UseFlagName &) const
-{
-    return false;
-}
-
-bool
 VDBRepository::do_is_expand_flag(const UseFlagName &) const
 {
     return false;
@@ -1107,5 +1101,11 @@ VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry &
             stringify(p.provided_by_name), stringify(p.provided_by_name), "");
 
     return result;
+}
+
+UseFlagNameCollection::ConstPointer
+VDBRepository::do_arch_flags() const
+{
+    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
 }
 

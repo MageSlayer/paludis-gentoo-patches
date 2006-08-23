@@ -382,9 +382,9 @@ namespace paludis
             virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const = 0;
 
             /**
-             * Override in descendents: is this an arch flag?
+             * Override in descendents: fetch all arch flags.
              */
-            virtual bool do_is_arch_flag(const UseFlagName &) const = 0;
+            virtual UseFlagNameCollection::ConstPointer do_arch_flags() const = 0;
 
             /**
              * Override in descendents: is this an expand flag?
@@ -439,7 +439,16 @@ namespace paludis
              */
             bool is_arch_flag(const UseFlagName & u) const
             {
-                return do_is_arch_flag(u);
+                UseFlagNameCollection::ConstPointer uu(do_arch_flags());
+                return uu->end() != uu->find(u);
+            }
+
+            /**
+             * Fetch all arch flags.
+             */
+            UseFlagNameCollection::ConstPointer arch_flags() const
+            {
+                return do_arch_flags();
             }
 
             /**

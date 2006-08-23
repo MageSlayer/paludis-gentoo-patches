@@ -71,9 +71,6 @@ using namespace paludis;
 
 namespace paludis
 {
-    /// Set of use flags.
-    typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
-
     /// Map for versions.
     typedef MakeHashedMap<QualifiedPackageName, VersionSpecCollection::Pointer>::Type VersionsMap;
 
@@ -135,10 +132,7 @@ namespace paludis
         mutable bool has_virtuals;
 
         /// Arch flags
-        mutable UseFlagSet arch_list;
-
-        /// Do we have arch_list?
-        mutable bool has_arch_list;
+        mutable UseFlagNameCollection::Pointer arch_flags;
 
         /// Do we have mirrors?
         mutable bool has_mirrors;
@@ -186,8 +180,7 @@ namespace paludis
         has_category_names(false),
         has_repo_mask(false),
         has_virtuals(false),
-        has_arch_list(false),
-        has_mirrors(false),
+        arch_flags(0),
         profile_ptr(0),
         news_ptr(new PortageRepositoryNews(params.environment, repo, p)),
         sets_ptr(new PortageRepositorySets(params.environment, repo, p)),
@@ -223,8 +216,7 @@ namespace paludis
         repo_mask.clear();
         has_repo_mask = false;
         has_virtuals = false;
-        arch_list.clear();
-        has_arch_list = false;
+        arch_flags.assign(0);
         has_mirrors = false;
         mirrors.clear();
     }
@@ -610,21 +602,19 @@ PortageRepository::do_query_use_force(const UseFlagName & u, const PackageDataba
     return _imp->profile_ptr->use_forced(u, e);
 }
 
-bool
-PortageRepository::do_is_arch_flag(const UseFlagName & u) const
+UseFlagNameCollection::ConstPointer
+PortageRepository::do_arch_flags() const
 {
-    if (! _imp->has_arch_list)
+    if (! _imp->arch_flags)
     {
-        Context context("When checking arch list for '" + stringify(u) + "':");
+        Context context("When loading arch list:");
 
         LineConfigFile archs(_imp->params.location / "profiles" / "arch.list");
-        std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(
-                    std::inserter(_imp->arch_list, _imp->arch_list.begin())));
-
-        _imp->has_arch_list = true;
+        _imp->arch_flags.assign(new UseFlagNameCollection::Concrete);
+        std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(_imp->arch_flags->inserter()));
     }
 
-    return _imp->arch_list.end() != _imp->arch_list.find(u);
+    return _imp->arch_flags;
 }
 
 bool
