@@ -45,6 +45,7 @@ builtin_unmerge()
             CONFIG_PROTECT_MASK="$(< ${dbdir}/CONFIG_PROTECT_MASK)"
         fi
     else
+        local old_CONFIG_PROTECT="${CONFIG_PROTECT:+${CONFIG_PROTECT} }/etc"
         eval $(bzcat "${dbdir}/environment.bz2" | while read line; do
             line=${line//\'}
             if [[ ${line%%=*} == CONFIG_PROTECT ]]; then
@@ -53,6 +54,13 @@ builtin_unmerge()
                 echo "CONFIG_PROTECT_MASK='${line#*=}'"
             fi
         done)
+
+        # catalyst creates things with an empty CONFIG_PROTECT...
+        if [[ -z "${CONFIG_PROTECT// }" ]] ; then
+            ewarn "CONFIG_PROTECT from environment.bz2 is empty"
+            ewarn "Using a fallback of '${old_CONFIG_PROTECT}'"
+            CONFIG_PROTECT="${old_CONFIG_PROTECT}"
+        fi
     fi
 
     if [[ -n ${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT} ]]; then
