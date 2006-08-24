@@ -19,6 +19,7 @@
 
 #include "command_line.hh"
 #include "find_stable_candidates.hh"
+#include "find_dropped_keywords.hh"
 #include "keywords_graph.hh"
 #include "archtool_environment.hh"
 
@@ -129,6 +130,7 @@ main(int argc, char *argv[])
 
         if (1 != (
                     CommandLine::get_instance()->a_find_stable_candidates.specified() +
+                    CommandLine::get_instance()->a_find_dropped_keywords.specified() +
                     CommandLine::get_instance()->a_keywords_graph.specified()))
             throw DoHelp("you should specify exactly one action");
 
@@ -141,6 +143,16 @@ main(int argc, char *argv[])
                 throw DoHelp("find-stable-candidates action takes exactly one parameter (the target arch)");
 
             do_find_stable_candidates(env);
+            return EXIT_SUCCESS;
+        }
+
+        if (CommandLine::get_instance()->a_find_dropped_keywords.specified())
+        {
+            if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters()))
+                throw DoHelp("find-dropped-keywords action takes exactly one parameter (the target arch)");
+
+            do_find_dropped_keywords(env);
             return EXIT_SUCCESS;
         }
 

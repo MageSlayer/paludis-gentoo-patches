@@ -28,6 +28,7 @@ man_archtool_LDADD = \
 archtool_SOURCES = \
 	command_line.hh              command_line.cc      \
 	find_stable_candidates.hh    find_stable_candidates.cc \
+	find_dropped_keywords.hh     find_dropped_keywords.cc \
 	keywords_graph.hh            keywords_graph.cc \
 	archtool_environment.hh      archtool_environment.cc \
 	archtool.cc
@@ -54,16 +55,26 @@ EXTRA_DIST = \
 	$(man_MANS) \
 	$(TESTS) \
 	find_stable_candidates-sr.hh find_stable_candidates-sr.cc \
+	find_dropped_keywords-sr.hh find_dropped_keywords-sr.cc \
 	find_stable_candidates_TEST_setup.sh find_stable_candidates_TEST_cleanup.sh
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = $(man_MANS) find_stable_candidates-sr.hh find_stable_candidates-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
-BUILT_SOURCES = find_stable_candidates-sr.hh find_stable_candidates-sr.cc
+BUILT_SOURCES = \
+	find_stable_candidates-sr.hh find_stable_candidates-sr.cc \
+	find_dropped_keywords-sr.hh find_dropped_keywords-sr.cc
 
 find_stable_candidates-sr.hh : find_stable_candidates.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/find_stable_candidates.sr > $@
 
 find_stable_candidates-sr.cc : find_stable_candidates.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/find_stable_candidates.sr > $@
+
+find_dropped_keywords-sr.hh : find_dropped_keywords.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/find_dropped_keywords.sr > $@
+
+find_dropped_keywords-sr.cc : find_dropped_keywords.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/find_dropped_keywords.sr > $@
+
 

@@ -60,6 +60,7 @@ class CommandLine :
         paludis::args::ArgsGroup action_args;
 
         paludis::args::SwitchArg a_find_stable_candidates;
+        paludis::args::SwitchArg a_find_dropped_keywords;
         paludis::args::SwitchArg a_keywords_graph;
 
         paludis::args::SwitchArg a_version;

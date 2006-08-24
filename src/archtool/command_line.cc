@@ -28,8 +28,10 @@ CommandLine::CommandLine() :
 
     a_find_stable_candidates(&action_args,
             "find-stable-candidates", 's',  "Search for stable package candidates"),
+    a_find_dropped_keywords(&action_args,
+            "find-dropped-keywords",  'd',  "Search for packages where keywords have been dropped"),
     a_keywords_graph(&action_args,
-            "keyword-graph",          'k',  "Display KEYWORDS graphically"),
+            "keyword-graph",          'k',  "Display keywords graphically"),
     a_version(&action_args,
             "version",                'V',  "Display program version"),
     a_help(&action_args,
@@ -50,10 +52,12 @@ CommandLine::CommandLine() :
     a_package(&general_args,    "package",    'P',
             "Matches with this package name only")
 {
-    add_usage_line("--find-stable-candidates [ --repository-dir /path ] "
+    add_usage_line("--find-stable-candidates arch [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
-            "[ --package foo --package fnord ... ] "
-            "arch");
+            "[ --package foo --package fnord ... ] ");
+    add_usage_line("--find-dropped-keywords arch [ --repository-dir /path ] "
+            "[ --category app-misc --category sys-apps ... ] "
+            "[ --package foo --package fnord ... ] ");
     add_usage_line("--keywords-graph [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
             "[ --package foo --package fnord ... ]"),
