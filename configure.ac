@@ -25,6 +25,7 @@ dnl }}}
 
 dnl {{{ basic toolchain checks
 AC_LANG([C++])
+AC_DISABLE_STATIC
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
