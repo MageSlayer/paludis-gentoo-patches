@@ -236,6 +236,19 @@ AC_CHECK_FUNCS([unlockpt],     [], [AC_MSG_ERROR([I need unlockpt])])
 dnl }}}
 
 dnl {{{ check for cxxflags
+AC_MSG_CHECKING([for go faster stripes])
+if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "as-needed" >/dev/null ; then
+	AC_MSG_RESULT([as-needed])
+	AC_MSG_ERROR([Bad ricer. No bagel.])
+else
+	if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "visibility" >/dev/null ; then
+		AC_MSG_RESULT([visibility])
+		AC_MSG_ERROR([Bad ricer. No bagel.])
+	else
+		AC_MSG_RESULT([no])
+	fi
+fi
+
 PALUDIS_CXXFLAGS=
 PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST=
 PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS=
