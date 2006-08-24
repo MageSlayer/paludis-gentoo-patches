@@ -26,14 +26,14 @@
 
 namespace paludis
 {
-    class ArchtoolEnvironment :
-        private PrivateImplementationPattern<ArchtoolEnvironment>,
+    class AdjutrixEnvironment :
+        private PrivateImplementationPattern<AdjutrixEnvironment>,
         public Environment
     {
         public:
-            ArchtoolEnvironment(const FSEntry & dir);
+            AdjutrixEnvironment(const FSEntry & dir);
 
-            virtual ~ArchtoolEnvironment();
+            virtual ~AdjutrixEnvironment();
 
             virtual std::string paludis_command() const;
     };

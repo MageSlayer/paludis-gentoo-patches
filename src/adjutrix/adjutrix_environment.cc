@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "archtool_environment.hh"
+#include "adjutrix_environment.hh"
 #include <paludis/util/collection_concrete.hh>
 
 using namespace paludis;
@@ -25,8 +25,8 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<ArchtoolEnvironment> :
-        InternalCounted<Implementation<ArchtoolEnvironment> >
+    struct Implementation<AdjutrixEnvironment> :
+        InternalCounted<Implementation<AdjutrixEnvironment> >
     {
         const FSEntry top_level_dir;
         PackageDatabase::Pointer db;
@@ -39,9 +39,9 @@ namespace paludis
     };
 }
 
-ArchtoolEnvironment::ArchtoolEnvironment(const FSEntry & dir) :
-    PrivateImplementationPattern<ArchtoolEnvironment>(
-            new Implementation<ArchtoolEnvironment>(this, dir)),
+AdjutrixEnvironment::AdjutrixEnvironment(const FSEntry & dir) :
+    PrivateImplementationPattern<AdjutrixEnvironment>(
+            new Implementation<AdjutrixEnvironment>(this, dir)),
     Environment(_imp->db)
 {
     AssociativeCollection<std::string, std::string>::Pointer keys(
@@ -56,12 +56,12 @@ ArchtoolEnvironment::ArchtoolEnvironment(const FSEntry & dir) :
                 _imp->db.raw_pointer(), keys));
 }
 
-ArchtoolEnvironment::~ArchtoolEnvironment()
+AdjutrixEnvironment::~AdjutrixEnvironment()
 {
 }
 
 std::string
-ArchtoolEnvironment::paludis_command() const
+AdjutrixEnvironment::paludis_command() const
 {
     return "false";
 }

@@ -74,7 +74,7 @@ CommandLine::CommandLine() :
 std::string
 CommandLine::app_name() const
 {
-    return "archtool";
+    return "adjutrix";
 }
 
 std::string
@@ -87,10 +87,10 @@ std::string
 CommandLine::app_description() const
 {
     return
-        "archtool provides a number of utilities that may be useful for arch teams."
+        "adjutrix provides a number of utilities that may be useful for arch teams."
         "\n\n"
-        "The --repository-dir switch can be used to tell archtool where to find "
-        "the repository. If this switch is not used, archtool will check the current "
+        "The --repository-dir switch can be used to tell adjutrix where to find "
+        "the repository. If this switch is not used, adjutrix will check the current "
         "directory, the parent directory and the parent's parent directory for "
         "something resembling a profile root. If run inside a package or category "
         "directory, filtering in the style of --package and --category is carried "

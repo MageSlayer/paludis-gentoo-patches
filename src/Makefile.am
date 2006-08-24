@@ -1,4 +1,4 @@
-SUBDIRS = . paludis gtkpaludis qualudis archtool
+SUBDIRS = . paludis gtkpaludis qualudis adjutrix
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in

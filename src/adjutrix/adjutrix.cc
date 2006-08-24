@@ -21,7 +21,7 @@
 #include "find_stable_candidates.hh"
 #include "find_dropped_keywords.hh"
 #include "keywords_graph.hh"
-#include "archtool_environment.hh"
+#include "adjutrix_environment.hh"
 
 #include <paludis/about.hh>
 #include <paludis/util/join.hh>
@@ -66,7 +66,7 @@ namespace
 
     void display_version()
     {
-        cout << "archtool " << PALUDIS_VERSION_MAJOR << "."
+        cout << "adjutrix " << PALUDIS_VERSION_MAJOR << "."
             << PALUDIS_VERSION_MINOR << "." << PALUDIS_VERSION_MICRO;
         if (! std::string(PALUDIS_SUBVERSION_REVISION).empty())
             cout << " svn " << PALUDIS_SUBVERSION_REVISION;
@@ -134,7 +134,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_keywords_graph.specified()))
             throw DoHelp("you should specify exactly one action");
 
-        ArchtoolEnvironment env(get_location_and_add_filters());
+        AdjutrixEnvironment env(get_location_and_add_filters());
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())
         {

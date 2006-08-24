@@ -7,33 +7,33 @@ DEFS= \
 
 SUBDIRS = .
 
-bin_PROGRAMS = archtool
-noinst_PROGRAMS = man-archtool
+bin_PROGRAMS = adjutrix
+noinst_PROGRAMS = man-adjutrix
 
-man_MANS = archtool.1
+man_MANS = adjutrix.1
 
-archtool.1 : man-archtool
-	./man-archtool | tee $@ | sed -e 's/^/    /'
+adjutrix.1 : man-adjutrix
+	./man-adjutrix | tee $@ | sed -e 's/^/    /'
 
-man_archtool_SOURCES = \
-	man_archtool.cc \
+man_adjutrix_SOURCES = \
+	man_adjutrix.cc \
 	command_line.hh \
 	command_line.cc
 
-man_archtool_LDADD = \
+man_adjutrix_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
 
-archtool_SOURCES = \
+adjutrix_SOURCES = \
 	command_line.hh              command_line.cc      \
 	find_stable_candidates.hh    find_stable_candidates.cc \
 	find_dropped_keywords.hh     find_dropped_keywords.cc \
 	keywords_graph.hh            keywords_graph.cc \
-	archtool_environment.hh      archtool_environment.cc \
-	archtool.cc
+	adjutrix_environment.hh      adjutrix_environment.cc \
+	adjutrix.cc
 
-archtool_LDADD = \
+adjutrix_LDADD = \
 	$(top_builddir)/paludis/tasks/libpaludistasks.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
