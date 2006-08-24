@@ -54,8 +54,8 @@ TESTS = version_TEST help_TEST find_stable_candidates_TEST
 EXTRA_DIST = \
 	$(man_MANS) \
 	$(TESTS) \
-	find_stable_candidates-sr.hh find_stable_candidates-sr.cc \
-	find_dropped_keywords-sr.hh find_dropped_keywords-sr.cc \
+	find_stable_candidates-sr.hh find_stable_candidates-sr.cc find_stable_candidates.sr \
+	find_dropped_keywords-sr.hh find_dropped_keywords-sr.cc find_dropped_keywords.sr \
 	find_stable_candidates_TEST_setup.sh find_stable_candidates_TEST_cleanup.sh
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
