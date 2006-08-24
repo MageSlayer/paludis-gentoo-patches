@@ -18,6 +18,7 @@
  */
 
 #include "colour.hh"
+#include "command_line.hh"
 #include "list.hh"
 #include <iomanip>
 #include <iostream>

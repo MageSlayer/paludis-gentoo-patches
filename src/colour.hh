@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_SRC_COLOUR_HH
 #define PALUDIS_GUARD_SRC_COLOUR_HH 1
 
-#include "command_line.hh"
 #include <paludis/util/stringify.hh>
 #include <config.h>
 #include <string>
@@ -75,13 +74,14 @@ enum Colour
     cl_misc          = cl_red
 };
 
-bool use_colour() PALUDIS_ATTRIBUTE((pure));
+bool use_colour();
+void set_use_colour(const bool value);
 bool use_xterm_titles() PALUDIS_ATTRIBUTE((pure));
 
 template <typename T_>
 std::string colour(Colour colour, const T_ & s)
 {
-    if (CommandLine::get_instance()->a_no_color.specified() || ! use_colour())
+    if (! use_colour())
         return paludis::stringify(s);
     else if (cl_none != colour)
         return "\033[" + paludis::stringify(static_cast<unsigned>(colour) / 100) + ";"
@@ -94,7 +94,7 @@ std::string colour(Colour colour, const T_ & s)
 template <typename T_>
 std::string xterm_title(const T_ & s)
 {
-    if (CommandLine::get_instance()->a_no_color.specified() || ! use_colour() || ! use_xterm_titles())
+    if (! use_colour() || ! use_xterm_titles())
         return "";
     else
         return "\x1b]2;" + paludis::stringify(s) + "\x07";

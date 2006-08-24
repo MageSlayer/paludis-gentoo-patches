@@ -1,4 +1,4 @@
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+AM_CXXFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src @PALUDIS_CXXFLAGS@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DDATADIR=\"$(datadir)\" \
@@ -23,12 +23,12 @@ man_paludis_SOURCES = \
 man_paludis_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/src/libcolour.a \
 	$(DYNAMIC_LD_LIBS)
 
 paludis_SOURCES = \
 	applets.hh           applets.cc           \
 	command_line.hh      command_line.cc      \
-	colour.hh            colour.cc            \
 	install.hh           install.cc           \
 	uninstall.hh         uninstall.cc         \
 	list.hh              list.cc              \
@@ -46,6 +46,7 @@ paludis_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/src/libcolour.a \
 	$(DYNAMIC_LD_LIBS)
 
 TESTS_ENVIRONMENT = env \

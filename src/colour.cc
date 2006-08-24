@@ -21,8 +21,17 @@
 #include <paludis/util/system.hh>
 #include <unistd.h>
 
-bool use_colour()
+namespace
 {
+    static bool can_use_colour = true;
+}
+
+bool
+use_colour()
+{
+    if (! can_use_colour)
+        return false;
+
     static bool result(
             (1 == isatty(1)) &&
             (0 != paludis::getenv_with_default("TERM", "").compare(0, 4, "dumb")));
@@ -30,7 +39,14 @@ bool use_colour()
     return result;
 }
 
-bool use_xterm_titles()
+void
+set_use_colour(const bool value)
+{
+    can_use_colour = value;
+}
+
+bool
+use_xterm_titles()
 {
     static bool result(
             (0 != paludis::getenv_with_default("TERM", "").compare(0, 4, "dumb")) &&

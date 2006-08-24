@@ -19,6 +19,7 @@
 
 #include "owner.hh"
 #include "colour.hh"
+#include "command_line.hh"
 #include <paludis/paludis.hh>
 #include <iostream>
 

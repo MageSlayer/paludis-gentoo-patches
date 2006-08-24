@@ -134,6 +134,7 @@ main(int argc, char *argv[])
     try
     {
         CommandLine::get_instance()->run(argc, argv);
+        set_use_colour(! CommandLine::get_instance()->a_no_color.specified());
 
         if (CommandLine::get_instance()->a_help.specified())
             throw DoHelp();
