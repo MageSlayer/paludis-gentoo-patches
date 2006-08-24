@@ -35,6 +35,7 @@ enum Colour
 
     cl_bold_red      = cl_red + 100,
     cl_bold_green    = cl_green + 100,
+    cl_bold_yellow   = cl_yellow + 100,
     cl_bold_blue     = cl_blue + 100,
     cl_bold_pink     = cl_pink + 100,
 

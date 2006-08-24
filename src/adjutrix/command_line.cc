@@ -45,6 +45,9 @@ CommandLine::CommandLine() :
             ("warning", "Show warnings only")
             ("silent",  "Suppress all log messages"),
             "qa"),
+    a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
+    a_no_color(&a_no_colour, "no-color"),
+
     a_repository_directory(&general_args, "repository-dir", 'D',
             "Where to find the repository (default: detected from ./ or ../ or ../..)"),
     a_category(&general_args,   "category",   'C',

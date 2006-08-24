@@ -61,7 +61,7 @@ CommandLine::CommandLine() :
             ("warning", "Show warnings only")
             ("silent",  "Suppress all log messages"),
             "qa"),
-    a_no_colour(&general_args, "no-colour", 'C', "Do not use colour"),
+    a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
     a_config_suffix(&general_args, "config-suffix", 'c', "Config directory suffix"),
 

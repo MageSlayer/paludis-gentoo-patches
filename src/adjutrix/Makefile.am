@@ -1,4 +1,4 @@
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+AM_CXXFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src @PALUDIS_CXXFLAGS@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DDATADIR=\"$(datadir)\" \
@@ -23,6 +23,7 @@ man_adjutrix_SOURCES = \
 man_adjutrix_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/src/libcolour.a \
 	$(DYNAMIC_LD_LIBS)
 
 adjutrix_SOURCES = \
@@ -38,6 +39,7 @@ adjutrix_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/src/libcolour.a \
 	$(DYNAMIC_LD_LIBS)
 
 TESTS_ENVIRONMENT = env \

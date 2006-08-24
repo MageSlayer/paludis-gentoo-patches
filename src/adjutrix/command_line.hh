@@ -72,8 +72,9 @@ class CommandLine :
         /// General arguments.
         paludis::args::ArgsGroup general_args;
 
-        /// --log-level
         paludis::args::EnumArg a_log_level;
+        paludis::args::SwitchArg a_no_colour;
+        paludis::args::AliasArg a_no_color;
 
         paludis::args::StringArg a_repository_directory;
         paludis::args::StringSetArg a_category;

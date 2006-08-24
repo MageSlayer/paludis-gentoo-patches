@@ -17,6 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "colour.hh"
 #include "command_line.hh"
 #include "find_stable_candidates.hh"
 #include "find_dropped_keywords.hh"
@@ -108,6 +109,7 @@ main(int argc, char *argv[])
     try
     {
         CommandLine::get_instance()->run(argc, argv);
+        set_use_colour(! CommandLine::get_instance()->a_no_color.specified());
 
         if (CommandLine::get_instance()->a_help.specified())
             throw DoHelp();

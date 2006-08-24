@@ -19,6 +19,7 @@
 
 #include "keywords_graph.hh"
 #include "command_line.hh"
+#include "colour.hh"
 
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/compare.hh>
@@ -108,13 +109,13 @@ namespace
                     a != a_end ; ++a)
             {
                 if (keywords.end() != keywords.find(KeywordName(stringify(*a))))
-                    cout << "+ ";
+                    cout << colour(cl_bold_green, "+ ");
                 else if (keywords.end() != keywords.find(KeywordName("~" + stringify(*a))))
-                    cout << "~ ";
+                    cout << colour(cl_bold_yellow, "~ ");
                 else if (keywords.end() != keywords.find(KeywordName("-" + stringify(*a))))
-                    cout << "- ";
+                    cout << colour(cl_red, "- ");
                 else if (keywords.end() != keywords.find(KeywordName("-*")))
-                    cout << "* ";
+                    cout << colour(cl_red, "* ");
                 else
                     cout << "  ";
             }
