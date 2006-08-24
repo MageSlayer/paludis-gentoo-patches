@@ -30,6 +30,35 @@ of every change, see the ChangeLog.
     * libwrapiter is now used to simplify iterator interfaces and reduce compile
     times.
 
+    * Much better handling of Portage-generated VDB entries.
+
+    * For VDB repository entries, all USE flags are marked as masked / forced.
+
+    * --query on virtuals is more useful. USE flags are displayed for --query.
+    Sets can be shown with --query.
+
+    * New client: archtool, a tool for developers and arch teams.
+
+0.4.4:
+    * In key/value configuration files, line continuations inside a quoted
+    string with no backslash is now a warning, not an error.
+
+    * REAL_CHOST is now exported automatically, to avoid problems with
+    gcc-config when Portage is not installed.
+
+    * Support for newer libselinux /proc voodoo.
+
+    * svn+https:// is recognised for syncing.
+
+    * Huge speed improvements when merging.
+
+    * portageq vdb_path is now emulated.
+
+    * Fail hooks for ebuild phases are available.
+
+0.4.3:
+    * An infinite loop on unmerge bug has been fixed.
+
 0.4.2:
     * CONFIG_PROTECT now works as expected for ROOT=/.
 
