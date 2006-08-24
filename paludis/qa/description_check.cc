@@ -18,6 +18,8 @@
  */
 
 #include <paludis/qa/description_check.hh>
+#include <paludis/package_database_entry.hh>
+#include <paludis/environment.hh>
 #include <strings.h>
 
 using namespace paludis;

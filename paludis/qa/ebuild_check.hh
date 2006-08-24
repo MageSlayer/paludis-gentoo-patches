@@ -23,13 +23,14 @@
 #include <paludis/name.hh>
 #include <paludis/qa/check.hh>
 #include <paludis/qa/check_result.hh>
-#include <paludis/qa/environment.hh>
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/version_spec.hh>
 
 namespace paludis
 {
+    class Environment;
+
     namespace qa
     {
 

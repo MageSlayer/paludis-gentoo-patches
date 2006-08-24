@@ -19,6 +19,8 @@
 
 #include <paludis/qa/create_metadata_check.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/package_database_entry.hh>
+#include <paludis/environment.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

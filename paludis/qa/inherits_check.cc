@@ -19,6 +19,8 @@
 
 #include <algorithm>
 #include <iterator>
+#include <paludis/package_database_entry.hh>
+#include <paludis/environment.hh>
 #include <paludis/qa/inherits_check.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/tokeniser.hh>

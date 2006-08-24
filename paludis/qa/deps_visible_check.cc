@@ -19,6 +19,8 @@
 
 #include <paludis/qa/deps_visible_check.hh>
 
+#include <paludis/package_database_entry.hh>
+#include <paludis/environment.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_atom.hh>
 

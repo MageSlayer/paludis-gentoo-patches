@@ -18,9 +18,17 @@
  */
 
 #include <paludis/qa/message.hh>
+#include <ostream>
 
 using namespace paludis;
 using namespace paludis::qa;
 
 #include <paludis/qa/message-sr.cc>
+
+std::ostream &
+paludis::qa::operator<< (std::ostream & s, const Message & m)
+{
+    s << "(" << m.level << ") " << m.msg;
+    return s;
+}
 

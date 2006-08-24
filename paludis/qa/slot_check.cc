@@ -18,6 +18,8 @@
  */
 
 #include <paludis/qa/slot_check.hh>
+#include <paludis/package_database_entry.hh>
+#include <paludis/environment.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

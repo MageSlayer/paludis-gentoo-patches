@@ -21,6 +21,8 @@
 #include <iterator>
 #include <paludis/qa/restrict_check.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/package_database_entry.hh>
+#include <paludis/environment.hh>
 #include <set>
 
 using namespace paludis;

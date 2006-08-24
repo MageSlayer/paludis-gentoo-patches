@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_QA_MESSAGE_HH 1
 
 #include <string>
+#include <iosfwd>
 
 /** \file
  * Declarations for the Message class.
@@ -44,6 +45,7 @@ namespace paludis
 
 #include <paludis/qa/message-sr.hh>
 
+        std::ostream & operator<< (std::ostream &, const Message &);
     }
 }
 

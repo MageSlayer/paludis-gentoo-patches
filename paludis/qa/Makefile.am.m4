@@ -5,6 +5,7 @@ dnl vim: set ft=m4 noet :
 
 define(`filelist', `')dnl
 define(`testlist', `')dnl
+define(`headerlist', `')dnl
 define(`srlist', `')dnl
 define(`srcleanlist', `')dnl
 define(`srheaderlist', `')dnl
@@ -21,7 +22,7 @@ $1_TEST_LDADD = \
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
-define(`addhh', `define(`filelist', filelist `$1.hh')')dnl
+define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', headerlist `$1.hh')')dnl
 define(`addcc', `define(`filelist', filelist `$1.cc')')dnl
 define(`addimpl', `define(`filelist', filelist `$1-impl.hh')')dnl
 define(`addsr', `define(`srlist', srlist `$1.sr')dnl
@@ -54,7 +55,8 @@ libpaludisqa_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVIS
 TESTS = testlist
 
 TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
+	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
+	PALUDIS_SKIP_CONFIG="yes" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/test/run_test.sh
@@ -62,6 +64,8 @@ TESTS_ENVIRONMENT = env \
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
 noinst_LTLIBRARIES = libpaludisqa.la
+paludis_qaincludedir = $(includedir)/paludis/qa/
+paludis_qainclude_HEADERS = headerlist srheaderlist
 
 endif
 
@@ -74,7 +78,7 @@ qa.hh : qa.hh.m4 files.m4
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in Makefile.am qa.hh
 DISTCLEANFILES = srcleanlist
-BUILT_SOURCES = srcleanlist
+BUILT_SOURCES = srcleanlist qa.hh
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \

@@ -20,6 +20,8 @@
 #include <paludis/qa/iuse_check.hh>
 #include <set>
 #include <algorithm>
+#include <paludis/package_database_entry.hh>
+#include <paludis/environment.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/tokeniser.hh>
 

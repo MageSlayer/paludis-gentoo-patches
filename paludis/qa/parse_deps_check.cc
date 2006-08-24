@@ -18,6 +18,8 @@
  */
 
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/package_database_entry.hh>
+#include <paludis/environment.hh>
 #include <paludis/qa/parse_deps_check.hh>
 
 using namespace paludis;

@@ -18,7 +18,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/qa/environment.hh>
+#include <paludis/package_database_entry.hh>
+#include <paludis/qa/qa_environment.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <map>
 
@@ -46,56 +47,10 @@ QAEnvironment::~QAEnvironment()
 {
 }
 
-bool
-QAEnvironment::query_use(const UseFlagName &, const PackageDatabaseEntry *) const
+std::string
+QAEnvironment::paludis_command() const
 {
-    return false;
-}
-
-bool
-QAEnvironment::accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const
-{
-    return false;
-}
-
-bool
-QAEnvironment::accept_license(const std::string &, const PackageDatabaseEntry * const) const
-{
-    return false;
-}
-
-bool
-QAEnvironment::query_user_masks(const PackageDatabaseEntry &) const
-{
-    return false;
-}
-
-bool
-QAEnvironment::query_user_unmasks(const PackageDatabaseEntry &) const
-{
-    return false;
-}
-
-namespace
-{
-    static const std::multimap<std::string, std::string> qa_environment_mirrors;
-}
-
-QAEnvironment::MirrorIterator
-QAEnvironment::begin_mirrors(const std::string &) const
-{
-    return MirrorIterator(qa_environment_mirrors.begin());
-}
-
-QAEnvironment::MirrorIterator
-QAEnvironment::end_mirrors(const std::string &) const
-{
-    return MirrorIterator(qa_environment_mirrors.end());
-}
-
-UseFlagNameCollection::Pointer
-QAEnvironment::query_enabled_use_matching(const std::string &, const PackageDatabaseEntry *) const
-{
-    return UseFlagNameCollection::Pointer(new UseFlagNameCollection::Concrete);
+    return "diefunc 'qa_environment.cc' 'QAEnvironment::paludis_command()' "
+        "'paludis_command called from within QAEnvironment'";
 }
 

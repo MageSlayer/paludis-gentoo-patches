@@ -51,41 +51,7 @@ namespace paludis
 
                 ~QAEnvironment();
 
-                virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
-
-                virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
-
-                virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
-
-                virtual bool query_user_masks(const PackageDatabaseEntry &) const;
-
-                virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
-
-                virtual std::string bashrc_files() const
-                {
-                    return "";
-                }
-
-                virtual std::string hook_dirs() const
-                {
-                    return "";
-                }
-
-                virtual std::string paludis_command() const PALUDIS_ATTRIBUTE((noreturn))
-                {
-                    throw InternalError(PALUDIS_HERE, "Cannot use paludis_command in a QA environment");
-                }
-
-                virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
-                        const std::string &, const PackageDatabaseEntry *) const;
-
-                virtual MirrorIterator begin_mirrors(const std::string & mirror) const;
-
-                virtual MirrorIterator end_mirrors(const std::string & mirror) const;
-
-                virtual void perform_hook (const Hook &) const
-                {
-                }
+                virtual std::string paludis_command() const;
         };
     }
 }
