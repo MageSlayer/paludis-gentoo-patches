@@ -22,7 +22,10 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/system.hh>
+#include <paludis/util/pstream.hh>
 #include <sstream>
+#include <fcntl.h>
 #include <test/test_framework.hh>
 
 /** \file
@@ -41,11 +44,16 @@ namespace
     struct C
     {
         std::stringstream s;
+        int dev_null_pid;
 
-        C()
+        C() :
+            dev_null_pid(open("/dev/stderr", O_RDONLY))
         {
             test::set_exception_to_debug_string(&verbose_exception_to_debug_string);
             Log::get_instance()->set_log_stream(&s);
+
+            set_run_command_stderr_fds(dev_null_pid, -1);
+            PStream::set_stderr_fd(dev_null_pid, -1);
         }
     };
 
