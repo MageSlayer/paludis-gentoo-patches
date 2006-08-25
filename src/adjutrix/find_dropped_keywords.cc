@@ -108,6 +108,7 @@ namespace
          * version for us, best stable version for anyone). */
 
         bool is_interesting(false);
+        VersionSpec worst_keyworded("99999999");
         typedef std::map<SlotName, VersionsEntry> VersionsInSlots;
         VersionsInSlots versions_in_slots;
 
@@ -135,6 +136,7 @@ namespace
                 is_interesting = true;
                 versions_in_slots.find(metadata->slot)->second.best_keyworded =
                     std::max(versions_in_slots.find(metadata->slot)->second.best_keyworded, *v);
+                worst_keyworded = std::min(worst_keyworded, *v);
             }
 
             if (keywords.end() != std::find_if(keywords.begin(), keywords.end(), IsStableOrUnstableKeyword()))
@@ -150,6 +152,9 @@ namespace
                 s_end(versions_in_slots.end()) ; s != s_end ; ++s)
         {
             if (s->second.best_keyworded >= s->second.best_anywhere)
+                continue;
+
+            if (s->second.best_anywhere < worst_keyworded)
                 continue;
 
             write_package(package, s->first, s->second.best_keyworded, s->second.best_anywhere);
