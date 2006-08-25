@@ -30,6 +30,7 @@
 #include <libwrapiter/libwrapiter.hh>
 
 #include "qualudis_command_line.hh"
+#include "colour.hh"
 #include "config.h"
 
 using namespace paludis;
@@ -224,6 +225,8 @@ namespace
     do_check_package_dir(const FSEntry & dir, const Environment & env)
     {
         Context context("When checking package '" + stringify(dir) + "':");
+        cerr << xterm_title("Checking " + dir.dirname().basename() + "/" +
+                dir.basename() + " - qualudis");
 
         bool ok(true), fatal(false);
 
@@ -277,6 +280,8 @@ namespace
     {
         Context context("When checking category '" + stringify(dir) + "':");
 
+        cerr << xterm_title("Checking " + dir.basename() + " - qualudis");
+
         cout << "QA checks for category directory " << dir << ":" << endl;
         cout << endl;
 
@@ -312,6 +317,8 @@ namespace
     do_check_eclass_dir(const FSEntry & dir, const Environment &)
     {
         Context context("When checking eclass directory '" + stringify(dir) + "':");
+
+        cerr << xterm_title("Checking " + dir.basename() + " - qualudis");
 
         cout << "QA checks for eclass directory " << dir << ":" << endl;
         cout << endl;
