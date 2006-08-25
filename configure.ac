@@ -375,7 +375,7 @@ if test x"$ENABLE_QA" = "xyes" ; then
 		PCREPLUSPLUS_LIBS=`pcre++-config --libs`
 		AC_SUBST(PCREPLUSPLUS_LIBS)
 	else
-		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa is used])])
+		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa is used])
 	fi
 fi
 AC_SUBST([ENABLE_QA])
