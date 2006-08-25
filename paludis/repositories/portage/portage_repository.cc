@@ -181,6 +181,7 @@ namespace paludis
         has_repo_mask(false),
         has_virtuals(false),
         arch_flags(0),
+        has_mirrors(false),
         profile_ptr(0),
         news_ptr(new PortageRepositoryNews(params.environment, repo, p)),
         sets_ptr(new PortageRepositorySets(params.environment, repo, p)),
