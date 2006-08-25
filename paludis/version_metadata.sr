@@ -48,6 +48,7 @@ make_class_EbuildVersionMetadata()
     key src_uri std::string
     key restrict_string std::string
     key keywords std::string
+    key eclass_keywords std::string
     key iuse std::string
     key inherited std::string
 

@@ -180,6 +180,7 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
         _metadata->license_string = f.get("LICENSE");
         _metadata->description = f.get("DESCRIPTION");
         _metadata->get_ebuild_interface()->keywords = f.get("KEYWORDS");
+        _metadata->get_ebuild_interface()->eclass_keywords = f.get("E_KEYWORDS");
         _metadata->get_ebuild_interface()->inherited = f.get("INHERITED");
         _metadata->get_ebuild_interface()->iuse = f.get("IUSE");
         _metadata->deps.post_depend_string = f.get("PDEPEND");
