@@ -41,14 +41,14 @@ MetadataCheck::operator() (const FSEntry & f) const
         result << Message(qal_major, "Not a regular file");
     else
     {
-        FSEntry dtd(FSEntry(getenv_or_error("HOME")) / ".paludis");
+        FSEntry dtd(FSEntry(getenv_or_error("HOME")) / ".qualudis");
         if (! dtd.exists())
-            throw ConfigurationError("~/.paludis/ does not exist, please create it");
+            throw ConfigurationError("~/.qualudis/ does not exist, please create it");
 
         dtd /= "cache";
         if (! dtd.exists())
             if (0 != dtd.mkdir(0755))
-                throw ConfigurationError("~/.paludis/cache/ does not exist and cannot be created");
+                throw ConfigurationError("~/.qualudis/cache/ does not exist and cannot be created");
 
         dtd /= "metadata.dtd";
         if (! dtd.exists() || dtd.mtime() > (std::time(0) + (24 * 60 * 60)))
