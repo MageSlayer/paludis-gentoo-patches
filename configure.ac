@@ -368,12 +368,15 @@ AC_ARG_ENABLE([qa],
 			  [ENABLE_QA=no
 			   AC_MSG_RESULT([no])])
 if test x"$ENABLE_QA" = "xyes" ; then
-   AC_CHECK_PROG(HAVE_PRCEPLUSPLUS, [pcre++-config], [yes],
-				 [AC_MSG_ERROR([pcre++ is needed for --enable-qa])])
-	PCREPLUSPLUS_CFLAGS=`pcre++-config --cflags`
-	AC_SUBST(PCREPLUSPLUS_CFLAGS)
-	PCREPLUSPLUS_LIBS=`pcre++-config --libs`
-	AC_SUBST(PCREPLUSPLUS_LIBS)
+   AC_CHECK_PROG(HAVE_PRCEPLUSPLUS, [pcre++-config], [yes], [no]])
+   if test x"$HAVE_PRCEPLUSPLUS" = "xyes" ; then
+		PCREPLUSPLUS_CFLAGS=`pcre++-config --cflags`
+		AC_SUBST(PCREPLUSPLUS_CFLAGS)
+		PCREPLUSPLUS_LIBS=`pcre++-config --libs`
+		AC_SUBST(PCREPLUSPLUS_LIBS)
+	else
+		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa is used])])
+	fi
 fi
 AC_SUBST([ENABLE_QA])
 AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
