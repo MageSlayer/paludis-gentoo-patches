@@ -62,6 +62,9 @@ namespace paludis
                     continue;
                 }
 
+                PackageDatabase::Pointer db(new PackageDatabase(env));
+
+                /* create our portage repository */
                 AssociativeCollection<std::string, std::string>::Pointer keys(
                         new AssociativeCollection<std::string, std::string>::Concrete);
 
@@ -71,10 +74,14 @@ namespace paludis
                 keys->insert("cache", "/var/empty");
                 keys->insert("profiles", stringify(base / "profiles" / tokens.at(1)));
 
-                PackageDatabase::Pointer db(new PackageDatabase(env));
                 db->add_repository(RepositoryMaker::get_instance()->find_maker("portage")(env,
                             db.raw_pointer(), keys));
 
+                /* create our virtuals repository */
+                db->add_repository(RepositoryMaker::get_instance()->find_maker("virtuals")(env,
+                            db.raw_pointer(), AssociativeCollection<std::string, std::string>::Pointer(0)));
+
+                /* make the entry */
                 package_databases.push_back(PackageDatabasesEntry(PackageDatabasesEntry::create()
                             .arch(UseFlagName(tokens.at(0)))
                             .location(base / "profiles" / tokens.at(1))
