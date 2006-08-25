@@ -368,7 +368,7 @@ AC_ARG_ENABLE([qa],
 			  [ENABLE_QA=no
 			   AC_MSG_RESULT([no])])
 if test x"$ENABLE_QA" = "xyes" ; then
-   AC_CHECK_PROG(HAVE_PRCEPLUSPLUS, [pcre++-config], [yes], [no]])
+   AC_CHECK_PROG(HAVE_PRCEPLUSPLUS, [pcre++-config], [yes], [no])
    if test x"$HAVE_PRCEPLUSPLUS" = "xyes" ; then
 		PCREPLUSPLUS_CFLAGS=`pcre++-config --cflags`
 		AC_SUBST(PCREPLUSPLUS_CFLAGS)
