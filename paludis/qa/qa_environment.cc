@@ -21,6 +21,9 @@
 #include <paludis/package_database_entry.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/log.hh>
+#include <paludis/config_file.hh>
 #include <map>
 
 using namespace paludis;
@@ -28,16 +31,45 @@ using namespace paludis::qa;
 
 namespace paludis
 {
+    namespace qa
+    {
+#include <paludis/qa/qa_environment-sr.hh>
+#include <paludis/qa/qa_environment-sr.cc>
+    }
+
     template<>
     struct Implementation<QAEnvironmentBase> :
         InternalCounted<QAEnvironmentBase>
     {
-        std::map<std::string, PackageDatabase::Pointer> package_databases;
+        std::vector<PackageDatabasesEntry> package_databases;
 
-        Implementation(const FSEntry &, const Environment * const env)
+        Implementation(const FSEntry & base, const Environment * const env)
         {
-            package_databases.insert(std::make_pair("base",
-                        PackageDatabase::Pointer(new PackageDatabase(env))));
+            Context context("When creating package databases from profiles.desc under '"
+                    + stringify(base / "profiles") + "':");
+
+            LineConfigFile profiles_desc(base / "profiles" / "profiles.desc");
+            for (LineConfigFile::Iterator line(profiles_desc.begin()), line_end(profiles_desc.end()) ;
+                    line != line_end ; ++line)
+            {
+                std::vector<std::string> tokens;
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+
+                if (tokens.size() != 3)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Skipping invalid line '"
+                            + *line + "'");
+                    continue;
+                }
+                package_databases.push_back(PackageDatabasesEntry(PackageDatabasesEntry::create()
+                            .arch(UseFlagName(tokens.at(0)))
+                            .location(base / "profiles" / tokens.at(1))
+                            .status(tokens.at(2))
+                            .package_database(PackageDatabase::Pointer(new PackageDatabase(env)))));
+            }
+
+            if (package_databases.empty())
+                throw ProfilesDescError("No profiles.desc entries found");
         }
     };
 }
@@ -53,7 +85,7 @@ QAEnvironmentBase::~QAEnvironmentBase()
 
 QAEnvironment::QAEnvironment(const FSEntry & base) :
     QAEnvironmentBase(base, this),
-    Environment(_imp->package_databases.begin()->second)
+    Environment(_imp->package_databases.begin()->package_database)
 {
     AssociativeCollection<std::string, std::string>::Pointer keys(
             new AssociativeCollection<std::string, std::string>::Concrete);
@@ -78,5 +110,10 @@ QAEnvironment::paludis_command() const
 {
     return "diefunc 'qa_environment.cc' 'QAEnvironment::paludis_command()' "
         "'paludis_command called from within QAEnvironment'";
+}
+
+ProfilesDescError::ProfilesDescError(const std::string & message) throw () :
+    ConfigurationError("Bad profiles.desc: " + message)
+{
 }
 

@@ -15,6 +15,9 @@ END
 cat <<END > profiles/profile/make.defaults
 ARCH=test
 END
+cat <<END > profiles/profiles.desc
+test profile/ stable
+END
 mkdir -p cat-one/pkg-one
 cat <<END > cat-one/pkg-one/pkg-one-1.ebuild
 DESCRIPTION="foo"

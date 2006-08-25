@@ -63,6 +63,13 @@ namespace paludis
 
                 virtual std::string paludis_command() const;
         };
+
+        class ProfilesDescError :
+            public ConfigurationError
+        {
+            public:
+                ProfilesDescError(const std::string & message) throw ();
+        };
     }
 }
 
