@@ -18,7 +18,8 @@ $1_TEST_LDADD = \
 	libpaludisqa.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(DYNAMIC_LD_LIBS)
+	$(DYNAMIC_LD_LIBS) \
+	$(PCREPLUSPLUS_LIBS)
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
@@ -48,6 +49,8 @@ addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 include(`paludis/qa/files.m4')
 
 if ENABLE_QA
+
+INCLUDES = $(PCREPLUSPLUS_CFLAGS)
 
 libpaludisqa_la_SOURCES = filelist
 libpaludisqa_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0

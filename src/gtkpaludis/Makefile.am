@@ -10,7 +10,7 @@ DEFS = \
 
 SUBDIRS = vtemm .
 
-INCLUDES = $(DEPS_CFLAGS)
+INCLUDES = $(GTKDEPS_CFLAGS)
 
 if ENABLE_GTK
 
@@ -31,7 +31,7 @@ gtkpaludis_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/src/gtkpaludis/vtemm/libvtemm.a \
-	$(DEPS_LIBS) \
+	$(GTKDEPS_LIBS) \
 	$(DYNAMIC_LD_LIBS)
 
 endif

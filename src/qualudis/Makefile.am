@@ -22,7 +22,10 @@ qualudis_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(PCREPLUSPLUS_LIBS) \
 	$(DYNAMIC_LD_LIBS)
+
+INCLUDES = $(PCREPLUSPLUS_CFLAGS)
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

@@ -362,11 +362,19 @@ dnl }}}
 dnl {{{ check for whether to build qa stuff
 AC_MSG_CHECKING([whether to build QA tools])
 AC_ARG_ENABLE([qa],
-			  [  --enable-qa             Build QA things (qualudis) (maybe broken)],
+			  [  --enable-qa             Build QA things (needs pcre++)],
 			  [ENABLE_QA=$enableval
 			   AC_MSG_RESULT([$enableval])],
 			  [ENABLE_QA=no
 			   AC_MSG_RESULT([no])])
+if test x"$ENABLE_QA" = "xyes" ; then
+   AC_CHECK_PROG(HAVE_PRCEPLUSPLUS, [pcre++-config], [yes],
+				 [AC_MSG_ERROR([pcre++ is needed for --enable-qa])])
+	PCREPLUSPLUS_CFLAGS=`pcre++-config --cflags`
+	AC_SUBST(PCREPLUSPLUS_CFLAGS)
+	PCREPLUSPLUS_LIBS=`pcre++-config --libs`
+	AC_SUBST(PCREPLUSPLUS_LIBS)
+fi
 AC_SUBST([ENABLE_QA])
 AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
 dnl }}}
@@ -455,9 +463,9 @@ if test "x$enable_gtk" = "xyes"; then
 	AC_SUBST(GMMPROC_DIR)
 	GMMPROC=$GMMPROC_DIR/gmmproc
 	AC_SUBST(GMMPROC)
-	PKG_CHECK_MODULES(DEPS, [gtkmm-2.4 >= 2.6.0 glibmm-2.4 >= 2.6.0 pangomm-1.4 gdkmm-2.4 vte >= 0.12.1])
-	AC_SUBST(DEPS_CFLAGS)
-	AC_SUBST(DEPS_LIBS)
+	PKG_CHECK_MODULES(GTKDEPS, [gtkmm-2.4 >= 2.6.0 glibmm-2.4 >= 2.6.0 pangomm-1.4 gdkmm-2.4 vte >= 0.12.1])
+	AC_SUBST(GTKDEPS_CFLAGS)
+	AC_SUBST(GTKDEPS_LIBS)
 fi
 
 AM_CONDITIONAL([ENABLE_GTK], test "x$enable_gtk" = "xyes")

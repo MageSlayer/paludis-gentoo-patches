@@ -60,7 +60,7 @@ noinst_LIBRARIES = libvtemm.a
 nodist_libvtemm_a_SOURCES = \
 	$(vte_generated_sources)
 
-INCLUDES = $(DEPS_CFLAGS)
+INCLUDES = $(GTKDEPS_CFLAGS)
 
 clean-local :
 	rm -fr private || true

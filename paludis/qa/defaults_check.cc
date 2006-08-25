@@ -20,7 +20,7 @@
 #include <fstream>
 #include <paludis/qa/defaults_check.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/match_sequence.hh>
+#include <pcre++.h>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -44,25 +44,18 @@ DefaultsCheck::operator() (const FSEntry & f) const
 {
     CheckResult result(f, identifier());
 
-    static const MatchRule r_echo(*MatchRule("\t") >> MatchRule("echo"));
-    static const MatchRule r_einfo(*MatchRule("\t") >> MatchRule("einfo"));
-    static const MatchRule r_colon(*MatchRule("\t") >> MatchRule(":"));
-    static const MatchRule r_true(*MatchRule("\t") >> MatchRule("true"));
-    static const MatchRule r_comment(*MatchRule("\t") >> MatchRule("#"));
-    static const MatchRule r_econf(*MatchRule("\t") >> MatchRule("econf") >> *MatchRule(" ")
-            >> (MatchRule::eol() || (MatchRule("||") >> *MatchRule(" ") >> MatchRule("die"))));
-    static const MatchRule r_emake(*MatchRule("\t") >> MatchRule("emake") >> *MatchRule(" ")
-            >> (MatchRule::eol() || (MatchRule("||") >> *MatchRule(" ") >> MatchRule("die"))));
-    static const MatchRule r_unpack(*MatchRule("\t") >> MatchRule("unpack") >> *MatchRule(" ")
-            >> (MatchRule("\"$A\"") || MatchRule("\"${A}\"") || MatchRule("$A") || MatchRule("${A}"))
-            >> (MatchRule::eol() || (MatchRule("||") >> *MatchRule(" ") >> MatchRule("die"))));
-    static const MatchRule r_cd_s(*MatchRule("\t") >> MatchRule("cd") >> *MatchRule(" ")
-            >> (MatchRule("\"$S\"") || MatchRule("\"${S}\"") || MatchRule("$S") || MatchRule("${S}"))
-            >> (MatchRule::eol() || (MatchRule("||") >> *MatchRule(" ") >> MatchRule("die"))));
+    static pcrepp::Pcre::Pcre r_echo("^\\s*(echo|einfo|ewarn)");
+    static pcrepp::Pcre::Pcre r_colon("^\\s*:");
+    static pcrepp::Pcre::Pcre r_true("^\\s*true");
+    static pcrepp::Pcre::Pcre r_comment("^\\s*#");
+    static pcrepp::Pcre::Pcre r_econf("^\\s*econf( *\\|\\| *die.*)?$");
+    static pcrepp::Pcre::Pcre r_emake("^\\s*emake( *\\|\\| *die.*)?$");
+    static pcrepp::Pcre::Pcre r_unpack("^\\s*unpack *([$]A|[$][{]A[}]|\"[$][{]A[}]\"|[$][{]A[}])( *\\|\\| *die.*)?$");
+    static pcrepp::Pcre::Pcre r_cd_s("^\\s*cd *([$]S|[$][{]S[}]|\"[$][{]S[}]\"|[$][{]S[}])( *\\|\\| *die.*)?$");
 
     if (! f.is_regular_file())
         result << Message(qal_skip, "Not a regular file");
-    else if (! IsFileWithExtension(".ebuild")(f.basename()))
+    else if (! IsFileWithExtension(".ebuild")(f))
         result << Message(qal_skip, "Not an ebuild file");
     else
     {
@@ -98,19 +91,17 @@ DefaultsCheck::operator() (const FSEntry & f) const
                             }
                             else if (line.empty())
                                 ;
-                            else if (r_econf.match(line))
+                            else if (r_econf.search(line))
                                 ;
-                            else if (r_emake.match(line))
+                            else if (r_emake.search(line))
                                 ;
-                            else if (r_echo.match(line))
+                            else if (r_echo.search(line))
                                 ;
-                            else if (r_einfo.match(line))
+                            else if (r_colon.search(line))
                                 ;
-                            else if (r_colon.match(line))
+                            else if (r_true.search(line))
                                 ;
-                            else if (r_true.match(line))
-                                ;
-                            else if (r_comment.match(line))
+                            else if (r_comment.search(line))
                                 ;
                             else
                                 src_compile_changed = true;
@@ -127,19 +118,17 @@ DefaultsCheck::operator() (const FSEntry & f) const
                             }
                             else if (line.empty())
                                 ;
-                            else if (r_unpack.match(line))
+                            else if (r_unpack.search(line))
                                 ;
-                            else if (r_cd_s.match(line))
+                            else if (r_cd_s.search(line))
                                 ;
-                            else if (r_echo.match(line))
+                            else if (r_echo.search(line))
                                 ;
-                            else if (r_einfo.match(line))
+                            else if (r_colon.search(line))
                                 ;
-                            else if (r_colon.match(line))
+                            else if (r_true.search(line))
                                 ;
-                            else if (r_true.match(line))
-                                ;
-                            else if (r_comment.match(line))
+                            else if (r_comment.search(line))
                                 ;
                             else
                                 src_unpack_changed = true;
