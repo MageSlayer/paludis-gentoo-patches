@@ -26,8 +26,34 @@
 using namespace paludis;
 using namespace paludis::qa;
 
+namespace paludis
+{
+    template<>
+    struct Implementation<QAEnvironmentBase> :
+        InternalCounted<QAEnvironmentBase>
+    {
+        std::map<std::string, PackageDatabase::Pointer> package_databases;
+
+        Implementation(const FSEntry &, const Environment * const env)
+        {
+            package_databases.insert(std::make_pair("base",
+                        PackageDatabase::Pointer(new PackageDatabase(env))));
+        }
+    };
+}
+
+QAEnvironmentBase::QAEnvironmentBase(const FSEntry & b, const Environment * const env) :
+    PrivateImplementationPattern<QAEnvironmentBase>(new Implementation<QAEnvironmentBase>(b, env))
+{
+}
+
+QAEnvironmentBase::~QAEnvironmentBase()
+{
+}
+
 QAEnvironment::QAEnvironment(const FSEntry & base) :
-    Environment(PackageDatabase::Pointer(new PackageDatabase(this)))
+    QAEnvironmentBase(base, this),
+    Environment(_imp->package_databases.begin()->second)
 {
     AssociativeCollection<std::string, std::string>::Pointer keys(
             new AssociativeCollection<std::string, std::string>::Concrete);

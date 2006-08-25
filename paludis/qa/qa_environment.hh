@@ -23,13 +23,12 @@
 
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
  * Declarations for the QAEnvironment class.
- *
- * \ingroup Environment
- * \ingroup QA
  */
 
 namespace paludis
@@ -37,13 +36,24 @@ namespace paludis
     namespace qa
     {
         /**
+         * Base from member holder for our package databases.
+         */
+        class QAEnvironmentBase :
+            private PrivateImplementationPattern<QAEnvironmentBase>
+        {
+            friend class QAEnvironment;
+
+            protected:
+                QAEnvironmentBase(const FSEntry & base, const Environment * const env);
+                ~QAEnvironmentBase();
+        };
+
+        /**
          * The QAEnvironment is an Environment that corresponds to the environment
          * used by Qualudis for QA checks.
-         *
-         * \ingroup Environment
-         * \ingroup QA
          */
         class QAEnvironment :
+            public QAEnvironmentBase,
             public Environment
         {
             public:
