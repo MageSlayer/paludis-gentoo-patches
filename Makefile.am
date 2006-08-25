@@ -11,6 +11,7 @@ automake-deps-hack.tmp :
 	make -C paludis/util
 	make -C paludis/args
 	make -C paludis/qa message-sr.hh
+	make -C src libcolour.a
 	make -C src/paludis paludis.1
 	make -C src/qualudis qualudis.1
 	touch $@
