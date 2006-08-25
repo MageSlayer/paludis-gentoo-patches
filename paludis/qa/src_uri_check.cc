@@ -82,8 +82,13 @@ namespace
                         mirror_host.erase(p);
                         RepositoryMirrorsInterface * m(env->package_database()->fetch_repository(
                                     env->package_database()->favourite_repository())->mirrors_interface);
-                        if ((! m) || (! m->is_mirror(mirror_host)))
-                            result << Message(qal_major, "Unknown mirror for '" + a->text() + "'");
+                        if (! m)
+                            result << Message(qal_major, "Mirror '" + a->text() + "' used, but repository '"
+                                    + stringify(env->package_database()->favourite_repository())
+                                    + "' defines no mirrors interface");
+                        else if (! m->is_mirror(mirror_host))
+                            result << Message(qal_major, "Unknown mirror '" + mirror_host
+                                    + "' for '" + a->text() + "'");
                     }
                 }
             }
