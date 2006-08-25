@@ -20,6 +20,7 @@
 #include "virtuals_repository.hh"
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
+#include <paludis/match_package.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fast_unique_copy.hh>
 #include <paludis/util/log.hh>
@@ -96,22 +97,24 @@ VirtualsRepository::need_entries() const
         for (RepositoryVirtualsInterface::VirtualsCollection::Iterator p(
                     pp->begin()), p_end(pp->end()) ; p != p_end ; ++p)
         {
-            VersionSpecCollection::ConstPointer vv((*r)->version_specs(p->provided_by_name));
+            VersionSpecCollection::ConstPointer vv((*r)->version_specs(p->provided_by_atom->package()));
 
             /* following is debug, not warning, because of overlay style repos */
             if (vv->empty())
                 Log::get_instance()->message(ll_debug, lc_context, "No packages matching '"
-                        + stringify(p->provided_by_name) + "' for virtual '"
+                        + stringify(*p->provided_by_atom) + "' for virtual '"
                         + stringify(p->virtual_name) + " ' in repository '"
                         + stringify((*r)->name()) + "'");
 
             for (VersionSpecCollection::Iterator v(vv->begin()), v_end(vv->end()) ;
                     v != v_end ; ++v)
-                _imp->entries.push_back(VREntry::create()
-                        .virtual_name(p->virtual_name)
-                        .version(*v)
-                        .provided_by_name(p->provided_by_name)
-                        .provided_by_repository((*r)->name()));
+                if (match_package(_imp->env, p->provided_by_atom, PackageDatabaseEntry(
+                                p->provided_by_atom->package(), *v, (*r)->name())))
+                    _imp->entries.push_back(VREntry::create()
+                            .virtual_name(p->virtual_name)
+                            .version(*v)
+                            .provided_by_name(p->provided_by_atom->package())
+                            .provided_by_repository((*r)->name()));
         }
     }
 
@@ -165,7 +168,7 @@ VirtualsRepository::do_version_metadata(
             p.first->provided_by_repository)->virtuals_interface->virtual_package_version_metadata(
                 RepositoryVirtualsEntry::create()
                 .virtual_name(p.first->virtual_name)
-                .provided_by_name(p.first->provided_by_name), v);
+                .provided_by_atom(PackageDepAtom::Pointer(new PackageDepAtom(p.first->provided_by_name))), v);
 }
 
 bool

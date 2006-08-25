@@ -901,16 +901,9 @@ PortageRepository::virtual_packages() const
 
     for (PortageRepositoryProfile::VirtualsIterator i(_imp->profile_ptr->begin_virtuals()),
             i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
-    {
-        if (stringify(i->second->package()) != stringify(*i->second))
-            Log::get_instance()->message(ll_qa, lc_context, "Stripping virtual '"
-                    + stringify(i->first) + "' provider '" + stringify(*i->second) + "' to '" +
-                    stringify(i->second->package()) + "'");
-
         result->insert(RepositoryVirtualsEntry::create()
-                .provided_by_name(i->second->package())
+                .provided_by_atom(i->second)
                 .virtual_name(i->first));
-    }
 
     Log::get_instance()->message(ll_debug, lc_context, "Loaded " + stringify(result->size()) +
             " virtual packages for repository '" + stringify(name()) + "'");
@@ -922,16 +915,17 @@ VersionMetadata::ConstPointer
 PortageRepository::virtual_package_version_metadata(const RepositoryVirtualsEntry & p,
         const VersionSpec & v) const
 {
-    VersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, v));
+    VersionMetadata::ConstPointer m(version_metadata(p.provided_by_atom->package(), v));
     VersionMetadata::Virtual::Pointer result(new VersionMetadata::Virtual(
-                PortageDepParser::parse_depend, PackageDatabaseEntry(p.provided_by_name, v, name())));
+                PortageDepParser::parse_depend, PackageDatabaseEntry(
+                    p.provided_by_atom->package(), v, name())));
 
     result->slot = m->slot;
     result->license_string = m->license_string;
     result->eapi = m->eapi;
     result->deps = VersionMetadataDeps(&PortageDepParser::parse_depend,
-            "=" + stringify(p.provided_by_name) + "-" + stringify(v),
-            "=" + stringify(p.provided_by_name) + "-" + stringify(v), "");
+            "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v),
+            "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v), "");
 
     return result;
 
