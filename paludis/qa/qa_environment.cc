@@ -61,11 +61,25 @@ namespace paludis
                             + *line + "'");
                     continue;
                 }
+
+                AssociativeCollection<std::string, std::string>::Pointer keys(
+                        new AssociativeCollection<std::string, std::string>::Concrete);
+
+                keys->insert("format", "portage");
+                keys->insert("importace", "1");
+                keys->insert("location", stringify(base));
+                keys->insert("cache", "/var/empty");
+                keys->insert("profiles", stringify(base / "profiles" / tokens.at(1)));
+
+                PackageDatabase::Pointer db(new PackageDatabase(env));
+                db->add_repository(RepositoryMaker::get_instance()->find_maker("portage")(env,
+                            db.raw_pointer(), keys));
+
                 package_databases.push_back(PackageDatabasesEntry(PackageDatabasesEntry::create()
                             .arch(UseFlagName(tokens.at(0)))
                             .location(base / "profiles" / tokens.at(1))
                             .status(tokens.at(2))
-                            .package_database(PackageDatabase::Pointer(new PackageDatabase(env)))));
+                            .package_database(db)));
             }
 
             if (package_databases.empty())
@@ -87,18 +101,6 @@ QAEnvironment::QAEnvironment(const FSEntry & base) :
     QAEnvironmentBase(base, this),
     Environment(_imp->package_databases.begin()->package_database)
 {
-    AssociativeCollection<std::string, std::string>::Pointer keys(
-            new AssociativeCollection<std::string, std::string>::Concrete);
-
-    keys->insert("format", "portage");
-    keys->insert("importace", "1");
-    keys->insert("location", stringify(base));
-    keys->insert("cache", "/var/empty");
-    keys->insert("profile", stringify(base / "profiles" / "base"));
-
-    package_database()->add_repository(
-            RepositoryMaker::get_instance()->find_maker("portage")(this,
-            package_database().raw_pointer(), keys));
 }
 
 QAEnvironment::~QAEnvironment()
