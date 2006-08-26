@@ -377,6 +377,9 @@ if test x"$ENABLE_QA" = "xyes" ; then
 	else
 		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa is used])
 	fi
+	PKG_CHECK_MODULES(LIBXML2DEPS, [libxml-2.0 >= 2.6])
+	AC_SUBST(LIBXML2DEPS_CFLAGS)
+	AC_SUBST(LIBXML2DEPS_LIBS)
 fi
 AC_SUBST([ENABLE_QA])
 AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")

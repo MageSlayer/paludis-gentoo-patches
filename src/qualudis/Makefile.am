@@ -24,9 +24,10 @@ qualudis_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/src/libcolour.a \
 	$(PCREPLUSPLUS_LIBS) \
+	$(LIBXML2DEPS_LIBS) \
 	$(DYNAMIC_LD_LIBS)
 
-INCLUDES = $(PCREPLUSPLUS_CFLAGS)
+INCLUDES = $(PCREPLUSPLUS_CFLAGS) $(LIBXML2DEPS_CFLAGS)
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

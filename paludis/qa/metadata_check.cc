@@ -22,9 +22,22 @@
 #include <paludis/qa/metadata_check.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/log.hh>
+
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+
+#if !defined(LIBXML_XPATH_ENABLED) || !defined(LIBXML_SAX1_ENABLED)
+#  error "Need libxml2 built with SAX and XPath."
+#endif
 
 using namespace paludis;
 using namespace paludis::qa;
+
+namespace
+{
+
+}
 
 MetadataCheck::MetadataCheck()
 {
@@ -43,11 +56,16 @@ MetadataCheck::operator() (const FSEntry & f) const
     {
         FSEntry dtd(FSEntry(getenv_or_error("HOME")) / ".qualudis");
         if (! dtd.exists())
-            throw ConfigurationError("~/.qualudis/ does not exist, please create it");
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "Creating ~/.qualudis "
+                    "with mode 0755");
+            if (! dtd.mkdir(0755))
+                throw ConfigurationError("~/.qualudis/ does not exist, please create it");
+        }
 
         dtd /= "cache";
         if (! dtd.exists())
-            if (0 != dtd.mkdir(0755))
+            if (! dtd.mkdir(0755))
                 throw ConfigurationError("~/.qualudis/cache/ does not exist and cannot be created");
 
         dtd /= "metadata.dtd";
@@ -68,15 +86,27 @@ MetadataCheck::operator() (const FSEntry & f) const
                         "' -- you should remove this file manually before continuing");
         }
 
-        PStream xmllint("xmllint --noout --nonet --dtdvalid '"
-                + stringify(dtd) + "' '" + stringify(f) + "' 2>&1");
-
-        std::string s;
-        while (std::getline(xmllint, s))
-            ;
-
-        if (0 != xmllint.exit_status())
-            result << Message(qal_major, "XML validation failed");
+        xmlParserCtxtPtr xml_parser_context(xmlNewParserCtxt());
+        xmlDtdPtr xml_dtd(xmlParseDTD(0, reinterpret_cast<const xmlChar *>(stringify(dtd).c_str())));
+        if (! xml_dtd)
+            result << Message(qal_major, "Unable to parse DTD '" + stringify(dtd) + "'");
+        else
+        {
+            xmlDocPtr xml_doc(xmlCtxtReadFile(xml_parser_context, stringify(f).c_str(), 0, XML_PARSE_DTDLOAD));
+            if (! xml_doc)
+                result << Message(qal_major, "Unable to parse '" + stringify(f) + "'");
+            else
+            {
+                xmlValidCtxtPtr xml_valid_context(xmlNewValidCtxt());
+                if (! xmlValidateDtd(xml_valid_context, xml_doc, xml_dtd))
+                    result << Message(qal_major, "Validation of '" + stringify(f) + "' against '"
+                            + stringify(dtd) + "' failed");
+                xmlFreeValidCtxt(xml_valid_context);
+                xmlFreeDoc(xml_doc);
+            }
+            xmlFreeDtd(xml_dtd);
+        }
+        xmlFreeParserCtxt(xml_parser_context);
     }
 
     return result;
