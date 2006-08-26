@@ -377,7 +377,8 @@ if test x"$ENABLE_QA" = "xyes" ; then
 	else
 		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa is used])
 	fi
-	PKG_CHECK_MODULES(LIBXML2DEPS, [libxml-2.0 >= 2.6])
+	PKG_CHECK_MODULES(LIBXML2DEPS, [libxml-2.0 >= 2.6], [],
+		[AC_MSG_ERROR([libxml2 (http://xmlsoft.org/) is required if --enable-qa is used])])
 	AC_SUBST(LIBXML2DEPS_CFLAGS)
 	AC_SUBST(LIBXML2DEPS_LIBS)
 fi
@@ -469,7 +470,8 @@ if test "x$enable_gtk" = "xyes"; then
 	AC_SUBST(GMMPROC_DIR)
 	GMMPROC=$GMMPROC_DIR/gmmproc
 	AC_SUBST(GMMPROC)
-	PKG_CHECK_MODULES(GTKDEPS, [gtkmm-2.4 >= 2.6.0 glibmm-2.4 >= 2.6.0 pangomm-1.4 gdkmm-2.4 vte >= 0.12.1])
+	PKG_CHECK_MODULES(GTKDEPS, [gtkmm-2.4 >= 2.6.0 glibmm-2.4 >= 2.6.0 pangomm-1.4 gdkmm-2.4 vte >= 0.12.1],
+		[], [AC_MSG_ERROR([gtkmm-2.4 and vte-0.12.1 or later are required if --enable-gtk is used])])
 	AC_SUBST(GTKDEPS_CFLAGS)
 	AC_SUBST(GTKDEPS_LIBS)
 fi
