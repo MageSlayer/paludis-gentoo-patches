@@ -15,7 +15,7 @@ noinst_PROGRAMS = force_automake_to_include_cxxcompile
 
 endif
 
-INCLUDES = $(DEPS_CFLAGS)
+INCLUDES = $(GTKDEPS_CFLAGS)
 
 force_automake_to_include_cxxcompile_SOURCES = force_automake_to_include_cxxcompile.cc
 
@@ -23,7 +23,7 @@ force_automake_to_include_cxxcompile.cc :
 	echo 'int main(int, char *[]) { }' > $@
 
 generate_defs_vte : generate_defs_vte.cc
-	$(CXXCOMPILE) $(DEPS_LIBS) -lglibmm_generate_extra_defs-2.4 -o $@ $<
+	$(CXXCOMPILE) $(GTKDEPS_LIBS) -lglibmm_generate_extra_defs-2.4 -o $@ $<
 
 CLEANFILES = *~ force_automake_to_include_cxxcompile.cc generate_defs_vte
 MAINTAINERCLEANFILES = Makefile.in $(vte_defs)
