@@ -36,7 +36,34 @@ using namespace paludis::qa;
 
 namespace
 {
+    template <typename PtrType_>
+    class LibXmlPtrHolder
+    {
+        private:
+            PtrType_ _ptr;
+            void (* _free_func) (PtrType_);
 
+            LibXmlPtrHolder(const LibXmlPtrHolder &);
+            void operator= (const LibXmlPtrHolder &);
+
+        public:
+            LibXmlPtrHolder(PtrType_ ptr, void (* free_func) (PtrType_)) :
+                _ptr(ptr),
+                _free_func(free_func)
+            {
+            }
+
+            ~LibXmlPtrHolder()
+            {
+                if (0 != _ptr)
+                    _free_func(_ptr);
+            }
+
+            operator PtrType_ () const
+            {
+                return _ptr;
+            }
+    };
 }
 
 MetadataCheck::MetadataCheck()
@@ -86,27 +113,26 @@ MetadataCheck::operator() (const FSEntry & f) const
                         "' -- you should remove this file manually before continuing");
         }
 
-        xmlParserCtxtPtr xml_parser_context(xmlNewParserCtxt());
-        xmlDtdPtr xml_dtd(xmlParseDTD(0, reinterpret_cast<const xmlChar *>(stringify(dtd).c_str())));
+        LibXmlPtrHolder<xmlParserCtxtPtr> xml_parser_context(xmlNewParserCtxt(), &xmlFreeParserCtxt);
+        LibXmlPtrHolder<xmlDtdPtr> xml_dtd(
+                xmlParseDTD(0, reinterpret_cast<const xmlChar *>(stringify(dtd).c_str())), &xmlFreeDtd);
+
         if (! xml_dtd)
             result << Message(qal_major, "Unable to parse DTD '" + stringify(dtd) + "'");
         else
         {
-            xmlDocPtr xml_doc(xmlCtxtReadFile(xml_parser_context, stringify(f).c_str(), 0, XML_PARSE_DTDLOAD));
+            LibXmlPtrHolder<xmlDocPtr> xml_doc(xmlCtxtReadFile(
+                        xml_parser_context, stringify(f).c_str(), 0, XML_PARSE_DTDLOAD), &xmlFreeDoc);
             if (! xml_doc)
                 result << Message(qal_major, "Unable to parse '" + stringify(f) + "'");
             else
             {
-                xmlValidCtxtPtr xml_valid_context(xmlNewValidCtxt());
+                LibXmlPtrHolder<xmlValidCtxtPtr> xml_valid_context(xmlNewValidCtxt(), &xmlFreeValidCtxt);
                 if (! xmlValidateDtd(xml_valid_context, xml_doc, xml_dtd))
                     result << Message(qal_major, "Validation of '" + stringify(f) + "' against '"
                             + stringify(dtd) + "' failed");
-                xmlFreeValidCtxt(xml_valid_context);
-                xmlFreeDoc(xml_doc);
             }
-            xmlFreeDtd(xml_dtd);
         }
-        xmlFreeParserCtxt(xml_parser_context);
     }
 
     return result;
