@@ -3,7 +3,7 @@
 # $Id: $
 
 DESCRIPTION="Read GLEP 42 news items"
-MAINTAINER="ciaran.mccreesh@blueyonder.co.uk"
+MAINTAINER="ciaranm@ciaranm.org"
 SVN_DATE='$Date: $'
 VERSION=$(svn_date_to_version "${SVN_DATE}" )
 
