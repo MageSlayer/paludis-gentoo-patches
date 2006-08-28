@@ -11,6 +11,7 @@ installvarlibpaludisnewsdir = $(localstatedir)/paludis/news
 
 installhookcommonprogdir = $(libexecdir)/paludis/hooks/common
 installhookinstallallpostdir = $(libexecdir)/paludis/hooks/install_all_post
+installhookinstallpostdir = $(libexecdir)/paludis/hooks/install_post
 
 installhookcommonprog_SCRIPTS = \
 	gnu_info_index.bash \
@@ -20,6 +21,9 @@ installhookcommonprog_SCRIPTS = \
 
 installhookinstallallpost_SCRIPTS = \
 	find_config_updates.bash
+
+installhookinstallpost_SCRIPTS = \
+	update_config_protect_list.bash
 
 installvarlibpaludisnews_DATA = \
 	.keep
