@@ -38,6 +38,7 @@ EXTRA_DIST = \
 	Makefile.am.m4 \
 	$(installhookcommonprog_SCRIPTS) \
 	$(installhookinstallallpost_SCRIPTS) \
+	$(installhookinstallpost_SCRIPTS) \
 	$(TESTS)
 
 check_SCRIPTS = $(TESTS)
