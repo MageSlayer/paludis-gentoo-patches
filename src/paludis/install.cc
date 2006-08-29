@@ -193,7 +193,7 @@ namespace
                         "::" + stringify(d.repository)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
-                        stringify(_max_count) + ") Installing " +
+                        stringify(_max_count + _max_virtual_count) + ") Installing " +
                         stringify(d.name) + "-" + stringify(d.version) +
                         "::" + stringify(d.repository));
             }
