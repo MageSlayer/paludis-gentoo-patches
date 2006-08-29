@@ -12,7 +12,7 @@ if [[ ! -f "${cfg_protect_list}" || ! -f "${cfg_protect_mask_list}" ]] ; then
     > "${cfg_protect_list}"
     > "${cfg_protect_mask_list}"
 
-    installed_pkgs=$(${PALUDIS_COMMAND} --list-packages --repository installed |grep ^* |cut -d" " -f2)
+    installed_pkgs=$(${PALUDIS_COMMAND} --list-packages --repository installed |grep "^*" |cut -d" " -f2)
 
     for p in ${installed_pkgs} ; do
         cfg_protect=$(${PALUDIS_COMMAND} --environment-variable ${p} CONFIG_PROTECT)
