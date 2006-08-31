@@ -1,0 +1,60 @@
+/* vim: set ft=cpp tw=80 sw=4 et : */
+
+/**
+\page KnownIssues Known Issues
+
+\section KnownIssuesMain About these issues
+
+This document describes some of the more commonly encountered problems, issues
+and things that aren't bugs but might look like they are. Pestering anyone about
+these is liable to get you hurt.
+
+\section KnownIssuesPackages Packages
+
+\subsection KnownIssuesUdev sys-fs/udev
+
+Problem: <code>sys-fs/udev</code> will fail at the merge stage.
+
+Workaround: Use <code>~arch</code> for this package. We don't support merging
+fancy things like device files.
+
+\subsection KnownIssuesKDE Some KDE libraries are broken on some amd64 profiles
+
+Problem: Various KDE applications install libraries into the wrong libdir.
+
+Workaround: Check your profile. You can't use <code>default-linux/amd64/</code>
+directly -- you have to use one of the release subdirectories. If this still
+fails, someone who knows what they're doing needs to sit down and figure out
+exactly what's going on for the profile in question.
+
+\subsection KnownIssuesCheck Various packages fail src_test
+
+Problem: Various packages fail <code>src_test</code>
+
+Workaround: You can <code>export SKIP_FUNCTIONS="test"</code> to skip tests. This
+is best done on a per-package basis via <code>bashrc</code>:
+
+\verbatim
+case "${PN}" in
+
+    automake|glibc|e2fsprogs|neon|gettext|tar)
+        export SKIP_FUNCTIONS=test
+        ;;
+
+esac
+\endverbatim
+
+Unfortunately not all package maintainers care about making their package's test
+suite work. This is a nuisance, a) because it makes things much harder for arch
+teams and b) because it makes it harder for users to catch bugs.
+
+\subsection KnownIssuesRootSandbox Sandbox violations when ROOT!=/
+
+Problem: Sandbox violations when ROOT!=/
+
+Workaround: Paludis enforces ROOT. However, some packages don't honour ROOT. To
+temporarily disable sandbox for these packages, <code>export SANDBOX_PREDICT=/</code>.
+
+*/
+
+

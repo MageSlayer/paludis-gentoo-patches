@@ -5,39 +5,39 @@
 
 \section BootstrapHowtoMain How to make a Paludis chroot
 
-<b>THIS WILL PROBABLY NOT ACTUALLY WORK!</b> Paludis is at the very
-early alpha stage.  It can sometimes install things, if you're very lucky, and
-if you're really lucky it might let you upgrade or uninstall them too. There are
-zillions of things that are not implemented. There are zillions of things that
-Paludis does differently from Portage -- some of these are intentional, some are
-not.
-
 <b>You may encounter problems!</b> Paludis is still undergoing heavy development,
 and although it's getting to be fairly reliable, there are still issues. Most
-ebuild authors don't test their code with both package managers.
+ebuild authors don't test their code with both package managers. You will also
+find that some packages are very picky about honouring <code>ROOT</code>. At the
+very least, you will encounter issues if you are trying to build a stable stage
+from an unstable system.
 
 You should join the <code>\#paludis</code> channel on Freenode. If you're doing
 anything development-related, you should probably also ask to be allowed to
 subscribe to the <code>paludis-sekrit</code> mailing list.
 
-\warning Do not try to use Paludis and Portage to install things inside the same
-    root. The config and vdb formats are not compatible!
+\warning Using Portage and Paludis on the same root isn't a very good idea. There
+    are differences in configuration and VDB formats.
 
 \warning Do not file bugs related to Paludis on Gentoo Bugzilla. Do not discuss
     Paludis on Gentoo mailing lists or forums. Do not pester Gentoo developers
-    about Paludis.
+    about Paludis. Read the \link KnownIssues known issues \endlink list.
 
 \section BootstrapHowtoRequirements Requirements
 
 Install Paludis locally, being sure to configure <code>sysconfdir</code> as
-<code>/etc</code> to avoid confusion later on. There're ebuilds in the tree, or in
-<a href="http://svn.pioto.org/viewvc/paludis/overlay/">
-the Paludis overlay</a> if you need SVN ebuilds.
+<code>/etc</code>, <code>localstatedir</code> as <code>/var/lib</code> and
+<code>datadir</code> as <code>/usr/share</code> to avoid confusion later on.
+There're ebuilds in the tree, or in <a
+href="http://svn.pioto.org/viewvc/paludis/overlay/"> the Paludis overlay</a> if
+you need SVN ebuilds.
 
-You'll need libebt, eselect and Subversion. You'll also need either g++-3.4,
-g++-4.1 or some other reasonably standard C++ compiler along with a complete
-standard library implementation (so no uClibc++). If you're trying to run on
-non-Linux, you'll also need to fix a few includes and submit a patch.
+You'll need libebt, libwrapiter, eselect and Subversion. If you're using the QA
+tools (<code>--enable-qa</code>) you will also need pcre++ (and pcre, by
+extension) and libxml2. You'll also need either g++-3.4, g++-4.1 or some other
+reasonably standard C++ compiler along with a complete standard library
+implementation (so no uClibc++). If you're trying to run on non-Linux, you'll
+also need to fix a few includes and submit a patch.
 
 Make sure the test suite passes (either <code>FEATURES="test"</code> for
 Portage, or <code>make check</code>). If it fails, don't continue until you
@@ -75,12 +75,12 @@ should use <code>* arch ~arch</code>.
 
 \verbatim
 cat <<"END" > /mychroot/etc/paludis/keywords.conf
-* x86
-dev-cpp/libebt x86 ~x86
-sys-apps/paludis x86 ~x86
-dev-util/subversion x86 ~x86
-app-admin/eselect x86 ~x86
-app-editors/vim x86 ~x86
+*                    x86
+dev-cpp/libebt       x86 ~x86
+sys-apps/paludis     x86 ~x86
+dev-util/subversion  x86 ~x86
+app-admin/eselect    x86 ~x86
+app-editors/vim      x86 ~x86
 app-editors/vim-core x86 ~x86
 END
 \endverbatim

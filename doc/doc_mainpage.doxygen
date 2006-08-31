@@ -6,6 +6,10 @@
 
 This is the documentation for Paludis, the other package manager. It is available as part of Paludis via <code>make doxygen</code>, or on the web at <a href="http://paludis.berlios.de/">the Paludis project page</a>.
 
+\warning Do not file bugs related to Paludis on Gentoo Bugzilla. Do not discuss
+    Paludis on Gentoo mailing lists or forums. Do not pester Gentoo developers
+    about Paludis. Read the \link KnownIssues known issues \endlink list.
+
 \section userdocs For End Users
 
 Paludis is still undergoing heavy development. It is not a mature solution, and
@@ -14,19 +18,16 @@ Paludis (some of which may leave your system unusable). Most ebuild authors do
 not test their code with both package managers.
 
 If you find this acceptable, read \link BootstrapHowto the Bootstrap HOWTO
-\endlink for how to set up a chroot or make a stage. You may also like to read
-about \link PortageDifferences some of the differences between Paludis and
-Portage\endlink.
+\endlink for how to set up a chroot or make a stage, or \link MigrationHowto the
+Migration HOWTO \endlink for how to migrate an existing install (this is less
+reliable). You may also like to read about \link PortageDifferences some of the
+differences between Paludis and Portage \endlink.
 
 We have a <a href="https://developer.berlios.de/bugs/?group_id=6360">bug
 tracker</a> and some
 <a href="https://developer.berlios.de/mail/?group_id=6360">mailing lists</a>, but
 you shouldn't try to use these until after you've discussed your problem in our
 IRC channel. Read the howto for more details.
-
-\warning Do not file bugs related to Paludis on Gentoo Bugzilla. Do not discuss
-    Paludis on Gentoo mailing lists or forums. Do not pester Gentoo developers
-    about Paludis.
 
 \section developerdocs For Developers
 
