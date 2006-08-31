@@ -72,20 +72,20 @@ _paludis() {
 					return 0
 					;;
                 --repository)
-                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-repositories |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-repositories --log-level silent |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
                     return 0
                     ;;
                 --category)
-                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-categories |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-categories --log-level silent |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
                     return 0
                     ;;
                 --package)
-                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-packages |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-packages --log-level silent |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
                     return 0
                     ;;
                 *)
                     # Do package name completion, etc
-                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-packages |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-packages --log-level silent |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
                     return 0
                     ;;
 			esac
