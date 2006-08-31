@@ -1,0 +1,95 @@
+# Bash completion function for paludis
+# Written by Mike Kelly
+# vim: set et sw=4 sts=4 ts=4 ft=sh :
+
+# NOTE: This is still a work in progress, don't expect it to work well or
+# properly right now.
+
+_paludis() {
+	local cur prev opts
+	COMPREPLY=()
+	cur=${COMP_WORDS[COMP_CWORD]}
+	prev=${COMP_WORDS[COMP_CWORD-1]}
+
+	opts="--query -q \
+		--install -i \
+		--uninstall -u \
+		--sync -s \
+		--contents -k \
+		--owner -o \
+		--version -V \
+		--info -I \
+		--help -h \
+		--has-version \
+		--best-version \
+		--environment-variable \
+		--configuration-variable \
+		--list-repositories \
+		--list-categories \
+		--list-packages \
+		--list-sync-protocols \
+		--list-repository-formats \
+		--list-dep-tag-categories \
+		--list-vulnerabilities \
+		--update-news \
+		--log-level \
+		--no-colour -C \
+		--no-color \
+		--config-suffix -c \
+		--show-slot -S \
+		--show-deps -D \
+		--show-metadata -M \
+		--pretend -p \
+		--preserve-world -1 \
+		--no-config-protection \
+		--fetch -f \
+		--dl-rdepend-post \
+		--dl-drop-self-circular \
+		--dl-drop-circular \
+		--dl-drop-all -0 \
+		--dl-ignore-installed -e \
+		--dl-no-recursive-deps \
+		--dl-max-stack-depth \
+		--dl-no-unnecessary-upgrades -U \
+		--repository \
+		--category \
+		--package \
+		--full-match"
+
+	case "${cur}" in
+		-*)
+			COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+			return 0
+			;;
+		*)
+			case "${prev}" in
+				--log-level)
+					COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
+					return 0
+					;;
+				--dl-rdepend-post)
+					COMPREPLY=($(compgen -W "always never as-needed" -- "${cur}"))
+					return 0
+					;;
+                --repository)
+                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-repositories |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
+                    return 0
+                    ;;
+                --category)
+                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-categories |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
+                    return 0
+                    ;;
+                --package)
+                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-packages |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
+                    return 0
+                    ;;
+                *)
+                    # Do package name completion, etc
+                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-packages |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
+                    return 0
+                    ;;
+			esac
+			;;
+	esac
+}
+complete -F _paludis paludis
