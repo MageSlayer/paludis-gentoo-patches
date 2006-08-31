@@ -147,6 +147,11 @@ variable <code>${ROOT}</code> is defined based upon <code>specpath</code>. All
 files must define a <code>format =</code> key; depending upon the value used, other
 optional and mandatory keys are available.
 
+Each repository can have a key named <code>importance</code>. This is used when
+two different repositories contain an identical package atom (e.g. foo/bar-1.0).
+The repository with the higher importance will always be chosen first. If not
+provided, the default is 0.
+
 \subsection ConfigurationFilesRepositoriesPortage portage Format Repositories
 
 \note The name <code>portage</code> is used here to refer to repositories in the
