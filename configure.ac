@@ -246,7 +246,12 @@ else
 		AC_MSG_RESULT([visibility])
 		AC_MSG_ERROR([Bad ricer. No bagel.])
 	else
-		AC_MSG_RESULT([no])
+		if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "enforce-eh" >/dev/null ; then
+			AC_MSG_RESULT([enforce-eh])
+			AC_MSG_ERROR([Bad ricer. No bagel.])
+		else
+			AC_MSG_RESULT([no])
+		fi
 	fi
 fi
 
