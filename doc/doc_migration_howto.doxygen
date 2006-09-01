@@ -7,7 +7,12 @@
     Paludis on Gentoo mailing lists or forums. Do not pester Gentoo developers
     about Paludis. Read the \link KnownIssues known issues \endlink list.
 
-\section MigrationHowtoPortageToPaludis How to Migrate from Portage to Paludis
+There are two methods you can follow to migrate from Portage to Paludis, the
+<a href="#MigrationHowtoPortageToPaludisManual">Manual Method</a>, and the
+<a href="#MigrationHowtoPortageToPaludisAutomated">Automated Method</a>. Also,
+it is now usually possible to migrate <a href="#MigrationHowtoPaludisToPortage">from Paludis back to Portage</a>.
+
+\section MigrationHowtoPortageToPaludisAutomated How to Migrate from Portage to Paludis (the automated method)
 
 Ideally, you'd install Paludis from scratch. However, it's usually possible to
 migrate from Portage to Paludis without too many issues.
@@ -15,11 +20,101 @@ migrate from Portage to Paludis without too many issues.
 \warning Migration is not entirely reliable.
 
 Start by installing Paludis. There are ebuilds in the tree, or you can get SVN
-ebuilds (which Portage can't use) from <a
-href="http://svn.pioto.org/viewvc/paludis/overlay/"> the Paludis overlay</a>. If
-you don't like the <code>libxml2</code> and <code>pcre++</code> dependencies,
-turn off the <code>qa</code> USE flag. <b>Make sure you are using at least version
-0.6</b> when following this guide.
+ebuilds (which Portage can't use) from
+<a href="http://svn.pioto.org/viewvc/paludis/overlay/"> the Paludis overlay</a>.
+If you don't like the <code>libxml2</code> and <code>pcre++</code> dependencies,
+turn off the <code>qa</code> USE flag. <b>Make sure you are using at least
+version 0.6</b> when following this guide.
+
+The easiest way to migrate your configuration from Portage to Paludis is by
+using the <a href="http://svn.pioto.org/viewvc/paludis/scratch/scripts/portage2paludis.bash">portage2paludis.bash</a> script, available via subversion. It is invoked as follows:
+
+\verbatim
+$ sudo ./portage2paludis.bash
+Portage2Paludis:
+
+This script will attempt to convert an existing portage configuration to
+a paludis configuration. It assumes that the portage configuration can
+be found via /etc/make.conf, /etc/make.profile, and /etc/portage/*
+
+Please enter where you would like your new paludis configuration to be
+created, or press enter to use the default.
+
+Paludis Config Directory [/etc/paludis]: 
+
+* Configuration Files:
+Generating use.conf (Pass 1 of 3)... done.
+Generating use.conf (Pass 2 of 3)... done.
+Generating use.conf (Pass 3 of 3)... done.
+Generating bashrc (Pass 1 of 1)... done.
+Generating keywords.conf (Pass 1 of 2)... done.
+Generating keywords.conf (Pass 2 of 2)... done.
+Generating mirrors.conf (Pass 1 of 1)... done.
+Generating package_mask.conf (Pass 1 of 1)... done.
+Generating package_unmask.conf (Pass 1 of 1)... done.
+Generating licenses.conf stub (Pass 1 of 1)... done.
+
+* Standard Repositories:
+Generating gentoo.conf (/usr/portage) (Pass 1 of 1)... done.
+Generating installed.conf (/var/db/pkg) (Pass 1 of 1)... done.
+Creating /var/db/pkg/world -> /var/lib/portage/world symlink... done.
+
+* Overlays:
+Generating portage.conf (/usr/local/portage) (Pass 1 of 1)... done.
+Generating vmware.conf (/usr/portage/local/layman/vmware) (Pass 1 of 1)... done.
+
+Complete!
+You now have a new paludis config in: /etc/paludis
+\endverbatim
+
+A few notes on the migration script. The target directory <b>must not exist</b>,
+or the script will bail out. This is to prevent it from clobbering an existing
+paludis config. Also, the script will not migrate your customized portage
+bashrc, that is somethign you will have to do on your own.
+
+The script will migrate your <code>PORTDIR_OVERLAYS</code> to Plaudis as best as
+possible, but, currently, Paludis doesn't support all the sync methods that
+<i>layman</i> does, so you will still probably want to run <code>layman
+-S</code> to update any layman repositories you have now. Finally, the script
+will first try to name your repositories what their profiles/repo_name file
+says they should be called and, if that fails, they will be called what their
+top level directory is called (so, /usr/local/portage is called "portage"). If
+any name collisions occur, the script will terminate, and you will have to
+finish configuring your overlays on your own.
+
+Now, try:
+
+\verbatim
+sudo paludis --sync
+paludis -pi world
+\endverbatim
+
+You will likely find that it picks up a few packages that Portage wouldn't. This
+is to be expected -- the Paludis dependency resolver is considerably more complete
+than the Portage one, and it will try to enforce runtime dependencies of already
+installed packages. In particular, this means that if you have any packages
+installed that have a <code>virtual/x11</code> runtime dependency, the virtual will
+be pulled in.
+
+You may encounter some nasty error messages, especially if you're running an old
+install and have some packages that were installed a very long time ago with a
+broken Portage release. In most cases, removing the VDB entry by hand and then
+immediately reinstalling the same version of the package using Paludis (or even
+a recent Portage) will suffice.
+
+\section MigrationHowtoPortageToPaludisManual How to Migrate from Portage to Paludis (the manual method)
+
+Ideally, you'd install Paludis from scratch. However, it's usually possible to
+migrate from Portage to Paludis without too many issues.
+
+\warning Migration is not entirely reliable.
+
+Start by installing Paludis. There are ebuilds in the tree, or you can get SVN
+ebuilds (which Portage can't use) from
+<a href="http://svn.pioto.org/viewvc/paludis/overlay/"> the Paludis overlay</a>.
+If you don't like the <code>libxml2</code> and <code>pcre++</code> dependencies,
+turn off the <code>qa</code> USE flag. <b>Make sure you are using at least
+version 0.6</b> when following this guide.
 
 Next, make some configuration files. For full details, see \link ConfigurationFiles
 the configuration files documentation \endlink . For a quick template:
