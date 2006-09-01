@@ -17,6 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/about.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -101,7 +102,8 @@ RepositorySoLoader::load_dir(const FSEntry & so_dir)
         if (d->is_directory())
             load_dir(*d);
 
-        if (! IsFileWithExtension(".so")(*d))
+        if (! IsFileWithExtension(".so." + stringify(100 * PALUDIS_VERSION_MAJOR +
+                        PALUDIS_VERSION_MINOR))(*d))
             continue;
 
         void * dl(dlopen(stringify(*d).c_str(), RTLD_LOCAL | RTLD_NOW));
