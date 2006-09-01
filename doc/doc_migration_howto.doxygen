@@ -8,9 +8,9 @@
     about Paludis. Read the \link KnownIssues known issues \endlink list.
 
 There are two methods you can follow to migrate from Portage to Paludis, the
-<a href="#MigrationHowtoPortageToPaludisManual">Manual Method</a>, and the
-<a href="#MigrationHowtoPortageToPaludisAutomated">Automated Method</a>. Also,
-it is now usually possible to migrate <a href="#MigrationHowtoPaludisToPortage">from Paludis back to Portage</a>.
+\ref MigrationHowtoPortageToPaludisManual "Manual Method", and the \ref
+MigrationHowtoPortageToPaludisAutomated "Automated Method". Also, it is now
+usually possible to migrate \ref MigrationHowtoPaludisToPortage "from Paludis back to Portage".
 
 \section MigrationHowtoPortageToPaludisAutomated How to Migrate from Portage to Paludis (the automated method)
 
@@ -72,7 +72,7 @@ or the script will bail out. This is to prevent it from clobbering an existing
 paludis config. Also, the script will not migrate your customized portage
 bashrc, that is somethign you will have to do on your own.
 
-The script will migrate your <code>PORTDIR_OVERLAYS</code> to Plaudis as best as
+The script will migrate your <code>PORTDIR_OVERLAYS</code> to Paludis as best as
 possible, but, currently, Paludis doesn't support all the sync methods that
 <i>layman</i> does, so you will still probably want to run <code>layman
 -S</code> to update any layman repositories you have now. Finally, the script
