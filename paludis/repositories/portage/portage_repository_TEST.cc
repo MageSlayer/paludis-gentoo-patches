@@ -628,5 +628,39 @@ namespace test_cases
             }
         }
     } test_portage_repository_query_use;
+
+    /**
+     * \test Test PortageRepository query_profile_masks functions.
+     *
+     * \ingroup grptestcases
+     */
+    struct PortageRepositoryQueryProfileMasksTest : TestCase
+    {
+        PortageRepositoryQueryProfileMasksTest() : TestCase("profiles package.mask") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "portage");
+            keys->insert("location", "portage_repository_TEST_dir/repo10");
+            keys->insert("profiles", "portage_repository_TEST_dir/repo10/profiles/profile/subprofile");
+            PortageRepository::Pointer repo(make_ebuild_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+
+            for (int pass = 1 ; pass <= 2 ; ++pass)
+            {
+                TestMessageSuffix pass_suffix(stringify(pass), true);
+
+                TEST_CHECK(repo->query_profile_masks(QualifiedPackageName("cat/masked"),
+                            VersionSpec("0")));
+                TEST_CHECK(! repo->query_profile_masks(QualifiedPackageName("cat/not_masked"),
+                            VersionSpec("0")));
+                TEST_CHECK(! repo->query_profile_masks(QualifiedPackageName("cat/was_masked"),
+                            VersionSpec("0")));
+            }
+        }
+    } test_portage_repository_query_profile_masks;
 }
 

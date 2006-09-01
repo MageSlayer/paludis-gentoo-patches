@@ -200,4 +200,27 @@ END
 cat <<END > cat-one/pkg-one/pkg-one-2.ebuild || exit 1
 cat <<END > cat-two/pkg-two/pkg-two-1.ebuild || exit 1
 END
+cd ..
+
+mkdir -p repo10/{eclass,distfiles,profiles/profile/subprofile} || exit 1
+cd repo10 || exit 1
+echo "test-repo-10" > profiles/repo_name || exit 1
+cat <<END >profiles/profile/make.defaults || exit 1
+ARCH=test
+USE="flag1 flag2 flag3 -flag4 -flag5"
+END
+cat <<END >profiles/categories || exit 1
+cat
+END
+cat <<END >profiles/profile/package.mask
+cat/masked
+cat/was_masked
+END
+cat <<END >profiles/profile/subprofile/package.mask
+-cat/was_masked
+END
+cat <<END >profiles/profile/subprofile/parent
+..
+END
+cd ..
 

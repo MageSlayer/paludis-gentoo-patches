@@ -79,9 +79,11 @@ namespace paludis
 
             void add_use_expand_to_use();
             void load_system_packages();
+            void load_package_mask();
             void handle_profile_arch_var();
 
             std::set<std::string> system_lines;
+            std::set<std::string> package_mask_lines;
 
         public:
             ///\name General variables
@@ -155,6 +157,7 @@ namespace paludis
                     load_profile_directory_recursively(*d);
 
                 add_use_expand_to_use();
+                load_package_mask();
                 load_system_packages();
                 handle_profile_arch_var();
             }
@@ -415,8 +418,39 @@ Implementation<PortageRepositoryProfile>::load_profile_package_mask(const FSEntr
     for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
             line != line_end ; ++line)
     {
-        PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
-        package_mask[a->package()].push_back(a);
+        if (line->empty())
+            continue;
+
+        if ('-' == line->at(0))
+        {
+            if (0 == package_mask_lines.erase(line->substr(1)))
+                Log::get_instance()->message(ll_qa, lc_context,
+                        "Trying to remove package.mask line '" + line->substr(1) +
+                        "' that doesn't exist");
+        }
+        else
+            package_mask_lines.insert(*line);
+    }
+}
+
+void
+Implementation<PortageRepositoryProfile>::load_package_mask()
+{
+    Context context("When building package.mask set:");
+
+    for (std::set<std::string>::const_iterator i(package_mask_lines.begin()),
+            i_end(package_mask_lines.end()) ; i != i_end ; ++i)
+    {
+        try
+        {
+            PackageDepAtom::ConstPointer a(new PackageDepAtom(*i));
+            package_mask[a->package()].push_back(a);
+        }
+        catch (const NameError & e)
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Skipping package.mask entry '"
+                    + *i + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+        }
     }
 }
 
