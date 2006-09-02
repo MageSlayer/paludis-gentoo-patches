@@ -34,8 +34,8 @@ if [[ ${#} -ne 2 ]]; then
     exit 1
 fi
 
-if [[ ! -d $(dirname $2) ]]; then
-    ebuild_notice "qa" "$0: target directory $2 does not exist; creating. Please fix the ebuild to create it explicitly."
+if [[ ! -d $(dirname "${D}$2") ]]; then
+    ebuild_notice "qa" "$0: target directory ${D}$2 does not exist; creating. Please fix the ebuild to create it explicitly."
     dodir $(dirname $2)
 fi
 
