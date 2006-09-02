@@ -40,12 +40,22 @@ econf()
         [[ -z "${CBUILD}" ]] || LOCAL_EXTRA_ECONF="--build=${CBUILD} ${LOCAL_EXTRA_ECONF}"
         [[ -z "${CTARGET}" ]] || LOCAL_EXTRA_ECONF="--target=${CTARGET} ${LOCAL_EXTRA_ECONF}"
 
-        # Check that this is actually what's wanted for multilib etc.
+        # If the ebuild passed in --prefix, use that to set --libdir. KDE at least needs this.
+
+        ECONF_PREFIX=/usr
+        for i in "$@"; do
+            if [[ ${i} == --prefix=* ]]; then
+                ECONF_PREFIX=${i#--prefix=}
+            elif [[ ${i} == --exec-prefix=* ]]; then
+                ECONF_PREFIX=${i#--exec-prefix=}
+            fi
+        done
+
         local libcmd=
         if [[ -n "${ABI}" ]] ; then
             local v="LIBDIR_${ABI}"
             if [[ -n "${!v}" ]] ; then
-                libcmd="--libdir=/usr/$(ebuild_get_libdir)"
+                libcmd="--libdir=${ECONF_PREFIX}/$(ebuild_get_libdir)"
             fi
         fi
 
