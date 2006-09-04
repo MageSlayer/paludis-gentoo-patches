@@ -82,7 +82,7 @@ check_SCRIPTS = $(TESTS) \
 	merge_TEST_setup.sh merge_TEST_cleanup.sh \
 	unmerge_TEST_setup.sh unmerge_TEST_cleanup.sh
 
-prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman prepinfo
+prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman prepinfo prepdocs prepalldocs
 
 EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash \
 	newlib.so.in newlib.a.in dolib.so.in dolib.a.in prep.in
