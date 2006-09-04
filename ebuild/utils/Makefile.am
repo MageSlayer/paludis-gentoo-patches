@@ -51,6 +51,8 @@ libexecprog_SCRIPTS = \
 	prepman \
 	prepallinfo \
 	prepinfo \
+	prepdocs \
+	prepalldocs \
 	$(libexecprog_SCRIPTS_extra)
 
 libexecprog_PROGRAMS = merge unmerge
