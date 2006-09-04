@@ -30,6 +30,7 @@ fi
 
 allowed_exts="png gif html htm jpg css jps"
 disallowed_dirs=""
+allowed_files=""
 recurse=0
 args=( )
 
@@ -58,6 +59,10 @@ parse_args() {
                 allowed_exts="$(split_names $2)"
                 shift
                 ;;
+            -f)
+                allowed_files="$(split_names $2)"
+                shift
+                ;;
             -x)
                 disallowed_dirs="$(split_names $2)"
                 shift
@@ -70,9 +75,9 @@ parse_args() {
 }
 
 install_file() {
-    bn=${1}
-    dn=${2}
-    prefix=${3}
+    local bn=${1}
+    local dn=${2}
+    local prefix=${3}
     local ret=0
 
     path=${bn}
@@ -84,8 +89,10 @@ install_file() {
     dir="${D}usr/share/doc/${PF}/${DOCDESTTREE}/${prefix}"
 
     if [[ -f ${path} ]]; then
-        ext="${path##*.}"
-        if [[ -n ${ext} ]] && has $ext $allowed_exts; then
+        ext="$(basename ${path})"
+        ext="${ext##*.}"
+        if ([[ -n ${ext} ]] && has $ext $allowed_exts) || has $bn $allowed_files
+        then
             [[ ! -d ${dir} ]] && install -d "${dir}"
             echo "install -m0644 ${path} ${dir}"
             install -m0644 "${path}" "${dir}/${bn}"
