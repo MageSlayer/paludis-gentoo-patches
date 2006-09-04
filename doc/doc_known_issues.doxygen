@@ -22,6 +22,8 @@ fancy things like device files.
 
 Problem: Various KDE applications install libraries into the wrong libdir.
 
+Workaround: Make sure you're running 0.6.1 or later.
+
 Workaround: Check your profile. You can't use <code>default-linux/amd64/</code>
 directly -- you have to use one of the release subdirectories. If this still
 fails, someone who knows what they're doing needs to sit down and figure out
