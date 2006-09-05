@@ -214,7 +214,7 @@ perform_hook()
         for hook_file in "${hook_dir}/${HOOK}/"*.bash ; do
             [[ -e "${hook_file}" ]] || continue
             ebuild_notice "debug" "Starting hook script '${hook_file}' for '${HOOK}'"
-            if ! bash "${hook_file}" ; then
+            if ! ( source "${hook_file}" ) ; then
                 ebuild_notice "warning" "Hook '${hook_file}' returned failure"
             else
                 ebuild_notice "warning" "Hook '${hook_file}' returned success"
