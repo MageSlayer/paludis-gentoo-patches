@@ -142,7 +142,8 @@ describe_read_parameters() {
 }
 
 describe_read_options() {
-	echo "target : News item ID (from 'list' action)"
+	echo "target : News item ID (from 'list' action), or the special" \
+		"item 'new', to list all new news items."
 }
 
 do_read() {
@@ -150,6 +151,14 @@ do_read() {
 
 	local i item= items
 	items=( $(get_unread ) )
+
+	if [[ "${1}" == "new" ]] ; then
+		for i in "${items[@]}" ; do
+			do_read "${i%::*}"
+		done
+		return
+	fi
+
 	for i in ${items[@]} ; do
 		[[ -n "${item}" ]] && break
 		[[ "${i%::*}" == "${1}" ]] || continue
