@@ -143,7 +143,8 @@ describe_read_parameters() {
 
 describe_read_options() {
 	echo "target : News item ID (from 'list' action), or the special" \
-		"item 'new', to list all new news items."
+		"item 'new', to list all new news items, or 'all', to" \
+		"show all items"
 }
 
 do_read() {
@@ -153,6 +154,12 @@ do_read() {
 	items=( $(get_unread ) )
 
 	if [[ "${1}" == "new" ]] ; then
+		for i in "${items[@]}" ; do
+			do_read "${i%::*}"
+		done
+		return
+	elif [[ "${1}" == "all" ]] ; then
+		items=( "${items[@]}" $(get_read) )
 		for i in "${items[@]}" ; do
 			do_read "${i%::*}"
 		done
@@ -202,7 +209,8 @@ describe_unread_parameters() {
 }
 
 describe_unread_options() {
-	echo "target : News item ID (from 'list' action)"
+	echo "target : News item ID (from 'list' action), or the special" \
+		"item 'all', to mark all items as unread"
 }
 
 do_unread() {
@@ -210,6 +218,14 @@ do_unread() {
 
 	local i item= items
 	items=( $(get_read ) )
+
+	if [[ "${1}" == "all" ]] ; then
+		for i in "${items[@]}" ; do
+			do_unread "${i%::*}"
+		done
+		return
+	fi
+
 	for i in ${items[@]} ; do
 		[[ -n "${item}" ]] && break
 		[[ "${i%::*}" == "${1}" ]] || continue
