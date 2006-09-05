@@ -95,7 +95,9 @@ export PALUDIS_HOME="$(canonicalise ${PALUDIS_HOME:-${HOME}} )"
 ebuild_source_profile()
 {
     if [[ -f ${1}/parent ]] ; then
-        while read line; do
+        while read line ; do
+            grep --silent '^[[:space:]]*#' <<<"${line}" && continue
+            grep --silent '[^[:space:]]' <<<"${line}" || continue
             ebuild_source_profile $(canonicalise ${1}/${line} )
         done <${1}/parent
     fi
