@@ -900,6 +900,9 @@ VDBRepository::invalidate() const
 void
 VDBRepository::add_to_world(const QualifiedPackageName & n) const
 {
+    Context context("When adding '" + stringify(n) + "' to world file '" +
+            stringify(_imp->world_file) + "':");
+
     bool found(false);
 
     if (_imp->world_file.exists())
@@ -917,12 +920,37 @@ VDBRepository::add_to_world(const QualifiedPackageName & n) const
 
     if (! found)
     {
+        /* portage is retarded, and doesn't ensure that the last entry in world has
+         * a newline character after it. */
+        bool world_file_needs_newline(false);
+        {
+            std::ifstream world(stringify(_imp->world_file).c_str(), std::ios::in);
+            if (world)
+            {
+                world.seekg(0, std::ios::end);
+                if (0 != world.tellg())
+                {
+                    world.seekg(-1, std::ios::end);
+                    if ('\n' != world.get())
+                        world_file_needs_newline = true;
+                }
+            }
+        }
+
+        if (world_file_needs_newline)
+            Log::get_instance()->message(ll_warning, lc_no_context, "World file '"
+                    + stringify(_imp->world_file) + "' lacks final newline");
+
         std::ofstream world(stringify(_imp->world_file).c_str(), std::ios::out | std::ios::app);
         if (! world)
             Log::get_instance()->message(ll_warning, lc_no_context, "Cannot append to world file '"
                     + stringify(_imp->world_file) + "', skipping world update");
         else
+        {
+            if (world_file_needs_newline)
+                world << std::endl;
             world << n << std::endl;
+        }
     }
 }
 

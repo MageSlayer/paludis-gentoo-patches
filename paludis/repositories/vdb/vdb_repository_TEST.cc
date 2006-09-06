@@ -22,6 +22,8 @@
 #include <paludis/test_environment.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <fstream>
+#include <iterator>
 
 using namespace test;
 using namespace paludis;
@@ -112,5 +114,125 @@ namespace test_cases
             TEST_CHECK(repo->query_use(UseFlagName("flag4"), &e2) == use_unspecified);
         }
     } test_vdb_repository_query_use;
+
+    /**
+     * \test Test VDBRepository add_to_world.
+     */
+    struct VDBRepositoryAddToWorldNewFileTest : TestCase
+    {
+        VDBRepositoryAddToWorldNewFileTest() : TestCase("add to world (new file)") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "vdb");
+            keys->insert("location", "vdb_repository_TEST_dir/repo1");
+            keys->insert("world", "vdb_repository_TEST_dir/world-new-file");
+            VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+            repo->add_to_world(QualifiedPackageName("cat-one/foofoo"));
+            std::ifstream world("vdb_repository_TEST_dir/world-new-file");
+            std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
+            TEST_CHECK_EQUAL(world_content, "cat-one/foofoo\n");
+        }
+    } test_vdb_repository_add_to_world_new_file;
+
+    /**
+     * \test Test VDBRepository add_to_world.
+     */
+    struct VDBRepositoryAddToWorldEmptyFileTest : TestCase
+    {
+        VDBRepositoryAddToWorldEmptyFileTest() : TestCase("add to world (empty file)") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "vdb");
+            keys->insert("location", "vdb_repository_TEST_dir/repo1");
+            keys->insert("world", "vdb_repository_TEST_dir/world-empty");
+            VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+            repo->add_to_world(QualifiedPackageName("cat-one/foofoo"));
+            std::ifstream world("vdb_repository_TEST_dir/world-empty");
+            std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
+            TEST_CHECK_EQUAL(world_content, "cat-one/foofoo\n");
+        }
+    } test_vdb_repository_add_to_world_empty_file;
+
+    /**
+     * \test Test VDBRepository add_to_world.
+     */
+    struct VDBRepositoryAddToWorldNoMatchTest : TestCase
+    {
+        VDBRepositoryAddToWorldNoMatchTest() : TestCase("add to world (no match)") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "vdb");
+            keys->insert("location", "vdb_repository_TEST_dir/repo1");
+            keys->insert("world", "vdb_repository_TEST_dir/world-no-match");
+            VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+            repo->add_to_world(QualifiedPackageName("cat-one/foofoo"));
+            std::ifstream world("vdb_repository_TEST_dir/world-no-match");
+            std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
+            TEST_CHECK_EQUAL(world_content, "cat-one/foo\ncat-one/bar\ncat-one/oink\ncat-one/foofoo\n");
+        }
+    } test_vdb_repository_add_to_world_no_match;
+
+    /**
+     * \test Test VDBRepository add_to_world.
+     */
+    struct VDBRepositoryAddToWorldMatchTest : TestCase
+    {
+        VDBRepositoryAddToWorldMatchTest() : TestCase("add to world (match)") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "vdb");
+            keys->insert("location", "vdb_repository_TEST_dir/repo1");
+            keys->insert("world", "vdb_repository_TEST_dir/world-match");
+            VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+            repo->add_to_world(QualifiedPackageName("cat-one/foofoo"));
+            std::ifstream world("vdb_repository_TEST_dir/world-match");
+            std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
+            TEST_CHECK_EQUAL(world_content, "cat-one/foo\ncat-one/foofoo\ncat-one/bar\n");
+        }
+    } test_vdb_repository_add_to_world_match;
+
+    /**
+     * \test Test VDBRepository add_to_world.
+     */
+    struct VDBRepositoryAddToWorldNoMatchNoEOLTest : TestCase
+    {
+        VDBRepositoryAddToWorldNoMatchNoEOLTest() : TestCase("add to world (no match, no trailing eol)") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            AssociativeCollection<std::string, std::string>::Pointer keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+            keys->insert("format", "vdb");
+            keys->insert("location", "vdb_repository_TEST_dir/repo1");
+            keys->insert("world", "vdb_repository_TEST_dir/world-no-match-no-eol");
+            VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
+                        &env, env.package_database().raw_pointer(), keys));
+            repo->add_to_world(QualifiedPackageName("cat-one/foofoo"));
+            std::ifstream world("vdb_repository_TEST_dir/world-no-match-no-eol");
+            std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
+            TEST_CHECK_EQUAL(world_content, "cat-one/foo\ncat-one/bar\ncat-one/oink\ncat-one/foofoo\n");
+        }
+    } test_vdb_repository_add_to_world_no_match_no_eol;
 }
 

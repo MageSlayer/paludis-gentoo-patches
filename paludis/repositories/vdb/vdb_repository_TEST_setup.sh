@@ -15,3 +15,21 @@ for i in DEPEND RDEPEND LICENSE INHERITED IUSE PDEPEND PROVIDE; do
 done
 
 echo "flag1 flag2" >>repo1/cat-one/pkg-one-1/USE
+
+touch "world-empty"
+cat <<END > world-no-match
+cat-one/foo
+cat-one/bar
+cat-one/oink
+END
+cat <<END > world-match
+cat-one/foo
+cat-one/foofoo
+cat-one/bar
+END
+cat <<END > world-no-match-no-eol
+cat-one/foo
+cat-one/bar
+END
+echo -n "cat-one/oink" >> world-no-match-no-eol
+
