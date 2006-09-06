@@ -197,8 +197,9 @@ RsyncSyncer::sync(const SyncOptions & opts) const
 
     std::string cmd("rsync --recursive --links --safe-links --perms --times "
             "--compress --force --whole-file --delete --delete-after --stats "
-            "--timeout=180 --exclude=/distfiles --exclude=/packages --progress "
-            + exclude + "'" + _remote + "' '" + _local + "/'");
+            "--timeout=180 --exclude=/distfiles --exclude=/packages "
+            "--exclude=/local --progress " + exclude + "'" + _remote + 
+            "' '" + _local + "/'");
 
     if (0 != run_command(cmd))
         throw SyncFailedError(_local, _remote);
