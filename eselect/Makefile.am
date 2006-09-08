@@ -5,7 +5,8 @@ SUBDIRS = .
 installeselectdir = $(datadir)/eselect/modules/
 
 installeselect_SCRIPTS = \
-	news.eselect
+	news.eselect \
+	repo.eselect
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(srcdir)/ebuild/" \
