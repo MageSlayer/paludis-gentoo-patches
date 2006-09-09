@@ -90,11 +90,12 @@ flags</code> line. Again, additional per-atom lines can be specified. The
 <code>-apache2</code> is important, if you value your sanity, since you'll be
 installing subversion. We're experimenting with a slightly different way of
 handling <code>USE_EXPAND</code> variables that allows different settings for
-different packages. This may change, but for now it looks like this:
+different packages. This may change, but for now it looks like this (note the
+<code>-*</code> to avoid inherinting profile values:
 
 \verbatim
 cat <<"END" > /mychroot/etc/paludis/use.conf
-* -doc nls -apache2 LINGUAS: en INPUT_DEVICES: keyboard mouse VIDEO_CARDS: ati
+* -doc nls -apache2 LINGUAS: en INPUT_DEVICES: keyboard mouse VIDEO_CARDS: -* ati
 app-editors/vim -nls
 END
 \endverbatim

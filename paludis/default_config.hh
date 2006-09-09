@@ -170,6 +170,17 @@ namespace paludis
 
             DefaultUseIterator end_default_use() const;
 
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const std::string> UseMinusStarIterator;
+
+            UseMinusStarIterator begin_use_prefixes_with_minus_star() const;
+            UseMinusStarIterator end_use_prefixes_with_minus_star() const;
+
+            typedef libwrapiter::ForwardIterator<DefaultConfig,
+                    const std::pair<PackageDepAtom::ConstPointer, std::string> > PackageUseMinusStarIterator;
+
+            PackageUseMinusStarIterator begin_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;
+            PackageUseMinusStarIterator end_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;
+
             ///}
 
             /**

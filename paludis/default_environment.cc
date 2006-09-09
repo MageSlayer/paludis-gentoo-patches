@@ -56,12 +56,10 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 {
     /* first check package database use masks... */
     const Repository * const repo((e ?
-                package_database()->fetch_repository(e->repository) :
-                package_database()->fetch_repository(package_database()->favourite_repository())
-                ).raw_pointer());
+                package_database()->fetch_repository(e->repository).raw_pointer() :
+                0));
 
-    if (repo->use_interface)
-        if (repo->use_interface->query_use_mask(f, e))
+    if (repo && repo->use_interface && repo->use_interface->query_use_mask(f, e))
             return false;
 
     /* check use: per package user config */
@@ -112,6 +110,19 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
             }
             throw InternalError(PALUDIS_HERE, "Bad state");
         } while (false);
+
+        /* and the -* bit */
+        for (DefaultConfig::PackageUseMinusStarIterator
+                i(DefaultConfig::get_instance()->begin_package_use_prefixes_with_minus_star(e->name)),
+                i_end(DefaultConfig::get_instance()->end_package_use_prefixes_with_minus_star(e->name)) ;
+                i != i_end ; ++i)
+        {
+            if (! match_package(this, *i->first, *e))
+                continue;
+
+            if (0 == i->second.compare(0, i->second.length(), stringify(f), 0, i->second.length()))
+                return false;
+        }
     }
 
     /* check use: general user config */
@@ -141,8 +152,16 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         throw InternalError(PALUDIS_HERE, "bad state " + stringify(state));
     } while (false);
 
+    /* and -* again */
+    for (DefaultConfig::UseMinusStarIterator
+            i(DefaultConfig::get_instance()->begin_use_prefixes_with_minus_star()),
+            i_end(DefaultConfig::get_instance()->end_use_prefixes_with_minus_star()) ;
+            i != i_end ; ++i)
+        if (0 == i->compare(0, i->length(), stringify(f), 0, i->length()))
+            return false;
+
     /* check use: package database config */
-    if (repo->use_interface)
+    if (repo && repo->use_interface)
     {
         switch (repo->use_interface->query_use(f, e))
         {

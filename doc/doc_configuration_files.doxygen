@@ -57,8 +57,8 @@ and <code>use use use ...</code> is one or more USE flag names, prefixed by
 a minus if they are to be disabled.
 
 For <code>USE_EXPAND</code> variables such as <code>LINGUAS</code> and
-<code>VIDEO_CARDS</code>, <code>atom VARIABLE: value value ...</code>
-should be used.
+<code>VIDEO_CARDS</code>, <code>atom VARIABLE: value value ...</code> should be
+used. To avoid inheriting values from your profile, include <code>-*</code>.
 
 \verbatim
 # By default, apply these to all packages
@@ -74,7 +74,7 @@ app-editors/vim -nls
 x11-libs/gtk+:2 tiff
 
 # We like English
-* LINGUAS: en_GB en
+* LINGUAS: -* en_GB en
 \endverbatim
 
 Note that if a package matches multiple lines, <em>all</em> of these lines will

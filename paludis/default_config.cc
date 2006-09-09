@@ -94,9 +94,16 @@ namespace paludis
 
         std::map<QualifiedPackageName, std::vector<UseConfigEntry> > use;
 
+        std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > empty_use_prefixes;
+
+        std::map<QualifiedPackageName, std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > >
+            use_prefixes_that_have_minus_star;
+
         std::vector<UseConfigEntry> empty_use;
 
         std::vector<std::pair<UseFlagName, UseFlagState> > default_use;
+
+        std::vector<std::string> default_use_prefixes_that_have_minus_star;
 
         std::multimap<std::string, std::string> mirrors;
 
@@ -104,7 +111,8 @@ namespace paludis
     };
 
     Implementation<DefaultConfig>::Implementation() :
-        paludis_command("paludis")
+        paludis_command("paludis"),
+        config_dir("(unset)")
     {
     }
 
@@ -374,12 +382,24 @@ DefaultConfig::DefaultConfig() :
 
                 std::string prefix;
                 if ("*" == tokens.at(0))
+                {
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                     {
                         if ('-' == t->at(0))
-                            _imp->default_use.push_back(std::make_pair(UseFlagName(
-                                            prefix + t->substr(1)), use_disabled));
+                        {
+                            if (*t == "-*")
+                            {
+                                _imp->default_use_prefixes_that_have_minus_star.push_back(prefix.empty() ? prefix :
+                                        prefix + "_");
+                                if (prefix.empty())
+                                    Log::get_instance()->message(ll_warning, lc_no_context,
+                                            "Using '* -*' in use.conf is dangerous. You have been warned.");
+                            }
+                            else
+                                _imp->default_use.push_back(std::make_pair(UseFlagName(
+                                                prefix + t->substr(1)), use_disabled));
+                        }
                         else if (':' == t->at(t->length() - 1))
                         {
                             prefix.clear();
@@ -391,6 +411,7 @@ DefaultConfig::DefaultConfig() :
                             _imp->default_use.push_back(std::make_pair(UseFlagName(
                                             prefix + *t), use_enabled));
                     }
+                }
                 else
                 {
                     PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
@@ -398,8 +419,14 @@ DefaultConfig::DefaultConfig() :
                             t != t_end ; ++t)
                     {
                         if ('-' == t->at(0))
-                            _imp->use[a->package()].push_back(UseConfigEntry(
-                                        a, UseFlagName(prefix + t->substr(1)), use_disabled));
+                        {
+                            if ("-*" == *t)
+                                _imp->use_prefixes_that_have_minus_star[a->package()].push_back(
+                                        std::make_pair(a, prefix.empty() ? prefix : prefix + "_"));
+                            else
+                                _imp->use[a->package()].push_back(UseConfigEntry(
+                                            a, UseFlagName(prefix + t->substr(1)), use_disabled));
+                        }
                         else if (':' == t->at(t->length() - 1))
                         {
                             prefix.clear();
@@ -678,4 +705,37 @@ DefaultConfig::end_mirrors(const std::string & m) const
 {
     return MirrorIterator(_imp->mirrors.upper_bound(m));
 }
+
+DefaultConfig::UseMinusStarIterator
+DefaultConfig::begin_use_prefixes_with_minus_star() const
+{
+    return UseMinusStarIterator(_imp->default_use_prefixes_that_have_minus_star.begin());
+}
+
+DefaultConfig::UseMinusStarIterator
+DefaultConfig::end_use_prefixes_with_minus_star() const
+{
+    return UseMinusStarIterator(_imp->default_use_prefixes_that_have_minus_star.end());
+}
+
+DefaultConfig::PackageUseMinusStarIterator
+DefaultConfig::begin_package_use_prefixes_with_minus_star(const QualifiedPackageName & d) const
+{
+    std::map<QualifiedPackageName, std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
+    if (_imp->use_prefixes_that_have_minus_star.end() != ((r = _imp->use_prefixes_that_have_minus_star.find(d))))
+        return PackageUseMinusStarIterator(r->second.begin());
+    else
+        return PackageUseMinusStarIterator(_imp->empty_use_prefixes.begin());
+}
+
+DefaultConfig::PackageUseMinusStarIterator
+DefaultConfig::end_package_use_prefixes_with_minus_star(const QualifiedPackageName & d) const
+{
+    std::map<QualifiedPackageName, std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
+    if (_imp->use_prefixes_that_have_minus_star.end() != ((r = _imp->use_prefixes_that_have_minus_star.find(d))))
+        return PackageUseMinusStarIterator(r->second.end());
+    else
+        return PackageUseMinusStarIterator(_imp->empty_use_prefixes.end());
+}
+
 

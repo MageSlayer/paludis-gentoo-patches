@@ -135,7 +135,7 @@ cat <<"END" > /etc/paludis/use.conf
 * -doc nls -apache2
 * LINGUAS: en
 * INPUT_DEVICES: keyboard mouse
-* VIDEO_CARDS: ati
+* VIDEO_CARDS: -* ati
 app-editors/vim -nls
 END
 
