@@ -57,6 +57,30 @@ namespace
 
     int MyClass::instances = 0;
 
+    class MyClassTwo :
+        public InstantiationPolicy<MyClassTwo, instantiation_method::SingletonAsNeededTag>
+    {
+        friend class InstantiationPolicy<MyClassTwo, instantiation_method::SingletonAsNeededTag>;
+
+        private:
+            MyClassTwo()
+            {
+                ++instances;
+            }
+
+            ~MyClassTwo()
+            {
+                --instances;
+            }
+
+        public:
+            std::string s;
+
+            static int instances;
+    };
+
+    int MyClassTwo::instances = 0;
+
     struct MyLoadAtStartupClass :
         public InstantiationPolicy<MyLoadAtStartupClass, instantiation_method::SingletonAtStartupTag>
     {
@@ -104,6 +128,37 @@ namespace test_cases
             TEST_CHECK_EQUAL(MyClass::get_instance()->s, "foo");
         }
     } test_singleton_pattern;
+
+    /**
+     * \test Test singleton behaviour.
+     *
+     * \ingroup grptestcases
+     */
+    struct SingletonPatternDeleteTest : TestCase
+    {
+        SingletonPatternDeleteTest() : TestCase("singleton delete test") { }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            TEST_CHECK_EQUAL(MyClassTwo::instances, 0);
+            TEST_CHECK(0 != MyClassTwo::get_instance());
+            TEST_CHECK_EQUAL(MyClassTwo::instances, 1);
+            TEST_CHECK(MyClassTwo::get_instance() == MyClassTwo::get_instance());
+            TEST_CHECK(MyClassTwo::get_instance()->s.empty());
+            MyClassTwo::get_instance()->s = "foo";
+            TEST_CHECK_EQUAL(MyClassTwo::get_instance()->s, "foo");
+            MyClassTwo::destroy_instance();
+            TEST_CHECK_EQUAL(MyClassTwo::instances, 0);
+            TEST_CHECK(0 != MyClassTwo::get_instance());
+            TEST_CHECK_EQUAL(MyClassTwo::instances, 1);
+            TEST_CHECK(MyClassTwo::get_instance()->s.empty());
+        }
+    } test_singleton_pattern_delete;
 
     /**
      * \test Test singleton create at startup behaviour.

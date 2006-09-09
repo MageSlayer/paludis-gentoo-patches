@@ -201,7 +201,33 @@ namespace paludis
 
             const InstantiationPolicy & operator= (const InstantiationPolicy &);
 
-            static OurType_ * _instance;
+            static OurType_ * * _get_instance_ptr();
+
+            class DeleteOnDestruction;
+            friend class DeleteOnDestruction;
+
+            static void _delete(OurType_ * const p)
+            {
+                delete p;
+            }
+
+            class DeleteOnDestruction
+            {
+                private:
+                    OurType_ * * const _ptr;
+
+                public:
+                    DeleteOnDestruction(OurType_ * * const p) :
+                        _ptr(p)
+                    {
+                    }
+
+                    ~DeleteOnDestruction()
+                    {
+                        InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>::_delete(* _ptr);
+                        * _ptr = 0;
+                    }
+            };
 
         protected:
             ///\name Basic operations
@@ -222,15 +248,41 @@ namespace paludis
              */
             static OurType_ * get_instance();
 
+            /**
+             * Destroy our instance.
+             */
+            static void destroy_instance();
+
             ///\}
     };
+
+    template<typename OurType_>
+    OurType_ * *
+    InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>::_get_instance_ptr()
+    {
+        static OurType_ * instance(0);
+        static DeleteOnDestruction delete_instance(&instance);
+
+        return &instance;
+    }
 
     template<typename OurType_>
     OurType_ *
     InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>::get_instance()
     {
-        static OurType_ instance;
-        return &instance;
+        OurType_ * * i(_get_instance_ptr());
+        if (0 == *i)
+            *i = new OurType_;
+        return *i;
+    }
+
+    template<typename OurType_>
+    void
+    InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>::destroy_instance()
+    {
+        OurType_ * * i(_get_instance_ptr());
+        delete *i;
+        *i = 0;
     }
 }
 
