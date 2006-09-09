@@ -22,6 +22,9 @@
 #include <paludis/util/fs_entry.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 using namespace paludis;
 using namespace test;
@@ -92,6 +95,7 @@ namespace test_cases
             d = e;
             TEST_CHECK(! d.is_regular_file());
             TEST_CHECK(! d.exists());
+            TEST_CHECK_THROWS(e.readlink(), FSError);
 
             d = FSEntry("fs_entry_TEST_dir/all_perms");
             TEST_CHECK(! e.is_regular_file());
@@ -114,13 +118,18 @@ namespace test_cases
             FSEntry h("fs_entry_TEST_dir/symlink_to_file_in_a");
             TEST_CHECK(h.is_symbolic_link());
             TEST_CHECK(! h.is_regular_file());
+            TEST_CHECK_EQUAL(h.readlink(), "dir_a/file_in_a");
 
             FSEntry i("fs_entry_TEST_dir/dir_to_make");
             TEST_CHECK(i.mkdir());
             TEST_CHECK(! i.mkdir());
+            TEST_CHECK(i.rmdir());
+            FSEntry j("fs_entry_TEST_dir/dir_to_make");
+            TEST_CHECK(! j.exists());
+            TEST_CHECK(! j.is_directory());
 
-            FSEntry j("fs_entry_TEST_dir/dir_a/file_in_a");
-            TEST_CHECK_THROWS(j.mkdir(), FSError);
+            FSEntry k("fs_entry_TEST_dir/dir_a/file_in_a");
+            TEST_CHECK_THROWS(k.mkdir(), FSError);
         }
     } test_fs_entry_behaviour;
 
@@ -238,5 +247,122 @@ namespace test_cases
             TEST_CHECK(stringify(e.dirname()) == "..");
         }
     } test_fs_entry_dir_base_name;
+
+    /**
+     * \test Test FSEntry chmod, chown and permissions methods
+     *
+     * \ingroup grpfilesystem
+     */
+    struct FSEntryChangePerms : TestCase
+    {
+        FSEntryChangePerms() : TestCase("chmod, chown and permissions") {}
+
+        void run()
+        {
+            FSEntry a("fs_entry_TEST_dir/no_perms");
+
+            uid_t my_uid = geteuid();
+            a.chown(my_uid);
+            TEST_CHECK_EQUAL(a.owner(), my_uid);
+
+            mode_t all_perms(S_IRUSR | S_IWUSR | S_IXUSR |
+                             S_IRGRP | S_IWGRP | S_IXGRP |
+                             S_IROTH | S_IWOTH | S_IXOTH);
+            a.chmod(all_perms);
+
+            FSEntry b("fs_entry_TEST_dir/no_perms");
+
+            TEST_CHECK_EQUAL(static_cast<mode_t>(b.permissions() & 0xFFF), all_perms);
+
+            mode_t no_perms(0);
+            b.chmod(no_perms);
+
+            FSEntry c("fs_entry_TEST_dir/no_perms");
+            TEST_CHECK_EQUAL(static_cast<mode_t>(c.permissions() & 0xFFF), no_perms);
+
+            FSEntry d("fs_entry_TEST_dir/i_dont_exist");
+
+            TEST_CHECK_THROWS(d.permissions(), FSError);
+            TEST_CHECK_THROWS(d.chmod(all_perms), FSError);
+            TEST_CHECK_THROWS(d.chown(static_cast<uid_t>(-1)), FSError);
+            TEST_CHECK_THROWS(d.owner(), FSError);
+            TEST_CHECK_THROWS(d.group(), FSError);
+
+            if (0 == my_uid)
+            {
+                struct passwd *pw = getpwent();
+
+                if (! pw)
+                    throw InternalError(PALUDIS_HERE, "getpwent returned NULL");
+
+                std::string my_file("fs_entry_TEST_dir/all_perms");
+                FSEntry e(my_file);
+
+                uid_t my_owner = e.owner();
+                gid_t my_group = e.group();
+
+                if (pw->pw_uid == my_owner)
+                {
+                    pw = getpwent();
+
+                    if (! pw)
+                        throw InternalError(PALUDIS_HERE, "getpwent returned NULL");
+                }
+
+                uid_t new_owner(pw->pw_uid);
+
+                e.chown(new_owner);
+
+                TEST_CHECK_EQUAL(FSEntry(my_file).owner(), new_owner);
+                TEST_CHECK_EQUAL(FSEntry(my_file).group(), my_group);
+
+                gid_t new_group(pw->pw_gid);
+
+                endpwent();
+
+                e.chown(static_cast<uid_t>(-1), new_group);
+
+                TEST_CHECK_EQUAL(FSEntry(my_file).owner(), new_owner);
+                TEST_CHECK_EQUAL(FSEntry(my_file).group(), new_group);
+
+                e.chown(static_cast<uid_t>(-1));
+
+                TEST_CHECK_EQUAL(FSEntry(my_file).owner(), new_owner);
+                TEST_CHECK_EQUAL(FSEntry(my_file).group(), new_group);
+
+                e.chown(my_owner, my_group);
+
+                TEST_CHECK_EQUAL(FSEntry(my_file).owner(), my_owner);
+                TEST_CHECK_EQUAL(FSEntry(my_file).group(), my_group);
+            }
+            else
+            {
+                FSEntry e("fs_entry_TEST_dir/all_perms");
+
+                TEST_CHECK_THROWS(e.chown(0, 0), FSError);
+            }
+        }
+    } test_fs_entry_change_perms;
+
+    /**
+     * \test Test operator<<
+     *
+     * \ingroup grpfilesystem
+     */
+    struct FSEntryToOstreamOperator : TestCase
+    {
+        FSEntryToOstreamOperator() : TestCase("operator<<") {}
+
+        void run()
+        {
+            std::string name("fs_entry_TEST_dir/no_perms");
+            std::ostringstream s;
+            FSEntry a(name);
+
+            s << a;
+
+            TEST_CHECK_EQUAL(s.str(), name);
+        }
+    } test_fs_entry_to_ostream_operator;
 }
 
