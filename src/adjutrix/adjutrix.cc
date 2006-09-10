@@ -22,6 +22,7 @@
 #include "find_stable_candidates.hh"
 #include "find_dropped_keywords.hh"
 #include "keywords_graph.hh"
+#include "display_profiles_use.hh"
 #include "adjutrix_environment.hh"
 
 #include <paludis/about.hh>
@@ -133,7 +134,8 @@ main(int argc, char *argv[])
         if (1 != (
                     CommandLine::get_instance()->a_find_stable_candidates.specified() +
                     CommandLine::get_instance()->a_find_dropped_keywords.specified() +
-                    CommandLine::get_instance()->a_keywords_graph.specified()))
+                    CommandLine::get_instance()->a_keywords_graph.specified() +
+                    CommandLine::get_instance()->a_display_profiles_use.specified()))
             throw DoHelp("you should specify exactly one action");
 
         AdjutrixEnvironment env(get_location_and_add_filters());
@@ -165,6 +167,16 @@ main(int argc, char *argv[])
                 throw DoHelp("keywords-graph action takes no parameters");
 
             do_keywords_graph(env);
+            return EXIT_SUCCESS;
+        }
+
+        if (CommandLine::get_instance()->a_display_profiles_use.specified())
+        {
+            if (CommandLine::get_instance()->begin_parameters() !=
+                        CommandLine::get_instance()->end_parameters())
+                throw DoHelp("display-profiles-use action takes no parameters");
+
+            do_display_profiles_use(env);
             return EXIT_SUCCESS;
         }
 

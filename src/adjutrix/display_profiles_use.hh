@@ -17,30 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_ARCHTOOL_ARCHTOOL_ENVIRONMENT_HH
-#define PALUDIS_GUARD_SRC_ARCHTOOL_ARCHTOOL_ENVIRONMENT_HH 1
+#ifndef PALUDIS_GUARD_SRC_ADJUTRIX_DISPLAY_PROFILES_USE_HH
+#define PALUDIS_GUARD_SRC_ADJUTRIX_DISPLAY_PROFILES_USE_HH 1
 
-#include <paludis/environment.hh>
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <adjutrix_environment.hh>
 
-namespace paludis
-{
-    class AdjutrixEnvironment :
-        private PrivateImplementationPattern<AdjutrixEnvironment>,
-        public Environment
-    {
-        public:
-            AdjutrixEnvironment(const FSEntry & dir);
-
-            virtual ~AdjutrixEnvironment();
-
-            virtual std::string paludis_command() const;
-
-            FSEntry main_repository_dir() const;
-
-            void set_profile(const FSEntry & location);
-    };
-}
+void do_display_profiles_use(paludis::AdjutrixEnvironment & env);
 
 #endif

@@ -32,6 +32,7 @@ adjutrix_SOURCES = \
 	find_dropped_keywords.hh     find_dropped_keywords.cc \
 	keywords_graph.hh            keywords_graph.cc \
 	adjutrix_environment.hh      adjutrix_environment.cc \
+	display_profiles_use.hh      display_profiles_use.cc \
 	adjutrix.cc
 
 adjutrix_LDADD = \

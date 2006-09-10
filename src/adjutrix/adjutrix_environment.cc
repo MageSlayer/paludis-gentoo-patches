@@ -66,3 +66,28 @@ AdjutrixEnvironment::paludis_command() const
     return "false";
 }
 
+FSEntry
+AdjutrixEnvironment::main_repository_dir() const
+{
+    return _imp->top_level_dir;
+}
+
+void
+AdjutrixEnvironment::set_profile(const FSEntry & location)
+{
+    PackageDatabase::Pointer db(new PackageDatabase(this));
+
+    AssociativeCollection<std::string, std::string>::Pointer keys(
+            new AssociativeCollection<std::string, std::string>::Concrete);
+
+    keys->insert("format", "portage");
+    keys->insert("location", stringify(_imp->top_level_dir));
+    keys->insert("profiles", stringify(location));
+
+    db->add_repository(
+            RepositoryMaker::get_instance()->find_maker("portage")(this,
+                _imp->db.raw_pointer(), keys));
+
+    change_package_database(db);
+}
+

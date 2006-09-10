@@ -32,6 +32,8 @@ CommandLine::CommandLine() :
             "find-dropped-keywords",  'd',  "Search for packages where keywords have been dropped"),
     a_keywords_graph(&action_args,
             "keyword-graph",          'k',  "Display keywords graphically"),
+    a_display_profiles_use(&action_args,
+            "display-profiles-use",   'u',  "Display USE information for all profiles"),
     a_version(&action_args,
             "version",                'V',  "Display program version"),
     a_help(&action_args,
@@ -63,7 +65,8 @@ CommandLine::CommandLine() :
             "[ --package foo --package fnord ... ] ");
     add_usage_line("--keywords-graph [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
-            "[ --package foo --package fnord ... ]"),
+            "[ --package foo --package fnord ... ]");
+    add_usage_line("--display-profiles-use [ --repository-dir /path ]");
 
     add_usage_line("--version");
     add_usage_line("--help");
