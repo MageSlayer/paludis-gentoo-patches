@@ -59,8 +59,13 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
                 package_database()->fetch_repository(e->repository).raw_pointer() :
                 0));
 
-    if (repo && repo->use_interface && repo->use_interface->query_use_mask(f, e))
+    if (repo && repo->use_interface)
+    {
+        if (repo->use_interface->query_use_mask(f, e))
             return false;
+        if (repo->use_interface->query_use_force(f, e))
+            return true;
+    }
 
     /* check use: per package user config */
     if (e)

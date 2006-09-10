@@ -125,7 +125,8 @@ namespace paludis
              * Does the user want the specified USE flag set for a
              * particular package?
              *
-             * Default behaviour: all USE flags turned off.
+             * Default behaviour: all USE flags turned off, unless overridden by
+             * the repository for the pde.
              */
             virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
 

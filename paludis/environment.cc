@@ -380,9 +380,40 @@ Hook::operator() (const std::string & k, const std::string & v) const
 }
 
 bool
-Environment::query_use(const UseFlagName &, const PackageDatabaseEntry *) const
+Environment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
-    return false;
+    /* first check package database use masks... */
+    const Repository * const repo((e ?
+                package_database()->fetch_repository(e->repository).raw_pointer() :
+                0));
+
+    if (repo && repo->use_interface)
+    {
+        if (repo->use_interface->query_use_mask(f, e))
+            return false;
+        if (repo->use_interface->query_use_force(f, e))
+            return true;
+    }
+
+    /* check use: package database config */
+    if (repo && repo->use_interface)
+    {
+        switch (repo->use_interface->query_use(f, e))
+        {
+            case use_disabled:
+            case use_unspecified:
+                return false;
+
+            case use_enabled:
+                return true;
+        }
+
+        throw InternalError(PALUDIS_HERE, "bad state");
+    }
+    else
+    {
+        return false;
+    }
 }
 
 UseFlagNameCollection::Pointer
