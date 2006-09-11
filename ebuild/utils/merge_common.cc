@@ -48,9 +48,23 @@ using namespace paludis;
 std::vector<std::string>
 merge::get_config_var(const std::string & var)
 {
-    std::vector<std::string> result;
+    std::vector<std::string> result, preresult;
     WhitespaceTokeniser::get_instance()->tokenise(getenv_with_default(var, ""),
-            std::back_inserter(result));
+            std::back_inserter(preresult));
+    result.reserve(preresult.size());
+
+    for (std::vector<std::string>::const_iterator i(preresult.begin()), i_end(preresult.end()) ;
+            i != i_end ; ++i)
+    {
+        if (i->empty())
+            continue;
+        if ("-*" == *i)
+            result.clear();
+        else if ('-' == i->at(0))
+            result.erase(std::remove(result.begin(), result.end(), i->substr(1)), result.end());
+        else
+            result.push_back(*i);
+    }
     return result;
 }
 
