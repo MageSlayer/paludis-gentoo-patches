@@ -22,21 +22,31 @@
 CommandLine::CommandLine() :
     ArgsHandler(),
 
-    action_args(this, "Actions",
-            "Selects which basic action to perform. Exactly one action should "
+    tree_action_args(this, "Tree-Oriented Actions",
+            "Selects which basic tree-oriented action to perform. Exactly one action should "
             "be specified."),
 
-    a_find_stable_candidates(&action_args,
+    a_find_stable_candidates(&tree_action_args,
             "find-stable-candidates", 's',  "Search for stable package candidates"),
-    a_find_dropped_keywords(&action_args,
+    a_find_dropped_keywords(&tree_action_args,
             "find-dropped-keywords",  'd',  "Search for packages where keywords have been dropped"),
-    a_keywords_graph(&action_args,
+    a_keywords_graph(&tree_action_args,
             "keyword-graph",          'k',  "Display keywords graphically"),
-    a_display_profiles_use(&action_args,
+
+    profile_action_args(this, "Profile-Oriented Actions",
+            "Selects which basic profile-oriented action to perform. Exactly one action should "
+            "be specified."),
+
+    a_display_profiles_use(&profile_action_args,
             "display-profiles-use",   'u',  "Display USE information for all profiles"),
-    a_version(&action_args,
+
+    general_action_args(this, "General Actions",
+            "Selects which basic general action to perform. Exactly one action should "
+            "be specified."),
+
+    a_version(&general_action_args,
             "version",                'V',  "Display program version"),
-    a_help(&action_args,
+    a_help(&general_action_args,
             "help",                   'h',  "Display program help"),
 
     general_args(this, "General options",
