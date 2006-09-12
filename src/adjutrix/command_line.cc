@@ -39,6 +39,9 @@ CommandLine::CommandLine() :
 
     a_display_profiles_use(&profile_action_args,
             "display-profiles-use",   'u',  "Display USE information for all profiles"),
+    a_display_default_system_resolution(&profile_action_args,
+            "display-default-system-resolution", 'S', "Display package names and versions that are included in "
+            "the default resolution of the system set"),
 
     general_action_args(this, "General Actions",
             "Selects which basic general action to perform. Exactly one action should "
@@ -65,9 +68,9 @@ CommandLine::CommandLine() :
 
     tree_args(this, "Tree action options",
             "Options which are relevant for tree actions."),
-    a_category(&general_args,   "category",   'C',
+    a_category(&tree_args,   "category",   'C',
             "Matches with this category name only (may be specified multiple times)"),
-    a_package(&general_args,    "package",    'P',
+    a_package(&tree_args,    "package",    'P',
             "Matches with this package name only (may be specified multiple times)"),
 
     profile_args(this, "Profile action options",

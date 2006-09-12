@@ -23,6 +23,7 @@
 #include "find_dropped_keywords.hh"
 #include "keywords_graph.hh"
 #include "display_profiles_use.hh"
+#include "display_default_system_resolution.hh"
 #include "adjutrix_environment.hh"
 
 #include <paludis/about.hh>
@@ -63,7 +64,7 @@ namespace
             return FSEntry::cwd().dirname().dirname();
         }
 
-        throw ConfigurationError("Cannot find tree location (try specifying --repository-directory)");
+        throw ConfigurationError("Cannot find tree location (try specifying --repository-dir)");
     }
 
     void display_version()
@@ -135,7 +136,9 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_find_stable_candidates.specified() +
                     CommandLine::get_instance()->a_find_dropped_keywords.specified() +
                     CommandLine::get_instance()->a_keywords_graph.specified() +
-                    CommandLine::get_instance()->a_display_profiles_use.specified()))
+                    CommandLine::get_instance()->a_display_profiles_use.specified() +
+                    CommandLine::get_instance()->a_display_default_system_resolution.specified()
+                    ))
             throw DoHelp("you should specify exactly one action");
 
         AdjutrixEnvironment env(get_location_and_add_filters());
@@ -178,6 +181,15 @@ main(int argc, char *argv[])
 
             do_display_profiles_use(env);
             return EXIT_SUCCESS;
+        }
+
+        if (CommandLine::get_instance()->a_display_default_system_resolution.specified())
+        {
+            if (CommandLine::get_instance()->begin_parameters() !=
+                        CommandLine::get_instance()->end_parameters())
+                throw DoHelp("display-default-system-resolution action takes no parameters");
+
+            return do_display_default_system_resolution(env);
         }
 
         throw InternalError(__PRETTY_FUNCTION__, "no action?");

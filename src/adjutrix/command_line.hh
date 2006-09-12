@@ -65,6 +65,7 @@ class CommandLine :
 
         paludis::args::ArgsGroup profile_action_args;
         paludis::args::SwitchArg a_display_profiles_use;
+        paludis::args::SwitchArg a_display_default_system_resolution;
 
         paludis::args::ArgsGroup general_action_args;
         paludis::args::SwitchArg a_version;

@@ -172,6 +172,9 @@ void do_find_dropped_keywords(const Environment & env)
             r(env.package_database()->begin_repositories()),
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
+        if (r->name() == RepositoryName("virtuals"))
+            continue;
+
         write_repository_header(keyword, r->name());
 
         CategoryNamePartCollection::ConstPointer cat_names(r->category_names());

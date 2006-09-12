@@ -27,12 +27,13 @@ man_adjutrix_LDADD = \
 	$(DYNAMIC_LD_LIBS)
 
 adjutrix_SOURCES = \
-	command_line.hh              command_line.cc      \
-	find_stable_candidates.hh    find_stable_candidates.cc \
-	find_dropped_keywords.hh     find_dropped_keywords.cc \
-	keywords_graph.hh            keywords_graph.cc \
-	adjutrix_environment.hh      adjutrix_environment.cc \
-	display_profiles_use.hh      display_profiles_use.cc \
+	command_line.hh                       command_line.cc      \
+	find_stable_candidates.hh             find_stable_candidates.cc \
+	find_dropped_keywords.hh              find_dropped_keywords.cc \
+	keywords_graph.hh                     keywords_graph.cc \
+	adjutrix_environment.hh               adjutrix_environment.cc \
+	display_profiles_use.hh               display_profiles_use.cc \
+	display_default_system_resolution.hh  display_default_system_resolution.cc \
 	adjutrix.cc
 
 adjutrix_LDADD = \
@@ -40,6 +41,7 @@ adjutrix_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
 	$(top_builddir)/src/libcolour.a \
 	$(DYNAMIC_LD_LIBS)
 

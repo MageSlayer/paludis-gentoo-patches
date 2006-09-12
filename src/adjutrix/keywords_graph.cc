@@ -136,6 +136,9 @@ void do_keywords_graph(const Environment & env)
             r(env.package_database()->begin_repositories()),
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
+        if (r->name() == RepositoryName("virtuals"))
+            continue;
+
         CategoryNamePartCollection::ConstPointer cat_names(r->category_names());
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
