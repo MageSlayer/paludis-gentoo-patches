@@ -150,24 +150,38 @@ void do_display_profiles_use(AdjutrixEnvironment & env)
         }
     }
 
-    LineConfigFile profiles_desc(env.main_repository_dir() / "profiles" / "profiles.desc");
+    if (CommandLine::get_instance()->a_profile.args_begin() ==
+            CommandLine::get_instance()->a_profile.args_end())
     {
-        for (LineConfigFile::Iterator line(profiles_desc.begin()), line_end(profiles_desc.end()) ;
-                line != line_end ; ++line)
+        LineConfigFile profiles_desc(env.main_repository_dir() / "profiles" / "profiles.desc");
         {
-            std::vector<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-
-            if (tokens.size() != 3)
+            for (LineConfigFile::Iterator line(profiles_desc.begin()), line_end(profiles_desc.end()) ;
+                    line != line_end ; ++line)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Skipping invalid line '"
-                        + *line + "'");
-                continue;
-            }
+                std::vector<std::string> tokens;
+                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
 
-            env.set_profile(env.main_repository_dir() / "profiles" / tokens.at(1));
-            display_profiles_use(env, tokens.at(0) + "." + tokens.at(2), env.main_repository_dir() /
-                    "profiles" / tokens.at(1), all_use_flags, all_use_expand_flags);
+                if (tokens.size() != 3)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Skipping invalid line '"
+                            + *line + "'");
+                    continue;
+                }
+
+                env.set_profile(env.main_repository_dir() / "profiles" / tokens.at(1));
+                display_profiles_use(env, tokens.at(0) + "." + tokens.at(2), env.main_repository_dir() /
+                        "profiles" / tokens.at(1), all_use_flags, all_use_expand_flags);
+            }
+        }
+    }
+    else
+    {
+        for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_profile.args_begin()),
+                i_end(CommandLine::get_instance()->a_profile.args_end()) ; i != i_end ; ++i)
+        {
+            env.set_profile(env.main_repository_dir() / "profiles" / (*i));
+            display_profiles_use(env, *i, env.main_repository_dir() /
+                    "profiles" / *i, all_use_flags, all_use_expand_flags);
         }
     }
 }

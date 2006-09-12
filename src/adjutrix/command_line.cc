@@ -62,10 +62,18 @@ CommandLine::CommandLine() :
 
     a_repository_directory(&general_args, "repository-dir", 'D',
             "Where to find the repository (default: detected from ./ or ../ or ../..)"),
+
+    tree_args(this, "Tree action options",
+            "Options which are relevant for tree actions."),
     a_category(&general_args,   "category",   'C',
-            "Matches with this category name only"),
+            "Matches with this category name only (may be specified multiple times)"),
     a_package(&general_args,    "package",    'P',
-            "Matches with this package name only")
+            "Matches with this package name only (may be specified multiple times)"),
+
+    profile_args(this, "Profile action options",
+            "Options which are relevant for profile actions."),
+    a_profile(&profile_args,    "profile",    'p',
+            "Display results for this profile path, rather than all profiles (may be specified multiple times)")
 {
     add_usage_line("--find-stable-candidates arch [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
@@ -76,7 +84,8 @@ CommandLine::CommandLine() :
     add_usage_line("--keywords-graph [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
             "[ --package foo --package fnord ... ]");
-    add_usage_line("--display-profiles-use [ --repository-dir /path ]");
+    add_usage_line("--display-profiles-use [ --profile default-linux/x86/2006.0 "
+            "--profile default-linux/x86/2006.1 ... ] [ --repository-dir /path ]");
 
     add_usage_line("--version");
     add_usage_line("--help");

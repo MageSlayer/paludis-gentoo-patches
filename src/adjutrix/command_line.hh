@@ -81,10 +81,29 @@ class CommandLine :
         paludis::args::AliasArg a_no_color;
 
         paludis::args::StringArg a_repository_directory;
+
+        ///}
+
+
+        ///\name Tree arguments
+        ///\{
+
+        paludis::args::ArgsGroup tree_args;
+
         paludis::args::StringSetArg a_category;
         paludis::args::StringSetArg a_package;
 
-        ///}
+        ///\}
+
+        ///\name Profile arguments
+        ///\{
+
+        paludis::args::ArgsGroup profile_args;
+
+        paludis::args::StringSetArg a_profile;
+
+        ///\}
+
 };
 
 /**
