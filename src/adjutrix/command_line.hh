@@ -102,6 +102,7 @@ class CommandLine :
         paludis::args::ArgsGroup profile_args;
 
         paludis::args::StringSetArg a_profile;
+        paludis::args::SwitchArg a_unstable;
 
         ///\}
 

@@ -18,8 +18,10 @@
  */
 
 #include "adjutrix_environment.hh"
+#include "command_line.hh"
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/repositories/portage/portage_repository.hh>
+#include <set>
 
 using namespace paludis;
 
@@ -31,12 +33,11 @@ namespace paludis
     {
         const FSEntry top_level_dir;
         PackageDatabase::Pointer db;
-        KeywordName accepted_keyword;
+        std::set<KeywordName> accepted_keywords;
 
         Implementation(Environment * const env, const FSEntry & d) :
             top_level_dir(d),
-            db(new PackageDatabase(env)),
-            accepted_keyword("fnord")
+            db(new PackageDatabase(env))
         {
         }
     };
@@ -92,10 +93,15 @@ AdjutrixEnvironment::set_profile(const FSEntry & location)
 
     PortageRepository::Pointer p(RepositoryMaker::get_instance()->find_maker("portage")(this,
                 _imp->db.raw_pointer(), keys));
-    _imp->accepted_keyword = KeywordName(p->profile_variable("ARCH"));
     db->add_repository(RepositoryMaker::get_instance()->find_maker("virtuals")(this,
                 db.raw_pointer(), AssociativeCollection<std::string, std::string>::Pointer(0)));
     db->add_repository(p);
+
+    _imp->accepted_keywords.clear();
+    _imp->accepted_keywords.insert(KeywordName("*"));
+    _imp->accepted_keywords.insert(KeywordName(p->profile_variable("ARCH")));
+    if (CommandLine::get_instance()->a_unstable.specified())
+        _imp->accepted_keywords.insert(KeywordName("~" + p->profile_variable("ARCH")));
 
     change_package_database(db);
 }
@@ -103,6 +109,6 @@ AdjutrixEnvironment::set_profile(const FSEntry & location)
 bool
 AdjutrixEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntry * const) const
 {
-    return (k.data() == "*") || (k == _imp->accepted_keyword);
+    return _imp->accepted_keywords.end() != _imp->accepted_keywords.find(k);
 }
 

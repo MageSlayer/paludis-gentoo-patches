@@ -76,7 +76,9 @@ CommandLine::CommandLine() :
     profile_args(this, "Profile action options",
             "Options which are relevant for profile actions."),
     a_profile(&profile_args,    "profile",    'p',
-            "Display results for this profile path, rather than all profiles (may be specified multiple times)")
+            "Display results for this profile path, rather than all profiles (may be specified multiple times)"),
+    a_unstable(&profile_args,   "unstable",    'U',
+            "Accept ~arch as well as arch")
 {
     add_usage_line("--find-stable-candidates arch [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
