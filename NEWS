@@ -4,7 +4,36 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-0.5 branch (in progress):
+0.6.2:
+    * A bug preventing recursion from behaving correctly in dohtml is fixed.
+
+    * Ebuild hooks can now use 'die'.
+
+    * The eselect news client has several new options.
+
+    * Portage doesn't always add a newline to the last line in world. We now
+    work around this.
+
+    * use.conf now supports -*, to prevent inheriting profile defaults.
+
+    * CONFIG_PROTECT and CONFIG_PROTECT_MASK now recognise -target and -*.
+
+    * The adjutrix client has several new actions that will be of use to arch
+    and release teams.
+
+0.6.1:
+    * A bug in dosym is fixed, meaning that Java packages, amongst others, can
+    now be installed.
+
+    * Profile package.mask files can now remove entries from inherited profiles.
+
+    * libdir is now set properly by econf when an ebuild specifies --prefix.
+    This should fix installing of KDE, amongst others.
+
+    * More sanity checking is now done both of the build environment and at
+    runtime.
+
+0.6.0:
     * elog will now write to PALUDIS_ELOG_FILE, if defined, as well as
     displaying on screen.
 
@@ -13,16 +42,10 @@ of every change, see the ChangeLog.
     * Support for CRAN (the Comprehensive R Archive Network) repositories is now
     available.
 
-    * Work has been started on a Gtk+ client.
-
-    * Support for binary packages.
-
     * Manual (man) pages are now provided.
 
     * Logic for complex operations such as installing and uninstalling has been
     moved out of the client code and into separate task classes.
-
-    * Hooks are now available for failed operations.
 
     * Repository formats are now dynamically loaded from .so files rather than
     being compiled in.
@@ -37,7 +60,7 @@ of every change, see the ChangeLog.
     * --query on virtuals is more useful. USE flags are displayed for --query.
     Sets can be shown with --query.
 
-    * New client: archtool, a tool for developers and arch teams.
+    * New client: adjutrix, a tool for developers and arch teams.
 
 0.4.4:
     * In key/value configuration files, line continuations inside a quoted
