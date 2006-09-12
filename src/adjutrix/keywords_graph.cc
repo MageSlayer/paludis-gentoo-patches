@@ -70,11 +70,19 @@ namespace
         if (arch_flags->empty())
             return;
 
+        std::set<SlotName> slots;
+        for (VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end()) ;
+                v != v_end ; ++v)
+            slots.insert(repo.version_metadata(package, *v)->slot);
+
         unsigned version_specs_columns_width(stringify(*std::max_element(versions->begin(),
                         versions->end(), CompareByStringLength())).length() + 1);
 
-        unsigned tallest_arch_name(stringify(*std::max_element(arch_flags->begin(),
-                        arch_flags->end(), CompareByStringLength())).length());
+        unsigned tallest_arch_name(std::max(stringify(*std::max_element(arch_flags->begin(),
+                            arch_flags->end(), CompareByStringLength())).length(), static_cast<std::size_t>(4)));
+
+        unsigned longest_slot_name(stringify(*std::max_element(slots.begin(),
+                        slots.end(), CompareByStringLength())).length());
 
         for (unsigned h = 0 ; h < tallest_arch_name ; ++h)
         {
@@ -87,19 +95,31 @@ namespace
                 else
                     cout << a->data().at(a->data().length() - tallest_arch_name + h) << " ";
             }
+            cout << "| ";
+            if ((tallest_arch_name - h) <= 4)
+                cout << std::string("slot").at(4 - tallest_arch_name + h);
             cout << endl;
         }
 
         cout << std::string(version_specs_columns_width, '-') << "+"
-            << std::string(arch_flags->size() * 2, '-') << endl;
+            << std::string(arch_flags->size() * 2 + 1, '-') << "+"
+            << std::string(longest_slot_name + 1, '-') << endl;
+
+        SlotName old_slot("first_slot");
         for (VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end()) ;
                 v != v_end ; ++v)
         {
-            cout << std::left << std::setw(version_specs_columns_width) << *v << "| ";
-
             VersionMetadata::ConstPointer metadata(repo.version_metadata(package, *v));
             if (! metadata->get_ebuild_interface())
                 continue;
+
+            if (metadata->slot != old_slot)
+                if (old_slot != SlotName("first_slot"))
+                    cout << std::string(version_specs_columns_width, '-') << "+"
+                        << std::string(arch_flags->size() * 2 + 1, '-') << "+"
+                        << std::string(longest_slot_name + 1, '-') << endl;
+
+            cout << std::left << std::setw(version_specs_columns_width) << *v << "| ";
 
             std::set<KeywordName> keywords;
             WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->keywords,
@@ -120,11 +140,17 @@ namespace
                     cout << "  ";
             }
 
+            cout << "| ";
+            if (metadata->slot != old_slot)
+            {
+                cout << metadata->slot;
+                old_slot = metadata->slot;
+            }
+
             cout << endl;
         }
 
         cout << endl;
-
     }
 }
 
