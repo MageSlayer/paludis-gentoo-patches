@@ -1,13 +1,17 @@
 /* vim: set ft=cpp tw=80 sw=4 et : */
 
 /**
-\page KnownIssues Known Issues
+\page KnownIssues Known Issues and Non-Issues
 
-\section KnownIssuesMain About these issues
+\section KnownIssuesMain About the issues
 
 This document describes some of the more commonly encountered problems, issues
 and things that aren't bugs but might look like they are. Pestering anyone about
 these is liable to get you hurt.
+
+\section KnownIssuesMain About the non-issues
+
+This document also describes some things that are not bugs or missing functionality. Pestering anyone about these is liable to get you hurt a lot.
 
 \section KnownIssuesPackages Packages
 
@@ -56,6 +60,20 @@ Problem: Sandbox violations when ROOT!=/
 
 Workaround: Paludis enforces ROOT. However, some packages don't honour ROOT. To
 temporarily disable sandbox for these packages, <code>export SANDBOX_PREDICT=/</code>.
+
+\section KnownNonIssuesPortageThings Things Portage Does
+
+\subsection KnownNonIssuesWget wget Resume Support
+
+Non-Problem: With Portage, <code>wget -c</code> is used to attempt to resume downloads of partial files. With Paludis, resumes are not allowed.
+
+Rationale: This leads to corruption and wasted bandwidth far too frequently. In particular, if an error page that isn't recognised as a 404 is fetched from one server (this is common for <code>mirror://sourceforge/</code>), resume support means <code>wget</code> would then download all but the first few hundred bytes of the file from somewhere else, leading to a corrupt distfile notice only after lots of bandwidth has been wasted.
+
+\subsection KnownNonIssesResume Resume / Skip First Support
+
+Non-Problem: Paludis doesn't have an equivalent to --resume --skipfirst in Portage.
+
+Rationale: Too unreliable, too flaky and far too widely abused. There's talk of echoing a command (<code>paludis -i10 =sys-apps/foo-1.23-r1 =app-misc/fnord-2 ...</code>) that can be used to resume if an ebuild exits with an error, but that's not set in stone.
 
 */
 
