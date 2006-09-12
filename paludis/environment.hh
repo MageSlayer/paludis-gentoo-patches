@@ -149,7 +149,7 @@ namespace paludis
             /**
              * Is the specified LICENSE accepted?
              *
-             * Default behaviour: no.
+             * Default behaviour: yes.
              */
             virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
 

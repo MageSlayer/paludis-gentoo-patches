@@ -434,7 +434,7 @@ Environment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEn
 bool
 Environment::accept_license(const std::string &, const PackageDatabaseEntry * const) const
 {
-    return false;
+    return true;
 }
 
 bool
