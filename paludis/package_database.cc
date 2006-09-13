@@ -177,6 +177,8 @@ QualifiedPackageName
 PackageDatabase::fetch_unique_qualified_package_name(
         const PackageNamePart & p) const
 {
+    Context context("When disambiguating package name '" + stringify(p) + "':");
+
     QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
 
     IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
@@ -184,11 +186,16 @@ PackageDatabase::fetch_unique_qualified_package_name(
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
     {
+        Context context("When looking in repository '" + stringify(r->name()) + "':");
+
         CategoryNamePartCollection::ConstPointer cats(r->category_names());
         CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end());
         for ( ; c != c_end ; ++c)
+        {
+            Context context("When looking in category '" + stringify(*c) + "':");
             if (r->has_package_named(*c + p))
                     result->insert(*c + p);
+        }
     }
 
     if (result->empty())

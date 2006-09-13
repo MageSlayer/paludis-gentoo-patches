@@ -78,6 +78,9 @@ void do_one_package_query(
 
         std::string old_slot;
         for (e = entries->begin() ; e != e_end ; ++e)
+        {
+            Context context("When displaying entry '" + stringify(*e) + "':'");
+
             if (e->repository == *r)
             {
                 VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
@@ -142,6 +145,7 @@ void do_one_package_query(
                     cout << "*";
                 cout << " ";
             }
+        }
 
         /* still need to show the slot for the last item */
         if (CommandLine::get_instance()->a_show_slot.specified())
