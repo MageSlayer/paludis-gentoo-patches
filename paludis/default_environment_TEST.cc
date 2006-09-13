@@ -94,5 +94,38 @@ namespace test_cases
             TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), &f));
         }
     } default_environment_use_test_minus_star;
+
+    struct TestDefaultEnvironmentUseMinusPartialStar : TestCase
+    {
+        TestDefaultEnvironmentUseMinusPartialStar() : TestCase("use -* partial") { }
+
+        void run()
+        {
+            setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "default_environment_TEST_dir" / "home3").c_str(), 1);
+            unsetenv("PALUDIS_SKIP_CONFIG");
+            DefaultConfig::destroy_instance();
+            DefaultEnvironment::destroy_instance();
+
+            Environment * env(DefaultEnvironment::get_instance());
+
+            TEST_CHECK(env->query_use(UseFlagName("foo"), 0));
+            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), 0));
+
+            PackageDatabaseEntry e(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("foo"));
+            TEST_CHECK(env->query_use(UseFlagName("foo"), &e));
+            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), &e));
+            TEST_CHECK(env->query_use(UseFlagName("moo"), &e));
+
+            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), &e));
+            TEST_CHECK(env->query_use(UseFlagName("exp_two"), &e));
+            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), &e));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), &e));
+            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), &e));
+
+            PackageDatabaseEntry f(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("3"), RepositoryName("foo"));
+            TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), &f));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), &f));
+        }
+    } default_environment_use_test_minus_star_partial;
 }
 

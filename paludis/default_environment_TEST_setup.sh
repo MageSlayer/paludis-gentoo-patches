@@ -58,3 +58,23 @@ profiles = `pwd`/repo/profile
 cache = /var/empty
 END
 
+mkdir -p home3/.paludis/repositories
+cat <<END > home3/.paludis/use.conf
+* foo bar baz -fnord
+* EXP: -* two
+>=cat-one/pkg-two-2 THIRD_EXP: -* two
+END
+cat <<END > home3/.paludis/keywords.conf
+* keyword
+END
+cat <<END > home3/.paludis/licenses.conf
+* *
+END
+cat <<END > home3/.paludis/repositories/foo.conf
+format = portage
+location = `pwd`/repo
+profiles = `pwd`/repo/profile
+cache = /var/empty
+END
+
+

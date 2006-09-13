@@ -390,8 +390,7 @@ DefaultConfig::DefaultConfig() :
                         {
                             if (*t == "-*")
                             {
-                                _imp->default_use_prefixes_that_have_minus_star.push_back(prefix.empty() ? prefix :
-                                        prefix + "_");
+                                _imp->default_use_prefixes_that_have_minus_star.push_back(prefix);
                                 if (prefix.empty())
                                     Log::get_instance()->message(ll_warning, lc_no_context,
                                             "Using '* -*' in use.conf is dangerous. You have been warned.");
@@ -422,7 +421,7 @@ DefaultConfig::DefaultConfig() :
                         {
                             if ("-*" == *t)
                                 _imp->use_prefixes_that_have_minus_star[a->package()].push_back(
-                                        std::make_pair(a, prefix.empty() ? prefix : prefix + "_"));
+                                        std::make_pair(a, prefix));
                             else
                                 _imp->use[a->package()].push_back(UseConfigEntry(
                                             a, UseFlagName(prefix + t->substr(1)), use_disabled));
