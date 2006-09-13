@@ -118,6 +118,8 @@ VirtualsRepository::need_entries() const
         }
     }
 
+    std::sort(_imp->entries.begin(), _imp->entries.end());
+
     _imp->has_entries = true;
 }
 
