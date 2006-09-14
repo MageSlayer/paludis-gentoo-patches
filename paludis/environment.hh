@@ -106,10 +106,10 @@ namespace paludis
             /**
              * Local package set, or zero.
              */
-            virtual DepAtom::Pointer local_package_set(const std::string &,
+            virtual CompositeDepAtom::Pointer local_package_set(const std::string &,
                     const PackageSetOptions & = PackageSetOptions(false)) const
             {
-                return DepAtom::Pointer(0);
+                return AllDepAtom::Pointer(0);
             }
 
             /**

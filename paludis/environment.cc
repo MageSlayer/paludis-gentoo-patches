@@ -193,51 +193,39 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
 DepAtom::Pointer
 Environment::package_set(const std::string & s, const PackageSetOptions & o) const
 {
+    /* favour local sets first */
+    CompositeDepAtom::Pointer result(local_package_set(s));
+    if (0 != result)
+        return result;
+
+    /* these sets always exist, even if empty */
     if (s == "everything" || s == "system" || s == "world" || s == "security")
-    {
         AllDepAtom::Pointer result(new AllDepAtom);
 
-        for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
-                r_end(package_database()->end_repositories()) ;
-                r != r_end ; ++r)
-        {
-            if (! (*r)->sets_interface)
-                continue;
+    for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+            r_end(package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+    {
+        if (! (*r)->sets_interface)
+            continue;
 
-            DepAtom::Pointer add((*r)->sets_interface->package_set(s, o));
+        DepAtom::Pointer add((*r)->sets_interface->package_set(s, o));
+        if (0 != add)
+        {
+            if (! result)
+                result.assign(new AllDepAtom);
+            result->add_child(add);
+        }
+
+        if ("everything" == s || "world" == s)
+        {
+            add = (*r)->sets_interface->package_set("system");
             if (0 != add)
                 result->add_child(add);
-
-            if ("system" != s)
-            {
-                add = (*r)->sets_interface->package_set("system");
-                if (0 != add)
-                    result->add_child(add);
-            }
         }
-
-        return result;
     }
-    else
-    {
-        DepAtom::Pointer rr(local_package_set(s));
-        if (0 != rr)
-            return rr;
 
-        for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
-                r_end(package_database()->end_repositories()) ;
-                r != r_end ; ++r)
-        {
-            if (! (*r)->sets_interface)
-                continue;
-
-            DepAtom::Pointer result((*r)->sets_interface->package_set(s));
-            if (0 != result)
-                return result;
-        }
-
-        return DepAtom::Pointer(0);
-    }
+    return result;
 }
 
 namespace

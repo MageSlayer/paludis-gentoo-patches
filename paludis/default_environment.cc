@@ -475,7 +475,7 @@ DefaultEnvironment::hook_dirs() const
     return join(hook_dirs.begin(), hook_dirs.end(), " ");
 }
 
-DepAtom::Pointer
+CompositeDepAtom::Pointer
 DefaultEnvironment::local_package_set(const std::string & s,
         const PackageSetOptions &) const
 {

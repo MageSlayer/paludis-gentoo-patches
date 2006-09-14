@@ -49,7 +49,7 @@ namespace paludis
             ~DefaultEnvironment();
 
         protected:
-            DepAtom::Pointer local_package_set(const std::string &,
+            CompositeDepAtom::Pointer local_package_set(const std::string &,
                     const PackageSetOptions & = PackageSetOptions(false)) const;
 
         public:
