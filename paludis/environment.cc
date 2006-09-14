@@ -200,7 +200,7 @@ Environment::package_set(const std::string & s, const PackageSetOptions & o) con
 
     /* these sets always exist, even if empty */
     if (s == "everything" || s == "system" || s == "world" || s == "security")
-        AllDepAtom::Pointer result(new AllDepAtom);
+        result.assign(new AllDepAtom);
 
     for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
