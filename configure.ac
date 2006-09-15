@@ -328,7 +328,7 @@ dnl }}}
 dnl {{{ sandbox
 AC_MSG_CHECKING([whether to enable sandbox])
 AC_ARG_ENABLE([sandbox],
-			  [  --enable-sandbox        Enable sandbox],
+			  AS_HELP_STRING([--enable-sandbox], [Enable sandbox]),
 			  [HAVE_SANDBOX=$enableval
 			   AC_MSG_RESULT([$enableval])],
 			  [AC_MSG_RESULT([autodetect])
@@ -345,7 +345,7 @@ dnl }}}
 dnl {{{ doxygen, dot
 AC_MSG_CHECKING([whether to enable doxygen])
 AC_ARG_ENABLE([doxygen],
-			  [  --enable-doxygen        Enable 'make doxygen' (developer docs)],
+			  AS_HELP_STRING([--enable-doxygen], [Enable 'make doxygen' (developer docs)]),
 			  [HAVE_DOXYGEN=$enableval
 			   AC_MSG_RESULT([$enableval])],
 			  [AC_MSG_RESULT([autodetect])
@@ -355,7 +355,7 @@ AM_CONDITIONAL([HAVE_DOXYGEN], test "x$HAVE_DOXYGEN" = "xyes")
 
 AC_MSG_CHECKING([whether to enable dot])
 AC_ARG_ENABLE([dot],
-			  [  --enable-dot            Enable 'HAVE_DOT' in doxygen.conf],
+			  AS_HELP_STRING([--enable-dot], [Enable 'HAVE_DOT' in doxygen.conf]),
 			[HAVE_DOT=$enableval
 			 AC_MSG_RESULT([$enableval])],
 			[AC_MSG_RESULT([autodetect])
@@ -367,7 +367,7 @@ dnl }}}
 dnl {{{ check for whether to build qa stuff
 AC_MSG_CHECKING([whether to build QA tools])
 AC_ARG_ENABLE([qa],
-			  [  --enable-qa             Build QA things (needs pcre++)],
+			  AS_HELP_STRING([--enable-qa], [Build QA things (needs pcre++)]),
 			  [ENABLE_QA=$enableval
 			   AC_MSG_RESULT([$enableval])],
 			  [ENABLE_QA=no
@@ -394,7 +394,7 @@ dnl }}}
 dnl {{{ colourschemes
 AC_MSG_CHECKING([whether we like pink])
 AC_ARG_ENABLE([pink],
-			  [ --enable-pink             Make it pink],
+			  AS_HELP_STRING([--enable-pink], [Make it pink]),
 			[WANT_PINK=$enableval
 			 AC_MSG_RESULT([$enableval])
 			 if test x$enableval = xyes ; then
