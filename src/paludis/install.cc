@@ -25,6 +25,10 @@
 #include <iostream>
 #include <set>
 
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include <paludis/tasks/install_task.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
@@ -507,6 +511,60 @@ namespace
 
         cout << endl;
     }
+
+    void show_resume_command(const InstallTask & task)
+    {
+        if (task.current_dep_list_entry() != task.dep_list().end())
+        {
+            cerr << "Resume command: " << DefaultEnvironment::get_instance()->paludis_command() <<
+                " --install --preserve-world --dl-drop-all --dl-no-recursive-deps";
+            for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
+                    i != i_end ; ++i)
+                cerr << " =" << i->name << "-" << i->version << "::" << i->repository;
+            cerr << endl;
+        }
+    }
+
+    class InstallKilledCatcher
+    {
+        private:
+            static const InstallTask * _task;
+
+            static void _signal_handler(int sig) PALUDIS_ATTRIBUTE((noreturn));
+
+            sighandler_t _old;
+
+        public:
+            InstallKilledCatcher(const InstallTask & task) :
+                _old(signal(SIGINT, &InstallKilledCatcher::_signal_handler))
+            {
+                _task = &task;
+            }
+
+            ~InstallKilledCatcher()
+            {
+                signal(SIGINT, _old);
+                _task = 0;
+            }
+    };
+
+    const InstallTask * InstallKilledCatcher::_task(0);
+
+    void
+    InstallKilledCatcher::_signal_handler(int sig)
+    {
+        cout << endl;
+        cerr << "Caught signal " << sig << endl;
+        cerr << "Waiting for children..." << endl;
+        cerr << endl;
+        if (_task)
+            show_resume_command(*_task);
+        cerr << endl;
+        while (-1 != wait(0))
+            ;
+        cerr << "Exiting with failure" << endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 int
@@ -538,6 +596,8 @@ do_install()
     task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
     task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
 
+    InstallKilledCatcher install_killed_catcher(task);
+
     try
     {
         for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
@@ -567,15 +627,7 @@ do_install()
         cerr << "  * " << e.backtrace("\n  * ");
         cerr << e.message() << endl;
         cerr << endl;
-        if (task.current_dep_list_entry() != task.dep_list().end())
-        {
-            cerr << "Resume command: " << DefaultEnvironment::get_instance()->paludis_command() <<
-                " --install --preserve-world --dl-drop-all --dl-no-recursive-deps";
-            for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
-                    i != i_end ; ++i)
-                cerr << " =" << i->name << "-" << i->version << "::" << i->repository;
-            cerr << endl;
-        }
+        show_resume_command(task);
         cerr << endl;
 
         return_code |= 1;
