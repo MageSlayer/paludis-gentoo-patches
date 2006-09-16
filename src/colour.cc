@@ -51,7 +51,7 @@ use_xterm_titles()
     static bool result(
             (0 != paludis::getenv_with_default("TERM", "").compare(0, 4, "dumb")) &&
             (0 != paludis::getenv_with_default("TERM", "").compare(0, 5, "linux")) &&
-            (0 != paludis::getenv_with_default("PALUDIS_NO_XTERM_TITLES", "").length()));
+            (0 == paludis::getenv_with_default("PALUDIS_NO_XTERM_TITLES", "").length()));
 
     return result;
 }
