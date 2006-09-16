@@ -132,6 +132,16 @@ namespace paludis
              * Run the task.
              */
             void execute();
+
+            /**
+             * Fetch our deplist.
+             */
+            const DepList & dep_list() const;
+
+            /**
+             * Fetch our current deplist entry.
+             */
+            DepList::Iterator current_dep_list_entry() const;
     };
 }
 

@@ -566,6 +566,17 @@ do_install()
         cerr << "Install error:" << endl;
         cerr << "  * " << e.backtrace("\n  * ");
         cerr << e.message() << endl;
+        cerr << endl;
+        if (task.current_dep_list_entry() != task.dep_list().end())
+        {
+            cerr << "Resume command: " << DefaultEnvironment::get_instance()->paludis_command() <<
+                " --install --preserve-world --dl-drop-all --dl-no-recursive-deps";
+            for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
+                    i != i_end ; ++i)
+                cerr << " =" << i->name << "-" << i->version << "::" << i->repository;
+            cerr << endl;
+        }
+        cerr << endl;
 
         return_code |= 1;
     }

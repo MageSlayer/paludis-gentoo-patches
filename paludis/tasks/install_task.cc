@@ -33,6 +33,7 @@ namespace paludis
     {
         Environment * const env;
         DepList dep_list;
+        DepList::Iterator current_dep_list_entry;
         InstallOptions install_options;
 
         std::list<std::string> raw_targets;
@@ -47,6 +48,7 @@ namespace paludis
         Implementation<InstallTask>(Environment * const e) :
             env(e),
             dep_list(e),
+            current_dep_list_entry(dep_list.begin()),
             install_options(false, false),
             targets(new AllDepAtom),
             pretend(false),
@@ -231,7 +233,10 @@ InstallTask::execute()
     /* display our task list */
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
+    {
+        _imp->current_dep_list_entry = dep;
         on_display_merge_list_entry(*dep);
+    }
 
     /* we're done displaying our task list */
     on_display_merge_list_post();
@@ -261,6 +266,8 @@ InstallTask::execute()
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
+        _imp->current_dep_list_entry = dep;
+
         std::string cpvr(stringify(dep->name) + "-" +
                 stringify(dep->version) + "::" +
                 stringify(dep->repository));
@@ -400,5 +407,17 @@ InstallTask::execute()
         _imp->env->perform_hook(Hook("install_all_post")("TARGETS", join(
                         _imp->raw_targets.begin(), _imp->raw_targets.end(), " ")));
     }
+}
+
+const DepList &
+InstallTask::dep_list() const
+{
+    return _imp->dep_list;
+}
+
+DepList::Iterator
+InstallTask::current_dep_list_entry() const
+{
+    return _imp->current_dep_list_entry;
 }
 
