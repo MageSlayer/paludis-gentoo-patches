@@ -556,12 +556,12 @@ namespace
         cout << endl;
         cerr << "Caught signal " << sig << endl;
         cerr << "Waiting for children..." << endl;
+        while (-1 != wait(0))
+            ;
         cerr << endl;
         if (_task)
             show_resume_command(*_task);
         cerr << endl;
-        while (-1 != wait(0))
-            ;
         cerr << "Exiting with failure" << endl;
         exit(EXIT_FAILURE);
     }
