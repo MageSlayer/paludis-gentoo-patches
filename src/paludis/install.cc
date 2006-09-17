@@ -514,6 +514,10 @@ namespace
 
     void show_resume_command(const InstallTask & task)
     {
+        if (CommandLine::get_instance()->a_fetch.specified() ||
+                CommandLine::get_instance()->a_pretend.specified())
+            return;
+
         if (task.current_dep_list_entry() != task.dep_list().end())
         {
             cerr << "Resume command: " << DefaultEnvironment::get_instance()->paludis_command() <<
