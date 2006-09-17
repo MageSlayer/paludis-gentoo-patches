@@ -236,23 +236,28 @@ AC_CHECK_FUNCS([grantpt],      [], [AC_MSG_ERROR([I need grantpt])])
 AC_CHECK_FUNCS([unlockpt],     [], [AC_MSG_ERROR([I need unlockpt])])
 dnl }}}
 
+dnl {{{ pch support
+AC_MSG_CHECKING([whether to build g++ precompiled headers])
+AC_ARG_ENABLE([precompiled-headers],
+			  AS_HELP_STRING([--enable-precompiled-headers], [Enable g++ precompiled headers (highly dodgy)]),
+			  enable_precompiled_headers=$enableval,
+			  enable_precompiled_headers=no)
+AC_MSG_RESULT($enable_precompiled_headers)
+AM_CONDITIONAL([ENABLE_PRECOMPILED_HEADERS], test "x$enable_precompiled_headers" = "xyes")
+dnl }}}
+
 dnl {{{ check for cxxflags
-AC_MSG_CHECKING([for go faster stripes])
-if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "as-needed" >/dev/null ; then
-	AC_MSG_RESULT([as-needed])
-	AC_MSG_ERROR([Bad ricer. No bagel.])
-else
-	if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "visibility" >/dev/null ; then
-		AC_MSG_RESULT([visibility])
-		AC_MSG_ERROR([Bad ricer. No bagel.])
-	else
-		if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "enforce-eh" >/dev/null ; then
-			AC_MSG_RESULT([enforce-eh])
+if test x == x"$LET_ME_RICE"
+then
+	AC_MSG_CHECKING([for go faster stripes])
+	for x in "as-needed" "visibility" "enforce-eh" "fast-math" "rtti"
+	do
+		if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "$x" >/dev/null ; then
+			AC_MSG_RESULT([$x])
 			AC_MSG_ERROR([Bad ricer. No bagel.])
-		else
-			AC_MSG_RESULT([no])
 		fi
-	fi
+	done
+	AC_MSG_RESULT([no])
 fi
 
 PALUDIS_CXXFLAGS=
@@ -315,6 +320,14 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wstrict-null-sentinel])
 	CHECK_CXXFLAG([-Wmissing-noreturn])
 	CHECK_CXXFLAG([-Woverloaded-virtual])
+	CHECK_CXXFLAG([-Winit-self])
+	CHECK_CXXFLAG([-Wsequence-point])
+	CHECK_CXXFLAG([-Wunreachable-code])
+	CHECK_CXXFLAG([-Wunused-function])
+	CHECK_CXXFLAG([-Wshadow])
+	if test "x${enable_precompiled_headers}" = "xyes" ; then
+		CHECK_CXXFLAG([-Winvalid-pch])
+	fi
 	CHECK_CXXFLAG([-pedantic])
 else
 	CHECK_CXXFLAG([-Wall])

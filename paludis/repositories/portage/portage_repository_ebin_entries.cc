@@ -135,8 +135,8 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
 
         for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
         {
-            std::string::size_type p((*ff)->text().rfind('/'));
-            if (std::string::npos == p)
+            std::string::size_type pos((*ff)->text().rfind('/'));
+            if (std::string::npos == pos)
             {
                 if (already_in_binaries.end() == already_in_binaries.find((*ff)->text()))
                 {
@@ -146,10 +146,10 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
             }
             else
             {
-                if (already_in_binaries.end() == already_in_binaries.find((*ff)->text().substr(p + 1)))
+                if (already_in_binaries.end() == already_in_binaries.find((*ff)->text().substr(pos + 1)))
                 {
-                    binaries.append((*ff)->text().substr(p + 1));
-                    already_in_binaries.insert((*ff)->text().substr(p + 1));
+                    binaries.append((*ff)->text().substr(pos + 1));
+                    already_in_binaries.insert((*ff)->text().substr(pos + 1));
                 }
             }
             binaries.append(" ");
@@ -159,33 +159,33 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
                     m(_imp->params.environment->begin_mirrors("*")),
                     m_end(_imp->params.environment->end_mirrors("*")) ;
                     m != m_end ; ++m)
-                flat_bin_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
+                flat_bin_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
 
             if (0 == (*ff)->text().compare(0, 9, "mirror://"))
             {
                 std::string mirror((*ff)->text().substr(9));
-                std::string::size_type q(mirror.find('/'));
+                std::string::size_type s_pos(mirror.find('/'));
 
-                if (std::string::npos == q)
+                if (std::string::npos == s_pos)
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since SRC_URI is broken");
 
-                if (! _imp->portage_repository->is_mirror(mirror.substr(0, q)))
-                    throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                if (! _imp->portage_repository->is_mirror(mirror.substr(0, s_pos)))
+                    throw PackageInstallActionError("Can't install '" + stringify(s_pos) + "-"
                             + stringify(v) + "' since SRC_URI references unknown mirror:// '" +
-                            mirror.substr(0, q) + "'");
+                            mirror.substr(0, s_pos) + "'");
 
                 for (Environment::MirrorIterator
-                        m(_imp->params.environment->begin_mirrors(mirror.substr(0, q))),
-                        m_end(_imp->params.environment->end_mirrors(mirror.substr(0, q))) ;
+                        m(_imp->params.environment->begin_mirrors(mirror.substr(0, s_pos))),
+                        m_end(_imp->params.environment->end_mirrors(mirror.substr(0, s_pos))) ;
                         m != m_end ; ++m)
-                    flat_bin_uri.append(m->second + "/" + mirror.substr(q + 1) + " ");
+                    flat_bin_uri.append(m->second + "/" + mirror.substr(s_pos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
-                        m(_imp->portage_repository->begin_mirrors(mirror.substr(0, q))),
-                        m_end(_imp->portage_repository->end_mirrors(mirror.substr(0, q))) ;
+                        m(_imp->portage_repository->begin_mirrors(mirror.substr(0, s_pos))),
+                        m_end(_imp->portage_repository->end_mirrors(mirror.substr(0, s_pos))) ;
                         m != m_end ; ++m)
-                    flat_bin_uri.append(m->second + "/" + mirror.substr(q + 1) + " ");
+                    flat_bin_uri.append(m->second + "/" + mirror.substr(s_pos + 1) + " ");
             }
             else
                 flat_bin_uri.append((*ff)->text());
@@ -199,13 +199,13 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
                         m(_imp->params.environment->begin_mirrors(master_mirror)),
                         m_end(_imp->params.environment->end_mirrors(master_mirror)) ;
                         m != m_end ; ++m)
-                    flat_bin_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
+                    flat_bin_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
                         m(_imp->portage_repository->begin_mirrors(master_mirror)),
                         m_end(_imp->portage_repository->end_mirrors(master_mirror)) ;
                         m != m_end ; ++m)
-                    flat_bin_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
+                    flat_bin_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
             }
         }
     }

@@ -67,15 +67,15 @@ NoResolvableOptionError::NoResolvableOptionError(I_ i, I_ end) throw () :
 {
 }
 
-AllMaskedError::AllMaskedError(const std::string & query) throw () :
-    DepListError("Error searching for '" + query + "': no available versions"),
-    _query(query)
+AllMaskedError::AllMaskedError(const std::string & our_query) throw () :
+    DepListError("Error searching for '" + our_query + "': no available versions"),
+    _query(our_query)
 {
 }
 
-UseRequirementsNotMetError::UseRequirementsNotMetError(const std::string & query) throw () :
-    DepListError("Error searching for '" + query + "': use requirements are not met"),
-    _query(query)
+UseRequirementsNotMetError::UseRequirementsNotMetError(const std::string & our_query) throw () :
+    DepListError("Error searching for '" + our_query + "': use requirements are not met"),
+    _query(our_query)
 {
 }
 
@@ -493,9 +493,9 @@ DepList::visit(const PackageDepAtom * const p)
 
         DepAtomFlattener f(_imp->environment, e.raw_pointer(), provide);
 
-        for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+        for (DepAtomFlattener::Iterator pr(f.begin()), pr_end(f.end()) ; pr != pr_end ; ++pr)
         {
-            PackageDepAtom pp(QualifiedPackageName((*p)->text()));
+            PackageDepAtom pp(QualifiedPackageName((*pr)->text()));
             if (_imp->merge_list.end() != std::find_if(
                         _imp->merge_list.begin(), _imp->merge_list.end(),
                         DepListEntryMatcher(_imp->environment, pp)))
@@ -513,10 +513,10 @@ DepList::visit(const PackageDepAtom * const p)
                 p_metadata = _imp->environment->package_database()->fetch_repository(RepositoryName(
                             "virtuals"))->version_metadata(pp.package(), merge_entry->version);
             }
-            catch (const NoSuchPackageError & e)
+            catch (const NoSuchPackageError & err)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Error '" + stringify(e.message()) + "' ("
-                        + stringify(e.what()) + ") when looking for virtual '" + stringify(pp.package())
+                Log::get_instance()->message(ll_warning, lc_context, "Error '" + stringify(err.message()) + "' ("
+                        + stringify(err.what()) + ") when looking for virtual '" + stringify(pp.package())
                         + "' for merge entry '" + stringify(*merge_entry));
             }
 #endif

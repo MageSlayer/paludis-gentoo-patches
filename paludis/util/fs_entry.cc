@@ -38,8 +38,8 @@
 
 using namespace paludis;
 
-FSError::FSError(const std::string & message) throw () :
-    Exception(message)
+FSError::FSError(const std::string & our_message) throw () :
+    Exception(our_message)
 {
 }
 
@@ -402,9 +402,9 @@ FSEntry::readlink() const
 }
 
 void
-FSEntry::chown(const uid_t owner, const gid_t group)
+FSEntry::chown(const uid_t new_owner, const gid_t new_group)
 {
-    if (0 != ::chown(_path.c_str(), owner, group))
+    if (0 != ::chown(_path.c_str(), new_owner, new_group))
         throw FSError("chown '" + _path + "' failed: " + ::strerror(errno));
 }
 

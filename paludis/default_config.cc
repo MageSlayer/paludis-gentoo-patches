@@ -138,51 +138,51 @@ DefaultConfig::DefaultConfig() :
 
     /* indirection */
     std::string root_prefix;
-    std::string config_suffix;
+    std::string local_config_suffix;
     if (! _imp->config_suffix.empty())
-        config_suffix = "-" + _imp->config_suffix;
+        local_config_suffix = "-" + _imp->config_suffix;
 
-    FSEntry config_dir(FSEntry(getenv_with_default("PALUDIS_HOME", getenv_or_error("HOME"))) /
-            (".paludis" + config_suffix)), old_config_dir(config_dir);
-    if (! config_dir.exists())
-        config_dir = (FSEntry(SYSCONFDIR) / ("paludis" + config_suffix));
-    if (! config_dir.exists())
+    FSEntry local_config_dir(FSEntry(getenv_with_default("PALUDIS_HOME", getenv_or_error("HOME"))) /
+            (".paludis" + local_config_suffix)), old_config_dir(local_config_dir);
+    if (! local_config_dir.exists())
+        local_config_dir = (FSEntry(SYSCONFDIR) / ("paludis" + local_config_suffix));
+    if (! local_config_dir.exists())
         throw DefaultConfigError("Can't find configuration directory (tried '"
-                + stringify(old_config_dir) + "', '" + stringify(config_dir) + "')");
+                + stringify(old_config_dir) + "', '" + stringify(local_config_dir) + "')");
 
     Log::get_instance()->message(ll_debug, lc_no_context, "DefaultConfig initial directory is '"
-            + stringify(config_dir) + "'");
+            + stringify(local_config_dir) + "'");
 
-    if ((config_dir / "specpath").exists())
+    if ((local_config_dir / "specpath").exists())
     {
-        KeyValueConfigFile specpath(config_dir / "specpath");
+        KeyValueConfigFile specpath(local_config_dir / "specpath");
         root_prefix = specpath.get("root");
-        config_suffix = specpath.get("config-suffix");
+        local_config_suffix = specpath.get("config-suffix");
 
         if (! root_prefix.empty() && stringify(FSEntry(root_prefix).realpath()) != "/")
         {
-            config_dir = FSEntry(root_prefix) / SYSCONFDIR / ("paludis" + config_suffix);
-            if (! config_dir.exists())
+            local_config_dir = FSEntry(root_prefix) / SYSCONFDIR / ("paludis" + local_config_suffix);
+            if (! local_config_dir.exists())
                 throw DefaultConfigError("Can't find configuration directory under root ("
-                        "tried '" + stringify(config_dir) + "'");
+                        "tried '" + stringify(local_config_dir) + "'");
         }
     }
 
     _imp->root = root_prefix;
-    _imp->config_dir = stringify(config_dir);
+    _imp->config_dir = stringify(local_config_dir);
 
     AssociativeCollection<std::string, std::string>::Pointer conf_vars(
             new AssociativeCollection<std::string, std::string>::Concrete);
     conf_vars->insert("ROOT", root_prefix);
 
     Log::get_instance()->message(ll_debug, lc_no_context, "DefaultConfig real directory is '"
-            + stringify(config_dir) + "', root prefix is '" + root_prefix +
-            "', config suffix is '" + config_suffix + "'");
+            + stringify(local_config_dir) + "', root prefix is '" + root_prefix +
+            "', config suffix is '" + local_config_suffix + "'");
 
     /* repositories */
     {
         std::list<FSEntry> dirs;
-        dirs.push_back(config_dir / "repositories");
+        dirs.push_back(local_config_dir / "repositories");
 
         std::list<FSEntry> repo_files;
         for (std::list<FSEntry>::const_iterator dir(dirs.begin()), dir_end(dirs.end()) ;
@@ -237,7 +237,7 @@ DefaultConfig::DefaultConfig() :
     /* keywords */
     {
         std::list<FSEntry> files;
-        files.push_back(config_dir / "keywords.conf");
+        files.push_back(local_config_dir / "keywords.conf");
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -276,7 +276,7 @@ DefaultConfig::DefaultConfig() :
     /* licenses */
     {
         std::list<FSEntry> files;
-        files.push_back(config_dir / "licenses.conf");
+        files.push_back(local_config_dir / "licenses.conf");
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -315,7 +315,7 @@ DefaultConfig::DefaultConfig() :
     /* user mask */
     {
         std::list<FSEntry> files;
-        files.push_back(config_dir / "package_mask.conf");
+        files.push_back(local_config_dir / "package_mask.conf");
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -338,7 +338,7 @@ DefaultConfig::DefaultConfig() :
     /* user unmask */
     {
         std::list<FSEntry> files;
-        files.push_back(config_dir / "package_unmask.conf");
+        files.push_back(local_config_dir / "package_unmask.conf");
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -361,7 +361,7 @@ DefaultConfig::DefaultConfig() :
     /* use */
     {
         std::list<FSEntry> files;
-        files.push_back(config_dir / "use.conf");
+        files.push_back(local_config_dir / "use.conf");
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -449,7 +449,7 @@ DefaultConfig::DefaultConfig() :
     /* mirrors */
     {
         std::list<FSEntry> files;
-        files.push_back(config_dir / "mirrors.conf");
+        files.push_back(local_config_dir / "mirrors.conf");
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -474,7 +474,7 @@ DefaultConfig::DefaultConfig() :
         }
     }
 
-    _imp->bashrc_files = stringify(config_dir / "bashrc");
+    _imp->bashrc_files = stringify(local_config_dir / "bashrc");
 
     _imp->config_suffix_can_be_set = false;
 }

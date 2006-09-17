@@ -39,8 +39,8 @@
 
 using namespace paludis;
 
-ConfigFileError::ConfigFileError(const std::string & message) throw () :
-    ConfigurationError("Config file error: " + message)
+ConfigFileError::ConfigFileError(const std::string & our_message) throw () :
+    ConfigurationError("Config file error: " + our_message)
 {
 }
 
@@ -51,10 +51,10 @@ ConfigFile::ConfigFile(std::istream * const stream) :
 {
 }
 
-ConfigFile::ConfigFile(const std::string & filename) try :
-    _stream(_make_stream(filename)),
+ConfigFile::ConfigFile(const std::string & our_filename) try :
+    _stream(_make_stream(our_filename)),
     _has_lines(false),
-    _filename(filename),
+    _filename(our_filename),
     _destroy_stream(true)
 {
 }
@@ -64,10 +64,10 @@ catch (...)
     throw;
 }
 
-ConfigFile::ConfigFile(const FSEntry & filename) try :
-    _stream(_make_stream(stringify(filename))),
+ConfigFile::ConfigFile(const FSEntry & our_filename) try :
+    _stream(_make_stream(stringify(our_filename))),
     _has_lines(false),
-    _filename(stringify(filename)),
+    _filename(stringify(our_filename)),
     _destroy_stream(true)
 {
 }
@@ -177,15 +177,15 @@ LineConfigFile::LineConfigFile(std::istream * const s) :
     need_lines();
 }
 
-LineConfigFile::LineConfigFile(const std::string & filename) :
-    ConfigFile(filename),
+LineConfigFile::LineConfigFile(const std::string & our_filename) :
+    ConfigFile(our_filename),
     PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>)
 {
     need_lines();
 }
 
-LineConfigFile::LineConfigFile(const FSEntry & filename) :
-    ConfigFile(filename),
+LineConfigFile::LineConfigFile(const FSEntry & our_filename) :
+    ConfigFile(our_filename),
     PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>)
 {
     need_lines();
@@ -244,15 +244,15 @@ KeyValueConfigFile::KeyValueConfigFile(std::istream * const s) :
     need_lines();
 }
 
-KeyValueConfigFile::KeyValueConfigFile(const std::string & filename) :
-    ConfigFile(filename),
+KeyValueConfigFile::KeyValueConfigFile(const std::string & our_filename) :
+    ConfigFile(our_filename),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
     need_lines();
 }
 
-KeyValueConfigFile::KeyValueConfigFile(const FSEntry & filename) :
-    ConfigFile(filename),
+KeyValueConfigFile::KeyValueConfigFile(const FSEntry & our_filename) :
+    ConfigFile(our_filename),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
     need_lines();
@@ -267,18 +267,18 @@ KeyValueConfigFile::KeyValueConfigFile(std::istream * const s,
     need_lines();
 }
 
-KeyValueConfigFile::KeyValueConfigFile(const std::string & filename,
+KeyValueConfigFile::KeyValueConfigFile(const std::string & our_filename,
         AssociativeCollection<std::string, std::string>::ConstPointer m) :
-    ConfigFile(filename),
+    ConfigFile(our_filename),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
     _imp->entries.insert(m->begin(), m->end());
     need_lines();
 }
 
-KeyValueConfigFile::KeyValueConfigFile(const FSEntry & filename,
+KeyValueConfigFile::KeyValueConfigFile(const FSEntry & our_filename,
         AssociativeCollection<std::string, std::string>::ConstPointer m) :
-    ConfigFile(filename),
+    ConfigFile(our_filename),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
     _imp->entries.insert(m->begin(), m->end());
@@ -483,16 +483,16 @@ AdvisoryFile::AdvisoryFile(std::istream * const s) :
     sanitise();
 }
 
-AdvisoryFile::AdvisoryFile(const std::string & filename) :
-    ConfigFile(filename),
+AdvisoryFile::AdvisoryFile(const std::string & our_filename) :
+    ConfigFile(our_filename),
     PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
 {
     need_lines();
     sanitise();
 }
 
-AdvisoryFile::AdvisoryFile(const FSEntry & filename) :
-    ConfigFile(filename),
+AdvisoryFile::AdvisoryFile(const FSEntry & our_filename) :
+    ConfigFile(our_filename),
     PrivateImplementationPattern<AdvisoryFile>(new Implementation<AdvisoryFile>)
 {
     need_lines();

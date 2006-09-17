@@ -108,10 +108,10 @@ ExtractCheck::operator() (const EbuildCheckData & e) const
     {
         throw;
     }
-    catch (const Exception & e)
+    catch (const Exception & err)
     {
-        result << Message(qal_fatal, "Caught Exception '" + e.message() + "' ("
-                + e.what() + ")");
+        result << Message(qal_fatal, "Caught Exception '" + err.message() + "' ("
+                + err.what() + ")");
     }
 
     return result;

@@ -48,8 +48,8 @@ namespace paludis
 }
 
 DepStringLexError::DepStringLexError(const std::string & dep_string,
-        const std::string & message) throw () :
-    DepStringError(dep_string, "in lex phase: " + message)
+        const std::string & our_message) throw () :
+    DepStringError(dep_string, "in lex phase: " + our_message)
 {
 }
 

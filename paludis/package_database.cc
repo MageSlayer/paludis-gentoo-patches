@@ -44,13 +44,13 @@ paludis::operator<< (std::ostream & s, const PackageDatabaseEntry & v)
     return s;
 }
 
-PackageDatabaseError::PackageDatabaseError(const std::string & message) throw () :
-    Exception(message)
+PackageDatabaseError::PackageDatabaseError(const std::string & our_message) throw () :
+    Exception(our_message)
 {
 }
 
-PackageDatabaseLookupError::PackageDatabaseLookupError(const std::string & message) throw () :
-    PackageDatabaseError(message)
+PackageDatabaseLookupError::PackageDatabaseLookupError(const std::string & our_message) throw () :
+    PackageDatabaseError(our_message)
 {
 }
 
@@ -59,9 +59,9 @@ DuplicateRepositoryError::DuplicateRepositoryError(const std::string & name) thr
 {
 }
 
-NoSuchPackageError::NoSuchPackageError(const std::string & name) throw () :
-    PackageDatabaseLookupError("Could not find '" + name + "'"),
-    _name(name)
+NoSuchPackageError::NoSuchPackageError(const std::string & our_name) throw () :
+    PackageDatabaseLookupError("Could not find '" + our_name + "'"),
+    _name(our_name)
 {
 }
 
@@ -85,13 +85,13 @@ struct AmbiguousPackageNameError::NameData
 };
 
 template <typename I_>
-AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & name,
+AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & our_name,
         I_ begin, const I_ end) throw () :
-    PackageDatabaseLookupError("Ambiguous package name '" + name + "' (candidates are " +
+    PackageDatabaseLookupError("Ambiguous package name '" + our_name + "' (candidates are " +
             join(begin, end, ", ") + ")"),
     _name_data(new NameData)
 {
-    _name_data->name = name;
+    _name_data->name = our_name;
     std::transform(begin, end, std::back_inserter(_name_data->names),
             &stringify<typename std::iterator_traits<I_>::value_type>);
 }
@@ -186,13 +186,13 @@ PackageDatabase::fetch_unique_qualified_package_name(
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
     {
-        Context context("When looking in repository '" + stringify(r->name()) + "':");
+        Context local_context("When looking in repository '" + stringify(r->name()) + "':");
 
         CategoryNamePartCollection::ConstPointer cats(r->category_names());
         CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end());
         for ( ; c != c_end ; ++c)
         {
-            Context context("When looking in category '" + stringify(*c) + "':");
+            Context very_local_context("When looking in category '" + stringify(*c) + "':");
             if (r->has_package_named(*c + p))
                     result->insert(*c + p);
         }

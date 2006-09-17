@@ -700,15 +700,15 @@ do_install()
                             }
                             else if (mr_keyword == mm)
                             {
-                                VersionMetadata::ConstPointer m(DefaultEnvironment::get_instance()->
+                                VersionMetadata::ConstPointer meta(DefaultEnvironment::get_instance()->
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                             pp->name, pp->version));
-                                if (m->get_ebuild_interface())
+                                if (meta->get_ebuild_interface())
                                 {
                                     std::set<KeywordName> keywords;
                                     WhitespaceTokeniser::get_instance()->tokenise(
-                                            m->get_ebuild_interface()->keywords,
+                                            meta->get_ebuild_interface()->keywords,
                                             create_inserter<KeywordName>(
                                                 std::inserter(keywords, keywords.end())));
 

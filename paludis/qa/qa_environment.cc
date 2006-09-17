@@ -121,8 +121,8 @@ QAEnvironment::paludis_command() const
         "'paludis_command called from within QAEnvironment'";
 }
 
-ProfilesDescError::ProfilesDescError(const std::string & message) throw () :
-    ConfigurationError("Bad profiles.desc: " + message)
+ProfilesDescError::ProfilesDescError(const std::string & our_message) throw () :
+    ConfigurationError("Bad profiles.desc: " + our_message)
 {
 }
 

@@ -47,9 +47,10 @@ namespace paludis {
     {
         public:
             /// Constructor.
-            SELinuxException(const std::string & message)
-                : Exception(message)
-            { }
+            SELinuxException(const std::string & our_message)
+                : Exception(our_message)
+            {
+            }
     };
 
     /**

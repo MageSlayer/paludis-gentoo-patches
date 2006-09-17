@@ -123,8 +123,8 @@ GetenvError::GetenvError(const std::string & key) throw () :
 {
 }
 
-RunCommandError::RunCommandError(const std::string & message) throw () :
-    Exception(message)
+RunCommandError::RunCommandError(const std::string & our_message) throw () :
+    Exception(our_message)
 {
 }
 

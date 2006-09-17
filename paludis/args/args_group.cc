@@ -43,11 +43,11 @@ namespace paludis
     };
 }
 
-ArgsGroup::ArgsGroup(ArgsHandler * h, const std::string & name,
-        const std::string & description) :
+ArgsGroup::ArgsGroup(ArgsHandler * h, const std::string & our_name,
+        const std::string & our_description) :
     PrivateImplementationPattern<ArgsGroup>(new Implementation<ArgsGroup>),
-    _name(name),
-    _description(description),
+    _name(our_name),
+    _description(our_description),
     _handler(h)
 {
     h->add(this);

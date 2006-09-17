@@ -21,8 +21,8 @@
 
 using namespace paludis;
 
-FakeRepository::FakeRepository(const RepositoryName & name) :
-    FakeRepositoryBase(name, RepositoryCapabilities::create()
+FakeRepository::FakeRepository(const RepositoryName & our_name) :
+    FakeRepositoryBase(our_name, RepositoryCapabilities::create()
             .installable_interface(this)
             .installed_interface(0)
             .mask_interface(this)

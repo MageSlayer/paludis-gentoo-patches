@@ -64,8 +64,8 @@ struct Exception::ContextData :
 {
 };
 
-Exception::Exception(const std::string & message) throw () :
-    _message(message),
+Exception::Exception(const std::string & our_message) throw () :
+    _message(our_message),
     _context_data(new ContextData)
 {
 }
@@ -100,8 +100,8 @@ Exception::backtrace(const std::string & delim) const
     return _context_data->backtrace(delim);
 }
 
-InternalError::InternalError(const std::string & where, const std::string & message) throw () :
-    Exception("Eek! Internal error at " + where + ": " + message)
+InternalError::InternalError(const std::string & where, const std::string & our_message) throw () :
+    Exception("Eek! Internal error at " + where + ": " + our_message)
 {
 }
 

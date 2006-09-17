@@ -80,10 +80,10 @@ namespace
             &make_general_set_dep_tag);
 }
 
-DepTagCategory::DepTagCategory(const std::string & id,
+DepTagCategory::DepTagCategory(const std::string & our_id,
         const std::string & t, const std::string & pre,
         const std::string & post) :
-    _id(id),
+    _id(our_id),
     _title(t),
     _pre_text(pre),
     _post_text(post)
@@ -103,9 +103,9 @@ DepTag::~DepTag()
 {
 }
 
-GLSADepTag::GLSADepTag(const std::string & id, const std::string & glsa_title) :
+GLSADepTag::GLSADepTag(const std::string & id, const std::string & our_glsa_title) :
     _id(id),
-    _glsa_title(glsa_title)
+    _glsa_title(our_glsa_title)
 {
 }
 

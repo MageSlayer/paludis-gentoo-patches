@@ -30,25 +30,25 @@
 
 using namespace paludis::args;
 
-ArgsOption::ArgsOption(ArgsGroup * const g, const std::string & long_name,
-        const char short_name, const std::string & description) :
+ArgsOption::ArgsOption(ArgsGroup * const g, const std::string & our_long_name,
+        const char our_short_name, const std::string & our_description) :
     _group(g),
-    _long_name(long_name),
-    _short_name(short_name),
-    _description(description),
+    _long_name(our_long_name),
+    _short_name(our_short_name),
+    _description(our_description),
     _specified(false)
 {
     g->add(this);
-    g->handler()->add_option(this, long_name, short_name);
+    g->handler()->add_option(this, our_long_name, our_short_name);
 }
 
 ArgsOption::~ArgsOption()
 {
 }
 
-SwitchArg::SwitchArg(ArgsGroup * const group, std::string long_name, char short_name,
-        std::string description) :
-    ArgsOption(group, long_name, short_name, description)
+SwitchArg::SwitchArg(ArgsGroup * const our_group, std::string our_long_name, char our_short_name,
+        std::string our_description) :
+    ArgsOption(our_group, our_long_name, our_short_name, our_description)
 {
 }
 
@@ -56,16 +56,16 @@ SwitchArg::~SwitchArg()
 {
 }
 
-AliasArg::AliasArg(ArgsOption * const other, const std::string & long_name) :
-    ArgsOption(other->group(), long_name, '\0', "Alias for --" + other->long_name()),
+AliasArg::AliasArg(ArgsOption * const other, const std::string & our_long_name) :
+    ArgsOption(other->group(), our_long_name, '\0', "Alias for --" + other->long_name()),
     _other(other)
 {
-    other->group()->handler()->add_option(other, long_name);
+    other->group()->handler()->add_option(other, our_long_name);
 }
 
-StringArg::StringArg(ArgsGroup * const g, const std::string & long_name,
-        const char short_name, const std::string & description) :
-    ArgsOption(g, long_name, short_name, description)
+StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
+        const char our_short_name, const std::string & our_description) :
+    ArgsOption(g, our_long_name, our_short_name, our_description)
 {
 }
 
@@ -84,9 +84,9 @@ namespace paludis
     };
 }
 
-StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & long_name,
-        const char short_name, const std::string & description) :
-    ArgsOption(g, long_name, short_name, description),
+StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_name,
+        const char our_short_name, const std::string & our_description) :
+    ArgsOption(g, our_long_name, our_short_name, our_description),
     PrivateImplementationPattern<StringSetArg>(new Implementation<StringSetArg>)
 {
 }
@@ -109,9 +109,9 @@ StringSetArg::add_argument(const std::string & arg)
     _imp->args.insert(arg);
 }
 
-IntegerArg::IntegerArg(ArgsGroup * const group, const std::string& long_name, 
-                char short_name, const std::string& description) :
-    ArgsOption(group, long_name, short_name, description)
+IntegerArg::IntegerArg(ArgsGroup * const our_group, const std::string & our_long_name,
+                char our_short_name, const std::string & our_description) :
+    ArgsOption(our_group, our_long_name, our_short_name, our_description)
 {
 }
 
@@ -197,13 +197,13 @@ EnumArg::EnumArgOptions::~EnumArgOptions()
 {
 }
 
-EnumArg::EnumArg(ArgsGroup * const group, const std::string & long_name,
-        const char short_name, const std::string & description,
-        const EnumArgOptions & opts, const std::string & default_arg) :
-    ArgsOption(group, long_name, short_name, description),
+EnumArg::EnumArg(ArgsGroup * const our_group, const std::string & our_long_name,
+        const char our_short_name, const std::string & our_description,
+        const EnumArgOptions & opts, const std::string & our_default_arg) :
+    ArgsOption(our_group, our_long_name, our_short_name, our_description),
     PrivateImplementationPattern<EnumArg>(new Implementation<EnumArg>),
-    _argument(default_arg),
-    _default_arg(default_arg)
+    _argument(our_default_arg),
+    _default_arg(our_default_arg)
 {
     _imp->allowed_args = opts._imp->options;
 }

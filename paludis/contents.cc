@@ -32,24 +32,24 @@ ContentsEntry::~ContentsEntry()
 {
 }
 
-ContentsFileEntry::ContentsFileEntry(const std::string & name) :
-    ContentsEntry(name)
+ContentsFileEntry::ContentsFileEntry(const std::string & our_name) :
+    ContentsEntry(our_name)
 {
 }
 
-ContentsDirEntry::ContentsDirEntry(const std::string & name) :
-    ContentsEntry(name)
+ContentsDirEntry::ContentsDirEntry(const std::string & our_name) :
+    ContentsEntry(our_name)
 {
 }
 
-ContentsMiscEntry::ContentsMiscEntry(const std::string & name) :
-    ContentsEntry(name)
+ContentsMiscEntry::ContentsMiscEntry(const std::string & our_name) :
+    ContentsEntry(our_name)
 {
 }
 
-ContentsSymEntry::ContentsSymEntry(const std::string & name, const std::string & target) :
-    ContentsEntry(name),
-    _target(target)
+ContentsSymEntry::ContentsSymEntry(const std::string & our_name, const std::string & our_target) :
+    ContentsEntry(our_name),
+    _target(our_target)
 {
 }
 

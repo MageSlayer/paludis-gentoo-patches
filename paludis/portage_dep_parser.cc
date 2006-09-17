@@ -75,7 +75,7 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
 
     for ( ; i != i_end ; ++i)
     {
-        Context context("When handling lexer token '" + i->second +
+        Context local_context("When handling lexer token '" + i->second +
                 "' (" + stringify(i->first) + "):");
         do
         {

@@ -315,7 +315,7 @@ PortageRepositorySets::security_set(const PackageSetOptions & o) const
 
     for ( ; f != f_end; ++f)
     {
-        Context c("When parsing security advisory '" + stringify(*f) + "':");
+        Context context("When parsing security advisory '" + stringify(*f) + "':");
 
         try
         {
@@ -327,7 +327,7 @@ PortageRepositorySets::security_set(const PackageSetOptions & o) const
             AdvisoryFile::LineIterator a(advisory.begin_affected()), a_end(advisory.end_affected());
             for ( ; a != a_end ; ++a)
             {
-                Context c("When parsing line 'Affected: " + *a + "':");
+                Context local_context("When parsing line 'Affected: " + *a + "':");
 
                 CompositeDepAtom::ConstPointer line(PortageDepParser::parse(*a));
                 AdvisoryVisitor atoms(_imp->environment, *line);
@@ -362,7 +362,7 @@ PortageRepositorySets::security_set(const PackageSetOptions & o) const
             AdvisoryFile::LineIterator u(advisory.begin_unaffected()), u_end(advisory.end_unaffected());
             for ( ; u != u_end ; ++u)
             {
-                Context c("When parsing line 'Unaffected: " + *u + "':");
+                Context local_c("When parsing line 'Unaffected: " + *u + "':");
 
                 CompositeDepAtom::ConstPointer line(PortageDepParser::parse(*u));
                 AdvisoryVisitor atoms(_imp->environment, *line);
@@ -391,9 +391,9 @@ PortageRepositorySets::security_set(const PackageSetOptions & o) const
                     {
                         unaffected.insert(*p);
                         std::set<std::pair<PackageDatabaseEntry, std::string> >::iterator
-                                a(affected.find(std::make_pair(*p, advisory_id)));
-                        if (a != affected.end())
-                            affected.erase(a);
+                                aff(affected.find(std::make_pair(*p, advisory_id)));
+                        if (aff != affected.end())
+                            affected.erase(aff);
                     }
                 }
             }
@@ -422,7 +422,7 @@ PortageRepositorySets::security_set(const PackageSetOptions & o) const
     {
         for ( ; i != i_end ; ++i)
         {
-            Context c("When creating adding vulnerable package '" + stringify(i->first) + "':");
+            Context context("When creating adding vulnerable package '" + stringify(i->first) + "':");
 
             PackageDepAtom::Pointer p(make_atom(i->first));
             p->set_tag(GLSADepTag::Pointer(new GLSADepTag(i->second, advisory_map[i->second])));
@@ -433,7 +433,7 @@ PortageRepositorySets::security_set(const PackageSetOptions & o) const
     {
         for ( ; i != i_end ; ++i)
         {
-            Context c("When finding best update for package '" + stringify(i->first) +
+            Context context("When finding best update for package '" + stringify(i->first) +
                     "', affected by '" + i->second + "':");
 
             PackageDatabaseEntryCollection::Iterator best = find_best(unaffected, i->first);

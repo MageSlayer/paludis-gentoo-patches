@@ -69,20 +69,20 @@ IuseCheck::operator() (const EbuildCheckData & e) const
                 result << Message(qal_minor, "Deprecated IUSEs '" + join(bad_iuse.begin(),
                             bad_iuse.end(), "', '") + "'");
         }
-        catch (const NameError & e)
+        catch (const NameError & err)
         {
-            result << Message(qal_fatal, "Bad IUSE entry name: " + e.message() + " ("
-                    + e.what() + ")");
+            result << Message(qal_fatal, "Bad IUSE entry name: " + err.message() + " ("
+                    + err.what() + ")");
         }
     }
     catch (const InternalError &)
     {
         throw;
     }
-    catch (const Exception & e)
+    catch (const Exception & err)
     {
-        result << Message(qal_fatal, "Caught Exception '" + e.message() + "' ("
-                + e.what() + ")");
+        result << Message(qal_fatal, "Caught Exception '" + err.message() + "' ("
+                + err.what() + ")");
     }
 
     return result;

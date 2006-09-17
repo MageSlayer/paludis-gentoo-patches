@@ -452,10 +452,10 @@ DefaultEnvironment::perform_hook(const Hook & hook) const
     Context context("When triggering hook '" + hook.name() + "'");
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook '" + hook.name() + "'");
 
-    const std::list<FSEntry> & hook_dirs(get_hook_dirs());
+    const std::list<FSEntry> & hook_dirs_ref(get_hook_dirs());
 
-    for (std::list<FSEntry>::const_iterator h(hook_dirs.begin()),
-            h_end(hook_dirs.end()) ; h != h_end ; ++h)
+    for (std::list<FSEntry>::const_iterator h(hook_dirs_ref.begin()),
+            h_end(hook_dirs_ref.end()) ; h != h_end ; ++h)
     {
         FSEntry hh(*h / hook.name());
         if (! hh.is_directory())
@@ -471,8 +471,8 @@ DefaultEnvironment::perform_hook(const Hook & hook) const
 std::string
 DefaultEnvironment::hook_dirs() const
 {
-    const std::list<FSEntry> & hook_dirs(get_hook_dirs());
-    return join(hook_dirs.begin(), hook_dirs.end(), " ");
+    const std::list<FSEntry> & hook_dirs_ref(get_hook_dirs());
+    return join(hook_dirs_ref.begin(), hook_dirs_ref.end(), " ");
 }
 
 CompositeDepAtom::Pointer

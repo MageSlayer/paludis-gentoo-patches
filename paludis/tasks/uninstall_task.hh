@@ -37,10 +37,10 @@ namespace paludis
             const PackageDatabaseEntryCollection::ConstPointer _p;
 
         public:
-            AmbiguousUnmergeTargetError(const std::string & target,
+            AmbiguousUnmergeTargetError(const std::string & our_target,
                     const PackageDatabaseEntryCollection::ConstPointer matches) throw () :
-                Exception("Ambiguous unmerge target '" + target + "'"),
-                _t(target),
+                Exception("Ambiguous unmerge target '" + our_target + "'"),
+                _t(our_target),
                 _p(matches)
             {
             }

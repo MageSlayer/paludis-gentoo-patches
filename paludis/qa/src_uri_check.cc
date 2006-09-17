@@ -74,12 +74,12 @@ namespace
                 if (0 == a->text().compare(0, 9, "mirror://"))
                 {
                     std::string mirror_host(a->text().substr(9));
-                    std::string::size_type p(mirror_host.find('/'));
-                    if (std::string::npos == p)
+                    std::string::size_type pos(mirror_host.find('/'));
+                    if (std::string::npos == pos)
                         result << Message(qal_major, "Malformed SRC_URI component '" + a->text() + "'");
                     else
                     {
-                        mirror_host.erase(p);
+                        mirror_host.erase(pos);
                         RepositoryMirrorsInterface * m(env->package_database()->fetch_repository(
                                     env->package_database()->favourite_repository())->mirrors_interface);
                         if (! m)
@@ -163,10 +163,10 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
                 Checker checker(result, fetch_restrict, e.environment);
                 src_uri_parts->accept(&checker);
             }
-            catch (const DepStringError & e)
+            catch (const DepStringError & err)
             {
-                result << Message(qal_major, "Invalid SRC_URI: '" + e.message() + "' ("
-                        + e.what() + ")");
+                result << Message(qal_major, "Invalid SRC_URI: '" + err.message() + "' ("
+                        + err.what() + ")");
                 break;
             }
         } while (false);
@@ -175,10 +175,10 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
     {
         throw;
     }
-    catch (const Exception & e)
+    catch (const Exception & err)
     {
-        result << Message(qal_fatal, "Caught Exception '" + e.message() + "' ("
-                + e.what() + ")");
+        result << Message(qal_fatal, "Caught Exception '" + err.message() + "' ("
+                + err.what() + ")");
     }
 
     return result;

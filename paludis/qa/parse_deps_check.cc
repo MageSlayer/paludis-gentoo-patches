@@ -47,10 +47,10 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
             std::string depend(metadata->deps.build_depend_string);
             PortageDepParser::parse(depend);
         }
-        catch (const Exception & e)
+        catch (const Exception & err)
         {
             result << Message(qal_fatal, "Unparsable DEPEND: '" +
-                    e.message() + "' (" + e.what() + ")");
+                    err.message() + "' (" + err.what() + ")");
         }
 
         try
@@ -58,10 +58,10 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
             std::string rdepend(metadata->deps.run_depend_string);
             PortageDepParser::parse(rdepend);
         }
-        catch (const Exception & e)
+        catch (const Exception & err)
         {
             result << Message(qal_fatal, "Unparsable RDEPEND: '" +
-                    e.message() + "' (" + e.what() + ")");
+                    err.message() + "' (" + err.what() + ")");
         }
 
         try
@@ -69,20 +69,20 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
             std::string pdepend(metadata->deps.post_depend_string);
             PortageDepParser::parse(pdepend);
         }
-        catch (const Exception & e)
+        catch (const Exception & err)
         {
             result << Message(qal_fatal, "Unparsable PDEPEND: '" +
-                    e.message() + "' (" + e.what() + ")");
+                    err.message() + "' (" + err.what() + ")");
         }
     }
     catch (const InternalError &)
     {
         throw;
     }
-    catch (const Exception & e)
+    catch (const Exception & err)
     {
-        result << Message(qal_fatal, "Caught Exception '" + e.message() + "' ("
-                + e.what() + ")");
+        result << Message(qal_fatal, "Caught Exception '" + err.message() + "' ("
+                + err.what() + ")");
     }
 
     return result;

@@ -280,8 +280,8 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
 
         for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
         {
-            std::string::size_type p((*ff)->text().rfind('/'));
-            if (std::string::npos == p)
+            std::string::size_type pos((*ff)->text().rfind('/'));
+            if (std::string::npos == pos)
             {
                 if (already_in_archives.end() == already_in_archives.find((*ff)->text()))
                 {
@@ -291,10 +291,10 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
             }
             else
             {
-                if (already_in_archives.end() == already_in_archives.find((*ff)->text().substr(p + 1)))
+                if (already_in_archives.end() == already_in_archives.find((*ff)->text().substr(pos + 1)))
                 {
-                    archives.append((*ff)->text().substr(p + 1));
-                    already_in_archives.insert((*ff)->text().substr(p + 1));
+                    archives.append((*ff)->text().substr(pos + 1));
+                    already_in_archives.insert((*ff)->text().substr(pos + 1));
                 }
             }
             archives.append(" ");
@@ -304,33 +304,33 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
                     m(_imp->params.environment->begin_mirrors("*")),
                     m_end(_imp->params.environment->end_mirrors("*")) ;
                     m != m_end ; ++m)
-                flat_src_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
+                flat_src_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
 
             if (0 == (*ff)->text().compare(0, 9, "mirror://"))
             {
                 std::string mirror((*ff)->text().substr(9));
-                std::string::size_type q(mirror.find('/'));
+                std::string::size_type spos(mirror.find('/'));
 
-                if (std::string::npos == q)
+                if (std::string::npos == spos)
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since SRC_URI is broken");
 
-                if (! _imp->portage_repository->is_mirror(mirror.substr(0, q)))
-                    throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                if (! _imp->portage_repository->is_mirror(mirror.substr(0, spos)))
+                    throw PackageInstallActionError("Can't install '" + stringify(spos) + "-"
                             + stringify(v) + "' since SRC_URI references unknown mirror:// '" +
-                            mirror.substr(0, q) + "'");
+                            mirror.substr(0, spos) + "'");
 
                 for (Environment::MirrorIterator
-                        m(_imp->params.environment->begin_mirrors(mirror.substr(0, q))),
-                        m_end(_imp->params.environment->end_mirrors(mirror.substr(0, q))) ;
+                        m(_imp->params.environment->begin_mirrors(mirror.substr(0, spos))),
+                        m_end(_imp->params.environment->end_mirrors(mirror.substr(0, spos))) ;
                         m != m_end ; ++m)
-                    flat_src_uri.append(m->second + "/" + mirror.substr(q + 1) + " ");
+                    flat_src_uri.append(m->second + "/" + mirror.substr(spos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
-                        m(_imp->portage_repository->begin_mirrors(mirror.substr(0, q))),
-                        m_end(_imp->portage_repository->end_mirrors(mirror.substr(0, q))) ;
+                        m(_imp->portage_repository->begin_mirrors(mirror.substr(0, spos))),
+                        m_end(_imp->portage_repository->end_mirrors(mirror.substr(0, spos))) ;
                         m != m_end ; ++m)
-                    flat_src_uri.append(m->second + "/" + mirror.substr(q + 1) + " ");
+                    flat_src_uri.append(m->second + "/" + mirror.substr(spos + 1) + " ");
             }
             else
                 flat_src_uri.append((*ff)->text());
@@ -344,13 +344,13 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
                         m(_imp->params.environment->begin_mirrors(master_mirror)),
                         m_end(_imp->params.environment->end_mirrors(master_mirror)) ;
                         m != m_end ; ++m)
-                    flat_src_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
+                    flat_src_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
 
                 for (RepositoryMirrorsInterface::MirrorsIterator
                         m(_imp->portage_repository->begin_mirrors(master_mirror)),
                         m_end(_imp->portage_repository->end_mirrors(master_mirror)) ;
                         m != m_end ; ++m)
-                    flat_src_uri.append(m->second + "/" + (*ff)->text().substr(p + 1) + " ");
+                    flat_src_uri.append(m->second + "/" + (*ff)->text().substr(pos + 1) + " ");
             }
         }
 
@@ -363,8 +363,8 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
 
         for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
         {
-            std::string::size_type p((*gg)->text().rfind('/'));
-            if (std::string::npos == p)
+            std::string::size_type pos((*gg)->text().rfind('/'));
+            if (std::string::npos == pos)
             {
                 if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text()))
                 {
@@ -374,10 +374,10 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
             }
             else
             {
-                if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text().substr(p + 1)))
+                if (already_in_all_archives.end() == already_in_all_archives.find((*gg)->text().substr(pos + 1)))
                 {
-                    all_archives.append((*gg)->text().substr(p + 1));
-                    already_in_all_archives.insert((*gg)->text().substr(p + 1));
+                    all_archives.append((*gg)->text().substr(pos + 1));
+                    already_in_all_archives.insert((*gg)->text().substr(pos + 1));
                 }
             }
             all_archives.append(" ");

@@ -311,7 +311,7 @@ CRANRepository::need_packages() const
     bool skip_invalid_package = false;
     for ( ; l != l_end ; ++l)
     {
-        Context context("When parsing line '" + *l + "':");
+        Context local_context("When parsing line '" + *l + "':");
 
         std::string line(strip_leading(strip_trailing(*l, " \t"), " \t"));
         if (line.empty())
@@ -426,7 +426,7 @@ CRANRepository::do_version_metadata(
         Log::get_instance()->message(ll_warning, lc_no_context, "has_version failed for request for '" +
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "': File '" + n + ".DESCRIPTION' not present.");
-        VersionMetadata::Pointer result(new VersionMetadata(CRANDepParser::parse));
+        result.assign(new VersionMetadata(CRANDepParser::parse));
         result->eapi = "UNKNOWN";
     }
 

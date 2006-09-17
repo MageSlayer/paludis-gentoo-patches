@@ -122,7 +122,7 @@ Implementation<CRANInstalledRepository>::load_entries() const
     {
         for (DirIterator d(location), d_end ; d != d_end ; ++d)
         {
-            Context context("When parsing directoryy '" + stringify(*d) + "'.");
+            Context local_context("When parsing directoryy '" + stringify(*d) + "'.");
             if (! d->is_directory())
                 continue;
 

@@ -22,7 +22,7 @@ CRANDepParser::parse(const std::string & s)
     std::list<std::string>::const_iterator a(atoms.begin()), a_end(atoms.end());
     for ( ; a != a_end ; ++a)
     {
-        Context context("When processing token '" + *a + "':");
+        Context local_context("When processing token '" + *a + "':");
 
         std::string aa = strip_leading(strip_trailing(*a, ")"), " \t");
 

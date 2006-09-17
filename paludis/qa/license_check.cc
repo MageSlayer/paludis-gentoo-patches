@@ -111,10 +111,10 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
                 Checker checker(result, e.environment);
                 license_parts->accept(&checker);
             }
-            catch (const DepStringError & e)
+            catch (const DepStringError & err)
             {
-                result << Message(qal_major, "Invalid LICENSE: '" + e.message() + "' ("
-                        + e.what() + ")");
+                result << Message(qal_major, "Invalid LICENSE: '" + err.message() + "' ("
+                        + err.what() + ")");
                 break;
             }
         } while (false);
@@ -123,10 +123,10 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
     {
         throw;
     }
-    catch (const Exception & e)
+    catch (const Exception & err)
     {
-        result << Message(qal_fatal, "Caught Exception '" + e.message() + "' ("
-                + e.what() + ")");
+        result << Message(qal_fatal, "Caught Exception '" + err.message() + "' ("
+                + err.what() + ")");
     }
 
     return result;

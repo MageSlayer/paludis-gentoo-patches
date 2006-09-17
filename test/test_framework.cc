@@ -137,8 +137,8 @@ namespace paludis
     };
 }
 
-TestCase::TestCase(const std::string & name) :
-    paludis::PrivateImplementationPattern<TestCase>(new paludis::Implementation<TestCase>(name))
+TestCase::TestCase(const std::string & our_name) :
+    paludis::PrivateImplementationPattern<TestCase>(new paludis::Implementation<TestCase>(our_name))
 {
     TestCaseList::register_test_case(this);
 }

@@ -28,8 +28,8 @@
 
 using namespace paludis::args;
 
-ArgsError::ArgsError(const std::string & message) throw () :
-    paludis::Exception("Error handling command line: " + message)
+ArgsError::ArgsError(const std::string & our_message) throw () :
+    paludis::Exception("Error handling command line: " + our_message)
 {
 }
 

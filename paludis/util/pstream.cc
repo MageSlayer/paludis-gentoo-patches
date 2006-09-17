@@ -34,8 +34,8 @@
 
 using namespace paludis;
 
-PStreamError::PStreamError(const std::string & message) throw () :
-    Exception(message)
+PStreamError::PStreamError(const std::string & our_message) throw () :
+    Exception(our_message)
 {
 }
 

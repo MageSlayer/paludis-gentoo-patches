@@ -67,8 +67,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ContentsEntry(const std::string & name) :
-                _name(name)
+            ContentsEntry(const std::string & our_name) :
+                _name(our_name)
             {
             }
 

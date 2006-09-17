@@ -212,8 +212,8 @@ namespace paludis
     };
 }
 
-NewsFile::NewsFile(const FSEntry & filename) :
-    ConfigFile(filename),
+NewsFile::NewsFile(const FSEntry & our_filename) :
+    ConfigFile(our_filename),
     PrivateImplementationPattern<NewsFile>(new Implementation<NewsFile>)
 {
     need_lines();

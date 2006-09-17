@@ -52,7 +52,7 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
     std::string key;
     for ( ; l != l_end ; ++l)
     {
-        Context context("When parsing line '" + *l + "':");
+        Context local_context("When parsing line '" + *l + "':");
 
         std::string line(strip_leading(strip_trailing(*l, " \t\r\n"), " \t\r\n")), value;
         std::string::size_type pos(line.find(':'));

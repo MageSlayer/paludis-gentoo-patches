@@ -34,10 +34,10 @@ using namespace paludis;
 #include <paludis/repository-sr.cc>
 
 Repository::Repository(
-        const RepositoryName & name,
+        const RepositoryName & our_name,
         const RepositoryCapabilities & caps) :
     RepositoryCapabilities(caps),
-    _name(name),
+    _name(our_name),
     _info(new RepositoryInfo)
 {
 }
@@ -117,10 +117,10 @@ RepositoryInfo::add_section(RepositoryInfoSection::ConstPointer s)
     return *this;
 }
 
-RepositoryInfoSection::RepositoryInfoSection(const std::string & heading) :
+RepositoryInfoSection::RepositoryInfoSection(const std::string & our_heading) :
     PrivateImplementationPattern<RepositoryInfoSection>(new Implementation<RepositoryInfoSection>)
 {
-    _imp->heading = heading;
+    _imp->heading = our_heading;
 }
 
 RepositoryInfoSection::~RepositoryInfoSection()

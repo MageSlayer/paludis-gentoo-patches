@@ -95,9 +95,9 @@ AllDepAtom::AllDepAtom()
 {
 }
 
-UseDepAtom::UseDepAtom(const UseFlagName & flag, bool inverse) :
-    _flag(flag),
-    _inverse(inverse)
+UseDepAtom::UseDepAtom(const UseFlagName & our_flag, bool is_inverse) :
+    _flag(our_flag),
+    _inverse(is_inverse)
 {
 }
 
@@ -113,9 +113,9 @@ BlockDepAtom::BlockDepAtom(PackageDepAtom::ConstPointer a) :
 {
 }
 
-PackageDepAtom::PackageDepAtom(const QualifiedPackageName & package) :
-    StringDepAtom(stringify(package)),
-    _package(package),
+PackageDepAtom::PackageDepAtom(const QualifiedPackageName & our_package) :
+    StringDepAtom(stringify(our_package)),
+    _package(our_package),
     _version_operator("="),
     _version_spec(0),
     _slot(0),
