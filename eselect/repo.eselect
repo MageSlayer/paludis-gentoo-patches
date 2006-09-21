@@ -170,6 +170,8 @@ do_set()
 	if [[ $# -ge 2 ]]; then
 		var=$1; shift
 		store_config ${REPO_CONFIG_FILE} $var "$*"
+	elif [[ $# -eq 1 ]]; then
+		store_config ${REPO_CONFIG_FILE} $1 ""
 	fi
 }
 
@@ -191,8 +193,9 @@ do_show()
 	else
 		vars=( template_root repo_root profiles distdir config_root )
 		write_list_start "Current configuration variables:"
-		for i in $vars; do
-			if value=$(load_config ${REPO_CONFIG_FILE} $i); then
+		for i in ${vars[@]}; do
+			value=$(load_config ${REPO_CONFIG_FILE} $i)
+			if [[ -n ${value} ]]; then
 				write_kv_list_entry $i "${value}"
 			fi
 		done
