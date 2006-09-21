@@ -536,7 +536,7 @@ namespace
 
             static void _signal_handler(int sig) PALUDIS_ATTRIBUTE((noreturn));
 
-            sighandler_t _old;
+            sig_t _old;
 
         public:
             InstallKilledCatcher(const InstallTask & task) :
