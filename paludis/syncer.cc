@@ -56,6 +56,8 @@ namespace
                 _local(local),
                 _remote(remote)
             {
+                if ((0 == _remote.compare(0, 4, "file", 0, 4)))
+                    _remote = _remote.erase(0, 7);
             }
 
         public:
@@ -131,6 +133,13 @@ namespace
      * \ingroup grpsyncer
      */
     static const SyncerMaker::RegisterMaker register_rsync_syncer("rsync",  &RsyncSyncer::make);
+
+    /**
+     * Register file:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
+    static const SyncerMaker::RegisterMaker register_file_syncer("file", &RsyncSyncer::make);
 
     /**
      * Register svn:// protocol.
