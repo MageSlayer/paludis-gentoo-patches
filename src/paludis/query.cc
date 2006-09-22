@@ -43,6 +43,8 @@ void do_one_package_query(
         MaskReasons & mask_reasons_to_explain,
         PackageDepAtom::Pointer atom)
 {
+    /* prefer the best installed version, then the best visible version, then
+     * the best version */
     PackageDatabaseEntryCollection::ConstPointer
         entries(env->package_database()->query(atom, is_either)),
         preferred_entries(env->package_database()->query(atom, is_installed_only));
@@ -51,7 +53,11 @@ void do_one_package_query(
     if (preferred_entries->empty())
         preferred_entries = entries;
 
-    const PackageDatabaseEntry display_entry(*preferred_entries->last());
+    PackageDatabaseEntry display_entry(*preferred_entries->last());
+    for (PackageDatabaseEntryCollection::Iterator i(preferred_entries->begin()),
+            i_end(preferred_entries->end()) ; i != i_end ; ++i)
+        if (! env->mask_reasons(*i).any())
+            display_entry = *i;
 
     /* match! display it. */
     cout << "* " << colour(cl_package_name, entries->begin()->name);
