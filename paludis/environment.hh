@@ -131,13 +131,13 @@ namespace paludis
             virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
 
             /**
-             * Fetch a list of enabled USE flags that start with a given prefix,
-             * for USE_EXPAND.
+             * Fetch any known use expand names (excluding prefix) that start with a
+             * given prefix.
              *
-             * Default behaviour: no USE flags.
+             * Default behaviour: no names known.
              */
-            virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
-                    const std::string & prefix, const PackageDatabaseEntry *) const;
+            virtual UseFlagNameCollection::ConstPointer known_use_expand_names(const UseFlagName &,
+                    const PackageDatabaseEntry *) const;
 
             /**
              * Is the specified KEYWORD accepted?

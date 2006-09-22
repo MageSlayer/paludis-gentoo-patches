@@ -69,8 +69,8 @@ namespace paludis
 
             virtual std::string paludis_command() const;
 
-            virtual UseFlagNameCollection::Pointer query_enabled_use_matching(
-                    const std::string & prefix, const PackageDatabaseEntry *) const;
+            virtual UseFlagNameCollection::ConstPointer known_use_expand_names(const UseFlagName &,
+                    const PackageDatabaseEntry *) const;
 
             virtual void perform_hook(const Hook & hook) const;
 

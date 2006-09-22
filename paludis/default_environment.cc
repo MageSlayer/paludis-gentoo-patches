@@ -300,67 +300,6 @@ DefaultEnvironment::paludis_command() const
     return DefaultConfig::get_instance()->paludis_command();
 }
 
-UseFlagNameCollection::Pointer
-DefaultEnvironment::query_enabled_use_matching(const std::string & prefix,
-        const PackageDatabaseEntry * e) const
-{
-    UseFlagNameCollection::Pointer result(new UseFlagNameCollection::Concrete);
-
-    for (DefaultConfig::DefaultUseIterator
-            u(DefaultConfig::get_instance()->begin_default_use()),
-            u_end(DefaultConfig::get_instance()->end_default_use()) ;
-            u != u_end ; ++u)
-    {
-        if (0 != u->first.data().compare(0, prefix.length(), prefix))
-            continue;
-
-        switch (u->second)
-        {
-            case use_enabled:
-                result->insert(u->first);
-                break;
-
-            case use_disabled:
-                result->erase(u->first);
-                break;
-
-            case use_unspecified:
-                break;
-        }
-    }
-
-    if (e)
-    {
-        for (DefaultConfig::UseConfigIterator
-                u(DefaultConfig::get_instance()->begin_use_config(e->name)),
-                u_end(DefaultConfig::get_instance()->end_use_config(e->name)) ;
-                u != u_end ; ++u)
-        {
-            if (0 != u->flag_name.data().compare(0, prefix.length(), prefix))
-                continue;
-
-            if (! match_package(this, *u->dep_atom, *e))
-                continue;
-
-            switch (u->flag_state)
-            {
-                case use_enabled:
-                    result->insert(u->flag_name);
-                    break;
-
-                case use_disabled:
-                    result->erase(u->flag_name);
-                    break;
-
-                case use_unspecified:
-                    break;
-            }
-        }
-    }
-
-    return result;
-}
-
 namespace
 {
     void add_one_hook(const std::string & base, std::list<FSEntry> & result)
@@ -544,5 +483,26 @@ DefaultEnvironment::MirrorIterator
 DefaultEnvironment::end_mirrors(const std::string & mirror) const
 {
     return DefaultConfig::get_instance()->end_mirrors(mirror);
+}
+
+UseFlagNameCollection::ConstPointer
+DefaultEnvironment::known_use_expand_names(const UseFlagName & prefix, const PackageDatabaseEntry * pde) const
+{
+    UseFlagNameCollection::Pointer result(new UseFlagNameCollection::Concrete);
+
+    std::string prefix_lower;
+    std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
+    for (DefaultConfig::DefaultUseIterator i(DefaultConfig::get_instance()->begin_default_use()),
+            i_end(DefaultConfig::get_instance()->end_default_use()) ; i != i_end ; ++i)
+        if (0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
+            result->insert(i->first);
+
+    if (pde)
+        for (DefaultConfig::UseConfigIterator i(DefaultConfig::get_instance()->begin_use_config(pde->name)),
+                i_end(DefaultConfig::get_instance()->end_use_config(pde->name)) ; i != i_end ; ++i)
+            if (0 == i->flag_name.data().compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
+                result->insert(i->flag_name);
+
+    return result;
 }
 

@@ -387,22 +387,19 @@ namespace paludis
             virtual UseFlagNameCollection::ConstPointer do_arch_flags() const = 0;
 
             /**
-             * Override in descendents: is this an expand flag?
+             * Override in descendents: fetch all use expand flags.
              */
-            virtual bool do_is_expand_flag(const UseFlagName &) const = 0;
+            virtual UseFlagNameCollection::ConstPointer do_use_expand_flags() const = 0;
 
             /**
-             * Override in descendents: is this an expand flag that should be
-             * ignored?
+             * Override in descendents: fetch all use expand hidden prefixes.
              */
-            virtual bool do_is_expand_hidden_flag(const UseFlagName &) const = 0;
+            virtual UseFlagNameCollection::ConstPointer do_use_expand_hidden_prefixes() const = 0;
 
             /**
-             * Override in descendents: for a UseFlagName where is_expand_flag
-             * is true, return the position of the delimiting underscore that
-             * splits name and value.
+             * Override in descendents: fetch all use expand prefixes.
              */
-            virtual std::string::size_type do_expand_flag_delim_pos(const UseFlagName &) const = 0;
+            virtual UseFlagNameCollection::ConstPointer do_use_expand_prefixes() const = 0;
 
         public:
             /**
@@ -435,15 +432,6 @@ namespace paludis
             }
 
             /**
-             * Query whether the specified use flag is an arch flag.
-             */
-            bool is_arch_flag(const UseFlagName & u) const
-            {
-                UseFlagNameCollection::ConstPointer uu(do_arch_flags());
-                return uu->end() != uu->find(u);
-            }
-
-            /**
              * Fetch all arch flags.
              */
             UseFlagNameCollection::ConstPointer arch_flags() const
@@ -452,35 +440,27 @@ namespace paludis
             }
 
             /**
-             * Query whether the specified use flag is an expand flag.
+             * Fetch all expand flags.
              */
-            bool is_expand_flag(const UseFlagName & u) const
+            UseFlagNameCollection::ConstPointer use_expand_flags() const
             {
-                return do_is_expand_flag(u);
+                return do_use_expand_flags();
             }
 
             /**
-             * Query whether the specified use flag is an expand flag that
-             * is ignored in visible output.
+             * Fetch all expand hidden flags.
              */
-            bool is_expand_hidden_flag(const UseFlagName & u) const
+            UseFlagNameCollection::ConstPointer use_expand_hidden_prefixes() const
             {
-                return do_is_expand_hidden_flag(u);
+                return do_use_expand_hidden_prefixes();
             }
 
             /**
-             * Fetch the expand flag name for a given use flag where
-             * is_expand_flag returns true.
+             * Fetch all use expand prefixes.
              */
-            UseFlagName expand_flag_name(const UseFlagName & u) const;
-
-            /**
-             * Fetch the expand flag value for a given use flag where
-             * is_expand_flag returns true.
-             */
-            UseFlagName expand_flag_value(const UseFlagName & u) const
+            UseFlagNameCollection::ConstPointer use_expand_prefixes() const
             {
-                return UseFlagName(stringify(u).substr(do_expand_flag_delim_pos(u) + 1));
+                return do_use_expand_prefixes();
             }
 
             virtual ~RepositoryUseInterface() { }

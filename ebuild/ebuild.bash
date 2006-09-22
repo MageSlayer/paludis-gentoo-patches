@@ -112,7 +112,7 @@ ebuild_source_profile()
     fi
 }
 
-save_vars="USE USE_EXPAND"
+save_vars="USE USE_EXPAND ${USE_EXPAND} ${!USE_EXPAND}"
 
 for var in ${save_vars} ; do
     eval "export save_var_${var}='${!var}'"
@@ -137,8 +137,8 @@ for f in ${PALUDIS_BASHRC_FILES} ; do
     fi
 done
 
-for var in ${save_vars}; do
-    if [[ -n ${!var} ]]; then
+for var in ${save_vars} ; do
+    if [[ -n ${!var} ]] ; then
         die "${var} should not be set in bashrc. Aborting."
     fi
 done

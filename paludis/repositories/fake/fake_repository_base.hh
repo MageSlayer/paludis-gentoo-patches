@@ -46,6 +46,20 @@ namespace paludis
         private PrivateImplementationPattern<FakeRepositoryBase>
     {
         protected:
+            /* RepositoryUseInterface */
+
+            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
+            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const;
+            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const;
+            virtual UseFlagNameCollection::ConstPointer do_arch_flags() const;
+            virtual UseFlagNameCollection::ConstPointer do_use_expand_flags() const;
+            virtual UseFlagNameCollection::ConstPointer do_use_expand_hidden_prefixes() const;
+            virtual UseFlagNameCollection::ConstPointer do_use_expand_prefixes() const;
+            virtual UseFlagName do_use_expand_name(const UseFlagName & u) const;
+            virtual UseFlagName do_use_expand_value(const UseFlagName & u) const;
+
+            /* end of RepositoryUseInterface */
+
             virtual bool do_has_category_named(const CategoryNamePart &) const;
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const;
@@ -70,18 +84,6 @@ namespace paludis
 
             virtual bool do_query_profile_masks(const QualifiedPackageName &,
                     const VersionSpec &) const;
-
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
-
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const;
-
-            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const;
-
-            virtual UseFlagNameCollection::ConstPointer do_arch_flags() const;
-
-            virtual bool do_is_expand_flag(const UseFlagName &) const;
-            virtual bool do_is_expand_hidden_flag(const UseFlagName &) const;
-            virtual std::string::size_type do_expand_flag_delim_pos(const UseFlagName &) const;
 
             virtual bool do_is_licence(const std::string &) const;
 

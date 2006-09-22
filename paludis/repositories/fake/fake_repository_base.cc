@@ -216,25 +216,6 @@ FakeRepositoryBase::do_arch_flags() const
 }
 
 bool
-FakeRepositoryBase::do_is_expand_flag(const UseFlagName &) const
-{
-    return false;
-}
-
-
-bool
-FakeRepositoryBase::do_is_expand_hidden_flag(const UseFlagName &) const
-{
-    return false;
-}
-
-std::string::size_type
-FakeRepositoryBase::do_expand_flag_delim_pos(const UseFlagName &) const
-{
-    return 0;
-}
-
-bool
 FakeRepositoryBase::do_is_licence(const std::string &) const
 {
     return false;
@@ -243,5 +224,35 @@ FakeRepositoryBase::do_is_licence(const std::string &) const
 void
 FakeRepositoryBase::invalidate() const
 {
+}
+
+UseFlagNameCollection::ConstPointer
+FakeRepositoryBase::do_use_expand_flags() const
+{
+    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+}
+
+UseFlagNameCollection::ConstPointer
+FakeRepositoryBase::do_use_expand_hidden_prefixes() const
+{
+    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+}
+
+UseFlagNameCollection::ConstPointer
+FakeRepositoryBase::do_use_expand_prefixes() const
+{
+    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+}
+
+UseFlagName
+FakeRepositoryBase::do_use_expand_name(const UseFlagName & u) const
+{
+    return u;
+}
+
+UseFlagName
+FakeRepositoryBase::do_use_expand_value(const UseFlagName & u) const
+{
+    return u;
 }
 

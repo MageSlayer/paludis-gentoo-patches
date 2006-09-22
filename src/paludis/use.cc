@@ -25,6 +25,18 @@
 
 using namespace paludis;
 
+namespace
+{
+    std::string::size_type
+    use_expand_delim_pos(const UseFlagName & u, const UseFlagNameCollection::ConstPointer c)
+    {
+        for (UseFlagNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            if (0 == u.data().compare(0, i->data().length(), i->data(), 0, i->data().length()))
+                return i->data().length();
+        return std::string::npos;
+    }
+}
+
 std::string
 make_pretty_use_flags_string(const Environment * const env, const PackageDatabaseEntry & p,
         VersionMetadata::ConstPointer metadata)
@@ -45,7 +57,7 @@ make_pretty_use_flags_string(const Environment * const env, const PackageDatabas
         for (std::set<UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
                 i != i_end ; ++i)
         {
-            if (use_interface->is_expand_flag(*i))
+            if (std::string::npos != use_expand_delim_pos(*i, use_interface->use_expand_prefixes()))
                 continue;
 
             if (env->query_use(*i, &p))
@@ -69,12 +81,13 @@ make_pretty_use_flags_string(const Environment * const env, const PackageDatabas
         for (std::set<UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
                 i != i_end ; ++i)
         {
-            if ((! use_interface->is_expand_flag(*i)) ||
-                    (use_interface->is_expand_hidden_flag(*i)))
+            std::string::size_type delim_pos;
+            if (std::string::npos == ((delim_pos = use_expand_delim_pos(*i, use_interface->use_expand_prefixes()))))
+                continue;
+            if (use_interface->use_expand_hidden_prefixes()->count(UseFlagName(i->data().substr(0, delim_pos))))
                 continue;
 
-            UseFlagName expand_name(use_interface->expand_flag_name(*i)),
-                expand_value(use_interface->expand_flag_value(*i));
+            UseFlagName expand_name(i->data().substr(0, delim_pos)), expand_value(i->data().substr(delim_pos + 1));
 
             if (expand_name != old_expand_name)
             {

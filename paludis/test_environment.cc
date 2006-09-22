@@ -82,9 +82,4 @@ TestEnvironment::end_mirrors(const std::string &) const
     return MirrorIterator(test_environment_mirrors.end());
 }
 
-UseFlagNameCollection::Pointer
-TestEnvironment::query_enabled_use_matching(const std::string &, const PackageDatabaseEntry *) const
-{
-    return UseFlagNameCollection::Pointer(new UseFlagNameCollection::Concrete);
-}
 

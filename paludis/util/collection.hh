@@ -189,6 +189,8 @@ namespace paludis
 
             virtual Iterator find(const T_ & v) const = 0;
 
+            virtual int count(const T_ & v) const = 0;
+
             ///\}
 
             ///\name Adding, removing and modifying items
@@ -306,6 +308,11 @@ namespace paludis
              * Erase an item, return whether we succeeded.
              */
             virtual bool erase(const K_ & k) = 0;
+
+            /**
+             * Erase an item, return whether we succeeded.
+             */
+            virtual bool erase(const Iterator & i) = 0;
 
             ///\}
 

@@ -94,20 +94,6 @@ namespace paludis
             virtual bool do_query_profile_masks(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
-
-            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const;
-
-            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const;
-
-            virtual UseFlagNameCollection::ConstPointer do_arch_flags() const;
-
-            virtual bool do_is_expand_flag(const UseFlagName &) const;
-
-            virtual bool do_is_expand_hidden_flag(const UseFlagName &) const;
-
-            virtual std::string::size_type do_expand_flag_delim_pos(const UseFlagName &) const;
-
             virtual bool do_is_licence(const std::string &) const;
 
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
@@ -121,6 +107,20 @@ namespace paludis
 
             virtual VersionMetadata::ConstPointer virtual_package_version_metadata(
                     const RepositoryVirtualsEntry &, const VersionSpec & v) const;
+
+            /* RepositoryUseInterface */
+
+            virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
+            virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const;
+            virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const;
+            virtual UseFlagNameCollection::ConstPointer do_arch_flags() const;
+            virtual UseFlagNameCollection::ConstPointer do_use_expand_flags() const;
+            virtual UseFlagNameCollection::ConstPointer do_use_expand_hidden_prefixes() const;
+            virtual UseFlagName do_use_expand_name(const UseFlagName & u) const;
+            virtual UseFlagName do_use_expand_value(const UseFlagName & u) const;
+            virtual UseFlagNameCollection::ConstPointer do_use_expand_prefixes() const;
+
+            /* end of RepositoryUseInterface */
 
         public:
             virtual RepositoryInfo::ConstPointer info(bool verbose) const;

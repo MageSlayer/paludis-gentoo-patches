@@ -222,46 +222,46 @@ PortageRepositoryEbinEntries::install(const QualifiedPackageName & q, const Vers
     }
 
     use += p->environment_variable("ARCH") + " ";
+
+    /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
+     * environment variables */
+    AssociativeCollection<std::string, std::string>::Pointer expand_vars(
+            new AssociativeCollection<std::string, std::string>::Concrete);
     for (PortageRepositoryProfile::UseExpandIterator x(p->begin_use_expand()),
             x_end(p->end_use_expand()) ; x != x_end ; ++x)
     {
         std::string lower_x;
-        std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x),
-                &::tolower);
+        std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x), &::tolower);
 
-        std::list<std::string> uses;
-        WhitespaceTokeniser::get_instance()->tokenise(
-                p->environment_variable(stringify(*x)),
-                std::back_inserter(uses));
+        /* possible values from profile */
+        std::set<UseFlagName> possible_values;
+        WhitespaceTokeniser::get_instance()->tokenise(p->environment_variable(stringify(*x)),
+                create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
 
-        for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
+        /* possible values from environment */
+        UseFlagNameCollection::ConstPointer possible_values_from_env(_imp->params.environment->
+                known_use_expand_names(*x, &e));
+        std::copy(possible_values_from_env->begin(), possible_values_from_env->end(),
+                std::inserter(possible_values, possible_values.end()));
+
+        for (std::set<UseFlagName>::const_iterator u(possible_values.begin()), u_end(possible_values.end()) ;
                 u != u_end ; ++u)
-            use += lower_x + "_" + *u + " ";
+        {
+            if (! _imp->params.environment->query_use(UseFlagName(lower_x + "_" + stringify(*u)), &e))
+                continue;
 
-        UseFlagNameCollection::Pointer u(_imp->params.environment->query_enabled_use_matching(
-                    lower_x + "_", &e));
-        for (UseFlagNameCollection::Iterator uu(u->begin()), uu_end(u->end()) ;
-                uu != uu_end ; ++uu)
-            use += stringify(*uu) + " ";
-    }
+            use.append(lower_x + "_" + stringify(*u) + " ");
 
-    AssociativeCollection<std::string, std::string>::Pointer expand_vars(
-            new AssociativeCollection<std::string, std::string>::Concrete);
-    for (PortageRepositoryProfile::UseExpandIterator
-            u(p->begin_use_expand()), u_end(p->end_use_expand()) ; u != u_end ; ++u)
-    {
-        std::string prefix;
-        std::transform(u->data().begin(), u->data().end(), std::back_inserter(prefix),
-                &::tolower);
-        prefix.append("_");
-
-        UseFlagNameCollection::Pointer x(_imp->params.environment->query_enabled_use_matching(prefix, &e));
-        std::string value;
-        for (UseFlagNameCollection::Iterator xx(x->begin()), xx_end(x->end()) ;
-                xx != xx_end ; ++xx)
-            value.append(stringify(*xx).erase(0, stringify(*u).length() + 1) + " ");
-
-        expand_vars->insert(stringify(*u), value);
+            std::string value;
+            AssociativeCollection<std::string, std::string>::Iterator i(expand_vars->find(stringify(*x)));
+            if (expand_vars->end() != i)
+            {
+                value = i->second + " ";
+                expand_vars->erase(i);
+            }
+            value.append(stringify(*u));
+            expand_vars->insert(stringify(*x), value);
+        }
     }
 
     binaries = strip_trailing(binaries, " ");

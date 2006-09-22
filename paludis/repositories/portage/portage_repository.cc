@@ -619,55 +619,6 @@ PortageRepository::do_arch_flags() const
 }
 
 bool
-PortageRepository::do_is_expand_flag(const UseFlagName & u) const
-{
-    _imp->need_profiles();
-
-    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
-            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
-        if (0 == strncasecmp(
-                    stringify(u).c_str(),
-                    (stringify(*i) + "_").c_str(),
-                    stringify(*i).length() + 1))
-            return true;
-
-    return false;
-}
-
-bool
-PortageRepository::do_is_expand_hidden_flag(const UseFlagName & u) const
-{
-    _imp->need_profiles();
-
-    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
-            i_end(_imp->profile_ptr->end_use_expand_hidden()) ; i != i_end ; ++i)
-        if (0 == strncasecmp(
-                    stringify(u).c_str(),
-                    (stringify(*i) + "_").c_str(),
-                    stringify(*i).length() + 1))
-            return true;
-
-    return false;
-}
-
-std::string::size_type
-PortageRepository::do_expand_flag_delim_pos(const UseFlagName & u) const
-{
-    _imp->need_profiles();
-
-    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
-            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
-        if (0 == strncasecmp(
-                    stringify(u).c_str(),
-                    (stringify(*i) + "_").c_str(),
-                    stringify(*i).length() + 1))
-            return stringify(*i).length();
-
-    throw InternalError(PALUDIS_HERE, "Use flag '" +
-            stringify(u) + "' not an expand flag?");
-}
-
-bool
 PortageRepository::do_is_licence(const std::string & s) const
 {
     FSEntry l(_imp->params.location);
@@ -929,5 +880,93 @@ PortageRepository::virtual_package_version_metadata(const RepositoryVirtualsEntr
 
     return result;
 
+}
+
+UseFlagNameCollection::ConstPointer
+PortageRepository::do_use_expand_flags() const
+{
+    _imp->need_profiles();
+
+    UseFlagNameCollection::Pointer result(new UseFlagNameCollection::Concrete);
+    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
+            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
+    {
+        std::list<std::string> values;
+        WhitespaceTokeniser::get_instance()->tokenise(_imp->profile_ptr->environment_variable(
+                    stringify(*i)), std::back_inserter(values));
+        for (std::list<std::string>::const_iterator j(values.begin()), j_end(values.end()) ;
+                j != j_end ; ++j)
+        {
+            std::string f(stringify(*i) + "_" + *j), lower_f;
+            std::transform(f.begin(), f.end(), std::back_inserter(lower_f), &::tolower);
+            result->insert(UseFlagName(lower_f));
+        }
+    }
+
+    return result;
+}
+
+UseFlagNameCollection::ConstPointer
+PortageRepository::do_use_expand_prefixes() const
+{
+    _imp->need_profiles();
+
+    UseFlagNameCollection::Pointer result(new UseFlagNameCollection::Concrete);
+    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
+            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
+    {
+        std::string lower_i;
+        std::transform(i->data().begin(), i->data().end(), std::back_inserter(lower_i), &::tolower);
+        result->insert(UseFlagName(lower_i));
+    }
+
+    return result;
+}
+
+UseFlagNameCollection::ConstPointer
+PortageRepository::do_use_expand_hidden_prefixes() const
+{
+    _imp->need_profiles();
+
+    UseFlagNameCollection::Pointer result(new UseFlagNameCollection::Concrete);
+    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand_hidden()),
+            i_end(_imp->profile_ptr->end_use_expand_hidden()) ; i != i_end ; ++i)
+    {
+        std::string lower_i;
+        std::transform(i->data().begin(), i->data().end(), std::back_inserter(lower_i), &::tolower);
+        result->insert(UseFlagName(lower_i));
+    }
+
+    return result;
+}
+
+UseFlagName
+PortageRepository::do_use_expand_name(const UseFlagName & u) const
+{
+    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
+            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
+    {
+        std::string lower_i;
+        std::transform(i->data().begin(), i->data().end(), std::back_inserter(lower_i), ::tolower);
+        if (0 == lower_i.compare(0, lower_i.length(), stringify(u), 0, lower_i.length()))
+            return *i;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Not a use expand name: '" + stringify(u) + "'");
+}
+
+UseFlagName
+PortageRepository::do_use_expand_value(const UseFlagName & u) const
+{
+    for (PortageRepositoryProfile::UseExpandIterator i(_imp->profile_ptr->begin_use_expand()),
+            i_end(_imp->profile_ptr->end_use_expand()) ; i != i_end ; ++i)
+    {
+        std::string lower_i;
+        std::transform(i->data().begin(), i->data().end(), std::back_inserter(lower_i), ::tolower);
+        if (0 == lower_i.compare(0, lower_i.length(), stringify(u), 0, lower_i.length()))
+            return UseFlagName(stringify(u).substr(lower_i.length() + 1));
+    }
+
+    throw InternalError(PALUDIS_HERE, "Not a use expand name: '" + stringify(u) + "'");
 }
 

@@ -166,6 +166,11 @@ namespace paludis
                 return Iterator(_items.find(v));
             }
 
+            virtual int count(const T_ & v) const
+            {
+                return _items.count(v);
+            }
+
             virtual bool insert(const T_ & v)
             {
                 return _items.insert(v).second;
@@ -257,6 +262,12 @@ namespace paludis
             virtual bool erase(const K_ & k)
             {
                 return 0 != _items.erase(k);
+            }
+
+            virtual bool erase(const Iterator & i)
+            {
+                _items.erase(i->first);
+                return true;
             }
 
             virtual bool empty() const

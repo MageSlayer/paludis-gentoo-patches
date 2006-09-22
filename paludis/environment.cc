@@ -404,12 +404,6 @@ Environment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) co
     }
 }
 
-UseFlagNameCollection::Pointer
-Environment::query_enabled_use_matching(const std::string &, const PackageDatabaseEntry *) const
-{
-    return UseFlagNameCollection::Pointer(new UseFlagNameCollection::Concrete);
-}
-
 bool
 Environment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const) const
 {
@@ -470,5 +464,11 @@ Environment::end_mirrors(const std::string &) const
 void
 Environment::perform_hook(const Hook &) const
 {
+}
+
+UseFlagNameCollection::ConstPointer
+Environment::known_use_expand_names(const UseFlagName &, const PackageDatabaseEntry *) const
+{
+    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
 }
 

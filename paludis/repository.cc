@@ -179,12 +179,3 @@ RepositoryInfo::end_sections() const
     return SectionIterator(_imp->sections.end());
 }
 
-UseFlagName
-RepositoryUseInterface::expand_flag_name(const UseFlagName & u) const
-{
-    std::string upper_u;
-    std::transform(u.data().begin(), u.data().end(), std::back_inserter(upper_u),
-                &::toupper);
-    return UseFlagName(upper_u.substr(0, do_expand_flag_delim_pos(u)));
-}
-

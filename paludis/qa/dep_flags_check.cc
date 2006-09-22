@@ -69,7 +69,7 @@ namespace
             if (! r->use_interface)
                 throw InternalError(PALUDIS_HERE, "Confused: Repository does not have a UseInterface.");
 
-            if (r->use_interface->is_arch_flag(u->flag()))
+            if (r->use_interface->arch_flags()->count(u->flag()))
             {
                 if (role == "DEPEND" || role == "RDEPEND" || role == "PDEPEND")
                 {
@@ -81,7 +81,7 @@ namespace
                     result << Message(qal_major, "Arch flag '" + stringify(u->flag()) +
                             "' in " + role);
             }
-            else if (r->use_interface->is_expand_flag(u->flag()))
+            else if (r->use_interface->use_expand_flags()->count(u->flag()))
             {
             }
             else if (iuse.end() == iuse.find(u->flag()))
