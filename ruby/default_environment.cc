@@ -56,6 +56,31 @@ namespace
         }
     }
 
+    VALUE
+    default_environment_accept_keyword(int argc, VALUE * argv, VALUE)
+    {
+        try
+        {
+            if (1 == argc || 2 == argc)
+            {
+                KeywordName * keyword_name_ptr;
+                Data_Get_Struct(argv[0], KeywordName, keyword_name_ptr);
+
+                PackageDatabaseEntry * pde_ptr(0);
+                if (2 == argc)
+                    Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
+
+                return DefaultEnvironment::get_instance()->accept_keyword(*keyword_name_ptr, pde_ptr) ? Qtrue : Qfalse;
+            }
+            else
+                rb_raise(rb_eArgError, "DefaultEnvironment.accept_keyword expects one or two arguments, but got %d", argc);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_default_environment()
     {
         rb_require("singleton");
@@ -63,6 +88,7 @@ namespace
         c_default_environment = rb_define_class("DefaultEnvironment", rb_cObject);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_default_environment);
         rb_define_method(c_default_environment, "query_use", RUBY_FUNC_CAST(&default_environment_query_use), -1);
+        rb_define_method(c_default_environment, "accept_keyword", RUBY_FUNC_CAST(&default_environment_accept_keyword), -1);
     }
 }
 

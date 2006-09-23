@@ -14,6 +14,7 @@ END
 
 cat <<END > home/.paludis/keywords.conf
 * test
+~foo/bar-1 ~test
 END
 
 cat <<END > home/.paludis/use.conf

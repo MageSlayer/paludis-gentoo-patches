@@ -53,7 +53,7 @@ OUR_OBJECTS = \
 TESTS = $(IF_RUBY_TESTS)
 noinst_DATA = $(OUR_OBJECTS)
 check_DATA = .libs/Paludis.so
-rubylibdir = $(DESTDIR)/@RUBY_SITEARCHDIR@
+rubylibdir = $(DESTDIR)/@RUBY_INSTALL_DIR@
 rubylib_DATA = Paludis.so
 
 OUR_CXXCOMPILE = $(CXX) -fPIC $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \

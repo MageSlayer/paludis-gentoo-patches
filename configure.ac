@@ -530,6 +530,17 @@ if test "x$enable_ruby" = "xyes" ; then
 	fi
 	AC_MSG_RESULT([$RUBY_SONAME])
 	AC_SUBST([RUBY_SONAME])
+
+	AC_ARG_WITH([ruby-install-dir],
+		AS_HELP_STRING([--with-ruby-install-dir=dir], [Specify Ruby installation dir]),
+		RUBY_INSTALL_DIR=`eval echo $withval`,
+		RUBY_INSTALL_DIR=)
+	AC_MSG_CHECKING([for Ruby installation dir])
+	if test "x$RUBY_INSTALL_DIR" = "x" ; then
+		RUBY_INSTALL_DIR=$RUBY_SITEARCHDIR
+	fi
+	AC_MSG_RESULT([$RUBY_INSTALL_DIR])
+	AC_SUBST([RUBY_INSTALL_DIR])
 fi
 
 AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
