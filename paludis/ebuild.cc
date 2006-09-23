@@ -101,7 +101,7 @@ EbuildCommand::operator() ()
                 ("PALUDIS_HOOK_DIRS", params.environment->hook_dirs())
                 ("PALUDIS_COMMAND", params.environment->paludis_command())
                 ("KV", kernel_version())
-                ("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string())
+                ("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
                 ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))));
 
     if (do_run_command(add_portage_vars(cmd)))

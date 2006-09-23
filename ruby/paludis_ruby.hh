@@ -25,13 +25,24 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/compare.hh>
+#include <paludis/mask_reasons.hh>
 #include <ruby.h>
 
 namespace paludis
 {
     namespace ruby
     {
+        /* general utilities */
+
         void exception_to_ruby_exception(const std::exception &) PALUDIS_ATTRIBUTE((noreturn));
+
+        std::string value_case_to_RubyCase(const std::string & s);
+
+        /* constructors */
+
+        VALUE create_mask_reasons(const MaskReasons &);
+
+        /* registration */
 
         class RegisterRubyClass :
             public InstantiationPolicy<RegisterRubyClass, instantiation_method::SingletonAsNeededTag>,

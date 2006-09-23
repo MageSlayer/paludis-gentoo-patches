@@ -19,7 +19,6 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/default_environment.hh>
-#include <paludis/util/compare.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -81,6 +80,45 @@ namespace
         }
     }
 
+    VALUE
+    default_environment_accept_license(int argc, VALUE * argv, VALUE)
+    {
+        try
+        {
+            if (1 == argc || 2 == argc)
+            {
+                PackageDatabaseEntry * pde_ptr(0);
+                if (2 == argc)
+                    Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
+
+                return DefaultEnvironment::get_instance()->accept_license(
+                        std::string(STR2CSTR(argv[0])), pde_ptr) ? Qtrue : Qfalse;
+            }
+            else
+                rb_raise(rb_eArgError, "DefaultEnvironment.accept_license expects one or two arguments, but got %d", argc);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    default_environment_mask_reasons(VALUE, VALUE pde)
+    {
+        PackageDatabaseEntry * pde_ptr(0);
+        Data_Get_Struct(pde, PackageDatabaseEntry, pde_ptr);
+        try
+        {
+            MaskReasons r(DefaultEnvironment::get_instance()->mask_reasons(*pde_ptr));
+            return create_mask_reasons(r);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_default_environment()
     {
         rb_require("singleton");
@@ -89,6 +127,8 @@ namespace
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_default_environment);
         rb_define_method(c_default_environment, "query_use", RUBY_FUNC_CAST(&default_environment_query_use), -1);
         rb_define_method(c_default_environment, "accept_keyword", RUBY_FUNC_CAST(&default_environment_accept_keyword), -1);
+        rb_define_method(c_default_environment, "accept_license", RUBY_FUNC_CAST(&default_environment_accept_license), -1);
+        rb_define_method(c_default_environment, "mask_reasons", RUBY_FUNC_CAST(&default_environment_mask_reasons), 1);
     }
 }
 

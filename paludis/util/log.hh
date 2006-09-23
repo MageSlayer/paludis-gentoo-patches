@@ -107,15 +107,13 @@ namespace paludis
             void set_log_stream(std::ostream * const);
 
             /**
-             * Log level, as a string.
-             */
-            std::string log_level_string() const;
-
-            /**
              * Set our program name.
              */
             void set_program_name(const std::string &);
     };
+
+    std::ostream &
+    operator<< (std::ostream &, const LogLevel &);
 }
 
 #endif

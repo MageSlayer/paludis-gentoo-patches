@@ -21,6 +21,7 @@
 #include <paludis_ruby.hh>
 #include <ruby.h>
 #include <list>
+#include <ctype.h>
 
 using namespace paludis;
 using namespace paludis::ruby;
@@ -67,6 +68,30 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
                 dynamic_cast<const paludis::Exception *>(&ee)->message().c_str(), ee.what());
     else
         rb_raise(rb_eRuntimeError, "Unexpected std::exception: (%s)", ee.what());
+}
+
+std::string
+paludis::ruby::value_case_to_RubyCase(const std::string & s)
+{
+    if (s.empty())
+        return s;
+
+    bool upper_next(true);
+    std::string result;
+    for (std::string::size_type p(0), p_end(s.length()) ; p != p_end ; ++p)
+    {
+        if ('_' == s[p])
+            upper_next = true;
+        else if (upper_next)
+        {
+            result.append(std::string(1, toupper(s[p])));
+            upper_next = false;
+        }
+        else
+            result.append(std::string(1, s[p]));
+    }
+
+    return result;
 }
 
 extern "C"

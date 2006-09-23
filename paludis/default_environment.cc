@@ -367,7 +367,7 @@ namespace
         MakeEnvCommand cmd(make_env_command("bash '" + stringify(f) + "'")
                 ("ROOT", DefaultConfig::get_instance()->root())
                 ("HOOK", hook.name())
-                ("HOOK_LOG_LEVEL", Log::get_instance()->log_level_string())
+                ("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
                 ("HOOK_CONFIG_SUFFIX", DefaultConfig::config_suffix())
                 ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
                 ("PALUDIS_COMMAND", paludis_command));

@@ -120,22 +120,26 @@ Log::set_log_stream(std::ostream * const s)
     _imp->stream = s;
 }
 
-std::string
-Log::log_level_string() const
+std::ostream &
+paludis::operator<< (std::ostream & s, const LogLevel & l)
 {
-    switch (Log::get_instance()->log_level())
+    switch (l)
     {
         case ll_qa:
-            return "qa";
+            s << "qa";
+            return s;
 
         case ll_warning:
-            return "warning";
+            s << "warning";
+            return s;
 
         case ll_debug:
-            return "debug";
+            s << "debug";
+            return s;
 
         case ll_silent:
-            return "silent";
+            s << "silent";
+            return s;
 
         case last_ll:
             ;
@@ -149,3 +153,4 @@ Log::set_program_name(const std::string & s)
 {
     _imp->program_name = s;
 }
+

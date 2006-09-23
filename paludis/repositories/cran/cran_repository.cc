@@ -520,7 +520,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     cmd = cmd("PV", stringify(vn));
     cmd = cmd("PALUDIS_CRAN_MIRRORS", _imp->mirror);
     cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));
-    cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string());
+    cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()));
     cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
 
 
@@ -542,7 +542,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     cmd = cmd("PV", stringify(vn));
     cmd = cmd("PALUDIS_CRAN_LIBRARY", stringify(_imp->library));
     cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));
-    cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string());
+    cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()));
     cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
     cmd = cmd("ROOT", stringify(_imp->root));
     cmd = cmd("WORKDIR", workdir);
@@ -558,7 +558,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     cmd = cmd("PV", stringify(vn));
     cmd = cmd("PALUDIS_CRAN_LIBRARY", stringify(_imp->library));
     cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));
-    cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", Log::get_instance()->log_level_string());
+    cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()));
     cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
     cmd = cmd("ROOT", stringify(_imp->root));
     cmd = cmd("WORKDIR", workdir);
