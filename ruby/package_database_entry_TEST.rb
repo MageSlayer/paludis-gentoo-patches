@@ -1,6 +1,5 @@
-#!/usr/bin/env ruby
+#!/usr/bin/ruby
 # vim: set sw=4 sts=4 et tw=80 :
-
 #
 # Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
@@ -19,10 +18,22 @@
 #
 
 require 'test/unit'
+require 'Paludis'
 
-class TC_Basic < Test::Unit::TestCase
-    def test_require
-        require 'Paludis'
+class TestCase_PackageDatabaseEntry < Test::Unit::TestCase
+    def test_create
+        v = PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
+                VersionSpec.new("0"), RepositoryName.new("moo"))
+    end
+
+    def test_create_error
+        assert_raise TypeError do
+            v = PackageDatabaseEntry.new("foo/bar", "0", "moo")
+        end
+    end
+    def test_to_s
+        assert_equal "foo/bar-10::moo", PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
+                        VersionSpec.new("10"), RepositoryName.new("moo")).to_s
     end
 end
 

@@ -1,33 +1,36 @@
 #!/bin/bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-if test -f "$TEST_SCRIPT_DIR""${2:-${1}}"_"setup.sh" ; then
-    echo ">>> setup for test ${2:-${1}}"
-    if ! "$TEST_SCRIPT_DIR""${2:-${1}}"_"setup.sh" ; then
-        echo ">>> exiting with error for test ${2:-${1}}"
+testname=${2:-${1}}
+testname=${testname%.rb}
+
+if test -f "$TEST_SCRIPT_DIR""${testname}"_"setup.sh" ; then
+    echo ">>> setup for test ${testname}"
+    if ! "$TEST_SCRIPT_DIR""${testname}"_"setup.sh" ; then
+        echo ">>> exiting with error for test ${testname}"
         exit 255
     fi
 fi
 
-echo ">>> test ${2:-${1}}"
+echo ">>> test ${testname}"
 if ! ${@} ; then
-    if test -f "$TEST_SCRIPT_DIR""${2:-${1}}"_"cleanup.sh" ; then
-        echo ">>> cleanup for test ${2:-${1}}"
-        "$TEST_SCRIPT_DIR""${2:-${1}}"_"cleanup.sh"
+    if test -f "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then
+        echo ">>> cleanup for test ${testname}"
+        "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh"
     fi
-    echo ">>> exiting with error for test ${2:-${1}}"
+    echo ">>> exiting with error for test ${testname}"
     exit 255
 fi
 
-if test -f "$TEST_SCRIPT_DIR""${2:-${1}}"_"cleanup.sh" ; then
-    echo ">>> cleanup for test ${2:-${1}}"
-    if ! "$TEST_SCRIPT_DIR""${2:-${1}}"_"cleanup.sh" ; then
-        echo ">>> exiting with error for test ${2:-${1}}"
+if test -f "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then
+    echo ">>> cleanup for test ${testname}"
+    if ! "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then
+        echo ">>> exiting with error for test ${testname}"
         exit 255
     fi
 fi
 
-echo ">>> exiting with success for test ${2:-${1}}"
+echo ">>> exiting with success for test ${testname}"
 exit 0
 
 

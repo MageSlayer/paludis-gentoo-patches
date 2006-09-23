@@ -11,12 +11,25 @@ DEFS= \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o *.so
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o *.so .libs/*.so
 MAINTAINERCLEANFILES = Makefile.in
 
-IF_RUBY_TESTS = paludis_ruby_TEST.rb name_TEST.rb
-IF_RUBY_SOURCES = paludis_ruby.cc paludis_ruby.hh name.cc
-EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES)
+IF_RUBY_TESTS = \
+	paludis_ruby_TEST.rb \
+	name_TEST.rb \
+	default_environment_TEST.rb \
+	package_database_entry_TEST.rb \
+	version_spec_TEST.rb
+
+IF_RUBY_SOURCES = \
+	paludis_ruby.cc paludis_ruby.hh \
+	name.cc \
+	default_environment.cc \
+	package_database_entry.cc \
+	version_spec.cc
+
+EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
+	default_environment_TEST_setup.sh default_environment_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
@@ -24,14 +37,22 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_srcdir)/ebuild/`" \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/ebuild/`" \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
-	LD_LIBRARY_PATH="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs`" \
-	ruby -I ./
+	SYSCONFDIR="$(sysconfdir)" \
+	LD_LIBRARY_PATH="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs`:`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/nothing/.libs`:`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/virtuals/.libs`" \
+	bash $(top_srcdir)/test/run_test.sh "ruby -I ./.libs/"
 
 if ENABLE_RUBY
 
+OUR_OBJECTS = \
+	name.o \
+	default_environment.o \
+	paludis_ruby.o \
+	package_database_entry.o \
+	version_spec.o
+
 TESTS = $(IF_RUBY_TESTS)
-OUR_OBJECTS = name.o paludis_ruby.o
 noinst_DATA = $(OUR_OBJECTS)
+check_DATA = .libs/Paludis.so
 rubylibdir = $(DESTDIR)/@RUBY_SITEARCHDIR@
 rubylib_DATA = Paludis.so
 
@@ -45,14 +66,38 @@ paludis_ruby.o : paludis_ruby.cc paludis_ruby.hh
 name.o : name.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/name.cc
 
-Paludis.so : $(OUR_OBJECTS)
+default_environment.o : default_environment.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/default_environment.cc
+
+package_database_entry.o : package_database_entry.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/package_database_entry.cc
+
+version_spec.o : version_spec.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/version_spec.cc
+
+.libs/Paludis.so : $(OUR_OBJECTS)
+	mkdir -p .libs
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	    $(AM_LDFLAGS) $(LDFLAGS) -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
-	    -L$(top_builddir)/paludis/.libs -lpaludis -o $@ $^
+	    $(AM_LDFLAGS) $(LDFLAGS) \
+	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
+	    -o $@ \
+	    $(top_builddir)/paludis/.libs/libpaludis.so \
+	    $(top_builddir)/paludis/repositories/nothing/.libs/libpaludisnothingrepository.so \
+	    $(top_builddir)/paludis/repositories/virtuals/.libs/libpaludisvirtualsrepository.so \
+	    $^
 
-clean-local :
-	rm -fr Paludis.so .checkimage || true
+Paludis.so : $(OUR_OBJECTS)
+	mkdir -p .libs
+	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	    $(AM_LDFLAGS) $(LDFLAGS) \
+	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
+	    -L$(top_builddir)/paludis/util/.libs/ -lpaludisutil \
+	    -L$(top_builddir)/paludis/.libs/ -lpaludis \
+	    -o $@ \
+	    $^
+
 
 endif
 

@@ -1,6 +1,23 @@
 #!/usr/bin/ruby
 # vim: set sw=4 sts=4 et tw=80 :
 
+#
+# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+#
+# This file is part of the Paludis package manager. Paludis is free software;
+# you can redistribute it and/or modify it under the terms of the GNU General
+# Public License version 2, as published by the Free Software Foundation.
+#
+# Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
 require 'test/unit'
 require 'Paludis'
 
@@ -30,10 +47,10 @@ module NameTestCaseBase
         x = name_type().new(valid_name_foo())
         y = name_type().new(valid_name_foo())
         z = name_type().new(valid_name_bar())
-        assert x == y
-        assert y != z
-        assert z < x
-        assert x > z
+        assert_equal x, y
+        assert_not_equal y, z
+        assert_operator z, :<, x
+        assert_operator x, :>, z
         assert_raise TypeError do
             x < valid_name_foo()
         end
@@ -51,8 +68,8 @@ module NameTestCaseBase
     def test_to_s
         x = name_type().new(valid_name_foo())
         y = name_type().new(valid_name_bar())
-        assert x.to_s == valid_name_foo()
-        assert y.to_s == valid_name_bar()
+        assert_equal valid_name_foo(), x.to_s
+        assert_equal valid_name_bar(), y.to_s
     end
 end
 
@@ -77,6 +94,17 @@ class TestCase_CategoryNamePart < Test::Unit::TestCase
 
     def name_type
         return CategoryNamePart
+    end
+
+    def test_plus
+        q = CategoryNamePart.new("foo") + PackageNamePart.new("bar")
+        assert_equal "foo/bar", q.to_s
+    end
+
+    def test_plus_bad
+        assert_raise TypeError do
+            q = CategoryNamePart.new("foo") + "bar"
+        end
     end
 end
 
@@ -127,4 +155,42 @@ class TestCase_KeywordName < Test::Unit::TestCase
         return KeywordName
     end
 end
+
+class TestCase_QualifiedPackageName < Test::Unit::TestCase
+    include NameTestCaseBase
+
+    def error_type
+        return QualifiedPackageNameError
+    end
+
+    def name_type
+        return QualifiedPackageName
+    end
+
+    def valid_name_foo
+        return "foo/foo"
+    end
+
+    def valid_name_bar
+        return "bar/bar"
+    end
+
+    def test_two_arg_create
+        x = QualifiedPackageName.new(CategoryNamePart.new("foo"), PackageNamePart.new("bar"))
+        assert_equal "foo/bar", x.to_s
+    end
+
+    def test_bad_arg_count_create
+        assert_raise ArgumentError do
+            x = QualifiedPackageName.new("foo", "bar", "baz")
+        end
+    end
+
+    def test_bad_type_create
+        assert_raise TypeError do
+            x = QualifiedPackageName.new("foo", "bar")
+        end
+    end
+end
+
 
