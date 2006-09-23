@@ -250,6 +250,39 @@ PortageRepositorySets::package_set(const std::string & s, const PackageSetOption
         return DepAtom::Pointer(0);
 }
 
+SetsCollection::ConstPointer
+PortageRepositorySets::sets_list() const
+{
+    Context context("While generating the list of sets:");
+
+    SetsCollection::Pointer result(new SetsCollection::Concrete);
+    result->insert("security");
+    result->insert("system");
+
+    /*
+     * TODO: get rid of unnecessary copying and just put this in a for loop
+     * (need to read some doxygen pages on FSEntry first)
+     */
+    try
+    {
+        std::list<FSEntry> repo_sets;
+        std::copy(DirIterator(_imp->params.setsdir), DirIterator(),
+            filter_inserter(std::back_inserter(repo_sets),
+            IsFileWithExtension(".conf")));
+
+        std::list<FSEntry>::const_iterator f(repo_sets.begin()),
+            f_end(repo_sets.end());
+
+        for ( ; f != f_end ; ++f)
+            result->insert(stringify(*f));
+    }
+    catch (const paludis::DirOpenError & e)
+    {
+    }
+
+    return result;
+}
+
 namespace
 {
     inline

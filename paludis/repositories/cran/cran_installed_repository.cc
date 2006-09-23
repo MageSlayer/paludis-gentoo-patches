@@ -493,6 +493,17 @@ CRANInstalledRepository::do_package_set(const std::string & s, const PackageSetO
         return DepAtom::Pointer(0);
 }
 
+SetsCollection::ConstPointer
+CRANInstalledRepository::sets_list() const
+{
+    Context context("While generating the list of sets:");
+
+    SetsCollection::Pointer result(new SetsCollection::Concrete);
+    result->insert("everything");
+    result->insert("world");
+    return result;
+}
+
 bool
 CRANInstalledRepository::do_sync() const
 {

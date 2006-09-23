@@ -133,6 +133,8 @@ namespace paludis
             virtual VersionMetadata::ConstPointer provided_package_version_metadata(
                     const RepositoryProvidesEntry &) const;
 
+            virtual SetsCollection::ConstPointer sets_list() const;
+
             typedef CountedPtr<VDBRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const VDBRepository, count_policy::InternalCountTag> ConstPointer;
     };

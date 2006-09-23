@@ -68,6 +68,11 @@ namespace paludis
              * Fetch the security set.
              */
             DepAtom::Pointer security_set(const PackageSetOptions & o) const;
+
+            /**
+             * Give a list of all the sets in this repo.
+             */
+            SetsCollection::ConstPointer sets_list() const;
     };
 }
 

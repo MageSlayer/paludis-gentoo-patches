@@ -691,6 +691,12 @@ PortageRepository::do_package_set(const std::string & s, const PackageSetOptions
     return _imp->sets_ptr->package_set(s, o);
 }
 
+SetsCollection::ConstPointer
+PortageRepository::sets_list() const
+{
+    return _imp->sets_ptr->sets_list();
+}
+
 bool
 PortageRepository::do_sync() const
 {

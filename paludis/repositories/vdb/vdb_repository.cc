@@ -873,6 +873,17 @@ VDBRepository::do_package_set(const std::string & s, const PackageSetOptions &) 
         return DepAtom::Pointer(0);
 }
 
+SetsCollection::ConstPointer
+VDBRepository::sets_list() const
+{
+    Context context("While generating the list of sets:");
+
+    SetsCollection::Pointer result(new SetsCollection::Concrete);
+    result->insert("everything");
+    result->insert("world");
+    return result;
+}
+
 void
 VDBRepository::invalidate() const
 {

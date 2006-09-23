@@ -551,6 +551,11 @@ namespace paludis
     };
 
     /**
+     * Contains the names of all the sets provided by the repository.
+     */
+    typedef SortedCollection<std::string> SetsCollection;
+
+    /**
      * Interface for package sets for repositories.
      *
      * \see Repository
@@ -573,6 +578,11 @@ namespace paludis
             {
                 return do_package_set(s, o);
             }
+
+            /**
+             * Gives a list of the names of all the sets provided by this repo.
+             */
+            virtual SetsCollection::ConstPointer sets_list() const = 0;
 
             virtual ~RepositorySetsInterface() { }
     };

@@ -33,6 +33,9 @@ int do_list_categories();
 /// Handle --list-packages.
 int do_list_packages();
 
+/// Handle --list-sets.
+int do_list_sets();
+
 /// Handle --list-vulnerabilities.
 int do_list_vulnerabilities();
 

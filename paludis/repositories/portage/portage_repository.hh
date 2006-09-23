@@ -101,6 +101,8 @@ namespace paludis
 
             virtual DepAtom::Pointer do_package_set(const std::string &, const PackageSetOptions &) const;
 
+            virtual SetsCollection::ConstPointer sets_list() const;
+
             virtual bool do_sync() const;
 
             virtual VirtualsCollection::ConstPointer virtual_packages() const;

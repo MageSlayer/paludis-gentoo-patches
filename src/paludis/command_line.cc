@@ -46,6 +46,7 @@ CommandLine::CommandLine() :
     a_list_repositories(&action_args_internal, "list-repositories", '\0', "List available repositories"),
     a_list_categories(&action_args_internal, "list-categories", '\0', "List available categories"),
     a_list_packages(&action_args_internal, "list-packages", '\0', "List available packages"),
+    a_list_sets(&action_args_internal, "list-sets", '\0', "List available package sets"),
     a_list_sync_protocols(&action_args_internal, "list-sync-protocols", '\0', "List available sync protocols"),
     a_list_repository_formats(&action_args_internal, "list-repository-formats", '\0',
             "List available repository formats"),
@@ -100,6 +101,7 @@ CommandLine::CommandLine() :
     a_repository(&list_args, "repository", '\0', "Matches with this repository name only"),
     a_category(&list_args,   "category",   '\0', "Matches with this category name only"),
     a_package(&list_args,    "package",    '\0', "Matches with this package name only"),
+    a_set(&list_args,        "set",        '\0', "Matches with this package set name only"),
 
     owner_args(this, "Owner options",
             "Options relevant for the --owner actions."),
@@ -123,6 +125,7 @@ CommandLine::CommandLine() :
     add_usage_line("--list-repositories [--repository repo1 --repository repo2 ...]");
     add_usage_line("--list-categories [--repository repo1 ... --category cat1 --category cat2 ...]");
     add_usage_line("--list-packages [--repository repo1 ... --category cat1 ... --package pkg1 --package pkg2 ...]");
+    add_usage_line("--list-sets [--repository repo1 ... --set set1 ...]");
     add_usage_line("--list-sync-protocols");
     add_usage_line("--list-repository-formats");
     add_usage_line("--list-dep-tag-categories");

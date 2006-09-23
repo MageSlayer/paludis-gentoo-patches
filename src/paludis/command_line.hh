@@ -110,6 +110,9 @@ class CommandLine :
         /// --list-packages
         paludis::args::SwitchArg a_list_packages;
 
+        /// --list-sets
+        paludis::args::SwitchArg a_list_sets;
+
         /// --list-sync-protocols
         paludis::args::SwitchArg a_list_sync_protocols;
 
@@ -230,6 +233,9 @@ class CommandLine :
 
         /// --package
         paludis::args::StringSetArg a_package;
+
+        /// --set
+        paludis::args::StringSetArg a_set;
 
         /// }
 

@@ -165,6 +165,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_list_repositories.specified() +
                     CommandLine::get_instance()->a_list_categories.specified() +
                     CommandLine::get_instance()->a_list_packages.specified() +
+                    CommandLine::get_instance()->a_list_sets.specified() +
                     CommandLine::get_instance()->a_list_sync_protocols.specified() +
                     CommandLine::get_instance()->a_list_repository_formats.specified() +
                     CommandLine::get_instance()->a_list_dep_tag_categories.specified() +
@@ -319,6 +320,14 @@ main(int argc, char *argv[])
                 throw DoHelp("list-packages action takes no parameters");
 
             return do_list_packages();
+        }
+
+        if (CommandLine::get_instance()->a_list_sets.specified())
+        {
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("list-sets action takes no parameters");
+
+            return do_list_sets();
         }
 
         if (CommandLine::get_instance()->a_contents.specified())
