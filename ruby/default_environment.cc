@@ -36,11 +36,16 @@ namespace
     {
         try
         {
-            if (1 == argc)
+            if (1 == argc || 2 == argc)
             {
                 UseFlagName * use_flag_ptr;
                 Data_Get_Struct(argv[0], UseFlagName, use_flag_ptr);
-                return DefaultEnvironment::get_instance()->query_use(*use_flag_ptr, 0) ? Qtrue : Qfalse;
+
+                PackageDatabaseEntry * pde_ptr(0);
+                if (2 == argc)
+                    Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
+
+                return DefaultEnvironment::get_instance()->query_use(*use_flag_ptr, pde_ptr) ? Qtrue : Qfalse;
             }
             else
                 rb_raise(rb_eArgError, "DefaultEnvironment.query_use expects one or two arguments, but got %d", argc);

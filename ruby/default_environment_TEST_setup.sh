@@ -18,6 +18,7 @@ END
 
 cat <<END > home/.paludis/use.conf
 * enabled
+~foo/bar-1 sometimes_enabled
 END
 
 cat <<END > home/.paludis/licenses.conf
