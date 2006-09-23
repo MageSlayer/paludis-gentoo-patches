@@ -37,5 +37,11 @@ addthis(`$1',`$5')addthis(`$1',`$6')')dnl
 
 include(`paludis/files.m4')
 
+extern "C"
+{
+    /* for simplifying extconf.rb detection */
+    void paludis_was_here();
+}
+
 #endif
 

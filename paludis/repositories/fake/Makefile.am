@@ -15,6 +15,11 @@ libpaludisfakerepository_la_SOURCES = \
 	fake_repository.cc fake_repository.hh \
 	fake_installed_repository.cc fake_installed_repository.hh
 
+libpaludisfakerepository_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
+
 libpaludisfakerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_fake_includedir = $(includedir)/paludis/repositories/fake/

@@ -14,6 +14,11 @@ libpaludisnothingrepository_la_SOURCES = nothing_repository.cc nothing_repositor
 libpaludisnothingrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 paludis_repositories_nothing_includedir = $(includedir)/paludis/repositories/nothing/
 
+libpaludisnothingrepository_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
+
 paludis_repositories_nothing_include_HEADERS = \
 	nothing_repository.hh \
 	nothing_repository-sr.hh

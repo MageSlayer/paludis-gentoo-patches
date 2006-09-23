@@ -253,6 +253,8 @@ fi
 PALUDIS_CXXFLAGS=
 PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST=
 PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS=
+PALUDIS_CXXFLAGS_NO_WSHADOW=
+PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=
 AC_MSG_CHECKING([whether our compiler is iccy])
 AC_COMPILE_IFELSE([
 #ifndef __ICC
@@ -293,6 +295,7 @@ if test "x${cxx_compiler_icc}" = "xyes" ; then
 	CHECK_CXXFLAG([-wd981])
 	CHECK_CXXFLAG([-wd1125])
 	CHECK_CXXFLAG([-wd1418])
+	PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wall])
 	CHECK_CXXFLAG([-Wextra])
@@ -315,13 +318,19 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wunreachable-code])
 	CHECK_CXXFLAG([-Wunused-function])
 	CHECK_CXXFLAG([-Wshadow])
+	if test "x$cxxflag_success" = "xyes" ; then
+		PALUDIS_CXXFLAGS_NO_WSHADOW=-Wno-shadow
+	fi
+	PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 	CHECK_CXXFLAG([-pedantic])
 else
 	CHECK_CXXFLAG([-Wall])
 fi
 AC_MSG_RESULT([${cxxflags_message}])
 AC_SUBST([PALUDIS_CXXFLAGS])
+AC_SUBST([PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])
+AC_SUBST([PALUDIS_CXXFLAGS_NO_WSHADOW])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS])
 dnl }}}
 
@@ -484,6 +493,49 @@ fi
 AM_CONDITIONAL([ENABLE_GTK], test "x$enable_gtk" = "xyes")
 dnl }}}
 
+dnl {{{ ruby interface
+AC_MSG_CHECKING([whether to build the ruby interface])
+AC_ARG_ENABLE([ruby],
+   AS_HELP_STRING([--enable-ruby], [Enable ruby interface (default: disable)]),
+   enable_ruby=$enableval,
+   enable_ruby=no)
+AC_MSG_RESULT($enable_ruby)
+
+if test "x$enable_ruby" = "xyes" ; then
+	AC_CHECK_PROGS(RUBY, ruby, )
+	if test "x$RUBY" = "x" ; then
+		AC_MSG_ERROR([Ruby is required for --enable-ruby])
+	fi
+
+	AC_MSG_CHECKING([for Ruby archdir])
+	RUBY_ARCHDIR=`ruby -r rbconfig -e 'puts Config::CONFIG@<:@"archdir"@:>@'`
+	if test "x$RUBY_ARCHDIR" = "x" ; then
+		AC_MSG_ERROR([Could not find Ruby archdir])
+	fi
+	AC_MSG_RESULT([$RUBY_ARCHDIR])
+	AC_SUBST([RUBY_ARCHDIR])
+
+	AC_MSG_CHECKING([for Ruby sitearchdir])
+	RUBY_SITEARCHDIR=`ruby -r rbconfig -e 'puts Config::CONFIG@<:@"sitearchdir"@:>@'`
+	if test "x$RUBY_SITEARCHDIR" = "x" ; then
+		AC_MSG_ERROR([Could not find Ruby sitearchdir])
+	fi
+	AC_MSG_RESULT([$RUBY_SITEARCHDIR])
+	AC_SUBST([RUBY_SITEARCHDIR])
+
+	AC_MSG_CHECKING([for Ruby soname])
+	RUBY_SONAME=`ruby -r rbconfig -e 'puts Config::CONFIG@<:@"RUBY_SO_NAME"@:>@'`
+	if test "x$RUBY_SONAME" = "x" ; then
+		AC_MSG_ERROR([Could not find Ruby soname])
+	fi
+	AC_MSG_RESULT([$RUBY_SONAME])
+	AC_SUBST([RUBY_SONAME])
+fi
+
+AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
+
+dnl }}}
+
 dnl {{{ is sed gnu sed
 AC_MSG_CHECKING([if we need a sed wrapper])
 AC_SUBST([NEED_SED_WRAPPER])
@@ -547,6 +599,7 @@ AC_OUTPUT(
 	paludis/selinux/Makefile
 	paludis/tasks/Makefile
 	paludis/util/Makefile
+	ruby/Makefile
 	src/Makefile
 	src/paludis/Makefile
 	src/gtkpaludis/Makefile

@@ -421,12 +421,12 @@ BrowseTree::on_menu_sync()
 }
 
 bool
-BrowseTree::on_button_press_event(GdkEventButton * event)
+BrowseTree::on_button_press_event(GdkEventButton * our_event)
 {
-    bool result(TreeView::on_button_press_event(event));
+    bool result(TreeView::on_button_press_event(our_event));
 
-    if (event->type == GDK_BUTTON_PRESS && event->button == 3)
-        _imp->popup_menu.popup(event->button, event->time);
+    if (our_event->type == GDK_BUTTON_PRESS && our_event->button == 3)
+        _imp->popup_menu.popup(our_event->button, our_event->time);
 
     return result;
 }

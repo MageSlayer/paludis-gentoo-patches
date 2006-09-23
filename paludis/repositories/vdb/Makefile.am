@@ -18,6 +18,11 @@ paludis_repositories_vdb_include_HEADERS = \
 	vdb_repository-sr.hh \
 	vdb_repository-sr.cc
 
+libpaludisvdbrepository_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
+
 TESTS = vdb_repository_TEST
 
 vdb_repository_TEST_SOURCES = vdb_repository_TEST.cc
@@ -25,10 +30,7 @@ vdb_repository_TEST_SOURCES = vdb_repository_TEST.cc
 vdb_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludisvdbrepository.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(DYNAMIC_LD_LIBS)
+	libpaludisvdbrepository.la
 
 vdb_repository_TEST_CXXFLAGS = -I$(top_srcdir)
 

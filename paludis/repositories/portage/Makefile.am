@@ -42,17 +42,19 @@ libpaludisportagerepository_la_SOURCES = \
 	make_ebin_repository.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
+libpaludisportagerepository_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
+
 TESTS = portage_repository_TEST
 
 portage_repository_TEST_SOURCES = portage_repository_TEST.cc
 
 portage_repository_TEST_LDADD = \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/test/libtest.a \
 	libpaludisportagerepository.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(DYNAMIC_LD_LIBS)
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a
 
 portage_repository_TEST_CXXFLAGS = -I$(top_srcdir)
 

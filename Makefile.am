@@ -3,9 +3,9 @@ MAINTAINERCLEANFILES = Makefile.in configure config/* aclocal.m4 \
 			config.h config.h.in INSTALL COPYING
 AUTOMAKE_OPTIONS = dist-bzip2 no-dist-gzip std-options
 EXTRA_DIST = autogen.bash automake-deps-hack.tmp
-SUBDIRS = misc test paludis cran ebuild src doc hooks eselect
+SUBDIRS = misc test paludis cran ebuild ruby src doc hooks eselect
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-qa
+DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby
 
 automake-deps-hack.tmp :
 	make -C paludis/util

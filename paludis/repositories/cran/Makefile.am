@@ -29,6 +29,11 @@ libpaludiscranrepository_la_SOURCES = \
 	cran_installed_repository.cc \
 	$(paludis_repositories_cran_include_HEADERS)
 
+libpaludiscranrepository_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
+
 TESTS = cran_dep_parser_TEST cran_repository_TEST
 
 cran_dep_parser_TEST_SOURCES = cran_dep_parser_TEST.cc
@@ -36,10 +41,7 @@ cran_dep_parser_TEST_SOURCES = cran_dep_parser_TEST.cc
 cran_dep_parser_TEST_LDADD= \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludiscranrepository.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(DYNAMIC_LD_LIBS)
+	libpaludiscranrepository.la
 
 cran_repository_TEST_SOURCES = cran_repository_TEST.cc
 
