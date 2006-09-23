@@ -21,21 +21,23 @@
 require 'test/unit'
 require 'Paludis'
 
-class TestCase_MaskReasons < Test::Unit::TestCase
+class Paludis
+    class TestCase_MaskReasons < Test::Unit::TestCase
 
-    def test_create
-        m = MaskReasons.new
+        def test_create
+            m = MaskReasons.new
+        end
+
+        def test_each
+            m = MaskReasons.new
+            assert_equal [], m.to_a
+        end
+
+        def test_empty
+            m = MaskReasons.new
+            assert m.empty?
+        end
+
     end
-
-    def test_each
-        m = MaskReasons.new
-        assert_equal [], m.to_a
-    end
-
-    def test_empty
-        m = MaskReasons.new
-        assert m.empty?
-    end
-
 end
 

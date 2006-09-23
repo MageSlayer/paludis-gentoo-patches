@@ -40,6 +40,7 @@ namespace paludis
 
         /* constructors */
 
+        VALUE master_class();
         VALUE create_mask_reasons(const MaskReasons &);
 
         /* registration */

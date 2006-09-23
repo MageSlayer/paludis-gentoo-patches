@@ -48,7 +48,7 @@ namespace
     {
         rb_require("singleton");
 
-        c_log = rb_define_class("Log", rb_cObject);
+        c_log = rb_define_class_under(master_class(), "Log", rb_cObject);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_log);
         rb_define_method(c_log, "log_level", RUBY_FUNC_CAST(&log_log_level), 0);
         rb_define_method(c_log, "log_level=", RUBY_FUNC_CAST(&log_log_level_set), 1);

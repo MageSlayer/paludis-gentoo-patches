@@ -23,31 +23,33 @@ ENV["PALUDIS_HOME"] = Dir.getwd().to_s + "/default_environment_TEST_dir/home";
 require 'test/unit'
 require 'Paludis'
 
-class TestCase_Log < Test::Unit::TestCase
-    def test_instance
-        assert_equal Log.instance.__id__, Log.instance.__id__
-    end
+class Paludis
+    class TestCase_Log < Test::Unit::TestCase
+        def test_instance
+            assert_equal Log.instance.__id__, Log.instance.__id__
+        end
 
-    def test_no_create
-        assert_raise NoMethodError do
-            x = Log.new()
+        def test_no_create
+            assert_raise NoMethodError do
+                x = Log.new()
+            end
         end
     end
-end
 
-class TestCase_LogLogLevel < Test::Unit::TestCase
-    def test_log_level
-        assert_equal Log.instance.log_level, Log.instance.log_level
-        assert Log.instance.log_level >= Log::LogLevel::Debug
-        assert Log.instance.log_level <= Log::LogLevel::Silent
-    end
+    class TestCase_LogLogLevel < Test::Unit::TestCase
+        def test_log_level
+            assert_equal Log.instance.log_level, Log.instance.log_level
+            assert Log.instance.log_level >= Log::LogLevel::Debug
+            assert Log.instance.log_level <= Log::LogLevel::Silent
+        end
 
-    def test_log_level_set
-        Log.instance.log_level = Log::LogLevel::Debug;
-        assert_equal Log::LogLevel::Debug, Log.instance.log_level
+        def test_log_level_set
+            Log.instance.log_level = Log::LogLevel::Debug;
+            assert_equal Log::LogLevel::Debug, Log.instance.log_level
 
-        Log.instance.log_level = Log::LogLevel::Warning;
-        assert_equal Log::LogLevel::Warning, Log.instance.log_level
+            Log.instance.log_level = Log::LogLevel::Warning;
+            assert_equal Log::LogLevel::Warning, Log.instance.log_level
+        end
     end
 end
 

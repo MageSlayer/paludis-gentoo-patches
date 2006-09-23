@@ -36,6 +36,11 @@ namespace paludis
     };
 }
 
+namespace
+{
+    static VALUE c_master_class;
+}
+
 RegisterRubyClass::RegisterRubyClass() :
     PrivateImplementationPattern<RegisterRubyClass>(new Implementation<RegisterRubyClass>)
 {
@@ -94,10 +99,17 @@ paludis::ruby::value_case_to_RubyCase(const std::string & s)
     return result;
 }
 
+VALUE
+paludis::ruby::master_class()
+{
+    return c_master_class;
+}
+
 extern "C"
 {
     void Init_Paludis()
     {
+        c_master_class = rb_define_class("Paludis", rb_cObject);
         RegisterRubyClass::get_instance()->execute();
     }
 }

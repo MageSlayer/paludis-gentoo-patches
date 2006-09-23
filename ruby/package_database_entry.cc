@@ -65,7 +65,7 @@ namespace
 
     void do_register_package_database_entry()
     {
-        c_package_database_entry = rb_define_class("PackageDatabaseEntry", rb_cObject);
+        c_package_database_entry = rb_define_class_under(master_class(), "PackageDatabaseEntry", rb_cObject);
         rb_define_singleton_method(c_package_database_entry, "new", RUBY_FUNC_CAST(&package_database_entry_new), 3);
         rb_define_method(c_package_database_entry, "initialize", RUBY_FUNC_CAST(&package_database_entry_init), 3);
         rb_define_method(c_package_database_entry, "<=>", RUBY_FUNC_CAST(&Common<PackageDatabaseEntry>::compare), 1);

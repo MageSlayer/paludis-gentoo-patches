@@ -21,33 +21,36 @@
 require 'test/unit'
 require 'Paludis'
 
-class TestCase_VersionSpec < Test::Unit::TestCase
-    def test_create
-        v = VersionSpec.new("0")
-    end
+class Paludis
+    class TestCase_VersionSpec < Test::Unit::TestCase
+        def test_create
+            v = VersionSpec.new("0")
+        end
 
-    def test_create_error
-        assert_raise TypeError do
-            v = VersionSpec.new(0)
+        def test_create_error
+            assert_raise TypeError do
+                v = VersionSpec.new(0)
+            end
+        end
+
+        def test_compare
+            v0 = VersionSpec.new("0")
+            v1 = VersionSpec.new("0.1")
+            v2 = VersionSpec.new("1.0")
+
+            assert_operator v0, :<, v1
+            assert_operator v0, :<, v2
+            assert_operator v1, :<, v2
+
+            assert_operator v0, :<=, v0
+            assert_operator v0, :<=, v1
+            assert_operator v0, :<=, v2
+            assert_operator v1, :<=, v2
+        end
+
+        def test_to_s
+            assert_equal "0.1_alpha2", VersionSpec.new("0.1_alpha2").to_s
         end
     end
-
-    def test_compare
-        v0 = VersionSpec.new("0")
-        v1 = VersionSpec.new("0.1")
-        v2 = VersionSpec.new("1.0")
-
-        assert_operator v0, :<, v1
-        assert_operator v0, :<, v2
-        assert_operator v1, :<, v2
-
-        assert_operator v0, :<=, v0
-        assert_operator v0, :<=, v1
-        assert_operator v0, :<=, v2
-        assert_operator v1, :<=, v2
-    end
-
-    def test_to_s
-        assert_equal "0.1_alpha2", VersionSpec.new("0.1_alpha2").to_s
-    end
 end
+

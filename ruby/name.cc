@@ -85,14 +85,14 @@ namespace
 
         static void do_register(const std::string & name)
         {
-            c_class = rb_define_class(name.c_str(), rb_cObject);
+            c_class = rb_define_class_under(master_class(), name.c_str(), rb_cObject);
             rb_define_singleton_method(c_class, "new", RUBY_FUNC_CAST(&name_part_new), 1);
             rb_define_method(c_class, "initialize", RUBY_FUNC_CAST(&name_part_init), 1);
             rb_define_method(c_class, "<=>", RUBY_FUNC_CAST(&Common<T_>::compare), 1);
             rb_include_module(c_class, rb_mComparable);
             rb_define_method(c_class, "to_s", RUBY_FUNC_CAST(&Common<T_>::to_s), 0);
 
-            c_class_except = rb_define_class((name + "Error").c_str(), rb_eRuntimeError);
+            c_class_except = rb_define_class_under(master_class(), (name + "Error").c_str(), rb_eRuntimeError);
             rb_define_singleton_method(c_class_except, "new", RUBY_FUNC_CAST(&name_part_error_new), 1);
             rb_define_method(c_class_except, "initialize", RUBY_FUNC_CAST(&name_part_error_init), 1);
         }
@@ -181,14 +181,14 @@ namespace
         rb_define_method(NameWrapper<CategoryNamePart, CategoryNamePartError>::c_class,
                 "+", RUBY_FUNC_CAST(&category_name_part_plus), 1);
 
-        c_qualified_package_name = rb_define_class("QualifiedPackageName", rb_cObject);
+        c_qualified_package_name = rb_define_class_under(master_class(), "QualifiedPackageName", rb_cObject);
         rb_define_singleton_method(c_qualified_package_name, "new", RUBY_FUNC_CAST(&qualified_package_name_new), -1);
         rb_define_method(c_qualified_package_name, "initialize", RUBY_FUNC_CAST(&qualified_package_name_init), -1);
         rb_define_method(c_qualified_package_name, "<=>", RUBY_FUNC_CAST(&Common<QualifiedPackageName>::compare), 1);
         rb_include_module(c_qualified_package_name, rb_mComparable);
         rb_define_method(c_qualified_package_name, "to_s", RUBY_FUNC_CAST(&Common<QualifiedPackageName>::to_s), 0);
 
-        c_qualified_package_name_error = rb_define_class("QualifiedPackageNameError", rb_eRuntimeError);
+        c_qualified_package_name_error = rb_define_class_under(master_class(), "QualifiedPackageNameError", rb_eRuntimeError);
         rb_define_singleton_method(c_qualified_package_name_error, "new", RUBY_FUNC_CAST(&qualified_package_name_error_new), 1);
         rb_define_method(c_qualified_package_name_error, "initialize", RUBY_FUNC_CAST(&qualified_package_name_error_init), 1);
     }

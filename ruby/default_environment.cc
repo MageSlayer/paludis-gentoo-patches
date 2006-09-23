@@ -123,7 +123,7 @@ namespace
     {
         rb_require("singleton");
 
-        c_default_environment = rb_define_class("DefaultEnvironment", rb_cObject);
+        c_default_environment = rb_define_class_under(master_class(), "DefaultEnvironment", rb_cObject);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_default_environment);
         rb_define_method(c_default_environment, "query_use", RUBY_FUNC_CAST(&default_environment_query_use), -1);
         rb_define_method(c_default_environment, "accept_keyword", RUBY_FUNC_CAST(&default_environment_accept_keyword), -1);

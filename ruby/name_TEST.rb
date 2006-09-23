@@ -73,124 +73,125 @@ module NameTestCaseBase
     end
 end
 
-class TestCase_PackageNamePart < Test::Unit::TestCase
-    include NameTestCaseBase
+class Paludis
+    class TestCase_PackageNamePart < Test::Unit::TestCase
+        include NameTestCaseBase
 
-    def error_type
-        return PackageNamePartError
-    end
-
-    def name_type
-        return PackageNamePart
-    end
-end
-
-class TestCase_CategoryNamePart < Test::Unit::TestCase
-    include NameTestCaseBase
-
-    def error_type
-        return CategoryNamePartError
-    end
-
-    def name_type
-        return CategoryNamePart
-    end
-
-    def test_plus
-        q = CategoryNamePart.new("foo") + PackageNamePart.new("bar")
-        assert_equal "foo/bar", q.to_s
-    end
-
-    def test_plus_bad
-        assert_raise TypeError do
-            q = CategoryNamePart.new("foo") + "bar"
+        def error_type
+            return PackageNamePartError
         end
-    end
-end
 
-class TestCase_UseFlagName < Test::Unit::TestCase
-    include NameTestCaseBase
-
-    def error_type
-        return UseFlagNameError
-    end
-
-    def name_type
-        return UseFlagName
-    end
-end
-
-class TestCase_RepositoryName < Test::Unit::TestCase
-    include NameTestCaseBase
-
-    def error_type
-        return RepositoryNameError
-    end
-
-    def name_type
-        return RepositoryName
-    end
-end
-
-class TestCase_SlotName < Test::Unit::TestCase
-    include NameTestCaseBase
-
-    def error_type
-        return SlotNameError
-    end
-
-    def name_type
-        return SlotName
-    end
-end
-
-class TestCase_KeywordName < Test::Unit::TestCase
-    include NameTestCaseBase
-
-    def error_type
-        return KeywordNameError
-    end
-
-    def name_type
-        return KeywordName
-    end
-end
-
-class TestCase_QualifiedPackageName < Test::Unit::TestCase
-    include NameTestCaseBase
-
-    def error_type
-        return QualifiedPackageNameError
-    end
-
-    def name_type
-        return QualifiedPackageName
-    end
-
-    def valid_name_foo
-        return "foo/foo"
-    end
-
-    def valid_name_bar
-        return "bar/bar"
-    end
-
-    def test_two_arg_create
-        x = QualifiedPackageName.new(CategoryNamePart.new("foo"), PackageNamePart.new("bar"))
-        assert_equal "foo/bar", x.to_s
-    end
-
-    def test_bad_arg_count_create
-        assert_raise ArgumentError do
-            x = QualifiedPackageName.new("foo", "bar", "baz")
+        def name_type
+            return PackageNamePart
         end
     end
 
-    def test_bad_type_create
-        assert_raise TypeError do
-            x = QualifiedPackageName.new("foo", "bar")
+    class TestCase_CategoryNamePart < Test::Unit::TestCase
+        include NameTestCaseBase
+
+        def error_type
+            return CategoryNamePartError
+        end
+
+        def name_type
+            return CategoryNamePart
+        end
+
+        def test_plus
+            q = CategoryNamePart.new("foo") + PackageNamePart.new("bar")
+            assert_equal "foo/bar", q.to_s
+        end
+
+        def test_plus_bad
+            assert_raise TypeError do
+                q = CategoryNamePart.new("foo") + "bar"
+            end
+        end
+    end
+
+    class TestCase_UseFlagName < Test::Unit::TestCase
+        include NameTestCaseBase
+
+        def error_type
+            return UseFlagNameError
+        end
+
+        def name_type
+            return UseFlagName
+        end
+    end
+
+    class TestCase_RepositoryName < Test::Unit::TestCase
+        include NameTestCaseBase
+
+        def error_type
+            return RepositoryNameError
+        end
+
+        def name_type
+            return RepositoryName
+        end
+    end
+
+    class TestCase_SlotName < Test::Unit::TestCase
+        include NameTestCaseBase
+
+        def error_type
+            return SlotNameError
+        end
+
+        def name_type
+            return SlotName
+        end
+    end
+
+    class TestCase_KeywordName < Test::Unit::TestCase
+        include NameTestCaseBase
+
+        def error_type
+            return KeywordNameError
+        end
+
+        def name_type
+            return KeywordName
+        end
+    end
+
+    class TestCase_QualifiedPackageName < Test::Unit::TestCase
+        include NameTestCaseBase
+
+        def error_type
+            return QualifiedPackageNameError
+        end
+
+        def name_type
+            return QualifiedPackageName
+        end
+
+        def valid_name_foo
+            return "foo/foo"
+        end
+
+        def valid_name_bar
+            return "bar/bar"
+        end
+
+        def test_two_arg_create
+            x = QualifiedPackageName.new(CategoryNamePart.new("foo"), PackageNamePart.new("bar"))
+            assert_equal "foo/bar", x.to_s
+        end
+
+        def test_bad_arg_count_create
+            assert_raise ArgumentError do
+                x = QualifiedPackageName.new("foo", "bar", "baz")
+            end
+        end
+
+        def test_bad_type_create
+            assert_raise TypeError do
+                x = QualifiedPackageName.new("foo", "bar")
+            end
         end
     end
 end
-
 

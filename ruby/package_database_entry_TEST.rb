@@ -20,20 +20,22 @@
 require 'test/unit'
 require 'Paludis'
 
-class TestCase_PackageDatabaseEntry < Test::Unit::TestCase
-    def test_create
-        v = PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
-                VersionSpec.new("0"), RepositoryName.new("moo"))
-    end
-
-    def test_create_error
-        assert_raise TypeError do
-            v = PackageDatabaseEntry.new("foo/bar", "0", "moo")
+class Paludis
+    class TestCase_PackageDatabaseEntry < Test::Unit::TestCase
+        def test_create
+            v = PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
+                    VersionSpec.new("0"), RepositoryName.new("moo"))
         end
-    end
-    def test_to_s
-        assert_equal "foo/bar-10::moo", PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
-                        VersionSpec.new("10"), RepositoryName.new("moo")).to_s
+
+        def test_create_error
+            assert_raise TypeError do
+                v = PackageDatabaseEntry.new("foo/bar", "0", "moo")
+            end
+        end
+        def test_to_s
+            assert_equal "foo/bar-10::moo", PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
+                            VersionSpec.new("10"), RepositoryName.new("moo")).to_s
+        end
     end
 end
 
