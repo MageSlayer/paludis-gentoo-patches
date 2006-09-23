@@ -106,7 +106,9 @@ RepositorySoLoader::load_dir(const FSEntry & so_dir)
                         PALUDIS_VERSION_MINOR))(*d))
             continue;
 
-        void * dl(dlopen(stringify(*d).c_str(), RTLD_LOCAL | RTLD_NOW));
+        /* don't use RTLD_LOCAL, g++ is over happy about template instantiations, and it
+         * can lead to multiple singleton instances. */
+        void * dl(dlopen(stringify(*d).c_str(), RTLD_GLOBAL | RTLD_NOW));
 
         if (dl)
             dl_opened.push_back(dl);
