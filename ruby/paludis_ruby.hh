@@ -25,6 +25,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/compare.hh>
+#include <paludis/package_database.hh>
 #include <paludis/mask_reasons.hh>
 #include <ruby.h>
 
@@ -42,6 +43,9 @@ namespace paludis
 
         VALUE master_class();
         VALUE create_mask_reasons(const MaskReasons &);
+        VALUE create_package_database(PackageDatabase::Pointer);
+        VALUE create_repository_name(const RepositoryName &);
+        VALUE create_qualified_package_name(const QualifiedPackageName &);
 
         /* registration */
 

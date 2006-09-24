@@ -146,5 +146,23 @@ class Paludis
         end
     end
 
+    class TestCase_PackageDatabase < Test::Unit::TestCase
+        def db
+            DefaultEnvironment.instance.package_database
+        end
+
+        def test_package_database
+            assert_kind_of PackageDatabase, db
+        end
+
+        def test_package_database_favourite_repository
+            assert_equal RepositoryName.new("testrepo"), db.favourite_repository
+        end
+
+        def test_package_database_fetch_unique_qualified_package_name
+            assert_equal QualifiedPackageName.new("foo/bar"), db.fetch_unique_qualified_package_name(PackageNamePart.new("bar"))
+        end
+    end
+
 end
 

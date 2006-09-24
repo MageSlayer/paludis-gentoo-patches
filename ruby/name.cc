@@ -194,5 +194,19 @@ namespace
     }
 }
 
+VALUE
+paludis::ruby::create_repository_name(const RepositoryName & r)
+{
+    return Data_Wrap_Struct((NameWrapper<RepositoryName, RepositoryNameError>::c_class),
+            0, &Common<RepositoryName>::free, new RepositoryName(r));
+}
+
+VALUE
+paludis::ruby::create_qualified_package_name(const QualifiedPackageName & q)
+{
+    return Data_Wrap_Struct(c_qualified_package_name, 0, &Common<QualifiedPackageName>::free,
+            new QualifiedPackageName(q));
+}
+
 RegisterRubyClass::Register paludis_ruby_register_name PALUDIS_ATTRIBUTE((used)) (&do_register_names);
 

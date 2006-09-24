@@ -90,11 +90,7 @@ namespace
 VALUE
 paludis::ruby::create_mask_reasons(const MaskReasons & m)
 {
-    VALUE result(rb_funcall(c_mask_reasons, rb_intern("new"), 0));
-    MaskReasons * m_ptr;
-    Data_Get_Struct(result, MaskReasons, m_ptr);
-    *m_ptr = m;
-    return result;
+    return Data_Wrap_Struct(c_mask_reasons, 0, &Common<MaskReasons>::free, new MaskReasons(m));
 }
 
 RegisterRubyClass::Register paludis_ruby_register_mask_reasons PALUDIS_ATTRIBUTE((used))

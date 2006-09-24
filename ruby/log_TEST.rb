@@ -51,5 +51,21 @@ class Paludis
             assert_equal Log::LogLevel::Warning, Log.instance.log_level
         end
     end
+
+    class TestCase_LogMessage < Test::Unit::TestCase
+        def test_log_message
+            Log.instance.message Log::LogLevel::Warning, "This is a test warning message"
+        end
+
+        def test_log_message_bad
+            assert_raise ArgumentError do
+                Log.instance.message "This should fail"
+            end
+
+            assert_raise TypeError do
+                Log.instance.message "Warning", "This should fail"
+            end
+        end
+    end
 end
 

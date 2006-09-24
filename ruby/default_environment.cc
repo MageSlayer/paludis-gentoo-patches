@@ -119,6 +119,19 @@ namespace
         }
     }
 
+    VALUE
+    default_environment_package_database(VALUE)
+    {
+        try
+        {
+            return create_package_database(DefaultEnvironment::get_instance()->package_database());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_default_environment()
     {
         rb_require("singleton");
@@ -129,6 +142,7 @@ namespace
         rb_define_method(c_default_environment, "accept_keyword", RUBY_FUNC_CAST(&default_environment_accept_keyword), -1);
         rb_define_method(c_default_environment, "accept_license", RUBY_FUNC_CAST(&default_environment_accept_license), -1);
         rb_define_method(c_default_environment, "mask_reasons", RUBY_FUNC_CAST(&default_environment_mask_reasons), 1);
+        rb_define_method(c_default_environment, "package_database", RUBY_FUNC_CAST(&default_environment_package_database), 0);
     }
 }
 
