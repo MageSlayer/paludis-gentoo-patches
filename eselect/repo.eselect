@@ -30,7 +30,7 @@ cat_file() {
 }
 
 get_var() {
-	default_template_root="http://svn.pioto.org/paludis/repo-templates"
+	default_template_root="http://svn.pioto.org/viewvc/paludis/repo-templates"
 	default_repo_root="${ROOT}/var/paludis/repositories"
 	default_config_root="${ROOT}/etc/paludis"
 	if [[ -L /etc/make.profile ]]; then

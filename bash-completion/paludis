@@ -27,6 +27,7 @@ _paludis() {
         --list-repositories \
         --list-categories \
         --list-packages \
+        --list-sets \
         --list-sync-protocols \
         --list-repository-formats \
         --list-dep-tag-categories \
@@ -54,6 +55,7 @@ _paludis() {
         --repository \
         --category \
         --package \
+        --set \
         --full-match"
 
     case "${cur}" in
@@ -63,6 +65,7 @@ _paludis() {
             ;;
         *)
             case "${prev}" in
+                ## Enum operators
                 --log-level)
                     COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
                     return 0
@@ -71,6 +74,7 @@ _paludis() {
                     COMPREPLY=($(compgen -W "always never as-needed" -- "${cur}"))
                     return 0
                     ;;
+                ## list specifiers
                 --repository)
                     COMPREPLY=($(compgen -W "`paludis --no-colour --list-repositories --log-level silent |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
                     return 0
@@ -83,9 +87,18 @@ _paludis() {
                     COMPREPLY=($(compgen -W "`paludis --no-colour --list-packages --log-level silent |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
                     return 0
                     ;;
+                --set)
+                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-sets --log-level silent |grep \"^\\*\" |cut -d\" \" -f2-`" -- "${cur}"))
+                    return 0
+                    ;;
+                --owner)
+                    COMPREPLY=($(compgen -o filenames -- "${cur}"))
+                    return 0
+                    ;;
                 *)
                     # Do package name completion, etc
-                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-packages --log-level silent |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
+                    # For now, just complete on set names
+                    COMPREPLY=($(compgen -W "`paludis --no-colour --list-sets --log-level silent |grep \"^*\" |cut -d\" \" -f2-`" -- "${cur}"))
                     return 0
                     ;;
             esac
