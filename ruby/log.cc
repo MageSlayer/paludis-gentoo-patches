@@ -29,7 +29,7 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_log;
-    static VALUE c_log_log_level;
+    static VALUE c_log_level;
 
     VALUE
     log_log_level(VALUE)
@@ -62,10 +62,10 @@ namespace
         rb_define_method(c_log, "log_level=", RUBY_FUNC_CAST(&log_log_level_set), 1);
         rb_define_method(c_log, "message", RUBY_FUNC_CAST(&log_message), 2);
 
-        c_log_log_level = rb_define_class_under(c_log, "LogLevel", rb_cObject);
+        c_log_level = rb_define_class_under(master_class(), "LogLevel", rb_cObject);
         for (LogLevel l(static_cast<LogLevel>(0)), l_end(last_ll) ; l != l_end ;
                 l = static_cast<LogLevel>(static_cast<int>(l) + 1))
-            rb_define_const(c_log_log_level, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+            rb_define_const(c_log_level, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
     }
 }
 

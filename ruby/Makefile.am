@@ -21,6 +21,7 @@ IF_RUBY_TESTS = \
 	package_database_entry_TEST.rb \
 	version_spec_TEST.rb \
 	mask_reasons_TEST.rb \
+	dep_atom_TEST.rb \
 	package_database_TEST.rb
 
 IF_RUBY_SOURCES = \
@@ -29,11 +30,13 @@ IF_RUBY_SOURCES = \
 	package_database_entry.cc \
 	version_spec.cc \
 	mask_reasons.cc \
+	dep_atom.cc \
 	log.cc \
 	package_database.cc
 
 EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
-	default_environment_TEST_setup.sh default_environment_TEST_cleanup.sh
+	default_environment_TEST_setup.sh default_environment_TEST_cleanup.sh \
+	package_database_TEST_setup.sh package_database_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
@@ -49,6 +52,7 @@ if ENABLE_RUBY
 
 OUR_OBJECTS = \
 	default_environment.o \
+	dep_atom.o \
 	log.o \
 	mask_reasons.o \
 	package_database.o \
@@ -71,6 +75,9 @@ paludis_ruby.o : paludis_ruby.cc paludis_ruby.hh
 
 default_environment.o : default_environment.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/default_environment.cc
+
+dep_atom.o : dep_atom.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/dep_atom.cc
 
 package_database_entry.o : package_database_entry.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/package_database_entry.cc

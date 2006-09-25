@@ -39,22 +39,22 @@ class Paludis
     class TestCase_LogLogLevel < Test::Unit::TestCase
         def test_log_level
             assert_equal Log.instance.log_level, Log.instance.log_level
-            assert Log.instance.log_level >= Log::LogLevel::Debug
-            assert Log.instance.log_level <= Log::LogLevel::Silent
+            assert Log.instance.log_level >= LogLevel::Debug
+            assert Log.instance.log_level <= LogLevel::Silent
         end
 
         def test_log_level_set
-            Log.instance.log_level = Log::LogLevel::Debug;
-            assert_equal Log::LogLevel::Debug, Log.instance.log_level
+            Log.instance.log_level = LogLevel::Debug;
+            assert_equal LogLevel::Debug, Log.instance.log_level
 
-            Log.instance.log_level = Log::LogLevel::Warning;
-            assert_equal Log::LogLevel::Warning, Log.instance.log_level
+            Log.instance.log_level = LogLevel::Warning;
+            assert_equal LogLevel::Warning, Log.instance.log_level
         end
     end
 
     class TestCase_LogMessage < Test::Unit::TestCase
         def test_log_message
-            Log.instance.message Log::LogLevel::Warning, "This is a test warning message"
+            Log.instance.message LogLevel::Warning, "This is a test warning message"
         end
 
         def test_log_message_bad

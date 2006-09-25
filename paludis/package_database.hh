@@ -204,7 +204,8 @@ namespace paludis
     {
         is_installed_only,    ///< Installed only
         is_uninstalled_only,  ///< Uninstalled only
-        is_either             ///< Either
+        is_either,            ///< Either
+        last_install_state
     };
 
     /**
@@ -291,6 +292,9 @@ namespace paludis
 
             ///\}
     };
+
+    std::ostream &
+    operator<< (std::ostream &, const InstallState &);
 }
 
 #endif

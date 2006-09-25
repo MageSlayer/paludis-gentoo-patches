@@ -70,7 +70,23 @@ namespace
     }
 }
 
+VALUE
+paludis::ruby::create_package_database_entry(const PackageDatabaseEntry & d)
+{
+    PackageDatabaseEntry * m_ptr(0);
+    try
+    {
+        m_ptr = new PackageDatabaseEntry(d);
+        return Data_Wrap_Struct(c_package_database_entry, 0, &Common<PackageDatabaseEntry>::free, m_ptr);
+    }
+    catch (const std::exception & e)
+    {
+        delete m_ptr;
+        exception_to_ruby_exception(e);
+    }
+
+}
+
 RegisterRubyClass::Register paludis_ruby_register_package_database_entry PALUDIS_ATTRIBUTE((used))
     (&do_register_package_database_entry);
-
 

@@ -309,3 +309,32 @@ PackageDatabase::end_repositories() const
     return RepositoryIterator(_imp->repositories.end());
 }
 
+std::ostream &
+paludis::operator<< (std::ostream & o, const InstallState & s)
+{
+    do
+    {
+        switch (s)
+        {
+            case is_installed_only:
+                o << "installed_only";
+                continue;
+
+            case is_uninstalled_only:
+                o << "uninstalled_only";
+                continue;
+
+            case is_either:
+                o << "either";
+                continue;
+
+            case last_install_state:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad InstallState");
+    } while (false);
+
+    return o;
+}
+

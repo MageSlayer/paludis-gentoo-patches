@@ -44,8 +44,10 @@ namespace paludis
         VALUE master_class();
         VALUE create_mask_reasons(const MaskReasons &);
         VALUE create_package_database(PackageDatabase::Pointer);
+        VALUE create_package_database_entry(const PackageDatabaseEntry &);
 
         VersionSpec value_to_version_spec(VALUE v);
+        PackageDepAtom::Pointer value_to_package_dep_atom(VALUE v);
 
         /* registration */
 
@@ -95,6 +97,14 @@ namespace paludis
                 Data_Get_Struct(self, T_, self_ptr);
 
                 return rb_str_new2(stringify(*self_ptr).c_str());
+            }
+
+            static VALUE to_s_via_ptr(VALUE self)
+            {
+                T_ * self_ptr;
+                Data_Get_Struct(self, T_, self_ptr);
+
+                return rb_str_new2(stringify(**self_ptr).c_str());
             }
         };
     }

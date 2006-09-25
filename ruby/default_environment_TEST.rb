@@ -23,7 +23,7 @@ ENV["PALUDIS_HOME"] = Dir.getwd().to_s + "/default_environment_TEST_dir/home";
 require 'test/unit'
 require 'Paludis'
 
-Paludis::Log.instance.log_level = Paludis::Log::LogLevel::Warning
+Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 
 class Paludis
 
@@ -45,8 +45,7 @@ class Paludis
             assert ! DefaultEnvironment.instance.query_use("not_enabled")
             assert ! DefaultEnvironment.instance.query_use("sometimes_enabled")
 
-            pde = PackageDatabaseEntry.new("foo/bar",
-                        VersionSpec.new("1.0"), "testrepo")
+            pde = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
 
             assert DefaultEnvironment.instance.query_use("enabled", pde)
             assert ! DefaultEnvironment.instance.query_use("not_enabled", pde)
@@ -91,8 +90,7 @@ class Paludis
         def test_accept_license
             assert DefaultEnvironment.instance.accept_license("test")
 
-            pde = PackageDatabaseEntry.new("foo/bar",
-                        VersionSpec.new("1.0"), "testrepo")
+            pde = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
 
             assert DefaultEnvironment.instance.accept_license("test", pde)
         end
@@ -109,16 +107,14 @@ class Paludis
 
     class TestCase_DefaultEnvironmentMaskReasons < Test::Unit::TestCase
         def test_mask_reasons
-            p = PackageDatabaseEntry.new("foo/bar",
-                        VersionSpec.new("1.0"), "testrepo")
+            p = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
 
             m = DefaultEnvironment.instance.mask_reasons(p)
             assert m.empty?
         end
 
         def test_mask_reasons_not_empty
-            p = PackageDatabaseEntry.new("foo/bar",
-                        VersionSpec.new("2.0"), "testrepo")
+            p = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("2.0"), "testrepo")
 
             m = DefaultEnvironment.instance.mask_reasons(p)
             assert ! m.empty?
@@ -127,8 +123,7 @@ class Paludis
         end
 
         def test_mask_reasons_no_such_repo
-            p = PackageDatabaseEntry.new("foo/bar",
-                        VersionSpec.new("1.0"), "nosuchrepo")
+            p = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "nosuchrepo")
 
             assert_raise RuntimeError do
                 DefaultEnvironment.instance.mask_reasons p
@@ -152,14 +147,6 @@ class Paludis
 
         def test_package_database
             assert_kind_of PackageDatabase, db
-        end
-
-        def test_package_database_favourite_repository
-            assert_equal "testrepo", db.favourite_repository
-        end
-
-        def test_package_database_fetch_unique_qualified_package_name
-            assert_equal "foo/bar", db.fetch_unique_qualified_package_name("bar")
         end
     end
 

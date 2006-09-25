@@ -18,8 +18,12 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+ENV["PALUDIS_HOME"] = Dir.getwd().to_s + "/package_database_TEST_dir/home";
+
 require 'test/unit'
 require 'Paludis'
+
+Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 
 class Paludis
     class TestCase_PackageDatabase < Test::Unit::TestCase
@@ -29,6 +33,37 @@ class Paludis
             end
         end
     end
-end
 
+    class TestCase_PackageDatabaseFavouriteRepository < Test::Unit::TestCase
+        def test_package_database_favourite_repository
+            assert_equal "testrepo", DefaultEnvironment.instance.package_database.favourite_repository
+        end
+    end
+
+    class TestCase_PackageDatabaseFetchUniqueQualifiedPackageName < Test::Unit::TestCase
+        def db
+            return DefaultEnvironment.instance.package_database
+        end
+
+        def test_package_database_fetch_unique_qualified_package_name
+            assert_equal "foo/bar", db.fetch_unique_qualified_package_name("bar")
+        end
+    end
+
+    class TestCase_PackageDatabaseQuery < Test::Unit::TestCase
+        def db
+            return DefaultEnvironment.instance.package_database
+        end
+
+        def test_package_database_query
+            a = db.query("=foo/bar-1.0", InstallState::UninstalledOnly)
+            assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
+
+            a = db.query("foo/bar", InstallState::UninstalledOnly)
+            assert_equal a, [
+                PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo"),
+                PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo") ]
+        end
+    end
+end
 

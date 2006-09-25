@@ -40,6 +40,7 @@ namespace
 {
     static VALUE c_master_class;
     static VALUE c_name_error;
+    static VALUE c_package_dep_atom_error;
 }
 
 RegisterRubyClass::RegisterRubyClass() :
@@ -71,6 +72,8 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
                 dynamic_cast<const paludis::InternalError *>(&ee)->message().c_str(), ee.what());
     else if (0 != dynamic_cast<const paludis::NameError *>(&ee))
         rb_raise(c_name_error, dynamic_cast<const paludis::NameError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::PackageDepAtomError *>(&ee))
+        rb_raise(c_package_dep_atom_error, dynamic_cast<const paludis::PackageDepAtomError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::Exception *>(&ee))
         rb_raise(rb_eRuntimeError, "Caught paludis::Exception: %s (%s)",
                 dynamic_cast<const paludis::Exception *>(&ee)->message().c_str(), ee.what());
@@ -114,6 +117,7 @@ extern "C"
     {
         c_master_class = rb_define_class("Paludis", rb_cObject);
         c_name_error = rb_define_class_under(c_master_class, "NameError", rb_eRuntimeError);
+        c_package_dep_atom_error = rb_define_class_under(c_master_class, "PackageDepAtomError", rb_eRuntimeError);
         RegisterRubyClass::get_instance()->execute();
     }
 }
