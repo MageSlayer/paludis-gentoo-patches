@@ -174,6 +174,7 @@ void
 Implementation<PortageRepositoryProfile>::load_profile_directory_recursively(const FSEntry & dir)
 {
     Context context("When adding profile directory '" + stringify(dir) + ":");
+    Log::get_instance()->message(ll_debug, lc_context, "Loading profile directory '" + stringify(dir) + "'");
 
     if (! dir.is_directory())
     {
@@ -283,7 +284,11 @@ Implementation<PortageRepositoryProfile>::load_profile_make_defaults(const FSEnt
 
     for (KeyValueConfigFile::Iterator k(file.begin()), k_end(file.end()) ;
             k != k_end ; ++k)
+    {
+        Log::get_instance()->message(ll_debug, lc_context, "Profile environment variable '" +
+                stringify(k->first) + "' is '" + stringify(k->second) + "'");
         environment_variables[k->first] = k->second;
+    }
 }
 
 void
@@ -597,9 +602,16 @@ PortageRepositoryProfile::environment_variable(const std::string & s) const
     Implementation<PortageRepositoryProfile>::EnvironmentVariablesMap::const_iterator i(
             _imp->environment_variables.find(s));
     if (_imp->environment_variables.end() == i)
+    {
+        Log::get_instance()->message(ll_debug, lc_no_context, "Environment variable '" + s + "' is unset");
         return "";
+    }
     else
+    {
+        Log::get_instance()->message(ll_debug, lc_no_context, "Environment variable '" + s +
+                "' is '" + i->second + "'");
         return i->second;
+    }
 }
 
 AllDepAtom::Pointer
