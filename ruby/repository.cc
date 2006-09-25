@@ -1,0 +1,191 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include <paludis_ruby.hh>
+#include <paludis/repository.hh>
+#include <paludis/util/stringify.hh>
+#include <ruby.h>
+
+using namespace paludis;
+using namespace paludis::ruby;
+
+#define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
+
+namespace
+{
+    static VALUE c_repository;
+
+    VALUE
+    repository_name(VALUE self)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            return rb_str_new2(stringify((*self_ptr)->name()).c_str());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    repository_has_category_named(VALUE self, VALUE cat)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            return (*self_ptr)->has_category_named(CategoryNamePart(STR2CSTR(cat))) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    repository_has_package_named(VALUE self, VALUE name)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            return (*self_ptr)->has_package_named(QualifiedPackageName(STR2CSTR(name))) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    repository_has_version(VALUE self, VALUE name, VALUE version)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            return (*self_ptr)->has_version(QualifiedPackageName(STR2CSTR(name)),
+                    value_to_version_spec(version)) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    repository_category_names(VALUE self)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            VALUE result(rb_ary_new());
+            CategoryNamePartCollection::ConstPointer c((*self_ptr)->category_names());
+            for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    repository_package_names(VALUE self, VALUE cat)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            CategoryNamePart category(STR2CSTR(cat));
+
+            VALUE result(rb_ary_new());
+            QualifiedPackageNameCollection::ConstPointer c((*self_ptr)->package_names(category));
+            for (QualifiedPackageNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    repository_version_specs(VALUE self, VALUE qpn)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            QualifiedPackageName q(STR2CSTR(qpn));
+
+            VALUE result(rb_ary_new());
+            VersionSpecCollection::ConstPointer c((*self_ptr)->version_specs(q));
+            for (VersionSpecCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                rb_ary_push(result, create_version_spec(*i));
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    void do_register_repository()
+    {
+        c_repository = rb_define_class_under(master_class(), "Repository", rb_cObject);
+        rb_funcall(c_repository, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_repository, "name", RUBY_FUNC_CAST(&repository_name), 0);
+
+        rb_define_method(c_repository, "has_category_named?", RUBY_FUNC_CAST(&repository_has_category_named), 1);
+        rb_define_method(c_repository, "has_package_named?", RUBY_FUNC_CAST(&repository_has_package_named), 1);
+        rb_define_method(c_repository, "has_version?", RUBY_FUNC_CAST(&repository_has_version), 2);
+
+        rb_define_method(c_repository, "category_names", RUBY_FUNC_CAST(&repository_category_names), 0);
+        rb_define_method(c_repository, "package_names", RUBY_FUNC_CAST(&repository_package_names), 1);
+        rb_define_method(c_repository, "version_specs", RUBY_FUNC_CAST(&repository_version_specs), 1);
+    }
+}
+
+VALUE
+paludis::ruby::create_repository(Repository::ConstPointer m)
+{
+    Repository::ConstPointer * m_ptr(0);
+    try
+    {
+        m_ptr = new Repository::ConstPointer(m);
+        return Data_Wrap_Struct(c_repository, 0, &Common<Repository::ConstPointer>::free, m_ptr);
+    }
+    catch (const std::exception & e)
+    {
+        delete m_ptr;
+        exception_to_ruby_exception(e);
+    }
+}
+
+RegisterRubyClass::Register paludis_ruby_register_repository PALUDIS_ATTRIBUTE((used))
+    (&do_register_repository);
+
+

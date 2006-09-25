@@ -45,6 +45,8 @@ namespace paludis
         VALUE create_mask_reasons(const MaskReasons &);
         VALUE create_package_database(PackageDatabase::Pointer);
         VALUE create_package_database_entry(const PackageDatabaseEntry &);
+        VALUE create_repository(Repository::ConstPointer);
+        VALUE create_version_spec(const VersionSpec &);
 
         VersionSpec value_to_version_spec(VALUE v);
         PackageDepAtom::Pointer value_to_package_dep_atom(VALUE v);

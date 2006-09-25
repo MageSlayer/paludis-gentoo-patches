@@ -22,7 +22,8 @@ IF_RUBY_TESTS = \
 	version_spec_TEST.rb \
 	mask_reasons_TEST.rb \
 	dep_atom_TEST.rb \
-	package_database_TEST.rb
+	package_database_TEST.rb \
+	repository_TEST.rb
 
 IF_RUBY_SOURCES = \
 	paludis_ruby.cc paludis_ruby.hh \
@@ -32,11 +33,13 @@ IF_RUBY_SOURCES = \
 	mask_reasons.cc \
 	dep_atom.cc \
 	log.cc \
-	package_database.cc
+	package_database.cc \
+	repository.cc
 
 EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	default_environment_TEST_setup.sh default_environment_TEST_cleanup.sh \
-	package_database_TEST_setup.sh package_database_TEST_cleanup.sh
+	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
+	repository_TEST_setup.sh repository_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
@@ -58,6 +61,7 @@ OUR_OBJECTS = \
 	package_database.o \
 	package_database_entry.o \
 	version_spec.o \
+	repository.o \
 	paludis_ruby.o
 
 TESTS = $(IF_RUBY_TESTS)
@@ -94,6 +98,9 @@ mask_reasons.o : mask_reasons.cc paludis_ruby.hh
 log.o : log.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/log.cc
 
+repository.o : repository.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/repository.cc
+
 .libs/Paludis.so : $(OUR_OBJECTS)
 	mkdir -p .libs
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -114,7 +121,6 @@ Paludis.so : $(OUR_OBJECTS)
 	    -L$(top_builddir)/paludis/.libs/ -lpaludis \
 	    -o $@ \
 	    $^
-
 
 endif
 

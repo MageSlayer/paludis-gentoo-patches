@@ -59,10 +59,56 @@ class Paludis
             a = db.query("=foo/bar-1.0", InstallState::UninstalledOnly)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
+            a = db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Either)
+            assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
+
             a = db.query("foo/bar", InstallState::UninstalledOnly)
             assert_equal a, [
                 PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo"),
                 PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo") ]
+
+            a = db.query(">=foo/bar-27", InstallState::UninstalledOnly)
+            assert a.empty?
+
+            a = db.query("foo/bar", InstallState::InstalledOnly)
+            assert a.empty?
+        end
+
+        def test_package_database_query_bad
+            assert_raise TypeError do
+                db.query(123, InstallState::Either)
+            end
+            assert_raise TypeError do
+                db.query(PackageDepAtom.new("foo/bar"), "Either")
+            end
+        end
+    end
+
+    class TestCase_PackageDatabaseRepositories < Test::Unit::TestCase
+        def db
+            return DefaultEnvironment.instance.package_database
+        end
+
+        def test_repositories
+            assert_equal 3, db.repositories.length
+
+            a = db.repositories.find_all do | repo |
+                repo.name == "testrepo"
+            end
+            assert_equal 1, a.length
+
+            a = db.repositories.find_all do | repo |
+                repo.name == "foorepo"
+            end
+            assert a.empty?
+        end
+
+        def test_fetch_repository
+            assert_equal "testrepo", db.fetch_repository("testrepo").name
+
+            assert_raise RuntimeError do
+                db.fetch_repository("barrepo")
+            end
         end
     end
 end

@@ -78,6 +78,13 @@ paludis::ruby::value_to_version_spec(VALUE v)
     }
 }
 
+VALUE
+paludis::ruby::create_version_spec(const VersionSpec & v)
+{
+    VersionSpec * vv(new VersionSpec(v));
+    return Data_Wrap_Struct(c_version_spec, 0, &Common<VersionSpec>::free, vv);
+}
+
 RegisterRubyClass::Register paludis_ruby_register_version_spec PALUDIS_ATTRIBUTE((used))
     (&do_register_version_spec);
 
