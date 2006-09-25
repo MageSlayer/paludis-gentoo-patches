@@ -610,6 +610,7 @@ AC_OUTPUT(
 	paludis/tasks/Makefile
 	paludis/util/Makefile
 	ruby/Makefile
+	ruby/demos/Makefile
 	src/Makefile
 	src/paludis/Makefile
 	src/gtkpaludis/Makefile

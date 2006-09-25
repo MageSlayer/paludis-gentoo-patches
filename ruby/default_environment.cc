@@ -19,6 +19,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/default_environment.hh>
+#include <paludis/default_config.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -29,6 +30,7 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_default_environment;
+    static VALUE c_default_config;
 
     VALUE
     default_environment_query_use(int argc, VALUE * argv, VALUE)
@@ -128,6 +130,33 @@ namespace
         }
     }
 
+    VALUE
+    default_config_config_suffix(VALUE)
+    {
+        try
+        {
+            return rb_str_new2(DefaultConfig::config_suffix().c_str());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    default_config_config_suffix_set(VALUE klass, VALUE str)
+    {
+        try
+        {
+            DefaultConfig::set_config_suffix(stringify(STR2CSTR(str)));
+            return klass;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_default_environment()
     {
         rb_require("singleton");
@@ -139,6 +168,13 @@ namespace
         rb_define_method(c_default_environment, "accept_license", RUBY_FUNC_CAST(&default_environment_accept_license), -1);
         rb_define_method(c_default_environment, "mask_reasons", RUBY_FUNC_CAST(&default_environment_mask_reasons), 1);
         rb_define_method(c_default_environment, "package_database", RUBY_FUNC_CAST(&default_environment_package_database), 0);
+
+        c_default_config = rb_define_class_under(master_class(), "DefaultConfig", rb_cObject);
+        rb_funcall(c_default_config, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_singleton_method(c_default_config, "config_suffix",
+                RUBY_FUNC_CAST(&default_config_config_suffix), 0);
+        rb_define_singleton_method(c_default_config, "config_suffix=",
+                RUBY_FUNC_CAST(&default_config_config_suffix_set), 1);
     }
 }
 

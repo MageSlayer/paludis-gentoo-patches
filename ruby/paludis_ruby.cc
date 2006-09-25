@@ -118,6 +118,9 @@ extern "C"
         c_master_class = rb_define_class("Paludis", rb_cObject);
         c_name_error = rb_define_class_under(c_master_class, "NameError", rb_eRuntimeError);
         c_package_dep_atom_error = rb_define_class_under(c_master_class, "PackageDepAtomError", rb_eRuntimeError);
+
+        rb_define_const(c_master_class, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
+                        + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));
         RegisterRubyClass::get_instance()->execute();
     }
 }

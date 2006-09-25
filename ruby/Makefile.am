@@ -1,4 +1,4 @@
-SUBDIRS = .
+SUBDIRS = . demos
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(srcdir)/ \
 	      @PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC@ \
