@@ -40,12 +40,14 @@ builtin_merge()
         PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK \
         VDB_FORMAT ; do
         echo "${!v}" > "${dbdir}"/${v} || die "pkg db write ${v} failed"
+        ebuild_notice "debug" "Writing VDB key ${v}=${!v}"
     done
     for v in ASFLAGS CBUILD CC CFLAGS CHOST CTARGET CXX CXXFLAGS \
         EXTRA_ECONF EXTRA_EINSTALL EXTRA_EMAKE LDFLAGS LIBCXXFLAGS \
         REPOSITORY ; do
         [[ -z "${!v}" ]] && continue
         echo "${!v}" > "${dbdir}"/${v} || die "pkg db write ${v} failed"
+        ebuild_notice "debug" "Writing VDB key ${v}=${!v}"
     done
 
     if [[ -n ${PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT} ]]; then
@@ -66,6 +68,10 @@ builtin_merge()
         reinstall="yes"
     fi
 
+    ebuild_notice "debug" "Writing VDB environment.bz2"
+    for v in ${USE_EXPAND} ; do
+        ebuild_notice "debug" "USE_EXPAND ${v}=${!v}"
+    done
     ( set ; export -p | sed 's:^declare -rx:declare -x:' ) | bzip2 > ${dbdir}/environment.bz2
     > ${dbdir}/CONTENTS
 
