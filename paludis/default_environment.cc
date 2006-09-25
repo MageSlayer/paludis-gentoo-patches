@@ -503,6 +503,9 @@ DefaultEnvironment::known_use_expand_names(const UseFlagName & prefix, const Pac
             if (0 == i->flag_name.data().compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
                 result->insert(i->flag_name);
 
+    Log::get_instance()->message(ll_debug, lc_no_context, "DefaultEnvironment::known_use_expand_names("
+            + stringify(prefix) + ", " + (pde ? stringify(*pde) : stringify("0")) + ") -> ("
+            + join(result->begin(), result->end(), ", ") + ")");
     return result;
 }
 

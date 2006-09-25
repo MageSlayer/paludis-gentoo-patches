@@ -415,6 +415,8 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
         std::string lower_x;
         std::transform(x->data().begin(), x->data().end(), std::back_inserter(lower_x), &::tolower);
 
+        expand_vars->insert(stringify(*x), "");
+
         /* possible values from profile */
         std::set<UseFlagName> possible_values;
         WhitespaceTokeniser::get_instance()->tokenise(p->environment_variable(stringify(*x)),
@@ -423,8 +425,9 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
         /* possible values from environment */
         UseFlagNameCollection::ConstPointer possible_values_from_env(_imp->params.environment->
                 known_use_expand_names(*x, &e));
-        std::copy(possible_values_from_env->begin(), possible_values_from_env->end(),
-                std::inserter(possible_values, possible_values.end()));
+        for (UseFlagNameCollection::Iterator i(possible_values_from_env->begin()),
+                i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
+            possible_values.insert(UseFlagName(stringify(*i).substr(lower_x.length() + 1)));
 
         for (std::set<UseFlagName>::const_iterator u(possible_values.begin()), u_end(possible_values.end()) ;
                 u != u_end ; ++u)
@@ -438,7 +441,9 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
             AssociativeCollection<std::string, std::string>::Iterator i(expand_vars->find(stringify(*x)));
             if (expand_vars->end() != i)
             {
-                value = i->second + " ";
+                value = i->second;
+                if (! value.empty())
+                    value.append(" ");
                 expand_vars->erase(i);
             }
             value.append(stringify(*u));
