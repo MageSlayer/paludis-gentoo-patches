@@ -314,7 +314,6 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wmissing-noreturn])
 	CHECK_CXXFLAG([-Woverloaded-virtual])
 	CHECK_CXXFLAG([-Winit-self])
-	CHECK_CXXFLAG([-Wsequence-point])
 	CHECK_CXXFLAG([-Wunreachable-code])
 	CHECK_CXXFLAG([-Wunused-function])
 	CHECK_CXXFLAG([-Wshadow])
