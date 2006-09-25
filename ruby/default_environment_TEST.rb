@@ -41,16 +41,16 @@ class Paludis
 
     class TestCase_DefaultEnvironmentUse < Test::Unit::TestCase
         def test_query_use
-            assert DefaultEnvironment.instance.query_use(UseFlagName.new("enabled"))
-            assert ! DefaultEnvironment.instance.query_use(UseFlagName.new("not_enabled"))
-            assert ! DefaultEnvironment.instance.query_use(UseFlagName.new("sometimes_enabled"))
+            assert DefaultEnvironment.instance.query_use("enabled")
+            assert ! DefaultEnvironment.instance.query_use("not_enabled")
+            assert ! DefaultEnvironment.instance.query_use("sometimes_enabled")
 
-            pde = PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
-                        VersionSpec.new("1.0"), RepositoryName.new("testrepo"))
+            pde = PackageDatabaseEntry.new("foo/bar",
+                        VersionSpec.new("1.0"), "testrepo")
 
-            assert DefaultEnvironment.instance.query_use(UseFlagName.new("enabled"), pde)
-            assert ! DefaultEnvironment.instance.query_use(UseFlagName.new("not_enabled"), pde)
-            assert DefaultEnvironment.instance.query_use(UseFlagName.new("sometimes_enabled"), pde)
+            assert DefaultEnvironment.instance.query_use("enabled", pde)
+            assert ! DefaultEnvironment.instance.query_use("not_enabled", pde)
+            assert DefaultEnvironment.instance.query_use("sometimes_enabled", pde)
         end
 
         def test_query_use_bad
@@ -58,7 +58,7 @@ class Paludis
                 DefaultEnvironment.instance.query_use(1, 2, 3)
             end
             assert_raise TypeError do
-                DefaultEnvironment.instance.query_use("not_enabled")
+                DefaultEnvironment.instance.query_use(123)
             end
         end
 
@@ -66,16 +66,15 @@ class Paludis
 
     class TestCase_DefaultEnvironmentAcceptKeyword < Test::Unit::TestCase
         def test_accept_keyword
-            assert DefaultEnvironment.instance.accept_keyword(KeywordName.new("test"))
-            assert ! DefaultEnvironment.instance.accept_keyword(KeywordName.new("bad"))
-            assert ! DefaultEnvironment.instance.accept_keyword(KeywordName.new("~test"))
+            assert DefaultEnvironment.instance.accept_keyword("test")
+            assert ! DefaultEnvironment.instance.accept_keyword("bad")
+            assert ! DefaultEnvironment.instance.accept_keyword("~test")
 
-            pde = PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
-                        VersionSpec.new("1.0"), RepositoryName.new("testrepo"))
+            pde = PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo")
 
-            assert DefaultEnvironment.instance.accept_keyword(KeywordName.new("test"), pde)
-            assert ! DefaultEnvironment.instance.accept_keyword(KeywordName.new("bad"), pde)
-            assert DefaultEnvironment.instance.accept_keyword(KeywordName.new("~test"), pde)
+            assert DefaultEnvironment.instance.accept_keyword("test", pde)
+            assert ! DefaultEnvironment.instance.accept_keyword("bad", pde)
+            assert DefaultEnvironment.instance.accept_keyword("~test", pde)
         end
 
         def test_accept_keyword_bad
@@ -83,7 +82,7 @@ class Paludis
                 DefaultEnvironment.instance.accept_keyword(1, 2, 3)
             end
             assert_raise TypeError do
-                DefaultEnvironment.instance.accept_keyword("foo")
+                DefaultEnvironment.instance.accept_keyword(123)
             end
         end
     end
@@ -92,8 +91,8 @@ class Paludis
         def test_accept_license
             assert DefaultEnvironment.instance.accept_license("test")
 
-            pde = PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
-                        VersionSpec.new("1.0"), RepositoryName.new("testrepo"))
+            pde = PackageDatabaseEntry.new("foo/bar",
+                        VersionSpec.new("1.0"), "testrepo")
 
             assert DefaultEnvironment.instance.accept_license("test", pde)
         end
@@ -110,16 +109,16 @@ class Paludis
 
     class TestCase_DefaultEnvironmentMaskReasons < Test::Unit::TestCase
         def test_mask_reasons
-            p = PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
-                        VersionSpec.new("1.0"), RepositoryName.new("testrepo"))
+            p = PackageDatabaseEntry.new("foo/bar",
+                        VersionSpec.new("1.0"), "testrepo")
 
             m = DefaultEnvironment.instance.mask_reasons(p)
             assert m.empty?
         end
 
         def test_mask_reasons_not_empty
-            p = PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
-                        VersionSpec.new("2.0"), RepositoryName.new("testrepo"))
+            p = PackageDatabaseEntry.new("foo/bar",
+                        VersionSpec.new("2.0"), "testrepo")
 
             m = DefaultEnvironment.instance.mask_reasons(p)
             assert ! m.empty?
@@ -128,8 +127,8 @@ class Paludis
         end
 
         def test_mask_reasons_no_such_repo
-            p = PackageDatabaseEntry.new(QualifiedPackageName.new("foo/bar"),
-                        VersionSpec.new("1.0"), RepositoryName.new("nosuchrepo"))
+            p = PackageDatabaseEntry.new("foo/bar",
+                        VersionSpec.new("1.0"), "nosuchrepo")
 
             assert_raise RuntimeError do
                 DefaultEnvironment.instance.mask_reasons p
@@ -156,11 +155,11 @@ class Paludis
         end
 
         def test_package_database_favourite_repository
-            assert_equal RepositoryName.new("testrepo"), db.favourite_repository
+            assert_equal "testrepo", db.favourite_repository
         end
 
         def test_package_database_fetch_unique_qualified_package_name
-            assert_equal QualifiedPackageName.new("foo/bar"), db.fetch_unique_qualified_package_name(PackageNamePart.new("bar"))
+            assert_equal "foo/bar", db.fetch_unique_qualified_package_name("bar")
         end
     end
 

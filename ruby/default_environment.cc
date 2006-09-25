@@ -37,14 +37,12 @@ namespace
         {
             if (1 == argc || 2 == argc)
             {
-                UseFlagName * use_flag_ptr;
-                Data_Get_Struct(argv[0], UseFlagName, use_flag_ptr);
-
                 PackageDatabaseEntry * pde_ptr(0);
                 if (2 == argc)
                     Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
 
-                return DefaultEnvironment::get_instance()->query_use(*use_flag_ptr, pde_ptr) ? Qtrue : Qfalse;
+                return DefaultEnvironment::get_instance()->query_use(UseFlagName(
+                            STR2CSTR(argv[0])), pde_ptr) ? Qtrue : Qfalse;
             }
             else
                 rb_raise(rb_eArgError, "DefaultEnvironment.query_use expects one or two arguments, but got %d", argc);
@@ -62,14 +60,12 @@ namespace
         {
             if (1 == argc || 2 == argc)
             {
-                KeywordName * keyword_name_ptr;
-                Data_Get_Struct(argv[0], KeywordName, keyword_name_ptr);
-
                 PackageDatabaseEntry * pde_ptr(0);
                 if (2 == argc)
                     Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
 
-                return DefaultEnvironment::get_instance()->accept_keyword(*keyword_name_ptr, pde_ptr) ? Qtrue : Qfalse;
+                return DefaultEnvironment::get_instance()->accept_keyword(KeywordName(
+                            STR2CSTR(argv[0])), pde_ptr) ? Qtrue : Qfalse;
             }
             else
                 rb_raise(rb_eArgError, "DefaultEnvironment.accept_keyword expects one or two arguments, but got %d", argc);

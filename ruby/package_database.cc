@@ -36,7 +36,7 @@ namespace
     {
         PackageDatabase::Pointer * self_ptr;
         Data_Get_Struct(self, PackageDatabase::Pointer, self_ptr);
-        return create_repository_name((*self_ptr)->favourite_repository());
+        return rb_str_new2(stringify((*self_ptr)->favourite_repository()).c_str());
     }
 
     VALUE
@@ -44,9 +44,8 @@ namespace
     {
         PackageDatabase::Pointer * self_ptr;
         Data_Get_Struct(self, PackageDatabase::Pointer, self_ptr);
-        PackageNamePart * pkg_ptr;
-        Data_Get_Struct(pkg, PackageNamePart, pkg_ptr);
-        return create_qualified_package_name((*self_ptr)->fetch_unique_qualified_package_name(*pkg_ptr));
+        return rb_str_new2(stringify((*self_ptr)->fetch_unique_qualified_package_name(
+                        PackageNamePart(STR2CSTR(pkg)))).c_str());
     }
 
     void do_register_package_database()

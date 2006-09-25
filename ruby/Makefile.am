@@ -17,7 +17,6 @@ MAINTAINERCLEANFILES = Makefile.in
 IF_RUBY_TESTS = \
 	paludis_ruby_TEST.rb \
 	log_TEST.rb \
-	name_TEST.rb \
 	default_environment_TEST.rb \
 	package_database_entry_TEST.rb \
 	version_spec_TEST.rb \
@@ -26,7 +25,6 @@ IF_RUBY_TESTS = \
 
 IF_RUBY_SOURCES = \
 	paludis_ruby.cc paludis_ruby.hh \
-	name.cc \
 	default_environment.cc \
 	package_database_entry.cc \
 	version_spec.cc \
@@ -53,7 +51,6 @@ OUR_OBJECTS = \
 	default_environment.o \
 	log.o \
 	mask_reasons.o \
-	name.o \
 	package_database.o \
 	package_database_entry.o \
 	version_spec.o \
@@ -71,9 +68,6 @@ OUR_CXXCOMPILE = $(CXX) -fPIC $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 
 paludis_ruby.o : paludis_ruby.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/paludis_ruby.cc
-
-name.o : name.cc paludis_ruby.hh
-	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/name.cc
 
 default_environment.o : default_environment.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/default_environment.cc

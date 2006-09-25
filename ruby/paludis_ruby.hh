@@ -44,8 +44,8 @@ namespace paludis
         VALUE master_class();
         VALUE create_mask_reasons(const MaskReasons &);
         VALUE create_package_database(PackageDatabase::Pointer);
-        VALUE create_repository_name(const RepositoryName &);
-        VALUE create_qualified_package_name(const QualifiedPackageName &);
+
+        VersionSpec value_to_version_spec(VALUE v);
 
         /* registration */
 

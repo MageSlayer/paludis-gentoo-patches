@@ -65,6 +65,19 @@ namespace
     }
 }
 
+VersionSpec
+paludis::ruby::value_to_version_spec(VALUE v)
+{
+    if (T_STRING == TYPE(v))
+        return VersionSpec(STR2CSTR(v));
+    else
+    {
+        VersionSpec * v_ptr;
+        Data_Get_Struct(v, VersionSpec, v_ptr);
+        return *v_ptr;
+    }
+}
+
 RegisterRubyClass::Register paludis_ruby_register_version_spec PALUDIS_ATTRIBUTE((used))
     (&do_register_version_spec);
 

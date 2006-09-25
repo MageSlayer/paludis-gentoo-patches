@@ -44,14 +44,10 @@ namespace
         PackageDatabaseEntry * ptr(0);
         try
         {
-            QualifiedPackageName * q_ptr;
-            Data_Get_Struct(q, QualifiedPackageName, q_ptr);
-            VersionSpec * v_ptr;
-            Data_Get_Struct(v, VersionSpec, v_ptr);
-            RepositoryName * n_ptr;
-            Data_Get_Struct(n, RepositoryName, n_ptr);
+            VersionSpec vv(value_to_version_spec(v));
 
-            ptr = new PackageDatabaseEntry(*q_ptr, *v_ptr, *n_ptr);
+            ptr = new PackageDatabaseEntry(QualifiedPackageName(STR2CSTR(q)), vv,
+                    RepositoryName(STR2CSTR(n)));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<PackageDatabaseEntry>::free, ptr));
             rb_obj_call_init(tdata, 3, argv);
             return tdata;
