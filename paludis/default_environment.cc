@@ -494,13 +494,15 @@ DefaultEnvironment::known_use_expand_names(const UseFlagName & prefix, const Pac
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
     for (DefaultConfig::DefaultUseIterator i(DefaultConfig::get_instance()->begin_default_use()),
             i_end(DefaultConfig::get_instance()->end_default_use()) ; i != i_end ; ++i)
-        if (0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
+        if (i->first.data().length() > prefix_lower.length() &&
+                0 == i->first.data().compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
             result->insert(i->first);
 
     if (pde)
         for (DefaultConfig::UseConfigIterator i(DefaultConfig::get_instance()->begin_use_config(pde->name)),
                 i_end(DefaultConfig::get_instance()->end_use_config(pde->name)) ; i != i_end ; ++i)
-            if (0 == i->flag_name.data().compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
+            if (i->flag_name.data().length() > prefix_lower.length() &&
+                    0 == i->flag_name.data().compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
                 result->insert(i->flag_name);
 
     Log::get_instance()->message(ll_debug, lc_no_context, "DefaultEnvironment::known_use_expand_names("
