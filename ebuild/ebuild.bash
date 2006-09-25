@@ -112,9 +112,10 @@ ebuild_source_profile()
     fi
 }
 
-save_vars="USE USE_EXPAND ${USE_EXPAND} ${!USE_EXPAND}"
+save_vars="USE USE_EXPAND ${USE_EXPAND}"
 
 for var in ${save_vars} ; do
+    ebuild_notice "debug" "Saving ${var}=${!var}"
     eval "export save_var_${var}='${!var}'"
 done
 
