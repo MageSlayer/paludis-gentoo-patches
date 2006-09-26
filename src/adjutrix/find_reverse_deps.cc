@@ -71,7 +71,7 @@ namespace
                 atom->accept(this);
             }
 
-            int found_matches()
+            bool found_matches()
             {
                 return _found_matches;
             }
@@ -184,9 +184,6 @@ namespace
 
         bool found_matches(false);
 
-        if (p_entries->empty())
-            return found_matches ? EXIT_SUCCESS: EXIT_FAILURE;
-
         for (PackageDatabaseEntryCollection::Iterator e(p_entries->begin()), e_end(p_entries->end()) ;
                 e != e_end ; ++e)
         {
@@ -205,11 +202,11 @@ namespace
             catch (Exception & exception)
             {
                 std::cout << "Caught Exception (" << exception.what() << ")" << std::endl;
-                return (found_matches ? EXIT_SUCCESS : EXIT_FAILURE) | 2;
+                return (found_matches ? 0 : 1) | 2;
             }
         }
 
-        return found_matches ? EXIT_SUCCESS : EXIT_FAILURE;
+        return found_matches ? 0 : 1;
     }
 }
 
@@ -221,10 +218,10 @@ int do_find_reverse_deps(AdjutrixEnvironment & env)
 
     PackageDepAtom::Pointer atom(new PackageDepAtom(*CommandLine::get_instance()->begin_parameters()));
     PackageDatabaseEntryCollection::Pointer entries(env.package_database()->query(atom, is_either));
-    int ret(EXIT_FAILURE);
+    int ret(0);
 
     if (entries->empty())
-        return ret;
+        return 1;
 
     for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
             r(env.package_database()->begin_repositories()),
@@ -232,7 +229,6 @@ int do_find_reverse_deps(AdjutrixEnvironment & env)
     {
         if (r->name() == RepositoryName("virtuals"))
             continue;
-
 
         write_repository_header(stringify(*atom), stringify(r->name()));
 
