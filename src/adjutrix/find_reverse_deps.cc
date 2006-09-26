@@ -19,6 +19,7 @@
 
 #include "find_reverse_deps.hh"
 #include "command_line.hh"
+#include "colour.hh"
 
 #include <paludis/util/compare.hh>
 #include <paludis/util/collection_concrete.hh>
@@ -216,7 +217,30 @@ int do_find_reverse_deps(AdjutrixEnvironment & env)
 
     env.set_profile(env.main_repository_dir() / "profiles" / "default-linux" / "amd64" / "2006.1");
 
-    PackageDepAtom::Pointer atom(new PackageDepAtom(*CommandLine::get_instance()->begin_parameters()));
+    PackageDepAtom::Pointer atom(0);
+    try
+    {
+        if (std::string::npos == CommandLine::get_instance()->begin_parameters()->find('/'))
+        {
+            atom.assign(new PackageDepAtom(env.package_database()->fetch_unique_qualified_package_name(
+                            PackageNamePart(*CommandLine::get_instance()->begin_parameters()))));
+        }
+        else
+            atom.assign(new PackageDepAtom(*CommandLine::get_instance()->begin_parameters()));
+    }
+    catch (const AmbiguousPackageNameError & e)
+    {
+        cout << endl;
+        cerr << "Query error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ");
+        cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
+        for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+                o_end(e.end_options()) ; o != o_end ; ++o)
+            cerr << "    * " << colour(cl_package_name, *o) << endl;
+        cerr << endl;
+        return 4;
+    }
+
     PackageDatabaseEntryCollection::Pointer entries(env.package_database()->query(atom, is_either));
     int ret(0);
 
