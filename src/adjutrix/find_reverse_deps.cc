@@ -202,7 +202,7 @@ namespace
             }
             catch (Exception & exception)
             {
-                std::cout << "Caught Exception (" << exception.what() << ")" << std::endl;
+                std::cerr << "Caught Exception (" << exception.what() << ")" << std::endl;
                 return (found_matches ? 0 : 1) | 2;
             }
         }
