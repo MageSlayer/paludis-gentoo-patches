@@ -62,6 +62,7 @@ class CommandLine :
         paludis::args::SwitchArg a_find_stable_candidates;
         paludis::args::SwitchArg a_find_dropped_keywords;
         paludis::args::SwitchArg a_keywords_graph;
+        paludis::args::SwitchArg a_reverse_deps;
 
         paludis::args::ArgsGroup profile_action_args;
         paludis::args::SwitchArg a_display_profiles_use;

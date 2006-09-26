@@ -32,6 +32,8 @@ CommandLine::CommandLine() :
             "find-dropped-keywords",  'd',  "Search for packages where keywords have been dropped"),
     a_keywords_graph(&tree_action_args,
             "keyword-graph",          'k',  "Display keywords graphically"),
+    a_reverse_deps(&tree_action_args,
+            "reverse-deps",           'r',  "Find all package that depend on a given dep atom"),
 
     profile_action_args(this, "Profile-Oriented Actions",
             "Selects which basic profile-oriented action to perform. Exactly one action should "

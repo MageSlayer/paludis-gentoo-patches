@@ -21,6 +21,7 @@
 #include "command_line.hh"
 #include "find_stable_candidates.hh"
 #include "find_dropped_keywords.hh"
+#include "find_reverse_deps.hh"
 #include "keywords_graph.hh"
 #include "display_profiles_use.hh"
 #include "display_default_system_resolution.hh"
@@ -136,6 +137,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_find_stable_candidates.specified() +
                     CommandLine::get_instance()->a_find_dropped_keywords.specified() +
                     CommandLine::get_instance()->a_keywords_graph.specified() +
+                    CommandLine::get_instance()->a_reverse_deps.specified() +
                     CommandLine::get_instance()->a_display_profiles_use.specified() +
                     CommandLine::get_instance()->a_display_default_system_resolution.specified()
                     ))
@@ -171,6 +173,15 @@ main(int argc, char *argv[])
 
             do_keywords_graph(env);
             return EXIT_SUCCESS;
+        }
+
+        if (CommandLine::get_instance()->a_reverse_deps.specified())
+        {
+            if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters()))
+                throw DoHelp("reverse-deps action takes exactly one parameter (the target dep)");
+
+            return do_find_reverse_deps(env);
         }
 
         if (CommandLine::get_instance()->a_display_profiles_use.specified())
