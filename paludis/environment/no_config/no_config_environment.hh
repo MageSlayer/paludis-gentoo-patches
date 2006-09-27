@@ -23,6 +23,7 @@
 #include <paludis/environment.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 namespace paludis
 {
@@ -41,9 +42,15 @@ namespace paludis
 
             FSEntry main_repository_dir() const;
 
-            void set_profile(const FSEntry & location);
-
             virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
+
+            typedef libwrapiter::ForwardIterator<NoConfigEnvironment, const NoConfigEnvironmentProfilesDescLine> ProfilesIterator;
+            ProfilesIterator begin_profiles() const;
+            ProfilesIterator end_profiles() const;
+
+            void set_profile(const FSEntry & location);
+            void set_profile(const ProfilesIterator & iter);
+
     };
 }
 

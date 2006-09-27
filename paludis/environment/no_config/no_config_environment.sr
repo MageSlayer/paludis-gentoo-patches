@@ -8,3 +8,12 @@ make_class_NoConfigEnvironmentParams()
     allow_named_args
 }
 
+make_class_NoConfigEnvironmentProfilesDescLine()
+{
+    key path FSEntry
+    key arch std::string
+    key status std::string
+    key db PackageDatabase::Pointer
+    allow_named_args
+}
+

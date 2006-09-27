@@ -113,25 +113,11 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
     if (CommandLine::get_instance()->a_profile.args_begin() ==
             CommandLine::get_instance()->a_profile.args_end())
     {
-        LineConfigFile profiles_desc(env.main_repository_dir() / "profiles" / "profiles.desc");
+        for (NoConfigEnvironment::ProfilesIterator p(env.begin_profiles()), p_end(env.end_profiles()) ;
+                p != p_end ; ++p)
         {
-            for (LineConfigFile::Iterator line(profiles_desc.begin()), line_end(profiles_desc.end()) ;
-                    line != line_end ; ++line)
-            {
-                std::vector<std::string> tokens;
-                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-
-                if (tokens.size() != 3)
-                {
-                    Log::get_instance()->message(ll_warning, lc_context, "Skipping invalid line '"
-                            + *line + "'");
-                    continue;
-                }
-
-                env.set_profile(env.main_repository_dir() / "profiles" / tokens.at(1));
-                return_code |= display_default_system_resolution(env, tokens.at(0) + "." + tokens.at(2), env.main_repository_dir() /
-                        "profiles" / tokens.at(1));
-            }
+            env.set_profile(p->path);
+            return_code |= display_default_system_resolution(env, p->arch + "." + p->status, p->path);
         }
     }
     else
@@ -146,6 +132,5 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
 
     return return_code;
 }
-
 
 
