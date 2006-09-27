@@ -157,13 +157,28 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         throw InternalError(PALUDIS_HERE, "bad state " + stringify(state));
     } while (false);
 
-    /* and -* again */
-    for (DefaultConfig::UseMinusStarIterator
-            i(DefaultConfig::get_instance()->begin_use_prefixes_with_minus_star()),
-            i_end(DefaultConfig::get_instance()->end_use_prefixes_with_minus_star()) ;
-            i != i_end ; ++i)
-        if (0 == i->compare(0, i->length(), stringify(f), 0, i->length()))
-            return false;
+    /* and -* again. slight gotcha: "* -*" should not override use expand things. if it
+     * does, USERLAND etc get emptied. */
+    bool consider_minus_star(true);
+    if (e && repo && repo->use_interface)
+    {
+        UseFlagNameCollection::ConstPointer prefixes(repo->use_interface->use_expand_prefixes());
+        for (UseFlagNameCollection::Iterator i(prefixes->begin()), i_end(prefixes->end()) ;
+                i != i_end ; ++i)
+            if (0 == i->data().compare(0, i->data().length(), stringify(f), 0, i->data().length()))
+            {
+                consider_minus_star = false;
+                break;
+            }
+    }
+
+    if (consider_minus_star)
+        for (DefaultConfig::UseMinusStarIterator
+                i(DefaultConfig::get_instance()->begin_use_prefixes_with_minus_star()),
+                i_end(DefaultConfig::get_instance()->end_use_prefixes_with_minus_star()) ;
+                i != i_end ; ++i)
+            if (0 == i->compare(0, i->length(), stringify(f), 0, i->length()))
+                return false;
 
     /* check use: package database config */
     if (repo && repo->use_interface)

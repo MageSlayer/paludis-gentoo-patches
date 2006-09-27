@@ -45,16 +45,16 @@ namespace test_cases
             TEST_CHECK(env->query_use(UseFlagName("foo"), 0));
             TEST_CHECK(! env->query_use(UseFlagName("foofoo"), 0));
 
-            PackageDatabaseEntry e(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("foo"));
-            TEST_CHECK(env->query_use(UseFlagName("foo"), &e));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), &e));
-            TEST_CHECK(env->query_use(UseFlagName("moo"), &e));
+            PackageDatabaseEntry pde(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("foo"));
+            TEST_CHECK(env->query_use(UseFlagName("foo"), &pde));
+            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("moo"), &pde));
 
-            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), &e));
-            TEST_CHECK(env->query_use(UseFlagName("exp_two"), &e));
-            TEST_CHECK(env->query_use(UseFlagName("exp_one"), &e));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), &e));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), &e));
+            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("exp_two"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("exp_one"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), &pde));
+            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), &pde));
 
             PackageDatabaseEntry f(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("3"), RepositoryName("foo"));
             TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), &f));
@@ -78,16 +78,16 @@ namespace test_cases
             TEST_CHECK(env->query_use(UseFlagName("foo"), 0));
             TEST_CHECK(! env->query_use(UseFlagName("foofoo"), 0));
 
-            PackageDatabaseEntry e(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("foo"));
-            TEST_CHECK(env->query_use(UseFlagName("foo"), &e));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), &e));
-            TEST_CHECK(! env->query_use(UseFlagName("moo"), &e));
+            PackageDatabaseEntry pde(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("foo"));
+            TEST_CHECK(env->query_use(UseFlagName("foo"), &pde));
+            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), &pde));
+            TEST_CHECK(! env->query_use(UseFlagName("moo"), &pde));
 
-            TEST_CHECK(! env->query_use(UseFlagName("more_exp_one"), &e));
-            TEST_CHECK(env->query_use(UseFlagName("exp_two"), &e));
-            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), &e));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), &e));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), &e));
+            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("exp_two"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("exp_one"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), &pde));
+            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), &pde));
 
             PackageDatabaseEntry f(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("3"), RepositoryName("foo"));
             TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), &f));
@@ -111,16 +111,16 @@ namespace test_cases
             TEST_CHECK(env->query_use(UseFlagName("foo"), 0));
             TEST_CHECK(! env->query_use(UseFlagName("foofoo"), 0));
 
-            PackageDatabaseEntry e(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("foo"));
-            TEST_CHECK(env->query_use(UseFlagName("foo"), &e));
-            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), &e));
-            TEST_CHECK(env->query_use(UseFlagName("moo"), &e));
+            PackageDatabaseEntry pde(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), RepositoryName("foo"));
+            TEST_CHECK(env->query_use(UseFlagName("foo"), &pde));
+            TEST_CHECK(! env->query_use(UseFlagName("foofoo"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("moo"), &pde));
 
-            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), &e));
-            TEST_CHECK(env->query_use(UseFlagName("exp_two"), &e));
-            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), &e));
-            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), &e));
-            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), &e));
+            TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("exp_two"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("exp_one"), &pde));
+            TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), &pde));
+            TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), &pde));
 
             PackageDatabaseEntry f(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("3"), RepositoryName("foo"));
             TEST_CHECK(! env->query_use(UseFlagName("third_exp_one"), &f));
