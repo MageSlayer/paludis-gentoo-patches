@@ -68,10 +68,11 @@ opts = GetoptLong.new(
     [ '--help',         '-h', GetoptLong::NO_ARGUMENT ],
     [ '--version',      '-V', GetoptLong::NO_ARGUMENT ],
     [ '--log-level',          GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--config-suffix',      GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--repository-dir',     GetoptLong::REQUIRED_ARGUMENT ],
     [ '--image',              GetoptLong::REQUIRED_ARGUMENT ])
 
 output_image = nil
+repository_dir = Dir.getwd
 opts.each do | opt, arg |
     case opt
     when '--help'
@@ -82,7 +83,7 @@ opts.each do | opt, arg |
         puts "  --version             Display program version"
         puts
         puts "  --log-level level     Set log level (debug, qa, warning, silent)"
-        puts "  --config-suffix dir   Set configuration directory suffix"
+        puts "  --repository-dir dir  Set repository directory (default: cwd)"
         puts
         puts "  --image foo.png       Output as the specified image rather than as text"
         exit 0
@@ -106,8 +107,8 @@ opts.each do | opt, arg |
             exit 1
         end
 
-    when '--config-suffix'
-        Paludis::DefaultConfig.config_suffix = arg
+    when '--repository-dir'
+        repository_dir = arg
 
     when '--image'
         output_image = arg
@@ -116,7 +117,8 @@ opts.each do | opt, arg |
 end
 
 distribution = Distribution.new
-Paludis::DefaultEnvironment.instance.package_database.repositories.each do | repo |
+env = Paludis::NoConfigEnvironment.new repository_dir
+env.package_database.repositories.each do | repo |
     distribution.add_repository repo
 end
 if output_image

@@ -1,8 +1,8 @@
 #!/bin/bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-mkdir default_environment_TEST_dir || exit 1
-cd default_environment_TEST_dir || exit 1
+mkdir environment_TEST_dir || exit 1
+cd environment_TEST_dir || exit 1
 
 mkdir -p home/.paludis/repositories
 
@@ -37,6 +37,9 @@ cat <<END > profiles/testprofile/make.defaults
 ARCH=test
 USERLAND=test
 KERNEL=test
+END
+cat <<END > profiles/profiles.desc
+test testprofile stable
 END
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
