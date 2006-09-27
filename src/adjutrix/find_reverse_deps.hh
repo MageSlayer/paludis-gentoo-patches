@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_SRC_ARCHTOOL_FIND_REVERSE_DEPS_HH
 #define PALUDIS_GUARD_SRC_ARCHTOOL_FIND_REVERSE_DEPS_HH 1
 
-#include <adjutrix_environment.hh>
+#include <paludis/environment/no_config/no_config_environment.hh>
 
-int do_find_reverse_deps(paludis::AdjutrixEnvironment & env);
+int do_find_reverse_deps(paludis::NoConfigEnvironment & env);
 
 #endif
 

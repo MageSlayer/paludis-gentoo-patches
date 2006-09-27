@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <iostream>
 #include <paludis/paludis.hh>
+#include <paludis/environment/default/default_environment.hh>
 #include <string>
 #include <set>
 

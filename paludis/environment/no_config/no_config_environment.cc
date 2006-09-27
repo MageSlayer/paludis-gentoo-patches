@@ -17,35 +17,38 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "adjutrix_environment.hh"
-#include "command_line.hh"
+#include "no_config_environment.hh"
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/repositories/portage/portage_repository.hh>
 #include <set>
 
 using namespace paludis;
 
+#include <paludis/environment/no_config/no_config_environment-sr.cc>
+
 namespace paludis
 {
     template<>
-    struct Implementation<AdjutrixEnvironment> :
-        InternalCounted<Implementation<AdjutrixEnvironment> >
+    struct Implementation<NoConfigEnvironment> :
+        InternalCounted<Implementation<NoConfigEnvironment> >
     {
         const FSEntry top_level_dir;
+        bool accept_unstable;
         PackageDatabase::Pointer db;
         std::set<KeywordName> accepted_keywords;
 
-        Implementation(Environment * const env, const FSEntry & d) :
-            top_level_dir(d),
+        Implementation(Environment * const env, const NoConfigEnvironmentParams & params) :
+            top_level_dir(params.repository_dir),
+            accept_unstable(params.accept_unstable),
             db(new PackageDatabase(env))
         {
         }
     };
 }
 
-AdjutrixEnvironment::AdjutrixEnvironment(const FSEntry & dir) :
-    PrivateImplementationPattern<AdjutrixEnvironment>(
-            new Implementation<AdjutrixEnvironment>(this, dir)),
+NoConfigEnvironment::NoConfigEnvironment(const NoConfigEnvironmentParams & params) :
+    PrivateImplementationPattern<NoConfigEnvironment>(
+            new Implementation<NoConfigEnvironment>(this, params)),
     Environment(_imp->db)
 {
     AssociativeCollection<std::string, std::string>::Pointer keys(
@@ -63,24 +66,24 @@ AdjutrixEnvironment::AdjutrixEnvironment(const FSEntry & dir) :
                 _imp->db.raw_pointer(), AssociativeCollection<std::string, std::string>::Pointer(0)));
 }
 
-AdjutrixEnvironment::~AdjutrixEnvironment()
+NoConfigEnvironment::~NoConfigEnvironment()
 {
 }
 
 std::string
-AdjutrixEnvironment::paludis_command() const
+NoConfigEnvironment::paludis_command() const
 {
     return "false";
 }
 
 FSEntry
-AdjutrixEnvironment::main_repository_dir() const
+NoConfigEnvironment::main_repository_dir() const
 {
     return _imp->top_level_dir;
 }
 
 void
-AdjutrixEnvironment::set_profile(const FSEntry & location)
+NoConfigEnvironment::set_profile(const FSEntry & location)
 {
     PackageDatabase::Pointer db(new PackageDatabase(this));
 
@@ -100,14 +103,14 @@ AdjutrixEnvironment::set_profile(const FSEntry & location)
     _imp->accepted_keywords.clear();
     _imp->accepted_keywords.insert(KeywordName("*"));
     _imp->accepted_keywords.insert(KeywordName(p->profile_variable("ARCH")));
-    if (CommandLine::get_instance()->a_unstable.specified())
+    if (_imp->accept_unstable)
         _imp->accepted_keywords.insert(KeywordName("~" + p->profile_variable("ARCH")));
 
     change_package_database(db);
 }
 
 bool
-AdjutrixEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntry * const) const
+NoConfigEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntry * const) const
 {
     return _imp->accepted_keywords.end() != _imp->accepted_keywords.find(k);
 }

@@ -4,6 +4,14 @@
 testname=${2:-${1}}
 testname=${testname%.rb}
 
+if test -f "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then
+    echo ">>> cleanup for test ${testname}"
+    if ! "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then
+        echo ">>> exiting with error for test ${testname}"
+        exit 255
+    fi
+fi
+
 if test -f "$TEST_SCRIPT_DIR""${testname}"_"setup.sh" ; then
     echo ">>> setup for test ${testname}"
     if ! "$TEST_SCRIPT_DIR""${testname}"_"setup.sh" ; then

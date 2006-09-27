@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_SRC_ADJUTRIX_DISPLAY_DEFAULT_SYSTEM_RESOLUTION_HH
 #define PALUDIS_GUARD_SRC_ADJUTRIX_DISPLAY_DEFAULT_SYSTEM_RESOLUTION_HH 1
 
-#include <adjutrix_environment.hh>
+#include <paludis/environment/no_config/no_config_environment.hh>
 
-int do_display_default_system_resolution(paludis::AdjutrixEnvironment & env);
+int do_display_default_system_resolution(paludis::NoConfigEnvironment & env);
 
 #endif

@@ -18,6 +18,7 @@ $1_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(DYNAMIC_LD_LIBS)
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
@@ -62,7 +63,7 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	hashed_containers.hh.in testscriptlist srlist srcleanlist
-SUBDIRS = digests util . repositories args qa selinux tasks
+SUBDIRS = digests util . repositories environment args qa selinux tasks
 BUILT_SOURCES = srcleanlist
 
 libpaludis_la_SOURCES = filelist

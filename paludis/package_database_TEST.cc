@@ -18,6 +18,7 @@
  */
 
 #include <paludis/paludis.hh>
+#include <paludis/environment/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

@@ -1,0 +1,21 @@
+CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda ihateautomake.cc ihateautomake.o
+MAINTAINERCLEANFILES = Makefile.in
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+DEFS= \
+	-DSYSCONFDIR=\"$(sysconfdir)\" \
+	-DLIBEXECDIR=\"$(libexecdir)\" \
+	-DDATADIR=\"$(datadir)\" \
+	-DLIBDIR=\"$(libdir)\"
+
+libpaludistestenvironment_la_SOURCES = \
+	test_environment.cc test_environment.hh
+
+libpaludistestenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludistestenvironment_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis.la
+
+lib_LTLIBRARIES = libpaludistestenvironment.la
+paludis_environment_test_includedir = $(includedir)/paludis/environment/test
+paludis_environment_test_include_HEADERS = test_environment.hh
+

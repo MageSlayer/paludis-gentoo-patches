@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/test_environment.hh>
+#include <paludis/environment/test/test_environment.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <map>
 #include <string>

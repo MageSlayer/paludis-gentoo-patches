@@ -26,6 +26,7 @@
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/environment/default/default_environment.hh>
 #include <string>
 
 /** \file

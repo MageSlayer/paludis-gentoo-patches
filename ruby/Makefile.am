@@ -48,7 +48,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/ebuild/`" \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
 	SYSCONFDIR="$(sysconfdir)" \
-	LD_LIBRARY_PATH="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs`" \
+	LD_LIBRARY_PATH="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs`:`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs`:`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/default/.libs`" \
 	bash $(top_srcdir)/test/run_test.sh "ruby -I ./.libs/"
 
 if ENABLE_RUBY
@@ -108,8 +108,10 @@ repository.o : repository.cc paludis_ruby.hh
 	    $(AM_LDFLAGS) $(LDFLAGS) \
 	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
 	    -o $@ \
+	    $^ \
+	    $(top_builddir)/paludis/util/.libs/libpaludisutil.so \
 	    $(top_builddir)/paludis/.libs/libpaludis.so \
-	    $^
+	    $(top_builddir)/paludis/environment/default/.libs/libpaludisdefaultenvironment.so
 
 Paludis.so : $(OUR_OBJECTS)
 	mkdir -p .libs
@@ -117,10 +119,11 @@ Paludis.so : $(OUR_OBJECTS)
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) \
 	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
+	    -o $@ \
+	    $^ \
 	    -L$(top_builddir)/paludis/util/.libs/ -lpaludisutil \
 	    -L$(top_builddir)/paludis/.libs/ -lpaludis \
-	    -o $@ \
-	    $^
+	    -L$(top_builddir)/paludis/environment/default/.libs/ -lpaludisdefaultenvironment
 
 endif
 

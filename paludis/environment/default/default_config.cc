@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/environment/default/default_config.hh>
 #include <paludis/config_file.hh>
-#include <paludis/default_config.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/destringify.hh>

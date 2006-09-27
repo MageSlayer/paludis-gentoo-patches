@@ -25,6 +25,7 @@
 #include <list>
 #include <map>
 #include <paludis/paludis.hh>
+#include <paludis/environment/default/default_environment.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor.hh>
 

@@ -18,8 +18,8 @@
  */
 
 #include <paludis_ruby.hh>
-#include <paludis/default_environment.hh>
-#include <paludis/default_config.hh>
+#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environment/default/default_config.hh>
 #include <ruby.h>
 
 using namespace paludis;

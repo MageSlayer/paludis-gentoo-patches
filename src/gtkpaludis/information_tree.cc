@@ -19,7 +19,7 @@
 
 #include "information_tree.hh"
 #include <gtkmm/treestore.h>
-#include <paludis/default_environment.hh>
+#include <paludis/environment/default/default_environment.hh>
 
 using namespace paludis;
 

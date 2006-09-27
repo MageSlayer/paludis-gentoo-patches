@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_ARCHTOOL_ARCHTOOL_ENVIRONMENT_HH
-#define PALUDIS_GUARD_SRC_ARCHTOOL_ARCHTOOL_ENVIRONMENT_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENT_NO_CONFIG_NO_CONFIG_ENVIRONMENT_HH
+#define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_NO_CONFIG_NO_CONFIG_ENVIRONMENT_HH 1
 
 #include <paludis/environment.hh>
 #include <paludis/util/fs_entry.hh>
@@ -26,14 +26,16 @@
 
 namespace paludis
 {
-    class AdjutrixEnvironment :
-        private PrivateImplementationPattern<AdjutrixEnvironment>,
+#include <paludis/environment/no_config/no_config_environment-sr.hh>
+
+    class NoConfigEnvironment :
+        private PrivateImplementationPattern<NoConfigEnvironment>,
         public Environment
     {
         public:
-            AdjutrixEnvironment(const FSEntry & dir);
+            NoConfigEnvironment(const NoConfigEnvironmentParams & params);
 
-            virtual ~AdjutrixEnvironment();
+            virtual ~NoConfigEnvironment();
 
             virtual std::string paludis_command() const;
 

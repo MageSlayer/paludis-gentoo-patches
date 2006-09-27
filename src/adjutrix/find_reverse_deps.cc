@@ -180,6 +180,8 @@ namespace
     {
         Context context("When checking package '" + stringify(p) + "':");
 
+        cerr << xterm_title("Checking " + stringify(p) + " - adjutrix");
+
         PackageDatabaseEntryCollection::Pointer p_entries(env.package_database()->query(
                 PackageDepAtom::Pointer(new PackageDepAtom(stringify(p))), is_uninstalled_only));
 
@@ -202,7 +204,9 @@ namespace
             }
             catch (Exception & exception)
             {
-                std::cerr << "Caught Exception (" << exception.what() << ")" << std::endl;
+                cerr << "Caught exception:" << endl;
+                cerr << "  * " << exception.backtrace("\n  * ") << endl;
+                cerr << "  * " << exception.message() << " (" << exception.what() << ")" << endl;
                 return (found_matches ? 0 : 1) | 2;
             }
         }
@@ -211,7 +215,7 @@ namespace
     }
 }
 
-int do_find_reverse_deps(AdjutrixEnvironment & env)
+int do_find_reverse_deps(NoConfigEnvironment & env)
 {
     Context context("When performing find-reverse-deps action:");
 

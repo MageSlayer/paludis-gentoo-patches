@@ -19,8 +19,8 @@
 
 #include <list>
 #include <paludis/config_file.hh>
-#include <paludis/default_config.hh>
-#include <paludis/default_environment.hh>
+#include <paludis/environment/default/default_config.hh>
+#include <paludis/environment/default/default_environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>

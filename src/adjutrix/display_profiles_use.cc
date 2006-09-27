@@ -52,7 +52,7 @@ namespace
     }
 
     void
-    display_profiles_use(const AdjutrixEnvironment & env, const std::string & desc,
+    display_profiles_use(const NoConfigEnvironment & env, const std::string & desc,
             const FSEntry & profile, const std::set<UseFlagName> & all_use,
             const std::multimap<std::string, UseFlagName> & all_use_expand_flags)
     {
@@ -97,7 +97,7 @@ namespace
     }
 }
 
-void do_display_profiles_use(AdjutrixEnvironment & env)
+void do_display_profiles_use(NoConfigEnvironment & env)
 {
     Context context("When performing display-profiles-use action:");
 

@@ -32,6 +32,7 @@
 #include <paludis/tasks/install_task.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/environment/default/default_environment.hh>
 
 /** \file
  * Handle the --install action for the main paludis program.

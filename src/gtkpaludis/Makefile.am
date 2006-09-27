@@ -27,11 +27,12 @@ gtkpaludis_SOURCES = \
 	gtkpaludis.cc
 
 gtkpaludis_LDADD = \
+	$(top_builddir)/src/gtkpaludis/vtemm/libvtemm.a \
 	$(top_builddir)/paludis/tasks/libpaludistasks.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/src/gtkpaludis/vtemm/libvtemm.a \
+	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
 	$(GTKDEPS_LIBS) \
 	$(DYNAMIC_LD_LIBS)
 

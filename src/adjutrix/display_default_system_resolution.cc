@@ -45,7 +45,7 @@ using namespace paludis;
 namespace
 {
     int
-    display_default_system_resolution(const AdjutrixEnvironment & env, const std::string & desc,
+    display_default_system_resolution(const NoConfigEnvironment & env, const std::string & desc,
             const FSEntry & profile)
     {
         int return_code(0);
@@ -104,7 +104,7 @@ namespace
     }
 }
 
-int do_display_default_system_resolution(AdjutrixEnvironment & env)
+int do_display_default_system_resolution(NoConfigEnvironment & env)
 {
     int return_code(0);
 

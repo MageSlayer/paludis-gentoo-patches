@@ -22,7 +22,7 @@
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
-#include <paludis/test_environment.hh>
+#include <paludis/environment/test/test_environment.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/system.hh>
 #include <test/test_framework.hh>

@@ -32,6 +32,8 @@
 
 #include <paludis/paludis.hh>
 #include <paludis/util/util.hh>
+#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environment/default/default_config.hh>
 
 #include <libebt/libebt.hh>
 #include <libwrapiter/libwrapiter.hh>

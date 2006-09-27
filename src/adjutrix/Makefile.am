@@ -32,7 +32,6 @@ adjutrix_SOURCES = \
 	find_dropped_keywords.hh              find_dropped_keywords.cc \
 	find_reverse_deps.hh                  find_reverse_deps.cc \
 	keywords_graph.hh                     keywords_graph.cc \
-	adjutrix_environment.hh               adjutrix_environment.cc \
 	display_profiles_use.hh               display_profiles_use.cc \
 	display_default_system_resolution.hh  display_default_system_resolution.cc \
 	adjutrix.cc
@@ -43,6 +42,7 @@ adjutrix_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
+	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/src/libcolour.a \
 	$(DYNAMIC_LD_LIBS)
 

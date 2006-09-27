@@ -25,12 +25,12 @@
 #include "keywords_graph.hh"
 #include "display_profiles_use.hh"
 #include "display_default_system_resolution.hh"
-#include "adjutrix_environment.hh"
 
 #include <paludis/about.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/environment/no_config/no_config_environment.hh>
 #include <iostream>
 
 using namespace paludis;
@@ -143,7 +143,9 @@ main(int argc, char *argv[])
                     ))
             throw DoHelp("you should specify exactly one action");
 
-        AdjutrixEnvironment env(get_location_and_add_filters());
+        NoConfigEnvironment env(NoConfigEnvironmentParams::create()
+                .repository_dir(get_location_and_add_filters())
+                .accept_unstable(CommandLine::get_instance()->a_unstable.specified()));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())
         {

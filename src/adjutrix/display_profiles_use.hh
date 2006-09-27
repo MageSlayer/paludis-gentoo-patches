@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_SRC_ADJUTRIX_DISPLAY_PROFILES_USE_HH
 #define PALUDIS_GUARD_SRC_ADJUTRIX_DISPLAY_PROFILES_USE_HH 1
 
-#include <adjutrix_environment.hh>
+#include <paludis/environment/no_config/no_config_environment.hh>
 
-void do_display_profiles_use(paludis::AdjutrixEnvironment & env);
+void do_display_profiles_use(paludis::NoConfigEnvironment & env);
 
 #endif

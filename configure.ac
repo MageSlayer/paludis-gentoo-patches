@@ -597,6 +597,10 @@ AC_OUTPUT(
 	paludis/about.hh
 	paludis/args/Makefile
 	paludis/digests/Makefile
+	paludis/environment/Makefile
+	paludis/environment/default/Makefile
+	paludis/environment/no_config/Makefile
+	paludis/environment/test/Makefile
 	paludis/hashed_containers.hh
 	paludis/qa/Makefile
 	paludis/repositories/Makefile

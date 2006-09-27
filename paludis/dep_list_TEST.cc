@@ -20,6 +20,7 @@
 #include <paludis/paludis.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
+#include <paludis/environment/test/test_environment.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>

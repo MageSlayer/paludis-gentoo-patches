@@ -30,6 +30,7 @@ vdb_repository_TEST_SOURCES = vdb_repository_TEST.cc
 vdb_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	libpaludisvdbrepository.la
 
 vdb_repository_TEST_CXXFLAGS = -I$(top_srcdir)

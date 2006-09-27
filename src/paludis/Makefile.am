@@ -46,6 +46,7 @@ paludis_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
 	$(top_builddir)/src/libcolour.a \
 	$(DYNAMIC_LD_LIBS)
 

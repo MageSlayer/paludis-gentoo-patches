@@ -54,6 +54,7 @@ portage_repository_TEST_SOURCES = portage_repository_TEST.cc
 portage_repository_TEST_LDADD = \
 	libpaludisportagerepository.la \
 	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a
 
 portage_repository_TEST_CXXFLAGS = -I$(top_srcdir)

@@ -34,6 +34,8 @@ libpaludisargs_la_SOURCES = $(paludis_args_include_HEADERS) \
 	man.cc
 
 libpaludisargs_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisargs_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil.la
 
 TESTS_ENVIRONMENT = env -u PALUDIS_OPTIONS \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

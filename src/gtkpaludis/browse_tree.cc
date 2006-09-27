@@ -27,7 +27,7 @@
 #include <gtkmm/menu.h>
 #include <gtkmm/messagedialog.h>
 
-#include <paludis/default_environment.hh>
+#include <paludis/environment/default/default_environment.hh>
 #include <paludis/util/log.hh>
 #include <paludis/syncer.hh>
 

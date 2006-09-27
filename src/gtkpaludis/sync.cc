@@ -20,7 +20,7 @@
 #include "sync.hh"
 #include "main_window.hh"
 
-#include <paludis/default_environment.hh>
+#include <paludis/environment/default/default_environment.hh>
 #include <paludis/util/log.hh>
 #include <paludis/syncer.hh>
 
