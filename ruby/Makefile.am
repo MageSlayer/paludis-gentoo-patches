@@ -48,10 +48,11 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/ebuild/`" \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
 	SYSCONFDIR="$(sysconfdir)" \
-	LD_LIBRARY_PATH="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs`: \
-			`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs`: \
-			`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/default/.libs`: \
-			`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/no_config/.libs`" \
+	LD_LIBRARY_PATH=`echo "\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs\`: \
+			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs\`: \
+			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/default/.libs\`: \
+			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/no_config/.libs\`" \
+			| tr -d ' '` \
 	bash $(top_srcdir)/test/run_test.sh "ruby -I ./.libs/"
 
 if ENABLE_RUBY
