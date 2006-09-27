@@ -637,6 +637,18 @@ do_install()
 
         return_code |= 1;
     }
+    catch (const PackageFetchActionError & e)
+    {
+        cout << endl;
+        cerr << "Fetch error:" << endl;
+        cerr << "  * " << e.backtrace("\n  * ");
+        cerr << e.message() << endl;
+        cerr << endl;
+        show_resume_command(task);
+        cerr << endl;
+
+        return_code |= 1;
+    }
     catch (const NoSuchPackageError & e)
     {
         cout << endl;
