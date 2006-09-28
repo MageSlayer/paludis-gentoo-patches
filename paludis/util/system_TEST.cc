@@ -105,6 +105,7 @@ namespace test_cases
         {
             TEST_CHECK(0 == run_command("true"));
             TEST_CHECK(0 != run_command("false"));
+            TEST_CHECK_EQUAL(77, run_command("exit 77"));
         }
     } test_run_command;
 

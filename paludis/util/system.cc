@@ -97,7 +97,7 @@ namespace
             int status(-1);
             if (-1 == wait(&status))
                 throw RunCommandError("wait failed: " + stringify(strerror(errno)));
-            return status;
+            return ((status & 0xff00) >> 8);
         }
 
         throw InternalError(PALUDIS_HERE, "should never be reached");

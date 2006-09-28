@@ -29,6 +29,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/fd_holder.hh>
 #include <paludis/selinux/security_context.hh>
 
 #include <algorithm>
@@ -98,38 +99,6 @@ namespace
             result_name = stringify(result);
         }
     }
-
-    /**
-     * RAII holder for a file descriptor.
-     */
-    class FDHolder
-    {
-        private:
-            const int _fd;
-            const bool _sync;
-
-        public:
-            FDHolder(const int fd, bool sync = true) :
-                _fd(fd),
-                _sync(sync)
-            {
-            }
-
-            ~FDHolder()
-            {
-                if (-1 != _fd)
-                {
-                    if (_sync)
-                        ::fsync(_fd);
-                    ::close(_fd);
-                }
-            }
-
-            operator int () const
-            {
-                return _fd;
-            }
-    };
 
     void
     do_dir(const FSEntry & root, const FSEntry & src_dir,
