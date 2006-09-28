@@ -37,6 +37,7 @@ while read a ; do
     a=${a%% *}
 
     want_named_args=
+    want_visible=
     want_keys=( )
     want_key_types=( )
     want_comparison_operators=
@@ -55,6 +56,11 @@ while read a ; do
     allow_named_args()
     {
         want_named_args=yes
+    }
+
+    visible()
+    {
+        want_visible=yes
     }
 
     doxygen_comment()
@@ -123,7 +129,11 @@ while read a ; do
     }
 
     if [[ "${what_to_make}" == "--header" ]] ; then
-        echo "class ${a}"
+        if [[ -z ${want_visible} ]] ; then
+            echo "class ${a}"
+        else
+            echo "class PALUDIS_VISIBLE ${a}"
+        fi
         echo "{"
         echo "    public:"
         echo

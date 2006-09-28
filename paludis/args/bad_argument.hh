@@ -39,7 +39,8 @@ namespace paludis
          * \ingroup grplibpaludisargs
          * \ingroup grpexceptions
          */
-        class BadArgument : public ArgsError
+        class PALUDIS_VISIBLE BadArgument :
+            public ArgsError
         {
             public:
                 /**

@@ -17,8 +17,7 @@
  */
 
 #include "args_option.hh"
-#include "bad_value.hh"
-#include "missing_value.hh"
+#include "args_error.hh"
 
 #include <paludis/util/visitor.hh>
 #include <paludis/util/destringify.hh>

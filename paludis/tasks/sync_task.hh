@@ -29,7 +29,7 @@ namespace paludis
     class Environment;
     class SyncFailedError;
 
-    class SyncTask :
+    class PALUDIS_VISIBLE SyncTask :
         PrivateImplementationPattern<SyncTask>,
         InstantiationPolicy<SyncTask, instantiation_method::NonCopyableTag>
     {

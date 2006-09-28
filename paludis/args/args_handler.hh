@@ -44,7 +44,7 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class ArgsHandler :
+        class PALUDIS_VISIBLE ArgsHandler :
             private InstantiationPolicy<ArgsHandler, instantiation_method::NonCopyableTag>,
             private PrivateImplementationPattern<ArgsHandler>
         {
@@ -174,7 +174,7 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        std::ostream & operator<< (std::ostream &, const ArgsHandler &);
+        std::ostream & operator<< (std::ostream &, const ArgsHandler &) PALUDIS_VISIBLE;
     }
 }
 

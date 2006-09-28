@@ -45,7 +45,7 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class ArgsGroup :
+        class PALUDIS_VISIBLE ArgsGroup :
             private PrivateImplementationPattern<ArgsGroup>,
             private InstantiationPolicy<ArgsGroup, instantiation_method::NonCopyableTag>
         {

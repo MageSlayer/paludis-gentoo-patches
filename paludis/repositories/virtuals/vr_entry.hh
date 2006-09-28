@@ -114,7 +114,6 @@ namespace paludis
             return a.virtual_name.category;
         }
     };
-
 }
 
 #endif

@@ -1,6 +1,6 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 
 TESTS = \
 	args_TEST
@@ -15,8 +15,6 @@ paludis_args_include_HEADERS = \
 	args_option.hh    \
 	bad_argument.hh   \
 	args_visitor.hh   \
-	bad_value.hh      \
-	missing_value.hh  \
 	args_dumper.hh    \
 	man.hh
 
@@ -28,8 +26,6 @@ libpaludisargs_la_SOURCES = $(paludis_args_include_HEADERS) \
 	args_option.cc \
 	bad_argument.cc \
 	args_visitor.cc \
-	bad_value.cc \
-	missing_value.cc \
 	args_dumper.cc \
 	man.cc
 

@@ -33,3 +33,13 @@ ArgsError::ArgsError(const std::string & our_message) throw () :
 {
 }
 
+BadValue::BadValue(const std::string& option, const std::string& value) throw () :
+    ArgsError("Invalid parameter '" + value + "' for argument '" + option + "'")
+{
+}
+
+MissingValue::MissingValue(const std::string & arg) throw() :
+    ArgsError("No parameter given for '" + arg + "'")
+{
+}
+

@@ -293,3 +293,15 @@ VirtualsRepository::do_install(const QualifiedPackageName &, const VersionSpec &
 {
 }
 
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility push(default)
+#endif
+namespace
+{
+    const RepositoryMaker::RegisterMaker register_virtuals_repository PALUDIS_ATTRIBUTE((used)) (
+            "virtuals", &VirtualsRepository::make_virtuals_repository);
+}
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility pop
+#endif
+

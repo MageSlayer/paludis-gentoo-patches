@@ -41,7 +41,8 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class ArgsOption : public virtual VisitableInterface<ArgsVisitorTypes>
+        class PALUDIS_VISIBLE ArgsOption :
+            public virtual VisitableInterface<ArgsVisitorTypes>
         {
             friend class ArgsHandler;
 
@@ -55,7 +56,6 @@ namespace paludis
                 bool _specified;
 
                 ArgsOption(const ArgsOption &);
-
                 void operator= (const ArgsOption &);
 
             protected:
@@ -120,14 +120,16 @@ namespace paludis
                     return _group;
                 }
         };
- 
+
         /**
          * A SwitchArg is an option that can either be specified or not
          * specified, and that takes no value (for example, --help).
          *
          * \ingroup grplibpaludisargs
          */
-        class SwitchArg : public ArgsOption, public Visitable<SwitchArg, ArgsVisitorTypes>
+        class PALUDIS_VISIBLE SwitchArg :
+            public ArgsOption,
+            public Visitable<SwitchArg, ArgsVisitorTypes>
         {
             public:
                 /**
@@ -138,19 +140,20 @@ namespace paludis
 
                 ~SwitchArg();
         };
- 
+
         /**
          * An option that takes a string argument.
          *
          * \ingroup grplibpaludisargs
          */
-        class StringArg : public ArgsOption, public Visitable<StringArg, ArgsVisitorTypes>
+        class PALUDIS_VISIBLE StringArg :
+            public ArgsOption,
+            public Visitable<StringArg, ArgsVisitorTypes>
         {
             private:
                 std::string _argument;
 
             public:
-
                 /**
                 * Constructor
                 */
@@ -173,7 +176,7 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class StringSetArg :
+        class PALUDIS_VISIBLE StringSetArg :
             public ArgsOption,
             public Visitable<StringSetArg, ArgsVisitorTypes>,
             private PrivateImplementationPattern<StringSetArg>
@@ -212,7 +215,9 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class AliasArg : public ArgsOption, public Visitable<AliasArg, ArgsVisitorTypes>
+        class PALUDIS_VISIBLE AliasArg :
+            public ArgsOption,
+            public Visitable<AliasArg, ArgsVisitorTypes>
         {
             private:
                 ArgsOption * const _other;
@@ -233,13 +238,15 @@ namespace paludis
                     _other->set_specified(value);
                 }
         };
- 
+
         /**
          * An option that takes an integer argument.
          *
          * \ingroup grplibpaludisargs
          */
-        class IntegerArg : public ArgsOption, public Visitable<IntegerArg, ArgsVisitorTypes>
+        class PALUDIS_VISIBLE IntegerArg :
+            public ArgsOption,
+            public Visitable<IntegerArg, ArgsVisitorTypes>
         {
             private:
                 int _argument;
@@ -266,7 +273,7 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class EnumArg :
+        class PALUDIS_VISIBLE EnumArg :
             public ArgsOption,
             public Visitable<EnumArg, ArgsVisitorTypes>,
             private PrivateImplementationPattern<EnumArg>
@@ -283,7 +290,7 @@ namespace paludis
                  *
                  * \ingroup grplibpaludisargs
                  */
-                class EnumArgOptions :
+                class PALUDIS_VISIBLE EnumArgOptions :
                     private PrivateImplementationPattern<EnumArgOptions>
                 {
                     friend class EnumArg;

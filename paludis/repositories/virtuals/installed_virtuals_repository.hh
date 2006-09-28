@@ -24,7 +24,7 @@
 
 namespace paludis
 {
-    class InstalledVirtualsRepository :
+    class PALUDIS_VISIBLE InstalledVirtualsRepository :
         public Repository,
         public RepositoryInstalledInterface,
         public RepositoryUninstallableInterface,
@@ -86,9 +86,6 @@ namespace paludis
                 return false;
             }
     };
-
-    static const RepositoryMaker::RegisterMaker register_installed_virtuals_repository(
-            "installed_virtuals", &InstalledVirtualsRepository::make_installed_virtuals_repository);
 }
 
 #endif

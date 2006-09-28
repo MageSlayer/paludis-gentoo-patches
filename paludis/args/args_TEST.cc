@@ -18,7 +18,7 @@
  */
 
 #include <paludis/args/args.hh>
-#include <paludis/args/missing_value.hh>
+#include <paludis/args/args_error.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 

@@ -39,13 +39,47 @@ namespace paludis
          * \ingroup grplibpaludisargs
          * \ingroup grpexceptions
          */
-        class ArgsError : public paludis::Exception
+        class PALUDIS_VISIBLE ArgsError :
+            public paludis::Exception
         {
             protected:
                 /**
                  * Constructor.
                  */
                 ArgsError(const std::string & message) throw ();
+        };
+
+        /**
+         * Thrown if an invalid parameter is passed to a valid command line argument.
+         *
+         * \ingroup grplibpaludisargs
+         * \ingroup grpexceptions
+         */
+        class PALUDIS_VISIBLE BadValue :
+            public ArgsError
+        {
+            public:
+                /**
+                 * Constructor
+                 */
+                BadValue(const std::string& option, const std::string& value) throw();
+        };
+
+        /**
+         * Thrown if an argument is specified that needs a parameter,
+         * but no parameter is given.
+         *
+         * \ingroup grplibpaludisargs
+         * \ingroup grpexceptions
+         */
+        class PALUDIS_VISIBLE MissingValue :
+            public ArgsError
+        {
+            public:
+                /**
+                 * Constructor.
+                 */
+                MissingValue(const std::string & arg) throw ();
         };
     }
 }

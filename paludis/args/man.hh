@@ -30,7 +30,7 @@ namespace paludis
         /**
          * Write a man page to an ostream.
          */
-        void generate_man(std::ostream &, const ArgsHandler * const h);
+        void generate_man(std::ostream &, const ArgsHandler * const h) PALUDIS_VISIBLE;
     }
 }
 

@@ -255,6 +255,7 @@ PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST=
 PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS=
 PALUDIS_CXXFLAGS_NO_WSHADOW=
 PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=
+PALUDIS_CXXFLAGS_VISIBILITY=
 AC_MSG_CHECKING([whether our compiler is iccy])
 AC_COMPILE_IFELSE([
 #ifndef __ICC
@@ -331,6 +332,42 @@ AC_SUBST([PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WSHADOW])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS])
+
+AC_MSG_CHECKING([whether to enable visibility])
+AC_ARG_ENABLE([visibility],
+			  AS_HELP_STRING([--enable-visibility], [Enable visibility (g++-4.1)]),
+			  [ENABLE_VISIBILITY=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [AC_COMPILE_IFELSE([
+#ifdef __ICC
+#  error nope
+#endif
+#if ! defined(__GNUC__)
+#  error nope
+#endif
+#if ! ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__>= 1))
+#  error nope
+#endif
+],
+			   [ENABLE_VISIBILITY=yes],
+			   [ENABLE_VISIBILITY=no])
+			  AC_MSG_RESULT([$ENABLE_VISIBILITY])])
+AC_SUBST([ENABLE_VISIBILITY])
+if test "x$ENABLE_VISIBILITY" = "xyes" ; then
+	AC_MSG_CHECKING([for appropriate compiler visibility flags])
+	old_PALUDIS_CXXFLAGS=$PALUDIS_CXXFLAGS
+	PALUDIS_CXXFLAGS=
+	CHECK_CXXFLAG([-fvisibility-inlines-hidden])
+	CHECK_CXXFLAG([-fvisibility=hidden])
+	AC_MSG_RESULT([$PALUDIS_CXXFLAGS])
+	PALUDIS_CXXFLAGS_VISIBILITY=$PALUDIS_CXXFLAGS
+	PALUDIS_CXXFLAGS=$old_PALUDIS_CXXFLAGS
+	PALUDIS_ENABLE_VISIBILITY=1
+else
+	PALUDIS_ENABLE_VISIBILITY=0
+fi
+AC_SUBST([PALUDIS_ENABLE_VISIBILITY])
+AC_SUBST([PALUDIS_CXXFLAGS_VISIBILITY])
 dnl }}}
 
 dnl {{{ sandbox
@@ -613,6 +650,7 @@ AC_OUTPUT(
 	paludis/selinux/Makefile
 	paludis/tasks/Makefile
 	paludis/util/Makefile
+	paludis/util/attributes.hh
 	ruby/Makefile
 	ruby/demos/Makefile
 	src/Makefile

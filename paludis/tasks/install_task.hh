@@ -28,21 +28,21 @@ namespace paludis
 {
     class Environment;
 
-    class MultipleSetTargetsSpecified :
+    class PALUDIS_VISIBLE MultipleSetTargetsSpecified :
         public Exception
     {
         public:
             MultipleSetTargetsSpecified() throw ();
     };
 
-    class HadBothPackageAndSetTargets :
+    class PALUDIS_VISIBLE HadBothPackageAndSetTargets :
         public Exception
     {
         public:
             HadBothPackageAndSetTargets() throw ();
     };
 
-    class InstallTask :
+    class PALUDIS_VISIBLE InstallTask :
         PrivateImplementationPattern<InstallTask>,
         InstantiationPolicy<InstallTask, instantiation_method::NonCopyableTag>
     {

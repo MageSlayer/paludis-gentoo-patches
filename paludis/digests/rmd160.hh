@@ -32,7 +32,7 @@ namespace paludis
      *
      * \ingroup grplibpaludisdigests
      */
-    class RMD160
+    class PALUDIS_VISIBLE RMD160
     {
         private:
             static const uint8_t _r[80], _rp[80];

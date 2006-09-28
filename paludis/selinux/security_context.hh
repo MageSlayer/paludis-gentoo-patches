@@ -33,7 +33,8 @@
  * \ingroup grplibpaludisselinux
  */
 
-namespace paludis {
+namespace paludis
+{
     class FSCreateCon;
     class MatchPathCon;
 
@@ -43,7 +44,8 @@ namespace paludis {
      * \ingroup grplibpaludisselinux
      * \ingroup grpexceptions
      */
-    class SELinuxException : public Exception
+    class PALUDIS_VISIBLE SELinuxException :
+        public Exception
     {
         public:
             /// Constructor.
@@ -58,9 +60,10 @@ namespace paludis {
      *
      * \ingroup grplibpaludisselinux
      */
-    class SecurityContext : private PrivateImplementationPattern<SecurityContext>,
-                            private InstantiationPolicy<SecurityContext, instantiation_method::NonCopyableTag>,
-                            public InternalCounted<SecurityContext>
+    class PALUDIS_VISIBLE SecurityContext :
+        private PrivateImplementationPattern<SecurityContext>,
+        private InstantiationPolicy<SecurityContext, instantiation_method::NonCopyableTag>,
+        public InternalCounted<SecurityContext>
     {
         public:
             /**
@@ -98,7 +101,7 @@ namespace paludis {
      *
      * \ingroup grplibpaludisselinux
      */
-    std::ostream& operator<<(std::ostream&, const SecurityContext &);
+    std::ostream& operator<<(std::ostream&, const SecurityContext &) PALUDIS_VISIBLE;
 
     /**
      * RAII-style wrapper for setfscreatecon().
@@ -111,7 +114,7 @@ namespace paludis {
      *
      * \ingroup grplibpaludisselinux
      */
-    class FSCreateCon
+    class PALUDIS_VISIBLE FSCreateCon
     {
         private:
             SecurityContext::ConstPointer _context;
@@ -134,7 +137,8 @@ namespace paludis {
      *
      * \ingroup grplibpaludisselinux
      */
-    class MatchPathCon : public InstantiationPolicy<MatchPathCon, instantiation_method::SingletonAsNeededTag>
+    class PALUDIS_VISIBLE MatchPathCon :
+        public InstantiationPolicy<MatchPathCon, instantiation_method::SingletonAsNeededTag>
     {
         private:
             bool _good;

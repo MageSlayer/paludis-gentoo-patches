@@ -18,7 +18,7 @@
  */
 
 #include "args.hh"
-#include "bad_value.hh"
+#include "args_error.hh"
 #include <set>
 #include <vector>
 

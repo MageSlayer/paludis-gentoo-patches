@@ -41,7 +41,8 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class ArgsDumper : public ArgsVisitorTypes::ConstVisitor
+        class PALUDIS_VISIBLE ArgsDumper :
+            public ArgsVisitorTypes::ConstVisitor
         {
             private:
                 std::ostream & _os;

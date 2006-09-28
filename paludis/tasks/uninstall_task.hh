@@ -29,7 +29,7 @@ namespace paludis
 {
     class Environment;
 
-    class AmbiguousUnmergeTargetError :
+    class PALUDIS_VISIBLE AmbiguousUnmergeTargetError :
         public Exception
     {
         private:
@@ -65,7 +65,7 @@ namespace paludis
             }
     };
 
-    class UninstallTask :
+    class PALUDIS_VISIBLE UninstallTask :
         PrivateImplementationPattern<UninstallTask>,
         InstantiationPolicy<UninstallTask, instantiation_method::NonCopyableTag>
     {

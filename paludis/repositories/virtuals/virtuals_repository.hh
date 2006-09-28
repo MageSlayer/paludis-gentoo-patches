@@ -24,7 +24,7 @@
 
 namespace paludis
 {
-    class VirtualsRepository :
+    class PALUDIS_VISIBLE VirtualsRepository :
         public Repository,
         public RepositoryInstallableInterface,
         public RepositoryMaskInterface,
@@ -82,9 +82,6 @@ namespace paludis
             }
 
     };
-
-    static const RepositoryMaker::RegisterMaker register_virtuals_repository(
-            "virtuals", &VirtualsRepository::make_virtuals_repository);
 }
 
 #endif

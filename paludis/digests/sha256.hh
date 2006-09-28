@@ -32,7 +32,7 @@ namespace paludis
      *
      * \ingroup grplibpaludisdigests
      */
-    class SHA256
+    class PALUDIS_VISIBLE SHA256
     {
         private:
             static const uint32_t _k[64];

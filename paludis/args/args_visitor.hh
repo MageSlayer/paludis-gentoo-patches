@@ -22,6 +22,7 @@
 #define PALUDIS_GUARD_ARGS_ARGS_VISITOR_HH 1
 
 #include <paludis/util/visitor.hh>
+#include <paludis/util/attributes.hh>
 #include <string>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
@@ -57,7 +58,8 @@ namespace paludis
          *
          * \ingroup grplibpaludisargs
          */
-        class ArgsVisitor : public ArgsVisitorTypes::Visitor
+        class PALUDIS_VISIBLE ArgsVisitor :
+            public ArgsVisitorTypes::Visitor
         {
             private:
                 libwrapiter::ForwardIterator<ArgsVisitor, std::string> * _args_index, _args_end;

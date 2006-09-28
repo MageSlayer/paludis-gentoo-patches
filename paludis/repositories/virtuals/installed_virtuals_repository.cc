@@ -299,3 +299,15 @@ InstalledVirtualsRepository::do_uninstall(const QualifiedPackageName &, const Ve
 {
 }
 
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility push(default)
+#endif
+namespace
+{
+    const RepositoryMaker::RegisterMaker register_installed_virtuals_repository PALUDIS_ATTRIBUTE((used)) (
+            "installed_virtuals", &InstalledVirtualsRepository::make_installed_virtuals_repository);
+}
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility pop
+#endif
+

@@ -32,7 +32,7 @@ namespace paludis
      *
      * \ingroup grplibpaludisdigests
      */
-    class MD5
+    class PALUDIS_VISIBLE MD5
     {
         private:
             static const uint32_t _t[64];
