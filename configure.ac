@@ -338,20 +338,8 @@ AC_ARG_ENABLE([visibility],
 			  AS_HELP_STRING([--enable-visibility], [Enable visibility (g++-4.1)]),
 			  [ENABLE_VISIBILITY=$enableval
 			   AC_MSG_RESULT([$enableval])],
-			  [AC_COMPILE_IFELSE([
-#ifdef __ICC
-#  error nope
-#endif
-#if ! defined(__GNUC__)
-#  error nope
-#endif
-#if ! ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__>= 1))
-#  error nope
-#endif
-],
-			   [ENABLE_VISIBILITY=yes],
-			   [ENABLE_VISIBILITY=no])
-			  AC_MSG_RESULT([$ENABLE_VISIBILITY])])
+			  [ENABLE_VISIBILITY=no])
+AC_MSG_RESULT([$ENABLE_VISIBILITY])
 AC_SUBST([ENABLE_VISIBILITY])
 if test "x$ENABLE_VISIBILITY" = "xyes" ; then
 	AC_MSG_CHECKING([for appropriate compiler visibility flags])
