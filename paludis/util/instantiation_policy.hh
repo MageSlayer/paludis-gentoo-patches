@@ -20,6 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_INSTANTIATION_POLICY_HH
 #define PALUDIS_GUARD_PALUDIS_INSTANTIATION_POLICY_HH 1
 
+#include <paludis/util/attributes.hh>
+
 /** \file
  * InstantiationPolicy patterns.
  *
@@ -88,7 +90,7 @@ namespace paludis
      * \ingroup grpinstance
      */
     template<typename OurType_>
-    class InstantiationPolicy<OurType_, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE InstantiationPolicy<OurType_, instantiation_method::NonCopyableTag>
     {
         private:
             InstantiationPolicy(const InstantiationPolicy &);
@@ -148,7 +150,7 @@ namespace paludis
      * \ingroup grpinstance
      */
     template<typename OurType_>
-    class InstantiationPolicy<OurType_, instantiation_method::SingletonAtStartupTag>
+    class PALUDIS_VISIBLE InstantiationPolicy<OurType_, instantiation_method::SingletonAtStartupTag>
     {
         private:
             InstantiationPolicy(const InstantiationPolicy &);
@@ -194,7 +196,7 @@ namespace paludis
      * \ingroup grpinstance
      */
     template<typename OurType_>
-    class InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>
+    class PALUDIS_VISIBLE InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>
     {
         private:
             InstantiationPolicy(const InstantiationPolicy &);
@@ -211,7 +213,7 @@ namespace paludis
                 delete p;
             }
 
-            class DeleteOnDestruction
+            class PALUDIS_VISIBLE DeleteOnDestruction
             {
                 private:
                     OurType_ * * const _ptr;

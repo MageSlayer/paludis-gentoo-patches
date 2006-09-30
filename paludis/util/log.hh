@@ -71,7 +71,7 @@ namespace paludis
      *
      * \ingroup grplog
      */
-    class Log :
+    class PALUDIS_VISIBLE Log :
         public InstantiationPolicy<Log, instantiation_method::SingletonAsNeededTag>,
         private PrivateImplementationPattern<Log>
     {
@@ -113,7 +113,7 @@ namespace paludis
     };
 
     std::ostream &
-    operator<< (std::ostream &, const LogLevel &);
+    operator<< (std::ostream &, const LogLevel &) PALUDIS_VISIBLE;
 }
 
 #endif

@@ -119,7 +119,7 @@ namespace paludis
      * \ingroup grpvc
      */
     template <typename KeyType_, typename ValueType_, typename NotFoundBehaviour_>
-    class VirtualConstructor :
+    class PALUDIS_VISIBLE VirtualConstructor :
         public NotFoundBehaviour_::template Parent<KeyType_, ValueType_>,
         public InstantiationPolicy<VirtualConstructor<KeyType_, ValueType_, NotFoundBehaviour_>,
             instantiation_method::SingletonAsNeededTag>
