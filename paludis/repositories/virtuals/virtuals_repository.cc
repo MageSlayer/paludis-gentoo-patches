@@ -136,9 +136,6 @@ bool
 VirtualsRepository::do_query_repository_masks(const QualifiedPackageName &,
         const VersionSpec &) const
 {
-    need_entries();
-
-    /// \todo
     return false;
 }
 
@@ -146,9 +143,6 @@ bool
 VirtualsRepository::do_query_profile_masks(const QualifiedPackageName &,
         const VersionSpec &) const
 {
-    need_entries();
-
-    /// \todo
     return false;
 }
 
@@ -177,6 +171,9 @@ bool
 VirtualsRepository::do_has_version(const QualifiedPackageName & q,
         const VersionSpec & v) const
 {
+    if (q.category.data() != "virtual")
+        return false;
+
     need_entries();
 
     std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
@@ -189,6 +186,9 @@ VirtualsRepository::do_has_version(const QualifiedPackageName & q,
 VersionSpecCollection::ConstPointer
 VirtualsRepository::do_version_specs(const QualifiedPackageName & q) const
 {
+    if (q.category.data() != "virtual")
+        return VersionSpecCollection::Pointer(new VersionSpecCollection::Concrete);
+
     need_entries();
 
     std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
@@ -206,6 +206,9 @@ VirtualsRepository::do_version_specs(const QualifiedPackageName & q) const
 QualifiedPackageNameCollection::ConstPointer
 VirtualsRepository::do_package_names(const CategoryNamePart & c) const
 {
+    if (c.data() != "virtual")
+        return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection::Concrete);
+
     need_entries();
 
     std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
@@ -251,6 +254,9 @@ VirtualsRepository::do_category_names() const
 bool
 VirtualsRepository::do_has_package_named(const QualifiedPackageName & q) const
 {
+    if (q.category.data() != "virtual")
+        return false;
+
     need_entries();
 
     std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
@@ -264,6 +270,9 @@ VirtualsRepository::do_has_package_named(const QualifiedPackageName & q) const
 bool
 VirtualsRepository::do_has_category_named(const CategoryNamePart & c) const
 {
+    if (c.data() != "virtual")
+        return false;
+
     need_entries();
 
     std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(

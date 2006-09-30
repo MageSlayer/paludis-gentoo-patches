@@ -141,9 +141,6 @@ bool
 InstalledVirtualsRepository::do_query_repository_masks(const QualifiedPackageName &,
         const VersionSpec &) const
 {
-    need_entries();
-
-    /// \todo
     return false;
 }
 
@@ -151,9 +148,6 @@ bool
 InstalledVirtualsRepository::do_query_profile_masks(const QualifiedPackageName &,
         const VersionSpec &) const
 {
-    need_entries();
-
-    /// \todo
     return false;
 }
 
@@ -183,6 +177,9 @@ bool
 InstalledVirtualsRepository::do_has_version(const QualifiedPackageName & q,
         const VersionSpec & v) const
 {
+    if (q.category.data() != "virtual")
+        return false;
+
     need_entries();
 
     std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
@@ -195,6 +192,9 @@ InstalledVirtualsRepository::do_has_version(const QualifiedPackageName & q,
 VersionSpecCollection::ConstPointer
 InstalledVirtualsRepository::do_version_specs(const QualifiedPackageName & q) const
 {
+    if (q.category.data() != "virtual")
+        return VersionSpecCollection::Pointer(new VersionSpecCollection::Concrete);
+
     need_entries();
 
     std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
@@ -212,6 +212,9 @@ InstalledVirtualsRepository::do_version_specs(const QualifiedPackageName & q) co
 QualifiedPackageNameCollection::ConstPointer
 InstalledVirtualsRepository::do_package_names(const CategoryNamePart & c) const
 {
+    if (c.data() != "virtual")
+        return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection::Concrete);
+
     need_entries();
 
     std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
@@ -257,6 +260,9 @@ InstalledVirtualsRepository::do_category_names() const
 bool
 InstalledVirtualsRepository::do_has_package_named(const QualifiedPackageName & q) const
 {
+    if (q.category.data() != "virtual")
+        return false;
+
     need_entries();
 
     std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
@@ -270,6 +276,9 @@ InstalledVirtualsRepository::do_has_package_named(const QualifiedPackageName & q
 bool
 InstalledVirtualsRepository::do_has_category_named(const CategoryNamePart & c) const
 {
+    if (c.data() != "virtual")
+        return false;
+
     need_entries();
 
     std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
