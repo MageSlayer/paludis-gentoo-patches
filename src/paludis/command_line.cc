@@ -42,7 +42,7 @@ CommandLine::CommandLine() :
     a_environment_variable(&action_args_internal, "environment-variable", '\0', "Display the value of an environment "
             "variable for a particular package"),
     a_configuration_variable(&action_args_internal, "configuration-variable", '\0', "Display the value of a "
-            "configuration variable for a particular package"),
+            "configuration variable for a particular repository"),
     a_list_repositories(&action_args_internal, "list-repositories", '\0', "List available repositories"),
     a_list_categories(&action_args_internal, "list-categories", '\0', "List available categories"),
     a_list_packages(&action_args_internal, "list-packages", '\0', "List available packages"),

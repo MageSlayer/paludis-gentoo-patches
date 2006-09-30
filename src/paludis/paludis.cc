@@ -379,7 +379,7 @@ main(int argc, char *argv[])
         {
             if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
                         CommandLine::get_instance()->end_parameters()))
-                throw DoHelp("configuration-variable action takes exactly two parameters (depatom var)");
+                throw DoHelp("configuration-variable action takes exactly two parameters (repository var)");
 
             return do_configuration_variable();
         }
