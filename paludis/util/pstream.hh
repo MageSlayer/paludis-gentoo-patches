@@ -44,7 +44,8 @@ namespace paludis
      * \ingroup grpsystem
      * \ingroup grpexceptions
      */
-    class PStreamError : public Exception
+    class PALUDIS_VISIBLE PStreamError :
+        public Exception
     {
         public:
             ///\name Basic operations
@@ -66,7 +67,7 @@ namespace paludis
      *
      * \ingroup grpsystem
      */
-    class PStreamInBuf :
+    class PALUDIS_VISIBLE PStreamInBuf :
         public std::streambuf,
         private InstantiationPolicy<PStreamInBuf, instantiation_method::NonCopyableTag>
     {
@@ -146,7 +147,7 @@ namespace paludis
          *
          * \ingroup grpsystem
          */
-        struct PStreamInBufBase :
+        struct PALUDIS_VISIBLE PStreamInBufBase :
             private paludis::InstantiationPolicy<PStreamInBufBase, instantiation_method::NonCopyableTag>
         {
             /**
@@ -170,7 +171,7 @@ namespace paludis
      *
      * \ingroup grpsystem
      */
-    class PStream :
+    class PALUDIS_VISIBLE PStream :
         private InstantiationPolicy<PStream, instantiation_method::NonCopyableTag>,
         protected pstream_internals::PStreamInBufBase,
         public std::istream

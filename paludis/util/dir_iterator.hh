@@ -39,7 +39,8 @@ namespace paludis
      * \ingroup grpfilesystem
      * \ingroup grpexceptions
      */
-    class DirOpenError : public FSError
+    class PALUDIS_VISIBLE DirOpenError :
+        public FSError
     {
         public:
             ///\name Basic operations
@@ -59,7 +60,7 @@ namespace paludis
      *
      * \ingroup grpfilesystem
      */
-    class DirIterator :
+    class PALUDIS_VISIBLE DirIterator :
         public std::iterator<std::forward_iterator_tag, FSEntry>,
         private PrivateImplementationPattern<DirIterator>
     {

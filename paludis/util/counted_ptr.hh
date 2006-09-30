@@ -38,7 +38,8 @@ namespace paludis
      * \ingroup grppointers
      * \ingroup grpexceptions
      */
-    class CountedPtrError : public Exception
+    class PALUDIS_VISIBLE CountedPtrError :
+        public Exception
     {
         public:
             ///\name Basic operations

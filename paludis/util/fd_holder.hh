@@ -27,7 +27,7 @@ namespace paludis
     /**
      * RAII holder for a file descriptor.
      */
-    class FDHolder
+    class PALUDIS_VISIBLE FDHolder
     {
         private:
             const int _fd;

@@ -44,7 +44,7 @@ namespace paludis
      * \ingroup grpcollections
      */
     template <typename T_>
-    class SequentialCollection :
+    class PALUDIS_VISIBLE SequentialCollection :
         private InstantiationPolicy<SequentialCollection<T_>, instantiation_method::NonCopyableTag>,
         public InternalCounted<SequentialCollection<T_> >,
         public std::iterator<typename std::iterator_traits<
@@ -136,7 +136,7 @@ namespace paludis
      * \ingroup grpcollections
      */
     template <typename T_, typename C_ = std::less<T_> >
-    class SortedCollection :
+    class PALUDIS_VISIBLE SortedCollection :
         private InstantiationPolicy<SortedCollection<T_, C_>, instantiation_method::NonCopyableTag>,
         public InternalCounted<SortedCollection<T_, C_> >,
         public std::iterator<typename std::iterator_traits<
@@ -248,7 +248,7 @@ namespace paludis
      * \ingroup grpcollections
      */
     template <typename K_, typename V_>
-    class AssociativeCollection :
+    class PALUDIS_VISIBLE AssociativeCollection :
         private InstantiationPolicy<AssociativeCollection<K_, V_>, instantiation_method::NonCopyableTag>,
         public InternalCounted<AssociativeCollection<K_, V_> >,
         public std::iterator<typename std::iterator_traits<

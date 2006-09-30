@@ -39,7 +39,7 @@ namespace paludis
      *
      * \ingroup grpfilesystem
      */
-    class IsFileWithExtension :
+    class PALUDIS_VISIBLE IsFileWithExtension :
         public std::unary_function<bool, FSEntry>
     {
         private:

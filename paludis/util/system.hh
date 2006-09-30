@@ -39,7 +39,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpsystem
      */
-    class GetenvError : public Exception
+    class PALUDIS_VISIBLE GetenvError : public Exception
     {
         public:
             ///\name Basic operations
@@ -56,7 +56,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpsystem
      */
-    class RunCommandError : public Exception
+    class PALUDIS_VISIBLE RunCommandError : public Exception
     {
         public:
             /**
@@ -71,7 +71,7 @@ namespace paludis
      *
      * \ingroup grpsystem
      */
-    std::string getenv_with_default(const std::string & key, const std::string & def);
+    std::string getenv_with_default(const std::string & key, const std::string & def) PALUDIS_VISIBLE;
 
     /**
      * Fetch the value of environment variable key, or throw a GetenvError if
@@ -79,14 +79,14 @@ namespace paludis
      *
      * \ingroup grpsystem
      */
-    std::string getenv_or_error(const std::string & key);
+    std::string getenv_or_error(const std::string & key) PALUDIS_VISIBLE;
 
     /**
      * Fetch the kernel version, for $KV.
      *
      * \ingroup grpsystem
      */
-    std::string kernel_version();
+    std::string kernel_version() PALUDIS_VISIBLE;
 
     /**
      * Run a command, wait for it to terminate and return its exit status.
@@ -95,7 +95,7 @@ namespace paludis
      *
      * \ingroup grpsystem
      */
-    int run_command(const std::string & cmd);
+    int run_command(const std::string & cmd) PALUDIS_VISIBLE;
 
     /**
      * Run a command in a directory, wait for it to terminate and return
@@ -103,7 +103,7 @@ namespace paludis
      *
      * \ingroup grpsystem
      */
-    int run_command_in_directory(const std::string & cmd, const FSEntry & fsentry);
+    int run_command_in_directory(const std::string & cmd, const FSEntry & fsentry) PALUDIS_VISIBLE;
 
     /**
      * Set the stderr and close for stdout fds used by run_command and
@@ -111,7 +111,7 @@ namespace paludis
      *
      * \ingroup grpsystem
      */
-    void set_run_command_stdout_fds(const int, const int);
+    void set_run_command_stdout_fds(const int, const int) PALUDIS_VISIBLE;
 
     /**
      * Set the stderr and close for stderr fds used by run_command and
@@ -119,12 +119,12 @@ namespace paludis
      *
      * \ingroup grpsystem
      */
-    void set_run_command_stderr_fds(const int, const int);
+    void set_run_command_stderr_fds(const int, const int) PALUDIS_VISIBLE;
 
     /**
      * Make a command that's run in a particular environment.
      */
-    class MakeEnvCommand
+    class PALUDIS_VISIBLE MakeEnvCommand
     {
         private:
             std::string cmd;
@@ -154,14 +154,14 @@ namespace paludis
      *
      * \ingroup grpsystem
      */
-    const MakeEnvCommand make_env_command(const std::string & cmd);
+    const MakeEnvCommand make_env_command(const std::string & cmd) PALUDIS_VISIBLE;
 
     /**
      * Make a command that is run inside the sandbox, if sandbox is enabled.
      *
      * \ingroup grpsystem
      */
-    const std::string make_sandbox_command(const std::string & cmd);
+    const std::string make_sandbox_command(const std::string & cmd) PALUDIS_VISIBLE;
 }
 
 #endif

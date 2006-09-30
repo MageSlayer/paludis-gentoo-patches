@@ -231,7 +231,7 @@ namespace paludis
      *
      * \ingroup grptokenise
      */
-    class WhitespaceTokeniser :
+    class PALUDIS_VISIBLE WhitespaceTokeniser :
         public InstantiationPolicy<WhitespaceTokeniser, instantiation_method::SingletonAtStartupTag>,
         public Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag>
     {

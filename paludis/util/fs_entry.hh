@@ -43,7 +43,8 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpfilesystem
      */
-    class FSError : public Exception
+    class PALUDIS_VISIBLE FSError :
+        public Exception
     {
         public:
             ///\name Basic operations
@@ -83,10 +84,11 @@ namespace paludis
      *
      * \ingroup grpfilesystem
      */
-    class FSEntry : public ComparisonPolicy<
-                        FSEntry,
-                        comparison_mode::FullComparisonTag,
-                        comparison_method::CompareByMemberTag<std::string> >
+    class PALUDIS_VISIBLE FSEntry :
+        public ComparisonPolicy<
+            FSEntry,
+            comparison_mode::FullComparisonTag,
+            comparison_method::CompareByMemberTag<std::string> >
     {
         friend std::ostream & operator<< (std::ostream & s, const FSEntry & f);
 
@@ -315,7 +317,7 @@ namespace paludis
      *
      * \ingroup grpfilesystem
      */
-    std::ostream & operator<< (std::ostream & s, const FSEntry & f);
+    std::ostream & operator<< (std::ostream & s, const FSEntry & f) PALUDIS_VISIBLE;
 
     template <typename T_> class SequentialCollection;
 

@@ -22,6 +22,7 @@
 
 #include <functional>
 #include <string>
+#include <paludis/util/attributes.hh>
 
 /** \file
  * Strip functions and adapters.
@@ -37,7 +38,7 @@ namespace paludis
      *
      * \ingroup grpstrippers
      */
-    std::string strip_leading_string(const std::string & s, const std::string & prefix);
+    std::string strip_leading_string(const std::string & s, const std::string & prefix) PALUDIS_VISIBLE;
 
     /**
      * Return a string equal to s, minus the string remove if remove occurs at
@@ -45,7 +46,7 @@ namespace paludis
      *
      * \ingroup grpstrippers
      */
-    std::string strip_leading(const std::string & s, const std::string & remove);
+    std::string strip_leading(const std::string & s, const std::string & remove) PALUDIS_VISIBLE;
 
     /**
      * Return a string equal to s minus any trailing characters that are
@@ -53,7 +54,7 @@ namespace paludis
      *
      * \ingroup grpstrippers
      */
-    std::string strip_trailing_string(const std::string & s, const std::string & suffix);
+    std::string strip_trailing_string(const std::string & s, const std::string & suffix) PALUDIS_VISIBLE;
 
     /**
      * Return a string equal to s, minus the string remove if remove occurs at
@@ -61,7 +62,7 @@ namespace paludis
      *
      * \ingroup grpstrippers
      */
-    std::string strip_trailing(const std::string & s, const std::string & remove);
+    std::string strip_trailing(const std::string & s, const std::string & remove) PALUDIS_VISIBLE;
 
     /**
      * Adapt one of the strip_ functions for use as a std::unary_function by

@@ -40,7 +40,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      */
-    class Context
+    class PALUDIS_VISIBLE Context
     {
         private:
             Context(const Context &);
@@ -70,7 +70,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      */
-    class Exception :
+    class PALUDIS_VISIBLE Exception :
         public std::exception
     {
         private:
@@ -120,7 +120,8 @@ namespace paludis
      *
      * \ingroup grpexceptions
      */
-    class InternalError : public Exception
+    class PALUDIS_VISIBLE InternalError :
+        public Exception
     {
         public:
             /**
@@ -150,7 +151,8 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpnames
      */
-    class NameError : public Exception
+    class PALUDIS_VISIBLE NameError :
+        public Exception
     {
         protected:
             /**
@@ -168,7 +170,8 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpconfigfile
      */
-    class ConfigurationError : public Exception
+    class PALUDIS_VISIBLE ConfigurationError :
+        public Exception
     {
         public:
             /**

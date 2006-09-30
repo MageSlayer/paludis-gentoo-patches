@@ -44,7 +44,7 @@ namespace paludis
      * \ingroup grpcollections
      */
     template <typename T_>
-    class SequentialCollection<T_>::Concrete :
+    class PALUDIS_VISIBLE SequentialCollection<T_>::Concrete :
         public SequentialCollection<T_>
     {
         private:
@@ -113,7 +113,7 @@ namespace paludis
      * \ingroup grpcollections
      */
     template <typename T_, typename C_ = std::less<T_> >
-    class SortedCollection<T_, C_>::Concrete :
+    class PALUDIS_VISIBLE SortedCollection<T_, C_>::Concrete :
         public SortedCollection<T_, C_>
     {
         private:
@@ -213,7 +213,7 @@ namespace paludis
      * \ingroup grpcollections
      */
     template <typename K_, typename V_>
-    class AssociativeCollection<K_, V_>::Concrete :
+    class PALUDIS_VISIBLE AssociativeCollection<K_, V_>::Concrete :
         public AssociativeCollection<K_, V_>
     {
         private:

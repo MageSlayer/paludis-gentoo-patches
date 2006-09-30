@@ -33,7 +33,7 @@ namespace paludis
      *
      * \ingroup grpfdotputstream
      */
-    class FDOutputStreamBuf :
+    class PALUDIS_VISIBLE FDOutputStreamBuf :
         public std::streambuf
     {
         protected:
@@ -74,7 +74,7 @@ namespace paludis
      *
      * \ingroup grpfdotputstream
      */
-    class FDOutputStreamBase
+    class PALUDIS_VISIBLE FDOutputStreamBase
     {
         protected:
             FDOutputStreamBuf buf;
@@ -96,7 +96,7 @@ namespace paludis
      *
      * \ingroup grpfdotputstream
      */
-    class FDOutputStream :
+    class PALUDIS_VISIBLE FDOutputStream :
         protected FDOutputStreamBase,
         public std::ostream
     {

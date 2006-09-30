@@ -38,7 +38,8 @@ namespace paludis
      * \ingroup grpdestringify
      * \ingroup grpexceptions
      */
-    class DestringifyError : public Exception
+    class PALUDIS_VISIBLE DestringifyError :
+        public Exception
     {
         public:
             ///\name Basic operations

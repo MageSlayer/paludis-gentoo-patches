@@ -22,6 +22,7 @@
 
 #include <cstdlib>
 #include <inttypes.h>
+#include <paludis/util/attributes.hh>
 
 namespace paludis
 {
@@ -34,7 +35,7 @@ namespace paludis
      *
      * \ingroup grprandom
      */
-    class Random
+    class PALUDIS_VISIBLE Random
     {
         private:
             static uint32_t global_seed;

@@ -35,7 +35,7 @@ namespace paludis
      *
      * \ingroup grppipe
      */
-    class Pipe :
+    class PALUDIS_VISIBLE Pipe :
         InstantiationPolicy<Pipe, instantiation_method::NonCopyableTag>
     {
         private:
