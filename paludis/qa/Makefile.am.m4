@@ -18,6 +18,8 @@ $1_TEST_LDADD = \
 	libpaludisqa.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
+	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
 	$(DYNAMIC_LD_LIBS) \
 	$(PCREPLUSPLUS_LIBS) \
 	$(LIBXML2DEPS_LIBS)
