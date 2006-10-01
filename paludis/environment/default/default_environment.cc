@@ -172,13 +172,16 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
             }
     }
 
-    if (consider_minus_star)
-        for (DefaultConfig::UseMinusStarIterator
-                i(DefaultConfig::get_instance()->begin_use_prefixes_with_minus_star()),
-                i_end(DefaultConfig::get_instance()->end_use_prefixes_with_minus_star()) ;
-                i != i_end ; ++i)
-            if (0 == i->compare(0, i->length(), stringify(f), 0, i->length()))
-                return false;
+    for (DefaultConfig::UseMinusStarIterator
+            i(DefaultConfig::get_instance()->begin_use_prefixes_with_minus_star()),
+            i_end(DefaultConfig::get_instance()->end_use_prefixes_with_minus_star()) ;
+            i != i_end ; ++i)
+    {
+        if ((! consider_minus_star) && i->empty())
+            continue;
+        if (0 == i->compare(0, i->length(), stringify(f), 0, i->length()))
+            return false;
+    }
 
     /* check use: package database config */
     if (repo && repo->use_interface)

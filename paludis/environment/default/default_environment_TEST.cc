@@ -85,7 +85,7 @@ namespace test_cases
 
             TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), &pde));
             TEST_CHECK(env->query_use(UseFlagName("exp_two"), &pde));
-            TEST_CHECK(env->query_use(UseFlagName("exp_one"), &pde));
+            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), &pde));
             TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), &pde));
             TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), &pde));
 
@@ -118,7 +118,7 @@ namespace test_cases
 
             TEST_CHECK(env->query_use(UseFlagName("more_exp_one"), &pde));
             TEST_CHECK(env->query_use(UseFlagName("exp_two"), &pde));
-            TEST_CHECK(env->query_use(UseFlagName("exp_one"), &pde));
+            TEST_CHECK(! env->query_use(UseFlagName("exp_one"), &pde));
             TEST_CHECK(env->query_use(UseFlagName("third_exp_one"), &pde));
             TEST_CHECK(! env->query_use(UseFlagName("third_exp_two"), &pde));
 
