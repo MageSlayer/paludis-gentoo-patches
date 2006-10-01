@@ -17,6 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/about.hh>
 #include <paludis/ebuild.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/strip.hh>
@@ -95,6 +96,11 @@ EbuildCommand::operator() ()
                                     params.eclassdirs->end(), " "))
                 ("PORTDIR", stringify(params.portdir))
                 ("DISTDIR", stringify(params.distdir))
+                ("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
+                         stringify(PALUDIS_VERSION_MINOR) + "." +
+                         stringify(PALUDIS_VERSION_MICRO) +
+                         (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
+                          std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
                 ("PALUDIS_TMPDIR", stringify(params.buildroot))
                 ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
                 ("PALUDIS_BASHRC_FILES", params.environment->bashrc_files())

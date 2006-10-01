@@ -38,7 +38,7 @@ builtin_merge()
     for v in CATEGORY CBUILD CHOST COUNTER DEPEND DESCRIPTION EAPI \
         FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
         PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK \
-        VDB_FORMAT ; do
+        VDB_FORMAT PKGMANAGER ; do
         echo "${!v}" > "${dbdir}"/${v} || die "pkg db write ${v} failed"
         ebuild_notice "debug" "Writing VDB key ${v}=${!v}"
     done
