@@ -57,7 +57,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grppackagedatabase
      */
-    class PackageDatabaseError : public Exception
+    class PALUDIS_VISIBLE PackageDatabaseError : public Exception
     {
         protected:
             /**
@@ -73,7 +73,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grppackagedatabase
      */
-    class PackageDatabaseLookupError : public PackageDatabaseError
+    class PALUDIS_VISIBLE PackageDatabaseLookupError : public PackageDatabaseError
     {
         protected:
             /**
@@ -89,7 +89,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grppackagedatabase
      */
-    class AmbiguousPackageNameError :
+    class PALUDIS_VISIBLE AmbiguousPackageNameError :
         public PackageDatabaseLookupError
     {
         private:
@@ -136,7 +136,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grppackagedatabase
      */
-    class DuplicateRepositoryError : public PackageDatabaseError
+    class PALUDIS_VISIBLE DuplicateRepositoryError : public PackageDatabaseError
     {
         public:
             /**
@@ -152,7 +152,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grppackagedatabase
      */
-    class NoSuchPackageError : public PackageDatabaseLookupError
+    class PALUDIS_VISIBLE NoSuchPackageError : public PackageDatabaseLookupError
     {
         private:
             std::string _name;
@@ -186,7 +186,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grppackagedatabase
      */
-    class NoSuchRepositoryError : public PackageDatabaseLookupError
+    class PALUDIS_VISIBLE NoSuchRepositoryError : public PackageDatabaseLookupError
     {
         public:
             /**
@@ -213,7 +213,7 @@ namespace paludis
      *
      * \ingroup grppackagedatabase
      */
-    class PackageDatabase :
+    class PALUDIS_VISIBLE PackageDatabase :
         private PrivateImplementationPattern<PackageDatabase>,
         private InstantiationPolicy<PackageDatabase, instantiation_method::NonCopyableTag>,
         public InternalCounted<PackageDatabase>
@@ -294,7 +294,7 @@ namespace paludis
     };
 
     std::ostream &
-    operator<< (std::ostream &, const InstallState &);
+    operator<< (std::ostream &, const InstallState &) PALUDIS_VISIBLE;
 }
 
 #endif

@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/portage/portage_repository_profile.hh>
+#include <paludis/repositories/portage/portage_repository_profile_file.hh>
 #include <paludis/repositories/portage/portage_repository_exceptions.hh>
 
 #include <paludis/util/log.hh>
@@ -69,21 +70,18 @@ namespace paludis
             void load_profile_directory_recursively(const FSEntry & dir);
             void load_profile_parent(const FSEntry & dir);
             void load_profile_make_defaults(const FSEntry & dir);
-            void load_profile_use_mask_or_force(const FSEntry & dir,
-                    const std::string & mask_or_force, UseFlagSet & set);
-            void load_profile_package_use_mask_or_force(const FSEntry & dir,
-                    const std::string & mask_or_force, PackageUseMaskMap & set);
-            void load_profile_packages(const FSEntry & dir);
-            void load_profile_virtuals(const FSEntry & dir);
-            void load_profile_package_mask(const FSEntry & dir);
 
             void add_use_expand_to_use();
-            void load_system_packages();
-            void load_package_mask();
+            void make_vars_from_file_vars();
             void handle_profile_arch_var();
 
-            std::set<std::string> system_lines;
-            std::set<std::string> package_mask_lines;
+            ProfileFile use_mask_file;
+            ProfileFile package_use_mask_file;
+            ProfileFile use_force_file;
+            ProfileFile package_use_force_file;
+            ProfileFile packages_file;
+            ProfileFile virtuals_file;
+            ProfileFile package_mask_file;
 
         public:
             ///\name General variables
@@ -157,8 +155,7 @@ namespace paludis
                     load_profile_directory_recursively(*d);
 
                 add_use_expand_to_use();
-                load_package_mask();
-                load_system_packages();
+                make_vars_from_file_vars();
                 handle_profile_arch_var();
             }
 
@@ -185,13 +182,14 @@ Implementation<PortageRepositoryProfile>::load_profile_directory_recursively(con
 
     load_profile_parent(dir);
     load_profile_make_defaults(dir);
-    load_profile_use_mask_or_force(dir, "mask", use_mask);
-    load_profile_use_mask_or_force(dir, "force", use_force);
-    load_profile_package_use_mask_or_force(dir, "mask", package_use_mask);
-    load_profile_package_use_mask_or_force(dir, "force", package_use_force);
-    load_profile_packages(dir);
-    load_profile_virtuals(dir);
-    load_profile_package_mask(dir);
+
+    use_mask_file.add_file(dir / "use.mask");
+    package_use_mask_file.add_file(dir / "package.use.mask");
+    use_force_file.add_file(dir / "use.force");
+    package_use_force_file.add_file(dir / "package.use.force");
+    packages_file.add_file(dir / "packages");
+    virtuals_file.add_file(dir / "virtuals");
+    package_mask_file.add_file(dir / "package.mask");
 }
 
 void
@@ -292,48 +290,37 @@ Implementation<PortageRepositoryProfile>::load_profile_make_defaults(const FSEnt
 }
 
 void
-Implementation<PortageRepositoryProfile>::load_profile_use_mask_or_force(const FSEntry & dir,
-        const std::string & mask_or_force, UseFlagSet & set)
+Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 {
-    Context context("When handling use." + mask_or_force + " file for profile directory '" +
-            stringify(dir) + ":");
-
-    if (! (dir / ("use." + mask_or_force)).exists())
-        return;
-
-    LineConfigFile file(dir / ("use." + mask_or_force));
     try
     {
-        for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
-                line != line_end ; ++line)
-        {
-            if ('-' == line->at(0))
-                set.erase(UseFlagName(line->substr(1)));
-            else
-                set.insert(UseFlagName(*line));
-        }
+        Context context("When parsing use.mask:");
+        std::copy(use_mask_file.begin(), use_mask_file.end(), create_inserter<UseFlagName>(
+                    std::inserter(use_mask, use_mask.begin())));
     }
     catch (const NameError & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading use." + mask_or_force +
-                " failed due to exception: " + e.message() + " (" + e.what() + ")");
+        Log::get_instance()->message(ll_warning, lc_context, "Loading use.mask "
+                " failed due to exception: " + stringify(e.message()) + " (" + e.what() + ")");
     }
-}
 
-void
-Implementation<PortageRepositoryProfile>::load_profile_package_use_mask_or_force(const FSEntry & dir,
-        const std::string & mask_or_force, PackageUseMaskMap & set)
-{
-    Context context("When handling package.use." + mask_or_force + " file for profile directory '" +
-            stringify(dir) + ":");
-
-    if (! (dir / ("package.use." + mask_or_force)).exists())
-        return;
-
-    LineConfigFile file(dir / ("package.use." + mask_or_force));
     try
     {
-        for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
+        Context context("When parsing use.force:");
+        std::copy(use_force_file.begin(), use_force_file.end(), create_inserter<UseFlagName>(
+                    std::inserter(use_force, use_force.begin())));
+    }
+    catch (const NameError & e)
+    {
+        Log::get_instance()->message(ll_warning, lc_context, "Loading use.force "
+                " failed due to exception: " + stringify(e.message()) + " (" + e.what() + ")");
+    }
+
+    try
+    {
+        Context context("When parsing package.use.mask:");
+
+        for (ProfileFile::Iterator line(package_use_mask_file.begin()), line_end(package_use_mask_file.end()) ;
                 line != line_end ; ++line)
         {
             std::list<std::string> tokens;
@@ -345,9 +332,9 @@ Implementation<PortageRepositoryProfile>::load_profile_package_use_mask_or_force
             PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
             QualifiedPackageName p(d->package());
 
-            PackageUseMaskMap::iterator i(set.find(p));
-            if (set.end() == i)
-                i = set.insert(std::make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer,
+            PackageUseMaskMap::iterator i(package_use_mask.find(p));
+            if (package_use_mask.end() == i)
+                i = package_use_mask.insert(std::make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer,
                             UseFlagName> >())).first;
 
             for ( ; t != t_end ; ++t)
@@ -356,105 +343,97 @@ Implementation<PortageRepositoryProfile>::load_profile_package_use_mask_or_force
     }
     catch (const NameError & e)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading package.use." + mask_or_force +
+        Log::get_instance()->message(ll_warning, lc_context, "Loading package.use.mask "
+                " failed due to exception: " + stringify(e.message()) + " (" + e.what() + ")");
+    }
+
+    try
+    {
+        Context context("When parsing package.use.force:");
+
+        for (ProfileFile::Iterator line(package_use_force_file.begin()), line_end(package_use_force_file.end()) ;
+                line != line_end ; ++line)
+        {
+            std::list<std::string> tokens;
+            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+            if (tokens.size() < 2)
+                continue;
+
+            std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end());
+            PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
+            QualifiedPackageName p(d->package());
+
+            PackageUseMaskMap::iterator i(package_use_force.find(p));
+            if (package_use_force.end() == i)
+                i = package_use_force.insert(std::make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer,
+                            UseFlagName> >())).first;
+
+            for ( ; t != t_end ; ++t)
+                i->second.push_back(std::make_pair(d, UseFlagName(*t)));
+        }
+    }
+    catch (const NameError & e)
+    {
+        Log::get_instance()->message(ll_warning, lc_context, "Loading package.use.mask "
                 " failed due to exception: " + e.message() + " (" + e.what() + ")");
     }
-}
 
-void
-Implementation<PortageRepositoryProfile>::load_profile_packages(const FSEntry & dir)
-{
-    Context context("When loading packages file in '" + stringify(dir) + "':");
-
-    if (! (dir / "packages").exists())
-        return;
-
-    LineConfigFile file(dir / "packages");
-    for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
-            line != line_end ; ++line)
+    try
     {
-        if (line->empty())
-            continue;
-
-        Context context_line("When reading line '" + *line + "':");
-
-        if ('*' == line->at(0))
-            system_lines.insert(line->substr(1));
-        else if (0 == line->compare(0, 2, "-*"))
-            if (0 == system_lines.erase(line->substr(2)))
-                Log::get_instance()->message(ll_qa, lc_context,
-                        "Trying to remove packages line '" + line->substr(2) +
-                        "' that doesn't exist");
-    }
-}
-
-void
-Implementation<PortageRepositoryProfile>::load_profile_virtuals(const FSEntry & dir)
-{
-    Context context("When loading virtuals file in '" + stringify(dir) + "':");
-
-    if (! (dir / "virtuals").exists())
-        return;
-
-    LineConfigFile file(dir / "virtuals");
-    for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
-            line != line_end ; ++line)
-    {
-        std::vector<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-        if (tokens.size() < 2)
-            continue;
-
-        QualifiedPackageName v(tokens[0]);
-        virtuals.erase(v);
-        virtuals.insert(std::make_pair(v, PackageDepAtom::Pointer(new PackageDepAtom(tokens[1]))));
-    }
-}
-
-void
-Implementation<PortageRepositoryProfile>::load_profile_package_mask(const FSEntry & dir)
-{
-    Context context("When loading package.mask file in '" + stringify(dir) + "':");
-
-    if (! (dir / "package.mask").exists())
-        return;
-
-    LineConfigFile file(dir / "package.mask");
-    for (LineConfigFile::Iterator line(file.begin()), line_end(file.end()) ;
-            line != line_end ; ++line)
-    {
-        if (line->empty())
-            continue;
-
-        if ('-' == line->at(0))
+        for (ProfileFile::Iterator i(packages_file.begin()), i_end(packages_file.end()) ; i != i_end ; ++i)
         {
-            if (0 == package_mask_lines.erase(line->substr(1)))
-                Log::get_instance()->message(ll_qa, lc_context,
-                        "Trying to remove package.mask line '" + line->substr(1) +
-                        "' that doesn't exist");
+            if (0 != i->compare(0, 1, "*", 0, 1))
+                continue;
+
+            Context context_atom("When parsing '" + *i + "':");
+            PackageDepAtom::Pointer atom(new PackageDepAtom(i->substr(1)));
+            atom->set_tag(system_tag);
+            system_packages->add_child(atom);
         }
-        else
-            package_mask_lines.insert(*line);
     }
-}
-
-void
-Implementation<PortageRepositoryProfile>::load_package_mask()
-{
-    Context context("When building package.mask set:");
-
-    for (std::set<std::string>::const_iterator i(package_mask_lines.begin()),
-            i_end(package_mask_lines.end()) ; i != i_end ; ++i)
+    catch (const NameError & e)
     {
+        Log::get_instance()->message(ll_warning, lc_context, "Loading packages "
+                " failed due to exception: " + e.message() + " (" + e.what() + ")");
+    }
+
+    try
+    {
+        for (ProfileFile::Iterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;
+                line != line_end ; ++line)
+        {
+            std::vector<std::string> tokens;
+            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+            if (tokens.size() < 2)
+                continue;
+
+            QualifiedPackageName v(tokens[0]);
+            virtuals.erase(v);
+            virtuals.insert(std::make_pair(v, PackageDepAtom::Pointer(new PackageDepAtom(tokens[1]))));
+        }
+    }
+    catch (const NameError & e)
+    {
+        Log::get_instance()->message(ll_warning, lc_context, "Loading virtuals "
+                " failed due to exception: " + e.message() + " (" + e.what() + ")");
+    }
+
+    for (ProfileFile::Iterator line(package_mask_file.begin()), line_end(package_mask_file.end()) ;
+            line != line_end ; ++line)
+    {
+        if (line->empty())
+            continue;
+
         try
         {
-            PackageDepAtom::ConstPointer a(new PackageDepAtom(*i));
+            PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
             package_mask[a->package()].push_back(a);
         }
         catch (const NameError & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Skipping package.mask entry '"
-                    + *i + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+            Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask atom '"
+                    + stringify(*line) + "' failed due to exception '" + e.message() + "' ("
+                    + e.what() + ")");
         }
     }
 }
@@ -520,21 +499,6 @@ Implementation<PortageRepositoryProfile>::add_use_expand_to_use()
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
             use[UseFlagName(lower_x + "_" + *u)] = use_enabled;
-    }
-}
-
-void
-Implementation<PortageRepositoryProfile>::load_system_packages()
-{
-    Context context("When loading system packages:");
-
-    for (std::set<std::string>::const_iterator i(system_lines.begin()),
-            i_end(system_lines.end()) ; i != i_end ; ++i)
-    {
-        Context context_atom("When parsing package '" + *i + "':");
-        PackageDepAtom::Pointer atom(new PackageDepAtom(*i));
-        atom->set_tag(system_tag);
-        system_packages->add_child(atom);
     }
 }
 
