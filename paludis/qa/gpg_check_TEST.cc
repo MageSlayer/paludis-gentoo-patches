@@ -18,8 +18,14 @@
  */
 
 #include <paludis/qa/gpg_check.hh>
+#include <paludis/util/system.hh>
+#include <paludis/util/fd_holder.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -30,6 +36,15 @@ namespace test_cases
     struct GPGCheckTest : TestCase
     {
         GPGCheckTest() : TestCase("signed Manifest") { }
+
+        bool skip() const
+        {
+            FDHolder dev_null(::open("/dev/null", O_WRONLY));
+            set_run_command_stdout_fds(dev_null, -1);
+            set_run_command_stderr_fds(dev_null, -1);
+
+            return (0 != run_command("gpg --help"));
+        }
 
         void run()
         {
