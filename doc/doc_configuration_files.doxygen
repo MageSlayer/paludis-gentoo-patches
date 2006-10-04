@@ -104,6 +104,28 @@ app-editors/vim-core x86 ~x86
 Note that if a package matches multiple lines, <em>all</em> of these lines will
 be considered, not just the best or last match.
 
+\section ConfigurationFilesPackage_MaskConf The package_mask.conf File
+
+Packages can be masked through the use of the <code>package_mask.conf</code> file. The format of the file is one <code>atom</code> per line. For example:
+
+\verbatim
+# Hide vim 7
+>=app-editors/vim-core-7
+>=app-editors/vim-7
+
+# Hide gvim
+app-editors/gvim
+\endverbatim
+
+\section ConfigurationFilesPackage_UnmaskConf The package_unmask.conf File
+
+Packages can be unmasked through the use of the <code>package_unmask.conf</code> file. The format of the file is one <code>atom</code> per line. For example:
+
+\verbatim
+# I need banshee 0.11.0
+media-sound/banshee
+\endverbatim
+
 \section ConfigurationFilesLicensesConf The licenses.conf File
 
 Licence filtering can be controlled via <code>licenses.conf</code>. If no
