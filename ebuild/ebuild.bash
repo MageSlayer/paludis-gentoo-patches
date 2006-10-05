@@ -151,6 +151,8 @@ done
 ebuild_load_ebuild()
 {
     if [[ -n "${PALUDIS_LOAD_ENVIRONMENT}" ]] ; then
+        [[ -d ${PALUDIS_TMPDIR} ]] \
+            || die "You need to create PALUDIS_TMPDIR (${PALUDIS_TMPDIR})."
         bunzip2 < "${PALUDIS_LOAD_ENVIRONMENT}" > ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF} \
             || die "Can't extract ${PALUDIS_LOAD_ENVIRONMENT}"
 
