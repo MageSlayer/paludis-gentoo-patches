@@ -20,6 +20,7 @@
 #include <ctime>
 #include <fstream>
 #include <paludis/qa/metadata_check.hh>
+#include <paludis/qa/libxml_utils.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
@@ -33,38 +34,6 @@
 
 using namespace paludis;
 using namespace paludis::qa;
-
-namespace
-{
-    template <typename PtrType_>
-    class LibXmlPtrHolder
-    {
-        private:
-            PtrType_ _ptr;
-            void (* _free_func) (PtrType_);
-
-            LibXmlPtrHolder(const LibXmlPtrHolder &);
-            void operator= (const LibXmlPtrHolder &);
-
-        public:
-            LibXmlPtrHolder(PtrType_ ptr, void (* free_func) (PtrType_)) :
-                _ptr(ptr),
-                _free_func(free_func)
-            {
-            }
-
-            ~LibXmlPtrHolder()
-            {
-                if (0 != _ptr)
-                    _free_func(_ptr);
-            }
-
-            operator PtrType_ () const
-            {
-                return _ptr;
-            }
-    };
-}
 
 MetadataCheck::MetadataCheck()
 {

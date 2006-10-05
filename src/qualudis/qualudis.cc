@@ -20,7 +20,11 @@
 #include <paludis/args/args.hh>
 #include <paludis/paludis.hh>
 #include <paludis/qa/qa.hh>
-#include <paludis/util/util.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/strip.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -94,14 +98,14 @@ namespace
                 {
                     case qa::qal_info:
                         display_header_once(&done_out, r);
-                        cout << "  info:   ";
+                        cout << "  info:         ";
                         continue;
 
                     case qa::qal_skip:
                         if (QualudisCommandLine::get_instance()->a_verbose.specified())
                         {
                             display_header_once(&done_out, r);
-                            cout << "  skip:   ";
+                            cout << "  skip:         ";
                         }
                         else
                             show = false;
@@ -109,22 +113,22 @@ namespace
 
                     case qa::qal_minor:
                         display_header_once(&done_out, r);
-                        cout << "  minor:  ";
+                        cout << "  minor:        ";
                         continue;
 
                     case qa::qal_major:
                         display_header_once(&done_out, r);
-                        cout << "  major:  ";
+                        cout << "  major:        ";
                         continue;
 
                     case qa::qal_fatal:
                         display_header_once(&done_out, r);
-                        cout << "  fatal:  ";
+                        cout << "  fatal:        ";
                         continue;
 
                     case qa::qal_maybe:
                         display_header_once(&done_out, r);
-                        cout << "  maybe:  ";
+                        cout << "  maybe:        ";
                         continue;
                 }
 
@@ -270,6 +274,29 @@ namespace
             }
         }
 
+        if (! ok && (dir / "metadata.xml").is_regular_file())
+        {
+            cout << "metadata.xml:" << endl;
+            qa::MetadataFile metadata(dir / "metadata.xml");
+            if (metadata.end_herds() != metadata.begin_herds())
+                cout << "  herds:        " << join(metadata.begin_herds(), metadata.end_herds(), ", ") << endl;
+            if (metadata.end_maintainers() != metadata.begin_maintainers())
+                for (qa::MetadataFile::MaintainersIterator i(metadata.begin_maintainers()),
+                        i_end(metadata.end_maintainers()) ; i != i_end ; ++i)
+                {
+                    if (i->first.empty() && i->second.empty())
+                        continue;
+
+                    cout << "  maintainer:   ";
+                    if (i->first.empty())
+                        cout << i->second;
+                    else if (i->second.empty())
+                        cout << "<" << i->first << ">";
+                    else
+                        cout << i->second << " <" << i->first << ">";
+                    cout << endl;
+                }
+        }
         cout << endl;
 
         return ok;
