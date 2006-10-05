@@ -20,6 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QA_LIBXML_UTILS_HH
 #define PALUDIS_GUARD_PALUDIS_QA_LIBXML_UTILS_HH 1
 
+#include <libxml/parser.h>
+#include <string>
+
 namespace paludis
 {
     namespace qa
@@ -52,6 +55,9 @@ namespace paludis
                     return _ptr;
                 }
         };
+
+        std::string
+        retarded_libxml_string_to_string(const xmlChar * s);
     }
 }
 

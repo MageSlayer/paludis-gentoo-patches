@@ -58,7 +58,7 @@ namespace paludis
                 {
                     if (n->type == XML_ELEMENT_NODE)
                     {
-                        std::string name(reinterpret_cast<const char *>(n->name));
+                        std::string name(retarded_libxml_string_to_string(n->name));
                         if (name == "maintainer")
                         {
                             _email.clear();
@@ -67,13 +67,13 @@ namespace paludis
                             maintainers.insert(std::make_pair(_email, _name));
                         }
                         else if (name == "herd")
-                            herds.insert(normalise(reinterpret_cast<const char *>(xmlNodeListGetString(doc,
+                            herds.insert(normalise(retarded_libxml_string_to_string(xmlNodeListGetString(doc,
                                                 n->xmlChildrenNode, 1))));
                         else if (name == "email")
-                            _email = normalise(reinterpret_cast<const char *>(xmlNodeListGetString(
+                            _email = normalise(retarded_libxml_string_to_string(xmlNodeListGetString(
                                             doc, n->xmlChildrenNode, 1)));
                         else if (name == "name")
-                            _name = normalise(reinterpret_cast<const char *>(xmlNodeListGetString(
+                            _name = normalise(retarded_libxml_string_to_string(xmlNodeListGetString(
                                             doc, n->xmlChildrenNode, 1)));
                         else
                             handle_node(doc, n->children);
