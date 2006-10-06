@@ -35,36 +35,50 @@
 
 namespace paludis
 {
-    /**
-     * Flags for a DepListEntry.
-     *
-     * \see DepListEntry
-     * \ingroup grpdepresolver
-     */
-    enum DepListEntryFlag
+    enum DepListTargetType
     {
-        dlef_has_predeps,
-        dlef_has_trypredeps,
-        dlef_has_postdeps,
-        dlef_skip,
-        last_dlef
+        dl_target_package,
+        dl_target_set
     };
 
-    /**
-     * Flags for a DepListEntry.
-     *
-     * \ingroup grpdepresolver
-     */
-    typedef std::bitset<last_dlef> DepListEntryFlags;
+    enum DepListReinstallOption
+    {
+        dl_reinstall_never,
+        dl_reinstall_always,
+        dl_reinstall_if_use_changed
+    };
 
-#include <paludis/dep_list_entry-sr.hh>
+    enum DepListUpgradeOption
+    {
+        dl_upgrade_always,
+        dl_upgrade_as_needed
+    };
 
-    /**
-     * A DepListEntry can be written to a stream.
-     *
-     * \ingroup grpdepresolver
-     */
-    std::ostream & operator<< (std::ostream &, const DepListEntry &);
+    enum DepListDepsOption
+    {
+        dl_deps_discard,
+        dl_deps_pre,
+        dl_deps_pre_or_post,
+        dl_deps_post,
+        dl_deps_try_post
+    };
+
+    enum DepListCircularOption
+    {
+        dl_circular_error,
+        dl_circular_discard
+    };
+
+    enum DepListEntryState
+    {
+        dle_no_deps,
+        dle_has_pre_deps,
+        dle_has_all_deps
+    };
+
+    typedef SortedCollection<DepTag::ConstPointer, DepTag::Comparator> DepListEntryTags;
+
+#include <paludis/dep_list-sr.hh>
 
     /**
      * Thrown if an error occurs whilst building a DepList.
@@ -79,43 +93,6 @@ namespace paludis
             ///\{
 
             DepListError(const std::string &) throw ();
-
-            ///\}
-    };
-
-    /**
-     * Thrown if a DepList's add stack gets too deep.
-     *
-     * \ingroup grpdepresolver
-     * \ingroup grpexceptions
-     */
-    class DepListStackTooDeepError : public DepListError
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            DepListStackTooDeepError(int level) throw ();
-
-            ///\}
-    };
-
-    /**
-     * Thrown if no entry in a || ( ) block is resolvable.
-     *
-     * \ingroup grpdepresolver
-     * \ingroup grpexceptions
-     */
-    class NoResolvableOptionError : public DepListError
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            NoResolvableOptionError() throw ();
-
-            template <typename I_>
-            NoResolvableOptionError(I_ i, I_ end) throw ();
 
             ///\}
     };
@@ -210,49 +187,13 @@ namespace paludis
      */
     class CircularDependencyError : public DepListError
     {
-        private:
-            unsigned _cycle_size;
-
         public:
             ///\name Basic operations
             ///\{
 
-            template <typename I_>
-            CircularDependencyError(I_ begin, const I_ end) throw ();
+            CircularDependencyError(const std::string & msg) throw ();
 
             ///\}
-
-            /**
-             * How large is our circular dependency cycle?
-             */
-            unsigned cycle_size() const
-            {
-                return _cycle_size;
-            }
-    };
-
-    /**
-     * Used in DepList::set_rdepend_post.
-     *
-     * \ingroup grpdepresolver
-     */
-    enum DepListRdependOption
-    {
-        /**
-         * RDEPENDs are always merged before the package; abort if this fails.
-         */
-        dlro_never,
-
-        /**
-         * RDEPENDs can be merged after the package, just before PDEPEND, if this is
-         * necessary for correct resolution
-         */
-        dlro_as_needed,
-
-        /**
-         * RDEPENDs are always merged with PDEPENDs.
-         */
-        dlro_always
     };
 
     /**
@@ -262,50 +203,53 @@ namespace paludis
      */
     class DepList :
         private InstantiationPolicy<DepList, instantiation_method::NonCopyableTag>,
-        private PrivateImplementationPattern<DepList>,
-        protected DepAtomVisitorTypes::ConstVisitor
+        private PrivateImplementationPattern<DepList>
     {
-        private:
-            void _add_raw(const DepAtom * const);
-
-            void _add(DepAtom::ConstPointer a)
-            {
-                _add_raw(a.raw_pointer());
-            }
-
-            void _add_in_role_raw(const DepAtom * const, const std::string & role);
-
-            void _add_in_role(DepAtom::ConstPointer a, const std::string & role)
-            {
-                _add_in_role_raw(a.raw_pointer(), role);
-            }
-
         protected:
-            ///\name Visit functions
-            ///{
-            void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
-            void visit(const PackageDepAtom * const);
-            void visit(const UseDepAtom * const);
-            void visit(const AnyDepAtom * const);
-            void visit(const BlockDepAtom * const);
-            void visit(const AllDepAtom * const);
-            ///}
+            class AddVisitor;
+            class QueryVisitor;
+
+            friend class AddVisitor;
+            friend class QueryVisitor;
+
+            void add_in_role(DepAtom::ConstPointer, const std::string & role);
+            bool prefer_installed_over_uninstalled(const PackageDatabaseEntry &,
+                    const PackageDatabaseEntry &);
+            void add_package(const PackageDatabaseEntry &);
+            void add_already_installed_package(const PackageDatabaseEntry &);
+            void add_predeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
+            void add_postdeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
 
         public:
             ///\name Basic operations
             ///\{
 
-            DepList(const Environment * const);
+            DepList(const Environment * const, const DepListOptions &);
 
             virtual ~DepList();
 
             ///\}
 
             /**
+             * Our options.
+             */
+            DepListOptions & options;
+
+            /**
              * Add the packages required to resolve an additional dependency
              * atom.
              */
             void add(DepAtom::ConstPointer);
+
+            /**
+             * Is an atom structure already installed?
+             */
+            bool already_installed(DepAtom::ConstPointer) const;
+
+            /**
+             * Is an atom structure already installed (overloaded for raw pointer)?
+             */
+            bool already_installed(const DepAtom * const) const;
 
             ///\name Iterate over our dependency list entries.
             ///\{
@@ -315,60 +259,6 @@ namespace paludis
             Iterator begin() const;
 
             Iterator end() const;
-
-            ///\}
-
-            ///\name Behaviour options
-            ///\{
-
-            /**
-             * Behaviour: determines when RDEPEND entries can be treated as PDEPEND.
-             */
-            void set_rdepend_post(const DepListRdependOption value);
-
-            /**
-             * Behaviour: if set, a package that depends directly upon itself
-             * will be accepted.
-             */
-            void set_drop_self_circular(const bool value);
-
-            /**
-             * Behaviour: if set, any circular dependencies are treated as if
-             * they do not exist.
-             */
-            void set_drop_circular(const bool value);
-
-            /**
-             * Behaviour: if set, any dependencies are treated as if
-             * they do not exist.
-             */
-            void set_drop_all(const bool value);
-
-            /**
-             * Behaviour: ignore installed packages.
-             */
-            void set_ignore_installed(const bool value);
-
-            /**
-             * Behaviour: check nth level dependencies for packages that are
-             * already installed.
-             */
-            void set_recursive_deps(const bool value);
-
-            /**
-             * Behaviour: set the maximum stack depth.
-             */
-            void set_max_stack_depth(const int value);
-
-            /**
-             * Behaviour: set whether we reinstall first level deps.
-             */
-            void set_reinstall(const bool value);
-
-            /**
-             * Behaviour: set whether we upgrade unnecessarily.
-             */
-            void set_no_unnecessary_upgrades(const bool value);
 
             ///\}
     };

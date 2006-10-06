@@ -45,9 +45,9 @@ namespace paludis
         bool had_set_targets;
         bool had_package_targets;
 
-        Implementation<InstallTask>(Environment * const e) :
+        Implementation<InstallTask>(Environment * const e, const DepListOptions & o) :
             env(e),
-            dep_list(e),
+            dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
             install_options(false, false),
             targets(new AllDepAtom),
@@ -70,85 +70,13 @@ HadBothPackageAndSetTargets::HadBothPackageAndSetTargets() throw () :
 {
 }
 
-InstallTask::InstallTask(Environment * const env) :
-    PrivateImplementationPattern<InstallTask>(new Implementation<InstallTask>(env))
+InstallTask::InstallTask(Environment * const env, const DepListOptions & options) :
+    PrivateImplementationPattern<InstallTask>(new Implementation<InstallTask>(env, options))
 {
 }
 
 InstallTask::~InstallTask()
 {
-}
-
-void
-InstallTask::set_rdepend_post(const DepListRdependOption value)
-{
-    _imp->dep_list.set_rdepend_post(value);
-}
-
-void
-InstallTask::set_drop_self_circular(const bool value)
-{
-    _imp->dep_list.set_drop_self_circular(value);
-}
-
-void
-InstallTask::set_drop_circular(const bool value)
-{
-    _imp->dep_list.set_drop_circular(value);
-}
-
-void
-InstallTask::set_drop_all(const bool value)
-{
-    _imp->dep_list.set_drop_all(value);
-}
-
-void
-InstallTask::set_ignore_installed(const bool value)
-{
-    _imp->dep_list.set_ignore_installed(value);
-}
-
-void
-InstallTask::set_recursive_deps(const bool value)
-{
-    _imp->dep_list.set_recursive_deps(value);
-}
-
-void
-InstallTask::set_max_stack_depth(const int value)
-{
-    _imp->dep_list.set_max_stack_depth(value);
-}
-
-void
-InstallTask::set_no_unnecessary_upgrades(const bool value)
-{
-    _imp->dep_list.set_no_unnecessary_upgrades(value);
-}
-
-void
-InstallTask::set_no_config_protect(const bool value)
-{
-    _imp->install_options.no_config_protect = value;
-}
-
-void
-InstallTask::set_fetch_only(const bool value)
-{
-    _imp->install_options.fetch_only = value;
-}
-
-void
-InstallTask::set_pretend(const bool value)
-{
-    _imp->pretend = value;
-}
-
-void
-InstallTask::set_preserve_world(const bool value)
-{
-    _imp->preserve_world = value;
 }
 
 void
@@ -167,7 +95,7 @@ InstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
 
         _imp->had_set_targets = true;
-        _imp->dep_list.set_reinstall(false);
+        _imp->dep_list.options.target_type = dl_target_set;
         _imp->targets->add_child(s);
     }
     else
@@ -176,6 +104,7 @@ InstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
 
         _imp->had_package_targets = true;
+        _imp->dep_list.options.target_type = dl_target_package;
 
         if (std::string::npos != target.find('/'))
             _imp->targets->add_child(PortageDepParser::parse(target));
@@ -235,7 +164,8 @@ InstallTask::execute()
             dep != dep_end ; ++dep)
     {
         _imp->current_dep_list_entry = dep;
-        on_display_merge_list_entry(*dep);
+        if (! dep->already_installed)
+            on_display_merge_list_entry(*dep);
     }
 
     /* we're done displaying our task list */
@@ -266,11 +196,13 @@ InstallTask::execute()
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
+        if (dep->already_installed)
+            continue;
         _imp->current_dep_list_entry = dep;
 
-        std::string cpvr(stringify(dep->name) + "-" +
-                stringify(dep->version) + "::" +
-                stringify(dep->repository));
+        std::string cpvr(stringify(dep->package.name) + "-" +
+                stringify(dep->package.version) + "::" +
+                stringify(dep->package.repository));
 
         /* we're about to fetch / install one item */
         if (_imp->install_options.fetch_only)
@@ -286,14 +218,14 @@ InstallTask::execute()
 
         /* fetch / install one item */
         const RepositoryInstallableInterface * const installable_interface(
-                _imp->env->package_database()->fetch_repository(dep->repository)->
+                _imp->env->package_database()->fetch_repository(dep->package.repository)->
                 installable_interface);
         if (! installable_interface)
             throw InternalError(PALUDIS_HERE, "Trying to install from a non-installable repository");
 
         try
         {
-            installable_interface->install(dep->name, dep->version, _imp->install_options);
+            installable_interface->install(dep->package.name, dep->package.version, _imp->install_options);
         }
         catch (const PackageInstallActionError & e)
         {
@@ -329,7 +261,7 @@ InstallTask::execute()
         // look for packages with the same name in the same slot
         PackageDatabaseEntryCollection::Pointer collision_list(_imp->env->package_database()->query(
                     PackageDepAtom::Pointer(new PackageDepAtom(
-                            stringify(dep->name) + ":" +
+                            stringify(dep->package.name) + ":" +
                             stringify(dep->metadata->slot))),
                     is_installed_only));
 
@@ -337,7 +269,7 @@ InstallTask::execute()
         PackageDatabaseEntryCollection::Concrete clean_list;
         for (PackageDatabaseEntryCollection::Iterator c(collision_list->begin()),
                 c_end(collision_list->end()) ; c != c_end ; ++c)
-            if (dep->version != c->version)
+            if (dep->package.version != c->version)
                 clean_list.insert(*c);
 
         on_build_cleanlist_post(*dep);
@@ -419,5 +351,29 @@ DepList::Iterator
 InstallTask::current_dep_list_entry() const
 {
     return _imp->current_dep_list_entry;
+}
+
+void
+InstallTask::set_no_config_protect(const bool value)
+{
+    _imp->install_options.no_config_protect = value;
+}
+
+void
+InstallTask::set_fetch_only(const bool value)
+{
+    _imp->install_options.fetch_only = value;
+}
+
+void
+InstallTask::set_pretend(const bool value)
+{
+    _imp->pretend = value;
+}
+
+void
+InstallTask::set_preserve_world(const bool value)
+{
+    _imp->preserve_world = value;
 }
 

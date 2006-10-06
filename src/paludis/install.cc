@@ -81,8 +81,8 @@ namespace
             std::set<DepTag::ConstPointer, DepTag::Comparator> _all_tags;
 
         public:
-            OurInstallTask() :
-                InstallTask(DefaultEnvironment::get_instance()),
+            OurInstallTask(const DepListOptions & options) :
+                InstallTask(DefaultEnvironment::get_instance(), options),
                 _current_count(0),
                 _max_count(0),
                 _new_count(0),
@@ -113,8 +113,8 @@ namespace
             virtual void on_build_cleanlist_pre(const DepListEntry & d)
             {
                 cout << endl << colour(cl_heading, "Cleaning stale versions after installing " +
-                        stringify(d.name) + "-" + stringify(d.version) +
-                        "::" + stringify(d.repository)) << endl << endl;
+                        stringify(d.package.name) + "-" + stringify(d.package.version) +
+                        "::" + stringify(d.package.repository)) << endl << endl;
             }
 
             virtual void on_build_cleanlist_post(const DepListEntry &)
@@ -170,13 +170,13 @@ namespace
             virtual void on_fetch_pre(const DepListEntry & d)
             {
                 cout << colour(cl_heading, "Fetching " +
-                        stringify(d.name) + "-" + stringify(d.version) +
-                        "::" + stringify(d.repository)) << endl << endl;
+                        stringify(d.package.name) + "-" + stringify(d.package.version) +
+                        "::" + stringify(d.package.repository)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
                         stringify(_max_count + _max_virtual_count) + ") Fetching " +
-                        stringify(d.name) + "-" + stringify(d.version) +
-                        "::" + stringify(d.repository));
+                        stringify(d.package.name) + "-" + stringify(d.package.version) +
+                        "::" + stringify(d.package.repository));
             }
 
             virtual void on_fetch_post(const DepListEntry &)
@@ -194,13 +194,13 @@ namespace
             virtual void on_install_pre(const DepListEntry & d)
             {
                 cout << endl << colour(cl_heading, "Installing " +
-                        stringify(d.name) + "-" + stringify(d.version) +
-                        "::" + stringify(d.repository)) << endl << endl;
+                        stringify(d.package.name) + "-" + stringify(d.package.version) +
+                        "::" + stringify(d.package.repository)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
                         stringify(_max_count + _max_virtual_count) + ") Installing " +
-                        stringify(d.name) + "-" + stringify(d.version) +
-                        "::" + stringify(d.repository));
+                        stringify(d.package.name) + "-" + stringify(d.package.version) +
+                        "::" + stringify(d.package.repository));
             }
 
             virtual void on_install_post(const DepListEntry &)
@@ -381,29 +381,29 @@ namespace
     void
     OurInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     {
-        Context context("When displaying entry '" + stringify(d) + "':");
+        Context context("When displaying entry '" + stringify(d.package) + "':");
 
-        cout << "* " << colour(cl_package_name, d.name);
+        cout << "* " << colour(cl_package_name, d.package.name);
 
         /* display version, unless it's 0 and our category is "virtual" */
-        if ((VersionSpec("0") != d.version) ||
-                CategoryNamePart("virtual") != d.name.category)
-            cout << "-" << d.version;
+        if ((VersionSpec("0") != d.package.version) ||
+                CategoryNamePart("virtual") != d.package.name.category)
+            cout << "-" << d.package.version;
 
         /* display repository, unless it's our main repository */
-        if (DefaultEnvironment::get_instance()->package_database()->favourite_repository() != d.repository)
-            cout << "::" << d.repository;
+        if (DefaultEnvironment::get_instance()->package_database()->favourite_repository() !=
+                d.package.repository)
+            cout << "::" << d.package.repository;
 
         /* display slot name, unless it's 0 */
         if (SlotName("0") != d.metadata->slot)
-            cout << colour(cl_slot, " {:" + stringify(
-                        d.metadata->slot) + "}");
+            cout << colour(cl_slot, " {:" + stringify(d.metadata->slot) + "}");
 
         /* indicate [U], [S] or [N]. display existing version, if we're
          * already installed */
         PackageDatabaseEntryCollection::Pointer existing(DefaultEnvironment::get_instance()->package_database()->
                 query(PackageDepAtom::Pointer(new PackageDepAtom(stringify(
-                                d.name))), is_installed_only));
+                                d.package.name))), is_installed_only));
 
         if (existing->empty())
         {
@@ -422,7 +422,7 @@ namespace
         else
         {
             existing = DefaultEnvironment::get_instance()->package_database()->query(PackageDepAtom::Pointer(
-                        new PackageDepAtom(stringify(d.name) + ":" +
+                        new PackageDepAtom(stringify(d.package.name) + ":" +
                             stringify(d.metadata->slot))),
                     is_installed_only);
             if (existing->empty())
@@ -439,7 +439,7 @@ namespace
                     ++_max_count;
                 }
             }
-            else if (existing->last()->version < d.version)
+            else if (existing->last()->version < d.package.version)
             {
                 cout << colour(cl_updatemode, " [U " + stringify(
                             existing->last()->version) + "]");
@@ -454,7 +454,7 @@ namespace
                     ++_max_count;
                 }
             }
-            else if (existing->last()->version > d.version)
+            else if (existing->last()->version > d.package.version)
             {
                 cout << colour(cl_updatemode, " [D " + stringify(
                             existing->last()->version) + "]");
@@ -487,19 +487,18 @@ namespace
         }
 
         /* fetch db entry */
-        PackageDatabaseEntry p(PackageDatabaseEntry(d.name,
-                    d.version, d.repository));
+        PackageDatabaseEntry p(d.package);
 
         /* display USE flags */
         std::cout << make_pretty_use_flags_string(DefaultEnvironment::get_instance(), p, d.metadata);
 
         /* display tag, add tag to our post display list */
-        if (! d.tag->empty())
+        if (! d.tags->empty())
         {
             std::string tag_titles;
             for (SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Iterator
-                    tag(d.tag->begin()),
-                    tag_end(d.tag->end()) ;
+                    tag(d.tags->begin()),
+                    tag_end(d.tags->end()) ;
                     tag != tag_end ; ++tag)
             {
                 _all_tags.insert(*tag);
@@ -525,7 +524,7 @@ namespace
                 " --install --preserve-world --dl-drop-all --dl-no-recursive-deps";
             for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
                     i != i_end ; ++i)
-                cerr << " =" << i->name << "-" << i->version << "::" << i->repository;
+                cerr << " =" << i->package.name << "-" << i->package.version << "::" << i->package.repository;
             cerr << endl;
         }
     }
@@ -570,6 +569,23 @@ namespace
         cerr << "Exiting with failure" << endl;
         exit(EXIT_FAILURE);
     }
+
+    DepListDepsOption
+    enum_arg_to_dep_list_deps_option(const args::EnumArg & arg)
+    {
+        if (arg.argument() == "pre")
+            return dl_deps_pre;
+        else if (arg.argument() == "pre-or-post")
+            return dl_deps_pre_or_post;
+        else if (arg.argument() == "post")
+            return dl_deps_post;
+        else if (arg.argument() == "try-post")
+            return dl_deps_try_post;
+        else if (arg.argument() == "discard")
+            return dl_deps_discard;
+        else
+            throw DoHelp("bad value for --" + arg.long_name());
+    }
 }
 
 int
@@ -579,23 +595,59 @@ do_install()
 
     Context context("When performing install action from command line:");
 
-    OurInstallTask task;
+    DepListOptions options;
 
-    task.set_drop_self_circular(CommandLine::get_instance()->a_dl_drop_self_circular.specified());
-    task.set_drop_circular(CommandLine::get_instance()->a_dl_drop_circular.specified());
-    task.set_drop_all(CommandLine::get_instance()->a_dl_drop_all.specified());
-    task.set_ignore_installed(CommandLine::get_instance()->a_dl_ignore_installed.specified());
-    task.set_recursive_deps(! CommandLine::get_instance()->a_dl_no_recursive_deps.specified());
-    task.set_max_stack_depth(CommandLine::get_instance()->a_dl_max_stack_depth.argument());
-    task.set_no_unnecessary_upgrades(CommandLine::get_instance()->a_dl_no_unnecessary_upgrades.specified());
+    if (CommandLine::get_instance()->dl_reinstall.specified())
+    {
+        if (CommandLine::get_instance()->dl_reinstall.argument() == "never")
+            options.reinstall = dl_reinstall_never;
+        else if (CommandLine::get_instance()->dl_reinstall.argument() == "always")
+            options.reinstall = dl_reinstall_always;
+        else
+            throw DoHelp("bad value for --dl-reinstall");
+    }
 
-    if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "always")
-        task.set_rdepend_post(dlro_always);
-    else if (CommandLine::get_instance()->a_dl_rdepend_post.argument() == "never")
-        task.set_rdepend_post(dlro_never);
-    else
-        task.set_rdepend_post(dlro_as_needed);
+    if (CommandLine::get_instance()->dl_upgrade.specified())
+    {
+        if (CommandLine::get_instance()->dl_upgrade.argument() == "as-needed")
+            options.upgrade = dl_upgrade_as_needed;
+        else if (CommandLine::get_instance()->dl_upgrade.argument() == "always")
+            options.upgrade = dl_upgrade_always;
+        else
+            throw DoHelp("bad value for --dl-upgrade");
+    }
 
+    if (CommandLine::get_instance()->dl_circular.specified())
+    {
+        if (CommandLine::get_instance()->dl_circular.argument() == "discard")
+            options.circular = dl_circular_discard;
+        else if (CommandLine::get_instance()->dl_circular.argument() == "error")
+            options.circular = dl_circular_error;
+        else
+            throw DoHelp("bad value for --dl-circular");
+    }
+
+    if (CommandLine::get_instance()->dl_installed_deps_pre.specified())
+        options.installed_deps_pre = enum_arg_to_dep_list_deps_option(
+                CommandLine::get_instance()->dl_installed_deps_pre);
+    if (CommandLine::get_instance()->dl_installed_deps_runtime.specified())
+        options.installed_deps_runtime = enum_arg_to_dep_list_deps_option(
+                CommandLine::get_instance()->dl_installed_deps_runtime);
+    if (CommandLine::get_instance()->dl_installed_deps_post.specified())
+        options.installed_deps_post = enum_arg_to_dep_list_deps_option(
+                CommandLine::get_instance()->dl_installed_deps_post);
+
+    if (CommandLine::get_instance()->dl_uninstalled_deps_pre.specified())
+        options.uninstalled_deps_pre = enum_arg_to_dep_list_deps_option(
+                CommandLine::get_instance()->dl_uninstalled_deps_pre);
+    if (CommandLine::get_instance()->dl_uninstalled_deps_runtime.specified())
+        options.uninstalled_deps_runtime = enum_arg_to_dep_list_deps_option(
+                CommandLine::get_instance()->dl_uninstalled_deps_runtime);
+    if (CommandLine::get_instance()->dl_uninstalled_deps_post.specified())
+        options.uninstalled_deps_post = enum_arg_to_dep_list_deps_option(
+                CommandLine::get_instance()->dl_uninstalled_deps_post);
+
+    OurInstallTask task(options);
     task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());
     task.set_fetch_only(CommandLine::get_instance()->a_fetch.specified());
     task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
@@ -754,18 +806,6 @@ do_install()
         cerr << "enabled or disabled. You may be able to work around this restriction by" << endl;
         cerr << "adjusting your use.conf." << endl;
         cerr << endl;
-
-        return_code |= 1;
-    }
-    catch (const DepListStackTooDeepError & e)
-    {
-        cout << endl;
-        cerr << "DepList stack too deep error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ") << e.message() << endl;
-        cerr << endl;
-        cerr << "Try '--dl-max-stack-depth " << std::max(
-                CommandLine::get_instance()->a_dl_max_stack_depth.argument() * 2, 100)
-            << "'." << endl << endl;
 
         return_code |= 1;
     }

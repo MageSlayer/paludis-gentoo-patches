@@ -50,7 +50,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            InstallTask(Environment * const env);
+            InstallTask(Environment * const env, const DepListOptions & options);
 
             ///\}
 
@@ -64,15 +64,6 @@ namespace paludis
 
             ///\name DepList and Install behaviour options
             ///\{
-
-            void set_rdepend_post(const DepListRdependOption value);
-            void set_drop_self_circular(const bool value);
-            void set_drop_circular(const bool value);
-            void set_drop_all(const bool value);
-            void set_ignore_installed(const bool value);
-            void set_recursive_deps(const bool value);
-            void set_max_stack_depth(const int value);
-            void set_no_unnecessary_upgrades(const bool value);
 
             void set_no_config_protect(const bool value);
             void set_fetch_only(const bool value);

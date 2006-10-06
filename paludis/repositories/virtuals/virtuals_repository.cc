@@ -82,39 +82,56 @@ VirtualsRepository::need_entries() const
 
     Context context("When loading entries for virtuals repository:");
 
-    /* Populate our _imp->entries. We need to iterate over each repository in
-     * our env's package database, see if it has a virtuals interface, and if it
-     * does create an entry for each virtual package. */
+    /* Determine our virtual name -> package mappings. */
+    std::map<QualifiedPackageName, PackageDepAtom::ConstPointer> virtual_to_real;
+
+    for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
+            r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    {
+        if (! (*r)->provides_interface)
+            continue;
+
+        RepositoryProvidesInterface::ProvidesCollection::ConstPointer provides(
+                (*r)->provides_interface->provided_packages());
+        for (RepositoryProvidesInterface::ProvidesCollection::Iterator p(provides->begin()),
+                p_end(provides->end()) ; p != p_end ; ++p)
+            virtual_to_real.insert(std::make_pair(p->virtual_name, PackageDepAtom::Pointer(
+                            new PackageDepAtom(stringify(p->provided_by_name)))));
+    }
+
     for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         if (! (*r)->virtuals_interface)
             continue;
 
-        RepositoryVirtualsInterface::VirtualsCollection::ConstPointer pp(
+        RepositoryVirtualsInterface::VirtualsCollection::ConstPointer virtuals(
                 (*r)->virtuals_interface->virtual_packages());
+        for (RepositoryVirtualsInterface::VirtualsCollection::Iterator v(virtuals->begin()),
+                v_end(virtuals->end()) ; v != v_end ; ++v)
+            virtual_to_real.insert(std::make_pair(v->virtual_name, v->provided_by_atom));
+    }
 
-        for (RepositoryVirtualsInterface::VirtualsCollection::Iterator p(
-                    pp->begin()), p_end(pp->end()) ; p != p_end ; ++p)
+    /* Populate our _imp->entries. */
+    for (std::map<QualifiedPackageName, PackageDepAtom::ConstPointer>::const_iterator
+            v(virtual_to_real.begin()), v_end(virtual_to_real.end()) ; v != v_end ; ++v)
+    {
+        PackageDatabaseEntryCollection::ConstPointer matches(_imp->env->package_database()->query(v->second,
+                    is_uninstalled_only));
+
+        if (matches->empty())
+            Log::get_instance()->message(ll_warning, lc_context, "No packages matching '"
+                    + stringify(*v->second) + "' for virtual '"
+                    + stringify(v->first));
+
+        for (PackageDatabaseEntryCollection::Iterator m(matches->begin()), m_end(matches->end()) ;
+                m != m_end ; ++m)
         {
-            VersionSpecCollection::ConstPointer vv((*r)->version_specs(p->provided_by_atom->package()));
-
-            /* following is debug, not warning, because of overlay style repos */
-            if (vv->empty())
-                Log::get_instance()->message(ll_debug, lc_context, "No packages matching '"
-                        + stringify(*p->provided_by_atom) + "' for virtual '"
-                        + stringify(p->virtual_name) + " ' in repository '"
-                        + stringify((*r)->name()) + "'");
-
-            for (VersionSpecCollection::Iterator v(vv->begin()), v_end(vv->end()) ;
-                    v != v_end ; ++v)
-                if (match_package(_imp->env, p->provided_by_atom, PackageDatabaseEntry(
-                                p->provided_by_atom->package(), *v, (*r)->name())))
-                    _imp->entries.push_back(VREntry::create()
-                            .virtual_name(p->virtual_name)
-                            .version(*v)
-                            .provided_by_name(p->provided_by_atom->package())
-                            .provided_by_repository((*r)->name()));
+            _imp->entries.push_back(VREntry::create()
+                    .virtual_name(v->first)
+                    .version(m->version)
+                    .provided_by_name(m->name)
+                    .provided_by_repository(m->repository));
         }
     }
 
@@ -159,6 +176,11 @@ VirtualsRepository::do_version_metadata(
 
     if (p.first == p.second)
         throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
+
+    Log::get_instance()->message(ll_debug, lc_no_context, "VirtualsRepository::do_version_metadata("
+            + stringify(q) + ", " + stringify(v) + ") lookup using '"
+            + stringify(p.first->virtual_name) + "', '" + stringify(p.first->version) + "', '"
+            + stringify(p.first->provided_by_name) + "', '" + stringify(p.first->provided_by_repository) + "'");
 
     return _imp->env->package_database()->fetch_repository(
             p.first->provided_by_repository)->virtuals_interface->virtual_package_version_metadata(

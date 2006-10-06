@@ -1,0 +1,39 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_DepListOptions()
+{
+    key reinstall DepListReinstallOption
+    key target_type DepListTargetType
+    key upgrade DepListUpgradeOption
+
+    key installed_deps_pre DepListDepsOption
+    key installed_deps_runtime DepListDepsOption
+    key installed_deps_post DepListDepsOption
+
+    key uninstalled_deps_pre DepListDepsOption
+    key uninstalled_deps_runtime DepListDepsOption
+    key uninstalled_deps_post DepListDepsOption
+
+    key circular DepListCircularOption
+
+    extra_constructors <<END
+            DepListOptions();
+END
+
+    allow_named_args
+}
+
+make_class_DepListEntry()
+{
+    key package PackageDatabaseEntry
+    key metadata VersionMetadata::ConstPointer
+    key tags DepListEntryTags::Pointer
+
+    key generation long
+    key state DepListEntryState
+    key already_installed bool
+
+    allow_named_args
+}
+

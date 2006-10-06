@@ -20,6 +20,7 @@ $1_TEST_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
 	$(DYNAMIC_LD_LIBS)
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl

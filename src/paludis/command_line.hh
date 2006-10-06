@@ -193,29 +193,18 @@ class CommandLine :
         /// DepList behaviour arguments.
         paludis::args::ArgsGroup dl_args;
 
-        /// --dl-rdepend-post
-        paludis::args::EnumArg a_dl_rdepend_post;
+        paludis::args::EnumArg dl_reinstall;
+        paludis::args::EnumArg dl_upgrade;
 
-        /// --dl-drop-self-circular
-        paludis::args::SwitchArg a_dl_drop_self_circular;
+        paludis::args::EnumArg dl_installed_deps_pre;
+        paludis::args::EnumArg dl_installed_deps_runtime;
+        paludis::args::EnumArg dl_installed_deps_post;
 
-        /// --dl-drop-circular
-        paludis::args::SwitchArg a_dl_drop_circular;
+        paludis::args::EnumArg dl_uninstalled_deps_pre;
+        paludis::args::EnumArg dl_uninstalled_deps_runtime;
+        paludis::args::EnumArg dl_uninstalled_deps_post;
 
-        /// --dl-drop-all
-        paludis::args::SwitchArg a_dl_drop_all;
-
-        /// --dl-ignore-installed
-        paludis::args::SwitchArg a_dl_ignore_installed;
-
-        /// --dl-no-recursive-deps
-        paludis::args::SwitchArg a_dl_no_recursive_deps;
-
-        /// --dl-max-stack-depth
-        paludis::args::IntegerArg a_dl_max_stack_depth;
-
-        /// --dl-no-unnecessary-upgrades
-        paludis::args::SwitchArg a_dl_no_unnecessary_upgrades;
+        paludis::args::EnumArg dl_circular;
 
         /// }
 

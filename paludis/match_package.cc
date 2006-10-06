@@ -89,15 +89,15 @@ match_package_internals::do_match(
         const PackageDepAtom * const atom,
         const DepListEntry * const entry)
 {
-    if (atom->package() != entry->name)
+    if (atom->package() != entry->package.name)
         return false;
 
-    if (atom->version_spec_ptr() && ! (((entry->version).*
+    if (atom->version_spec_ptr() && ! (((entry->package.version).*
                     (atom->version_operator().as_version_spec_operator()))
                 (*atom->version_spec_ptr())))
         return false;
 
-    if (atom->repository_ptr() && (*atom->repository_ptr() != entry->repository))
+    if (atom->repository_ptr() && (*atom->repository_ptr() != entry->package.repository))
         return false;
 
     if (atom->slot_ptr() && (*atom->slot_ptr() != entry->metadata->slot))
@@ -105,9 +105,6 @@ match_package_internals::do_match(
 
     if (atom->use_requirements_ptr())
     {
-        PackageDatabaseEntry e(entry->name, entry->version,
-                entry->repository);
-
         for (UseRequirements::Iterator u(atom->use_requirements_ptr()->begin()),
                 u_end(atom->use_requirements_ptr()->end()) ; u != u_end ; ++u)
         {
@@ -117,12 +114,12 @@ match_package_internals::do_match(
                     continue;
 
                 case use_enabled:
-                    if (! env->query_use(u->first, &e))
+                    if (! env->query_use(u->first, &entry->package))
                         return false;
                     continue;
 
                 case use_disabled:
-                    if (env->query_use(u->first, &e))
+                    if (env->query_use(u->first, &entry->package))
                         return false;
                     continue;
             }

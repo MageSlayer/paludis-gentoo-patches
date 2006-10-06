@@ -153,7 +153,7 @@ namespace paludis
                 {
                 }
 
-                ~CountedPtrBase()
+                virtual ~CountedPtrBase()
                 {
                 }
 
@@ -246,7 +246,7 @@ namespace paludis
                 {
                 }
 
-                ~CountedPtrBase()
+                virtual ~CountedPtrBase()
                 {
                 }
 

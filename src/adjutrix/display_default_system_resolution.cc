@@ -66,17 +66,16 @@ namespace
 
         cout << std::left << std::setw(20) << (desc + ":") << display_profile << endl;
 
-        DepList d(&env);
-        d.set_reinstall(false);
-        d.set_drop_circular(true);
+        DepListOptions d_options;
+        d_options.circular = dl_circular_discard;
+        DepList d(&env, d_options);
 
         try
         {
             d.add(env.package_set("system"));
 
             for (DepList::Iterator e(d.begin()), e_end(d.end()) ; e != e_end ; ++e)
-                cout << "    " << e->name << "-" << e->version << ":" << e->metadata->slot << "::"
-                    << e->repository << endl;
+                cout << "    " << e->package << ":" << e->metadata->slot << endl;
         }
         catch (const NoSuchPackageError & e)
         {
