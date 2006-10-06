@@ -1063,9 +1063,14 @@ VDBRepository::provided_packages() const
 
         try
         {
-            if (! e->metadata)
-                _imp->load_entry(e);
-            const std::string provide_str(e->metadata->get_ebuild_interface()->provide_string);
+            std::string provide_str;
+            if (e->metadata)
+                provide_str = e->metadata->get_ebuild_interface()->provide_string;
+            else
+            {
+                // _imp->load_entry(e); slow
+                provide_str = file_contents(_imp->location, e->name, e->version, "PROVIDE");
+            }
             if (provide_str.empty())
                 continue;
 
