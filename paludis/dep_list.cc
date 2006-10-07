@@ -124,9 +124,34 @@ namespace
         {
         }
 
-        bool operator() (const DepListEntry & e) const
+        template <typename T_>
+        bool operator() (const T_ & e) const
         {
             return e.generation > g;
+        }
+    };
+
+    struct RemoveTagsWithGenerationGreaterThan
+    {
+        long g;
+
+        RemoveTagsWithGenerationGreaterThan(long gg) :
+            g(gg)
+        {
+        }
+
+        void operator() (DepListEntry & e) const
+        {
+            /* see EffSTL 9 for why this is so painful */
+            if (e.tags->empty())
+                return;
+            DepListEntryTags::Pointer t(new DepListEntryTags::Concrete);
+            GenerationGreaterThan pred(g);
+            for (DepListEntryTags::Iterator i(e.tags->begin()), i_end(e.tags->end()) ;
+                    i != i_end ; ++i)
+                if (! pred(*i))
+                    t->insert(*i);
+            std::swap(e.tags, t);
         }
     };
 
@@ -156,7 +181,10 @@ namespace
             ~DepListTransaction()
             {
                 if (! _committed)
+                {
                     _list.remove_if(GenerationGreaterThan(_initial_generation));
+                    std::for_each(_list.begin(), _list.end(), RemoveTagsWithGenerationGreaterThan(_initial_generation));
+                }
             }
     };
 
@@ -332,10 +360,16 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
                 *a, is_installed_only));
 
     /* are we already on the merge list? */
-    MergeList::const_iterator existing_merge_list_entry(std::find_if(d->_imp->merge_list.begin(),
+    MergeList::iterator existing_merge_list_entry(std::find_if(d->_imp->merge_list.begin(),
                 d->_imp->merge_list.end(), MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, a)));
     if (existing_merge_list_entry != d->_imp->merge_list.end())
     {
+        /* tag it */
+        if (a->tag())
+            existing_merge_list_entry->tags->insert(DepTagEntry::create()
+                    .tag(a->tag())
+                    .generation(d->_imp->merge_list_generation));
+
         /* have our deps been merged already, or is this a circular dep? */
         if (dle_no_deps == existing_merge_list_entry->state)
         {
@@ -370,8 +404,8 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
             break;
         }
 
-    /* no installable candidates. if we're already installed, that's ok,
-     * otherwise error. */
+    /* no installable candidates. if we're already installed, that's ok (except for top level
+     * package targets), otherwise error. */
     if (! best_visible_candidate)
     {
         if (already_installed->empty())
@@ -384,10 +418,11 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         }
         else
         {
+            // todo: top level
             Log::get_instance()->message(ll_warning, lc_context, "No visible packages matching '"
                     + stringify(*a) + "', falling back to installed package '"
                     + stringify(*already_installed->last()) + "'");
-            d->add_already_installed_package(*already_installed->last());
+            d->add_already_installed_package(*already_installed->last(), a->tag());
             return;
         }
     }
@@ -409,7 +444,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         {
             Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
                     + stringify(*already_installed_in_same_slot->last()) + "' over '" + stringify(*best_visible_candidate) + "'");
-            d->add_already_installed_package(*already_installed_in_same_slot->last());
+            d->add_already_installed_package(*already_installed_in_same_slot->last(), a->tag());
             return;
         }
         else
@@ -420,7 +455,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         Log::get_instance()->message(ll_debug, lc_context, "No installed packages in SLOT '"
                 + stringify(slot) + "', taking uninstalled package '" + stringify(*best_visible_candidate) + "'");
 
-    d->add_package(*best_visible_candidate);
+    d->add_package(*best_visible_candidate, a->tag());
 }
 
 void
@@ -550,7 +585,7 @@ DepList::add(DepAtom::ConstPointer atom)
 }
 
 void
-DepList::add_package(const PackageDatabaseEntry & p)
+DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
 {
     Context context("When adding package '" + stringify(p) + "':");
 
@@ -571,6 +606,11 @@ DepList::add_package(const PackageDatabaseEntry & p)
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .already_installed(false))),
         our_merge_entry_post_position(our_merge_entry_position);
+
+    if (tag)
+        our_merge_entry_position->tags->insert(DepTagEntry::create()
+                .generation(_imp->merge_list_generation)
+                .tag(tag));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
             our_merge_entry_position);
@@ -671,7 +711,7 @@ DepList::add_postdeps(DepAtom::ConstPointer d, const DepListDepsOption opt, cons
 }
 
 void
-DepList::add_already_installed_package(const PackageDatabaseEntry & p)
+DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
 {
     Context context("When adding installed package '" + stringify(p) + "':");
 
@@ -687,6 +727,11 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p)
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
                 .already_installed(true)));
+
+    if (tag)
+        our_merge_entry->tags->insert(DepTagEntry::create()
+                .generation(_imp->merge_list_generation)
+                .tag(tag));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
             our_merge_entry);

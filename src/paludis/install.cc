@@ -78,7 +78,7 @@ namespace
                 _upgrade_virtual_count, _downgrade_virtual_count,
                 _new_slot_virtual_count, _rebuild_virtual_count;
 
-            std::set<DepTag::ConstPointer, DepTag::Comparator> _all_tags;
+            std::set<DepTagEntry> _all_tags;
 
         public:
             OurInstallTask(const DepListOptions & options) :
@@ -345,11 +345,9 @@ namespace
             TagDisplayer tag_displayer;
 
             std::set<std::string> tag_categories;
-            std::transform(
-                    indirect_iterator<const DepTag>(_all_tags.begin()),
-                    indirect_iterator<const DepTag>(_all_tags.end()),
-                    std::inserter(tag_categories, tag_categories.begin()),
-                    std::mem_fun_ref(&DepTag::category));
+            for (std::set<DepTagEntry>::const_iterator a(_all_tags.begin()),
+                    a_end(_all_tags.end()) ; a != a_end ; ++a)
+                tag_categories.insert(a->tag->category());
 
             for (std::set<std::string>::iterator cat(tag_categories.begin()),
                     cat_end(tag_categories.end()) ; cat != cat_end ; ++cat)
@@ -362,13 +360,12 @@ namespace
                 if (! c->pre_text().empty())
                     cout << c->pre_text() << endl << endl;
 
-                for (std::set<DepTag::ConstPointer, DepTag::Comparator>::const_iterator
-                        t(_all_tags.begin()), t_end(_all_tags.end()) ;
+                for (std::set<DepTagEntry>::const_iterator t(_all_tags.begin()), t_end(_all_tags.end()) ;
                         t != t_end ; ++t)
                 {
-                    if ((*t)->category() != *cat)
+                    if (t->tag->category() != *cat)
                         continue;
-                    (*t)->accept(&tag_displayer);
+                    t->tag->accept(&tag_displayer);
                 }
                 cout << endl;
 
@@ -496,13 +493,13 @@ namespace
         if (! d.tags->empty())
         {
             std::string tag_titles;
-            for (SortedCollection<DepTag::ConstPointer, DepTag::Comparator>::Iterator
+            for (SortedCollection<DepTagEntry>::Iterator
                     tag(d.tags->begin()),
                     tag_end(d.tags->end()) ;
                     tag != tag_end ; ++tag)
             {
                 _all_tags.insert(*tag);
-                tag_titles.append((*tag)->short_text());
+                tag_titles.append(tag->tag->short_text());
                 tag_titles.append(",");
             }
             tag_titles.erase(tag_titles.length() - 1);

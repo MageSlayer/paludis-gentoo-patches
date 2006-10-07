@@ -18,6 +18,7 @@
  */
 
 #include "dep_tag.hh"
+#include <paludis/util/compare.hh>
 
 /** \file
  * Implementation for DepTag, DepTagCategory etc.
@@ -26,6 +27,8 @@
  */
 
 using namespace paludis;
+
+#include <paludis/dep_tag-sr.cc>
 
 namespace
 {
@@ -95,7 +98,9 @@ NoSuchDepTagCategory::NoSuchDepTagCategory(const std::string & s) throw () :
 {
 }
 
-DepTag::DepTag()
+DepTag::DepTag() :
+    ComparisonPolicy<DepTag, comparison_mode::FullComparisonTag,
+        comparison_method::CompareByMemberFetchFunctionTag<std::string> >(&DepTag::short_text)
 {
 }
 

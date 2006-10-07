@@ -76,8 +76,6 @@ namespace paludis
         dle_has_all_deps
     };
 
-    typedef SortedCollection<DepTag::ConstPointer, DepTag::Comparator> DepListEntryTags;
-
 #include <paludis/dep_list-sr.hh>
 
     /**
@@ -215,8 +213,8 @@ namespace paludis
             void add_in_role(DepAtom::ConstPointer, const std::string & role);
             bool prefer_installed_over_uninstalled(const PackageDatabaseEntry &,
                     const PackageDatabaseEntry &);
-            void add_package(const PackageDatabaseEntry &);
-            void add_already_installed_package(const PackageDatabaseEntry &);
+            void add_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
+            void add_already_installed_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
             void add_predeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
             void add_postdeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
 

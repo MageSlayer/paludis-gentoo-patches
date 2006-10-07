@@ -478,7 +478,7 @@ while read a ; do
                 echo "{"
                 for (( k = 0 ; k < ${#want_comparison_fields[@]} ; k++ )) ; do
                     w=${want_comparison_fields[${k}]}
-                    echo "    switch (paludis::compare(${w}, other.${w}))"
+                    echo "    switch (paludis::compare(${w}, ${w//[^\*]}other.${w#\*}))"
                     echo "    {"
                     echo "        case -1:"
                     echo "            return -1;"

@@ -32,6 +32,8 @@
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/collection.hh>
+#include <paludis/util/sr.hh>
 
 namespace paludis
 {
@@ -136,7 +138,7 @@ namespace paludis
 
     /**
      * A DepTag can be associated with a PackageDepAtom, and is transferred
-     * onto any associated DepListEntry instances. 
+     * onto any associated DepListEntry instances.
      *
      * It is used for tagging dep list entries visually, for example to
      * indicate an associated GLSA.
@@ -146,7 +148,10 @@ namespace paludis
     class DepTag :
         InstantiationPolicy<DepTag, instantiation_method::NonCopyableTag>,
         public InternalCounted<DepTag>,
-        public virtual VisitableInterface<DepTagVisitorTypes>
+        public virtual VisitableInterface<DepTagVisitorTypes>,
+        public ComparisonPolicy<DepTag,
+            comparison_mode::FullComparisonTag,
+            comparison_method::CompareByMemberFetchFunctionTag<std::string> >
     {
         protected:
             /**
@@ -172,20 +177,8 @@ namespace paludis
             virtual std::string category() const = 0;
 
             /**
-             * Used for comparisons in containers containing pointers to DepTag
-             * instances.
-             *
-             * \ingroup grpdeptag
+             * Compare, by short_text only.
              */
-            struct Comparator
-            {
-                /// Perform the comparison.
-                bool operator() (const DepTag::ConstPointer & d1,
-                        const DepTag::ConstPointer & d2) const
-                {
-                    return d1->short_text() < d2->short_text();
-                }
-            };
     };
 
     /**
@@ -240,6 +233,10 @@ namespace paludis
 
             virtual std::string category() const;
     };
+
+#include <paludis/dep_tag-sr.hh>
+
+    typedef SortedCollection<DepTagEntry> DepListEntryTags;
 }
 
 #endif
