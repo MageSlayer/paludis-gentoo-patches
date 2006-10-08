@@ -23,6 +23,7 @@
 #include "use.hh"
 
 #include <iostream>
+#include <limits>
 #include <set>
 
 #include <signal.h>
@@ -53,6 +54,10 @@ namespace
         {
             cout << "* " << colour(cl_tag, tag->short_text()) << ": "
                 << tag->glsa_title() << endl;
+        }
+
+        void visit(const DependencyDepTag * const)
+        {
         }
 
         void visit(const GeneralSetDepTag * const tag)
@@ -355,6 +360,9 @@ namespace
                 DepTagCategory::ConstPointer c(DepTagCategoryMaker::get_instance()->
                         find_maker(*cat)());
 
+                if (! c->visible())
+                    continue;
+
                 if (! c->title().empty())
                     cout << colour(cl_heading, c->title()) << ":" << endl << endl;
                 if (! c->pre_text().empty())
@@ -378,9 +386,13 @@ namespace
     void
     OurInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     {
+        if (d.already_installed && CommandLine::get_instance()->a_show_install_reasons.argument() != "full")
+            return;
+
         Context context("When displaying entry '" + stringify(d.package) + "':");
 
-        cout << "* " << colour(cl_package_name, d.package.name);
+        cout << "* " << colour(d.already_installed ? cl_unimportant : cl_package_name,
+                d.package.name);
 
         /* display version, unless it's 0 and our category is "virtual" */
         if ((VersionSpec("0") != d.package.version) ||
@@ -394,15 +406,18 @@ namespace
 
         /* display slot name, unless it's 0 */
         if (SlotName("0") != d.metadata->slot)
-            cout << colour(cl_slot, " {:" + stringify(d.metadata->slot) + "}");
+            cout << colour(d.already_installed ? cl_unimportant : cl_slot,
+                    " {:" + stringify(d.metadata->slot) + "}");
 
-        /* indicate [U], [S] or [N]. display existing version, if we're
+        /* indicate [U], [S], [N] or [-]. display existing version, if we're
          * already installed */
         PackageDatabaseEntryCollection::Pointer existing(DefaultEnvironment::get_instance()->package_database()->
                 query(PackageDepAtom::Pointer(new PackageDepAtom(stringify(
                                 d.package.name))), is_installed_only));
 
-        if (existing->empty())
+        if (d.already_installed)
+            cout << colour(cl_unimportant, " [-]");
+        else if (existing->empty())
         {
             cout << colour(cl_updatemode, " [N]");
             if (d.metadata->get_virtual_interface())
@@ -487,7 +502,8 @@ namespace
         PackageDatabaseEntry p(d.package);
 
         /* display USE flags */
-        std::cout << make_pretty_use_flags_string(DefaultEnvironment::get_instance(), p, d.metadata);
+        if (! d.already_installed)
+            std::cout << make_pretty_use_flags_string(DefaultEnvironment::get_instance(), p, d.metadata);
 
         /* display tag, add tag to our post display list */
         if (! d.tags->empty())
@@ -498,12 +514,55 @@ namespace
                     tag_end(d.tags->end()) ;
                     tag != tag_end ; ++tag)
             {
+                if (tag->tag->category() == "dependency")
+                    continue;
+
                 _all_tags.insert(*tag);
                 tag_titles.append(tag->tag->short_text());
-                tag_titles.append(",");
+                tag_titles.append(", ");
             }
-            tag_titles.erase(tag_titles.length() - 1);
-            cout << " " << colour(cl_tag, "<" + tag_titles + ">");
+            if (! tag_titles.empty())
+            {
+                tag_titles.erase(tag_titles.length() - 2);
+                cout << " " << colour(d.already_installed ? cl_unimportant : cl_tag,
+                        "<" + tag_titles + ">");
+            }
+
+            /* display dependency tags */
+            if ((CommandLine::get_instance()->a_show_install_reasons.argument() == "summary") ||
+                    (CommandLine::get_instance()->a_show_install_reasons.argument() == "full"))
+            {
+                std::string deps;
+                unsigned count(0), max_count;
+                if (CommandLine::get_instance()->a_show_install_reasons.argument() == "summary")
+                    max_count = 3;
+                else
+                    max_count = std::numeric_limits<long>::max();
+
+                for (SortedCollection<DepTagEntry>::Iterator
+                        tag(d.tags->begin()),
+                        tag_end(d.tags->end()) ;
+                        tag != tag_end ; ++tag)
+                {
+                    if (tag->tag->category() != "dependency")
+                        continue;
+
+                    if (++count < max_count)
+                    {
+                        deps.append(tag->tag->short_text());
+                        deps.append(", ");
+                    }
+                }
+                if (! deps.empty())
+                {
+                    if (count >= max_count)
+                        deps.append(stringify(count - max_count + 1) + " more, ");
+
+                    deps.erase(deps.length() - 2);
+                    cout << " " << colour(d.already_installed ? cl_unimportant : cl_tag,
+                            "<" + deps + ">");
+                }
+            }
         }
 
         cout << endl;
@@ -643,6 +702,10 @@ do_install()
     if (CommandLine::get_instance()->dl_uninstalled_deps_post.specified())
         options.uninstalled_deps_post = enum_arg_to_dep_list_deps_option(
                 CommandLine::get_instance()->dl_uninstalled_deps_post);
+
+    if ((CommandLine::get_instance()->a_show_install_reasons.argument() == "summary") ||
+            (CommandLine::get_instance()->a_show_install_reasons.argument() == "full"))
+        options.dependency_tags = true;
 
     OurInstallTask task(options);
     task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());

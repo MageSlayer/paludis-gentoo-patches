@@ -185,6 +185,9 @@ class CommandLine :
         /// --fetch
         paludis::args::SwitchArg a_fetch;
 
+        /// --show-install-reasons
+        paludis::args::EnumArg a_show_install_reasons;
+
         /// }
 
         /// \name DepList behaviour arguments

@@ -164,8 +164,7 @@ InstallTask::execute()
             dep != dep_end ; ++dep)
     {
         _imp->current_dep_list_entry = dep;
-        if (! dep->already_installed)
-            on_display_merge_list_entry(*dep);
+        on_display_merge_list_entry(*dep);
     }
 
     /* we're done displaying our task list */

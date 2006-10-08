@@ -32,6 +32,7 @@ enum Colour
     cl_yellow        = 33,
     cl_blue          = 34,
     cl_pink          = 35,
+    cl_grey          = 38,
 
     cl_bold_red      = cl_red + 100,
     cl_bold_green    = cl_green + 100,
@@ -67,6 +68,7 @@ enum Colour
     cl_key_name      = cl_blue,
 #endif
 
+    cl_unimportant   = cl_grey,
     cl_error         = cl_bold_red,
 
     cl_file          = cl_none,

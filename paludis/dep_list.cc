@@ -74,7 +74,8 @@ DepListOptions::DepListOptions() :
     uninstalled_deps_pre(dl_deps_pre),
     uninstalled_deps_runtime(dl_deps_pre_or_post),
     uninstalled_deps_post(dl_deps_post),
-    circular(dl_circular_error)
+    circular(dl_circular_error),
+    dependency_tags(false)
 {
     /* when changing the above, also see src/paludis/command_line.cc. */
 }
@@ -370,6 +371,11 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
                     .tag(a->tag())
                     .generation(d->_imp->merge_list_generation));
 
+        if (d->_imp->opts.dependency_tags && d->_imp->current_pde())
+            existing_merge_list_entry->tags->insert(DepTagEntry::create()
+                    .tag(DepTag::Pointer(new DependencyDepTag(*d->_imp->current_pde())))
+                    .generation(d->_imp->merge_list_generation));
+
         /* have our deps been merged already, or is this a circular dep? */
         if (dle_no_deps == existing_merge_list_entry->state)
         {
@@ -612,6 +618,11 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                 .generation(_imp->merge_list_generation)
                 .tag(tag));
 
+    if (_imp->opts.dependency_tags && _imp->current_pde())
+        our_merge_entry_position->tags->insert(DepTagEntry::create()
+                .tag(DepTag::Pointer(new DependencyDepTag(*_imp->current_pde())))
+                .generation(_imp->merge_list_generation));
+
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
             our_merge_entry_position);
 
@@ -732,6 +743,11 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::C
         our_merge_entry->tags->insert(DepTagEntry::create()
                 .generation(_imp->merge_list_generation)
                 .tag(tag));
+
+    if (_imp->opts.dependency_tags && _imp->current_pde())
+        our_merge_entry->tags->insert(DepTagEntry::create()
+                .tag(DepTag::Pointer(new DependencyDepTag(*_imp->current_pde())))
+                .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
             our_merge_entry);

@@ -17,6 +17,8 @@ make_class_DepListOptions()
 
     key circular DepListCircularOption
 
+    key dependency_tags bool
+
     extra_constructors <<END
             DepListOptions();
 END

@@ -43,6 +43,7 @@ namespace
     make_glsa_dep_tag()
     {
         return DepTagCategory::ConstPointer(new DepTagCategory(
+                    true,
                     "glsa",
                     "Security advisories",
                     "Your system is potentially affected by these security issues:",
@@ -58,7 +59,7 @@ namespace
             &make_glsa_dep_tag);
 
     /**
-     * Create the DepTagCategory for seneral sets.
+     * Create the DepTagCategory for general sets.
      *
      * \see register_general_set_dep_tag
      *
@@ -68,6 +69,7 @@ namespace
     make_general_set_dep_tag()
     {
         return DepTagCategory::ConstPointer(new DepTagCategory(
+                    true,
                     "general",
                     "General sets",
                     "",
@@ -81,11 +83,40 @@ namespace
      */
     static const DepTagCategoryMaker::RegisterMaker register_general_set_dep_tag("general",
             &make_general_set_dep_tag);
+
+    /**
+     * Create the DepTagCategory for dependency sets.
+     *
+     * \see register_dependency_set_dep_tag
+     *
+     * \ingroup grpdeptag
+     */
+    DepTagCategory::ConstPointer
+    make_dependency_set_dep_tag()
+    {
+        return DepTagCategory::ConstPointer(new DepTagCategory(
+                    false,
+                    "dependency",
+                    "Dependencies",
+                    "",
+                    ""));
+    }
+
+    /**
+     * Register the general set dep tag category instance.
+     *
+     * \ingroup grpdeptag
+     */
+    static const DepTagCategoryMaker::RegisterMaker register_dependency_set_dep_tag("dependency",
+            &make_dependency_set_dep_tag);
 }
 
-DepTagCategory::DepTagCategory(const std::string & our_id,
+DepTagCategory::DepTagCategory(
+        bool vis,
+        const std::string & our_id,
         const std::string & t, const std::string & pre,
         const std::string & post) :
+    _visible(vis),
     _id(our_id),
     _title(t),
     _pre_text(pre),
@@ -147,5 +178,22 @@ std::string
 GeneralSetDepTag::category() const
 {
     return "general";
+}
+
+DependencyDepTag::DependencyDepTag(const PackageDatabaseEntry & pde) :
+    _dbe(pde)
+{
+}
+
+std::string
+DependencyDepTag::short_text() const
+{
+    return stringify(_dbe);
+}
+
+std::string
+DependencyDepTag::category() const
+{
+    return "dependency";
 }
 

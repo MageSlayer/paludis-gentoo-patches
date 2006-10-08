@@ -27,6 +27,7 @@
  */
 
 #include <string>
+#include <paludis/package_database_entry.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/counted_ptr.hh>
@@ -53,6 +54,7 @@ namespace paludis
         public InternalCounted<DepTagCategory>
     {
         private:
+            bool _visible;
             const std::string _id;
             const std::string _title;
             const std::string _pre_text;
@@ -62,10 +64,20 @@ namespace paludis
             /**
              * Constructor.
              */
-            DepTagCategory(const std::string & id,
+            DepTagCategory(
+                    bool visible,
+                    const std::string & id,
                     const std::string & t,
                     const std::string & pre,
                     const std::string & post);
+
+            /**
+             * Should we be displayed in a tag category summary?
+             */
+            bool visible() const
+            {
+                return _visible;
+            }
 
             /**
              * Fetch our short ID (for example, 'GLSA').
@@ -128,13 +140,14 @@ namespace paludis
     class DepTag;
     class GLSADepTag;
     class GeneralSetDepTag;
+    class DependencyDepTag;
 
     /**
      * Visitor class for visiting the different DepTag subclasses.
      *
      * \ingroup grpdeptag
      */
-    typedef VisitorTypes<GLSADepTag *, GeneralSetDepTag *> DepTagVisitorTypes;
+    typedef VisitorTypes<GLSADepTag *, GeneralSetDepTag *, DependencyDepTag *> DepTagVisitorTypes;
 
     /**
      * A DepTag can be associated with a PackageDepAtom, and is transferred
@@ -228,6 +241,29 @@ namespace paludis
              * Constructor.
              */
             GeneralSetDepTag(const std::string & id);
+
+            virtual std::string short_text() const;
+
+            virtual std::string category() const;
+    };
+
+    /**
+     * DepTag subclass for dependencies.
+     *
+     * \ingroup grpdeptag
+     */
+    class DependencyDepTag :
+        public DepTag,
+        public Visitable<DependencyDepTag, DepTagVisitorTypes>
+    {
+        private:
+            const PackageDatabaseEntry _dbe;
+
+        public:
+            /**
+             * Constructor.
+             */
+            DependencyDepTag(const PackageDatabaseEntry & dbe);
 
             virtual std::string short_text() const;
 

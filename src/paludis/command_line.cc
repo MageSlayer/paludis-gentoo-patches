@@ -78,6 +78,12 @@ CommandLine::CommandLine() :
     a_preserve_world(&install_args, "preserve-world", '1', "Don't modify the world file"),
     a_no_config_protection(&install_args, "no-config-protection", '\0', "Disable config file protection (dangerous)"),
     a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
+    a_show_install_reasons(&install_args, "show-install-reasons", '\0', "Show why packages are being installed",
+            paludis::args::EnumArg::EnumArgOptions
+            ("none",    "Don't show any information")
+            ("summary", "Show a summary")
+            ("full",    "Show full output (can be very verbose)"),
+            "none"),
 
     dl_args(this, "DepList behaviour",
             "Modify dependency list generation behaviour. Use with caution."),
