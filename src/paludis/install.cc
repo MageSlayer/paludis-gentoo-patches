@@ -576,11 +576,18 @@ namespace
 
         if (task.current_dep_list_entry() != task.dep_list().end())
         {
-            cerr << "Resume command: " << DefaultEnvironment::get_instance()->paludis_command() <<
-                " --install --preserve-world --dl-drop-all --dl-no-recursive-deps";
+            cerr << "Resume command: " << DefaultEnvironment::get_instance()->paludis_command() << " "
+                "--dl-installed-deps-pre discard "
+                "--dl-installed-deps-runtime discard "
+                "--dl-installed-deps-post discard "
+                "--dl-uninstalled-deps-pre discard "
+                "--dl-uninstalled-deps-runtime discard "
+                "--dl-uninstalled-deps-post discard "
+                "--install --preserve-world";
             for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
                     i != i_end ; ++i)
-                cerr << " =" << i->package.name << "-" << i->package.version << "::" << i->package.repository;
+                if (! i->already_installed)
+                    cerr << " =" << i->package.name << "-" << i->package.version << "::" << i->package.repository;
             cerr << endl;
         }
     }
