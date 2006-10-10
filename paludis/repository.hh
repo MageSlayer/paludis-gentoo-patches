@@ -567,16 +567,15 @@ namespace paludis
             /**
              * Override in descendents: package list.
              */
-            virtual DepAtom::Pointer do_package_set(const std::string & id, const PackageSetOptions & o) const = 0;
+            virtual DepAtom::Pointer do_package_set(const std::string & id) const = 0;
 
         public:
             /**
              * Fetch a package set.
              */
-            virtual DepAtom::Pointer package_set(const std::string & s,
-                    const PackageSetOptions & o = PackageSetOptions(false)) const
+            virtual DepAtom::Pointer package_set(const std::string & s) const
             {
-                return do_package_set(s, o);
+                return do_package_set(s);
             }
 
             /**

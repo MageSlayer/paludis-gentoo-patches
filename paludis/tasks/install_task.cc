@@ -86,7 +86,7 @@ InstallTask::add_target(const std::string & target)
 
     DepAtom::Pointer s(0);
 
-    if (s = ((_imp->env->package_set(target))))
+    if ((target != "insecurity") && ((s = ((_imp->env->package_set(target))))))
     {
         if (_imp->had_set_targets)
             throw MultipleSetTargetsSpecified();

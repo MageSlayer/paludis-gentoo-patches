@@ -17,14 +17,25 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "libxml_utils.hh"
+#include <paludis/libxml/libxml.hh>
+#include <list>
+#include <paludis/util/join.hh>
+#include <paludis/util/tokeniser.hh>
 
 std::string
-paludis::qa::retarded_libxml_string_to_string(const xmlChar * s)
+paludis::retarded_libxml_string_to_string(const xmlChar * s)
 {
     if (s)
         return std::string(reinterpret_cast<const char *>(s));
     else
         return "";
+}
+
+std::string
+paludis::normalise(const std::string & s)
+{
+    std::list<std::string> words;
+    WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(words));
+    return join(words.begin(), words.end(), " ");
 }
 

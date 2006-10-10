@@ -202,6 +202,18 @@ namespace paludis
             virtual bool insert(const T_ & v) = 0;
 
             /**
+             * Insert a range of items, return whether we inserted everything.
+             */
+            template <typename I_>
+            bool insert(I_ b, const I_ & e)
+            {
+                bool result(false);
+                for ( ; b != e ; ++b)
+                    result |= insert(*b);
+                return result;
+            }
+
+            /**
              * Erase an item, return whether we succeeded.
              */
             virtual bool erase(const T_ & v) = 0;

@@ -99,7 +99,7 @@ namespace paludis
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
-            virtual DepAtom::Pointer do_package_set(const std::string &, const PackageSetOptions &) const;
+            virtual DepAtom::Pointer do_package_set(const std::string &) const;
 
             virtual SetsCollection::ConstPointer sets_list() const;
 

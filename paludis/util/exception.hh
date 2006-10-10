@@ -145,6 +145,23 @@ namespace paludis
     };
 
     /**
+     * A NotAvailableError is an Exception that is thrown if something that is
+     * not available (for example due to compile time configure options or platform
+     * limitations) is used.
+     *
+     * \ingroup grpexceptions
+     */
+    class PALUDIS_VISIBLE NotAvailableError :
+        public Exception
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            NotAvailableError(const std::string & message) throw ();
+    };
+
+    /**
      * A NameError is an Exception that is thrown when some kind of invalid
      * name is encountered.
      *

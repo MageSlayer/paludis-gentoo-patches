@@ -84,7 +84,7 @@ paludis::make_ebuild_repository(
 
     std::string securitydir;
     if (m->end() == m->find("securitydir") || ((securitydir = m->find("securitydir")->second)).empty())
-        securitydir = location + "/metadata/security";
+        securitydir = location + "/metadata/glsa";
 
     std::string newsdir;
     if (m->end() == m->find("newsdir") || ((newsdir = m->find("newsdir")->second)).empty())

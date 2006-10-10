@@ -472,9 +472,9 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
 
         try
         {
-            v->insert(strip_leading_string(
-                        strip_trailing_string(e->basename(), _imp->entries_ptr->file_extension()),
-                        stringify(n.package) + "-"));
+            v->insert(VersionSpec(strip_leading_string(
+                            strip_trailing_string(e->basename(), _imp->entries_ptr->file_extension()),
+                            stringify(n.package) + "-")));
         }
         catch (const NameError &)
         {
@@ -680,7 +680,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 }
 
 DepAtom::Pointer
-PortageRepository::do_package_set(const std::string & s, const PackageSetOptions & o) const
+PortageRepository::do_package_set(const std::string & s) const
 {
     if (s == "system")
     {
@@ -688,7 +688,7 @@ PortageRepository::do_package_set(const std::string & s, const PackageSetOptions
         return _imp->profile_ptr->system_packages();
     }
 
-    return _imp->sets_ptr->package_set(s, o);
+    return _imp->sets_ptr->package_set(s);
 }
 
 SetsCollection::ConstPointer

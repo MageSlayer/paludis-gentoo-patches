@@ -83,7 +83,7 @@ namespace paludis
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &, 
                     const InstallOptions &) const;
 
-            virtual DepAtom::Pointer do_package_set(const std::string &, const PackageSetOptions & o) const;
+            virtual DepAtom::Pointer do_package_set(const std::string &) const;
 
             /* RepositoryUseInterface */
 

@@ -21,6 +21,7 @@
 #include "command_line.hh"
 #include "find_stable_candidates.hh"
 #include "find_dropped_keywords.hh"
+#include "find_insecure_packages.hh"
 #include "find_reverse_deps.hh"
 #include "keywords_graph.hh"
 #include "display_profiles_use.hh"
@@ -136,6 +137,7 @@ main(int argc, char *argv[])
         if (1 != (
                     CommandLine::get_instance()->a_find_stable_candidates.specified() +
                     CommandLine::get_instance()->a_find_dropped_keywords.specified() +
+                    CommandLine::get_instance()->a_find_insecure_packages.specified() +
                     CommandLine::get_instance()->a_keywords_graph.specified() +
                     CommandLine::get_instance()->a_reverse_deps.specified() +
                     CommandLine::get_instance()->a_display_profiles_use.specified() +
@@ -166,6 +168,17 @@ main(int argc, char *argv[])
             do_find_dropped_keywords(env);
             return EXIT_SUCCESS;
         }
+
+        if (CommandLine::get_instance()->a_find_insecure_packages.specified())
+        {
+            if (CommandLine::get_instance()->begin_parameters() !=
+                        CommandLine::get_instance()->end_parameters())
+                throw DoHelp("find-dropped-keywords action takes no parameters");
+
+            do_find_insecure_packages(env);
+            return EXIT_SUCCESS;
+        }
+
 
         if (CommandLine::get_instance()->a_keywords_graph.specified())
         {

@@ -18,6 +18,7 @@ $1_TEST_LDADD = \
 	libpaludisqa.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libxml/libpaludislibxml.la \
 	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
 	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
 	$(DYNAMIC_LD_LIBS) \
@@ -57,6 +58,11 @@ INCLUDES = $(PCREPLUSPLUS_CFLAGS) $(LIBXML2DEPS_CFLAGS)
 
 libpaludisqa_la_SOURCES = filelist
 libpaludisqa_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+libpaludisqa_la_LIBADD = \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libxml/libpaludislibxml.la \
+	@LIBXML2DEPS_LIBS@
 
 TESTS = testlist
 

@@ -30,6 +30,7 @@ adjutrix_SOURCES = \
 	command_line.hh                       command_line.cc      \
 	find_stable_candidates.hh             find_stable_candidates.cc \
 	find_dropped_keywords.hh              find_dropped_keywords.cc \
+	find_insecure_packages.hh             find_insecure_packages.cc \
 	find_reverse_deps.hh                  find_reverse_deps.cc \
 	keywords_graph.hh                     keywords_graph.cc \
 	display_profiles_use.hh               display_profiles_use.cc \

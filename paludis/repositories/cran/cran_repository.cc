@@ -572,7 +572,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
 }
 
 DepAtom::Pointer
-CRANRepository::do_package_set(const std::string & s, const PackageSetOptions &) const
+CRANRepository::do_package_set(const std::string & s) const
 {
     if ("base" == s)
     {

@@ -17,23 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_LIST_REPOSITORIES_HH
-#define PALUDIS_GUARD_SRC_LIST_REPOSITORIES_HH 1
+#ifndef PALUDIS_GUARD_SRC_ADJUTRIX_FIND_INSECURE_PACKAGES_HH
+#define PALUDIS_GUARD_SRC_ADJUTRIX_FIND_INSECURE_PACKAGES_HH 1
 
-/** \file
- * Declaration for the do_list_repositories and do_list_categories functions.
- */
+#include <paludis/environment.hh>
 
-/// Handle --list-repositories.
-int do_list_repositories();
-
-/// Handle --list-categories.
-int do_list_categories();
-
-/// Handle --list-packages.
-int do_list_packages();
-
-/// Handle --list-sets.
-int do_list_sets();
+void do_find_insecure_packages(const paludis::Environment & env);
 
 #endif

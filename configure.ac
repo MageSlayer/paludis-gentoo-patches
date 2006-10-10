@@ -176,6 +176,8 @@ AC_DEFINE_UNQUOTED([HAVE_STD_HASHES], $have_std_hashes, [Do we have std:: hashes
 AC_SUBST([HAVE_STD_HASHES])
 dnl }}}
 
+need_xml_check=
+
 dnl {{{ we need libebt.
 dnl don't use AC_CHECK_HEADER, it does silly things
 AC_MSG_CHECKING([for libebt])
@@ -336,8 +338,7 @@ AC_SUBST([PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS])
 AC_MSG_CHECKING([whether to enable visibility])
 AC_ARG_ENABLE([visibility],
 			  AS_HELP_STRING([--enable-visibility], [Enable visibility (g++-4.1)]),
-			  [ENABLE_VISIBILITY=$enableval
-			   AC_MSG_RESULT([$enableval])],
+			  [ENABLE_VISIBILITY=$enableval],
 			  [ENABLE_VISIBILITY=no])
 AC_MSG_RESULT([$ENABLE_VISIBILITY])
 AC_SUBST([ENABLE_VISIBILITY])
@@ -400,7 +401,7 @@ dnl }}}
 dnl {{{ check for whether to build qa stuff
 AC_MSG_CHECKING([whether to build QA tools])
 AC_ARG_ENABLE([qa],
-			  AS_HELP_STRING([--enable-qa], [Build QA things (needs pcre++)]),
+			  AS_HELP_STRING([--enable-qa], [Build QA things (needs pcre++, libxml2)]),
 			  [ENABLE_QA=$enableval
 			   AC_MSG_RESULT([$enableval])],
 			  [ENABLE_QA=no
@@ -415,13 +416,38 @@ if test x"$ENABLE_QA" = "xyes" ; then
 	else
 		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa is used])
 	fi
-	PKG_CHECK_MODULES(LIBXML2DEPS, [libxml-2.0 >= 2.6], [],
-		[AC_MSG_ERROR([libxml2 (http://xmlsoft.org/) is required if --enable-qa is used])])
-	AC_SUBST(LIBXML2DEPS_CFLAGS)
-	AC_SUBST(LIBXML2DEPS_LIBS)
+	need_xml_check=yes
 fi
 AC_SUBST([ENABLE_QA])
 AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
+dnl }}}
+
+dnl {{{ check for whether to build glsa stuff
+AC_MSG_CHECKING([whether to build GLSA support])
+AC_ARG_ENABLE([qa],
+			  AS_HELP_STRING([--enable-glsa], [Build GLSA things (needs libxml2)]),
+			  [ENABLE_GLSA=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [ENABLE_GLSA=no
+			   AC_MSG_RESULT([no])])
+if test x"$ENABLE_GLSA" = "xyes" ; then
+	need_xml_check=yes
+	AC_DEFINE([ENABLE_GLSA], [1], [Build GLSA support])
+fi
+AC_SUBST([ENABLE_GLSA])
+AM_CONDITIONAL([ENABLE_GLSA], test "x$ENABLE_QA" = "xyes")
+dnl }}}
+
+dnl {{{ libxml2 check
+NEED_XML=$need_xml_check
+if test "x$need_xml_check" = "xyes" ; then
+	PKG_CHECK_MODULES(LIBXML2DEPS, [libxml-2.0 >= 2.6], [],
+		[AC_MSG_ERROR([libxml2 (http://xmlsoft.org/) is required if --enable-qa or --enable-glsa is used])])
+	AC_SUBST(LIBXML2DEPS_CFLAGS)
+	AC_SUBST(LIBXML2DEPS_LIBS)
+fi
+AC_SUBST([NEED_XML])
+AM_CONDITIONAL([NEED_XML], test "x$NEED_XML" = "xyes")
 dnl }}}
 
 dnl {{{ colourschemes
@@ -627,6 +653,7 @@ AC_OUTPUT(
 	paludis/environment/no_config/Makefile
 	paludis/environment/test/Makefile
 	paludis/hashed_containers.hh
+	paludis/libxml/Makefile
 	paludis/qa/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/cran/Makefile

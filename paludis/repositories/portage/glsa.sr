@@ -1,0 +1,8 @@
+make_class_GLSARange()
+{
+    key op std::string;
+    # not a version, may be something like 1.3*
+    key version std::string;
+
+    allow_named_args;
+}

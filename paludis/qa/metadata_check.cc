@@ -20,7 +20,7 @@
 #include <ctime>
 #include <fstream>
 #include <paludis/qa/metadata_check.hh>
-#include <paludis/qa/libxml_utils.hh>
+#include <paludis/libxml/libxml.hh>
 #include <paludis/util/pstream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>

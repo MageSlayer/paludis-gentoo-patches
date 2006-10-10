@@ -30,6 +30,8 @@ CommandLine::CommandLine() :
             "find-stable-candidates", 's',  "Search for stable package candidates"),
     a_find_dropped_keywords(&tree_action_args,
             "find-dropped-keywords",  'd',  "Search for packages where keywords have been dropped"),
+    a_find_insecure_packages(&tree_action_args,
+            "find-insecure-packages",  'i',  "Search for packages marked as insecure by a GLSA"),
     a_keywords_graph(&tree_action_args,
             "keyword-graph",          'k',  "Display keywords graphically"),
     a_reverse_deps(&tree_action_args,
@@ -86,6 +88,9 @@ CommandLine::CommandLine() :
             "[ --category app-misc --category sys-apps ... ] "
             "[ --package foo --package fnord ... ] ");
     add_usage_line("--find-dropped-keywords arch [ --repository-dir /path ] "
+            "[ --category app-misc --category sys-apps ... ] "
+            "[ --package foo --package fnord ... ] ");
+    add_usage_line("--find-insecure-packages [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
             "[ --package foo --package fnord ... ] ");
     add_usage_line("--keywords-graph [ --repository-dir /path ] "

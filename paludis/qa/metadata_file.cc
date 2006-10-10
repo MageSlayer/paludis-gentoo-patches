@@ -18,7 +18,7 @@
  */
 
 #include "metadata_file.hh"
-#include <paludis/qa/libxml_utils.hh>
+#include <paludis/libxml/libxml.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
@@ -40,13 +40,6 @@ namespace paludis
     {
         private:
             std::string _email, _name;
-
-            std::string normalise(const std::string & s)
-            {
-                std::list<std::string> words;
-                WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(words));
-                return join(words.begin(), words.end(), " ");
-            }
 
         public:
             std::set<std::string> herds;

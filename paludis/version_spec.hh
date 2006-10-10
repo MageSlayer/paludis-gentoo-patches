@@ -72,7 +72,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            VersionSpec(const std::string & text);
+            explicit VersionSpec(const std::string & text);
 
             /**
              * Copy constructor.

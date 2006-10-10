@@ -448,7 +448,7 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
 }
 
 DepAtom::Pointer
-CRANInstalledRepository::do_package_set(const std::string & s, const PackageSetOptions &) const
+CRANInstalledRepository::do_package_set(const std::string & s) const
 {
     Context context("When fetching package set '" + s + "' from '" +
             stringify(name()) + "':");

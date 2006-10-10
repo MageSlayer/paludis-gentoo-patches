@@ -122,9 +122,6 @@ class CommandLine :
         /// --list-dep-tag-categories
         paludis::args::SwitchArg a_list_dep_tag_categories;
 
-        /// --list-vulnerabilities
-        paludis::args::SwitchArg a_list_vulnerabilities;
-
         /// --update-news
         paludis::args::SwitchArg a_update_news;
 

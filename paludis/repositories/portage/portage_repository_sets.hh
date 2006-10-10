@@ -62,12 +62,12 @@ namespace paludis
             /**
              * Fetch a package set other than system.
              */
-            DepAtom::Pointer package_set(const std::string & s, const PackageSetOptions & o) const;
+            DepAtom::Pointer package_set(const std::string & s) const;
 
             /**
-             * Fetch the security set.
+             * Fetch the security or insecurity set.
              */
-            DepAtom::Pointer security_set(const PackageSetOptions & o) const;
+            DepAtom::Pointer security_set(bool insecure) const;
 
             /**
              * Give a list of all the sets in this repo.

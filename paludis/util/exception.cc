@@ -100,6 +100,11 @@ Exception::backtrace(const std::string & delim) const
     return _context_data->backtrace(delim);
 }
 
+NotAvailableError::NotAvailableError(const std::string & msg) throw () :
+    Exception("Error: Not available: " + msg)
+{
+}
+
 InternalError::InternalError(const std::string & where, const std::string & our_message) throw () :
     Exception("Eek! Internal error at " + where + ": " + our_message)
 {

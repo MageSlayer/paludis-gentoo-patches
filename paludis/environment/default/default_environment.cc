@@ -433,8 +433,7 @@ DefaultEnvironment::hook_dirs() const
 }
 
 CompositeDepAtom::Pointer
-DefaultEnvironment::local_package_set(const std::string & s,
-        const PackageSetOptions &) const
+DefaultEnvironment::local_package_set(const std::string & s) const
 {
     Context context("When looking for package set '" + s + "' in default environment:");
 

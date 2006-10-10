@@ -20,6 +20,7 @@
 
 #include <paludis/repositories/portage/portage_repository.hh>
 #include <paludis/repositories/portage/portage_repository_sets.hh>
+#include <paludis/repositories/portage/glsa.hh>
 
 #include <paludis/dep_list.hh>
 #include <paludis/environment.hh>
@@ -35,119 +36,9 @@
 #include <list>
 #include <set>
 
+#include "config.h"
+
 using namespace paludis;
-
-namespace
-{
-    class AdvisoryVisitor :
-        private InstantiationPolicy<AdvisoryVisitor, instantiation_method::NonCopyableTag>,
-        public DepAtomVisitorTypes::ConstVisitor
-    {
-        private:
-            const Environment * const _env;
-
-            mutable const CompositeDepAtom & _a;
-
-            mutable std::vector<const PackageDepAtom *> _atoms;
-
-        protected:
-            ///\name Visit methods
-            ///{
-            void visit(const AllDepAtom *);
-            void visit(const AnyDepAtom *) PALUDIS_ATTRIBUTE((noreturn));
-            void visit(const UseDepAtom *);
-            void visit(const PlainTextDepAtom *);
-            void visit(const PackageDepAtom *);
-            void visit(const BlockDepAtom *);
-            ///}
-
-        public:
-            /**
-             * Constructor.
-             */
-            AdvisoryVisitor(const Environment * const env, const CompositeDepAtom & a);
-
-            /**
-             * Destructor.
-             */
-            ~AdvisoryVisitor()
-            {
-            }
-
-            /**
-             * Iterate over our dep atoms.
-             */
-            typedef std::vector<const PackageDepAtom *>::iterator Iterator;
-
-            /**
-             * Grab element by index.
-             */
-            const PackageDepAtom * at(std::vector<const PackageDepAtom *>::size_type n) const
-            {
-                return _atoms[n];
-            }
-
-            /**
-             * Return the number of atoms.
-             */
-            std::vector<const PackageDepAtom *>::size_type size() const
-            {
-                return _atoms.size();
-            }
-    };
-}
-
-AdvisoryVisitor::AdvisoryVisitor(const Environment * const env, const CompositeDepAtom & a) :
-    _env(env),
-    _a(a)
-{
-    Context c("When flattening the AdvisoryFile line:");
-    std::for_each(a.begin(), a.end(), accept_visitor(this));
-    if (_atoms.size() == 2)
-    {
-        VersionOperatorValue v1(_atoms[0]->version_operator().value()),
-                v2(_atoms[1]->version_operator().value());
-
-        if ((v1 == vo_equal) || (v2 == vo_equal))
-            throw AdvisoryFileError("Broken line: Forbidden 'equal' atom in range");
-    }
-}
-
-void
-AdvisoryVisitor::visit(const AllDepAtom * a)
-{
-    std::for_each(a->begin(), a->end(), accept_visitor(this));
-}
-
-void
-AdvisoryVisitor::visit(const AnyDepAtom *)
-{
-    throw AdvisoryFileError("Unexpected AnyDepAtom in line");
-}
-
-void
-AdvisoryVisitor::visit(const UseDepAtom * a)
-{
-    if (_env->query_use(a->flag(), 0) ^ a->inverse())
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-}
-
-void
-AdvisoryVisitor::visit(const PackageDepAtom * a)
-{
-    _atoms.push_back(a);
-}
-
-void
-AdvisoryVisitor::visit(const PlainTextDepAtom *)
-{
-}
-
-void
-AdvisoryVisitor::visit(const BlockDepAtom *)
-{
-}
-
 
 namespace paludis
 {
@@ -186,12 +77,14 @@ PortageRepositorySets::~PortageRepositorySets()
 
 
 DepAtom::Pointer
-PortageRepositorySets::package_set(const std::string & s, const PackageSetOptions & o) const
+PortageRepositorySets::package_set(const std::string & s) const
 {
     if ("system" == s)
         throw InternalError(PALUDIS_HERE, "system set should've been handled by PortageRepository");
     else if ("security" == s)
-        return security_set(o);
+        return security_set(false);
+    else if ("insecurity" == s)
+        return security_set(true);
     else if ((_imp->params.setsdir / (s + ".conf")).exists())
     {
         GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s));
@@ -321,161 +214,163 @@ PortageRepositorySets::find_best(PackageDatabaseEntryCollection & c, const Packa
     return i_best;
 }
 
+namespace
+{
+    bool
+    match_range(const PackageDatabaseEntry & e, const GLSARange & r)
+    {
+        VersionOperatorValue our_op(static_cast<VersionOperatorValue>(-1));
+        std::string ver(r.version);
+        if (r.op == "le")
+            our_op = vo_less_equal;
+        if (r.op == "lt")
+            our_op = vo_less;
+        if (r.op == "eq")
+        {
+            if (! ver.empty() && '*' == ver.at(ver.length() - 1))
+            {
+                ver.erase(ver.length() - 1);
+                our_op = vo_equal_star;
+            }
+            else
+                our_op = vo_equal;
+        }
+        if (r.op == "gt")
+            our_op = vo_greater;
+        if (r.op == "ge")
+            our_op = vo_greater_equal;
+
+        if (-1 != our_op)
+            return (e.version.*(VersionOperator(our_op).as_version_spec_operator()))(VersionSpec(ver));
+
+        if (0 == r.op.compare(0, 1, "r"))
+        {
+            return (e.version.*(VersionOperator(vo_tilde).as_version_spec_operator()))(VersionSpec(ver)) &&
+                match_range(e, GLSARange::create().op(r.op.substr(1)).version(r.version));
+        }
+
+        throw GLSAError("Got bad op '" + r.op + "'");
+    }
+
+    bool
+    is_vulnerable(const GLSAPackage & glsa_pkg, const PackageDatabaseEntry & c)
+    {
+        /* a package is affected if it matches any vulnerable line, except if it matches
+         * any unaffected line. */
+        bool vulnerable(false);
+        for (GLSAPackage::RangesIterator r(glsa_pkg.begin_vulnerable()), r_end(glsa_pkg.end_vulnerable()) ;
+                r != r_end && ! vulnerable ; ++r)
+            if (match_range(c, *r))
+                vulnerable = true;
+
+        if (! vulnerable)
+            return false;
+
+        for (GLSAPackage::RangesIterator r(glsa_pkg.begin_unaffected()), r_end(glsa_pkg.end_unaffected()) ;
+                r != r_end && vulnerable ; ++r)
+            if (match_range(c, *r))
+                vulnerable = false;
+
+        return vulnerable;
+    }
+}
 
 DepAtom::Pointer
-PortageRepositorySets::security_set(const PackageSetOptions & o) const
+PortageRepositorySets::security_set(bool insecurity) const
 {
-    Context c("When building security package set:");
+    Context context("When building security or insecurity package set:");
     AllDepAtom::Pointer security_packages(new AllDepAtom);
 
-    bool list_affected_only(o.list_affected_only);
-    InstallState affected_state(list_affected_only ? is_either : is_installed_only);
-
     if (!_imp->params.securitydir.is_directory())
-        return DepAtom::Pointer(new AllDepAtom);
+        return security_packages;
 
-    std::list<FSEntry> advisories;
-    std::copy(DirIterator(_imp->params.securitydir), DirIterator(),
-        filter_inserter(std::back_inserter(advisories),
-        IsFileWithExtension("advisory-", ".conf")));
+    std::map<std::string, GLSADepTag::Pointer> glsa_tags;
 
-    std::list<FSEntry>::const_iterator f(advisories.begin()),
-        f_end(advisories.end());
-
-    std::set<std::pair<PackageDatabaseEntry, std::string> > affected;
-    PackageDatabaseEntryCollection::Concrete unaffected;
-    std::map<std::string, std::string> advisory_map;
-
-    for ( ; f != f_end; ++f)
+    for (DirIterator f(_imp->params.securitydir), f_end ; f != f_end; ++f)
     {
-        Context context("When parsing security advisory '" + stringify(*f) + "':");
+        if (! IsFileWithExtension("glsa-", ".xml")(*f))
+            continue;
+
+        Context local_context("When parsing security advisory '" + stringify(*f) + "':");
 
         try
         {
-            AdvisoryFile advisory(*f);
-            std::string advisory_id(advisory.get("Id"));
-            advisory_map[advisory_id] = advisory.get("Title");
+            GLSA::ConstPointer glsa(GLSA::create_from_xml_file(stringify(*f)));
+            Context local_local_context("When handling GLSA '" + glsa->id() + "' from '" +
+                    stringify(*f) + "':");
 
-
-            AdvisoryFile::LineIterator a(advisory.begin_affected()), a_end(advisory.end_affected());
-            for ( ; a != a_end ; ++a)
+            for (GLSA::PackagesIterator glsa_pkg(glsa->begin_packages()),
+                    glsa_pkg_end(glsa->end_packages()) ; glsa_pkg != glsa_pkg_end ; ++glsa_pkg)
             {
-                Context local_context("When parsing line 'Affected: " + *a + "':");
-
-                CompositeDepAtom::ConstPointer line(PortageDepParser::parse(*a));
-                AdvisoryVisitor atoms(_imp->environment, *line);
-
-                if ((0 == atoms.size()) || (2 < atoms.size()))
+                PackageDatabaseEntryCollection::ConstPointer candidates(_imp->environment->package_database()->query(
+                            PackageDepAtom::Pointer(new PackageDepAtom(stringify(glsa_pkg->name()))),
+                            insecurity ? is_either : is_installed_only));
+                for (PackageDatabaseEntryCollection::Iterator c(candidates->begin()), c_end(candidates->end()) ;
+                        c != c_end ; ++c)
                 {
-                    continue;
-                }
-
-                bool is_range(2 == atoms.size());
-
-                PackageDatabaseEntryCollection::ConstPointer affected_collection1(
-                        _imp->environment->package_database()->query(*atoms.at(0), affected_state));
-                PackageDatabaseEntryCollection::ConstPointer affected_collection2(
-                        new PackageDatabaseEntryCollection::Concrete);
-                PackageDatabaseEntryCollection::Iterator p(affected_collection1->begin()),
-                    p_end(affected_collection1->end());
-
-                if (is_range)
-                    affected_collection2 = _imp->environment->package_database()->query(
-                            *atoms.at(1), affected_state);
-
-                for ( ; p != p_end ; ++p)
-                {
-                    if ((affected.end() != affected.find(std::make_pair(*p, advisory_id))))
+                    if (! is_vulnerable(*glsa_pkg, *c))
                         continue;
-                    if ((! is_range) || (affected_collection2->end() != affected_collection2->find(*p)))
-                        affected.insert(std::make_pair(*p, advisory_id));
-                }
-            }
 
-            AdvisoryFile::LineIterator u(advisory.begin_unaffected()), u_end(advisory.end_unaffected());
-            for ( ; u != u_end ; ++u)
-            {
-                Context local_c("When parsing line 'Unaffected: " + *u + "':");
+                    if (glsa_tags.end() == glsa_tags.find(glsa->id()))
+                        glsa_tags.insert(std::make_pair(glsa->id(), GLSADepTag::Pointer(
+                                        new GLSADepTag(glsa->id(), glsa->title()))));
 
-                CompositeDepAtom::ConstPointer line(PortageDepParser::parse(*u));
-                AdvisoryVisitor atoms(_imp->environment, *line);
-
-                if ((0 == atoms.size()) || (2 < atoms.size()))
-                {
-                    continue;
-                }
-
-                bool is_range(2 == atoms.size());
-
-                PackageDatabaseEntryCollection::ConstPointer unaffected_collection1(
-                        _imp->environment->package_database()->query(*atoms.at(0), is_either));
-                PackageDatabaseEntryCollection::ConstPointer unaffected_collection2(
-                        new PackageDatabaseEntryCollection::Concrete);
-                PackageDatabaseEntryCollection::Iterator p(unaffected_collection1->begin()),
-                    p_end(unaffected_collection1->end());
-
-                if (is_range)
-                    unaffected_collection2 = _imp->environment->package_database()->query(
-                            *atoms.at(1), is_either);
-
-                for ( ; p != p_end ; ++p)
-                {
-                    if ((! is_range) || (unaffected_collection2->end() != unaffected_collection2->find(*p)))
+                    if (insecurity)
                     {
-                        unaffected.insert(*p);
-                        std::set<std::pair<PackageDatabaseEntry, std::string> >::iterator
-                                aff(affected.find(std::make_pair(*p, advisory_id)));
-                        if (aff != affected.end())
-                            affected.erase(aff);
+                        PackageDepAtom::Pointer atom(new PackageDepAtom(
+                                    "=" + stringify(c->name) + "-" + stringify(c->version) +
+                                    "::" + stringify(c->repository)));
+                        atom->set_tag(glsa_tags.find(glsa->id())->second);
+                        security_packages->add_child(atom);
+                    }
+                    else
+                    {
+                        /* we need to find the best not vulnerable installable package that isn't masked
+                         * that's in the same slot as our vulnerable installed package. */
+                        bool ok(false);
+                        SlotName wanted_slot(_imp->environment->package_database()->fetch_repository(
+                                    c->repository)->version_metadata(c->name, c->version)->slot);
+
+                        PackageDatabaseEntryCollection::ConstPointer available(
+                                _imp->environment->package_database()->query(PackageDepAtom::Pointer(
+                                        new PackageDepAtom(stringify(glsa_pkg->name()))), is_uninstalled_only));
+                        for (PackageDatabaseEntryCollection::ReverseIterator r(available->rbegin()),
+                                r_end(available->rend()) ; r != r_end ; ++r)
+                        {
+                            if (_imp->environment->mask_reasons(*r).any())
+                                continue;
+                            if (_imp->environment->package_database()->fetch_repository(r->repository)->version_metadata(
+                                        r->name, r->version)->slot != wanted_slot)
+                                continue;
+                            if (is_vulnerable(*glsa_pkg, *r))
+                                continue;
+
+                            PackageDepAtom::Pointer atom(new PackageDepAtom(
+                                        "=" + stringify(r->name) + "-" + stringify(r->version) +
+                                        "::" + stringify(r->repository)));
+                            atom->set_tag(glsa_tags.find(glsa->id())->second);
+                            security_packages->add_child(atom);
+                            ok = true;
+                            break;
+                        }
+
+                        if (! ok)
+                            throw GLSAError("Could not determine upgrade path to resolve '"
+                                    + glsa->id() + ": " + glsa->title() + "' for package '"
+                                    + stringify(*c) + "'");
                     }
                 }
             }
         }
-        catch (const AdvisoryFileError & e)
+        catch (const GLSAError & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context,
-                    "Malformed advisory file '" + stringify(*f) + "': " + e.message());
+            Log::get_instance()->message(ll_warning, lc_context, "Cannot use GLSA '" +
+                    stringify(*f) + "' due to exception '" + e.message() + "' (" + e.what() + ")");
         }
-        catch (const InternalError & e)
+        catch (const NameError & e)
         {
-            throw;
-        }
-        catch (const Exception & e)
-        {
-            Log::get_instance()->message(ll_warning, lc_context,
-                    "Exception caught while parsing advisory '" + stringify(*f) +
-                    "': " + e.message());
-        }
-
-    }
-
-    std::set<std::pair<PackageDatabaseEntry, std::string> >::const_iterator
-        i(affected.begin()), i_end(affected.end());
-    if (list_affected_only)
-    {
-        for ( ; i != i_end ; ++i)
-        {
-            Context context("When creating adding vulnerable package '" + stringify(i->first) + "':");
-
-            PackageDepAtom::Pointer p(make_atom(i->first));
-            p->set_tag(GLSADepTag::Pointer(new GLSADepTag(i->second, advisory_map[i->second])));
-            security_packages->add_child(p);
-        }
-    }
-    else
-    {
-        for ( ; i != i_end ; ++i)
-        {
-            Context context("When finding best update for package '" + stringify(i->first) +
-                    "', affected by '" + i->second + "':");
-
-            PackageDatabaseEntryCollection::Iterator best = find_best(unaffected, i->first);
-            if (best == unaffected.end())
-                throw AllMaskedError("No best update available for package '" + stringify(i->first) + "':");
-
-            PackageDepAtom::Pointer p(make_atom(*best));
-            p->set_tag(GLSADepTag::Pointer(new GLSADepTag(i->second, advisory_map[i->second])));
-            security_packages->add_child(p);
+            Log::get_instance()->message(ll_warning, lc_context, "Cannot use GLSA '" +
+                    stringify(*f) + "' due to exception '" + e.message() + "' (" + e.what() + ")");
         }
     }
 

@@ -171,7 +171,6 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_list_sync_protocols.specified() +
                     CommandLine::get_instance()->a_list_repository_formats.specified() +
                     CommandLine::get_instance()->a_list_dep_tag_categories.specified() +
-                    CommandLine::get_instance()->a_list_vulnerabilities.specified() +
                     CommandLine::get_instance()->a_contents.specified() +
                     CommandLine::get_instance()->a_owner.specified() +
                     CommandLine::get_instance()->a_has_version.specified() +
@@ -227,14 +226,6 @@ main(int argc, char *argv[])
                 throw DoHelp("list-dep-tag-categories action takes no parameters");
 
             return do_list_dep_tag_categories();
-        }
-
-        if (CommandLine::get_instance()->a_list_vulnerabilities.specified())
-        {
-            if (! CommandLine::get_instance()->empty())
-                throw DoHelp("list-vulnerabilities action takes no paramters");
-
-            return do_list_vulnerabilities();
         }
 
         /* these actions do need DefaultConfig */

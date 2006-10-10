@@ -16,20 +16,6 @@ make_class_InstallOptions()
 END
 }
 
-make_class_PackageSetOptions()
-{
-    key list_affected_only bool
-
-    doxygen_comment << "END"
-        /**
-         * Options for the Repository::package_set method.
-         *
-         * \see Repository
-         * \ingroup grprepository
-         */
-END
-}
-
 make_class_RepositoryCapabilities()
 {
     key installable_interface "RepositoryInstallableInterface *"

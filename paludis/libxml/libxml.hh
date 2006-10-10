@@ -21,44 +21,44 @@
 #define PALUDIS_GUARD_PALUDIS_QA_LIBXML_UTILS_HH 1
 
 #include <libxml/parser.h>
+#include <paludis/util/attributes.hh>
 #include <string>
 
 namespace paludis
 {
-    namespace qa
+    template <typename PtrType_>
+    class LibXmlPtrHolder
     {
-        template <typename PtrType_>
-        class LibXmlPtrHolder
-        {
-            private:
-                PtrType_ _ptr;
-                void (* _free_func) (PtrType_);
+        private:
+            PtrType_ _ptr;
+            void (* _free_func) (PtrType_);
 
-                LibXmlPtrHolder(const LibXmlPtrHolder &);
-                void operator= (const LibXmlPtrHolder &);
+            LibXmlPtrHolder(const LibXmlPtrHolder &);
+            void operator= (const LibXmlPtrHolder &);
 
-            public:
-                LibXmlPtrHolder(PtrType_ ptr, void (* free_func) (PtrType_)) :
-                    _ptr(ptr),
-                    _free_func(free_func)
-                {
-                }
+        public:
+            LibXmlPtrHolder(PtrType_ ptr, void (* free_func) (PtrType_)) :
+                _ptr(ptr),
+                _free_func(free_func)
+            {
+            }
 
-                ~LibXmlPtrHolder()
-                {
-                    if (0 != _ptr)
-                        _free_func(_ptr);
-                }
+            ~LibXmlPtrHolder()
+            {
+                if (0 != _ptr)
+                    _free_func(_ptr);
+            }
 
-                operator PtrType_ () const
-                {
-                    return _ptr;
-                }
-        };
+            operator PtrType_ () const
+            {
+                return _ptr;
+            }
+    };
 
-        std::string
-        retarded_libxml_string_to_string(const xmlChar * s);
-    }
+    std::string
+    retarded_libxml_string_to_string(const xmlChar * s) PALUDIS_VISIBLE;
+
+    std::string normalise(const std::string & s) PALUDIS_VISIBLE;
 }
 
 

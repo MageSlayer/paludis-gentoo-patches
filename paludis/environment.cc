@@ -191,7 +191,7 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
 }
 
 DepAtom::Pointer
-Environment::package_set(const std::string & s, const PackageSetOptions & o) const
+Environment::package_set(const std::string & s) const
 {
     /* favour local sets first */
     CompositeDepAtom::Pointer result(local_package_set(s));
@@ -209,7 +209,7 @@ Environment::package_set(const std::string & s, const PackageSetOptions & o) con
         if (! (*r)->sets_interface)
             continue;
 
-        DepAtom::Pointer add((*r)->sets_interface->package_set(s, o));
+        DepAtom::Pointer add((*r)->sets_interface->package_set(s));
         if (0 != add)
         {
             if (! result)
