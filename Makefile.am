@@ -8,12 +8,12 @@ SUBDIRS = misc test paludis cran ebuild ruby src doc hooks eselect
 DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --with-ruby-install-dir='$${prefix}/ruby_dir'
 
 automake-deps-hack.tmp :
-	make -C paludis/util
-	make -C paludis/args
-	make -C paludis/qa message-sr.hh
-	make -C src libcolour.a
-	make -C src/paludis paludis.1
-	make -C src/qualudis qualudis.1
+	$(MAKE) -C paludis/util
+	$(MAKE) -C paludis/args
+	$(MAKE) -C paludis/qa message-sr.hh
+	$(MAKE) -C src libcolour.a
+	$(MAKE) -C src/paludis paludis.1
+	$(MAKE) -C src/qualudis qualudis.1
 	touch $@
 
 dist-hook :
