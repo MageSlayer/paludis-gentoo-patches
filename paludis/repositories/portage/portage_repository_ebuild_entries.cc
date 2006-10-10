@@ -315,8 +315,10 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
                     throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since SRC_URI is broken");
 
-                if (! _imp->portage_repository->is_mirror(mirror.substr(0, spos)))
-                    throw PackageInstallActionError("Can't install '" + stringify(spos) + "-"
+                if (! _imp->portage_repository->is_mirror(mirror.substr(0, spos)) &&
+                        _imp->params.environment->begin_mirrors(mirror.substr(0, spos)) == 
+                        _imp->params.environment->end_mirrors(mirror.substr(0, spos)))
+                    throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                             + stringify(v) + "' since SRC_URI references unknown mirror:// '" +
                             mirror.substr(0, spos) + "'");
 
