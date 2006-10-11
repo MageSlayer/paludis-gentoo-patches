@@ -100,3 +100,15 @@ paludis::make_ebin_repository(
                 .buildroot(buildroot)));
 }
 
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility push(default)
+#endif
+namespace
+{
+    const RepositoryMaker::RegisterMaker register_portage_ebin_repository PALUDIS_ATTRIBUTE((used)) (
+            "ebin", &make_ebin_repository);
+}
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility pop
+#endif
+

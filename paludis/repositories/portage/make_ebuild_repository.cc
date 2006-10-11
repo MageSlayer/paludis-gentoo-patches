@@ -142,3 +142,18 @@ paludis::make_portage_repository(
     return make_ebuild_repository(env, db, m);
 }
 
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility push(default)
+#endif
+namespace
+{
+    const RepositoryMaker::RegisterMaker register_portage_ebuild_repository PALUDIS_ATTRIBUTE((used)) (
+            "ebuild", &make_ebuild_repository);
+
+    const RepositoryMaker::RegisterMaker register_portage_portage_repository PALUDIS_ATTRIBUTE((used)) (
+            "portage", &make_portage_repository);
+}
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility pop
+#endif
+

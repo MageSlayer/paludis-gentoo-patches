@@ -542,3 +542,15 @@ PortageRepositoryEbuildEntries::make_portage_repository_ebuild_entries(
     return Pointer(new PortageRepositoryEbuildEntries(e, r, p));
 }
 
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility push(default)
+#endif
+namespace
+{
+    const PortageRepositoryEntriesMaker::RegisterMaker register_portage_repository_ebuild_entries PALUDIS_ATTRIBUTE((used)) (
+            "ebuild", &PortageRepositoryEbuildEntries::make_portage_repository_ebuild_entries);
+}
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility pop
+#endif
+

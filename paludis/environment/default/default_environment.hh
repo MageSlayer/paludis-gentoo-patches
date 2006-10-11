@@ -37,7 +37,7 @@ namespace paludis
      *
      * \ingroup grpdefaultenvironment
      */
-    class DefaultEnvironment :
+    class PALUDIS_VISIBLE DefaultEnvironment :
         public Environment,
         public InstantiationPolicy<DefaultEnvironment, instantiation_method::SingletonAsNeededTag>
     {

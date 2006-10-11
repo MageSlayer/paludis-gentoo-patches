@@ -24,7 +24,7 @@
 
 namespace paludis
 {
-    class FakeInstalledRepository :
+    class PALUDIS_VISIBLE FakeInstalledRepository :
         public FakeRepositoryBase,
         public RepositoryInstalledInterface
     {

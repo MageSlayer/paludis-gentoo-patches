@@ -29,7 +29,7 @@ namespace paludis
 {
 #include <paludis/environment/no_config/no_config_environment-sr.hh>
 
-    class NoConfigEnvironment :
+    class PALUDIS_VISIBLE NoConfigEnvironment :
         private PrivateImplementationPattern<NoConfigEnvironment>,
         public Environment
     {

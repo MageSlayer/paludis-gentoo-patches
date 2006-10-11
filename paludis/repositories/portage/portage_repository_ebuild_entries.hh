@@ -40,7 +40,7 @@ namespace paludis
      *
      * \ingroup grpportagerepository
      */
-    class PortageRepositoryEbuildEntries :
+    class PALUDIS_VISIBLE PortageRepositoryEbuildEntries :
         public PortageRepositoryEntries,
         private PrivateImplementationPattern<PortageRepositoryEbuildEntries>
     {
@@ -65,16 +65,6 @@ namespace paludis
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &, PortageRepositoryProfile::ConstPointer) const;
     };
-
-    /**
-     * Register PortageRepositoryEbuildEntries.
-     *
-     * \ingroup grpportagerepository
-     */
-    static const PortageRepositoryEntriesMaker::RegisterMaker register_portage_repository_ebuild_entries(
-            "ebuild", &PortageRepositoryEbuildEntries::make_portage_repository_ebuild_entries);
-
-
 }
 
 #endif

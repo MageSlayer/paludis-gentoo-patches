@@ -584,3 +584,16 @@ CRANInstalledRepository::remove_from_world(const QualifiedPackageName & n) const
     std::copy(world_lines.begin(), world_lines.end(),
             std::ostream_iterator<std::string>(world_file, "\n"));
 }
+
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility push(default)
+#endif
+namespace
+{
+    const RepositoryMaker::RegisterMaker register_cran_installed_repository PALUDIS_ATTRIBUTE((used)) (
+            "cran_installed", &CRANInstalledRepository::make_cran_installed_repository);
+}
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility pop
+#endif
+

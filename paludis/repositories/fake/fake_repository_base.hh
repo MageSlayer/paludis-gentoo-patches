@@ -39,7 +39,7 @@ namespace paludis
      * \see FakeInstalledRepository
      * \ingroup grpfakerepository
      */
-    class FakeRepositoryBase :
+    class PALUDIS_VISIBLE FakeRepositoryBase :
         public Repository,
         public RepositoryMaskInterface,
         public RepositoryUseInterface,

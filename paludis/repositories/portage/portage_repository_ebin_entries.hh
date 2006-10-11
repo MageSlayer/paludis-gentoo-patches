@@ -40,7 +40,7 @@ namespace paludis
      *
      * \ingroup grpportagerepository
      */
-    class PortageRepositoryEbinEntries :
+    class PALUDIS_VISIBLE PortageRepositoryEbinEntries :
         public PortageRepositoryEntries,
         private PrivateImplementationPattern<PortageRepositoryEbinEntries>
     {
@@ -65,16 +65,6 @@ namespace paludis
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &, PortageRepositoryProfile::ConstPointer) const;
     };
-
-    /**
-     * Register PortageRepositoryEbinEntries.
-     *
-     * \ingroup grpportagerepository
-     */
-    static const PortageRepositoryEntriesMaker::RegisterMaker register_portage_repository_ebin_entries(
-            "ebin", &PortageRepositoryEbinEntries::make_portage_repository_ebin_entries);
-
-
 }
 
 #endif

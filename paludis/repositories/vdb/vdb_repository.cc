@@ -1165,3 +1165,15 @@ VDBRepository::do_use_expand_value(const UseFlagName & u) const
     return u;
 }
 
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility push(default)
+#endif
+namespace
+{
+    const RepositoryMaker::RegisterMaker register_vdb_repository PALUDIS_ATTRIBUTE((used)) (
+            "vdb", &VDBRepository::make_vdb_repository);
+}
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility pop
+#endif
+

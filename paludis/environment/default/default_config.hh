@@ -49,7 +49,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpdefaultconfig
      */
-    class DefaultConfigError : public ConfigurationError
+    class PALUDIS_VISIBLE DefaultConfigError : public ConfigurationError
     {
         public:
             /**
@@ -67,7 +67,7 @@ namespace paludis
      *
      * \ingroup grpdefaultconfig
      */
-    class DefaultConfig :
+    class PALUDIS_VISIBLE DefaultConfig :
         public InstantiationPolicy<DefaultConfig, instantiation_method::SingletonAsNeededTag>,
         private PrivateImplementationPattern<DefaultConfig>
     {

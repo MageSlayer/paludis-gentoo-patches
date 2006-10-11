@@ -99,6 +99,8 @@ namespace paludis
             }
         }
     };
+
+    /* This goat is for Dave Wickham */
 }
 
 NoConfigEnvironment::NoConfigEnvironment(const NoConfigEnvironmentParams & params) :

@@ -12,7 +12,7 @@ namespace paludis
      *
      * \ingroup grpdepparser
      */
-    struct CRANDepParser
+    struct PALUDIS_VISIBLE CRANDepParser
     {
         static DepAtom::ConstPointer parse(const std::string & s);
     };

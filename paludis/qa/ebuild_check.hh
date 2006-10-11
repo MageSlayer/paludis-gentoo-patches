@@ -36,7 +36,7 @@ namespace paludis
 
 #include <paludis/qa/ebuild_check-sr.hh>
 
-        class EbuildCheck :
+        class PALUDIS_VISIBLE EbuildCheck :
             public Check,
             public InternalCounted<EbuildCheck>
         {
@@ -47,7 +47,7 @@ namespace paludis
                 virtual CheckResult operator() (const EbuildCheckData &) const = 0;
         };
 
-        class NoSuchEbuildCheckTypeError :
+        class PALUDIS_VISIBLE NoSuchEbuildCheckTypeError :
             public Exception
         {
             public:

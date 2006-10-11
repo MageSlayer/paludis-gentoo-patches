@@ -44,7 +44,7 @@ namespace paludis
      *
      * \ingroup grpportagerepository
      */
-    class PortageRepository :
+    class PALUDIS_VISIBLE PortageRepository :
         public Repository,
         public RepositoryMaskInterface,
         public RepositoryUseInterface,

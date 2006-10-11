@@ -34,7 +34,7 @@ namespace paludis
 
 #include <paludis/repositories/portage/glsa-sr.hh>
 
-    class GLSAError :
+    class PALUDIS_VISIBLE GLSAError :
         public ConfigurationError
     {
         public:
@@ -47,7 +47,7 @@ namespace paludis
             ///\}
     };
 
-    class GLSAPackage :
+    class PALUDIS_VISIBLE GLSAPackage :
         private PrivateImplementationPattern<GLSAPackage>,
         public InternalCounted<GLSAPackage>
     {
@@ -71,7 +71,7 @@ namespace paludis
             QualifiedPackageName name() const;
     };
 
-    class GLSA :
+    class PALUDIS_VISIBLE GLSA :
         private PrivateImplementationPattern<GLSA>,
         public InternalCounted<GLSA>
     {

@@ -246,6 +246,15 @@ then
 	do
 		if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "$x" >/dev/null ; then
 			AC_MSG_RESULT([$x])
+			if test $x = "as-needed" ; then
+				echo "You shouldn't have as-needed as a global flag. It makes the linker break" 1>&2
+				echo "legitimate code. For more details, read http://ciaranm.org/show_post.pl?post_id=13" 1>&2
+			fi
+			if test $x = "visibility" ; then
+				echo "Don't use visibility except for applications that're designed for" 1>&2
+				echo "it. At present, Paludis can't be used with visibility because of what" 1>&2
+				echo "appears to be an ld.so bug." 1>&2
+			fi
 			AC_MSG_ERROR([Bad ricer. No bagel.])
 		fi
 	done
@@ -335,12 +344,13 @@ AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WSHADOW])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS])
 
-AC_MSG_CHECKING([whether to enable visibility])
-AC_ARG_ENABLE([visibility],
-			  AS_HELP_STRING([--enable-visibility], [Enable visibility (g++-4.1)]),
-			  [ENABLE_VISIBILITY=$enableval],
-			  [ENABLE_VISIBILITY=no])
-AC_MSG_RESULT([$ENABLE_VISIBILITY])
+dnl AC_MSG_CHECKING([whether to enable visibility])
+dnl AC_ARG_ENABLE([visibility],
+dnl 			  AS_HELP_STRING([--enable-visibility], [Enable visibility (g++-4.1)]),
+dnl 			  [ENABLE_VISIBILITY=$enableval],
+dnl 			  [ENABLE_VISIBILITY=no])
+dnl AC_MSG_RESULT([$ENABLE_VISIBILITY])
+ENABLE_VISIBILITY=no
 AC_SUBST([ENABLE_VISIBILITY])
 if test "x$ENABLE_VISIBILITY" = "xyes" ; then
 	AC_MSG_CHECKING([for appropriate compiler visibility flags])

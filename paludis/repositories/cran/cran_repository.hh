@@ -43,7 +43,7 @@ namespace paludis
      *
      * \ingroup grpcranrepository
      */
-    class CRANRepository :
+    class PALUDIS_VISIBLE CRANRepository :
         public Repository,
         public RepositoryInstallableInterface,
         public RepositorySyncableInterface,
@@ -124,7 +124,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpportagerepository
      */
-    class CRANRepositoryConfigurationError : public ConfigurationError
+    class PALUDIS_VISIBLE CRANRepositoryConfigurationError : public ConfigurationError
     {
         public:
             /**
@@ -132,13 +132,6 @@ namespace paludis
              */
             CRANRepositoryConfigurationError(const std::string & msg) throw ();
     };
-
-    /**
-     * Register CRANRepository.
-     */
-    static const RepositoryMaker::RegisterMaker register_cran_repository(
-            "cran", &CRANRepository::make_cran_repository);
-
 }
 
 #endif

@@ -40,7 +40,7 @@ namespace paludis
      *
      * \ingroup grpportagerepository
      */
-    class PortageRepositorySets :
+    class PALUDIS_VISIBLE PortageRepositorySets :
         private PrivateImplementationPattern<PortageRepositorySets>,
         private InstantiationPolicy<PortageRepositorySets, instantiation_method::NonCopyableTag>,
         public InternalCounted<PortageRepositorySets>

@@ -38,7 +38,7 @@ namespace paludis
          *
          * \ingroup QA
          */
-        class Check :
+        class PALUDIS_VISIBLE Check :
             private InstantiationPolicy<Check, instantiation_method::NonCopyableTag>
         {
             protected:

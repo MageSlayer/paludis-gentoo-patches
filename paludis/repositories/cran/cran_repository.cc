@@ -623,3 +623,15 @@ CRANRepository::invalidate() const
     _imp->invalidate();
 }
 
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility push(default)
+#endif
+namespace
+{
+    const RepositoryMaker::RegisterMaker register_cran_repository PALUDIS_ATTRIBUTE((used)) (
+            "cran", &CRANRepository::make_cran_repository);
+}
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility pop
+#endif
+

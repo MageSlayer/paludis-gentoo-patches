@@ -27,29 +27,12 @@ namespace paludis
     CountedPtr<Repository>
     make_ebuild_repository(const Environment * const,
             const PackageDatabase * const,
-            AssociativeCollection<std::string, std::string>::ConstPointer);
+            AssociativeCollection<std::string, std::string>::ConstPointer) PALUDIS_VISIBLE;
 
     CountedPtr<Repository>
     make_portage_repository(const Environment * const,
             const PackageDatabase * const,
-            AssociativeCollection<std::string, std::string>::ConstPointer);
-
-    /**
-     * Register PortageRepository for ebuilds.
-     *
-     * \ingroup grpportagerepository
-     */
-    static const RepositoryMaker::RegisterMaker register_portage_ebuild_repository(
-            "ebuild", &make_ebuild_repository);
-
-    /**
-     * Register PortageRepository for ebuilds (deprecated format = portage).
-     *
-     * \ingroup grpportagerepository
-     */
-    static const RepositoryMaker::RegisterMaker register_portage_portage_repository(
-            "portage", &make_portage_repository);
-
+            AssociativeCollection<std::string, std::string>::ConstPointer) PALUDIS_VISIBLE;
 }
 
 #endif

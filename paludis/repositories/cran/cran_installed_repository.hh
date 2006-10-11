@@ -43,7 +43,7 @@ namespace paludis
      *
      * \ingroup grpcraninstrepository
      */
-    class CRANInstalledRepository :
+    class PALUDIS_VISIBLE CRANInstalledRepository :
         public Repository,
         public RepositoryInstalledInterface,
         public RepositoryUninstallableInterface,
@@ -124,7 +124,7 @@ namespace paludis
      * \ingroup grpcraninstrepository
      * \ingroup grpexceptions
      */
-    class CRANInstalledRepositoryConfigurationError : public ConfigurationError
+    class PALUDIS_VISIBLE CRANInstalledRepositoryConfigurationError : public ConfigurationError
     {
         public:
             /**
@@ -132,14 +132,6 @@ namespace paludis
              */
             CRANInstalledRepositoryConfigurationError(const std::string & msg) throw ();
     };
-
-    /**
-     * Register the CRAN Installed repository format.
-     *
-     * \ingroup grpcraninstrepository
-     */
-    static const RepositoryMaker::RegisterMaker register_cran_installed_repository(
-            "cran_installed", &CRANInstalledRepository::make_cran_installed_repository);
 }
 
 #endif

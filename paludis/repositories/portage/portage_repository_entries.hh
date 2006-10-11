@@ -47,7 +47,7 @@ namespace paludis
      *
      * \ingroup grpportagerepository
      */
-    class PortageRepositoryEntries :
+    class PALUDIS_VISIBLE PortageRepositoryEntries :
         public InternalCounted<PortageRepositoryEntries>
     {
         private:
@@ -101,7 +101,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grprepository
      */
-    class NoSuchPortageRepositoryEntriesType : public ConfigurationError
+    class PALUDIS_VISIBLE NoSuchPortageRepositoryEntriesType : public ConfigurationError
     {
         public:
             /**

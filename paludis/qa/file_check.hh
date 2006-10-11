@@ -42,7 +42,7 @@ namespace paludis
          *
          * \ingroup QA
          */
-        class FileCheck :
+        class PALUDIS_VISIBLE FileCheck :
             public Check,
             public InternalCounted<FileCheck>
         {
@@ -53,7 +53,7 @@ namespace paludis
                 virtual CheckResult operator() (const FSEntry &) const = 0;
         };
 
-        class NoSuchFileCheckTypeError :
+        class PALUDIS_VISIBLE NoSuchFileCheckTypeError :
             public Exception
         {
             public:

@@ -42,7 +42,7 @@ namespace paludis
      *
      * \ingroup grpnothingrepository
      */
-    class NothingRepository :
+    class PALUDIS_VISIBLE NothingRepository :
         public Repository,
         public RepositorySyncableInterface,
         private PrivateImplementationPattern<NothingRepository>
@@ -110,13 +110,6 @@ namespace paludis
              */
             NothingRepositoryConfigurationError(const std::string & msg) throw ();
     };
-
-    /**
-     * Register NothingRepository.
-     */
-    static const RepositoryMaker::RegisterMaker register_nothing_repository(
-            "nothing", &NothingRepository::make_nothing_repository);
-
 }
 
 

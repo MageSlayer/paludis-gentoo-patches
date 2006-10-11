@@ -27,15 +27,7 @@ namespace paludis
     CountedPtr<Repository>
     make_ebin_repository(const Environment * const,
             const PackageDatabase * const,
-            AssociativeCollection<std::string, std::string>::ConstPointer);
-
-    /**
-     * Register PortageRepository for ebins.
-     *
-     * \ingroup grpportagerepository
-     */
-    static const RepositoryMaker::RegisterMaker register_portage_ebin_repository(
-            "ebin", &make_ebin_repository);
+            AssociativeCollection<std::string, std::string>::ConstPointer) PALUDIS_VISIBLE;
 
 }
 

@@ -365,4 +365,15 @@ PortageRepositoryEbinEntries::make_portage_repository_ebin_entries(
     return Pointer(new PortageRepositoryEbinEntries(e, r, p));
 }
 
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility push(default)
+#endif
+namespace
+{
+    const PortageRepositoryEntriesMaker::RegisterMaker register_portage_repository_ebin_entries PALUDIS_ATTRIBUTE((used)) (
+            "ebin", &PortageRepositoryEbinEntries::make_portage_repository_ebin_entries);
+}
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility pop
+#endif
 

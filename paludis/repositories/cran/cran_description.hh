@@ -28,7 +28,7 @@ namespace paludis
     /**
      * CRANDescription as used by CRANRepository and CRANInstalledRepository
      */
-    struct CRANDescription
+    struct PALUDIS_VISIBLE CRANDescription
     {
         /// Our package name.
         QualifiedPackageName name;
@@ -77,7 +77,7 @@ namespace paludis
          *
          * \ingroup grpcrandesc
          */
-        struct ComparePackage
+        struct PALUDIS_VISIBLE ComparePackage
         {
             bool operator() (const QualifiedPackageName & c, const CRANDescription & d) const
             {
@@ -95,7 +95,7 @@ namespace paludis
          *
          * \ingroup grpcrandesc
          */
-        struct CompareVersion
+        struct PALUDIS_VISIBLE CompareVersion
         {
             bool operator() (const std::pair<QualifiedPackageName, VersionSpec> & c,
                     const CRANDescription & d) const

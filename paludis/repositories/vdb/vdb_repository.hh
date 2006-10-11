@@ -44,7 +44,7 @@ namespace paludis
      *
      * \ingroup grpvdbrepository
      */
-    class VDBRepository :
+    class PALUDIS_VISIBLE VDBRepository :
         public Repository,
         public RepositoryInstalledInterface,
         public RepositoryUseInterface,
@@ -146,7 +146,7 @@ namespace paludis
      * \ingroup grpvdbrepository
      * \ingroup grpexceptions
      */
-    class VDBRepositoryConfigurationError : public ConfigurationError
+    class PALUDIS_VISIBLE VDBRepositoryConfigurationError : public ConfigurationError
     {
         public:
             /**
@@ -161,7 +161,7 @@ namespace paludis
      * \ingroup grpvdbrepository
      * \ingroup grpexceptions
      */
-    class VDBRepositoryKeyReadError : public ConfigurationError
+    class PALUDIS_VISIBLE VDBRepositoryKeyReadError : public ConfigurationError
     {
         public:
             /**
@@ -169,14 +169,6 @@ namespace paludis
              */
             VDBRepositoryKeyReadError(const std::string & msg) throw ();
     };
-
-    /**
-     * Register the VDB repository format.
-     *
-     * \ingroup grpvdbrepository
-     */
-    static const RepositoryMaker::RegisterMaker register_vdb_repository(
-            "vdb", &VDBRepository::make_vdb_repository);
 }
 
 #endif

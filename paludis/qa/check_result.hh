@@ -39,7 +39,7 @@ namespace paludis
          *
          * \ingroup QA
          */
-        class CheckResult
+        class PALUDIS_VISIBLE CheckResult
         {
             private:
                 std::list<Message> _messages;

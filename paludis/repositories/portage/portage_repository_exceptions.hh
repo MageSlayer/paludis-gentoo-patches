@@ -37,7 +37,7 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpportagerepository
      */
-    class PortageRepositoryConfigurationError :
+    class PALUDIS_VISIBLE PortageRepositoryConfigurationError :
         public ConfigurationError
     {
         public:

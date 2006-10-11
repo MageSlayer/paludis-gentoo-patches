@@ -38,7 +38,7 @@ namespace paludis
      *
      * \ingroup grptestenvironment
      */
-    class TestEnvironment : public Environment
+    class PALUDIS_VISIBLE TestEnvironment : public Environment
     {
         public:
             /**

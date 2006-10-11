@@ -41,7 +41,7 @@ namespace paludis
      *
      * \ingroup grpportagerepository
      */
-    class PortageRepositoryNews :
+    class PALUDIS_VISIBLE PortageRepositoryNews :
         private PrivateImplementationPattern<PortageRepositoryNews>,
         private InstantiationPolicy<PortageRepositoryNews, instantiation_method::NonCopyableTag>,
         public InternalCounted<PortageRepositoryNews>
@@ -64,7 +64,7 @@ namespace paludis
      *
      * \ingroup grpnewsconfigfile
      */
-    class NewsFile :
+    class PALUDIS_VISIBLE NewsFile :
         protected ConfigFile,
         private PrivateImplementationPattern<NewsFile>
     {

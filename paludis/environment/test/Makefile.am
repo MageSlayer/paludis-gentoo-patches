@@ -1,6 +1,6 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda ihateautomake.cc ihateautomake.o
 MAINTAINERCLEANFILES = Makefile.in
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \

@@ -27,7 +27,7 @@
 
 namespace paludis
 {
-    class ProfileFile :
+    class PALUDIS_VISIBLE ProfileFile :
         private PrivateImplementationPattern<ProfileFile>
     {
         public:
