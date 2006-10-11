@@ -92,7 +92,11 @@ paludis::make_ebuild_repository(
 
     std::string cache;
     if (m->end() == m->find("cache") || ((cache = m->find("cache")->second)).empty())
+    {
         cache = location + "/metadata/cache";
+        if (! FSEntry(cache).exists())
+            cache = "/var/empty";
+    }
 
     std::string sync;
     if (m->end() == m->find("sync") || ((sync = m->find("sync")->second)).empty())
