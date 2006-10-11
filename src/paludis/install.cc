@@ -503,7 +503,8 @@ namespace
 
         /* display USE flags */
         if (! d.already_installed)
-            std::cout << make_pretty_use_flags_string(DefaultEnvironment::get_instance(), p, d.metadata);
+            std::cout << make_pretty_use_flags_string(DefaultEnvironment::get_instance(), p, d.metadata,
+                    (existing->empty() ? 0 : &*existing->last()));
 
         /* display tag, add tag to our post display list */
         if (! d.tags->empty())
@@ -666,6 +667,8 @@ do_install()
             options.reinstall = dl_reinstall_never;
         else if (CommandLine::get_instance()->dl_reinstall.argument() == "always")
             options.reinstall = dl_reinstall_always;
+        else if (CommandLine::get_instance()->dl_reinstall.argument() == "if-use-changed")
+            options.reinstall = dl_reinstall_if_use_changed;
         else
             throw DoHelp("bad value for --dl-reinstall");
     }

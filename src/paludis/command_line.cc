@@ -89,8 +89,9 @@ CommandLine::CommandLine() :
 
     dl_reinstall(&dl_args, "dl-reinstall", '\0', "When to reinstall packages",
             paludis::args::EnumArg::EnumArgOptions
-            ("never",         "Never")
-            ("always",        "Always"),
+            ("never",          "Never")
+            ("always",         "Always")
+            ("if-use-changed", "If USE flags have changed"),
             "never"),
     dl_upgrade(&dl_args, "dl-upgrade", '\0', "When to upgrade packages",
             paludis::args::EnumArg::EnumArgOptions

@@ -27,6 +27,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/tokeniser.hh>
 
 #include <algorithm>
 #include <functional>
@@ -783,7 +784,27 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
     if (uninstalled.version != installed.version)
         return false;
 
-    /* todo: check dl_reinstall_if_use_changed */
+    if (dl_reinstall_if_use_changed == _imp->opts.reinstall)
+    {
+        const EbuildVersionMetadata * const evm_i(_imp->env->package_database()->fetch_repository(
+                    installed.repository)->version_metadata(installed.name, installed.version)->get_ebuild_interface());
+        const EbuildVersionMetadata * const evm_u(_imp->env->package_database()->fetch_repository(
+                    uninstalled.repository)->version_metadata(uninstalled.name, uninstalled.version)->get_ebuild_interface());
+
+        std::set<std::string> use_i, use_u, use_common;
+        if (evm_i)
+            WhitespaceTokeniser::get_instance()->tokenise(evm_i->iuse, std::inserter(use_i, use_i.end()));
+        if (evm_u)
+            WhitespaceTokeniser::get_instance()->tokenise(evm_u->iuse, std::inserter(use_u, use_u.end()));
+
+        std::set_intersection(use_i.begin(), use_i.end(), use_u.begin(), use_u.end(),
+                std::inserter(use_common, use_common.end()));
+
+        for (std::set<std::string>::const_iterator f(use_common.begin()), f_end(use_common.end()) ;
+                f != f_end ; ++f)
+            if (_imp->env->query_use(UseFlagName(*f), &installed) != _imp->env->query_use(UseFlagName(*f), &uninstalled))
+                return false;
+    }
 
     return true;
 }

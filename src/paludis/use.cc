@@ -39,7 +39,7 @@ namespace
 
 std::string
 make_pretty_use_flags_string(const Environment * const env, const PackageDatabaseEntry & p,
-        VersionMetadata::ConstPointer metadata)
+        VersionMetadata::ConstPointer metadata, const PackageDatabaseEntry * const other_p)
 {
     std::ostringstream c;
 
@@ -74,6 +74,10 @@ make_pretty_use_flags_string(const Environment * const env, const PackageDatabas
                 else
                     c << " " << colour(cl_flag_off, "-" + stringify(*i));
             }
+
+            if (other_p)
+                if (env->query_use(*i, &p) != env->query_use(*i, other_p))
+                    c << "*";
         }
 
         /* now display expand flags */
@@ -109,6 +113,10 @@ make_pretty_use_flags_string(const Environment * const env, const PackageDatabas
                 else
                     c << " " << colour(cl_flag_off, "-" + stringify(expand_value));
             }
+
+            if (other_p)
+                if (env->query_use(*i, &p) != env->query_use(*i, other_p))
+                    c << "*";
         }
     }
 

@@ -30,6 +30,7 @@
  */
 std::string
 make_pretty_use_flags_string(const paludis::Environment * const env, const paludis::PackageDatabaseEntry & p,
-        paludis::VersionMetadata::ConstPointer metadata) PALUDIS_ATTRIBUTE((nonnull(1)));
+        paludis::VersionMetadata::ConstPointer metadata, const paludis::PackageDatabaseEntry * const other_p = 0)
+        PALUDIS_ATTRIBUTE((nonnull(1)));
 
 #endif
