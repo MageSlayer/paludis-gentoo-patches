@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = dist-bzip2 no-dist-gzip std-options
 EXTRA_DIST = autogen.bash automake-deps-hack.tmp
 SUBDIRS = misc test paludis cran ebuild ruby src doc hooks eselect
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --with-ruby-install-dir='$${prefix}/ruby_dir'
+DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-glsa --with-ruby-install-dir='$${prefix}/ruby_dir'
 
 automake-deps-hack.tmp :
 	$(MAKE) -C paludis/util
