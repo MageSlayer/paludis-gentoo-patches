@@ -441,11 +441,37 @@ PortageRepository::need_category_names() const
 
     Context context("When loading category names for " + stringify(name()) + ":");
 
-    LineConfigFile cats(_imp->params.location / "profiles" / "categories");
+    if (! (_imp->params.location / "profiles" / "categories").exists())
+    {
+        Log::get_instance()->message(ll_qa, lc_context, "No categories file for repository at '"
+                + stringify(_imp->params.location) + "', faking it");
+        for (DirIterator d(_imp->params.location), d_end ; d != d_end ; ++d)
+        {
+            if (! d->is_directory())
+                continue;
 
-    for (LineConfigFile::Iterator line(cats.begin()), line_end(cats.end()) ;
-            line != line_end ; ++line)
-        _imp->category_names.insert(std::make_pair(CategoryNamePart(*line), false));
+            std::string n(d->basename());
+            if (n == "CVS" || n == "distfiles" || n == "scripts" || n == "eclass" || n == "licences"
+                    || n == "packages")
+                continue;
+
+            try
+            {
+                _imp->category_names.insert(std::make_pair(CategoryNamePart(n), false));
+            }
+            catch (const NameError &)
+            {
+            }
+        }
+    }
+    else
+    {
+        LineConfigFile cats(_imp->params.location / "profiles" / "categories");
+
+        for (LineConfigFile::Iterator line(cats.begin()), line_end(cats.end()) ;
+                line != line_end ; ++line)
+            _imp->category_names.insert(std::make_pair(CategoryNamePart(*line), false));
+    }
 
     _imp->has_category_names = true;
 }
