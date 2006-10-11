@@ -180,8 +180,6 @@ namespace
     {
         Context context("When checking package '" + stringify(p) + "':");
 
-        cerr << xterm_title("Checking " + stringify(p) + " - adjutrix");
-
         PackageDatabaseEntryCollection::Pointer p_entries(env.package_database()->query(
                 PackageDepAtom::Pointer(new PackageDepAtom(stringify(p))), is_uninstalled_only));
 
@@ -218,8 +216,6 @@ namespace
 int do_find_reverse_deps(NoConfigEnvironment & env)
 {
     Context context("When performing find-reverse-deps action:");
-
-    env.set_profile(env.main_repository_dir() / "profiles" / "default-linux" / "amd64" / "2006.1");
 
     PackageDepAtom::Pointer atom(0);
     try
@@ -264,6 +260,8 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
+            cerr << xterm_title("Checking " + stringify(*c) + " - adjutrix");
+
             if (CommandLine::get_instance()->a_category.specified())
                 if (CommandLine::get_instance()->a_category.args_end() == std::find(
                             CommandLine::get_instance()->a_category.args_begin(),
