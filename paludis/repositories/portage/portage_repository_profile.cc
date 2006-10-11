@@ -338,7 +338,29 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
                             UseFlagName> >())).first;
 
             for ( ; t != t_end ; ++t)
-                i->second.push_back(std::make_pair(d, UseFlagName(*t)));
+            {
+                if (0 == t->compare(0, 1, "-"))
+                {
+                    UseFlagName r(t->substr(1));
+                    bool found(false);
+                    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator
+                            e(i->second.begin()), e_end(i->second.end()) ; e != e_end ; )
+                    {
+                        if (stringify(*e->first) == stringify(*d) && e->second == r)
+                        {
+                            found = true;
+                            i->second.erase(e++);
+                        }
+                        else
+                            ++e;
+                    }
+
+                    if (! found)
+                        Log::get_instance()->message(ll_qa, lc_context, "No match for '" + stringify(*line) + "'");
+                }
+                else
+                    i->second.push_back(std::make_pair(d, UseFlagName(*t)));
+            }
         }
     }
     catch (const NameError & e)
@@ -369,7 +391,29 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
                             UseFlagName> >())).first;
 
             for ( ; t != t_end ; ++t)
-                i->second.push_back(std::make_pair(d, UseFlagName(*t)));
+            {
+                if (0 == t->compare(0, 1, "-"))
+                {
+                    UseFlagName r(t->substr(1));
+                    bool found(false);
+                    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator
+                            e(i->second.begin()), e_end(i->second.end()) ; e != e_end ; )
+                    {
+                        if (stringify(*e->first) == stringify(*d) && e->second == r)
+                        {
+                            found = true;
+                            i->second.erase(e++);
+                        }
+                        else
+                            ++e;
+                    }
+
+                    if (! found)
+                        Log::get_instance()->message(ll_qa, lc_context, "No match for '" + stringify(*line) + "'");
+                }
+                else
+                    i->second.push_back(std::make_pair(d, UseFlagName(*t)));
+            }
         }
     }
     catch (const NameError & e)

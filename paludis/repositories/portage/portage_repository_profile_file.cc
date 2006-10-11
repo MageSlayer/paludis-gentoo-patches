@@ -20,7 +20,7 @@
 #include "portage_repository_profile_file.hh"
 #include <paludis/util/log.hh>
 #include <paludis/config_file.hh>
-#include <set>
+#include <list>
 
 using namespace paludis;
 
@@ -30,7 +30,7 @@ namespace paludis
     struct Implementation<ProfileFile> :
         InternalCounted<Implementation<ProfileFile> >
     {
-        std::set<std::string> lines;
+        std::list<std::string> lines;
     };
 }
 
@@ -47,14 +47,14 @@ ProfileFile::add_file(const FSEntry & f)
     {
         if (0 == line->compare(0, 1, "-", 0, 1))
         {
-            std::set<std::string>::iterator i(_imp->lines.find(line->substr(1)));
+            std::list<std::string>::iterator i(std::find(_imp->lines.begin(), _imp->lines.end(), line->substr(1)));
             if (_imp->lines.end() == i)
                 Log::get_instance()->message(ll_qa, lc_context, "No match for '" + *line + "'");
             else
                 _imp->lines.erase(i);
         }
         else
-            _imp->lines.insert(*line);
+            _imp->lines.push_back(*line);
     }
 }
 
