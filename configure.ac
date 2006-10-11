@@ -434,7 +434,7 @@ dnl }}}
 
 dnl {{{ check for whether to build glsa stuff
 AC_MSG_CHECKING([whether to build GLSA support])
-AC_ARG_ENABLE([qa],
+AC_ARG_ENABLE([glsa],
 			  AS_HELP_STRING([--enable-glsa], [Build GLSA things (needs libxml2)]),
 			  [ENABLE_GLSA=$enableval
 			   AC_MSG_RESULT([$enableval])],
