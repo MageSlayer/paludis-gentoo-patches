@@ -4,6 +4,45 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.6.7:
+    * The qualudis client now checks that Manifest files are signed.
+
+    * Various minor bug fixes.
+
+    * We now define a PKGMANAGER environment variable and vdb entry.
+
+0.6.6:
+    * Using * -* in use.conf no longer implies -* for USE_EXPAND variables.
+
+    * A new NoConfigEnvironment is provided to make things easier for tool
+    writers.
+
+    * The adjutrix client now has a reverse dependencies search facility.
+
+0.6.5:
+    * The USE_EXPAND code has been simplified, and numerous bugs fixed in the
+    process.
+
+    * A new --list-sets action is available.
+
+    * For --query, visible packages are now chosen over invisible packages.
+
+    * When a package install fails, the paludis client now displays a command
+    that can be used to resume the current task.
+
+0.6.4:
+    * A bug that could cause highly strange behaviour with virtuals when using
+    multiple profiles is fixed.
+
+    * All package sets are now composite. Previously some were instead selected
+    from only one repository, which was confusing behaviour and not as useful as
+    originally suspected.
+
+0.6.3:
+    * -* now works properly.
+
+    * The adjutrix keywords graph is now SLOT aware.
+
 0.6.2:
     * A bug preventing recursion from behaving correctly in dohtml is fixed.
 
