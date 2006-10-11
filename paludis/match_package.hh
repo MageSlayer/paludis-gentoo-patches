@@ -64,8 +64,8 @@ namespace paludis
          *
          * \ingroup grpmatchpackage
          */
-        template <typename P1_, typename P2_>
-        inline const Environment * sanitise_env(const CountedPtr<const Environment, P1_, P2_> env)
+        template <typename P1_>
+        inline const Environment * sanitise_env(const CountedPtr<const Environment, P1_> env)
         {
             return env.raw_pointer();
         }
@@ -95,8 +95,8 @@ namespace paludis
          *
          * \ingroup grpmatchpackage
          */
-        template <typename P1_, typename P2_>
-        inline const PackageDepAtom * sanitise_atom(const CountedPtr<const PackageDepAtom, P1_, P2_> atom)
+        template <typename P1_>
+        inline const PackageDepAtom * sanitise_atom(const CountedPtr<const PackageDepAtom, P1_> atom)
         {
             return atom.raw_pointer();
         }

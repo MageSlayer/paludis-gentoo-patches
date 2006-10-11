@@ -369,22 +369,5 @@ namespace test_cases
             TEST_CHECK(! i);
         }
     } test_counted_ptr_internal_assign_pointer;
-
-    /**
-     * \test CountedPtr zero dereferences.
-     *
-     * \ingroup grptestcases
-     */
-    struct CountedPtrZeroDeferenceTests : TestCase
-    {
-        CountedPtrZeroDeferenceTests() :
-            TestCase("CountedPtr zero dereference tests") { }
-
-        void run()
-        {
-            CountedPtr<int, count_policy::ExternalCountTag, dereference_policy::CheckedDereferenceTag> i(0);
-            TEST_CHECK_THROWS(++*i, CountedPtrError);
-        }
-    } test_counted_ptr_zero_dereference;
 }
 

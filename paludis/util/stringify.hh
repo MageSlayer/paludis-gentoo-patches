@@ -32,7 +32,7 @@
 
 namespace paludis
 {
-    template <typename T_, typename U_, typename V_>
+    template <typename T_, typename U_>
     class CountedPtr;
 
     /**
@@ -71,8 +71,8 @@ namespace paludis
          *
          * \ingroup grpstringify
          */
-        template <typename T_, typename U_, typename V_>
-        struct CheckType<CountedPtr<T_, U_, V_> >
+        template <typename T_, typename U_>
+        struct CheckType<CountedPtr<T_, U_> >
         {
         };
 

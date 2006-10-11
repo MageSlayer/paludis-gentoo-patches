@@ -33,24 +33,6 @@
 namespace paludis
 {
     /**
-     * Thrown when a CountedPtr check fails.
-     *
-     * \ingroup grppointers
-     * \ingroup grpexceptions
-     */
-    class PALUDIS_VISIBLE CountedPtrError :
-        public Exception
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            CountedPtrError() throw ();
-
-            ///\}
-    };
-
-    /**
      * Contains CountedPtr count policies.
      *
      * \ingroup grppointers
@@ -78,33 +60,6 @@ namespace paludis
     }
 
     /**
-     * Contains CountedPtr dereference policies.
-     *
-     * \ingroup grppointers
-     */
-    namespace dereference_policy
-    {
-        /**
-         * CountedPtr dereferences are not checked.
-         *
-         * \ingroup grppointers
-         */
-        struct UncheckedDereferenceTag
-        {
-        };
-
-        /**
-         * CountedPtr dereferences are checked, and a CountedPtrError is
-         * thrown for 0 dereferences.
-         *
-         * \ingroup grppointers
-         */
-        struct CheckedDereferenceTag
-        {
-        };
-    }
-
-    /**
      * CountedPtr internals.
      *
      * \ingroup grppointers
@@ -116,17 +71,9 @@ namespace paludis
          *
          * \ingroup grppointers
          */
-        template <typename T_, typename DereferencePolicy_>
-        class CountedPtrBase;
-
-        /**
-         * Base class for CountedPtr (specialisation for UncheckedDereferenceTag).
-         *
-         * \ingroup grppointers
-         */
         template <typename T_>
-        class CountedPtrBase<T_, dereference_policy::UncheckedDereferenceTag> :
-            public ComparisonPolicy<CountedPtrBase<T_, dereference_policy::UncheckedDereferenceTag>,
+        class CountedPtrBase :
+            public ComparisonPolicy<CountedPtrBase<T_>,
                        comparison_mode::EqualityComparisonTag,
                        comparison_method::CompareByMemberTag<T_ *> >
         {
@@ -145,7 +92,7 @@ namespace paludis
                 ///\{
 
                 CountedPtrBase(T_ * ptr) :
-                    ComparisonPolicy<CountedPtrBase<T_, dereference_policy::UncheckedDereferenceTag>,
+                    ComparisonPolicy<CountedPtrBase<T_>,
                         comparison_mode::EqualityComparisonTag,
                         comparison_method::CompareByMemberTag<T_ *> >(
                                 &CountedPtrBase::_ptr),
@@ -190,127 +137,26 @@ namespace paludis
         };
 
         template <typename T_>
-        const T_ & CountedPtrBase<T_, dereference_policy::UncheckedDereferenceTag>::operator* () const
+        const T_ & CountedPtrBase<T_>::operator* () const
         {
             return *_ptr;
         }
 
         template <typename T_>
-        const T_ * CountedPtrBase<T_, dereference_policy::UncheckedDereferenceTag>::operator-> () const
+        const T_ * CountedPtrBase<T_>::operator-> () const
         {
             return _ptr;
         }
 
         template <typename T_>
-        T_ & CountedPtrBase<T_, dereference_policy::UncheckedDereferenceTag>::operator* ()
+        T_ & CountedPtrBase<T_>::operator* ()
         {
             return *_ptr;
         }
 
         template <typename T_>
-        T_ * CountedPtrBase<T_, dereference_policy::UncheckedDereferenceTag>::operator-> ()
+        T_ * CountedPtrBase<T_>::operator-> ()
         {
-            return _ptr;
-        }
-        /**
-         * Base class for CountedPtr (specialisation for CheckedDereferenceTag).
-         *
-         * \ingroup grppointers
-         */
-        template <typename T_>
-        class CountedPtrBase<T_, dereference_policy::CheckedDereferenceTag> :
-            public ComparisonPolicy<CountedPtrBase<T_, dereference_policy::CheckedDereferenceTag>,
-                       comparison_mode::EqualityComparisonTag,
-                       comparison_method::CompareByMemberTag<T_ *> >
-        {
-            private:
-                CountedPtrBase(const CountedPtrBase & other);
-
-                const CountedPtrBase & operator= (const CountedPtrBase & other);
-
-            protected:
-                /**
-                 * Pointer to our data.
-                 */
-                T_ * _ptr;
-
-                ///\name Basic operations
-                ///\{
-
-                CountedPtrBase(T_ * ptr) :
-                    ComparisonPolicy<CountedPtrBase<T_, dereference_policy::CheckedDereferenceTag>,
-                        comparison_mode::EqualityComparisonTag,
-                        comparison_method::CompareByMemberTag<T_ *> >(
-                                &CountedPtrBase::_ptr),
-                    _ptr(ptr)
-                {
-                }
-
-                virtual ~CountedPtrBase()
-                {
-                }
-
-                ///\}
-
-            public:
-                ///\name Dereference operators
-                ///\{
-
-                inline const T_ & operator* () const;
-                inline const T_ * operator-> () const;
-                T_ & operator* ();
-                T_ * operator-> ();
-
-                /**
-                 * Fetch our raw pointer.
-                 */
-                T_ * raw_pointer() const
-                {
-                    return _ptr;
-                }
-
-                ///\}
-
-                /**
-                 * Return whether we are null. We use const void * rather than bool
-                 * here to avoid bool -> int conversion weirdness. See \ref
-                 * TCppPL 21.3.3.
-                 */
-                operator const void * () const
-                {
-                    return _ptr;
-                }
-        };
-
-        template <typename T_>
-        const T_ & CountedPtrBase<T_, dereference_policy::CheckedDereferenceTag>::operator* () const
-        {
-            if (0 == _ptr)
-                throw CountedPtrError();
-            return *_ptr;
-        }
-
-        template <typename T_>
-        const T_ * CountedPtrBase<T_, dereference_policy::CheckedDereferenceTag>::operator-> () const
-        {
-            if (0 == _ptr)
-                throw CountedPtrError();
-            return _ptr;
-        }
-
-        template <typename T_>
-        T_ & CountedPtrBase<T_, dereference_policy::CheckedDereferenceTag>::operator* ()
-        {
-            if (0 == _ptr)
-                throw CountedPtrError();
-            return *_ptr;
-        }
-
-        template <typename T_>
-        T_ * CountedPtrBase<T_, dereference_policy::CheckedDereferenceTag>::operator-> ()
-        {
-            if (0 == _ptr)
-                throw CountedPtrError();
             return _ptr;
         }
     }
@@ -320,8 +166,7 @@ namespace paludis
      *
      * \ingroup grppointers
      */
-    template <typename T_, typename CountPolicy_ = count_policy::InternalCountTag,
-             typename DereferencePolicy_ = dereference_policy::UncheckedDereferenceTag>
+    template <typename T_, typename CountPolicy_ = count_policy::InternalCountTag>
     class CountedPtr;
 
     /**
@@ -329,7 +174,7 @@ namespace paludis
      *
      * \ingroup grppointers
      */
-    template <typename T_, typename DereferencePolicy_ = dereference_policy::UncheckedDereferenceTag>
+    template <typename T_>
     class InternalCounted;
 
     /**
@@ -337,9 +182,9 @@ namespace paludis
      *
      * \ingroup grppointers
      */
-    template <typename T_, typename DereferencePolicy_>
-    class CountedPtr<T_, count_policy::ExternalCountTag, DereferencePolicy_> :
-        public counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>
+    template <typename T_>
+    class CountedPtr<T_, count_policy::ExternalCountTag> :
+        public counted_ptr_internals::CountedPtrBase<T_>
     {
         private:
             unsigned * _ref_count;
@@ -349,13 +194,13 @@ namespace paludis
             ///\{
 
             explicit CountedPtr(T_ * const ptr) :
-                counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(ptr),
+                counted_ptr_internals::CountedPtrBase<T_>(ptr),
                 _ref_count(new unsigned(1))
             {
             }
 
             CountedPtr(const CountedPtr & other) :
-                counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(other.raw_pointer()),
+                counted_ptr_internals::CountedPtrBase<T_>(other.raw_pointer()),
                 _ref_count(other._ref_count)
             {
                 ++*_ref_count;
@@ -367,7 +212,7 @@ namespace paludis
              */
             template <typename O_>
             CountedPtr(const CountedPtr<O_, count_policy::ExternalCountTag> & other) :
-                counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(other._ptr),
+                counted_ptr_internals::CountedPtrBase<T_>(other._ptr),
                 _ref_count(other.reference_count_pointer())
             {
                 ++*_ref_count;
@@ -439,23 +284,23 @@ namespace paludis
      *
      * \ingroup grppointers
      */
-    template <typename T_, typename DereferencePolicy_>
-    class CountedPtr<T_, count_policy::InternalCountTag, DereferencePolicy_> :
-        public counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>
+    template <typename T_>
+    class CountedPtr<T_, count_policy::InternalCountTag> :
+        public counted_ptr_internals::CountedPtrBase<T_>
     {
         public:
             ///\name Basic operations
             ///\{
 
             explicit CountedPtr(T_ * const ptr) :
-                counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(ptr)
+                counted_ptr_internals::CountedPtrBase<T_>(ptr)
             {
                 if (0 != this->_ptr)
                     ++*this->_ptr->reference_count_pointer();
             }
 
             CountedPtr(const CountedPtr & other) :
-                counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(other._ptr)
+                counted_ptr_internals::CountedPtrBase<T_>(other._ptr)
             {
                 if (0 != this->_ptr)
                     ++*this->_ptr->reference_count_pointer();
@@ -467,7 +312,7 @@ namespace paludis
              */
             template <typename O_>
             CountedPtr(const CountedPtr<O_, count_policy::InternalCountTag> & other) :
-                counted_ptr_internals::CountedPtrBase<T_, DereferencePolicy_>(
+                counted_ptr_internals::CountedPtrBase<T_>(
                         static_cast<T_ *>(other.raw_pointer()))
             {
                 if (0 != this->_ptr)
@@ -526,8 +371,8 @@ namespace paludis
             ///\}
     };
 
-    template <typename T_, typename DereferencePolicy_>
-    CountedPtr<T_, count_policy::InternalCountTag, DereferencePolicy_>::~CountedPtr()
+    template <typename T_>
+    CountedPtr<T_, count_policy::InternalCountTag>::~CountedPtr()
     {
         if (0 != this->_ptr)
             if (0 == --(*this->_ptr->reference_count_pointer()))
@@ -544,9 +389,9 @@ namespace paludis
      *
      * \ingroup grppointers
      */
-    template <typename T_, typename DereferencePolicy_>
+    template <typename T_>
     class InternalCounted :
-        private InstantiationPolicy<InternalCounted<T_, DereferencePolicy_>,
+        private InstantiationPolicy<InternalCounted<T_>,
             instantiation_method::NonCopyableTag>
     {
         private:
@@ -574,12 +419,12 @@ namespace paludis
             /**
              * A CountedPtr to us.
              */
-            typedef CountedPtr<T_, count_policy::InternalCountTag, DereferencePolicy_> Pointer;
+            typedef CountedPtr<T_, count_policy::InternalCountTag> Pointer;
 
             /**
              * A CountedPtr to us (const).
              */
-            typedef CountedPtr<const T_, count_policy::InternalCountTag, DereferencePolicy_> ConstPointer;
+            typedef CountedPtr<const T_, count_policy::InternalCountTag> ConstPointer;
 
             ///\}
 
