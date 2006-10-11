@@ -33,3 +33,5 @@ libpaludislibxml_la_LIBADD = \
 
 endif
 
+EXTRA_DIST = libxml.hh libxml.cc
+
