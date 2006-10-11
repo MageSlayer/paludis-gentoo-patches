@@ -4,6 +4,19 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.8.0:
+    * A Ruby interface is now available.
+
+    * qualudis: Various deprecated functions are flagged. Maintainer
+    information is now included in the output.
+
+    * The deplist has been rewritten to be much cleaner and much more sensible
+    in its handling of virtuals. It can now reinstall packages if USE flags have
+    changed, and can display why a package is being installed.
+
+    * The security set for Portage format repositories no longer requires an
+    external preprocessor. paludis -pi security will now work off a raw sync.
+
 0.6.7:
     * The qualudis client now checks that Manifest files are signed.
 
