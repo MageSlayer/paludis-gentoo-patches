@@ -51,7 +51,11 @@ ProfileFile::add_file(const FSEntry & f)
             if (_imp->lines.end() == i)
                 Log::get_instance()->message(ll_qa, lc_context, "No match for '" + *line + "'");
             else
-                _imp->lines.erase(i);
+                while (_imp->lines.end() != i)
+                {
+                    _imp->lines.erase(i++);
+                    i = std::find(i, _imp->lines.end(), line->substr(1));
+                }
         }
         else
             _imp->lines.push_back(*line);
