@@ -31,7 +31,6 @@ using namespace paludis;
 /** \file
  * Test cases for VDBRepository.
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -39,7 +38,6 @@ namespace test_cases
     /**
      * \test Test VDBRepository repo names
      *
-     * \ingroup grptestcases
      */
     struct VDBRepositoryRepoNameTest : TestCase
     {
@@ -61,7 +59,6 @@ namespace test_cases
     /**
      * \test Test VDBRepository has_category_named
      *
-     * \ingroup grptestcases
      */
     struct VDBRepositoryHasCategoryNamedTest : TestCase
     {
@@ -86,7 +83,6 @@ namespace test_cases
     /**
      * \test Test VDBRepository query_use
      *
-     * \ingroup grptestcases
      */
     struct VDBRepositoryQueryUseTest : TestCase
     {

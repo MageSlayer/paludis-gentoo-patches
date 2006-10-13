@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: PDEPEND overlaps.
+         *
+         * \ingroup grpqacheck
+         */
         class PdependOverlapCheck :
             public EbuildCheck
         {

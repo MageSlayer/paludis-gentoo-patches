@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: deps visibility.
+         *
+         * \ingroup grpqa
+         */
         class DepsVisibleCheck :
             public EbuildCheck
         {

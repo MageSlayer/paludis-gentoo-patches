@@ -27,7 +27,7 @@
 /** \file
  * Implementation for test framework classes.
  *
- * \ingroup Test
+ * \ingroup grptestframework
  */
 
 using namespace test;

@@ -27,6 +27,13 @@
 
 namespace paludis
 {
+    /**
+     * A file in a PortageRepository profile.
+     *
+     * Handles -lines, comments, inherits automatically.
+     *
+     * \ingroup grpportagerepository
+     */
     class PALUDIS_VISIBLE ProfileFile :
         private PrivateImplementationPattern<ProfileFile>
     {

@@ -28,7 +28,6 @@ using namespace paludis;
 /** \file
  * Test cases for PortageDepLexer.
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -36,7 +35,6 @@ namespace test_cases
     /**
      * \test Test PortageDepLexer with an empty input.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepLexerEmptyTest : TestCase
     {
@@ -53,7 +51,6 @@ namespace test_cases
     /**
      * \test Test PortageDepLexer with a blank input.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepLexerBlankTest : TestCase
     {
@@ -73,7 +70,6 @@ namespace test_cases
     /**
      * \test Test PortageDepLexer with a package.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepLexerPackageTest : TestCase
     {
@@ -93,7 +89,6 @@ namespace test_cases
     /**
      * \test Test DepParser with a sequence of packages.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepLexerPackagesTest : TestCase
     {
@@ -131,7 +126,6 @@ namespace test_cases
     /**
      * \test Test PortageDepLexer with an any group.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepLexerAnyTest : TestCase
     {
@@ -185,7 +179,6 @@ namespace test_cases
     /**
      * \test Test PortageDepLexer with a use group.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepLexerUseTest : TestCase
     {
@@ -231,7 +224,6 @@ namespace test_cases
     /**
      * \test Test PortageDepLexer with bad input.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepLexerBadTest : TestCase
     {

@@ -27,7 +27,7 @@
 /** \file
  * Test framework class definitions.
  *
- * \ingroup Test
+ * \ingroup grptestframework
  */
 
 namespace test
@@ -35,7 +35,7 @@ namespace test
     /**
      * RAII suffix marker for TestCase context.
      *
-     * \ingroup Test
+     * \ingroup grptestframework
      */
     class TestMessageSuffix :
         paludis::PrivateImplementationPattern<TestMessageSuffix>
@@ -60,7 +60,7 @@ namespace test
     /**
      * Base TestCase class.
      *
-     * \ingroup Test
+     * \ingroup grptestframework
      */
     class TestCase :
         private paludis::PrivateImplementationPattern<TestCase>
@@ -126,7 +126,7 @@ namespace test
     /**
      * Thrown if a TestCase failed.
      *
-     * \ingroup Test
+     * \ingroup grptestframework
      * \ingroup grpexceptions
      */
     class TestFailedException : public std::exception
@@ -158,7 +158,7 @@ namespace test
     /**
      * A list of TestCase instances.
      *
-     * \ingroup Test
+     * \ingroup grptestframework
      */
     class TestCaseList
     {

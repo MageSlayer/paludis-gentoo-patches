@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: HOMEPAGE sanity.
+         *
+         * \ingroup grpqacheck
+         */
         class HomepageCheck :
             public EbuildCheck
         {

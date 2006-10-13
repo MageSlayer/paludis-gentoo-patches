@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: IUSE.
+         *
+         * \ingroup grpqacheck
+         */
         class IuseCheck :
             public EbuildCheck
         {

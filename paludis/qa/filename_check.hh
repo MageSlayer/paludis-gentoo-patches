@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: filename sanity.
+         *
+         * \ingroup grpqacheck
+         */
         class FileNameCheck :
             public FileCheck
         {

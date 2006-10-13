@@ -39,7 +39,9 @@ include(`paludis/files.m4')
 
 extern "C"
 {
-    /* for simplifying extconf.rb detection */
+    /**
+     * For simplifying extconf.rb detection.
+     */
     void paludis_was_here();
 }
 

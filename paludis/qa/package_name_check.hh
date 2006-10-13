@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: category/packge name sanity.
+         *
+         * \ingroup grpqacheck
+         */
         class PackageNameCheck :
             public PackageDirCheck
         {

@@ -32,7 +32,6 @@ using namespace paludis;
 /** \file
  * Test cases for iterator utilities.
  *
- * \ingroup grptestcases
  */
 
 namespace
@@ -63,7 +62,6 @@ namespace test_cases
     /**
      * \test Test IndirectIterator over a vector of CountedPtr of int.
      *
-     * \ingroup grptestcases
      */
     struct IndirectIteratorVecCPIntTest : TestCase
     {
@@ -91,7 +89,6 @@ namespace test_cases
     /**
      * \test Test IndirectIterator over a list of CountedPtr of int.
      *
-     * \ingroup grptestcases
      */
     struct IndirectIteratorListCPIntTest : TestCase
     {
@@ -115,7 +112,6 @@ namespace test_cases
     /**
      * \test Test IndirectIterator over a vector of int *.
      *
-     * \ingroup grptestcases
      */
     struct IndirectIteratorVecPIntTest : TestCase
     {
@@ -144,7 +140,6 @@ namespace test_cases
     /**
      * \test Test IndirectIterator over a list of int *.
      *
-     * \ingroup grptestcases
      */
     struct IndirectIteratorListPIntTest : TestCase
     {
@@ -195,7 +190,6 @@ namespace test_cases
     /**
      * \test Test FilterInsertIterator.
      *
-     * \ingroup grptestcases
      */
     struct FilterInsertIteratorTest : TestCase
     {
@@ -224,7 +218,6 @@ namespace test_cases
     /**
      * \test Test iterator_utilities next()
      *
-     * \ingroup grptestcases
      */
     struct IteratorNextTest : public TestCase
     {
@@ -247,7 +240,6 @@ namespace test_cases
     /**
      * \test Test iterator_utilities previous()
      *
-     * \ingroup grptestcases
      */
     struct IteratorpreviousTest : public TestCase
     {
@@ -280,7 +272,6 @@ namespace test_cases
     /**
      * \test Test TransformInsertIterator.
      *
-     * \ingroup grptestcases
      */
     struct TransformInsertIteratorTest : TestCase
     {
@@ -303,7 +294,6 @@ namespace test_cases
     /**
      * \test Test SelectFirst and SelectSecond.
      *
-     * \ingroup grptestcases
      */
     struct SimpleSelectPairTest : TestCase
     {
@@ -338,7 +328,6 @@ namespace test_cases
     /**
      * \test Test create_inserter.
      *
-     * \ingroup grptestcases
      */
     struct CreateInsertIteratorTest : TestCase
     {

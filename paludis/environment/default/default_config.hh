@@ -39,6 +39,12 @@ namespace paludis
 {
     struct EnvironmentMirrorIteratorTag;
 
+    /**
+     * Iterate over environment mirrors.
+     *
+     * \see Environment
+     * \ingroup grpenvironment
+     */
     typedef libwrapiter::ForwardIterator<EnvironmentMirrorIteratorTag,
             const std::pair<const std::string, std::string> > EnvironmentMirrorIterator;
 

@@ -29,6 +29,11 @@ namespace paludis
 {
 #include <paludis/environment/no_config/no_config_environment-sr.hh>
 
+    /**
+     * An environment that uses a single repository, with no user configuration.
+     *
+     * \ingroup grpnoconfigenvironment
+     */
     class PALUDIS_VISIBLE NoConfigEnvironment :
         private PrivateImplementationPattern<NoConfigEnvironment>,
         public Environment

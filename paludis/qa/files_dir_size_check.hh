@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: is files/ too big.
+         *
+         * \ingroup grpqacheck
+         */
         class FilesDirSizeCheck :
             public PackageDirCheck
         {

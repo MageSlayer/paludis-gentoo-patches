@@ -28,7 +28,6 @@
 /** \file
  * Extra settings for test cases.
  *
- * \ingroup grptestcases
  */
 
 using namespace paludis;
@@ -38,7 +37,6 @@ namespace
     /**
      * Convert an exception to a debug string.
      *
-     * \ingroup grptestcases
      */
     std::string verbose_exception_to_debug_string(
             const std::exception & e) PALUDIS_ATTRIBUTE((noinline));
@@ -46,7 +44,6 @@ namespace
     /**
      * Avoid logging visibly.
      *
-     * \ingroup grptestcases
      */
     struct C
     {
@@ -64,7 +61,6 @@ namespace
     /**
      * Avoid logging visibly.
      *
-     * \ingroup grptestcases
      */
     static const C my_c;
 

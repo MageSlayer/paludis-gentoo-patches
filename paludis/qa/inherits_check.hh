@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: inherits sanity.
+         *
+         * \ingroup grpqacheck
+         */
         class InheritsCheck :
             public EbuildCheck
         {

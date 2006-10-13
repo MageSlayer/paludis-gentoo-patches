@@ -272,6 +272,9 @@ namespace paludis
 
 #include <paludis/dep_tag-sr.hh>
 
+    /**
+     * Tags attached to a DepListEntry.
+     */
     typedef SortedCollection<DepTagEntry> DepListEntryTags;
 }
 

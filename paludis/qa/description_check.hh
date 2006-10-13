@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: is DESCRIPTION ok.
+         *
+         * \ingroup grpqacheck
+         */
         class DescriptionCheck :
             public EbuildCheck
         {

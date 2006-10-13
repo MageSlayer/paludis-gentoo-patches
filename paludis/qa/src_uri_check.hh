@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: is SRC_URI good.
+         *
+         * \ingroup grpqacheck
+         */
         class SrcUriCheck :
             public EbuildCheck
         {

@@ -1,5 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
+@GENERATED_FILE@
+
 /*
  * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
@@ -36,6 +38,24 @@
 /** \def PALUDIS_CAN_USE_ATTRIBUTE
  * Defined if we can rely upon PALUDIS_ATTRIBUTE working (for example, for
  * weak).
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \def PALUDIS_ENABLE_VISIBILITY
+ * Whether to enable visibility support.
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \def PALUDIS_VISIBLE
+ * Marker used to represent 'make visible', if visibility is enabled.
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \def PALUDIS_HIDDEN
+ * Marker used to represent 'make hidden', if visibility is enabled.
  *
  * \ingroup grplibpaludisutil
  */

@@ -22,8 +22,8 @@
 /** \file
  * Implementation for BadArgument.
  *
- * \ingroup Args
- * \ingroup Exception
+ * \ingroup grplibpaludisargs
+ * \ingroup grpexceptions
  */
 
 using namespace paludis::args;

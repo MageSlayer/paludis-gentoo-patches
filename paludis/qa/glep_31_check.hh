@@ -28,6 +28,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: GLEP 31 compliance.
+         *
+         * \ingroup grpqacheck
+         */
         class Glep31Check :
             public FileCheck
         {

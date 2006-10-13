@@ -26,7 +26,6 @@
 /** \file
  * Test cases for IsFileWithExtension.
  *
- * \ingroup grptestcases
  */
 
 using namespace paludis;
@@ -37,7 +36,6 @@ namespace test_cases
     /**
      * \test Test IsFileWithExtension.
      *
-     * \ingroup grptestcases
      */
     struct IsFileWithExtensionTest : TestCase
     {
@@ -64,7 +62,6 @@ namespace test_cases
     /**
      * \test Test IsFileWithExtension with a prefix.
      *
-     * \ingroup grptestcases
      */
     struct IsFileWithExtensionPrefixTest : TestCase
     {

@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: calls to deprecated functions.
+         *
+         * \ingroup grpqacheck
+         */
         class DeprecatedFunctionsCheck :
             public FileCheck
         {

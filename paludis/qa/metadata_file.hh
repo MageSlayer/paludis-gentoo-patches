@@ -29,6 +29,11 @@ namespace paludis
 
     namespace qa
     {
+        /**
+         * Wrapper around metadata.xml files.
+         *
+         * \ingroup grpqa
+         */
         class MetadataFile :
             public PrivateImplementationPattern<MetadataFile>
         {

@@ -29,7 +29,6 @@ using namespace test;
 /** \file
  * Test cases for package_database.hh.
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -37,7 +36,6 @@ namespace test_cases
     /**
      * \test PackageDatabase repository tests.
      *
-     * \ingroup grptestcases
      */
     struct PackageDatabaseRepositoryTest : TestCase
     {
@@ -94,7 +92,6 @@ namespace test_cases
     /**
      * \test PackageDatabase query tests.
      *
-     * \ingroup grptestcases
      */
     struct PackageDatabaseQueryTest : TestCase
     {
@@ -157,7 +154,6 @@ namespace test_cases
     /**
      * \test PackageDatabase disambiguate tests.
      *
-     * \ingroup grptestcases
      */
     struct PackageDatabaseDisambiguateTest : TestCase
     {

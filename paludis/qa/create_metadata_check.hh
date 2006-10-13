@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: can metadata be generated.
+         *
+         * \ingroup grpqacheck
+         */
         class CreateMetadataCheck :
             public EbuildCheck
         {

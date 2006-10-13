@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: digest collisions.
+         *
+         * \ingroup grpqacheck
+         */
         class DigestCollisionsCheck :
             public PackageDirCheck
         {

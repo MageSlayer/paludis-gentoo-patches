@@ -30,7 +30,6 @@ using namespace test;
 /** \file
  * Test cases for strip.hh.
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -38,7 +37,6 @@ namespace test_cases
     /**
      * \test Test StripLeadingString.
      *
-     * \ingroup grptestcases
      */
     struct StripLeadingStringTest : TestCase
     {
@@ -59,7 +57,6 @@ namespace test_cases
     /**
      * \test Test StripLeading.
      *
-     * \ingroup grptestcases
      */
     struct StripLeadingTest : TestCase
     {
@@ -80,7 +77,6 @@ namespace test_cases
     /**
      * \test Test StripTrailingString.
      *
-     * \ingroup grptestcases
      */
     struct StripTrailingStringTest : TestCase
     {
@@ -101,7 +97,6 @@ namespace test_cases
     /**
      * \test Test StripTrailing.
      *
-     * \ingroup grptestcases
      */
     struct StripTrailingTest : TestCase
     {

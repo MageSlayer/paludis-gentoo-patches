@@ -28,7 +28,6 @@ using namespace paludis;
  * \file
  * Test cases for about.hh .
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -36,7 +35,6 @@ namespace test_cases
     /**
      * \test Version tests.
      *
-     * \ingroup grptestcases
      */
     struct VersionTest : TestCase
     {
@@ -65,7 +63,6 @@ namespace test_cases
     /**
      * \test Build info tests.
      *
-     * \ingroup grptestcases
      */
     struct BuildInfoTest : TestCase
     {

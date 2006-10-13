@@ -29,7 +29,6 @@ namespace test_cases
     /**
      * \test Test HashSet.
      *
-     * \ingroup grptestcases
      */
     struct HashSetTestQPN : TestCase
     {

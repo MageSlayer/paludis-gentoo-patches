@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: is RESTRICT sane.
+         *
+         * \ingroup grpqacheck
+         */
         class RestrictCheck :
             public EbuildCheck
         {

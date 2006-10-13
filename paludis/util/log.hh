@@ -112,6 +112,11 @@ namespace paludis
             void set_program_name(const std::string &);
     };
 
+    /**
+     * Stringify a LogLevel constant.
+     *
+     * \ingroup grplog
+     */
     std::ostream &
     operator<< (std::ostream &, const LogLevel &) PALUDIS_VISIBLE;
 }

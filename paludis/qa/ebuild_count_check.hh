@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: is the ebuild count sane.
+         *
+         * \ingroup grpqacheck
+         */
         class EbuildCountCheck :
             public PackageDirCheck
         {

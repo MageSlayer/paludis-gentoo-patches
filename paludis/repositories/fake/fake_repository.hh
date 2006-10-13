@@ -24,6 +24,11 @@
 
 namespace paludis
 {
+    /**
+     * Fake repository for use in test cases.
+     *
+     * \ingroup grpfakerepository
+     */
     class PALUDIS_VISIBLE FakeRepository :
         public FakeRepositoryBase,
         public RepositoryInstallableInterface

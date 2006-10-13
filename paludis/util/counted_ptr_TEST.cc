@@ -28,7 +28,6 @@ using namespace paludis;
 /** \file
  * Test cases for counted_ptr.hh .
  *
- * \ingroup grptestcases
  */
 
 namespace
@@ -36,7 +35,6 @@ namespace
     /**
      * Test InternalCounted class.
      *
-     * \ingroup grptestcases
      */
     class MyClass :
         public InternalCounted<MyClass>
@@ -77,7 +75,6 @@ namespace
 /**
  * Test InternalCounted class is stringifiable.
  *
- * \ingroup grptestcases
  */
 std::ostream & operator<< (std::ostream & s, const MyClass & c)
 {
@@ -90,7 +87,6 @@ namespace test_cases
     /**
      * \test CountedPtr creation tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrCreationTests : TestCase
     {
@@ -106,7 +102,6 @@ namespace test_cases
     /**
      * \test CountedPtr dereference tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrDereferenceTests : TestCase
     {
@@ -126,7 +121,6 @@ namespace test_cases
     /**
      * \test CountedPtr copy tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrCopyTests : TestCase
     {
@@ -146,7 +140,6 @@ namespace test_cases
     /**
      * \test CountedPtr dereference-assign tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrDereferenceAssignTests : TestCase
     {
@@ -176,7 +169,6 @@ namespace test_cases
     /**
      * \test CountedPtr assign value tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrAssignValueTests : TestCase
     {
@@ -199,7 +191,6 @@ namespace test_cases
     /**
      * \test CountedPtr assign pointer tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrAssignPointerTests : TestCase
     {
@@ -231,7 +222,6 @@ namespace test_cases
     /**
      * \test CountedPtr internal creation tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrInternalCreationTests : TestCase
     {
@@ -246,7 +236,6 @@ namespace test_cases
     /**
      * \test CountedPtr internal dereference tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrInternalDereferenceTests : TestCase
     {
@@ -265,7 +254,6 @@ namespace test_cases
     /**
      * \test CountedPtr internal copy tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrInternalCopyTests : TestCase
     {
@@ -285,7 +273,6 @@ namespace test_cases
     /**
      * \test CountedPtr internal dereference-assign tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrInternalDereferenceAssignTests : TestCase
     {
@@ -316,7 +303,6 @@ namespace test_cases
     /**
      * \test CountedPtr internal assign value tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrInternalAssignValueTests : TestCase
     {
@@ -340,7 +326,6 @@ namespace test_cases
     /**
      * \test CountedPtr internal assign pointer tests.
      *
-     * \ingroup grptestcases
      */
     struct CountedPtrInternalAssignPointerTests : TestCase
     {

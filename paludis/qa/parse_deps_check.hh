@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: are deps parsable?
+         *
+         * \ingroup grpqacheck
+         */
         class ParseDepsCheck :
             public EbuildCheck
         {

@@ -34,7 +34,7 @@
 /** \file
  * Implementation of the default test runner.
  *
- * \ingroup Test
+ * \ingroup grptestframework
  */
 
 using namespace test;

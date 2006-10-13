@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: is ChangeLog sane.
+         *
+         * \ingroup grpqacheck
+         */
         class ChangeLogCheck :
             public FileCheck
         {

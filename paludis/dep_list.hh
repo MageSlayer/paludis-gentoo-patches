@@ -35,45 +35,75 @@
 
 namespace paludis
 {
+    /**
+     * What type of target are we handling at the top level.
+     *
+     * \ingroup grpdepresolver
+     */
     enum DepListTargetType
     {
-        dl_target_package,
-        dl_target_set
+        dl_target_package,   ///\< A package, so force reinstalls.
+        dl_target_set        ///\< A set, so don't force reinstalls.
     };
 
+    /**
+     * When should we reinstall.
+     *
+     * \ingroup grpdepresolver
+     */
     enum DepListReinstallOption
     {
-        dl_reinstall_never,
-        dl_reinstall_always,
-        dl_reinstall_if_use_changed
+        dl_reinstall_never,             ///\< Never.
+        dl_reinstall_always,            ///\< Always.
+        dl_reinstall_if_use_changed     ///\< If a USE flag has changed.
     };
 
+    /**
+     * When should we upgrade.
+     *
+     * \ingroup grpdepresolver
+     */
     enum DepListUpgradeOption
     {
-        dl_upgrade_always,
-        dl_upgrade_as_needed
+        dl_upgrade_always,          ///\< Always.
+        dl_upgrade_as_needed        ///\< Only as needed.
     };
 
+    /**
+     * How should we handle a dep class.
+     *
+     * \ingroup grpdepresolver
+     */
     enum DepListDepsOption
     {
-        dl_deps_discard,
-        dl_deps_pre,
-        dl_deps_pre_or_post,
-        dl_deps_post,
-        dl_deps_try_post
+        dl_deps_discard,           ///\< Discard it
+        dl_deps_pre,               ///\< As a pre dependency
+        dl_deps_pre_or_post,       ///\< As a pre dependency with fallback to post
+        dl_deps_post,              ///\< As a post dependency
+        dl_deps_try_post           ///\< As an optional post dependency
     };
 
+    /**
+     * How we handle circular deps.
+     *
+     * \ingroup grpdepresolver
+     */
     enum DepListCircularOption
     {
-        dl_circular_error,
-        dl_circular_discard
+        dl_circular_error,    ///\< As an error
+        dl_circular_discard   ///\< Discard them
     };
 
+    /**
+     * State of a DepListEntry.
+     *
+     * \ingroup grpdepresolver
+     */
     enum DepListEntryState
     {
-        dle_no_deps,
-        dle_has_pre_deps,
-        dle_has_all_deps
+        dle_no_deps,         ///\< Dependencies have yet to be added
+        dle_has_pre_deps,    ///\< Predependencies have been added
+        dle_has_all_deps     ///\< All dependencies have been added
     };
 
 #include <paludis/dep_list-sr.hh>

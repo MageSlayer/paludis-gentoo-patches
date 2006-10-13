@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: ebuild prescence.
+         *
+         * \ingroup grpqacheck
+         */
         class HasEbuildsCheck :
             public PackageDirCheck
         {

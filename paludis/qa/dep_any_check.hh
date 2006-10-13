@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: || ( ) sanity.
+         *
+         * \ingroup grpqacheck
+         */
         class DepAnyCheck :
             public EbuildCheck
         {

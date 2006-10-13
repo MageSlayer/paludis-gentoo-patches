@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: metadata.xml.
+         *
+         * \ingroup grpqacheck
+         */
         class MetadataCheck :
             public FileCheck
         {

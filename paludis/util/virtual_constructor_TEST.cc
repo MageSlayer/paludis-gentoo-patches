@@ -26,7 +26,6 @@
 /** \file
  * Test cases for VirtualConstructor.
  *
- * \ingroup grptestcases
  */
 
 using namespace test;
@@ -139,7 +138,6 @@ namespace test_cases
     /**
      * \test Test VirtualConstructor.
      *
-     * \ingroup grptestcases
      */
     struct VirtualConstructorTest : TestCase
     {
@@ -167,7 +165,6 @@ namespace test_cases
     /**
      * \test Test VirtualConstructor keys
      *
-     * \ingroup grptestcases
      */
     struct VirtualConstructorKeysTest : TestCase
     {

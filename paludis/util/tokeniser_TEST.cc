@@ -29,7 +29,6 @@ using namespace paludis;
 /** \file
  * Test cases for tokeniser.hh .
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -37,7 +36,6 @@ namespace test_cases
     /**
      * \test Test Tokeniser<AnyOfTag, DelimiterTag>
      *
-     * \ingroup grptestcases
      */
     struct TestTokeniserAD : TestCase
     {
@@ -85,7 +83,6 @@ namespace test_cases
     /**
      * \test Test Tokeniser<AnyOfTag, BoundaryTag>
      *
-     * \ingroup grptestcases
      */
     struct TestTokeniserAB : TestCase
     {

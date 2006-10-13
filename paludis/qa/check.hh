@@ -26,7 +26,7 @@
 /** \file
  * Declarations for the paludis::qa::Check class.
  *
- * \ingroup QA
+ * \ingroup grpqa
  */
 
 namespace paludis
@@ -36,7 +36,7 @@ namespace paludis
         /**
          * Base class for a QA check.
          *
-         * \ingroup QA
+         * \ingroup grpqa
          */
         class PALUDIS_VISIBLE Check :
             private InstantiationPolicy<Check, instantiation_method::NonCopyableTag>

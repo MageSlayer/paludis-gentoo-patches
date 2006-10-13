@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: keywords.
+         *
+         * \ingroup grpqacheck
+         */
         class KeywordsCheck :
             public EbuildCheck
         {

@@ -26,7 +26,6 @@
 /** \file
  * Test cases for paludis::Random.
  *
- * \ingroup grptestcases
  */
 
 using namespace paludis;
@@ -62,7 +61,6 @@ namespace test_cases
     /**
      * \test Test Random distibutions using counts.
      *
-     * \ingroup grptestcases
      */
     struct RandomDistributionCountsTest : TestCase
     {

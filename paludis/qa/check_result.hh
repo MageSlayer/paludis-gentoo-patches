@@ -27,7 +27,7 @@
 /** \file
  * Declarations for the CheckResult class.
  *
- * \ingroup QA
+ * \ingroup grpqa
  */
 
 namespace paludis
@@ -37,7 +37,7 @@ namespace paludis
         /**
          * The result of a QA check.
          *
-         * \ingroup QA
+         * \ingroup grpqa
          */
         class PALUDIS_VISIBLE CheckResult
         {

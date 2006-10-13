@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA: check use? flags in metadata.
+         *
+         * \ingroup grpqacheck
+         */
         class DepFlagsCheck :
             public EbuildCheck
         {

@@ -22,6 +22,11 @@
 
 namespace paludis
 {
+    /**
+     * Metaprogramming: an empty class.
+     *
+     * \ingroup grpsr
+     */
     struct Empty
     {
     };
@@ -29,12 +34,22 @@ namespace paludis
     template <bool value_, typename IfTrue_, typename IfFalse_>
     struct Select;
 
+    /**
+     * Metaprogramming: select a type based upon a condition.
+     *
+     * \ingroup grpsr
+     */
     template <typename IfTrue_, typename IfFalse_>
     struct Select<true, IfTrue_, IfFalse_>
     {
         typedef IfTrue_ Type;
     };
 
+    /**
+     * Metaprogramming: select a type based upon a condition.
+     *
+     * \ingroup grpsr
+     */
     template <typename IfTrue_, typename IfFalse_>
     struct Select<false, IfTrue_, IfFalse_>
     {

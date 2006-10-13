@@ -28,7 +28,6 @@ using namespace paludis;
 /** \file
  * Test cases for QualifiedPackageName.
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -36,7 +35,6 @@ namespace test_cases
     /**
      * \test Basic QualifiedPackageName tests.
      *
-     * \ingroup grptestcases
      */
     struct QualifiedPackageNameTest : TestCase
     {
@@ -52,7 +50,6 @@ namespace test_cases
     /**
      * \test Validate QualifiedPackageName tests.
      *
-     * \ingroup grptestcases
      */
     struct QualifiedPackageNameValidateTest : TestCase
     {
@@ -70,7 +67,6 @@ namespace test_cases
     /**
      * \test Compare QualifiedPackageName tests.
      *
-     * \ingroup grptestcases
      */
     struct QualifiedPackageNameCompareTest : TestCase
     {
@@ -101,7 +97,6 @@ namespace test_cases
     /**
      * \test Test CategoryNamePart creation.
      *
-     * \ingroup grptestcases
      */
     struct CategoryNamePartCreationTest : public TestCase
     {
@@ -117,7 +112,6 @@ namespace test_cases
     /**
      * \test Test CategoryNamePart validation
      *
-     * \ingroup grptestcases
      */
     struct CategoryNamePartValidationTest : public TestCase
     {
@@ -136,7 +130,6 @@ namespace test_cases
     /**
      * \test Test PackageNamePart creation.
      *
-     * \ingroup grptestcases
      */
     struct PackageNamePartCreationTest : public TestCase
     {
@@ -152,7 +145,6 @@ namespace test_cases
     /**
      * \test Test PackageNamePart validation.
      *
-     * \ingroup grptestcases
      */
     struct PackageNamePartValidationTest : public TestCase
     {
@@ -171,7 +163,6 @@ namespace test_cases
     /**
      * \test Test PackageNamePart comparison.
      *
-     * \ingroup grptestcases
      */
     struct PackageNamePartComparisonTest : public TestCase
     {

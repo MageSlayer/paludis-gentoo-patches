@@ -28,7 +28,6 @@ using namespace paludis;
 /** \file
  * Test cases for instantiation_policy.hh .
  *
- * \ingroup grptestcases
  */
 
 namespace
@@ -36,7 +35,6 @@ namespace
     /**
      * Test class for InstantiationPolicy.
      *
-     * \ingroup grptestcases
      */
     class MyClass :
         public InstantiationPolicy<MyClass, instantiation_method::SingletonAsNeededTag>
@@ -106,7 +104,6 @@ namespace test_cases
     /**
      * \test Test singleton behaviour.
      *
-     * \ingroup grptestcases
      */
     struct SingletonPatternTest : TestCase
     {
@@ -132,7 +129,6 @@ namespace test_cases
     /**
      * \test Test singleton behaviour.
      *
-     * \ingroup grptestcases
      */
     struct SingletonPatternDeleteTest : TestCase
     {
@@ -163,7 +159,6 @@ namespace test_cases
     /**
      * \test Test singleton create at startup behaviour.
      *
-     * \ingroup grptestcases
      */
     struct SingletonPatternCreateAtStartupTest : TestCase
     {

@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: file permissions.
+         *
+         * \ingroup grpqacheck
+         */
         class FilePermissionsCheck :
             public FileCheck
         {

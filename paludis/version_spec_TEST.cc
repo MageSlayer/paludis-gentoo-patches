@@ -29,7 +29,6 @@ using namespace paludis;
 /** \file
  * Test cases for VersionSpec.
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -37,7 +36,6 @@ namespace test_cases
     /**
      * \test Basic version_spec creation.
      *
-     * \ingroup grptestcases
      */
     struct VersionSpecCreationTest : TestCase
     {
@@ -77,7 +75,6 @@ namespace test_cases
     /**
      * \test Invalid version rejection
      *
-     * \ingroup grptestcases
      */
     struct VersionSpecRejectTest : TestCase
     {
@@ -99,7 +96,6 @@ namespace test_cases
     /**
      * \test Not so basic version_spec creation.
      *
-     * \ingroup grptestcases
      */
     struct VersionSpecParseTest : TestCase
     {
@@ -117,7 +113,6 @@ namespace test_cases
     /**
      * \test VersionSpec star comparisons
      *
-     * \ingroup grptestcases
      */
     struct VersionSpecStarCompareTest : TestCase
     {
@@ -143,7 +138,6 @@ namespace test_cases
     /**
      * \test VersionSpec tilde comparisons
      *
-     * \ingroup grptestcases
      */
     struct VersionSpecTildeCompareTest : TestCase
     {
@@ -161,7 +155,6 @@ namespace test_cases
     /**
      * \test VersionSpec remove revision
      *
-     * \ingroup grptestcases
      */
     struct VersionRemoveRevisionTest : TestCase
     {
@@ -178,7 +171,6 @@ namespace test_cases
     /**
      * \test VersionSpec revision only
      *
-     * \ingroup grptestcases
      */
     struct VersionRevisionOnlyTest : TestCase
     {
@@ -195,7 +187,6 @@ namespace test_cases
     /**
      * \test VersionSpec ordering.
      *
-     * \ingroup grptestcases
      */
     struct VersionSpecCompareSCMTest : TestCase
     {

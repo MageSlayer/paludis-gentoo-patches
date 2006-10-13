@@ -26,7 +26,7 @@ using namespace test;
 /** \file
  * This test should pass.
  *
- * \ingroup Test
+ * \ingroup grptestframework
  */
 
 namespace test_cases
@@ -34,7 +34,7 @@ namespace test_cases
     /**
      * \test This test should pass.
      *
-     * \ingroup Test
+     * \ingroup grptestframework
      */
     struct PassTest : TestCase
     {

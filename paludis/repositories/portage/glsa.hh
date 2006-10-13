@@ -34,6 +34,11 @@ namespace paludis
 
 #include <paludis/repositories/portage/glsa-sr.hh>
 
+    /**
+     * Thrown if a bad GLSA is found.
+     *
+     * \ingroup grpexceptions
+     */
     class PALUDIS_VISIBLE GLSAError :
         public ConfigurationError
     {
@@ -47,6 +52,12 @@ namespace paludis
             ///\}
     };
 
+    /**
+     * Represents a package entry in a GLSA.
+     *
+     * \see GLSA
+     * \ingroup grpportagerepository
+     */
     class PALUDIS_VISIBLE GLSAPackage :
         private PrivateImplementationPattern<GLSAPackage>,
         public InternalCounted<GLSAPackage>
@@ -71,6 +82,11 @@ namespace paludis
             QualifiedPackageName name() const;
     };
 
+    /**
+     * Represents a GLSA (security advisory).
+     *
+     * \ingroup grpportagerepository
+     */
     class PALUDIS_VISIBLE GLSA :
         private PrivateImplementationPattern<GLSA>,
         public InternalCounted<GLSA>

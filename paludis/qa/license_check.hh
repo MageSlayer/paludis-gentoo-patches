@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: LICENSE sanity.
+         *
+         * \ingroup grpqacheck
+         */
         class LicenseCheck :
             public EbuildCheck
         {

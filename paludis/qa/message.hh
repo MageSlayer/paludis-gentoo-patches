@@ -26,13 +26,18 @@
 /** \file
  * Declarations for the Message class.
  *
- * \ingroup QA
+ * \ingroup grpqa
  */
 
 namespace paludis
 {
     namespace qa
     {
+        /**
+         * Severity level of a QA message.
+         *
+         * \ingroup grpqa
+         */
         enum QALevel
         {
             qal_info,
@@ -45,6 +50,11 @@ namespace paludis
 
 #include <paludis/qa/message-sr.hh>
 
+        /**
+         * Write a QA message to a stream.
+         *
+         * \ingroup grpqa
+         */
         std::ostream & operator<< (std::ostream &, const Message &);
     }
 }

@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: is Manifest gpg signed?
+         *
+         * \ingroup grpqacheck
+         */
         class GPGCheck :
             public PackageDirCheck
         {

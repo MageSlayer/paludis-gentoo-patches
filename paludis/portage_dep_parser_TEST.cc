@@ -28,7 +28,6 @@ using namespace paludis;
 /** \file
  * Test cases for PortageDepParser.
  *
- * \ingroup grptestcases
  */
 
 #ifndef DOXYGEN
@@ -119,7 +118,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser with an empty input.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserEmptyTest : TestCase
     {
@@ -137,7 +135,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser with a blank input.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserBlankTest : TestCase
     {
@@ -155,7 +152,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser with a package.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserPackageTest : TestCase
     {
@@ -173,7 +169,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser with a decorated package.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserDecoratedPackageTest : TestCase
     {
@@ -204,7 +199,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser with a sequence of packages.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserPackagesTest : TestCase
     {
@@ -223,7 +217,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser with an any group.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserAnyTest : TestCase
     {
@@ -242,7 +235,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser with an all group.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserAllTest : TestCase
     {
@@ -261,7 +253,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser with a use group.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserUseTest : TestCase
     {
@@ -280,7 +271,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser with an inverse use group.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserInvUseTest : TestCase
     {
@@ -299,7 +289,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser nesting errors.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserBadNestingTest : TestCase
     {
@@ -320,7 +309,6 @@ namespace test_cases
     /**
      * \test Test PortageDepParser weird errors.
      *
-     * \ingroup grptestcases
      */
     struct PortageDepParserBadValuesTest : TestCase
     {

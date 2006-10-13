@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: is SLOT sane.
+         *
+         * \ingroup grpqacheck
+         */
         class SlotCheck :
             public EbuildCheck
         {

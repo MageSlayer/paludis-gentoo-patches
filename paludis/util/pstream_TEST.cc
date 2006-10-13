@@ -27,7 +27,6 @@ using namespace test;
 /** \file
  * Tests for PStream.
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -35,7 +34,6 @@ namespace test_cases
     /**
      * \test Test PStream on a normal command.
      *
-     * \ingroup grptestcases
      */
     struct PStreamTest : TestCase
     {
@@ -57,7 +55,6 @@ namespace test_cases
     /**
      * \test Test PStream on a command that doesn't exist.
      *
-     * \ingroup grptestcases
      */
     struct PStreamNoExistTest : TestCase
     {
@@ -73,7 +70,6 @@ namespace test_cases
     /**
      * \test Test PStream on a command that returns a failure with no output.
      *
-     * \ingroup grptestcases
      */
     struct PStreamSilentFailTest : TestCase
     {
@@ -89,7 +85,6 @@ namespace test_cases
     /**
      * \test Test PStream on a command that fails with output.
      *
-     * \ingroup grptestcases
      */
     struct PStreamFailTest : TestCase
     {

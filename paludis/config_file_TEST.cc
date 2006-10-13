@@ -33,7 +33,6 @@ using namespace paludis;
 /** \file
  * Test cases for config_file.hh .
  *
- * \ingroup grptestcases
  * \ingroup grpconfigfile
  */
 
@@ -42,7 +41,6 @@ namespace
     /**
      * A ConfigFile descendent for use in tests.
      *
-     * \ingroup grptestcases
      */
     class TestFile : protected ConfigFile
     {
@@ -92,7 +90,6 @@ namespace test_cases
     /**
      * \test Test ConfigFile.
      *
-     * \ingroup grptestcases
      */
     struct ConfigFileTest : TestCase
     {
@@ -123,7 +120,6 @@ namespace test_cases
     /**
      * \test Test ConfigFile with file opening.
      *
-     * \ingroup grptestcases
      */
     struct ConfigFileOpenFileTest : TestCase
     {
@@ -155,7 +151,6 @@ namespace test_cases
     /**
      * \test Test LineConfigFile.
      *
-     * \ingroup grptestcases
      */
     struct LineConfigFileTest : TestCase
     {
@@ -188,7 +183,6 @@ namespace test_cases
     /**
      * \test Test KeyValueConfigFile basics.
      *
-     * \ingroup grptestcases
      */
     struct KeyValueConfigFileTest : TestCase
     {
@@ -216,7 +210,6 @@ namespace test_cases
     /**
      * \test Test KeyValueConfigFile continuations.
      *
-     * \ingroup grptestcases
      */
     struct KeyValueConfigFileContinuationsTest : TestCase
     {
@@ -237,7 +230,6 @@ namespace test_cases
     /**
      * \test Test KeyValueConfigFile variables.
      *
-     * \ingroup grptestcases
      */
     struct KeyValueConfigFileVarsTest : TestCase
     {
@@ -283,7 +275,6 @@ namespace test_cases
     /**
      * \test Test KeyValueConfigFile errors.
      *
-     * \ingroup grptestcases
      */
     struct KeyValueConfigFileErrorsTest : TestCase
     {

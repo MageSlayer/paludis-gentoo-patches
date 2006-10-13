@@ -30,7 +30,7 @@
 /** \file
  * Declarations for the FileCheck class.
  *
- * \ingroup QA
+ * \ingroup grpqa
  */
 
 namespace paludis
@@ -40,7 +40,7 @@ namespace paludis
         /**
          * A QA check that operates upon a file.
          *
-         * \ingroup QA
+         * \ingroup grpqa
          */
         class PALUDIS_VISIBLE FileCheck :
             public Check,
@@ -53,6 +53,11 @@ namespace paludis
                 virtual CheckResult operator() (const FSEntry &) const = 0;
         };
 
+        /**
+         * Thrown if a bad file check is requested.
+         *
+         * \ingroup grpexceptions
+         */
         class PALUDIS_VISIBLE NoSuchFileCheckTypeError :
             public Exception
         {
@@ -60,13 +65,24 @@ namespace paludis
                 NoSuchFileCheckTypeError(const std::string &) throw ();
         };
 
-        /* Do not turn this into a straight function. It makes icc cry. */
+        /**
+         * Make a FileCheck class.
+         *
+         * We're implementing things this way to avoid breaking icc70. Icky.
+         *
+         * \ingroup grpqa
+         */
         template <typename T_>
         struct MakeFileCheck
         {
             static FileCheck::Pointer make_file_check();
         };
 
+        /**
+         * Virtual constructor for file checks.
+         *
+         * \ingroup grpqa
+         */
         typedef VirtualConstructor<
             std::string,
             FileCheck::Pointer (*) (),

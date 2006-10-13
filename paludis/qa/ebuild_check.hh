@@ -36,6 +36,11 @@ namespace paludis
 
 #include <paludis/qa/ebuild_check-sr.hh>
 
+        /**
+         * Base class for QA checks that operate upon ebuilds.
+         *
+         * \ingroup grpqa
+         */
         class PALUDIS_VISIBLE EbuildCheck :
             public Check,
             public InternalCounted<EbuildCheck>
@@ -47,6 +52,11 @@ namespace paludis
                 virtual CheckResult operator() (const EbuildCheckData &) const = 0;
         };
 
+        /**
+         * Thrown if a bad package ebuild check is requested.
+         *
+         * \ingroup grpexceptions
+         */
         class PALUDIS_VISIBLE NoSuchEbuildCheckTypeError :
             public Exception
         {
@@ -54,7 +64,13 @@ namespace paludis
                 NoSuchEbuildCheckTypeError(const std::string &) throw ();
         };
 
-        /* icc stupidity workaround */
+        /**
+         * Make an EbuildCheck class.
+         *
+         * We're implementing things this way to avoid breaking icc70. Icky.
+         *
+         * \ingroup grpqa
+         */
         template <typename T_>
         struct MakeEbuildCheck
         {

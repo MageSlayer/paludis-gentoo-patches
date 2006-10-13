@@ -114,7 +114,6 @@ namespace
 /** \file
  * Test cases for CRANRepository.
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -122,7 +121,6 @@ namespace test_cases
     /**
      * \test Test CRANDepParser::parse to parse well formed CRAN Depends: strings.
      *
-     * \ingroup grptestcases
      */
     struct CRANDepParserTest : TestCase
     {

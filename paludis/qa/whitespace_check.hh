@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: whitespace.
+         *
+         * \ingroup grpqacheck
+         */
         class WhitespaceCheck :
             public FileCheck
         {

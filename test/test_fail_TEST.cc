@@ -26,7 +26,7 @@ using namespace test;
 /** \file
  * This test should fail.
  *
- * \ingroup Test
+ * \ingroup grptestframework
  */
 
 namespace test_cases

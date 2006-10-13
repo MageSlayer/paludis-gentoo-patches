@@ -26,7 +26,6 @@
 /** \file
  * Test cases for system.hh .
  *
- * \ingroup grptestcases
  */
 
 using namespace test;
@@ -38,7 +37,6 @@ namespace test_cases
     /**
      * \test Test getenv_with_default.
      *
-     * \ingroup grptestcases
      */
     struct GetenvWithDefaultTest : TestCase
     {
@@ -55,7 +53,6 @@ namespace test_cases
     /**
      * \test Test getenv_or_error.
      *
-     * \ingroup grptestcases
      */
     struct GetenvOrErrorTest : TestCase
     {
@@ -71,7 +68,6 @@ namespace test_cases
     /**
      * \test Test kernel_version.
      *
-     * \ingroup grptestcases
      */
     struct KernelVersionTest : TestCase
     {
@@ -95,7 +91,6 @@ namespace test_cases
     /**
      * \test Test run_command.
      *
-     * \ingroup grptestcases
      */
     struct RunCommandTest : TestCase
     {
@@ -112,7 +107,6 @@ namespace test_cases
     /**
      * \test Test run_command_in_directory.
      *
-     * \ingroup grptestcases
      */
     struct RunCommandInDirectoryTest : TestCase
     {
@@ -133,7 +127,6 @@ namespace test_cases
     /**
      * \test Test make_env_command.
      *
-     * \ingroup grptestcases
      */
     struct MakeEnvCommandTest : TestCase
     {
@@ -165,7 +158,6 @@ namespace test_cases
     /**
      * \test Test make_env_command with quotes.
      *
-     * \ingroup grptestcases
      */
     struct MakeEnvCommandQuoteTest : TestCase
     {

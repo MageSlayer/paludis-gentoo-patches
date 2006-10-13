@@ -47,7 +47,6 @@ namespace test_cases
     /**
      * Convenience base class used by many of the DepList tests.
      *
-     * \ingroup Test
      */
     class DepListTestCaseBase :
         public TestCase
@@ -126,7 +125,6 @@ namespace test_cases
     /**
      * Convenience sub base class used by the numbered DepList tests.
      *
-     * \ingroup Test
      */
     template <int i_>
     struct DepListTestCase : DepListTestCaseBase
@@ -143,7 +141,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase1 : DepListTestCase<1>
     {
@@ -162,7 +159,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase2 : DepListTestCase<2>
     {
@@ -183,7 +179,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase3 : DepListTestCase<3>
     {
@@ -206,7 +201,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase4 : DepListTestCase<4>
     {
@@ -229,7 +223,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase5 : DepListTestCase<5>
     {
@@ -252,7 +245,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase6 : DepListTestCase<6>
     {
@@ -275,7 +267,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase7 : DepListTestCase<7>
     {
@@ -300,7 +291,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase8 : DepListTestCase<8>
     {
@@ -325,7 +315,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase9 : DepListTestCase<9>
     {
@@ -350,7 +339,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase10 : DepListTestCase<10>
     {
@@ -372,7 +360,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase11 : DepListTestCase<11>
     {
@@ -396,7 +383,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase12 : DepListTestCase<12>
     {
@@ -420,7 +406,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase13 : DepListTestCase<13>
     {
@@ -445,7 +430,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase14 : DepListTestCase<14>
     {
@@ -466,7 +450,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase15 : DepListTestCase<15>
     {
@@ -488,7 +471,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase16 : DepListTestCase<16>
     {
@@ -511,7 +493,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase17 : DepListTestCase<17>
     {
@@ -536,7 +517,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase18 : DepListTestCase<18>
     {
@@ -555,7 +535,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase19 : DepListTestCase<19>
     {
@@ -576,7 +555,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase20 : DepListTestCase<20>
     {
@@ -596,7 +574,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase21 : DepListTestCase<21>
     {
@@ -616,7 +593,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase22 : DepListTestCase<22>
     {
@@ -637,7 +613,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase23 : DepListTestCase<23>
     {
@@ -659,7 +634,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase24 : DepListTestCase<24>
     {
@@ -681,7 +655,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase25 : DepListTestCase<25>
     {
@@ -703,7 +676,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase26 : DepListTestCase<26>
     {
@@ -725,7 +697,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase27 : DepListTestCase<27>
     {
@@ -747,7 +718,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase28 : DepListTestCase<28>
     {
@@ -769,7 +739,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase29 : DepListTestCase<29>
     {
@@ -791,7 +760,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase30 : DepListTestCase<30>
     {
@@ -813,7 +781,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase31 : DepListTestCase<31>
     {
@@ -835,7 +802,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase32 : DepListTestCase<32>
     {
@@ -858,7 +824,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase33 : DepListTestCase<33>
     {
@@ -881,7 +846,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase34 : DepListTestCase<34>
     {
@@ -903,7 +867,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase35 : DepListTestCase<35>
     {
@@ -925,7 +888,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase36 : DepListTestCase<36>
     {
@@ -947,7 +909,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase37 : DepListTestCase<37>
     {
@@ -968,7 +929,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase38 : DepListTestCase<38>
     {
@@ -988,7 +948,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase39 : DepListTestCase<39>
     {
@@ -1015,7 +974,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase40 : DepListTestCase<40>
     {
@@ -1043,7 +1001,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase41 : DepListTestCase<41>
     {
@@ -1066,7 +1023,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase42 : DepListTestCase<42>
     {
@@ -1088,7 +1044,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase43 : DepListTestCase<43>
     {
@@ -1110,7 +1065,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase44 : DepListTestCase<44>
     {
@@ -1131,7 +1085,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase45 : DepListTestCase<45>
     {
@@ -1152,7 +1105,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase46 : DepListTestCase<46>
     {
@@ -1173,7 +1125,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase47 : DepListTestCase<47>
     {
@@ -1200,7 +1151,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase48 : DepListTestCase<48>
     {
@@ -1227,7 +1177,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase49 : DepListTestCase<49>
     {
@@ -1248,7 +1197,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase50 : DepListTestCase<50>
     {
@@ -1269,7 +1217,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase51 : DepListTestCase<51>
     {
@@ -1296,7 +1243,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase52 : DepListTestCase<52>
     {
@@ -1323,7 +1269,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase53 : DepListTestCase<53>
     {
@@ -1344,7 +1289,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase54 : DepListTestCase<54>
     {
@@ -1367,7 +1311,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase55 : DepListTestCase<55>
     {
@@ -1388,7 +1331,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase56 : DepListTestCase<56>
     {
@@ -1411,7 +1353,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase57 : DepListTestCase<57>
     {
@@ -1434,7 +1375,6 @@ namespace test_cases
     /**
      * \test Test DepList resolution behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCase58 : DepListTestCase<58>
     {
@@ -1454,7 +1394,6 @@ namespace test_cases
     /**
      * \test Test DepList transactional add behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCaseTransactionalAdd : TestCase
     {
@@ -1489,7 +1428,6 @@ namespace test_cases
     /**
      * \test Test DepList transactional add behaviour on PDEPENDs.
      *
-     * \ingroup Test
      */
     struct DepListTestCaseTransactionalAddPost : TestCase
     {
@@ -1524,7 +1462,6 @@ namespace test_cases
     /**
      * \test Test DepList transactional forced downgrade of installed package behaviour.
      *
-     * \ingroup Test
      */
     struct DepListTestCaseForcedDowngradeOfInstalled : TestCase
     {

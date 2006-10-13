@@ -28,7 +28,6 @@ namespace
 {
     /**
      * \name Test utilities
-     * \ingroup grptestcases
      * \{
      */
 
@@ -65,7 +64,6 @@ namespace test_cases
 {
     /**
      * \name Test cases for paludis::digests::RMD160
-     * \ingroup grptestcases
      * \{
      */
 

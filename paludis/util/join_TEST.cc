@@ -29,7 +29,6 @@ using namespace test;
 /** \file
  * Test cases for join.hh .
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -37,7 +36,6 @@ namespace test_cases
     /**
      * \test Test join on a vector.
      *
-     * \ingroup grptestcases
      */
     struct JoinVectorTest : TestCase
     {
@@ -58,7 +56,6 @@ namespace test_cases
     /**
      * \test Test join on a list.
      *
-     * \ingroup grptestcases
      */
     struct JoinListTest : TestCase
     {
@@ -79,7 +76,6 @@ namespace test_cases
     /**
      * \test Test join with empty things.
      *
-     * \ingroup grptestcases
      */
     struct JoinEmptyTest : TestCase
     {

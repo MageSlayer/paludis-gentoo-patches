@@ -30,7 +30,6 @@ using namespace test;
 /** \file
  * Test cases for visitor.hh .
  *
- * \ingroup grptestcases
  */
 
 #ifndef DOXYGEN
@@ -138,7 +137,6 @@ namespace test_cases
     /**
      * \test Test const visitors.
      *
-     * \ingroup grptestcases
      */
     struct ConstVisitorTest : TestCase
     {
@@ -164,7 +162,6 @@ namespace test_cases
     /**
      * \test Test non-const visitors.
      *
-     * \ingroup grptestcases
      */
     struct VisitorTest : TestCase
     {

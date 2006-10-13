@@ -26,6 +26,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: extraction dependencies.
+         *
+         * \ingroup grpqacheck
+         */
         class ExtractCheck :
             public EbuildCheck
         {

@@ -30,7 +30,7 @@
 /** \file
  * Declarations for the PackageDirCheck class.
  *
- * \ingroup QA
+ * \ingroup grpqa
  */
 
 namespace paludis
@@ -40,7 +40,7 @@ namespace paludis
         /**
          * A QA check that operates upon a package directory.
          *
-         * \ingroup QA
+         * \ingroup grpqa
          */
         class PackageDirCheck :
             public Check,
@@ -53,6 +53,11 @@ namespace paludis
                 virtual CheckResult operator() (const FSEntry &) const = 0;
         };
 
+        /**
+         * Thrown if a bad package dir check is requested.
+         *
+         * \ingroup grpexceptions
+         */
         class NoSuchPackageDirCheckTypeError :
             public Exception
         {
@@ -60,7 +65,13 @@ namespace paludis
                 NoSuchPackageDirCheckTypeError(const std::string &) throw ();
         };
 
-        /* icc is dumb */
+        /**
+         * Make a PackageDirCheck class.
+         *
+         * We're implementing things this way to avoid breaking icc70. Icky.
+         *
+         * \ingroup grpqa
+         */
         template <typename T_>
         struct MakePackageDirCheck
         {
@@ -71,6 +82,11 @@ namespace paludis
             }
         };
 
+        /**
+         * Virtual constructor for package dir checks.
+         *
+         * \ingroup grpqa
+         */
         typedef VirtualConstructor<
             std::string,
             PackageDirCheck::Pointer (*) (),

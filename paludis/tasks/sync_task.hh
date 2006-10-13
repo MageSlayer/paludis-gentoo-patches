@@ -29,6 +29,11 @@ namespace paludis
     class Environment;
     class SyncFailedError;
 
+    /**
+     * Task to handle syncing some or all repositories.
+     *
+     * \ingroup grptasks
+     */
     class PALUDIS_VISIBLE SyncTask :
         PrivateImplementationPattern<SyncTask>,
         InstantiationPolicy<SyncTask, instantiation_method::NonCopyableTag>

@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: check that misc files exist.
+         *
+         * \ingroup grpqacheck
+         */
         class HasMiscFilesCheck :
             public PackageDirCheck
         {

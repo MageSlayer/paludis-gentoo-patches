@@ -26,6 +26,13 @@
 
 namespace paludis
 {
+    /**
+     * Wrapper around libxml pointers.
+     *
+     * RAII, the specified function is used to free the pointer.
+     *
+     * \ingroup grpxml
+     */
     template <typename PtrType_>
     class LibXmlPtrHolder
     {
@@ -55,9 +62,19 @@ namespace paludis
             }
     };
 
+    /**
+     * Turn a retarded libxml string into a std::string.
+     *
+     * \ingroup grpxml
+     */
     std::string
     retarded_libxml_string_to_string(const xmlChar * s) PALUDIS_VISIBLE;
 
+    /**
+     * Remove leading and trailing whitespace, and normalise internal whitespace.
+     *
+     * \ingroup grpxml
+     */
     std::string normalise(const std::string & s) PALUDIS_VISIBLE;
 }
 

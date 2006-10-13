@@ -29,6 +29,11 @@ namespace paludis
 {
     class Environment;
 
+    /**
+     * Thrown if an ambiguous unmerge target is supplied.
+     *
+     * \ingroup grpexceptions
+     */
     class PALUDIS_VISIBLE AmbiguousUnmergeTargetError :
         public Exception
     {
@@ -65,6 +70,11 @@ namespace paludis
             }
     };
 
+    /**
+     * Task used to uninstall one or more targets.
+     *
+     * \ingroup grptasks
+     */
     class PALUDIS_VISIBLE UninstallTask :
         PrivateImplementationPattern<UninstallTask>,
         InstantiationPolicy<UninstallTask, instantiation_method::NonCopyableTag>

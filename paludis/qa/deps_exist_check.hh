@@ -27,6 +27,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: do packages in *DEPEND exist.
+         *
+         * \ingroup grpqacheck
+         */
         class DepsExistCheck :
             public EbuildCheck
         {

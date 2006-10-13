@@ -31,7 +31,6 @@ using namespace paludis;
 /** \file
  * Test cases for PortageRepository.
  *
- * \ingroup grptestcases
  */
 
 namespace test_cases
@@ -39,7 +38,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository repository names.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryRepoNameTest : TestCase
     {
@@ -62,7 +60,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository repository with no names.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryNoRepoNameTest : TestCase
     {
@@ -85,7 +82,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository repository empty names.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryEmptyRepoNameTest : TestCase
     {
@@ -108,7 +104,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository repository has_category_named.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryHasCategoryNamedTest : TestCase
     {
@@ -140,7 +135,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository category_names.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryCategoryNamesTest : TestCase
     {
@@ -174,7 +168,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository has_package_named.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryHasPackageNamedTest : TestCase
     {
@@ -214,7 +207,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository has_package_named cached.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryHasPackageNamedCachedTest : TestCase
     {
@@ -258,7 +250,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository package_names.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryPackageNamesTest : TestCase
     {
@@ -311,7 +302,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository bad package names.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryBadPackageNamesTest : TestCase
     {
@@ -345,7 +335,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository has_version.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryHasVersionTest : TestCase
     {
@@ -389,7 +378,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository versions.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryVersionsTest : TestCase
     {
@@ -432,7 +420,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository duff versions.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryDuffVersionsTest : TestCase
     {
@@ -475,7 +462,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository cached metadata.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryMetadataCachedTest : TestCase
     {
@@ -511,7 +497,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository uncached metadata.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryMetadataUncachedTest : TestCase
     {
@@ -548,7 +533,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository unparsable metadata.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryMetadataUnparsableTest : TestCase
     {
@@ -584,7 +568,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository query_use and query_use_mask functions.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryQueryUseTest : TestCase
     {
@@ -632,7 +615,6 @@ namespace test_cases
     /**
      * \test Test PortageRepository query_profile_masks functions.
      *
-     * \ingroup grptestcases
      */
     struct PortageRepositoryQueryProfileMasksTest : TestCase
     {

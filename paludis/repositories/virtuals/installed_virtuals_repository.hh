@@ -24,6 +24,11 @@
 
 namespace paludis
 {
+    /**
+     * Repository representing installed virtual packages.
+     *
+     * \ingroup grpvirtualsrepository
+     */
     class PALUDIS_VISIBLE InstalledVirtualsRepository :
         public Repository,
         public RepositoryInstalledInterface,

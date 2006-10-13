@@ -64,6 +64,11 @@ namespace paludis
                 virtual std::string paludis_command() const;
         };
 
+        /**
+         * Thrown if a profiles.desc file is broken.
+         *
+         * \ingroup grpexceptions
+         */
         class ProfilesDescError :
             public ConfigurationError
         {

@@ -28,6 +28,11 @@ namespace paludis
 {
     namespace qa
     {
+        /**
+         * QA check: default function reimplementations.
+         *
+         * \ingroup grpqacheck
+         */
         class DefaultsCheck :
             public FileCheck
         {

@@ -28,6 +28,11 @@ namespace paludis
 {
     class Environment;
 
+    /**
+     * Thrown if multiple set targets are specified.
+     *
+     * \ingroup grpexceptions
+     */
     class PALUDIS_VISIBLE MultipleSetTargetsSpecified :
         public Exception
     {
@@ -35,6 +40,11 @@ namespace paludis
             MultipleSetTargetsSpecified() throw ();
     };
 
+    /**
+     * Thrown if both sets and packages are specified as targets.
+     *
+     * \ingroup grpexceptions
+     */
     class PALUDIS_VISIBLE HadBothPackageAndSetTargets :
         public Exception
     {
@@ -42,6 +52,11 @@ namespace paludis
             HadBothPackageAndSetTargets() throw ();
     };
 
+    /**
+     * Task used to install one or more targets.
+     *
+     * \ingroup grptasks
+     */
     class PALUDIS_VISIBLE InstallTask :
         PrivateImplementationPattern<InstallTask>,
         InstantiationPolicy<InstallTask, instantiation_method::NonCopyableTag>
