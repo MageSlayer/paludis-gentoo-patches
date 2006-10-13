@@ -162,21 +162,29 @@ main(int argc, char *argv[])
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "--dl-no-unnecessary-upgrades / -U is deprecated");
             CommandLine::get_instance()->dl_upgrade.set_argument("as-needed");
+            CommandLine::get_instance()->dl_upgrade.set_specified(true);
         }
         if (CommandLine::get_instance()->a_dl_drop_all.specified())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "--dl-drop-all / -0 is deprecated");
             CommandLine::get_instance()->dl_installed_deps_pre.set_argument("discard");
+            CommandLine::get_instance()->dl_installed_deps_pre.set_specified(true);
             CommandLine::get_instance()->dl_installed_deps_post.set_argument("discard");
+            CommandLine::get_instance()->dl_installed_deps_post.set_specified(true);
             CommandLine::get_instance()->dl_installed_deps_runtime.set_argument("discard");
+            CommandLine::get_instance()->dl_installed_deps_runtime.set_specified(true);
             CommandLine::get_instance()->dl_uninstalled_deps_pre.set_argument("discard");
+            CommandLine::get_instance()->dl_uninstalled_deps_pre.set_specified(true);
             CommandLine::get_instance()->dl_uninstalled_deps_post.set_argument("discard");
+            CommandLine::get_instance()->dl_uninstalled_deps_post.set_specified(true);
             CommandLine::get_instance()->dl_uninstalled_deps_runtime.set_argument("discard");
+            CommandLine::get_instance()->dl_uninstalled_deps_runtime.set_specified(true);
         }
         if (CommandLine::get_instance()->a_dl_ignore_installed.specified())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "--dl-ignore-installed / -e is deprecated");
             CommandLine::get_instance()->dl_reinstall.set_argument("always");
+            CommandLine::get_instance()->dl_reinstall.set_specified("always");
         }
 
         /* need an action */
