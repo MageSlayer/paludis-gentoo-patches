@@ -32,6 +32,7 @@
 
 #include <paludis/paludis.hh>
 #include <paludis/util/util.hh>
+#include <paludis/util/log.hh>
 #include <paludis/environment/default/default_environment.hh>
 #include <paludis/environment/default/default_config.hh>
 
@@ -47,17 +48,14 @@
  * Main paludis program.
  */
 
-namespace p = paludis;
-
+using namespace paludis;
 using std::cout;
 using std::cerr;
 using std::endl;
 
-#ifndef DOXYGEN
 struct DoVersion
 {
 };
-#endif
 
 namespace
 {
@@ -104,22 +102,22 @@ namespace
 
     void display_info()
     {
-        p::Environment * const env(p::DefaultEnvironment::get_instance());
+        Environment * const env(DefaultEnvironment::get_instance());
 
-        for (p::IndirectIterator<p::PackageDatabase::RepositoryIterator, const p::Repository>
+        for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
                 r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
                 r != r_end ; ++r)
         {
             cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
 
-            p::RepositoryInfo::ConstPointer ii(r->info(true));
-            for (p::RepositoryInfo::SectionIterator i(ii->begin_sections()),
+            RepositoryInfo::ConstPointer ii(r->info(true));
+            for (RepositoryInfo::SectionIterator i(ii->begin_sections()),
                     i_end(ii->end_sections()) ; i != i_end ; ++i)
             {
                 cout << "    " << colour(cl_heading, (*i)->heading() + ":") << endl;
-                for (p::RepositoryInfoSection::KeyValueIterator k((*i)->begin_kvs()),
+                for (RepositoryInfoSection::KeyValueIterator k((*i)->begin_kvs()),
                         k_end((*i)->end_kvs()) ; k != k_end ; ++k)
-                    cout << "        " << std::setw(22) << std::left << (p::stringify(k->first) + ":")
+                    cout << "        " << std::setw(22) << std::left << (stringify(k->first) + ":")
                         << std::setw(0) << " " << k->second << endl;
                 cout << endl;
             }
@@ -131,7 +129,7 @@ namespace
 int
 main(int argc, char *argv[])
 {
-    p::Context context("In program " + p::join(argv, argv + argc, " ") + ":");
+    Context context("In program " + join(argv, argv + argc, " ") + ":");
 
     try
     {
@@ -145,20 +143,43 @@ main(int argc, char *argv[])
             throw DoVersion();
 
         if (! CommandLine::get_instance()->a_log_level.specified())
-            p::Log::get_instance()->set_log_level(p::ll_qa);
+            Log::get_instance()->set_log_level(ll_qa);
         else if (CommandLine::get_instance()->a_log_level.argument() == "debug")
-            p::Log::get_instance()->set_log_level(p::ll_debug);
+            Log::get_instance()->set_log_level(ll_debug);
         else if (CommandLine::get_instance()->a_log_level.argument() == "qa")
-            p::Log::get_instance()->set_log_level(p::ll_qa);
+            Log::get_instance()->set_log_level(ll_qa);
         else if (CommandLine::get_instance()->a_log_level.argument() == "warning")
-            p::Log::get_instance()->set_log_level(p::ll_warning);
+            Log::get_instance()->set_log_level(ll_warning);
         else if (CommandLine::get_instance()->a_log_level.argument() == "silent")
-            p::Log::get_instance()->set_log_level(p::ll_silent);
+            Log::get_instance()->set_log_level(ll_silent);
         else
             throw DoHelp("bad value for --log-level");
 
-        p::Log::get_instance()->set_program_name(argv[0]);
+        Log::get_instance()->set_program_name(argv[0]);
 
+        /* deprecated args */
+        if (CommandLine::get_instance()->a_dl_no_unnecessary_upgrades.specified())
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "--dl-no-unnecessary-upgrades / -U is deprecated");
+            CommandLine::get_instance()->dl_upgrade.set_argument("as-needed");
+        }
+        if (CommandLine::get_instance()->a_dl_drop_all.specified())
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "--dl-drop-all / -0 is deprecated");
+            CommandLine::get_instance()->dl_installed_deps_pre.set_argument("discard");
+            CommandLine::get_instance()->dl_installed_deps_post.set_argument("discard");
+            CommandLine::get_instance()->dl_installed_deps_runtime.set_argument("discard");
+            CommandLine::get_instance()->dl_uninstalled_deps_pre.set_argument("discard");
+            CommandLine::get_instance()->dl_uninstalled_deps_post.set_argument("discard");
+            CommandLine::get_instance()->dl_uninstalled_deps_runtime.set_argument("discard");
+        }
+        if (CommandLine::get_instance()->a_dl_ignore_installed.specified())
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "--dl-ignore-installed / -e is deprecated");
+            CommandLine::get_instance()->dl_reinstall.set_argument("always");
+        }
+
+        /* need an action */
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +
                     CommandLine::get_instance()->a_install.specified() +
@@ -235,14 +256,14 @@ main(int argc, char *argv[])
             std::string paludis_command(argv[0]);
             if (CommandLine::get_instance()->a_config_suffix.specified())
             {
-                p::DefaultConfig::set_config_suffix(CommandLine::get_instance()->a_config_suffix.argument());
+                DefaultConfig::set_config_suffix(CommandLine::get_instance()->a_config_suffix.argument());
                 paludis_command.append(" --config-suffix " +
                         CommandLine::get_instance()->a_config_suffix.argument());
             }
             paludis_command.append(" --log-level " + CommandLine::get_instance()->a_log_level.argument());
-            p::DefaultConfig::get_instance()->set_paludis_command(paludis_command);
+            DefaultConfig::get_instance()->set_paludis_command(paludis_command);
         }
-        catch (const p::DefaultConfigError & e)
+        catch (const DefaultConfigError & e)
         {
             if (CommandLine::get_instance()->a_info.specified())
             {
@@ -383,7 +404,7 @@ main(int argc, char *argv[])
             return do_update_news();
         }
 
-        throw p::InternalError(__PRETTY_FUNCTION__, "no action?");
+        throw InternalError(__PRETTY_FUNCTION__, "no action?");
     }
     catch (const DoVersion &)
     {
@@ -417,7 +438,7 @@ main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
     }
-    catch (const p::Exception & e)
+    catch (const Exception & e)
     {
         cout << endl;
         cerr << "Unhandled exception:" << endl

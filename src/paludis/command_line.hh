@@ -238,6 +238,15 @@ class CommandLine :
         paludis::args::SwitchArg a_full_match;
 
         /// }
+
+
+        /// \name Deprecated arguments
+        ///\{
+
+        paludis::args::ArgsGroup deprecated_args;
+        paludis::args::SwitchArg a_dl_no_unnecessary_upgrades;
+        paludis::args::SwitchArg a_dl_drop_all;
+        paludis::args::SwitchArg a_dl_ignore_installed;
 };
 
 /**

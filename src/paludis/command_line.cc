@@ -164,7 +164,15 @@ CommandLine::CommandLine() :
 
     owner_args(this, "Owner options",
             "Options relevant for the --owner actions."),
-    a_full_match(&owner_args, "full-match", '\0', "Match whole filename")
+    a_full_match(&owner_args, "full-match", '\0', "Match whole filename"),
+
+    deprecated_args(this, "Deprecated options", "Deprecated options."),
+    a_dl_no_unnecessary_upgrades(&deprecated_args, "dl-no-unnecessary-upgrades", 'U',
+            "Replaced by --dl-upgrade as-needed"),
+    a_dl_drop_all(&deprecated_args, "dl-drop-all", '0',
+            "Drop all dependencies"),
+    a_dl_ignore_installed(&deprecated_args, "dl-ignore-installed", 'e',
+            "Replaced by --dl-reinstall always")
 {
     add_usage_line("--query [query options] target ...");
     add_usage_line("--install [install options] target ...");
