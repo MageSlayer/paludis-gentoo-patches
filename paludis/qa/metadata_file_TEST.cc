@@ -20,6 +20,7 @@
 #include <paludis/qa/metadata_file.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include "config.h"
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -65,6 +66,15 @@ namespace test_cases
                         f.end_maintainers(), std::make_pair(std::string("oink@oink"), std::string(""))));
             TEST_CHECK(f.end_maintainers() != std::find(f.begin_maintainers(),
                         f.end_maintainers(), std::make_pair(std::string(""), std::string("Fred the Fish"))));
+        }
+
+        bool skip() const
+        {
+#if ENABLE_GLSA
+            return false;
+#else
+            return true;
+#endif
         }
     } test_has_ebuilds_check;
 }
