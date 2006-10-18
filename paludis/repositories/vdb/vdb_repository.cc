@@ -407,6 +407,8 @@ namespace paludis
                 file_contents(location, p->name, p->version, "PDEPEND");
         p->metadata->get_ebuild_interface()->provide_string =
                 file_contents(location, p->name, p->version, "PROVIDE");
+        p->metadata->get_ebuild_interface()->src_uri =
+                file_contents(location, p->name, p->version, "SRC_URI");
         p->metadata->eapi = file_contents(location, p->name, p->version, "EAPI");
         p->metadata->homepage = file_contents(location, p->name, p->version, "HOMEPAGE");
         p->metadata->description = file_contents(location, p->name, p->version, "DESCRIPTION");
