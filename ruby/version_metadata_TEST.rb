@@ -63,8 +63,8 @@ class Paludis
 
         def test_ebuild_members
             assert_equal "", vmd("1.0").provide_string
-            assert_equal "", vmd("1.0").src_uri
-            assert_equal "", vmd("1.0").restrict_string
+            assert_equal "http://example.com/bar-1.0.tar.bz2", vmd("1.0").src_uri
+            assert_equal "monkey", vmd("1.0").restrict_string
             assert_equal "test", vmd("1.0").keywords.gsub(%r/\s/, "")
             assert_equal "", vmd("1.0").iuse.gsub(%r/\s/, "")
         end

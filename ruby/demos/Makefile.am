@@ -15,7 +15,8 @@ CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o *.so
 MAINTAINERCLEANFILES = Makefile.in
 
 IF_RUBY_DEMOS = \
-	version_spec_distributions.rb
+	version_spec_distributions.rb \
+	find_unused_distfiles.rb
 
 EXTRA_DIST = $(IF_RUBY_DEMOS)
 
@@ -31,7 +32,8 @@ TESTS_ENVIRONMENT = env \
 
 if ENABLE_RUBY
 
-noinst_DATA = $(IF_RUBY_DEMOS)
+rubydemosdir = $(datadir)/paludis/ruby/demos/
+rubydemos_DATA = $(IF_RUBY_DEMOS)
 
 endif
 

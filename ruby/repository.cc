@@ -30,6 +30,8 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_repository;
+    static VALUE c_repository_info;
+    static VALUE c_repository_info_section;
 
     VALUE
     repository_name(VALUE self)
@@ -169,6 +171,69 @@ namespace
         }
     }
 
+    template <typename T_, T_ * RepositoryCapabilities::* m_>
+    struct Interface
+    {
+        static VALUE fetch(VALUE self)
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            return ((**self_ptr).*m_) ? self : Qnil;
+        }
+    };
+
+    VALUE
+    repository_info(VALUE self, VALUE verbose)
+    {
+        Repository::ConstPointer * self_ptr;
+        Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+
+        RepositoryInfo::ConstPointer * p = new RepositoryInfo::ConstPointer((*self_ptr)->info(Qfalse == verbose));
+        return Data_Wrap_Struct(c_repository_info, 0, &Common<RepositoryInfo::ConstPointer>::free, p);
+    }
+
+    VALUE
+    repository_info_sections(VALUE self)
+    {
+        try
+        {
+            RepositoryInfo::ConstPointer * self_ptr;
+            Data_Get_Struct(self, RepositoryInfo::ConstPointer, self_ptr);
+
+            VALUE result(rb_ary_new());
+            for (RepositoryInfo::SectionIterator i((*self_ptr)->begin_sections()),
+                    i_end((*self_ptr)->end_sections()) ; i != i_end ; ++i)
+            {
+                RepositoryInfoSection::ConstPointer * s(new RepositoryInfoSection::ConstPointer(*i));
+                rb_ary_push(result, Data_Wrap_Struct(c_repository_info_section, 0, &Common<RepositoryInfo::ConstPointer>::free, s));
+            }
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    repository_info_section_kvs(VALUE self)
+    {
+        try
+        {
+            RepositoryInfoSection::ConstPointer * self_ptr;
+            Data_Get_Struct(self, RepositoryInfoSection::ConstPointer, self_ptr);
+
+            VALUE result(rb_hash_new());
+            for (RepositoryInfoSection::KeyValueIterator i((*self_ptr)->begin_kvs()),
+                    i_end((*self_ptr)->end_kvs()) ; i != i_end ; ++i)
+                rb_hash_aset(result, rb_str_new2(i->first.c_str()), rb_str_new2(i->second.c_str()));
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
 
     void do_register_repository()
     {
@@ -185,6 +250,43 @@ namespace
         rb_define_method(c_repository, "version_specs", RUBY_FUNC_CAST(&repository_version_specs), 1);
 
         rb_define_method(c_repository, "version_metadata", RUBY_FUNC_CAST(&repository_version_metadata), 2);
+
+        rb_define_method(c_repository, "installable_interface", RUBY_FUNC_CAST((&Interface<RepositoryInstallableInterface,
+                        &Repository::installable_interface>::fetch)), 0);
+        rb_define_method(c_repository, "installed_interface", RUBY_FUNC_CAST((&Interface<RepositoryInstalledInterface,
+                        &Repository::installed_interface>::fetch)), 0);
+        rb_define_method(c_repository, "mask_interface", RUBY_FUNC_CAST((&Interface<RepositoryMaskInterface,
+                        &Repository::mask_interface>::fetch)), 0);
+        rb_define_method(c_repository, "news_interface", RUBY_FUNC_CAST((&Interface<RepositoryNewsInterface,
+                        &Repository::news_interface>::fetch)), 0);
+        rb_define_method(c_repository, "sets_interface", RUBY_FUNC_CAST((&Interface<RepositorySetsInterface,
+                        &Repository::sets_interface>::fetch)), 0);
+        rb_define_method(c_repository, "syncable_interface", RUBY_FUNC_CAST((&Interface<RepositorySyncableInterface,
+                        &Repository::syncable_interface>::fetch)), 0);
+        rb_define_method(c_repository, "uninstallable_interface", RUBY_FUNC_CAST((&Interface<RepositoryUninstallableInterface,
+                        &Repository::uninstallable_interface>::fetch)), 0);
+        rb_define_method(c_repository, "use_interface", RUBY_FUNC_CAST((&Interface<RepositoryUseInterface,
+                        &Repository::use_interface>::fetch)), 0);
+        rb_define_method(c_repository, "world_interface", RUBY_FUNC_CAST((&Interface<RepositoryWorldInterface,
+                        &Repository::world_interface>::fetch)), 0);
+        rb_define_method(c_repository, "mirrors_interface", RUBY_FUNC_CAST((&Interface<RepositoryMirrorsInterface,
+                        &Repository::mirrors_interface>::fetch)), 0);
+        rb_define_method(c_repository, "environment_variable_interface", RUBY_FUNC_CAST((&Interface<RepositoryEnvironmentVariableInterface,
+                        &Repository::environment_variable_interface>::fetch)), 0);
+        rb_define_method(c_repository, "provides_interface", RUBY_FUNC_CAST((&Interface<RepositoryProvidesInterface,
+                        &Repository::provides_interface>::fetch)), 0);
+        rb_define_method(c_repository, "virtuals_interface", RUBY_FUNC_CAST((&Interface<RepositoryVirtualsInterface,
+                        &Repository::virtuals_interface>::fetch)), 0);
+
+        rb_define_method(c_repository, "info", RUBY_FUNC_CAST(&repository_info), 1);
+
+        c_repository_info = rb_define_class_under(master_class(), "RepositoryInfo", rb_cObject);
+        rb_funcall(c_repository_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_repository_info, "sections", RUBY_FUNC_CAST(&repository_info_sections), 0);
+
+        c_repository_info_section = rb_define_class_under(master_class(), "RepositoryInfoSection", rb_cObject);
+        rb_funcall(c_repository_info_section, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_repository_info_section, "kvs", RUBY_FUNC_CAST(&repository_info_section_kvs), 0);
     }
 }
 

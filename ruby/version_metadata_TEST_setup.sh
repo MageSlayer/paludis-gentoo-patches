@@ -22,11 +22,12 @@ END
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"
 HOMEPAGE="http://paludis.berlios.de/"
-SRC_URI=""
+SRC_URI="http://example.com/${P}.tar.bz2"
 SLOT="0"
 IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
+RESTRICT="monkey"
 END
 
 cd ..

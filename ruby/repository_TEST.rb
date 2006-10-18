@@ -116,5 +116,14 @@ class Paludis
             assert repo.package_names("bar").empty?
         end
     end
+
+    class TestCase_RepositoryInterfaces < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_interfaces
+            assert_equal repo.name, repo.installable_interface.name
+            assert_nil repo.installed_interface
+        end
+    end
 end
 
