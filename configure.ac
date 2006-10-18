@@ -445,7 +445,7 @@ if test x"$ENABLE_GLSA" = "xyes" ; then
 	AC_DEFINE([ENABLE_GLSA], [1], [Build GLSA support])
 fi
 AC_SUBST([ENABLE_GLSA])
-AM_CONDITIONAL([ENABLE_GLSA], test "x$ENABLE_QA" = "xyes")
+AM_CONDITIONAL([ENABLE_GLSA], test "x$ENABLE_GLSA" = "xyes")
 dnl }}}
 
 dnl {{{ libxml2 check
