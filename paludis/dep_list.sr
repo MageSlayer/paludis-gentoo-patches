@@ -24,6 +24,15 @@ make_class_DepListOptions()
 END
 
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for a DepList.
+         *
+         * \see DepList
+         * \ingroup grpdepresolver
+         */
+END
 }
 
 make_class_DepListEntry()
@@ -37,5 +46,14 @@ make_class_DepListEntry()
     key already_installed bool
 
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * An entry in a DepList.
+         *
+         * \see DepList
+         * \ingroup grpdepresolver
+         */
+END
 }
 

@@ -1,5 +1,6 @@
-CLEANFILES = *~ html/* html
-MAINTAINERCLEANFILES = Makefile.in
+tagfiles = \
+	libstdc++.tag \
+	libwrapiter.tag
 
 docfiles = \
 	doc_main.doxygen \
@@ -18,12 +19,20 @@ docfiles = \
 	doc_migration_howto.doxygen \
 	doc_known_issues.doxygen
 
-EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css $(docfiles)
+EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css $(docfiles) $(tagfiles)
+CLEANFILES = *~ html/* html
+MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
+
+libstdc++.tag :
+	wget -O $@ http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
+
+libwrapiter.tag :
+	wget -O $@ http://libwrapiter.berlios.de/libwrapiter.tag
 
 if HAVE_DOXYGEN
 
 doxygen : doxygen.conf $(top_srcdir)/paludis/*.cc $(top_srcdir)/paludis/*.hh \
-		$(docfiles)
+		$(docfiles) $(tagfiles)
 	doxygen doxygen.conf
 
 else
