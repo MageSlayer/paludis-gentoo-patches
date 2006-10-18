@@ -23,7 +23,8 @@ IF_RUBY_TESTS = \
 	mask_reasons_TEST.rb \
 	dep_atom_TEST.rb \
 	package_database_TEST.rb \
-	repository_TEST.rb
+	repository_TEST.rb \
+	version_metadata_TEST.rb
 
 IF_RUBY_SOURCES = \
 	paludis_ruby.cc paludis_ruby.hh \
@@ -34,12 +35,14 @@ IF_RUBY_SOURCES = \
 	dep_atom.cc \
 	log.cc \
 	package_database.cc \
-	repository.cc
+	repository.cc \
+	version_metadata.cc
 
 EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
-	repository_TEST_setup.sh repository_TEST_cleanup.sh
+	repository_TEST_setup.sh repository_TEST_cleanup.sh \
+	version_metadata_TEST_setup.sh version_metadata_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
@@ -66,6 +69,7 @@ OUR_OBJECTS = \
 	package_database_entry.o \
 	version_spec.o \
 	repository.o \
+	version_metadata.o \
 	paludis_ruby.o
 
 TESTS = $(IF_RUBY_TESTS)
@@ -95,6 +99,9 @@ package_database.o : package_database.cc paludis_ruby.hh
 
 version_spec.o : version_spec.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/version_spec.cc
+
+version_metadata.o : version_metadata.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/version_metadata.cc
 
 mask_reasons.o : mask_reasons.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/mask_reasons.cc

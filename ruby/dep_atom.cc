@@ -46,11 +46,11 @@ namespace
     VALUE
     package_dep_atom_new(VALUE self, VALUE s)
     {
-        PackageDepAtom::Pointer * ptr(0);
+        PackageDepAtom::ConstPointer * ptr(0);
         try
         {
-            ptr = new PackageDepAtom::Pointer(new PackageDepAtom(STR2CSTR(s)));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<PackageDepAtom::Pointer>::free, ptr));
+            ptr = new PackageDepAtom::ConstPointer(new PackageDepAtom(STR2CSTR(s)));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<PackageDepAtom::ConstPointer>::free, ptr));
             rb_obj_call_init(tdata, 1, &s);
             return tdata;
         }
@@ -69,20 +69,36 @@ namespace
         c_package_dep_atom = rb_define_class_under(master_class(), "PackageDepAtom", c_dep_atom);
         rb_define_singleton_method(c_package_dep_atom, "new", RUBY_FUNC_CAST(&package_dep_atom_new), 1);
         rb_define_method(c_package_dep_atom, "initialize", RUBY_FUNC_CAST(&package_dep_atom_init), 1);
-        rb_define_method(c_package_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<PackageDepAtom::Pointer>::to_s_via_ptr), 0);
+        rb_define_method(c_package_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<PackageDepAtom::ConstPointer>::to_s_via_ptr), 0);
     }
 }
 
-PackageDepAtom::Pointer
+PackageDepAtom::ConstPointer
 paludis::ruby::value_to_package_dep_atom(VALUE v)
 {
     if (T_STRING == TYPE(v))
-        return PackageDepAtom::Pointer(new PackageDepAtom(STR2CSTR(v)));
+        return PackageDepAtom::ConstPointer(new PackageDepAtom(STR2CSTR(v)));
     else
     {
-        PackageDepAtom::Pointer * v_ptr;
-        Data_Get_Struct(v, PackageDepAtom::Pointer, v_ptr);
+        PackageDepAtom::ConstPointer * v_ptr;
+        Data_Get_Struct(v, PackageDepAtom::ConstPointer, v_ptr);
         return *v_ptr;
+    }
+}
+
+VALUE
+paludis::ruby::dep_atom_to_value(DepAtom::ConstPointer m)
+{
+    DepAtom::ConstPointer * m_ptr(0);
+    try
+    {
+        m_ptr = new DepAtom::ConstPointer(m);
+        return Data_Wrap_Struct(c_dep_atom, 0, &Common<DepAtom::ConstPointer>::free, m_ptr);
+    }
+    catch (const std::exception & e)
+    {
+        delete m_ptr;
+        exception_to_ruby_exception(e);
     }
 }
 

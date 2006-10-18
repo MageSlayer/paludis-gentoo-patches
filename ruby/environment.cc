@@ -143,7 +143,7 @@ namespace
         try
         {
             MaskReasons r(env_data->env_ptr->mask_reasons(*pde_ptr));
-            return create_mask_reasons(r);
+            return mask_reasons_to_value(r);
         }
         catch (const std::exception & e)
         {
@@ -159,7 +159,7 @@ namespace
 
         try
         {
-            return create_package_database(env_data->env_ptr->package_database());
+            return package_database_to_value(env_data->env_ptr->package_database());
         }
         catch (const std::exception & e)
         {

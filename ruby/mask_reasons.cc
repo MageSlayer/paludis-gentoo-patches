@@ -88,7 +88,7 @@ namespace
 }
 
 VALUE
-paludis::ruby::create_mask_reasons(const MaskReasons & m)
+paludis::ruby::mask_reasons_to_value(const MaskReasons & m)
 {
     return Data_Wrap_Struct(c_mask_reasons, 0, &Common<MaskReasons>::free, new MaskReasons(m));
 }

@@ -144,7 +144,7 @@ namespace
             VALUE result(rb_ary_new());
             VersionSpecCollection::ConstPointer c((*self_ptr)->version_specs(q));
             for (VersionSpecCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                rb_ary_push(result, create_version_spec(*i));
+                rb_ary_push(result, version_spec_to_value(*i));
             return result;
         }
         catch (const std::exception & e)
@@ -152,6 +152,23 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+
+    VALUE
+    repository_version_metadata(VALUE self, VALUE name, VALUE version)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            return version_metadata_to_value((*self_ptr)->version_metadata(QualifiedPackageName(STR2CSTR(name)),
+                        value_to_version_spec(version)));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
 
     void do_register_repository()
     {
@@ -166,11 +183,13 @@ namespace
         rb_define_method(c_repository, "category_names", RUBY_FUNC_CAST(&repository_category_names), 0);
         rb_define_method(c_repository, "package_names", RUBY_FUNC_CAST(&repository_package_names), 1);
         rb_define_method(c_repository, "version_specs", RUBY_FUNC_CAST(&repository_version_specs), 1);
+
+        rb_define_method(c_repository, "version_metadata", RUBY_FUNC_CAST(&repository_version_metadata), 2);
     }
 }
 
 VALUE
-paludis::ruby::create_repository(Repository::ConstPointer m)
+paludis::ruby::repository_to_value(Repository::ConstPointer m)
 {
     Repository::ConstPointer * m_ptr(0);
     try

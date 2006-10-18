@@ -71,7 +71,7 @@ namespace
 }
 
 VALUE
-paludis::ruby::create_package_database_entry(const PackageDatabaseEntry & d)
+paludis::ruby::package_database_entry_to_value(const PackageDatabaseEntry & d)
 {
     PackageDatabaseEntry * m_ptr(0);
     try

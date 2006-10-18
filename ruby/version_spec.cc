@@ -79,7 +79,7 @@ paludis::ruby::value_to_version_spec(VALUE v)
 }
 
 VALUE
-paludis::ruby::create_version_spec(const VersionSpec & v)
+paludis::ruby::version_spec_to_value(const VersionSpec & v)
 {
     VersionSpec * vv(new VersionSpec(v));
     return Data_Wrap_Struct(c_version_spec, 0, &Common<VersionSpec>::free, vv);

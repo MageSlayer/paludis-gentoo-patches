@@ -39,17 +39,21 @@ namespace paludis
 
         std::string value_case_to_RubyCase(const std::string & s);
 
+        VALUE master_class();
+
         /* constructors */
 
-        VALUE master_class();
-        VALUE create_mask_reasons(const MaskReasons &);
-        VALUE create_package_database(PackageDatabase::Pointer);
-        VALUE create_package_database_entry(const PackageDatabaseEntry &);
-        VALUE create_repository(Repository::ConstPointer);
-        VALUE create_version_spec(const VersionSpec &);
+        VALUE mask_reasons_to_value(const MaskReasons &);
+        VALUE package_database_to_value(PackageDatabase::Pointer);
+        VALUE package_database_entry_to_value(const PackageDatabaseEntry &);
+        VALUE repository_to_value(Repository::ConstPointer);
+        VALUE version_spec_to_value(const VersionSpec &);
+        VALUE version_metadata_to_value(VersionMetadata::ConstPointer);
+        VALUE dep_atom_to_value(DepAtom::ConstPointer);
 
         VersionSpec value_to_version_spec(VALUE v);
-        PackageDepAtom::Pointer value_to_package_dep_atom(VALUE v);
+        VersionMetadata::ConstPointer value_to_version_metadata(VALUE);
+        PackageDepAtom::ConstPointer value_to_package_dep_atom(VALUE v);
 
         /* registration */
 

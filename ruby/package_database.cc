@@ -78,7 +78,7 @@ namespace
             VALUE result(rb_ary_new());
             for (PackageDatabaseEntryCollection::Iterator i(items->begin()),
                     i_end(items->end()) ; i != i_end ; ++i)
-                rb_ary_push(result, create_package_database_entry(*i));
+                rb_ary_push(result, package_database_entry_to_value(*i));
             return result;
         }
         catch (const std::exception & e)
@@ -98,7 +98,7 @@ namespace
             VALUE result(rb_ary_new());
             for (PackageDatabase::RepositoryIterator r((*self_ptr)->begin_repositories()),
                     r_end((*self_ptr)->end_repositories()) ; r != r_end ; ++r)
-                rb_ary_push(result, create_repository(*r));
+                rb_ary_push(result, repository_to_value(*r));
 
             return result;
         }
@@ -116,7 +116,7 @@ namespace
             PackageDatabase::Pointer * self_ptr;
             Data_Get_Struct(self, PackageDatabase::Pointer, self_ptr);
 
-            return create_repository((*self_ptr)->fetch_repository(RepositoryName(STR2CSTR(name))));
+            return repository_to_value((*self_ptr)->fetch_repository(RepositoryName(STR2CSTR(name))));
         }
         catch (const std::exception & e)
         {
@@ -147,7 +147,7 @@ namespace
 }
 
 VALUE
-paludis::ruby::create_package_database(PackageDatabase::Pointer m)
+paludis::ruby::package_database_to_value(PackageDatabase::Pointer m)
 {
     PackageDatabase::Pointer * m_ptr(0);
     try
