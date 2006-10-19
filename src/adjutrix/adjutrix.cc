@@ -147,7 +147,10 @@ main(int argc, char *argv[])
 
         NoConfigEnvironment env(NoConfigEnvironmentParams::create()
                 .repository_dir(get_location_and_add_filters())
-                .accept_unstable(CommandLine::get_instance()->a_unstable.specified()));
+                .accept_unstable(CommandLine::get_instance()->a_unstable.specified())
+                .repository_type(
+                    (CommandLine::get_instance()->a_reverse_deps.specified()) ? ncer_auto : ncer_portage
+                    ));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())
         {

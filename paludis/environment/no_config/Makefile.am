@@ -15,7 +15,8 @@ libpaludisnoconfigenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@
 libpaludisnoconfigenvironment_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la
+	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
+	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la
 
 lib_LTLIBRARIES = libpaludisnoconfigenvironment.la
 paludis_environment_no_config_includedir = $(includedir)/paludis/environment/no_config

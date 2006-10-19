@@ -215,7 +215,8 @@ namespace
 
             NoConfigEnvironment * e(new NoConfigEnvironment(NoConfigEnvironmentParams::create()
                         .repository_dir(FSEntry(path))
-                        .accept_unstable(false)));
+                        .accept_unstable(false)
+                        .repository_type(ncer_auto)));
             EnvironmentData * ptr(new EnvironmentData(e, e));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<EnvironmentData>::free, ptr));
             rb_obj_call_init(tdata, 1, &s);

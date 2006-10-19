@@ -24,6 +24,7 @@
 #include <paludis/util/compare.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/log.hh>
 
 #include <set>
 #include <map>
@@ -120,8 +121,7 @@ namespace
     void
     ReverseDepChecker::visit(const PackageDepAtom * const a)
     {
-        PackageDatabaseEntryCollection::ConstPointer dep_entries(
-                _db->query(*a, is_uninstalled_only));
+        PackageDatabaseEntryCollection::ConstPointer dep_entries(_db->query(*a, is_either));
         PackageDatabaseEntryCollection::Pointer matches(new PackageDatabaseEntryCollection::Concrete);
 
         bool header_written = false;
@@ -181,7 +181,7 @@ namespace
         Context context("When checking package '" + stringify(p) + "':");
 
         PackageDatabaseEntryCollection::Pointer p_entries(env.package_database()->query(
-                PackageDepAtom::Pointer(new PackageDepAtom(stringify(p))), is_uninstalled_only));
+                PackageDepAtom::Pointer(new PackageDepAtom(stringify(p))), is_either));
 
         bool found_matches(false);
 
@@ -245,13 +245,17 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
     int ret(0);
 
     if (entries->empty())
+    {
+        Log::get_instance()->message(ll_warning, lc_context, "No matches in package database for '"
+                + stringify(*atom) + "'");
         return 1;
+    }
 
     for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
             r(env.package_database()->begin_repositories()),
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        if (r->name() == RepositoryName("virtuals"))
+        if (r->name() == RepositoryName("virtuals") || r->name() == RepositoryName("installed_virtuals"))
             continue;
 
         write_repository_header(stringify(*atom), stringify(r->name()));

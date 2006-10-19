@@ -27,6 +27,19 @@
 
 namespace paludis
 {
+    /**
+     * The type of repository to use for a NoConfigEnvironment.
+     *
+     * \see NoConfigEnvironment
+     * \ingroup grpnoconfigenvironment
+     */
+    enum NoConfigEnvironmentRepositoryType
+    {
+        ncer_portage,
+        ncer_vdb,
+        ncer_auto
+    };
+
 #include <paludis/environment/no_config/no_config_environment-sr.hh>
 
     /**
