@@ -17,39 +17,27 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_MAIN_WINDOW_HH
-#define PALUDIS_GUARD_SRC_GTKPALUDIS_MAIN_WINDOW_HH 1
+#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_PACKAGES_PAGE_HH
+#define PALUDIS_GUARD_SRC_GTKPALUDIS_PACKAGES_PAGE_HH 1
 
-#include <gtkmm/window.h>
-#include <paludis/util/instantiation_policy.hh>
+#include <gtkmm/table.h>
 #include <paludis/util/private_implementation_pattern.hh>
 
 namespace gtkpaludis
 {
-    class MainWindow :
-        public paludis::InstantiationPolicy<MainWindow, paludis::instantiation_method::SingletonAsNeededTag>,
-        private paludis::PrivateImplementationPattern<MainWindow>,
-        public Gtk::Window
+    class PackagesPage :
+        public Gtk::Table,
+        private paludis::PrivateImplementationPattern<PackagesPage>
     {
-        friend class paludis::InstantiationPolicy<MainWindow, paludis::instantiation_method::SingletonAsNeededTag>;
-
         private:
-            MainWindow();
-            virtual ~MainWindow();
-
-            void _set_lock(bool value);
-            void _update_status();
+            void _package_list_selection_changed();
+            void _category_list_selection_changed();
 
         public:
-            virtual void populate();
+            PackagesPage();
+            virtual ~PackagesPage();
 
-            void lock_controls();
-            void maybe_unlock_controls();
-
-            void push_status(const std::string &);
-            void pop_status();
-
-            void show_messages_page();
+            void populate();
     };
 }
 

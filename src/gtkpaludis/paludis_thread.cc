@@ -32,7 +32,7 @@ namespace paludis
         InternalCounted<Implementation<PaludisThread> >
     {
         Glib::Dispatcher dispatcher;
-        Glib::Mutex queue_mutex;
+        Glib::Mutex queue_mutex, single_mutex;
         std::deque<sigc::slot<void> > * queue;
 
         Implementation() :
@@ -105,7 +105,10 @@ PaludisThread::_queue_run()
 void
 PaludisThread::_thread_func(PaludisThread::Launchable::Pointer l)
 {
-    (*l)();
+    {
+        Glib::Mutex::Lock lock(_imp->single_mutex);
+        (*l)();
+    }
     _queue_add(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::maybe_unlock_controls));
 }
 

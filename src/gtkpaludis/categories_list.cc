@@ -128,6 +128,7 @@ CategoriesList::~CategoriesList()
 void
 CategoriesList::populate()
 {
+    _imp->model->clear();
     PaludisThread::get_instance()->launch(Populate::Pointer(new Populate(_imp.raw_pointer())));
 }
 

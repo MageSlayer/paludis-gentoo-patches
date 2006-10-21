@@ -21,10 +21,14 @@ gtkpaludis_SOURCES = \
 	command_line.cc       command_line.hh \
 	main_window.cc        main_window.hh \
 	categories_list.cc    categories_list.hh \
+	packages_page.cc      packages_page.hh \
 	packages_list.cc      packages_list.hh \
 	package_info.cc       package_info.hh \
 	package_overview.cc   package_overview.hh \
 	paludis_thread.cc     paludis_thread.hh \
+	messages.cc           messages.hh \
+	repositories_list.cc  repositories_list.hh \
+	repositories_page.cc  repositories_page.hh \
 	gtkpaludis.cc
 
 gtkpaludis_LDADD = \
