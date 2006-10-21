@@ -19,11 +19,12 @@ bin_PROGRAMS = gtkpaludis
 
 gtkpaludis_SOURCES = \
 	command_line.cc       command_line.hh \
-	browse_tree.cc        browse_tree.hh \
-	information_tree.cc   information_tree.hh \
-	vte_message_window.hh vte_message_window.cc \
 	main_window.cc        main_window.hh \
-	sync.cc               sync.hh \
+	categories_list.cc    categories_list.hh \
+	packages_list.cc      packages_list.hh \
+	package_info.cc       package_info.hh \
+	package_overview.cc   package_overview.hh \
+	paludis_thread.cc     paludis_thread.hh \
 	gtkpaludis.cc
 
 gtkpaludis_LDADD = \

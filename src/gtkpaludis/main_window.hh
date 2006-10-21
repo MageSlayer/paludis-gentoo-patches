@@ -21,24 +21,35 @@
 #define PALUDIS_GUARD_SRC_GTKPALUDIS_MAIN_WINDOW_HH 1
 
 #include <gtkmm/window.h>
-#include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 
-namespace paludis
+namespace gtkpaludis
 {
     class MainWindow :
-        public Gtk::Window,
-        private PrivateImplementationPattern<MainWindow>,
-        public InstantiationPolicy<MainWindow, instantiation_method::SingletonAsNeededTag>
+        public paludis::InstantiationPolicy<MainWindow, paludis::instantiation_method::SingletonAsNeededTag>,
+        private paludis::PrivateImplementationPattern<MainWindow>,
+        public Gtk::Window
     {
-        friend class InstantiationPolicy<MainWindow, instantiation_method::SingletonAsNeededTag>;
+        friend class paludis::InstantiationPolicy<MainWindow, paludis::instantiation_method::SingletonAsNeededTag>;
 
         private:
             MainWindow();
             virtual ~MainWindow();
 
+            void _category_list_selection_changed();
+            void _package_list_selection_changed();
+            void _set_lock(bool value);
+            void _update_status();
+
         public:
-            void set_children_sensitive(bool value);
+            virtual void populate();
+
+            void lock_controls();
+            void maybe_unlock_controls();
+
+            void push_status(const std::string &);
+            void pop_status();
     };
 }
 

@@ -30,69 +30,72 @@
 /**
  * Our command line.
  */
-class CommandLine :
-    public paludis::args::ArgsHandler,
-    public paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonAsNeededTag>
+namespace gtkpaludis
 {
-    friend class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonAsNeededTag>;
-
-    private:
-        /// Constructor.
-        CommandLine();
-
-        /// Destructor.
-        ~CommandLine();
-
-    public:
-        ///\name Program information
-        ///\{
-
-        virtual std::string app_name() const;
-        virtual std::string app_synopsis() const;
-        virtual std::string app_description() const;
-
-        ///\}
-
-        /// \name Action arguments
-        ///\{
-
-        /// Action arguments.
-        paludis::args::ArgsGroup action_args;
-
-        /// --version
-        paludis::args::SwitchArg a_version;
-
-        /// --help
-        paludis::args::SwitchArg a_help;
-
-        ///\}
-
-        /// \name General arguments
-        ///\{
-
-        /// General arguments.
-        paludis::args::ArgsGroup general_args;
-
-        /// --log-level
-        paludis::args::EnumArg a_log_level;
-
-        /// --config-suffix
-        paludis::args::StringArg a_config_suffix;
-
-        ///\}
-};
-
-/**
- * Show the help message.
- */
-struct DoHelp
-{
-    const std::string message;
-
-    DoHelp(const std::string & m = "") :
-        message(m)
+    class CommandLine :
+        public paludis::args::ArgsHandler,
+        public paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonAsNeededTag>
     {
-    }
-};
+        friend class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonAsNeededTag>;
+
+        private:
+            /// Constructor.
+            CommandLine();
+
+            /// Destructor.
+            ~CommandLine();
+
+        public:
+            ///\name Program information
+            ///\{
+
+            virtual std::string app_name() const;
+            virtual std::string app_synopsis() const;
+            virtual std::string app_description() const;
+
+            ///\}
+
+            /// \name Action arguments
+            ///\{
+
+            /// Action arguments.
+            paludis::args::ArgsGroup action_args;
+
+            /// --version
+            paludis::args::SwitchArg a_version;
+
+            /// --help
+            paludis::args::SwitchArg a_help;
+
+            ///\}
+
+            /// \name General arguments
+            ///\{
+
+            /// General arguments.
+            paludis::args::ArgsGroup general_args;
+
+            /// --log-level
+            paludis::args::EnumArg a_log_level;
+
+            /// --config-suffix
+            paludis::args::StringArg a_config_suffix;
+
+            ///\}
+    };
+
+    /**
+     * Show the help message.
+     */
+    struct DoHelp
+    {
+        const std::string message;
+
+        DoHelp(const std::string & m = "") :
+            message(m)
+        {
+        }
+    };
+}
 
 #endif

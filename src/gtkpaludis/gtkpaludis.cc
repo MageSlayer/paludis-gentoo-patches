@@ -35,6 +35,8 @@
 #include "main_window.hh"
 
 using namespace paludis;
+using namespace gtkpaludis;
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -58,7 +60,7 @@ namespace
         static bool _gtkmm_initialized;
 
     public:
-        TryMain(int& argc, char**& argv) :
+        TryMain(int argc, char * argv[]) :
             Gtk::Main()
         {
             _gtkmm_initialized = gtk_init_check(&argc, &argv);
@@ -73,7 +75,7 @@ namespace
         {
             if (! _gtkmm_initialized)
                 throw GtkInitFailed();
-    
+
             Gtk::Main::run(window);
         }
 
@@ -81,7 +83,7 @@ namespace
         {
             if (! _gtkmm_initialized)
                 throw GtkInitFailed();
-    
+
             Gtk::Main::run();
         }
     };
@@ -170,6 +172,8 @@ main(int argc, char * argv[])
             std::string::size_type last_slash(paludis_command.rfind('/'));
             if (std::string::npos == last_slash)
                 last_slash = 0;
+            if (0 == paludis_command.compare(last_slash, 3, "lt-"))
+                paludis_command.erase(last_slash, 3);
             if (0 == paludis_command.compare(last_slash, 3, "gtk"))
                 paludis_command.erase(last_slash, 3);
 
@@ -190,6 +194,9 @@ main(int argc, char * argv[])
             if (! gui_kit.initialized())
                 throw GtkInitFailed();
 
+            Glib::thread_init();
+            Glib::signal_idle().connect(sigc::bind_return(sigc::mem_fun(*MainWindow::get_instance(),
+                            &MainWindow::populate), false));
             TryMain::run(*MainWindow::get_instance());
         }
     }
@@ -280,9 +287,10 @@ main(int argc, char * argv[])
             dialog.run();
         }
         else
-        {        cout << endl;
-                 cerr << "Unhandled exception:" << endl
-                     << "  * Unknown exception type. Ouch..." << endl;
+        {
+            cout << endl;
+            cerr << "Unhandled exception:" << endl
+                << "  * Unknown exception type. Ouch..." << endl;
         }
         return EXIT_FAILURE;
     }

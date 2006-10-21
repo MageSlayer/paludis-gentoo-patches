@@ -18,110 +18,124 @@
  */
 
 #include "main_window.hh"
-#include "browse_tree.hh"
-#include "information_tree.hh"
-#include "vte_message_window.hh"
+#include "categories_list.hh"
+#include "packages_list.hh"
+#include "package_info.hh"
 
-#include <paludis/about.hh>
-#include <paludis/util/stringify.hh>
+#include <paludis/util/log.hh>
 
 #include <gtkmm/box.h>
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
-#include <gtkmm/frame.h>
 #include <gtkmm/label.h>
-#include <gtkmm/paned.h>
+#include <gtkmm/notebook.h>
 #include <gtkmm/scrolledwindow.h>
+#include <gtkmm/separator.h>
 #include <gtkmm/stock.h>
-#include <gtkmm/textview.h>
+#include <gtkmm/table.h>
 
+#include <list>
+
+using namespace gtkpaludis;
 using namespace paludis;
 
 namespace paludis
 {
     template<>
     struct Implementation<MainWindow> :
-        InternalCounted<MainWindow>
+        InternalCounted<Implementation<MainWindow> >
     {
-        Gtk::VBox main_container;
+        unsigned lock_count;
 
-        Gtk::HBox search_container;
-        Gtk::Label search_label;
-        Gtk::Entry search_box;
-        Gtk::Button search_button;
+        Glib::Dispatcher dispatcher;
 
-        Gtk::VPaned browse_information_messages_pane;
-        Gtk::HPaned browse_information_pane;
+        Gtk::Table main_table;
 
-        Gtk::Frame information_frame;
-        Gtk::ScrolledWindow information_window;
-        InformationTree information_tree;
+        Gtk::Notebook main_notebook;
+        Gtk::Table packages_page;
+        Gtk::Table sets_page;
+        Gtk::Table repositories_page;
 
-        Gtk::Frame browse_frame;
-        Gtk::ScrolledWindow browse_window;
-        BrowseTree browse_tree;
+        Gtk::ScrolledWindow status_label_box;
+        Gtk::Label status_label;
 
-        Gtk::Frame messages_frame;
-        Gtk::ScrolledWindow messages_window;
-        VteMessageWindow vte_messages;
+        Gtk::HBox packages_search;
+        Gtk::Entry packages_search_entry;
+        Gtk::Button packages_search_button;
+        Gtk::HSeparator packages_search_button_sep;
 
-        Implementation(MainWindow * const main_window);
+        Gtk::ScrolledWindow categories_list_scroll;
+        CategoriesList categories_list;
+
+        Gtk::ScrolledWindow packages_list_scroll;
+        PackagesList packages_list;
+
+        PackageInfo package_info;
+
+        std::list<std::string> status;
+
+        Implementation() :
+            lock_count(0),
+            main_table(1, 2, false),
+            packages_page(2, 3, false),
+            status_label("", Gtk::ALIGN_LEFT),
+            packages_search_button(Gtk::Stock::FIND)
+        {
+        }
     };
 }
 
-Implementation<MainWindow>::Implementation(MainWindow * const main_window) :
-    main_container(false, 5),
-    search_container(false, 5),
-    search_label(" Search: "),
-    search_button(Gtk::Stock::FIND),
-    information_frame(" Information: "),
-    browse_frame(" Browse: "),
-    browse_tree(main_window, &information_tree),
-    messages_frame(" Messages: ")
-{
-}
-
 MainWindow::MainWindow() :
-    PrivateImplementationPattern<MainWindow>(new Implementation<MainWindow>(this))
+    PrivateImplementationPattern<MainWindow>(new Implementation<MainWindow>)
 {
-    set_title("gtkPaludis " + stringify(PALUDIS_VERSION_MAJOR) + "." +
-            stringify(PALUDIS_VERSION_MINOR) + "." +
-            stringify(PALUDIS_VERSION_MICRO));
-
+    set_title("gtkpaludis");
+    set_border_width(2);
     set_default_size(600, 400);
-    set_border_width(5);
 
-    add(_imp->main_container);
+    _imp->main_notebook.set_border_width(5);
+    _imp->main_notebook.append_page(_imp->packages_page, "Packages");
+    _imp->main_notebook.append_page(_imp->sets_page, "Sets");
+    _imp->main_notebook.append_page(_imp->repositories_page, "Repositories");
 
-    _imp->main_container.pack_start(_imp->search_container, Gtk::PACK_SHRINK);
-    _imp->main_container.pack_end(_imp->browse_information_messages_pane, Gtk::PACK_EXPAND_WIDGET);
+    add(_imp->main_table);
+    _imp->main_table.attach(_imp->main_notebook, 0, 1, 0, 1);
+    _imp->main_table.attach(_imp->status_label_box, 0, 1, 1, 2, Gtk::FILL, Gtk::AttachOptions(0));
+    _imp->status_label_box.set_border_width(5);
+    _imp->status_label_box.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_NEVER);
+    _imp->status_label_box.add(_imp->status_label);
 
-    _imp->search_container.pack_start(_imp->search_label, Gtk::PACK_SHRINK);
-    _imp->search_container.pack_start(_imp->search_box);
-    _imp->search_container.pack_end(_imp->search_button, Gtk::PACK_SHRINK);
+    _imp->packages_page.set_col_spacings(5);
+    _imp->packages_page.set_row_spacings(5);
+    _imp->packages_page.set_border_width(5);
 
-    _imp->browse_information_messages_pane.pack1(_imp->browse_information_pane);
-    _imp->browse_information_messages_pane.pack2(_imp->messages_frame);
+    _imp->packages_search.pack_start(_imp->packages_search_entry, Gtk::PACK_EXPAND_WIDGET);
+    _imp->packages_search.pack_start(_imp->packages_search_button_sep, Gtk::PACK_SHRINK, 5);
+    _imp->packages_search.pack_end(_imp->packages_search_button, Gtk::PACK_SHRINK);
+    _imp->packages_search_entry.set_width_chars(30);
+    _imp->packages_page.attach(_imp->packages_search, 0, 2, 0, 1, Gtk::FILL | Gtk::EXPAND, Gtk::AttachOptions(0));
 
-    _imp->browse_information_pane.pack1(_imp->browse_frame);
-    _imp->browse_information_pane.pack2(_imp->information_frame);
+    _imp->categories_list_scroll.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_ALWAYS);
+    _imp->categories_list_scroll.add(_imp->categories_list);
+    _imp->packages_page.attach(_imp->categories_list_scroll, 0, 1, 1, 2, Gtk::SHRINK, Gtk::FILL | Gtk::EXPAND);
 
-    _imp->browse_frame.add(_imp->browse_window);
-    _imp->browse_window.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
-    _imp->browse_window.set_border_width(5);
-    _imp->browse_window.add(_imp->browse_tree);
+    _imp->packages_list_scroll.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_ALWAYS);
+    _imp->packages_list_scroll.add(_imp->packages_list);
+    _imp->packages_page.attach(_imp->packages_list_scroll, 1, 2, 1, 2);
 
-    _imp->information_frame.add(_imp->information_window);
-    _imp->information_window.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
-    _imp->information_window.set_border_width(5);
-    _imp->information_window.add(_imp->information_tree);
+    _imp->packages_page.attach(_imp->package_info, 0, 2, 2, 3);
 
-    _imp->messages_frame.add(_imp->messages_window);
-    _imp->messages_window.set_border_width(5);
-    _imp->messages_window.add(_imp->vte_messages);
-    _imp->messages_window.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+    _imp->categories_list.get_selection()->signal_changed().connect(sigc::mem_fun(*this,
+                &MainWindow::_category_list_selection_changed));
+    _imp->packages_list.get_selection()->signal_changed().connect(sigc::mem_fun(*this,
+                &MainWindow::_package_list_selection_changed));
 
     show_all_children();
+}
+
+void
+MainWindow::_set_lock(bool value)
+{
+    set_sensitive(! value);
 }
 
 MainWindow::~MainWindow()
@@ -129,11 +143,59 @@ MainWindow::~MainWindow()
 }
 
 void
-MainWindow::set_children_sensitive(bool value)
+MainWindow::populate()
 {
-    _imp->browse_tree.set_sensitive(value);
-    _imp->information_tree.set_sensitive(value);
-    _imp->search_box.set_sensitive(value);
-    _imp->search_button.set_sensitive(value);
+    _imp->categories_list.populate();
+}
+
+void
+MainWindow::_category_list_selection_changed()
+{
+    CategoryNamePart c("dummy");
+    _imp->packages_list.populate(_imp->categories_list.current_category());
+}
+
+void
+MainWindow::_package_list_selection_changed()
+{
+    QualifiedPackageName c("dummy/dummy");
+    _imp->package_info.populate(_imp->packages_list.current_package());
+}
+
+void
+MainWindow::lock_controls()
+{
+    if (0 == _imp->lock_count++)
+        _set_lock(true);
+}
+
+void
+MainWindow::maybe_unlock_controls()
+{
+    if (0 == --_imp->lock_count)
+        _set_lock(false);
+}
+
+void
+MainWindow::push_status(const std::string & s)
+{
+    _imp->status.push_back(s);
+    _update_status();
+}
+
+void
+MainWindow::pop_status()
+{
+    _imp->status.pop_back();
+    _update_status();
+}
+
+void
+MainWindow::_update_status()
+{
+    if (_imp->status.empty())
+        _imp->status_label.set_label("");
+    else
+        _imp->status_label.set_label(_imp->status.back());
 }
 

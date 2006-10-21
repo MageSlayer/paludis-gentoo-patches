@@ -544,7 +544,7 @@ if test "x$enable_gtk" = "xyes"; then
 	AC_SUBST(GMMPROC_DIR)
 	GMMPROC=$GMMPROC_DIR/gmmproc
 	AC_SUBST(GMMPROC)
-	PKG_CHECK_MODULES(GTKDEPS, [gtkmm-2.4 >= 2.6.0 glibmm-2.4 >= 2.6.0 pangomm-1.4 gdkmm-2.4 vte >= 0.12.1],
+	PKG_CHECK_MODULES(GTKDEPS, [gtkmm-2.4 >= 2.6.0 glibmm-2.4 >= 2.6.0 pangomm-1.4 gdkmm-2.4 gthread-2.0 >= 2.6.0 vte >= 0.12.1],
 		[], [AC_MSG_ERROR([gtkmm-2.4 and vte-0.12.1 or later are required if --enable-gtk is used])])
 	AC_SUBST(GTKDEPS_CFLAGS)
 	AC_SUBST(GTKDEPS_LIBS)

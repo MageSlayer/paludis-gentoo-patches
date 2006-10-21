@@ -19,6 +19,8 @@
 
 #include "command_line.hh"
 
+using namespace gtkpaludis;
+
 CommandLine::CommandLine() :
     ArgsHandler(),
 

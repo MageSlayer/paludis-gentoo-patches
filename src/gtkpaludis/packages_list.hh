@@ -17,30 +17,26 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_BROWSE_TREE_HH
-#define PALUDIS_GUARD_SRC_GTKPALUDIS_BROWSE_TREE_HH 1
+#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_PACKAGES_LIST_HH
+#define PALUDIS_GUARD_SRC_GTKPALUDIS_PACKAGES_LIST_HH 1
 
 #include <gtkmm/treeview.h>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/name.hh>
 
-namespace paludis
+namespace gtkpaludis
 {
-    class InformationTree;
-    class MainWindow;
-
-    class BrowseTree :
+    class PackagesList :
         public Gtk::TreeView,
-        private PrivateImplementationPattern<BrowseTree>
+        private paludis::PrivateImplementationPattern<PackagesList>
     {
         public:
-            BrowseTree(MainWindow * const, InformationTree * const);
-            ~BrowseTree();
+            PackagesList();
+            virtual ~PackagesList();
 
-            virtual void on_changed();
-            virtual void on_menu_sync();
-
-            virtual bool on_button_press_event(GdkEventButton *);
-            virtual void on_child_process_exited(int, int);
+            void clear_packages();
+            void populate(const paludis::CategoryNamePart &);
+            paludis::QualifiedPackageName current_package();
     };
 }
 
