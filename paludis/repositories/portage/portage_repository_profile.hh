@@ -54,7 +54,9 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            PortageRepositoryProfile(const Environment * const env, const FSEntryCollection & location);
+            PortageRepositoryProfile(const Environment * const env,
+                    const RepositoryName & name,
+                    const FSEntryCollection & location);
             ~PortageRepositoryProfile();
 
             ///\}

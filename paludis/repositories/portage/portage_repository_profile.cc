@@ -145,10 +145,11 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Implementation(const Environment * const e, const FSEntryCollection & dirs) :
+            Implementation(const Environment * const e, const RepositoryName & name,
+                    const FSEntryCollection & dirs) :
                 env(e),
                 system_packages(new AllDepAtom),
-                system_tag(new GeneralSetDepTag("system"))
+                system_tag(new GeneralSetDepTag("system", stringify(name)))
             {
                 for (FSEntryCollection::Iterator d(dirs.begin()), d_end(dirs.end()) ;
                         d != d_end ; ++d)
@@ -571,9 +572,9 @@ Implementation<PortageRepositoryProfile>::handle_profile_arch_var()
 }
 
 PortageRepositoryProfile::PortageRepositoryProfile(
-        const Environment * const env, const FSEntryCollection & location) :
+        const Environment * const env, const RepositoryName & name, const FSEntryCollection & location) :
     PrivateImplementationPattern<PortageRepositoryProfile>(
-            new Implementation<PortageRepositoryProfile>(env, location))
+            new Implementation<PortageRepositoryProfile>(env, name, location))
 {
 }
 

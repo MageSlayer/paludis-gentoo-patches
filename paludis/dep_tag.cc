@@ -163,8 +163,9 @@ GLSADepTag::glsa_title() const
     return _glsa_title;
 }
 
-GeneralSetDepTag::GeneralSetDepTag(const std::string & id) :
-    _id(id)
+GeneralSetDepTag::GeneralSetDepTag(const std::string & id, const std::string & r) :
+    _id(id),
+    _source(r)
 {
 }
 
@@ -178,6 +179,12 @@ std::string
 GeneralSetDepTag::category() const
 {
     return "general";
+}
+
+std::string
+GeneralSetDepTag::source() const
+{
+    return _source;
 }
 
 DependencyDepTag::DependencyDepTag(const PackageDatabaseEntry & pde) :

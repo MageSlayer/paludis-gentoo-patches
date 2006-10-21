@@ -172,9 +172,11 @@ namespace paludis
 
         /// Have we loaded our virtuals?
         bool has_our_virtuals;
+
+        PortageRepository * const repo;
     };
 
-    Implementation<PortageRepository>::Implementation(PortageRepository * const repo,
+    Implementation<PortageRepository>::Implementation(PortageRepository * const r,
             const PortageRepositoryParams & p) :
         params(p),
         has_category_names(false),
@@ -187,7 +189,8 @@ namespace paludis
         sets_ptr(new PortageRepositorySets(params.environment, repo, p)),
         entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
                     params.entry_format)(params.environment, repo, p)),
-        has_our_virtuals(false)
+        has_our_virtuals(false),
+        repo(r)
     {
     }
 
@@ -202,7 +205,7 @@ namespace paludis
             return;
 
         profile_ptr.assign(new PortageRepositoryProfile(
-                    params.environment, *params.profiles));
+                    params.environment, repo->name(), *params.profiles));
     }
 
     void

@@ -87,7 +87,7 @@ PortageRepositorySets::package_set(const std::string & s) const
         return security_set(true);
     else if ((_imp->params.setsdir / (s + ".conf")).exists())
     {
-        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s));
+        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s, stringify(_imp->portage_repository->name())));
 
         FSEntry ff(_imp->params.setsdir / (s + ".conf"));
         Context context("When loading package set '" + s + "' from '" + stringify(ff) + "':");

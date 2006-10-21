@@ -235,16 +235,19 @@ namespace paludis
     {
         private:
             const std::string _id;
+            const std::string _source;
 
         public:
             /**
              * Constructor.
              */
-            GeneralSetDepTag(const std::string & id);
+            GeneralSetDepTag(const std::string & id, const std::string & source);
 
             virtual std::string short_text() const;
 
             virtual std::string category() const;
+
+            std::string source() const;
     };
 
     /**

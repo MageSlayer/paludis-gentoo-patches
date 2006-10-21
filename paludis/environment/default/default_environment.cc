@@ -442,7 +442,7 @@ DefaultEnvironment::local_package_set(const std::string & s) const
     {
         LineConfigFile f(ff);
         AllDepAtom::Pointer result(new AllDepAtom);
-        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s));
+        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s, s + ".conf"));
 
         for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
