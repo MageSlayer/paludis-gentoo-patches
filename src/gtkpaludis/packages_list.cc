@@ -121,43 +121,39 @@ namespace
     {
         std::map<QualifiedPackageName, std::string> names;
 
-        dispatch(sigc::bind<1>(sigc::mem_fun(MainWindow::get_instance(),
-                        &MainWindow::push_status), "Loading package names..."));
-
-        for (PackageDatabase::RepositoryIterator
-                r(DefaultEnvironment::get_instance()->package_database()->begin_repositories()),
-                r_end(DefaultEnvironment::get_instance()->package_database()->end_repositories()) ; r != r_end ; ++r)
         {
-            dispatch(sigc::bind<1>(sigc::mem_fun(MainWindow::get_instance(),
-                            &MainWindow::push_status), "Loading package names from '" +
-                        stringify((*r)->name()) + "'..."));
+            StatusBarMessage m1(this, "Loading package names...");
 
-            QualifiedPackageNameCollection::ConstPointer pkgs((*r)->package_names(_cat));
-            for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
-                    p != p_end ; ++p)
-                names.insert(std::make_pair(*p, ""));
+            for (PackageDatabase::RepositoryIterator
+                    r(DefaultEnvironment::get_instance()->package_database()->begin_repositories()),
+                    r_end(DefaultEnvironment::get_instance()->package_database()->end_repositories()) ; r != r_end ; ++r)
+            {
+                StatusBarMessage m2(this, "Loading package names from '" + stringify((*r)->name()) + "'...");
 
-            dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::pop_status));
+                QualifiedPackageNameCollection::ConstPointer pkgs((*r)->package_names(_cat));
+                for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+                        p != p_end ; ++p)
+                    names.insert(std::make_pair(*p, ""));
+            }
         }
 
-        dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::pop_status));
-        dispatch(sigc::bind<1>(sigc::mem_fun(MainWindow::get_instance(),
-                        &MainWindow::push_status), "Loading package descriptions..."));
-
-        for (std::map<QualifiedPackageName, std::string>::iterator i(names.begin()), i_end(names.end()) ;
-                i != i_end ; ++i)
         {
-            PackageDatabaseEntryCollection::ConstPointer results(DefaultEnvironment::get_instance()->package_database()->query(
-                        PackageDepAtom::Pointer(new PackageDepAtom(stringify(i->first))), is_either));
+            StatusBarMessage m1(this, "Loading package descriptions...");
 
-            if (results->empty())
-                continue;
-            i->second = DefaultEnvironment::get_instance()->package_database()->fetch_repository(
-                    results->last()->repository)->version_metadata(results->last()->name,
-                    results->last()->version)->description;
+            for (std::map<QualifiedPackageName, std::string>::iterator i(names.begin()), i_end(names.end()) ;
+                    i != i_end ; ++i)
+            {
+                PackageDatabaseEntryCollection::ConstPointer results(DefaultEnvironment::get_instance()->package_database()->query(
+                            PackageDepAtom::Pointer(new PackageDepAtom(stringify(i->first))), is_either));
+
+                if (results->empty())
+                    continue;
+                i->second = DefaultEnvironment::get_instance()->package_database()->fetch_repository(
+                        results->last()->repository)->version_metadata(results->last()->name,
+                        results->last()->version)->description;
+            }
         }
 
-        dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::pop_status));
         dispatch(sigc::bind<1>(sigc::mem_fun(_list, &Implementation<PackagesList>::add_packages), names));
     }
 }

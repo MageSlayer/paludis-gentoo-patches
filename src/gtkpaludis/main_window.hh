@@ -46,6 +46,8 @@ namespace gtkpaludis
             void lock_controls();
             void maybe_unlock_controls();
 
+            void show_exception(const std::string & what, const std::string & message, bool fatal);
+            void message(const std::string &);
             void push_status(const std::string &);
             void pop_status();
 

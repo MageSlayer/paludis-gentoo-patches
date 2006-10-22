@@ -27,6 +27,8 @@
 #include <gtkmm/box.h>
 #include <gtkmm/notebook.h>
 #include <gtkmm/table.h>
+#include <gtkmm/messagedialog.h>
+#include <gtkmm/main.h>
 
 #include <list>
 
@@ -153,5 +155,22 @@ void
 MainWindow::show_messages_page()
 {
     _imp->main_notebook.set_current_page(_imp->messages_page_id);
+}
+
+void
+MainWindow::show_exception(const std::string & what, const std::string & message, bool fatal)
+{
+    Gtk::MessageDialog dialog(*this, fatal ? "Fatal Error" : "Error", false, Gtk::MESSAGE_ERROR);
+    dialog.set_secondary_text(message + " (" + what + ")");
+    dialog.run();
+
+    if (fatal)
+        Gtk::Main::quit();
+}
+
+void
+MainWindow::message(const std::string & s)
+{
+    _imp->messages.message(s);
 }
 

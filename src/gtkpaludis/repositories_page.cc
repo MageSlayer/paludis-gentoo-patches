@@ -21,6 +21,7 @@
 #include "repositories_list.hh"
 #include "paludis_thread.hh"
 #include "main_window.hh"
+#include "sync.hh"
 
 #include <paludis/environment/default/default_environment.hh>
 #include <gtkmm/button.h>
@@ -110,18 +111,10 @@ namespace
     void
     Sync::operator() ()
     {
-        dispatch(sigc::bind<1>(sigc::mem_fun(MainWindow::get_instance(),
-                        &MainWindow::push_status), "Syncing repository '" + stringify(_name) + "'..."));
-
-        Repository::ConstPointer repo(DefaultEnvironment::get_instance()->package_database()->fetch_repository(_name));
-        if (repo->syncable_interface)
-        {
-            dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::show_messages_page));
-            repo->syncable_interface->sync();
-        }
-
-        dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::pop_status));
-        dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::populate));
+        StatusBarMessage m1(this, "Syncing repository '" + stringify(_name) + "'...");
+        OurSyncTask task(this);
+        task.add_target(stringify(_name));
+        task.execute();
     }
 }
 

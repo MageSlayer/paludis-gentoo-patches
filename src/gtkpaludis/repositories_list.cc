@@ -92,15 +92,13 @@ namespace
     {
         std::set<RepositoryName> names;
 
-        dispatch(sigc::bind<1>(sigc::mem_fun(MainWindow::get_instance(),
-                        &MainWindow::push_status), "Loading repository names..."));
+        StatusBarMessage m1(this, "Loading repository names...");
 
         for (PackageDatabase::RepositoryIterator
                 r(DefaultEnvironment::get_instance()->package_database()->begin_repositories()),
                 r_end(DefaultEnvironment::get_instance()->package_database()->end_repositories()) ; r != r_end ; ++r)
             names.insert((*r)->name());
 
-        dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::pop_status));
         dispatch(sigc::bind<1>(sigc::mem_fun(_imp, &Implementation<RepositoriesList>::add_repositories), names));
     }
 }

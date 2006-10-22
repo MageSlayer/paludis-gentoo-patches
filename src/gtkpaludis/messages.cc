@@ -24,6 +24,7 @@
 #include <paludis/util/system.hh>
 #include <cstdlib>
 #include <fcntl.h>
+#include <unistd.h>
 
 // for restoring Log's output stream
 #include <iostream>
@@ -106,5 +107,12 @@ Messages::Messages() :
 Messages::~Messages()
 {
     Log::get_instance()->set_log_stream(&std::cerr);
+}
+
+void
+Messages::message(const std::string & s)
+{
+    std::string msg("=== " + s + " ===\n");
+    write(_imp->term_pty.slave_fd(), msg.c_str(), msg.length());
 }
 

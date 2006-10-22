@@ -92,24 +92,18 @@ namespace
     {
         std::set<CategoryNamePart> names;
 
-        dispatch(sigc::bind<1>(sigc::mem_fun(MainWindow::get_instance(),
-                        &MainWindow::push_status), "Loading category names..."));
+        StatusBarMessage m1(this, "Loading category names...");
 
         for (PackageDatabase::RepositoryIterator
                 r(DefaultEnvironment::get_instance()->package_database()->begin_repositories()),
                 r_end(DefaultEnvironment::get_instance()->package_database()->end_repositories()) ; r != r_end ; ++r)
         {
-            dispatch(sigc::bind<1>(sigc::mem_fun(MainWindow::get_instance(),
-                            &MainWindow::push_status), "Loading category names from '" +
-                        stringify((*r)->name()) + "'..."));
+            StatusBarMessage m2(this, "Loading category names from '" + stringify((*r)->name()) + "'...");
 
             CategoryNamePartCollection::ConstPointer cats((*r)->category_names());
             std::copy(cats->begin(), cats->end(), std::inserter(names, names.end()));
-
-            dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::pop_status));
         }
 
-        dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::pop_status));
         dispatch(sigc::bind<1>(sigc::mem_fun(_imp, &Implementation<CategoriesList>::add_categories), names));
     }
 }

@@ -45,11 +45,21 @@ namespace gtkpaludis
                 protected:
                     Launchable();
 
+                public:
                     void dispatch(const sigc::slot<void> &);
 
-                public:
                     virtual ~Launchable();
                     virtual void operator() () = 0;
+
+                    class StatusBarMessage
+                    {
+                        private:
+                            Launchable * const _l;
+
+                        public:
+                            StatusBarMessage(Launchable * const, const std::string &);
+                            ~StatusBarMessage();
+                    };
             };
 
             friend class Launchable;

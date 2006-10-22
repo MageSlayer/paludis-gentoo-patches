@@ -112,8 +112,7 @@ namespace
         top_row[_imp->columns.col_left] = stringify(_pkg);
         top_row[_imp->columns.col_right] = "";
 
-        dispatch(sigc::bind<1>(sigc::mem_fun(MainWindow::get_instance(),
-                        &MainWindow::push_status), "Querying package versions..."));
+        StatusBarMessage m1(this, "Querying package versions...");
 
         PackageDatabaseEntryCollection::ConstPointer results(DefaultEnvironment::get_instance()->package_database()->query(
                     PackageDepAtom::Pointer(new PackageDepAtom(stringify(_pkg))), is_either));
@@ -134,8 +133,6 @@ namespace
             value.append(stringify(i->version));
             (*r->second)[_imp->columns.col_right] = value;
         }
-
-        dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::pop_status));
 
         dispatch(sigc::bind<1>(sigc::mem_fun(_imp, &Implementation<PackageOverview>::set_model), model));
     }

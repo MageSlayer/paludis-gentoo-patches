@@ -32,6 +32,8 @@ namespace gtkpaludis
         public:
             Messages();
             virtual ~Messages();
+
+            void message(const std::string &);
     };
 }
 

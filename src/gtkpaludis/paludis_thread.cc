@@ -20,6 +20,7 @@
 #include "paludis_thread.hh"
 #include "main_window.hh"
 #include <paludis/util/log.hh>
+#include <paludis/util/stringify.hh>
 #include <glibmm/thread.h>
 
 using namespace paludis;
@@ -107,8 +108,45 @@ PaludisThread::_thread_func(PaludisThread::Launchable::Pointer l)
 {
     {
         Glib::Mutex::Lock lock(_imp->single_mutex);
-        (*l)();
+        try
+        {
+            try
+            {
+                (*l)();
+            }
+            catch (const Exception &)
+            {
+                throw;
+            }
+            catch (const std::exception & e)
+            {
+                throw InternalError(PALUDIS_HERE, "Caught unexpected exception '" + stringify(e.what()) + "'");
+            }
+        }
+        catch (const InternalError & e)
+        {
+            _queue_add(sigc::bind<std::string, std::string, bool>(
+                        sigc::mem_fun(MainWindow::get_instance(), &MainWindow::show_exception),
+                        stringify(e.what()), e.message(), true));
+        }
+        catch (const Exception & e)
+        {
+            _queue_add(sigc::bind<std::string, std::string, bool>(
+                        sigc::mem_fun(MainWindow::get_instance(), &MainWindow::show_exception),
+                        stringify(e.what()), e.message(), false));
+        }
     }
     _queue_add(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::maybe_unlock_controls));
+}
+
+PaludisThread::Launchable::StatusBarMessage::StatusBarMessage(Launchable * const l, const std::string & s) :
+    _l(l)
+{
+    _l->dispatch(sigc::bind<1>(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::push_status), s));
+}
+
+PaludisThread::Launchable::StatusBarMessage::~StatusBarMessage()
+{
+    _l->dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::pop_status));
 }
 

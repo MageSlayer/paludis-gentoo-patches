@@ -172,10 +172,18 @@ main(int argc, char * argv[])
             std::string::size_type last_slash(paludis_command.rfind('/'));
             if (std::string::npos == last_slash)
                 last_slash = 0;
-            if (0 == paludis_command.compare(last_slash, 3, "lt-"))
-                paludis_command.erase(last_slash, 3);
-            if (0 == paludis_command.compare(last_slash, 3, "gtk"))
-                paludis_command.erase(last_slash, 3);
+            if (0 == paludis_command.compare(last_slash + 1, 13, "lt-gtkpaludis"))
+            {
+                /* i hate libtool */
+                paludis_command.erase(last_slash);
+                if (std::string::npos != ((last_slash = paludis_command.rfind('/'))))
+                    paludis_command.erase(last_slash);
+                if (std::string::npos != ((last_slash = paludis_command.rfind('/'))))
+                    paludis_command.erase(last_slash);
+                paludis_command.append("/paludis/paludis");
+            }
+            else if (0 == paludis_command.compare(last_slash + 1, 3, "gtk"))
+                paludis_command.erase(last_slash + 1, 3);
 
             if (CommandLine::get_instance()->a_config_suffix.specified())
             {
