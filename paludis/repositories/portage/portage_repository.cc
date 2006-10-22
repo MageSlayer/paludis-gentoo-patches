@@ -185,10 +185,10 @@ namespace paludis
         arch_flags(0),
         has_mirrors(false),
         profile_ptr(0),
-        news_ptr(new PortageRepositoryNews(params.environment, repo, p)),
-        sets_ptr(new PortageRepositorySets(params.environment, repo, p)),
+        news_ptr(new PortageRepositoryNews(params.environment, r, p)),
+        sets_ptr(new PortageRepositorySets(params.environment, r, p)),
         entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
-                    params.entry_format)(params.environment, repo, p)),
+                    params.entry_format)(params.environment, r, p)),
         has_our_virtuals(false),
         repo(r)
     {
