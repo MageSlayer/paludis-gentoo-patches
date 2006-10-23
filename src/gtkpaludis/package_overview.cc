@@ -106,6 +106,8 @@ namespace
     void
     Populate::operator() ()
     {
+        StatusBarMessage m1(this, "Querying package...");
+
         Glib::RefPtr<Gtk::TreeStore> model(Gtk::TreeStore::create(_imp->columns));
         std::map<RepositoryName, Gtk::TreeModel::iterator> repository_rows;
 
@@ -113,26 +115,52 @@ namespace
         top_row[_imp->columns.col_left] = stringify(_pkg);
         top_row[_imp->columns.col_right] = "";
 
-        StatusBarMessage m1(this, "Querying package versions...");
+        Gtk::TreeModel::Row description_row = *model->append(top_row.children());
+        description_row[_imp->columns.col_left] = "Description";
 
-        PackageDatabaseEntryCollection::ConstPointer results(DefaultEnvironment::get_instance()->package_database()->query(
-                    PackageDepAtom::Pointer(new PackageDepAtom(stringify(_pkg))), is_either));
+        Gtk::TreeModel::Row homepage_row = *model->append(top_row.children());
+        homepage_row[_imp->columns.col_left] = "Homepage";
 
-        for (PackageDatabaseEntryCollection::Iterator i(results->begin()), i_end(results->end()) ;
-                i != i_end ; ++i)
+        Gtk::TreeModel::Row versions_row = *model->append(top_row.children());
+        versions_row[_imp->columns.col_left] = "Versions";
+        versions_row[_imp->columns.col_right] = "";
+
+        PackageDepAtom::Pointer atom(new PackageDepAtom(stringify(_pkg)));
+        PackageDatabaseEntryCollection::ConstPointer
+            entries(DefaultEnvironment::get_instance()->package_database()->query(atom, is_either)),
+            preferred_entries(DefaultEnvironment::get_instance()->package_database()->query(atom, is_installed_only));
+        if (preferred_entries->empty())
+            preferred_entries = entries;
+
         {
-            std::map<RepositoryName, Gtk::TreeModel::iterator>::iterator r(repository_rows.find(i->repository));
-            if (repository_rows.end() == r)
-            {
-                r = repository_rows.insert(std::make_pair(i->repository, model->append(top_row.children()))).first;
-                (*r->second)[_imp->columns.col_left] = stringify(i->repository);
-            }
+            StatusBarMessage m2(this, "Querying package versions...");
 
-            Glib::ustring value((*r->second)[_imp->columns.col_right]);
-            if (! value.empty())
-                value.append(" ");
-            value.append(stringify(i->version));
-            (*r->second)[_imp->columns.col_right] = value;
+            for (PackageDatabaseEntryCollection::Iterator i(entries->begin()), i_end(entries->end()) ;
+                    i != i_end ; ++i)
+            {
+                std::map<RepositoryName, Gtk::TreeModel::iterator>::iterator r(repository_rows.find(i->repository));
+                if (repository_rows.end() == r)
+                {
+                    r = repository_rows.insert(std::make_pair(i->repository, model->append(versions_row.children()))).first;
+                    (*r->second)[_imp->columns.col_left] = stringify(i->repository);
+                }
+
+                Glib::ustring value((*r->second)[_imp->columns.col_right]);
+                if (! value.empty())
+                    value.append(" ");
+                value.append(stringify(i->version));
+                (*r->second)[_imp->columns.col_right] = value;
+            }
+        }
+
+        if (! (preferred_entries->empty()))
+        {
+            StatusBarMessage m2(this, "Querying package metadata...");
+            VersionMetadata::ConstPointer metadata(DefaultEnvironment::get_instance()->package_database()->fetch_repository(
+                        preferred_entries->last()->repository)->version_metadata(
+                        preferred_entries->last()->name, preferred_entries->last()->version));
+            homepage_row[_imp->columns.col_right] = metadata->homepage;
+            description_row[_imp->columns.col_right] = metadata->description;
         }
 
         dispatch(sigc::bind<1>(sigc::mem_fun(_imp, &Implementation<PackageOverview>::set_model), model));

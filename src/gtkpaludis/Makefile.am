@@ -43,9 +43,18 @@ gtkpaludis_LDADD = \
 	$(GTKDEPS_LIBS) \
 	$(DYNAMIC_LD_LIBS)
 
+BUILT_SOURCES = packages_list-sr.hh packages_list-sr.cc
+
 endif
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in
+DISTCLEANFILES = packages_list-sr.hh packages_list-sr.cc
+EXTRA_DIST = packages_list.sr
 
+packages_list-sr.hh : packages_list.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/packages_list.sr > $@
+
+packages_list-sr.cc : packages_list.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/packages_list.sr > $@
 

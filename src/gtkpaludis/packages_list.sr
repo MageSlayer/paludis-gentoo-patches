@@ -1,0 +1,6 @@
+make_class_PackagesListEntry()
+{
+    key description std::string
+    key is_installed bool
+    allow_named_args
+}
