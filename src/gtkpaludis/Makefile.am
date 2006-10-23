@@ -30,6 +30,9 @@ gtkpaludis_SOURCES = \
 	repositories_list.cc   repositories_list.hh   \
 	repositories_page.cc   repositories_page.hh   \
 	repository_overview.cc repository_overview.hh \
+	set_overview.hh        set_overview.cc        \
+	sets_list.hh           sets_list.cc           \
+	sets_page.hh           sets_page.cc           \
 	sync.cc                sync.hh                \
 	gtkpaludis.cc
 

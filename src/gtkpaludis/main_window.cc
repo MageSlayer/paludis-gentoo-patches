@@ -18,6 +18,7 @@
  */
 
 #include "main_window.hh"
+#include "sets_page.hh"
 #include "packages_page.hh"
 #include "repositories_page.hh"
 #include "messages.hh"
@@ -49,7 +50,7 @@ namespace paludis
 
         Gtk::Notebook main_notebook;
         PackagesPage packages_page;
-        Gtk::Table sets_page;
+        SetsPage sets_page;
         RepositoriesPage repositories_page;
         Gtk::Table messages_page;
 
@@ -112,6 +113,7 @@ MainWindow::populate()
 {
     _imp->packages_page.populate();
     _imp->repositories_page.populate();
+    _imp->sets_page.populate();
 }
 
 void
