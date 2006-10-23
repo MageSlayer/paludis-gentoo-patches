@@ -47,6 +47,26 @@ using std::endl;
 
 namespace
 {
+    struct ShortTagDisplayer :
+        DepTagVisitorTypes::ConstVisitor
+    {
+        std::string text;
+
+        void visit(const GLSADepTag * const tag)
+        {
+            text = tag->short_text();
+        }
+
+        void visit(const DependencyDepTag * const)
+        {
+        }
+
+        void visit(const GeneralSetDepTag * const tag)
+        {
+            text = tag->short_text() + "<" + tag->source() + ">";
+        }
+    };
+
     struct TagDisplayer :
         DepTagVisitorTypes::ConstVisitor
     {
@@ -519,7 +539,9 @@ namespace
                     continue;
 
                 _all_tags.insert(*tag);
-                tag_titles.append(tag->tag->short_text());
+                ShortTagDisplayer t;
+                tag->tag->accept(&t);
+                tag_titles.append(t.text);
                 tag_titles.append(", ");
             }
             if (! tag_titles.empty())
