@@ -240,15 +240,12 @@ InstalledVirtualsRepository::do_package_names(const CategoryNamePart & c) const
 CategoryNamePartCollection::ConstPointer
 InstalledVirtualsRepository::do_category_names() const
 {
+    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
+    result->insert(CategoryNamePart("virtual"));
+
+#if 0
     need_entries();
 
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
-#if 0
-    /// \todo: in theory, this can be a lot lot lot faster
-    for (std::vector<VREntry>::const_iterator p(_imp->entries.begin()), p_end(_imp->entries.end()) ;
-            p != p_end ; ++p)
-        result->insert(p->virtual_name.category);
-#else
     fast_unique_copy(_imp->entries.begin(), _imp->entries.end(),
             transform_inserter(result->inserter(), EntriesCategoryExtractor()),
             EntriesCategoryComparator());
