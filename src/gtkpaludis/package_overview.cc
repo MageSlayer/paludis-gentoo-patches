@@ -86,6 +86,46 @@ PackageOverview::~PackageOverview()
 
 namespace
 {
+    std::string mask_reasons_to_letters(const MaskReasons & masks)
+    {
+        std::string reasons;
+        for (MaskReason m(MaskReason(0)) ; m < last_mr ;
+                m = MaskReason(static_cast<int>(m) + 1))
+        {
+            if (! masks.test(m))
+                continue;
+
+            switch (m)
+            {
+                case mr_keyword:
+                    reasons.append("K");
+                    break;
+                case mr_user_mask:
+                    reasons.append("U");
+                    break;
+                case mr_profile_mask:
+                    reasons.append("P");
+                    break;
+                case mr_repository_mask:
+                    reasons.append("R");
+                    break;
+                case mr_eapi:
+                    reasons.append("E");
+                    break;
+                case mr_license:
+                    reasons.append("L");
+                    break;
+                case mr_by_association:
+                    reasons.append("A");
+                    break;
+                case last_mr:
+                    break;
+            }
+        }
+
+        return reasons;
+    }
+
     class Populate :
         public PaludisThread::Launchable
     {
@@ -149,6 +189,11 @@ namespace
                 if (! value.empty())
                     value.append(" ");
                 value.append(stringify(i->version));
+
+                std::string reasons(mask_reasons_to_letters(DefaultEnvironment::get_instance()->mask_reasons(*i)));
+                if (! reasons.empty())
+                    value.append("(" + reasons + ")");
+
                 (*r->second)[_imp->columns.col_right] = value;
             }
         }
