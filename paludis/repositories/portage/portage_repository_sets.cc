@@ -149,6 +149,7 @@ PortageRepositorySets::sets_list() const
     Context context("While generating the list of sets:");
 
     SetsCollection::Pointer result(new SetsCollection::Concrete);
+    result->insert("insecurity");
     result->insert("security");
     result->insert("system");
 
