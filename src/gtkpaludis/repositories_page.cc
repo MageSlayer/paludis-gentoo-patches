@@ -19,6 +19,7 @@
 
 #include "repositories_page.hh"
 #include "repositories_list.hh"
+#include "repository_overview.hh"
 #include "paludis_thread.hh"
 #include "main_window.hh"
 #include "sync.hh"
@@ -40,6 +41,8 @@ namespace paludis
     {
         Gtk::ScrolledWindow repositories_list_scroll;
         RepositoriesList repositories_list;
+        Gtk::ScrolledWindow repository_info_scroll;
+        RepositoryOverview repository_info;
 
         Gtk::HButtonBox buttons_box;
         Gtk::Button sync_button;
@@ -63,6 +66,9 @@ RepositoriesPage::RepositoriesPage() :
     _imp->repositories_list_scroll.add(_imp->repositories_list);
     attach(_imp->repositories_list_scroll, 0, 1, 0, 2, Gtk::SHRINK, Gtk::FILL | Gtk::EXPAND);
 
+    _imp->repository_info_scroll.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+    _imp->repository_info_scroll.add(_imp->repository_info);
+    attach(_imp->repository_info_scroll, 1, 2, 0, 1);
 
     _imp->buttons_box.set_border_width(5);
     _imp->buttons_box.set_spacing(5);
@@ -89,6 +95,7 @@ RepositoriesPage::populate()
 void
 RepositoriesPage::_repository_list_selection_changed()
 {
+    _imp->repository_info.populate(_imp->repositories_list.current_repository());
 }
 
 namespace

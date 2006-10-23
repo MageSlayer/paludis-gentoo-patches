@@ -66,6 +66,7 @@ namespace paludis
             model = m;
             overview->set_model(model);
             overview->expand_all();
+            overview->columns_autosize();
         }
     };
 }

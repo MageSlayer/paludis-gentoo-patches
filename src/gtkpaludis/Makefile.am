@@ -18,18 +18,19 @@ if ENABLE_GTK
 bin_PROGRAMS = gtkpaludis
 
 gtkpaludis_SOURCES = \
-	categories_list.cc    categories_list.hh \
-	command_line.cc       command_line.hh \
-	main_window.cc        main_window.hh \
-	messages.cc           messages.hh \
-	package_info.cc       package_info.hh \
-	package_overview.cc   package_overview.hh \
-	packages_list.cc      packages_list.hh \
-	packages_page.cc      packages_page.hh \
-	paludis_thread.cc     paludis_thread.hh \
-	repositories_list.cc  repositories_list.hh \
-	repositories_page.cc  repositories_page.hh \
-	sync.cc               sync.hh \
+	categories_list.cc     categories_list.hh     \
+	command_line.cc        command_line.hh        \
+	main_window.cc         main_window.hh         \
+	messages.cc            messages.hh            \
+	package_info.cc        package_info.hh        \
+	package_overview.cc    package_overview.hh    \
+	packages_list.cc       packages_list.hh       \
+	packages_page.cc       packages_page.hh       \
+	paludis_thread.cc      paludis_thread.hh      \
+	repositories_list.cc   repositories_list.hh   \
+	repositories_page.cc   repositories_page.hh   \
+	repository_overview.cc repository_overview.hh \
+	sync.cc                sync.hh                \
 	gtkpaludis.cc
 
 gtkpaludis_LDADD = \

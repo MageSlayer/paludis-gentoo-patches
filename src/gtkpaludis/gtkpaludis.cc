@@ -184,6 +184,8 @@ main(int argc, char * argv[])
             }
             else if (0 == paludis_command.compare(last_slash + 1, 3, "gtk"))
                 paludis_command.erase(last_slash + 1, 3);
+            else if ("gtkpaludis" == paludis_command)
+                paludis_command = "paludis";
 
             if (CommandLine::get_instance()->a_config_suffix.specified())
             {
