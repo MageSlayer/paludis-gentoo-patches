@@ -34,29 +34,10 @@ IRC channel. Read the howto for more details.
 
 \section developerdocs For Developers
 
-Start by getting a
-<a href="http://svn.pioto.org/viewvc/paludis/">Subversion
-checkout</a> of <code>trunk/</code>, and reading the \link PortageDifferences Paludis and Portage
-differences \endlink document.
-
-It's best to start by skimming over the main program to get a feel for how
-everything fits together. The interface code is kept in the src/ directory,
-and library code is in paludis/ .
-
-The following classes are good places to begin:
-
-- paludis::DefaultEnvironment provides a representation of the default
-  operating environment.
-- paludis::PackageDatabase provides routines for querying packages. An
-  instance can be obtained via paludis::DefaultEnvironment.
-- paludis::DepList can be used for making dependency lists.
-- paludis::Repository is subclassed to do querying, installing,
-  uninstalling, syncing and the like.
-
-The <a href="modules.html">Modules</a> link in the header bar will probably
-be of more use than any of the full class lists.
-
 You should also read \link CodingStandards the Coding Standards \endlink
 before tinkering.
+
+A \link ProgrammingWithPaludis rough guide to programming with Paludis \endlink
+is available. You are encouraged to extend this document by submitting patches.
 
 */

@@ -35,3 +35,6 @@ endif
 
 EXTRA_DIST = libxml.hh libxml.cc
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+

@@ -61,3 +61,7 @@ packages_list-sr.hh : packages_list.sr $(top_srcdir)/misc/make_sr.bash
 packages_list-sr.cc : packages_list.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/packages_list.sr > $@
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+

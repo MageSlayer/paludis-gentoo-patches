@@ -49,3 +49,7 @@ vte_vfuncs.defs :
 
 EXTRA_DIST = enum.pl generate_defs_vte.cc
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+

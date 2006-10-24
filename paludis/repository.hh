@@ -146,6 +146,7 @@ namespace paludis
      * which return 0 if an interface is not available.
      *
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class Repository :
         private InstantiationPolicy<Repository, instantiation_method::NonCopyableTag>,
@@ -166,8 +167,12 @@ namespace paludis
              */
             Repository(const RepositoryName &, const RepositoryCapabilities &);
 
-            ///\name Implementations: naviagation functions
-            ///{
+            /**
+             * \name Implementations: navigation functions
+             *
+             * These are implemented in subclasses to handle navigation queries.
+             */
+            ///\{
 
             /**
              * Override in descendents: fetch the metadata.
@@ -209,17 +214,21 @@ namespace paludis
              */
             virtual bool do_has_category_named(const CategoryNamePart &) const = 0;
 
-            ///}
+            ///\}
 
-            ///\name Implementations: misc files
-            ///{
+            /**
+             * \name Implementations: misc files
+             *
+             * Various utility functions related to misc files.
+             */
+            ///\{
 
             /**
              * Override in descendents: is this a licence?
              */
             virtual bool do_is_licence(const std::string &) const = 0;
 
-            ///}
+            ///\}
 
         public:
             virtual RepositoryInfo::ConstPointer info(bool verbose) const;

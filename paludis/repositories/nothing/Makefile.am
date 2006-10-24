@@ -38,3 +38,6 @@ nothing_repository-sr.hh : nothing_repository.sr $(top_srcdir)/misc/make_sr.bash
 nothing_repository-sr.cc : nothing_repository.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/nothing_repository.sr > $@
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+

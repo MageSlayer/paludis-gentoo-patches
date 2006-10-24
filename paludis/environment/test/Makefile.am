@@ -19,3 +19,7 @@ lib_LTLIBRARIES = libpaludistestenvironment.la
 paludis_environment_test_includedir = $(includedir)/paludis/environment/test
 paludis_environment_test_include_HEADERS = test_environment.hh
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+

@@ -40,4 +40,5 @@ no_config_environment-sr.cc : no_config_environment.sr $(top_srcdir)/misc/make_s
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/no_config_environment.sr > $@
 
 built-sources : $(BUILT_SOURCES)
+	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

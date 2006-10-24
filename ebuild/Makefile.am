@@ -51,3 +51,7 @@ EXTRA_DIST = $(libexecprog_SCRIPTS) run_test.bash $(TESTS)
 check_SCRIPTS = run_test.bash $(TESTS)
 check_PROGRAMS =
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+

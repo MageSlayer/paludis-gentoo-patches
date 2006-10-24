@@ -125,3 +125,6 @@ endif
 TESTS = portage_repository_TEST $(GLSA_TESTS)
 check_PROGRAMS = $(TESTS)
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+

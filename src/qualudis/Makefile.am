@@ -61,3 +61,7 @@ DISTCLEANFILES = $(man_pages)
 MAINTAINERCLEANFILES = Makefile.in
 EXTRA_DIST = $(man_pages)
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+

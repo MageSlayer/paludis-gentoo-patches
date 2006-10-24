@@ -1,0 +1,269 @@
+/* vim: set ft=cpp tw=80 sw=4 et : */
+
+/**
+\page ProgrammingWithPaludis Programming with Paludis
+
+Start by getting a
+<a href="http://svn.pioto.org/viewvc/paludis/">Subversion
+checkout</a> of <code>trunk/</code>, and reading the \link PortageDifferences Paludis and Portage
+differences \endlink document.
+
+It's best to start by skimming over the main program to get a feel for how
+everything fits together. The interface code is kept in the src/ directory,
+and library code is in paludis/ .
+
+The <a href="modules.html">Modules</a> link in the header bar will probably
+be of more use than any of the full class lists.
+
+\section ProgrammingWithPaludisBasics Basics
+
+There are currently two APIs available:
+
+- The C++ API. This offers the full range of functionality.
+- The Ruby API. This offers a subset of the functionality and is aimed at script and utility
+  authors. Not every class or method is currently available; support for more classes and
+  methods can be added as needed. Some things (for example, defining new Environment subclasses)
+  will likely never be available through this interface.
+
+A basic C++ application will look something like:
+
+\code
+#include <paludis/paludis.hh>
+#include <paludis/environment/default/default_environment.hh>
+
+#include <iostream>
+#include <cstdlib>
+
+using std::cout;
+using std::cerr;
+using std::endl;
+
+int main(int, char *[])
+{
+    try
+    {
+        paludis::PackageDatabaseEntryCollection::ConstPointer packages(
+                paludis::DefaultEnvironment::get_instance()->package_database()->query(
+                    paludis::PackageDepAtom("app-editors/vim"), paludis::is_installed_only));
+
+        if (packages->empty())
+            cout << "Vim is not installed" << endl;
+        else
+            cout << "Vim " << packages->last()->version << " is installed" << endl;
+    }
+    catch (const paludis::Exception & e)
+    {
+        cerr << "Caught exception '" << e.message() << "' ("
+            << e.what() << ")" << endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+\endcode
+
+Compile this using <code>g++ -Wall -lpaludis -lpaludisdefaultenvironment</code>.
+
+The same application written in Ruby will look something like:
+
+\verbatim
+#!/usr/bin/env ruby
+
+require 'Paludis'
+
+packages = Paludis::DefaultEnvironment::instance.package_database.query(
+    "app-editors/vim", Paludis::InstallState::InstalledOnly)
+
+if packages.empty?
+    puts "Vim is not installed"
+else
+    puts "Vim " + packages.last.version + " is installed"
+end
+\endverbatim
+
+Notice how various Rubyisms (singleton styles, question mark methods, constants
+for enums) are used. The Ruby interface aims to be natural to Ruby programmers
+and behave like a Ruby library, rather than being an exact translation.
+
+Make sure you can run both of these examples before reading on.
+
+\section ProgrammingWithPaludisCommonPatterns Common Patterns
+
+A number of common patterns are used throughout the code.
+
+\subsection ProgrammingWithPaludisCommonPatternsIterators Iterators
+
+STL style iterator pairs crop up in various places. Where this happens, there is
+usually a member typedef named <code>Iterator</code> or <code>FooIterator</code>,
+along with members named <code>begin</code> and <code>end</code> or <code>begin_foo</code>
+and <code>end_foo</code>. See \ref TCppSL if you are unfamiliar with this style.
+
+The underlying iterator format is usually hidden from the library programmer by a
+libwrapiter::ForwardIterator. This is to speed up compile times and to avoid breaking
+lots of things when underlying data types change.
+
+Ruby works better with blocks than external iterators. Thus, instead of providing
+<code>begin_foo</code> and <code>end_foo</code> methods, Ruby classes typically have
+a single <code>foo</code> member function that returns an array made from the
+iterator range.
+
+\subsection ProgrammingWithPaludisCommonPatternsPointers Pointers
+
+We have a reference-counted smart pointer template class, paludis::CountedPtr. It's
+used to avoid expensive copying and tricky memory management. Most classes that
+are suitable for being held by a smart pointer have member typedefs named
+<code>Pointer</code> and <code>ConstPointer</code>.
+
+We don't use std::tr1::shared_ptr because most of our target compilers don't have
+it yet.
+
+This is all hidden in the Ruby interface.
+
+\subsection ProgrammingWithPaludisCommonPatternsValidated Validated Names
+
+Rather than using std::string for package, category etc names, we have a wrapper
+class template called paludis::Validated, and a bunch of typedefs (paludis::CategoryNamePart,
+paludis::PackageNamePart, paludis::SlotName, paludis::RepositoryName, paludis::KeywordName).
+This gives a couple of benefits:
+
+- It catches certain screwups (e.g. passing the wrong parameter types) at compile time.
+- It means exceptions caused by weird data (e.g. from user input) are caught at a sensible
+  place, rather than sometime weird later on.
+
+Ruby doesn't do static checking, so it just uses raw String instances for all of these.
+
+\subsection ProgrammingWithPaludisCommonPatternsCollections Collections
+
+Sometimes we need to pass around a collection of items. The paludis::SortedCollection,
+paludis::SequentialCollection and paludis::AssociativeCollection wrappers handle this.
+They are passed around via smart pointers to avoid copying.
+
+The basic classes are abstract. Use paludis::SortedCollection::Concrete etc if you need
+to make one yourself.
+
+In Ruby these are converted to arrays.
+
+\subsection ProgrammingWithPaludisCommonPatternsSmartRecords Smart Records
+
+Smart records are a bit smarter than Plain Old Data structs. They might define comparison
+operators and constructors. They're used in quite a few places.
+
+Some smart records support named parameter constructors. A typical call to one of these
+looks like:
+
+\code
+PackageDatabaseEntry my_pde(PackageDatabaseEntryParams::create()
+        .package(QualifiedPackageName("app-editors/vim"))
+        .version(VersionSpec("7.0.147"))
+        .repository(RepositoryName("gentoo")));
+\endcode
+
+Named parameters can be specified in any order.
+
+\subsection ProgrammingWithPaludisCommonPatternsStringify Stringify
+
+Many types can be converted to a std::string for display purposes. The paludis::stringify()
+template function will handle this. It also works for any internal and standard library data
+type that can be written to a std::ostream.
+
+\section ProgrammingWithPaludisEnvironment The Environment
+
+At the heart of the Paludis API is a paludis::Environment subclass instance. All
+non-trivial clients will use one of the Environment subclasses as their starting
+point for obtaining data (Environment itself contains abstract members and cannot
+be used directly).
+
+\subsection ProgrammingWithPaludisDefaultEnvironment DefaultEnvironment
+
+The paludis::DefaultEnvironment class should be used when user configuration
+files (<code>~/.paludis</code> or <code>/etc/paludis</code> are to be parsed. This
+is a singleton class (see \ref GoF for details on singletons) whose instance can
+be obtained via the paludis::DefaultEnvironment::get_instance method.
+
+The configuration suffix can be set using the paludis::DefaultConfig::set_config_suffix
+static member function. Clients should usually provide a <code>--config-suffix</code> and
+<code>-c</code> command-line option for this.
+
+When using DefaultEnvironment, linking should include <code>-lpaludisdefaultenvironment</code>.
+
+In Ruby, the class is <code>Paludis::DefaultEnvironment</code>, the instance is
+<code>Paludis::DefaultEnvironment::instance</code> and the configuration suffix is
+set using <code>Paludis::DefaultConfig::config_suffix=</code>.
+
+\subsection ProgrammingWithPaludisNoConfigEnvironment NoConfigEnvironment
+
+The paludis::NoConfigEnvironment class should be used when user configuration should
+not be read, and instead the repository should be from a single particular directory.
+Multiple instances of this environment can be created if necessary.
+
+When using NoConfigEnvironment, linking should include <code>-lpaludisnoconfigenvironment</code>.
+
+In Ruby the class is <code>Paludis::NoConfigEnvironment</code>.
+
+\subsection ProgrammingWithPaludisOtherEnvironments Other Environments
+
+The paludis::qa::QAEnvironment class is used for QA environments. There is also a
+paludis::TestEnvironment class that is used in some test cases. These are less useful
+for most client authors.
+
+There is currently no Ruby wrapper for either of these.
+
+\section ProgrammingWithPaludisPackageDatabase The Package Database
+
+Every paludis::Environment has a paludis::PackageDatabase, which can be obtained
+via the paludis::Environment::package_database() method.
+
+The PackageDatabase contains a number of paludis::Repository subclass instances. These
+can be obtained using the paludis::PackageDatabase::begin_repositories() and
+paludis::PackageDatabase::end_repositories() pair or the
+paludis::PackageDatabase::fetch_repository() method.
+
+The PackageDatabase also provides a number of utility functions. paludis::PackageDatabase::query()
+can be used to fetch a paludis::PackageDatabaseEntryCollection containing packages
+matching a particular paludis::PackageDepAtom. paludis::PackageDatabase::fetch_unique_qualified_package_name()
+can be used to convert a paludis::PackageNamePart with no associated paludis::CategoryNamePart into
+a full paludis::QualifiedPackageName .
+
+In Ruby, the class is <code>Paludis::PackageDatabase</code> and and instance can
+only be obtained by calling <code>some_environment.package_database</code>.
+Rather than providing iterator pairs, repositories are available through the
+<code>repositories</code> method, whose return value behaves like an array of
+<code>Paludis::Repository</code> subclass instances. The
+<code>fetch_repository</code> and <code>fetch_unique_qualified_package_name</code> methods are available.
+
+\section ProgrammingWithPaludisRepositories Repositories
+
+The paludis::Repository class is an abstract base class representing a
+repository. Each paludis::Repository subclass provides various core functions,
+along with various optional others based upon the repository's capabilities.
+
+The commonly used subclasses are:
+
+- paludis::PortageRepository, which is used for Gentoo-style ebuild repositories.
+- paludis::VDBRepository, which is used for installed packages
+- paludis::VirtualsRepository, which is used for old-style virtuals
+- paludis::InstalledVirtualsRepository, which is used for old-style provided virtuals
+
+Others include:
+
+- paludis::CRANRepository, which is used for CRAN packages.
+- paludis::CRANInstalledRepository, which is used for installed CRAN packages.
+- paludis::FakeRepository, which is used for some test cases.
+
+Repository creation is usually handled by the paludis::Environment subclass and its
+associated paludis::PackageDatabase. In Ruby, this is the only way to gain access
+to a repository.
+
+All repositories provide some basic functions for querying their contents. Commonly used
+functions are paludis::Repository::version_metadata(), paludis::Repository::has_category_named(),
+paludis::Repository::has_package_named(), paludis::Repository::category_names(),
+paludis::Repository::package_names(), paludis::Repository::version_specs() and
+paludis::Repository::has_version(). These are available through Ruby; the has_ functions
+have a question mark suffix as per Ruby convention.
+
+Additional capabilities are available through optional interfaces. These can be accessed
+via members named paludis::Repository::mask_interface, paludis::Repository::sets_interface
+and so on -- these members will either be a pointer to the interface or a zero pointer.
+
+
+*/

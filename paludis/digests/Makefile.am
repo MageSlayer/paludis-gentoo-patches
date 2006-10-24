@@ -40,3 +40,6 @@ md5_TEST_SOURCES = md5_TEST.cc
 md5_TEST_CXXFLAGS = -I$(top_srcdir)
 md5_TEST_LDADD = $(top_builddir)/test/libtest.a libpaludisdigests.la
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+

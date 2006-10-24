@@ -21,3 +21,7 @@ EXTRA_DIST = \
 check_SCRIPTS = $(TESTS)
 check_PROGRAMS =
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+

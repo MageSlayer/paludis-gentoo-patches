@@ -138,7 +138,7 @@ while read a ; do
         echo "    public:"
         echo
         echo "        ///\\name Data members"
-        echo "        ///\\{"
+        echo "        ///\{"
         echo
 
         for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
@@ -146,13 +146,13 @@ while read a ; do
         done
 
         echo
-        echo "        ///\\}"
+        echo "        ///\}"
         echo
 
         if [[ -n "${want_comparison_operators}" ]] ; then
 
             echo "        ///\\name Comparison operators"
-            echo "        ///\\{"
+            echo "        ///\{"
             echo
 
             if [[ "${want_comparison_operators}" == "all" ]] ; then
@@ -170,12 +170,12 @@ while read a ; do
             done
 
             echo
-            echo "        ///\\}"
+            echo "        ///\}"
             echo
         fi
 
         echo "        ///\\name Basic operations"
-        echo "        ///\\{"
+        echo "        ///\{"
         echo
 
         echo "        ${a}("
@@ -198,13 +198,13 @@ while read a ; do
         make_class_${a}
 
         echo
-        echo "        ///\\}"
+        echo "        ///\}"
         echo
 
         if [[ -n "${want_named_args}" ]] ; then
 
             echo "        ///\\name Named argument constructor"
-            echo "        ///\\{"
+            echo "        ///\{"
             echo
 
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
@@ -223,7 +223,7 @@ while read a ; do
                 echo "                $(make_const_ref "${t}" ) ${n};"
                 echo
                 echo "                ///\\name Basic operations"
-                echo "                ///\\{"
+                echo "                ///\{"
                 echo
                 echo "                Param_${n}(const Empty &, $(make_const_ref "${t}" ) value_for_${n}) :"
                 echo "                    ${n}(value_for_${n})"
@@ -236,7 +236,7 @@ while read a ; do
                 echo "                {"
                 echo "                }"
                 echo
-                echo "                ///\\}"
+                echo "                ///\}"
                 echo "        };"
                 echo
                 echo "        /**"
@@ -250,7 +250,7 @@ while read a ; do
                 echo
                 echo "            public:"
                 echo "                ///\\name Basic operations"
-                echo "                ///\\{"
+                echo "                ///\{"
                 echo
                 echo "                After_"
                 echo "                ${n}($(make_const_ref "${t}" ) value_for_${n})"
@@ -276,7 +276,7 @@ while read a ; do
                 echo "                {"
                 echo "                }"
                 echo
-                echo "                ///\\}"
+                echo "                ///\}"
                 echo "        };"
                 echo
             done
@@ -334,7 +334,7 @@ while read a ; do
             echo
             echo "            public:"
             echo "                ///\\name Basic operations"
-            echo "                ///\\{"
+            echo "                ///\{"
             echo
             echo "                Params("
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
@@ -400,7 +400,7 @@ while read a ; do
             echo "                        );"
             echo "                }"
             echo
-            echo "                ///\\}"
+            echo "                ///\}"
             echo
             echo "        };"
             echo

@@ -99,4 +99,5 @@ DEFS= \
 EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist srlist srcleanlist
 
 built-sources : $(BUILT_SOURCES)
+	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

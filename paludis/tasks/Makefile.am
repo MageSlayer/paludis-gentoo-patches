@@ -30,3 +30,7 @@ libpaludistasks_a_SOURCES = $(paludis_tasks_include_HEADERS) \
 	uninstall_task.cc \
 	sync_task.cc
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+

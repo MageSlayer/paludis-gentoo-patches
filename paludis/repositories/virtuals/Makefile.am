@@ -57,5 +57,8 @@ vr_entry-sr.hh : vr_entry.sr $(top_srcdir)/misc/make_sr.bash
 vr_entry-sr.cc : vr_entry.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vr_entry.sr > $@
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
 
 

@@ -45,3 +45,7 @@ default_environment_TEST_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	libpaludisdefaultenvironment.la
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+

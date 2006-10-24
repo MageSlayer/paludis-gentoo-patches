@@ -62,3 +62,7 @@ Makefile.am : Makefile.am.m4 files.m4
 util.hh : util.hh.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash util.hh
 
+changequote(`<', `>')
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+

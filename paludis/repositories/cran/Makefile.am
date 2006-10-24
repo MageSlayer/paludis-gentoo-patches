@@ -95,3 +95,6 @@ cran_installed_repository-sr.hh : cran_installed_repository.sr $(top_srcdir)/mis
 cran_installed_repository-sr.cc : cran_installed_repository.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/cran_installed_repository.sr > $@
 
+built-sources : $(BUILT_SOURCES)
+	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+

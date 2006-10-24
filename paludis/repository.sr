@@ -38,6 +38,7 @@ make_class_RepositoryCapabilities()
          *
          * \see Repository
          * \ingroup grprepository
+         * \nosubgrouping
          */
 END
 

@@ -98,5 +98,8 @@ comparison_policy.hh : comparison_policy.hh.m4
 ihateautomake.cc : all
 	test -f $@ || touch $@
 
+changequote(`<', `>')
 built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
 

@@ -28,4 +28,6 @@ paludis_repositories_fake_include_HEADERS = \
 	fake_repository_base.hh \
 	fake_installed_repository.hh
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

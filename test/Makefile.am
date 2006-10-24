@@ -23,3 +23,6 @@ test_pass_TEST_LDADD = libtest.a
 test_fail_TEST_SOURCES = test_fail_TEST.cc
 test_fail_TEST_LDADD = libtest.a
 
+built-sources : $(BUILT_SOURCES)
+	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+

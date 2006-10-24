@@ -36,3 +36,6 @@ install-data-local :
 	@[ -f $(top_builddir)/done-check ] || echo "**************************************" || true
 	@[ -f $(top_builddir)/done-check ] || echo || true
 
+built-sources : $(BUILT_SOURCES)
+	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+

@@ -63,4 +63,6 @@ vdb_repository-sr.hh : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
 vdb_repository-sr.cc : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vdb_repository.sr > $@
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 

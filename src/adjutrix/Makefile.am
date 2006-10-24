@@ -85,4 +85,7 @@ find_dropped_keywords-sr.hh : find_dropped_keywords.sr $(top_srcdir)/misc/make_s
 find_dropped_keywords-sr.cc : find_dropped_keywords.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/find_dropped_keywords.sr > $@
 
+built-sources : $(BUILT_SOURCES)
+	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
 
