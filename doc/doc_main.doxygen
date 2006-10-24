@@ -8,6 +8,12 @@
 /** \defgroup grplibpaludisutil Paludis utilities library
  */
 
+/** \defgroup grplibpaludistasks Paludis tasks library
+ */
+
+/** \defgroup grplibpaludisxml Paludis XML wrapper library
+ */
+
 /** \defgroup grplibpaludisqa Paludis QA library
  */
 
@@ -24,6 +30,20 @@
  */
 
 /** \defgroup grpexceptions Exceptions
+ */
+
+// ----- grplibpaludistasks Subgroups -----
+
+/** \defgroup grptasks Tasks
+ *
+ * \ingroup grplibpaludistasks
+ */
+
+// ----- grplibpaludisxml Subgroups -----
+
+/** \defgroup grpxml XML Wrappers
+ *
+ * \ingroup grplibpaludisxml
  */
 
 // ----- grplibpaludis Subgroups -----
@@ -102,6 +122,11 @@
  * \ingroup grpenvironment
  */
 
+/** \defgroup grpnoconfigenvironment No config environment
+ *
+ * \ingroup grpenvironment
+ */
+
 /** \defgroup grppackagedatabase Package database
  *
  * \ingroup grpenvironment
@@ -158,6 +183,16 @@
  * \ingroup grprepository
  */
 
+/** \defgroup grpvirtualsrepository Virtuals repository
+ *
+ * \ingroup grprepository
+ */
+
+/** \defgroup grpcrandesc CRAN descriptions
+ *
+ * \ingroup grprepository
+ */
+
 /** \defgroup grpebuildinterface Ebuild interface
  *
  * \ingroup grprepository
@@ -186,6 +221,11 @@
  */
 
 /** \defgroup grpdepatomprettyprinter Dep atom pretty printer
+ *
+ * \ingroup grpdepatoms
+ */
+
+/** \defgroup grpdeptag Dependency tags
  *
  * \ingroup grpdepatoms
  */
@@ -227,6 +267,11 @@
  */
 
 /** \defgroup grpcompare Comparisons
+ *
+ * \ingroup grplibpaludisutil
+ */
+
+/** \defgroup grpiterators Iterators
  *
  * \ingroup grplibpaludisutil
  */
@@ -286,7 +331,7 @@
  * \ingroup grplibpaludisutil
  */
 
-/** \defgroup grprecords Records
+/** \defgroup grpsr Smart Record
  *
  * \ingroup grplibpaludisutil
  */
@@ -315,7 +360,7 @@
 
 /** \defgroup grpvisitor Visitor
  *
- * \ingroup grpvisitor
+ * \ingroup grppatterns
  */
 
 // ----- grpstrings Subgroups -----
@@ -349,4 +394,17 @@
  *
  * \ingroup grpstrings
  */
+
+// ----- grplibpaludisqa Subgroups -----
+
+/** \defgroup grpqa QA
+ *
+ * \ingroup libpaludisqa
+ */
+
+/** \defgroup grpqacheck QA Checks
+ *
+ * \ingroup libpaludisqa
+ */
+
 
