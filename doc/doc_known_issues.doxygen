@@ -20,7 +20,8 @@ This document also describes some things that are not bugs or missing functional
 Problem: <code>sys-fs/udev</code> will fail at the merge stage.
 
 Workaround: Use <code>~arch</code> for this package. We don't support merging
-fancy things like device files.
+fancy things like device files. Neither does Portage, but Portage isn't well
+behaved enough to error out on it either -- it just does something silly.
 
 \subsection KnownIssuesKDE Some KDE libraries are broken on some amd64 profiles
 
@@ -74,6 +75,13 @@ Rationale: This leads to corruption and wasted bandwidth far too frequently. In 
 Non-Problem: Paludis doesn't have an equivalent to --resume --skipfirst in Portage.
 
 Rationale: Too unreliable, too flaky and far too widely abused. There's talk of echoing a command (<code>paludis -i10 =sys-apps/foo-1.23-r1 =app-misc/fnord-2 ...</code>) that can be used to resume if an ebuild exits with an error, but that's not set in stone.
+
+\subsection KnownNonIssuesNice Automatic Niceness Support
+
+Non-Problem: There's no <code>PORTAGE_NICENESS</code> equivalent.
+
+Rationale: Learn how to use <code>nice</code>. There's no <code>GCC_NICENESS</code> or <code>VIM_NICENESS</code>
+either.
 
 */
 

@@ -14,7 +14,6 @@ docfiles = \
 	doc_changelog.doxygen \
 	doc_portage_differences.doxygen \
 	doc_news.doxygen \
-	doc_security_advisories.doxygen \
 	doc_configuration_files.doxygen \
 	doc_migration_howto.doxygen \
 	doc_known_issues.doxygen

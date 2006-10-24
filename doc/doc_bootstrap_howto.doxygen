@@ -32,13 +32,6 @@ There're ebuilds in the tree, or in <a
 href="http://svn.pioto.org/viewvc/paludis/overlay/"> the Paludis overlay</a> if
 you need SVN ebuilds.
 
-You'll need libebt, libwrapiter, eselect and Subversion. If you're using the QA
-tools (<code>--enable-qa</code>) you will also need pcre++ (and pcre, by
-extension) and libxml2. You'll also need either g++-3.4, g++-4.1 or some other
-reasonably standard C++ compiler along with a complete standard library
-implementation (so no uClibc++). If you're trying to run on non-Linux, you'll
-also need to fix a few includes and submit a patch.
-
 Make sure the test suite passes (either <code>FEATURES="test"</code> for
 Portage, or <code>make check</code>). If it fails, don't continue until you
 figure out why.
@@ -270,8 +263,8 @@ almost certainly need --dl-drop-circular at this stage.
 paludis --config-suffix bootstrap --install --pretend --dl-drop-all sys-apps/baselayout
 sudo paludis --config-suffix bootstrap --install --dl-drop-all sys-apps/baselayout
 
-paludis --config-suffix bootstrap --install --pretend --dl-drop-circular system
-sudo paludis --config-suffix bootstrap --install --dl-drop-circular system
+paludis --config-suffix bootstrap --install --pretend --dl-circular discard system
+sudo paludis --config-suffix bootstrap --install --dl-circular discard system
 \endverbatim
 
 Note that system will pull in Portage. That's a profiles thing that's

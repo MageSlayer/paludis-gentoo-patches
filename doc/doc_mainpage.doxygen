@@ -13,9 +13,12 @@ This is the documentation for Paludis, the other package manager. It is availabl
 \section userdocs For End Users
 
 Paludis is still undergoing heavy development. It is not a mature solution, and
-still has quite a few missing features. You <b>will</b> run into bugs if you use
-Paludis (some of which may leave your system unusable). Most ebuild authors do
-not test their code with both package managers.
+still has quite a few missing features. For the sake of covering our asses, we
+remind you that using Paludis might break your system (using Portage might break
+your system too, but they don't like to admit that up front). Paludis is much
+stricter than Portage when it comes to circular dependencies, ebuilds doing dodgy
+things, enforcing ROOT, merging non-directories over directories and the like, so
+expect to see error messages when using naughty ebuilds.
 
 If you find this acceptable, read \link BootstrapHowto the Bootstrap HOWTO
 \endlink for how to set up a chroot or make a stage, or \link MigrationHowto the
