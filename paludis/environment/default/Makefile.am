@@ -17,7 +17,7 @@ libpaludisdefaultenvironment_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la
 
 lib_LTLIBRARIES = libpaludisdefaultenvironment.la
-paludis_environment_default_includedir = $(includedir)/paludis/environment/test
+paludis_environment_default_includedir = $(includedir)/paludis/environment/default
 paludis_environment_default_include_HEADERS = default_config.hh default_environment.hh
 
 EXTRA_DIST = \
