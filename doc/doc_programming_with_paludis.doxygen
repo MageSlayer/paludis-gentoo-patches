@@ -176,7 +176,7 @@ be used directly).
 \subsection ProgrammingWithPaludisDefaultEnvironment DefaultEnvironment
 
 The paludis::DefaultEnvironment class should be used when user configuration
-files (<code>~/.paludis</code> or <code>/etc/paludis</code> are to be parsed. This
+files (<code>~/.paludis</code> or <code>/etc/paludis</code>) are to be parsed. This
 is a singleton class (see \ref GoF for details on singletons) whose instance can
 be obtained via the paludis::DefaultEnvironment::get_instance method.
 
