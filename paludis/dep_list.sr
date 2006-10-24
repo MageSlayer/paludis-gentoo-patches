@@ -31,6 +31,7 @@ END
          *
          * \see DepList
          * \ingroup grpdepresolver
+         * \nosubgrouping
          */
 END
 }
@@ -53,6 +54,7 @@ make_class_DepListEntry()
          *
          * \see DepList
          * \ingroup grpdepresolver
+         * \nosubgrouping
          */
 END
 }

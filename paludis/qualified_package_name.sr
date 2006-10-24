@@ -17,6 +17,7 @@ END
          * Represents a category plus package name.
          *
          * \ingroup grpnames
+         * \nosubgrouping
          */
 END
 }

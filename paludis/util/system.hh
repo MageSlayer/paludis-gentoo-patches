@@ -38,6 +38,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grpsystem
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE GetenvError : public Exception
     {
@@ -55,6 +56,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grpsystem
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE RunCommandError : public Exception
     {

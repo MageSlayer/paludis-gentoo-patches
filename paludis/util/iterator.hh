@@ -100,6 +100,7 @@ namespace paludis
      * of dereferencing.
      *
      * \ingroup grpiterators
+     * \nosubgrouping
      */
     template <typename Iter_, typename Value_>
     class IndirectIterator : public std::iterator<typename std::iterator_traits<Iter_>::iterator_category, Value_>,
@@ -196,6 +197,7 @@ namespace paludis
      * inserted.
      *
      * \ingroup grpiterators
+     * \nosubgrouping
      */
     template <typename Iter_, typename Pred_>
     class FilterInsertIterator :
@@ -291,6 +293,7 @@ namespace paludis
      * upon an item before inserting it.
      *
      * \ingroup grpiterators
+     * \nosubgrouping
      */
     template <typename Iter_, typename Trans_>
     class TransformInsertIterator :
@@ -415,6 +418,7 @@ namespace paludis
      * the specified type using the provided value.
      *
      * \ingroup grpiterators
+     * \nosubgrouping
      */
     template <typename Iter_, typename Type_>
     class CreateInsertIterator :

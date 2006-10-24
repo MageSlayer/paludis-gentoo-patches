@@ -113,6 +113,7 @@ namespace paludis
      *
      * \ingroup grpdepresolver
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class DepListError : public Exception
     {
@@ -130,6 +131,7 @@ namespace paludis
      *
      * \ingroup grpdepresolver
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class AllMaskedError : public DepListError
     {
@@ -163,6 +165,7 @@ namespace paludis
      *
      * \ingroup grpdepresolver
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class UseRequirementsNotMetError : public DepListError
     {
@@ -195,6 +198,7 @@ namespace paludis
      *
      * \ingroup grpdepresolver
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class BlockError : public DepListError
     {
@@ -212,6 +216,7 @@ namespace paludis
      *
      * \ingroup grpdepresolver
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class CircularDependencyError : public DepListError
     {
@@ -228,6 +233,7 @@ namespace paludis
      * Holds a list of dependencies in merge order.
      *
      * \ingroup grpdepresolver
+     * \nosubgrouping
      */
     class DepList :
         private InstantiationPolicy<DepList, instantiation_method::NonCopyableTag>,

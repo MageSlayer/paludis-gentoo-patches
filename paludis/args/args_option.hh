@@ -175,6 +175,7 @@ namespace paludis
          * An option that takes a set of strings.
          *
          * \ingroup grplibpaludisargs
+         * \nosubgrouping
          */
         class PALUDIS_VISIBLE StringSetArg :
             public ArgsOption,
@@ -272,6 +273,7 @@ namespace paludis
          * An option that takes one of a predefined set of string arguments.
          *
          * \ingroup grplibpaludisargs
+         * \nosubgrouping
          */
         class PALUDIS_VISIBLE EnumArg :
             public ArgsOption,

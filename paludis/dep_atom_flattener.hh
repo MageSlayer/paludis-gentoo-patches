@@ -44,6 +44,7 @@ namespace paludis
      * <b>not</b> suitable for heirarchies that can contain || ( ) blocks.
      *
      * \ingroup grpdepatomflattener
+     * \nosubgrouping
      */
     class DepAtomFlattener :
         private InstantiationPolicy<DepAtomFlattener, instantiation_method::NonCopyableTag>,

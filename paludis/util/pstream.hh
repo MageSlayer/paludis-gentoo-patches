@@ -43,6 +43,7 @@ namespace paludis
      *
      * \ingroup grpsystem
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE PStreamError :
         public Exception
@@ -66,6 +67,7 @@ namespace paludis
      * based upon the "io/inbuf1.hpp" example in section 13.13.3.
      *
      * \ingroup grpsystem
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE PStreamInBuf :
         public std::streambuf,
@@ -170,6 +172,7 @@ namespace paludis
      * from the output of an executed command.
      *
      * \ingroup grpsystem
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE PStream :
         private InstantiationPolicy<PStream, instantiation_method::NonCopyableTag>,

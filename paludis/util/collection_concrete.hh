@@ -42,6 +42,7 @@ namespace paludis
      *
      * \see SequentialCollection
      * \ingroup grpcollections
+     * \nosubgrouping
      */
     template <typename T_>
     class PALUDIS_VISIBLE SequentialCollection<T_>::Concrete :
@@ -111,6 +112,7 @@ namespace paludis
      *
      * \see SortedCollection
      * \ingroup grpcollections
+     * \nosubgrouping
      */
     template <typename T_, typename C_ = std::less<T_> >
     class PALUDIS_VISIBLE SortedCollection<T_, C_>::Concrete :
@@ -211,6 +213,7 @@ namespace paludis
      *
      * \see AssociativeCollection
      * \ingroup grpcollections
+     * \nosubgrouping
      */
     template <typename K_, typename V_>
     class PALUDIS_VISIBLE AssociativeCollection<K_, V_>::Concrete :

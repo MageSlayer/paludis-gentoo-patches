@@ -26,6 +26,7 @@ make_class_PortageRepositoryParams()
          *
          * \see PortageRepository
          * \ingroup grpportagerepository
+         * \nosubgrouping
          */
 END
 

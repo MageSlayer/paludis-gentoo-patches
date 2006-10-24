@@ -39,6 +39,7 @@ namespace paludis
      * Backtrace context class.
      *
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE Context
     {
@@ -69,6 +70,7 @@ namespace paludis
      * Base exception class.
      *
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE Exception :
         public std::exception
@@ -119,6 +121,7 @@ namespace paludis
      * never supposed to happen happens.
      *
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE InternalError :
         public Exception
@@ -150,6 +153,7 @@ namespace paludis
      * limitations) is used.
      *
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE NotAvailableError :
         public Exception
@@ -167,6 +171,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grpnames
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE NameError :
         public Exception
@@ -186,6 +191,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grpconfigfile
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE ConfigurationError :
         public Exception

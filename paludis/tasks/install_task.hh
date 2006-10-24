@@ -56,6 +56,7 @@ namespace paludis
      * Task used to install one or more targets.
      *
      * \ingroup grptasks
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE InstallTask :
         PrivateImplementationPattern<InstallTask>,

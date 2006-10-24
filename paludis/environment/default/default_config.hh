@@ -72,6 +72,7 @@ namespace paludis
      * configuration settings from on-disk configuration files.
      *
      * \ingroup grpdefaultconfig
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE DefaultConfig :
         public InstantiationPolicy<DefaultConfig, instantiation_method::SingletonAsNeededTag>,

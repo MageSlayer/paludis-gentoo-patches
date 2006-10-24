@@ -37,6 +37,7 @@ namespace paludis
      *
      * \ingroup grpdestringify
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE DestringifyError :
         public Exception

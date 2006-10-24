@@ -240,6 +240,7 @@ namespace paludis
              * remove_appropriate_from_world.
              *
              * \ingroup grpenvironment
+             * \nosubgrouping
              */
             class WorldCallbacks
             {

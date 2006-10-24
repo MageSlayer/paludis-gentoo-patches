@@ -46,6 +46,7 @@ namespace paludis
      * Handle entries (for example, ebuilds) in a PortageRepository.
      *
      * \ingroup grpportagerepository
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE PortageRepositoryEntries :
         public InternalCounted<PortageRepositoryEntries>
@@ -100,6 +101,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoSuchPortageRepositoryEntriesType : public ConfigurationError
     {

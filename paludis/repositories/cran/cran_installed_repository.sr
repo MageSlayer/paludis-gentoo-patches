@@ -15,6 +15,7 @@ make_class_CRANInstalledRepositoryParams()
          *
          * \see CRANInstalledRepository
          * \ingroup grpcraninstrepository
+         * \nosubgrouping
          */
 END
 

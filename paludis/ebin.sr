@@ -16,6 +16,7 @@ make_class_EbinCommandParams()
          *
          * \see EbinCommand
          * \ingroup grpebininterface
+         * \nosubgrouping
          */
 END
 
@@ -35,6 +36,7 @@ make_class_EbinFetchCommandParams()
          *
          * \see EbinFetchCommand
          * \ingroup grpebininterface
+         * \nosubgrouping
          */
 END
 
@@ -58,6 +60,7 @@ make_class_EbinInstallCommandParams()
          *
          * \see EbinInstallCommand
          * \ingroup grpebininterface
+         * \nosubgrouping
          */
 END
 

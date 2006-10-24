@@ -91,8 +91,8 @@ namespace paludis
      * then handled by DepParser.
      *
      * \see DepParser
-     *
      * \ingroup grpdeplexer
+     * \nosubgrouping
      */
     class PortageDepLexer :
         private InstantiationPolicy<PortageDepLexer, instantiation_method::NonCopyableTag>,

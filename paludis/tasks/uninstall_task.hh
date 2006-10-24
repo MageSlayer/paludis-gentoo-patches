@@ -74,6 +74,7 @@ namespace paludis
      * Task used to uninstall one or more targets.
      *
      * \ingroup grptasks
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE UninstallTask :
         PrivateImplementationPattern<UninstallTask>,

@@ -36,6 +36,7 @@ namespace paludis
      * \ref TCppPL section 14.4).
      *
      * \ingroup grpsave
+     * \nosubgrouping
      */
     template <typename T_>
     class Save :

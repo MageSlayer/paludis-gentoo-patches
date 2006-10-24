@@ -88,6 +88,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grppackagedatabase
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE AmbiguousPackageNameError :
         public PackageDatabaseLookupError

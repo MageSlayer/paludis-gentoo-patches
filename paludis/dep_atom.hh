@@ -60,6 +60,7 @@ namespace paludis
      * Base class for a dependency atom.
      *
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class DepAtom :
         public virtual VisitableInterface<DepAtomVisitorTypes>,
@@ -94,6 +95,7 @@ namespace paludis
      * atoms.
      *
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class CompositeDepAtom :
         public DepAtom,
@@ -146,6 +148,7 @@ namespace paludis
      * Represents a "|| ( )" dependency block.
      *
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class AnyDepAtom :
         public CompositeDepAtom,
@@ -165,6 +168,7 @@ namespace paludis
      * atoms.
      *
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class AllDepAtom :
         public CompositeDepAtom,
@@ -183,6 +187,7 @@ namespace paludis
      * Represents a use? ( ) dependency atom.
      *
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class UseDepAtom :
         public CompositeDepAtom,
@@ -224,6 +229,7 @@ namespace paludis
      * piece of text.
      *
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class StringDepAtom :
         public DepAtom
@@ -255,6 +261,7 @@ namespace paludis
      * A selection of USE flag requirements.
      *
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class UseRequirements :
         public InternalCounted<UseRequirements>,
@@ -296,6 +303,7 @@ namespace paludis
      * restrictions.
      *
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class PackageDepAtom :
         public StringDepAtom,
@@ -423,6 +431,7 @@ namespace paludis
      * a URI in SRC_URI).
      *
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class PlainTextDepAtom :
         public StringDepAtom,
@@ -457,6 +466,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class PackageDepAtomError :
         public Exception
@@ -483,6 +493,7 @@ namespace paludis
      * restrictions.
      *
      * \ingroup grpdepatoms
+     * \nosubgrouping
      */
     class BlockDepAtom :
         public StringDepAtom,

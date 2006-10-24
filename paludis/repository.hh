@@ -68,6 +68,7 @@ namespace paludis
      *
      * \see RepositoryInfo
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryInfoSection :
         public InternalCounted<RepositoryInfoSection>,
@@ -106,6 +107,7 @@ namespace paludis
      * Information about a Repository, for the end user.
      *
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryInfo :
         public InternalCounted<RepositoryInfo>,
@@ -330,6 +332,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryMaskInterface
     {
@@ -371,6 +374,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryUseInterface
     {
@@ -480,6 +484,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryInstalledInterface
     {
@@ -510,6 +515,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryInstallableInterface
     {
@@ -537,6 +543,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryUninstallableInterface
     {
@@ -569,6 +576,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositorySetsInterface
     {
@@ -600,6 +608,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositorySyncableInterface
     {
@@ -628,6 +637,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryWorldInterface
     {
@@ -650,6 +660,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryNewsInterface
     {
@@ -669,6 +680,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryEnvironmentVariableInterface
     {
@@ -688,6 +700,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryMirrorsInterface
     {
@@ -717,6 +730,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryVirtualsInterface
     {
@@ -736,6 +750,7 @@ namespace paludis
      *
      * \see Repository
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class RepositoryProvidesInterface
     {
@@ -755,6 +770,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class NoSuchRepositoryTypeError : public ConfigurationError
     {
@@ -770,6 +786,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class PackageActionError : public Exception
     {
@@ -785,6 +802,7 @@ namespace paludis
      *
      * \ingroup grprepository
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class PackageInstallActionError : public PackageActionError
     {
@@ -800,6 +818,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grprepository
+     * \nosubgrouping
      */
     class PackageFetchActionError : public PackageActionError
     {
@@ -815,6 +834,7 @@ namespace paludis
      *
      * \ingroup grprepository
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class PackageUninstallActionError : public PackageActionError
     {
@@ -830,6 +850,7 @@ namespace paludis
      *
      * \ingroup grprepository
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class EnvironmentVariableActionError :
         public PackageActionError

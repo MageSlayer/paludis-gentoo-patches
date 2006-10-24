@@ -13,6 +13,7 @@ make_class_RepositoryConfigEntry()
          *
          * \see DefaultConfig
          * \ingroup grpdefaultconfig
+         * \nosubgrouping
          */
 END
 

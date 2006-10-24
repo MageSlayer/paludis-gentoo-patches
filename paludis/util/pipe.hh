@@ -34,6 +34,7 @@ namespace paludis
      * Wrapper around pipe file descriptors.
      *
      * \ingroup grppipe
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE Pipe :
         InstantiationPolicy<Pipe, instantiation_method::NonCopyableTag>

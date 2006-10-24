@@ -42,6 +42,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grpfilesystem
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE FSError :
         public Exception

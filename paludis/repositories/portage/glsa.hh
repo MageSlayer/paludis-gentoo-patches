@@ -38,6 +38,7 @@ namespace paludis
      * Thrown if a bad GLSA is found.
      *
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE GLSAError :
         public ConfigurationError
@@ -57,6 +58,7 @@ namespace paludis
      *
      * \see GLSA
      * \ingroup grpportagerepository
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE GLSAPackage :
         private PrivateImplementationPattern<GLSAPackage>,
@@ -86,6 +88,7 @@ namespace paludis
      * Represents a GLSA (security advisory).
      *
      * \ingroup grpportagerepository
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE GLSA :
         private PrivateImplementationPattern<GLSA>,

@@ -38,6 +38,7 @@ namespace paludis
      *
      * \ingroup grpfilesystem
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE DirOpenError :
         public FSError
@@ -59,6 +60,7 @@ namespace paludis
      * instance.
      *
      * \ingroup grpfilesystem
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE DirIterator :
         public std::iterator<std::forward_iterator_tag, FSEntry>,

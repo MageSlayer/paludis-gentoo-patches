@@ -43,6 +43,7 @@ namespace paludis
      * Portage for the main Gentoo tree.
      *
      * \ingroup grpportagerepository
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE PortageRepository :
         public Repository,

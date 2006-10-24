@@ -54,6 +54,7 @@ namespace paludis
      * Base class for a contents entry.
      *
      * \ingroup grpcontents
+     * \nosubgrouping
      */
     class ContentsEntry :
         private InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>,
@@ -93,6 +94,7 @@ namespace paludis
      * A file contents entry.
      *
      * \ingroup grpcontents
+     * \nosubgrouping
      */
     class ContentsFileEntry :
         public ContentsEntry,
@@ -111,6 +113,7 @@ namespace paludis
      * A directory contents entry.
      *
      * \ingroup grpcontents
+     * \nosubgrouping
      */
     class ContentsDirEntry :
         public ContentsEntry,
@@ -129,6 +132,7 @@ namespace paludis
      * A misc contents entry.
      *
      * \ingroup grpcontents
+     * \nosubgrouping
      */
     class ContentsMiscEntry :
         public ContentsEntry,
@@ -147,6 +151,7 @@ namespace paludis
      * A sym contents entry.
      *
      * \ingroup grpcontents
+     * \nosubgrouping
      */
     class ContentsSymEntry :
         public ContentsEntry,
@@ -174,6 +179,7 @@ namespace paludis
      * A package's contents.
      *
      * \ingroup grpcontents
+     * \nosubgrouping
      */
     class Contents :
         private InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>,

@@ -76,6 +76,7 @@ namespace paludis
          * Interface: visit a class of NodePtrType_.
          *
          * \ingroup grpvisitor
+         * \nosubgrouping
          */
         template <typename NodePtrType_>
         class Visits
@@ -106,6 +107,7 @@ namespace paludis
          * Interface: don't visit NoType things.
          *
          * \ingroup grpvisitor
+         * \nosubgrouping
          */
         template <unsigned n_>
         class Visits<const visitor_internals::NoType<n_> * >
@@ -125,6 +127,7 @@ namespace paludis
          * Interface: don't visit NoType things.
          *
          * \ingroup grpvisitor
+         * \nosubgrouping
          */
         template <unsigned n_>
         class Visits<visitor_internals::NoType<n_> * >
@@ -146,6 +149,7 @@ namespace paludis
      * visitor that is descended from one of the VisitorType_ subclasses.
      *
      * \ingroup grpvisitor
+     * \nosubgrouping
      */
     template <typename VisitorType_>
     class VisitableInterface
@@ -180,6 +184,7 @@ namespace paludis
      * implementation of VisitableInterface.
      *
      * \ingroup grpvisitor
+     * \nosubgrouping
      */
     template <typename OurType_, typename VisitorType_>
     class Visitable :
@@ -219,6 +224,7 @@ namespace paludis
      * specified node types.
      *
      * \ingroup grpvisitor
+     * \nosubgrouping
      */
     template <
         typename N1_,
@@ -316,6 +322,7 @@ namespace paludis
      * pointers to nodes.
      *
      * \ingroup grpvisitor
+     * \nosubgrouping
      */
     template <typename VisitorPointer_>
     class AcceptVisitor

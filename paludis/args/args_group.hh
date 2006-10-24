@@ -44,6 +44,7 @@ namespace paludis
          * Contains a related group of command line arguments.
          *
          * \ingroup grplibpaludisargs
+         * \nosubgrouping
          */
         class PALUDIS_VISIBLE ArgsGroup :
             private PrivateImplementationPattern<ArgsGroup>,

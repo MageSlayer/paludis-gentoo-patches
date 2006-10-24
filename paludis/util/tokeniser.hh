@@ -155,6 +155,7 @@ namespace paludis
      * Tokeniser: specialisation for delim_kind::AnyOfTag.
      *
      * \ingroup grptokenise
+     * \nosubgrouping
      */
     template <typename DelimMode_, typename Char_>
     class Tokeniser<delim_kind::AnyOfTag, DelimMode_, Char_> :

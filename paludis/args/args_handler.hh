@@ -43,6 +43,7 @@ namespace paludis
          * Handles command line arguments.
          *
          * \ingroup grplibpaludisargs
+         * \nosubgrouping
          */
         class PALUDIS_VISIBLE ArgsHandler :
             private InstantiationPolicy<ArgsHandler, instantiation_method::NonCopyableTag>,

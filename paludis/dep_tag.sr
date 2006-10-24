@@ -15,6 +15,7 @@ make_class_DepTagEntry()
          *
          * \see DepListEntry
          * \ingroup grpdepresolver
+         * \nosubgrouping
          */
 END
 }

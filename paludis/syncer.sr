@@ -11,6 +11,7 @@ make_class_SyncOptions()
          *
          * \see Syncer
          * \ingroup grpsyncer
+         * \nosubgrouping
          */
 END
 }

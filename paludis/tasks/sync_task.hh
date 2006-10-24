@@ -33,6 +33,7 @@ namespace paludis
      * Task to handle syncing some or all repositories.
      *
      * \ingroup grptasks
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE SyncTask :
         PrivateImplementationPattern<SyncTask>,

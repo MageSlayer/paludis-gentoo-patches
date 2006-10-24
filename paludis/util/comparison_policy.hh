@@ -122,6 +122,7 @@ namespace paludis
      * ComparisonPolicy: specialisation for NoComparisonTag.
      *
      * \ingroup grpcompare
+     * \nosubgrouping
      */
     template <typename OurType_, typename ComparisonMethodTag_>
     class ComparisonPolicy<OurType_, comparison_mode::NoComparisonTag, ComparisonMethodTag_>
@@ -147,6 +148,7 @@ namespace paludis
      * CompareByMemberTag.
      *
      * \ingroup grpcompare
+     * \nosubgrouping
      */
     template <typename OurType_, typename MemberType_>
     class ComparisonPolicy<OurType_, comparison_mode::EqualityComparisonTag,
@@ -208,6 +210,7 @@ namespace paludis
      * CompareByMemberComparisonFunctionTag.
      *
      * \ingroup grpcompare
+     * \nosubgrouping
      */
     template <typename OurType_>
     class ComparisonPolicy<OurType_, comparison_mode::EqualityComparisonTag,
@@ -267,6 +270,7 @@ namespace paludis
      * CompareByMemberTag.
      *
      * \ingroup grpcompare
+     * \nosubgrouping
      */
     template <typename OurType_, typename MemberType_>
     class ComparisonPolicy<OurType_, comparison_mode::FullComparisonTag,
@@ -331,6 +335,7 @@ namespace paludis
      * CompareByMemberComparisonFunctionTag.
      *
      * \ingroup grpcompare
+     * \nosubgrouping
      */
     template <typename OurType_>
     class ComparisonPolicy<OurType_, comparison_mode::FullComparisonTag,
@@ -394,6 +399,7 @@ namespace paludis
      * CompareByMemberFetchFunctionTag.
      *
      * \ingroup grpcompare
+     * \nosubgrouping
      */
     template <typename OurType_, typename MemberType_>
     class ComparisonPolicy<OurType_, comparison_mode::EqualityComparisonTag,
@@ -453,6 +459,7 @@ namespace paludis
      * CompareByMemberFetchFunctionTag.
      *
      * \ingroup grpcompare
+     * \nosubgrouping
      */
     template <typename OurType_, typename MemberType_>
     class ComparisonPolicy<OurType_, comparison_mode::FullComparisonTag,

@@ -70,6 +70,7 @@ namespace paludis
          * Base class for CountedPtr.
          *
          * \ingroup grppointers
+         * \nosubgrouping
          */
         template <typename T_>
         class CountedPtrBase :
@@ -181,6 +182,7 @@ namespace paludis
      * Reference counted pointer class (specialisation for ExternalCountTag).
      *
      * \ingroup grppointers
+     * \nosubgrouping
      */
     template <typename T_>
     class CountedPtr<T_, count_policy::ExternalCountTag> :
@@ -283,6 +285,7 @@ namespace paludis
      * Reference counted pointer class (specialisation for InternalCountTag).
      *
      * \ingroup grppointers
+     * \nosubgrouping
      */
     template <typename T_>
     class CountedPtr<T_, count_policy::InternalCountTag> :
@@ -388,6 +391,7 @@ namespace paludis
      * Base class for an internally counted class.
      *
      * \ingroup grppointers
+     * \nosubgrouping
      */
     template <typename T_>
     class InternalCounted :

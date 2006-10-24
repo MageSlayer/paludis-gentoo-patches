@@ -34,6 +34,7 @@ namespace paludis
      * basic algorithm and \ref AppCrypt 16.1 for the choice of numbers.
      *
      * \ingroup grprandom
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE Random
     {

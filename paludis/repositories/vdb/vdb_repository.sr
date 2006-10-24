@@ -16,6 +16,7 @@ make_class_VDBRepositoryParams()
          *
          * \see VDBRepository
          * \ingroup grpvdbrepository
+         * \nosubgrouping
          */
 END
 

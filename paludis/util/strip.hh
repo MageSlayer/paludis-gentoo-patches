@@ -70,6 +70,7 @@ namespace paludis
      * issue with std::bind2nd).
      *
      * \ingroup grpstrippers
+     * \nosubgrouping
      */
     template <std::string (* f_)(const std::string &, const std::string &)>
     class StripAdapter :

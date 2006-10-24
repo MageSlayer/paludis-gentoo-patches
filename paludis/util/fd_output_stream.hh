@@ -32,6 +32,7 @@ namespace paludis
      * based upon the "io/outbuf2.hpp" example in section 13.13.3.
      *
      * \ingroup grpfdotputstream
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE FDOutputStreamBuf :
         public std::streambuf

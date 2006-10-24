@@ -11,6 +11,7 @@ make_class_Message()
          * A QA message.
          *
          * \ingroup grpqa
+         * \nosubgrouping
          */
 END
 }

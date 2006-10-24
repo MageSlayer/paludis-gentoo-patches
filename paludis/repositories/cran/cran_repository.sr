@@ -19,6 +19,7 @@ make_class_CRANRepositoryParams()
          *
          * \see CRANRepository
          * \ingroup grpcranrepository
+         * \nosubgrouping
          */
 END
 

@@ -45,6 +45,7 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grpconfigfile
+     * \nosubgrouping
      */
     class ConfigFileError : public ConfigurationError
     {
@@ -63,6 +64,7 @@ namespace paludis
      * being discarded.
      *
      * \ingroup grpconfigfile
+     * \nosubgrouping
      */
     class ConfigFile :
         paludis::InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>
@@ -151,6 +153,7 @@ namespace paludis
      * normalised lines. Do not subclass.
      *
      * \ingroup grplineconfigfile
+     * \nosubgrouping
      */
     class LineConfigFile :
         protected ConfigFile,
@@ -200,6 +203,7 @@ namespace paludis
      *
      * \ingroup grpkvconfigfile
      * \ingroup grpexceptions
+     * \nosubgrouping
      */
     class KeyValueConfigFileError : public ConfigurationError
     {
@@ -218,6 +222,7 @@ namespace paludis
      * normalised lines. Do not subclass.
      *
      * \ingroup grpkvconfigfile
+     * \nosubgrouping
      */
     class KeyValueConfigFile :
         protected ConfigFile,

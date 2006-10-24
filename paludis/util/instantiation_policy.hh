@@ -88,6 +88,7 @@ namespace paludis
      * or assigned to.
      *
      * \ingroup grpinstance
+     * \nosubgrouping
      */
     template<typename OurType_>
     class PALUDIS_VISIBLE InstantiationPolicy<OurType_, instantiation_method::NonCopyableTag>
@@ -116,6 +117,7 @@ namespace paludis
      * InstantiationPolicy: specialisation for classes that cannot be created.
      *
      * \ingroup grpinstance
+     * \nosubgrouping
      */
     template<typename OurType_>
     class InstantiationPolicy<OurType_, instantiation_method::NonInstantiableTag>
@@ -148,6 +150,7 @@ namespace paludis
      * created at startup.
      *
      * \ingroup grpinstance
+     * \nosubgrouping
      */
     template<typename OurType_>
     class PALUDIS_VISIBLE InstantiationPolicy<OurType_, instantiation_method::SingletonAtStartupTag>
@@ -194,6 +197,7 @@ namespace paludis
      * created as needed.
      *
      * \ingroup grpinstance
+     * \nosubgrouping
      */
     template<typename OurType_>
     class PALUDIS_VISIBLE InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>

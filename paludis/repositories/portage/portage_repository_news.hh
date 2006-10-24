@@ -40,6 +40,7 @@ namespace paludis
      * Holds the news/ data for a PortageRepository instance.
      *
      * \ingroup grpportagerepository
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE PortageRepositoryNews :
         private PrivateImplementationPattern<PortageRepositoryNews>,
@@ -63,6 +64,7 @@ namespace paludis
      * A NewsFile represents a GLEP 42 news file.
      *
      * \ingroup grpnewsconfigfile
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE NewsFile :
         protected ConfigFile,

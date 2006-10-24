@@ -44,6 +44,7 @@ namespace paludis
      * a PortageRepository instance.
      *
      * \ingroup grpportagerepository
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE PortageRepositoryProfile :
         private PrivateImplementationPattern<PortageRepositoryProfile>,

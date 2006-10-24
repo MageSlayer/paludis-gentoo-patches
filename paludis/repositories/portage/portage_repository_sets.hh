@@ -39,6 +39,7 @@ namespace paludis
      * Holds the information about sets, except system, for a PortageRepository.
      *
      * \ingroup grpportagerepository
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE PortageRepositorySets :
         private PrivateImplementationPattern<PortageRepositorySets>,
