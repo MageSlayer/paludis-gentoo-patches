@@ -203,6 +203,7 @@ while read a ; do
 
         if [[ -n "${want_named_args}" ]] ; then
 
+            echo "#ifndef DOXYGEN"
             echo "        ///\\name Named argument constructor"
             echo "        ///\{"
             echo
@@ -415,6 +416,7 @@ while read a ; do
             done
             echo "> create();"
             echo
+            echo "#endif"
         fi
 
         echo "};"
