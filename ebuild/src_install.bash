@@ -28,7 +28,9 @@ src_install()
 
 ebuild_f_install()
 {
-    cd ${S} || die "cd to \${S} (\"${S}\") failed"
+    if [[ -d "${S}" ]]; then
+        cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    fi
 
     if hasq "install" ${RESTRICT} ; then
         ebuild_section "Skipping src_install (RESTRICT)"

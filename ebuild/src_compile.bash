@@ -31,8 +31,9 @@ src_compile()
 
 ebuild_f_compile()
 {
-    mkdir -p ${S}
-    cd ${S} || die "cd to \${S} (\"${S}\") failed"
+    if [[ -d "${S}" ]]; then
+        cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    fi
 
     if hasq "compile" ${RESTRICT} ; then
         ebuild_section "Skipping src_compile (RESTRICT)"
