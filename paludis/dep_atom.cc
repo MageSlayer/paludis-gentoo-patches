@@ -125,6 +125,20 @@ PackageDepAtom::PackageDepAtom(const QualifiedPackageName & our_package) :
 {
 }
 
+PackageDepAtom::PackageDepAtom(const PackageDepAtom & other) :
+    VisitableInterface<DepAtomVisitorTypes>(other),
+    StringDepAtom(stringify(other)),
+    Visitable<PackageDepAtom, DepAtomVisitorTypes>(other),
+    _package(other._package),
+    _version_operator(other._version_operator),
+    _version_spec(other._version_spec),
+    _slot(other._slot),
+    _repository(other._repository),
+    _use_requirements(other._use_requirements),
+    _tag(other._tag)
+{
+}
+
 PackageDepAtom::PackageDepAtom(const std::string & ss) :
     StringDepAtom(ss),
     _package(CategoryNamePart("later"), PackageNamePart("later")),

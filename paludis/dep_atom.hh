@@ -324,6 +324,11 @@ namespace paludis
              */
             PackageDepAtom(const std::string &);
 
+            /**
+             * Copy constructor.
+             */
+            PackageDepAtom(const PackageDepAtom &);
+
             ~PackageDepAtom();
 
             ///\}
