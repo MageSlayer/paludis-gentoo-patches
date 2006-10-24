@@ -224,7 +224,7 @@ matching a particular paludis::PackageDepAtom. paludis::PackageDatabase::fetch_u
 can be used to convert a paludis::PackageNamePart with no associated paludis::CategoryNamePart into
 a full paludis::QualifiedPackageName .
 
-In Ruby, the class is <code>Paludis::PackageDatabase</code> and and instance can
+In Ruby, the class is <code>Paludis::PackageDatabase</code> and an instance can
 only be obtained by calling <code>some_environment.package_database</code>.
 Rather than providing iterator pairs, repositories are available through the
 <code>repositories</code> method, whose return value behaves like an array of
