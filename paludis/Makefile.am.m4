@@ -98,3 +98,5 @@ comparison_policy.hh : comparison_policy.hh.m4
 ihateautomake.cc : all
 	test -f $@ || touch $@
 
+built-sources : $(BUILT_SOURCES)
+

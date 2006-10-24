@@ -5,6 +5,18 @@ make_class_DepTagEntry()
 
     allow_named_args
     comparison_operators "all" "*tag"
+
+    doxygen_comment << "END"
+        /**
+         * Tags associated with a DepListEntry.
+         *
+         * The generation key is used internally by DepList. Its value is of no interest
+         * to outside clients.
+         *
+         * \see DepListEntry
+         * \ingroup grpdepresolver
+         */
+END
 }
 
 

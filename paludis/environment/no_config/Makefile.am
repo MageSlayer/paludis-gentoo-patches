@@ -39,4 +39,5 @@ no_config_environment-sr.hh : no_config_environment.sr $(top_srcdir)/misc/make_s
 no_config_environment-sr.cc : no_config_environment.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/no_config_environment.sr > $@
 
+built-sources : $(BUILT_SOURCES)
 

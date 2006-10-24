@@ -5,5 +5,13 @@ make_class_Message()
 {
     key level QALevel
     key msg std::string
+
+    doxygen_comment << "END"
+        /**
+         * A QA message.
+         *
+         * \ingroup grpqa
+         */
+END
 }
 

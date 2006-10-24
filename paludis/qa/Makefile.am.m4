@@ -98,3 +98,5 @@ DEFS= \
 	-DBIGTEMPDIR=\"/var/tmp\"
 EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist srlist srcleanlist
 
+built-sources : $(BUILT_SOURCES)
+

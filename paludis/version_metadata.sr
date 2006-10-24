@@ -28,6 +28,15 @@ END
              */
             DepAtom::ConstPointer post_depend() const;
 END
+
+    doxygen_comment << "END"
+        /**
+         * Dependency data for VersionMetadata.
+         *
+         * \see VersionMetadata
+         * \ingroup grpversions
+         */
+END
 }
 
 make_class_VersionMetadataBase()
@@ -40,6 +49,15 @@ make_class_VersionMetadataBase()
     key description std::string
 
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Version metadata common to all VersionMetadata types.
+         *
+         * \see VersionMetadata
+         * \ingroup grpversions
+         */
+END
 }
 
 make_class_EbuildVersionMetadata()
@@ -64,6 +82,15 @@ END
 END
 
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Version metadata for ebuilds.
+         *
+         * \see VersionMetadata
+         * \ingroup grpversions
+         */
+END
 }
 
 make_class_CRANVersionMetadata()
@@ -74,6 +101,15 @@ make_class_CRANVersionMetadata()
     key is_bundle bool
 
     allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Version metadata for CRAN packages.
+         *
+         * \see VersionMetadata
+         * \ingroup grpversions
+         */
+END
 }
 
 make_class_EbinVersionMetadata()
@@ -84,10 +120,28 @@ make_class_EbinVersionMetadata()
     extra_constructors <<END
             EbinVersionMetadata();
 END
+
+    doxygen_comment << "END"
+        /**
+         * Version metadata for ebin packages.
+         *
+         * \see VersionMetadata
+         * \ingroup grpversions
+         */
+END
 }
 
 make_class_VirtualMetadata()
 {
     key virtual_for PackageDatabaseEntry
+
+    doxygen_comment << "END"
+        /**
+         * Version metadata for virtual packages.
+         *
+         * \see VersionMetadata
+         * \ingroup grpversions
+         */
+END
 }
 
