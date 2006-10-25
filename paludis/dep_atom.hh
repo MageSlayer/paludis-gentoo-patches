@@ -222,6 +222,16 @@ namespace paludis
             }
 
             virtual const UseDepAtom * as_use_dep_atom() const;
+
+            /**
+             * A non-constant smart pointer to ourself.
+             */
+            typedef CountedPtr<UseDepAtom, count_policy::InternalCountTag> Pointer;
+
+            /**
+             * A constant smart pointer to ourself.
+             */
+            typedef CountedPtr<const UseDepAtom, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**

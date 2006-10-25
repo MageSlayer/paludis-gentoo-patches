@@ -125,6 +125,22 @@ namespace
     };
 
     VALUE
+    use_dep_atom_flag(VALUE self)
+    {
+        UseDepAtom::ConstPointer * p;
+        Data_Get_Struct(self, UseDepAtom::ConstPointer, p);
+        return rb_str_new2(stringify((*p)->flag()).c_str());
+    }
+
+    VALUE
+    use_dep_atom_inverse(VALUE self)
+    {
+        UseDepAtom::ConstPointer * p;
+        Data_Get_Struct(self, UseDepAtom::ConstPointer, p);
+        return (*p)->inverse() ? Qtrue : Qfalse;
+    }
+
+    VALUE
     composite_dep_atom_each(VALUE self)
     {
         CompositeDepAtom::Pointer * m_ptr;
@@ -152,6 +168,8 @@ namespace
 
         c_use_dep_atom = rb_define_class_under(master_class(), "UseDepAtom", c_composite_dep_atom);
         rb_funcall(c_use_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_use_dep_atom, "flag", RUBY_FUNC_CAST(&use_dep_atom_flag), 0);
+        rb_define_method(c_use_dep_atom, "inverse?", RUBY_FUNC_CAST(&use_dep_atom_inverse), 0);
 
         c_string_dep_atom = rb_define_class_under(master_class(), "StringDepAtom", c_dep_atom);
         rb_funcall(c_string_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
