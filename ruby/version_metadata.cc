@@ -94,6 +94,19 @@ namespace
         }
     };
 
+    template <DepAtom::ConstPointer (VersionMetadataDeps::* m_) () const>
+    struct DependValue
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            VersionMetadata::ConstPointer * self_ptr;
+            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            // don't change the line below to something cleaner, it makes g++-4.1 puke
+            return dep_atom_to_value(((&(*self_ptr)->deps)->*m_)());
+        }
+    };
+
     void do_register_version_metadata()
     {
         c_version_metadata = rb_define_class_under(master_class(), "VersionMetadata", rb_cObject);
@@ -127,6 +140,13 @@ namespace
                         &EbuildVersionMetadata::iuse>::fetch)), 0);
         rb_define_method(c_version_metadata, "inherited", RUBY_FUNC_CAST((&EbuildValue<std::string,
                         &EbuildVersionMetadata::inherited>::fetch)), 0);
+
+        rb_define_method(c_version_metadata, "build_depend", RUBY_FUNC_CAST((&DependValue<
+                        &VersionMetadataDeps::build_depend>::fetch)), 0);
+        rb_define_method(c_version_metadata, "run_depend", RUBY_FUNC_CAST((&DependValue<
+                        &VersionMetadataDeps::run_depend>::fetch)), 0);
+        rb_define_method(c_version_metadata, "post_depend", RUBY_FUNC_CAST((&DependValue<
+                        &VersionMetadataDeps::post_depend>::fetch)), 0);
     }
 }
 

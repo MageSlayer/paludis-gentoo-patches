@@ -68,6 +68,12 @@ class Paludis
             assert_equal "test", vmd("1.0").keywords.gsub(%r/\s/, "")
             assert_equal "", vmd("1.0").iuse.gsub(%r/\s/, "")
         end
+
+        def test_deps
+            assert_kind_of AllDepAtom, vmd("1.0").build_depend
+            assert_kind_of AllDepAtom, vmd("1.0").run_depend
+            assert_kind_of AllDepAtom, vmd("1.0").post_depend
+        end
     end
 end
 
