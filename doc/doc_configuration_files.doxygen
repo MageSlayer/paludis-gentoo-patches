@@ -82,10 +82,14 @@ be considered, not just the best or last match.
 
 \section ConfigurationFilesKeywordsConf The keywords.conf File
 
-Which <code>KEYWORDS</code> to accept is controlled through
-<code>keywords.conf</code>. The format of a line is
-<code>atom keyword ...</code>. As with Portage, accepting
-<code>~arch</code> does <em>not</em> implicitly accept <code>arch</code>.
+Which <code>ARCH KEYWORDS</code> to accept is controlled by the 
+<code>keywords.conf</code> file. The format of a line is
+<code>atom keyword1 keywords2 ...</code>, where <code>atom</code> is a package
+depend atom or <code>*</code> for "all packages" and 
+<code>keyword1 keyword2 ...</code> is one or more arch keywords. As with Portage,
+accepting <code>~arch</code> does <em>not</em> 
+implicitly accept <code>arch</code>, however, if a package matches multiple lines, 
+<em>all</em> of these lines will be considered, not just the best or last match. 
 For example:
 
 \verbatim
@@ -93,16 +97,16 @@ For example:
 * x86
 
 # But some ~arch packages:
-dev-cpp/libebt x86 ~x86
-sys-apps/paludis x86 ~x86
-dev-util/subversion x86 ~x86
-app-admin/eselect x86 ~x86
-app-editors/vim x86 ~x86
-app-editors/vim-core x86 ~x86
+app-editors/vim ~x86
+app-editors/vim-core ~x86
 \endverbatim
 
-Note that if a package matches multiple lines, <em>all</em> of these lines will
-be considered, not just the best or last match.
+If <code>*</code> is not used, then every package that is to be installed will require
+an entry in <code>keywords.conf</code>. It is also generally assumed within the gentoo
+portage tree that if <code>~ARCH</code> is accepted for a package, then so is 
+<code>ARCH</code>; not doing so may result in all versions or the latest version of a 
+package being masked, as the package is stabilised.
+
 
 \section ConfigurationFilesPackage_MaskConf The package_mask.conf File
 
@@ -123,7 +127,7 @@ Packages can be unmasked through the use of the <code>package_unmask.conf</code>
 
 \verbatim
 # I need banshee 0.11.0
-media-sound/banshee
+=media-sound/banshee-0.11.0
 \endverbatim
 
 \section ConfigurationFilesLicensesConf The licenses.conf File
