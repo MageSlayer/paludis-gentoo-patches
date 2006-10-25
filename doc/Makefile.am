@@ -1,3 +1,5 @@
+SUBDIRS = examples .
+
 tagfiles = \
 	libstdc++.tag \
 	libwrapiter.tag

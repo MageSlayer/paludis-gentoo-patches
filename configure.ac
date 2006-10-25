@@ -645,6 +645,7 @@ AC_OUTPUT(
 	cran/Makefile
 	doc/Makefile
 	doc/doxygen.conf
+	doc/examples/Makefile
 	ebuild/Makefile
 	ebuild/digests/Makefile
 	ebuild/fetchers/Makefile

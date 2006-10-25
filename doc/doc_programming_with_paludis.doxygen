@@ -27,59 +27,13 @@ There are currently two APIs available:
 
 A basic C++ application will look something like:
 
-\code
-#include <paludis/paludis.hh>
-#include <paludis/environment/default/default_environment.hh>
-
-#include <iostream>
-#include <cstdlib>
-
-using std::cout;
-using std::cerr;
-using std::endl;
-
-int main(int, char *[])
-{
-    try
-    {
-        paludis::PackageDatabaseEntryCollection::ConstPointer packages(
-                paludis::DefaultEnvironment::get_instance()->package_database()->query(
-                    paludis::PackageDepAtom("app-editors/vim"), paludis::is_installed_only));
-
-        if (packages->empty())
-            cout << "Vim is not installed" << endl;
-        else
-            cout << "Vim " << packages->last()->version << " is installed" << endl;
-    }
-    catch (const paludis::Exception & e)
-    {
-        cerr << "Caught exception '" << e.message() << "' ("
-            << e.what() << ")" << endl;
-        return EXIT_FAILURE;
-    }
-
-    return EXIT_SUCCESS;
-}
-\endcode
+\include pwp_basic_cplusplus_app.cc
 
 Compile this using <code>g++ -Wall -lpaludis -lpaludisdefaultenvironment</code>.
 
 The same application written in Ruby will look something like:
 
-\verbatim
-#!/usr/bin/env ruby
-
-require 'Paludis'
-
-packages = Paludis::DefaultEnvironment::instance.package_database.query(
-    "app-editors/vim", Paludis::InstallState::InstalledOnly)
-
-if packages.empty?
-    puts "Vim is not installed"
-else
-    puts "Vim " + packages.last.version + " is installed"
-end
-\endverbatim
+\verbinclude pwp_basic_ruby_app.rb
 
 Notice how various Rubyisms (singleton styles, question mark methods, constants
 for enums) are used. The Ruby interface aims to be natural to Ruby programmers
@@ -265,5 +219,10 @@ Additional capabilities are available through optional interfaces. These can be 
 via members named paludis::Repository::mask_interface, paludis::Repository::sets_interface
 and so on -- these members will either be a pointer to the interface or a zero pointer.
 
+A full list of optional capabilities can be seen in the documentation for paludis::RepositoryCapabilities,
+from which paludis::Repository inherits.
+
+In Ruby, this works a bit differently. Members that return either a self reference or nil
+are available for each interface. They are named as their C++ equivalents.
 
 */
