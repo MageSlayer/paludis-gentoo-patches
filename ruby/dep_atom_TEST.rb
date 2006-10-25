@@ -22,7 +22,24 @@ require 'test/unit'
 require 'Paludis'
 
 class Paludis
-    class TestCase_VersionSpec < Test::Unit::TestCase
+    class TestCase_DepAtom < Test::Unit::TestCase
+        def test_create_error
+            assert_raise NoMethodError do
+                v = DepAtom.new
+            end
+            assert_raise NoMethodError do
+                v = StringDepAtom.new
+            end
+            assert_raise NoMethodError do
+                v = AnyDepAtom.new
+            end
+            assert_raise NoMethodError do
+                v = AllDepAtom.new
+            end
+        end
+    end
+
+    class TestCase_PackageDepAtom < Test::Unit::TestCase
         def test_create
             v = PackageDepAtom.new(">=foo/bar-1")
         end
@@ -34,13 +51,86 @@ class Paludis
             assert_raise PackageDepAtomError do
                 v = PackageDepAtom.new("=sys-apps/foo")
             end
-            assert_raise NoMethodError do
-                v = DepAtom.new
-            end
         end
 
         def test_to_s
             assert_equal ">=foo/bar-1", PackageDepAtom.new(">=foo/bar-1").to_s
+        end
+    end
+
+    class TestCase_PlainTextDepAtom < Test::Unit::TestCase
+        def test_create
+            v = PlainTextDepAtom.new("monkey")
+        end
+
+        def test_create_error
+            assert_raise TypeError do
+                v = PlainTextDepAtom.new(0)
+            end
+        end
+
+        def test_to_s
+            assert_equal "monkey", PlainTextDepAtom.new("monkey").to_s
+        end
+    end
+
+    class TestCase_BlockDepAtom < Test::Unit::TestCase
+        def test_create
+            v = BlockDepAtom.new(PackageDepAtom.new(">=foo/bar-1"))
+            w = BlockDepAtom.new("<=foo/bar-2")
+        end
+
+        def test_create_error
+            assert_raise TypeError do
+                v = BlockDepAtom.new(0)
+            end
+            assert_raise PackageDepAtomError do
+                v = BlockDepAtom.new("=foo/bar")
+            end
+        end
+
+        def test_blocked_atom
+            assert_equal "foo/bar", BlockDepAtom.new("foo/bar").blocked_atom.to_s
+            assert_equal "foo/baz", BlockDepAtom.new(PackageDepAtom.new("foo/baz")).blocked_atom.to_s
+        end
+    end
+
+    class TestCase_Composites < Test::Unit::TestCase
+        def test_composites
+            atom = PortageDepParser::parse("|| ( foo/bar foo/baz ) foo/monkey")
+            assert_kind_of CompositeDepAtom, atom
+            assert_kind_of AllDepAtom, atom
+
+            assert_equal 2, atom.to_a.length
+
+            atom.each_with_index do | a, i |
+                case i
+                when 0:
+                    assert_kind_of AnyDepAtom, a
+                    assert_equal 2, a.to_a.length
+                    a.each_with_index do | b, j |
+                        case j
+                        when 0:
+                            assert_kind_of PackageDepAtom, b
+                            assert_equal "foo/bar", b.to_s
+
+                        when 1:
+                            assert_kind_of PackageDepAtom, b
+                            assert_equal "foo/baz", b.to_s
+
+                        else
+                            throw "Too many items"
+                        end
+                    end
+
+                when 1:
+                    assert_kind_of PackageDepAtom, a
+                    assert_equal "foo/monkey", a.to_s
+
+                else
+                    throw "Too many items"
+                end
+            end
         end
     end
 end

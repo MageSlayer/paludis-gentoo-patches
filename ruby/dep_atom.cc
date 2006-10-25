@@ -29,29 +29,43 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_dep_atom;
+    static VALUE c_composite_dep_atom;
     static VALUE c_package_dep_atom;
+    static VALUE c_plain_text_dep_atom;
+    static VALUE c_all_dep_atom;
+    static VALUE c_any_dep_atom;
+    static VALUE c_use_dep_atom;
+    static VALUE c_block_dep_atom;
+    static VALUE c_string_dep_atom;
 
     VALUE
-    dep_atom_init(VALUE self)
+    dep_atom_init_0(VALUE self)
     {
         return self;
     }
 
     VALUE
-    package_dep_atom_init(VALUE self, VALUE)
+    dep_atom_init_1(VALUE self, VALUE)
     {
         return self;
     }
 
     VALUE
-    package_dep_atom_new(VALUE self, VALUE s)
+    dep_atom_init_2(VALUE self, VALUE, VALUE)
     {
-        PackageDepAtom::ConstPointer * ptr(0);
+        return self;
+    }
+
+    VALUE
+    use_dep_atom_new(VALUE self, VALUE pkg, VALUE inverse)
+    {
+        UseDepAtom::ConstPointer * ptr(0);
         try
         {
-            ptr = new PackageDepAtom::ConstPointer(new PackageDepAtom(STR2CSTR(s)));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<PackageDepAtom::ConstPointer>::free, ptr));
-            rb_obj_call_init(tdata, 1, &s);
+            ptr = new UseDepAtom::ConstPointer(new UseDepAtom(
+                        UseFlagName(STR2CSTR(pkg)), Qfalse != inverse && Qnil != inverse));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<UseDepAtom::ConstPointer>::free, ptr));
+            rb_obj_call_init(tdata, 2, &pkg);
             return tdata;
         }
         catch (const std::exception & e)
@@ -61,15 +75,101 @@ namespace
         }
     }
 
+    VALUE
+    block_dep_atom_new(VALUE self, VALUE atom)
+    {
+        BlockDepAtom::ConstPointer * ptr(0);
+        try
+        {
+            PackageDepAtom::ConstPointer pkg(value_to_package_dep_atom(atom));
+            ptr = new BlockDepAtom::ConstPointer(new BlockDepAtom(pkg));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<BlockDepAtom::ConstPointer>::free, ptr));
+            rb_obj_call_init(tdata, 1, &atom);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    block_dep_atom_blocked_atom(VALUE self)
+    {
+        BlockDepAtom::ConstPointer * p;
+        Data_Get_Struct(self, BlockDepAtom::ConstPointer, p);
+        return dep_atom_to_value((*p)->blocked_atom());
+    }
+
+    template <typename A_>
+    struct DepAtomThings
+    {
+        static VALUE
+        dep_atom_new_1(VALUE self, VALUE s)
+        {
+            typename A_::ConstPointer * ptr(0);
+            try
+            {
+                ptr = new typename A_::ConstPointer(new A_(STR2CSTR(s)));
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<typename A_::ConstPointer>::free, ptr));
+                rb_obj_call_init(tdata, 1, &s);
+                return tdata;
+            }
+            catch (const std::exception & e)
+            {
+                delete ptr;
+                exception_to_ruby_exception(e);
+            }
+        }
+    };
+
+    VALUE
+    composite_dep_atom_each(VALUE self)
+    {
+        CompositeDepAtom::Pointer * m_ptr;
+        Data_Get_Struct(self, CompositeDepAtom::Pointer, m_ptr);
+        for (CompositeDepAtom::Iterator i((*m_ptr)->begin()), i_end((*m_ptr)->end()) ; i != i_end ; ++i)
+            rb_yield(dep_atom_to_value(*i));
+        return self;
+    }
+
     void do_register_dep_atom()
     {
         c_dep_atom = rb_define_class_under(master_class(), "DepAtom", rb_cObject);
         rb_funcall(c_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
 
-        c_package_dep_atom = rb_define_class_under(master_class(), "PackageDepAtom", c_dep_atom);
-        rb_define_singleton_method(c_package_dep_atom, "new", RUBY_FUNC_CAST(&package_dep_atom_new), 1);
-        rb_define_method(c_package_dep_atom, "initialize", RUBY_FUNC_CAST(&package_dep_atom_init), 1);
+        c_composite_dep_atom = rb_define_class_under(master_class(), "CompositeDepAtom", c_dep_atom);
+        rb_funcall(c_composite_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_composite_dep_atom, "each", RUBY_FUNC_CAST(&composite_dep_atom_each), 0);
+        rb_include_module(c_composite_dep_atom, rb_mEnumerable);
+
+        c_all_dep_atom = rb_define_class_under(master_class(), "AllDepAtom", c_composite_dep_atom);
+        rb_funcall(c_all_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+
+        c_any_dep_atom = rb_define_class_under(master_class(), "AnyDepAtom", c_composite_dep_atom);
+        rb_funcall(c_any_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+
+        c_use_dep_atom = rb_define_class_under(master_class(), "UseDepAtom", c_composite_dep_atom);
+        rb_funcall(c_use_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+
+        c_string_dep_atom = rb_define_class_under(master_class(), "StringDepAtom", c_dep_atom);
+        rb_funcall(c_string_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+
+        c_package_dep_atom = rb_define_class_under(master_class(), "PackageDepAtom", c_string_dep_atom);
+        rb_define_singleton_method(c_package_dep_atom, "new", RUBY_FUNC_CAST(&DepAtomThings<PackageDepAtom>::dep_atom_new_1), 1);
+        rb_define_method(c_package_dep_atom, "initialize", RUBY_FUNC_CAST(&dep_atom_init_1), 1);
         rb_define_method(c_package_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<PackageDepAtom::ConstPointer>::to_s_via_ptr), 0);
+
+        c_plain_text_dep_atom = rb_define_class_under(master_class(), "PlainTextDepAtom", c_string_dep_atom);
+        rb_define_singleton_method(c_plain_text_dep_atom, "new", RUBY_FUNC_CAST(&DepAtomThings<PlainTextDepAtom>::dep_atom_new_1), 1);
+        rb_define_method(c_plain_text_dep_atom, "initialize", RUBY_FUNC_CAST(&dep_atom_init_1), 1);
+        rb_define_method(c_plain_text_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<PlainTextDepAtom::ConstPointer>::to_s_via_ptr), 0);
+
+        c_block_dep_atom = rb_define_class_under(master_class(), "BlockDepAtom", c_string_dep_atom);
+        rb_define_singleton_method(c_block_dep_atom, "new", RUBY_FUNC_CAST(&block_dep_atom_new), 1);
+        rb_define_method(c_block_dep_atom, "initialize", RUBY_FUNC_CAST(&dep_atom_init_1), 1);
+        rb_define_method(c_block_dep_atom, "blocked_atom", RUBY_FUNC_CAST(&block_dep_atom_blocked_atom), 0);
     }
 }
 
@@ -89,11 +189,60 @@ paludis::ruby::value_to_package_dep_atom(VALUE v)
 VALUE
 paludis::ruby::dep_atom_to_value(DepAtom::ConstPointer m)
 {
+    struct V :
+        DepAtomVisitorTypes::ConstVisitor
+    {
+        VALUE value;
+        DepAtom::ConstPointer mm;
+
+        V(DepAtom::ConstPointer _m) :
+            mm(_m)
+        {
+        }
+
+        void visit(const AllDepAtom *)
+        {
+            value = Data_Wrap_Struct(c_all_dep_atom, 0, &Common<AllDepAtom::ConstPointer>::free,
+                    new AllDepAtom::ConstPointer(mm));
+        }
+
+        void visit(const AnyDepAtom *)
+        {
+            value = Data_Wrap_Struct(c_any_dep_atom, 0, &Common<AnyDepAtom::ConstPointer>::free,
+                    new AnyDepAtom::ConstPointer(mm));
+        }
+
+        void visit(const UseDepAtom *)
+        {
+            value = Data_Wrap_Struct(c_use_dep_atom, 0, &Common<UseDepAtom::ConstPointer>::free,
+                    new UseDepAtom::ConstPointer(mm));
+        }
+
+        void visit(const PlainTextDepAtom *)
+        {
+            value = Data_Wrap_Struct(c_plain_text_dep_atom, 0, &Common<PlainTextDepAtom::ConstPointer>::free,
+                    new PlainTextDepAtom::ConstPointer(mm));
+        }
+
+        void visit(const PackageDepAtom *)
+        {
+            value = Data_Wrap_Struct(c_package_dep_atom, 0, &Common<PackageDepAtom::ConstPointer>::free,
+                    new PackageDepAtom::ConstPointer(mm));
+        }
+
+        void visit(const BlockDepAtom *)
+        {
+            value = Data_Wrap_Struct(c_block_dep_atom, 0, &Common<BlockDepAtom::ConstPointer>::free,
+                    new BlockDepAtom::ConstPointer(mm));
+        }
+    };
+
     DepAtom::ConstPointer * m_ptr(0);
     try
     {
-        m_ptr = new DepAtom::ConstPointer(m);
-        return Data_Wrap_Struct(c_dep_atom, 0, &Common<DepAtom::ConstPointer>::free, m_ptr);
+        V v(m);
+        m->accept(&v);
+        return v.value;
     }
     catch (const std::exception & e)
     {

@@ -462,6 +462,13 @@ namespace paludis
     };
 
     /**
+     * A PlainTextDepAtom can be written to an ostream.
+     *
+     * \ingroup grpdepatoms
+     */
+    std::ostream & operator<< (std::ostream &, const PlainTextDepAtom &);
+
+    /**
      * Thrown if an invalid package dep atom specification is encountered.
      *
      * \ingroup grpexceptions

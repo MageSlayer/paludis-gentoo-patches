@@ -267,6 +267,13 @@ PackageDepAtom::~PackageDepAtom()
 }
 
 std::ostream &
+paludis::operator<< (std::ostream & s, const PlainTextDepAtom & a)
+{
+    s << a.text();
+    return s;
+}
+
+std::ostream &
 paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
 {
     if (a.version_spec_ptr())
