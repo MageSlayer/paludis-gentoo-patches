@@ -41,6 +41,10 @@ namespace
     static VALUE c_master_class;
     static VALUE c_name_error;
     static VALUE c_package_dep_atom_error;
+    static VALUE c_package_database_error;
+    static VALUE c_package_database_lookup_error;
+    static VALUE c_no_such_package_error;
+    static VALUE c_no_such_repository_error;
 }
 
 RegisterRubyClass::RegisterRubyClass() :
@@ -74,6 +78,14 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_name_error, dynamic_cast<const paludis::NameError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::PackageDepAtomError *>(&ee))
         rb_raise(c_package_dep_atom_error, dynamic_cast<const paludis::PackageDepAtomError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee))
+        rb_raise(c_no_such_repository_error, dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::NoSuchPackageError *>(&ee))
+        rb_raise(c_no_such_package_error, dynamic_cast<const paludis::NoSuchPackageError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::PackageDatabaseLookupError *>(&ee))
+        rb_raise(c_package_database_lookup_error, dynamic_cast<const paludis::PackageDatabaseLookupError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::PackageDatabaseError *>(&ee))
+        rb_raise(c_package_database_error, dynamic_cast<const paludis::PackageDatabaseError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::Exception *>(&ee))
         rb_raise(rb_eRuntimeError, "Caught paludis::Exception: %s (%s)",
                 dynamic_cast<const paludis::Exception *>(&ee)->message().c_str(), ee.what());
@@ -118,6 +130,10 @@ extern "C"
         c_master_class = rb_define_class("Paludis", rb_cObject);
         c_name_error = rb_define_class_under(c_master_class, "NameError", rb_eRuntimeError);
         c_package_dep_atom_error = rb_define_class_under(c_master_class, "PackageDepAtomError", rb_eRuntimeError);
+        c_package_database_error = rb_define_class_under(c_master_class, "PackageDatabaseError", rb_eRuntimeError);
+        c_package_database_lookup_error = rb_define_class_under(c_master_class, "PackageDatabaseLookupError", c_package_database_error);
+        c_no_such_package_error = rb_define_class_under(c_master_class, "NoSuchPackageError", c_package_database_lookup_error);
+        c_no_such_repository_error = rb_define_class_under(c_master_class, "NoSuchRepositoryError", c_package_database_lookup_error);
 
         rb_define_const(c_master_class, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
                         + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));

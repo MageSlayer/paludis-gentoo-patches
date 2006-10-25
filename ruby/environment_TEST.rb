@@ -215,7 +215,7 @@ class Paludis
         def test_mask_reasons_no_such_repo
             p = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "nosuchrepo")
 
-            assert_raise RuntimeError do
+            assert_raise Paludis::NoSuchRepositoryError do
                 env.mask_reasons p
             end
         end

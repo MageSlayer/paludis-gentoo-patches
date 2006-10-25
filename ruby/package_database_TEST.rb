@@ -106,7 +106,7 @@ class Paludis
         def test_fetch_repository
             assert_equal "testrepo", db.fetch_repository("testrepo").name
 
-            assert_raise RuntimeError do
+            assert_raise Paludis::NoSuchRepositoryError do
                 db.fetch_repository("barrepo")
             end
         end
