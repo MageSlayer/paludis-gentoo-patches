@@ -42,6 +42,48 @@ class Paludis
         def test_to_s
             assert_equal "foo/bar-10::moo", PackageDatabaseEntry.new("foo/bar", "10", "moo").to_s
         end
+
+        def test_name
+            pde = PackageDatabaseEntry.new('foo/bar', VersionSpec.new('1.0-r1'), 'moo')
+            assert_instance_of String, pde.name
+            assert_equal pde.name ,'foo/bar'
+        end
+
+        def test_name_set
+            pde = PackageDatabaseEntry.new('foo/bar', VersionSpec.new('1.0-r1'), 'moo')
+            pde.name='foo/baz'
+            assert_equal pde.name, 'foo/baz'
+        end
+
+        def test_version
+            pde = PackageDatabaseEntry.new('foo/bar', VersionSpec.new('1.0-r1'), 'moo')
+            assert_instance_of VersionSpec, pde.version
+            assert_equal pde.version ,VersionSpec.new('1.0-r1')
+            pde = PackageDatabaseEntry.new('foo/bar', '1.0-r1', 'moo')
+            assert_instance_of VersionSpec, pde.version
+            assert_equal pde.version ,VersionSpec.new('1.0-r1')
+        end
+
+        def test_version_set
+            pde = PackageDatabaseEntry.new('foo/bar', VersionSpec.new('1.0-r1'), 'moo')
+            pde.version = VersionSpec.new('7')
+            assert_equal pde.version, VersionSpec.new('7')
+            pde.version = '7.1'
+            assert_equal pde.version, VersionSpec.new('7.1')
+        end
+
+        def test_repository
+            pde = PackageDatabaseEntry.new('foo/bar', VersionSpec.new('1.0-r1'), 'moo')
+            assert_instance_of String, pde.repository
+            assert_equal pde.repository ,'moo'
+        end
+        
+        def test_repository_set
+            pde = PackageDatabaseEntry.new('foo/bar', VersionSpec.new('1.0-r1'), 'moo')
+            pde.repository='testrepo'
+            assert_equal pde.repository, 'testrepo'
+        end
+
     end
 end
 

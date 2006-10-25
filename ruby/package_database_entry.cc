@@ -59,6 +59,65 @@ namespace
         }
     }
 
+    VALUE
+    package_database_entry_version(VALUE self)
+    {
+        try
+        {
+            PackageDatabaseEntry * p;
+            Data_Get_Struct(self, PackageDatabaseEntry, p);
+            return version_spec_to_value(p->version);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    package_database_entry_version_set(VALUE self, VALUE version)
+    {
+        try
+        {
+            PackageDatabaseEntry * p;
+            Data_Get_Struct(self, PackageDatabaseEntry, p);
+            p->version = value_to_version_spec(version);
+            return self;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    template <typename T_, T_ PackageDatabaseEntry::* m_>
+    struct EntryValue
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            PackageDatabaseEntry * p;
+            Data_Get_Struct(self, PackageDatabaseEntry, p);
+            return rb_str_new2(stringify(p->*m_).c_str());
+        } 
+
+        static VALUE
+        set(VALUE self, VALUE str)
+        {
+            try 
+            {
+                PackageDatabaseEntry * p;
+                Data_Get_Struct(self, PackageDatabaseEntry, p);
+                p->*m_ =  T_ ((STR2CSTR(str)));
+                return self;
+            }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
+        } 
+    };
+    
     void do_register_package_database_entry()
     {
         c_package_database_entry = rb_define_class_under(master_class(), "PackageDatabaseEntry", rb_cObject);
@@ -67,6 +126,12 @@ namespace
         rb_define_method(c_package_database_entry, "<=>", RUBY_FUNC_CAST(&Common<PackageDatabaseEntry>::compare), 1);
         rb_include_module(c_package_database_entry, rb_mComparable);
         rb_define_method(c_package_database_entry, "to_s", RUBY_FUNC_CAST(&Common<PackageDatabaseEntry>::to_s), 0);
+        rb_define_method(c_package_database_entry, "name", RUBY_FUNC_CAST((&EntryValue<QualifiedPackageName, &PackageDatabaseEntry::name>::fetch)), 0);
+        rb_define_method(c_package_database_entry, "name=", RUBY_FUNC_CAST((&EntryValue<QualifiedPackageName, &PackageDatabaseEntry::name>::set)), 1);
+        rb_define_method(c_package_database_entry, "version", RUBY_FUNC_CAST(&package_database_entry_version), 0);
+        rb_define_method(c_package_database_entry, "version=", RUBY_FUNC_CAST(&package_database_entry_version_set), 1);
+        rb_define_method(c_package_database_entry, "repository", RUBY_FUNC_CAST((&EntryValue<RepositoryName, &PackageDatabaseEntry::repository>::fetch)), 0);
+        rb_define_method(c_package_database_entry, "repository=", RUBY_FUNC_CAST((&EntryValue<RepositoryName, &PackageDatabaseEntry::repository>::set)), 1);
     }
 }
 
