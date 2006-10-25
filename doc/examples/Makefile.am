@@ -14,7 +14,7 @@ noinst_PROGRAMS = \
 noinst_SCRIPTS = \
 	pwp_basic_ruby_app.rb
 
-EXTRA_DIST = $(check_PROGRAMS) $(check_SCRIPTS)
+EXTRA_DIST = $(noinst_PROGRAMS) $(noinst_SCRIPTS)
 
 pwp_basic_cplusplus_app_SOURCES = pwp_basic_cplusplus_app.cc
 pwp_basic_cplusplus_app_LDFLAGS = \
