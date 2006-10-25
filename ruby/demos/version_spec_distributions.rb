@@ -5,6 +5,7 @@ require 'Paludis'
 require 'getoptlong'
 
 Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
+Paludis::Log.instance.program_name = $0
 
 class Distribution
     def initialize

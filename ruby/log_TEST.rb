@@ -34,6 +34,18 @@ class Paludis
                 x = Log.new()
             end
         end
+
+        def test_set_program_name
+            assert_nothing_raised do
+                Log.instance.program_name = 'TestProg'
+            end
+        end
+
+        def test_no_set_program_name
+            assert_raise TypeError do
+                Log.instance.program_name = 7
+            end
+        end
     end
 
     class TestCase_LogLogLevel < Test::Unit::TestCase

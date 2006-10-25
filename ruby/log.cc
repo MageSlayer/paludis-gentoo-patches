@@ -45,6 +45,13 @@ namespace
     }
 
     VALUE
+    log_set_program_name(VALUE self, VALUE name)
+    {
+        Log::get_instance()->set_program_name(stringify(STR2CSTR(name)));
+        return self;
+    }
+
+    VALUE
     log_message(VALUE self, VALUE log_level, VALUE message)
     {
         Log::get_instance()->message(static_cast<LogLevel>(NUM2INT(log_level)), lc_no_context,
@@ -60,6 +67,7 @@ namespace
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_log);
         rb_define_method(c_log, "log_level", RUBY_FUNC_CAST(&log_log_level), 0);
         rb_define_method(c_log, "log_level=", RUBY_FUNC_CAST(&log_log_level_set), 1);
+        rb_define_method(c_log, "program_name=", RUBY_FUNC_CAST(&log_set_program_name), 1);
         rb_define_method(c_log, "message", RUBY_FUNC_CAST(&log_message), 2);
 
         c_log_level = rb_define_class_under(master_class(), "LogLevel", rb_cObject);
