@@ -28,6 +28,8 @@ IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
 RESTRICT="monkey"
+DEPEND="foo/bar"
+RDEPEND=""
 END
 
 cd ..

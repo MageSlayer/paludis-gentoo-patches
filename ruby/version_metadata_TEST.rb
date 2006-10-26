@@ -73,6 +73,14 @@ class Paludis
             assert_kind_of AllDepAtom, vmd("1.0").build_depend
             assert_kind_of AllDepAtom, vmd("1.0").run_depend
             assert_kind_of AllDepAtom, vmd("1.0").post_depend
+
+            assert_equal 1, vmd("1.0").build_depend.to_a.length
+            assert vmd("1.0").run_depend.to_a.empty?
+            assert vmd("1.0").post_depend.to_a.empty?
+
+            assert_equal "foo/bar", vmd("1.0").build_depend_string.gsub(/\s/, "")
+            assert_equal "", vmd("1.0").run_depend_string.gsub(/\s/, "")
+            assert_equal "", vmd("1.0").post_depend_string.gsub(/\s/, "")
         end
     end
 end

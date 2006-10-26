@@ -107,6 +107,18 @@ namespace
         }
     };
 
+    template <std::string VersionMetadataDeps::* m_>
+    struct DependValueString
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            VersionMetadata::ConstPointer * self_ptr;
+            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            return rb_str_new2(((&(*self_ptr)->deps)->*m_).c_str());
+        }
+    };
+
     void do_register_version_metadata()
     {
         c_version_metadata = rb_define_class_under(master_class(), "VersionMetadata", rb_cObject);
@@ -147,6 +159,13 @@ namespace
                         &VersionMetadataDeps::run_depend>::fetch)), 0);
         rb_define_method(c_version_metadata, "post_depend", RUBY_FUNC_CAST((&DependValue<
                         &VersionMetadataDeps::post_depend>::fetch)), 0);
+
+        rb_define_method(c_version_metadata, "build_depend_string", RUBY_FUNC_CAST((&DependValueString<
+                        &VersionMetadataDeps::build_depend_string>::fetch)), 0);
+        rb_define_method(c_version_metadata, "run_depend_string", RUBY_FUNC_CAST((&DependValueString<
+                        &VersionMetadataDeps::run_depend_string>::fetch)), 0);
+        rb_define_method(c_version_metadata, "post_depend_string", RUBY_FUNC_CAST((&DependValueString<
+                        &VersionMetadataDeps::post_depend_string>::fetch)), 0);
     }
 }
 
