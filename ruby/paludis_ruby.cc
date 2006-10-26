@@ -46,6 +46,8 @@ namespace
     static VALUE c_no_such_package_error;
     static VALUE c_no_such_repository_error;
     static VALUE c_dep_string_error;
+    static VALUE c_dep_string_parse_error;
+    static VALUE c_dep_string_nesting_error;
 }
 
 RegisterRubyClass::RegisterRubyClass() :
@@ -87,6 +89,10 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_package_database_lookup_error, dynamic_cast<const paludis::PackageDatabaseLookupError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::PackageDatabaseError *>(&ee))
         rb_raise(c_package_database_error, dynamic_cast<const paludis::PackageDatabaseError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::DepStringNestingError *>(&ee))
+        rb_raise(c_dep_string_nesting_error, dynamic_cast<const paludis::DepStringNestingError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::DepStringParseError *>(&ee))
+        rb_raise(c_dep_string_parse_error, dynamic_cast<const paludis::DepStringParseError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::DepStringError *>(&ee))
         rb_raise(c_dep_string_error, dynamic_cast<const paludis::DepStringError *>(&ee)->message().c_str());
 
@@ -139,6 +145,8 @@ extern "C"
         c_no_such_package_error = rb_define_class_under(c_master_class, "NoSuchPackageError", c_package_database_lookup_error);
         c_no_such_repository_error = rb_define_class_under(c_master_class, "NoSuchRepositoryError", c_package_database_lookup_error);
         c_dep_string_error = rb_define_class_under(c_master_class, "DepStringError", rb_eRuntimeError);
+        c_dep_string_parse_error = rb_define_class_under(c_master_class, "DepStringParseError", c_dep_string_error);
+        c_dep_string_nesting_error = rb_define_class_under(c_master_class, "DepStringNestingError", c_dep_string_parse_error);
 
         rb_define_const(c_master_class, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
                         + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));

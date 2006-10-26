@@ -56,17 +56,23 @@ class Paludis
             assert_equal "foo/monkey", atom.to_a[0].to_s
             assert_kind_of PackageDepAtom, atom.to_a[0]
 
-            assert_raise DepStringError do
+            assert_raise DepStringParseError do
                 PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PackageDepAtom, false)
             end
 
             PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PackageDepAtom, true)
 
-            assert_raise DepStringError do
+            assert_raise DepStringParseError do
                 PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PlainTextDepAtom, false)
             end
 
             PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PlainTextDepAtom, true)
+        end
+        
+        def test_dep_string_nesting_error
+            assert_raise DepStringNestingError do
+                PortageDepParser::parse("|| ( foo/var ", PortageDepParser::PackageDepAtom,true)
+            end
         end
     end
 end
