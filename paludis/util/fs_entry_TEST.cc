@@ -186,11 +186,13 @@ namespace test_cases
             FSEntry a("fs_entry_TEST_dir");
             FSEntry b("fs_entry_TEST_dir/no_perms");
             FSEntry c("fs_entry_TEST_dir/no_such_file");
+            FSEntry d("fs_entry_TEST_dir/dir_a/dir_in_a");
 
             TEST_CHECK(a.ctime() <= std::time(NULL));
-            TEST_CHECK((a.mtime() >= a.ctime()) && (a.mtime() <= std::time(NULL)));
             TEST_CHECK(b.ctime() <= std::time(NULL));
             TEST_CHECK((b.mtime() >= b.ctime()) && (b.mtime() <= std::time(NULL)));
+            TEST_CHECK(d.ctime() <= std::time(NULL));
+            TEST_CHECK((d.mtime() >= d.ctime()) && (d.mtime() <= std::time(NULL)));
 
             TEST_CHECK_THROWS(c.ctime(), FSError);
             TEST_CHECK_THROWS(c.mtime(), FSError);
