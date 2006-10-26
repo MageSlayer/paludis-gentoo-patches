@@ -234,14 +234,14 @@ namespace paludis
         public Visitable<GeneralSetDepTag, DepTagVisitorTypes>
     {
         private:
-            const std::string _id;
+            const SetName _id;
             const std::string _source;
 
         public:
             /**
              * Constructor.
              */
-            GeneralSetDepTag(const std::string & id, const std::string & source);
+            GeneralSetDepTag(const SetName & id, const std::string & source);
 
             virtual std::string short_text() const;
 

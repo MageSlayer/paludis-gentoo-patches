@@ -185,7 +185,7 @@ namespace
     {
         private:
             Implementation<SetOverview> * const _imp;
-            std::string _set;
+            SetName _set;
 
         public:
             Populate(Implementation<SetOverview> * const imp, const std::string & set) :
@@ -206,7 +206,7 @@ namespace
 
         DepAtom::ConstPointer set_atom(DefaultEnvironment::get_instance()->package_set(_set));
         Gtk::TreeModel::Row top_row = *model->append();
-        top_row[_imp->columns.col_atom] = _set;
+        top_row[_imp->columns.col_atom] = stringify(_set);
         TreeFromDepAtom v(model, &_imp->columns, &top_row);
         set_atom->accept(&v);
 

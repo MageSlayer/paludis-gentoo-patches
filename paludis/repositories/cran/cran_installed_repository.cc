@@ -448,12 +448,12 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
 }
 
 DepAtom::Pointer
-CRANInstalledRepository::do_package_set(const std::string & s) const
+CRANInstalledRepository::do_package_set(const SetName & s) const
 {
-    Context context("When fetching package set '" + s + "' from '" +
+    Context context("When fetching package set '" + stringify(s) + "' from '" +
             stringify(name()) + "':");
 
-    if ("everything" == s)
+    if ("everything" == s.data())
     {
         AllDepAtom::Pointer result(new AllDepAtom);
         if (! _imp->entries_valid)
@@ -468,7 +468,7 @@ CRANInstalledRepository::do_package_set(const std::string & s) const
 
         return result;
     }
-    else if ("world" == s)
+    else if ("world" == s.data())
     {
         AllDepAtom::Pointer result(new AllDepAtom);
 
@@ -499,8 +499,8 @@ CRANInstalledRepository::sets_list() const
     Context context("While generating the list of sets:");
 
     SetsCollection::Pointer result(new SetsCollection::Concrete);
-    result->insert("everything");
-    result->insert("world");
+    result->insert(SetName("everything"));
+    result->insert(SetName("world"));
     return result;
 }
 

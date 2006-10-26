@@ -433,16 +433,16 @@ DefaultEnvironment::hook_dirs() const
 }
 
 CompositeDepAtom::Pointer
-DefaultEnvironment::local_package_set(const std::string & s) const
+DefaultEnvironment::local_package_set(const SetName & s) const
 {
-    Context context("When looking for package set '" + s + "' in default environment:");
+    Context context("When looking for package set '" + stringify(s) + "' in default environment:");
 
-    FSEntry ff(FSEntry(DefaultConfig::get_instance()->config_dir()) / "sets" / (s + ".conf"));
+    FSEntry ff(FSEntry(DefaultConfig::get_instance()->config_dir()) / "sets" / (stringify(s) + ".conf"));
     if (ff.exists())
     {
         LineConfigFile f(ff);
         AllDepAtom::Pointer result(new AllDepAtom);
-        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s, s + ".conf"));
+        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s, stringify(s) + ".conf"));
 
         for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)

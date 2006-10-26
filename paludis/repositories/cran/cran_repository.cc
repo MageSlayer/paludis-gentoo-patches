@@ -572,9 +572,9 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
 }
 
 DepAtom::Pointer
-CRANRepository::do_package_set(const std::string & s) const
+CRANRepository::do_package_set(const SetName & s) const
 {
-    if ("base" == s)
+    if ("base" == s.data())
     {
         /**
          * \todo Implement system as all package which are installed
@@ -592,7 +592,7 @@ CRANRepository::sets_list() const
     Context context("While generating the list of sets:");
 
     SetsCollection::Pointer result(new SetsCollection::Concrete);
-    result->insert("base");
+    result->insert(SetName("base"));
     return result;
 }
 

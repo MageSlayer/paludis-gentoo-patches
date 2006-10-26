@@ -309,9 +309,15 @@ void do_one_query(
     DepAtom::Pointer set(0);
     if (std::string::npos == q.find('/'))
     {
-        if (0 == ((set = env->package_set(q))))
-            atom.assign(new PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
-                            PackageNamePart(q))));
+        try
+        {
+            if (0 == ((set = env->package_set(SetName(q)))))
+                atom.assign(new PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
+                                PackageNamePart(q))));
+        }
+        catch (const SetNameError &)
+        {
+        }
     }
     else
         atom.assign(new PackageDepAtom(q));

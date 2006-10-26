@@ -77,20 +77,20 @@ PortageRepositorySets::~PortageRepositorySets()
 
 
 DepAtom::Pointer
-PortageRepositorySets::package_set(const std::string & s) const
+PortageRepositorySets::package_set(const SetName & s) const
 {
-    if ("system" == s)
+    if ("system" == s.data())
         throw InternalError(PALUDIS_HERE, "system set should've been handled by PortageRepository");
-    else if ("security" == s)
+    else if ("security" == s.data())
         return security_set(false);
-    else if ("insecurity" == s)
+    else if ("insecurity" == s.data())
         return security_set(true);
-    else if ((_imp->params.setsdir / (s + ".conf")).exists())
+    else if ((_imp->params.setsdir / (stringify(s) + ".conf")).exists())
     {
         GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s, stringify(_imp->portage_repository->name())));
 
-        FSEntry ff(_imp->params.setsdir / (s + ".conf"));
-        Context context("When loading package set '" + s + "' from '" + stringify(ff) + "':");
+        FSEntry ff(_imp->params.setsdir / (stringify(s) + ".conf"));
+        Context context("When loading package set '" + stringify(s) + "' from '" + stringify(ff) + "':");
 
         AllDepAtom::Pointer result(new AllDepAtom);
         LineConfigFile f(ff);
@@ -149,14 +149,10 @@ PortageRepositorySets::sets_list() const
     Context context("While generating the list of sets:");
 
     SetsCollection::Pointer result(new SetsCollection::Concrete);
-    result->insert("insecurity");
-    result->insert("security");
-    result->insert("system");
+    result->insert(SetName("insecurity"));
+    result->insert(SetName("security"));
+    result->insert(SetName("system"));
 
-    /*
-     * TODO: get rid of unnecessary copying and just put this in a for loop
-     * (need to read some doxygen pages on FSEntry first)
-     */
     try
     {
         std::list<FSEntry> repo_sets;
@@ -168,7 +164,16 @@ PortageRepositorySets::sets_list() const
             f_end(repo_sets.end());
 
         for ( ; f != f_end ; ++f)
-            result->insert(stringify(*f));
+            try
+            {
+                result->insert(SetName(stringify(*f)));
+            }
+            catch (const NameError & e)
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Skipping set '"
+                        + stringify(*f) + "' due to exception '" + stringify(e.message()) + "' ("
+                        + stringify(e.what()) + ")");
+            }
     }
     catch (const paludis::DirOpenError & e)
     {

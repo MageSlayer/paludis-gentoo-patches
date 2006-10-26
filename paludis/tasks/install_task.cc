@@ -86,19 +86,28 @@ InstallTask::add_target(const std::string & target)
 
     DepAtom::Pointer s(0);
 
-    if ((target != "insecurity") && ((s = ((_imp->env->package_set(target))))))
+    bool done(false);
+    try
     {
-        if (_imp->had_set_targets)
-            throw MultipleSetTargetsSpecified();
+        if ((target != "insecurity") && ((s = ((_imp->env->package_set(SetName(target)))))))
+        {
+            if (_imp->had_set_targets)
+                throw MultipleSetTargetsSpecified();
 
-        if (_imp->had_package_targets)
-            throw HadBothPackageAndSetTargets();
+            if (_imp->had_package_targets)
+                throw HadBothPackageAndSetTargets();
 
-        _imp->had_set_targets = true;
-        _imp->dep_list.options.target_type = dl_target_set;
-        _imp->targets->add_child(s);
+            _imp->had_set_targets = true;
+            _imp->dep_list.options.target_type = dl_target_set;
+            _imp->targets->add_child(s);
+            done = true;
+        }
     }
-    else
+    catch (const SetNameError &)
+    {
+    }
+
+    if (! done)
     {
         if (_imp->had_set_targets)
             throw HadBothPackageAndSetTargets();

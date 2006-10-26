@@ -149,7 +149,7 @@ namespace paludis
                     const FSEntryCollection & dirs) :
                 env(e),
                 system_packages(new AllDepAtom),
-                system_tag(new GeneralSetDepTag("system", stringify(name)))
+                system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
             {
                 for (FSEntryCollection::Iterator d(dirs.begin()), d_end(dirs.end()) ;
                         d != d_end ; ++d)

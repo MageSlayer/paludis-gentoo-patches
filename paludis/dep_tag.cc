@@ -163,7 +163,7 @@ GLSADepTag::glsa_title() const
     return _glsa_title;
 }
 
-GeneralSetDepTag::GeneralSetDepTag(const std::string & id, const std::string & r) :
+GeneralSetDepTag::GeneralSetDepTag(const SetName & id, const std::string & r) :
     _id(id),
     _source(r)
 {
@@ -172,7 +172,7 @@ GeneralSetDepTag::GeneralSetDepTag(const std::string & id, const std::string & r
 std::string
 GeneralSetDepTag::short_text() const
 {
-    return _id;
+    return stringify(_id);
 }
 
 std::string

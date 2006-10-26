@@ -569,7 +569,7 @@ namespace paludis
     /**
      * Contains the names of all the sets provided by the repository.
      */
-    typedef SortedCollection<std::string> SetsCollection;
+    typedef SortedCollection<SetName> SetsCollection;
 
     /**
      * Interface for package sets for repositories.
@@ -584,13 +584,13 @@ namespace paludis
             /**
              * Override in descendents: package list.
              */
-            virtual DepAtom::Pointer do_package_set(const std::string & id) const = 0;
+            virtual DepAtom::Pointer do_package_set(const SetName & id) const = 0;
 
         public:
             /**
              * Fetch a package set.
              */
-            virtual DepAtom::Pointer package_set(const std::string & s) const
+            DepAtom::Pointer package_set(const SetName & s) const
             {
                 return do_package_set(s);
             }

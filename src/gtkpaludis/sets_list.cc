@@ -59,9 +59,9 @@ namespace paludis
         {
         }
 
-        void add_sets(const std::set<std::string> & c)
+        void add_sets(const std::set<SetName> & c)
         {
-            for (std::set<std::string>::const_iterator n(c.begin()), n_end(c.end()) ; n != n_end ; ++n)
+            for (std::set<SetName>::const_iterator n(c.begin()), n_end(c.end()) ; n != n_end ; ++n)
             {
                 Gtk::TreeModel::Row row = *(model->append());
                 row[columns.col_set] = stringify(*n);
@@ -90,7 +90,7 @@ namespace
     void
     Populate::operator() ()
     {
-        std::set<std::string> names;
+        std::set<SetName> names;
 
         StatusBarMessage m1(this, "Loading set names...");
 

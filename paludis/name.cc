@@ -296,3 +296,35 @@ QualifiedPackageName::QualifiedPackageName(const std::string & s) :
 {
 }
 
+void
+SetNameValidator::validate(const std::string & s)
+{
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-+_");
+
+    do
+    {
+        if (s.empty())
+            break;
+
+        if ('-' == s.at(0))
+            break;
+
+        if (std::string::npos != s.find_first_not_of(allowed_chars))
+            break;
+
+        return;
+
+    } while (false);
+
+    Context c("When validating set name '" + s + "':");
+    throw SetNameError(s);
+}
+
+SetNameError::SetNameError(const std::string & name) throw () :
+    NameError(name, "set")
+{
+}
+

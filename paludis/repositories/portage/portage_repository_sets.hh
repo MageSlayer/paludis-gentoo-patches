@@ -63,7 +63,7 @@ namespace paludis
             /**
              * Fetch a package set other than system.
              */
-            DepAtom::Pointer package_set(const std::string & s) const;
+            DepAtom::Pointer package_set(const SetName & s) const;
 
             /**
              * Fetch the security or insecurity set.

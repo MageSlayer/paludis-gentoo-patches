@@ -112,7 +112,7 @@ namespace paludis
             /**
              * Local package set, or zero.
              */
-            virtual CompositeDepAtom::Pointer local_package_set(const std::string &) const
+            virtual CompositeDepAtom::Pointer local_package_set(const SetName &) const
             {
                 return AllDepAtom::Pointer(0);
             }
@@ -233,7 +233,7 @@ namespace paludis
             /**
              * Fetch a named package set.
              */
-            DepAtom::Pointer package_set(const std::string &) const;
+            DepAtom::Pointer package_set(const SetName &) const;
 
             /**
              * Subclass for callbacks used by add_appropriate_to_world and

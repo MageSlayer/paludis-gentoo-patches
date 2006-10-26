@@ -310,7 +310,7 @@ namespace paludis
 
     /**
      * A KeywordNameValidator handles validation rules for the value of a
-     * UseFlagName.
+     * KeywordName.
      *
      * \ingroup grpnames
      */
@@ -326,7 +326,7 @@ namespace paludis
 
     /**
      * A KeywordNameError is thrown if an invalid value is assigned to
-     * a KeywordNameName.
+     * a KeywordName.
      *
      * \ingroup grpnames
      * \ingroup grpexceptions
@@ -358,6 +358,45 @@ namespace paludis
         use_disabled,        /// disabled
         use_enabled          /// enabled
     };
+
+    /**
+     * A SetNameValidator handles validation rules for the value of a
+     * SetName.
+     *
+     * \ingroup grpnames
+     */
+    struct SetNameValidator :
+        private InstantiationPolicy<SetNameValidator, instantiation_method::NonInstantiableTag>
+    {
+        /**
+         * If the parameter is not a valid value for a SetName,
+         * throw a SetNameError.
+         */
+        static void validate(const std::string &);
+    };
+
+    /**
+     * A SetNameError is thrown if an invalid value is assigned to
+     * a SetName.
+     *
+     * \ingroup grpnames
+     * \ingroup grpexceptions
+     */
+    class SetNameError : public NameError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            SetNameError(const std::string & name) throw ();
+    };
+
+    /**
+     * A SetName holds a std::string that is a valid name for a set.
+     *
+     * \ingroup grpnames
+     */
+    typedef Validated<std::string, SetNameValidator> SetName;
 }
 
 #endif

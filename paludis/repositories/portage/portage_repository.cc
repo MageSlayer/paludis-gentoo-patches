@@ -709,9 +709,9 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 }
 
 DepAtom::Pointer
-PortageRepository::do_package_set(const std::string & s) const
+PortageRepository::do_package_set(const SetName & s) const
 {
-    if (s == "system")
+    if (s.data() == "system")
     {
         _imp->need_profiles();
         return _imp->profile_ptr->system_packages();

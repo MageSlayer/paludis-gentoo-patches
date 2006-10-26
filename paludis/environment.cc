@@ -191,7 +191,7 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
 }
 
 DepAtom::Pointer
-Environment::package_set(const std::string & s) const
+Environment::package_set(const SetName & s) const
 {
     /* favour local sets first */
     CompositeDepAtom::Pointer result(local_package_set(s));
@@ -199,7 +199,7 @@ Environment::package_set(const std::string & s) const
         return result;
 
     /* these sets always exist, even if empty */
-    if (s == "everything" || s == "system" || s == "world" || s == "security")
+    if (s.data() == "everything" || s.data() == "system" || s.data() == "world" || s.data() == "security")
         result.assign(new AllDepAtom);
 
     for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
@@ -217,9 +217,9 @@ Environment::package_set(const std::string & s) const
             result->add_child(add);
         }
 
-        if ("everything" == s || "world" == s)
+        if ("everything" == s.data() || "world" == s.data())
         {
-            add = (*r)->sets_interface->package_set("system");
+            add = (*r)->sets_interface->package_set(SetName("system"));
             if (0 != add)
                 result->add_child(add);
         }

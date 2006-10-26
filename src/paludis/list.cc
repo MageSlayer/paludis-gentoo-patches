@@ -186,7 +186,7 @@ do_list_sets()
     p::Context context("While performing list-sets action from command line:");
     p::Environment * const env(p::DefaultEnvironment::get_instance());
 
-    std::map<std::string, std::list<p::RepositoryName> > sets;
+    std::map<p::SetName, std::list<p::RepositoryName> > sets;
 
     for (p::IndirectIterator<p::PackageDatabase::RepositoryIterator, const p::Repository>
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
@@ -208,16 +208,16 @@ do_list_sets()
             sets[*s].push_back(r->name());
     }
 
-    for (std::map<std::string, std::list<p::RepositoryName > >::const_iterator
+    for (std::map<p::SetName, std::list<p::RepositoryName > >::const_iterator
             s(sets.begin()), s_end(sets.end()) ; s != s_end ; ++s)
     {
         if (CommandLine::get_instance()->a_set.specified())
             if (CommandLine::get_instance()->a_set.args_end() == std::find(
                         CommandLine::get_instance()->a_set.args_begin(),
                         CommandLine::get_instance()->a_set.args_end(),
-                        s->first))
+                        stringify(s->first)))
                 continue;
-                
+
         ret_code = 0;
 
         std::cout << "* " << colour(cl_package_name, s->first) << std::endl;

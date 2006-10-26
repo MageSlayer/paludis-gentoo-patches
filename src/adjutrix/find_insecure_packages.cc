@@ -151,7 +151,7 @@ void do_find_insecure_packages(const Environment & env)
 
         write_repository_header(r->name());
 
-        DepAtom::ConstPointer all_insecure(r->sets_interface->package_set("insecurity"));
+        DepAtom::ConstPointer all_insecure(r->sets_interface->package_set(SetName("insecurity")));
         if (! all_insecure)
             continue;
         ListInsecureVisitor v(env);

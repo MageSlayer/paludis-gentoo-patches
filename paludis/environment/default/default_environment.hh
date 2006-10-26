@@ -49,7 +49,7 @@ namespace paludis
             ~DefaultEnvironment();
 
         protected:
-            CompositeDepAtom::Pointer local_package_set(const std::string &) const;
+            CompositeDepAtom::Pointer local_package_set(const SetName &) const;
 
         public:
             virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
