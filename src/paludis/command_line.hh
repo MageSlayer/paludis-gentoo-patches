@@ -153,9 +153,6 @@ class CommandLine :
         /// Query arguments.
         paludis::args::ArgsGroup query_args;
 
-        /// --show-slot
-        paludis::args::SwitchArg a_show_slot;
-
         /// --show-deps
         paludis::args::SwitchArg a_show_deps;
 

@@ -67,7 +67,6 @@ CommandLine::CommandLine() :
 
     query_args(this, "Query options",
             "Options which are relevant for --query."),
-    a_show_slot(&query_args,        "show-slot",    'S', "Show SLOTs"),
     a_show_deps(&query_args,        "show-deps",    'D', "Show dependencies"),
     a_show_metadata(&query_args,    "show-metadata", 'M', "Show raw metadata"),
 

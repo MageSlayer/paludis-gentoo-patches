@@ -93,16 +93,14 @@ void do_one_package_query(
                 VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
                             e->repository)->version_metadata(e->name,
                             e->version));
-                if (CommandLine::get_instance()->a_show_slot.specified())
-                {
-                    /* show the slot, if we're about to move onto a new slot */
-                    std::string slot_name(stringify(metadata->slot));
-                    if (old_slot.empty())
-                        old_slot = slot_name;
-                    else if (old_slot != slot_name)
-                        cout << colour(cl_slot, "{:" + old_slot + "} ");
+
+                /* show the slot, if we're about to move onto a new slot */
+                std::string slot_name(stringify(metadata->slot));
+                if (old_slot.empty())
                     old_slot = slot_name;
-                }
+                else if (old_slot != slot_name)
+                    cout << colour(cl_slot, "{:" + old_slot + "} ");
+                old_slot = slot_name;
 
                 const MaskReasons masks(env->mask_reasons(*e));
 
@@ -155,8 +153,7 @@ void do_one_package_query(
         }
 
         /* still need to show the slot for the last item */
-        if (CommandLine::get_instance()->a_show_slot.specified())
-            cout << colour(cl_slot, "{:" + old_slot + "} ");
+        cout << colour(cl_slot, "{:" + old_slot + "} ");
 
         cout << endl;
     }
