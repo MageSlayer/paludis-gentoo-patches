@@ -31,6 +31,10 @@ class Paludis
             assert_raise TypeError do
                 v = VersionSpec.new(0)
             end
+
+            assert_raise BadVersionSpecError do
+                v = VersionSpec.new("1.0-r1-x")
+            end
         end
 
         def test_compare
@@ -50,6 +54,14 @@ class Paludis
 
         def test_to_s
             assert_equal "0.1_alpha2", VersionSpec.new("0.1_alpha2").to_s
+        end
+
+        def test_remove_revision
+            assert_equal VersionSpec.new('0.1'), VersionSpec.new('0.1-r1').remove_revision
+        end
+
+        def test_version_only
+            assert_equal 'r9', VersionSpec.new('0.1-r9').revision_only
         end
     end
 end

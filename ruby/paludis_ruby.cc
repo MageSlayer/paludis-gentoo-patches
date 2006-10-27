@@ -40,6 +40,7 @@ namespace
 {
     static VALUE c_master_class;
     static VALUE c_name_error;
+    static VALUE c_bad_version_spec_error;
     static VALUE c_package_dep_atom_error;
     static VALUE c_package_database_error;
     static VALUE c_package_database_lookup_error;
@@ -77,6 +78,8 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
     if (0 != dynamic_cast<const paludis::InternalError *>(&ee))
         rb_raise(rb_eRuntimeError, "Unexpected paludis::InternalError: %s (%s)",
                 dynamic_cast<const paludis::InternalError *>(&ee)->message().c_str(), ee.what());
+    else if (0 != dynamic_cast<const paludis::BadVersionSpecError *>(&ee))
+        rb_raise(c_bad_version_spec_error, dynamic_cast<const paludis::BadVersionSpecError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::NameError *>(&ee))
         rb_raise(c_name_error, dynamic_cast<const paludis::NameError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::PackageDepAtomError *>(&ee))
@@ -139,6 +142,7 @@ extern "C"
     {
         c_master_class = rb_define_class("Paludis", rb_cObject);
         c_name_error = rb_define_class_under(c_master_class, "NameError", rb_eRuntimeError);
+        c_bad_version_spec_error = rb_define_class_under(c_master_class, "BadVersionSpecError", c_name_error);
         c_package_dep_atom_error = rb_define_class_under(c_master_class, "PackageDepAtomError", rb_eRuntimeError);
         c_package_database_error = rb_define_class_under(c_master_class, "PackageDatabaseError", rb_eRuntimeError);
         c_package_database_lookup_error = rb_define_class_under(c_master_class, "PackageDatabaseLookupError", c_package_database_error);

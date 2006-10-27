@@ -54,6 +54,32 @@ namespace
         }
     }
 
+    VALUE
+    version_spec_remove_revision(VALUE self)
+    {
+        try
+        {
+            return version_spec_to_value(value_to_version_spec(self).remove_revision());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    version_spec_revision_only(VALUE self)
+    {
+        try
+        {
+            return rb_str_new2((value_to_version_spec(self).revision_only().c_str()));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_version_spec()
     {
         c_version_spec = rb_define_class_under(master_class(), "VersionSpec", rb_cObject);
@@ -62,6 +88,8 @@ namespace
         rb_define_method(c_version_spec, "<=>", RUBY_FUNC_CAST(&Common<VersionSpec>::compare), 1);
         rb_include_module(c_version_spec, rb_mComparable);
         rb_define_method(c_version_spec, "to_s", RUBY_FUNC_CAST(&Common<VersionSpec>::to_s), 0);
+        rb_define_method(c_version_spec, "remove_revision", RUBY_FUNC_CAST(&version_spec_remove_revision), 0);
+        rb_define_method(c_version_spec, "revision_only", RUBY_FUNC_CAST(&version_spec_revision_only), 0);
     }
 }
 
