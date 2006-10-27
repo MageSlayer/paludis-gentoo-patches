@@ -110,6 +110,10 @@ class Paludis
                 db.fetch_repository("barrepo")
             end
         end
+
+        def test_better_repository
+            assert_equal 'testrepo', db.better_repository('testrepo', 'virtuals')
+        end
     end
 end
 

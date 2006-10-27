@@ -124,6 +124,25 @@ namespace
         }
     }
 
+    VALUE
+    package_database_better_repository(VALUE self, VALUE name1, VALUE name2)
+    {
+        try
+        {
+            PackageDatabase::Pointer * self_ptr;
+            Data_Get_Struct(self, PackageDatabase::Pointer, self_ptr);
+
+            return rb_str_new2(stringify((*self_ptr)->better_repository(
+                        RepositoryName(STR2CSTR(name1)),
+                        RepositoryName(STR2CSTR(name2))
+                        )).c_str());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_package_database()
     {
         c_package_database = rb_define_class_under(master_class(), "PackageDatabase", rb_cObject);
@@ -138,6 +157,8 @@ namespace
                 RUBY_FUNC_CAST(&package_database_repositories), 0);
         rb_define_method(c_package_database, "fetch_repository",
                 RUBY_FUNC_CAST(&package_database_fetch_repository), 1);
+        rb_define_method(c_package_database, "better_repository",
+                RUBY_FUNC_CAST(&package_database_better_repository), 2);
 
         c_package_database_install_state = rb_define_class_under(master_class(), "InstallState", rb_cObject);
         for (InstallState l(static_cast<InstallState>(0)), l_end(last_install_state) ; l != l_end ;
