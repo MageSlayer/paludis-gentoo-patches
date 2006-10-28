@@ -74,7 +74,7 @@ Rationale: This leads to corruption and wasted bandwidth far too frequently. In 
 
 Non-Problem: Paludis doesn't have an equivalent to --resume --skipfirst in Portage.
 
-Rationale: Too unreliable, too flaky and far too widely abused. There's talk of echoing a command (<code>paludis -i10 =sys-apps/foo-1.23-r1 =app-misc/fnord-2 ...</code>) that can be used to resume if an ebuild exits with an error, but that's not set in stone.
+Rationale: Too unreliable, too flaky and far too widely abused; however, if an ebuild exits with an error, Paludis will echo a resume command (<code>paludis -i10 =sys-apps/foo-1.23-r1 =app-misc/fnord-2 ...</code>) that can be used to resume the build.
 
 \subsection KnownNonIssuesNice Automatic Niceness Support
 
