@@ -149,15 +149,15 @@ namespace
             virtual void on_clean_all_pre(const DepListEntry &,
                     const PackageDatabaseEntryCollection & c)
             {
-                if (c.empty())
-                    cout << "* No cleaning required" << endl;
-                else
-                {
-                    for (PackageDatabaseEntryCollection::Iterator cc(c.begin()),
-                            cc_end(c.end()) ; cc != cc_end ; ++cc)
-                        cout << "* " << colour(cl_package_name, *cc) << endl;
-                }
+                for (PackageDatabaseEntryCollection::Iterator cc(c.begin()),
+                        cc_end(c.end()) ; cc != cc_end ; ++cc)
+                    cout << "* " << colour(cl_package_name, *cc) << endl;
                 cout << endl;
+            }
+
+            virtual void on_no_clean_needed(const DepListEntry &)
+            {
+                cout << "* No cleaning required" << endl;
             }
 
             virtual void on_clean_pre(const DepListEntry &,

@@ -283,41 +283,46 @@ InstallTask::execute()
         on_build_cleanlist_post(*dep);
 
         /* ok, we have the cleanlist. we're about to clean */
-        _imp->env->perform_hook(Hook("uninstall_all_pre")("TARGETS", join(
-                        clean_list.begin(), clean_list.end(), " ")));
-        on_clean_all_pre(*dep, clean_list);
-
-        for (PackageDatabaseEntryCollection::Iterator c(clean_list.begin()),
-                c_end(clean_list.end()) ; c != c_end ; ++c)
+        if (clean_list.empty())
+            on_no_clean_needed(*dep);
+        else
         {
-            /* clean one item */
-            _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", stringify(*c)));
-            on_clean_pre(*dep, *c);
+            _imp->env->perform_hook(Hook("uninstall_all_pre")("TARGETS", join(
+                            clean_list.begin(), clean_list.end(), " ")));
+            on_clean_all_pre(*dep, clean_list);
 
-            const RepositoryUninstallableInterface * const uninstall_interface(
-                    _imp->env->package_database()->fetch_repository(c->repository)->
-                    uninstallable_interface);
-            if (! uninstall_interface)
-                throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
-
-            try
+            for (PackageDatabaseEntryCollection::Iterator c(clean_list.begin()),
+                    c_end(clean_list.end()) ; c != c_end ; ++c)
             {
-                uninstall_interface->uninstall(c->name, c->version, _imp->install_options);
-            }
-            catch (const PackageUninstallActionError & e)
-            {
-                _imp->env->perform_hook(Hook("uninstall_fail")("TARGET", stringify(*c))("MESSAGE", e.message()));
-                throw;
+                /* clean one item */
+                _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", stringify(*c)));
+                on_clean_pre(*dep, *c);
+
+                const RepositoryUninstallableInterface * const uninstall_interface(
+                        _imp->env->package_database()->fetch_repository(c->repository)->
+                        uninstallable_interface);
+                if (! uninstall_interface)
+                    throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
+
+                try
+                {
+                    uninstall_interface->uninstall(c->name, c->version, _imp->install_options);
+                }
+                catch (const PackageUninstallActionError & e)
+                {
+                    _imp->env->perform_hook(Hook("uninstall_fail")("TARGET", stringify(*c))("MESSAGE", e.message()));
+                    throw;
+                }
+
+                on_clean_post(*dep, *c);
+                _imp->env->perform_hook(Hook("uninstall_post")("TARGET", stringify(*c)));
             }
 
-            on_clean_post(*dep, *c);
-            _imp->env->perform_hook(Hook("uninstall_post")("TARGET", stringify(*c)));
+            /* we're done cleaning */
+            _imp->env->perform_hook(Hook("uninstall_all_post")("TARGETS", join(
+                            clean_list.begin(), clean_list.end(), " ")));
+            on_clean_all_post(*dep, clean_list);
         }
-
-        /* we're done cleaning */
-        _imp->env->perform_hook(Hook("uninstall_all_post")("TARGETS", join(
-                        clean_list.begin(), clean_list.end(), " ")));
-        on_clean_all_post(*dep, clean_list);
     }
 
     /* update world */
