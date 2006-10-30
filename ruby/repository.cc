@@ -237,7 +237,7 @@ namespace
 
     void do_register_repository()
     {
-        c_repository = rb_define_class_under(master_class(), "Repository", rb_cObject);
+        c_repository = rb_define_class_under(paludis_module(), "Repository", rb_cObject);
         rb_funcall(c_repository, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository, "name", RUBY_FUNC_CAST(&repository_name), 0);
 
@@ -280,11 +280,11 @@ namespace
 
         rb_define_method(c_repository, "info", RUBY_FUNC_CAST(&repository_info), 1);
 
-        c_repository_info = rb_define_class_under(master_class(), "RepositoryInfo", rb_cObject);
+        c_repository_info = rb_define_class_under(paludis_module(), "RepositoryInfo", rb_cObject);
         rb_funcall(c_repository_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository_info, "sections", RUBY_FUNC_CAST(&repository_info_sections), 0);
 
-        c_repository_info_section = rb_define_class_under(master_class(), "RepositoryInfoSection", rb_cObject);
+        c_repository_info_section = rb_define_class_under(paludis_module(), "RepositoryInfoSection", rb_cObject);
         rb_funcall(c_repository_info_section, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository_info_section, "kvs", RUBY_FUNC_CAST(&repository_info_section_kvs), 0);
     }

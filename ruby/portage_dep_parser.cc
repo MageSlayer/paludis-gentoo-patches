@@ -74,7 +74,7 @@ namespace
     {
         rb_require("singleton");
 
-        c_portage_dep_parser = rb_define_class_under(master_class(), "PortageDepParser", rb_cObject);
+        c_portage_dep_parser = rb_define_class_under(paludis_module(), "PortageDepParser", rb_cObject);
         rb_funcall(c_portage_dep_parser, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_singleton_method(c_portage_dep_parser, "parse",
                 RUBY_FUNC_CAST(&portage_dep_parser_parse), -1);

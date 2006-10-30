@@ -152,39 +152,39 @@ namespace
 
     void do_register_dep_atom()
     {
-        c_dep_atom = rb_define_class_under(master_class(), "DepAtom", rb_cObject);
+        c_dep_atom = rb_define_class_under(paludis_module(), "DepAtom", rb_cObject);
         rb_funcall(c_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
 
-        c_composite_dep_atom = rb_define_class_under(master_class(), "CompositeDepAtom", c_dep_atom);
+        c_composite_dep_atom = rb_define_class_under(paludis_module(), "CompositeDepAtom", c_dep_atom);
         rb_funcall(c_composite_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_composite_dep_atom, "each", RUBY_FUNC_CAST(&composite_dep_atom_each), 0);
         rb_include_module(c_composite_dep_atom, rb_mEnumerable);
 
-        c_all_dep_atom = rb_define_class_under(master_class(), "AllDepAtom", c_composite_dep_atom);
+        c_all_dep_atom = rb_define_class_under(paludis_module(), "AllDepAtom", c_composite_dep_atom);
         rb_funcall(c_all_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
 
-        c_any_dep_atom = rb_define_class_under(master_class(), "AnyDepAtom", c_composite_dep_atom);
+        c_any_dep_atom = rb_define_class_under(paludis_module(), "AnyDepAtom", c_composite_dep_atom);
         rb_funcall(c_any_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
 
-        c_use_dep_atom = rb_define_class_under(master_class(), "UseDepAtom", c_composite_dep_atom);
+        c_use_dep_atom = rb_define_class_under(paludis_module(), "UseDepAtom", c_composite_dep_atom);
         rb_funcall(c_use_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_use_dep_atom, "flag", RUBY_FUNC_CAST(&use_dep_atom_flag), 0);
         rb_define_method(c_use_dep_atom, "inverse?", RUBY_FUNC_CAST(&use_dep_atom_inverse), 0);
 
-        c_string_dep_atom = rb_define_class_under(master_class(), "StringDepAtom", c_dep_atom);
+        c_string_dep_atom = rb_define_class_under(paludis_module(), "StringDepAtom", c_dep_atom);
         rb_funcall(c_string_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
 
-        c_package_dep_atom = rb_define_class_under(master_class(), "PackageDepAtom", c_string_dep_atom);
+        c_package_dep_atom = rb_define_class_under(paludis_module(), "PackageDepAtom", c_string_dep_atom);
         rb_define_singleton_method(c_package_dep_atom, "new", RUBY_FUNC_CAST(&DepAtomThings<PackageDepAtom>::dep_atom_new_1), 1);
         rb_define_method(c_package_dep_atom, "initialize", RUBY_FUNC_CAST(&dep_atom_init_1), 1);
         rb_define_method(c_package_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<PackageDepAtom::ConstPointer>::to_s_via_ptr), 0);
 
-        c_plain_text_dep_atom = rb_define_class_under(master_class(), "PlainTextDepAtom", c_string_dep_atom);
+        c_plain_text_dep_atom = rb_define_class_under(paludis_module(), "PlainTextDepAtom", c_string_dep_atom);
         rb_define_singleton_method(c_plain_text_dep_atom, "new", RUBY_FUNC_CAST(&DepAtomThings<PlainTextDepAtom>::dep_atom_new_1), 1);
         rb_define_method(c_plain_text_dep_atom, "initialize", RUBY_FUNC_CAST(&dep_atom_init_1), 1);
         rb_define_method(c_plain_text_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<PlainTextDepAtom::ConstPointer>::to_s_via_ptr), 0);
 
-        c_block_dep_atom = rb_define_class_under(master_class(), "BlockDepAtom", c_string_dep_atom);
+        c_block_dep_atom = rb_define_class_under(paludis_module(), "BlockDepAtom", c_string_dep_atom);
         rb_define_singleton_method(c_block_dep_atom, "new", RUBY_FUNC_CAST(&block_dep_atom_new), 1);
         rb_define_method(c_block_dep_atom, "initialize", RUBY_FUNC_CAST(&dep_atom_init_1), 1);
         rb_define_method(c_block_dep_atom, "blocked_atom", RUBY_FUNC_CAST(&block_dep_atom_blocked_atom), 0);

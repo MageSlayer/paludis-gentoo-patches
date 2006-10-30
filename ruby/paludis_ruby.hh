@@ -39,7 +39,7 @@ namespace paludis
 
         std::string value_case_to_RubyCase(const std::string & s);
 
-        VALUE master_class();
+        VALUE paludis_module();
 
         /* constructors */
 

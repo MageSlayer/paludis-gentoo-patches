@@ -121,7 +121,7 @@ namespace
 
     void do_register_version_metadata()
     {
-        c_version_metadata = rb_define_class_under(master_class(), "VersionMetadata", rb_cObject);
+        c_version_metadata = rb_define_class_under(paludis_module(), "VersionMetadata", rb_cObject);
         rb_funcall(c_version_metadata, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_version_metadata, "get_ebuild_interface", RUBY_FUNC_CAST(&version_metadata_get_ebuild_interface), 0);
         rb_define_method(c_version_metadata, "get_virtual_interface", RUBY_FUNC_CAST(&version_metadata_get_virtual_interface), 0);

@@ -78,7 +78,7 @@ namespace
 
     void do_register_mask_reasons()
     {
-        c_mask_reasons = rb_define_class_under(master_class(), "MaskReasons", rb_cObject);
+        c_mask_reasons = rb_define_class_under(paludis_module(), "MaskReasons", rb_cObject);
         rb_define_singleton_method(c_mask_reasons, "new", RUBY_FUNC_CAST(&mask_reasons_new), 0);
         rb_define_method(c_mask_reasons, "initialize", RUBY_FUNC_CAST(&mask_reasons_init), 0);
         rb_define_method(c_mask_reasons, "each", RUBY_FUNC_CAST(&mask_reasons_each), 0);

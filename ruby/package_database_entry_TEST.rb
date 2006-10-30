@@ -20,7 +20,7 @@
 require 'test/unit'
 require 'Paludis'
 
-class Paludis
+module Paludis
     class TestCase_PackageDatabaseEntry < Test::Unit::TestCase
         def test_create
             v = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("0"), "moo")

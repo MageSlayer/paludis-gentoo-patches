@@ -25,7 +25,7 @@ require 'Paludis'
 
 Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 
-class Paludis
+module Paludis
     class TestCase_PackageDatabase < Test::Unit::TestCase
         def test_no_create
             assert_raise NoMethodError do

@@ -63,14 +63,14 @@ namespace
     {
         rb_require("singleton");
 
-        c_log = rb_define_class_under(master_class(), "Log", rb_cObject);
+        c_log = rb_define_class_under(paludis_module(), "Log", rb_cObject);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_log);
         rb_define_method(c_log, "log_level", RUBY_FUNC_CAST(&log_log_level), 0);
         rb_define_method(c_log, "log_level=", RUBY_FUNC_CAST(&log_log_level_set), 1);
         rb_define_method(c_log, "program_name=", RUBY_FUNC_CAST(&log_set_program_name), 1);
         rb_define_method(c_log, "message", RUBY_FUNC_CAST(&log_message), 2);
 
-        c_log_level = rb_define_class_under(master_class(), "LogLevel", rb_cObject);
+        c_log_level = rb_define_class_under(paludis_module(), "LogLevel", rb_cObject);
         for (LogLevel l(static_cast<LogLevel>(0)), l_end(last_ll) ; l != l_end ;
                 l = static_cast<LogLevel>(static_cast<int>(l) + 1))
             rb_define_const(c_log_level, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));

@@ -38,7 +38,7 @@ namespace paludis
 
 namespace
 {
-    static VALUE c_master_class;
+    static VALUE c_paludis_module;
     static VALUE c_name_error;
     static VALUE c_bad_version_spec_error;
     static VALUE c_package_dep_atom_error;
@@ -131,28 +131,28 @@ paludis::ruby::value_case_to_RubyCase(const std::string & s)
 }
 
 VALUE
-paludis::ruby::master_class()
+paludis::ruby::paludis_module()
 {
-    return c_master_class;
+    return c_paludis_module;
 }
 
 extern "C"
 {
     void Init_Paludis()
     {
-        c_master_class = rb_define_class("Paludis", rb_cObject);
-        c_name_error = rb_define_class_under(c_master_class, "NameError", rb_eRuntimeError);
-        c_bad_version_spec_error = rb_define_class_under(c_master_class, "BadVersionSpecError", c_name_error);
-        c_package_dep_atom_error = rb_define_class_under(c_master_class, "PackageDepAtomError", rb_eRuntimeError);
-        c_package_database_error = rb_define_class_under(c_master_class, "PackageDatabaseError", rb_eRuntimeError);
-        c_package_database_lookup_error = rb_define_class_under(c_master_class, "PackageDatabaseLookupError", c_package_database_error);
-        c_no_such_package_error = rb_define_class_under(c_master_class, "NoSuchPackageError", c_package_database_lookup_error);
-        c_no_such_repository_error = rb_define_class_under(c_master_class, "NoSuchRepositoryError", c_package_database_lookup_error);
-        c_dep_string_error = rb_define_class_under(c_master_class, "DepStringError", rb_eRuntimeError);
-        c_dep_string_parse_error = rb_define_class_under(c_master_class, "DepStringParseError", c_dep_string_error);
-        c_dep_string_nesting_error = rb_define_class_under(c_master_class, "DepStringNestingError", c_dep_string_parse_error);
+        c_paludis_module = rb_define_module("Paludis");
+        c_name_error = rb_define_class_under(c_paludis_module, "NameError", rb_eRuntimeError);
+        c_bad_version_spec_error = rb_define_class_under(c_paludis_module, "BadVersionSpecError", c_name_error);
+        c_package_dep_atom_error = rb_define_class_under(c_paludis_module, "PackageDepAtomError", rb_eRuntimeError);
+        c_package_database_error = rb_define_class_under(c_paludis_module, "PackageDatabaseError", rb_eRuntimeError);
+        c_package_database_lookup_error = rb_define_class_under(c_paludis_module, "PackageDatabaseLookupError", c_package_database_error);
+        c_no_such_package_error = rb_define_class_under(c_paludis_module, "NoSuchPackageError", c_package_database_lookup_error);
+        c_no_such_repository_error = rb_define_class_under(c_paludis_module, "NoSuchRepositoryError", c_package_database_lookup_error);
+        c_dep_string_error = rb_define_class_under(c_paludis_module, "DepStringError", rb_eRuntimeError);
+        c_dep_string_parse_error = rb_define_class_under(c_paludis_module, "DepStringParseError", c_dep_string_error);
+        c_dep_string_nesting_error = rb_define_class_under(c_paludis_module, "DepStringNestingError", c_dep_string_parse_error);
 
-        rb_define_const(c_master_class, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
+        rb_define_const(c_paludis_module, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
                         + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));
         RegisterRubyClass::get_instance()->execute();
     }

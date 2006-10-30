@@ -21,7 +21,7 @@
 require 'test/unit'
 require 'Paludis'
 
-class Paludis
+module Paludis
     class TestCase_DepAtom < Test::Unit::TestCase
         def test_create_error
             assert_raise NoMethodError do

@@ -21,7 +21,7 @@
 require 'test/unit'
 require 'Paludis'
 
-class Paludis
+module Paludis
     class TestCase_VersionSpec < Test::Unit::TestCase
         def test_create
             v = VersionSpec.new("0")

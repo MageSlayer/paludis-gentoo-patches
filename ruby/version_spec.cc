@@ -82,7 +82,7 @@ namespace
 
     void do_register_version_spec()
     {
-        c_version_spec = rb_define_class_under(master_class(), "VersionSpec", rb_cObject);
+        c_version_spec = rb_define_class_under(paludis_module(), "VersionSpec", rb_cObject);
         rb_define_singleton_method(c_version_spec, "new", RUBY_FUNC_CAST(&version_spec_new), 1);
         rb_define_method(c_version_spec, "initialize", RUBY_FUNC_CAST(&version_spec_init), 1);
         rb_define_method(c_version_spec, "<=>", RUBY_FUNC_CAST(&Common<VersionSpec>::compare), 1);

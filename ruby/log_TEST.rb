@@ -23,7 +23,7 @@ ENV["PALUDIS_HOME"] = Dir.getwd().to_s + "/default_environment_TEST_dir/home";
 require 'test/unit'
 require 'Paludis'
 
-class Paludis
+module Paludis
     class TestCase_Log < Test::Unit::TestCase
         def test_instance
             assert_equal Log.instance.__id__, Log.instance.__id__

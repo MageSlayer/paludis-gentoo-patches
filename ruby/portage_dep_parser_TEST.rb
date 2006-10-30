@@ -21,7 +21,7 @@
 require 'test/unit'
 require 'Paludis'
 
-class Paludis
+module Paludis
     class TestCase_PortageDepParser < Test::Unit::TestCase
         def test_one_arg
             atom = PortageDepParser::parse("foo/monkey")

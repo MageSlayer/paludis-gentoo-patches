@@ -145,7 +145,7 @@ namespace
 
     void do_register_package_database()
     {
-        c_package_database = rb_define_class_under(master_class(), "PackageDatabase", rb_cObject);
+        c_package_database = rb_define_class_under(paludis_module(), "PackageDatabase", rb_cObject);
         rb_funcall(c_package_database, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_package_database, "favourite_repository",
                 RUBY_FUNC_CAST(&package_database_favourite_repository), 0);
@@ -160,7 +160,7 @@ namespace
         rb_define_method(c_package_database, "better_repository",
                 RUBY_FUNC_CAST(&package_database_better_repository), 2);
 
-        c_package_database_install_state = rb_define_class_under(master_class(), "InstallState", rb_cObject);
+        c_package_database_install_state = rb_define_class_under(paludis_module(), "InstallState", rb_cObject);
         for (InstallState l(static_cast<InstallState>(0)), l_end(last_install_state) ; l != l_end ;
                 l = static_cast<InstallState>(static_cast<int>(l) + 1))
             rb_define_const(c_package_database_install_state, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));

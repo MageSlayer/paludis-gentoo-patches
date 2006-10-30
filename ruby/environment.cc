@@ -246,7 +246,7 @@ namespace
     {
         rb_require("singleton");
 
-        c_environment = rb_define_class_under(master_class(), "Environment", rb_cObject);
+        c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_environment, "query_use", RUBY_FUNC_CAST(&environment_query_use), -1);
         rb_define_method(c_environment, "accept_keyword", RUBY_FUNC_CAST(&environment_accept_keyword), -1);
@@ -254,18 +254,18 @@ namespace
         rb_define_method(c_environment, "mask_reasons", RUBY_FUNC_CAST(&environment_mask_reasons), 1);
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
 
-        c_default_environment = rb_define_class_under(master_class(), "DefaultEnvironment", c_environment);
+        c_default_environment = rb_define_class_under(paludis_module(), "DefaultEnvironment", c_environment);
         rb_define_singleton_method(c_default_environment, "new", RUBY_FUNC_CAST(&default_environment_new), 0);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_default_environment);
 
-        c_default_config = rb_define_class_under(master_class(), "DefaultConfig", rb_cObject);
+        c_default_config = rb_define_class_under(paludis_module(), "DefaultConfig", rb_cObject);
         rb_funcall(c_default_config, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_singleton_method(c_default_config, "config_suffix",
                 RUBY_FUNC_CAST(&default_config_config_suffix), 0);
         rb_define_singleton_method(c_default_config, "config_suffix=",
                 RUBY_FUNC_CAST(&default_config_config_suffix_set), 1);
 
-        c_no_config_environment = rb_define_class_under(master_class(), "NoConfigEnvironment", c_environment);
+        c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
         rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), 1);
         rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), 1);
     }
