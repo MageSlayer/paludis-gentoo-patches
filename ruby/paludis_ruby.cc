@@ -26,6 +26,8 @@
 using namespace paludis;
 using namespace paludis::ruby;
 
+#define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
+
 namespace paludis
 {
     template<>
@@ -49,6 +51,24 @@ namespace
     static VALUE c_dep_string_error;
     static VALUE c_dep_string_parse_error;
     static VALUE c_dep_string_nesting_error;
+
+    VALUE paludis_match_package(VALUE, VALUE en, VALUE a, VALUE t)
+    {
+        try
+        {
+            Environment * env;
+            Data_Get_Struct(en, Environment, env);
+            PackageDepAtom::ConstPointer atom(value_to_package_dep_atom(a));
+            PackageDatabaseEntry * target;
+            Data_Get_Struct(t, PackageDatabaseEntry, target);
+            return match_package(env, atom, *target) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+    }
 }
 
 RegisterRubyClass::RegisterRubyClass() :
@@ -151,6 +171,8 @@ extern "C"
         c_dep_string_error = rb_define_class_under(c_paludis_module, "DepStringError", rb_eRuntimeError);
         c_dep_string_parse_error = rb_define_class_under(c_paludis_module, "DepStringParseError", c_dep_string_error);
         c_dep_string_nesting_error = rb_define_class_under(c_paludis_module, "DepStringNestingError", c_dep_string_parse_error);
+
+        rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
 
         rb_define_const(c_paludis_module, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
                         + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));

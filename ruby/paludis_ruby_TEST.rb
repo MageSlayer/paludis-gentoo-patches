@@ -18,6 +18,8 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+ENV["PALUDIS_HOME"] = Dir.getwd().to_s + "/paludis_ruby_TEST_dir/home";
+
 require 'test/unit'
 
 class TC_Basic < Test::Unit::TestCase
@@ -26,3 +28,24 @@ class TC_Basic < Test::Unit::TestCase
     end
 end
 
+require 'Paludis'
+
+Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
+
+module Paludis
+
+    class TestCase_Match < Test::Unit::TestCase
+
+        def test_match
+            env = DefaultEnvironment.instance
+            atom_good = PackageDepAtom.new('>=foo/bar-1')
+            atom_bad = PackageDepAtom.new('>=foo/bar-2')
+            pde = PackageDatabaseEntry.new('foo/bar','1','test')
+        
+            assert Paludis::match_package(env, atom_good, pde)
+            assert !Paludis::match_package(env, atom_bad, pde)
+            
+        end
+    end
+
+end
