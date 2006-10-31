@@ -38,7 +38,6 @@ namespace gtkpaludis
             virtual ~MainWindow();
 
             void _set_lock(bool value);
-            void _update_status();
 
         public:
             virtual void populate();

@@ -22,6 +22,7 @@
 #include "packages_page.hh"
 #include "repositories_page.hh"
 #include "messages.hh"
+#include "tasks_page.hh"
 
 #include <paludis/util/log.hh>
 
@@ -30,6 +31,7 @@
 #include <gtkmm/table.h>
 #include <gtkmm/messagedialog.h>
 #include <gtkmm/main.h>
+#include <gtkmm/statusbar.h>
 
 #include <list>
 
@@ -49,25 +51,21 @@ namespace paludis
         Gtk::Table main_table;
 
         Gtk::Notebook main_notebook;
+        TasksPage tasks_page;
         PackagesPage packages_page;
         SetsPage sets_page;
         RepositoriesPage repositories_page;
         Gtk::Table messages_page;
-
-        Gtk::ScrolledWindow status_label_box;
-        Gtk::Label status_label;
-
         Messages messages;
 
-        std::list<std::string> status;
+        Gtk::Statusbar status_bar;
 
         int messages_page_id;
 
         Implementation() :
             lock_count(0),
             main_table(1, 2, false),
-            messages_page(1, 1, false),
-            status_label("", Gtk::ALIGN_LEFT)
+            messages_page(1, 1, false)
         {
         }
     };
@@ -81,6 +79,7 @@ MainWindow::MainWindow() :
     set_default_size(600, 400);
 
     _imp->main_notebook.set_border_width(5);
+//    _imp->main_notebook.append_page(_imp->tasks_page, "Common Tasks");
     _imp->main_notebook.append_page(_imp->packages_page, "Packages");
     _imp->main_notebook.append_page(_imp->sets_page, "Sets");
     _imp->main_notebook.append_page(_imp->repositories_page, "Repositories");
@@ -88,10 +87,8 @@ MainWindow::MainWindow() :
 
     add(_imp->main_table);
     _imp->main_table.attach(_imp->main_notebook, 0, 1, 0, 1);
-    _imp->main_table.attach(_imp->status_label_box, 0, 1, 1, 2, Gtk::FILL, Gtk::AttachOptions(0));
-    _imp->status_label_box.set_border_width(5);
-    _imp->status_label_box.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_NEVER);
-    _imp->status_label_box.add(_imp->status_label);
+    _imp->status_bar.set_has_resize_grip(true);
+    _imp->main_table.attach(_imp->status_bar, 0, 1, 1, 2, Gtk::FILL, Gtk::AttachOptions(0));
 
     _imp->messages_page.attach(_imp->messages, 0, 1, 0, 1);
 
@@ -133,24 +130,13 @@ MainWindow::maybe_unlock_controls()
 void
 MainWindow::push_status(const std::string & s)
 {
-    _imp->status.push_back(s);
-    _update_status();
+    _imp->status_bar.push(s);
 }
 
 void
 MainWindow::pop_status()
 {
-    _imp->status.pop_back();
-    _update_status();
-}
-
-void
-MainWindow::_update_status()
-{
-    if (_imp->status.empty())
-        _imp->status_label.set_label("");
-    else
-        _imp->status_label.set_label(_imp->status.back());
+    _imp->status_bar.pop();
 }
 
 void

@@ -9,7 +9,7 @@ DEFS = \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DGLIBMM_EXCEPTIONS_ENABLED=1
 
-SUBDIRS = vtemm .
+SUBDIRS = cellrendererbutton vtemm .
 
 INCLUDES = $(GTKDEPS_CFLAGS)
 
@@ -34,10 +34,12 @@ gtkpaludis_SOURCES = \
 	sets_list.hh           sets_list.cc           \
 	sets_page.hh           sets_page.cc           \
 	sync.cc                sync.hh                \
+	tasks_page.cc          tasks_page.hh          \
 	gtkpaludis.cc
 
 gtkpaludis_LDADD = \
 	$(top_builddir)/src/gtkpaludis/vtemm/libvtemm.a \
+	$(top_builddir)/src/gtkpaludis/cellrendererbutton/libcellrendererbutton.a \
 	$(top_builddir)/paludis/tasks/libpaludistasks.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \

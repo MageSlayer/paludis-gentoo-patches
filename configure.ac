@@ -548,6 +548,34 @@ if test "x$enable_gtk" = "xyes"; then
 		[], [AC_MSG_ERROR([gtkmm-2.4 and vte-0.12.1 or later are required if --enable-gtk is used])])
 	AC_SUBST(GTKDEPS_CFLAGS)
 	AC_SUBST(GTKDEPS_LIBS)
+
+	AC_MSG_CHECKING([whether Gtk::TreeView::set_grid_lines is available])
+	old_CXXFLAGS=$CXXFLAGS
+	CXXFLAGS="$CXXFLAGS $GTKDEPS_CFLAGS"
+	AC_COMPILE_IFELSE([
+#include <gtkmm/treeview.h>
+int main(int, char *[])
+{
+	Gtk::TreeViewGridLines g;
+	g = Gtk::TREE_VIEW_GRID_LINES_VERTICAL;
+}
+],
+		[have_tree_view_grid_lines=yes],
+		[have_tree_view_grid_lines=no])
+	CXXFLAGS="$old_CXXFLAGS"
+	AC_MSG_RESULT([$have_tree_view_grid_lines])
+	if test "x$have_tree_view_grid_lines" = "xyes" ; then
+		AC_MSG_CHECKING([whether Gtk::TreeView::set_grid_lines works])
+		PKG_CHECK_MODULES(GTKTREEVIEWDEPS, [gtk+-2.0 >= 2.11],
+						  [have_tree_view_grid_lines=yes],
+						  [have_tree_view_grid_lines=no])
+		AC_MSG_RESULT([$have_tree_view_grid_lines])
+	fi
+	HAVE_TREE_VIEW_GRID_LINES=$have_tree_view_grid_lines
+	if test "x$have_tree_view_grid_lines" = "xyes" ; then
+		AC_DEFINE_UNQUOTED([HAVE_TREE_VIEW_GRID_LINES], 1, [Do we have Gtk::TreeView::set_grid_lines?])
+	fi
+	AC_SUBST([HAVE_TREE_VIEW_GRID_LINES])
 fi
 
 AM_CONDITIONAL([ENABLE_GTK], test "x$enable_gtk" = "xyes")
@@ -682,6 +710,7 @@ AC_OUTPUT(
 	src/Makefile
 	src/paludis/Makefile
 	src/gtkpaludis/Makefile
+	src/gtkpaludis/cellrendererbutton/Makefile
 	src/gtkpaludis/vtemm/Makefile
 	src/gtkpaludis/vtemm/converts/Makefile
 	src/gtkpaludis/vtemm/defs/Makefile
