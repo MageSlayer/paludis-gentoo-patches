@@ -27,11 +27,12 @@ cat <<END > home/.paludis/licenses.conf
 * *
 END
 
-mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files} || exit 1
+mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files,foo/baz/files,quux/baz/files} || exit 1
 cd testrepo || exit 1
 echo "testrepo" > profiles/repo_name || exit 1
 cat <<END > profiles/categories || exit 1
 foo
+quux
 END
 cat <<END > profiles/testprofile/make.defaults
 ARCH=test
@@ -57,6 +58,26 @@ SLOT="0"
 IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="~test"
+END
+
+cat <<"END" > foo/baz/baz-1.0.ebuild || exit 1
+DESCRIPTION="Test package"
+HOMEPAGE="http://paludis.berlios.de/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+END
+
+cat <<"END" > quux/baz/baz-2.0.ebuild || exit 1
+DESCRIPTION="Test package"
+HOMEPAGE="http://paludis.berlios.de/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
 END
 cd ..
 

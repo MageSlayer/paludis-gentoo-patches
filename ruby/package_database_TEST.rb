@@ -48,6 +48,15 @@ module Paludis
         def test_package_database_fetch_unique_qualified_package_name
             assert_equal "foo/bar", db.fetch_unique_qualified_package_name("bar")
         end
+
+        def test_error
+            assert_raise AmbiguousPackageNameError do
+                db.fetch_unique_qualified_package_name('baz')
+            end
+            assert_raise NoSuchPackageError do
+                db.fetch_unique_qualified_package_name('foobarbaz')
+            end
+        end
     end
 
     class TestCase_PackageDatabaseQuery < Test::Unit::TestCase

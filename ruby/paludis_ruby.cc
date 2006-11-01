@@ -46,6 +46,7 @@ namespace
     static VALUE c_package_dep_atom_error;
     static VALUE c_package_database_error;
     static VALUE c_package_database_lookup_error;
+    static VALUE c_ambiguous_package_name_error;
     static VALUE c_no_such_package_error;
     static VALUE c_no_such_repository_error;
     static VALUE c_dep_string_error;
@@ -106,6 +107,8 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_package_dep_atom_error, dynamic_cast<const paludis::PackageDepAtomError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee))
         rb_raise(c_no_such_repository_error, dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::AmbiguousPackageNameError *>(&ee))
+        rb_raise(c_ambiguous_package_name_error, dynamic_cast<const paludis::AmbiguousPackageNameError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::NoSuchPackageError *>(&ee))
         rb_raise(c_no_such_package_error, dynamic_cast<const paludis::NoSuchPackageError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::PackageDatabaseLookupError *>(&ee))
@@ -166,6 +169,7 @@ extern "C"
         c_package_dep_atom_error = rb_define_class_under(c_paludis_module, "PackageDepAtomError", rb_eRuntimeError);
         c_package_database_error = rb_define_class_under(c_paludis_module, "PackageDatabaseError", rb_eRuntimeError);
         c_package_database_lookup_error = rb_define_class_under(c_paludis_module, "PackageDatabaseLookupError", c_package_database_error);
+        c_ambiguous_package_name_error = rb_define_class_under(c_paludis_module, "AmbiguousPackageNameError", c_package_database_lookup_error);
         c_no_such_package_error = rb_define_class_under(c_paludis_module, "NoSuchPackageError", c_package_database_lookup_error);
         c_no_such_repository_error = rb_define_class_under(c_paludis_module, "NoSuchRepositoryError", c_package_database_lookup_error);
         c_dep_string_error = rb_define_class_under(c_paludis_module, "DepStringError", rb_eRuntimeError);
