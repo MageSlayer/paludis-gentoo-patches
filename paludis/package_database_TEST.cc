@@ -49,14 +49,14 @@ namespace test_cases
             FakeRepository::Pointer r1(new FakeRepository(RepositoryName("repo1")));
             FakeRepository::Pointer r2(new FakeRepository(RepositoryName("repo2")));
 
-            TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo1")), PackageDatabaseLookupError);
-            TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), PackageDatabaseLookupError);
+            TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo1")), NoSuchRepositoryError);
+            TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
 
             p.add_repository(r1);
             TEST_CHECK(p.fetch_repository(RepositoryName("repo1")));
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo1"))->name(),
                     RepositoryName("repo1"));
-            TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), PackageDatabaseLookupError);
+            TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
 
             TEST_CHECK_THROWS(p.add_repository(r1), DuplicateRepositoryError);
 
