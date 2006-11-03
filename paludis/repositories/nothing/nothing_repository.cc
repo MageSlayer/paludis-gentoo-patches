@@ -186,8 +186,8 @@ NothingRepository::make_nothing_repository(
         throw NothingRepositoryConfigurationError("Key 'location' not specified or empty");
 
     std::string sync;
-    if (m->end() == m->find("sync") || ((sync = m->find("sync")->second)).empty())
-        ; // nothing
+    if (m->end() != m->find("sync"))
+        sync = m->find("sync")->second;
 
     std::string name;
     if (m->end() == m->find("name") || ((name = m->find("name")->second)).empty())
@@ -195,8 +195,8 @@ NothingRepository::make_nothing_repository(
                 + repo_file + "'");
 
     std::string sync_exclude;
-    if (m->end() == m->find("sync_exclude") || ((sync_exclude = m->find("sync_exclude")->second)).empty())
-        ; // nothing
+    if (m->end() != m->find("sync_exclude"))
+        sync_exclude = m->find("sync_exclude")->second;
 
     return CountedPtr<Repository>(new NothingRepository(NothingRepositoryParams::create()
                 .name(name)

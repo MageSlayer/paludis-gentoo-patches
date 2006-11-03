@@ -66,12 +66,12 @@ paludis::make_ebin_repository(
         newsdir = location + "/metadata/news";
 
     std::string sync;
-    if (m->end() == m->find("sync") || ((sync = m->find("sync")->second)).empty())
-        ; // nothing
+    if (m->end() == m->find("sync"))
+        sync = m->find("sync")->second;
 
     std::string sync_exclude;
-    if (m->end() == m->find("sync_exclude") || ((sync_exclude = m->find("sync_exclude")->second)).empty())
-        ; // nothing
+    if (m->end() == m->find("sync_exclude"))
+        sync_exclude = m->find("sync_exclude")->second;
 
     std::string root;
     if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())

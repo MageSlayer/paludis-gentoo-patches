@@ -107,7 +107,7 @@ namespace test_cases
 
         void run()
         {
-            char * args[] = { "program-name", "--other-baz", "-fsne", "blah", "7", "three", "--", "--dummy",
+            const char * args[] = { "program-name", "--other-baz", "-fsne", "blah", "7", "three", "--", "--dummy",
                 "one", "two" };
             CommandLine c1;
             c1.run(10, args);
@@ -142,7 +142,7 @@ namespace test_cases
 
         void run()
         {
-            char *args[] = { "program-name", "-e" };
+            const char *args[] = { "program-name", "-e" };
             CommandLine c1;
             TEST_CHECK_THROWS(c1.run(2, args), MissingValue);
         }
@@ -158,7 +158,7 @@ namespace test_cases
 
         void run()
         {
-            char *args[] = { "program-name", "--stringset", "one", "-t", "two", "-t", "three", "fnord" };
+            const char *args[] = { "program-name", "--stringset", "one", "-t", "two", "-t", "three", "fnord" };
             CommandLine c1;
             c1.run(8, args);
             TEST_CHECK(c1.arg_stringset.specified());
