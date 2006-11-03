@@ -276,6 +276,11 @@ namespace paludis
             void add(DepAtom::ConstPointer);
 
             /**
+             * Clear the list.
+             */
+            void clear();
+
+            /**
              * Is an atom structure already installed?
              */
             bool already_installed(DepAtom::ConstPointer) const;

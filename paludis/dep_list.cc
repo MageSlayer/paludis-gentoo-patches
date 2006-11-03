@@ -576,6 +576,12 @@ DepList::~DepList()
 }
 
 void
+DepList::clear()
+{
+    _imp.assign(new Implementation<DepList>(_imp->env, _imp->opts));
+}
+
+void
 DepList::add_in_role(DepAtom::ConstPointer atom, const std::string & role)
 {
     Context context("When adding " + role + ":");

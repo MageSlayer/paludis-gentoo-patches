@@ -19,6 +19,8 @@
 
 #include "package_info.hh"
 #include "package_overview.hh"
+#include "main_window.hh"
+#include "queue_page.hh"
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/box.h>
 #include <gtkmm/button.h>
@@ -37,16 +39,19 @@ namespace paludis
         Gtk::ScrolledWindow overview_page_main;
         Gtk::VButtonBox overview_page_buttons;
 
-        Gtk::Button install_button;
+        Gtk::Button queue_button;
         Gtk::Button uninstall_button;
 
         Gtk::ScrolledWindow metadata_page;
 
         PackageOverview overview;
 
+        QualifiedPackageName current_package;
+
         Implementation() :
-            install_button("Install"),
-            uninstall_button("Uninstall")
+            queue_button("Queue"),
+            uninstall_button("Uninstall"),
+            current_package("no-category/no-package")
         {
         }
     };
@@ -67,8 +72,12 @@ PackageInfo::PackageInfo() :
     _imp->overview_page_buttons.set_border_width(5);
     _imp->overview_page_buttons.set_spacing(5);
     _imp->overview_page_buttons.set_layout(Gtk::BUTTONBOX_START);
-    _imp->overview_page_buttons.add(_imp->install_button);
+    _imp->overview_page_buttons.add(_imp->queue_button);
     _imp->overview_page_buttons.add(_imp->uninstall_button);
+
+    _imp->queue_button.signal_clicked().connect(sigc::mem_fun(this,
+                &PackageInfo::_queue_button_clicked));
+    _imp->queue_button.set_sensitive(false);
 }
 
 PackageInfo::~PackageInfo()
@@ -79,5 +88,14 @@ void
 PackageInfo::populate(const QualifiedPackageName & n)
 {
     _imp->overview.populate(n);
+    _imp->current_package = n;
+    _imp->queue_button.set_sensitive(stringify(n) != "no-category/no-package");
+}
+
+void
+PackageInfo::_queue_button_clicked()
+{
+    MainWindow::get_instance()->show_queue_page();
+    MainWindow::get_instance()->queue_page()->add_target(stringify(_imp->current_package));
 }
 

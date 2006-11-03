@@ -23,6 +23,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/dep_list.hh>
+#include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 namespace paludis
 {
@@ -88,10 +89,15 @@ namespace paludis
 
             ///\}
 
-            ///\name Add targets
+            ///\name Targets
             ///\{
 
             void add_target(const std::string &);
+            void clear();
+
+            typedef libwrapiter::ForwardIterator<InstallTask, const std::string> TargetsIterator;
+            TargetsIterator begin_targets() const;
+            TargetsIterator end_targets() const;
 
             ///\}
 

@@ -30,6 +30,9 @@ namespace gtkpaludis
         private paludis::PrivateImplementationPattern<PackageInfo>,
         public Gtk::Notebook
     {
+        private:
+            void _queue_button_clicked();
+
         public:
             PackageInfo();
             virtual ~PackageInfo();

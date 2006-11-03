@@ -17,26 +17,34 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_MESSAGES_HH
-#define PALUDIS_GUARD_SRC_GTKPALUDIS_MESSAGES_HH 1
+#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_QUEUE_LIST_HH
+#define PALUDIS_GUARD_SRC_GTKPALUDIS_QUEUE_LIST_HH 1
 
-#include <gtkmm/scrolledwindow.h>
+#include <gtkmm/treeview.h>
+#include <gtkmm/liststore.h>
 #include <paludis/util/private_implementation_pattern.hh>
 
 namespace gtkpaludis
 {
-    class Messages :
-        private paludis::PrivateImplementationPattern<Messages>,
-        public Gtk::ScrolledWindow
+    class QueuePage;
+
+    class QueueList :
+        public Gtk::TreeView,
+        private paludis::PrivateImplementationPattern<QueueList>
     {
-        private:
-            void _install_signal_handlers();
+        class Populate;
+        friend class Populate;
 
         public:
-            Messages();
-            virtual ~Messages();
+            QueueList(QueuePage * const);
+            virtual ~QueueList();
 
-            void message(const std::string &);
+            void clear();
+            void invalidate();
+            void calculate();
+            void add_target(const std::string &);
+
+            void set_model_show_dep_columns(Glib::RefPtr<Gtk::ListStore>);
     };
 }
 

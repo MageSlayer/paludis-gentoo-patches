@@ -20,6 +20,8 @@
 #include "sets_page.hh"
 #include "sets_list.hh"
 #include "set_overview.hh"
+#include "main_window.hh"
+#include "queue_page.hh"
 
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
@@ -46,10 +48,10 @@ namespace paludis
         SetOverview set_overview;
 
         Gtk::HButtonBox buttons_box;
-        Gtk::Button install_button;
+        Gtk::Button queue_button;
 
         Implementation() :
-            install_button("Install")
+            queue_button("Queue")
         {
         }
     };
@@ -74,13 +76,15 @@ SetsPage::SetsPage() :
     _imp->buttons_box.set_border_width(5);
     _imp->buttons_box.set_spacing(5);
     _imp->buttons_box.set_layout(Gtk::BUTTONBOX_END);
-    _imp->buttons_box.add(_imp->install_button);
+    _imp->buttons_box.add(_imp->queue_button);
     attach(_imp->buttons_box, 1, 2, 1, 2, Gtk::FILL | Gtk::EXPAND, Gtk::AttachOptions(0));
 
-    _imp->install_button.signal_clicked().connect(sigc::mem_fun(this,
-                &SetsPage::_install_button_clicked));
+    _imp->queue_button.signal_clicked().connect(sigc::mem_fun(this,
+                &SetsPage::_queue_button_clicked));
+    _imp->queue_button.set_sensitive(false);
     _imp->sets_list.get_selection()->signal_changed().connect(sigc::mem_fun(this,
                 &SetsPage::_sets_list_selection_changed));
+
 }
 
 SetsPage::~SetsPage()
@@ -97,10 +101,16 @@ void
 SetsPage::_sets_list_selection_changed()
 {
     _imp->set_overview.populate(_imp->sets_list.current_set());
+    _imp->queue_button.set_sensitive(! _imp->sets_list.current_set().empty());
 }
 
 void
-SetsPage::_install_button_clicked()
+SetsPage::_queue_button_clicked()
 {
+    if (! _imp->sets_list.current_set().empty())
+    {
+        MainWindow::get_instance()->show_queue_page();
+        MainWindow::get_instance()->queue_page()->add_target(_imp->sets_list.current_set());
+    }
 }
 

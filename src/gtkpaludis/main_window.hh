@@ -21,11 +21,14 @@
 #define PALUDIS_GUARD_SRC_GTKPALUDIS_MAIN_WINDOW_HH 1
 
 #include <gtkmm/window.h>
+#include <gtkmm/notebook.h>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 namespace gtkpaludis
 {
+    class QueuePage;
+
     class MainWindow :
         public paludis::InstantiationPolicy<MainWindow, paludis::instantiation_method::SingletonAsNeededTag>,
         private paludis::PrivateImplementationPattern<MainWindow>,
@@ -38,6 +41,7 @@ namespace gtkpaludis
             virtual ~MainWindow();
 
             void _set_lock(bool value);
+            void _main_notebook_page_switched(GtkNotebookPage *, guint);
 
         public:
             virtual void populate();
@@ -46,11 +50,18 @@ namespace gtkpaludis
             void maybe_unlock_controls();
 
             void show_exception(const std::string & what, const std::string & message, bool fatal);
+            void show_error_dialog(const std::string & title, const std::string & message);
+
             void message(const std::string &);
             void push_status(const std::string &);
             void pop_status();
 
             void show_messages_page();
+            void show_queue_page();
+
+            void message_window_changed();
+
+            QueuePage * queue_page();
     };
 }
 

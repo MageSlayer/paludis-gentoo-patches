@@ -20,6 +20,7 @@ bin_PROGRAMS = gtkpaludis
 gtkpaludis_SOURCES = \
 	categories_list.cc     categories_list.hh     \
 	command_line.cc        command_line.hh        \
+	install.cc             install.hh             \
 	main_window.cc         main_window.hh         \
 	messages.cc            messages.hh            \
 	package_info.cc        package_info.hh        \
@@ -27,12 +28,15 @@ gtkpaludis_SOURCES = \
 	packages_list.cc       packages_list.hh       \
 	packages_page.cc       packages_page.hh       \
 	paludis_thread.cc      paludis_thread.hh      \
+	queue_list.cc          queue_list.hh          \
+	queue_options.cc       queue_options.hh       \
+	queue_page.cc          queue_page.hh          \
 	repositories_list.cc   repositories_list.hh   \
 	repositories_page.cc   repositories_page.hh   \
 	repository_overview.cc repository_overview.hh \
-	set_overview.hh        set_overview.cc        \
-	sets_list.hh           sets_list.cc           \
-	sets_page.hh           sets_page.cc           \
+	set_overview.cc        set_overview.hh        \
+	sets_list.cc           sets_list.hh           \
+	sets_page.cc           sets_page.hh           \
 	sync.cc                sync.hh                \
 	tasks_page.cc          tasks_page.hh          \
 	gtkpaludis.cc

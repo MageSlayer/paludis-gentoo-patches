@@ -31,7 +31,7 @@ namespace gtkpaludis
     {
         private:
             void _sets_list_selection_changed();
-            void _install_button_clicked();
+            void _queue_button_clicked();
 
         public:
             SetsPage();

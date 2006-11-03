@@ -18,10 +18,13 @@
  */
 
 #include "messages.hh"
+#include "main_window.hh"
+
 #include <vtemm/terminal_widget.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/pstream.hh>
 #include <cstdlib>
 #include <fcntl.h>
 #include <unistd.h>
@@ -101,7 +104,12 @@ Messages::Messages() :
 
     set_run_command_stdout_fds(_imp->term_pty.slave_fd(), _imp->term_pty.master_fd());
     set_run_command_stderr_fds(_imp->term_pty.slave_fd(), _imp->term_pty.master_fd());
+    PStream::set_stderr_fd(_imp->term_pty.slave_fd(), _imp->term_pty.master_fd());
+
     Log::get_instance()->set_log_stream(&_imp->messages_stream);
+
+    Glib::signal_idle().connect(sigc::bind_return(sigc::mem_fun(this,
+                    &Messages::_install_signal_handlers), false));
 }
 
 Messages::~Messages()
@@ -114,5 +122,12 @@ Messages::message(const std::string & s)
 {
     std::string msg("=== " + s + " ===\n");
     write(_imp->term_pty.slave_fd(), msg.c_str(), msg.length());
+}
+
+void
+Messages::_install_signal_handlers()
+{
+    _imp->term.signal_cursor_moved().connect(sigc::mem_fun(MainWindow::get_instance(),
+                &MainWindow::message_window_changed));
 }
 

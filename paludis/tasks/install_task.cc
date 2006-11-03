@@ -80,6 +80,15 @@ InstallTask::~InstallTask()
 }
 
 void
+InstallTask::clear()
+{
+    _imp->targets.assign(new AllDepAtom);
+    _imp->had_set_targets = false;
+    _imp->had_package_targets = false;
+    _imp->dep_list.clear();
+}
+
+void
 InstallTask::add_target(const std::string & target)
 {
     Context context("When adding install target '" + target + "':");
@@ -388,5 +397,17 @@ void
 InstallTask::set_preserve_world(const bool value)
 {
     _imp->preserve_world = value;
+}
+
+InstallTask::TargetsIterator
+InstallTask::begin_targets() const
+{
+    return TargetsIterator(_imp->raw_targets.begin());
+}
+
+InstallTask::TargetsIterator
+InstallTask::end_targets() const
+{
+    return TargetsIterator(_imp->raw_targets.end());
 }
 

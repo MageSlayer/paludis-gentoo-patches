@@ -23,6 +23,7 @@
 #include "repositories_page.hh"
 #include "messages.hh"
 #include "tasks_page.hh"
+#include "queue_page.hh"
 
 #include <paludis/util/log.hh>
 
@@ -55,12 +56,14 @@ namespace paludis
         PackagesPage packages_page;
         SetsPage sets_page;
         RepositoriesPage repositories_page;
+        QueuePage queue_page;
         Gtk::Table messages_page;
         Messages messages;
 
         Gtk::Statusbar status_bar;
 
         int messages_page_id;
+        int queue_page_id;
 
         Implementation() :
             lock_count(0),
@@ -76,13 +79,17 @@ MainWindow::MainWindow() :
 {
     set_title("gtkpaludis");
     set_border_width(2);
-    set_default_size(600, 400);
+    set_default_size(700, 550);
 
     _imp->main_notebook.set_border_width(5);
-//    _imp->main_notebook.append_page(_imp->tasks_page, "Common Tasks");
+    _imp->main_notebook.signal_switch_page().connect(sigc::mem_fun(this,
+                &MainWindow::_main_notebook_page_switched));
+
+    _imp->main_notebook.append_page(_imp->tasks_page, "Common Tasks");
     _imp->main_notebook.append_page(_imp->packages_page, "Packages");
     _imp->main_notebook.append_page(_imp->sets_page, "Sets");
     _imp->main_notebook.append_page(_imp->repositories_page, "Repositories");
+    _imp->queue_page_id = _imp->main_notebook.append_page(_imp->queue_page, "Queue");
     _imp->messages_page_id = _imp->main_notebook.append_page(_imp->messages_page, "Messages");
 
     add(_imp->main_table);
@@ -146,6 +153,12 @@ MainWindow::show_messages_page()
 }
 
 void
+MainWindow::show_queue_page()
+{
+    _imp->main_notebook.set_current_page(_imp->queue_page_id);
+}
+
+void
 MainWindow::show_exception(const std::string & what, const std::string & message, bool fatal)
 {
     Gtk::MessageDialog dialog(*this, fatal ? "Fatal Error" : "Error", false, Gtk::MESSAGE_ERROR);
@@ -157,8 +170,36 @@ MainWindow::show_exception(const std::string & what, const std::string & message
 }
 
 void
+MainWindow::show_error_dialog(const std::string & title, const std::string & message)
+{
+    Gtk::MessageDialog dialog(*this, title, false, Gtk::MESSAGE_ERROR);
+    dialog.set_secondary_text(message);
+    dialog.run();
+}
+
+void
 MainWindow::message(const std::string & s)
 {
     _imp->messages.message(s);
+}
+
+QueuePage *
+MainWindow::queue_page()
+{
+    return &_imp->queue_page;
+}
+
+void
+MainWindow::message_window_changed()
+{
+    if (_imp->main_notebook.get_current_page() != _imp->messages_page_id)
+        _imp->main_notebook.set_tab_label_text(_imp->messages_page, "Messages *");
+}
+
+void
+MainWindow::_main_notebook_page_switched(GtkNotebookPage *, guint)
+{
+    if (_imp->main_notebook.get_current_page() == _imp->messages_page_id)
+        _imp->main_notebook.set_tab_label_text(_imp->messages_page, "Messages");
 }
 

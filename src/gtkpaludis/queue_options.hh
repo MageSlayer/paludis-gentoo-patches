@@ -17,26 +17,21 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_MESSAGES_HH
-#define PALUDIS_GUARD_SRC_GTKPALUDIS_MESSAGES_HH 1
+#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_QUEUE_OPTIONS_HH
+#define PALUDIS_GUARD_SRC_GTKPALUDIS_QUEUE_OPTIONS_HH 1
 
-#include <gtkmm/scrolledwindow.h>
+#include <gtkmm/notebook.h>
 #include <paludis/util/private_implementation_pattern.hh>
 
 namespace gtkpaludis
 {
-    class Messages :
-        private paludis::PrivateImplementationPattern<Messages>,
-        public Gtk::ScrolledWindow
+    class QueueOptions :
+        public Gtk::Notebook,
+        private paludis::PrivateImplementationPattern<QueueOptions>
     {
-        private:
-            void _install_signal_handlers();
-
         public:
-            Messages();
-            virtual ~Messages();
-
-            void message(const std::string &);
+            QueueOptions();
+            virtual ~QueueOptions();
     };
 }
 

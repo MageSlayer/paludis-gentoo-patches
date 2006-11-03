@@ -107,6 +107,9 @@ namespace test_cases
                     ++exp;
                     ++got;
                 }
+
+                d.clear();
+                TEST_CHECK(d.begin() == d.end());
             }
 
         public:
