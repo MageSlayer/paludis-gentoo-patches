@@ -86,6 +86,7 @@ InstallTask::clear()
     _imp->had_set_targets = false;
     _imp->had_package_targets = false;
     _imp->dep_list.clear();
+    _imp->raw_targets.clear();
 }
 
 void

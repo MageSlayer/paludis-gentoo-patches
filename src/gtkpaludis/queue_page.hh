@@ -31,6 +31,7 @@ namespace gtkpaludis
     {
         private:
             void _recalculate_button_clicked();
+            void _clear_button_clicked();
 
         public:
             QueuePage();

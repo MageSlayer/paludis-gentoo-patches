@@ -74,6 +74,8 @@ QueuePage::QueuePage() :
 
     _imp->recalculate_button.signal_clicked().connect(sigc::mem_fun(this,
                 &QueuePage::_recalculate_button_clicked));
+    _imp->clear_button.signal_clicked().connect(sigc::mem_fun(this,
+                &QueuePage::_clear_button_clicked));
 }
 
 QueuePage::~QueuePage()
@@ -103,5 +105,11 @@ void
 QueuePage::_recalculate_button_clicked()
 {
     _imp->queue_list.calculate();
+}
+
+void
+QueuePage::_clear_button_clicked()
+{
+    clear();
 }
 
