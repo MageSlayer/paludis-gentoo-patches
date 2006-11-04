@@ -58,9 +58,32 @@ namespace
     {
     };
 
+    static std::string current_entry_heading;
+
+    void
+    need_entry_heading()
+    {
+        static std::string last_displayed_entry_heading;
+        if (last_displayed_entry_heading != current_entry_heading)
+        {
+            cout << endl;
+            cout << current_entry_heading << endl;
+            last_displayed_entry_heading = current_entry_heading;
+        }
+    }
+
+    void
+    set_entry_heading(const std::string & s)
+    {
+        current_entry_heading = s;
+        if (! QualudisCommandLine::get_instance()->a_quiet.specified())
+            need_entry_heading();
+    }
+
     void
     display_header(const qa::CheckResult & r)
     {
+        need_entry_heading();
         cout << r.item() << ": " << r.rule() << ":" << endl;
     }
 
@@ -212,12 +235,14 @@ namespace
             }
             catch (const Exception & e)
             {
+                need_entry_heading();
                 std::cout << "Eek! Caught Exception '" << e.message() << "' (" << e.what()
                     << ") when doing check '" << *i << "'" << endl;
                 ok = false;
             }
             catch (const std::exception & e)
             {
+                need_entry_heading();
                 std::cout << "Eek! Caught std::exception '" << e.what()
                     << "' when doing check '" << *i << "'" << endl;
                 ok = false;
@@ -230,11 +255,11 @@ namespace
     {
         Context context("When checking package '" + stringify(dir) + "':");
         cerr << xterm_title("Checking " + dir.dirname().basename() + "/" +
-                dir.basename() + " - qualudis");
+                dir.basename() + " - qualudis") << std::flush;
 
         bool ok(true), fatal(false);
 
-        cout << "QA checks for package directory " << dir << ":" << endl;
+        set_entry_heading("QA checks for package directory " + stringify(dir) + ":");
 
         if (! fatal)
             do_check_kind<qa::PackageDirCheckMaker>(ok, fatal, dir);
@@ -297,7 +322,6 @@ namespace
                     cout << endl;
                 }
         }
-        cout << endl;
 
         return ok;
     }
@@ -307,10 +331,9 @@ namespace
     {
         Context context("When checking category '" + stringify(dir) + "':");
 
-        cerr << xterm_title("Checking " + dir.basename() + " - qualudis");
+        cerr << xterm_title("Checking " + dir.basename() + " - qualudis") << std::flush;
 
-        cout << "QA checks for category directory " << dir << ":" << endl;
-        cout << endl;
+        set_entry_heading("QA checks for category directory " + stringify(dir) + ":");
 
         bool ok(true);
 
@@ -326,11 +349,9 @@ namespace
             {
                 bool fatal(false);
 
-                cout << "QA checks for category file " << *d << ":" << endl;
+                set_entry_heading("QA checks for category file " + stringify(*d) + ":");
 
                 do_check_kind<qa::FileCheckMaker>(ok, fatal, *d);
-
-                cout << endl;
 
                 if (fatal)
                     break;
@@ -345,10 +366,9 @@ namespace
     {
         Context context("When checking eclass directory '" + stringify(dir) + "':");
 
-        cerr << xterm_title("Checking " + dir.basename() + " - qualudis");
+        cerr << xterm_title("Checking " + dir.basename() + " - qualudis") << std::flush;
 
-        cout << "QA checks for eclass directory " << dir << ":" << endl;
-        cout << endl;
+        set_entry_heading("QA checks for eclass directory " + stringify(dir) + ":");
 
         bool ok(true);
 
@@ -362,11 +382,9 @@ namespace
             {
                 bool fatal(false);
 
-                cout << "QA checks for eclass file " << *d << ":" << endl;
+                set_entry_heading("QA checks for eclass file " + stringify(*d) + ":");
 
                 do_check_kind<qa::FileCheckMaker>(ok, fatal, *d);
-
-                cout << endl;
 
                 if (fatal)
                     break;
@@ -381,7 +399,7 @@ namespace
     {
         Context context("When checking top level '" + stringify(dir) + "':");
 
-        cout << "QA checks for top level directory " << dir << ":" << endl << endl;
+        set_entry_heading("QA checks for top level directory " + stringify(dir) + ":");
 
         qa::QAEnvironment env(dir);
         bool ok(true);

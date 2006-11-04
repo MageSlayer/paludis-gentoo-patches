@@ -35,6 +35,7 @@ QualudisCommandLine::QualudisCommandLine() :
             "Options relevant for the --owner actions."),
     a_qa_checks(&check_options, "qa-check", 'c', "Only perform given check."),
     a_verbose(&check_options, "verbose", 'v', "Be verbose"),
+    a_quiet(&check_options, "quiet", 'q', "Be quiet"),
     a_log_level(&check_options, "log-level", 'L', "Specify the log level",
             paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
             ("qa",      "Show QA messages and warnings only")
