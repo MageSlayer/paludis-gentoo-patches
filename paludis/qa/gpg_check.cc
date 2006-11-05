@@ -25,7 +25,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <pcre++.h>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -38,31 +37,29 @@ CheckResult
 GPGCheck::operator() (const FSEntry & d) const
 {
     CheckResult result(d, identifier());
+    FSEntry manifest(d / "Manifest");
 
-    if (! (d / "Manifest").is_regular_file())
+    if (! manifest.is_regular_file())
     {
         result << Message(qal_major, "No Manifest");
         return result;
     }
 
-    static pcrepp::Pcre::Pcre r_is_signed("^-----BEGIN PGP SIGNED MESSAGE-----");
     bool is_signed(false);
     {
-        std::ifstream ff(stringify(d / "Manifest").c_str());
+        std::ifstream ff(stringify(manifest).c_str());
         if (! ff)
-            result << Message(qal_major, "Can't read file");
+            result << Message(qal_major, "Can't read Manifest file");
         else
         {
             std::string s;
-            while ((! is_signed) && std::getline(ff, s))
-                if (r_is_signed.search(s))
-                    is_signed = true;
+            if (std::getline(ff, s))
+                is_signed = (0 == s.compare("-----BEGIN PGP SIGNED MESSAGE-----"));
         }
     }
 
     if (is_signed)
     {
-        FSEntry manifest(d / "Manifest");
         FDHolder dev_null(::open("/dev/null", O_WRONLY));
 
         set_run_command_stdout_fds(dev_null, -1);
