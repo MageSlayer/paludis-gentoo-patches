@@ -32,11 +32,6 @@ namespace gtkpaludis
     class CellRendererButton :
         public Gtk::CellRendererText
     {
-        private:
-            static const unsigned int _button_width = 80;
-            static const unsigned int _button_height = 30;
-
-
         protected:
             virtual void get_size_vfunc(Gtk::Widget & widget, const Gdk::Rectangle * cell_area,
                     int * x_offset, int * y_offset, int * width, int * height) const;

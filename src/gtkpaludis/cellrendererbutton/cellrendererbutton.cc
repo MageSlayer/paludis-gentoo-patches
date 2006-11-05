@@ -19,8 +19,24 @@
 
 #include "cellrendererbutton.hh"
 #include <gtkmm/enums.h>
+#include <iomanip>
+#include <sstream>
 
 using namespace gtkpaludis;
+
+namespace
+{
+    std::string
+    gdk_color_to_colour_string(const Gdk::Color & c)
+    {
+        std::stringstream rs, gs, bs;
+        rs << std::hex << std::setw(4) << std::setfill('0') << c.get_red();
+        gs << std::hex << std::setw(4) << std::setfill('0') << c.get_green();
+        bs << std::hex << std::setw(4) << std::setfill('0') << c.get_blue();
+
+        return "#" + rs.str() + gs.str() + bs.str();
+    }
+}
 
 CellRendererButton::CellRendererButton() :
     Glib::ObjectBase(typeid(CellRendererButton)),
@@ -81,10 +97,13 @@ CellRendererButton::render_vfunc(const Glib::RefPtr<Gdk::Drawable> & window,
     if (width <= 0 || height <= 0)
         return;
 
+#if 0
     Gtk::StateType state = Gtk::STATE_INSENSITIVE;
     if (flags & Gtk::CELL_RENDERER_SELECTED)
         state = widget.has_focus() ? Gtk::STATE_SELECTED : Gtk::STATE_ACTIVE;
-
+#else
+    Gtk::StateType state(Gtk::STATE_ACTIVE);
+#endif
     const Gtk::ShadowType shadow = Gtk::SHADOW_OUT;
 
     Glib::RefPtr<Gdk::Window> window_casted = Glib::RefPtr<Gdk::Window>::cast_dynamic<>(window);
@@ -94,6 +113,11 @@ CellRendererButton::render_vfunc(const Glib::RefPtr<Gdk::Drawable> & window,
                 widget, "button", cell_area.get_x() + x_offset + cell_x_pad,
                 cell_area.get_y() + y_offset + cell_y_pad, width - 1, height - 1);
 
+        /* using property_attributes() sometimes breaks on redraws */
+        widget.ensure_style();
+        std::string colour_string(gdk_color_to_colour_string(widget.get_style()->get_fg(state)));
+        property_markup() = "<markup><span foreground=\"" + colour_string +
+            "\">" + property_text() + "</span></markup>";
         CellRendererText::render_vfunc(window, widget, r, cell_area, rr, flags);
     }
 }
