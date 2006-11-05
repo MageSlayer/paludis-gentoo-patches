@@ -38,14 +38,16 @@ void
 CellRendererButton::get_size_vfunc(Gtk::Widget & widget, const Gdk::Rectangle * cell_area,
         int * x_offset, int * y_offset, int * width, int * height) const
 {
-#if 0
-    const unsigned int x_pad = property_xpad();
-    const unsigned int y_pad = property_ypad();
-    const unsigned int x_align = property_xalign();
-    const unsigned int y_align = property_yalign();
+    Gtk::CellRendererText::get_size_vfunc(widget, cell_area, x_offset, y_offset,
+            width, height);
 
-    const int calculated_width = 2 * x_pad + _button_width;
-    const int calculated_height = 2 * y_pad + _button_height;
+    const unsigned int x_pad = 4;
+    const unsigned int y_pad = 4;
+    const float x_align = property_xalign();
+    const float y_align = property_yalign();
+
+    const int calculated_width = 2 * x_pad + (width ? *width : 0);
+    const int calculated_height = 2 * y_pad + (height ? *height : 0);
 
     if (width)
         *width = calculated_width;
@@ -55,22 +57,10 @@ CellRendererButton::get_size_vfunc(Gtk::Widget & widget, const Gdk::Rectangle * 
     if (cell_area)
     {
         if (x_offset)
-            *x_offset = std::max<int>(0, x_align * (cell_area->get_width() - calculated_width));
+            *x_offset = std::max(0, static_cast<int>(x_align * (cell_area->get_width() - calculated_width)));
         if (y_offset)
-            *y_offset = std::max<int>(0, y_align * (cell_area->get_height() - calculated_height));
+            *y_offset = std::max(0, static_cast<int>(y_align * (cell_area->get_height() - calculated_height)));
     }
-#else
-    Gtk::CellRendererText::get_size_vfunc(widget, cell_area, x_offset, y_offset,
-            width, height);
-    if (width)
-        *width += 10;
-    if (height)
-        *height += 6;
-    if (x_offset)
-        *x_offset = 0;
-    if (y_offset)
-        *y_offset = 0;
-#endif
 }
 
 void

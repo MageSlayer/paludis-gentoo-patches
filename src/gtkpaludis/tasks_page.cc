@@ -68,7 +68,8 @@ namespace
 #endif
 
             {
-                append_column("Icon", columns.col_icon);
+                get_column(append_column("Icon", columns.col_icon) - 1)->get_first_cell_renderer()->
+                    set_fixed_size(40, 40);
                 get_column(append_column("Text", columns.col_text) - 1)->set_expand(true);
 
                 CellRendererButton * const renderer = new CellRendererButton;
