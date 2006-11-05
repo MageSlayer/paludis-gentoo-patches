@@ -70,10 +70,12 @@ namespace
             {
                 append_column("Icon", columns.col_icon);
                 get_column(append_column("Text", columns.col_text) - 1)->set_expand(true);
+
                 CellRendererButton * const renderer = new CellRendererButton;
                 Gtk::TreeViewColumn * const column = new Gtk::TreeViewColumn("Button",
                         *Gtk::manage(renderer));
                 column->add_attribute(renderer->property_text(), columns.col_button);
+                renderer->property_width_chars() = 10;
                 append_column(*column);
             }
 

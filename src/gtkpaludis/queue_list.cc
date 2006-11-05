@@ -23,6 +23,7 @@
 #include "install.hh"
 #include "paludis_thread.hh"
 #include <gtkmm/liststore.h>
+#include <cellrendererbutton/cellrendererbutton.hh>
 #include <paludis/util/stringify.hh>
 #include <list>
 
@@ -172,6 +173,7 @@ QueueList::Populate::display_entry(const paludis::DepListEntry & e)
 
     Gtk::TreeModel::Row row = *(_model->append());
     row[_q->_imp->columns.col_package] = stringify(e.package);
+    row[_q->_imp->columns.col_why] = " ... ";
 }
 
 void
@@ -185,11 +187,17 @@ void
 QueueList::set_model_show_dep_columns(Glib::RefPtr<Gtk::ListStore> new_model)
 {
     remove_all_columns();
-    append_column("Package", _imp->columns.col_package);
+    get_column(append_column("Package", _imp->columns.col_package) - 1)->set_expand(true);
     append_column("", _imp->columns.col_status);
     append_column("Use", _imp->columns.col_use);
     append_column("Tags", _imp->columns.col_tags);
-    append_column("Why", _imp->columns.col_why);
+    {
+        CellRendererButton * const renderer = new CellRendererButton;
+        Gtk::TreeViewColumn * const column = new Gtk::TreeViewColumn("Why",
+                *Gtk::manage(renderer));
+        column->add_attribute(renderer->property_text(), _imp->columns.col_why);
+        append_column(*column);
+    }
 
     _imp->model.swap(new_model);
     set_model(_imp->model);

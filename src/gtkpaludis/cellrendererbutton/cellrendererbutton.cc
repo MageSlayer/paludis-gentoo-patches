@@ -27,6 +27,7 @@ CellRendererButton::CellRendererButton() :
     Gtk::CellRendererText()
 {
     property_alignment() = Pango::ALIGN_CENTER;
+    property_xalign() = 0.5;
 }
 
 CellRendererButton::~CellRendererButton()
@@ -34,9 +35,10 @@ CellRendererButton::~CellRendererButton()
 }
 
 void
-CellRendererButton::get_size_vfunc(Gtk::Widget &, const Gdk::Rectangle * cell_area,
+CellRendererButton::get_size_vfunc(Gtk::Widget & widget, const Gdk::Rectangle * cell_area,
         int * x_offset, int * y_offset, int * width, int * height) const
 {
+#if 0
     const unsigned int x_pad = property_xpad();
     const unsigned int y_pad = property_ypad();
     const unsigned int x_align = property_xalign();
@@ -57,6 +59,18 @@ CellRendererButton::get_size_vfunc(Gtk::Widget &, const Gdk::Rectangle * cell_ar
         if (y_offset)
             *y_offset = std::max<int>(0, y_align * (cell_area->get_height() - calculated_height));
     }
+#else
+    Gtk::CellRendererText::get_size_vfunc(widget, cell_area, x_offset, y_offset,
+            width, height);
+    if (width)
+        *width += 10;
+    if (height)
+        *height += 6;
+    if (x_offset)
+        *x_offset = 0;
+    if (y_offset)
+        *y_offset = 0;
+#endif
 }
 
 void
