@@ -308,13 +308,14 @@ void do_one_query(
     {
         try
         {
-            if (0 == ((set = env->package_set(SetName(q)))))
-                atom.assign(new PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
-                                PackageNamePart(q))));
+            set = env->package_set(SetName(q));
         }
         catch (const SetNameError &)
         {
         }
+        if (0 == set)
+            atom.assign(new PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
+                            PackageNamePart(q))));
     }
     else
         atom.assign(new PackageDepAtom(q));
