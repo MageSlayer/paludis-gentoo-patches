@@ -70,7 +70,7 @@ namespace
         {
             Repository::ConstPointer * self_ptr;
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
-            return (*self_ptr)->has_package_named(QualifiedPackageName(STR2CSTR(name))) ? Qtrue : Qfalse;
+            return (*self_ptr)->has_package_named(value_to_qualified_package_name(name)) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -85,7 +85,7 @@ namespace
         {
             Repository::ConstPointer * self_ptr;
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
-            return (*self_ptr)->has_version(QualifiedPackageName(STR2CSTR(name)),
+            return (*self_ptr)->has_version(value_to_qualified_package_name(name),
                     value_to_version_spec(version)) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
@@ -125,7 +125,7 @@ namespace
             VALUE result(rb_ary_new());
             QualifiedPackageNameCollection::ConstPointer c((*self_ptr)->package_names(category));
             for (QualifiedPackageNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+                rb_ary_push(result, qualified_package_name_to_value(*i));
             return result;
         }
         catch (const std::exception & e)
@@ -141,7 +141,7 @@ namespace
         {
             Repository::ConstPointer * self_ptr;
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
-            QualifiedPackageName q(STR2CSTR(qpn));
+            QualifiedPackageName q = value_to_qualified_package_name(qpn);
 
             VALUE result(rb_ary_new());
             VersionSpecCollection::ConstPointer c((*self_ptr)->version_specs(q));
@@ -162,7 +162,7 @@ namespace
         {
             Repository::ConstPointer * self_ptr;
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
-            return version_metadata_to_value((*self_ptr)->version_metadata(QualifiedPackageName(STR2CSTR(name)),
+            return version_metadata_to_value((*self_ptr)->version_metadata(value_to_qualified_package_name(name),
                         value_to_version_spec(version)));
         }
         catch (const std::exception & e)

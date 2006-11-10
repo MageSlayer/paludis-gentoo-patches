@@ -90,6 +90,37 @@ namespace
         }
     }
 
+    VALUE
+    package_database_entry_name(VALUE self)
+    {
+        try
+        {
+            PackageDatabaseEntry * p;
+            Data_Get_Struct(self, PackageDatabaseEntry, p);
+            return qualified_package_name_to_value(p->name);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    package_database_entry_name_set(VALUE self, VALUE qpn)
+    {
+        try
+        {
+            PackageDatabaseEntry * p;
+            Data_Get_Struct(self, PackageDatabaseEntry, p);
+            p->name = value_to_qualified_package_name(qpn);
+            return self;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     template <typename T_, T_ PackageDatabaseEntry::* m_>
     struct EntryValue
     {
@@ -126,8 +157,8 @@ namespace
         rb_define_method(c_package_database_entry, "<=>", RUBY_FUNC_CAST(&Common<PackageDatabaseEntry>::compare), 1);
         rb_include_module(c_package_database_entry, rb_mComparable);
         rb_define_method(c_package_database_entry, "to_s", RUBY_FUNC_CAST(&Common<PackageDatabaseEntry>::to_s), 0);
-        rb_define_method(c_package_database_entry, "name", RUBY_FUNC_CAST((&EntryValue<QualifiedPackageName, &PackageDatabaseEntry::name>::fetch)), 0);
-        rb_define_method(c_package_database_entry, "name=", RUBY_FUNC_CAST((&EntryValue<QualifiedPackageName, &PackageDatabaseEntry::name>::set)), 1);
+        rb_define_method(c_package_database_entry, "name", RUBY_FUNC_CAST(&package_database_entry_name), 0);
+        rb_define_method(c_package_database_entry, "name=", RUBY_FUNC_CAST(&package_database_entry_name_set), 1);
         rb_define_method(c_package_database_entry, "version", RUBY_FUNC_CAST(&package_database_entry_version), 0);
         rb_define_method(c_package_database_entry, "version=", RUBY_FUNC_CAST(&package_database_entry_version_set), 1);
         rb_define_method(c_package_database_entry, "repository", RUBY_FUNC_CAST((&EntryValue<RepositoryName, &PackageDatabaseEntry::repository>::fetch)), 0);

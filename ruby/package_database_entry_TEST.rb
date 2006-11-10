@@ -45,7 +45,7 @@ module Paludis
 
         def test_name
             pde = PackageDatabaseEntry.new('foo/bar', VersionSpec.new('1.0-r1'), 'moo')
-            assert_instance_of String, pde.name
+            assert_instance_of QualifiedPackageName, pde.name
             assert_equal pde.name ,'foo/bar'
         end
 

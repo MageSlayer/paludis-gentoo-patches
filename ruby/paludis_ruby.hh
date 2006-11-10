@@ -50,10 +50,12 @@ namespace paludis
         VALUE version_spec_to_value(const VersionSpec &);
         VALUE version_metadata_to_value(VersionMetadata::ConstPointer);
         VALUE dep_atom_to_value(DepAtom::ConstPointer);
+        VALUE qualified_package_name_to_value(const QualifiedPackageName &);
 
         VersionSpec value_to_version_spec(VALUE v);
         VersionMetadata::ConstPointer value_to_version_metadata(VALUE);
         PackageDepAtom::ConstPointer value_to_package_dep_atom(VALUE v);
+        QualifiedPackageName value_to_qualified_package_name(VALUE v);
 
         /* registration */
 

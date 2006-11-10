@@ -25,7 +25,8 @@ IF_RUBY_TESTS = \
 	package_database_TEST.rb \
 	repository_TEST.rb \
 	version_metadata_TEST.rb \
-	portage_dep_parser_TEST.rb
+	portage_dep_parser_TEST.rb \
+	qualified_package_name_TEST.rb
 
 IF_RUBY_SOURCES = \
 	paludis_ruby.cc paludis_ruby.hh \
@@ -38,7 +39,8 @@ IF_RUBY_SOURCES = \
 	package_database.cc \
 	repository.cc \
 	version_metadata.cc \
-	portage_dep_parser.cc
+	portage_dep_parser.cc \
+	qualified_package_name.cc
 
 EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
@@ -74,6 +76,7 @@ OUR_OBJECTS = \
 	repository.o \
 	version_metadata.o \
 	portage_dep_parser.o \
+	qualified_package_name.o \
 	paludis_ruby.o
 
 TESTS = $(IF_RUBY_TESTS)
@@ -118,6 +121,9 @@ repository.o : repository.cc paludis_ruby.hh
 
 portage_dep_parser.o : portage_dep_parser.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/portage_dep_parser.cc
+
+qualified_package_name.o : qualified_package_name.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/qualified_package_name.cc
 
 .libs/Paludis.so : $(OUR_OBJECTS)
 	mkdir -p .libs

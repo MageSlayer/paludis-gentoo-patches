@@ -42,6 +42,8 @@ namespace
 {
     static VALUE c_paludis_module;
     static VALUE c_name_error;
+    static VALUE c_category_name_part_error;
+    static VALUE c_package_name_part_error;
     static VALUE c_bad_version_spec_error;
     static VALUE c_package_dep_atom_error;
     static VALUE c_package_database_error;
@@ -101,6 +103,10 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
                 dynamic_cast<const paludis::InternalError *>(&ee)->message().c_str(), ee.what());
     else if (0 != dynamic_cast<const paludis::BadVersionSpecError *>(&ee))
         rb_raise(c_bad_version_spec_error, dynamic_cast<const paludis::BadVersionSpecError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::PackageNamePartError *>(&ee))
+        rb_raise(c_package_name_part_error, dynamic_cast<const paludis::PackageNamePartError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::CategoryNamePartError *>(&ee))
+        rb_raise(c_category_name_part_error, dynamic_cast<const paludis::CategoryNamePartError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::NameError *>(&ee))
         rb_raise(c_name_error, dynamic_cast<const paludis::NameError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::PackageDepAtomError *>(&ee))
@@ -165,6 +171,8 @@ extern "C"
     {
         c_paludis_module = rb_define_module("Paludis");
         c_name_error = rb_define_class_under(c_paludis_module, "NameError", rb_eRuntimeError);
+        c_category_name_part_error = rb_define_class_under(c_paludis_module, "CategoryNamePartError", c_name_error);
+        c_package_name_part_error = rb_define_class_under(c_paludis_module, "PackageNamePartError", c_name_error);
         c_bad_version_spec_error = rb_define_class_under(c_paludis_module, "BadVersionSpecError", c_name_error);
         c_package_dep_atom_error = rb_define_class_under(c_paludis_module, "PackageDepAtomError", rb_eRuntimeError);
         c_package_database_error = rb_define_class_under(c_paludis_module, "PackageDatabaseError", rb_eRuntimeError);
