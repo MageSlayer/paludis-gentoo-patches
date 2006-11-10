@@ -111,6 +111,7 @@ cat <<"END" > /mychroot/etc/paludis/licenses.conf
 # a few of these by turning off some default USE flags.
 * LGPL-2.1 LGPL-2 GPL-2 BSD MIT BZIP2 Artistic DB PSF-2.1.1 PSF-2.2
 * as-is tcp_wrappers_license freedist ZLIB openssl CRACKLIB PAM FLEX
+* less
 
 # These are needed to get Subversion.
 * Apache-1.1 Apache-2.0
