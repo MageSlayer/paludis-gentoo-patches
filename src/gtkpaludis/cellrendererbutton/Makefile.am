@@ -13,14 +13,14 @@ SUBDIRS = .
 
 INCLUDES = $(GTKDEPS_CFLAGS)
 
-if ENABLE_GTK
-
-noinst_LIBRARIES = libcellrendererbutton.a
-
-libcellrendererbutton_a_SOURCES = \
-	cellrendererbutton.cc cellrendererbutton.hh
-
-endif
+# if ENABLE_GTK
+# 
+# noinst_LIBRARIES = libcellrendererbutton.a
+# 
+# libcellrendererbutton_a_SOURCES = \
+# 	cellrendererbutton.cc cellrendererbutton.hh
+# 
+# endif
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in
