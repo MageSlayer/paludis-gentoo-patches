@@ -89,13 +89,14 @@ namespace paludis
 namespace
 {
     void
-    populate_deps_box(Gtk::ComboBoxText & box)
+    populate_deps_box(Gtk::ComboBoxText & box, const std::string & def)
     {
         box.append_text("Pre");
         box.append_text("Pre or post");
         box.append_text("Post");
         box.append_text("Try post");
         box.append_text("Discard");
+        box.set_active_text(def);
     }
 }
 
@@ -129,12 +130,15 @@ QueueOptions::QueueOptions() :
     _imp->reinstall_box.append_text("Never");
     _imp->reinstall_box.append_text("Always");
     _imp->reinstall_box.append_text("If USE changed");
+    _imp->reinstall_box.set_active_text("Never");
 
     _imp->circular_box.append_text("Error");
     _imp->circular_box.append_text("Discard");
+    _imp->circular_box.set_active_text("Error");
 
     _imp->upgrade_box.append_text("Always");
     _imp->upgrade_box.append_text("As needed");
+    _imp->upgrade_box.set_active_text("Always");
 
     append_page(_imp->dependencies_page, "Dependencies");
     _imp->dependencies_page.attach(_imp->uninstalled_deps_frame, 0, 1, 0, 1);
@@ -180,13 +184,13 @@ QueueOptions::QueueOptions() :
     _imp->installed_deps_table.attach(_imp->installed_deps_post_box, 1, 2, 2, 3,
             Gtk::EXPAND | Gtk::FILL, Gtk::AttachOptions(0));
 
-    populate_deps_box(_imp->installed_deps_pre_box);
-    populate_deps_box(_imp->installed_deps_runtime_box);
-    populate_deps_box(_imp->installed_deps_post_box);
+    populate_deps_box(_imp->installed_deps_pre_box, "Discard");
+    populate_deps_box(_imp->installed_deps_runtime_box, "Try post");
+    populate_deps_box(_imp->installed_deps_post_box, "Try post");
 
-    populate_deps_box(_imp->uninstalled_deps_pre_box);
-    populate_deps_box(_imp->uninstalled_deps_runtime_box);
-    populate_deps_box(_imp->uninstalled_deps_post_box);
+    populate_deps_box(_imp->uninstalled_deps_pre_box, "Pre");
+    populate_deps_box(_imp->uninstalled_deps_runtime_box, "Pre or post");
+    populate_deps_box(_imp->uninstalled_deps_post_box, "Post");
 }
 
 QueueOptions::~QueueOptions()

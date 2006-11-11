@@ -72,11 +72,12 @@ namespace
                     set_fixed_size(40, 40);
                 get_column(append_column("Text", columns.col_text) - 1)->set_expand(true);
 
-                CellRendererButton * const renderer = new CellRendererButton;
+                CellRendererButton * const renderer = new CellRendererButton(*this);
                 Gtk::TreeViewColumn * const column = new Gtk::TreeViewColumn("Button",
                         *Gtk::manage(renderer));
                 column->add_attribute(renderer->property_text(), columns.col_button);
                 renderer->property_width_chars() = 10;
+                renderer->set_column(column);
                 append_column(*column);
             }
 

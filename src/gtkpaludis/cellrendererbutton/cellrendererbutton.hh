@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_SRC_GTKPALUDIS_CELLRENDERERBUTTON_HH 1
 
 #include <gtkmm/cellrenderertext.h>
+#include <gtkmm/treeview.h>
 
 namespace gtkpaludis
 {
@@ -32,6 +33,19 @@ namespace gtkpaludis
     class CellRendererButton :
         public Gtk::CellRendererText
     {
+        private:
+            bool _button_pressed(GdkEventButton *);
+            bool _motion_notify(GdkEventMotion *);
+
+            Gtk::TreeView * const _owner;
+            Gtk::TreeModel::Path _focused_path;
+            Gtk::TreeViewColumn * _column;
+
+            bool _temporary_highlight_hack;
+
+            Glib::Property<unsigned int> _property_text_x_pad;
+            Glib::Property<unsigned int> _property_text_y_pad;
+
         protected:
             virtual void get_size_vfunc(Gtk::Widget & widget, const Gdk::Rectangle * cell_area,
                     int * x_offset, int * y_offset, int * width, int * height) const;
@@ -46,8 +60,31 @@ namespace gtkpaludis
                     const Gdk::Rectangle & cell_area, Gtk::CellRendererState flags);
 
         public:
-            CellRendererButton();
+            CellRendererButton(Gtk::TreeView & owner);
             virtual ~CellRendererButton();
+            void set_column(Gtk::TreeViewColumn * const column);
+
+            Glib::PropertyProxy<unsigned int> property_text_x_pad()
+            {
+                return _property_text_x_pad.get_proxy();
+            }
+
+            Glib::PropertyProxy_ReadOnly<unsigned int> property_text_x_pad() const
+            {
+                return Glib::PropertyProxy_ReadOnly<unsigned int>(this,
+                        "text-x-pad");
+            }
+
+            Glib::PropertyProxy<unsigned int> property_text_y_pad()
+            {
+                return _property_text_y_pad.get_proxy();
+            }
+
+            Glib::PropertyProxy_ReadOnly<unsigned int> property_text_y_pad() const
+            {
+                return Glib::PropertyProxy_ReadOnly<unsigned int>(this,
+                        "text-y-pad");
+            }
     };
 }
 

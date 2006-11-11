@@ -38,12 +38,26 @@ namespace
     }
 }
 
-CellRendererButton::CellRendererButton() :
+CellRendererButton::CellRendererButton(Gtk::TreeView & owner) :
     Glib::ObjectBase(typeid(CellRendererButton)),
-    Gtk::CellRendererText()
+    Gtk::CellRendererText(),
+    _owner(&owner),
+    _column(0),
+    _temporary_highlight_hack(false),
+    _property_text_x_pad(*this, "text-x-pad", 4),
+    _property_text_y_pad(*this, "text-y-pad", 4)
 {
     property_alignment() = Pango::ALIGN_CENTER;
     property_xalign() = 0.5;
+
+    _owner->add_events(Gdk::POINTER_MOTION_MASK | Gdk::BUTTON_MOTION_MASK |
+            Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_RELEASE_MASK | Gdk::ENTER_NOTIFY_MASK |
+            Gdk::LEAVE_NOTIFY_MASK);
+
+    _owner->signal_button_press_event().connect(sigc::mem_fun(
+                this, &CellRendererButton::_button_pressed), false);
+    _owner->signal_motion_notify_event().connect(sigc::mem_fun(
+                this, &CellRendererButton::_motion_notify), false);
 }
 
 CellRendererButton::~CellRendererButton()
@@ -57,8 +71,8 @@ CellRendererButton::get_size_vfunc(Gtk::Widget & widget, const Gdk::Rectangle * 
     Gtk::CellRendererText::get_size_vfunc(widget, cell_area, x_offset, y_offset,
             width, height);
 
-    const unsigned int x_pad = 4;
-    const unsigned int y_pad = 4;
+    const unsigned int x_pad = _property_text_x_pad.get_value();
+    const unsigned int y_pad = _property_text_y_pad.get_value();
     const float x_align = property_xalign();
     const float y_align = property_yalign();
 
@@ -102,14 +116,13 @@ CellRendererButton::render_vfunc(const Glib::RefPtr<Gdk::Drawable> & window,
     if (flags & Gtk::CELL_RENDERER_SELECTED)
         state = widget.has_focus() ? Gtk::STATE_SELECTED : Gtk::STATE_ACTIVE;
 #else
-    Gtk::StateType state(Gtk::STATE_ACTIVE);
+    Gtk::StateType state(_temporary_highlight_hack ? Gtk::STATE_SELECTED : Gtk::STATE_ACTIVE);
 #endif
-    const Gtk::ShadowType shadow = Gtk::SHADOW_OUT;
 
     Glib::RefPtr<Gdk::Window> window_casted = Glib::RefPtr<Gdk::Window>::cast_dynamic<>(window);
     if (window_casted)
     {
-        widget.get_style()->paint_box(window_casted, state, shadow, cell_area,
+        widget.get_style()->paint_box(window_casted, state, Gtk::SHADOW_OUT, cell_area,
                 widget, "button", cell_area.get_x() + x_offset + cell_x_pad,
                 cell_area.get_y() + y_offset + cell_y_pad, width - 1, height - 1);
 
@@ -128,5 +141,49 @@ CellRendererButton::activate_vfunc(GdkEvent *, Gtk::Widget &,
         const Gdk::Rectangle &, Gtk::CellRendererState)
 {
     return false;
+}
+
+bool
+CellRendererButton::_button_pressed(GdkEventButton * event)
+{
+    if (! (event->type & GDK_BUTTON_PRESS && event->button == 1))
+        return false;
+
+    return true;
+}
+
+bool
+CellRendererButton::_motion_notify(GdkEventMotion * event)
+{
+    Gtk::TreeModel::Path path, old_focused_path(_focused_path);
+    Gtk::TreeViewColumn * column;
+    int cell_x, cell_y;
+    if (_owner->get_path_at_pos(static_cast<int>(event->x), static_cast<int>(event->y),
+                path, column, cell_x, cell_y)
+            && (_column && column == _column))
+        _focused_path = path;
+    else
+        _focused_path = Gtk::TreePath();
+
+    _temporary_highlight_hack = ! _focused_path.empty();
+
+    /* path comparisons are a bit weird */
+    if (old_focused_path.empty() && ! _focused_path.empty())
+        _owner->queue_draw();
+    else if (_focused_path.empty() && ! old_focused_path.empty())
+        _owner->queue_draw();
+    else if (_focused_path.empty() && old_focused_path.empty())
+    {
+        /* nothing */
+    }
+    else if (old_focused_path != _focused_path)
+        _owner->queue_draw();
+    return false;
+}
+
+void
+CellRendererButton::set_column(Gtk::TreeViewColumn * const column)
+{
+    _column = column;
 }
 

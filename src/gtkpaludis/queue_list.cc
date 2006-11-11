@@ -192,10 +192,14 @@ QueueList::set_model_show_dep_columns(Glib::RefPtr<Gtk::ListStore> new_model)
     append_column("Use", _imp->columns.col_use);
     append_column("Tags", _imp->columns.col_tags);
     {
-        CellRendererButton * const renderer = new CellRendererButton;
+        CellRendererButton * const renderer = new CellRendererButton(*this);
+        renderer->property_text_x_pad() = 0;
+        renderer->property_text_y_pad() = 0;
+
         Gtk::TreeViewColumn * const column = new Gtk::TreeViewColumn("Why",
                 *Gtk::manage(renderer));
         column->add_attribute(renderer->property_text(), _imp->columns.col_why);
+        renderer->set_column(column);
         append_column(*column);
     }
 
