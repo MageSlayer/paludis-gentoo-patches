@@ -24,7 +24,10 @@
 #include "paludis_thread.hh"
 #include <gtkmm/liststore.h>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/environment/default/default_environment.hh>
 #include <list>
+#include <set>
 
 #ifdef USE_BROKEN_CELL_RENDERER_BUTTON
 #  include <cellrendererbutton/cellrendererbutton.hh>
@@ -40,6 +43,7 @@ namespace
     {
         public:
             Gtk::TreeModelColumn<Glib::ustring> col_package;
+            Gtk::TreeModelColumn<Glib::ustring> col_slot;
             Gtk::TreeModelColumn<Glib::ustring> col_status;
             Gtk::TreeModelColumn<Glib::ustring> col_use;
             Gtk::TreeModelColumn<Glib::ustring> col_tags;
@@ -50,6 +54,7 @@ namespace
             Columns()
             {
                 add(col_package);
+                add(col_slot);
                 add(col_status);
                 add(col_use);
                 add(col_tags);
@@ -58,6 +63,114 @@ namespace
 #endif
             }
     };
+
+    template <typename T_>
+    std::string
+    pango_colour(const std::string & c, const T_ & s)
+    {
+        return "<span foreground=\"" + c + "\">" + stringify(s) + "</span>";
+    }
+
+    std::string::size_type
+    use_expand_delim_pos(const UseFlagName & u, const UseFlagNameCollection::ConstPointer c)
+    {
+        for (UseFlagNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+            if (0 == u.data().compare(0, i->data().length(), i->data(), 0, i->data().length()))
+                return i->data().length();
+        return std::string::npos;
+    }
+
+    std::string
+    make_pretty_use_flags_string(const Environment * const env, const PackageDatabaseEntry & p,
+            VersionMetadata::ConstPointer metadata, const PackageDatabaseEntry * const other_p)
+    {
+        static const std::string cl_flag_on("#00cc00");
+        static const std::string cl_flag_off("#cc0000");
+
+        std::ostringstream c;
+
+        if (metadata->get_ebuild_interface())
+        {
+            const RepositoryUseInterface * const use_interface(
+                    env->package_database()->
+                    fetch_repository(p.repository)->use_interface);
+            std::set<UseFlagName> iuse;
+            WhitespaceTokeniser::get_instance()->tokenise(
+                    metadata->get_ebuild_interface()->iuse,
+                    create_inserter<UseFlagName>(std::inserter(iuse, iuse.end())));
+
+            /* display normal use flags first */
+            for (std::set<UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
+                    i != i_end ; ++i)
+            {
+                if (std::string::npos != use_expand_delim_pos(*i, use_interface->use_expand_prefixes()))
+                    continue;
+
+                if (env->query_use(*i, &p))
+                {
+                    if (use_interface && use_interface->query_use_force(*i, &p))
+                        c << " " << pango_colour(cl_flag_on, "(" + stringify(*i) + ")");
+                    else
+                        c << " " << pango_colour(cl_flag_on, *i);
+                }
+                else
+                {
+                    if (use_interface && use_interface->query_use_mask(*i, &p))
+                        c << " " << pango_colour(cl_flag_off, "(-" + stringify(*i) + ")");
+                    else
+                        c << " " << pango_colour(cl_flag_off, "-" + stringify(*i));
+                }
+
+                if (other_p)
+                    if (env->query_use(*i, &p) != env->query_use(*i, other_p))
+                        c << "*";
+            }
+
+            /* now display expand flags */
+            UseFlagName old_expand_name("OFTEN_NOT_BEEN_ON_BOATS");
+            for (std::set<UseFlagName>::const_iterator i(iuse.begin()), i_end(iuse.end()) ;
+                    i != i_end ; ++i)
+            {
+                std::string::size_type delim_pos;
+                if (std::string::npos == ((delim_pos = use_expand_delim_pos(*i,
+                                    use_interface->use_expand_prefixes()))))
+                    continue;
+                if (use_interface->use_expand_hidden_prefixes()->count(UseFlagName(i->data().substr(
+                                    0, delim_pos))))
+                    continue;
+
+                UseFlagName expand_name(i->data().substr(0, delim_pos)),
+                            expand_value(i->data().substr(delim_pos + 1));
+
+                if (expand_name != old_expand_name)
+                {
+                    c << " " << expand_name << ":";
+                    old_expand_name = expand_name;
+                }
+
+                if (env->query_use(*i, &p))
+                {
+                    if (use_interface && use_interface->query_use_force(*i, &p))
+                        c << " " << pango_colour(cl_flag_on, "(" + stringify(expand_value) + ")");
+                    else
+                        c << " " << pango_colour(cl_flag_on, expand_value);
+                }
+                else
+                {
+                    if (use_interface && use_interface->query_use_mask(*i, &p))
+                        c << " " << pango_colour(cl_flag_off, "(-" + stringify(expand_value) + ")");
+                    else
+                        c << " " << pango_colour(cl_flag_off, "-" + stringify(expand_value));
+                }
+
+                if (other_p)
+                    if (env->query_use(*i, &p) != env->query_use(*i, other_p))
+                        c << "*";
+            }
+        }
+
+        return c.str();
+    }
 }
 
 namespace paludis
@@ -179,7 +292,39 @@ QueueList::Populate::display_entry(const paludis::DepListEntry & e)
         return;
 
     Gtk::TreeModel::Row row = *(_model->append());
-    row[_q->_imp->columns.col_package] = stringify(e.package);
+
+    if (e.package.repository == DefaultEnvironment::get_instance()->package_database()->favourite_repository())
+        row[_q->_imp->columns.col_package] = stringify(e.package.name) + "-" +
+            stringify(e.package.version);
+    else
+        row[_q->_imp->columns.col_package] = stringify(e.package);
+
+    PackageDatabaseEntryCollection::Pointer existing(DefaultEnvironment::get_instance()->package_database()->
+            query(PackageDepAtom::Pointer(new PackageDepAtom(stringify(
+                            e.package.name))), is_installed_only));
+
+    if (existing->empty())
+        row[_q->_imp->columns.col_status] = "N";
+    else
+    {
+        existing = DefaultEnvironment::get_instance()->package_database()->query(PackageDepAtom::Pointer(
+                    new PackageDepAtom(stringify(e.package.name) + ":" +
+                        stringify(e.metadata->slot))),
+                is_installed_only);
+        if (existing->empty())
+            row[_q->_imp->columns.col_status] = "S";
+        else if (existing->last()->version < e.package.version)
+            row[_q->_imp->columns.col_status] = "U " + stringify(existing->last()->version);
+        else if (existing->last()->version > e.package.version)
+            row[_q->_imp->columns.col_status] = "D " + stringify(existing->last()->version);
+        else
+            row[_q->_imp->columns.col_status] = "R";
+    }
+
+    row[_q->_imp->columns.col_slot] = ":" + stringify(e.metadata->slot);
+    row[_q->_imp->columns.col_use] = make_pretty_use_flags_string(DefaultEnvironment::get_instance(),
+            e.package, e.metadata, 0);
+
 #ifdef USE_BROKEN_CELL_RENDERER_BUTTON
     row[_q->_imp->columns.col_why] = " ... ";
 #endif
@@ -197,8 +342,15 @@ QueueList::set_model_show_dep_columns(Glib::RefPtr<Gtk::ListStore> new_model)
 {
     remove_all_columns();
     get_column(append_column("Package", _imp->columns.col_package) - 1)->set_expand(true);
-    append_column("", _imp->columns.col_status);
-    append_column("Use", _imp->columns.col_use);
+    append_column("Slot", _imp->columns.col_slot);
+    append_column("Status", _imp->columns.col_status);
+    {
+        Gtk::CellRendererText * const renderer(new Gtk::CellRendererText);
+        Gtk::TreeViewColumn * const column(new Gtk::TreeViewColumn("Use", *Gtk::manage(renderer)));
+        column->add_attribute(renderer->property_markup(), _imp->columns.col_use);
+        append_column(*column);
+    }
+
     append_column("Tags", _imp->columns.col_tags);
 
 #ifdef USE_BROKEN_CELL_RENDERER_BUTTON
