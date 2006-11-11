@@ -131,4 +131,3 @@ RepositoriesList::current_repository()
         return RepositoryName("no-repository");
 }
 
-

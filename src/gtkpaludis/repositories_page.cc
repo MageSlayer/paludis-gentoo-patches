@@ -46,9 +46,11 @@ namespace paludis
 
         Gtk::HButtonBox buttons_box;
         Gtk::Button sync_button;
+        Gtk::Button sync_all_button;
 
         Implementation() :
-            sync_button("Sync")
+            sync_button("Sync"),
+            sync_all_button("Sync all")
         {
         }
     };
@@ -74,10 +76,14 @@ RepositoriesPage::RepositoriesPage() :
     _imp->buttons_box.set_spacing(5);
     _imp->buttons_box.set_layout(Gtk::BUTTONBOX_END);
     _imp->buttons_box.add(_imp->sync_button);
+    _imp->buttons_box.add(_imp->sync_all_button);
     attach(_imp->buttons_box, 1, 2, 1, 2, Gtk::FILL | Gtk::EXPAND, Gtk::AttachOptions(0));
 
     _imp->sync_button.signal_clicked().connect(sigc::mem_fun(this,
                 &RepositoriesPage::_sync_button_clicked));
+    _imp->sync_button.set_sensitive(false);
+    _imp->sync_all_button.signal_clicked().connect(sigc::mem_fun(this,
+                &RepositoriesPage::_sync_all_button_clicked));
     _imp->repositories_list.get_selection()->signal_changed().connect(sigc::mem_fun(this,
                 &RepositoriesPage::_repository_list_selection_changed));
 }
@@ -96,6 +102,8 @@ void
 RepositoriesPage::_repository_list_selection_changed()
 {
     _imp->repository_info.populate(_imp->repositories_list.current_repository());
+    _imp->sync_button.set_sensitive(_imp->repositories_list.current_repository().data()
+            != "no-repository");
 }
 
 namespace
@@ -104,11 +112,19 @@ namespace
         public PaludisThread::Launchable
     {
         private:
+            bool _all;
             RepositoryName _name;
 
         public:
             Sync(const RepositoryName & name) :
+                _all(false),
                 _name(name)
+            {
+            }
+
+            Sync() :
+                _all(true),
+                _name("dummy")
             {
             }
 
@@ -118,9 +134,13 @@ namespace
     void
     Sync::operator() ()
     {
-        StatusBarMessage m1(this, "Syncing repository '" + stringify(_name) + "'...");
+        StatusBarMessage m1(this, _all ?
+                "Syncing all repositories..." :
+                "Syncing repository '" + stringify(_name) + "'...");
+
         OurSyncTask task(this);
-        task.add_target(stringify(_name));
+        if (! _all)
+            task.add_target(stringify(_name));
         task.execute();
     }
 }
@@ -133,5 +153,17 @@ RepositoriesPage::_sync_button_clicked()
         return;
 
     PaludisThread::get_instance()->launch(Sync::Pointer(new Sync(current_repository)));
+}
+
+void
+RepositoriesPage::_sync_all_button_clicked()
+{
+    sync_all();
+}
+
+void
+RepositoriesPage::sync_all()
+{
+    PaludisThread::get_instance()->launch(Sync::Pointer(new Sync));
 }
 

@@ -41,12 +41,14 @@ namespace paludis
         Gtk::Button recalculate_button;
         Gtk::Button install_button;
         Gtk::Button clear_button;
+        Gtk::Button why_button;
 
         Implementation(QueuePage * const page) :
             queue_list(page),
             recalculate_button("Recalculate"),
             install_button("Install"),
-            clear_button("Clear")
+            clear_button("Clear"),
+            why_button("Why?")
         {
         }
     };
@@ -68,6 +70,7 @@ QueuePage::QueuePage() :
     _imp->queue_buttons.add(_imp->recalculate_button);
     _imp->queue_buttons.add(_imp->install_button);
     _imp->queue_buttons.add(_imp->clear_button);
+    _imp->queue_buttons.add(_imp->why_button);
     attach(_imp->queue_buttons, 1, 2, 1, 2, Gtk::AttachOptions(0), Gtk::AttachOptions(0));
 
     _imp->queue_list.invalidate();
@@ -103,6 +106,12 @@ QueuePage::set_queue_list_calculated(bool b)
 
 void
 QueuePage::_recalculate_button_clicked()
+{
+    _imp->queue_list.calculate();
+}
+
+void
+QueuePage::recalculate()
 {
     _imp->queue_list.calculate();
 }

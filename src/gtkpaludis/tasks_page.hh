@@ -22,17 +22,25 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name.hh>
-#include <gtkmm/scrolledwindow.h>
+#include <gtkmm/box.h>
 
 namespace gtkpaludis
 {
     class TasksPage :
-        public Gtk::ScrolledWindow,
+        public Gtk::VBox,
         private paludis::PrivateImplementationPattern<TasksPage>
     {
+        private:
+            void _task_list_selection_changed();
+            void _go_button_clicked();
+
         public:
             TasksPage();
             virtual ~TasksPage();
+
+            void sync_action();
+            void security_action();
+            void world_action();
     };
 }
 

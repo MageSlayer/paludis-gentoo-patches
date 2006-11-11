@@ -79,7 +79,7 @@ MainWindow::MainWindow() :
 {
     set_title("gtkpaludis");
     set_border_width(2);
-    set_default_size(700, 550);
+    set_default_size(600, 400);
 
     _imp->main_notebook.set_border_width(5);
     _imp->main_notebook.signal_switch_page().connect(sigc::mem_fun(this,
@@ -187,6 +187,12 @@ QueuePage *
 MainWindow::queue_page()
 {
     return &_imp->queue_page;
+}
+
+RepositoriesPage *
+MainWindow::repositories_page()
+{
+    return &_imp->repositories_page;
 }
 
 void

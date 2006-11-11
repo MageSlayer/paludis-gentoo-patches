@@ -39,6 +39,7 @@ namespace gtkpaludis
 
             void clear();
             void add_target(const std::string &);
+            void recalculate();
             void set_queue_list_calculated(bool);
     };
 }

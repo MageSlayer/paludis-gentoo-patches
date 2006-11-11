@@ -23,9 +23,12 @@
 #include "install.hh"
 #include "paludis_thread.hh"
 #include <gtkmm/liststore.h>
-#include <cellrendererbutton/cellrendererbutton.hh>
 #include <paludis/util/stringify.hh>
 #include <list>
+
+#ifdef USE_BROKEN_CELL_RENDERER_BUTTON
+#  include <cellrendererbutton/cellrendererbutton.hh>
+#endif
 
 using namespace paludis;
 using namespace gtkpaludis;
@@ -40,7 +43,9 @@ namespace
             Gtk::TreeModelColumn<Glib::ustring> col_status;
             Gtk::TreeModelColumn<Glib::ustring> col_use;
             Gtk::TreeModelColumn<Glib::ustring> col_tags;
+#ifdef USE_BROKEN_CELL_RENDERER_BUTTON
             Gtk::TreeModelColumn<Glib::ustring> col_why;
+#endif
 
             Columns()
             {
@@ -48,7 +53,9 @@ namespace
                 add(col_status);
                 add(col_use);
                 add(col_tags);
+#ifdef USE_BROKEN_CELL_RENDERER_BUTTON
                 add(col_why);
+#endif
             }
     };
 }
@@ -173,7 +180,9 @@ QueueList::Populate::display_entry(const paludis::DepListEntry & e)
 
     Gtk::TreeModel::Row row = *(_model->append());
     row[_q->_imp->columns.col_package] = stringify(e.package);
+#ifdef USE_BROKEN_CELL_RENDERER_BUTTON
     row[_q->_imp->columns.col_why] = " ... ";
+#endif
 }
 
 void
@@ -191,6 +200,8 @@ QueueList::set_model_show_dep_columns(Glib::RefPtr<Gtk::ListStore> new_model)
     append_column("", _imp->columns.col_status);
     append_column("Use", _imp->columns.col_use);
     append_column("Tags", _imp->columns.col_tags);
+
+#ifdef USE_BROKEN_CELL_RENDERER_BUTTON
     {
         CellRendererButton * const renderer = new CellRendererButton(*this);
         renderer->property_text_x_pad() = 0;
@@ -202,6 +213,7 @@ QueueList::set_model_show_dep_columns(Glib::RefPtr<Gtk::ListStore> new_model)
         renderer->set_column(column);
         append_column(*column);
     }
+#endif
 
     _imp->model.swap(new_model);
     set_model(_imp->model);

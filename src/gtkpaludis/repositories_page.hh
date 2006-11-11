@@ -32,12 +32,14 @@ namespace gtkpaludis
         private:
             void _repository_list_selection_changed();
             void _sync_button_clicked();
+            void _sync_all_button_clicked();
 
         public:
             RepositoriesPage();
             virtual ~RepositoriesPage();
 
             void populate();
+            void sync_all();
     };
 }
 

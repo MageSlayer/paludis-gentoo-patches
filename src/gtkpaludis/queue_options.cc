@@ -73,14 +73,14 @@ namespace paludis
             dependencies_page(2, 1, false),
             installed_deps_frame("Installed packages"),
             installed_deps_table(2, 3, false),
-            installed_deps_pre_label("Pre dependencies:", Gtk::ALIGN_LEFT),
-            installed_deps_runtime_label("Runtime dependencies:", Gtk::ALIGN_LEFT),
-            installed_deps_post_label("Post dependencies:", Gtk::ALIGN_LEFT),
+            installed_deps_pre_label("Pre:", Gtk::ALIGN_LEFT),
+            installed_deps_runtime_label("Runtime:", Gtk::ALIGN_LEFT),
+            installed_deps_post_label("Post:", Gtk::ALIGN_LEFT),
             uninstalled_deps_frame("Uninstalled packages"),
             uninstalled_deps_table(2, 3, false),
-            uninstalled_deps_pre_label("Pre dependencies:", Gtk::ALIGN_LEFT),
-            uninstalled_deps_runtime_label("Runtime dependencies:", Gtk::ALIGN_LEFT),
-            uninstalled_deps_post_label("Post dependencies:", Gtk::ALIGN_LEFT)
+            uninstalled_deps_pre_label("Pre:", Gtk::ALIGN_LEFT),
+            uninstalled_deps_runtime_label("Runtime:", Gtk::ALIGN_LEFT),
+            uninstalled_deps_post_label("Post:", Gtk::ALIGN_LEFT)
         {
         }
     };
