@@ -214,7 +214,7 @@ InstallTask::execute()
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
-        if (dep->already_installed)
+        if (dep->skip_install)
             continue;
         _imp->current_dep_list_entry = dep;
 

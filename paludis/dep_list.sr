@@ -44,7 +44,7 @@ make_class_DepListEntry()
 
     key generation long
     key state DepListEntryState
-    key already_installed bool
+    key skip_install bool
 
     allow_named_args
 

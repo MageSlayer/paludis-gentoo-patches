@@ -617,7 +617,7 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                 .generation(_imp->merge_list_generation)
                 .state(dle_no_deps)
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
-                .already_installed(false))),
+                .skip_install(metadata->get_virtual_interface()))),
         our_merge_entry_post_position(our_merge_entry_position);
 
     if (tag)
@@ -669,7 +669,7 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                         .generation(_imp->merge_list_generation)
                         .state(dle_has_all_deps)
                         .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
-                        .already_installed(false)));
+                        .skip_install(m->get_virtual_interface())));
         }
     }
 
@@ -744,7 +744,7 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::C
                 .generation(_imp->merge_list_generation)
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
-                .already_installed(true)));
+                .skip_install(true)));
 
     if (tag)
         our_merge_entry->tags->insert(DepTagEntry::create()

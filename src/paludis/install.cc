@@ -406,12 +406,12 @@ namespace
     void
     OurInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     {
-        if (d.already_installed && CommandLine::get_instance()->a_show_install_reasons.argument() != "full")
+        if (d.skip_install && CommandLine::get_instance()->a_show_install_reasons.argument() != "full")
             return;
 
         Context context("When displaying entry '" + stringify(d.package) + "':");
 
-        cout << "* " << colour(d.already_installed ? cl_unimportant : cl_package_name,
+        cout << "* " << colour(d.skip_install ? cl_unimportant : cl_package_name,
                 d.package.name);
 
         /* display version, unless it's 0 and our category is "virtual" */
@@ -426,7 +426,7 @@ namespace
 
         /* display slot name, unless it's 0 */
         if (SlotName("0") != d.metadata->slot)
-            cout << colour(d.already_installed ? cl_unimportant : cl_slot,
+            cout << colour(d.skip_install ? cl_unimportant : cl_slot,
                     " {:" + stringify(d.metadata->slot) + "}");
 
         /* indicate [U], [S], [N] or [-]. display existing version, if we're
@@ -435,7 +435,7 @@ namespace
                 query(PackageDepAtom::Pointer(new PackageDepAtom(stringify(
                                 d.package.name))), is_installed_only));
 
-        if (d.already_installed)
+        if (d.skip_install)
             cout << colour(cl_unimportant, " [-]");
         else if (existing->empty())
         {
@@ -522,7 +522,7 @@ namespace
         PackageDatabaseEntry p(d.package);
 
         /* display USE flags */
-        if (! d.already_installed)
+        if (! d.skip_install)
             std::cout << make_pretty_use_flags_string(DefaultEnvironment::get_instance(), p, d.metadata,
                     (existing->empty() ? 0 : &*existing->last()));
 
@@ -547,7 +547,7 @@ namespace
             if (! tag_titles.empty())
             {
                 tag_titles.erase(tag_titles.length() - 2);
-                cout << " " << colour(d.already_installed ? cl_unimportant : cl_tag,
+                cout << " " << colour(d.skip_install ? cl_unimportant : cl_tag,
                         "<" + tag_titles + ">");
             }
 
@@ -582,7 +582,7 @@ namespace
                         deps.append(stringify(count - max_count + 1) + " more, ");
 
                     deps.erase(deps.length() - 2);
-                    cout << " " << colour(d.already_installed ? cl_unimportant : cl_tag,
+                    cout << " " << colour(d.skip_install ? cl_unimportant : cl_tag,
                             "<" + deps + ">");
                 }
             }
@@ -609,7 +609,7 @@ namespace
                 "--install --preserve-world";
             for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
                     i != i_end ; ++i)
-                if (! i->already_installed)
+                if (! i->skip_install)
                     cerr << " =" << i->package.name << "-" << i->package.version << "::" << i->package.repository;
             cerr << endl;
         }
