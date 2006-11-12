@@ -86,7 +86,7 @@ _adjutrix() {
                     ;;
 
                 --repository-dir|-D)
-                    COMPREPLY=($(compgen -o filenames -d -- "${cur}"))
+                    COMPREPLY=($(compgen -d -- "${cur}"))
                     return 0
                     ;;
 
@@ -98,8 +98,6 @@ _adjutrix() {
                     ;;
 
                 *)
-                    COMPREPLY=()
-                    return 0
                     ;;
             esac
             ;;
