@@ -670,6 +670,7 @@ dnl {{{ output
 AM_CONFIG_HEADER(config.h)
 AC_OUTPUT(
 	Makefile
+	bash-completion/Makefile
 	cran/Makefile
 	doc/Makefile
 	doc/doxygen.conf

@@ -1,0 +1,108 @@
+# Bash completion function for adjutrix
+# Written by Mike Kelly
+# vim: set et sw=4 sts=4 ts=4 ft=sh :
+
+# NOTE: This is still a work in progress, don't expect it to work well or
+# properly right now.
+
+_adjutrix_get_repodir() {
+    local repodir
+    [[ -f ./profiles/repo_name ]] && repodir=$(readlink -f $(pwd))
+    [[ -f ../profiles/repo_name ]] && repodir=$(readlink -f $(pwd)/..)
+    [[ -f ../../profiles/repo_name ]] && repodir=$(readlink -f $(pwd)/../..)
+    [[ -z "${repodir}" ]] && return 1
+    echo "${repodir}"
+}
+
+_adjutrix() {
+    local cur prev opts repodir
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+
+    # Figure out what our repository dir is
+    for i in $(seq 0 ${COMP_CWORD}) ; do
+        if [[ ${COMP_WORDS[i]} == "-D" \
+            || ${COMP_WORDS[i]} == "--repository-dir" ]]
+        then
+            repodir=${COMP_WORDS[i+1]}
+        fi
+    done
+    [[ -z "${repodir}" ]] && repodir="$(_adjutrix_get_repodir)"
+
+    opts="--find-stable-candidates -s \
+        --find-dropped-keywords -d \
+        --find-insecure-packages -i \
+        --keyword-graph -k \
+        --reverse-deps -r \
+        --display-profiles-use -u \
+        --display-default-system-resolution -S \
+        --version -V \
+        --help -h \
+        --log-level \
+        --no-colour \
+        --no-color \
+        --repository-dir -D \
+        --category -C \
+        --package -P \
+        --profile -p \
+        --unstable -U"
+
+    case "${cur}" in
+        -*)
+            COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+            return 0
+            ;;
+        *)
+            case "${prev}" in
+                ## Enum operators
+                --log-level)
+                    COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
+                    return 0
+                    ;;
+
+                --category)
+                    [[ -z "${repodir}" ]] && return 0
+                    COMPREPLY=($(compgen -W "$(< ${repodir}/profiles/categories)" -- "${cur}"))
+                    return 0
+                    ;;
+                --package)
+                    [[ -z "${repodir}" ]] && return 0
+                    # borrowed from the gentoo bashcomp script
+                    local p
+                    COMPREPLY=($(compgen -W "$(\
+                        builtin cd ${repodir}; \
+                        for p in *-*/${cur}*; do \
+                            [[ -d ${p} ]] && \
+                            echo ${p##*/} ; \
+                        done)" -- "${cur}"))
+                    return 0
+                    ;;
+
+                --find-stable-candidates|-s|--find-dropped-keywords|-d)
+                    [[ -z "${repodir}" ]] && return 0
+                    COMPREPLY=($(compgen -W "$(< ${repodir}/profiles/arch.list)" -- "${cur}"))
+                    return 0
+                    ;;
+
+                --repository-dir|-D)
+                    COMPREPLY=($(compgen -o filenames -d -- "${cur}"))
+                    return 0
+                    ;;
+
+                --profile|-p)
+                    COMPREPLY=($(compgen -W "$(\
+                        grep -ve ^\# -ve ^\$ ${repodir}/profiles/profiles.desc \
+                        |awk '{print $2}')" -- "${cur}"))
+                    return 0
+                    ;;
+
+                *)
+                    COMPREPLY=()
+                    return 0
+                    ;;
+            esac
+            ;;
+    esac
+}
+complete -F _adjutrix adjutrix
