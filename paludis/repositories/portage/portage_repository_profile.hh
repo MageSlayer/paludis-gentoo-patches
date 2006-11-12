@@ -72,7 +72,7 @@ namespace paludis
             bool use_forced(const UseFlagName &, const PackageDatabaseEntry * const) const;
 
             /// Use flag state, ignoring mask and force?
-            UseFlagState use_state_ignoring_masks(const UseFlagName &) const;
+            UseFlagState use_state_ignoring_masks(const UseFlagName &, const PackageDatabaseEntry * const) const;
 
             ///\}
 

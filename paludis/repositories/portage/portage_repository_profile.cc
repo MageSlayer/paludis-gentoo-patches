@@ -40,6 +40,36 @@
 
 using namespace paludis;
 
+namespace
+{
+    typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
+    typedef MakeHashedMap<std::string, std::string>::Type EnvironmentVariablesMap;
+    typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
+    typedef MakeHashedMap<QualifiedPackageName, std::list<PackageDepAtom::ConstPointer> >::Type PackageMaskMap;
+
+    typedef MakeHashedMap<UseFlagName, bool>::Type FlagStatusMap;
+    typedef std::list<std::pair<PackageDepAtom::ConstPointer, FlagStatusMap> > PackageFlagStatusMapList;
+
+    struct StackedValues
+    {
+        std::string origin;
+
+        FlagStatusMap use;
+        FlagStatusMap use_mask;
+        FlagStatusMap use_force;
+        PackageFlagStatusMapList package_use;
+        PackageFlagStatusMapList package_use_mask;
+        PackageFlagStatusMapList package_use_force;
+
+        StackedValues(const std::string & o) :
+            origin(o)
+        {
+        }
+    };
+
+    typedef std::list<StackedValues> StackedValuesList;
+}
+
 namespace paludis
 {
     /**
@@ -52,33 +82,18 @@ namespace paludis
     class Implementation<PortageRepositoryProfile> :
         public InternalCounted<PortageRepositoryProfile>
     {
-        public:
-            ///\name Convenience typedefs
-            ///\{
-
-            typedef MakeHashedMap<UseFlagName, UseFlagState>::Type UseMap;
-            typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
-            typedef MakeHashedMap<std::string, std::string>::Type EnvironmentVariablesMap;
-            typedef MakeHashedMap<QualifiedPackageName,
-                    std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> > >::Type PackageUseMaskMap;
-            typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
-            typedef MakeHashedMap<QualifiedPackageName, std::list<PackageDepAtom::ConstPointer> >::Type PackageMaskMap;
-
-            ///\}
-
         private:
             void load_profile_directory_recursively(const FSEntry & dir);
             void load_profile_parent(const FSEntry & dir);
             void load_profile_make_defaults(const FSEntry & dir);
 
+            void load_basic_use_file(const FSEntry & file, FlagStatusMap & m);
+            void load_atom_use_file(const FSEntry & file, PackageFlagStatusMapList & m);
+
             void add_use_expand_to_use();
             void make_vars_from_file_vars();
             void handle_profile_arch_var();
 
-            ProfileFile use_mask_file;
-            ProfileFile package_use_mask_file;
-            ProfileFile use_force_file;
-            ProfileFile package_use_force_file;
             ProfileFile packages_file;
             ProfileFile virtuals_file;
             ProfileFile package_mask_file;
@@ -88,19 +103,6 @@ namespace paludis
             ///\{
 
             const Environment * const env;
-
-            ///\}
-
-            ///\name Use flags
-            ///\{
-
-            UseMap use;
-            UseFlagSet use_expand;
-            UseFlagSet use_expand_hidden;
-            UseFlagSet use_mask;
-            UseFlagSet use_force;
-            PackageUseMaskMap package_use_mask;
-            PackageUseMaskMap package_use_force;
 
             ///\}
 
@@ -126,19 +128,19 @@ namespace paludis
 
             ///\}
 
+            ///\name USE related values
+            ///\{
+
+            UseFlagSet use_expand;
+            UseFlagSet use_expand_hidden;
+            StackedValuesList stacked_values_list;
+
+            ///\}
+
             ///\name Masks
             ///\{
 
             PackageMaskMap package_mask;
-
-            ///\}
-
-            ///\name Queries
-            ///\{
-
-            bool use_mask_or_force(const UseFlagName & u, const PackageDatabaseEntry * const e,
-                    const std::string & mask_or_force, const UseFlagSet & global,
-                    const PackageUseMaskMap & package) const;
 
             ///\}
 
@@ -181,13 +183,17 @@ Implementation<PortageRepositoryProfile>::load_profile_directory_recursively(con
         return;
     }
 
+    stacked_values_list.push_back(StackedValues(stringify(dir)));
+
     load_profile_parent(dir);
     load_profile_make_defaults(dir);
 
-    use_mask_file.add_file(dir / "use.mask");
-    package_use_mask_file.add_file(dir / "package.use.mask");
-    use_force_file.add_file(dir / "use.force");
-    package_use_force_file.add_file(dir / "package.use.force");
+    load_basic_use_file(dir / "use.mask", stacked_values_list.back().use_mask);
+    load_basic_use_file(dir / "use.force", stacked_values_list.back().use_force);
+    load_atom_use_file(dir / "package.use", stacked_values_list.back().package_use);
+    load_atom_use_file(dir / "package.use.mask", stacked_values_list.back().package_use_mask);
+    load_atom_use_file(dir / "package.use.force", stacked_values_list.back().package_use_force);
+
     packages_file.add_file(dir / "packages");
     virtuals_file.add_file(dir / "virtuals");
     package_mask_file.add_file(dir / "package.mask");
@@ -247,9 +253,9 @@ Implementation<PortageRepositoryProfile>::load_profile_make_defaults(const FSEnt
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
             if ('-' == u->at(0))
-                use[UseFlagName(u->substr(1))] = use_disabled;
+                stacked_values_list.back().use[UseFlagName(u->substr(1))] = false;
             else
-                use[UseFlagName(*u)] = use_enabled;
+                stacked_values_list.back().use[UseFlagName(*u)] = true;
     }
     catch (const NameError & e)
     {
@@ -293,136 +299,6 @@ Implementation<PortageRepositoryProfile>::load_profile_make_defaults(const FSEnt
 void
 Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 {
-    try
-    {
-        Context context("When parsing use.mask:");
-        std::copy(use_mask_file.begin(), use_mask_file.end(), create_inserter<UseFlagName>(
-                    std::inserter(use_mask, use_mask.begin())));
-    }
-    catch (const NameError & e)
-    {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading use.mask "
-                " failed due to exception: " + stringify(e.message()) + " (" + e.what() + ")");
-    }
-
-    try
-    {
-        Context context("When parsing use.force:");
-        std::copy(use_force_file.begin(), use_force_file.end(), create_inserter<UseFlagName>(
-                    std::inserter(use_force, use_force.begin())));
-    }
-    catch (const NameError & e)
-    {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading use.force "
-                " failed due to exception: " + stringify(e.message()) + " (" + e.what() + ")");
-    }
-
-    try
-    {
-        Context context("When parsing package.use.mask:");
-
-        for (ProfileFile::Iterator line(package_use_mask_file.begin()), line_end(package_use_mask_file.end()) ;
-                line != line_end ; ++line)
-        {
-            std::list<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-            if (tokens.size() < 2)
-                continue;
-
-            std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end());
-            PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
-            QualifiedPackageName p(d->package());
-
-            PackageUseMaskMap::iterator i(package_use_mask.find(p));
-            if (package_use_mask.end() == i)
-                i = package_use_mask.insert(std::make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer,
-                            UseFlagName> >())).first;
-
-            for ( ; t != t_end ; ++t)
-            {
-                if (0 == t->compare(0, 1, "-"))
-                {
-                    UseFlagName r(t->substr(1));
-                    bool found(false);
-                    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator
-                            e(i->second.begin()), e_end(i->second.end()) ; e != e_end ; )
-                    {
-                        if (stringify(*e->first) == stringify(*d) && e->second == r)
-                        {
-                            found = true;
-                            i->second.erase(e++);
-                        }
-                        else
-                            ++e;
-                    }
-
-                    if (! found)
-                        Log::get_instance()->message(ll_qa, lc_context, "No match for '" + stringify(*line) + "'");
-                }
-                else
-                    i->second.push_back(std::make_pair(d, UseFlagName(*t)));
-            }
-        }
-    }
-    catch (const NameError & e)
-    {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading package.use.mask "
-                " failed due to exception: " + stringify(e.message()) + " (" + e.what() + ")");
-    }
-
-    try
-    {
-        Context context("When parsing package.use.force:");
-
-        for (ProfileFile::Iterator line(package_use_force_file.begin()), line_end(package_use_force_file.end()) ;
-                line != line_end ; ++line)
-        {
-            std::list<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
-            if (tokens.size() < 2)
-                continue;
-
-            std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end());
-            PackageDepAtom::ConstPointer d(new PackageDepAtom(*t++));
-            QualifiedPackageName p(d->package());
-
-            PackageUseMaskMap::iterator i(package_use_force.find(p));
-            if (package_use_force.end() == i)
-                i = package_use_force.insert(std::make_pair(p, std::list<std::pair<PackageDepAtom::ConstPointer,
-                            UseFlagName> >())).first;
-
-            for ( ; t != t_end ; ++t)
-            {
-                if (0 == t->compare(0, 1, "-"))
-                {
-                    UseFlagName r(t->substr(1));
-                    bool found(false);
-                    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::iterator
-                            e(i->second.begin()), e_end(i->second.end()) ; e != e_end ; )
-                    {
-                        if (stringify(*e->first) == stringify(*d) && e->second == r)
-                        {
-                            found = true;
-                            i->second.erase(e++);
-                        }
-                        else
-                            ++e;
-                    }
-
-                    if (! found)
-                        Log::get_instance()->message(ll_qa, lc_context, "No match for '" + stringify(*line) + "'");
-                }
-                else
-                    i->second.push_back(std::make_pair(d, UseFlagName(*t)));
-            }
-        }
-    }
-    catch (const NameError & e)
-    {
-        Log::get_instance()->message(ll_warning, lc_context, "Loading package.use.mask "
-                " failed due to exception: " + e.message() + " (" + e.what() + ")");
-    }
-
     try
     {
         for (ProfileFile::Iterator i(packages_file.begin()), i_end(packages_file.end()) ; i != i_end ; ++i)
@@ -483,53 +359,96 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
     }
 }
 
-bool
-Implementation<PortageRepositoryProfile>::use_mask_or_force(
-        const UseFlagName & u, const PackageDatabaseEntry * const e, const std::string & mask_or_force,
-        const UseFlagSet & global, const PackageUseMaskMap & package) const
+void
+Implementation<PortageRepositoryProfile>::load_basic_use_file(const FSEntry & file, FlagStatusMap & m)
 {
-    Context context("When querying profile use " + mask_or_force + " status of '" + stringify(u) +
-            (e ? "' for '" + stringify(*e) + "'" : "'"));
+    if (! file.exists())
+        return;
 
-    if (global.end() != global.find(u))
-        return true;
-
-    if (0 == e)
-        return false;
-
-    PackageUseMaskMap::const_iterator i(package.find(e->name));
-    if (package.end() == i)
-        return false;
-
-    for (std::list<std::pair<PackageDepAtom::ConstPointer, UseFlagName> >::const_iterator
-            j(i->second.begin()), j_end(i->second.end()) ; j != j_end ; ++j)
+    Context context("When loading basic use file '" + stringify(file) + ":");
+    LineConfigFile f(file);
+    for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+            line != line_end ; ++line)
     {
-        static int depth(0);
-        if (depth > 3)
-        {
-            Log::get_instance()->message(ll_warning, lc_context,
-                    "depth > 3 on entry '" + stringify(*j->first) + "'");
+        std::list<std::string> tokens;
+        WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
 
-            if (j->first->use_requirements_ptr())
-                continue;
-            if (u == j->second && match_package(env, j->first, e))
-                return true;
-        }
-        else
+        for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                t != t_end ; ++t)
         {
-            Save<int> save_depth(&depth, depth + 1);
-            if (u == j->second && match_package(env, j->first, e))
-                return true;
+            try
+            {
+                if (t->empty())
+                    continue;
+                if ('-' == t->at(0))
+                    m[UseFlagName(t->substr(1))] = false;
+                else
+                    m[UseFlagName(*t)] = true;
+            }
+            catch (const NameError & e)
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Ignoring token '"
+                        + *t + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+            }
         }
     }
+}
 
-    return false;
+void
+Implementation<PortageRepositoryProfile>::load_atom_use_file(const FSEntry & file, PackageFlagStatusMapList & m)
+{
+    if (! file.exists())
+        return;
+
+    Context context("When loading atomised use file '" + stringify(file) + ":");
+    LineConfigFile f(file);
+    for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+            line != line_end ; ++line)
+    {
+        std::list<std::string> tokens;
+        WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+
+        if (tokens.empty())
+            continue;
+
+        try
+        {
+            PackageDepAtom::ConstPointer atom(new PackageDepAtom(*tokens.begin()));
+            PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(atom, FlagStatusMap())));
+
+            for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+                    t != t_end ; ++t)
+            {
+                try
+                {
+                    if (t->empty())
+                        continue;
+                    if ('-' == t->at(0))
+                        n->second[UseFlagName(t->substr(1))] = false;
+                    else
+                        n->second[UseFlagName(*t)] = true;
+                }
+                catch (const NameError & e)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Ignoring token '"
+                            + *t + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+                }
+            }
+        }
+        catch (const PackageDepAtomError & e)
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Ignoring line '"
+                    + *line + "' due to exception '" + e.message() + "' (" + e.what() + ")");
+        }
+    }
 }
 
 void
 Implementation<PortageRepositoryProfile>::add_use_expand_to_use()
 {
     Context context("When adding USE_EXPAND to USE:");
+
+    stacked_values_list.push_back(StackedValues("use_expand special values"));
 
     for (UseFlagSet::const_iterator x(use_expand.begin()), x_end(use_expand.end()) ;
             x != x_end ; ++x)
@@ -543,7 +462,7 @@ Implementation<PortageRepositoryProfile>::add_use_expand_to_use()
                 std::back_inserter(uses));
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
-            use[UseFlagName(lower_x + "_" + *u)] = use_enabled;
+            stacked_values_list.back().use[UseFlagName(lower_x + "_" + *u)] = true;
     }
 }
 
@@ -556,14 +475,17 @@ Implementation<PortageRepositoryProfile>::handle_profile_arch_var()
     if (arch_s.empty())
         throw PortageRepositoryConfigurationError("ARCH variable is unset or empty");
 
+    stacked_values_list.push_back(StackedValues("arch special values"));
     try
     {
         UseFlagName arch(arch_s);
 
-        use[arch] = use_enabled;
-        use_force.insert(arch);
+        stacked_values_list.back().use[arch] = true;
+        stacked_values_list.back().use_force[arch] = true;
+#if 0
         if (use_mask.end() != use_mask.find(arch))
             throw PortageRepositoryConfigurationError("ARCH USE '" + arch_s + "' is use masked");
+#endif
     }
     catch (const NameError & e)
     {
@@ -586,30 +508,91 @@ bool
 PortageRepositoryProfile::use_masked(const UseFlagName & u,
         const PackageDatabaseEntry * const e) const
 {
-    return _imp->use_mask_or_force(u, e, "mask", _imp->use_mask, _imp->package_use_mask);
+    bool result(false);
+    for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
+            i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
+    {
+        FlagStatusMap::const_iterator f(i->use_mask.find(u));
+        if (i->use_mask.end() != f)
+            result = f->second;
+
+        if (e)
+            for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
+                    g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
+            {
+                if (! match_package(_imp->env, g->first, e))
+                    continue;
+
+                FlagStatusMap::const_iterator h(g->second.find(u));
+                if (g->second.end() != h)
+                    result = h->second;
+            }
+    }
+
+    return result;
 }
 
 bool
 PortageRepositoryProfile::use_forced(const UseFlagName & u,
         const PackageDatabaseEntry * const e) const
 {
-    return _imp->use_mask_or_force(u, e, "force", _imp->use_force, _imp->package_use_force);
+    bool result(false);
+    for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
+            i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
+    {
+        FlagStatusMap::const_iterator f(i->use_force.find(u));
+        if (i->use_force.end() != f)
+            result = f->second;
+
+        if (e)
+            for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
+                    g_end(i->package_use_force.end()) ; g != g_end ; ++g)
+            {
+                if (! match_package(_imp->env, g->first, e))
+                    continue;
+
+                FlagStatusMap::const_iterator h(g->second.find(u));
+                if (g->second.end() != h)
+                    result = h->second;
+            }
+    }
+
+    return result;
 }
 
 UseFlagState
-PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u) const
+PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
+        const PackageDatabaseEntry * const e) const
 {
-    Implementation<PortageRepositoryProfile>::UseMap::const_iterator p(_imp->use.find(u));
-    if (_imp->use.end() == p)
-        return use_unspecified;
-    return p->second;
+    UseFlagState result(use_unspecified);
+
+    for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
+            i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
+    {
+        FlagStatusMap::const_iterator f(i->use.find(u));
+        if (i->use.end() != f)
+            result = f->second ? use_enabled : use_disabled;
+
+        if (e)
+            for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
+                    g_end(i->package_use.end()) ; g != g_end ; ++g)
+            {
+                if (! match_package(_imp->env, g->first, e))
+                    continue;
+
+                FlagStatusMap::const_iterator h(g->second.find(u));
+                if (g->second.end() != h)
+                    result = h->second ? use_enabled : use_disabled;
+            }
+    }
+
+    return result;
 }
 
 std::string
 PortageRepositoryProfile::environment_variable(const std::string & s) const
 {
-    Implementation<PortageRepositoryProfile>::EnvironmentVariablesMap::const_iterator i(
-            _imp->environment_variables.find(s));
+    EnvironmentVariablesMap::const_iterator i(_imp->environment_variables.find(s));
     if (_imp->environment_variables.end() == i)
     {
         Log::get_instance()->message(ll_debug, lc_no_context, "Environment variable '" + s + "' is unset");
@@ -669,8 +652,7 @@ bool
 PortageRepositoryProfile::profile_masked(const QualifiedPackageName & n,
         const VersionSpec & v, const RepositoryName & r) const
 {
-    Implementation<PortageRepositoryProfile>::PackageMaskMap::const_iterator rr(
-            _imp->package_mask.find(n));
+    PackageMaskMap::const_iterator rr(_imp->package_mask.find(n));
     if (_imp->package_mask.end() == rr)
         return false;
     else

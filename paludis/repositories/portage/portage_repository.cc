@@ -612,21 +612,21 @@ PortageRepository::do_query_profile_masks(const QualifiedPackageName & n,
 }
 
 UseFlagState
-PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry *) const
+PortageRepository::do_query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
     _imp->need_profiles();
-    return _imp->profile_ptr->use_state_ignoring_masks(f);
+    return _imp->profile_ptr->use_state_ignoring_masks(f, e);
 }
 
 bool
-PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabaseEntry *e) const
+PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabaseEntry * e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_masked(u, e);
 }
 
 bool
-PortageRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEntry *e) const
+PortageRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEntry * e) const
 {
     _imp->need_profiles();
     return _imp->profile_ptr->use_forced(u, e);
