@@ -186,7 +186,7 @@ do_list_sets()
     p::Context context("While performing list-sets action from command line:");
     p::Environment * const env(p::DefaultEnvironment::get_instance());
 
-    std::map<p::SetName, std::list<p::RepositoryName> > sets;
+    std::map<p::SetName, std::list<std::string> > sets;
 
     for (p::IndirectIterator<p::PackageDatabase::RepositoryIterator, const p::Repository>
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
@@ -205,10 +205,18 @@ do_list_sets()
         p::SetsCollection::ConstPointer set_names(r->sets_interface->sets_list());
         for (p::SetsCollection::Iterator s(set_names->begin()), s_end(set_names->end()) ;
                 s != s_end ; ++s)
-            sets[*s].push_back(r->name());
+            sets[*s].push_back(stringify(r->name()));
     }
 
-    for (std::map<p::SetName, std::list<p::RepositoryName > >::const_iterator
+    if (! CommandLine::get_instance()->a_repository.specified())
+    {
+        p::SetsCollection::ConstPointer set_names(env->sets_list());
+        for (p::SetsCollection::Iterator s(set_names->begin()), s_end(set_names->end()) ;
+                s != s_end ; ++s)
+            sets[*s].push_back("environment");
+    }
+
+    for (std::map<p::SetName, std::list<std::string> >::const_iterator
             s(sets.begin()), s_end(sets.end()) ; s != s_end ; ++s)
     {
         if (CommandLine::get_instance()->a_set.specified())

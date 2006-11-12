@@ -28,6 +28,7 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -488,6 +489,23 @@ DefaultEnvironment::local_package_set(const SetName & s) const
     }
 
     return DepAtom::Pointer(0);
+}
+
+SetsCollection::ConstPointer
+DefaultEnvironment::sets_list() const
+{
+    SetsCollection::Pointer result(new SetsCollection::Concrete);
+
+    for (DirIterator d(FSEntry(DefaultConfig::get_instance()->config_dir()) / "sets"), d_end ;
+            d != d_end ; ++d)
+    {
+        if (! IsFileWithExtension(".conf")(*d))
+            continue;
+
+        result->insert(SetName(strip_trailing_string(d->basename(), ".conf")));
+    }
+
+    return result;
 }
 
 DefaultEnvironment::MirrorIterator

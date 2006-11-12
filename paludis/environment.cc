@@ -472,3 +472,9 @@ Environment::known_use_expand_names(const UseFlagName &, const PackageDatabaseEn
     return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
 }
 
+SetsCollection::ConstPointer
+Environment::sets_list() const
+{
+    return SetsCollection::ConstPointer(new SetsCollection::Concrete);
+}
+

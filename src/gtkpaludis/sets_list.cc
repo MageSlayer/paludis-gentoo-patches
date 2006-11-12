@@ -104,6 +104,9 @@ namespace
             std::copy(sets->begin(), sets->end(), std::inserter(names, names.end()));
         }
 
+        SetsCollection::ConstPointer sets(DefaultEnvironment::get_instance()->sets_list());
+        std::copy(sets->begin(), sets->end(), std::inserter(names, names.end()));
+
         dispatch(sigc::bind<1>(sigc::mem_fun(_imp, &Implementation<SetsList>::add_sets), names));
     }
 }

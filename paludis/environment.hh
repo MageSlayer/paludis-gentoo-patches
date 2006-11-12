@@ -236,6 +236,13 @@ namespace paludis
             DepAtom::Pointer package_set(const SetName &) const;
 
             /**
+             * Fetch all named sets. Does not include sets from repositories.
+             *
+             * Default behaviour: no sets.
+             */
+            virtual SetsCollection::ConstPointer sets_list() const;
+
+            /**
              * Subclass for callbacks used by add_appropriate_to_world and
              * remove_appropriate_from_world.
              *

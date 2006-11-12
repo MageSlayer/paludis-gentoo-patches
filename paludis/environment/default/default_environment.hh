@@ -52,6 +52,8 @@ namespace paludis
             CompositeDepAtom::Pointer local_package_set(const SetName &) const;
 
         public:
+            virtual SetsCollection::ConstPointer sets_list() const;
+
             virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
 
             virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
