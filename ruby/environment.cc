@@ -168,6 +168,22 @@ namespace
     }
 
     VALUE
+    environment_package_set(VALUE self, VALUE set_name)
+    {
+        EnvironmentData * env_data;
+        Data_Get_Struct(self, EnvironmentData, env_data);
+
+        try
+        {
+            return dep_atom_to_value(env_data->env_ptr->package_set(SetName(STR2CSTR(set_name))));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
     default_config_config_suffix(VALUE)
     {
         try
@@ -253,6 +269,7 @@ namespace
         rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), -1);
         rb_define_method(c_environment, "mask_reasons", RUBY_FUNC_CAST(&environment_mask_reasons), 1);
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
+        rb_define_method(c_environment, "package_set", RUBY_FUNC_CAST(&environment_package_set), 1);
 
         c_default_environment = rb_define_class_under(paludis_module(), "DefaultEnvironment", c_environment);
         rb_define_singleton_method(c_default_environment, "new", RUBY_FUNC_CAST(&default_environment_new), 0);

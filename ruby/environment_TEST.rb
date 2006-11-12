@@ -255,5 +255,33 @@ module Paludis
             assert_equal "testrepo", db.fetch_repository("testrepo").name
         end
     end
+
+    class TestCase_DefaultEnvironmentPackageSet < Test::Unit::TestCase
+        def test_package_set
+            assert_kind_of DepAtom, DefaultEnvironment.instance.package_set('everything')
+        end
+
+        def test_package_set_error
+            assert_raise SetNameError do
+                DefaultEnvironment.instance.package_set('broken*')
+            end
+        end
+    end
+
+    class TestCase_NoConfigEnvironmentPackageSet < Test::Unit::TestCase
+        def env
+            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
+        end
+
+        def test_package_set
+            assert_kind_of DepAtom, DefaultEnvironment.instance.package_set('everything')
+        end
+
+        def test_package_set_error
+            assert_raise SetNameError do
+                env.package_set('broken*')
+            end
+        end
+    end
 end
 
