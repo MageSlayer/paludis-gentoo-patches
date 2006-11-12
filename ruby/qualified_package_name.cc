@@ -44,11 +44,11 @@ namespace
         {
             if (1 == argc)
             {
-                ptr = new QualifiedPackageName(STR2CSTR(argv[0]));
+                ptr = new QualifiedPackageName(StringValuePtr(argv[0]));
             }
             else if (2 == argc)
             {
-                ptr = new QualifiedPackageName(CategoryNamePart(STR2CSTR(argv[0])), PackageNamePart(STR2CSTR(argv[1])));
+                ptr = new QualifiedPackageName(CategoryNamePart(StringValuePtr(argv[0])), PackageNamePart(StringValuePtr(argv[1])));
             }
             else
             {
@@ -83,7 +83,7 @@ namespace
             {
                 QualifiedPackageName * p;
                 Data_Get_Struct(self, QualifiedPackageName, p);
-                p->*m_ =  T_ ((STR2CSTR(str)));
+                p->*m_ =  T_ ((StringValuePtr(str)));
                 return self;
             }
             catch (const std::exception & e)
@@ -128,7 +128,7 @@ QualifiedPackageName
 paludis::ruby::value_to_qualified_package_name(VALUE v)
 {
     if (T_STRING == TYPE(v))
-        return QualifiedPackageName(STR2CSTR(v));
+        return QualifiedPackageName(StringValuePtr(v));
     else
     {
         QualifiedPackageName * v_ptr;

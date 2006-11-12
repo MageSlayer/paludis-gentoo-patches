@@ -47,7 +47,7 @@ namespace
     VALUE
     log_set_program_name(VALUE self, VALUE name)
     {
-        Log::get_instance()->set_program_name(stringify(STR2CSTR(name)));
+        Log::get_instance()->set_program_name(stringify(StringValuePtr(name)));
         return self;
     }
 
@@ -55,7 +55,7 @@ namespace
     log_message(VALUE self, VALUE log_level, VALUE message)
     {
         Log::get_instance()->message(static_cast<LogLevel>(NUM2INT(log_level)), lc_no_context,
-                stringify(STR2CSTR(message)));
+                stringify(StringValuePtr(message)));
         return self;
     }
 

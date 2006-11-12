@@ -63,7 +63,7 @@ namespace
         try
         {
             ptr = new UseDepAtom::ConstPointer(new UseDepAtom(
-                        UseFlagName(STR2CSTR(pkg)), Qfalse != inverse && Qnil != inverse));
+                        UseFlagName(StringValuePtr(pkg)), Qfalse != inverse && Qnil != inverse));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<UseDepAtom::ConstPointer>::free, ptr));
             rb_obj_call_init(tdata, 2, &pkg);
             return tdata;
@@ -111,7 +111,7 @@ namespace
             typename A_::ConstPointer * ptr(0);
             try
             {
-                ptr = new typename A_::ConstPointer(new A_(STR2CSTR(s)));
+                ptr = new typename A_::ConstPointer(new A_(StringValuePtr(s)));
                 VALUE tdata(Data_Wrap_Struct(self, 0, &Common<typename A_::ConstPointer>::free, ptr));
                 rb_obj_call_init(tdata, 1, &s);
                 return tdata;
@@ -195,7 +195,7 @@ PackageDepAtom::ConstPointer
 paludis::ruby::value_to_package_dep_atom(VALUE v)
 {
     if (T_STRING == TYPE(v))
-        return PackageDepAtom::ConstPointer(new PackageDepAtom(STR2CSTR(v)));
+        return PackageDepAtom::ConstPointer(new PackageDepAtom(StringValuePtr(v)));
     else
     {
         PackageDepAtom::ConstPointer * v_ptr;

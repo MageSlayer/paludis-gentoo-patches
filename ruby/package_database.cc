@@ -55,7 +55,7 @@ namespace
             PackageDatabase::Pointer * self_ptr;
             Data_Get_Struct(self, PackageDatabase::Pointer, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->fetch_unique_qualified_package_name(
-                            PackageNamePart(STR2CSTR(pkg)))).c_str());
+                            PackageNamePart(StringValuePtr(pkg)))).c_str());
         }
         catch (const std::exception & e)
         {
@@ -116,7 +116,7 @@ namespace
             PackageDatabase::Pointer * self_ptr;
             Data_Get_Struct(self, PackageDatabase::Pointer, self_ptr);
 
-            return repository_to_value((*self_ptr)->fetch_repository(RepositoryName(STR2CSTR(name))));
+            return repository_to_value((*self_ptr)->fetch_repository(RepositoryName(StringValuePtr(name))));
         }
         catch (const std::exception & e)
         {
@@ -133,8 +133,8 @@ namespace
             Data_Get_Struct(self, PackageDatabase::Pointer, self_ptr);
 
             return rb_str_new2(stringify((*self_ptr)->better_repository(
-                        RepositoryName(STR2CSTR(name1)),
-                        RepositoryName(STR2CSTR(name2))
+                        RepositoryName(StringValuePtr(name1)),
+                        RepositoryName(StringValuePtr(name2))
                         )).c_str());
         }
         catch (const std::exception & e)

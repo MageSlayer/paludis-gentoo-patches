@@ -42,7 +42,7 @@ namespace
         VersionSpec * ptr(0);
         try
         {
-            ptr = new VersionSpec(std::string(STR2CSTR(s)));
+            ptr = new VersionSpec(std::string(StringValuePtr(s)));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<VersionSpec>::free, ptr));
             rb_obj_call_init(tdata, 1, &s);
             return tdata;
@@ -97,7 +97,7 @@ VersionSpec
 paludis::ruby::value_to_version_spec(VALUE v)
 {
     if (T_STRING == TYPE(v))
-        return VersionSpec(STR2CSTR(v));
+        return VersionSpec(StringValuePtr(v));
     else
     {
         VersionSpec * v_ptr;

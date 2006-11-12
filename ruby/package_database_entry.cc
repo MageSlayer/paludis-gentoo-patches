@@ -46,8 +46,8 @@ namespace
         {
             VersionSpec vv(value_to_version_spec(v));
 
-            ptr = new PackageDatabaseEntry(QualifiedPackageName(STR2CSTR(q)), vv,
-                    RepositoryName(STR2CSTR(n)));
+            ptr = new PackageDatabaseEntry(QualifiedPackageName(StringValuePtr(q)), vv,
+                    RepositoryName(StringValuePtr(n)));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<PackageDatabaseEntry>::free, ptr));
             rb_obj_call_init(tdata, 3, argv);
             return tdata;
@@ -139,7 +139,7 @@ namespace
             {
                 PackageDatabaseEntry * p;
                 Data_Get_Struct(self, PackageDatabaseEntry, p);
-                p->*m_ =  T_ ((STR2CSTR(str)));
+                p->*m_ =  T_ ((StringValuePtr(str)));
                 return self;
             }
             catch (const std::exception & e)

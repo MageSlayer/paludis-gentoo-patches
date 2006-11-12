@@ -69,7 +69,7 @@ namespace
                 if (2 == argc)
                     Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
 
-                return env_data->env_ptr->query_use(UseFlagName(STR2CSTR(argv[0])), pde_ptr) ? Qtrue : Qfalse;
+                return env_data->env_ptr->query_use(UseFlagName(StringValuePtr(argv[0])), pde_ptr) ? Qtrue : Qfalse;
             }
             else
                 rb_raise(rb_eArgError, "Environment.query_use expects one or two arguments, but got %d", argc);
@@ -95,7 +95,7 @@ namespace
                     Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
 
                 return env_data->env_ptr->accept_keyword(KeywordName(
-                            STR2CSTR(argv[0])), pde_ptr) ? Qtrue : Qfalse;
+                            StringValuePtr(argv[0])), pde_ptr) ? Qtrue : Qfalse;
             }
             else
                 rb_raise(rb_eArgError, "Environment.accept_keyword expects one or two arguments, but got %d", argc);
@@ -121,7 +121,7 @@ namespace
                     Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
 
                 return env_data->env_ptr->accept_license(
-                        std::string(STR2CSTR(argv[0])), pde_ptr) ? Qtrue : Qfalse;
+                        std::string(StringValuePtr(argv[0])), pde_ptr) ? Qtrue : Qfalse;
             }
             else
                 rb_raise(rb_eArgError, "Environment.accept_license expects one or two arguments, but got %d", argc);
@@ -175,7 +175,7 @@ namespace
 
         try
         {
-            return dep_atom_to_value(env_data->env_ptr->package_set(SetName(STR2CSTR(set_name))));
+            return dep_atom_to_value(env_data->env_ptr->package_set(SetName(StringValuePtr(set_name))));
         }
         catch (const std::exception & e)
         {
@@ -201,7 +201,7 @@ namespace
     {
         try
         {
-            DefaultConfig::set_config_suffix(stringify(STR2CSTR(str)));
+            DefaultConfig::set_config_suffix(stringify(StringValuePtr(str)));
             return klass;
         }
         catch (const std::exception & e)
@@ -223,9 +223,12 @@ namespace
         try
         {
             if (T_STRING == TYPE(s))
-                path = STR2CSTR(s);
+                path = StringValuePtr(s);
             else if (rb_obj_is_kind_of(s, rb_cDir))
-                path = STR2CSTR(rb_funcall(s, rb_intern("path"), 0));
+            {
+                VALUE v = rb_funcall(s, rb_intern("path"), 0);
+                path = StringValuePtr(v);
+            }
             else
                 rb_raise(rb_eTypeError, "NoConfigEnvironment.new expects a string or Dir");
 

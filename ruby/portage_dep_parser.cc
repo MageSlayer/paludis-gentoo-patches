@@ -36,7 +36,7 @@ namespace
         try
         {
             if (1 == argc)
-                return dep_atom_to_value(PortageDepParser::parse(STR2CSTR(args[0])));
+                return dep_atom_to_value(PortageDepParser::parse(StringValuePtr(args[0])));
             else if (3 == argc)
             {
                 bool b(! (args[2] == Qnil || args[2] == Qfalse));
@@ -45,17 +45,17 @@ namespace
                 {
                     case 17:
                         if (b)
-                            return dep_atom_to_value(PortageDepParser::parse(STR2CSTR(args[0]),
+                            return dep_atom_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
                                         PortageDepParserPolicy<PackageDepAtom, true>::get_instance()));
                         else
-                            return dep_atom_to_value(PortageDepParser::parse(STR2CSTR(args[0]),
+                            return dep_atom_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
                                         PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
                     case 23:
                         if (b)
-                            return dep_atom_to_value(PortageDepParser::parse(STR2CSTR(args[0]),
+                            return dep_atom_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
                                         PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance()));
                         else
-                            return dep_atom_to_value(PortageDepParser::parse(STR2CSTR(args[0]),
+                            return dep_atom_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
                                         PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
                 }
 

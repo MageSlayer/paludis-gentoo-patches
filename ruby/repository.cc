@@ -55,7 +55,7 @@ namespace
         {
             Repository::ConstPointer * self_ptr;
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
-            return (*self_ptr)->has_category_named(CategoryNamePart(STR2CSTR(cat))) ? Qtrue : Qfalse;
+            return (*self_ptr)->has_category_named(CategoryNamePart(StringValuePtr(cat))) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -120,7 +120,7 @@ namespace
         {
             Repository::ConstPointer * self_ptr;
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
-            CategoryNamePart category(STR2CSTR(cat));
+            CategoryNamePart category(StringValuePtr(cat));
 
             VALUE result(rb_ary_new());
             QualifiedPackageNameCollection::ConstPointer c((*self_ptr)->package_names(category));
