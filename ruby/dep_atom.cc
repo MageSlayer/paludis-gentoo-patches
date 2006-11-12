@@ -196,11 +196,16 @@ paludis::ruby::value_to_package_dep_atom(VALUE v)
 {
     if (T_STRING == TYPE(v))
         return PackageDepAtom::ConstPointer(new PackageDepAtom(StringValuePtr(v)));
-    else
+    else if (rb_obj_is_kind_of(v, c_package_dep_atom))
     {
         PackageDepAtom::ConstPointer * v_ptr;
         Data_Get_Struct(v, PackageDepAtom::ConstPointer, v_ptr);
         return *v_ptr;
+    }
+    else
+    {
+        std::string message = "TypeError: can't convert " + std::string(rb_obj_classname(v)) + " into PackageDepAtom";
+        rb_raise(rb_eTypeError, message.c_str());
     }
 }
 

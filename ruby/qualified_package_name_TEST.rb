@@ -92,6 +92,12 @@ module Paludis
             qpn.package = pkg_new
             assert_equal pkg_new, qpn.package
         end
+
+        def test_to_value_type_error
+            assert_raise TypeError do
+                QualifiedPackageName.new('foo-bar/baz') <=> PackageDepAtom.new('foo-bar/baz')
+            end
+        end
     end
 end
 

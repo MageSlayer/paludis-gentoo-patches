@@ -98,11 +98,16 @@ paludis::ruby::value_to_version_spec(VALUE v)
 {
     if (T_STRING == TYPE(v))
         return VersionSpec(StringValuePtr(v));
-    else
+    else if (rb_obj_is_kind_of(v, c_version_spec))
     {
         VersionSpec * v_ptr;
         Data_Get_Struct(v, VersionSpec, v_ptr);
         return *v_ptr;
+    }
+    else
+    {
+        std::string message = "TypeError: can't convert " + std::string(rb_obj_classname(v)) + "into VersionSpec";
+        rb_raise(rb_eTypeError, message.c_str());
     }
 }
 

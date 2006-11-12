@@ -60,6 +60,12 @@ module Paludis
             assert ! repo.has_version?("foo/barbar", VersionSpec.new("1.0"))
             assert ! repo.has_version?("foo/bar", VersionSpec.new("3.0"))
         end
+
+        def test_has_version_error
+            assert_raise TypeError do
+                repo.has_version?('foo/bar', PackageDepAtom.new('foo-bar/baz'))
+            end
+        end
     end
 
     class TestCase_RepositoryHasCategoryNamed < Test::Unit::TestCase

@@ -188,9 +188,17 @@ paludis::ruby::version_metadata_to_value(VersionMetadata::ConstPointer m)
 VersionMetadata::ConstPointer
 paludis::ruby::value_to_version_metadata(VALUE v)
 {
-    VersionMetadata::ConstPointer * v_ptr;
-    Data_Get_Struct(v, VersionMetadata::ConstPointer, v_ptr);
-    return *v_ptr;
+    if (rb_obj_is_kind_of(v, c_version_metadata))
+    {
+        VersionMetadata::ConstPointer * v_ptr;
+        Data_Get_Struct(v, VersionMetadata::ConstPointer, v_ptr);
+        return *v_ptr;
+    }
+    else
+    {
+        std::string message = "TypeError: can't convert " + std::string(rb_obj_classname(v)) + " into VersionMetadata";
+        rb_raise(rb_eTypeError, message.c_str());
+    }
 }
 
 RegisterRubyClass::Register paludis_ruby_register_version_metadata PALUDIS_ATTRIBUTE((used))

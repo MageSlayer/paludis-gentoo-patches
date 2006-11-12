@@ -129,11 +129,16 @@ paludis::ruby::value_to_qualified_package_name(VALUE v)
 {
     if (T_STRING == TYPE(v))
         return QualifiedPackageName(StringValuePtr(v));
-    else
+    else if (rb_obj_is_kind_of(v, c_qualified_package_name))
     {
         QualifiedPackageName * v_ptr;
         Data_Get_Struct(v, QualifiedPackageName, v_ptr);
         return *v_ptr;
+    }
+    else
+    {
+        std::string message = "TypeError: can't convert " + std::string(rb_obj_classname(v)) + " into QualifiedPackageName";
+        rb_raise(rb_eTypeError, message.c_str());
     }
 }
 

@@ -87,6 +87,9 @@ module Paludis
             assert_raise PackageDepAtomError do
                 v = BlockDepAtom.new("=foo/bar")
             end
+            assert_raise TypeError do 
+                v = BlockDepAtom.new(PlainTextDepAtom.new('foo-bar/baz'))
+            end
         end
 
         def test_blocked_atom
