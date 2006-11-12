@@ -56,6 +56,8 @@ namespace paludis
         VersionMetadata::ConstPointer value_to_version_metadata(VALUE);
         PackageDepAtom::ConstPointer value_to_package_dep_atom(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
+        PackageDatabaseEntry value_to_package_database_entry(VALUE v);
+        Environment* value_to_environment(VALUE v);
 
         /* registration */
 

@@ -60,12 +60,10 @@ namespace
     {
         try
         {
-            Environment * env;
-            Data_Get_Struct(en, Environment, env);
-            PackageDepAtom::ConstPointer atom(value_to_package_dep_atom(a));
-            PackageDatabaseEntry * target;
-            Data_Get_Struct(t, PackageDatabaseEntry, target);
-            return match_package(env, atom, *target) ? Qtrue : Qfalse;
+            Environment * env = value_to_environment(en);
+            PackageDepAtom::ConstPointer atom = value_to_package_dep_atom(a);
+            PackageDatabaseEntry target = value_to_package_database_entry(t);
+            return match_package(env, atom, target) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {

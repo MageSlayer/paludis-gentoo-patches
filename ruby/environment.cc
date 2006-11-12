@@ -63,13 +63,12 @@ namespace
 
         try
         {
-            if (1 == argc || 2 == argc)
+            if (1 == argc)
+                return env_data->env_ptr->query_use(UseFlagName(StringValuePtr(argv[0])), 0) ? Qtrue : Qfalse;
+            else if (2 == argc)
             {
-                PackageDatabaseEntry * pde_ptr(0);
-                if (2 == argc)
-                    Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
-
-                return env_data->env_ptr->query_use(UseFlagName(StringValuePtr(argv[0])), pde_ptr) ? Qtrue : Qfalse;
+                PackageDatabaseEntry pde = value_to_package_database_entry(argv[1]);
+                return env_data->env_ptr->query_use(UseFlagName(StringValuePtr(argv[0])), &pde) ? Qtrue : Qfalse;
             }
             else
                 rb_raise(rb_eArgError, "Environment.query_use expects one or two arguments, but got %d", argc);
@@ -88,14 +87,12 @@ namespace
 
         try
         {
-            if (1 == argc || 2 == argc)
+            if (1 == argc)
+                return env_data->env_ptr->accept_keyword(KeywordName(StringValuePtr(argv[0])), 0) ? Qtrue : Qfalse;
+            else if (2 == argc)
             {
-                PackageDatabaseEntry * pde_ptr(0);
-                if (2 == argc)
-                    Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
-
-                return env_data->env_ptr->accept_keyword(KeywordName(
-                            StringValuePtr(argv[0])), pde_ptr) ? Qtrue : Qfalse;
+                PackageDatabaseEntry pde = value_to_package_database_entry(argv[1]);
+                return env_data->env_ptr->accept_keyword(KeywordName(StringValuePtr(argv[0])), &pde) ? Qtrue : Qfalse;
             }
             else
                 rb_raise(rb_eArgError, "Environment.accept_keyword expects one or two arguments, but got %d", argc);
@@ -114,14 +111,12 @@ namespace
 
         try
         {
-            if (1 == argc || 2 == argc)
+            if (1 == argc)
+                return env_data->env_ptr->accept_license(std::string(StringValuePtr(argv[0])), 0) ? Qtrue : Qfalse;
+            else if (2 == argc)
             {
-                PackageDatabaseEntry * pde_ptr(0);
-                if (2 == argc)
-                    Data_Get_Struct(argv[1], PackageDatabaseEntry, pde_ptr);
-
-                return env_data->env_ptr->accept_license(
-                        std::string(StringValuePtr(argv[0])), pde_ptr) ? Qtrue : Qfalse;
+                PackageDatabaseEntry pde = value_to_package_database_entry(argv[1]);
+                return env_data->env_ptr->accept_license(std::string(StringValuePtr(argv[0])), &pde) ? Qtrue : Qfalse;
             }
             else
                 rb_raise(rb_eArgError, "Environment.accept_license expects one or two arguments, but got %d", argc);
@@ -133,16 +128,15 @@ namespace
     }
 
     VALUE
-    environment_mask_reasons(VALUE self, VALUE pde)
+    environment_mask_reasons(VALUE self, VALUE pde_value)
     {
         EnvironmentData * env_data;
         Data_Get_Struct(self, EnvironmentData, env_data);
 
-        PackageDatabaseEntry * pde_ptr(0);
-        Data_Get_Struct(pde, PackageDatabaseEntry, pde_ptr);
+        PackageDatabaseEntry pde = value_to_package_database_entry(pde_value);
         try
         {
-            MaskReasons r(env_data->env_ptr->mask_reasons(*pde_ptr));
+            MaskReasons r(env_data->env_ptr->mask_reasons(pde));
             return mask_reasons_to_value(r);
         }
         catch (const std::exception & e)
@@ -288,6 +282,22 @@ namespace
         c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
         rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), 1);
         rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), 1);
+    }
+}
+
+Environment *
+paludis::ruby::value_to_environment(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_environment))
+    {
+        Environment * v_ptr;
+        Data_Get_Struct(v, Environment, v_ptr);
+        return v_ptr;
+    }
+    else
+    {
+        std::string message = "TypeError: can't convert " + std::string(rb_obj_classname(v)) + " into Environment";
+        rb_raise(rb_eTypeError, message.c_str());
     }
 }
 

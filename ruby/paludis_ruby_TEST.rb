@@ -41,10 +41,24 @@ module Paludis
             atom_good = PackageDepAtom.new('>=foo/bar-1')
             atom_bad = PackageDepAtom.new('>=foo/bar-2')
             pde = PackageDatabaseEntry.new('foo/bar','1','test')
-        
+
             assert Paludis::match_package(env, atom_good, pde)
             assert !Paludis::match_package(env, atom_bad, pde)
-            
+
+        end
+
+        def test_type_errors
+            env = DefaultEnvironment.instance
+            atom = PackageDepAtom.new('>=foo/bar-1')
+            pde = PackageDatabaseEntry.new('foo/bar','1','test')
+
+            assert_raise TypeError do
+                Paludis::match_package(atom,atom,pde)
+            end
+
+            assert_raise TypeError do
+                Paludis::match_package(env,atom,atom)
+            end
         end
     end
 

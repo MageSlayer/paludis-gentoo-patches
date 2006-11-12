@@ -166,6 +166,22 @@ namespace
     }
 }
 
+PackageDatabaseEntry
+paludis::ruby::value_to_package_database_entry(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_package_database_entry))
+    {
+        PackageDatabaseEntry * v_ptr;
+        Data_Get_Struct(v, PackageDatabaseEntry, v_ptr);
+        return *v_ptr;
+    }
+    else
+    {
+        std::string message = "TypeError: can't convert " + std::string(rb_obj_classname(v)) + " into PackageDatabaseEntry";
+        rb_raise(rb_eTypeError, message.c_str());
+    }
+}
+
 VALUE
 paludis::ruby::package_database_entry_to_value(const PackageDatabaseEntry & d)
 {
