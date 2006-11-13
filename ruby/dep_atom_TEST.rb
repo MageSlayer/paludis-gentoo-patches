@@ -108,16 +108,16 @@ module Paludis
 
             atom.each_with_index do | a, i |
                 case i
-                when 0:
+                when 0
                     assert_kind_of AnyDepAtom, a
                     assert_equal 2, a.to_a.length
                     a.each_with_index do | b, j |
                         case j
-                        when 0:
+                        when 0
                             assert_kind_of PackageDepAtom, b
                             assert_equal "foo/bar", b.to_s
 
-                        when 1:
+                        when 1
                             assert_kind_of PackageDepAtom, b
                             assert_equal "foo/baz", b.to_s
 
@@ -126,7 +126,7 @@ module Paludis
                         end
                     end
 
-                when 1:
+                when 1
                     assert_kind_of PackageDepAtom, a
                     assert_equal "foo/monkey", a.to_s
 
