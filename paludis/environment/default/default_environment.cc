@@ -496,14 +496,15 @@ DefaultEnvironment::sets_list() const
 {
     SetsCollection::Pointer result(new SetsCollection::Concrete);
 
-    for (DirIterator d(FSEntry(DefaultConfig::get_instance()->config_dir()) / "sets"), d_end ;
-            d != d_end ; ++d)
-    {
-        if (! IsFileWithExtension(".conf")(*d))
-            continue;
+    if ((FSEntry(DefaultConfig::get_instance()->config_dir()) / "sets").exists())
+        for (DirIterator d(FSEntry(DefaultConfig::get_instance()->config_dir()) / "sets"), d_end ;
+                d != d_end ; ++d)
+        {
+            if (! IsFileWithExtension(".conf")(*d))
+                continue;
 
-        result->insert(SetName(strip_trailing_string(d->basename(), ".conf")));
-    }
+            result->insert(SetName(strip_trailing_string(d->basename(), ".conf")));
+        }
 
     return result;
 }
