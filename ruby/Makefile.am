@@ -61,7 +61,7 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/default/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/no_config/.libs\`" \
 			| tr -d ' '` \
-	bash $(top_srcdir)/test/run_test.sh "ruby -I ./.libs/"
+	bash $(top_srcdir)/test/run_test.sh "$(RUBY) -I ./.libs/"
 
 if ENABLE_RUBY
 

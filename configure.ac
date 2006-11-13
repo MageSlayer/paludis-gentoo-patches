@@ -582,6 +582,7 @@ AM_CONDITIONAL([ENABLE_GTK], test "x$enable_gtk" = "xyes")
 dnl }}}
 
 dnl {{{ ruby interface
+AC_ARG_VAR(RUBY,path to ruby interpreter)
 AC_MSG_CHECKING([whether to build the ruby interface])
 AC_ARG_ENABLE([ruby],
    AS_HELP_STRING([--enable-ruby], [Enable ruby interface (default: disable)]),
@@ -596,7 +597,7 @@ if test "x$enable_ruby" = "xyes" ; then
 	fi
 
 	AC_MSG_CHECKING([for Ruby archdir])
-	RUBY_ARCHDIR=`ruby -r rbconfig -e 'puts Config::CONFIG@<:@"archdir"@:>@'`
+	RUBY_ARCHDIR=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"archdir"@:>@'`
 	if test "x$RUBY_ARCHDIR" = "x" ; then
 		AC_MSG_ERROR([Could not find Ruby archdir])
 	fi
@@ -604,7 +605,7 @@ if test "x$enable_ruby" = "xyes" ; then
 	AC_SUBST([RUBY_ARCHDIR])
 
 	AC_MSG_CHECKING([for Ruby sitearchdir])
-	RUBY_SITEARCHDIR=`ruby -r rbconfig -e 'puts Config::CONFIG@<:@"sitearchdir"@:>@'`
+	RUBY_SITEARCHDIR=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"sitearchdir"@:>@'`
 	if test "x$RUBY_SITEARCHDIR" = "x" ; then
 		AC_MSG_ERROR([Could not find Ruby sitearchdir])
 	fi
@@ -612,7 +613,7 @@ if test "x$enable_ruby" = "xyes" ; then
 	AC_SUBST([RUBY_SITEARCHDIR])
 
 	AC_MSG_CHECKING([for Ruby soname])
-	RUBY_SONAME=`ruby -r rbconfig -e 'puts Config::CONFIG@<:@"RUBY_SO_NAME"@:>@'`
+	RUBY_SONAME=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"RUBY_SO_NAME"@:>@'`
 	if test "x$RUBY_SONAME" = "x" ; then
 		AC_MSG_ERROR([Could not find Ruby soname])
 	fi
