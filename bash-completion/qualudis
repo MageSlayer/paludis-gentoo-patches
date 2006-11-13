@@ -1,0 +1,52 @@
+# Bash completion function for qualudis
+# Written by Mike Kelly
+# vim: set et sw=4 sts=4 ts=4 ft=sh :
+
+# NOTE: This is still a work in progress, don't expect it to work well or
+# properly right now.
+
+_qualudis() {
+    local cur prev opts repodir
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+
+    opts="--describe -d \
+        --version -V \
+        --help -h \
+        --qa-check -c \
+        --verbose -v \
+        --quiet -q \
+        --log-level -L \
+        --message-level -M"
+
+    case "${cur}" in
+        -*)
+            COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+            return 0
+            ;;
+        *)
+            case "${prev}" in
+                ## Enum operators
+                --log-level|-L)
+                    COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
+                    return 0
+                    ;;
+                --message-level|-M)
+                    COMPREPLY=($(compgen -W "info minor major fatal" -- "${cur}"))
+                    return 0
+                    ;;
+
+                --qa-check|-c)
+                    COMPREPLY=($(compgen -W "$(qualudis --log-level silent --describe |sed -n 's/  \(.*\):/\1/p')" -- "${cur}"))
+                    return 0
+                    ;;
+
+                *)
+                    COMPREPLY=($(compgen -d -- "${cur}"))
+                    ;;
+            esac
+            ;;
+    esac
+}
+complete -o filenames -F _qualudis qualudis
