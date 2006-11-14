@@ -43,6 +43,7 @@ CommandLine::CommandLine() :
     add_usage_line("[ general options ]");
     add_usage_line("--version");
     add_usage_line("--help");
+    add_environment_variable("GTKPALUDIS_OPTIONS", "Default command-line options.");
 }
 
 std::string

@@ -53,6 +53,7 @@ QualudisCommandLine::QualudisCommandLine() :
     message_level(paludis::qa::qal_info)
 {
     add_usage_line("[ options ] [ directories ... ]");
+    add_environment_variable("QUALUDIS_OPTIONS", "Default command-line options.");
 }
 
 QualudisCommandLine::~QualudisCommandLine()

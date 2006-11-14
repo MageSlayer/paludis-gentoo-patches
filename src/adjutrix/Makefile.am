@@ -57,7 +57,7 @@ TESTS_ENVIRONMENT = env \
 	SYSCONFDIR="$(sysconfdir)" \
 	bash $(top_srcdir)/test/run_test.sh bash
 
-TESTS = version_TEST help_TEST find_stable_candidates_TEST
+TESTS = version_TEST help_TEST find_stable_candidates_TEST args_from_environment_TEST
 
 EXTRA_DIST = \
 	$(man_MANS) \

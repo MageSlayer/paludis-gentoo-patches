@@ -62,7 +62,7 @@ TESTS_ENVIRONMENT = env \
 
 TESTS = version_TEST help_TEST list_sync_formats_TEST \
 	list_repository_formats_TEST list_dep_tag_categories_TEST \
-	exception_TEST install_TEST upgrade_TEST
+	exception_TEST install_TEST upgrade_TEST args_from_environment_TEST
 
 EXTRA_DIST = \
 	$(man_MANS) \

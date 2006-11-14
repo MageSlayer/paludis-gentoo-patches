@@ -143,7 +143,7 @@ main(int argc, char * argv[])
     {
         {
             Context context_local("When handling command line:");
-            CommandLine::get_instance()->run(argc, argv);
+            CommandLine::get_instance()->run(argc, argv, "GTKPALUDIS_OPTIONS");
 
             if (CommandLine::get_instance()->a_help.specified())
                 throw DoHelp();

@@ -61,7 +61,7 @@ namespace paludis
                 /**
                  * Add a new environment line.
                  */
-                void add_enviromnent_variable(const std::string & e, const std::string & desc);
+                void add_environment_variable(const std::string & e, const std::string & desc);
 
                 /**
                  * Add an new ArgsGroup (called by the ArgsGroup constructor).
@@ -84,9 +84,11 @@ namespace paludis
                 ///\}
 
                 /**
-                 * Parse command line arguments.
+                 * Parse command line arguments. The last (optional) argument is the name
+                 * of an environment variable holding arguments which are prepended to the
+                 * command line arguments.
                  */
-                void run(const int, const char * const * const);
+                void run(const int, const char * const * const, const std::string & env_var = "");
 
                 ///\name Iterate over our parameters (non - and -- switches and their values)
                 ///\{

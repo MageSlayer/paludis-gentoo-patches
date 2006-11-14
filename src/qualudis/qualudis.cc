@@ -460,7 +460,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        QualudisCommandLine::get_instance()->run(argc, argv);
+        QualudisCommandLine::get_instance()->run(argc, argv, "QUALUDIS_OPTIONS");
 
         if (QualudisCommandLine::get_instance()->a_help.specified())
             throw DoHelp();

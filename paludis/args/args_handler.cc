@@ -70,7 +70,7 @@ ArgsHandler::add_usage_line(const std::string & l)
 }
 
 void
-ArgsHandler::add_enviromnent_variable(const std::string & e, const std::string & desc)
+ArgsHandler::add_environment_variable(const std::string & e, const std::string & desc)
 {
     _imp->environment_lines.push_back(std::make_pair(e, desc));
 }
@@ -83,11 +83,13 @@ ArgsHandler::add(ArgsGroup * const g)
 }
 
 void
-ArgsHandler::run(const int argc, const char * const * const argv)
+ArgsHandler::run(const int argc, const char * const * const argv, const std::string & env_var)
 {
     std::list<std::string> args;
+    std::string env_options;
 
-    std::string env_options = paludis::getenv_with_default("PALUDIS_OPTIONS", "");
+    if (!env_var.empty())
+        env_options = paludis::getenv_with_default(env_var, "");
 
     std::istringstream iss(env_options);
     std::string option;

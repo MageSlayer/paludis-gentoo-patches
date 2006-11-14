@@ -195,16 +195,17 @@ CommandLine::CommandLine() :
     add_usage_line("--list-dep-tag-categories");
     add_usage_line("--update-news");
 
-    add_enviromnent_variable("PALUDIS_HOME", "Overrides the home directory used when searching "
+    add_environment_variable("PALUDIS_HOME", "Overrides the home directory used when searching "
             "for configuration files etc.");
-    add_enviromnent_variable("PALUDIS_NO_GLOBAL_HOOKS", "Don't use global hooks. Mostly for "
+    add_environment_variable("PALUDIS_NO_GLOBAL_HOOKS", "Don't use global hooks. Mostly for "
             "internal and test case use.");
-    add_enviromnent_variable("PALUDIS_SKIP_CONFIG", "Don't load configuration. Mostly for "
+    add_environment_variable("PALUDIS_SKIP_CONFIG", "Don't load configuration. Mostly for "
             "internal and test case use.");
-    add_enviromnent_variable("PALUDIS_EBUILD_DIR", "Where to look for ebuild.bash and related "
+    add_environment_variable("PALUDIS_EBUILD_DIR", "Where to look for ebuild.bash and related "
             "utilities.");
-    add_enviromnent_variable("PALUDIS_REPOSITORY_SO_DIR", "Where to look for repository .so "
+    add_environment_variable("PALUDIS_REPOSITORY_SO_DIR", "Where to look for repository .so "
             "files.");
+    add_environment_variable("PALUDIS_OPTIONS", "Default command-line options.");
 }
 
 std::string
