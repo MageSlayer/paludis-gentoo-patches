@@ -2,7 +2,7 @@
 
 /** \mainpage
 
-\section overview Overview
+\section mainpageoverview Overview
 
 This is the documentation for Paludis, the other package manager. It is available as part of Paludis via <code>make doxygen</code>, or on the web at <a href="http://paludis.berlios.de/">the Paludis project page</a>.
 
