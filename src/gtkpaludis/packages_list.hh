@@ -36,7 +36,11 @@ namespace gtkpaludis
 
             void clear_packages();
             void populate(const paludis::CategoryNamePart &);
+            sigc::signal<void> & populated();
+
             paludis::QualifiedPackageName current_package();
+
+            int number_of_packages();
     };
 }
 

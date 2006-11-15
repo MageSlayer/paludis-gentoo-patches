@@ -35,6 +35,9 @@ namespace gtkpaludis
             virtual ~CategoriesList();
 
             void populate();
+            sigc::signal<void> & populated();
+
+            void select_category(const paludis::CategoryNamePart &);
             paludis::CategoryNamePart current_category();
     };
 }

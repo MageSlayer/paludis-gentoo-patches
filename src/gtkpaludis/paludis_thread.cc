@@ -150,3 +150,14 @@ PaludisThread::Launchable::StatusBarMessage::~StatusBarMessage()
     _l->dispatch(sigc::mem_fun(MainWindow::get_instance(), &MainWindow::pop_status));
 }
 
+bool
+PaludisThread::try_lock_unlock()
+{
+    if (_imp->single_mutex.trylock())
+    {
+        _imp->single_mutex.unlock();
+        return true;
+    }
+    return false;
+}
+

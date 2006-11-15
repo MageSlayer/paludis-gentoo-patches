@@ -69,6 +69,8 @@ namespace paludis
         Glib::RefPtr<Gtk::ListStore> model;
         PackagesList * const list;
 
+        sigc::signal<void> populated;
+
         Implementation(PackagesList * const l) :
             model(Gtk::ListStore::create(columns)),
             list(l)
@@ -176,6 +178,7 @@ namespace
         }
 
         dispatch(sigc::bind<1>(sigc::mem_fun(_list, &Implementation<PackagesList>::add_packages), names));
+        dispatch(sigc::mem_fun(_list->populated, &sigc::signal<void>::operator()));
     }
 }
 
@@ -203,4 +206,15 @@ PackagesList::current_package()
         return QualifiedPackageName("no-category/no-package");
 }
 
+sigc::signal<void> &
+PackagesList::populated()
+{
+    return _imp->populated;
+}
+
+int
+PackagesList::number_of_packages()
+{
+    return _imp->model->children().size();
+}
 

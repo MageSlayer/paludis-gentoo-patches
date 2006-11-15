@@ -29,6 +29,8 @@ namespace gtkpaludis
 {
     class QueuePage;
     class RepositoriesPage;
+    class SetsPage;
+    class PackagesPage;
 
     class MainWindow :
         public paludis::InstantiationPolicy<MainWindow, paludis::instantiation_method::SingletonAsNeededTag>,
@@ -59,11 +61,15 @@ namespace gtkpaludis
 
             void show_messages_page();
             void show_queue_page();
+            void show_sets_page();
+            void show_packages_page();
 
             void message_window_changed();
 
             QueuePage * queue_page();
             RepositoriesPage * repositories_page();
+            SetsPage * sets_page();
+            PackagesPage * packages_page();
     };
 }
 

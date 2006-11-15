@@ -17,34 +17,22 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_PACKAGES_PAGE_HH
-#define PALUDIS_GUARD_SRC_GTKPALUDIS_PACKAGES_PAGE_HH 1
+#ifndef PALUDIS_GUARD_SRC_GTKPALUDIS_TEST_COMMON_HH
+#define PALUDIS_GUARD_SRC_GTKPALUDIS_TEST_COMMON_HH 1
 
-#include <gtkmm/table.h>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <sigc++/connection.h>
+#include <sigc++/slot.h>
+#include <string>
 
 namespace gtkpaludis
 {
-    class PackagesList;
-    class CategoriesList;
-
-    class PackagesPage :
-        public Gtk::Table,
-        private paludis::PrivateImplementationPattern<PackagesPage>
+    struct GtkMainQuitOnDestruction
     {
-        private:
-            void _package_list_selection_changed();
-            void _category_list_selection_changed();
-
-        public:
-            PackagesPage();
-            virtual ~PackagesPage();
-
-            void populate();
-
-            PackagesList * packages_list();
-            CategoriesList * categories_list();
+        ~GtkMainQuitOnDestruction();
     };
+
+    sigc::connection launch_signal_connection(sigc::slot<void>);
+    std::string test_dir();
 }
 
 #endif

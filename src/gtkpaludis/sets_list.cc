@@ -53,6 +53,7 @@ namespace paludis
     {
         Columns columns;
         Glib::RefPtr<Gtk::ListStore> model;
+        sigc::signal<void> populated;
 
         Implementation() :
             model(Gtk::ListStore::create(columns))
@@ -108,6 +109,7 @@ namespace
         std::copy(sets->begin(), sets->end(), std::inserter(names, names.end()));
 
         dispatch(sigc::bind<1>(sigc::mem_fun(_imp, &Implementation<SetsList>::add_sets), names));
+        dispatch(sigc::mem_fun(_imp->populated, &sigc::signal<void>::operator()));
     }
 }
 
@@ -139,4 +141,27 @@ SetsList::current_set()
         return "";
 }
 
+int
+SetsList::number_of_sets()
+{
+    return _imp->model->children().size();
+}
+
+bool
+SetsList::has_set_named(const SetName & s)
+{
+    const Gtk::TreeNodeChildren children(_imp->model->children());
+    for (Gtk::TreeNodeChildren::const_iterator i(children.begin()), i_end(children.end()) ;
+            i != i_end ; ++i)
+        if (stringify(s) == (*i)[_imp->columns.col_set])
+            return true;
+
+    return false;
+}
+
+sigc::signal<void> &
+SetsList::populated()
+{
+    return _imp->populated;
+}
 

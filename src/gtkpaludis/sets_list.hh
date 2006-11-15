@@ -35,7 +35,11 @@ namespace gtkpaludis
             virtual ~SetsList();
 
             void populate();
+            sigc::signal<void> & populated();
+
             std::string current_set();
+            bool has_set_named(const paludis::SetName &);
+            int number_of_sets();
     };
 }
 

@@ -13,13 +13,25 @@ SUBDIRS = cellrendererbutton vtemm .
 
 INCLUDES = $(GTKDEPS_CFLAGS)
 
+TESTS_ENVIRONMENT = env \
+	TEST_SCRIPT_DIR="$(srcdir)/" \
+	PALUDIS_NO_GLOBAL_HOOKS="yes" \
+	PALUDIS_NO_XTERM_TITLES="yes" \
+	PALUDIS_EBUILD_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_srcdir)/ebuild/`" \
+	PALUDIS_EBUILD_DIR_FALLBACK="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/ebuild/`" \
+	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
+	PALUDIS_HOME="$(srcdir)" \
+	SYSCONFDIR="$(sysconfdir)" \
+	bash $(top_srcdir)/test/run_test.sh $(srcdir)/test_helper.bash
+
+IF_GTK_TESTS = version_TEST help_TEST sets_list_TEST
+
 if ENABLE_GTK
 
 bin_PROGRAMS = gtkpaludis
 
-gtkpaludis_SOURCES = \
+common_sources = \
 	categories_list.cc     categories_list.hh     \
-	command_line.cc        command_line.hh        \
 	install.cc             install.hh             \
 	main_window.cc         main_window.hh         \
 	messages.cc            messages.hh            \
@@ -38,12 +50,15 @@ gtkpaludis_SOURCES = \
 	sets_list.cc           sets_list.hh           \
 	sets_page.cc           sets_page.hh           \
 	sync.cc                sync.hh                \
-	tasks_page.cc          tasks_page.hh          \
+	tasks_page.cc          tasks_page.hh
+
+gtkpaludis_SOURCES = \
+	$(common_sources) \
+	command_line.cc        command_line.hh        \
 	gtkpaludis.cc
 
 gtkpaludis_LDADD = \
 	$(top_builddir)/src/gtkpaludis/vtemm/libvtemm.a \
-	$(top_builddir)/src/gtkpaludis/cellrendererbutton/libcellrendererbutton.a \
 	$(top_builddir)/paludis/tasks/libpaludistasks.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
@@ -54,12 +69,35 @@ gtkpaludis_LDADD = \
 
 BUILT_SOURCES = packages_list-sr.hh packages_list-sr.cc
 
+if ENABLE_GTK_TESTS
+
+check_PROGRAMS = prod-x-server sets_list_TEST
+check_SCRIPTS = \
+	sets_list_TEST_setup.sh sets_list_TEST_cleanup.sh
+check_LIBRARIES = libtestcommon.a
+
+libtestcommon_a_SOURCES = test_common.hh test_common.cc
+
+sets_list_TEST_SOURCES = $(common_sources) sets_list_TEST.cc
+sets_list_TEST_LDADD = \
+	libtestcommon.a \
+	$(gtkpaludis_LDADD) \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtestnomain.a
+
+prod_x_server_SOURCES = prod-x-server.cc
+prod_x_server_LDADD = -lX11
+
+TESTS = version_TEST help_TEST sets_list_TEST
+
+endif
+
 endif
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in
 DISTCLEANFILES = packages_list-sr.hh packages_list-sr.cc
-EXTRA_DIST = packages_list.sr
+EXTRA_DIST = packages_list.sr version_TEST help_TEST $(check_SCRIPTS)
 
 packages_list-sr.hh : packages_list.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/packages_list.sr > $@

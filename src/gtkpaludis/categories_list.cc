@@ -54,6 +54,8 @@ namespace paludis
         Columns columns;
         Glib::RefPtr<Gtk::ListStore> model;
 
+        sigc::signal<void> populated;
+
         Implementation() :
             model(Gtk::ListStore::create(columns))
         {
@@ -105,6 +107,7 @@ namespace
         }
 
         dispatch(sigc::bind<1>(sigc::mem_fun(_imp, &Implementation<CategoriesList>::add_categories), names));
+        dispatch(sigc::mem_fun(_imp->populated, &sigc::signal<void>::operator()));
     }
 }
 
@@ -126,6 +129,23 @@ CategoriesList::populate()
     PaludisThread::get_instance()->launch(Populate::Pointer(new Populate(_imp.raw_pointer())));
 }
 
+void
+CategoriesList::select_category(const CategoryNamePart & cat)
+{
+    const Gtk::TreeNodeChildren children(_imp->model->children());
+    Gtk::TreeNodeChildren::iterator i(children.begin()), i_end(children.end());
+    for ( ; i != i_end ; ++i)
+        if (stringify(cat) == (*i)[_imp->columns.col_category])
+        {
+            get_selection()->select(i);
+            get_selection()->signal_changed();
+            return;
+        }
+
+    get_selection()->unselect_all();
+    get_selection()->signal_changed();
+}
+
 CategoryNamePart
 CategoriesList::current_category()
 {
@@ -134,5 +154,11 @@ CategoriesList::current_category()
         return CategoryNamePart(stringify((*i)[_imp->columns.col_category]));
     else
         return CategoryNamePart("no-category");
+}
+
+sigc::signal<void> &
+CategoriesList::populated()
+{
+    return _imp->populated;
 }
 

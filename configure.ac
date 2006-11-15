@@ -577,8 +577,16 @@ int main(int, char *[])
 	fi
 	AC_SUBST([HAVE_TREE_VIEW_GRID_LINES])
 fi
-
 AM_CONDITIONAL([ENABLE_GTK], test "x$enable_gtk" = "xyes")
+
+enable_gtk_tests=monkey
+AC_MSG_CHECKING([whether to build tests for the gtk+ client])
+AC_ARG_ENABLE([gtktests],
+   AS_HELP_STRING([--enable-gtktests], [Enable tests for the gtk+ client (default: disable)]),
+   enable_gtk_tests=$enableval,
+   enable_gtk_tests=no)
+AC_MSG_RESULT($enable_gtk_tests)
+AM_CONDITIONAL([ENABLE_GTK_TESTS], test "x$enable_gtk_tests" = "xyes")
 dnl }}}
 
 dnl {{{ ruby interface

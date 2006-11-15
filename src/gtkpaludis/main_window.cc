@@ -64,6 +64,8 @@ namespace paludis
 
         int messages_page_id;
         int queue_page_id;
+        int sets_page_id;
+        int packages_page_id;
 
         Implementation() :
             lock_count(0),
@@ -86,8 +88,8 @@ MainWindow::MainWindow() :
                 &MainWindow::_main_notebook_page_switched));
 
     _imp->main_notebook.append_page(_imp->tasks_page, "Common Tasks");
-    _imp->main_notebook.append_page(_imp->packages_page, "Packages");
-    _imp->main_notebook.append_page(_imp->sets_page, "Sets");
+    _imp->packages_page_id = _imp->main_notebook.append_page(_imp->packages_page, "Packages");
+    _imp->sets_page_id = _imp->main_notebook.append_page(_imp->sets_page, "Sets");
     _imp->main_notebook.append_page(_imp->repositories_page, "Repositories");
     _imp->queue_page_id = _imp->main_notebook.append_page(_imp->queue_page, "Queue");
     _imp->messages_page_id = _imp->main_notebook.append_page(_imp->messages_page, "Messages");
@@ -115,9 +117,11 @@ MainWindow::~MainWindow()
 void
 MainWindow::populate()
 {
+    lock_controls();
     _imp->packages_page.populate();
     _imp->repositories_page.populate();
     _imp->sets_page.populate();
+    maybe_unlock_controls();
 }
 
 void
@@ -159,6 +163,18 @@ MainWindow::show_queue_page()
 }
 
 void
+MainWindow::show_sets_page()
+{
+    _imp->main_notebook.set_current_page(_imp->sets_page_id);
+}
+
+void
+MainWindow::show_packages_page()
+{
+    _imp->main_notebook.set_current_page(_imp->packages_page_id);
+}
+
+void
 MainWindow::show_exception(const std::string & what, const std::string & message, bool fatal)
 {
     Gtk::MessageDialog dialog(*this, fatal ? "Fatal Error" : "Error", false, Gtk::MESSAGE_ERROR);
@@ -193,6 +209,18 @@ RepositoriesPage *
 MainWindow::repositories_page()
 {
     return &_imp->repositories_page;
+}
+
+SetsPage *
+MainWindow::sets_page()
+{
+    return &_imp->sets_page;
+}
+
+PackagesPage *
+MainWindow::packages_page()
+{
+    return &_imp->packages_page;
 }
 
 void

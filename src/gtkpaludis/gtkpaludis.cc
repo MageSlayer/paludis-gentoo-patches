@@ -204,7 +204,13 @@ main(int argc, char * argv[])
             if (! gui_kit.initialized())
                 throw GtkInitFailed();
 
-            Glib::thread_init();
+            if (! Glib::thread_supported())
+                Glib::thread_init();
+
+#ifdef GTKPALUDIS_SLAVE_MODE
+            std::cerr << "Running in slave mode, for test cases" << std::endl;
+#endif
+
             Glib::signal_idle().connect(sigc::bind_return(sigc::mem_fun(*MainWindow::get_instance(),
                             &MainWindow::populate), false));
             TryMain::run(*MainWindow::get_instance());

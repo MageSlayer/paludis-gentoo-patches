@@ -111,4 +111,15 @@ PackagesPage::_package_list_selection_changed()
     _imp->package_info.populate(_imp->packages_list.current_package());
 }
 
+PackagesList *
+PackagesPage::packages_list()
+{
+    return &_imp->packages_list;
+}
+
+CategoriesList *
+PackagesPage::categories_list()
+{
+    return &_imp->categories_list;
+}
 

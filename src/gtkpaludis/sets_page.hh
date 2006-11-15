@@ -25,6 +25,8 @@
 
 namespace gtkpaludis
 {
+    class SetsList;
+
     class SetsPage :
         public Gtk::Table,
         private paludis::PrivateImplementationPattern<SetsPage>
@@ -38,6 +40,8 @@ namespace gtkpaludis
             virtual ~SetsPage();
 
             void populate();
+
+            SetsList * sets_list();
     };
 }
 

@@ -114,3 +114,9 @@ SetsPage::_queue_button_clicked()
     }
 }
 
+SetsList *
+SetsPage::sets_list()
+{
+    return &_imp->sets_list;
+}
+

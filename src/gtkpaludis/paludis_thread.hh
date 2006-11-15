@@ -74,6 +74,7 @@ namespace gtkpaludis
 
         public:
             void launch(Launchable::Pointer);
+            bool try_lock_unlock();
     };
 }
 
