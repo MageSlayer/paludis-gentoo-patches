@@ -3,9 +3,7 @@
 /**
 \page MigrationHowto Migration Howto
 
-\warning Do not file bugs related to Paludis on Gentoo Bugzilla. Do not discuss
-    Paludis on Gentoo mailing lists or forums. Do not pester Gentoo developers
-    about Paludis. Read the \link KnownIssues known issues \endlink list.
+\warning Read the \link KnownIssues known issues \endlink list.
 
 There are two methods you can follow to migrate from Portage to Paludis, the
 \ref MigrationHowtoPortageToPaludisManual "Manual Method", and the \ref
