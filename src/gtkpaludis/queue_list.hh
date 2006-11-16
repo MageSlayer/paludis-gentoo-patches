@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_GTKPALUDIS_QUEUE_LIST_HH 1
 
 #include <gtkmm/treeview.h>
-#include <gtkmm/liststore.h>
+#include <gtkmm/treestore.h>
 #include <paludis/util/private_implementation_pattern.hh>
 
 namespace gtkpaludis
@@ -35,6 +35,9 @@ namespace gtkpaludis
         class Populate;
         friend class Populate;
 
+        private:
+            void _sensitive_changed();
+
         public:
             QueueList(QueuePage * const);
             virtual ~QueueList();
@@ -44,7 +47,7 @@ namespace gtkpaludis
             void calculate();
             void add_target(const std::string &);
 
-            void set_model_show_dep_columns(Glib::RefPtr<Gtk::ListStore>);
+            void set_model_show_dep_columns(Glib::RefPtr<Gtk::TreeStore>);
     };
 }
 
