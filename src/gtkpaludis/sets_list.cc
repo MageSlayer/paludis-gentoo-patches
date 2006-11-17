@@ -105,6 +105,8 @@ namespace
             std::copy(sets->begin(), sets->end(), std::inserter(names, names.end()));
         }
 
+        names.erase(SetName("insecurity"));
+
         SetsCollection::ConstPointer sets(DefaultEnvironment::get_instance()->sets_list());
         std::copy(sets->begin(), sets->end(), std::inserter(names, names.end()));
 
