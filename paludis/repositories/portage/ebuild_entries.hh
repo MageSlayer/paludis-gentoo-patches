@@ -25,7 +25,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
- * Declaration for the PortageRepositoryEbuildEntries class.
+ * Declaration for the EbuildEntries class.
  *
  * \ingroup grpportagerepository
  */
@@ -40,20 +40,20 @@ namespace paludis
      *
      * \ingroup grpportagerepository
      */
-    class PALUDIS_VISIBLE PortageRepositoryEbuildEntries :
+    class PALUDIS_VISIBLE EbuildEntries :
         public PortageRepositoryEntries,
-        private PrivateImplementationPattern<PortageRepositoryEbuildEntries>
+        private PrivateImplementationPattern<EbuildEntries>
     {
         public:
-            static PortageRepositoryEbuildEntries::Pointer
-                make_portage_repository_ebuild_entries(const Environment * const,
+            static EbuildEntries::Pointer
+                make_ebuild_entries(const Environment * const,
                         PortageRepository * const, const PortageRepositoryParams &);
 
-            PortageRepositoryEbuildEntries(const Environment * const,
+            EbuildEntries(const Environment * const,
                     PortageRepository * const portage_repository,
                     const PortageRepositoryParams &);
 
-            virtual ~PortageRepositoryEbuildEntries();
+            virtual ~EbuildEntries();
 
             virtual VersionMetadata::Pointer generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const;

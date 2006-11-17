@@ -17,7 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/portage/portage_repository_ebuild_entries.hh>
+#include <paludis/repositories/portage/ebuild_entries.hh>
+#include <paludis/repositories/portage/ebuild_flat_metadata_cache.hh>
 #include <paludis/repositories/portage/portage_repository.hh>
 
 #include <paludis/dep_atom_flattener.hh>
@@ -40,112 +41,68 @@ using namespace paludis;
 namespace paludis
 {
     /**
-     * Implementation data for PortageRepositoryEbuildEntries.
+     * Implementation data for EbuildEntries.
      *
      * \ingroup grpportagerepository
      */
     template<>
-    struct Implementation<PortageRepositoryEbuildEntries> :
-        InternalCounted<Implementation<PortageRepositoryEbuildEntries> >
+    struct Implementation<EbuildEntries> :
+        InternalCounted<Implementation<EbuildEntries> >
     {
         const Environment * const environment;
         PortageRepository * const portage_repository;
         const PortageRepositoryParams params;
 
+        EclassMtimes::Pointer eclass_mtimes;
+        time_t master_mtime;
+
         Implementation(const Environment * const e, PortageRepository * const p,
                 const PortageRepositoryParams & k) :
             environment(e),
             portage_repository(p),
-            params(k)
+            params(k),
+            eclass_mtimes(new EclassMtimes(k.eclassdirs)),
+            master_mtime(0)
         {
+            FSEntry m(k.location / "metadata" / "timestamp");
+            if (m.exists())
+                master_mtime = m.mtime();
         }
     };
 }
 
-PortageRepositoryEbuildEntries::PortageRepositoryEbuildEntries(
+EbuildEntries::EbuildEntries(
         const Environment * const e, PortageRepository * const p, const PortageRepositoryParams & k) :
     PortageRepositoryEntries(".ebuild"),
-    PrivateImplementationPattern<PortageRepositoryEbuildEntries>(new
-            Implementation<PortageRepositoryEbuildEntries>(e, p, k))
+    PrivateImplementationPattern<EbuildEntries>(new
+            Implementation<EbuildEntries>(e, p, k))
 {
 }
 
-PortageRepositoryEbuildEntries::~PortageRepositoryEbuildEntries()
+EbuildEntries::~EbuildEntries()
 {
 }
 
 VersionMetadata::Pointer
-PortageRepositoryEbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
+EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
         const VersionSpec & v) const
 {
     VersionMetadata::Pointer result(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
 
-    FSEntry cache_file(_imp->params.cache);
-    cache_file /= stringify(q.category);
-    cache_file /= stringify(q.package) + "-" + stringify(v);
+    FSEntry ebuild_file(_imp->params.location / stringify(q.category) /
+            stringify(q.package) / (stringify(q.package) + "-" + stringify(v) + ".ebuild"));
 
     bool ok(false);
-    if (cache_file.is_regular_file())
+    if (_imp->params.cache.basename() != "empty")
     {
-        std::ifstream cache(stringify(cache_file).c_str());
-        std::string line;
+        FSEntry cache_file(_imp->params.cache);
+        cache_file /= stringify(q.category);
+        cache_file /= stringify(q.package) + "-" + stringify(v);
 
-        if (cache)
-        {
-            std::getline(cache, line); result->deps.build_depend_string = line;
-            std::getline(cache, line); result->deps.run_depend_string = line;
-            std::getline(cache, line); result->slot = SlotName(line);
-            std::getline(cache, line); result->get_ebuild_interface()->src_uri = line;
-            std::getline(cache, line); result->get_ebuild_interface()->restrict_string = line;
-            std::getline(cache, line); result->homepage = line;
-            std::getline(cache, line); result->license_string = line;
-            std::getline(cache, line); result->description = line;
-            std::getline(cache, line); result->get_ebuild_interface()->keywords = line;
-            std::getline(cache, line); result->get_ebuild_interface()->inherited = line;
-            std::getline(cache, line); result->get_ebuild_interface()->iuse = line;
-            std::getline(cache, line);
-            std::getline(cache, line); result->deps.post_depend_string = line;
-            std::getline(cache, line); result->get_ebuild_interface()->provide_string = line;
-            std::getline(cache, line); result->eapi = line;
-
-            // check mtimes
-            time_t cache_time(cache_file.mtime());
+        EbuildFlatMetadataCache metadata_cache(cache_file, ebuild_file, _imp->master_mtime,
+                _imp->eclass_mtimes);
+        if (metadata_cache.load(result))
             ok = true;
-
-            if ((_imp->params.location / stringify(q.category) /
-                        stringify(q.package) /
-                        (stringify(q.package) + "-" + stringify(v)
-                            + ".ebuild")).mtime() > cache_time)
-                ok = false;
-            else
-            {
-                FSEntry timestamp(_imp->params.location / "metadata" / "timestamp");
-                if (timestamp.exists())
-                    cache_time = timestamp.mtime();
-
-                std::list<std::string> inherits;
-                WhitespaceTokeniser::get_instance()->tokenise(
-                        stringify(result->get_ebuild_interface()->inherited),
-                        std::back_inserter(inherits));
-                for (FSEntryCollection::Iterator e(_imp->params.eclassdirs->begin()),
-                        e_end(_imp->params.eclassdirs->end()) ; e != e_end ; ++e)
-                    for (std::list<std::string>::const_iterator i(inherits.begin()),
-                            i_end(inherits.end()) ; i != i_end ; ++i)
-                    {
-                        if ((*e / (*i + ".eclass")).exists())
-                            if (((*e / (*i + ".eclass"))).mtime() > cache_time)
-                                ok = false;
-                    }
-            }
-
-            if (! ok)
-                Log::get_instance()->message(ll_warning, lc_no_context, "Stale cache file at '"
-                        + stringify(cache_file) + "'");
-        }
-        else
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Couldn't read the cache file at '"
-                    + stringify(cache_file) + "'");
     }
 
     if (! ok)
@@ -178,7 +135,6 @@ PortageRepositoryEbuildEntries::generate_version_metadata(const QualifiedPackage
     }
 
     return result;
-
 }
 
 namespace
@@ -245,7 +201,7 @@ namespace
 }
 
 void
-PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
+EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         const InstallOptions & o, PortageRepositoryProfile::ConstPointer p) const
 {
     if (! _imp->portage_repository->has_version(q, v))
@@ -508,7 +464,7 @@ PortageRepositoryEbuildEntries::install(const QualifiedPackageName & q, const Ve
 }
 
 std::string
-PortageRepositoryEbuildEntries::get_environment_variable(const QualifiedPackageName & q,
+EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
         const VersionSpec & v, const std::string & var,
         PortageRepositoryProfile::ConstPointer) const
 {
@@ -535,11 +491,11 @@ PortageRepositoryEbuildEntries::get_environment_variable(const QualifiedPackageN
     return cmd.result();
 }
 
-PortageRepositoryEbuildEntries::Pointer
-PortageRepositoryEbuildEntries::make_portage_repository_ebuild_entries(
+EbuildEntries::Pointer
+EbuildEntries::make_ebuild_entries(
         const Environment * const e, PortageRepository * const r, const PortageRepositoryParams & p)
 {
-    return Pointer(new PortageRepositoryEbuildEntries(e, r, p));
+    return Pointer(new EbuildEntries(e, r, p));
 }
 
 #ifdef PALUDIS_ENABLE_VISIBILITY
@@ -548,7 +504,7 @@ PortageRepositoryEbuildEntries::make_portage_repository_ebuild_entries(
 namespace
 {
     const PortageRepositoryEntriesMaker::RegisterMaker register_portage_repository_ebuild_entries PALUDIS_ATTRIBUTE((used)) (
-            "ebuild", &PortageRepositoryEbuildEntries::make_portage_repository_ebuild_entries);
+            "ebuild", &EbuildEntries::make_ebuild_entries);
 }
 #ifdef PALUDIS_ENABLE_VISIBILITY
 #  pragma GCC visibility pop

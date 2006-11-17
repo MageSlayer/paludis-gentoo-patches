@@ -1,0 +1,96 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include "ebuild_flat_metadata_cache.hh"
+#include <paludis/util/log.hh>
+#include <paludis/util/tokeniser.hh>
+#include <fstream>
+#include <set>
+
+using namespace paludis;
+
+EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
+        const FSEntry & e, time_t t, EclassMtimes::ConstPointer m) :
+    _filename(f),
+    _ebuild(e),
+    _master_mtime(t),
+    _eclass_mtimes(m)
+{
+}
+
+bool
+EbuildFlatMetadataCache::load(VersionMetadata::Pointer result)
+{
+    std::ifstream cache(stringify(_filename).c_str());
+    std::string line;
+
+    if (cache)
+    {
+        std::getline(cache, line); result->deps.build_depend_string = line;
+        std::getline(cache, line); result->deps.run_depend_string = line;
+        std::getline(cache, line); result->slot = SlotName(line);
+        std::getline(cache, line); result->get_ebuild_interface()->src_uri = line;
+        std::getline(cache, line); result->get_ebuild_interface()->restrict_string = line;
+        std::getline(cache, line); result->homepage = line;
+        std::getline(cache, line); result->license_string = line;
+        std::getline(cache, line); result->description = line;
+        std::getline(cache, line); result->get_ebuild_interface()->keywords = line;
+        std::getline(cache, line); result->get_ebuild_interface()->inherited = line;
+        std::getline(cache, line); result->get_ebuild_interface()->iuse = line;
+        std::getline(cache, line);
+        std::getline(cache, line); result->deps.post_depend_string = line;
+        std::getline(cache, line); result->get_ebuild_interface()->provide_string = line;
+        std::getline(cache, line); result->eapi = line;
+
+        // check mtimes
+        time_t cache_time(std::max(_master_mtime, _filename.mtime()));
+        bool ok = true;
+
+        if (_ebuild.mtime() > cache_time)
+            ok = false;
+        else
+        {
+            std::set<std::string> inherits;
+            WhitespaceTokeniser::get_instance()->tokenise(
+                    stringify(result->get_ebuild_interface()->inherited),
+                    std::inserter(inherits, inherits.end()));
+
+            for (std::set<std::string>::const_iterator i(inherits.begin()),
+                    i_end(inherits.end()) ; i != i_end ; ++i)
+                if (_eclass_mtimes->mtime(*i) > cache_time)
+                {
+                    ok = false;
+                    break;
+                }
+        }
+
+        if (! ok)
+            Log::get_instance()->message(ll_warning, lc_no_context, "Stale cache file at '"
+                    + stringify(_filename) + "'");
+
+        return ok;
+    }
+    else
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context,
+                "Couldn't use the cache file at '" + stringify(_filename) + "'");
+        return false;
+    }
+}
+

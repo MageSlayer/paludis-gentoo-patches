@@ -26,10 +26,10 @@ paludis_repositories_portage_include_HEADERS = \
 	portage_repository_params-sr.hh \
 	portage_repository_sets.hh \
 	portage_repository_entries.hh \
-	portage_repository_ebuild_entries.hh \
-	portage_repository_ebin_entries.hh \
-	make_ebuild_repository.hh \
-	make_ebin_repository.hh
+	ebuild_entries.hh \
+	ebuild_flat_metadata_cache.hh \
+	eclass_mtimes.hh \
+	make_ebuild_repository.hh
 
 libpaludisportagerepository_la_SOURCES = \
 	glsa.cc \
@@ -40,11 +40,11 @@ libpaludisportagerepository_la_SOURCES = \
 	portage_repository_news.cc \
 	portage_repository_sets.cc \
 	portage_repository_entries.cc \
-	portage_repository_ebuild_entries.cc \
-	portage_repository_ebin_entries.cc \
+	ebuild_entries.cc \
+	ebuild_flat_metadata_cache.cc \
+	eclass_mtimes.cc \
 	portage_repository_params.cc \
 	make_ebuild_repository.cc \
-	make_ebin_repository.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
 libpaludisportagerepository_la_LIBADD = \

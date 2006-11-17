@@ -9,6 +9,7 @@ make_class_PortageRepositoryParams()
     key location FSEntry
     key profiles FSEntryCollection::ConstPointer
     key cache FSEntry
+    key write_cache FSEntry
     key distdir FSEntry
     key pkgdir FSEntry
     key eclassdirs FSEntryCollection::ConstPointer

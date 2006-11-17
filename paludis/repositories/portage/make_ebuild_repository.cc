@@ -98,6 +98,10 @@ paludis::make_ebuild_repository(
             cache = "/var/empty";
     }
 
+    std::string write_cache;
+    if (m->end() == m->find("write_cache") || ((write_cache = m->find("write_cache")->second)).empty())
+        write_cache = "/var/empty";
+
     std::string sync;
     if (m->end() != m->find("sync"))
             sync = m->find("sync")->second;
@@ -121,6 +125,7 @@ paludis::make_ebuild_repository(
                 .location(location)
                 .profiles(profiles)
                 .cache(cache)
+                .write_cache(write_cache)
                 .eclassdirs(eclassdirs)
                 .distdir(distdir)
                 .pkgdir(FSEntry("/var/empty"))

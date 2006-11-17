@@ -17,19 +17,25 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_MAKE_EBIN_REPOSITORY_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_MAKE_EBIN_REPOSITORY_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_ECLASS_MTIMES_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_ECLASS_MTIMES_HH 1
 
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/collection.hh>
 
 namespace paludis
 {
-    CountedPtr<Repository>
-    make_ebin_repository(const Environment * const,
-            const PackageDatabase * const,
-            AssociativeCollection<std::string, std::string>::ConstPointer) PALUDIS_VISIBLE;
+    class EclassMtimes :
+        private PrivateImplementationPattern<EclassMtimes>,
+        public InternalCounted<EclassMtimes>
+    {
+        public:
+            EclassMtimes(FSEntryCollection::ConstPointer);
+            ~EclassMtimes();
 
+            time_t mtime(const std::string &) const;
+    };
 }
-
 
 #endif
