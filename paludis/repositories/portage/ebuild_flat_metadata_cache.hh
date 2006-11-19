@@ -33,11 +33,13 @@ namespace paludis
             const FSEntry & _ebuild;
             time_t _master_mtime;
             EclassMtimes::ConstPointer _eclass_mtimes;
+            bool _silent;
 
         public:
             EbuildFlatMetadataCache(const FSEntry &, const FSEntry &,
-                    time_t, EclassMtimes::ConstPointer);
+                    time_t, EclassMtimes::ConstPointer, bool silent);
             bool load(VersionMetadata::Pointer);
+            void save(VersionMetadata::ConstPointer);
     };
 }
 

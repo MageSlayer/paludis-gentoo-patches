@@ -20,23 +20,28 @@
 #include "ebuild_flat_metadata_cache.hh"
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/join.hh>
 #include <fstream>
 #include <set>
+#include <list>
 
 using namespace paludis;
 
 EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
-        const FSEntry & e, time_t t, EclassMtimes::ConstPointer m) :
+        const FSEntry & e, time_t t, EclassMtimes::ConstPointer m, bool s) :
     _filename(f),
     _ebuild(e),
     _master_mtime(t),
-    _eclass_mtimes(m)
+    _eclass_mtimes(m),
+    _silent(s)
 {
 }
 
 bool
 EbuildFlatMetadataCache::load(VersionMetadata::Pointer result)
 {
+    Context context("When loading version metadata to '" + stringify(_filename) + "':");
+
     std::ifstream cache(stringify(_filename).c_str());
     std::string line;
 
@@ -88,9 +93,54 @@ EbuildFlatMetadataCache::load(VersionMetadata::Pointer result)
     }
     else
     {
-        Log::get_instance()->message(ll_warning, lc_no_context,
+        Log::get_instance()->message(_silent ? ll_debug : ll_warning, lc_no_context,
                 "Couldn't use the cache file at '" + stringify(_filename) + "'");
         return false;
     }
+}
+
+namespace
+{
+    template <typename T_>
+    std::string normalise(const T_ & s)
+    {
+        std::list<std::string> tokens;
+        WhitespaceTokeniser::get_instance()->tokenise(stringify(s), std::back_inserter(tokens));
+        return join(tokens.begin(), tokens.end(), " ");
+    }
+}
+
+void
+EbuildFlatMetadataCache::save(VersionMetadata::ConstPointer v)
+{
+    Context context("When saving version metadata to '" + stringify(_filename) + "':");
+
+    _filename.dirname().mkdir();
+    std::ofstream cache(stringify(_filename).c_str());
+
+    if (cache)
+    {
+        cache << normalise(v->deps.build_depend_string) << std::endl;
+        cache << normalise(v->deps.run_depend_string) << std::endl;
+        cache << normalise(v->slot) << std::endl;
+        cache << normalise(v->get_ebuild_interface()->src_uri) << std::endl;
+        cache << normalise(v->get_ebuild_interface()->restrict_string) << std::endl;
+        cache << normalise(v->homepage) << std::endl;
+        cache << normalise(v->license_string) << std::endl;
+        cache << normalise(v->description) << std::endl;
+        cache << normalise(v->get_ebuild_interface()->keywords) << std::endl;
+        cache << normalise(v->get_ebuild_interface()->inherited) << std::endl;
+        cache << normalise(v->get_ebuild_interface()->iuse) << std::endl;
+        cache << std::endl;
+        cache << normalise(v->deps.post_depend_string) << std::endl;
+        cache << normalise(v->get_ebuild_interface()->provide_string) << std::endl;
+        cache << normalise(v->eapi) << std::endl;
+    }
+    else
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context,
+                "Couldn't write cache file to '" + stringify(_filename) + "'");
+    }
+
 }
 

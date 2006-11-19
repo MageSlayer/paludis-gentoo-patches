@@ -87,22 +87,39 @@ VersionMetadata::Pointer
 EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
         const VersionSpec & v) const
 {
+    Context context("When generating version metadata for '" + stringify(q) + "-" + stringify(v) + "':");
+
     VersionMetadata::Pointer result(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
 
     FSEntry ebuild_file(_imp->params.location / stringify(q.category) /
             stringify(q.package) / (stringify(q.package) + "-" + stringify(v) + ".ebuild"));
 
+    FSEntry cache_file(_imp->params.cache);
+    cache_file /= stringify(q.category);
+    cache_file /= stringify(q.package) + "-" + stringify(v);
+
+    FSEntry write_cache_file(_imp->params.write_cache);
+    write_cache_file /= stringify(q.category);
+    write_cache_file /= stringify(q.package) + "-" + stringify(v);
+
     bool ok(false);
     if (_imp->params.cache.basename() != "empty")
     {
-        FSEntry cache_file(_imp->params.cache);
-        cache_file /= stringify(q.category);
-        cache_file /= stringify(q.package) + "-" + stringify(v);
 
         EbuildFlatMetadataCache metadata_cache(cache_file, ebuild_file, _imp->master_mtime,
-                _imp->eclass_mtimes);
+                _imp->eclass_mtimes, false);
         if (metadata_cache.load(result))
             ok = true;
+    }
+
+    if ((! ok) && _imp->params.write_cache.basename() != "empty")
+    {
+        EbuildFlatMetadataCache write_metadata_cache(write_cache_file, ebuild_file, _imp->master_mtime,
+                _imp->eclass_mtimes, true);
+        if (write_metadata_cache.load(result))
+            ok = true;
+        else if (write_cache_file.exists())
+            write_cache_file.unlink();
     }
 
     if (! ok)
@@ -132,6 +149,13 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
 
         if (0 == ((result = cmd.metadata())))
             throw InternalError(PALUDIS_HERE, "cmd.metadata() is zero pointer???");
+
+        if (_imp->params.write_cache.basename() != "empty")
+        {
+            EbuildFlatMetadataCache metadata_cache(write_cache_file, ebuild_file, _imp->master_mtime,
+                    _imp->eclass_mtimes, false);
+            metadata_cache.save(result);
+        }
     }
 
     return result;

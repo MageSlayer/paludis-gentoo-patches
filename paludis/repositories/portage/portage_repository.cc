@@ -254,6 +254,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     config_info->add_kv("eclassdirs", join(_imp->params.eclassdirs->begin(),
                 _imp->params.eclassdirs->end(), " "));
     config_info->add_kv("cache", stringify(_imp->params.cache));
+    config_info->add_kv("write_cache", stringify(_imp->params.write_cache));
     config_info->add_kv("distdir", stringify(_imp->params.distdir));
     config_info->add_kv("pkgdir", stringify(_imp->params.pkgdir));
     config_info->add_kv("securitydir", stringify(_imp->params.securitydir));
