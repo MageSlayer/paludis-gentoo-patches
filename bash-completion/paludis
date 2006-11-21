@@ -78,7 +78,7 @@ _paludis() {
                     return 0
                     ;;
                 --debug-build)
-                    COMPREPLY=($(compreply -W "none split internal" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "none split internal" -- "${cur}"))
                     return 0
                     ;;
                 --show-install-reasons)
