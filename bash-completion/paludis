@@ -14,6 +14,7 @@ _paludis() {
     opts="--query -q \
         --install -i \
         --uninstall -u \
+        --uninstall-unused \
         --sync -s \
         --contents -k \
         --owner -o \
@@ -43,9 +44,13 @@ _paludis() {
         --pretend -p \
         --preserve-world -1 \
         --no-config-protection \
+        --debug-build \
         --fetch -f \
         --show-install-reasons \
+        --with-unused-dependencies \
+        --with-dependencies \
         --dl-reinstall \
+        --dl-reinstall-scm \
         --dl-upgrade \
         --dl-installed-deps-pre \
         --dl-installed-deps-runtime \
@@ -72,12 +77,20 @@ _paludis() {
                     COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
                     return 0
                     ;;
+                --debug-build)
+                    COMPREPLY=($(compreply -W "none split internal" -- "${cur}"))
+                    return 0
+                    ;;
                 --show-install-reasons)
                     COMPREPLY=($(compgen -W "none summary full" -- "${cur}"))
                     return 0
                     ;;
                 --dl-reinstall)
                     COMPREPLY=($(compgen -W "never always if-use-changed" -- "${cur}"))
+                    return 0
+                    ;;
+                --dl-reinstall-scm)
+                    COMPREPLY=($(compgen -W "never always daily weekly" -- "${cur}"))
                     return 0
                     ;;
                 --dl-upgrade)
