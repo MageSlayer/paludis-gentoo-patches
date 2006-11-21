@@ -482,6 +482,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     .root(stringify(_imp->params.root) + "/")
                     .profiles(_imp->params.profiles)
                     .disable_cfgpro(o.no_config_protect)
+                    .debug_build(o.debug_build)
                     .slot(SlotName(metadata->slot)));
 
     install_cmd();

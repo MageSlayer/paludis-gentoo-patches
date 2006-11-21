@@ -313,6 +313,28 @@ EbuildInstallCommand::failure()
 MakeEnvCommand
 EbuildInstallCommand::extend_command(const MakeEnvCommand & cmd)
 {
+    std::string debug_build;
+    do
+    {
+        switch (install_params.debug_build)
+        {
+            case ido_none:
+                debug_build = "none";
+                continue;
+
+            case ido_split:
+                debug_build = "split";
+                continue;
+
+            case ido_internal:
+                debug_build = "internal";
+                continue;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad debug_build value");
+    }
+    while (false);
+
     MakeEnvCommand result(cmd
             ("A", install_params.a)
             ("AA", install_params.aa)
@@ -321,6 +343,7 @@ EbuildInstallCommand::extend_command(const MakeEnvCommand & cmd)
             ("ROOT", install_params.root)
             ("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK",
                 install_params.disable_cfgpro ? "/" : "")
+            ("PALUDIS_DEBUG_BUILD", debug_build)
             ("PALUDIS_PROFILE_DIR", stringify(*install_params.profiles->begin()))
             ("PALUDIS_PROFILE_DIRS", join(install_params.profiles->begin(),
                                           install_params.profiles->end(), " "))

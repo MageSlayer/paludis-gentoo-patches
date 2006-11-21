@@ -86,6 +86,7 @@ namespace paludis
             void set_fetch_only(const bool value);
             void set_pretend(const bool value);
             void set_preserve_world(const bool value);
+            void set_debug_mode(const InstallDebugOption value);
 
             ///\}
 

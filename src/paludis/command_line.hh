@@ -179,6 +179,9 @@ class CommandLine :
         /// --no-config-protection
         paludis::args::SwitchArg a_no_config_protection;
 
+        /// --debug-build
+        paludis::args::EnumArg a_debug_build;
+
         /// --fetch
         paludis::args::SwitchArg a_fetch;
 

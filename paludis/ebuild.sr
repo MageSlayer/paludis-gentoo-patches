@@ -60,6 +60,7 @@ make_class_EbuildInstallCommandParams()
     key profiles FSEntryCollection::ConstPointer
     key expand_vars "AssociativeCollection<std::string, std::string>::ConstPointer"
     key disable_cfgpro bool
+    key debug_build InstallDebugOption
     key slot SlotName
 
     doxygen_comment << "END"

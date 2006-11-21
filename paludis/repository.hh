@@ -61,6 +61,13 @@ namespace paludis
     class RepositoryProvidesInterface;
     class RepositoryVirtualsInterface;
 
+    enum InstallDebugOption
+    {
+        ido_none,
+        ido_split,
+        ido_internal
+    };
+
 #include <paludis/repository-sr.hh>
 
     /**

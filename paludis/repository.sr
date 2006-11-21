@@ -5,6 +5,7 @@ make_class_InstallOptions()
 {
     key no_config_protect bool
     key fetch_only bool
+    key debug_build InstallDebugOption
 
     doxygen_comment << "END"
         /**

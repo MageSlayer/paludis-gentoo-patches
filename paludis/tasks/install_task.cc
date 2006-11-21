@@ -49,7 +49,7 @@ namespace paludis
             env(e),
             dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
-            install_options(false, false),
+            install_options(false, false, ido_none),
             targets(new AllDepAtom),
             pretend(false),
             preserve_world(false),
@@ -398,6 +398,12 @@ void
 InstallTask::set_preserve_world(const bool value)
 {
     _imp->preserve_world = value;
+}
+
+void
+InstallTask::set_debug_mode(const InstallDebugOption value)
+{
+    _imp->install_options.debug_build = value;
 }
 
 InstallTask::TargetsIterator

@@ -759,6 +759,18 @@ do_install()
     task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
     task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
 
+    if (CommandLine::get_instance()->a_debug_build.specified())
+    {
+        if (CommandLine::get_instance()->a_debug_build.argument() == "none")
+            task.set_debug_mode(ido_none);
+        else if (CommandLine::get_instance()->a_debug_build.argument() == "split")
+            task.set_debug_mode(ido_split);
+        else if (CommandLine::get_instance()->a_debug_build.argument() == "internal")
+            task.set_debug_mode(ido_internal);
+        else
+            throw DoHelp("bad value for --debug-build");
+    }
+
     InstallKilledCatcher install_killed_catcher(task);
 
     try

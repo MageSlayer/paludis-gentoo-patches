@@ -45,7 +45,7 @@ namespace paludis
 
         Implementation<UninstallTask>(Environment * const e) :
             env(e),
-            install_options(false, false),
+            install_options(false, false, ido_none),
             pretend(false),
             preserve_world(false),
             with_unused_dependencies(false),

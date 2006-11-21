@@ -26,18 +26,42 @@ builtin_strip()
     fi
     PALUDIS_STRIP_FLAGS=${PALUDIS_STRIP_FLAGS:---strip-unneeded}
 
-    for fn in $(find "${D}" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 -or -name '*.so' -or -name '*.so.*' \)); do
+    if [[ "${PALUDIS_DEBUG_BUILD}" == "split" ]] ; then
+        OBJCOPY=${OBJCOPY:-${CHOST}-objcopy}
+        if ! type -p -- "${OBJCOPY}" &>/dev/null ; then
+            OBJCOPY=objcopy
+        fi
+        if ! type -p -- "${OBJCOPY}" &>/dev/null ; then
+            die "Can't work out what OBJCOPY should be"
+        fi
+    fi
+
+    for fn in $(find "${D}" -type f \
+            \( -perm -0100 -or -perm -0010 -or -perm -0001 -or -name '*.so' -or -name '*.so.*' \)); do
         local ft=$(file "${fn}")
         if [[ $? != 0 || -z ${ft} ]]; then
             return 1
         fi
 
         if [[ ${ft} == *"current ar archive"* ]]; then
-            echo ${STRIP} -g "${fn}"
-            ${STRIP} -g "${fn}"
+            if [[ "${PALUDIS_DEBUG_BUILD}" != "internal" ]] ; then
+                echo ${STRIP} -g "${fn}"
+                ${STRIP} -g "${fn}"
+            fi
         elif [[ ${ft} == *"SB executable"* || ${ft} == *"SB shared object"* ]]; then
-            echo ${STRIP} ${PALUDIS_STRIP_FLAGS} "${fn}"
-            ${STRIP} ${PALUDIS_STRIP_FLAGS} "${fn}"
+            if [[ "${PALUDIS_DEBUG_BUILD}" == "split" ]] ; then
+                local fd="${D}usr/lib/debug/${fn:${#D}}.debug"
+                mkdir -p "$(dirname "${fd}" )"
+                echo ${OBJCOPY} --only-keep-debug "${fn}" "${fd}"
+                ${OBJCOPY} --only-keep-debug "${fn}" "${fd}"
+                echo ${OBJCOPY} --add-gnu-debuglink="${fd}" "${fn}"
+                ${OBJCOPY} --add-gnu-debuglink="${fd}" "${fn}"
+                chmod a-x,o-w "${fd}"
+            fi
+            if [[ "${PALUDIS_DEBUG_BUILD}" != "internal" ]] ; then
+                echo ${STRIP} ${PALUDIS_STRIP_FLAGS} "${fn}"
+                ${STRIP} ${PALUDIS_STRIP_FLAGS} "${fn}"
+            fi
         fi
     done
 }

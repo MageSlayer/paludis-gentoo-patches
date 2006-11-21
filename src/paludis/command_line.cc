@@ -76,6 +76,12 @@ CommandLine::CommandLine() :
     a_pretend(&install_args, "pretend", 'p', "Pretend only"),
     a_preserve_world(&install_args, "preserve-world", '1', "Don't modify the world file"),
     a_no_config_protection(&install_args, "no-config-protection", '\0', "Disable config file protection (dangerous)"),
+    a_debug_build(&install_args, "debug-build", '\0', "What to do with debug information",
+            paludis::args::EnumArg::EnumArgOptions
+            ("none",     "Discard debug information")
+            ("split",    "Split debug information")
+            ("internal", "Keep debug information with binaries"),
+            "none"),
     a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
     a_show_install_reasons(&install_args, "show-install-reasons", '\0', "Show why packages are being installed",
             paludis::args::EnumArg::EnumArgOptions
