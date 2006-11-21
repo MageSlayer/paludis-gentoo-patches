@@ -25,13 +25,15 @@ unalias -a
 unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR GLOBIGNORE
 eval unset LANG ${!LC_*}
 
-export SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}"
-export SANDBOX_PREDICT="${SANDBOX_PREDICT}/proc/self/maps:/dev/console:/dev/random"
-export SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}"
-export SANDBOX_WRITE="${SANDBOX_WRITE}/dev/shm:/dev/stdout:/dev/stderr:/dev/null:/dev/tty"
-export SANDBOX_WRITE="${SANDBOX_WRITE}:${PALUDIS_TMPDIR}:/var/cache"
-export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/proc/self/task:/selinux/context"
-export SANDBOX_ON="1"
+if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
+    export SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}"
+    export SANDBOX_PREDICT="${SANDBOX_PREDICT}/proc/self/maps:/dev/console:/dev/random"
+    export SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}"
+    export SANDBOX_WRITE="${SANDBOX_WRITE}/dev/shm:/dev/stdout:/dev/stderr:/dev/null:/dev/tty"
+    export SANDBOX_WRITE="${SANDBOX_WRITE}:${PALUDIS_TMPDIR}:/var/cache"
+    export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/proc/self/task:/selinux/context"
+    export SANDBOX_ON="1"
+fi
 export REAL_CHOST="${CHOST}"
 
 shopt -s expand_aliases
@@ -210,7 +212,7 @@ perform_hook()
     ebuild_notice "debug" "Starting hook '${HOOK}'"
 
     local old_sandbox_on="${SANDBOX_ON}"
-    export SANDBOX_ON="0"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && export SANDBOX_ON="0"
 
     local hook_dir
     for hook_dir in ${PALUDIS_HOOK_DIRS} ; do
@@ -227,7 +229,7 @@ perform_hook()
         done
     done
 
-    export SANDBOX_ON="${old_sandbox_on}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && export SANDBOX_ON="${old_sandbox_on}"
 }
 
 ebuild_main()

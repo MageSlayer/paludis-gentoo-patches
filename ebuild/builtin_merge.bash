@@ -108,9 +108,9 @@ builtin_merge()
 ebuild_f_merge()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
     local old_sandbox_on="${SANDBOX_ON}"
-    [[ "$(canonicalise ${ROOT} )" != "/" ]] || SANDBOX_ON=0
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && [[ "$(canonicalise ${ROOT} )" != "/" ]] || SANDBOX_ON=0
 
     if hasq "merge" ${RESTRICT} ; then
         ebuild_section "Skipping builtin_merge (RESTRICT)"
@@ -122,7 +122,7 @@ ebuild_f_merge()
         ebuild_section "Done builtin_merge"
     fi
 
-    SANDBOX_WRITE="${old_sandbox_write}"
-    SANDBOX_ON="${old_sandbox_on}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_ON="${old_sandbox_on}"
 }
 

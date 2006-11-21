@@ -29,7 +29,7 @@ pkg_postinst()
 ebuild_f_postinst()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
 
     if hasq "postinst" ${RESTRICT} ; then
         ebuild_section "Skipping pkg_postinst (RESTRICT)"
@@ -41,6 +41,6 @@ ebuild_f_postinst()
         ebuild_section "Done pkg_postinst"
     fi
 
-    SANDBOX_WRITE="${old_sandbox_write}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
 }
 

@@ -116,7 +116,7 @@ builtin_fetch()
 ebuild_f_fetch()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${DISTDIR}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${DISTDIR}"
     if hasq "fetch" ${RESTRICT} ; then
         ebuild_section "Skipping builtin_fetch (RESTRICT)"
     elif hasq "fetch" ${SKIP_FUNCTIONS} ; then
@@ -126,7 +126,7 @@ ebuild_f_fetch()
         builtin_fetch
         ebuild_section "Done builtin_fetch"
     fi
-    SANDBOX_WRITE="${old_sandbox_write}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
 }
 
 

@@ -29,7 +29,7 @@ pkg_setup()
 ebuild_f_setup()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
 
     if hasq "setup" ${RESTRICT} ; then
         ebuild_section "Skipping pkg_setup (RESTRICT)"
@@ -41,6 +41,6 @@ ebuild_f_setup()
         ebuild_section "Done pkg_setup"
     fi
 
-    SANDBOX_WRITE="${old_sandbox_write}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
 }
 

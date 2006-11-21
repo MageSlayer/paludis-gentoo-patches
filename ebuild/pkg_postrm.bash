@@ -29,7 +29,7 @@ pkg_postrm()
 ebuild_f_postrm()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
 
     if hasq "postrm" ${RESTRICT} ; then
         ebuild_section "Skipping pkg_postrm (RESTRICT)"
@@ -41,7 +41,7 @@ ebuild_f_postrm()
         ebuild_section "Done pkg_postrm"
     fi
 
-    SANDBOX_WRITE="${old_sandbox_write}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
 }
 
 

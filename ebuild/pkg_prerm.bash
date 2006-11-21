@@ -29,7 +29,7 @@ pkg_prerm()
 ebuild_f_prerm()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
 
     if hasq "prerm" ${RESTRICT} ; then
         ebuild_section "Skipping pkg_prerm (RESTRICT)"
@@ -41,6 +41,6 @@ ebuild_f_prerm()
         ebuild_section "Done pkg_prerm"
     fi
 
-    SANDBOX_WRITE="${old_sandbox_write}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
 }
 

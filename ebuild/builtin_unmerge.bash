@@ -87,9 +87,9 @@ builtin_unmerge()
 ebuild_f_unmerge()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
     local old_sandbox_on="${SANDBOX_ON}"
-    [[ "$(canonicalise ${ROOT} )" != "/" ]] || SANDBOX_ON=0
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && [[ "$(canonicalise ${ROOT} )" != "/" ]] || SANDBOX_ON=0
 
     if hasq "unmerge" ${RESTRICT} ; then
         ebuild_section "Skipping builtin_unmerge (RESTRICT)"
@@ -101,8 +101,8 @@ ebuild_f_unmerge()
         ebuild_section "Done builtin_unmerge"
     fi
 
-    SANDBOX_WRITE="${old_sandbox_write}"
-    SANDBOX_ON="${old_sandbox_on}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_ON="${old_sandbox_on}"
 }
 
 

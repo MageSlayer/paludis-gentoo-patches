@@ -42,7 +42,7 @@ src_test()
 ebuild_f_test()
 {
     local old_sandbox_predict="${SANDBOX_PREDICT}"
-    SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}/"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}/"
 
     if hasq "test" ${RESTRICT} ; then
         ebuild_section "Skipping src_test (RESTRICT)"
@@ -54,6 +54,6 @@ ebuild_f_test()
         ebuild_section "Done src_test"
     fi
 
-    SANDBOX_PREDICT="${old_sandbox_predict}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${old_sandbox_predict}"
 }
 

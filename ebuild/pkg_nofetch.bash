@@ -39,7 +39,7 @@ pkg_nofetch()
 ebuild_f_nofetch()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${DISTDIR}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${DISTDIR}"
     if hasq "nofetch" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_nofetch (SKIP_FUNCTIONS)"
     else
@@ -58,5 +58,5 @@ ebuild_f_nofetch()
             die "Manual fetching is required"
         fi
     fi
-    SANDBOX_WRITE="${old_sandbox_write}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
 }

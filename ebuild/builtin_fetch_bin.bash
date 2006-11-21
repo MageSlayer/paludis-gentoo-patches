@@ -65,7 +65,7 @@ builtin_fetch_bin()
 ebuild_f_fetch_bin()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${PKGDIR}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${PKGDIR}"
     if hasq "fetch_bin" ${RESTRICT} ; then
         ebuild_section "Skipping builtin_fetch_bin (RESTRICT)"
     elif hasq "fetch_bin" ${SKIP_FUNCTIONS} ; then
@@ -75,7 +75,7 @@ ebuild_f_fetch_bin()
         builtin_fetch_bin
         ebuild_section "Done builtin_fetch_bin"
     fi
-    SANDBOX_WRITE="${old_sandbox_write}"
+    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
 }
 
 
