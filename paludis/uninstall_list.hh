@@ -39,6 +39,7 @@ namespace paludis
     {
         private:
             void add_package(const PackageDatabaseEntry &);
+            void remove_package(const PackageDatabaseEntry &);
             void add_unused_dependencies();
             void add_dependencies(const PackageDatabaseEntry &);
             PackageDatabaseEntryCollection::ConstPointer collect_depped_upon(

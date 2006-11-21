@@ -178,7 +178,7 @@ while read a ; do
         echo "        ///\{"
         echo
 
-        echo "        ${a}("
+        echo "        explicit ${a}("
         for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
             echo -n "                $(make_const_ref "${want_key_types[${k}]}") value_for_${want_keys[${k}]}"
             if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then

@@ -105,6 +105,9 @@ UninstallList::add(const PackageDatabaseEntry & e)
     if (_imp->options.with_dependencies)
         add_dependencies(e);
 
+    remove_package(e);
+    add_package(e);
+
     if (_imp->options.with_unused_dependencies)
         add_unused_dependencies();
 }
@@ -136,7 +139,18 @@ UninstallList::add_package(const PackageDatabaseEntry & e)
         throw InternalError(PALUDIS_HERE, "Trying to add '" + stringify(e) +
                 "' to UninstallList but has_version failed");
 
-    _imp->uninstall_list.push_back(e);
+    _imp->uninstall_list.push_back(UninstallListEntry(e));
+}
+
+void
+UninstallList::remove_package(const PackageDatabaseEntry & e)
+{
+    Context context("When removing package '" + stringify(e) + "' from the uninstall list:");
+
+    std::list<UninstallListEntry>::iterator i(std::find_if(_imp->uninstall_list.begin(),
+                _imp->uninstall_list.end(), MatchUninstallListEntry(e)));
+    if (_imp->uninstall_list.end() != i)
+        _imp->uninstall_list.erase(i);
 }
 
 PackageDatabaseEntryCollection::ConstPointer
