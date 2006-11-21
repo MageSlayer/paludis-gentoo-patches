@@ -28,6 +28,7 @@ CommandLine::CommandLine() :
     a_query(&action_args,     "query",        'q',  "Query for package information"),
     a_install(&action_args,   "install",      'i',  "Install one or more packages"),
     a_uninstall(&action_args, "uninstall",    'u',  "Uninstall one or more packages"),
+    a_uninstall_unused(&action_args, "uninstall-unused",    '\0',  "Uninstall unused packages"),
     a_sync(&action_args,      "sync",         's',  "Sync all or specified repositories"),
     a_contents(&action_args,  "contents",     'k',  "Display contents of a package"),
     a_owner(&action_args,     "owner",        'o',  "Display the owner of a file"),
@@ -71,7 +72,7 @@ CommandLine::CommandLine() :
     a_show_metadata(&query_args,    "show-metadata", 'M', "Show raw metadata"),
 
     install_args(this, "Install, Uninstall options",
-            "Options which are relevant for --install or --uninstall."),
+            "Options which are relevant for --install, --uninstall or --uninstall-unused."),
     a_pretend(&install_args, "pretend", 'p', "Pretend only"),
     a_preserve_world(&install_args, "preserve-world", '1', "Don't modify the world file"),
     a_no_config_protection(&install_args, "no-config-protection", '\0', "Disable config file protection (dangerous)"),

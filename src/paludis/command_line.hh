@@ -68,6 +68,9 @@ class CommandLine :
         /// --uninstall
         paludis::args::SwitchArg a_uninstall;
 
+        /// --uninstall-unused
+        paludis::args::SwitchArg a_uninstall_unused;
+
         /// --sync
         paludis::args::SwitchArg a_sync;
 

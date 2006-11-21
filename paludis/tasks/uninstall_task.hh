@@ -112,6 +112,7 @@ namespace paludis
             ///\{
 
             void add_target(const std::string &);
+            void add_unused();
 
             ///\}
 

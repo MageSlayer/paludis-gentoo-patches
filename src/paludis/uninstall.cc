@@ -126,63 +126,79 @@ namespace
                 cout << endl;
             }
     };
+
+    int real_uninstall(bool unused)
+    {
+        int return_code(0);
+
+        Context context(unused ?
+                "When performing uninstall-unused action from command line:" :
+                "When performing uninstall action from command line:");
+
+        OurUninstallTask task;
+
+        task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
+        task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());
+        task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
+        task.set_with_unused_dependencies(CommandLine::get_instance()->a_with_unused_dependencies.specified());
+        task.set_with_dependencies(CommandLine::get_instance()->a_with_dependencies.specified());
+
+        try
+        {
+            if (unused)
+                task.add_unused();
+            else
+                for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
+                        q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
+                    task.add_target(*q);
+
+            task.execute();
+
+            cout << endl;
+        }
+        catch (const AmbiguousUnmergeTargetError & e)
+        {
+            cout << endl;
+            cerr << "Query error:" << endl;
+            cerr << "  * " << e.backtrace("\n  * ");
+            cerr << "Ambiguous unmerge target '" << e.target() << "'. Did you mean:" << endl;
+            for (AmbiguousUnmergeTargetError::Iterator o(e.begin()),
+                    o_end(e.end()) ; o != o_end ; ++o)
+                cerr << "    * =" << colour(cl_package_name, *o) << endl;
+            cerr << endl;
+            return 1;
+        }
+        catch (const PackageUninstallActionError & e)
+        {
+            cout << endl;
+            cerr << "Uninstall error:" << endl;
+            cerr << "  * " << e.backtrace("\n  * ");
+            cerr << e.message() << endl;
+
+            return_code |= 1;
+        }
+        catch (const NoSuchPackageError & e)
+        {
+            cout << endl;
+            cerr << "Query error:" << endl;
+            cerr << "  * " << e.backtrace("\n  * ");
+            cerr << "No such package '" << e.name() << "'" << endl;
+            return 1;
+        }
+
+        return return_code;
+    }
 }
 
 int
 do_uninstall()
 {
-    int return_code(0);
+    return real_uninstall(false);
+}
 
-    Context context("When performing uninstall action from command line:");
-
-    OurUninstallTask task;
-
-    task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
-    task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());
-    task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
-    task.set_with_unused_dependencies(CommandLine::get_instance()->a_with_unused_dependencies.specified());
-    task.set_with_dependencies(CommandLine::get_instance()->a_with_dependencies.specified());
-
-    try
-    {
-        for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
-                q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
-            task.add_target(*q);
-
-        task.execute();
-
-        cout << endl;
-    }
-    catch (const AmbiguousUnmergeTargetError & e)
-    {
-        cout << endl;
-        cerr << "Query error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ");
-        cerr << "Ambiguous unmerge target '" << e.target() << "'. Did you mean:" << endl;
-        for (AmbiguousUnmergeTargetError::Iterator o(e.begin()),
-                o_end(e.end()) ; o != o_end ; ++o)
-            cerr << "    * =" << colour(cl_package_name, *o) << endl;
-        cerr << endl;
-        return 1;
-    }
-    catch (const PackageUninstallActionError & e)
-    {
-        cout << endl;
-        cerr << "Uninstall error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ");
-        cerr << e.message() << endl;
-
-        return_code |= 1;
-    }
-    catch (const NoSuchPackageError & e)
-    {
-        cout << endl;
-        cerr << "Query error:" << endl;
-        cerr << "  * " << e.backtrace("\n  * ");
-        cerr << "No such package '" << e.name() << "'" << endl;
-        return 1;
-    }
-
-    return return_code;
+int
+do_uninstall_unused()
+{
+    return real_uninstall(true);
 }
 

@@ -27,6 +27,7 @@ using namespace paludis;
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/hashed_containers.hh>
+#include <paludis/match_package.hh>
 #include <list>
 #include <algorithm>
 
@@ -110,6 +111,37 @@ UninstallList::add(const PackageDatabaseEntry & e)
 
     if (_imp->options.with_unused_dependencies)
         add_unused_dependencies();
+}
+
+void
+UninstallList::add_unused()
+{
+    Context context("When finding unused packages:");
+
+    PackageDatabaseEntryCollection::ConstPointer world(collect_world()),
+        everything(collect_all_installed());
+
+    PackageDatabaseEntryCollection::Pointer
+        world_plus_deps(new PackageDatabaseEntryCollection::Concrete),
+        unused(new PackageDatabaseEntryCollection::Concrete);
+
+    world_plus_deps->insert(world->begin(), world->end());
+
+    std::size_t old_size(0);
+    while (old_size != world_plus_deps->size())
+    {
+        old_size = world_plus_deps->size();
+        PackageDatabaseEntryCollection::ConstPointer new_world_deps(
+                collect_depped_upon(world_plus_deps));
+        world_plus_deps->insert(new_world_deps->begin(), new_world_deps->end());
+    }
+
+    std::set_difference(everything->begin(), everything->end(),
+            world_plus_deps->begin(), world_plus_deps->end(), unused->inserter());
+
+    for (PackageDatabaseEntryCollection::Iterator i(unused->begin()),
+            i_end(unused->end()) ; i != i_end ; ++i)
+        add_package(*i);
 }
 
 UninstallList::Iterator
@@ -363,5 +395,103 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
 
         add(*i);
     }
+}
+
+namespace
+{
+    struct IsWorldMatcher :
+        DepAtomVisitorTypes::ConstVisitor
+    {
+        bool matched;
+
+        IsWorldMatcher() :
+            matched(false)
+        {
+        }
+    };
+
+    struct IsWorld :
+        DepAtomVisitorTypes::ConstVisitor,
+        std::unary_function<PackageDatabaseEntry, bool>
+    {
+        const Environment * const env;
+        DepAtom::ConstPointer world;
+        const PackageDatabaseEntry * dbe;
+        bool matched;
+
+        IsWorld(const Environment * const e) :
+            env(e),
+            world(e->package_set(SetName("world"))),
+            matched(false)
+        {
+        }
+
+        bool operator() (const PackageDatabaseEntry & e)
+        {
+            dbe = &e;
+            matched = false;
+            world->accept(this);
+            return matched;
+        }
+
+        void visit(const AllDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const PackageDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            if (match_package(env, a, *dbe))
+                matched = true;
+        }
+
+        void visit(const UseDepAtom * const u)
+        {
+            if (matched)
+                return;
+
+            std::for_each(u->begin(), u->end(), accept_visitor(this));
+        }
+
+        void visit(const AnyDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const BlockDepAtom * const)
+        {
+        }
+
+        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+        }
+    };
+}
+
+PackageDatabaseEntryCollection::ConstPointer
+UninstallList::collect_world() const
+{
+    Context local_context("When collecting world packages:");
+
+    PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection::Concrete);
+    PackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
+
+    IsWorld w(_imp->env);
+    for (PackageDatabaseEntryCollection::Iterator i(everything->begin()),
+            i_end(everything->end()) ; i != i_end ; ++i)
+        if (w(*i))
+            result->insert(*i);
+
+    return result;
 }
 

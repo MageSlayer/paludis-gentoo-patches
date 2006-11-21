@@ -41,6 +41,7 @@ namespace paludis
         bool preserve_world;
         bool with_unused_dependencies;
         bool with_dependencies;
+        bool unused;
 
         Implementation<UninstallTask>(Environment * const e) :
             env(e),
@@ -48,7 +49,8 @@ namespace paludis
             pretend(false),
             preserve_world(false),
             with_unused_dependencies(false),
-            with_dependencies(false)
+            with_dependencies(false),
+            unused(false)
         {
         }
     };
@@ -96,6 +98,19 @@ UninstallTask::add_target(const std::string & target)
                             PackageNamePart(target)))));
 
     _imp->raw_targets.push_back(target);
+
+    if (_imp->unused)
+        throw InternalError(PALUDIS_HERE, "Trying to mix unused and normal targets?");
+}
+
+void
+UninstallTask::add_unused()
+{
+    Context context("When adding unused packages:");
+    _imp->unused = true;
+
+    if (! _imp->raw_targets.empty())
+        throw InternalError(PALUDIS_HERE, "Trying to mix unused and normal targets?");
 }
 
 namespace
@@ -128,20 +143,23 @@ UninstallTask::execute()
             .with_dependencies(_imp->with_dependencies)
             .with_unused_dependencies(_imp->with_unused_dependencies));
 
-    for (std::list<PackageDepAtom::Pointer>::const_iterator t(_imp->targets.begin()),
-            t_end(_imp->targets.end()) ; t != t_end ; ++t)
-    {
-        Context local_context("When looking for target '" + stringify(**t) + "':");
+    if (_imp->unused)
+        list.add_unused();
+    else
+        for (std::list<PackageDepAtom::Pointer>::const_iterator t(_imp->targets.begin()),
+                t_end(_imp->targets.end()) ; t != t_end ; ++t)
+        {
+            Context local_context("When looking for target '" + stringify(**t) + "':");
 
-        PackageDatabaseEntryCollection::ConstPointer r(_imp->env->package_database()->query(
-                    *t, is_installed_only));
-        if (r->empty())
-            throw NoSuchPackageError(stringify(**t));
-        else if (r->size() > 1)
-            throw AmbiguousUnmergeTargetError(stringify(**t), r);
-        else
-            list.add(*r->begin());
-    }
+            PackageDatabaseEntryCollection::ConstPointer r(_imp->env->package_database()->query(
+                        *t, is_installed_only));
+            if (r->empty())
+                throw NoSuchPackageError(stringify(**t));
+            else if (r->size() > 1)
+                throw AmbiguousUnmergeTargetError(stringify(**t), r);
+            else
+                list.add(*r->begin());
+        }
 
     on_build_unmergelist_post();
 

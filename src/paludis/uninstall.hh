@@ -29,5 +29,8 @@
 /// Handle --uninstall.
 int do_uninstall();
 
+/// Handle --uninstall-unused.
+int do_uninstall_unused();
+
 #endif
 

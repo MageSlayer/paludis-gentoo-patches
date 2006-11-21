@@ -192,6 +192,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_version.specified() +
                     CommandLine::get_instance()->a_install.specified() +
                     CommandLine::get_instance()->a_uninstall.specified() +
+                    CommandLine::get_instance()->a_uninstall_unused.specified() +
                     CommandLine::get_instance()->a_sync.specified() +
                     CommandLine::get_instance()->a_list_repositories.specified() +
                     CommandLine::get_instance()->a_list_categories.specified() +
@@ -313,6 +314,14 @@ main(int argc, char *argv[])
                 throw DoHelp("uninstall action requires at least one parameter");
 
             return do_uninstall();
+        }
+
+        if (CommandLine::get_instance()->a_uninstall_unused.specified())
+        {
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("uninstall-unused action takes no parameters");
+
+            return do_uninstall_unused();
         }
 
         if (CommandLine::get_instance()->a_sync.specified())

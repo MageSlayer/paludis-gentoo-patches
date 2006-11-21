@@ -45,6 +45,7 @@ namespace paludis
             PackageDatabaseEntryCollection::ConstPointer collect_depped_upon(
                     const PackageDatabaseEntryCollection::ConstPointer targets) const;
             PackageDatabaseEntryCollection::ConstPointer collect_all_installed() const;
+            PackageDatabaseEntryCollection::ConstPointer collect_world() const;
 
         public:
             UninstallList(const Environment * const, const UninstallListOptions &);
@@ -53,6 +54,7 @@ namespace paludis
             UninstallListOptions & options;
 
             void add(const PackageDatabaseEntry &);
+            void add_unused();
 
             typedef libwrapiter::ForwardIterator<UninstallList, const UninstallListEntry> Iterator;
             Iterator begin() const;
