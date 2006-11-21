@@ -344,6 +344,9 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
         if (cache->second->end() == cache->second->find(e))
             continue;
 
+        Log::get_instance()->message(ll_debug, lc_context, "Adding '" + stringify(*i) +
+                "' because it depends upon '" + stringify(e) + "'");
+
         add(*i);
     }
 }
