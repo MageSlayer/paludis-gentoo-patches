@@ -185,6 +185,9 @@ class CommandLine :
         /// --with-unused-dependencies
         paludis::args::SwitchArg a_with_unused_dependencies;
 
+        /// --with-dependencies
+        paludis::args::SwitchArg a_with_dependencies;
+
         /// }
 
         /// \name DepList behaviour arguments

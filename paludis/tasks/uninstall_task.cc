@@ -40,13 +40,15 @@ namespace paludis
         bool pretend;
         bool preserve_world;
         bool with_unused_dependencies;
+        bool with_dependencies;
 
         Implementation<UninstallTask>(Environment * const e) :
             env(e),
             install_options(false, false),
             pretend(false),
             preserve_world(false),
-            with_unused_dependencies(false)
+            with_unused_dependencies(false),
+            with_dependencies(false)
         {
         }
     };
@@ -123,7 +125,7 @@ UninstallTask::execute()
     on_build_unmergelist_pre();
 
     UninstallList list(_imp->env, UninstallListOptions::create()
-            .with_dependencies(false)
+            .with_dependencies(_imp->with_dependencies)
             .with_unused_dependencies(_imp->with_unused_dependencies));
 
     for (std::list<PackageDepAtom::Pointer>::const_iterator t(_imp->targets.begin()),
@@ -214,5 +216,11 @@ void
 UninstallTask::set_with_unused_dependencies(const bool value)
 {
     _imp->with_unused_dependencies = value;
+}
+
+void
+UninstallTask::set_with_dependencies(const bool value)
+{
+    _imp->with_dependencies = value;
 }
 

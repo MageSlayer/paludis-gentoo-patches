@@ -141,6 +141,7 @@ do_uninstall()
     task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());
     task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
     task.set_with_unused_dependencies(CommandLine::get_instance()->a_with_unused_dependencies.specified());
+    task.set_with_dependencies(CommandLine::get_instance()->a_with_dependencies.specified());
 
     try
     {

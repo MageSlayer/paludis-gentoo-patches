@@ -85,6 +85,10 @@ UninstallList::add(const PackageDatabaseEntry & e)
     Context context("When adding '" + stringify(e) + "' to the uninstall list:");
 
     add_package(e);
+
+    if (_imp->options.with_dependencies)
+        add_dependencies(e);
+
     if (_imp->options.with_unused_dependencies)
         add_unused_dependencies();
 }
@@ -284,6 +288,31 @@ UninstallList::add_unused_dependencies()
             add_package(*i);
             added = true;
         }
+    }
+}
+
+void
+UninstallList::add_dependencies(const PackageDatabaseEntry & e)
+{
+    Context context("When adding things that depend upon '" + stringify(e) + "':");
+
+    PackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
+    for (PackageDatabaseEntryCollection::Iterator i(everything->begin()),
+            i_end(everything->end()) ; i != i_end ; ++i)
+    {
+        Context local_context("When seeing whether '" + stringify(*i) + "' has a dep:");
+
+        DepCollector c(_imp->env, *i);
+        VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
+                    i->repository)->version_metadata(i->name, i->version));
+        metadata->deps.build_depend()->accept(&c);
+        metadata->deps.run_depend()->accept(&c);
+        metadata->deps.post_depend()->accept(&c);
+
+        if (c.matches->end() == c.matches->find(e))
+            continue;
+
+        add(*i);
     }
 }
 
