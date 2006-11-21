@@ -185,6 +185,21 @@ namespace test_cases
     } test_version_revision_only;
 
     /**
+     * \test VersionSpec is_scm
+     *
+     */
+    struct VersionIsScmTest : TestCase
+    {
+        VersionIsScmTest() : TestCase("version spec is_scm") {}
+
+        void run()
+        {
+            TEST_CHECK(! VersionSpec("1.2").is_scm());
+            TEST_CHECK(VersionSpec("1.2-scm-r99").is_scm());
+        }
+    } test_version_is_scm;
+
+    /**
      * \test VersionSpec ordering.
      *
      */

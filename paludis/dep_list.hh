@@ -59,6 +59,19 @@ namespace paludis
     };
 
     /**
+     * When should we reinstall scm.
+     *
+     * \ingroup grpdepresolver
+     */
+    enum DepListReinstallScmOption
+    {
+        dl_reinstall_scm_never,
+        dl_reinstall_scm_always,
+        dl_reinstall_scm_daily,
+        dl_reinstall_scm_weekly
+    };
+
+    /**
      * When should we upgrade.
      *
      * \ingroup grpdepresolver

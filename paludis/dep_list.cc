@@ -67,6 +67,7 @@ CircularDependencyError::CircularDependencyError(const std::string & msg) throw 
 
 DepListOptions::DepListOptions() :
     reinstall(dl_reinstall_never),
+    reinstall_scm(dl_reinstall_scm_never),
     target_type(dl_target_package),
     upgrade(dl_upgrade_always),
     installed_deps_pre(dl_deps_discard),
@@ -784,6 +785,37 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
 
     if (dl_upgrade_as_needed == _imp->opts.upgrade)
         return true;
+
+    if (dl_reinstall_scm_never != _imp->opts.reinstall_scm)
+        if (installed.version.is_scm() && uninstalled.version == installed.version)
+        {
+            static time_t current_time(time(0)); /* static to avoid weirdness */
+            time_t installed_time(_imp->env->package_database()->fetch_repository(installed.repository
+                        )->installed_interface->installed_time(installed.name, installed.version));
+            do
+            {
+                switch (_imp->opts.reinstall_scm)
+                {
+                    case dl_reinstall_scm_always:
+                        return false;
+
+                    case dl_reinstall_scm_daily:
+                        if (current_time - installed_time > (24 * 60 * 60))
+                            return false;
+                        continue;
+
+                    case dl_reinstall_scm_weekly:
+                        if (current_time - installed_time > (24 * 60 * 60 * 7))
+                            return false;
+                        continue;
+
+                    case dl_reinstall_never:
+                        ; /* nothing */
+                }
+
+                throw InternalError(PALUDIS_HERE, "Bad value for opts.reinstall_scm");
+            } while (false);
+        }
 
     /* use != rather than > to correctly force a downgrade when packages are
      * removed. */

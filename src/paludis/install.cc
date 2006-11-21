@@ -695,6 +695,20 @@ do_install()
             throw DoHelp("bad value for --dl-reinstall");
     }
 
+    if (CommandLine::get_instance()->dl_reinstall_scm.specified())
+    {
+        if (CommandLine::get_instance()->dl_reinstall_scm.argument() == "never")
+            options.reinstall_scm = dl_reinstall_scm_never;
+        else if (CommandLine::get_instance()->dl_reinstall_scm.argument() == "always")
+            options.reinstall_scm = dl_reinstall_scm_always;
+        else if (CommandLine::get_instance()->dl_reinstall_scm.argument() == "daily")
+            options.reinstall_scm = dl_reinstall_scm_daily;
+        else if (CommandLine::get_instance()->dl_reinstall_scm.argument() == "weekly")
+            options.reinstall_scm = dl_reinstall_scm_weekly;
+        else
+            throw DoHelp("bad value for --dl-reinstall-scm");
+    }
+
     if (CommandLine::get_instance()->dl_upgrade.specified())
     {
         if (CommandLine::get_instance()->dl_upgrade.argument() == "as-needed")

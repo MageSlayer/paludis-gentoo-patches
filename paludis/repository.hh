@@ -496,6 +496,16 @@ namespace paludis
                     const QualifiedPackageName &,
                     const VersionSpec &) const = 0;
 
+            /**
+             * Override in descendents: when was a package installed.
+             */
+            virtual time_t do_installed_time(
+                    const QualifiedPackageName &,
+                    const VersionSpec &) const
+            {
+                return time_t(0);
+            }
+
         public:
             /**
              * Fetch contents.
@@ -505,6 +515,18 @@ namespace paludis
                     const VersionSpec & v) const
             {
                 return do_contents(q, v);
+            }
+
+            /**
+             * When was a package installed.
+             *
+             * Can return time_t(0) if the installed time is unknown.
+             */
+            time_t installed_time(
+                    const QualifiedPackageName & q,
+                    const VersionSpec & v) const
+            {
+                return do_installed_time(q, v);
             }
 
             virtual ~RepositoryInstalledInterface() { }

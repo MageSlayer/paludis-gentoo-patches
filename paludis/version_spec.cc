@@ -343,15 +343,16 @@ VersionSpec::hash_value() const
 namespace
 {
     /**
-     * Identify Part instances that are revisions.
+     * Identify Part instances that are of a certain kind.
      *
      * \ingroup grpversions
      */
-    struct IsRevisionPart
+    template <PartKind p_>
+    struct IsPart
     {
         bool operator() (const Part & p) const
         {
-            return p.kind == revision;
+            return p.kind == p_;
         }
     };
 }
@@ -365,7 +366,7 @@ VersionSpec::remove_revision() const
     result._imp->parts.erase(std::remove_if(
                 result._imp->parts.begin(),
                 result._imp->parts.end(),
-                IsRevisionPart()), result._imp->parts.end());
+                IsPart<revision>()), result._imp->parts.end());
 
     std::string::size_type p;
     if (std::string::npos != ((p = result._imp->text.rfind("-r"))))
@@ -379,7 +380,7 @@ std::string
 VersionSpec::revision_only() const
 {
     std::vector<Part>::const_iterator r(std::find_if(_imp->parts.begin(),
-                _imp->parts.end(), IsRevisionPart()));
+                _imp->parts.end(), IsPart<revision>()));
     if (r != _imp->parts.end())
         return "r" + stringify(r->value);
     else
@@ -391,5 +392,14 @@ paludis::operator<< (std::ostream & s, const VersionSpec & v)
 {
     s << v._imp->text;
     return s;
+}
+
+bool
+VersionSpec::is_scm() const
+{
+    std::vector<Part>::const_iterator r(std::find_if(_imp->parts.begin(),
+                _imp->parts.end(), IsPart<scm>()));
+
+    return r != _imp->parts.end();
 }
 

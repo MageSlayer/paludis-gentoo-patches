@@ -96,6 +96,13 @@ CommandLine::CommandLine() :
             ("always",         "Always")
             ("if-use-changed", "If USE flags have changed"),
             "never"),
+    dl_reinstall_scm(&dl_args, "dl-reinstall-scm", '\0', "When to reinstall scm packages",
+            paludis::args::EnumArg::EnumArgOptions
+            ("never",          "Never")
+            ("always",         "Always")
+            ("daily",          "If they are over a day old")
+            ("weekly",         "If they are over a week old"),
+            "never"),
     dl_upgrade(&dl_args, "dl-upgrade", '\0', "When to upgrade packages",
             paludis::args::EnumArg::EnumArgOptions
             ("always",        "Always")

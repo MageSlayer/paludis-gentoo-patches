@@ -4,6 +4,7 @@
 make_class_DepListOptions()
 {
     key reinstall DepListReinstallOption
+    key reinstall_scm DepListReinstallScmOption
     key target_type DepListTargetType
     key upgrade DepListUpgradeOption
 

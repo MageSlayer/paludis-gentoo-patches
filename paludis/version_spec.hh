@@ -115,6 +115,11 @@ namespace paludis
              */
             std::string revision_only() const;
 
+            /**
+             * Are we an -scm package?
+             */
+            bool is_scm() const;
+
     };
 
     /**

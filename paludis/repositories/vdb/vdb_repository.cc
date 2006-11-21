@@ -75,11 +75,15 @@ namespace
         /// Our built USE flags.
         std::set<UseFlagName> use;
 
+        /// Our installed date.
+        time_t installed_time;
+
         /// Constructor
         VDBEntry(const QualifiedPackageName & n, const VersionSpec & v) :
             name(n),
             version(v),
-            metadata(0)
+            metadata(0),
+            installed_time(0)
         {
         }
 
@@ -679,6 +683,44 @@ VDBRepository::do_contents(
     }
 
     return result;
+}
+
+time_t
+VDBRepository::do_installed_time(const QualifiedPackageName & q,
+        const VersionSpec & v) const
+{
+    Context context("When finding installed time for '" + stringify(q) +
+            "-" + stringify(v) + "':");
+
+    if (! _imp->entries_valid)
+        _imp->load_entries();
+
+    std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
+        r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
+                        q, v), VDBEntry::CompareVersion()));
+
+    if (r.first == r.second)
+        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
+    else
+    {
+        if (0 == r.first->installed_time)
+        {
+            FSEntry f(_imp->location / stringify(q.category) / (stringify(q.package) + "-"
+                        + stringify(v)) / "CONTENTS");
+            try
+            {
+                r.first->installed_time = f.ctime();
+            }
+            catch (const FSError & e)
+            {
+                Log::get_instance()->message(ll_warning, lc_no_context, "Can't get ctime of '"
+                        + stringify(f) + "' due to exception '" + e.message() + "' (" + e.what()
+                        + ")");
+                r.first->installed_time = 1;
+            }
+        }
+        return r.first->installed_time;
+    }
 }
 
 UseFlagState

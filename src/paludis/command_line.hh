@@ -197,6 +197,7 @@ class CommandLine :
         paludis::args::ArgsGroup dl_args;
 
         paludis::args::EnumArg dl_reinstall;
+        paludis::args::EnumArg dl_reinstall_scm;
         paludis::args::EnumArg dl_upgrade;
 
         paludis::args::EnumArg dl_installed_deps_pre;

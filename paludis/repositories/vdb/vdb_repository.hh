@@ -78,6 +78,10 @@ namespace paludis
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
+            virtual time_t do_installed_time(
+                    const QualifiedPackageName &,
+                    const VersionSpec &) const;
+
             virtual bool do_is_licence(const std::string &) const;
 
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &, 
