@@ -26,11 +26,24 @@ using namespace paludis;
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
+#include <paludis/hashed_containers.hh>
 #include <list>
 #include <algorithm>
 
 namespace paludis
 {
+    template<>
+    class CRCHash<PackageDatabaseEntry> :
+        public CRCHash<std::string>
+    {
+        public:
+            /// Hash function.
+            std::size_t operator() (const PackageDatabaseEntry & val) const
+            {
+                return CRCHash<std::string>::operator() (stringify(val));
+            }
+    };
+
     template<>
     struct Implementation<UninstallList> :
         InternalCounted<Implementation<UninstallList> >
@@ -38,6 +51,9 @@ namespace paludis
         const Environment * const env;
         UninstallListOptions options;
         std::list<UninstallListEntry> uninstall_list;
+
+        mutable MakeHashedMap<PackageDatabaseEntry, PackageDatabaseEntryCollection::ConstPointer>::Type
+            dep_collector_cache;
 
         Implementation(const Environment * const e, const UninstallListOptions & o) :
             env(e),
@@ -215,13 +231,22 @@ UninstallList::collect_depped_upon(PackageDatabaseEntryCollection::ConstPointer 
             i != i_end ; ++i)
     {
         Context local_context("When collecting depended upon packages for '" + stringify(*i) + "':");
-        DepCollector c(_imp->env, *i);
-        VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
-                    i->repository)->version_metadata(i->name, i->version));
-        metadata->deps.build_depend()->accept(&c);
-        metadata->deps.run_depend()->accept(&c);
-        metadata->deps.post_depend()->accept(&c);
-        result->insert(c.matches->begin(), c.matches->end());
+
+        MakeHashedMap<PackageDatabaseEntry, PackageDatabaseEntryCollection::ConstPointer>::Type::const_iterator
+            cache(_imp->dep_collector_cache.find(*i));
+        if (cache == _imp->dep_collector_cache.end())
+        {
+            DepCollector c(_imp->env, *i);
+            VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
+                        i->repository)->version_metadata(i->name, i->version));
+            metadata->deps.build_depend()->accept(&c);
+            metadata->deps.run_depend()->accept(&c);
+            metadata->deps.post_depend()->accept(&c);
+            cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
+                        PackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
+        }
+
+        result->insert(cache->second->begin(), cache->second->end());
     }
 
     return result;
@@ -302,14 +327,21 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
     {
         Context local_context("When seeing whether '" + stringify(*i) + "' has a dep:");
 
-        DepCollector c(_imp->env, *i);
-        VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
-                    i->repository)->version_metadata(i->name, i->version));
-        metadata->deps.build_depend()->accept(&c);
-        metadata->deps.run_depend()->accept(&c);
-        metadata->deps.post_depend()->accept(&c);
+        MakeHashedMap<PackageDatabaseEntry, PackageDatabaseEntryCollection::ConstPointer>::Type::const_iterator
+            cache(_imp->dep_collector_cache.find(*i));
+        if (cache == _imp->dep_collector_cache.end())
+        {
+            DepCollector c(_imp->env, *i);
+            VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
+                        i->repository)->version_metadata(i->name, i->version));
+            metadata->deps.build_depend()->accept(&c);
+            metadata->deps.run_depend()->accept(&c);
+            metadata->deps.post_depend()->accept(&c);
+            cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
+                        PackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
+        }
 
-        if (c.matches->end() == c.matches->find(e))
+        if (cache->second->end() == cache->second->find(e))
             continue;
 
         add(*i);
