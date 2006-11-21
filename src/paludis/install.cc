@@ -749,9 +749,11 @@ do_install()
 
     try
     {
+        cout << "Building target list... " << std::flush;
         for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
                 q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
             task.add_target(*q);
+        cout << endl;
 
         task.execute();
 

@@ -22,6 +22,7 @@
 
 #include <paludis/environment/default/default_environment.hh>
 #include <paludis/tasks/uninstall_task.hh>
+#include <paludis/uninstall_list.hh>
 
 #include <iostream>
 
@@ -73,9 +74,9 @@ namespace
                     "Total: " << _count << (_count == 1 ? " package" : " packages") << endl;
             }
 
-            virtual void on_display_unmerge_list_entry(const PackageDatabaseEntry & d)
+            virtual void on_display_unmerge_list_entry(const UninstallListEntry & d)
             {
-                cout << "* " << colour(cl_package_name, stringify(d)) << endl;
+                cout << "* " << colour(cl_package_name, stringify(d.package)) << endl;
                 ++_count;
             }
 
@@ -83,19 +84,19 @@ namespace
             {
             }
 
-            virtual void on_uninstall_pre(const PackageDatabaseEntry & d)
+            virtual void on_uninstall_pre(const UninstallListEntry & d)
             {
                 cout << endl << colour(cl_heading, "Uninstalling " +
-                        stringify(d.name) + "-" + stringify(d.version) +
-                        "::" + stringify(d.repository)) << endl << endl;
+                        stringify(d.package.name) + "-" + stringify(d.package.version) +
+                        "::" + stringify(d.package.repository)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
                         stringify(_count) + ") Uninstalling " +
-                        stringify(d.name) + "-" + stringify(d.version) +
-                        "::" + stringify(d.repository));
+                        stringify(d.package.name) + "-" + stringify(d.package.version) +
+                        "::" + stringify(d.package.repository));
             }
 
-            virtual void on_uninstall_post(const PackageDatabaseEntry &)
+            virtual void on_uninstall_post(const UninstallListEntry &)
             {
             }
 
@@ -139,6 +140,7 @@ do_uninstall()
     task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
     task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());
     task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
+    task.set_with_unused_dependencies(CommandLine::get_instance()->a_with_unused_dependencies.specified());
 
     try
     {

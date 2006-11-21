@@ -28,6 +28,7 @@
 namespace paludis
 {
     class Environment;
+    class UninstallListEntry;
 
     /**
      * Thrown if an ambiguous unmerge target is supplied.
@@ -102,6 +103,7 @@ namespace paludis
             void set_no_config_protect(const bool value);
             void set_pretend(const bool value);
             void set_preserve_world(const bool value);
+            void set_with_unused_dependencies(const bool value);
 
             ///\}
 
@@ -120,11 +122,11 @@ namespace paludis
 
             virtual void on_display_unmerge_list_pre() = 0;
             virtual void on_display_unmerge_list_post() = 0;
-            virtual void on_display_unmerge_list_entry(const PackageDatabaseEntry &) = 0;
+            virtual void on_display_unmerge_list_entry(const UninstallListEntry &) = 0;
 
             virtual void on_uninstall_all_pre() = 0;
-            virtual void on_uninstall_pre(const PackageDatabaseEntry &) = 0;
-            virtual void on_uninstall_post(const PackageDatabaseEntry &) = 0;
+            virtual void on_uninstall_pre(const UninstallListEntry &) = 0;
+            virtual void on_uninstall_post(const UninstallListEntry &) = 0;
             virtual void on_uninstall_all_post() = 0;
 
             virtual void on_update_world_pre() = 0;

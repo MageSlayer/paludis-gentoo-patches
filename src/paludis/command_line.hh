@@ -182,6 +182,9 @@ class CommandLine :
         /// --show-install-reasons
         paludis::args::EnumArg a_show_install_reasons;
 
+        /// --with-unused-dependencies
+        paludis::args::SwitchArg a_with_unused_dependencies;
+
         /// }
 
         /// \name DepList behaviour arguments

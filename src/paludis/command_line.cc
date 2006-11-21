@@ -82,6 +82,8 @@ CommandLine::CommandLine() :
             ("summary", "Show a summary")
             ("full",    "Show full output (can be very verbose)"),
             "none"),
+    a_with_unused_dependencies(&install_args, "with-unused-dependencies", '\0',
+            "Also uninstall any dependencies that are no longer used"),
 
     dl_args(this, "DepList behaviour",
             "Modify dependency list generation behaviour. Use with caution."),

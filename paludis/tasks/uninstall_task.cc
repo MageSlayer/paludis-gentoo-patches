@@ -19,6 +19,7 @@
 
 #include "uninstall_task.hh"
 #include <paludis/environment.hh>
+#include <paludis/uninstall_list.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <list>
 
@@ -38,12 +39,14 @@ namespace paludis
 
         bool pretend;
         bool preserve_world;
+        bool with_unused_dependencies;
 
         Implementation<UninstallTask>(Environment * const e) :
             env(e),
             install_options(false, false),
             pretend(false),
-            preserve_world(false)
+            preserve_world(false),
+            with_unused_dependencies(false)
         {
         }
     };
@@ -115,14 +118,19 @@ namespace
 void
 UninstallTask::execute()
 {
-    Context context("When executing install task:");
+    Context context("When executing uninstall task:");
 
     on_build_unmergelist_pre();
 
-    PackageDatabaseEntryCollection::Pointer unmerge(new PackageDatabaseEntryCollection::Concrete);
+    UninstallList list(_imp->env, UninstallListOptions::create()
+            .with_dependencies(false)
+            .with_unused_dependencies(_imp->with_unused_dependencies));
+
     for (std::list<PackageDepAtom::Pointer>::const_iterator t(_imp->targets.begin()),
             t_end(_imp->targets.end()) ; t != t_end ; ++t)
     {
+        Context local_context("When looking for target '" + stringify(**t) + "':");
+
         PackageDatabaseEntryCollection::ConstPointer r(_imp->env->package_database()->query(
                     *t, is_installed_only));
         if (r->empty())
@@ -130,15 +138,14 @@ UninstallTask::execute()
         else if (r->size() > 1)
             throw AmbiguousUnmergeTargetError(stringify(**t), r);
         else
-            unmerge->insert(*r->begin());
+            list.add(*r->begin());
     }
 
     on_build_unmergelist_post();
 
     on_display_unmerge_list_pre();
 
-    for (PackageDatabaseEntryCollection::Iterator i(unmerge->begin()),
-            i_end(unmerge->end()) ; i != i_end ; ++i)
+    for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
         on_display_unmerge_list_entry(*i);
 
     on_display_unmerge_list_post();
@@ -163,28 +170,26 @@ UninstallTask::execute()
         on_update_world_post();
     }
 
-    _imp->env->perform_hook(Hook("uninstall_all_pre")("TARGETS", join(unmerge->begin(), unmerge->end(), " ")));
+    _imp->env->perform_hook(Hook("uninstall_all_pre")("TARGETS", join(_imp->raw_targets.begin(),
+                    _imp->raw_targets.end(), " ")));
     on_uninstall_all_pre();
 
-    for (PackageDatabaseEntryCollection::Iterator i(unmerge->begin()),
-            i_end(unmerge->end()) ; i != i_end ; ++i)
+    for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
     {
-        std::string cpvr(stringify(i->name) + "-" +
-            stringify(i->version) + "::" +
-            stringify(i->repository));
+        std::string cpvr(stringify(i->package));
 
         _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr));
         on_uninstall_pre(*i);
 
         const RepositoryUninstallableInterface * const uninstall_interface(
-                _imp->env->package_database()->fetch_repository(i->repository)->
+                _imp->env->package_database()->fetch_repository(i->package.repository)->
                 uninstallable_interface);
         if (! uninstall_interface)
             throw InternalError(PALUDIS_HERE, "Trying to uninstall from a non-uninstallable repo");
 
         try
         {
-            uninstall_interface->uninstall(i->name, i->version, _imp->install_options);
+            uninstall_interface->uninstall(i->package.name, i->package.version, _imp->install_options);
         }
         catch (const PackageUninstallActionError & e)
         {
@@ -197,10 +202,17 @@ UninstallTask::execute()
     }
 
     on_uninstall_all_post();
-    _imp->env->perform_hook(Hook("uninstall_all_post")("TARGETS", join(unmerge->begin(), unmerge->end(), " ")));
+    _imp->env->perform_hook(Hook("uninstall_all_post")("TARGETS", join(_imp->raw_targets.begin(),
+                    _imp->raw_targets.end(), " ")));
 }
 
 AmbiguousUnmergeTargetError::~AmbiguousUnmergeTargetError() throw ()
 {
+}
+
+void
+UninstallTask::set_with_unused_dependencies(const bool value)
+{
+    _imp->with_unused_dependencies = value;
 }
 
