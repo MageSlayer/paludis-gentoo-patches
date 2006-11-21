@@ -230,6 +230,7 @@ perform_hook()
     done
 
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && export SANDBOX_ON="${old_sandbox_on}"
+    true
 }
 
 ebuild_main()

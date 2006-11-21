@@ -76,6 +76,7 @@ ebuild_f_fetch_bin()
         ebuild_section "Done builtin_fetch_bin"
     fi
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
+    true
 }
 
 

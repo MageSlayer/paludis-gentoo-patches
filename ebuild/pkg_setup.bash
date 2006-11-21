@@ -42,5 +42,6 @@ ebuild_f_setup()
     fi
 
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
+    true
 }
 

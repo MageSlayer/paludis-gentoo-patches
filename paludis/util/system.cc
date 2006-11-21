@@ -217,7 +217,7 @@ paludis::make_sandbox_command(const std::string & cmd)
 #if HAVE_SANDBOX
     if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
     {
-        Log::get_instance()->message(ll_warning, lc_no_context,
+        Log::get_instance()->message(ll_debug, lc_no_context,
                 "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sandbox");
         return cmd;
     }

@@ -124,5 +124,6 @@ ebuild_f_merge()
 
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_ON="${old_sandbox_on}"
+    true
 }
 
