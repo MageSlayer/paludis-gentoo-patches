@@ -24,6 +24,7 @@
 #include "messages.hh"
 #include "tasks_page.hh"
 #include "queue_page.hh"
+#include "menu.hh"
 
 #include <paludis/util/log.hh>
 
@@ -51,6 +52,7 @@ namespace paludis
 
         Gtk::Table main_table;
 
+        Menu menu;
         Gtk::Notebook main_notebook;
         TasksPage tasks_page;
         PackagesPage packages_page;
@@ -69,7 +71,7 @@ namespace paludis
 
         Implementation() :
             lock_count(0),
-            main_table(1, 2, false),
+            main_table(1, 3, false),
             messages_page(1, 1, false)
         {
         }
@@ -83,7 +85,7 @@ MainWindow::MainWindow() :
     set_border_width(2);
     set_default_size(600, 400);
 
-    _imp->main_notebook.set_border_width(5);
+//    _imp->main_notebook.set_border_width(5);
     _imp->main_notebook.signal_switch_page().connect(sigc::mem_fun(this,
                 &MainWindow::_main_notebook_page_switched));
 
@@ -95,9 +97,13 @@ MainWindow::MainWindow() :
     _imp->messages_page_id = _imp->main_notebook.append_page(_imp->messages_page, "Messages");
 
     add(_imp->main_table);
-    _imp->main_table.attach(_imp->main_notebook, 0, 1, 0, 1);
+
+    _imp->main_table.attach(*_imp->menu.get_menu_widget(), 0, 1, 0, 1, Gtk::FILL, Gtk::AttachOptions(0));
+    _imp->menu.add_accel_group_to(this);
+
+    _imp->main_table.attach(_imp->main_notebook, 0, 1, 1, 2);
     _imp->status_bar.set_has_resize_grip(true);
-    _imp->main_table.attach(_imp->status_bar, 0, 1, 1, 2, Gtk::FILL, Gtk::AttachOptions(0));
+    _imp->main_table.attach(_imp->status_bar, 0, 1, 2, 3, Gtk::FILL, Gtk::AttachOptions(0));
 
     _imp->messages_page.attach(_imp->messages, 0, 1, 0, 1);
 

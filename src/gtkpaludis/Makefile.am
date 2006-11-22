@@ -22,6 +22,8 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_REPOSITORY_SO_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories`" \
 	PALUDIS_HOME="$(srcdir)" \
 	SYSCONFDIR="$(sysconfdir)" \
+	GNOME_ACCESSIBILITY="1" \
+	GTK_MODULES="gail:atk-bridge" \
 	bash $(top_srcdir)/test/run_test.sh $(srcdir)/test_helper.bash
 
 IF_GTK_TESTS = version_TEST help_TEST sets_list_TEST
@@ -34,6 +36,7 @@ common_sources = \
 	categories_list.cc     categories_list.hh     \
 	install.cc             install.hh             \
 	main_window.cc         main_window.hh         \
+	menu.cc                menu.hh                \
 	messages.cc            messages.hh            \
 	package_info.cc        package_info.hh        \
 	package_overview.cc    package_overview.hh    \
@@ -73,7 +76,9 @@ if ENABLE_GTK_TESTS
 
 check_PROGRAMS = prod-x-server sets_list_TEST
 check_SCRIPTS = \
-	sets_list_TEST_setup.sh sets_list_TEST_cleanup.sh
+	sets_list_TEST_setup.sh sets_list_TEST_cleanup.sh \
+	quit_TEST.py quit_TEST_setup.sh quit_TEST_cleanup.sh
+
 check_LIBRARIES = libtestcommon.a
 
 libtestcommon_a_SOURCES = test_common.hh test_common.cc
@@ -88,7 +93,7 @@ sets_list_TEST_LDADD = \
 prod_x_server_SOURCES = prod-x-server.cc
 prod_x_server_LDADD = -lX11
 
-TESTS = version_TEST help_TEST sets_list_TEST
+TESTS = version_TEST help_TEST quit_TEST.py sets_list_TEST
 
 endif
 

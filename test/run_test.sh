@@ -3,6 +3,7 @@
 
 testname=${2:-${1}}
 testname=${testname%.rb}
+testname=${testname%.py}
 
 if test -f "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then
     echo ">>> cleanup for test ${testname}"
