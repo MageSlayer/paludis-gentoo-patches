@@ -11,7 +11,7 @@ DEFS = \
 
 SUBDIRS = cellrendererbutton vtemm .
 
-INCLUDES = $(GTKDEPS_CFLAGS)
+INCLUDES = $(GTKDEPS_CFLAGS) $(GTKTESTDEPS_CFLAGS)
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
@@ -25,8 +25,6 @@ TESTS_ENVIRONMENT = env \
 	GNOME_ACCESSIBILITY="1" \
 	GTK_MODULES="gail:atk-bridge" \
 	bash $(top_srcdir)/test/run_test.sh $(srcdir)/test_helper.bash
-
-IF_GTK_TESTS = version_TEST help_TEST sets_list_TEST
 
 if ENABLE_GTK
 
@@ -68,32 +66,23 @@ gtkpaludis_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
 	$(GTKDEPS_LIBS) \
+	$(GTKTESTDEPS_LIBS) \
 	$(DYNAMIC_LD_LIBS)
 
 BUILT_SOURCES = packages_list-sr.hh packages_list-sr.cc
 
 if ENABLE_GTK_TESTS
 
-check_PROGRAMS = prod-x-server sets_list_TEST
+check_PROGRAMS = prod-x-server
 check_SCRIPTS = \
-	sets_list_TEST_setup.sh sets_list_TEST_cleanup.sh \
-	quit_TEST.py quit_TEST_setup.sh quit_TEST_cleanup.sh
-
-check_LIBRARIES = libtestcommon.a
-
-libtestcommon_a_SOURCES = test_common.hh test_common.cc
-
-sets_list_TEST_SOURCES = $(common_sources) sets_list_TEST.cc
-sets_list_TEST_LDADD = \
-	libtestcommon.a \
-	$(gtkpaludis_LDADD) \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/test/libtestnomain.a
+	quit_TEST.py quit_TEST_setup.sh quit_TEST_cleanup.sh \
+	config_suffix_TEST.py \
+	sets_list_TEST.py sets_list_TEST_setup.sh sets_list_TEST_cleanup.sh
 
 prod_x_server_SOURCES = prod-x-server.cc
 prod_x_server_LDADD = -lX11
 
-TESTS = version_TEST help_TEST quit_TEST.py sets_list_TEST
+TESTS = version_TEST help_TEST quit_TEST.py config_suffix_TEST.py sets_list_TEST.py
 
 endif
 

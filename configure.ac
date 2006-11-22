@@ -587,6 +587,12 @@ AC_ARG_ENABLE([gtktests],
    enable_gtk_tests=no)
 AC_MSG_RESULT($enable_gtk_tests)
 AM_CONDITIONAL([ENABLE_GTK_TESTS], test "x$enable_gtk_tests" = "xyes")
+if test "x$enable_gtk_tests" = "xyes"; then
+	PKG_CHECK_MODULES(GTKTESTDEPS, [atkmm-1.6 >= 2.6.0],
+		[], [AC_MSG_ERROR([atkmm-2.6 or later is required if --enable-gtk-tests is used])])
+	AC_SUBST(GTKTESTDEPS_CFLAGS)
+	AC_SUBST(GTKTESTDEPS_LIBS)
+fi
 dnl }}}
 
 dnl {{{ ruby interface

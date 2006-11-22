@@ -118,6 +118,9 @@ namespace
 SetsList::SetsList() :
     PrivateImplementationPattern<SetsList>(new Implementation<SetsList>)
 {
+#ifdef GTKMM_ATKMM_ENABLED
+    get_accessible()->set_name("SetsList");
+#endif
     set_model(_imp->model);
     append_column("Set", _imp->columns.col_set);
 }
