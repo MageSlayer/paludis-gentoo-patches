@@ -39,6 +39,9 @@ namespace paludis
         /// Our metadata, may be zero.
         VersionMetadata::Pointer metadata;
 
+        /// Our installed date.
+        time_t installed_time;
+
         /// Turn a CRAN package name into a paludis package name.
         static void normalise_name(std::string & s)
         {
