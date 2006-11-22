@@ -45,7 +45,8 @@ namespace paludis
             qal_maybe,
             qal_minor,
             qal_major,
-            qal_fatal
+            qal_fatal,
+            last_qal   ///< Number of items
         };
 
 #include <paludis/qa/message-sr.hh>
@@ -56,6 +57,13 @@ namespace paludis
          * \ingroup grpqa
          */
         std::ostream & operator<< (std::ostream &, const Message &);
+
+        /**
+         * Write a QALevel to a stream.
+         *
+         * \ingroup grpqa
+         */
+        std::ostream & operator<< (std::ostream &, const QALevel &);
     }
 }
 

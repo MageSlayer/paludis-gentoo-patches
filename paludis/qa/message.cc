@@ -18,6 +18,7 @@
  */
 
 #include <paludis/qa/message.hh>
+#include <paludis/util/exception.hh>
 #include <ostream>
 
 using namespace paludis;
@@ -32,3 +33,38 @@ paludis::qa::operator<< (std::ostream & s, const Message & m)
     return s;
 }
 
+std::ostream &
+paludis::qa::operator<< (std::ostream & s, const QALevel & l)
+{
+    switch (l)
+    {
+        case qal_info:
+            s << "info";
+            return s;
+
+        case qal_skip:
+            s << "skip";
+            return s;
+
+        case qal_maybe:
+            s << "maybe";
+            return s;
+
+        case qal_minor:
+            s << "minor";
+            return s;
+
+        case qal_major:
+            s << "major";
+            return s;
+
+        case qal_fatal:
+            s << "fatal";
+            return s;
+
+        case last_qal:
+            ;
+    };
+
+    throw InternalError(PALUDIS_HERE, "Bad QA Level");
+}
