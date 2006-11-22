@@ -153,6 +153,9 @@ namespace
                         display_header_once(&done_out, r);
                         cout << "  maybe:        ";
                         continue;
+
+                    case qa::last_qal:
+                        ;
                 }
 
                 throw InternalError(PALUDIS_HERE, "Bad mk_level");
@@ -225,6 +228,9 @@ namespace
                             ok = false;
                             fatal = true;
                             return;
+
+                        case qa::last_qal:
+                            ;
                     }
                     throw InternalError(PALUDIS_HERE, "Bad most_severe_level");
                 } while (0);
