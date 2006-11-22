@@ -21,6 +21,7 @@
 #include <paludis/repositories/fake/fake_repository_base.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/iterator.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/portage_dep_parser.hh>
 
@@ -55,6 +56,9 @@ namespace paludis
 
         /// Our metadata.
         std::map<std::string, VersionMetadata::Pointer > metadata;
+
+        /// Our sets.
+        std::map<SetName, DepAtom::Pointer > sets;
 
         /// (Empty) provides map.
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
@@ -254,5 +258,30 @@ UseFlagName
 FakeRepositoryBase::do_use_expand_value(const UseFlagName & u) const
 {
     return u;
+}
+
+void
+FakeRepositoryBase::add_package_set(const SetName & n, DepAtom::Pointer s)
+{
+    _imp->sets.insert(std::make_pair(n, s));
+}
+
+DepAtom::Pointer
+FakeRepositoryBase::do_package_set(const SetName & id) const
+{
+    std::map<SetName, DepAtom::Pointer >::const_iterator i(_imp->sets.find(id));
+    if (_imp->sets.end() == i)
+        return DepAtom::Pointer(0);
+    else
+        return i->second;
+}
+
+SetsCollection::ConstPointer
+FakeRepositoryBase::sets_list() const
+{
+    SetsCollection::Pointer result(new SetsCollection::Concrete);
+    std::copy(_imp->sets.begin(), _imp->sets.end(),
+            transform_inserter(result->inserter(), SelectFirst<SetName, DepAtom::Pointer>()));
+    return result;
 }
 

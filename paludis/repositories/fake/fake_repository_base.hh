@@ -43,6 +43,7 @@ namespace paludis
         public Repository,
         public RepositoryMaskInterface,
         public RepositoryUseInterface,
+        public RepositorySetsInterface,
         private PrivateImplementationPattern<FakeRepositoryBase>
     {
         protected:
@@ -87,6 +88,9 @@ namespace paludis
 
             virtual bool do_is_licence(const std::string &) const;
 
+            virtual DepAtom::Pointer do_package_set(const SetName & id) const;
+            virtual SetsCollection::ConstPointer sets_list() const;
+
         protected:
             /**
              * Constructor.
@@ -127,6 +131,11 @@ namespace paludis
             {
                 return add_version(CategoryNamePart(c) + PackageNamePart(p), VersionSpec(v));
             }
+
+            /**
+             * Add a package set.
+             */
+            void add_package_set(const SetName &, DepAtom::Pointer);
 
             /**
              * A non-constant smart pointer to ourself.

@@ -22,6 +22,7 @@
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/environment/test/test_environment.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -316,6 +317,78 @@ namespace test_cases
                 .with_dependencies(false);
         }
     } uninstall_list_with_unused_deps_with_cross_used_test;
+
+    struct UninstallListWithUnusedDepsWorldTest :
+        public UninstallListTestCaseBase
+    {
+        UninstallListWithUnusedDepsWorldTest() :
+            UninstallListTestCaseBase("with unused deps world")
+        {
+            installed_repo->add_package_set(SetName("world"), PortageDepParser::parse(
+                        "foo/moo"));
+        }
+
+        void populate_targets()
+        {
+            add_target("foo/bar", "1");
+        }
+
+        void populate_repo()
+        {
+            installed_repo->add_version("foo", "bar", "1")->deps.build_depend_string = "foo/baz foo/moo";
+            installed_repo->add_version("foo", "baz", "2");
+            installed_repo->add_version("foo", "moo", "2");
+        }
+
+        void populate_expected()
+        {
+            expected.push_back("foo/bar-1::installed");
+            expected.push_back("foo/baz-2::installed");
+        }
+
+        UninstallListOptions options()
+        {
+            return UninstallListOptions::create()
+                .with_unused_dependencies(true)
+                .with_dependencies(false);
+        }
+    } uninstall_list_with_unused_deps_world_test;
+
+    struct UninstallListWithUnusedDepsWorldTargetTest :
+        public UninstallListTestCaseBase
+    {
+        UninstallListWithUnusedDepsWorldTargetTest() :
+            UninstallListTestCaseBase("with unused deps world target")
+        {
+            installed_repo->add_package_set(SetName("world"), PortageDepParser::parse(
+                        "foo/bar foo/moo"));
+        }
+
+        void populate_targets()
+        {
+            add_target("foo/bar", "1");
+        }
+
+        void populate_repo()
+        {
+            installed_repo->add_version("foo", "bar", "1")->deps.build_depend_string = "foo/baz foo/moo";
+            installed_repo->add_version("foo", "baz", "2");
+            installed_repo->add_version("foo", "moo", "2");
+        }
+
+        void populate_expected()
+        {
+            expected.push_back("foo/bar-1::installed");
+            expected.push_back("foo/baz-2::installed");
+        }
+
+        UninstallListOptions options()
+        {
+            return UninstallListOptions::create()
+                .with_unused_dependencies(true)
+                .with_dependencies(false);
+        }
+    } uninstall_list_with_unused_deps_world_target_test;
 }
 
 

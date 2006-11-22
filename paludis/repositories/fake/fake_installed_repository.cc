@@ -27,7 +27,7 @@ FakeInstalledRepository::FakeInstalledRepository(const RepositoryName & our_name
             .installed_interface(this)
             .mask_interface(this)
             .news_interface(0)
-            .sets_interface(0)
+            .sets_interface(this)
             .syncable_interface(0)
             .uninstallable_interface(0)
             .use_interface(this)

@@ -80,6 +80,73 @@ namespace
             return f.package == e;
         }
     };
+
+    struct IsWorld :
+        DepAtomVisitorTypes::ConstVisitor,
+        std::unary_function<PackageDatabaseEntry, bool>
+    {
+        const Environment * const env;
+        DepAtom::ConstPointer world;
+        const PackageDatabaseEntry * dbe;
+        bool matched;
+
+        IsWorld(const Environment * const e) :
+            env(e),
+            world(e->package_set(SetName("world"))),
+            matched(false)
+        {
+        }
+
+        bool operator() (const PackageDatabaseEntry & e)
+        {
+            dbe = &e;
+            matched = false;
+            world->accept(this);
+            return matched;
+        }
+
+        void visit(const AllDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const PackageDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            if (match_package(env, a, *dbe))
+                matched = true;
+        }
+
+        void visit(const UseDepAtom * const u)
+        {
+            if (matched)
+                return;
+
+            std::for_each(u->begin(), u->end(), accept_visitor(this));
+        }
+
+        void visit(const AnyDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const BlockDepAtom * const)
+        {
+        }
+
+        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+        }
+    };
 }
 
 UninstallList::UninstallList(const Environment * const env, const UninstallListOptions & o) :
@@ -316,14 +383,8 @@ UninstallList::add_unused_dependencies()
                 i_end(_imp->uninstall_list.end()) ; i != i_end ; ++i)
             uninstall_list_targets->insert(i->package);
 
-        Log::get_instance()->message(ll_debug, lc_context, "uninstall_list_targets is '"
-                + join(uninstall_list_targets->begin(), uninstall_list_targets->end(), " ") + "'");
-
         PackageDatabaseEntryCollection::ConstPointer depped_upon_list(
                 collect_depped_upon(uninstall_list_targets));
-
-        Log::get_instance()->message(ll_debug, lc_context, "depped_upon_list is '"
-                + join(depped_upon_list->begin(), depped_upon_list->end(), " ") + "'");
 
         /* find packages that're depped upon by anything not in our uninstall list */
         PackageDatabaseEntryCollection::Pointer everything_except_uninstall_list_targets(
@@ -345,13 +406,14 @@ UninstallList::add_unused_dependencies()
         std::set_difference(depped_upon_list->begin(), depped_upon_list->end(),
                 depped_upon_not_list->begin(), depped_upon_not_list->end(), unused_dependencies->inserter());
 
-        Log::get_instance()->message(ll_debug, lc_context, "unused_dependencies is '"
-                + join(unused_dependencies->begin(), unused_dependencies->end(), " ") + "'");
-
-        /* if any of them aren't already on the list, add them and recurse */
+        /* if any of them aren't already on the list, and aren't in world, add them and recurse */
+        IsWorld w(_imp->env);
         for (PackageDatabaseEntryCollection::Iterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
+            if (w(*i))
+                continue;
+
             if (_imp->uninstall_list.end() != std::find_if(_imp->uninstall_list.begin(),
                         _imp->uninstall_list.end(), MatchUninstallListEntry(*i)))
                 continue;
@@ -395,87 +457,6 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
 
         add(*i);
     }
-}
-
-namespace
-{
-    struct IsWorldMatcher :
-        DepAtomVisitorTypes::ConstVisitor
-    {
-        bool matched;
-
-        IsWorldMatcher() :
-            matched(false)
-        {
-        }
-    };
-
-    struct IsWorld :
-        DepAtomVisitorTypes::ConstVisitor,
-        std::unary_function<PackageDatabaseEntry, bool>
-    {
-        const Environment * const env;
-        DepAtom::ConstPointer world;
-        const PackageDatabaseEntry * dbe;
-        bool matched;
-
-        IsWorld(const Environment * const e) :
-            env(e),
-            world(e->package_set(SetName("world"))),
-            matched(false)
-        {
-        }
-
-        bool operator() (const PackageDatabaseEntry & e)
-        {
-            dbe = &e;
-            matched = false;
-            world->accept(this);
-            return matched;
-        }
-
-        void visit(const AllDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const PackageDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            if (match_package(env, a, *dbe))
-                matched = true;
-        }
-
-        void visit(const UseDepAtom * const u)
-        {
-            if (matched)
-                return;
-
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
-        }
-
-        void visit(const AnyDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const BlockDepAtom * const)
-        {
-        }
-
-        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
-        }
-    };
 }
 
 PackageDatabaseEntryCollection::ConstPointer
