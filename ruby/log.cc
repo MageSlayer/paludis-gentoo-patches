@@ -40,7 +40,10 @@ namespace
     VALUE
     log_log_level_set(VALUE self, VALUE value)
     {
-        Log::get_instance()->set_log_level(static_cast<LogLevel>(NUM2INT(value)));
+        int l = NUM2INT(value);
+        if (l < 0 || l >= last_ll)
+            rb_raise(rb_eTypeError, "Log.level= expects a valid LogLevel");
+        Log::get_instance()->set_log_level(static_cast<LogLevel>(l));
         return self;
     }
 
@@ -54,7 +57,10 @@ namespace
     VALUE
     log_message(VALUE self, VALUE log_level, VALUE message)
     {
-        Log::get_instance()->message(static_cast<LogLevel>(NUM2INT(log_level)), lc_no_context,
+        int l = NUM2INT(log_level);
+        if (l < 0 || l >= last_ll)
+            rb_raise(rb_eTypeError, "Log.log_message expects a valid LogLevel as the first parameter");
+        Log::get_instance()->message(static_cast<LogLevel>(l), lc_no_context,
                 stringify(StringValuePtr(message)));
         return self;
     }

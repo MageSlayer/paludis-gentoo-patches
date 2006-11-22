@@ -56,11 +56,17 @@ module Paludis
         end
 
         def test_log_level_set
-            Log.instance.log_level = LogLevel::Debug;
+            Log.instance.log_level = LogLevel::Debug
             assert_equal LogLevel::Debug, Log.instance.log_level
 
-            Log.instance.log_level = LogLevel::Warning;
+            Log.instance.log_level = LogLevel::Warning
             assert_equal LogLevel::Warning, Log.instance.log_level
+        end
+
+        def test_error
+            assert_raise TypeError do
+                Log.instance.log_level = 456
+            end
         end
     end
 
@@ -76,6 +82,10 @@ module Paludis
 
             assert_raise TypeError do
                 Log.instance.message "Warning", "This should fail"
+            end
+
+            assert_raise TypeError do
+                Log.instance.message 456, "This should fail"
             end
         end
     end
