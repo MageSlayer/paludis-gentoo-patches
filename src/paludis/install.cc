@@ -25,12 +25,15 @@
 #include <iostream>
 #include <limits>
 #include <set>
+#include <cstdlib>
+#include <cstring>
 
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
 #include <paludis/tasks/install_task.hh>
+#include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/environment/default/default_environment.hh>
@@ -599,8 +602,8 @@ namespace
 
         if (task.current_dep_list_entry() != task.dep_list().end())
         {
-            cerr << "Resume command: " << DefaultEnvironment::get_instance()->paludis_command() << " "
-                "--dl-installed-deps-pre discard "
+            std::string resume_command = DefaultEnvironment::get_instance()->paludis_command() 
+                + " --dl-installed-deps-pre discard "
                 "--dl-installed-deps-runtime discard "
                 "--dl-installed-deps-post discard "
                 "--dl-uninstalled-deps-pre discard "
@@ -610,8 +613,24 @@ namespace
             for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
                     i != i_end ; ++i)
                 if (! i->skip_install)
-                    cerr << " =" << i->package.name << "-" << i->package.version << "::" << i->package.repository;
-            cerr << endl;
+                    resume_command = resume_command + " ="
+                        + stringify(i->package.name) + "-"
+                        + stringify(i->package.version) + "::"
+                        + stringify(i->package.repository);
+            
+            if (CommandLine::get_instance()->a_resume_command_template.specified())
+            {
+                std::string file_name(CommandLine::get_instance()->a_resume_command_template.argument());
+                char* resume_template = strdup(file_name.c_str());
+                FDOutputStream resume_command_file(mkstemp(resume_template));
+                cerr << endl;
+                cerr << "Resume command saved to file: " << resume_template;
+                cerr << endl;
+                resume_command_file << resume_command << endl;
+                std::free(resume_template);
+            }
+            else
+                cerr << "Resume command: " << resume_command << endl;
         }
     }
 

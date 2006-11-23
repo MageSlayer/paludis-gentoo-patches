@@ -283,6 +283,14 @@ main(int argc, char *argv[])
             throw;
         }
 
+        if (CommandLine::get_instance()->a_resume_command_template.specified())
+        {
+            // The template should contain at least XXXXXX
+            std::string resume_template = CommandLine::get_instance()->a_resume_command_template.argument();
+            if (resume_template.find("XXXXXX", 0) == std::string::npos )
+                throw DoHelp("resume-command-template must contain at least XXXXXX");
+        }
+
         if (CommandLine::get_instance()->a_info.specified())
         {
             display_version();

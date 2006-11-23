@@ -65,6 +65,7 @@ CommandLine::CommandLine() :
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
     a_config_suffix(&general_args, "config-suffix", 'c', "Config directory suffix"),
+    a_resume_command_template(&general_args, "resume-command-template", '\0', "Save the resume command to a file made using mkstemp(3)"),
 
     query_args(this, "Query options",
             "Options which are relevant for --query."),

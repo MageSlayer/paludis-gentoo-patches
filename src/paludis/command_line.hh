@@ -148,6 +148,9 @@ class CommandLine :
         /// --config-suffix
         paludis::args::StringArg a_config_suffix;
 
+        /// --resume-command-template
+        paludis::args::StringArg a_resume_command_template;
+
         ///}
 
         /// \name Query arguments

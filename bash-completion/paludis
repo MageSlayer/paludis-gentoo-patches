@@ -38,6 +38,7 @@ _paludis() {
         --no-colour \
         --no-color \
         --config-suffix -c \
+        --resume-command-template \
         --show-slot -S \
         --show-deps -D \
         --show-metadata -M \
