@@ -228,6 +228,7 @@ namespace
 
             NoConfigEnvironment * e(new NoConfigEnvironment(NoConfigEnvironmentParams::create()
                         .repository_dir(FSEntry(path))
+                        .write_cache(FSEntry("/var/empty"))
                         .accept_unstable(false)
                         .repository_type(ncer_auto)));
             EnvironmentData * ptr(new EnvironmentData(e, e));
