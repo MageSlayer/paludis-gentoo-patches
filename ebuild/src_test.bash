@@ -44,6 +44,10 @@ ebuild_f_test()
     local old_sandbox_predict="${SANDBOX_PREDICT}"
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}/"
 
+    if [[ -d "${S}" ]]; then
+        cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    fi
+
     if hasq "test" ${RESTRICT} ; then
         ebuild_section "Skipping src_test (RESTRICT)"
     elif hasq "test" ${SKIP_FUNCTIONS} ; then
