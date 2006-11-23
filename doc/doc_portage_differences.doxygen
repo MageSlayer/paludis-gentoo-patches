@@ -41,6 +41,8 @@ would be relevant if it were:
 
 - Ability to sync from Subversion, Git.
 
+- Ability to uninstall packages with dependencies.
+
 \section PortageDifferencesEbuildDeveloper For the Ebuild Developer
 
 As well as the end user advantages, ebuild authors will benefit from:

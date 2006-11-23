@@ -60,7 +60,7 @@ teams and b) because it makes it harder for users to catch bugs.
 Problem: Sandbox violations when ROOT!=/
 
 Workaround: Paludis enforces ROOT. However, some packages don't honour ROOT. To
-temporarily disable sandbox for these packages, <code>export SANDBOX_PREDICT=/</code>.
+temporarily disable sandbox for these packages, <code>export SANDBOX_PREDICT=/</code> .
 
 \section KnownNonIssuesPortageThings Things Portage Does
 

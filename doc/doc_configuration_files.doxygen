@@ -195,6 +195,8 @@ The following keys are available for <code>format = portage</code>:
 - <code>cache</code> (default: <code>${location}/metadata/cache</code>), which
   controls the location of the metadata cache for a repository. It should be set
   to <code>/var/empty</code> if there is no metadata cache available.
+- <code>write_cache</code>, which can be set to a directory that will be used
+  to write generated cache files.
 - <code>distdir</code> (default: <code>${location}/distfiles</code>), which
   controls where downloaded files are saved.
 - <code>eclassdirs</code> (default: <code>${location}/eclass</code>), which
