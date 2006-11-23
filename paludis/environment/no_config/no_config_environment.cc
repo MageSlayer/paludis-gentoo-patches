@@ -37,6 +37,7 @@ namespace paludis
         InternalCounted<Implementation<NoConfigEnvironment> >
     {
         const FSEntry top_level_dir;
+        const FSEntry write_cache;
         bool accept_unstable;
         bool is_vdb;
         std::set<KeywordName> accepted_keywords;
@@ -108,6 +109,7 @@ namespace
 Implementation<NoConfigEnvironment>::Implementation(
         Environment * const env, const NoConfigEnvironmentParams & params) :
     top_level_dir(params.repository_dir),
+    write_cache(params.write_cache),
     accept_unstable(params.accept_unstable),
     is_vdb(is_vdb_repository(params.repository_dir, params.repository_type)),
     vdb_db(is_vdb ? new PackageDatabase(env) : 0)
@@ -162,6 +164,7 @@ Implementation<NoConfigEnvironment>::Implementation(
             keys->insert("format", "portage");
             keys->insert("location", stringify(params.repository_dir));
             keys->insert("profiles", stringify(p->path));
+            keys->insert("write_cache", stringify(params.write_cache));
 
             p->db->add_repository(RepositoryMaker::get_instance()->find_maker("portage")(env,
                         p->db.raw_pointer(), keys));
@@ -251,6 +254,7 @@ NoConfigEnvironment::set_profile(const FSEntry & location)
     keys->insert("format", "portage");
     keys->insert("location", stringify(_imp->top_level_dir));
     keys->insert("profiles", stringify(location));
+    keys->insert("write_cache", stringify(_imp->write_cache));
 
     PortageRepository::Pointer p(RepositoryMaker::get_instance()->find_maker("portage")(this,
                 db.raw_pointer(), keys));

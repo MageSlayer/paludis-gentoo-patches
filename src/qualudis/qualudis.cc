@@ -407,7 +407,7 @@ namespace
 
         set_entry_heading("QA checks for top level directory " + stringify(dir) + ":");
 
-        qa::QAEnvironment env(dir);
+        qa::QAEnvironment env(dir, QualudisCommandLine::get_instance()->a_write_cache_dir.argument());
         bool ok(true);
 
         for (DirIterator d(dir) ; d != DirIterator() ; ++d)
@@ -435,14 +435,14 @@ namespace
 
         if (dir.basename() == "eclass" && dir.is_directory())
         {
-            qa::QAEnvironment env(dir.dirname());
+            qa::QAEnvironment env(dir.dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument());
             return do_check_eclass_dir(dir, env);
         }
 
         else if (std::count_if(DirIterator(dir), DirIterator(), IsFileWithExtension(
                         dir.basename() + "-", ".ebuild")))
         {
-            qa::QAEnvironment env(dir.dirname().dirname());
+            qa::QAEnvironment env(dir.dirname().dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument());
             return do_check_package_dir(dir, env);
         }
 
@@ -451,7 +451,7 @@ namespace
 
         else if ((dir.dirname() / "profiles").is_directory())
         {
-            qa::QAEnvironment env(dir.dirname());
+            qa::QAEnvironment env(dir.dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument());
             return do_check_category_dir(dir, env);
         }
 
@@ -534,6 +534,9 @@ int main(int argc, char *argv[])
 
             return EXIT_SUCCESS;
         }
+
+        if (! QualudisCommandLine::get_instance()->a_write_cache_dir.specified())
+            QualudisCommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
 
         if (! QualudisCommandLine::get_instance()->empty())
         {

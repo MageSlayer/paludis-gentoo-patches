@@ -145,8 +145,12 @@ main(int argc, char *argv[])
                     ))
             throw DoHelp("you should specify exactly one action");
 
+        if (! CommandLine::get_instance()->a_write_cache_dir.specified())
+            CommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
+
         NoConfigEnvironment env(NoConfigEnvironmentParams::create()
                 .repository_dir(get_location_and_add_filters())
+                .write_cache(CommandLine::get_instance()->a_write_cache_dir.argument())
                 .accept_unstable(CommandLine::get_instance()->a_unstable.specified())
                 .repository_type(
                     (CommandLine::get_instance()->a_reverse_deps.specified()) ? ncer_auto : ncer_portage

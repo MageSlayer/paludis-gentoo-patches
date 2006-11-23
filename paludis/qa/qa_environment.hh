@@ -44,7 +44,8 @@ namespace paludis
             friend class QAEnvironment;
 
             protected:
-                QAEnvironmentBase(const FSEntry & base, const Environment * const env);
+                QAEnvironmentBase(const FSEntry & base, const FSEntry & write_cache,
+                        const Environment * const env);
                 ~QAEnvironmentBase();
         };
 
@@ -57,7 +58,8 @@ namespace paludis
             public Environment
         {
             public:
-                QAEnvironment(const FSEntry & base);
+                QAEnvironment(const FSEntry & base,
+                        const FSEntry & write_cache = FSEntry("/var/empty"));
 
                 ~QAEnvironment();
 

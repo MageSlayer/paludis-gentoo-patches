@@ -82,7 +82,12 @@ CommandLine::CommandLine() :
     a_profile(&profile_args,    "profile",    'p',
             "Display results for this profile path, rather than all profiles (may be specified multiple times)"),
     a_unstable(&profile_args,   "unstable",    'U',
-            "Accept ~arch as well as arch")
+            "Accept ~arch as well as arch"),
+
+    configuration_options(this, "Configuration options",
+            "Options that control general configuration."),
+    a_write_cache_dir(&configuration_options, "write-cache-dir", '\0',
+            "Use a subdirectory named for the repository name under the specified directory for repository write cache")
 {
     add_usage_line("--find-stable-candidates arch [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "

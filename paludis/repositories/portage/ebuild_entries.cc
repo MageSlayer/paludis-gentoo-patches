@@ -99,6 +99,7 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
     cache_file /= stringify(q.package) + "-" + stringify(v);
 
     FSEntry write_cache_file(_imp->params.write_cache);
+    write_cache_file /= stringify(_imp->portage_repository->name());
     write_cache_file /= stringify(q.category);
     write_cache_file /= stringify(q.package) + "-" + stringify(v);
 

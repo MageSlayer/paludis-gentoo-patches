@@ -50,7 +50,12 @@ QualudisCommandLine::QualudisCommandLine() :
             ("fatal", "Show only fatals"),
             "info"),
 
-    message_level(paludis::qa::qal_info)
+    message_level(paludis::qa::qal_info),
+
+    configuration_options(this, "Configuration options",
+            "Options that control general configuration."),
+    a_write_cache_dir(&configuration_options, "write-cache-dir", '\0',
+            "Use a subdirectory named for the repository name under the specified directory for repository write cache")
 {
     add_usage_line("[ options ] [ directories ... ]");
     add_environment_variable("QUALUDIS_OPTIONS", "Default command-line options.");

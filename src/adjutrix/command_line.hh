@@ -108,6 +108,14 @@ class CommandLine :
 
         ///\}
 
+        ///\name Configuration options
+        ///\{
+
+        paludis::args::ArgsGroup configuration_options;
+
+        paludis::args::StringArg a_write_cache_dir;
+
+        ///\}
 };
 
 /**

@@ -4,6 +4,7 @@
 make_class_NoConfigEnvironmentParams()
 {
     key repository_dir "FSEntry"
+    key write_cache "FSEntry"
     key accept_unstable bool
     key repository_type NoConfigEnvironmentRepositoryType
     allow_named_args

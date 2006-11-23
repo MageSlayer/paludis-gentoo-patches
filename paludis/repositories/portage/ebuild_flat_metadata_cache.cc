@@ -115,6 +115,7 @@ EbuildFlatMetadataCache::save(VersionMetadata::ConstPointer v)
 {
     Context context("When saving version metadata to '" + stringify(_filename) + "':");
 
+    _filename.dirname().dirname().mkdir();
     _filename.dirname().mkdir();
     std::ofstream cache(stringify(_filename).c_str());
 

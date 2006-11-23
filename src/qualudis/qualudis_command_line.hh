@@ -71,6 +71,15 @@ class QualudisCommandLine :
         paludis::qa::QALevel message_level;
 
         ///\}
+
+        ///\name Configuration options
+        ///\{
+
+        paludis::args::ArgsGroup configuration_options;
+
+        paludis::args::StringArg a_write_cache_dir;
+
+        ///\}
 };
 
 
