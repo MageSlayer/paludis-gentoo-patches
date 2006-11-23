@@ -15,17 +15,13 @@ focus.widget.node.select()
 
 sets_list = tree.root.findChild(predicate.IsNamed("SetsList"))
 
-monkey_cell = sets_list.findChild(predicate.IsNamed("monkey"), requireResult = False, retry = False)
+monkey_cell = sets_list.findChild(predicate.IsNamed("monkey"),
+        requireResult = False, retry = False)
 if monkey_cell:
     raise "there should be no monkey"
 
 system_cell = sets_list.findChild(predicate.IsNamed("system"))
 system_cell.select()
 
-for x in range(10):
-    dogtail.utils.doDelay()
-
 click('Quit')
-
-
 
