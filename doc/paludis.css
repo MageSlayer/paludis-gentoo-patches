@@ -372,5 +372,7 @@ HR { height: 1px;
 
 code {
     background-color: #f5f5f5;
+    border: 1px solid #cccccc;
+    padding: 2px;
 }
 
