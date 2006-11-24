@@ -35,6 +35,7 @@ if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
     export SANDBOX_ON="1"
 fi
 export REAL_CHOST="${CHOST}"
+[[ -z "${CBUILD}" ]] && export CBUILD="${CHOST}"
 
 shopt -s expand_aliases
 shopt -s extglob
