@@ -35,7 +35,6 @@ if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
     export SANDBOX_ON="1"
 fi
 export REAL_CHOST="${CHOST}"
-[[ -z "${CBUILD}" ]] && export CBUILD="${CHOST}"
 
 shopt -s expand_aliases
 shopt -s extglob
@@ -150,6 +149,8 @@ done
 for var in ${save_vars} ; do
     eval "export ${var}=\${save_var_${var}}"
 done
+
+[[ -z "${CBUILD}" ]] && export CBUILD="${CHOST}"
 
 ebuild_load_ebuild()
 {
