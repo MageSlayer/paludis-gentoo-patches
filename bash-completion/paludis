@@ -103,7 +103,7 @@ _paludis() {
                     return 0
                     ;;
                 --dl-circular)
-                    COMPREPLY=($(compgen -W "error discard" -- -"${cur}"))
+                    COMPREPLY=($(compgen -W "error discard" -- "${cur}"))
                     return 0
                     ;;
                 ## list specifiers
