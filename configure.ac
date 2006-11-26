@@ -549,6 +549,10 @@ if test "x$enable_gtk" = "xyes"; then
 	AC_SUBST(GTKDEPS_CFLAGS)
 	AC_SUBST(GTKDEPS_LIBS)
 
+	# for vte
+	PKG_CHECK_MODULES(PYGTKDEPS, [pygtk-2.0 >= 2.6.0],
+		[], [AC_MSG_ERROR([pygtk-2.6 is required if --enable-gtk is used])])
+
 	AC_MSG_CHECKING([whether Gtk::TreeView::set_grid_lines is available])
 	old_CXXFLAGS=$CXXFLAGS
 	CXXFLAGS="$CXXFLAGS $GTKDEPS_CFLAGS"
