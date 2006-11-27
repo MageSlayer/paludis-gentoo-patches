@@ -23,6 +23,8 @@
 #include <iomanip>
 #include <iostream>
 #include <paludis/paludis.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/environment/default/default_environment.hh>
 #include <string>
 #include <set>
@@ -32,19 +34,20 @@
  * main paludis program.
  */
 
-namespace p = paludis;
+using namespace paludis;
 
 int do_has_version()
 {
     int return_code(0);
 
-    p::Context context("When performing has-version action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
+    Context context("When performing has-version action from command line:");
+    Environment * const env(DefaultEnvironment::get_instance());
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    p::PackageDepAtom::Pointer atom(new p::PackageDepAtom(query));
-    p::PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
-                atom, p::is_installed_only));
+    PackageDepAtom::Pointer atom(new PackageDepAtom(query));
+    PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
+                atom, is_installed_only));
+
     if (entries->empty())
         return_code = 1;
 
@@ -55,13 +58,33 @@ int do_best_version()
 {
     int return_code(0);
 
-    p::Context context("When performing best-version action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
+    Context context("When performing best-version action from command line:");
+    Environment * const env(DefaultEnvironment::get_instance());
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    p::PackageDepAtom::Pointer atom(new p::PackageDepAtom(query));
-    p::PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
-                atom, p::is_installed_only));
+    PackageDepAtom::Pointer atom(new PackageDepAtom(query));
+    PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
+                atom, is_installed_only));
+
+    /* make built_with_use work for virtuals... icky... */
+    while (! entries->empty())
+    {
+        VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
+                    entries->last()->repository)->version_metadata(entries->last()->name,
+                    entries->last()->version));
+        if (! metadata->get_virtual_interface())
+            break;
+
+        Log::get_instance()->message(ll_qa, lc_context, "best-version of '" + query +
+                "' resolves to '" + stringify(*entries->last()) + "', which is a virtual for '"
+                + stringify(metadata->get_virtual_interface()->virtual_for) + "'. This will break with "
+                "new style virtuals.");
+        PackageDatabaseEntryCollection::Pointer new_entries(
+                new PackageDatabaseEntryCollection::Concrete);
+        new_entries->insert(metadata->get_virtual_interface()->virtual_for);
+        entries = new_entries;
+    }
+
     if (entries->empty())
         return_code = 1;
     else
@@ -80,25 +103,25 @@ int do_environment_variable()
 {
     int return_code(0);
 
-    p::Context context("When performing environment-variable action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
+    Context context("When performing environment-variable action from command line:");
+    Environment * const env(DefaultEnvironment::get_instance());
 
     std::string atom_str(*CommandLine::get_instance()->begin_parameters());
-    std::string var_str(* p::next(CommandLine::get_instance()->begin_parameters()));
-    p::PackageDepAtom::Pointer atom(new p::PackageDepAtom(atom_str));
+    std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
+    PackageDepAtom::Pointer atom(new PackageDepAtom(atom_str));
 
-    p::PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
-                atom, p::is_installed_only));
-
-    if (entries->empty())
-        entries = env->package_database()->query(atom, p::is_uninstalled_only);
+    PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
+                atom, is_installed_only));
 
     if (entries->empty())
-        throw p::NoSuchPackageError(atom_str);
+        entries = env->package_database()->query(atom, is_uninstalled_only);
 
-    p::Repository::ConstPointer repo(env->package_database()->fetch_repository(
+    if (entries->empty())
+        throw NoSuchPackageError(atom_str);
+
+    Repository::ConstPointer repo(env->package_database()->fetch_repository(
                 entries->begin()->repository));
-    p::RepositoryEnvironmentVariableInterface * env_if(
+    RepositoryEnvironmentVariableInterface * env_if(
             repo->environment_variable_interface);
 
     if (! env_if)
@@ -117,19 +140,19 @@ int do_configuration_variable()
 {
     int return_code(0);
 
-    p::Context context("When performing configuration-variable action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
+    Context context("When performing configuration-variable action from command line:");
+    Environment * const env(DefaultEnvironment::get_instance());
 
     std::string repo_str(*CommandLine::get_instance()->begin_parameters());
-    std::string var_str(* p::next(CommandLine::get_instance()->begin_parameters()));
+    std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
 
-    p::RepositoryInfo::ConstPointer info(env->package_database()->fetch_repository(
-                p::RepositoryName(repo_str))->info(false));
+    RepositoryInfo::ConstPointer info(env->package_database()->fetch_repository(
+                RepositoryName(repo_str))->info(false));
 
     return_code = 1;
-    for (p::RepositoryInfo::SectionIterator s(info->begin_sections()),
+    for (RepositoryInfo::SectionIterator s(info->begin_sections()),
             s_end(info->end_sections()) ; s != s_end ; ++s)
-        for (p::RepositoryInfoSection::KeyValueIterator k((*s)->begin_kvs()),
+        for (RepositoryInfoSection::KeyValueIterator k((*s)->begin_kvs()),
                 k_end((*s)->end_kvs()) ; k != k_end ; ++k)
             if (var_str == k->first)
             {
@@ -146,7 +169,7 @@ int do_list_repository_formats()
     int return_code(1);
 
     std::set<std::string> keys;
-    p::RepositoryMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
+    RepositoryMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
 
     if (! keys.empty())
     {
@@ -164,7 +187,7 @@ int do_list_sync_protocols()
     int return_code(1);
 
     std::set<std::string> keys;
-    p::SyncerMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
+    SyncerMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
 
     if (! keys.empty())
     {
@@ -182,7 +205,7 @@ int do_list_dep_tag_categories()
     int return_code(1);
 
     std::set<std::string> keys;
-    p::DepTagCategoryMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
+    DepTagCategoryMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
 
     if (! keys.empty())
     {
