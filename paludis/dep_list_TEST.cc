@@ -1489,5 +1489,133 @@ namespace test_cases
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "), "cat/one-1:0::repo");
         }
     } test_dep_list_forced_downgrade_of_installed;
+
+    /**
+     * \test Test DepList fall back never.
+     */
+    struct DepListTestCaseFallBackNever : TestCase
+    {
+        DepListTestCaseFallBackNever() : TestCase("dep list fall back never") { }
+
+        void run()
+        {
+            TestEnvironment env;
+
+            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            env.package_database()->add_repository(repo);
+            repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two";
+
+            FakeInstalledRepository::Pointer installed_repo(
+                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+            env.package_database()->add_repository(installed_repo);
+            installed_repo->add_version("cat", "two", "2");
+
+            DepList d(&env, DepListOptions());
+            d.options.fall_back = dl_fall_back_never;
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse("cat/one")), DepListError);
+        }
+    } test_dep_list_fall_back_never;
+
+    /**
+     * \test Test DepList fall back as needed.
+     */
+    struct DepListTestCaseFallBackAsNeeded : TestCase
+    {
+        DepListTestCaseFallBackAsNeeded() : TestCase("dep list fall back as needed") { }
+
+        void run()
+        {
+            TestEnvironment env;
+
+            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            env.package_database()->add_repository(repo);
+            repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two";
+
+            FakeInstalledRepository::Pointer installed_repo(
+                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+            env.package_database()->add_repository(installed_repo);
+            installed_repo->add_version("cat", "two", "2");
+
+            DepList d(&env, DepListOptions());
+            d.options.fall_back = dl_fall_back_as_needed;
+            d.add(PortageDepParser::parse("cat/one"));
+            d.add(PortageDepParser::parse("cat/two"));
+            TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "), "cat/two-2:0::installed_repo cat/one-1:0::repo");
+        }
+    } test_dep_list_fall_back_as_needed;
+
+    /**
+     * \test Test DepList fall back as needed.
+     */
+    struct DepListTestCaseFallBackAsNeededNotTargets : TestCase
+    {
+        DepListTestCaseFallBackAsNeededNotTargets() : TestCase("dep list fall back as needed not targets") { }
+
+        void run()
+        {
+            TestEnvironment env;
+
+            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            env.package_database()->add_repository(repo);
+            repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two";
+
+            FakeInstalledRepository::Pointer installed_repo(
+                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+            env.package_database()->add_repository(installed_repo);
+            installed_repo->add_version("cat", "two", "2");
+            installed_repo->add_version("cat", "three", "3");
+
+            DepList d1(&env, DepListOptions());
+            d1.options.fall_back = dl_fall_back_as_needed_except_targets;
+            d1.add(PortageDepParser::parse("cat/one"));
+            TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/two-2:0::installed_repo cat/one-1:0::repo");
+            TEST_CHECK_THROWS(d1.add(PortageDepParser::parse("cat/three")), DepListError);
+
+            DepList d2(&env, DepListOptions());
+            d2.options.fall_back = dl_fall_back_as_needed_except_targets;
+            TEST_CHECK_THROWS(d2.add(PortageDepParser::parse("cat/two")), DepListError);
+
+            DepList d3(&env, DepListOptions());
+            d3.options.fall_back = dl_fall_back_as_needed_except_targets;
+            TEST_CHECK_THROWS(d3.add(PortageDepParser::parse("( cat/one cat/two )")), DepListError);
+
+            DepList d4(&env, DepListOptions());
+            d4.options.fall_back = dl_fall_back_as_needed_except_targets;
+            TEST_CHECK_THROWS(d4.add(PortageDepParser::parse("( cat/one cat/three )")), DepListError);
+        }
+    } test_dep_list_fall_back_as_needed_not_targets;
+
+    /**
+     * \test Test DepList upgrade as needed.
+     */
+    struct DepListTestCaseUpgradeAsNeeded : TestCase
+    {
+        DepListTestCaseUpgradeAsNeeded() : TestCase("dep list upgrade as needed") { }
+
+        void run()
+        {
+            TestEnvironment env;
+
+            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            env.package_database()->add_repository(repo);
+            repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two";
+            repo->add_version("cat", "two", "2");
+
+            FakeInstalledRepository::Pointer installed_repo(
+                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+            env.package_database()->add_repository(installed_repo);
+            installed_repo->add_version("cat", "two", "0");
+
+            DepList d1(&env, DepListOptions());
+            d1.options.upgrade = dl_upgrade_as_needed;
+            d1.add(PortageDepParser::parse("cat/one"));
+            TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/two-0:0::installed_repo cat/one-1:0::repo");
+
+            DepList d2(&env, DepListOptions());
+            d2.options.upgrade = dl_upgrade_as_needed;
+            d2.add(PortageDepParser::parse("( cat/one cat/two )"));
+            TEST_CHECK_EQUAL(join(d2.begin(), d2.end(), " "), "cat/two-2:0::repo cat/one-1:0::repo");
+        }
+    } test_dep_list_upgrade_as_needed;
 }
 

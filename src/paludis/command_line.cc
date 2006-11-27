@@ -173,6 +173,13 @@ CommandLine::CommandLine() :
             ("discard",       "Discard"),
             "error"),
 
+    dl_fall_back(&dl_args, "dl-fall-back", '\0', "When to fall back to installed packages",
+            paludis::args::EnumArg::EnumArgOptions
+            ("as-needed-except-targets", "Where necessary, but not for target packages")
+            ("as-needed",                "Where necessary, including for target packages")
+            ("never",                    "Never"),
+            "as-needed"),
+
     list_args(this, "List options",
             "Options relevant for one or more of the --list actions."),
     a_repository(&list_args, "repository", '\0', "Matches with this repository name only"),

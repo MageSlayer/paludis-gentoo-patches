@@ -59,6 +59,18 @@ namespace paludis
     };
 
     /**
+     * When can we fall back to installed?
+     *
+     * \ingroup grpdepresolver
+     */
+    enum DepListFallBackOption
+    {
+        dl_fall_back_as_needed_except_targets,
+        dl_fall_back_as_needed,
+        dl_fall_back_never
+    };
+
+    /**
      * When should we reinstall scm.
      *
      * \ingroup grpdepresolver
@@ -266,6 +278,7 @@ namespace paludis
             void add_already_installed_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
             void add_predeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
             void add_postdeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
+            bool is_top_level_target(const PackageDatabaseEntry &) const;
 
         public:
             ///\name Basic operations

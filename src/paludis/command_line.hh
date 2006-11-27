@@ -219,6 +219,8 @@ class CommandLine :
 
         paludis::args::EnumArg dl_circular;
 
+        paludis::args::EnumArg dl_fall_back;
+
         /// }
 
         /// \name List arguments

@@ -748,6 +748,18 @@ do_install()
             throw DoHelp("bad value for --dl-circular");
     }
 
+    if (CommandLine::get_instance()->dl_fall_back.specified())
+    {
+        if (CommandLine::get_instance()->dl_fall_back.argument() == "as-needed-except-targets")
+            options.fall_back = dl_fall_back_as_needed_except_targets;
+        else if (CommandLine::get_instance()->dl_fall_back.argument() == "as-needed")
+            options.fall_back = dl_fall_back_as_needed;
+        else if (CommandLine::get_instance()->dl_fall_back.argument() == "never")
+            options.fall_back = dl_fall_back_never;
+        else
+            throw DoHelp("bad value for --dl-fall-back");
+    }
+
     if (CommandLine::get_instance()->dl_installed_deps_pre.specified())
         options.installed_deps_pre = enum_arg_to_dep_list_deps_option(
                 CommandLine::get_instance()->dl_installed_deps_pre);

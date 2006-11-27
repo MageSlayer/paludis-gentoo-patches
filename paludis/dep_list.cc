@@ -70,6 +70,7 @@ DepListOptions::DepListOptions() :
     reinstall_scm(dl_reinstall_scm_never),
     target_type(dl_target_package),
     upgrade(dl_upgrade_always),
+    fall_back(dl_fall_back_as_needed_except_targets),
     installed_deps_pre(dl_deps_discard),
     installed_deps_runtime(dl_deps_try_post),
     installed_deps_post(dl_deps_try_post),
@@ -98,6 +99,8 @@ namespace paludis
         MergeList::iterator merge_list_insert_position;
         long merge_list_generation;
 
+        DepAtom::ConstPointer current_top_level_target;
+
         const PackageDatabaseEntry * current_pde() const
         {
             if (current_merge_list_entry != merge_list.end())
@@ -110,7 +113,8 @@ namespace paludis
             opts(o),
             current_merge_list_entry(merge_list.end()),
             merge_list_insert_position(merge_list.end()),
-            merge_list_generation(0)
+            merge_list_generation(0),
+            current_top_level_target(0)
         {
         }
     };
@@ -416,7 +420,34 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
      * package targets), otherwise error. */
     if (! best_visible_candidate)
     {
-        if (already_installed->empty())
+        bool can_fall_back;
+        do
+        {
+            switch (d->_imp->opts.fall_back)
+            {
+                case dl_fall_back_never:
+                    can_fall_back = false;
+                    continue;
+
+                case dl_fall_back_as_needed_except_targets:
+                    if (! d->_imp->current_pde())
+                        can_fall_back = false;
+                    else if (already_installed->empty())
+                        can_fall_back = true;
+                    else
+                        can_fall_back = ! d->is_top_level_target(*already_installed->last());
+
+                    continue;
+
+                case dl_fall_back_as_needed:
+                    can_fall_back = true;
+                    continue;
+            }
+
+            throw InternalError(PALUDIS_HERE, "Bad fall_back value '" + stringify(d->_imp->opts.fall_back) + "'");
+        } while (false);
+
+        if (already_installed->empty() || ! can_fall_back)
         {
             if (a->use_requirements_ptr() && d->_imp->env->package_database()->query(
                         a->without_use_requirements(), is_either))
@@ -426,7 +457,6 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         }
         else
         {
-            // todo: top level
             Log::get_instance()->message(ll_warning, lc_context, "No visible packages matching '"
                     + stringify(*a) + "', falling back to installed package '"
                     + stringify(*already_installed->last()) + "'");
@@ -579,7 +609,8 @@ DepList::~DepList()
 void
 DepList::clear()
 {
-    _imp.assign(new Implementation<DepList>(_imp->env, _imp->opts));
+    DepListOptions o(options);
+    _imp.assign(new Implementation<DepList>(_imp->env, o));
 }
 
 void
@@ -593,6 +624,10 @@ void
 DepList::add(DepAtom::ConstPointer atom)
 {
     DepListTransaction transaction(_imp->merge_list, _imp->merge_list_generation);
+
+    Save<DepAtom::ConstPointer> save_current_top_level_target(&_imp->current_top_level_target,
+            _imp->current_top_level_target ? _imp->current_top_level_target : atom);
+
     AddVisitor visitor(this);
     atom->accept(&visitor);
     transaction.commit();
@@ -776,9 +811,25 @@ bool
 DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installed,
         const PackageDatabaseEntry & uninstalled)
 {
-    if (dl_target_package == _imp->opts.target_type)
-        if (! _imp->current_pde())
-            return false;
+    do
+    {
+        switch (_imp->opts.target_type)
+        {
+            case dl_target_package:
+                if (! _imp->current_pde())
+                    return false;
+
+                if (is_top_level_target(uninstalled))
+                    return false;
+
+                continue;
+
+            case dl_target_set:
+                continue;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad target_type value '" + stringify(_imp->opts.target_type) + "'");
+    } while (false);
 
     if (dl_reinstall_always == _imp->opts.reinstall)
             return false;
@@ -871,5 +922,86 @@ DepList::Iterator
 DepList::end() const
 {
     return Iterator(_imp->merge_list.end());
+}
+
+namespace
+{
+    struct IsTopLevelTarget :
+        DepAtomVisitorTypes::ConstVisitor,
+        std::unary_function<PackageDatabaseEntry, bool>
+    {
+        const Environment * const env;
+        DepAtom::ConstPointer target;
+        const PackageDatabaseEntry * dbe;
+        bool matched;
+
+        IsTopLevelTarget(const Environment * const e, DepAtom::ConstPointer t) :
+            env(e),
+            target(t),
+            matched(false)
+        {
+        }
+
+        bool operator() (const PackageDatabaseEntry & e)
+        {
+            dbe = &e;
+            matched = false;
+            target->accept(this);
+            return matched;
+        }
+
+        void visit(const AllDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const PackageDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            if (match_package(env, a, *dbe))
+                matched = true;
+        }
+
+        void visit(const UseDepAtom * const u)
+        {
+            if (matched)
+                return;
+
+            std::for_each(u->begin(), u->end(), accept_visitor(this));
+        }
+
+        void visit(const AnyDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const BlockDepAtom * const)
+        {
+        }
+
+        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+        }
+    };
+
+}
+
+bool
+DepList::is_top_level_target(const PackageDatabaseEntry & e) const
+{
+    if (! _imp->current_top_level_target)
+        throw InternalError(PALUDIS_HERE, "current_top_level_target not set?");
+
+    IsTopLevelTarget t(_imp->env, _imp->current_top_level_target);
+    return t(e);
 }
 

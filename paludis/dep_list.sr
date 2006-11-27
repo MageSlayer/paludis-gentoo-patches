@@ -7,6 +7,7 @@ make_class_DepListOptions()
     key reinstall_scm DepListReinstallScmOption
     key target_type DepListTargetType
     key upgrade DepListUpgradeOption
+    key fall_back DepListFallBackOption
 
     key installed_deps_pre DepListDepsOption
     key installed_deps_runtime DepListDepsOption
