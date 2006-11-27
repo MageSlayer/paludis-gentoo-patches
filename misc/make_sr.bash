@@ -189,11 +189,6 @@ while read a ; do
         done
         echo "            );"
         echo
-        echo "        ${a}(const ${a} & other);"
-        echo
-        echo "        const ${a} & operator= (const ${a} & other);"
-        echo
-        echo "        ~${a}();"
 
         make_class_${a}
 
@@ -440,33 +435,6 @@ while read a ; do
                 echo
             fi
         done
-        echo "{"
-        echo "}"
-        echo
-
-        echo "${a}::${a}(const ${a} & other) :"
-        for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-            echo -n "    ${want_keys[${k}]}(other.${want_keys[${k}]})"
-            if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
-                echo ","
-            else
-                echo
-            fi
-        done
-        echo "{"
-        echo "}"
-        echo
-
-        echo "const ${a} &"
-        echo "${a}::operator= (const ${a} & other)"
-        echo "{"
-        for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-            echo "    ${want_keys[${k}]} = other.${want_keys[${k}]};"
-        done
-        echo "    return *this;"
-        echo "}"
-
-        echo "${a}::~${a}()"
         echo "{"
         echo "}"
         echo
