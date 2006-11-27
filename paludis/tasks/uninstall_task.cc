@@ -196,6 +196,9 @@ UninstallTask::execute()
 
     for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
     {
+        if (i->skip_uninstall)
+            continue;
+
         std::string cpvr(stringify(i->package));
 
         _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr));

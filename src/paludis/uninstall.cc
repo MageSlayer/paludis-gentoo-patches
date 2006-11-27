@@ -76,6 +76,9 @@ namespace
 
             virtual void on_display_unmerge_list_entry(const UninstallListEntry & d)
             {
+                if (d.skip_uninstall)
+                    return;
+
                 cout << "* " << colour(cl_package_name, stringify(d.package)) << endl;
                 ++_count;
             }

@@ -25,6 +25,7 @@ END
 make_class_UninstallListEntry()
 {
     key package PackageDatabaseEntry
+    key skip_uninstall bool
 
     allow_named_args
 

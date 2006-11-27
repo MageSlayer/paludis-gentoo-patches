@@ -234,11 +234,10 @@ UninstallList::add_package(const PackageDatabaseEntry & e)
 {
     Context context("When adding package '" + stringify(e) + "' to the uninstall list:");
 
-    if (! _imp->env->package_database()->fetch_repository(e.repository)->has_version(e.name, e.version))
-        throw InternalError(PALUDIS_HERE, "Trying to add '" + stringify(e) +
-                "' to UninstallList but has_version failed");
+    VersionMetadata::ConstPointer m(_imp->env->package_database()->fetch_repository(
+                e.repository)->version_metadata(e.name, e.version));
 
-    _imp->uninstall_list.push_back(UninstallListEntry(e));
+    _imp->uninstall_list.push_back(UninstallListEntry(e, m->get_virtual_interface()));
 }
 
 void
