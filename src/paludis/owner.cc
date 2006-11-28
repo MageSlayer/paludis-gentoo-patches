@@ -75,11 +75,12 @@ namespace
     };
 }
 
-void
+int
 do_one_owner(
         const p::Environment * const env,
         const std::string & query)
 {
+    bool found_owner=false;
     cout << "* " << colour(cl_package_name, query) << endl;
 
     for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
@@ -106,13 +107,17 @@ do_one_owner(
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
                     std::for_each(contents->begin(), contents->end(), accept_visitor(&d));
                     if (d.found)
+                    {
                         cout << "    " << e << endl;
+                        found_owner=true;
+                    }
                 }
             }
         }
     }
 
     cout << endl;
+    return found_owner ? 0 : 1;
 }
 
 
@@ -126,7 +131,7 @@ do_owner()
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());
     for ( ; q != q_end ; ++q)
-        do_one_owner(env, *q);
+        return_code |= do_one_owner(env, *q);
 
     return return_code;
 }
