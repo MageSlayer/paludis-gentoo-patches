@@ -106,6 +106,13 @@ MetadataFile::MetadataFile(const std::string & text) :
     _imp->handle_node(xml_doc, xmlDocGetRootElement(xml_doc));
 }
 
+MetadataFile::MetadataFile(const MetadataFile & other) :
+    PrivateImplementationPattern<MetadataFile>(new Implementation<MetadataFile>)
+{
+    _imp->herds = other._imp->herds;
+    _imp->maintainers = other._imp->maintainers;
+}
+
 MetadataFile::~MetadataFile()
 {
 }

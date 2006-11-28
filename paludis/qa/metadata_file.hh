@@ -40,6 +40,7 @@ namespace paludis
             public:
                 MetadataFile(const FSEntry & location);
                 MetadataFile(const std::string & text);
+                MetadataFile(const MetadataFile & other);
                 ~MetadataFile();
 
                 typedef libwrapiter::ForwardIterator<MetadataFile, const std::string> HerdsIterator;
