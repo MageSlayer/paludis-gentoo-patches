@@ -226,7 +226,7 @@ perform_hook()
             if ! ( source "${hook_file}" ) ; then
                 ebuild_notice "warning" "Hook '${hook_file}' returned failure"
             else
-                ebuild_notice "warning" "Hook '${hook_file}' returned success"
+                ebuild_notice "debug" "Hook '${hook_file}' returned success"
             fi
         done
     done
