@@ -14,7 +14,6 @@
  */
 
 #include <paludis/dep_atom.hh>
-#include <paludis/dep_list.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/attributes.hh>
 
@@ -37,17 +36,6 @@ namespace paludis
                 const PackageDepAtom * const atom,
                 const PackageDatabaseEntry * const entry)
             PALUDIS_ATTRIBUTE((nonnull(1, 2, 3)));
-
-        /**
-         * Do the match on a DepListEntry.
-         *
-         * \ingroup grpmatchpackage
-         */
-        bool do_match(
-                const Environment * const env,
-                const PackageDepAtom * const atom,
-                const DepListEntry * const entry)
-            PALUDIS_ATTRIBUTE((nonnull(2, 3)));
 
         /**
          * Normalise env type.

@@ -209,7 +209,7 @@ namespace
 
         bool operator() (const DepListEntry & e)
         {
-            return match_package(env, a, e);
+            return match_package(env, a, e.package);
         }
     };
 
