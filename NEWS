@@ -4,6 +4,66 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.10.0:
+    * Uninstall with dependencies and uninstalling unused packages is now
+    supported.
+
+    * SCM (CVS, subversion, ...) packages can now be flagged for reinstall after
+    a given period of time.
+
+    * Paludis now has options for automatically making debug or split debug
+    builds.
+
+    * The resume command can now be written to a file.
+
+    * Cache can be written to a named directory.
+
+    * Various ebuild compatibility tweaks.
+
+    * When to fall back to installed packages to resolve a dependency is now
+    configurable.
+
+    * Users can define their own fetchers.
+
+0.8.4:
+    * With 0.8.3, 'make doxygen' at top level would fail. This is now fixed.
+
+0.8.3:
+    * More work on the Ruby interface.
+
+    * paludis --query now always shows SLOT information.
+
+    * qualudis now has a --quiet option and checks for certain illegal variable
+    assignments.
+
+    * Old-style virtual packages are no longer displayed in dep lists.
+
+    * Bash 3.2's different =~ syntax is now supported.
+
+    * PALUDIS_OPTIONS now only applies to paludis. ADJUTRIX_OPTIONS etc can be
+    used for other clients.
+
+0.8.2:
+    * Lots of documentation updates. A new "Programming with Paludis" document
+    is available.
+
+    * NoConfigEnvironment, and by extension adjutrix, can now work with VDB
+    repositories where appropriate.
+
+    * More work on the Ruby interface.
+
+    * Various minor Portage compatibility tweaks.
+
+0.8.1:
+    * Various autotools-related bugs are fixed. The Ruby Paludis.so should now
+    be built and installed correctly on most systems.
+
+    * A -blah in profile files now removes all blah lines, rather than just the
+    first.
+
+    * Pre-0.8 command line options are now available again, marked as
+    deprecated.
+
 0.8.0:
     * A Ruby interface is now available.
 
