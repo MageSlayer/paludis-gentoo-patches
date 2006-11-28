@@ -24,7 +24,7 @@ automake-deps-dist-hack.tmp :
 	touch $@
 
 dist-hook :
-	rm $(distdir)/automake-deps-hack.tmp
+	rm $(distdir)/automake-deps-dist-hack.tmp
 
 doxygen :
 	$(MAKE) -C doc doxygen
