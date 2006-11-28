@@ -160,21 +160,26 @@ UninstallList::~UninstallList()
 }
 
 void
-UninstallList::add(const PackageDatabaseEntry & e)
+UninstallList::add(const PackageDatabaseEntry & e, const PackageDatabaseEntry * const t)
 {
-    if (_imp->uninstall_list.end() != std::find_if(_imp->uninstall_list.begin(),
-                _imp->uninstall_list.end(), MatchUninstallListEntry(e)))
+    std::list<UninstallListEntry>::iterator i;
+    if (_imp->uninstall_list.end() != ((i = std::find_if(_imp->uninstall_list.begin(),
+                        _imp->uninstall_list.end(), MatchUninstallListEntry(e)))))
+    {
+        if (t)
+            i->tags->insert(DepTag::Pointer(new DependencyDepTag(*t)));
+
         return;
+    }
 
     Context context("When adding '" + stringify(e) + "' to the uninstall list:");
 
-    add_package(e);
+    add_package(e, t);
 
     if (_imp->options.with_dependencies)
         add_dependencies(e);
 
-    remove_package(e);
-    add_package(e);
+    move_package_to_end(e);
 
     if (_imp->options.with_unused_dependencies)
         add_unused_dependencies();
@@ -208,7 +213,7 @@ UninstallList::add_unused()
 
     for (PackageDatabaseEntryCollection::Iterator i(unused->begin()),
             i_end(unused->end()) ; i != i_end ; ++i)
-        add_package(*i);
+        add_package(*i, 0);
 }
 
 UninstallList::Iterator
@@ -230,25 +235,30 @@ UninstallListOptions::UninstallListOptions() :
 }
 
 void
-UninstallList::add_package(const PackageDatabaseEntry & e)
+UninstallList::add_package(const PackageDatabaseEntry & e, const PackageDatabaseEntry * t)
 {
     Context context("When adding package '" + stringify(e) + "' to the uninstall list:");
 
     VersionMetadata::ConstPointer m(_imp->env->package_database()->fetch_repository(
                 e.repository)->version_metadata(e.name, e.version));
 
-    _imp->uninstall_list.push_back(UninstallListEntry(e, m->get_virtual_interface()));
+    std::list<UninstallListEntry>::iterator i(_imp->uninstall_list.insert(
+                _imp->uninstall_list.end(), UninstallListEntry(
+                    e, m->get_virtual_interface(), SortedCollection<DepTag::Pointer>::Pointer(
+                        new SortedCollection<DepTag::Pointer>::Concrete))));
+    if (t)
+        i->tags->insert(DepTag::Pointer(new DependencyDepTag(*t)));
 }
 
 void
-UninstallList::remove_package(const PackageDatabaseEntry & e)
+UninstallList::move_package_to_end(const PackageDatabaseEntry & e)
 {
     Context context("When removing package '" + stringify(e) + "' from the uninstall list:");
 
     std::list<UninstallListEntry>::iterator i(std::find_if(_imp->uninstall_list.begin(),
                 _imp->uninstall_list.end(), MatchUninstallListEntry(e)));
     if (_imp->uninstall_list.end() != i)
-        _imp->uninstall_list.erase(i);
+        _imp->uninstall_list.splice(_imp->uninstall_list.end(), _imp->uninstall_list, i);
 }
 
 PackageDatabaseEntryCollection::ConstPointer
@@ -417,7 +427,7 @@ UninstallList::add_unused_dependencies()
                         _imp->uninstall_list.end(), MatchUninstallListEntry(*i)))
                 continue;
 
-            add_package(*i);
+            add_package(*i, 0);
             added = true;
         }
     }
@@ -454,7 +464,7 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
         Log::get_instance()->message(ll_debug, lc_context, "Adding '" + stringify(*i) +
                 "' because it depends upon '" + stringify(e) + "'");
 
-        add(*i);
+        add(*i, &e);
     }
 }
 

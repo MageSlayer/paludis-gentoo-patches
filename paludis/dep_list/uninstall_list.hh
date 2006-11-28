@@ -24,6 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/package_database_entry.hh>
+#include <paludis/dep_tag.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -38,8 +39,8 @@ namespace paludis
         public InstantiationPolicy<UninstallList, instantiation_method::NonCopyableTag>
     {
         private:
-            void add_package(const PackageDatabaseEntry &);
-            void remove_package(const PackageDatabaseEntry &);
+            void add_package(const PackageDatabaseEntry &, const PackageDatabaseEntry *);
+            void move_package_to_end(const PackageDatabaseEntry &);
             void add_unused_dependencies();
             void add_dependencies(const PackageDatabaseEntry &);
             PackageDatabaseEntryCollection::ConstPointer collect_depped_upon(
@@ -53,7 +54,7 @@ namespace paludis
 
             UninstallListOptions & options;
 
-            void add(const PackageDatabaseEntry &);
+            void add(const PackageDatabaseEntry &, const PackageDatabaseEntry * const = 0);
             void add_unused();
 
             typedef libwrapiter::ForwardIterator<UninstallList, const UninstallListEntry> Iterator;

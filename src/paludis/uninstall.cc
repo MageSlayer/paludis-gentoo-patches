@@ -77,10 +77,48 @@ namespace
             virtual void on_display_unmerge_list_entry(const UninstallListEntry & d)
             {
                 if (d.skip_uninstall)
-                    return;
+                    if (CommandLine::get_instance()->a_show_install_reasons.argument() != "full")
+                        return;
 
-                cout << "* " << colour(cl_package_name, stringify(d.package)) << endl;
+                cout << "* " << colour(d.skip_uninstall ? cl_unimportant : cl_package_name, stringify(d.package));
                 ++_count;
+
+                if ((CommandLine::get_instance()->a_show_install_reasons.argument() == "summary") ||
+                        (CommandLine::get_instance()->a_show_install_reasons.argument() == "full"))
+                {
+                    std::string deps;
+                    unsigned count(0), max_count;
+                    if (CommandLine::get_instance()->a_show_install_reasons.argument() == "summary")
+                        max_count = 3;
+                    else
+                        max_count = std::numeric_limits<long>::max();
+
+                    for (SortedCollection<DepTag::Pointer>::Iterator
+                            tag(d.tags->begin()),
+                            tag_end(d.tags->end()) ;
+                            tag != tag_end ; ++tag)
+                    {
+                        if ((*tag)->category() != "dependency")
+                            continue;
+
+                        if (++count < max_count)
+                        {
+                            deps.append((*tag)->short_text());
+                            deps.append(", ");
+                        }
+                    }
+                    if (! deps.empty())
+                    {
+                        if (count >= max_count)
+                            deps.append(stringify(count - max_count + 1) + " more, ");
+
+                        deps.erase(deps.length() - 2);
+                        cout << " " << colour(d.skip_uninstall ? cl_unimportant : cl_tag,
+                                "<" + deps + ">");
+                    }
+                }
+
+                cout << endl;
             }
 
             virtual void on_uninstall_all_pre()

@@ -3,8 +3,9 @@
 
 make_class_UninstallListOptions()
 {
-    key with_unused_dependencies bool;
-    key with_dependencies bool;
+    key with_unused_dependencies bool
+    key with_dependencies bool
+
     extra_constructors <<END
             UninstallListOptions();
 END
@@ -26,6 +27,7 @@ make_class_UninstallListEntry()
 {
     key package PackageDatabaseEntry
     key skip_uninstall bool
+    key tags "SortedCollection<DepTag::Pointer>::Pointer"
 
     allow_named_args
 
