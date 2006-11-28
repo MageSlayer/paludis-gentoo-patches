@@ -211,11 +211,18 @@ InstallTask::execute()
     }
 
     /* fetch / install our entire list */
+    int x(0), y(0);
+    for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
+            dep != dep_end ; ++dep)
+        if (! dep->skip_install)
+            ++y;
+
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
         if (dep->skip_install)
             continue;
+        ++x;
         _imp->current_dep_list_entry = dep;
 
         std::string cpvr(stringify(dep->package.name) + "-" +
@@ -225,12 +232,15 @@ InstallTask::execute()
         /* we're about to fetch / install one item */
         if (_imp->install_options.fetch_only)
         {
-            _imp->env->perform_hook(Hook("fetch_pre")("TARGET", cpvr));
+            _imp->env->perform_hook(Hook("fetch_pre")
+                    ("TARGET", cpvr)
+                    ("X_OF_Y", stringify(x) + " of " + stringify(y)));
             on_fetch_pre(*dep);
         }
         else
         {
-            _imp->env->perform_hook(Hook("install_pre")("TARGET", cpvr));
+            _imp->env->perform_hook(Hook("install_pre")("TARGET", cpvr)
+                    ("X_OF_Y", stringify(x) + " of " + stringify(y)));
             on_install_pre(*dep);
         }
 
@@ -255,12 +265,14 @@ InstallTask::execute()
         if (_imp->install_options.fetch_only)
         {
             on_fetch_post(*dep);
-            _imp->env->perform_hook(Hook("fetch_post")("TARGET", cpvr));
+            _imp->env->perform_hook(Hook("fetch_post")("TARGET", cpvr)
+                    ("X_OF_Y", stringify(x) + " of " + stringify(y)));
         }
         else
         {
             on_install_post(*dep);
-            _imp->env->perform_hook(Hook("install_post")("TARGET", cpvr));
+            _imp->env->perform_hook(Hook("install_post")("TARGET", cpvr)
+                    ("X_OF_Y", stringify(x) + " of " + stringify(y)));
         }
 
         if (_imp->install_options.fetch_only)
@@ -305,7 +317,8 @@ InstallTask::execute()
                     c_end(clean_list.end()) ; c != c_end ; ++c)
             {
                 /* clean one item */
-                _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", stringify(*c)));
+                _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", stringify(*c))
+                        ("X_OF_Y", stringify(x) + " of " + stringify(y)));
                 on_clean_pre(*dep, *c);
 
                 const RepositoryUninstallableInterface * const uninstall_interface(
@@ -325,7 +338,8 @@ InstallTask::execute()
                 }
 
                 on_clean_post(*dep, *c);
-                _imp->env->perform_hook(Hook("uninstall_post")("TARGET", stringify(*c)));
+                _imp->env->perform_hook(Hook("uninstall_post")("TARGET", stringify(*c))
+                        ("X_OF_Y", stringify(x) + " of " + stringify(y)));
             }
 
             /* we're done cleaning */

@@ -194,14 +194,21 @@ UninstallTask::execute()
                     _imp->raw_targets.end(), " ")));
     on_uninstall_all_pre();
 
+    int x(0), y(0);
+    for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
+        if (! i->skip_uninstall)
+            ++y;
+
     for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
     {
         if (i->skip_uninstall)
             continue;
+        ++x;
 
         std::string cpvr(stringify(i->package));
 
-        _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr));
+        _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr)
+                ("X_OF_Y", stringify(x) + " of " + stringify(y)));
         on_uninstall_pre(*i);
 
         const RepositoryUninstallableInterface * const uninstall_interface(
@@ -221,7 +228,8 @@ UninstallTask::execute()
         }
 
         on_uninstall_post(*i);
-        _imp->env->perform_hook(Hook("uninstall_post")("TARGET", cpvr));
+        _imp->env->perform_hook(Hook("uninstall_post")("TARGET", cpvr)
+                ("X_OF_Y", stringify(x) + " of " + stringify(y)));
     }
 
     on_uninstall_all_post();

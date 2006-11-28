@@ -70,12 +70,15 @@ SyncTask::execute()
                     _imp->targets.end(), " ")));
     on_sync_all_pre();
 
+    int x(0), y(std::distance(_imp->targets.begin(), _imp->targets.end()));
     for (std::list<RepositoryName>::const_iterator r(_imp->targets.begin()), r_end(_imp->targets.end()) ;
             r != r_end ; ++r)
     {
         Context context_local("When syncing repository '" + stringify(*r) + "':");
+        ++x;
 
-        _imp->env->perform_hook(Hook("sync_pre")("TARGET", stringify(*r)));
+        _imp->env->perform_hook(Hook("sync_pre")("TARGET", stringify(*r))
+                ("X_OF_Y", stringify(x) + " of " + stringify(y)));
         on_sync_pre(*r);
 
         try
@@ -89,12 +92,14 @@ SyncTask::execute()
         }
         catch (const SyncFailedError & e)
         {
-            _imp->env->perform_hook(Hook("sync_fail")("TARGET", stringify(*r)));
+            _imp->env->perform_hook(Hook("sync_fail")("TARGET", stringify(*r))
+                    ("X_OF_Y", stringify(x) + " of " + stringify(y)));
             on_sync_fail(*r, e);
         }
 
         on_sync_post(*r);
-        _imp->env->perform_hook(Hook("sync_post")("TARGET", stringify(*r)));
+        _imp->env->perform_hook(Hook("sync_post")("TARGET", stringify(*r))
+                    ("X_OF_Y", stringify(x) + " of " + stringify(y)));
     }
 
     on_sync_all_post();

@@ -19,16 +19,18 @@
 
 mkdir -p "${ROOT}/var/log"
 
+X_OF_Y="${X_OF_Y+ (${X_OF_Y})}"
+
 (
     echo -n "$(date +%s ): "
 
     case "${HOOK}" in
         install_pre)
-            echo "starting install of package ${TARGET}"
+            echo "starting install of package ${TARGET}${X_OF_Y}"
         ;;
 
         install_post)
-            echo "finished install of package ${TARGET}"
+            echo "finished install of package ${TARGET}${X_OF_Y}"
         ;;
 
         install_all_pre)
@@ -40,11 +42,11 @@ mkdir -p "${ROOT}/var/log"
         ;;
 
         uninstall_pre)
-            echo "starting uninstall of package ${TARGET}"
+            echo "starting uninstall of package ${TARGET}${X_OF_Y}"
         ;;
 
         uninstall_post)
-            echo "finished uninstall of package ${TARGET}"
+            echo "finished uninstall of package ${TARGET}${X_OF_Y}"
         ;;
 
         uninstall_all_pre)
@@ -56,11 +58,11 @@ mkdir -p "${ROOT}/var/log"
         ;;
 
         fetch_pre)
-            echo "starting fetch of package ${TARGET}"
+            echo "starting fetch of package ${TARGET}${X_OF_Y}"
         ;;
 
         fetch_post)
-            echo "finished fetch of package ${TARGET}"
+            echo "finished fetch of package ${TARGET}${X_OF_Y}"
         ;;
 
         fetch_all_pre)
@@ -72,11 +74,11 @@ mkdir -p "${ROOT}/var/log"
         ;;
 
         sync_pre)
-            echo "starting sync of repository ${TARGET}"
+            echo "starting sync of repository ${TARGET}${X_OF_Y}"
         ;;
 
         sync_post)
-            echo "finished sync of repository ${TARGET}"
+            echo "finished sync of repository ${TARGET}${X_OF_Y}"
         ;;
 
         *)
