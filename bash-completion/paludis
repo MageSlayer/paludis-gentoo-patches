@@ -32,14 +32,12 @@ _paludis() {
         --list-sync-protocols \
         --list-repository-formats \
         --list-dep-tag-categories \
-        --list-vulnerabilities \
         --update-news \
         --log-level \
         --no-colour \
         --no-color \
         --config-suffix -c \
         --resume-command-template \
-        --show-slot -S \
         --show-deps -D \
         --show-metadata -M \
         --pretend -p \
@@ -60,6 +58,7 @@ _paludis() {
         --dl-uninstalled-deps-runtime \
         --dl-uninstalled-deps-post \
         --dl-circular \
+        --dl-fall-back \
         --repository \
         --category \
         --package \
@@ -104,6 +103,10 @@ _paludis() {
                     ;;
                 --dl-circular)
                     COMPREPLY=($(compgen -W "error discard" -- "${cur}"))
+                    return 0
+                    ;;
+                --dl-fall-back)
+                    COMPREPLY=($(compgen -W "as-needed-except-targets as-needed never" -- "${cur}"))
                     return 0
                     ;;
                 ## list specifiers
