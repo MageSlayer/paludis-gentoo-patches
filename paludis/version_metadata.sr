@@ -39,9 +39,29 @@ END
 END
 }
 
+make_class_VersionMetadataOrigins()
+{
+    key "source" "CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>"
+    key "binary" "CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>"
+
+    extra_constructors <<END
+            VersionMetadataOrigins();
+END
+
+    doxygen_comment << "END"
+        /**
+         * Origins data for VersionMetadata.
+         *
+         * \see VersionMetadata
+         * \ingroup grpversions
+         */
+END
+}
+
 make_class_VersionMetadataBase()
 {
     key deps VersionMetadataDeps
+    key origins VersionMetadataOrigins
     key slot SlotName
     key license_string std::string
     key eapi std::string

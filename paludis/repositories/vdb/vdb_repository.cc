@@ -427,6 +427,11 @@ namespace paludis
         }
         p->metadata->slot = SlotName(slot);
 
+        std::string repo(file_contents(location, p->name, p->version, "REPOSITORY"));
+        if (! repo.empty())
+            p->metadata->origins.source.assign(new PackageDatabaseEntry(p->name, p->version,
+                        RepositoryName(repo)));
+
         std::string raw_use(file_contents(location, p->name, p->version, "USE"));
         p->use.clear();
         WhitespaceTokeniser::get_instance()->tokenise(raw_use,

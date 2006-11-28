@@ -258,6 +258,13 @@ void do_one_package_query(
             }
         }
 
+        if (metadata->origins.source)
+            cout << "    " << std::setw(22) << std::left << "Source origin:" << std::setw(0)
+                << " " << colour(cl_package_name, *metadata->origins.source) << endl;
+        if (metadata->origins.binary)
+            cout << "    " << std::setw(22) << std::left << "Binary origin:" << std::setw(0)
+                << " " << colour(cl_package_name, *metadata->origins.binary) << endl;
+
         if (metadata->get_ebuild_interface())
         {
             if (! metadata->get_ebuild_interface()->provide_string.empty())

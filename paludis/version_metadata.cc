@@ -87,6 +87,7 @@ VersionMetadata::VersionMetadata(ParserFunction p) :
     VersionMetadataBase(VersionMetadataBase::create()
             .slot(SlotName("unset"))
             .deps(VersionMetadataDeps(p))
+            .origins(VersionMetadataOrigins())
             .homepage("")
             .license_string("")
             .description("")
@@ -106,6 +107,7 @@ VersionMetadata::VersionMetadata(ParserFunction p,
     VersionMetadataBase(VersionMetadataBase::create()
             .slot(SlotName("unset"))
             .deps(VersionMetadataDeps(p))
+            .origins(VersionMetadataOrigins())
             .homepage("")
             .license_string("")
             .description("")
@@ -150,6 +152,12 @@ VersionMetadata::license() const
 VersionMetadata::Virtual::Virtual(ParserFunction p, const PackageDatabaseEntry & e) :
     VersionMetadata(p, 0, 0, 0, &_v),
     _v(e)
+{
+}
+
+VersionMetadataOrigins::VersionMetadataOrigins() :
+    source(0),
+    binary(0)
 {
 }
 
