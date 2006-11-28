@@ -1,4 +1,8 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
+DISTCLEANFILES = \
+	use_config_entry-sr.hh use_config_entry-sr.cc \
+	repository_config_entry-sr.hh repository_config_entry-sr.cc
+BUILT_SOURCES = $(DISTCLEANFILES)
 MAINTAINERCLEANFILES = Makefile.in
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
@@ -18,12 +22,19 @@ libpaludisdefaultenvironment_la_LIBADD = \
 
 lib_LTLIBRARIES = libpaludisdefaultenvironment.la
 paludis_environment_default_includedir = $(includedir)/paludis/environment/default
-paludis_environment_default_include_HEADERS = default_config.hh default_environment.hh
+paludis_environment_default_include_HEADERS = \
+	default_config.hh \
+	default_environment.hh \
+	use_config_entry-sr.hh \
+	repository_config_entry-sr.hh
 
 EXTRA_DIST = \
 	default_environment_TEST_setup.sh \
 	default_environment_TEST.cc \
-	default_environment_TEST_cleanup.sh
+	default_environment_TEST_cleanup.sh \
+	$(BUILT_SOURCES) \
+	use_config_entry.sr \
+	repository_config_entry.sr
 
 TESTS = default_environment_TEST
 
@@ -48,4 +59,15 @@ default_environment_TEST_LDADD = \
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
+use_config_entry-sr.hh : use_config_entry.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/use_config_entry.sr > $@
+
+use_config_entry-sr.cc : use_config_entry.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/use_config_entry.sr > $@
+
+repository_config_entry-sr.hh : repository_config_entry.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/repository_config_entry.sr > $@
+
+repository_config_entry-sr.cc : repository_config_entry.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/repository_config_entry.sr > $@
 

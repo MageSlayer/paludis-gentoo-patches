@@ -131,7 +131,7 @@ namespace paludis
      */
     typedef SortedCollection<CategoryNamePart> CategoryNamePartCollection;
 
-#include <paludis/qualified_package_name-sr.hh>
+#include <paludis/name-sr.hh>
 
     /**
      * Output a QualifiedPackageName to a stream.

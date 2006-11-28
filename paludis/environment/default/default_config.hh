@@ -64,8 +64,8 @@ namespace paludis
             DefaultConfigError(const std::string & msg) throw ();
     };
 
-#include <paludis/repository_config_entry-sr.hh>
-#include <paludis/use_config_entry-sr.hh>
+#include <paludis/environment/default/use_config_entry-sr.hh>
+#include <paludis/environment/default/repository_config_entry-sr.hh>
 
     /**
      * DefaultConfig is used by DefaultEnvironment to access the user's

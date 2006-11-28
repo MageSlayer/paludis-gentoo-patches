@@ -30,7 +30,7 @@
 
 using namespace paludis;
 
-#include <paludis/qualified_package_name-sr.cc>
+#include <paludis/name-sr.cc>
 
 QualifiedPackageNameError::QualifiedPackageNameError(const std::string & s) throw () :
     NameError(s, "qualified package name")

@@ -48,8 +48,8 @@
 
 using namespace paludis;
 
-#include <paludis/repository_config_entry-sr.cc>
-#include <paludis/use_config_entry-sr.cc>
+#include <paludis/environment/default/use_config_entry-sr.cc>
+#include <paludis/environment/default/repository_config_entry-sr.cc>
 
 namespace paludis
 {
