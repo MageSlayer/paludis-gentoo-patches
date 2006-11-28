@@ -116,7 +116,7 @@ namespace paludis
             std::string revision_only() const;
 
             /**
-             * Are we an -scm package?
+             * Are we an -scm package, or something pretending to be one?
              */
             bool is_scm() const;
 

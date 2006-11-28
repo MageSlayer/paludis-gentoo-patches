@@ -397,9 +397,26 @@ paludis::operator<< (std::ostream & s, const VersionSpec & v)
 bool
 VersionSpec::is_scm() const
 {
-    std::vector<Part>::const_iterator r(std::find_if(_imp->parts.begin(),
-                _imp->parts.end(), IsPart<scm>()));
+    std::vector<Part>::const_iterator r;
 
-    return r != _imp->parts.end();
+    if (_imp->parts.empty())
+        return false;
+
+    /* are we an obvious scm version? */
+    r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<scm>());
+    if (r != _imp->parts.end())
+        return true;
+
+    /* are we a -r9999? */
+    r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<revision>());
+    if (r != _imp->parts.end())
+        if (r->value == 9999)
+            return true;
+
+    /* is our version without revisions exactly 9999? */
+    if (remove_revision() == VersionSpec("9999"))
+        return true;
+
+    return false;
 }
 

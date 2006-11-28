@@ -807,6 +807,21 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::C
     add_postdeps(metadata->deps.post_depend(), _imp->opts.installed_deps_post, "post");
 }
 
+namespace
+{
+    bool is_scm(const QualifiedPackageName & n)
+    {
+        std::string pkg(stringify(n.package));
+        if (pkg.length() < 5)
+            return false;
+        if (0 == pkg.compare(pkg.length() - 4, 4, "-cvs"))
+            return true;
+        if (0 == pkg.compare(pkg.length() - 4, 4, "-svn"))
+            return true;
+        return false;
+    }
+}
+
 bool
 DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installed,
         const PackageDatabaseEntry & uninstalled)
@@ -838,7 +853,8 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
         return true;
 
     if (dl_reinstall_scm_never != _imp->opts.reinstall_scm)
-        if (installed.version.is_scm() && uninstalled.version == installed.version)
+        if (uninstalled.version == installed.version &&
+                (installed.version.is_scm() || is_scm(installed.name)))
         {
             static time_t current_time(time(0)); /* static to avoid weirdness */
             time_t installed_time(_imp->env->package_database()->fetch_repository(installed.repository
