@@ -42,7 +42,12 @@ builtin_fetch()
                     ebuild_section "Need to fetch ${aa}"
                     old_aa="${aa}"
                 fi
-                prg="${PALUDIS_EBUILD_DIR}/fetchers/do$(echo ${a%%://*} )"
+                local d
+                for d in ${PALUDIS_FETCHERS_DIRS:-${PALUDIS_EBUILD_DIR}/fetchers/} ; do
+                    prg=${d}/do$(echo ${a%%://*} | tr '[:upper:]' '[:lower:]' )
+                    ebuild_notice "debug" "fetcher program candidate for '${a}' is '${prg}'"
+                    [[ -x "${prg}" ]] && break
+                done
                 if [[ -x "${prg}" ]] ; then
                     ${prg} "${a}" "${DISTDIR}/${aa}"
                 else

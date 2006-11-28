@@ -200,6 +200,13 @@ namespace paludis
             virtual std::string hook_dirs() const;
 
             /**
+             * Our fetchers directories.
+             *
+             * Default behaviour: user then paludis fetcher dirs.
+             */
+            virtual std::string fetchers_dirs() const;
+
+            /**
              * How to run paludis.
              */
             virtual std::string paludis_command() const = 0;

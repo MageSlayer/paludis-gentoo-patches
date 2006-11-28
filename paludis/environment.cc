@@ -444,6 +444,15 @@ Environment::hook_dirs() const
     return "";
 }
 
+std::string
+Environment::fetchers_dirs() const
+{
+    return
+        DATADIR "/paludis/fetchers" " "
+        LIBEXECDIR "/paludis/fetchers" " "
+        ;
+}
+
 namespace
 {
     static const std::multimap<std::string, std::string> environment_mirrors;
