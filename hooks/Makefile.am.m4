@@ -43,6 +43,7 @@ EXTRA_DIST = \
 	$(installhookcommonprog_SCRIPTS) \
 	$(installhookinstallallpost_SCRIPTS) \
 	$(installhookinstallpost_SCRIPTS) \
+	$(installhookebuildmergepre_SCRIPTS) \
 	$(TESTS)
 
 check_SCRIPTS = $(TESTS)
