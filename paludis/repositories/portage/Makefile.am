@@ -113,6 +113,7 @@ libpaludisportagerepositoryxmlthings_la_CXXFLAGS = @LIBXML2DEPS_CFLAGS@
 libpaludisportagerepositoryxmlthings_la_LIBADD = @LIBXML2DEPS_LIBS@ \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libxml/libpaludislibxml.la
+libpaludisportagerepositoryxmlthings_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 GLSA_TESTS = xml_things_TEST
 xml_things_TEST_SOURCES = xml_things_TEST.cc

@@ -30,6 +30,7 @@ libpaludislibxml_la_CXXFLAGS = @LIBXML2DEPS_CFLAGS@
 libpaludislibxml_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	@LIBXML2DEPS_LIBS@
+libpaludislibxml_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 endif
 
