@@ -602,8 +602,8 @@ namespace
 
         if (task.current_dep_list_entry() != task.dep_list().end())
         {
-            std::string resume_command = DefaultEnvironment::get_instance()->paludis_command() 
-                + " --dl-installed-deps-pre discard "
+            std::string resume_command = DefaultEnvironment::get_instance()->paludis_command() + " "
+                "--dl-installed-deps-pre discard "
                 "--dl-installed-deps-runtime discard "
                 "--dl-installed-deps-post discard "
                 "--dl-uninstalled-deps-pre discard "
@@ -617,7 +617,7 @@ namespace
                         + stringify(i->package.name) + "-"
                         + stringify(i->package.version) + "::"
                         + stringify(i->package.repository);
-            
+
             if (CommandLine::get_instance()->a_resume_command_template.specified())
             {
                 std::string file_name(CommandLine::get_instance()->a_resume_command_template.argument());
@@ -873,7 +873,7 @@ do_install()
                 cout << endl;
                 cerr << "Query error:" << endl;
                 cerr << "  * " << e.backtrace("\n  * ");
-                cerr << "All versions of '" << e.query() << "' are masked" << endl;
+                cerr << "No versions of '" << e.query() << "' are available" << endl;
             }
             else
             {
