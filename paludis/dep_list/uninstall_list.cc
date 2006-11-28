@@ -21,7 +21,7 @@
 
 using namespace paludis;
 
-#include <paludis/uninstall_list-sr.cc>
+#include <paludis/dep_list/uninstall_list-sr.cc>
 #include <paludis/environment.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/join.hh>

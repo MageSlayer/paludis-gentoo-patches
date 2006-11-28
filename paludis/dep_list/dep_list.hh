@@ -131,7 +131,7 @@ namespace paludis
         dle_has_all_deps     ///\< All dependencies have been added
     };
 
-#include <paludis/dep_list-sr.hh>
+#include <paludis/dep_list/dep_list-sr.hh>
 
     /**
      * Thrown if an error occurs whilst building a DepList.

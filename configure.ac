@@ -706,6 +706,7 @@ AC_OUTPUT(
 	paludis/Makefile
 	paludis/about.hh
 	paludis/args/Makefile
+	paludis/dep_list/Makefile
 	paludis/digests/Makefile
 	paludis/environment/Makefile
 	paludis/environment/default/Makefile

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_list.hh>
+#include <paludis/dep_list/dep_list.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>

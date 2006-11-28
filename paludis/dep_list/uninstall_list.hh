@@ -29,7 +29,7 @@
 
 namespace paludis
 {
-#include <paludis/uninstall_list-sr.hh>
+#include <paludis/dep_list/uninstall_list-sr.hh>
 
     class Environment;
 

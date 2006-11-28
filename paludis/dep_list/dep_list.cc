@@ -19,7 +19,7 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
-#include <paludis/dep_list.hh>
+#include <paludis/dep_list/dep_list.hh>
 #include <paludis/match_package.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
@@ -36,7 +36,7 @@
 
 using namespace paludis;
 
-#include <paludis/dep_list-sr.cc>
+#include <paludis/dep_list/dep_list-sr.cc>
 
 DepListError::DepListError(const std::string & m) throw () :
     Exception(m)

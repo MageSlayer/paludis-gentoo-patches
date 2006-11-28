@@ -19,7 +19,7 @@
 
 #include "uninstall_task.hh"
 #include <paludis/environment.hh>
-#include <paludis/uninstall_list.hh>
+#include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <list>
 

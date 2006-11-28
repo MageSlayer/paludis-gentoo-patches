@@ -22,7 +22,7 @@
 #include <paludis/repositories/portage/portage_repository_sets.hh>
 #include <paludis/repositories/portage/glsa.hh>
 
-#include <paludis/dep_list.hh>
+#include <paludis/dep_list/dep_list.hh>
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
 #include <paludis/portage_dep_parser.hh>

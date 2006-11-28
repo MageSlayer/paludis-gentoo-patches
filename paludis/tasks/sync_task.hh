@@ -22,7 +22,7 @@
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/dep_list.hh>
+#include <paludis/dep_list/dep_list.hh>
 
 namespace paludis
 {
