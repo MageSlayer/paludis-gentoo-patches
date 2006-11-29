@@ -212,6 +212,21 @@ void do_one_package_query(
             cout << "    " << std::setw(22) << std::left << "SRC_REPOSITORY:" << std::setw(0) <<
                  " " << metadata->get_ebin_interface()->src_repository << endl;
         }
+
+        if (metadata->origins.source)
+            cout << "    " << std::setw(22) << std::left << "SOURCE_ORIGIN:" << std::setw(0)
+                << " " << *metadata->origins.source << endl;
+        if (metadata->origins.binary)
+            cout << "    " << std::setw(22) << std::left << "BINARY_ORIGIN::" << std::setw(0)
+                << " " << *metadata->origins.binary << endl;
+        if (0 != env->package_database()->fetch_repository(display_entry.repository)->installed_interface)
+        {
+            time_t t(env->package_database()->fetch_repository(display_entry.repository
+                        )->installed_interface->installed_time(display_entry.name, display_entry.version));
+            if (0 != t)
+                cout << "    " << std::setw(22) << std::left << "INSTALLED_TIME:" << std::setw(0)
+                    << " " << t << endl;
+        }
     }
     else
     {
@@ -264,6 +279,18 @@ void do_one_package_query(
         if (metadata->origins.binary)
             cout << "    " << std::setw(22) << std::left << "Binary origin:" << std::setw(0)
                 << " " << colour(cl_package_name, *metadata->origins.binary) << endl;
+        if (0 != env->package_database()->fetch_repository(display_entry.repository)->installed_interface)
+        {
+            time_t t(env->package_database()->fetch_repository(display_entry.repository
+                        )->installed_interface->installed_time(display_entry.name, display_entry.version));
+            if (0 != t)
+            {
+                char buf[255];
+                if (strftime(buf, 254, "%c", localtime(&t)))
+                    cout << "    " << std::setw(22) << std::left << "Installed time:" << std::setw(0)
+                        << " " << buf << endl;
+            }
+        }
 
         if (metadata->get_ebuild_interface())
         {
