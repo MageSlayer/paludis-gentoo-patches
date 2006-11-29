@@ -79,6 +79,20 @@ namespace paludis
 
         /// Our parts.
         std::vector<Part> parts;
+
+        /// Our hash
+        mutable bool has_hash;
+        mutable std::size_t hash;
+
+        /// Our is_scm
+        mutable bool has_is_scm;
+        mutable bool is_scm;
+
+        Implementation() :
+            has_hash(false),
+            has_is_scm(false)
+        {
+        }
     };
 }
 
@@ -265,6 +279,10 @@ VersionSpec::operator= (const VersionSpec & other)
     {
         _imp->text = other._imp->text;
         _imp->parts = other._imp->parts;
+        _imp->has_hash = other._imp->has_hash;
+        _imp->hash = other._imp->hash;
+        _imp->has_is_scm = other._imp->has_is_scm;
+        _imp->is_scm = other._imp->is_scm;
     }
     return *this;
 }
@@ -334,10 +352,32 @@ VersionSpec::equal_star_compare(const VersionSpec & other) const
 std::size_t
 VersionSpec::hash_value() const
 {
-    /// \todo Improve this;
-    if (_imp->parts.empty())
-        return 0;
-    return _imp->parts[0].value;
+    if (_imp->has_hash)
+        return _imp->hash;
+
+    size_t result(0);
+
+    const std::size_t h_shift = std::numeric_limits<std::size_t>::digits - 5;
+    const std::size_t h_mask = static_cast<std::size_t>(0x1f) << h_shift;
+
+    do
+    {
+        for (std::vector<Part>::const_iterator r(_imp->parts.begin()), r_end(_imp->parts.end()) ;
+                r != r_end ; ++r)
+        {
+            if (r->kind == empty && r->value == 0)
+                continue;
+
+            std::size_t hh(result & h_mask);
+            result <<= 5;
+            result ^= (hh >> h_shift);
+            result ^= (static_cast<std::size_t>(r->kind) + (r->value << 3));
+        }
+    } while (false);
+
+    _imp->has_hash = true;
+    _imp->hash = result;
+    return result;
 }
 
 namespace
@@ -397,26 +437,45 @@ paludis::operator<< (std::ostream & s, const VersionSpec & v)
 bool
 VersionSpec::is_scm() const
 {
-    std::vector<Part>::const_iterator r;
+    if (_imp->has_is_scm)
+        return _imp->is_scm;
 
-    if (_imp->parts.empty())
-        return false;
+    bool result(false);
+    do
+    {
+        std::vector<Part>::const_iterator r;
 
-    /* are we an obvious scm version? */
-    r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<scm>());
-    if (r != _imp->parts.end())
-        return true;
+        if (_imp->parts.empty())
+            break;
 
-    /* are we a -r9999? */
-    r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<revision>());
-    if (r != _imp->parts.end())
-        if (r->value == 9999)
-            return true;
+        /* are we an obvious scm version? */
+        r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<scm>());
+        if (r != _imp->parts.end())
+        {
+            result = true;
+            break;
+        }
 
-    /* is our version without revisions exactly 9999? */
-    if (remove_revision() == VersionSpec("9999"))
-        return true;
+        /* are we a -r9999? */
+        r = std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<revision>());
+        if (r != _imp->parts.end())
+            if (r->value == 9999)
+            {
+                result = true;
+                break;
+            }
 
-    return false;
+        /* is our version without revisions exactly 9999? */
+        if (remove_revision() == VersionSpec("9999"))
+        {
+            result = true;
+            break;
+        }
+    } while (false);
+
+    _imp->is_scm = result;
+    _imp->has_is_scm = true;
+
+    return result;
 }
 

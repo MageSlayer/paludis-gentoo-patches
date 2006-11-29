@@ -207,6 +207,20 @@ namespace test_cases
         }
     } test_version_is_scm;
 
+    struct VersionSpecHashTest : TestCase
+    {
+        VersionSpecHashTest() : TestCase("version spec hash_value()") { }
+
+        void run()
+        {
+            TEST_CHECK(VersionSpec("0").hash_value() == VersionSpec("0.0").hash_value());
+            TEST_CHECK(VersionSpec("1").hash_value() == VersionSpec("1.0").hash_value());
+            TEST_CHECK(VersionSpec("1.0").hash_value() == VersionSpec("1").hash_value());
+            TEST_CHECK(VersionSpec("1.0_alpha").hash_value() == VersionSpec("1_alpha").hash_value());
+            TEST_CHECK(VersionSpec("1_alpha").hash_value() == VersionSpec("1.0_alpha").hash_value());
+        }
+    } test_version_spec_hash_value;
+
     /**
      * \test VersionSpec ordering.
      *
@@ -295,17 +309,21 @@ namespace test_cases
             std::vector<VersionSpec>::iterator v1(v.begin()), v_end(v.end());
             for ( ; v1 != v_end ; ++v1)
             {
-                TestMessageSuffix s1("v1:" + stringify(*v1), false);
+                TestMessageSuffix s1("v1:" + stringify(*v1), true);
                 std::vector<VersionSpec>::iterator v2(v.begin());
                 for ( ; v2 != v_end ; ++v2)
                 {
-                    TestMessageSuffix s2("v2:" + stringify(*v2), false);
+                    TestMessageSuffix s2("v2:" + stringify(*v2), true);
                     if (std::distance(v.begin(), v1) < std::distance(v.begin(), v2))
                     {
                         TEST_CHECK(*v1 < *v2);
                         TEST_CHECK(*v2 > *v1);
                         TEST_CHECK(*v1 != *v2);
                         TEST_CHECK(*v2 != *v1);
+                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()), true);
+                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()), true);
+                        TEST_CHECK(v1->hash_value() != v2->hash_value());
+                        TEST_CHECK(v2->hash_value() != v1->hash_value());
                     }
                     else if (std::distance(v.begin(), v1) > std::distance(v.begin(), v2))
                     {
@@ -313,11 +331,19 @@ namespace test_cases
                         TEST_CHECK(*v1 > *v2);
                         TEST_CHECK(*v2 != *v1);
                         TEST_CHECK(*v1 != *v2);
+                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()), true);
+                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()), true);
+                        TEST_CHECK(v1->hash_value() != v2->hash_value());
+                        TEST_CHECK(v2->hash_value() != v1->hash_value());
                     }
                     else
                     {
                         TEST_CHECK(*v2 == *v1);
                         TEST_CHECK(*v1 == *v2);
+                        TestMessageSuffix sv1("hv1:" + stringify(v1->hash_value()), true);
+                        TestMessageSuffix sv2("hv2:" + stringify(v2->hash_value()), true);
+                        TEST_CHECK(v1->hash_value() == v2->hash_value());
+                        TEST_CHECK(v2->hash_value() == v1->hash_value());
                     }
                 }
             }
