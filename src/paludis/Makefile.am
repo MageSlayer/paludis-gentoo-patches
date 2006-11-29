@@ -39,6 +39,7 @@ paludis_SOURCES = \
 	contents.hh          contents.cc          \
 	owner.hh             owner.cc             \
 	news.hh              news.cc              \
+	report.hh            report.cc            \
 	paludis.cc
 
 paludis_LDADD = \

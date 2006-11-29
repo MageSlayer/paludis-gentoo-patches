@@ -26,6 +26,7 @@
 #include "news.hh"
 #include "owner.hh"
 #include "query.hh"
+#include "report.hh"
 #include "sync.hh"
 #include "uninstall.hh"
 #include "config.h"
@@ -194,6 +195,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_uninstall.specified() +
                     CommandLine::get_instance()->a_uninstall_unused.specified() +
                     CommandLine::get_instance()->a_sync.specified() +
+                    CommandLine::get_instance()->a_report.specified() +
                     CommandLine::get_instance()->a_list_repositories.specified() +
                     CommandLine::get_instance()->a_list_categories.specified() +
                     CommandLine::get_instance()->a_list_packages.specified() +
@@ -335,6 +337,13 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_sync.specified())
         {
             return do_sync();
+        }
+
+        if (CommandLine::get_instance()->a_report.specified())
+        {
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("report action takes no parameters");
+            return do_report();
         }
 
         if (CommandLine::get_instance()->a_list_repositories.specified())

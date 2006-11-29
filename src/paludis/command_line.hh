@@ -74,6 +74,9 @@ class CommandLine :
         /// --sync
         paludis::args::SwitchArg a_sync;
 
+        /// --report
+        paludis::args::SwitchArg a_report;
+
         /// --contents
         paludis::args::SwitchArg a_contents;
 

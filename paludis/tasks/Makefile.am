@@ -23,12 +23,14 @@ paludis_tasks_includedir = $(includedir)/paludis/tasks
 paludis_tasks_include_HEADERS = \
 	install_task.hh \
 	uninstall_task.hh \
-	sync_task.hh
+	sync_task.hh \
+	report_task.hh
 
 libpaludistasks_a_SOURCES = $(paludis_tasks_include_HEADERS) \
 	install_task.cc \
 	uninstall_task.cc \
-	sync_task.cc
+	sync_task.cc \
+	report_task.cc
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

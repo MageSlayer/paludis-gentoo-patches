@@ -30,6 +30,7 @@ CommandLine::CommandLine() :
     a_uninstall(&action_args, "uninstall",    'u',  "Uninstall one or more packages"),
     a_uninstall_unused(&action_args, "uninstall-unused",    '\0',  "Uninstall unused packages"),
     a_sync(&action_args,      "sync",         's',  "Sync all or specified repositories"),
+    a_report(&action_args,    "report",       'r',  "Report the current state of the system"),
     a_contents(&action_args,  "contents",     'k',  "Display contents of a package"),
     a_owner(&action_args,     "owner",        'o',  "Display the owner of a file"),
     a_version(&action_args,   "version",      'V',  "Display program version"),
@@ -202,6 +203,7 @@ CommandLine::CommandLine() :
     add_usage_line("--query [query options] target ...");
     add_usage_line("--install [install options] target ...");
     add_usage_line("--sync [target (leave blank for all)]");
+    add_usage_line("--report");
     add_usage_line("--contents target ...");
     add_usage_line("--owner [owner options] files ...");
     add_usage_line("--version");
