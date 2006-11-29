@@ -7,7 +7,7 @@ AC_CONFIG_AUX_DIR(config)
 
 VERSION_MAJOR=0
 VERSION_MINOR=10
-VERSION_MICRO=0
+VERSION_MICRO=1
 VERSION_FULL="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_MICRO"
 VERSION="$VERSION_FULL"
 VERSION_LIB_CURRENT=`expr 100 '*' $VERSION_MAJOR + $VERSION_MINOR`
@@ -216,13 +216,13 @@ int main(int, char **)
 AC_MSG_CHECKING([libwrapiter version])
 AC_COMPILE_IFELSE([
 #include <libwrapiter/libwrapiter.hh>
-#if LIBWRAPITER_VERSION < 200
-#  error libwrapiter 0.2 or later required
+#if LIBWRAPITER_VERSION < 1000
+#  error libwrapiter 1.0 or later required
 #endif
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([libwrapiter version must be at least 0.2])])
+	 AC_MSG_ERROR([libwrapiter version must be at least 1.0])])
 dnl }}}
 
 dnl {{{ check for various misc functions.

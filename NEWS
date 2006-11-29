@@ -5,6 +5,18 @@ This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
 0.10.0:
+    * Package origins and install times can now be queried.
+
+    * Packages with version 9999, or with names ending in "-cvs" or "-svn", are
+    now considered to be SCM packages for reinstall purposes.
+
+    * Paludis will now compile with g++-3.4 again.
+
+    * A new --report action, which displays warnings about installed packages
+    that are insecure, masked or no longer available, has been added to the
+    paludis client.
+
+0.10.0:
     * Uninstall with dependencies and uninstalling unused packages is now
     supported.
 
