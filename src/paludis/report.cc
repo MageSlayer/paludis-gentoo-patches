@@ -146,8 +146,7 @@ namespace
     void
     OurReportTask::on_report_all_post()
     {
-        cout << endl <<
-            "Finished processing " <<
+        cout << "Finished processing " <<
             _n_packages << " " << (_n_packages != 1 ? "packages" : "package") << ". " <<
             _n_errors << " " << (_n_errors != 1 ? "errors" : "error") << "." << endl;
     }

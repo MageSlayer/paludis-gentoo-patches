@@ -18,6 +18,7 @@
  */
 
 #include "report_task.hh"
+#include <paludis/util/log.hh>
 #include <paludis/environment.hh>
 
 using namespace paludis;
@@ -134,6 +135,7 @@ ReportTask::execute()
     on_report_all_pre();
 
     paludis::Environment * const e(_imp->env);
+    bool once(true);
 
     VulnerableChecker vuln(*e);
     for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),
@@ -143,10 +145,22 @@ ReportTask::execute()
         if (! rr->sets_interface)
             continue;
 
-        DepAtom::ConstPointer insecure(rr->sets_interface->package_set(SetName("insecurity")));
-        if (! insecure)
-            continue;
-        insecure->accept(&vuln);
+        try
+        {
+            DepAtom::ConstPointer insecure(rr->sets_interface->package_set(SetName("insecurity")));
+            if (! insecure)
+                continue;
+            insecure->accept(&vuln);
+        }
+        catch (const NotAvailableError &)
+        {
+            if (once)
+            {
+                Log::get_instance()->message(ll_warning, lc_no_context,
+                        "Skipping GLSA checks because Paludis was built without XML support");
+                once = false;
+            }
+        }
     }
 
     for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),
