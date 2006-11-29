@@ -16,6 +16,7 @@ _paludis() {
         --uninstall -u \
         --uninstall-unused \
         --sync -s \
+        --report -r \
         --contents -k \
         --owner -o \
         --version -V \
