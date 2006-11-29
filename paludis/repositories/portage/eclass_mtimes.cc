@@ -51,7 +51,7 @@ time_t
 EclassMtimes::mtime(const std::string & e) const
 {
     MakeHashedMap<std::string, time_t>::Type::const_iterator i(_imp->eclass_mtimes.find(e));
-    if (_imp->eclass_mtimes.end() != i)
+    if (i != _imp->eclass_mtimes.end())
         return i->second;
 
     time_t r(0);
