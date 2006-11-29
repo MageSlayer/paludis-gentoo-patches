@@ -4,7 +4,7 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
-0.10.0:
+0.10.1:
     * Package origins and install times can now be queried.
 
     * Packages with version 9999, or with names ending in "-cvs" or "-svn", are
