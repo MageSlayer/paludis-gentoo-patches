@@ -193,3 +193,8 @@ Repository::do_category_names_containing_package(const PackageNamePart & p) cons
     return result;
 }
 
+void
+Repository::regenerate_cache() const
+{
+}
+

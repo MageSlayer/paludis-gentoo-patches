@@ -337,9 +337,14 @@ namespace paludis
             }
 
             /**
-             * Invalidate any cache.
+             * Invalidate any in memory cache.
              */
             virtual void invalidate() const = 0;
+
+            /**
+             * Regenerate any on disk cache.
+             */
+            virtual void regenerate_cache() const;
 
             /**
              * Are we allowed to be favourite repository?

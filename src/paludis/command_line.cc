@@ -54,6 +54,10 @@ CommandLine::CommandLine() :
             "List available repository formats"),
     a_list_dep_tag_categories(&action_args_internal, "list-dep-tag-categories", '\0', "List known dep tag categories"),
     a_update_news(&action_args_internal, "update-news", '\0', "Regenerate news.unread files"),
+    a_regenerate_installed_cache(&action_args_internal, "regenerate-installed-cache", '\0',
+            "Regenerate (non-metadata) cache for installed repositories"),
+    a_regenerate_installable_cache(&action_args_internal, "regenerate-installable-cache", '\0',
+            "Regenerate (non-metadata) cache for installable repositories"),
 
     general_args(this, "General options",
             "Options which are relevant for most or all actions."),

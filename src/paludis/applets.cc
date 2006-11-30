@@ -218,3 +218,21 @@ int do_list_dep_tag_categories()
     return return_code;
 }
 
+int do_regenerate_cache(bool installed)
+{
+    Context context("When performing cache regeneration action from command line:");
+    Environment * const env(DefaultEnvironment::get_instance());
+
+    for (PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
+            r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    {
+        if (installed != (0 != (*r)->installed_interface))
+            continue;
+
+        std::cout << "Regenerating cache for " << (*r)->name() << "..." << std::endl;
+        (*r)->regenerate_cache();
+    }
+
+    return 0;
+}
+

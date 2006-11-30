@@ -317,6 +317,9 @@ namespace paludis
         /// World file
         FSEntry world_file;
 
+        /// Provides cache
+        FSEntry provides_cache;
+
         /// Do we have entries loaded?
         mutable bool entries_valid;
 
@@ -328,6 +331,9 @@ namespace paludis
 
         /// Load metadata for one entry.
         void load_entry(std::vector<VDBEntry>::iterator) const;
+
+        /// Provieds data
+        mutable RepositoryProvidesInterface::ProvidesCollection::Pointer provides;
 
         /// Constructor.
         Implementation(const VDBRepositoryParams &);
@@ -346,7 +352,9 @@ namespace paludis
         root(p.root),
         buildroot(p.buildroot),
         world_file(p.world),
-        entries_valid(false)
+        provides_cache(p.provides_cache),
+        entries_valid(false),
+        provides(0)
     {
     }
 
@@ -775,8 +783,8 @@ VDBRepository::make_vdb_repository(
         const PackageDatabase * const db,
         AssociativeCollection<std::string, std::string>::ConstPointer m)
 {
-    Context context("When making VDB repository from repo_file '" +
-            (m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second) + "':");
+    std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second);
+    Context context("When making VDB repository from repo_file '" + repo_file + "':");
 
     std::string location;
     if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
@@ -790,6 +798,15 @@ VDBRepository::make_vdb_repository(
     if (m->end() == m->find("world") || ((world = m->find("world")->second)).empty())
         world = location + "/world";
 
+    std::string provides_cache;
+    if (m->end() == m->find("provides_cache") || ((provides_cache = m->find("provides_cache")->second)).empty())
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, "The provides_cache key is not set in '"
+                + repo_file + "'. You should read http://paludis.berlios.de/CacheFiles.html and select an "
+                "appropriate value.");
+        provides_cache = "/var/empty";
+    }
+
     std::string buildroot;
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
@@ -800,7 +817,8 @@ VDBRepository::make_vdb_repository(
                 .location(location)
                 .root(root)
                 .world(world)
-                .buildroot(buildroot)));
+                .buildroot(buildroot)
+                .provides_cache(provides_cache)));
 }
 
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(
@@ -1095,7 +1113,126 @@ VDBRepository::get_environment_variable(
 RepositoryProvidesInterface::ProvidesCollection::ConstPointer
 VDBRepository::provided_packages() const
 {
-    Context context("When loading VDB PROVIDEs map:");
+    if (_imp->provides)
+        return _imp->provides;
+
+    if (! load_provided_using_cache())
+        load_provided_the_slow_way();
+
+    return _imp->provides;
+}
+
+VersionMetadata::ConstPointer
+VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry & p) const
+{
+    VersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, p.version));
+    VersionMetadata::Virtual::Pointer result(new VersionMetadata::Virtual(
+                PortageDepParser::parse_depend, PackageDatabaseEntry(p.provided_by_name,
+                    p.version, name())));
+
+    result->slot = m->slot;
+    result->license_string = m->license_string;
+    result->eapi = m->eapi;
+    result->deps = VersionMetadataDeps(&PortageDepParser::parse_depend,
+            stringify(p.provided_by_name), stringify(p.provided_by_name), "");
+
+    return result;
+}
+
+UseFlagNameCollection::ConstPointer
+VDBRepository::do_arch_flags() const
+{
+    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+}
+
+UseFlagNameCollection::ConstPointer
+VDBRepository::do_use_expand_flags() const
+{
+    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+}
+
+UseFlagNameCollection::ConstPointer
+VDBRepository::do_use_expand_prefixes() const
+{
+    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+}
+
+UseFlagNameCollection::ConstPointer
+VDBRepository::do_use_expand_hidden_prefixes() const
+{
+    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+}
+
+UseFlagName
+VDBRepository::do_use_expand_name(const UseFlagName & u) const
+{
+    return u;
+}
+
+UseFlagName
+VDBRepository::do_use_expand_value(const UseFlagName & u) const
+{
+    return u;
+}
+
+bool
+VDBRepository::load_provided_using_cache() const
+{
+    if (_imp->provides_cache == FSEntry("/var/empty"))
+        return false;
+
+    Context context("When loading VDB PROVIDEs map using '" + stringify(_imp->provides_cache) + "':");
+
+    ProvidesCollection::Pointer result(new ProvidesCollection::Concrete);
+
+    if (! _imp->provides_cache.is_regular_file())
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, "Provides cache at '"
+                + stringify(_imp->provides_cache) + "' is not a regular file.");
+        return false;
+    }
+
+    LineConfigFile provides_cache(_imp->provides_cache);
+    LineConfigFile::Iterator line(provides_cache.begin()), line_end(provides_cache.end());
+
+    std::string version;
+    if (line != line_end)
+        version = *line++;
+
+    if (version != "paludis-1")
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, "Can't use provides cache at '"
+                + stringify(_imp->provides_cache) + "' because format '" + version + "' is not 'paludis-1'");
+        return false;
+    }
+
+    while (line != line_end)
+    {
+        std::vector<std::string> tokens;
+        WhitespaceTokeniser::get_instance()->tokenise(*line++, std::back_inserter(tokens));
+        if (tokens.size() < 3)
+            continue;
+
+        PackageDatabaseEntry dbe(QualifiedPackageName(tokens.at(0)), VersionSpec(tokens.at(1)), name());
+        DepAtomFlattener f(_imp->env, &dbe, PortageDepParser::parse(
+                    join(next(next(tokens.begin())), tokens.end(), " "),
+                    PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
+
+        for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+            result->insert(RepositoryProvidesEntry::create()
+                    .virtual_name((*p)->text())
+                    .version(dbe.version)
+                    .provided_by_name(dbe.name));
+    }
+
+    _imp->provides = result;
+    return true;
+}
+
+void
+VDBRepository::load_provided_the_slow_way() const
+{
+    Context context("When loading VDB PROVIDEs map the slow way:");
 
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting VDB PROVIDEs map creation");
 
@@ -1158,60 +1295,49 @@ VDBRepository::provided_packages() const
 
     Log::get_instance()->message(ll_debug, lc_no_context, "Done VDB PROVIDEs map creation");
 
-    return result;
+    _imp->provides = result;
 }
 
-VersionMetadata::ConstPointer
-VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry & p) const
+void
+VDBRepository::regenerate_cache() const
 {
-    VersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, p.version));
-    VersionMetadata::Virtual::Pointer result(new VersionMetadata::Virtual(
-                PortageDepParser::parse_depend, PackageDatabaseEntry(p.provided_by_name,
-                    p.version, name())));
+    if (_imp->provides_cache == FSEntry("/var/empty"))
+        return;
 
-    result->slot = m->slot;
-    result->license_string = m->license_string;
-    result->eapi = m->eapi;
-    result->deps = VersionMetadataDeps(&PortageDepParser::parse_depend,
-            stringify(p.provided_by_name), stringify(p.provided_by_name), "");
+    Context context("When generating VDB repository provides cache at '"
+            + stringify(_imp->provides_cache) + "':");
 
-    return result;
-}
+    FSEntry(_imp->provides_cache).unlink();
+    _imp->provides_cache.dirname().mkdir();
 
-UseFlagNameCollection::ConstPointer
-VDBRepository::do_arch_flags() const
-{
-    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
-}
+    if (! _imp->entries_valid)
+        _imp->load_entries();
 
-UseFlagNameCollection::ConstPointer
-VDBRepository::do_use_expand_flags() const
-{
-    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
-}
+    std::ofstream f(stringify(_imp->provides_cache).c_str());
+    if (! f)
+    {
+        Log::get_instance()->message(ll_warning, lc_context, "Cannot write to '"
+                + stringify(_imp->provides_cache) + "'");
+        return;
+    }
 
-UseFlagNameCollection::ConstPointer
-VDBRepository::do_use_expand_prefixes() const
-{
-    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
-}
+    f << "paludis-1" << std::endl;
 
-UseFlagNameCollection::ConstPointer
-VDBRepository::do_use_expand_hidden_prefixes() const
-{
-    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
-}
+    for (std::vector<VDBEntry>::const_iterator c(_imp->entries.begin()), c_end(_imp->entries.end()) ;
+            c != c_end ; ++c)
+    {
+        std::string provide_str;
+        if (c->metadata)
+            provide_str = c->metadata->get_ebuild_interface()->provide_string;
+        else
+            provide_str = file_contents(_imp->location, c->name, c->version, "PROVIDE");
 
-UseFlagName
-VDBRepository::do_use_expand_name(const UseFlagName & u) const
-{
-    return u;
-}
+        provide_str = strip_leading(strip_trailing(provide_str, " \t\r\n"), " \t\r\n");
+        if (provide_str.empty())
+            continue;
 
-UseFlagName
-VDBRepository::do_use_expand_value(const UseFlagName & u) const
-{
-    return u;
+        f << c->name << " " << c->version << " " << provide_str << std::endl;
+    }
 }
 
 #ifdef PALUDIS_ENABLE_VISIBILITY

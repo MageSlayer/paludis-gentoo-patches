@@ -47,5 +47,8 @@ int do_list_sync_protocols();
 /// Handle --list-dep-tag-categories
 int do_list_dep_tag_categories();
 
+/// Handle cache regeneration
+int do_regenerate_cache(bool installed);
+
 #endif
 

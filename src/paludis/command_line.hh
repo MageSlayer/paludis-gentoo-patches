@@ -131,6 +131,12 @@ class CommandLine :
         /// --update-news
         paludis::args::SwitchArg a_update_news;
 
+        /// --regenerate-installed-cache
+        paludis::args::SwitchArg a_regenerate_installed_cache;
+
+        /// --regenerate-installable-cache
+        paludis::args::SwitchArg a_regenerate_installable_cache;
+
         ///}
 
         /// \name General arguments

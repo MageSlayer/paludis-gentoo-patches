@@ -207,6 +207,8 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_owner.specified() +
                     CommandLine::get_instance()->a_has_version.specified() +
                     CommandLine::get_instance()->a_update_news.specified() +
+                    CommandLine::get_instance()->a_regenerate_installed_cache.specified() +
+                    CommandLine::get_instance()->a_regenerate_installable_cache.specified() +
                     CommandLine::get_instance()->a_environment_variable.specified() +
                     CommandLine::get_instance()->a_configuration_variable.specified() +
                     CommandLine::get_instance()->a_info.specified() +
@@ -436,6 +438,15 @@ main(int argc, char *argv[])
                 throw DoHelp("update-news action takes no parameters");
 
             return do_update_news();
+        }
+
+        if (CommandLine::get_instance()->a_regenerate_installed_cache.specified() ||
+                CommandLine::get_instance()->a_regenerate_installable_cache.specified())
+        {
+            if (! CommandLine::get_instance()->empty())
+                throw DoHelp("regenerate cache actions takes no parameters");
+
+            return do_regenerate_cache(CommandLine::get_instance()->a_regenerate_installed_cache.specified());
         }
 
         throw InternalError(__PRETTY_FUNCTION__, "no action?");
