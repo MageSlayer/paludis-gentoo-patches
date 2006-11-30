@@ -46,7 +46,8 @@ _adjutrix() {
         --category -C \
         --package -P \
         --profile -p \
-        --unstable -U"
+        --unstable -U \
+        --write-cache-dir"
 
     case "${cur}" in
         -*)
@@ -85,7 +86,7 @@ _adjutrix() {
                     return 0
                     ;;
 
-                --repository-dir|-D)
+                --repository-dir|-D|--write-cache-dir)
                     COMPREPLY=($(compgen -d -- "${cur}"))
                     return 0
                     ;;

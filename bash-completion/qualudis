@@ -18,7 +18,8 @@ _qualudis() {
         --verbose -v \
         --quiet -q \
         --log-level -L \
-        --message-level -M"
+        --message-level -M \
+        --write-cache-dir"
 
     case "${cur}" in
         -*)
@@ -38,7 +39,7 @@ _qualudis() {
                     ;;
 
                 --qa-check|-c)
-                    COMPREPLY=($(compgen -W "$(qualudis --log-level silent --describe |sed -n 's/  \(.*\):/\1/p')" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "$(qualudis --log-level silent --describe |sed -n 's/^  \(.*\):$/\1/p')" -- "${cur}"))
                     return 0
                     ;;
 
