@@ -188,14 +188,10 @@ PackageDatabase::fetch_unique_qualified_package_name(
     {
         Context local_context("When looking in repository '" + stringify(r->name()) + "':");
 
-        CategoryNamePartCollection::ConstPointer cats(r->category_names());
-        CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end());
-        for ( ; c != c_end ; ++c)
-        {
-            Context very_local_context("When looking in category '" + stringify(*c) + "':");
-            if (r->has_package_named(*c + p))
-                    result->insert(*c + p);
-        }
+        CategoryNamePartCollection::ConstPointer cats(r->category_names_containing_package(p));
+        for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+                c != c_end ; ++c)
+            result->insert(*c + p);
     }
 
     if (result->empty())

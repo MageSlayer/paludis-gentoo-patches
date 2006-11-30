@@ -19,6 +19,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/util/compare.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <map>
 #include <list>
 #include <ctype.h>
@@ -177,5 +178,18 @@ RepositoryInfo::SectionIterator
 RepositoryInfo::end_sections() const
 {
     return SectionIterator(_imp->sections.end());
+}
+
+CategoryNamePartCollection::ConstPointer
+Repository::do_category_names_containing_package(const PackageNamePart & p) const
+{
+    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
+    CategoryNamePartCollection::ConstPointer cats(category_names());
+    for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+            c != c_end ; ++c)
+        if (has_package_named(*c + p))
+            result->insert(*c);
+
+    return result;
 }
 

@@ -214,6 +214,13 @@ namespace paludis
             virtual CategoryNamePartCollection::ConstPointer do_category_names() const = 0;
 
             /**
+             * Override in descendents if a fast implementation is available: fetch category names
+             * that contain a particular package.
+             */
+            virtual CategoryNamePartCollection::ConstPointer do_category_names_containing_package(
+                    const PackageNamePart &) const;
+
+            /**
              * Override in descendents: check for a package.
              */
             virtual bool do_has_package_named(const QualifiedPackageName &) const = 0;
@@ -274,6 +281,15 @@ namespace paludis
             CategoryNamePartCollection::ConstPointer category_names() const
             {
                 return do_category_names();
+            }
+
+            /**
+             * Fetch categories that contain a named package.
+             */
+            CategoryNamePartCollection::ConstPointer category_names_containing_package(
+                    const PackageNamePart & p) const
+            {
+                return do_category_names_containing_package(p);
             }
 
             /**
