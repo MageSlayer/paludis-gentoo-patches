@@ -323,9 +323,9 @@ paludis::ruby::value_to_ebuild_check_data(VALUE v)
     }
     else
     {
-        std::string message = "can't convert " + std::string(rb_obj_classname(v)) + " into EbuildCheckData";
-        rb_raise(rb_eTypeError, message.c_str());
+        rb_raise(rb_eTypeError, "Can't convert %s into EbuildCheckData", rb_obj_classname(v));
     }
 }
+
 RegisterRubyClass::Register paludis_ruby_register_check PALUDIS_ATTRIBUTE((used))
     (&do_register_check);

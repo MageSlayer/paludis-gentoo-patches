@@ -137,8 +137,7 @@ paludis::ruby::value_to_qualified_package_name(VALUE v)
     }
     else
     {
-        std::string message = "TypeError: can't convert " + std::string(rb_obj_classname(v)) + " into QualifiedPackageName";
-        rb_raise(rb_eTypeError, message.c_str());
+        rb_raise(rb_eTypeError, "Can't convert %s into QualifiedPackageName", rb_obj_classname(v));
     }
 }
 

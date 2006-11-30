@@ -28,6 +28,17 @@ module Paludis
         class TestCase_QAEnvironment < Test::Unit::TestCase
             def test_create
                 env = QAEnvironment.new('qa_environment_TEST_dir/repo1')
+                env = QAEnvironment.new('qa_environment_TEST_dir/repo1', '/var/empty')
+            end
+
+            def test_create_error
+                assert_raise ArgumentError do
+                    env = QAEnvironment.new
+                end
+
+                assert_raise ArgumentError do
+                    env = QAEnvironment.new("1","2","3")
+                end
             end
 
             def test_as_environment

@@ -204,8 +204,7 @@ paludis::ruby::value_to_package_dep_atom(VALUE v)
     }
     else
     {
-        std::string message = "TypeError: can't convert " + std::string(rb_obj_classname(v)) + " into PackageDepAtom";
-        rb_raise(rb_eTypeError, message.c_str());
+        rb_raise(rb_eTypeError, "Can't convert %s into PackageDepAtom", rb_obj_classname(v));
     }
 }
 
