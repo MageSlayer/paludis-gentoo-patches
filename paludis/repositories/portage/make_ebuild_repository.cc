@@ -102,6 +102,15 @@ paludis::make_ebuild_repository(
     if (m->end() == m->find("write_cache") || ((write_cache = m->find("write_cache")->second)).empty())
         write_cache = "/var/empty";
 
+    std::string names_cache;
+    if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
+                + repo_file + "'. You should read http://paludis.berlios.de/CacheFiles.html and select an "
+                "appropriate value.");
+        names_cache = "/var/empty";
+    }
+
     std::string sync;
     if (m->end() != m->find("sync"))
             sync = m->find("sync")->second;
@@ -126,6 +135,7 @@ paludis::make_ebuild_repository(
                 .profiles(profiles)
                 .cache(cache)
                 .write_cache(write_cache)
+                .names_cache(names_cache)
                 .eclassdirs(eclassdirs)
                 .distdir(distdir)
                 .pkgdir(FSEntry("/var/empty"))

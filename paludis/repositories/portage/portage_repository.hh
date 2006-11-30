@@ -77,6 +77,9 @@ namespace paludis
 
             virtual CategoryNamePartCollection::ConstPointer do_category_names() const;
 
+            CategoryNamePartCollection::ConstPointer do_category_names_containing_package(
+                    const PackageNamePart & p) const;
+
             virtual QualifiedPackageNameCollection::ConstPointer do_package_names(
                     const CategoryNamePart &) const;
 
@@ -139,6 +142,7 @@ namespace paludis
             ~PortageRepository();
 
             virtual void invalidate() const;
+            virtual void regenerate_cache() const;
 
             virtual void update_news() const;
 

@@ -472,6 +472,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     config_info->add_kv("root", stringify(_imp->root));
     config_info->add_kv("format", "vdb");
     config_info->add_kv("world", stringify(_imp->world_file));
+    config_info->add_kv("world", stringify(_imp->provides_cache));
     config_info->add_kv("buildroot", stringify(_imp->buildroot));
 
     _info->add_section(config_info);
@@ -1192,12 +1193,10 @@ VDBRepository::load_provided_using_cache() const
         return false;
     }
 
-    LineConfigFile provides_cache(_imp->provides_cache);
-    LineConfigFile::Iterator line(provides_cache.begin()), line_end(provides_cache.end());
+    std::ifstream provides_cache(stringify(_imp->provides_cache).c_str());
 
     std::string version;
-    if (line != line_end)
-        version = *line++;
+    std::getline(provides_cache, version);
 
     if (version != "paludis-1")
     {
@@ -1206,10 +1205,11 @@ VDBRepository::load_provided_using_cache() const
         return false;
     }
 
-    while (line != line_end)
+    std::string line;
+    while (std::getline(provides_cache, line))
     {
         std::vector<std::string> tokens;
-        WhitespaceTokeniser::get_instance()->tokenise(*line++, std::back_inserter(tokens));
+        WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
         if (tokens.size() < 3)
             continue;
 

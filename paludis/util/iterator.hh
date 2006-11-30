@@ -404,10 +404,10 @@ namespace paludis
      */
     template <typename A_, typename B_>
     struct SelectSecond :
-        std::unary_function<A_, std::pair<A_, B_> >
+        std::unary_function<B_, std::pair<A_, B_> >
     {
         /// Carry out the selection.
-        A_ operator() (const std::pair<A_, B_> & p) const
+        B_ operator() (const std::pair<A_, B_> & p) const
         {
             return p.second;
         }
