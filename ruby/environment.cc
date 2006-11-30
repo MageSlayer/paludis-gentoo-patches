@@ -259,8 +259,7 @@ namespace
     void do_register_environment()
     {
         rb_require("singleton");
-
-        c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
+        c_environment = environment_class();
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_environment, "query_use", RUBY_FUNC_CAST(&environment_query_use), -1);
         rb_define_method(c_environment, "accept_keyword", RUBY_FUNC_CAST(&environment_accept_keyword), -1);

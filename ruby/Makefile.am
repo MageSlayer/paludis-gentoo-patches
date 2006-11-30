@@ -28,6 +28,13 @@ IF_RUBY_TESTS = \
 	portage_dep_parser_TEST.rb \
 	qualified_package_name_TEST.rb
 
+IF_RUBY_QA_TESTS = \
+	message_TEST.rb \
+	check_result_TEST.rb \
+	metadata_file_TEST.rb \
+	qa_environment_TEST.rb \
+	check_TEST.rb
+
 IF_RUBY_SOURCES = \
 	paludis_ruby.cc paludis_ruby.hh \
 	environment.cc \
@@ -42,12 +49,22 @@ IF_RUBY_SOURCES = \
 	portage_dep_parser.cc \
 	qualified_package_name.cc
 
+IF_RUBY_QA_SOURCES = \
+	message.cc \
+	check.cc \
+	check_result.cc \
+	qa_environment.cc \
+	metadata_file.cc
+
 EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
+	$(IF_RUBY_QA_TESTS) $(IF_RUBY_QA_SOURCES) \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh \
 	version_metadata_TEST_setup.sh version_metadata_TEST_cleanup.sh \
-	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh
+	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
+	qa_environment_TEST_setup.sh qa_environment_TEST_cleanup.sh \
+	check_TEST_setup.sh check_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
@@ -59,13 +76,15 @@ TESTS_ENVIRONMENT = env \
 	LD_LIBRARY_PATH=`echo "\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/default/.libs\`: \
-			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/no_config/.libs\`" \
+			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/no_config/.libs\`: \
+			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/qa/.libs\`: \
+			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/libxml/.libs\`" \
 			| tr -d ' '` \
 	bash $(top_srcdir)/test/run_test.sh "$(RUBY) -I ./.libs/"
 
 if ENABLE_RUBY
 
-OUR_OBJECTS = \
+BASE_OBJECTS = \
 	environment.o \
 	dep_atom.o \
 	log.o \
@@ -79,7 +98,25 @@ OUR_OBJECTS = \
 	qualified_package_name.o \
 	paludis_ruby.o
 
+if ENABLE_QA
+
+OUR_OBJECTS = $(BASE_OBJECTS)\
+	paludis_ruby.o \
+	message.o \
+	check.o \
+	check_result.o \
+	qa_environment.o \
+	metadata_file.o
+
+TESTS = $(IF_RUBY_TESTS) $(IF_RUBY_QA_TESTS)
+
+else
+
+OUR_OBJECTS = $(BASE_OBJECTS)
 TESTS = $(IF_RUBY_TESTS)
+
+endif
+
 noinst_DATA = $(OUR_OBJECTS)
 check_DATA = .libs/Paludis.so
 rubylibdir = @RUBY_INSTALL_DIR@
@@ -125,6 +162,56 @@ portage_dep_parser.o : portage_dep_parser.cc paludis_ruby.hh
 qualified_package_name.o : qualified_package_name.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/qualified_package_name.cc
 
+message.o : message.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/message.cc
+
+check.o : check.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/check.cc
+
+check_result.o : check_result.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/check_result.cc
+
+qa_environment.o : qa_environment.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/qa_environment.cc
+
+metadata_file.o : metadata_file.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/metadata_file.cc
+
+if ENABLE_QA
+
+.libs/Paludis.so : $(OUR_OBJECTS)
+	mkdir -p .libs
+	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	    $(AM_LDFLAGS) $(LDFLAGS) \
+	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
+	    -o $@ \
+	    $^ \
+	    $(top_builddir)/paludis/util/.libs/libpaludisutil.so \
+	    $(top_builddir)/paludis/.libs/libpaludis.so \
+	    $(top_builddir)/paludis/environment/default/.libs/libpaludisdefaultenvironment.so \
+	    $(top_builddir)/paludis/environment/no_config/.libs/libpaludisnoconfigenvironment.so \
+	    $(top_builddir)/paludis/qa/.libs/libpaludisqa.so \
+	    $(top_builddir)/paludis/libxml/.libs/libpaludislibxml.so \
+	    $(PCREPLUSPLUS_LIBS)
+
+Paludis.so : $(OUR_OBJECTS)
+	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	    $(AM_LDFLAGS) $(LDFLAGS) \
+	    -I@RUBY_SITEARCHDIR@ -l@RUBY_SONAME@ \
+	    -o $@ \
+	    $^ \
+	    -L$(top_builddir)/paludis/util/.libs/ -lpaludisutil \
+	    -L$(top_builddir)/paludis/.libs/ -lpaludis \
+	    -L$(top_builddir)/paludis/environment/default/.libs/ -lpaludisdefaultenvironment \
+	    -L$(top_builddir)/paludis/environment/no_config/.libs/ -lpaludisnoconfigenvironment \
+	    -L$(top_builddir)/paludis/qa/.libs/ -lpaludisqa \
+	    -L$(top_builddir)/paludis/libxml/.libs/ -lpaludislibxml \
+	    $(PCREPLUSPLUS_LIBS)
+
+else
+
 .libs/Paludis.so : $(OUR_OBJECTS)
 	mkdir -p .libs
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -139,7 +226,6 @@ qualified_package_name.o : qualified_package_name.cc paludis_ruby.hh
 	    $(top_builddir)/paludis/environment/no_config/.libs/libpaludisnoconfigenvironment.so
 
 Paludis.so : $(OUR_OBJECTS)
-	mkdir -p .libs
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	    $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	    $(AM_LDFLAGS) $(LDFLAGS) \
@@ -150,6 +236,8 @@ Paludis.so : $(OUR_OBJECTS)
 	    -L$(top_builddir)/paludis/.libs/ -lpaludis \
 	    -L$(top_builddir)/paludis/environment/default/.libs/ -lpaludisdefaultenvironment \
 	    -L$(top_builddir)/paludis/environment/no_config/.libs/ -lpaludisnoconfigenvironment
+
+endif
 
 endif
 

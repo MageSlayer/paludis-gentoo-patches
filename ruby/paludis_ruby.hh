@@ -20,6 +20,8 @@
 #ifndef PALUDIS_GUARD_RUBY_RUBY_PALUDIS_RUBY_HH
 #define PALUDIS_GUARD_RUBY_RUBY_PALUDIS_RUBY_HH 1
 
+#include "config.h"
+
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
@@ -27,10 +29,17 @@
 #include <paludis/util/compare.hh>
 #include <paludis/package_database.hh>
 #include <paludis/mask_reasons.hh>
+#include <paludis/util/fs_entry.hh>
+
+#ifdef ENABLE_RUBY_QA
+#include <paludis/qa/qa.hh>
+#endif
+
 #include <ruby.h>
 
 namespace paludis
 {
+
     namespace ruby
     {
         /* general utilities */
@@ -40,6 +49,7 @@ namespace paludis
         std::string value_case_to_RubyCase(const std::string & s);
 
         VALUE paludis_module();
+        VALUE environment_class();
 
         /* constructors */
 
@@ -58,6 +68,19 @@ namespace paludis
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
         PackageDatabaseEntry value_to_package_database_entry(VALUE v);
         Environment* value_to_environment(VALUE v);
+
+#ifdef ENABLE_RUBY_QA
+        VALUE paludis_qa_module();
+        qa::Message value_to_message(VALUE v);
+        qa::EbuildCheckData value_to_ebuild_check_data(VALUE v);
+        VALUE ebuild_check_data_to_value(const qa::EbuildCheckData &);
+        VALUE check_result_to_value(const qa::CheckResult &);
+        VALUE package_dir_check_to_value(qa::PackageDirCheck::Pointer);
+        VALUE file_check_to_value(qa::FileCheck::Pointer);
+        VALUE ebuild_check_to_value(qa::EbuildCheck::Pointer);
+        VALUE message_to_value(const qa::Message &);
+        VALUE metadata_file_to_value(const qa::MetadataFile &);
+#endif
 
         /* registration */
 

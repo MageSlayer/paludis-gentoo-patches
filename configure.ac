@@ -427,6 +427,7 @@ if test x"$ENABLE_QA" = "xyes" ; then
 		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa is used])
 	fi
 	need_xml_check=yes
+	AC_DEFINE([ENABLE_RUBY_QA], [1], [Enable QA support in ruby])
 fi
 AC_SUBST([ENABLE_QA])
 AM_CONDITIONAL([ENABLE_QA], test "x$ENABLE_QA" = "xyes")
