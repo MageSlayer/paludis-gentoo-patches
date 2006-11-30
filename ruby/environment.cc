@@ -35,26 +35,6 @@ namespace
     static VALUE c_default_config;
     static VALUE c_no_config_environment;
 
-    class EnvironmentData
-    {
-        private:
-            Environment * _e;
-
-        public:
-            Environment * const env_ptr;
-
-            EnvironmentData(Environment * const ee, Environment * const free_e = 0) :
-                _e(free_e),
-                env_ptr(ee)
-            {
-            }
-
-            ~EnvironmentData()
-            {
-                delete _e;
-            }
-    };
-
     VALUE
     environment_query_use(int argc, VALUE * argv, VALUE self)
     {
@@ -285,13 +265,13 @@ namespace
     }
 }
 
-Environment *
-paludis::ruby::value_to_environment(VALUE v)
+EnvironmentData *
+paludis::ruby::value_to_environment_data(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_environment))
     {
-        Environment * v_ptr;
-        Data_Get_Struct(v, Environment, v_ptr);
+        EnvironmentData * v_ptr;
+        Data_Get_Struct(v, EnvironmentData, v_ptr);
         return v_ptr;
     }
     else

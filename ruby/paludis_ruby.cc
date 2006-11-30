@@ -77,7 +77,7 @@ namespace
     {
         try
         {
-            Environment * env = value_to_environment(en);
+            Environment * env = value_to_environment_data(en)->env_ptr;
             PackageDepAtom::ConstPointer atom = value_to_package_dep_atom(a);
             PackageDatabaseEntry target = value_to_package_database_entry(t);
             return match_package(env, atom, target) ? Qtrue : Qfalse;

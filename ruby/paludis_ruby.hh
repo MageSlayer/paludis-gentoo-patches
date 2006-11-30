@@ -42,6 +42,26 @@ namespace paludis
 
     namespace ruby
     {
+
+        class EnvironmentData
+        {
+            private:
+                Environment * _e;
+
+            public:
+                Environment * const env_ptr;
+
+                EnvironmentData(Environment * const ee, Environment * const free_e = 0) :
+                    _e(free_e),
+                    env_ptr(ee)
+                {
+                }
+
+                ~EnvironmentData()
+                {
+                    delete _e;
+                }
+        };
         /* general utilities */
 
         void exception_to_ruby_exception(const std::exception &) PALUDIS_ATTRIBUTE((noreturn));
@@ -67,7 +87,7 @@ namespace paludis
         PackageDepAtom::ConstPointer value_to_package_dep_atom(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
         PackageDatabaseEntry value_to_package_database_entry(VALUE v);
-        Environment* value_to_environment(VALUE v);
+        EnvironmentData* value_to_environment_data(VALUE v);
 
 #ifdef ENABLE_RUBY_QA
         VALUE paludis_qa_module();

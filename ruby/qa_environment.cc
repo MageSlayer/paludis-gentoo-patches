@@ -41,28 +41,29 @@ namespace
     VALUE
     qa_environment_new(int argc, VALUE* argv, VALUE self)
     {
-        QAEnvironment * ptr(0);
+        std::string write_cache;
         try
         {
             if (1 == argc)
             {
-                ptr = new QAEnvironment(FSEntry(StringValuePtr(argv[0])));
+                write_cache = "/var/empty";
             }
             else if (2 == argc)
             {
-                ptr = new QAEnvironment(FSEntry(StringValuePtr(argv[0])), FSEntry(StringValuePtr(argv[1])));
+                write_cache = StringValuePtr(argv[1]);
             }
             else
             {
                 rb_raise(rb_eArgError, "QAEnvironment expects one or two arguments, but got %d",argc);
             }
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<QAEnvironment>::free, ptr));
+            QAEnvironment * e = new QAEnvironment(FSEntry(StringValuePtr(argv[0])), FSEntry(write_cache));
+            EnvironmentData * ptr(new EnvironmentData(e,e));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<EnvironmentData>::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
         catch (const std::exception & e)
         {
-            delete ptr;
             exception_to_ruby_exception(e);
         }
     }

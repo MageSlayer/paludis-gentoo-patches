@@ -30,6 +30,11 @@ module Paludis
                 env = QAEnvironment.new('qa_environment_TEST_dir/repo1')
             end
 
+            def test_as_environment
+                env = QAEnvironment.new('qa_environment_TEST_dir/repo1')
+                assert_kind_of PackageDatabase, env.package_database
+            end
+
             def test_pass
                 env = QAEnvironment.new('qa_environment_TEST_dir/repo1')
                 check = EbuildCheckMaker.instance.find_maker('create_metadata')
