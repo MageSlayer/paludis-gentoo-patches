@@ -205,6 +205,10 @@ ReportTask::execute()
                     {
                         is_missing = true;
                     }
+                    catch (const NoSuchRepositoryError &)
+                    {
+                        is_missing = true;
+                    }
 
                     std::pair<VulnerableChecker::ConstIterator, VulnerableChecker::ConstIterator> pi(
                             vuln.insecure_tags(pde));
