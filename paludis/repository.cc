@@ -183,6 +183,8 @@ RepositoryInfo::end_sections() const
 CategoryNamePartCollection::ConstPointer
 Repository::do_category_names_containing_package(const PackageNamePart & p) const
 {
+    Context context("When finding category names containing package '" + stringify(p) + "':");
+
     CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
     CategoryNamePartCollection::ConstPointer cats(category_names());
     for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
