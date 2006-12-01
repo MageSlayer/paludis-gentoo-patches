@@ -197,6 +197,8 @@ The following keys are available for <code>format = portage</code>:
   to <code>/var/empty</code> if there is no metadata cache available.
 - <code>write_cache</code>, which can be set to a directory that will be used
   to write generated cache files.
+- <code>names_cache</code>, which should be either <code>/var/empty</code> or
+  <code>${location}/.cache/names</code>. See \link CacheFiles \endlink
 - <code>distdir</code> (default: <code>${location}/distfiles</code>), which
   controls where downloaded files are saved.
 - <code>eclassdirs</code> (default: <code>${location}/eclass</code>), which
@@ -228,6 +230,8 @@ The following keys are available for <code>format = vdb</code>:
   <code>${ROOT}/var/db/pkg</code>.
 - <code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which is
   used as a temporary directory when carrying out uninstall operations,
+- <code>provides_cache</code>, which should be either <code>/var/empty</code> or
+  <code>${location}/.cache/provides</code>. See \link CacheFiles \endlink
 - <code>world</code> (default: <code>${location}/world</code>), which is used
   for the world file.
 

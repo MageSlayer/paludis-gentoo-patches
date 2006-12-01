@@ -1,0 +1,64 @@
+/* vim: set ft=cpp tw=80 sw=4 et : */
+
+/**
+\page CacheFiles Cache Files
+
+\section CacheFilesOverview Overview
+
+This document explains the various cache options that are available for
+Paludis. Correct use of the cache can offer huge speed benefits; however,
+using the different cache options impose various restrictions about
+how other package managers can be used in parallel with Paludis.
+
+\section CacheFilesProvidesCache The Provides Cache
+
+Loading the VDB (information about installed packages) is rather slow on
+systems that have several hundred packages installed. The VDB format cannot
+currently be changed because lots of ebuilds rely upon it working (solutions
+involving hacking in a fake VDB with real data elsewhere are considered too
+hackish to be practical). This is a nuisance, because the VDB needs to be
+fully loaded for most tasks.
+
+Many common tasks only require a full VDB load to check for PROVIDE entries.
+If, instead of forcing a full scan to load PROVIDEs, we cache this data in
+a single file, various common tasks become an order of magnitude faster.
+Paludis supports this option via a key called <code>provides_cache</code>
+in the configuration files for <code>vdb</code> format repositories.
+
+To enable this cache, set <code>provides_cache = ${location}/.cache/provides</code> .
+To disable it, set <code>provides_cache = /var/empty</code> . By default, the
+provide cache is disabled but generates a warning message suggesting that the
+user explicitly enable or disable it.
+
+\warning If you enable the provides cache, and then go on to install or
+  uninstall packages using another package manager, you <b>must</b> run
+  <code>paludis --regenerate-installed-cache</code> before performing
+  <i>any</i> other operation. You should also run this command after turning
+  on the cache for the first time, and if Paludis is interrupted during
+  an install or uninstall.
+
+\section CacheFilesNamesCache The Names Cache
+
+Turning an unqualified package name, like <code>vim</code>, into a qualified
+name, like <code>app-editors/vim</code>, involves scanning every category
+directory. This can take several seconds on a cold filesystem cache. Paludis can
+cache unqualified to qualified name mappings for <code>portage</code> and
+<code>vdb</code> repository formats. This makes certain common tasks much faster.
+
+To enable this cache, set <code>names_cache = ${location}/.cache/names</code> .
+To disable it, set <code>names_cache = /var/empty</code> . By default, the
+names cache is disabled but generates a warning message suggesting that the
+user explicitly enable or disable it.
+
+\warning If you enable the names cache, and then go on to sync or otherwise
+  modify the repository in question manually or with another package manager,
+  you <b>must</b> run <code>paludis --regenerate-installable-cache</code>
+  (for Portage repositories) or <code>paludis
+  --regenerate-installed-cache</code> (for VDB repositories). You should
+  also run this command after turning on the cache for the first time,
+  and if Paludis is interrupted during an install, uninstall or sync.
+
+*/
+
+
+

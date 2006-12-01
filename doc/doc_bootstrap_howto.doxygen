@@ -206,6 +206,10 @@ which is set magically, to make the config work both in and outside of a
 chroot (this is one of the reasons we have the weird-looking specpath
 thing). The Paludis overlay is optional but recommended.
 
+You will also need to specify <code>names_cache</code> for the Portage format
+repositories and <code>provides_cache</code> for the VDB repositories.
+See \link CacheFiles \endlink .
+
 \verbatim
 cat <<"END" > /mychroot/etc/paludis/repositories/gentoo.conf
 location = ${ROOT}/var/paludis/repositories/gentoo/

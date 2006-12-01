@@ -169,6 +169,10 @@ Set up your repository files. Do not tinker with the VDB location, it
 <code>/usr/portage</code> for the main tree because sticking data that gets
 changed on <code>/usr</code> is silly.
 
+You will also need to specify <code>names_cache</code> for the Portage format
+repositories and <code>provides_cache</code> for the VDB repositories.
+See \link CacheFiles \endlink .
+
 \verbatim
 cat <<"END" > /etc/paludis/repositories/gentoo.conf
 location = /var/paludis/repositories/gentoo/

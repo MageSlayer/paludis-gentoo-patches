@@ -19,7 +19,8 @@ docfiles = \
 	doc_configuration_files.doxygen \
 	doc_migration_howto.doxygen \
 	doc_known_issues.doxygen \
-	doc_programming_with_paludis.doxygen
+	doc_programming_with_paludis.doxygen \
+	doc_cache_files.doxygen
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css $(docfiles) $(tagfiles)
 CLEANFILES = *~ html/* html
