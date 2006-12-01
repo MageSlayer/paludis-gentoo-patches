@@ -12,11 +12,11 @@ how other package managers can be used in parallel with Paludis.
 
 \section CacheFilesProvidesCache The Provides Cache
 
-Loading the VDB (information about installed packages) is rather slow on
+Loading the VDB (information about installed packages) is slow on
 systems that have several hundred packages installed. The VDB format cannot
 currently be changed because lots of ebuilds rely upon it working (solutions
-involving hacking in a fake VDB with real data elsewhere are considered too
-hackish to be practical). This is a nuisance, because the VDB needs to be
+involving hacking in a fake VDB with real data elsewhere are considered far too
+impractical). This is a nuisance, because the VDB needs to be
 fully loaded for most tasks.
 
 Many common tasks only require a full VDB load to check for PROVIDE entries.
@@ -27,7 +27,7 @@ in the configuration files for <code>vdb</code> format repositories.
 
 To enable this cache, set <code>provides_cache = ${location}/.cache/provides</code> .
 To disable it, set <code>provides_cache = /var/empty</code> . By default, the
-provide cache is disabled but generates a warning message suggesting that the
+provides cache is disabled but generates a warning message suggesting that the
 user explicitly enable or disable it.
 
 \warning If you enable the provides cache, and then go on to install or
