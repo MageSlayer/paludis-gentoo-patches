@@ -22,7 +22,10 @@ if test -f "$TEST_SCRIPT_DIR""${testname}"_"setup.sh" ; then
 fi
 
 echo ">>> test ${testname}"
-if ! ${@} ; then
+${@}
+code=$?
+if [[ 0 != ${code} ]] ; then
+    echo ">>> test ${testname} returned ${code}"
     if test -f "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh" ; then
         echo ">>> cleanup for test ${testname}"
         "$TEST_SCRIPT_DIR""${testname}"_"cleanup.sh"

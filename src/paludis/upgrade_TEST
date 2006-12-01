@@ -3,15 +3,15 @@
 PALUDIS_HOME=./upgrade_TEST_dir/config/ \
    ./paludis --config-suffix upgrade-test --install =test-category/target-1 || exit 1
 
-./upgrade_TEST_dir/root/usr/bin/testbin | grep testbin-1 >/dev/null || exit 1
-./upgrade_TEST_dir/root/usr/bin/testbin1 | grep testbin1 >/dev/null || exit 1
-./upgrade_TEST_dir/root/usr/bin/testbin2 && exit 1
+./upgrade_TEST_dir/root/usr/bin/testbin | grep testbin-1 >/dev/null || exit 2
+./upgrade_TEST_dir/root/usr/bin/testbin1 | grep testbin1 >/dev/null || exit 3
+./upgrade_TEST_dir/root/usr/bin/testbin2 && exit 4
 
 
 PALUDIS_HOME=./upgrade_TEST_dir/config/ \
-   ./paludis --config-suffix upgrade-test --install target || exit 1
+   ./paludis --config-suffix upgrade-test --install target || exit 5
 
-./upgrade_TEST_dir/root/usr/bin/testbin | grep testbin-2 >/dev/null || exit 1
-./upgrade_TEST_dir/root/usr/bin/testbin1 && exit 1
-./upgrade_TEST_dir/root/usr/bin/testbin2 | grep testbin2 >/dev/null || exit 1
+./upgrade_TEST_dir/root/usr/bin/testbin | grep testbin-2 >/dev/null || exit 6
+./upgrade_TEST_dir/root/usr/bin/testbin1 && exit 7
+./upgrade_TEST_dir/root/usr/bin/testbin2 | grep testbin2 >/dev/null || exit 8
 
