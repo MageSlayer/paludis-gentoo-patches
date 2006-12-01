@@ -134,6 +134,7 @@ cran_do_merge() {
         && rm -f "${IMAGE}/${PALUDIS_CRAN_LIBRARY##${ROOT}}/R.css"
     mkdir -p "${PALUDIS_CRAN_LIBRARY}/paludis/${PN}"
     ${PALUDIS_EBUILD_DIR}/utils/merge "${IMAGE}" "${ROOT}" "${PALUDIS_CRAN_LIBRARY}/paludis/${PN}/CONTENTS"
+    echo ${REPOSITORY} > "${PALUDIS_CRAN_LIBRARY}/paludis/${PN}/REPOSITORY"
 }
 
 cran_do_unmerge() {

@@ -562,7 +562,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
     cmd = cmd("ROOT", stringify(_imp->root));
     cmd = cmd("WORKDIR", workdir);
-
+    cmd = cmd("REPOSITORY", stringify(name()));
 
     if (0 != run_command(cmd))
         throw PackageInstallActionError("Couldn't merge '" + stringify(q) + "-" + stringify(vn) + "' to '" +

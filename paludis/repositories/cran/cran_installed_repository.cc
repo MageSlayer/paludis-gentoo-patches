@@ -267,6 +267,32 @@ CRANInstalledRepository::do_has_version(const QualifiedPackageName & q,
     return versions->end() != versions->find(v);
 }
 
+namespace
+{
+    /**
+     * Fetch the contents of a VDB file.
+     *
+     * \ingroup grpcranrepository
+     */
+    std::string
+    file_contents(const FSEntry & location, const QualifiedPackageName & name,
+            const std::string & key)
+    {
+        Context context("When loading metadata for '" + stringify(name)
+                + "' key '" + key + "' from '" + stringify(location) + "':");
+
+        FSEntry f(location / stringify(name.package));
+        if (! (f / key).is_regular_file())
+            return "";
+
+        std::ifstream ff(stringify(f / key).c_str());
+        if (! ff)
+            throw InternalError("CRANInstalledRepository", "Could not read '" + stringify(f / key) + "'");
+        return strip_leading(strip_trailing(std::string((std::istreambuf_iterator<char>(ff)),
+                        std::istreambuf_iterator<char>()), " \t\n"), " \t\n");
+    }
+}
+
 VersionMetadata::ConstPointer
 CRANInstalledRepository::do_version_metadata(
         const QualifiedPackageName & q, const VersionSpec & v) const
@@ -290,6 +316,11 @@ CRANInstalledRepository::do_version_metadata(
     if (d.is_regular_file())
     {
         CRANDescription description(stringify(q.package), d);
+        // Don't put this into CRANDescription, as it's only relevant to CRANInstalledRepository
+        std::string repo(file_contents(_imp->location, q, "REPOSITORY"));
+        if (! repo.empty())
+            description.metadata->origins.source.assign(new PackageDatabaseEntry(stringify(q.package), v,
+                    RepositoryName(repo)));
         result = description.metadata;
     }
     else
