@@ -59,6 +59,9 @@ namespace paludis
             bool load_provided_using_cache() const;
             void load_provided_the_slow_way() const;
 
+            void regenerate_provides_cache() const;
+            void regenerate_names_cache() const;
+
         protected:
             virtual bool do_has_category_named(const CategoryNamePart &) const;
 
@@ -106,6 +109,9 @@ namespace paludis
             virtual UseFlagNameCollection::ConstPointer do_use_expand_prefixes() const;
 
             /* end of RepositoryUseInterface */
+
+            virtual CategoryNamePartCollection::ConstPointer do_category_names_containing_package(
+                    const PackageNamePart &) const;
 
         public:
             /**

@@ -45,6 +45,7 @@
 #include <functional>
 #include <algorithm>
 #include <vector>
+#include <list>
 
 /** \file
  * Implementation for VDBRepository.
@@ -58,6 +59,8 @@ using namespace paludis;
 
 namespace
 {
+    typedef MakeHashedMap<PackageNamePart, std::list<CategoryNamePart> >::Type NameCacheMap;
+
     /**
      * Holds an entry in a VDB.
      */
@@ -245,10 +248,7 @@ namespace
         return ! std::count_if(DirIterator(vdb_dir), DirIterator(),
                 IsFileWithExtension(".ebuild"));
     }
-}
 
-namespace
-{
     /**
      * Fetch the contents of a VDB file.
      *
@@ -320,6 +320,8 @@ namespace paludis
         /// Provides cache
         FSEntry provides_cache;
 
+        FSEntry names_cache;
+
         /// Do we have entries loaded?
         mutable bool entries_valid;
 
@@ -334,6 +336,8 @@ namespace paludis
 
         /// Provieds data
         mutable RepositoryProvidesInterface::ProvidesCollection::Pointer provides;
+
+        mutable NameCacheMap name_cache_map;
 
         /// Constructor.
         Implementation(const VDBRepositoryParams &);
@@ -353,6 +357,7 @@ namespace paludis
         buildroot(p.buildroot),
         world_file(p.world),
         provides_cache(p.provides_cache),
+        names_cache(p.names_cache),
         entries_valid(false),
         provides(0)
     {
@@ -808,6 +813,15 @@ VDBRepository::make_vdb_repository(
         provides_cache = "/var/empty";
     }
 
+    std::string names_cache;
+    if (m->end() == m->find("names_cache") || ((names_cache = m->find("names_cache")->second)).empty())
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, "The names_cache key is not set in '"
+                + repo_file + "'. You should read http://paludis.berlios.de/CacheFiles.html and select an "
+                "appropriate value.");
+        names_cache = "/var/empty";
+    }
+
     std::string buildroot;
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
@@ -819,7 +833,8 @@ VDBRepository::make_vdb_repository(
                 .root(root)
                 .world(world)
                 .buildroot(buildroot)
-                .provides_cache(provides_cache)));
+                .provides_cache(provides_cache)
+                .names_cache(names_cache)));
 }
 
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(
@@ -1301,6 +1316,13 @@ VDBRepository::load_provided_the_slow_way() const
 void
 VDBRepository::regenerate_cache() const
 {
+    regenerate_provides_cache();
+    regenerate_names_cache();
+}
+
+void
+VDBRepository::regenerate_provides_cache() const
+{
     if (_imp->provides_cache == FSEntry("/var/empty"))
         return;
 
@@ -1338,6 +1360,79 @@ VDBRepository::regenerate_cache() const
 
         f << c->name << " " << c->version << " " << provide_str << std::endl;
     }
+}
+
+void
+VDBRepository::regenerate_names_cache() const
+{
+    if (_imp->names_cache == FSEntry("/var/empty"))
+        return;
+
+    Context context("When generating VDB repository names cache at '"
+            + stringify(_imp->names_cache) + "':");
+
+    if (_imp->names_cache.is_directory())
+        for (DirIterator i(_imp->names_cache, true), i_end ; i != i_end ; ++i)
+            FSEntry(*i).unlink();
+
+    _imp->names_cache.dirname().mkdir();
+    FSEntry(_imp->names_cache).mkdir();
+
+    MakeHashedMap<std::string, std::string>::Type m;
+
+    CategoryNamePartCollection::ConstPointer cats(category_names());
+    for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+            c != c_end ; ++c)
+    {
+        QualifiedPackageNameCollection::ConstPointer pkgs(package_names(*c));
+        for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+                p != p_end ; ++p)
+            m[stringify(p->package)].append(stringify(*c) + "\n");
+    }
+
+    for (MakeHashedMap<std::string, std::string>::Type::const_iterator e(m.begin()), e_end(m.end()) ;
+            e != e_end ; ++e)
+    {
+        std::ofstream f(stringify(_imp->names_cache / stringify(e->first)).c_str());
+        if (! f)
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Cannot write to '"
+                    + stringify(_imp->names_cache) + "'");
+            continue;
+        }
+        f << e->second;
+    }
+
+}
+
+CategoryNamePartCollection::ConstPointer
+VDBRepository::do_category_names_containing_package(const PackageNamePart & p) const
+{
+    if (_imp->names_cache == FSEntry("/var/empty"))
+        return Repository::do_category_names_containing_package(p);
+
+    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
+    NameCacheMap::iterator r(_imp->name_cache_map.find(p));
+
+    if (_imp->name_cache_map.end() == r)
+    {
+        r = _imp->name_cache_map.insert(std::make_pair(p, std::list<CategoryNamePart>())).first;
+
+        FSEntry ff(_imp->names_cache / stringify(p));
+        if (ff.exists())
+        {
+            std::ifstream f(stringify(ff).c_str());
+            if (! f)
+                Log::get_instance()->message(ll_warning, lc_context, "Cannot read '" + stringify(ff) + "'");
+            std::string line;
+            while (std::getline(f, line))
+                r->second.push_back(CategoryNamePart(line));
+        }
+    }
+
+    std::copy(r->second.begin(), r->second.end(), result->inserter());
+
+    return result;
 }
 
 #ifdef PALUDIS_ENABLE_VISIBILITY

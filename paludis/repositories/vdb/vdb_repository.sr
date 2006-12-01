@@ -9,6 +9,7 @@ make_class_VDBRepositoryParams()
     key root FSEntry
     key world FSEntry
     key provides_cache FSEntry
+    key names_cache FSEntry
     key buildroot FSEntry
 
     doxygen_comment << "END"
