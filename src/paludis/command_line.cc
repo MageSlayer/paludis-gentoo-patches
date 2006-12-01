@@ -183,7 +183,7 @@ CommandLine::CommandLine() :
             ("as-needed-except-targets", "Where necessary, but not for target packages")
             ("as-needed",                "Where necessary, including for target packages")
             ("never",                    "Never"),
-            "as-needed"),
+            "as-needed-except-targets"),
 
     list_args(this, "List options",
             "Options relevant for one or more of the --list actions."),
