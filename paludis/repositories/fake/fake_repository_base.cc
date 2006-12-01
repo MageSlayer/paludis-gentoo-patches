@@ -112,9 +112,10 @@ FakeRepositoryBase::do_category_names() const
 QualifiedPackageNameCollection::ConstPointer
 FakeRepositoryBase::do_package_names(const CategoryNamePart & c) const
 {
-    if (! has_category_named(c))
-        throw InternalError(PALUDIS_HERE, "no category named " + stringify(c));
     QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
+    if (! has_category_named(c))
+        return result;
+
     PackageNamePartCollection::Iterator p(_imp->package_names.find(c)->second->begin()),
         p_end(_imp->package_names.find(c)->second->end());
     for ( ; p != p_end ; ++p)
@@ -126,9 +127,9 @@ VersionSpecCollection::ConstPointer
 FakeRepositoryBase::do_version_specs(const QualifiedPackageName & n) const
 {
     if (! has_category_named(n.category))
-        throw InternalError(PALUDIS_HERE, "no category");
+        return VersionSpecCollection::Pointer(new VersionSpecCollection::Concrete);
     if (! has_package_named(n))
-        throw InternalError(PALUDIS_HERE, "no package");
+        return VersionSpecCollection::Pointer(new VersionSpecCollection::Concrete);
     return _imp->versions.find(n)->second;
 }
 
@@ -136,9 +137,9 @@ bool
 FakeRepositoryBase::do_has_version(const QualifiedPackageName & q, const VersionSpec & v) const
 {
     if (! has_category_named(q.category))
-        throw InternalError(PALUDIS_HERE, "no category");
+        return false;
     if (! has_package_named(q))
-        throw InternalError(PALUDIS_HERE, "no package");
+        return false;
     return _imp->versions.find(q)->second->find(v) !=
         _imp->versions.find(q)->second->end();
 }

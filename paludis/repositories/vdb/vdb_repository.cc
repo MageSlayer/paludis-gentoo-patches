@@ -325,11 +325,15 @@ namespace paludis
         /// Do we have entries loaded?
         mutable bool entries_valid;
 
+        /// Do we have category entries loaded?
+        mutable MakeHashedSet<CategoryNamePart>::Type category_entries_valid;
+
         /// Our entries, keep this sorted!
         mutable std::vector<VDBEntry> entries;
 
         /// Load entries.
         void load_entries() const;
+        void load_entries_for(const CategoryNamePart &) const;
 
         /// Load metadata for one entry.
         void load_entry(std::vector<VDBEntry>::iterator) const;
@@ -373,27 +377,59 @@ namespace paludis
         Context context("When loading VDBRepository entries from '" +
                 stringify(location) + "':");
 
+        Log::get_instance()->message(ll_debug, lc_context, "VDB load entries started");
+
         entries.clear();
+        category_entries_valid.clear();
         entries_valid = true;
         try
         {
             for (DirIterator cat_i(location), cat_iend ; cat_i != cat_iend ; ++cat_i)
-            {
-                if (! cat_i->is_directory())
-                    continue;
-
-                for (DirIterator pkg_i(*cat_i), pkg_iend ; pkg_i != pkg_iend ; ++pkg_i)
-                {
-                    PackageDepAtom atom("=" + cat_i->basename() + "/" + pkg_i->basename());
-                    entries.push_back(VDBEntry(atom.package(), *atom.version_spec_ptr()));
-                }
-            }
+                load_entries_for(CategoryNamePart(cat_i->basename()));
 
             std::sort(entries.begin(), entries.end());
         }
         catch (...)
         {
             entries_valid = false;
+            throw;
+        }
+
+        Log::get_instance()->message(ll_debug, lc_context, "VDB load entries done");
+    }
+
+    void
+    Implementation<VDBRepository>::load_entries_for(const CategoryNamePart & cat) const
+    {
+        MakeHashedSet<CategoryNamePart>::Type::const_iterator i(category_entries_valid.find(cat));
+        if (i != category_entries_valid.end())
+            return;
+
+        Context context("When loading VDBRepository entries for '" + stringify(cat) + "' from '" +
+                stringify(location) + "':");
+
+        Log::get_instance()->message(ll_debug, lc_context, "VDB load entries for '" +
+                stringify(cat) + "' started");
+
+        try
+        {
+            category_entries_valid.insert(cat);
+
+            FSEntry dir(location / stringify(cat));
+            if (! dir.is_directory())
+                return;
+
+            for (DirIterator pkg_i(dir), pkg_iend ; pkg_i != pkg_iend ; ++pkg_i)
+            {
+                PackageDepAtom atom("=" + stringify(cat) + "/" + pkg_i->basename());
+                entries.push_back(VDBEntry(atom.package(), *atom.version_spec_ptr()));
+            }
+
+            std::sort(entries.begin(), entries.end());
+        }
+        catch (...)
+        {
+            category_entries_valid.erase(cat);
             throw;
         }
     }
@@ -403,6 +439,7 @@ namespace paludis
     {
         entries_valid = false;
         entries.clear();
+        category_entries_valid.clear();
     }
 
     void
@@ -509,7 +546,7 @@ VDBRepository::do_has_package_named(const QualifiedPackageName & q) const
             "' in " + stringify(name()) + ":");
 
     if (! _imp->entries_valid)
-        _imp->load_entries();
+        _imp->load_entries_for(q.category);
 
     std::pair<std::vector<VDBEntry>::const_iterator, std::vector<VDBEntry>::const_iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), q,
@@ -572,6 +609,9 @@ VDBRepository::do_version_specs(const QualifiedPackageName & n) const
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
+    if (! _imp->entries_valid)
+        _imp->load_entries_for(n.category);
+
     VersionSpecCollection::Pointer result(new VersionSpecCollection::Concrete);
 
     std::pair<std::vector<VDBEntry>::const_iterator, std::vector<VDBEntry>::const_iterator>
@@ -603,7 +643,7 @@ VDBRepository::do_version_metadata(
             "-" + stringify(v) + "':");
 
     if (! _imp->entries_valid)
-        _imp->load_entries();
+        _imp->load_entries_for(q.category);
 
     std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
@@ -712,7 +752,7 @@ VDBRepository::do_installed_time(const QualifiedPackageName & q,
             "-" + stringify(v) + "':");
 
     if (! _imp->entries_valid)
-        _imp->load_entries();
+        _imp->load_entries_for(q.category);
 
     std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
@@ -746,11 +786,10 @@ UseFlagState
 VDBRepository::do_query_use(const UseFlagName & f,
         const PackageDatabaseEntry * const e) const
 {
-    if (! _imp->entries_valid)
-        _imp->load_entries();
-
-    if (e->repository == name())
+    if (e && e->repository == name())
     {
+        if (! _imp->entries_valid)
+            _imp->load_entries_for(e->name.category);
 
         std::pair<std::vector<VDBEntry>::iterator, std::vector<VDBEntry>::iterator>
             r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
@@ -1416,6 +1455,9 @@ VDBRepository::do_category_names_containing_package(const PackageNamePart & p) c
 
     if (_imp->name_cache_map.end() == r)
     {
+        Log::get_instance()->message(ll_debug, lc_context, "Loading names cache for '" +
+                stringify(p) + "'");
+
         r = _imp->name_cache_map.insert(std::make_pair(p, std::list<CategoryNamePart>())).first;
 
         FSEntry ff(_imp->names_cache / stringify(p));

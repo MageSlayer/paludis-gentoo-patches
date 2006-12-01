@@ -218,12 +218,6 @@ PackageDatabase::_do_query(const PackageDepAtom & a, const InstallState installe
         if ((installed_state == is_uninstalled_only) && r->installed_interface)
             continue;
 
-        if (! r->has_category_named(a.package().category))
-            continue;
-
-        if (! r->has_package_named(a.package()))
-            continue;
-
         VersionSpecCollection::ConstPointer versions(r->version_specs(a.package()));
         VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end());
         for ( ; v != v_end ; ++v)
