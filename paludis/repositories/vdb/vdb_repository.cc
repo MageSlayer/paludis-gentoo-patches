@@ -514,7 +514,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     config_info->add_kv("root", stringify(_imp->root));
     config_info->add_kv("format", "vdb");
     config_info->add_kv("world", stringify(_imp->world_file));
-    config_info->add_kv("world", stringify(_imp->provides_cache));
+    config_info->add_kv("provides_cache", stringify(_imp->provides_cache));
+    config_info->add_kv("names_cache", stringify(_imp->names_cache));
     config_info->add_kv("buildroot", stringify(_imp->buildroot));
 
     _info->add_section(config_info);
