@@ -812,12 +812,25 @@ namespace
     bool is_scm(const QualifiedPackageName & n)
     {
         std::string pkg(stringify(n.package));
-        if (pkg.length() < 5)
-            return false;
-        if (0 == pkg.compare(pkg.length() - 4, 4, "-cvs"))
-            return true;
-        if (0 == pkg.compare(pkg.length() - 4, 4, "-svn"))
-            return true;
+        switch (pkg.length())
+        {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+                return false;
+
+            case 4:
+                if (0 == pkg.compare(pkg.length() - 4, 4, "-cvs"))
+                    return true;
+                if (0 == pkg.compare(pkg.length() - 4, 4, "-svn"))
+                    return true;
+
+                /* fall through */
+            default:
+                if (0 == pkg.compare(pkg.length() - 5, 5, "-live"))
+                    return true;
+        }
         return false;
     }
 }
