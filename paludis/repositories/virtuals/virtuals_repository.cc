@@ -36,13 +36,40 @@ namespace paludis
     {
         const Environment * const env;
 
+        mutable std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> > names;
+        mutable bool has_names;
+
         mutable std::vector<VREntry> entries;
         mutable bool has_entries;
 
         Implementation(const Environment * const e) :
             env(e),
+            has_names(false),
             has_entries(false)
         {
+        }
+    };
+}
+
+namespace
+{
+    struct NamesCategoryComparator
+    {
+        bool
+        operator() (const std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> & a,
+                const std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> & b) const
+        {
+            return a.first.category < b.first.category;
+        }
+    };
+
+    struct NamesNameComparator
+    {
+        bool
+        operator() (const std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> & a,
+                const std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> & b) const
+        {
+            return a.first < b.first;
         }
     };
 }
@@ -75,16 +102,16 @@ VirtualsRepository::~VirtualsRepository()
 }
 
 void
-VirtualsRepository::need_entries() const
+VirtualsRepository::need_names() const
 {
-    if (_imp->has_entries)
+    if (_imp->has_names)
         return;
 
-    Context context("When loading entries for virtuals repository:");
+    Context context("When loading names for virtuals repository:");
+
+    Log::get_instance()->message(ll_debug, lc_context, "VirtualsRepository need_names");
 
     /* Determine our virtual name -> package mappings. */
-    std::map<QualifiedPackageName, PackageDepAtom::ConstPointer> virtual_to_real;
-
     for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
@@ -95,9 +122,11 @@ VirtualsRepository::need_entries() const
                 (*r)->provides_interface->provided_packages());
         for (RepositoryProvidesInterface::ProvidesCollection::Iterator p(provides->begin()),
                 p_end(provides->end()) ; p != p_end ; ++p)
-            virtual_to_real.insert(std::make_pair(p->virtual_name, PackageDepAtom::Pointer(
+            _imp->names.push_back(std::make_pair(p->virtual_name, PackageDepAtom::ConstPointer(
                             new PackageDepAtom(stringify(p->provided_by_name)))));
     }
+
+    std::sort(_imp->names.begin(), _imp->names.end());
 
     for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
@@ -109,12 +138,36 @@ VirtualsRepository::need_entries() const
                 (*r)->virtuals_interface->virtual_packages());
         for (RepositoryVirtualsInterface::VirtualsCollection::Iterator v(virtuals->begin()),
                 v_end(virtuals->end()) ; v != v_end ; ++v)
-            virtual_to_real.insert(std::make_pair(v->virtual_name, v->provided_by_atom));
+        {
+            std::pair<
+                std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator,
+                std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator> p(
+                        std::equal_range(_imp->names.begin(), _imp->names.end(),
+                            std::make_pair(v->virtual_name, PackageDepAtom::ConstPointer(0)),
+                            NamesNameComparator()));
+
+            if (p.first == p.second)
+                _imp->names.push_back(std::make_pair(v->virtual_name, v->provided_by_atom));
+        }
     }
 
+    std::sort(_imp->names.begin(), _imp->names.end());
+}
+
+void
+VirtualsRepository::need_entries() const
+{
+    if (_imp->has_entries)
+        return;
+
+    Context context("When loading entries for virtuals repository:");
+    need_names();
+
+    Log::get_instance()->message(ll_debug, lc_context, "VirtualsRepository need_entries");
+
     /* Populate our _imp->entries. */
-    for (std::map<QualifiedPackageName, PackageDepAtom::ConstPointer>::const_iterator
-            v(virtual_to_real.begin()), v_end(virtual_to_real.end()) ; v != v_end ; ++v)
+    for (std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator
+            v(_imp->names.begin()), v_end(_imp->names.end()) ; v != v_end ; ++v)
     {
         PackageDatabaseEntryCollection::ConstPointer matches(_imp->env->package_database()->query(v->second,
                     is_uninstalled_only));
@@ -231,24 +284,18 @@ VirtualsRepository::do_package_names(const CategoryNamePart & c) const
     if (c.data() != "virtual")
         return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection::Concrete);
 
-    need_entries();
+    need_names();
 
-    std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
-            std::equal_range(_imp->entries.begin(), _imp->entries.end(),
-                VREntry(c + PackageNamePart("dummy"), VersionSpec("0"), QualifiedPackageName("dummy/package"),
-                    RepositoryName("dummy_repository")), EntriesCategoryComparator()));
-
+    std::pair<
+        std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator,
+        std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator> p(
+            std::equal_range(_imp->names.begin(), _imp->names.end(),
+                std::make_pair(c + PackageNamePart("dummy"), PackageDepAtom::ConstPointer(0)),
+                NamesCategoryComparator()));
 
     QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
-#if 0
-    /// \todo: in theory, this can be a lot faster
-    for ( ; p.first != p.second ; ++p.first)
-        result->insert(p.first->virtual_name);
-#else
-    fast_unique_copy(p.first, p.second,
-            transform_inserter(result->inserter(), EntriesNameExtractor()),
-            EntriesNameComparator());
-#endif
+    std::copy(p.first, p.second, transform_inserter(result->inserter(),
+                SelectFirst<QualifiedPackageName, PackageDepAtom::ConstPointer>()));
 
     return result;
 }
@@ -275,12 +322,14 @@ VirtualsRepository::do_has_package_named(const QualifiedPackageName & q) const
     if (q.category.data() != "virtual")
         return false;
 
-    need_entries();
+    need_names();
 
-    std::pair<std::vector<VREntry>::const_iterator, std::vector<VREntry>::const_iterator> p(
-            std::equal_range(_imp->entries.begin(), _imp->entries.end(),
-                VREntry(q, VersionSpec("0"), QualifiedPackageName("dummy/package"),
-                    RepositoryName("dummy_repository")), EntriesNameComparator()));
+    std::pair<
+        std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator,
+        std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator> p(
+            std::equal_range(_imp->names.begin(), _imp->names.end(),
+                std::make_pair(q, PackageDepAtom::ConstPointer(0)),
+                NamesNameComparator()));
 
     return p.first != p.second;
 }

@@ -36,6 +36,7 @@ namespace paludis
         private PrivateImplementationPattern<VirtualsRepository>
     {
         private:
+            void need_names() const;
             void need_entries() const;
 
         protected:
