@@ -94,7 +94,7 @@ namespace paludis
     typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
 
     /// Map for name caches.
-    typedef MakeHashedMultiMap<PackageNamePart, CategoryNamePart>::Type NameCacheMap;
+    typedef MakeHashedMap<PackageNamePart, std::list<CategoryNamePart> >::Type NameCacheMap;
 
     /**
      * Implementation data for a PortageRepository.
@@ -179,9 +179,6 @@ namespace paludis
         /// Name cache map
         mutable NameCacheMap name_cache_map;
 
-        /// Have we loaded our name cache map?
-        mutable bool has_name_cache_map;
-
         /// Can we use our name cache map?
         mutable bool can_use_name_cache_map;
 
@@ -202,7 +199,6 @@ namespace paludis
         entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
                     params.entry_format)(params.environment, r, p)),
         has_our_virtuals(false),
-        has_name_cache_map(false),
         can_use_name_cache_map(true),
         repo(r)
     {
@@ -1030,20 +1026,14 @@ PortageRepository::regenerate_cache() const
     Context context("When generating Portage repository names cache at '"
             + stringify(_imp->params.names_cache) + "':");
 
-    FSEntry(_imp->params.names_cache).unlink();
+    if (_imp->params.names_cache.is_directory())
+        for (DirIterator i(_imp->params.names_cache, true), i_end ; i != i_end ; ++i)
+            FSEntry(*i).unlink();
+
     _imp->params.names_cache.dirname().mkdir();
+    FSEntry(_imp->params.names_cache).mkdir();
 
-    std::ofstream f(stringify(_imp->params.names_cache).c_str());
-    if (! f)
-    {
-        Log::get_instance()->message(ll_warning, lc_context, "Cannot write to '"
-                + stringify(_imp->params.names_cache) + "'");
-        return;
-    }
-
-    f << "paludis-1" << std::endl;
-
-    NameCacheMap m;
+    MakeHashedMap<std::string, std::string>::Type m;
 
     CategoryNamePartCollection::ConstPointer cats(category_names());
     for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
@@ -1052,22 +1042,21 @@ PortageRepository::regenerate_cache() const
         QualifiedPackageNameCollection::ConstPointer pkgs(package_names(*c));
         for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
-            m.insert(std::make_pair(p->package, *c));
+            m[stringify(p->package)].append(stringify(*c) + "\n");
     }
 
-    PackageNamePart old_p("not-a-package");
-    for (NameCacheMap::const_iterator e(m.begin()), e_end(m.end()) ;
+    for (MakeHashedMap<std::string, std::string>::Type::const_iterator e(m.begin()), e_end(m.end()) ;
             e != e_end ; ++e)
     {
-        if (e->first != old_p)
+        std::ofstream f(stringify(_imp->params.names_cache / stringify(e->first)).c_str());
+        if (! f)
         {
-            f << std::endl << e->first;
-            old_p = e->first;
+            Log::get_instance()->message(ll_warning, lc_context, "Cannot write to '"
+                    + stringify(_imp->params.names_cache) + "'");
+            continue;
         }
-
-        f << " " << e->second;
+        f << e->second;
     }
-    f << std::endl;
 }
 
 CategoryNamePartCollection::ConstPointer
@@ -1076,55 +1065,27 @@ PortageRepository::do_category_names_containing_package(const PackageNamePart & 
     if (_imp->params.names_cache == FSEntry("/var/empty") || ! _imp->can_use_name_cache_map)
         return Repository::do_category_names_containing_package(p);
 
-    if (! _imp->has_name_cache_map)
+    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
+    NameCacheMap::iterator r(_imp->name_cache_map.find(p));
+
+    if (_imp->name_cache_map.end() == r)
     {
-        Context context("When finding category names containing a package using '" +
-                stringify(_imp->params.names_cache) + "':");
+        r = _imp->name_cache_map.insert(std::make_pair(p, std::list<CategoryNamePart>())).first;
 
-        if (! _imp->params.names_cache.is_regular_file())
+        FSEntry ff(_imp->params.names_cache / stringify(p));
+        if (ff.exists())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Provides cache at '"
-                    + stringify(_imp->params.names_cache) + "' is not a regular file.");
-            _imp->can_use_name_cache_map = false;
-            return Repository::do_category_names_containing_package(p);
+            std::ifstream f(stringify(ff).c_str());
+            if (! f)
+                Log::get_instance()->message(ll_warning, lc_context, "Cannot read '" + stringify(ff) + "'");
+            std::string line;
+            while (std::getline(f, line))
+                r->second.push_back(CategoryNamePart(line));
         }
-
-        std::ifstream names_cache(stringify(_imp->params.names_cache).c_str());
-
-        std::string version;
-        std::getline(names_cache, version);
-
-        if (version != "paludis-1")
-        {
-            Log::get_instance()->message(ll_warning, lc_no_context, "Can't use names cache at '"
-                    + stringify(_imp->params.names_cache) + "' because format '" + version + "' is not 'paludis-1'");
-            return Repository::do_category_names_containing_package(p);
-        }
-
-        std::string line;
-        while (std::getline(names_cache, line))
-        {
-            if (line.empty())
-                continue;
-
-            std::vector<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(line, std::back_inserter(tokens));
-            if (tokens.size() < 2)
-                continue;
-
-            for (std::vector<std::string>::const_iterator i(next(tokens.begin())), i_end(tokens.end()) ;
-                    i != i_end ; ++i)
-                _imp->name_cache_map.insert(std::make_pair(PackageNamePart(tokens.at(0)),
-                            CategoryNamePart(*i)));
-        }
-        _imp->has_name_cache_map = true;
     }
 
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
-    std::pair<NameCacheMap::const_iterator, NameCacheMap::const_iterator> r(
-            _imp->name_cache_map.equal_range(p));
-    std::copy(r.first, r.second, transform_inserter(result->inserter(),
-                SelectSecond<PackageNamePart, CategoryNamePart>()));
+    std::copy(r->second.begin(), r->second.end(), result->inserter());
+
     return result;
 }
 
