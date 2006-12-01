@@ -34,6 +34,8 @@ _paludis() {
         --list-repository-formats \
         --list-dep-tag-categories \
         --update-news \
+        --regenerate-installed-cache \
+        --regenerate-installable-cache \
         --log-level \
         --no-colour \
         --no-color \
