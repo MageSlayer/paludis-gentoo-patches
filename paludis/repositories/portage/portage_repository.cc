@@ -456,6 +456,8 @@ PortageRepository::need_category_names() const
 
     Context context("When loading category names for " + stringify(name()) + ":");
 
+    Log::get_instance()->message(ll_debug, lc_context, "need_category_names");
+
     if (! (_imp->params.location / "profiles" / "categories").exists())
     {
         Log::get_instance()->message(ll_qa, lc_context, "No categories file for repository at '"
@@ -499,6 +501,8 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
 
     Context context("When loading versions for '" + stringify(n) + "' in "
             + stringify(name()) + ":");
+
+    Log::get_instance()->message(ll_debug, lc_context, "need_version_names '" + stringify(n) + "'");
 
     VersionSpecCollection::Pointer v(new VersionSpecCollection::Concrete);
 
