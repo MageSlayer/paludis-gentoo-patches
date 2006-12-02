@@ -1617,5 +1617,43 @@ namespace test_cases
             TEST_CHECK_EQUAL(join(d2.begin(), d2.end(), " "), "cat/two-2:0::repo cat/one-1:0::repo");
         }
     } test_dep_list_upgrade_as_needed;
+
+    /**
+     * \test Test DepList reinstall scm.
+     */
+    struct DepListTestCaseReinstallSCM : TestCase
+    {
+        DepListTestCaseReinstallSCM() : TestCase("dep list reinstall scm") { }
+
+        void run()
+        {
+            TestEnvironment env;
+
+            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            env.package_database()->add_repository(repo);
+            repo->add_version("cat", "zero", "1")->deps.build_depend_string =
+                "( cat/one cat/two cat/three-live cat/four-cvs cat/five-svn )";
+            repo->add_version("cat", "one", "scm");
+            repo->add_version("cat", "two", "2");
+            repo->add_version("cat", "three-live", "0");
+            repo->add_version("cat", "four-cvs", "0");
+            repo->add_version("cat", "five-svn", "0");
+
+            FakeInstalledRepository::Pointer installed_repo(
+                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+            env.package_database()->add_repository(installed_repo);
+            installed_repo->add_version("cat", "one", "scm");
+            installed_repo->add_version("cat", "two", "2");
+            installed_repo->add_version("cat", "three-live", "0");
+            installed_repo->add_version("cat", "four-cvs", "0");
+            installed_repo->add_version("cat", "five-svn", "0");
+
+            DepList d1(&env, DepListOptions());
+            d1.options.reinstall_scm = dl_reinstall_scm_always;
+            d1.add(PortageDepParser::parse("cat/zero"));
+            TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/one-scm:0::repo cat/two-2:0::installed_repo "
+                    "cat/three-live-0:0::repo cat/four-cvs-0:0::repo cat/five-svn-0:0::repo cat/zero-1:0::repo");
+        }
+    } test_dep_list_upgrade_reinstall_scm;
 }
 
