@@ -58,6 +58,25 @@ user explicitly enable or disable it.
   also run this command after turning on the cache for the first time,
   and if Paludis is interrupted during an install, uninstall or sync.
 
+\section CacheFilesMetadataCache The Metadata Cache
+
+Extracting metadata (description, dependency information and so on) from an
+ebuild is slow -- it involves invoking <code>bash</code> with a considerable
+amount of supporting code. To avoid this penalty, a centrally generated metadata
+cache is distributed with the official tree in the <code>metadata/cache</code>
+directory (Paludis can be told to look elsewhere by using the <code>cache</code>
+reposiory key).  For third party repositories and non-rsync users, this metadata
+cache may not be available.
+
+Paludis can generate metadata cache locally on demand. This will not speed up the
+first time cache is accessed for a particular ebuild, but subsequent invocations
+will be several orders of magnitude faster. To enable this cache where it is needed,
+set the <code>write_cache</code> key in a Portage format repository. Recommended
+values are <code>/var/cache/paludis/metadata</code> or
+<code>/home/username/.paludis-cache</code>. Note that Paludis will place the
+write cache for a repository into a subdirectory named for that repository, so
+specifying the same <code>write_cache</code> for every repository is acceptable.
+
 */
 
 
