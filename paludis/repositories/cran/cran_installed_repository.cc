@@ -76,9 +76,6 @@ namespace paludis
         /// Load entries.
         void load_entries() const;
 
-        /// Load metadata for one entry.
-        void load_entry(std::vector<CRANDescription>::iterator) const;
-
         /// Metadata cache
         mutable MetadataMap metadata;
 
@@ -227,6 +224,9 @@ CRANInstalledRepository::do_package_names(const CategoryNamePart & c) const
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
+    if (! _imp->entries_valid)
+        _imp->load_entries();
+
     QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
     if (! do_has_category_named(c))
         return result;
@@ -245,6 +245,9 @@ CRANInstalledRepository::do_version_specs(const QualifiedPackageName & n) const
             + stringify(name()) + ":");
 
     VersionSpecCollection::Pointer result(new VersionSpecCollection::Concrete);
+
+    if (! _imp->entries_valid)
+        _imp->load_entries();
 
     std::pair<std::vector<CRANDescription>::const_iterator, std::vector<CRANDescription>::const_iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), n,
