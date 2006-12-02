@@ -4,6 +4,15 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.12.0:
+    * The QA library now has a Ruby interface.
+
+    * Huge performance increases for various common tasks, assisted by optional
+    new cache methods. This requires changes to repository files (documented in
+    CacheFiles.html).
+
+    * Packages named -live are now recognised as SCM packages.
+
 0.10.1:
     * Package origins and install times can now be queried.
 
