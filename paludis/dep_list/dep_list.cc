@@ -825,8 +825,8 @@ namespace
                     return true;
                 if (0 == pkg.compare(pkg.length() - 4, 4, "-svn"))
                     return true;
+                return false;
 
-                /* fall through */
             default:
                 if (0 == pkg.compare(pkg.length() - 5, 5, "-live"))
                     return true;
