@@ -820,16 +820,16 @@ namespace
             case 3:
                 return false;
 
+            default:
+                if (0 == pkg.compare(pkg.length() - 5, 5, "-live"))
+                    return true;
+
             case 4:
                 if (0 == pkg.compare(pkg.length() - 4, 4, "-cvs"))
                     return true;
                 if (0 == pkg.compare(pkg.length() - 4, 4, "-svn"))
                     return true;
                 return false;
-
-            default:
-                if (0 == pkg.compare(pkg.length() - 5, 5, "-live"))
-                    return true;
         }
         return false;
     }
