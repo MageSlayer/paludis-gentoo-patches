@@ -26,6 +26,10 @@ Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 module Paludis
     module QA
         class TestCase_FileCheckMaker < Test::Unit::TestCase
+            def instance
+                FileCheckMaker.instance
+            end
+
             def test_instance
                 assert_equal FileCheckMaker.instance.__id__, FileCheckMaker.instance.__id__
                 assert_kind_of FileCheckMaker, FileCheckMaker.instance
@@ -38,22 +42,37 @@ module Paludis
             end
 
             def test_respond_to
-                assert_respond_to FileCheckMaker.instance, :keys
-                assert_respond_to FileCheckMaker.instance, :find_maker
+                assert_respond_to instance, :keys
+                assert_respond_to instance, :find_maker
+                assert_respond_to instance, :check_names
+                assert_respond_to instance, :find_check
             end
 
             def test_keys
-                assert_kind_of Array, FileCheckMaker.instance.keys
-                assert_not_equal 0, FileCheckMaker.instance.keys
+                assert_kind_of Array, instance.keys
+                assert_not_equal 0, instance.keys
             end
 
             def test_find_maker
-                name = FileCheckMaker.instance.keys.first
-                assert_kind_of FileCheck, FileCheckMaker.instance.find_maker(name)
+                name = instance.keys.first
+                assert_kind_of FileCheck, instance.find_maker(name)
+            end
+            def test_check_names
+                assert_kind_of Array, instance.check_names
+                assert_equal instance.keys, instance.check_names
+            end
+
+            def test_find_check
+                name = instance.keys.first
+                assert_equal instance.find_maker(name).describe, instance.find_check(name).describe
             end
         end
 
         class TestCase_PackageDirCheckMaker < Test::Unit::TestCase
+            def instance
+                PackageDirCheckMaker.instance
+            end
+
             def test_instance
                 assert_equal PackageDirCheckMaker.instance.__id__, PackageDirCheckMaker.instance.__id__
                 assert_kind_of PackageDirCheckMaker, PackageDirCheckMaker.instance
@@ -66,22 +85,37 @@ module Paludis
             end
 
             def test_respond_to
-                assert_respond_to FileCheckMaker.instance, :keys
-                assert_respond_to FileCheckMaker.instance, :find_maker
+                assert_respond_to instance, :keys
+                assert_respond_to instance, :find_maker
+                assert_respond_to instance, :check_names
+                assert_respond_to instance, :find_check
             end
 
             def test_keys
-                assert_kind_of Array, PackageDirCheckMaker.instance.keys
-                assert_not_equal 0, PackageDirCheckMaker.instance.keys
+                assert_kind_of Array, instance.keys
+                assert_not_equal 0, instance.keys
             end
 
             def test_find_maker
-                name = PackageDirCheckMaker.instance.keys.first
-                assert_kind_of PackageDirCheck, PackageDirCheckMaker.instance.find_maker(name)
+                name = instance.keys.first
+                assert_kind_of PackageDirCheck, instance.find_maker(name)
+            end
+            def test_check_names
+                assert_kind_of Array, instance.check_names
+                assert_equal instance.keys, instance.check_names
+            end
+
+            def test_find_check
+                name = instance.keys.first
+                assert_equal instance.find_maker(name).describe, instance.find_check(name).describe
             end
         end
 
         class TestCase_EbuildCheckMaker < Test::Unit::TestCase
+            def instance
+                EbuildCheckMaker.instance
+            end
+
             def test_instance
                 assert_equal EbuildCheckMaker.instance.__id__, EbuildCheckMaker.instance.__id__
                 assert_kind_of EbuildCheckMaker, EbuildCheckMaker.instance
@@ -94,18 +128,29 @@ module Paludis
             end
 
             def test_respond_to
-                assert_respond_to FileCheckMaker.instance, :keys
-                assert_respond_to FileCheckMaker.instance, :find_maker
+                assert_respond_to instance, :keys
+                assert_respond_to instance, :find_maker
+                assert_respond_to instance, :check_names
+                assert_respond_to instance, :find_check
             end
 
             def test_keys
-                assert_kind_of Array, EbuildCheckMaker.instance.keys
-                assert_not_equal 0, EbuildCheckMaker.instance.keys
+                assert_kind_of Array, instance.keys
+                assert_not_equal 0, instance.keys
             end
 
             def test_find_maker
-                name = EbuildCheckMaker.instance.keys.first
-                assert_kind_of EbuildCheck, EbuildCheckMaker.instance.find_maker(name)
+                name = instance.keys.first
+                assert_kind_of EbuildCheck, instance.find_maker(name)
+            end
+            def test_check_names
+                assert_kind_of Array, instance.check_names
+                assert_equal instance.keys, instance.check_names
+            end
+
+            def test_find_check
+                name = instance.keys.first
+                assert_equal instance.find_maker(name).describe, instance.find_check(name).describe
             end
         end
 

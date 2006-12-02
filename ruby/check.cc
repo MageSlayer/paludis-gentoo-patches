@@ -241,18 +241,24 @@ namespace
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_package_dir_check_maker);
         rb_define_method(c_package_dir_check_maker, "keys", RUBY_FUNC_CAST(CheckMakerStruct<PackageDirCheckMaker>::keys),0);
         rb_define_method(c_package_dir_check_maker, "find_maker", RUBY_FUNC_CAST(&package_dir_check_maker_find_maker),1);
+        rb_define_alias(c_package_dir_check_maker, "check_names", "keys");
+        rb_define_alias(c_package_dir_check_maker, "find_check", "find_maker");
 
         c_file_check_maker = rb_define_class_under(paludis_qa_module(), "FileCheckMaker", rb_cObject);
         rb_funcall(c_file_check_maker, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_file_check_maker);
         rb_define_method(c_file_check_maker, "keys", RUBY_FUNC_CAST(CheckMakerStruct<FileCheckMaker>::keys),0);
         rb_define_method(c_file_check_maker, "find_maker", RUBY_FUNC_CAST(&file_check_maker_find_maker),1);
+        rb_define_alias(c_file_check_maker, "check_names", "keys");
+        rb_define_alias(c_file_check_maker, "find_check", "find_maker");
 
         c_ebuild_check_maker = rb_define_class_under(paludis_qa_module(), "EbuildCheckMaker", rb_cObject);
         rb_funcall(c_ebuild_check_maker, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_ebuild_check_maker);
         rb_define_method(c_ebuild_check_maker, "keys", RUBY_FUNC_CAST(&CheckMakerStruct<EbuildCheckMaker>::keys),0);
         rb_define_method(c_ebuild_check_maker, "find_maker", RUBY_FUNC_CAST(&ebuild_check_maker_find_maker),1);
+        rb_define_alias(c_ebuild_check_maker, "check_names", "keys");
+        rb_define_alias(c_ebuild_check_maker, "find_check", "find_maker");
     }
 }
 
