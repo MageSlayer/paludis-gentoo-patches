@@ -16,7 +16,9 @@ MAINTAINERCLEANFILES = Makefile.in
 
 IF_RUBY_DEMOS = \
 	version_spec_distributions.rb \
-	find_unused_distfiles.rb
+	find_unused_distfiles.rb \
+	latest_stable.rb \
+	qualudis.rb
 
 EXTRA_DIST = $(IF_RUBY_DEMOS)
 
