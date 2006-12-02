@@ -44,6 +44,12 @@ ebuild_f_test()
     local old_sandbox_predict="${SANDBOX_PREDICT}"
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}/"
 
+    export PALUDIS_EXTRA_DIE_MESSAGE="
+!!! This package failed inside the test phase. You should read
+!!!    http://paludis.berlios.de/KnownIssues.html
+!!! for more information on packages with test phase failures.
+"
+
     if [[ -d "${S}" ]]; then
         cd "${S}" || die "cd to \${S} (\"${S}\") failed"
     fi

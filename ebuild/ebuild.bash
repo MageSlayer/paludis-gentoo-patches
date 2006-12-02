@@ -65,6 +65,11 @@ diefunc()
     done
     echo 1>&2
 
+    if [[ -n "${PALUDIS_EXTRA_DIE_MESSAGE}" ]] ; then
+        echo "${PALUDIS_EXTRA_DIE_MESSAGE}" 1>&2
+        echo 1>&2
+    fi
+
     kill ${EBUILD_KILL_PID}
     exit 249
 }

@@ -55,12 +55,17 @@ Unfortunately not all package maintainers care about making their package's test
 suite work. This is a nuisance, a) because it makes things much harder for arch
 teams and b) because it makes it harder for users to catch bugs.
 
+At this stage, you should not consider filing a bug about packages whose test
+phases fail. This is something that is being handled by the Gentoo QA team and
+various arch teams.
+
 \subsection KnownIssuesRootSandbox Sandbox violations when ROOT!=/
 
 Problem: Sandbox violations when ROOT!=/
 
 Workaround: Paludis enforces ROOT. However, some packages don't honour ROOT. To
-temporarily disable sandbox for these packages, <code>export SANDBOX_PREDICT=/</code> .
+temporarily disable sandbox for these packages, <code>export SANDBOX_PREDICT=/</code>
+or <code>export SANDBOX_WRITE=/</code> .
 
 \section KnownNonIssuesPortageThings Things Portage Does
 
