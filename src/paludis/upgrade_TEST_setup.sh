@@ -32,6 +32,7 @@ cat <<END > root/${SYSCONFDIR}/paludis/repositories/repo1.conf
 location = `pwd`/repo1
 cache = /var/empty
 format = portage
+names_cache = /var/empty
 profiles = \${location}/profiles/testprofile
 buildroot = `pwd`/build
 END
@@ -39,6 +40,8 @@ END
 cat <<END > root/${SYSCONFDIR}/paludis/repositories/installed.conf
 location = \${ROOT}/var/db/pkg
 format = vdb
+names_cache = /var/empty
+provides_cache = /var/empty
 buildroot = `pwd`/build
 END
 

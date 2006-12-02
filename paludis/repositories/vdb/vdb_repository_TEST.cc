@@ -49,6 +49,8 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
                         &env, env.package_database().raw_pointer(), keys));
@@ -70,6 +72,8 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
                         &env, env.package_database().raw_pointer(), keys));
@@ -94,6 +98,8 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
                         &env, env.package_database().raw_pointer(), keys));
@@ -124,6 +130,8 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-new-file");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
@@ -148,6 +156,8 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-empty");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
@@ -172,6 +182,8 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-no-match");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
@@ -196,6 +208,8 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-match");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
@@ -220,6 +234,8 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-no-match-no-eol");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(

@@ -49,6 +49,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo1");
             keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -71,6 +72,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo2");
             keys->insert("profile", "portage_repository_TEST_dir/repo2/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -93,6 +95,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo3");
             keys->insert("profile", "portage_repository_TEST_dir/repo3/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -115,6 +118,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo1");
             keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -146,6 +150,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo1");
             keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -179,6 +184,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -218,6 +224,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -261,6 +268,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -313,6 +321,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo5");
             keys->insert("profile", "portage_repository_TEST_dir/repo5/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -346,6 +355,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -389,6 +399,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -431,6 +442,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo8");
             keys->insert("profile", "portage_repository_TEST_dir/repo8/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -473,6 +485,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo6");
             keys->insert("profile", "portage_repository_TEST_dir/repo6/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -513,6 +526,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo7");
             keys->insert("profile", "portage_repository_TEST_dir/repo7/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -549,6 +563,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo7");
             keys->insert("profile", "portage_repository_TEST_dir/repo7/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -579,6 +594,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo9");
             keys->insert("profile", "portage_repository_TEST_dir/repo9/profiles/profile");
             PortageRepository::Pointer repo(make_ebuild_repository(
@@ -626,6 +642,7 @@ namespace test_cases
             AssociativeCollection<std::string, std::string>::Pointer keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "portage");
+            keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo10");
             keys->insert("profiles", "portage_repository_TEST_dir/repo10/profiles/profile/subprofile");
             PortageRepository::Pointer repo(make_ebuild_repository(

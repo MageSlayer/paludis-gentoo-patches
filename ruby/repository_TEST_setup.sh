@@ -9,6 +9,7 @@ mkdir -p home/.paludis/repositories
 cat <<END > home/.paludis/repositories/testrepo.conf
 location = `pwd`/testrepo
 format = portage
+names_cache = /var/empty
 cache = /var/empty
 profiles = \${location}/profiles/testprofile
 END

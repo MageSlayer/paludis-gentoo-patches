@@ -34,6 +34,7 @@ cat <<END > home1/.paludis/licenses.conf
 END
 cat <<END > home1/.paludis/repositories/foo.conf
 format = portage
+names_cache = /var/empty
 location = `pwd`/repo
 profiles = `pwd`/repo/profile
 cache = /var/empty
@@ -53,6 +54,7 @@ cat <<END > home2/.paludis/licenses.conf
 END
 cat <<END > home2/.paludis/repositories/foo.conf
 format = portage
+names_cache = /var/empty
 location = `pwd`/repo
 profiles = `pwd`/repo/profile
 cache = /var/empty
@@ -72,6 +74,7 @@ cat <<END > home3/.paludis/licenses.conf
 END
 cat <<END > home3/.paludis/repositories/foo.conf
 format = portage
+names_cache = /var/empty
 location = `pwd`/repo
 profiles = `pwd`/repo/profile
 cache = /var/empty

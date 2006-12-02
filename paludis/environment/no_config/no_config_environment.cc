@@ -165,6 +165,7 @@ Implementation<NoConfigEnvironment>::Implementation(
             keys->insert("location", stringify(params.repository_dir));
             keys->insert("profiles", stringify(p->path));
             keys->insert("write_cache", stringify(params.write_cache));
+            keys->insert("names_cache", "/var/empty");
 
             p->db->add_repository(RepositoryMaker::get_instance()->find_maker("portage")(env,
                         p->db.raw_pointer(), keys));
@@ -180,6 +181,8 @@ Implementation<NoConfigEnvironment>::Implementation(
                 new AssociativeCollection<std::string, std::string>::Concrete);
 
         keys->insert("format", "vdb");
+        keys->insert("names_cache", "/var/empty");
+        keys->insert("provides_cache", "/var/empty");
         keys->insert("location", stringify(top_level_dir));
 
         vdb_db->add_repository(RepositoryMaker::get_instance()->find_maker("vdb")(env,
@@ -252,6 +255,7 @@ NoConfigEnvironment::set_profile(const FSEntry & location)
             new AssociativeCollection<std::string, std::string>::Concrete);
 
     keys->insert("format", "portage");
+    keys->insert("names_cache", "/var/empty");
     keys->insert("location", stringify(_imp->top_level_dir));
     keys->insert("profiles", stringify(location));
     keys->insert("write_cache", stringify(_imp->write_cache));

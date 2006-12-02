@@ -69,6 +69,7 @@ namespace paludis
                         new AssociativeCollection<std::string, std::string>::Concrete);
 
                 keys->insert("format", "portage");
+                keys->insert("names_cache", "/var/empty");
                 keys->insert("importace", "1");
                 keys->insert("location", stringify(base));
                 keys->insert("cache", "/var/empty");
