@@ -53,7 +53,7 @@ struct S<const T_ &>
     static const int t = 0;
 };
 
-int main(int, char *[])
+int main(int, char **)
 {
     return S<int &>::s + S<const int &>::t;
 }
