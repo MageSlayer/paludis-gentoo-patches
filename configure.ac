@@ -386,7 +386,7 @@ else
 fi
 dnl }}}
 
-dnl {{{ doxygen, dot
+dnl {{{ doxygen
 AC_MSG_CHECKING([whether to enable doxygen])
 AC_ARG_ENABLE([doxygen],
 			  AS_HELP_STRING([--enable-doxygen], [Enable 'make doxygen' (developer docs)]),
@@ -396,16 +396,6 @@ AC_ARG_ENABLE([doxygen],
 			   AC_CHECK_PROG(HAVE_DOXYGEN, [doxygen], [yes], [no])])
 AC_SUBST([HAVE_DOXYGEN])
 AM_CONDITIONAL([HAVE_DOXYGEN], test "x$HAVE_DOXYGEN" = "xyes")
-
-AC_MSG_CHECKING([whether to enable dot])
-AC_ARG_ENABLE([dot],
-			  AS_HELP_STRING([--enable-dot], [Enable 'HAVE_DOT' in doxygen.conf]),
-			[HAVE_DOT=$enableval
-			 AC_MSG_RESULT([$enableval])],
-			[AC_MSG_RESULT([autodetect])
-			 AC_CHECK_PROG(HAVE_DOT, [dot], [yes], [no])])
-AC_SUBST([HAVE_DOT])
-AM_CONDITIONAL([HAVE_DOT], test "x$HAVE_DOT" = "xyes")
 dnl }}}
 
 dnl {{{ check for whether to build qa stuff
