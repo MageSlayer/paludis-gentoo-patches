@@ -78,7 +78,7 @@ builtin_merge()
     if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then
         install -d "${ROOT%/}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
         if [[ -d "${D}" ]] ; then
-            merge "${D%/}/" "${ROOT%/}/" "${dbdir}/CONTENTS" \
+            "${PALUDIS_EBUILD_DIR}/"merge "${D%/}/" "${ROOT%/}/" "${dbdir}/CONTENTS" \
                 || die "merge failed"
         fi
     fi
@@ -89,7 +89,7 @@ builtin_merge()
     fi
 
     if [[ -n "${reinstall}" ]] ; then
-        unmerge "${ROOT%/}/" "${dbdir}/OLDCONTENTS" \
+        "${PALUDIS_EBUILD_DIR}/"unmerge "${ROOT%/}/" "${dbdir}/OLDCONTENTS" \
             || die "unmerge failed"
 
         if ! /bin/sh -c 'echo Good, our shell is still usable' ; then

@@ -73,7 +73,7 @@ builtin_unmerge()
     export CONFIG_PROTECT="${CONFIG_PROTECT}"
     export CONFIG_PROTECT_MASK="${CONFIG_PROTECT_MASK}"
 
-    unmerge "${ROOT}/" "${dbdir}/CONTENTS" \
+    "${PALUDIS_EBUILD_DIR}/"unmerge "${ROOT}/" "${dbdir}/CONTENTS" \
         || die "unmerge failed"
 
     if ! /bin/sh -c 'echo Good, our shell is still usable' ; then
