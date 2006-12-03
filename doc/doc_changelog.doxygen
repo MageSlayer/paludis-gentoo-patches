@@ -1,7 +1,7 @@
 /* vim: set ft=cpp tw=80 sw=4 et : */
 
 /**
-\page ChangeLog ChangeLog
+\page PaludisChangeLog Paludis ChangeLog
 
 \verbinclude ChangeLog
 
