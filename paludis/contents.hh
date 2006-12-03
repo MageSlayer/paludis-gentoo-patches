@@ -107,6 +107,10 @@ namespace paludis
             ContentsFileEntry(const std::string & name);
 
             ///\}
+
+            typedef CountedPtr<ContentsFileEntry, count_policy::InternalCountTag> Pointer;
+
+            typedef CountedPtr<const ContentsFileEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
@@ -126,6 +130,10 @@ namespace paludis
             ContentsDirEntry(const std::string & name);
 
             ///\}
+
+            typedef CountedPtr<ContentsDirEntry, count_policy::InternalCountTag> Pointer;
+
+            typedef CountedPtr<const ContentsDirEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
@@ -145,6 +153,10 @@ namespace paludis
             ContentsMiscEntry(const std::string & name);
 
             ///\}
+
+            typedef CountedPtr<ContentsMiscEntry, count_policy::InternalCountTag> Pointer;
+
+            typedef CountedPtr<const ContentsMiscEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
@@ -173,6 +185,10 @@ namespace paludis
             {
                 return _target;
             }
+
+            typedef CountedPtr<ContentsSymEntry, count_policy::InternalCountTag> Pointer;
+
+            typedef CountedPtr<const ContentsSymEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
