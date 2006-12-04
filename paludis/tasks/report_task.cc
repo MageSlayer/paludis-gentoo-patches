@@ -19,7 +19,9 @@
 
 #include "report_task.hh"
 #include <paludis/util/log.hh>
+#include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/environment.hh>
+#include <set>
 
 using namespace paludis;
 
@@ -163,6 +165,14 @@ ReportTask::execute()
         }
     }
 
+    UninstallList unused_list(e, UninstallListOptions());
+    unused_list.add_unused();
+    std::set<PackageDatabaseEntry> unused;
+    for (UninstallList::Iterator i(unused_list.begin()), i_end(unused_list.end());
+            i != i_end ; ++i)
+        if (! i->skip_uninstall)
+            unused.insert(i->package);
+
     for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
@@ -188,6 +198,7 @@ ReportTask::execute()
                     bool is_masked(false);
                     bool is_vulnerable(false);
                     bool is_missing(false);
+                    bool is_unused(false);
 
                     MaskReasons mr;
                     try
@@ -215,7 +226,10 @@ ReportTask::execute()
                     if (pi.first != pi.second)
                         is_vulnerable = true;
 
-                    if (is_masked || is_vulnerable || is_missing)
+                    if (unused.end() != unused.find(pde))
+                        is_unused = true;
+
+                    if (is_masked || is_vulnerable || is_missing || is_unused)
                     {
                         on_report_package_failure_pre(pde);
                         if (is_masked)
@@ -229,6 +243,8 @@ ReportTask::execute()
                         }
                         if (is_missing)
                             on_report_package_is_missing(pde);
+                        if (is_unused)
+                            on_report_package_is_unused(pde);
                         on_report_package_failure_post(pde);
                     }
                     else

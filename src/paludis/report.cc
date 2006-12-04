@@ -57,6 +57,7 @@ namespace
             virtual void on_report_package_is_vulnerable(const PackageDatabaseEntry & pde, const std::string & tag);
             virtual void on_report_package_is_vulnerable_post(const PackageDatabaseEntry & pde);
             virtual void on_report_package_is_missing(const PackageDatabaseEntry & pde);
+            virtual void on_report_package_is_unused(const PackageDatabaseEntry & pde);
             virtual void on_report_package_failure_post(const PackageDatabaseEntry & pde);
             virtual void on_report_check_package_post(const QualifiedPackageName & p);
             virtual void on_report_all_post();
@@ -128,6 +129,13 @@ namespace
     OurReportTask::on_report_package_is_missing(const PackageDatabaseEntry &)
     {
         cout << endl << "    No longer exists in its original repository";
+        ++_n_errors;
+    }
+
+    void
+    OurReportTask::on_report_package_is_unused(const PackageDatabaseEntry &)
+    {
+        cout << endl << "    Not used by any package in world";
         ++_n_errors;
     }
 

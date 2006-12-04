@@ -67,6 +67,7 @@ namespace paludis
             virtual void on_report_package_is_vulnerable(const PackageDatabaseEntry & pde, const std::string & tag) = 0;
             virtual void on_report_package_is_vulnerable_post(const PackageDatabaseEntry & pde) = 0;
             virtual void on_report_package_is_missing(const PackageDatabaseEntry & pde) = 0;
+            virtual void on_report_package_is_unused(const PackageDatabaseEntry & pde) = 0;
             virtual void on_report_package_failure_post(const PackageDatabaseEntry & pde) = 0;
             virtual void on_report_check_package_post(const QualifiedPackageName & p) = 0;
             virtual void on_report_all_post() = 0;
