@@ -692,6 +692,7 @@ AC_OUTPUT(
 	ebuild/echo_functions.bash
 	eselect/Makefile
 	hooks/Makefile
+	hooks/demos/Makefile
 	misc/Makefile
 	misc/svn-version-filter-data.bash
 	paludis/Makefile

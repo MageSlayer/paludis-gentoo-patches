@@ -5,7 +5,7 @@ dnl vim: set ft=m4 noet :
 
 MAINTAINERCLEANFILES = Makefile.in Makefile.am
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda .keep
-SUBDIRS = .
+SUBDIRS = . demos
 
 installvarlibpaludisnewsdir = $(localstatedir)/paludis/news
 
