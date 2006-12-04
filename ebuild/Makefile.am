@@ -49,8 +49,6 @@ TESTS_ENVIRONMENT = env \
 TESTS = echo_functions_TEST.bash list_functions_TEST.bash kernel_functions_TEST.bash \
 	merge_TEST.bash unmerge_TEST.bash
 
-EXTRA_DIST = $(libexecprog_SCRIPTS) run_test.bash $(TESTS)
-
 libexecprog_PROGRAMS = merge unmerge
 merge_SOURCES = merge.cc merge_common.cc merge_common.hh
 merge_LDADD = \
@@ -64,11 +62,12 @@ unmerge_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/digests/libpaludisdigests.la
 
-
 check_SCRIPTS = $(TESTS) \
 	merge_TEST_setup.sh merge_TEST_cleanup.sh \
 	unmerge_TEST_setup.sh unmerge_TEST_cleanup.sh \
 	run_test.bash $(TESTS)
+
+EXTRA_DIST = $(libexecprog_SCRIPTS) run_test.bash $(TESTS) $(check_SCRIPTS)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
