@@ -263,6 +263,32 @@ namespace
         }
     }
 
+    VALUE
+    repository_installed_time(VALUE self, VALUE qpn, VALUE vs)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            const RepositoryInstalledInterface * const installed_interface ((**self_ptr).installed_interface);
+            if (installed_interface)
+            {
+                return rb_time_new(installed_interface->installed_time(
+                            value_to_qualified_package_name(qpn),
+                            value_to_version_spec(vs)
+                            ), 0);
+            }
+            else
+            {
+                return Qnil;
+            }
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_repository()
     {
         c_repository = rb_define_class_under(paludis_module(), "Repository", rb_cObject);
@@ -308,6 +334,7 @@ namespace
 
         rb_define_method(c_repository, "info", RUBY_FUNC_CAST(&repository_info), 1);
         rb_define_method(c_repository, "contents", RUBY_FUNC_CAST(&repository_contents), 2);
+        rb_define_method(c_repository, "installed_time", RUBY_FUNC_CAST(&repository_installed_time), 2);
 
         c_repository_info = rb_define_class_under(paludis_module(), "RepositoryInfo", rb_cObject);
         rb_funcall(c_repository_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));

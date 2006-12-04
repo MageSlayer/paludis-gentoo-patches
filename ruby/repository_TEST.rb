@@ -133,6 +133,9 @@ module Paludis
         def test_interfaces
             assert_equal repo.name, repo.installable_interface.name
             assert_nil repo.installed_interface
+
+            assert_equal installed_repo.name, installed_repo.installed_interface.name
+            assert_nil installed_repo.installable_interface
         end
     end
 
@@ -142,10 +145,6 @@ module Paludis
         def entries
             contents = installed_repo.contents('cat-one/pkg-one','1')
             entries = contents.entries
-        end
-
-        def test_installed
-            assert_not_nil installed_repo.installed_interface
         end
 
         def test_contents
@@ -178,6 +177,15 @@ module Paludis
             assert_equal '/test/test_link -> /test/test_file', entries[2].to_s
             assert_equal '/test/test_file', entries[2].target
             assert_equal '/test/test_link', entries[2].name
+        end
+    end
+
+    class TestCase_RepositoryInstalledTime < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_time
+            time = installed_repo.installed_time('cat-one/pkg-one','1')
+            assert_kind_of Time, time
         end
     end
 end
