@@ -95,3 +95,16 @@ Contents::end() const
     return Iterator(_imp->c.end());
 }
 
+std::ostream &
+paludis::operator<< (std::ostream & s, const ContentsSymEntry & e)
+{
+    s << e.name() << " -> " << e.target();
+    return s;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const ContentsEntry & e)
+{
+    s << e.name();
+    return s;
+}

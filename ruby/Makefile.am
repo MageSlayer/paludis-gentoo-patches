@@ -27,7 +27,8 @@ IF_RUBY_TESTS = \
 	repository_TEST.rb \
 	version_metadata_TEST.rb \
 	portage_dep_parser_TEST.rb \
-	qualified_package_name_TEST.rb
+	qualified_package_name_TEST.rb \
+	contents_TEST.rb
 
 IF_RUBY_QA_TESTS = \
 	message_TEST.rb \
@@ -48,7 +49,8 @@ IF_RUBY_SOURCES = \
 	repository.cc \
 	version_metadata.cc \
 	portage_dep_parser.cc \
-	qualified_package_name.cc
+	qualified_package_name.cc \
+	contents.cc
 
 IF_RUBY_QA_SOURCES = \
 	message.cc \
@@ -97,6 +99,7 @@ BASE_OBJECTS = \
 	version_metadata.o \
 	portage_dep_parser.o \
 	qualified_package_name.o \
+	contents.o \
 	paludis_ruby.o
 
 if ENABLE_QA
@@ -162,6 +165,9 @@ portage_dep_parser.o : portage_dep_parser.cc paludis_ruby.hh
 
 qualified_package_name.o : qualified_package_name.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/qualified_package_name.cc
+
+contents.o : contents.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/contents.cc
 
 message.o : message.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/message.cc

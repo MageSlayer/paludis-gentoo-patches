@@ -81,6 +81,8 @@ namespace paludis
         VALUE version_metadata_to_value(VersionMetadata::ConstPointer);
         VALUE dep_atom_to_value(DepAtom::ConstPointer);
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
+        VALUE contents_to_value(Contents::ConstPointer);
+        VALUE contents_entry_to_value(ContentsEntry::ConstPointer);
 
         VersionSpec value_to_version_spec(VALUE v);
         VersionMetadata::ConstPointer value_to_version_metadata(VALUE);

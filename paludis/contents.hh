@@ -225,6 +225,21 @@ namespace paludis
 
             ///\}
     };
+
+    /**
+     * Write a ContentsSymEntry to a stream
+     *
+     * \ingroup grpcontents
+     */
+    std::ostream & operator<< (std::ostream &, const ContentsSymEntry &);
+
+    /**
+     * Write a ContentsEntry to a stream
+     *
+     * \ingroup grpcontents
+     */
+    std::ostream & operator<< (std::ostream &, const ContentsEntry &);
+
 }
 
 #endif

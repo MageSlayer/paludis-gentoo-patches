@@ -35,6 +35,10 @@ module Paludis
     end
 
     module RepositoryTestCase
+        def installed_repo
+            db.fetch_repository "installed"
+        end
+
         def repo
             db.fetch_repository "testrepo"
         end
@@ -129,6 +133,51 @@ module Paludis
         def test_interfaces
             assert_equal repo.name, repo.installable_interface.name
             assert_nil repo.installed_interface
+        end
+    end
+
+    class TestCase_RepositoryContents < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def entries
+            contents = installed_repo.contents('cat-one/pkg-one','1')
+            entries = contents.entries
+        end
+
+        def test_installed
+            assert_not_nil installed_repo.installed_interface
+        end
+
+        def test_contents
+            contents = installed_repo.contents('cat-one/pkg-one','1')
+            assert_kind_of Contents, contents
+        end
+
+        def test_contents_entries
+            assert_kind_of Array, entries
+            assert_equal 3, entries.length
+        end
+
+        def test_first_entry
+            assert_kind_of ContentsEntry, entries[0]
+            assert_kind_of ContentsDirEntry, entries[0]
+            assert_equal '//test', entries[0].to_s
+            assert_equal '//test', entries[0].name
+        end
+
+        def test_second_entry
+            assert_kind_of ContentsEntry, entries[1]
+            assert_kind_of ContentsFileEntry, entries[1]
+            assert_equal '/test/test_file', entries[1].to_s
+            assert_equal '/test/test_file', entries[1].name
+        end
+
+        def test_third_entry
+            assert_kind_of ContentsEntry, entries[2]
+            assert_kind_of ContentsSymEntry, entries[2]
+            assert_equal '/test/test_link -> /test/test_file', entries[2].to_s
+            assert_equal '/test/test_file', entries[2].target
+            assert_equal '/test/test_link', entries[2].name
         end
     end
 end
