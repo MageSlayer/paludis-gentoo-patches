@@ -23,7 +23,6 @@ export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/ut
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
 count=0
-echo
 einfo "Checking for broken symlinks..."
 
 find "${IMAGE}" -type l | while read link ; do
