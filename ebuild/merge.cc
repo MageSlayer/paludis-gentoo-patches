@@ -113,6 +113,8 @@ namespace
             root_str.clear();
         if (0 != dst_dir_str.compare(0, root_str.length(), root_str))
             throw Failure("do_dir confused: '" + root_str + "' '" + dst_dir_str + "'");
+        if (dst_dir_str == "/")
+            dst_dir_str.clear();
 
         cout << ">>> " << std::setw(5) << std::left << "[dir]" << " " <<
             dst_dir_str.substr(root_str.length()) << "/" << dst_dir.basename() << endl;
@@ -173,6 +175,8 @@ namespace
             root_str.clear();
         if (0 != dst_dir_str.compare(0, root_str.length(), root_str))
             throw Failure("do_obj confused: '" + root_str + "' '" + dst_dir_str + "'");
+        if (dst_dir_str == "/")
+            dst_dir_str.clear();
 
         cout << ">>> " << std::setw(5) << std::left << "[obj]" << " " <<
             dst_dir_str.substr(root_str.length()) << "/" << dst.basename();
@@ -257,6 +261,8 @@ namespace
             root_str.clear();
         if (0 != dst_dir_str.compare(0, root_str.length(), root_str))
             throw Failure("do_sym confused: '" + root_str + "' '" + dst_dir_str + "'");
+        if (dst_dir_str == "/")
+            dst_dir_str.clear();
 
         cout << ">>> " << std::setw(5) << std::left << "[sym]" << " " <<
             dst_dir_str.substr(root_str.length()) << "/" << dst.basename() << endl;
