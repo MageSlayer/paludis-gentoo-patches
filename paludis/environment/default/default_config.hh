@@ -98,7 +98,7 @@ namespace paludis
             static std::string config_suffix();
 
             ///\name Iterate over our repositories
-            ///{
+            ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig, const RepositoryConfigEntry> RepositoryIterator;
 
@@ -106,10 +106,10 @@ namespace paludis
 
             RepositoryIterator end_repositories() const;
 
-            ///}
+            ///\}
 
             ///\name Iterate over our default and per-package keywords
-            ///{
+            ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig,
                     const std::pair<PackageDepAtom::ConstPointer, KeywordName> > PackageKeywordsIterator;
@@ -124,10 +124,10 @@ namespace paludis
 
             DefaultKeywordsIterator end_default_keywords() const;
 
-            ///}
+            ///\}
 
             ///\name Iterate over our default and per-package licenses
-            ///{
+            ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig,
                     const std::pair<PackageDepAtom::ConstPointer, std::string> > PackageLicensesIterator;
@@ -142,10 +142,10 @@ namespace paludis
 
             DefaultLicensesIterator end_default_licenses() const;
 
-            ///}
+            ///\}
 
             ///\name Iterate over our masks and unmasks
-            ///{
+            ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig, const PackageDepAtom> UserMasksIterator;
 
@@ -159,10 +159,10 @@ namespace paludis
 
             UserUnmasksIterator end_user_unmasks(const QualifiedPackageName & d) const;
 
-            ///}
+            ///\}
 
             ///\name Iterate over our default and per-package use flags
-            ///{
+            ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig, const UseConfigEntry> UseConfigIterator;
 
@@ -188,7 +188,7 @@ namespace paludis
             PackageUseMinusStarIterator begin_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;
             PackageUseMinusStarIterator end_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;
 
-            ///}
+            ///\}
 
             /**
              * Our bashrc files.
