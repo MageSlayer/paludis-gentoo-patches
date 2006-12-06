@@ -19,6 +19,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/version_metadata.hh>
+#include <paludis/package_database_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <ruby.h>
 
@@ -119,6 +120,25 @@ namespace
         }
     };
 
+    template <CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> VersionMetadataOrigins::* m_>
+    struct VMOrigins
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            VersionMetadata::ConstPointer * self_ptr;
+            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            if ((&(*self_ptr)->origins)->*m_)
+            {
+                return package_database_entry_to_value(*((&(*self_ptr)->origins)->*m_));
+            }
+            else
+            {
+                return Qnil;
+            }
+        }
+    };
+
     void do_register_version_metadata()
     {
         c_version_metadata = rb_define_class_under(paludis_module(), "VersionMetadata", rb_cObject);
@@ -166,6 +186,11 @@ namespace
                         &VersionMetadataDeps::run_depend_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "post_depend_string", RUBY_FUNC_CAST((&DependValueString<
                         &VersionMetadataDeps::post_depend_string>::fetch)), 0);
+
+        rb_define_method(c_version_metadata, "origin_source", RUBY_FUNC_CAST((&VMOrigins<
+                        &VersionMetadataOrigins::source>::fetch)), 0);
+        rb_define_method(c_version_metadata, "origin_binary", RUBY_FUNC_CAST((&VMOrigins<
+                        &VersionMetadataOrigins::binary>::fetch)), 0);
     }
 }
 

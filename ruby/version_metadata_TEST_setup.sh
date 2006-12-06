@@ -34,3 +34,12 @@ END
 
 cd ..
 
+mkdir -p installed/cat-one/pkg-{one,two}-1 || exit 1
+
+touch installed/cat-one/pkg-one-1/CONTENTS
+touch installed/cat-one/pkg-two-1/CONTENTS
+
+echo "origin_test" > installed/cat-one/pkg-one-1/REPOSITORY
+echo "0" > installed/cat-one/pkg-one-1/SLOT
+echo "0" > installed/cat-one/pkg-two-1/SLOT
+

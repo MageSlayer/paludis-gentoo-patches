@@ -38,8 +38,19 @@ module Paludis
             @env
         end
 
+        def env_vdb
+            unless @env_vdb
+                @env_vdb = NoConfigEnvironment.new("version_metadata_TEST_dir/installed/")
+            end
+            @env_vdb
+        end
+
         def vmd version
             env.package_database.fetch_repository("testrepo").version_metadata("foo/bar", version)
+        end
+
+        def vmd_vdb package, version
+            env_vdb.package_database.fetch_repository("installed").version_metadata(package, version)
         end
 
         def test_license
@@ -81,6 +92,12 @@ module Paludis
             assert_equal "foo/bar", vmd("1.0").build_depend_string.gsub(/\s/, "")
             assert_equal "", vmd("1.0").run_depend_string.gsub(/\s/, "")
             assert_equal "", vmd("1.0").post_depend_string.gsub(/\s/, "")
+        end
+
+        def test_origin_source
+            assert_equal PackageDatabaseEntry.new('cat-one/pkg-one', '1', 'origin_test'),
+                vmd_vdb('cat-one/pkg-one','1').origin_source
+            assert_nil vmd_vdb('cat-one/pkg-two','1').origin_source
         end
     end
 end
