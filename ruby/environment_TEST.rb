@@ -283,5 +283,34 @@ module Paludis
             end
         end
     end
+
+    class TestCase_DefaultConfig < Test::Unit::TestCase
+        def test_respond_to
+            assert_respond_to DefaultConfig, :config_suffix
+            assert_respond_to DefaultConfig, :config_suffix=
+            assert_respond_to DefaultConfig.instance, :config_dir
+            assert_respond_to DefaultConfig.instance, :root
+            assert_respond_to DefaultConfig.instance, :bashrc_files
+        end
+
+        def test_root
+            assert_kind_of String, DefaultConfig.instance.root
+            assert_equal '', DefaultConfig.instance.root
+        end
+
+        def test_config_dir
+            assert_kind_of String, DefaultConfig.instance.config_dir
+            cd = DefaultConfig.instance.config_dir
+            assert_equal '/environment_TEST_dir/home/.paludis',
+                cd.gsub(Dir.getwd,'')
+        end
+
+        def test_bashrc_files
+            assert_kind_of String, DefaultConfig.instance.bashrc_files
+            cd = DefaultConfig.instance.bashrc_files
+            assert_equal '/environment_TEST_dir/home/.paludis/bashrc',
+                cd.gsub(Dir.getwd,'')
+        end
+    end
 end
 

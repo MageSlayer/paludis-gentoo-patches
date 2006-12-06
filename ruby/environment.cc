@@ -170,6 +170,16 @@ namespace
         }
     }
 
+    template <std::string (DefaultConfig::* m_) () const>
+    struct ConfigStruct
+    {
+        static VALUE
+        fetch(VALUE)
+        {
+            return rb_str_new2((((DefaultConfig::get_instance())->*m_)()).c_str());
+        }
+    };
+
     VALUE
     default_config_config_suffix_set(VALUE klass, VALUE str)
     {
@@ -254,10 +264,14 @@ namespace
 
         c_default_config = rb_define_class_under(paludis_module(), "DefaultConfig", rb_cObject);
         rb_funcall(c_default_config, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_default_config);
         rb_define_singleton_method(c_default_config, "config_suffix",
                 RUBY_FUNC_CAST(&default_config_config_suffix), 0);
         rb_define_singleton_method(c_default_config, "config_suffix=",
                 RUBY_FUNC_CAST(&default_config_config_suffix_set), 1);
+        rb_define_method(c_default_config, "config_dir", RUBY_FUNC_CAST((&ConfigStruct<&DefaultConfig::config_dir>::fetch)), 0);
+        rb_define_method(c_default_config, "root", RUBY_FUNC_CAST((&ConfigStruct<&DefaultConfig::root>::fetch)), 0);
+        rb_define_method(c_default_config, "bashrc_files", RUBY_FUNC_CAST((&ConfigStruct<&DefaultConfig::bashrc_files>::fetch)), 0);
 
         c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
         rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), 1);
