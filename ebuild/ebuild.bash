@@ -198,6 +198,9 @@ ebuild_load_ebuild()
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?EBUILD_KILL_PID=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?ROOT=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?SANDBOX/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?BASH_/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?SHELLOPTS_/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?..\?ID=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?LD_/d' \
             "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}"
 
