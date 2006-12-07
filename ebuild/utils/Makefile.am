@@ -69,7 +69,7 @@ TESTS = dobin_TEST.bash
 prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman prepinfo prepdocs prepalldocs
 
 EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash \
-	newlib.so.in newlib.a.in dolib.so.in dolib.a.in prep.in
+	newlib.so.in newlib.a.in dolib.so.in dolib.a.in prep.in $(TESTS)
 
 CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a sed $(prep_scripts)
 
