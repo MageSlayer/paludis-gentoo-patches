@@ -75,11 +75,18 @@ builtin_merge()
     ( set ; export -p | sed 's:^declare -rx:declare -x:' ) | bzip2 > ${dbdir}/environment.bz2
     > ${dbdir}/CONTENTS
 
+    local merge=${PALUDIS_EBUILD_DIR}/merge
+    [[ -x "${merge}" ]] || merge="${PALUDIS_EBUILD_DIR_FALLBACK}"/merge
+    [[ -x "${merge}" ]] || die "Couldn't find merge"
+
+    local unmerge=${PALUDIS_EBUILD_DIR}/unmerge
+    [[ -x "${unmerge}" ]] || unmerge="${PALUDIS_EBUILD_DIR_FALLBACK}"/unmerge
+    [[ -x "${unmerge}" ]] || die "Couldn't find unmerge"
+
     if [[ -n "${D}" ]] && [[ -d "${D}" ]] ; then
         install -d "${ROOT%/}/" || die "couldn't make \${ROOT} (\"${ROOT}\")"
         if [[ -d "${D}" ]] ; then
-            "${PALUDIS_EBUILD_DIR}/"merge "${D%/}/" "${ROOT%/}/" "${dbdir}/CONTENTS" \
-                || die "merge failed"
+            ${merge} "${D%/}/" "${ROOT%/}/" "${dbdir}/CONTENTS" || die "merge failed"
         fi
     fi
 
@@ -89,8 +96,7 @@ builtin_merge()
     fi
 
     if [[ -n "${reinstall}" ]] ; then
-        "${PALUDIS_EBUILD_DIR}/"unmerge "${ROOT%/}/" "${dbdir}/OLDCONTENTS" \
-            || die "unmerge failed"
+        ${unmerge} "${ROOT%/}/" "${dbdir}/OLDCONTENTS" || die "unmerge failed"
 
         if ! /bin/sh -c 'echo Good, our shell is still usable' ; then
             echo "Looks like our shell broke. Trying an ldconfig to fix it..."

@@ -73,8 +73,11 @@ builtin_unmerge()
     export CONFIG_PROTECT="${CONFIG_PROTECT}"
     export CONFIG_PROTECT_MASK="${CONFIG_PROTECT_MASK}"
 
-    "${PALUDIS_EBUILD_DIR}/"unmerge "${ROOT}/" "${dbdir}/CONTENTS" \
-        || die "unmerge failed"
+    local unmerge=${PALUDIS_EBUILD_DIR}/unmerge
+    [[ -x "${unmerge}" ]] || unmerge="${PALUDIS_EBUILD_DIR_FALLBACK}"/unmerge
+    [[ -x "${unmerge}" ]] || die "Couldn't find unmerge"
+
+    ${unmerge} "${ROOT}/" "${dbdir}/CONTENTS" || die "unmerge failed"
 
     if ! /bin/sh -c 'echo Good, our shell is still usable' ; then
         echo "Looks like our shell broke. Trying an ldconfig to fix it..."
