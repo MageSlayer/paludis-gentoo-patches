@@ -46,6 +46,7 @@
 namespace paludis
 {
     class Environment;
+    class RepositoryNameCache;
 
     class RepositoryInstallableInterface;
     class RepositoryInstalledInterface;

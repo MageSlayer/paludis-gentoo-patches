@@ -60,7 +60,6 @@ namespace paludis
             void load_provided_the_slow_way() const;
 
             void regenerate_provides_cache() const;
-            void regenerate_names_cache() const;
 
         protected:
             virtual bool do_has_category_named(const CategoryNamePart &) const;

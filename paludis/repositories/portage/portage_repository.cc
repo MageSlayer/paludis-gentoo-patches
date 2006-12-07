@@ -36,6 +36,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/repository_name_cache.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -92,9 +93,6 @@ namespace paludis
 
     /// Map for virtuals.
     typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
-
-    /// Map for name caches.
-    typedef MakeHashedMap<PackageNamePart, std::list<CategoryNamePart> >::Type NameCacheMap;
 
     /**
      * Implementation data for a PortageRepository.
@@ -176,11 +174,7 @@ namespace paludis
         /// Have we loaded our virtuals?
         bool has_our_virtuals;
 
-        /// Name cache map
-        mutable NameCacheMap name_cache_map;
-
-        /// Can we use our name cache map?
-        mutable bool can_use_name_cache_map;
+        RepositoryNameCache::Pointer names_cache;
 
         PortageRepository * const repo;
     };
@@ -199,7 +193,7 @@ namespace paludis
         entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
                     params.entry_format)(params.environment, r, p)),
         has_our_virtuals(false),
-        can_use_name_cache_map(true),
+        names_cache(new RepositoryNameCache(p.names_cache, r)),
         repo(r)
     {
     }
@@ -1024,72 +1018,18 @@ PortageRepository::do_use_expand_value(const UseFlagName & u) const
 void
 PortageRepository::regenerate_cache() const
 {
-    if (_imp->params.names_cache == FSEntry("/var/empty"))
-        return;
-
-    Context context("When generating Portage repository names cache at '"
-            + stringify(_imp->params.names_cache) + "':");
-
-    if (_imp->params.names_cache.is_directory())
-        for (DirIterator i(_imp->params.names_cache, true), i_end ; i != i_end ; ++i)
-            FSEntry(*i).unlink();
-
-    _imp->params.names_cache.dirname().mkdir();
-    FSEntry(_imp->params.names_cache).mkdir();
-
-    MakeHashedMap<std::string, std::string>::Type m;
-
-    CategoryNamePartCollection::ConstPointer cats(category_names());
-    for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
-            c != c_end ; ++c)
-    {
-        QualifiedPackageNameCollection::ConstPointer pkgs(package_names(*c));
-        for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
-                p != p_end ; ++p)
-            m[stringify(p->package)].append(stringify(*c) + "\n");
-    }
-
-    for (MakeHashedMap<std::string, std::string>::Type::const_iterator e(m.begin()), e_end(m.end()) ;
-            e != e_end ; ++e)
-    {
-        std::ofstream f(stringify(_imp->params.names_cache / stringify(e->first)).c_str());
-        if (! f)
-        {
-            Log::get_instance()->message(ll_warning, lc_context, "Cannot write to '"
-                    + stringify(_imp->params.names_cache) + "'");
-            continue;
-        }
-        f << e->second;
-    }
+    _imp->names_cache->regenerate_cache();
 }
 
 CategoryNamePartCollection::ConstPointer
 PortageRepository::do_category_names_containing_package(const PackageNamePart & p) const
 {
-    if (_imp->params.names_cache == FSEntry("/var/empty") || ! _imp->can_use_name_cache_map)
+    if (! _imp->names_cache->usable())
         return Repository::do_category_names_containing_package(p);
 
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
-    NameCacheMap::iterator r(_imp->name_cache_map.find(p));
+    CategoryNamePartCollection::ConstPointer result(
+            _imp->names_cache->category_names_containing_package(p));
 
-    if (_imp->name_cache_map.end() == r)
-    {
-        r = _imp->name_cache_map.insert(std::make_pair(p, std::list<CategoryNamePart>())).first;
-
-        FSEntry ff(_imp->params.names_cache / stringify(p));
-        if (ff.exists())
-        {
-            std::ifstream f(stringify(ff).c_str());
-            if (! f)
-                Log::get_instance()->message(ll_warning, lc_context, "Cannot read '" + stringify(ff) + "'");
-            std::string line;
-            while (std::getline(f, line))
-                r->second.push_back(CategoryNamePart(line));
-        }
-    }
-
-    std::copy(r->second.begin(), r->second.end(), result->inserter());
-
-    return result;
+    return result ? result : Repository::do_category_names_containing_package(p);
 }
 
