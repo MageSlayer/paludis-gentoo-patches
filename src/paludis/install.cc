@@ -101,10 +101,7 @@ namespace
     {
         private:
             int _current_count, _max_count, _new_count, _upgrade_count,
-                _downgrade_count, _new_slot_count, _rebuild_count,
-                _current_virtual_count, _max_virtual_count, _new_virtual_count,
-                _upgrade_virtual_count, _downgrade_virtual_count,
-                _new_slot_virtual_count, _rebuild_virtual_count;
+                _downgrade_count, _new_slot_count, _rebuild_count;
 
             std::set<DepTagEntry> _all_tags;
 
@@ -117,14 +114,7 @@ namespace
                 _upgrade_count(0),
                 _downgrade_count(0),
                 _new_slot_count(0),
-                _rebuild_count(0),
-                _current_virtual_count(0),
-                _max_virtual_count(0),
-                _new_virtual_count(0),
-                _upgrade_virtual_count(0),
-                _downgrade_virtual_count(0),
-                _new_slot_virtual_count(0),
-                _rebuild_virtual_count(0)
+                _rebuild_count(0)
             {
             }
 
@@ -169,7 +159,7 @@ namespace
                 cout << colour(cl_heading, "Cleaning " + stringify(c)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(_current_count) + " of " +
-                        stringify(_max_count + _max_virtual_count) + ") Cleaning " + stringify(c));
+                        stringify(_max_count) + ") Cleaning " + stringify(c));
             }
 
             virtual void on_clean_post(const DepListEntry &,
@@ -202,7 +192,7 @@ namespace
                         "::" + stringify(d.package.repository)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
-                        stringify(_max_count + _max_virtual_count) + ") Fetching " +
+                        stringify(_max_count) + ") Fetching " +
                         stringify(d.package.name) + "-" + stringify(d.package.version) +
                         "::" + stringify(d.package.repository));
             }
@@ -226,7 +216,7 @@ namespace
                         "::" + stringify(d.package.repository)) << endl << endl;
 
                 cerr << xterm_title("(" + stringify(++_current_count) + " of " +
-                        stringify(_max_count + _max_virtual_count) + ") Installing " +
+                        stringify(_max_count) + ") Installing " +
                         stringify(d.package.name) + "-" + stringify(d.package.version) +
                         "::" + stringify(d.package.repository));
             }
@@ -276,11 +266,6 @@ namespace
             Log::get_instance()->message(ll_warning, lc_no_context,
                     "Max count doesn't add up. This is a bug!");
 
-        if (_max_virtual_count != _new_virtual_count + _upgrade_virtual_count +
-                _downgrade_virtual_count + _new_slot_virtual_count + _rebuild_virtual_count)
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Max virtuals count doesn't add up. This is a bug!");
-
         cout << endl << "Total: " << _max_count << (_max_count == 1 ? " package" : " packages");
         if (_max_count)
         {
@@ -322,50 +307,6 @@ namespace
             cout << ")";
         }
 
-        if (_max_virtual_count)
-        {
-            cout << " and " << _max_virtual_count << (_max_virtual_count == 1
-                    ? " virtual" : " virtuals");
-            bool need_comma(false);
-            cout << " (";
-            if (_new_virtual_count)
-            {
-                cout << _new_virtual_count << " new";
-                need_comma = true;
-            }
-            if (_upgrade_virtual_count)
-            {
-                if (need_comma)
-                    cout << ", ";
-                cout << _upgrade_virtual_count << (_upgrade_virtual_count == 1 ? " upgrade" : " upgrades");
-                need_comma = true;
-            }
-            if (_downgrade_virtual_count)
-            {
-                if (need_comma)
-                    cout << ", ";
-                cout << _downgrade_virtual_count << (_downgrade_virtual_count == 1 ?
-                        " downgrade" : " downgrades");
-                need_comma = true;
-            }
-            if (_new_slot_virtual_count)
-            {
-                if (need_comma)
-                    cout << ", ";
-                cout << _new_slot_virtual_count << (_new_slot_virtual_count == 1 ?
-                        " in new slot" : " in new slots");
-                need_comma = true;
-            }
-            if (_rebuild_virtual_count)
-            {
-                if (need_comma)
-                    cout << ", ";
-                cout << _rebuild_virtual_count << (_rebuild_virtual_count == 1 ?
-                        " rebuild" : " rebuilds");
-                need_comma = true;
-            }
-            cout << ")";
-        }
         cout << endl << endl;
 
         if (CommandLine::get_instance()->a_pretend.specified() && ! _all_tags.empty())
@@ -443,12 +384,7 @@ namespace
         else if (existing->empty())
         {
             cout << colour(cl_updatemode, " [N]");
-            if (d.metadata->get_virtual_interface())
-            {
-                ++_new_virtual_count;
-                ++_max_virtual_count;
-            }
-            else
+            if (! d.metadata->get_virtual_interface())
             {
                 ++_new_count;
                 ++_max_count;
@@ -463,12 +399,7 @@ namespace
             if (existing->empty())
             {
                 cout << colour(cl_updatemode, " [S]");
-                if (d.metadata->get_virtual_interface())
-                {
-                    ++_new_slot_virtual_count;
-                    ++_max_virtual_count;
-                }
-                else
+                if (! d.metadata->get_virtual_interface())
                 {
                     ++_new_slot_count;
                     ++_max_count;
@@ -478,12 +409,7 @@ namespace
             {
                 cout << colour(cl_updatemode, " [U " + stringify(
                             existing->last()->version) + "]");
-                if (d.metadata->get_virtual_interface())
-                {
-                    ++_upgrade_virtual_count;
-                    ++_max_virtual_count;
-                }
-                else
+                if (! d.metadata->get_virtual_interface())
                 {
                     ++_upgrade_count;
                     ++_max_count;
@@ -493,12 +419,7 @@ namespace
             {
                 cout << colour(cl_updatemode, " [D " + stringify(
                             existing->last()->version) + "]");
-                if (d.metadata->get_virtual_interface())
-                {
-                    ++_downgrade_virtual_count;
-                    ++_max_virtual_count;
-                }
-                else
+                if (! d.metadata->get_virtual_interface())
                 {
                     ++_downgrade_count;
                     ++_max_count;
@@ -508,12 +429,7 @@ namespace
             else
             {
                 cout << colour(cl_updatemode, " [R]");
-                if (d.metadata->get_virtual_interface())
-                {
-                    ++_rebuild_virtual_count;
-                    ++_max_virtual_count;
-                }
-                else
+                if (! d.metadata->get_virtual_interface())
                 {
                     ++_rebuild_count;
                     ++_max_count;
