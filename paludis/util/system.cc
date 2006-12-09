@@ -54,6 +54,14 @@ namespace
     int
     real_run_command(const std::string & cmd, const FSEntry * const fsentry)
     {
+        static bool done_paludis_pid(false);
+        if (! done_paludis_pid)
+        {
+            if (getenv_with_default("PALUDIS_PID", "").empty())
+                setenv("PALUDIS_PID", stringify(getpid()).c_str(), 1);
+            done_paludis_pid = true;
+        }
+
         pid_t child(fork());
         if (0 == child)
         {
