@@ -45,6 +45,8 @@ namespace
     static int stderr_write_fd = -1;
     static int stderr_close_fd = -1;
 
+    static pid_t paludis_pid(getpid());
+
     /**
      * Runs a command in a directory if needed, wait for it to terminate
      * and return its exit status.
@@ -58,7 +60,7 @@ namespace
         if (! done_paludis_pid)
         {
             if (getenv_with_default("PALUDIS_PID", "").empty())
-                setenv("PALUDIS_PID", stringify(getpid()).c_str(), 1);
+                setenv("PALUDIS_PID", stringify(paludis_pid).c_str(), 1);
             done_paludis_pid = true;
         }
 
