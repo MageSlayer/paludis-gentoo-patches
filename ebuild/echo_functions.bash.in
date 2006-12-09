@@ -46,21 +46,47 @@ fi
 COLOUR_NORMAL=$'\e[0m'
 PALUDIS_ENDCOL=$'\e[A\e['$(( ${COLUMNS:-80} - 7 ))'G'
 
+paludis_ecmd()
+{
+    local cmd="$1" hook="$2" prefix="$3" message="$4" newline="$5"
+
+    echo -n "${prefix}${message}"
+    [[ -z "${newline}" ]] && echo
+
+    if type perform_hook &>/dev/null ; then
+        if [[ -n "${hook}" ]] ; then
+            MESSAGE="${message}" perform_hook "${hook}"
+        fi
+    fi
+}
+
 einfon()
 {
-    echo -ne " ${COLOUR_GOOD}*${COLOUR_NORMAL} $*"
-    PALUDIS_LAST_E_CMD=einfon
+    paludis_ecmd \
+        "einfon" \
+        "einfo" \
+        "`echo -ne " ${COLOUR_GOOD}*${COLOUR_NORMAL} "`" \
+        "$*" \
+        "no"
 }
 
 einfo()
 {
-    einfon "$*\n"
-    PALUDIS_LAST_E_CMD=einfo
+    paludis_ecmd \
+        "einfo" \
+        "einfo" \
+        "`echo -ne " ${COLOUR_GOOD}*${COLOUR_NORMAL} "`" \
+        "$*"
 }
 
 elog()
 {
-    einfo "$@"
+    paludis_ecmd \
+        "elog" \
+        "einfo" \
+        "`echo -ne " ${COLOUR_GOOD}*${COLOUR_NORMAL} "`" \
+        "$*"
+
     if [[ -n "${PALUDIS_ELOG_FILE}" ]] ; then
         echo "$@" >> "${PALUDIS_ELOG_FILE}"
     fi
@@ -68,21 +94,29 @@ elog()
 
 ewarn()
 {
-    echo -e " ${COLOUR_WARN}*${COLOUR_NORMAL} $*"
-    PALUDIS_LAST_E_CMD=ewarn
+    paludis_ecmd \
+        "ewarn" \
+        "ewarn" \
+        "`echo -ne " ${COLOUR_WARN}*${COLOUR_NORMAL} "`" \
+        "$*"
 }
 
 eerror()
 {
-    echo -e " ${COLOUR_BAD}*${COLOUR_NORMAL} $*"
-    PALUDIS_LAST_E_CMD=eerror
+    paludis_ecmd \
+        "eerror" \
+        "eerror" \
+        "`echo -ne " ${COLOUR_BAD}*${COLOUR_NORMAL} "`" \
+        "$*"
 }
 
 ebegin()
 {
-    einfo "$* ..."
-    PALUDIS_LAST_E_CMD=ebegin
-    PALUDIS_LAST_E_LEN=$(( 4 + ${#msg} ))
+    paludis_ecmd \
+        "ebegin" \
+        "einfo" \
+        "`echo -ne " ${COLOUR_GOOD}*${COLOUR_NORMAL} "`" \
+        "$* ..."
 }
 
 _eend()
@@ -99,7 +133,6 @@ _eend()
         msg="${COLOUR_BRACKET}[ ${COLOUR_BAD}!!${COLOUR_BRACKET} ]${COLOUR_NORMAL}"
     fi
 
-#    printf "%$(( ${COLUMNS:-80} - PALUDIS_LAST_E_LEN - 6))s%b\n" '' "${msg}"
     echo -e "${PALUDIS_ENDCOL} ${msg}"
 
     return ${retval}
@@ -110,7 +143,6 @@ eend()
     local retval=${1:-0}
     shift
     _eend ${retval} eerror "$*"
-    PALUDIS_LAST_E_CMD=eend
     return ${retval}
 }
 
@@ -119,7 +151,6 @@ ewend()
     local retval=${1:-0}
     shift
     _eend ${retval} ewarn "$*"
-    PALUDIS_LAST_E_CMD=ewend
     return ${retval}
 }
 

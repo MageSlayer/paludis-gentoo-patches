@@ -79,6 +79,7 @@ userhook(`fetch_all_pre')
 userhook(`fetch_all_post')
 userhook(`fetch_all_all_pre')
 userhook(`fetch_all_all_post')
+
 userhook(`ebuild_metadata_pre')
 userhook(`ebuild_metadata_fail')
 userhook(`ebuild_metadata_post')
@@ -133,6 +134,11 @@ userhook(`ebuild_prerm_post')
 userhook(`ebuild_postrm_pre')
 userhook(`ebuild_postrm_fail')
 userhook(`ebuild_postrm_post')
+userhook(`einfo')
+
+userhook(`ewarn')
+userhook(`eerror')
+userhook(`elog')
 
 define(`systemhook', `
 installsystemhooks$1dir = $(libexecdir)/paludis/hooks/$1
