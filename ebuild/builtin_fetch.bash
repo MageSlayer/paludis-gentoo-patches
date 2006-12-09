@@ -90,7 +90,7 @@ builtin_fetch()
             prg="${PALUDIS_EBUILD_DIR}/digests/do$(echo ${line[0]} | tr \
                 '[[:upper:]]' '[[:lower:]]')"
             if [[ -x "${prg}" ]] ; then
-                ebegin "Checking ${line[0]} for ${line[2]}"
+                ebegin_unhooked "Checking ${line[0]} for ${line[2]}"
                 if [[ $("${prg}" "${DISTDIR}/${line[2]}" ) == "${line[1]}" ]] ; then
                     eend 0
                 else
@@ -98,7 +98,7 @@ builtin_fetch()
                     hasq "${line[2]}" ${badfetch} || badfetch="${badfetch} ${line[2]}"
                 fi
             else
-                einfo "Can't check ${line[0]} for ${line[2]}"
+                einfo_unhooked "Can't check ${line[0]} for ${line[2]}"
             fi
 
         done < "${FILESDIR}"/digest-${PN}-${PVR%-r0}

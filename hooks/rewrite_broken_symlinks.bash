@@ -22,10 +22,10 @@ shopt -s extglob
 export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
-count=0
-einfo "Checking for broken symlinks..."
+export count=0
+einfo_unhooked "Checking for broken symlinks..."
 
-find "${IMAGE}" -type l | while read link ; do
+while read link ; do
     target=$(readlink "${link}" )
     if [[ "${target#${IMAGE}}" != "${target}" ]] ; then
         ebuild_notice "qa" "Found broken symlink '${link}' -> '${target}'"
@@ -35,12 +35,12 @@ find "${IMAGE}" -type l | while read link ; do
         newtarget="/${newtarget##+(/)}"
         echo ln -s "${newtarget}" "${link}" 1>&2
         ln -s "${newtarget}" "${link}"
-        count=$(( ${count} + 1 ))
+        export count=$(( ${count} + 1 ))
     fi
-done
+done < <(find "${IMAGE}" -type l )
 
-if [[ ${count} == 0 ]] ; then
-    einfo "Done checking for broken symlinks"
+if [[ "${count}" -eq 0 ]] ; then
+    einfo_unhooked "Done checking for broken symlinks"
 else
     ewarn "Fixed ${count} broken symlinks"
 fi

@@ -79,6 +79,15 @@ einfo()
         "$*"
 }
 
+einfo_unhooked()
+{
+    paludis_ecmd \
+        "einfo" \
+        "" \
+        "`echo -ne " ${COLOUR_GOOD}*${COLOUR_NORMAL} "`" \
+        "$*"
+}
+
 elog()
 {
     paludis_ecmd \
@@ -115,6 +124,15 @@ ebegin()
     paludis_ecmd \
         "ebegin" \
         "einfo" \
+        "`echo -ne " ${COLOUR_GOOD}*${COLOUR_NORMAL} "`" \
+        "$* ..."
+}
+
+ebegin_unhooked()
+{
+    paludis_ecmd \
+        "ebegin" \
+        "" \
         "`echo -ne " ${COLOUR_GOOD}*${COLOUR_NORMAL} "`" \
         "$* ..."
 }

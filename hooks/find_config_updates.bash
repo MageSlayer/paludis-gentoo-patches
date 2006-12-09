@@ -23,20 +23,20 @@ export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/ut
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
 echo
-einfo "Searching for configuration files requiring action..."
+einfo_unhooked "Searching for configuration files requiring action..."
 
 dir_count=0
 for dir in /etc ${CONFIG_PROTECT} ; do
     [[ -d "${ROOT%/}/${dir}" ]] || continue
     c=$(find "${ROOT%/}/${dir}" -iname '._cfg????_*' | wc -l )
     if [[ ${c} -gt 0 ]] ; then
-        einfo "Found ${c} files in ${ROOT%%+(/)}/${dir}"
+        einfo_unhooked "Found ${c} files in ${ROOT%%+(/)}/${dir}"
         dir_count=$((dir_count + 1))
     fi
 done
 
 if [[ 0 -eq "${dir_count}" ]] ; then
-    einfo "No configuration file updates required"
+    einfo_unhooked "No configuration file updates required"
     exit 0
 else
     ewarn "Found files in ${dir_count} directories"

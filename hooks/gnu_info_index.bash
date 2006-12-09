@@ -21,7 +21,7 @@ export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/ut
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
 echo
-einfo "Checking whether the GNU info directory needs updating..."
+einfo_unhooked "Checking whether the GNU info directory needs updating..."
 
 regen_info_dirs=
 vdb_loc=$(${PALUDIS_COMMAND} --configuration-variable installed location )
@@ -39,7 +39,7 @@ for info_path in ${INFOPATH/:/ } ; do
 done
 
 if [[ -z "${regen_info_dirs}" ]] ; then
-    einfo "No updates needed"
+    einfo_unhooked "No updates needed"
     exit 0
 fi
 
@@ -47,7 +47,7 @@ good_count=0
 bad_count=0
 
 for info_path in ${regen_info_dirs} ; do
-    einfo "Updating directory ${info_path}..."
+    einfo_unhooked "Updating directory ${info_path}..."
 
     [[ -e "${info_path}"/dir ]] && mv -f "${info_path}/"dir{,.old}
 
@@ -78,7 +78,7 @@ if [[ ${bad_count} -gt 0 ]] ; then
     ewarn "Processed $(( good_count + bad_count )) info files, with ${bad_count} errors"
     exit 1
 else
-    einfo "Processed ${good_count} info files"
+    einfo_unhooked "Processed ${good_count} info files"
     exit 0
 fi
 

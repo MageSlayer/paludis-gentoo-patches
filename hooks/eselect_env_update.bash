@@ -21,7 +21,7 @@ export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/ut
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
 echo
-einfo "Regenerating environment..."
+einfo_unhooked "Regenerating environment..."
 eselect env update || exit 1
-einfo "Done regenerating environment"
+einfo_unhooked "Done regenerating environment"
 

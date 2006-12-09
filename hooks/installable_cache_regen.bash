@@ -21,9 +21,9 @@ export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/ut
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
 echo
-einfo "Regenerating cache for installable repositories..."
+einfo_unhooked "Regenerating cache for installable repositories..."
 ${PALUDIS_COMMAND} --regenerate-installable-cache
-einfo "Done regenerating cache for installable repositories"
+einfo_unhooked "Done regenerating cache for installable repositories"
 
 true
 

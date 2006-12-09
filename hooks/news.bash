@@ -26,7 +26,7 @@ done_echo=
 
 if [[ "${HOOK/pretend}" == "${HOOK}" ]] ; then
     [[ -z "${done_echo}" ]] && echo ; done_echo=yes
-    einfo "Checking for news items..."
+    einfo_unhooked "Checking for news items..."
 
     ${PALUDIS_COMMAND} --update-news
 fi
@@ -44,7 +44,7 @@ if [[ ${count} -gt 0 ]] ; then
     ewarn "You have ${count} unread news items"
 elif [[ "${HOOK/pretend}" == "${HOOK}" ]] ; then
     [[ -z "${done_echo}" ]] && echo ; done_echo=yes
-    einfo "No unread news items found"
+    einfo_unhooked "No unread news items found"
 fi
 
 true
