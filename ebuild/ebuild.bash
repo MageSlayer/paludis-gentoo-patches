@@ -199,12 +199,14 @@ ebuild_load_ebuild()
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?ROOT=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?SANDBOX/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?BASH_/d' \
-            -e '/^\(declare \(-[^ ]\+ \)\?\)\?SHELLOPTS_/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?SHELLOPTS/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?..\?ID=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?LD_/d' \
             "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}"
 
-        source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" &>/dev/null \
+
+        echo source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" 1>&2
+        source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" \
             || die "Can't load saved environment"
 
         export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"
