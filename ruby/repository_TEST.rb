@@ -198,5 +198,30 @@ module Paludis
             assert_kind_of Time, time
         end
     end
+
+    class TestCase_RepositoryInfo < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_info
+            assert_kind_of RepositoryInfo, repo.info(false)
+            assert_kind_of RepositoryInfo, repo.info(true)
+        end
+
+        def test_sections
+            assert_kind_of Array, repo.info(false).sections
+            assert_equal 1, repo.info(false).sections.length
+        end
+
+        def test_section_header
+            assert_kind_of String, repo.info(false).sections.first.header
+            assert_equal 'Configuration information', repo.info(false).sections.first.header
+        end
+
+        def test_section_kvs
+            assert_kind_of Hash, repo.info(false).sections.first.kvs
+            assert_equal 'portage', repo.info(false).sections.first.kvs['format']
+            assert_equal 'vdb', installed_repo.info(false).sections.first.kvs['format']
+        end
+    end
 end
 

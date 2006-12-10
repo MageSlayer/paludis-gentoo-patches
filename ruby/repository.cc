@@ -257,6 +257,14 @@ namespace
     }
 
     VALUE
+    repository_info_section_header(VALUE self)
+    {
+        RepositoryInfoSection::ConstPointer * self_ptr;
+        Data_Get_Struct(self, RepositoryInfoSection::ConstPointer, self_ptr);
+        return rb_str_new2((*self_ptr)->heading().c_str());
+    }
+
+    VALUE
     repository_contents(VALUE self, VALUE qpn, VALUE vs)
     {
         try
@@ -366,6 +374,7 @@ namespace
         c_repository_info_section = rb_define_class_under(paludis_module(), "RepositoryInfoSection", rb_cObject);
         rb_funcall(c_repository_info_section, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository_info_section, "kvs", RUBY_FUNC_CAST(&repository_info_section_kvs), 0);
+        rb_define_method(c_repository_info_section, "header", RUBY_FUNC_CAST(&repository_info_section_header), 0);
     }
 }
 
