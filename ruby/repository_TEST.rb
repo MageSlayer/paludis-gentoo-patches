@@ -111,7 +111,17 @@ module Paludis
         def test_category_names
             a = repo.category_names
             assert_equal 1, a.length
-            assert_equal "foo", a[0]
+            assert_equal "foo", a.first
+        end
+    end
+
+    class TestCase_RepositoryCategoryNamesContainingPackage < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_category_names_containing_package
+            a = repo.category_names_containing_package('bar')
+            assert_equal 1, a.length
+            assert_equal "foo", a.first
         end
     end
 

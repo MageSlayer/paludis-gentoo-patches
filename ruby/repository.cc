@@ -114,6 +114,27 @@ namespace
     }
 
     VALUE
+    repository_category_names_containing_package(VALUE self, VALUE pkg)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            PackageNamePart package(StringValuePtr(pkg));
+
+            VALUE result(rb_ary_new());
+            CategoryNamePartCollection::ConstPointer c((*self_ptr)->category_names_containing_package(package));
+            for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
     repository_package_names(VALUE self, VALUE cat)
     {
         try
@@ -300,6 +321,8 @@ namespace
         rb_define_method(c_repository, "has_version?", RUBY_FUNC_CAST(&repository_has_version), 2);
 
         rb_define_method(c_repository, "category_names", RUBY_FUNC_CAST(&repository_category_names), 0);
+        rb_define_method(c_repository, "category_names_containing_package",
+                RUBY_FUNC_CAST(&repository_category_names_containing_package), 1);
         rb_define_method(c_repository, "package_names", RUBY_FUNC_CAST(&repository_package_names), 1);
         rb_define_method(c_repository, "version_specs", RUBY_FUNC_CAST(&repository_version_specs), 1);
 
