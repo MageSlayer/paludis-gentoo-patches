@@ -7,12 +7,15 @@ make_class_GemsRepositoryParams()
     key package_database "const PackageDatabase *"
     key location FSEntry
     key distdir FSEntry
-    key sync std::string
-    key sync_exclude std::string
+    key yaml_uri std::string
     key root FSEntry
     key buildroot FSEntry
 
     allow_named_args
 }
 
+make_class_GemsRepositoryEntry()
+{
+    key metadata VersionMetadata::Pointer
+}
 

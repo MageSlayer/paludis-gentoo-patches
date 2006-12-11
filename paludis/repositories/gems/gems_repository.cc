@@ -22,13 +22,23 @@
 using namespace paludis;
 
 #include <paludis/repositories/gems/gems_repository-sr.cc>
+#include <paludis/repositories/gems/cache.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/system.hh>
+#include <paludis/util/log.hh>
+#include <paludis/syncer.hh>
 #include <paludis/package_database.hh>
+#include <paludis/hashed_containers.hh>
+#include <paludis/environment.hh>
 
 #include <paludis/portage_dep_parser.hh>
 
 namespace paludis
 {
+    typedef std::map<VersionSpec, GemsRepositoryEntry> Versions;
+    typedef MakeHashedMap<PackageNamePart, Versions>::Type Packages;
+
     template<>
     struct Implementation<GemsRepository> :
         InternalCounted<Implementation<GemsRepository> >
@@ -37,8 +47,12 @@ namespace paludis
 
         void need_entries() const;
 
+        mutable bool has_entries;
+        mutable Packages packages;
+
         Implementation(const GemsRepositoryParams & p) :
-            params(p)
+            params(p),
+            has_entries(false)
         {
         }
     };
@@ -46,6 +60,21 @@ namespace paludis
     void
     Implementation<GemsRepository>::need_entries() const
     {
+        if (has_entries)
+            return;
+
+        Context context("When loading Gems repository entries:");
+
+        GemsCache cache(params.location / "yaml");
+        for (GemsCache::Iterator g(cache.begin()), g_end(cache.end()) ;
+                g != g_end ; ++g)
+        {
+            VersionMetadata::Pointer m(new VersionMetadata(PortageDepParser::parse_depend));
+            Packages::iterator v(packages.insert(std::make_pair(g->name, Versions())).first);
+            v->second.insert(std::make_pair(g->version, m));
+        }
+
+        has_entries = true;
     }
 }
 
@@ -62,6 +91,7 @@ GemsRepository::do_has_package_named(const QualifiedPackageName & c) const
         return false;
 
     _imp->need_entries();
+    return _imp->packages.end() != _imp->packages.find(c.package);
 
     return false;
 }
@@ -84,7 +114,12 @@ GemsRepository::do_package_names(const CategoryNamePart & c) const
 
     _imp->need_entries();
 
-    return QualifiedPackageNameCollection::ConstPointer(new QualifiedPackageNameCollection::Concrete);
+    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
+    for (Packages::const_iterator i(_imp->packages.begin()), i_end(_imp->packages.end()) ;
+            i != i_end ; ++i)
+        result->insert(c + i->first);
+
+    return result;
 }
 
 VersionSpecCollection::ConstPointer
@@ -95,7 +130,13 @@ GemsRepository::do_version_specs(const QualifiedPackageName & p) const
 
     _imp->need_entries();
 
-    return VersionSpecCollection::ConstPointer(new VersionSpecCollection::Concrete);
+    VersionSpecCollection::Pointer result(new VersionSpecCollection::Concrete);
+    Packages::const_iterator i(_imp->packages.find(p.package));
+    if (i != _imp->packages.end())
+        std::copy(i->second.begin(), i->second.end(), transform_inserter(
+                    result->inserter(), SelectFirst<VersionSpec, GemsRepositoryEntry>()));
+
+    return result;
 }
 
 bool
@@ -117,7 +158,15 @@ GemsRepository::do_version_metadata(const QualifiedPackageName & q, const Versio
 
     _imp->need_entries();
 
-    return VersionMetadata::ConstPointer(new VersionMetadata(&PortageDepParser::parse_depend));
+    Packages::const_iterator i(_imp->packages.find(q.package));
+    if (i == _imp->packages.end())
+        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
+
+    Versions::const_iterator j(i->second.find(v));
+    if (j == i->second.end())
+        throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
+
+    return j->second.metadata;
 }
 
 bool
@@ -146,7 +195,46 @@ GemsRepository::sets_list() const
 bool
 GemsRepository::do_sync() const
 {
-    return false;
+    Context context("When syncing repository '" + stringify(name()) + "':");
+
+    if (_imp->params.yaml_uri.empty())
+        return false;
+
+    std::string::size_type p;
+    if (std::string::npos == ((p = _imp->params.yaml_uri.find(':'))))
+        throw ConfigurationError("Don't recognise URI '" + _imp->params.yaml_uri + "'");
+
+    std::string protocol(_imp->params.yaml_uri.substr(0, p));
+
+    std::list<std::string> fetchers_dirs;
+    WhitespaceTokeniser::get_instance()->tokenise(_imp->params.environment->fetchers_dirs(),
+            std::back_inserter(fetchers_dirs));
+
+    Log::get_instance()->message(ll_debug, lc_context, "looking for syncer protocol '"
+            + stringify(protocol) + "'");
+
+    FSEntry fetcher("/var/empty");
+    bool ok(false);
+    for (std::list<std::string>::const_iterator d(fetchers_dirs.begin()),
+            d_end(fetchers_dirs.end()) ; d != d_end && ! ok; ++d)
+    {
+        fetcher = FSEntry(*d) / ("do" + protocol);
+        if (fetcher.exists() && fetcher.has_permission(fs_ug_owner, fs_perm_execute))
+            ok = true;
+
+        Log::get_instance()->message(ll_debug, lc_no_context, "Trying '" + stringify(fetcher) + "': "
+                + (ok ? "ok" : "not ok"));
+    }
+
+    if (! ok)
+        throw ConfigurationError("Don't know how to fetch URI '" + _imp->params.yaml_uri + "'");
+
+    (_imp->params.location / "yaml").unlink();
+    if (run_command(stringify(fetcher) + " '" +_imp->params.yaml_uri + "' '" +
+                stringify(_imp->params.location / "yaml") + "'"))
+        throw SyncFailedError(stringify(_imp->params.location / "yaml"), _imp->params.yaml_uri);
+
+    return true;
 }
 
 GemsRepository::GemsRepository(const GemsRepositoryParams & p) :

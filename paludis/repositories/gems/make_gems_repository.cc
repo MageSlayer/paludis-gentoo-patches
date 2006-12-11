@@ -40,13 +40,9 @@ paludis::make_gems_repository(const Environment * const env,
     if (m->end() == m->find("distdir") || ((distdir = m->find("distdir")->second)).empty())
         distdir = location + "/distfiles";
 
-    std::string sync;
-    if (m->end() != m->find("sync"))
-        sync = m->find("sync")->second;
-
-    std::string sync_exclude;
-    if (m->end() != m->find("sync_exclude"))
-        sync_exclude = m->find("sync_exclude")->second;
+    std::string yaml_uri;
+    if (m->end() != m->find("yaml_uri"))
+        yaml_uri = m->find("yaml_uri")->second;
 
     std::string root;
     if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
@@ -61,10 +57,22 @@ paludis::make_gems_repository(const Environment * const env,
                 .package_database(db)
                 .location(location)
                 .distdir(distdir)
-                .sync(sync)
-                .sync_exclude(sync_exclude)
+                .yaml_uri(yaml_uri)
                 .root(root)
                 .buildroot(buildroot)));
 
 }
+
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility push(default)
+#endif
+namespace
+{
+    const RepositoryMaker::RegisterMaker register_gems_repository PALUDIS_ATTRIBUTE((used)) (
+            "gems", &make_gems_repository);
+}
+#ifdef PALUDIS_ENABLE_VISIBILITY
+#  pragma GCC visibility pop
+#endif
+
 
