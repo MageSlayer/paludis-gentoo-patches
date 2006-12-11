@@ -25,13 +25,28 @@ using namespace paludis;
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/package_database.hh>
 
+#include <paludis/portage_dep_parser.hh>
+
 namespace paludis
 {
     template<>
-    struct Implementation<GemsRepository>
+    struct Implementation<GemsRepository> :
+        InternalCounted<Implementation<GemsRepository> >
     {
+        const GemsRepositoryParams params;
+
         void need_entries() const;
+
+        Implementation(const GemsRepositoryParams & p) :
+            params(p)
+        {
+        }
     };
+
+    void
+    Implementation<GemsRepository>::need_entries() const
+    {
+    }
 }
 
 bool
@@ -102,7 +117,7 @@ GemsRepository::do_version_metadata(const QualifiedPackageName & q, const Versio
 
     _imp->need_entries();
 
-    return VersionMetadata::ConstPointer(new VersionMetadata);
+    return VersionMetadata::ConstPointer(new VersionMetadata(&PortageDepParser::parse_depend));
 }
 
 bool
@@ -111,4 +126,66 @@ GemsRepository::do_is_licence(const std::string &) const
     return false;
 }
 
+void
+GemsRepository::do_install(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
+{
+}
+
+DepAtom::Pointer
+GemsRepository::do_package_set(const SetName &) const
+{
+    return DepAtom::Pointer(0);
+}
+
+SetsCollection::ConstPointer
+GemsRepository::sets_list() const
+{
+    return SetsCollection::Pointer(new SetsCollection::Concrete);
+}
+
+bool
+GemsRepository::do_sync() const
+{
+    return false;
+}
+
+GemsRepository::GemsRepository(const GemsRepositoryParams & p) :
+    Repository(RepositoryName("gems"),
+            RepositoryCapabilities::create()
+            .mask_interface(0)
+            .installable_interface(this)
+            .installed_interface(0)
+            .news_interface(0)
+            .sets_interface(this)
+            .syncable_interface(this)
+            .uninstallable_interface(0)
+            .use_interface(0)
+            .world_interface(0)
+            .environment_variable_interface(0)
+            .mirrors_interface(0)
+            .virtuals_interface(0)
+            .provides_interface(0)),
+    PrivateImplementationPattern<GemsRepository>(new Implementation<GemsRepository>(p))
+{
+}
+
+GemsRepository::~GemsRepository()
+{
+}
+
+void
+GemsRepository::invalidate() const
+{
+}
+
+void
+GemsRepository::regenerate_cache() const
+{
+}
+
+RepositoryInfo::ConstPointer
+GemsRepository::info(bool) const
+{
+    return RepositoryInfo::Pointer(new RepositoryInfo);
+}
 
