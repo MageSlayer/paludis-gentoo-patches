@@ -9,8 +9,15 @@ cat <<END > entries
 gems:
   foo-1.2.3: !ruby/object:Gem::Specification
     name: foo
+    homepage: http://foo.com/
     version: !ruby/object:Gem::Version
       version: 1.2.3
+    required_ruby_version: !ruby/object:Gem::Version::Requirement
+      requirements:
+      - - ">"
+        - !ruby/object:Gem::Version
+          version: 1.8.0
+      version:
 
   bar-2.3.4: !ruby/object:Gem::Specification
     name: bar

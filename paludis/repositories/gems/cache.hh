@@ -25,6 +25,7 @@
 #include <paludis/util/collection.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/version_requirements.hh>
 
 #include <libwrapiter/libwrapiter.hh>
 

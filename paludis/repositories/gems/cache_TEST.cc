@@ -45,11 +45,23 @@ namespace test_cases
             TEST_CHECK(c != cache.end());
 
             TEST_CHECK_EQUAL(c->name, PackageNamePart("foo"));
+            TEST_CHECK_EQUAL(c->homepage, "http://foo.com/");
+            TEST_CHECK_EQUAL(c->version, VersionSpec("1.2.3"));
+
+            TEST_CHECK(c->required_ruby_version);
+            TEST_CHECK_EQUAL(std::distance(c->required_ruby_version->begin(),
+                        c->required_ruby_version->end()), 1);
+            TEST_CHECK_EQUAL(c->required_ruby_version->begin()->version_operator, VersionOperator(">"));
+            TEST_CHECK_EQUAL(c->required_ruby_version->begin()->version_spec, VersionSpec("1.8.0"));
 
             ++c;
             TEST_CHECK(c != cache.end());
 
             TEST_CHECK_EQUAL(c->name, PackageNamePart("bar"));
+            TEST_CHECK_EQUAL(c->homepage, "");
+            TEST_CHECK_EQUAL(c->version, VersionSpec("2.3.4"));
+            TEST_CHECK(c->required_ruby_version);
+            TEST_CHECK(c->required_ruby_version->empty());
 
             ++c;
             TEST_CHECK(c == cache.end());

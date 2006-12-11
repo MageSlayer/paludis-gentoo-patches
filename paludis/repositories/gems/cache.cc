@@ -22,6 +22,7 @@
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <list>
 
 #include <yaml.h>
@@ -71,6 +72,99 @@ namespace
         return v.str;
     }
 
+    struct VersionVisitor :
+        YamlNodeVisitorTypes::ConstVisitor
+    {
+        std::string str;
+
+        void visit(const YamlScalarNode * n) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw GemsCacheError("Expected a mapping node, not scalar '" + n->value() + "'");
+        }
+
+        void visit(const YamlSequenceNode *) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw GemsCacheError("Expected a mapping node, not a sequence");
+        }
+
+        void visit(const YamlMappingNode * n)
+        {
+            for (YamlMappingNode::Iterator i(n->begin()), i_end(n->end()) ; i != i_end ; ++i)
+                if (i->first->value() == "version")
+                    str = as_string(i->second);
+        }
+    };
+
+    struct RequirementsVisitor :
+        YamlNodeVisitorTypes::ConstVisitor
+    {
+        VersionRequirements::Pointer r;
+        bool top_level;
+
+        std::string op;
+        std::string v;
+
+        RequirementsVisitor(VersionRequirements::Pointer rr) :
+            r(rr),
+            top_level(true)
+        {
+        }
+
+        void visit(const YamlMappingNode * n)
+        {
+            Context context("When handling mapping node:");
+
+            if (top_level)
+            {
+                for (YamlMappingNode::Iterator i(n->begin()), i_end(n->end()) ; i != i_end ; ++i)
+                    if (i->first->value() == "requirements")
+                    {
+                        Context context2("When handling mapping node requirements key:");
+                        i->second->accept(this);
+                    }
+            }
+            else
+                for (YamlMappingNode::Iterator i(n->begin()), i_end(n->end()) ; i != i_end ; ++i)
+                    if (i->first->value() == "version")
+                        v = as_string(i->second);
+        }
+
+        void visit(const YamlSequenceNode * n)
+        {
+            Context context("When handling sequence node:");
+
+            if (top_level)
+            {
+                Save<bool> save_top_level(&top_level, false);
+                std::for_each(n->begin(), n->end(), accept_visitor(this));
+            }
+            else
+            {
+                op = "";
+                v = "";
+
+                YamlSequenceNode::Iterator i(n->begin()), i_end(n->end());
+                if (i == i_end)
+                    throw YamlError("Expected a sequence with two entries, not zero");
+                op = as_string(*i++);
+                if (i == i_end)
+                    throw YamlError("Expected a sequence with two entries, not one");
+                VersionVisitor vv;
+                (*i++)->accept(&vv);
+                v = vv.str;
+                if (i != i_end)
+                    throw YamlError("Expected a sequence with two entries, not more than two");
+
+                r->push_back(VersionRequirement(VersionOperator(op), VersionSpec(v)));
+            }
+        }
+
+        void visit(const YamlScalarNode *) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw YamlError("Didn't expect a scalar");
+        }
+    };
+
     struct EntryVisitor :
         YamlNodeVisitorTypes::ConstVisitor
     {
@@ -81,9 +175,11 @@ namespace
         std::string summary;
         std::string description;
         std::string homepage;
+        VersionRequirements::Pointer required_ruby_version;
 
         EntryVisitor(const std::string & _id) :
-            id(_id)
+            id(_id),
+            required_ruby_version(new VersionRequirements::Concrete)
         {
         }
 
@@ -98,7 +194,7 @@ namespace
                 .summary(summary)
                 .description(description)
                 .homepage(homepage)
-                .required_ruby_version(SequentialCollection<std::string>::Pointer(0))
+                .required_ruby_version(required_ruby_version)
                 .authors(SequentialCollection<std::string>::Pointer(0))
                 .dependencies(SequentialCollection<std::string>::Pointer(0))
                 .requirements(SequentialCollection<std::string>::Pointer(0));
@@ -120,6 +216,24 @@ namespace
             {
                 if (i->first->value() == "name")
                     name = as_string(i->second);
+                else if (i->first->value() == "summary")
+                    summary = as_string(i->second);
+                else if (i->first->value() == "description")
+                    description = as_string(i->second);
+                else if (i->first->value() == "homepage")
+                    homepage = as_string(i->second);
+                else if (i->first->value() == "version")
+                {
+                    VersionVisitor v;
+                    i->second->accept(&v);
+                    version = v.str;
+                }
+                else if (i->first->value() == "required_ruby_version")
+                {
+                    Context context("When handling required_ruby_version children:");
+                    RequirementsVisitor v(required_ruby_version);
+                    i->second->accept(&v);
+                }
             }
         }
     };
