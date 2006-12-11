@@ -70,6 +70,13 @@ namespace paludis
                 g != g_end ; ++g)
         {
             VersionMetadata::Pointer m(new VersionMetadata(PortageDepParser::parse_depend));
+            m->slot = SlotName(stringify(g->version));
+            m->homepage = g->homepage;
+            if (g->description.empty())
+                m->description = g->summary;
+            else
+                m->description = g->description;
+
             Packages::iterator v(packages.insert(std::make_pair(g->name, Versions())).first);
             v->second.insert(std::make_pair(g->version, m));
         }
