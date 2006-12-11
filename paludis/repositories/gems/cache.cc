@@ -23,6 +23,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/log.hh>
 #include <list>
 
 #include <yaml.h>
@@ -43,31 +44,38 @@ namespace paludis
 
 namespace
 {
-    std::string
-    as_string(YamlNode::ConstPointer n)
+    struct AsStringVisitor :
+        YamlNodeVisitorTypes::ConstVisitor
     {
-        struct Visitor :
-            YamlNodeVisitorTypes::ConstVisitor
+        std::string str;
+        std::string join;
+
+        void visit(const YamlSequenceNode * nn)
         {
-            std::string str;
-
-            void visit(const YamlSequenceNode *) PALUDIS_ATTRIBUTE((noreturn))
-            {
+            if (join.empty())
                 throw GemsCacheError("Expected a scalar node, not a sequence");
-            }
+            else
+                std::for_each(nn->begin(), nn->end(), accept_visitor(this));
+        }
 
-            void visit(const YamlMappingNode *) PALUDIS_ATTRIBUTE((noreturn))
-            {
-                throw GemsCacheError("Expected a scalar node, not a mapping");
-            }
+        void visit(const YamlMappingNode *) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw GemsCacheError("Expected a scalar node, not a mapping");
+        }
 
-            void visit(const YamlScalarNode * nn)
-            {
-                str = nn->value();
-            }
-        };
+        void visit(const YamlScalarNode * nn)
+        {
+            if (! str.empty())
+                str.append(join);
+            str.append(nn->value());
+        }
+    };
 
-        Visitor v;
+    std::string
+    as_string(YamlNode::ConstPointer n, const std::string & join = "")
+    {
+        AsStringVisitor v;
+        v.join = join;
         n->accept(&v);
         return v.str;
     }
@@ -89,6 +97,7 @@ namespace
 
         void visit(const YamlMappingNode * n)
         {
+            Context context("When looking for a version: key in a mapping:");
             for (YamlMappingNode::Iterator i(n->begin()), i_end(n->end()) ; i != i_end ; ++i)
                 if (i->first->value() == "version")
                     str = as_string(i->second);
@@ -126,7 +135,10 @@ namespace
             else
                 for (YamlMappingNode::Iterator i(n->begin()), i_end(n->end()) ; i != i_end ; ++i)
                     if (i->first->value() == "version")
+                    {
+                        Context local_context("When looking for a version: key in a requirements mapping:");
                         v = as_string(i->second);
+                    }
         }
 
         void visit(const YamlSequenceNode * n)
@@ -159,8 +171,11 @@ namespace
             }
         }
 
-        void visit(const YamlScalarNode *) PALUDIS_ATTRIBUTE((noreturn))
+        void visit(const YamlScalarNode * n)
         {
+            if (top_level && n->value().empty())
+                return;
+
             throw YamlError("Didn't expect a scalar");
         }
     };
@@ -214,6 +229,8 @@ namespace
         {
             for (YamlMappingNode::Iterator i(n->begin()), i_end(n->end()) ; i != i_end ; ++i)
             {
+                Context context("When handling entry key '" + i->first->value() + "':");
+
                 if (i->first->value() == "name")
                     name = as_string(i->second);
                 else if (i->first->value() == "summary")
@@ -221,7 +238,7 @@ namespace
                 else if (i->first->value() == "description")
                     description = as_string(i->second);
                 else if (i->first->value() == "homepage")
-                    homepage = as_string(i->second);
+                    homepage = as_string(i->second, " ");
                 else if (i->first->value() == "version")
                 {
                     VersionVisitor v;
@@ -230,7 +247,7 @@ namespace
                 }
                 else if (i->first->value() == "required_ruby_version")
                 {
-                    Context context("When handling required_ruby_version children:");
+                    Context context2("When handling required_ruby_version children:");
                     RequirementsVisitor v(required_ruby_version);
                     i->second->accept(&v);
                 }
@@ -268,9 +285,19 @@ namespace
                 }
                 else
                 {
-                    EntryVisitor v(i->first->value());
-                    i->second->accept(&v);
-                    imp->entries.push_back(v.entry());
+                    Context context("When processing ID '" + i->first->value() + "':");
+                    try
+                    {
+                        EntryVisitor v(i->first->value());
+                        i->second->accept(&v);
+                        imp->entries.push_back(v.entry());
+                    }
+                    catch (const NameError & e)
+                    {
+                        Log::get_instance()->message(ll_qa, lc_context, "Skipping ID '"
+                                + i->first->value() + "' due to exception '" + e.message() + "' ("
+                                + e.what() + ")");
+                    }
                 }
             }
         }
