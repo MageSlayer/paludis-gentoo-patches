@@ -27,4 +27,9 @@ GemsRepositoryConfigurationError::GemsRepositoryConfigurationError(
 {
 }
 
+GemsCacheError::GemsCacheError(
+        const std::string & msg) throw () :
+    ConfigurationError("Gems repository cache error: " + msg)
+{
+}
 

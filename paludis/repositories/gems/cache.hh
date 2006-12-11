@@ -17,30 +17,36 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GEMS_GEMS_REPOSITORY_EXCEPTIONS_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GEMS_GEMS_REPOSITORY_EXCEPTIONS_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GEMS_CACHE_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GEMS_CACHE_HH 1
 
-#include <paludis/util/exception.hh>
+#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/collection.hh>
+#include <paludis/name.hh>
+#include <paludis/version_spec.hh>
+
+#include <libwrapiter/libwrapiter.hh>
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE GemsRepositoryConfigurationError :
-        public ConfigurationError
+    class FSEntry;
+
+#include <paludis/repositories/gems/cache-sr.hh>
+
+    class GemsCache :
+        private InstantiationPolicy<GemsCache, instantiation_method::NonCopyableTag>,
+        private PrivateImplementationPattern<GemsCache>,
+        public InternalCounted<GemsCache>
     {
         public:
-            /**
-             * Constructor.
-             */
-            GemsRepositoryConfigurationError(const std::string & msg) throw ();
-    };
+            GemsCache(const FSEntry &);
+            ~GemsCache();
 
-    class PALUDIS_VISIBLE GemsCacheError :
-        public ConfigurationError
-    {
-        public:
-            GemsCacheError(const std::string & msg) throw ();
+            typedef libwrapiter::ForwardIterator<GemsCache, const GemsCacheEntry> Iterator;
+            Iterator begin() const;
+            Iterator end() const;
     };
-
 }
 
 #endif
