@@ -646,11 +646,13 @@ dnl }}}
 
 dnl {{{ repositories
 ALL_REPOSITORIES="cran fake nothing portage vdb gems virtuals"
-DEFAULT_REPOSITORIES="cran fake nothing portage vdb virtuals"
+DEFAULT_REPOSITORIES="fake nothing portage vdb virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...
-			  Build the specified repositories. Available repositories are:
+			  Build the specified repositories:
+			  default         Equivalent to fake,nothing,portage,vdb,virtuals
+
 			  cran            The Comprehensive R Archive Network
 			  fake            A fake repository for test cases
 			  gems            Ruby Gems (requires libyaml) (UNUSABLE)
@@ -660,7 +662,7 @@ AC_ARG_WITH([repositories],
 			  virtuals        Old style Portage virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
 			[repositories="$DEFAULT_REPOSITORIES"])
-repositories=`echo $repositories | tr ' ' '\n' | sort | uniq | tr '\n' ' '`
+repositories=`echo $repositories | tr ' ' '\n' | sed -e "s,^default\$,$DEFAULT_REPOSITORIES," | tr ' ' '\n' | sort | uniq | tr '\n' ' '`
 AC_MSG_RESULT([$repositories])
 BUILD_REPOSITORIES="$repositories"
 AC_SUBST([ALL_REPOSITORIES])
