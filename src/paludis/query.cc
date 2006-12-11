@@ -62,8 +62,10 @@ void do_one_package_query(
 
     /* match! display it. */
     cout << "* " << colour(cl_package_name, entries->begin()->name);
-    if (atom->version_spec_ptr())
-        cout << " (" << atom->version_operator() << *atom->version_spec_ptr() << ")";
+    if (atom->version_requirements_ptr())
+        for (VersionRequirements::Iterator r(atom->version_requirements_ptr()->begin()),
+                r_end(atom->version_requirements_ptr()->end()) ; r != r_end ; ++r)
+            cout << " (" << r->version_operator << r->version_spec << ")";
     if (atom->slot_ptr())
         cout << " (:" << *atom->slot_ptr() << ")";
     if (atom->repository_ptr())

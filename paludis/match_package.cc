@@ -36,10 +36,11 @@ match_package_internals::do_match(
     if (atom->package() != entry->name)
         return false;
 
-    if (atom->version_spec_ptr() && ! (((entry->version).*
-                    (atom->version_operator().as_version_spec_operator()))
-                (*atom->version_spec_ptr())))
-        return false;
+    if (atom->version_requirements_ptr())
+        for (VersionRequirements::Iterator r(atom->version_requirements_ptr()->begin()),
+                r_end(atom->version_requirements_ptr()->end()) ; r != r_end ; ++r)
+            if (! (((entry->version).*(r->version_operator.as_version_spec_operator()))(r->version_spec)))
+                return false;
 
     if (atom->repository_ptr())
         if (*atom->repository_ptr() != entry->repository)

@@ -26,6 +26,7 @@
 #include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 
@@ -321,8 +322,7 @@ namespace paludis
     {
         private:
             QualifiedPackageName _package;
-            VersionOperator _version_operator;
-            CountedPtr<VersionSpec, count_policy::ExternalCountTag> _version_spec;
+            VersionRequirements::Pointer _version_requirements;
             CountedPtr<SlotName, count_policy::ExternalCountTag> _slot;
             CountedPtr<RepositoryName, count_policy::ExternalCountTag> _repository;
             UseRequirements::Pointer _use_requirements;
@@ -360,19 +360,11 @@ namespace paludis
             }
 
             /**
-             * Fetch the version operator.
+             * Fetch the version requirements (may be a zero pointer).
              */
-            const VersionOperator version_operator() const
+            VersionRequirements::ConstPointer version_requirements_ptr() const
             {
-                return _version_operator;
-            }
-
-            /**
-             * Fetch the version spec (may be a zero pointer).
-             */
-            CountedPtr<VersionSpec, count_policy::ExternalCountTag> version_spec_ptr() const
-            {
-                return _version_spec;
+                return _version_requirements;
             }
 
             /**

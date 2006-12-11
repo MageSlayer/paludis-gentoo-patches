@@ -19,6 +19,7 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/collection_concrete.hh>
 
 #include <list>
 #include <map>
@@ -116,8 +117,7 @@ BlockDepAtom::BlockDepAtom(PackageDepAtom::ConstPointer a) :
 PackageDepAtom::PackageDepAtom(const QualifiedPackageName & our_package) :
     StringDepAtom(stringify(our_package)),
     _package(our_package),
-    _version_operator("="),
-    _version_spec(0),
+    _version_requirements(0),
     _slot(0),
     _repository(0),
     _use_requirements(0),
@@ -130,8 +130,7 @@ PackageDepAtom::PackageDepAtom(const PackageDepAtom & other) :
     StringDepAtom(stringify(other)),
     Visitable<PackageDepAtom, DepAtomVisitorTypes>(other),
     _package(other._package),
-    _version_operator(other._version_operator),
-    _version_spec(other._version_spec),
+    _version_requirements(other._version_requirements),
     _slot(other._slot),
     _repository(other._repository),
     _use_requirements(other._use_requirements),
@@ -142,8 +141,7 @@ PackageDepAtom::PackageDepAtom(const PackageDepAtom & other) :
 PackageDepAtom::PackageDepAtom(const std::string & ss) :
     StringDepAtom(ss),
     _package(CategoryNamePart("later"), PackageNamePart("later")),
-    _version_operator("="),
-    _version_spec(0),
+    _version_requirements(0),
     _slot(0),
     _repository(0),
     _use_requirements(0),
@@ -204,7 +202,7 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
             std::string::size_type p(1);
             if (s.length() > 1 && std::string::npos != std::string("<>=~").find(s.at(1)))
                 ++p;
-            _version_operator = s.substr(0, p);
+            VersionOperator op(s.substr(0, p));
 
             std::string::size_type q(p);
 
@@ -233,20 +231,20 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
 
             _package = QualifiedPackageName(s.substr(p, q - p - 1));
 
+            _version_requirements.assign(new VersionRequirements::Concrete);
+
             if ('*' == s.at(s.length() - 1))
             {
-                if (_version_operator != vo_equal)
+                if (op != vo_equal)
                     Log::get_instance()->message(ll_qa, lc_context,
                             "Package dep atom '" + ss + "' uses * "
-                            "with operator '" + stringify(_version_operator) +
+                            "with operator '" + stringify(op) +
                             "', pretending it uses the equals operator instead");
-                _version_operator = vo_equal_star;
-                _version_spec = CountedPtr<VersionSpec, count_policy::ExternalCountTag>(
-                        new VersionSpec(s.substr(q, s.length() - q - 1)));
+                op = vo_equal_star;
+                _version_requirements->push_back(VersionRequirement(op, VersionSpec(s.substr(q, s.length() - q - 1))));
             }
             else
-                _version_spec = CountedPtr<VersionSpec, count_policy::ExternalCountTag>(
-                        new VersionSpec(s.substr(q)));
+                _version_requirements->push_back(VersionRequirement(op, VersionSpec(s.substr(q))));
         }
         else
             _package = QualifiedPackageName(s);
@@ -276,22 +274,42 @@ paludis::operator<< (std::ostream & s, const PlainTextDepAtom & a)
 std::ostream &
 paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
 {
-    if (a.version_spec_ptr())
+    if (a.version_requirements_ptr())
     {
-        if (a.version_operator() == vo_equal_star)
-            s << "=";
-        else
-           s << a.version_operator();
+        bool need_comma(false);
+        for (VersionRequirements::Iterator r(a.version_requirements_ptr()->begin()),
+                r_end(a.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+        {
+            if (need_comma)
+                s << ",";
+
+            if (r->version_operator == vo_equal_star)
+                s << "=";
+            else
+               s << r->version_operator;
+
+            need_comma = true;
+        }
     }
 
     s << a.package();
 
-    if (a.version_spec_ptr())
+    if (a.version_requirements_ptr())
     {
-        s << "-" << *a.version_spec_ptr();
+        bool need_comma(false);
+        for (VersionRequirements::Iterator r(a.version_requirements_ptr()->begin()),
+                r_end(a.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+        {
+            if (need_comma)
+                s << ",";
 
-        if (a.version_operator() == vo_equal_star)
-            s << "*";
+            s << "-" << r->version_spec;
+
+            if (r->version_operator == vo_equal_star)
+                s << "*";
+
+            need_comma = true;
+        }
     }
 
     if (a.slot_ptr())

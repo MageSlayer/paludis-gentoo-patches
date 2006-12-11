@@ -423,7 +423,8 @@ namespace paludis
             for (DirIterator pkg_i(dir), pkg_iend ; pkg_i != pkg_iend ; ++pkg_i)
             {
                 PackageDepAtom atom("=" + stringify(cat) + "/" + pkg_i->basename());
-                entries.push_back(VDBEntry(atom.package(), *atom.version_spec_ptr()));
+                entries.push_back(VDBEntry(atom.package(),
+                            atom.version_requirements_ptr()->begin()->version_spec));
             }
 
             std::sort(entries.begin(), entries.end());

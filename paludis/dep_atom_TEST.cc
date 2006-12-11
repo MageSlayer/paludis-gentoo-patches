@@ -86,55 +86,57 @@ namespace test_cases
             PackageDepAtom a("foo/bar");
             TEST_CHECK_STRINGIFY_EQUAL(a.package(), "foo/bar");
             TEST_CHECK(! a.slot_ptr());
-            TEST_CHECK(! a.version_spec_ptr());
+            TEST_CHECK(! a.version_requirements_ptr());
 
             PackageDepAtom b(">=foo/bar-1.2.3");
             TEST_CHECK_STRINGIFY_EQUAL(b.package(), "foo/bar");
             TEST_CHECK(! b.slot_ptr());
-            TEST_CHECK(b.version_spec_ptr());
-            TEST_CHECK_STRINGIFY_EQUAL(*b.version_spec_ptr(), "1.2.3");
-            TEST_CHECK_EQUAL(b.version_operator(), vo_greater_equal);
+            TEST_CHECK(b.version_requirements_ptr());
+            TEST_CHECK_EQUAL(std::distance(b.version_requirements_ptr()->begin(),
+                        b.version_requirements_ptr()->end()), 1);
+            TEST_CHECK_STRINGIFY_EQUAL(b.version_requirements_ptr()->begin()->version_spec, "1.2.3");
+            TEST_CHECK_EQUAL(b.version_requirements_ptr()->begin()->version_operator, vo_greater_equal);
 
             PackageDepAtom c("foo/bar:baz");
             TEST_CHECK_STRINGIFY_EQUAL(c.package(), "foo/bar");
             TEST_CHECK(c.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*c.slot_ptr(), "baz");
-            TEST_CHECK(! c.version_spec_ptr());
+            TEST_CHECK(! c.version_requirements_ptr());
 
             PackageDepAtom d("=foo/bar-1.2*:1.2.1");
             TEST_CHECK_STRINGIFY_EQUAL(d.package(), "foo/bar");
             TEST_CHECK(d.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*d.slot_ptr(), "1.2.1");
-            TEST_CHECK(d.version_spec_ptr());
-            TEST_CHECK_STRINGIFY_EQUAL(*d.version_spec_ptr(), "1.2");
-            TEST_CHECK_EQUAL(d.version_operator(), vo_equal_star);
+            TEST_CHECK(d.version_requirements_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(d.version_requirements_ptr()->begin()->version_spec, "1.2");
+            TEST_CHECK_EQUAL(d.version_requirements_ptr()->begin()->version_operator, vo_equal_star);
 
             PackageDepAtom e("foo/bar:1.2.1");
             TEST_CHECK_STRINGIFY_EQUAL(e.package(), "foo/bar");
             TEST_CHECK(e.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*e.slot_ptr(), "1.2.1");
-            TEST_CHECK(! e.version_spec_ptr());
+            TEST_CHECK(! e.version_requirements_ptr());
 
             PackageDepAtom f("foo/bar:0");
             TEST_CHECK_STRINGIFY_EQUAL(f.package(), "foo/bar");
             TEST_CHECK(f.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*f.slot_ptr(), "0");
-            TEST_CHECK(! f.version_spec_ptr());
+            TEST_CHECK(! f.version_requirements_ptr());
 
             PackageDepAtom g("foo/bar-100dpi");
             TEST_CHECK_STRINGIFY_EQUAL(g.package(), "foo/bar-100dpi");
 
             PackageDepAtom h(">=foo/bar-100dpi-1.23");
             TEST_CHECK_STRINGIFY_EQUAL(h.package(), "foo/bar-100dpi");
-            TEST_CHECK(h.version_spec_ptr());
-            TEST_CHECK_STRINGIFY_EQUAL(*h.version_spec_ptr(), "1.23");
-            TEST_CHECK_EQUAL(h.version_operator(), vo_greater_equal);
+            TEST_CHECK(h.version_requirements_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(h.version_requirements_ptr()->begin()->version_spec, "1.23");
+            TEST_CHECK_EQUAL(h.version_requirements_ptr()->begin()->version_operator, vo_greater_equal);
 
             TEST_CHECK_THROWS(PackageDepAtom(""), PackageDepAtomError);
 
             PackageDepAtom i("foo/bar[one][-two]");
             TEST_CHECK_STRINGIFY_EQUAL(i.package(), "foo/bar");
-            TEST_CHECK(! i.version_spec_ptr());
+            TEST_CHECK(! i.version_requirements_ptr());
             TEST_CHECK(! i.repository_ptr());
             TEST_CHECK(! i.slot_ptr());
             TEST_CHECK(i.use_requirements_ptr());
@@ -150,15 +152,15 @@ namespace test_cases
 
             PackageDepAtom j("=foo/bar-scm-r3");
             TEST_CHECK_STRINGIFY_EQUAL(j.package(), "foo/bar");
-            TEST_CHECK(j.version_spec_ptr());
-            TEST_CHECK_STRINGIFY_EQUAL(*j.version_spec_ptr(), "scm-r3");
-            TEST_CHECK_EQUAL(j.version_operator(), vo_equal);
+            TEST_CHECK(j.version_requirements_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(j.version_requirements_ptr()->begin()->version_spec, "scm-r3");
+            TEST_CHECK_EQUAL(j.version_requirements_ptr()->begin()->version_operator, vo_equal);
 
             PackageDepAtom k("=foo/bar-scm");
             TEST_CHECK_STRINGIFY_EQUAL(k.package(), "foo/bar");
-            TEST_CHECK(k.version_spec_ptr());
-            TEST_CHECK_STRINGIFY_EQUAL(*k.version_spec_ptr(), "scm");
-            TEST_CHECK_EQUAL(k.version_operator(), vo_equal);
+            TEST_CHECK(k.version_requirements_ptr());
+            TEST_CHECK_STRINGIFY_EQUAL(k.version_requirements_ptr()->begin()->version_spec, "scm");
+            TEST_CHECK_EQUAL(k.version_requirements_ptr()->begin()->version_operator, vo_equal);
         }
     } test_package_dep_atom;
 }

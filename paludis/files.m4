@@ -33,5 +33,6 @@ add(`repository_so_loader',              `cc')
 add(`syncer',                            `hh', `cc', `sr')
 add(`version_metadata',                  `hh', `cc', `sr')
 add(`version_operator',                  `hh', `cc', `test')
+add(`version_requirements',              `hh', `cc', `sr')
 add(`version_spec',                      `hh', `cc', `sr', `test')
 

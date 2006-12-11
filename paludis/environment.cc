@@ -297,7 +297,7 @@ namespace
                 if (w)
                     w->skip_callback(a, ":slot restrictions");
             }
-            else if (a->version_spec_ptr())
+            else if (a->version_requirements_ptr() && ! a->version_requirements_ptr()->empty())
             {
                 if (w)
                     w->skip_callback(a, "version restrictions");

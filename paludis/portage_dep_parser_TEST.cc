@@ -92,8 +92,9 @@ namespace
         *_o << "<package";
         if (p->slot_ptr())
             *_o << " slot=\"" << *p->slot_ptr() << "\"";
-        if (p->version_spec_ptr())
-            *_o << " version=\"" << p->version_operator() << *p->version_spec_ptr() << "\"";
+        if (p->version_requirements_ptr())
+            *_o << " version=\"" << p->version_requirements_ptr()->begin()->version_operator <<
+                p->version_requirements_ptr()->begin()->version_spec << "\"";
         *_o << ">" << p->package() << "</package>";
     }
 
