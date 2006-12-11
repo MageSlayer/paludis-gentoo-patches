@@ -329,6 +329,9 @@ paludis::ruby::dep_atom_to_value(DepAtom::ConstPointer m)
         }
     };
 
+    if (0 == m)
+        return Qnil;
+
     DepAtom::ConstPointer * m_ptr(0);
     try
     {
