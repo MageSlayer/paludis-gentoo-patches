@@ -245,6 +245,7 @@ namespace
         c_contents_sym_entry = rb_define_class_under(paludis_module(), "ContentsSymEntry", c_contents_entry);
         rb_define_singleton_method(c_contents_sym_entry, "new", RUBY_FUNC_CAST(&contents_sym_entry_new), -1);
         rb_define_method(c_contents_sym_entry, "target", RUBY_FUNC_CAST((&ContentsThings<ContentsSymEntry,&ContentsSymEntry::target>::fetch)), 0);
+        rb_define_method(c_contents_sym_entry, "to_s", RUBY_FUNC_CAST(&Common<ContentsSymEntry::ConstPointer>::to_s_via_ptr), 0);
     }
 }
 
