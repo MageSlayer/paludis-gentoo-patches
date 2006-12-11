@@ -56,9 +56,10 @@ namespace paludis
      *
      * \ingroup grpversions
      */
-    class VersionSpec : private PrivateImplementationPattern<VersionSpec>,
-                        public ComparisonPolicy<VersionSpec, comparison_mode::FullComparisonTag,
-                            comparison_method::CompareByMemberComparisonFunctionTag>
+    class VersionSpec :
+        private PrivateImplementationPattern<VersionSpec>,
+        public ComparisonPolicy<VersionSpec, comparison_mode::FullComparisonTag,
+            comparison_method::CompareByMemberComparisonFunctionTag>
     {
         friend std::ostream & operator<< (std::ostream &, const VersionSpec &);
 
@@ -95,6 +96,11 @@ namespace paludis
             bool tilde_compare(const VersionSpec & other) const;
 
             /**
+             * Comparison function for ~> depend operator (gems).
+             */
+            bool tilde_greater_compare(const VersionSpec & other) const;
+
+            /**
              * Comparison function for =* depend operator.
              */
             bool equal_star_compare(const VersionSpec & other) const;
@@ -114,6 +120,15 @@ namespace paludis
              * Revision part only (or "r0").
              */
             std::string revision_only() const;
+
+            /**
+             * Bump ourself.
+             *
+             * This is used by the ~> operator. It returns a version where the
+             * next to last number is one greater (e.g. 5.3.1 => 5.4). Any non
+             * number parts are stripped (e.g. 1.2.3_alpha4-r5 => 1.3).
+             */
+            VersionSpec bump() const;
 
             /**
              * Are we an -scm package, or something pretending to be one?

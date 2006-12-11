@@ -388,7 +388,8 @@ namespace
      * \ingroup grpversions
      */
     template <PartKind p_>
-    struct IsPart
+    struct IsPart :
+        std::unary_function<Part, bool>
     {
         bool operator() (const Part & p) const
         {
@@ -477,5 +478,39 @@ VersionSpec::is_scm() const
     _imp->has_is_scm = true;
 
     return result;
+}
+
+VersionSpec
+VersionSpec::bump() const
+{
+    std::vector<Part> number_parts;
+    std::copy(_imp->parts.begin(),
+            std::find_if(_imp->parts.begin(), _imp->parts.end(), std::not1(IsPart<number>())),
+            std::back_inserter(number_parts));
+
+    if (number_parts.empty())
+        return *this;
+    if (number_parts.size() > 1)
+        number_parts.pop_back();
+    if (! number_parts.empty())
+        ++number_parts.back().value;
+
+    bool need_dot(false);
+    std::string str;
+    for (std::vector<Part>::const_iterator r(number_parts.begin()), r_end(number_parts.end()) ;
+            r != r_end ; ++r)
+    {
+        if (need_dot)
+            str.append(".");
+        str.append(stringify(r->value));
+        need_dot = true;
+    }
+    return VersionSpec(str);
+}
+
+bool
+VersionSpec::tilde_greater_compare(const VersionSpec & v) const
+{
+    return operator>= (v) && operator< (v.bump());
 }
 

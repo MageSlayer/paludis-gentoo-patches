@@ -153,6 +153,23 @@ namespace test_cases
     } test_version_spec_tilde_compare;
 
     /**
+     * \test VersionSpec tilde greater comparisons
+     *
+     */
+    struct VersionSpecTildeGreaterCompareTest : TestCase
+    {
+        VersionSpecTildeGreaterCompareTest() : TestCase("version spec tilde greater compare") {}
+
+        void run()
+        {
+            TEST_CHECK(VersionSpec("1.2").tilde_greater_compare(VersionSpec("1.2")));
+            TEST_CHECK(VersionSpec("1.2.1").tilde_greater_compare(VersionSpec("1.2")));
+            TEST_CHECK(! VersionSpec("1.1").tilde_greater_compare(VersionSpec("1.2")));
+            TEST_CHECK(! VersionSpec("2.0").tilde_greater_compare(VersionSpec("1.2")));
+        }
+    } test_version_spec_tilde_greater_compare;
+
+    /**
      * \test VersionSpec remove revision
      *
      */
@@ -167,6 +184,24 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r99").remove_revision(), "1.2");
         }
     } test_version_remove_revision;
+
+    /**
+     * \test VersionSpec bump
+     *
+     */
+    struct VersionBumpTest : TestCase
+    {
+        VersionBumpTest() : TestCase("version spec bump") {}
+
+        void run()
+        {
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2").bump(), "2");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r99").bump(), "2");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2.3").bump(), "1.3");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1").bump(), "2");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("scm").bump(), "scm");
+        }
+    } test_version_bump;
 
     /**
      * \test VersionSpec revision only

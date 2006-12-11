@@ -50,6 +50,7 @@ namespace paludis
         vo_greater,          ///< > dependency
         vo_greater_equal,    ///< >= dependency
         vo_equal_star,       ///< =* dependency
+        vo_tilde_greater,    ///< ~> dependency (gems)
         last_vo              ///< number of items
     };
 

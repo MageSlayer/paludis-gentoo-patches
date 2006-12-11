@@ -60,6 +60,12 @@ VersionOperator::_decode(const std::string & v)
                     case '<':
                         return vo_less_equal;
                 }
+            else if ('>' == v[1])
+                switch (v[0])
+                {
+                    case '~':
+                        return vo_tilde_greater;
+                }
     }
 
     throw BadVersionOperatorError(v);
@@ -100,6 +106,10 @@ paludis::operator<< (std::ostream & s, const VersionOperator & v)
                 s << "=*";
                 continue;
 
+            case vo_tilde_greater:
+                s << "~>";
+                continue;
+
             case last_vo:
                 break;
         }
@@ -116,19 +126,21 @@ bool (VersionSpec::* VersionOperator::as_version_spec_operator() const)(const Ve
     switch (_v)
     {
         case vo_less:
-            return &VersionSpec::operator< ;
+            return &VersionSpec::operator<;
         case vo_less_equal:
-            return &VersionSpec::operator<= ;
+            return &VersionSpec::operator<=;
         case vo_equal:
-            return &VersionSpec::operator== ;
+            return &VersionSpec::operator==;
         case vo_tilde:
-            return &VersionSpec::tilde_compare ;
+            return &VersionSpec::tilde_compare;
         case vo_greater:
-            return &VersionSpec::operator> ;
+            return &VersionSpec::operator>;
         case vo_greater_equal:
-            return &VersionSpec::operator>= ;
+            return &VersionSpec::operator>=;
         case vo_equal_star:
-            return &VersionSpec::equal_star_compare ;
+            return &VersionSpec::equal_star_compare;
+        case vo_tilde_greater:
+            return &VersionSpec::tilde_greater_compare;
         case last_vo:
             break;
     }
