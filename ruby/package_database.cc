@@ -32,6 +32,12 @@ namespace
     static VALUE c_package_database;
     static VALUE c_package_database_install_state;
 
+    /*
+     * call-seq:
+     *     favourite_repository -> String
+     *
+     * Fetch the name of our 'favourite' repository
+     */
     VALUE
     package_database_favourite_repository(VALUE self)
     {
@@ -47,6 +53,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     fetch_unique_qualified_package_name(package_name) -> QualifiedPackageName
+     *
+     * Disambiguate a package name
+     */
     VALUE
     package_database_fetch_unique_qualified_package_name(VALUE self, VALUE pkg)
     {
@@ -63,6 +75,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     query(atom, install_state) -> Array
+     *
+     *  Query the repositoty. Returns an array of PackageDatabaseEntry
+     */
     VALUE
     package_database_query(VALUE self, VALUE atom, VALUE state)
     {
@@ -87,6 +105,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     repositories -> Array
+     *
+     *  Returns an array of Repository
+     */
     VALUE
     package_database_repositories(VALUE self)
     {
@@ -108,6 +132,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     fetch_repository(repository_name) -> Repository
+     *
+     *  Fetch a named repository.
+     */
     VALUE
     package_database_fetch_repository(VALUE self, VALUE name)
     {
@@ -124,6 +154,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     better_repository(repository_name_a, repository_name_b) -> String
+     *
+     * Which repository is better?
+     */
     VALUE
     package_database_better_repository(VALUE self, VALUE name1, VALUE name2)
     {
@@ -145,10 +181,14 @@ namespace
 
     void do_register_package_database()
     {
+        /*
+         * Document-class: Paludis::PackageDatabase
+         *
+         * A PackageDatabase can be queried for Package instances.
+         */
         c_package_database = rb_define_class_under(paludis_module(), "PackageDatabase", rb_cObject);
         rb_funcall(c_package_database, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_package_database, "favourite_repository",
-                RUBY_FUNC_CAST(&package_database_favourite_repository), 0);
+        rb_define_method(c_package_database, "favourite_repository", RUBY_FUNC_CAST(&package_database_favourite_repository), 0);
         rb_define_method(c_package_database, "fetch_unique_qualified_package_name",
                 RUBY_FUNC_CAST(&package_database_fetch_unique_qualified_package_name), 1);
         rb_define_method(c_package_database, "query",
@@ -159,11 +199,17 @@ namespace
                 RUBY_FUNC_CAST(&package_database_fetch_repository), 1);
         rb_define_method(c_package_database, "better_repository",
                 RUBY_FUNC_CAST(&package_database_better_repository), 2);
-
+        /*
+         * Document-module: Paludis::InstallState
+         *
+         * Do we want installed, uninstalled or either when querying?
+         */
         c_package_database_install_state = rb_define_class_under(paludis_module(), "InstallState", rb_cObject);
         for (InstallState l(static_cast<InstallState>(0)), l_end(last_install_state) ; l != l_end ;
                 l = static_cast<InstallState>(static_cast<int>(l) + 1))
             rb_define_const(c_package_database_install_state, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/package_database.hh, InstallState, c_package_database_install_state>
     }
 }
 

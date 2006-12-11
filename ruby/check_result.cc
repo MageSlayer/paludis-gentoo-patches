@@ -63,6 +63,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     empty? -> true of false
+     *
+     * Are there any messages?
+     */
     VALUE
     check_result_empty(VALUE self)
     {
@@ -71,6 +77,12 @@ namespace
         return (ptr)->empty() ? Qtrue : Qfalse;
     }
 
+    /*
+     * call-seq:
+     *     most_severe_level -> QALevel
+     *
+     * Most severe message level in the CheckResult.
+     */
     VALUE
     check_result_most_severe_level(VALUE self)
     {
@@ -96,6 +108,12 @@ namespace
 
     }
 
+    /*
+     * call-seq:
+     *     messages -> Array
+     *
+     * Array with all result Messages in.
+     */
     VALUE
     check_result_messages(VALUE self)
     {
@@ -108,6 +126,22 @@ namespace
         return result;
     }
 
+    /*
+     * Document-method: item
+     *
+     * call-seq:
+     *     item -> String
+     *
+     * What was checked
+     */
+    /*
+     * Document-method: rule
+     *
+     * call-seq:
+     *     rule -> String
+     *
+     * Check class that produced this result.
+     */
     template <const std::string & (CheckResult::* m_) () const>
     struct CheckResultValue
     {
@@ -122,6 +156,11 @@ namespace
 
     void do_register_check_result()
     {
+        /*
+         * Document-class: Paludis::QA::CheckResult
+         *
+         * The result of a QA check.
+         */
         c_check_result = rb_define_class_under(paludis_qa_module(), "CheckResult", rb_cObject);
         rb_define_singleton_method(c_check_result, "new", RUBY_FUNC_CAST(&check_result_new),-1);
         rb_define_method(c_check_result, "initialize", RUBY_FUNC_CAST(&check_result_init),-1);

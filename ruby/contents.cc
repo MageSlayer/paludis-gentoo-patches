@@ -59,6 +59,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     add(contents_entry)
+     *
+     * Add a new entry.
+    */
     VALUE contents_add(VALUE self, VALUE v)
     {
         if (rb_obj_is_kind_of(v, c_contents_entry))
@@ -84,6 +90,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     entries -> Array
+     *
+     * Gets an array of entries.
+     */
     VALUE
     contents_entries(VALUE self)
     {
@@ -155,6 +167,16 @@ namespace
         }
     }
 
+    /*
+     * Document-method: name
+     *
+     * Returns our name
+     */
+    /*
+     * Document-method: target
+     *
+     * Returns the target
+     */
     template <typename T_, std::string (T_::* m_) () const>
     struct ContentsThings
     {
@@ -169,27 +191,59 @@ namespace
 
     void do_register_contents()
     {
+        /*
+         * Document-class: Paludis::Contents
+         *
+         * A package's contents.
+         */
         c_contents = rb_define_class_under(paludis_module(), "Contents", rb_cObject);
         rb_define_singleton_method(c_contents, "new", RUBY_FUNC_CAST(&contents_new), 0);
         rb_define_method(c_contents, "initialize", RUBY_FUNC_CAST(&contents_init), 0);
         rb_define_method(c_contents, "entries", RUBY_FUNC_CAST(&contents_entries), 0);
         rb_define_method(c_contents, "add", RUBY_FUNC_CAST(&contents_add), 1);
 
+        /*
+         * Document-class: Paludis::ContentsEntry
+         *
+         * Base class for a ContentsEntry
+         */
         c_contents_entry = rb_define_class_under(paludis_module(), "ContentsEntry", rb_cObject);
         rb_funcall(c_contents_entry, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_contents_entry, "name", RUBY_FUNC_CAST((&ContentsThings<ContentsEntry,&ContentsEntry::name>::fetch)), 0);
         rb_define_method(c_contents_entry, "initialize", RUBY_FUNC_CAST(&contents_entry_init),-1);
         rb_define_method(c_contents_entry, "to_s", RUBY_FUNC_CAST(&Common<ContentsEntry::ConstPointer>::to_s_via_ptr), 0);
 
+        /*
+         * Document-class: Paludis::ContentsFileEntry
+         *
+         * A file ContentsEntry
+         */
         c_contents_file_entry = rb_define_class_under(paludis_module(), "ContentsFileEntry", c_contents_entry);
         rb_define_singleton_method(c_contents_file_entry, "new", RUBY_FUNC_CAST((&ContentsNew<ContentsFileEntry>::contents_entry_new)), -1);
+
+        /*
+         * Document-class: Paludis::ContentsDirEntry
+         *
+         * A directory ContentsEntry
+         */
         c_contents_dir_entry = rb_define_class_under(paludis_module(), "ContentsDirEntry", c_contents_entry);
         rb_define_singleton_method(c_contents_dir_entry, "new", RUBY_FUNC_CAST((&ContentsNew<ContentsDirEntry>::contents_entry_new)), -1);
+
+        /*
+         * Document-class: Paludis::ContentsMiscEntry
+         
+         *  A miscellaneous ContentsEntry
+         */
         c_contents_misc_entry = rb_define_class_under(paludis_module(), "ContentsMiscEntry", c_contents_entry);
         rb_define_singleton_method(c_contents_misc_entry, "new", RUBY_FUNC_CAST((&ContentsNew<ContentsMiscEntry>::contents_entry_new)), -1);
+
+        /*
+         * Document-class: Paludis::ContentsSymEntry
+         *
+         * A symlink ContentsEntry
+         */
         c_contents_sym_entry = rb_define_class_under(paludis_module(), "ContentsSymEntry", c_contents_entry);
         rb_define_singleton_method(c_contents_sym_entry, "new", RUBY_FUNC_CAST(&contents_sym_entry_new), -1);
-        rb_define_method(c_contents_sym_entry, "to_s", RUBY_FUNC_CAST(&Common<ContentsSymEntry::ConstPointer>::to_s_via_ptr), 0);
         rb_define_method(c_contents_sym_entry, "target", RUBY_FUNC_CAST((&ContentsThings<ContentsSymEntry,&ContentsSymEntry::target>::fetch)), 0);
     }
 }

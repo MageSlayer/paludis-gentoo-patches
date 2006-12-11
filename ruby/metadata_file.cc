@@ -68,6 +68,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     herds -> Array
+     *
+     * Array of herds specified in file.
+     */
     VALUE
     metadata_file_herds(VALUE self)
     {
@@ -81,6 +87,12 @@ namespace
         return result;
     }
 
+    /*
+     * call-seq:
+     *     maintainers -> Hash
+     *
+     * Hash of maintainers specified in file, keys are :email and :name.
+     */
     VALUE
     metadata_file_maintainers(VALUE self)
     {
@@ -105,6 +117,11 @@ namespace
     }
     void do_register_metadata_file()
     {
+        /*
+         * Document-class: Paludis::QA::MetadataFile
+         *
+         * Wrapper around metadata.xml files.
+         */
         c_metadata_file = rb_define_class_under(paludis_qa_module(), "MetadataFile", rb_cObject);
         rb_define_singleton_method(c_metadata_file, "new", RUBY_FUNC_CAST(&metadata_file_new),-1);
         rb_define_method(c_metadata_file, "initialize", RUBY_FUNC_CAST(&metadata_file_init),-1);

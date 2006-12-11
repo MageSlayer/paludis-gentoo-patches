@@ -49,6 +49,12 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     new(qualified_package_name, version_spec, environment_data)
+     *
+     * Creates a new EbuildCheckData for EbuildCheck.
+     */
     VALUE
     ebuild_check_data_new(int argc, VALUE *argv, VALUE self)
     {
@@ -78,6 +84,22 @@ namespace
         }
     }
 
+    /*
+     * Document-method: describe
+     *
+     * call-seq:
+     *     describe -> String
+     *
+     * Describe what check checks.
+     */
+    /*
+     * Document-method: is_important?
+     *
+     * call-seq:
+     *     is_important? -> true or false
+     *
+     * Is the check important?
+     */
     template <typename T_>
     struct CheckStruct
     {
@@ -114,6 +136,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     check(directory) -> CheckResult
+     *
+     * Runs check on directory.
+     */
     VALUE
     package_dir_check_check(VALUE self, VALUE f)
     {
@@ -127,6 +155,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     check(file) -> CheckResult
+     *
+     * Runs check on file.
+     */
     VALUE
     file_check_check(VALUE self, VALUE f)
     {
@@ -140,6 +174,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     check(ebuild_check_data) -> CheckResult
+     *
+     * Runs check on EbuildCheckData.
+     */
     VALUE
     ebuild_check_check(VALUE self, VALUE f)
     {
@@ -153,6 +193,14 @@ namespace
         }
     }
 
+    /*
+     * Document-method: keys
+     *
+     * call-seq:
+     *     keys -> Array
+     *
+     * Fetch the check names for this class.
+     */
     template <typename T_>
     struct CheckMakerStruct
     {
@@ -171,6 +219,12 @@ namespace
         }
     };
 
+    /*
+     * call-seq:
+     *     find_maker(name)
+     *
+     * Fetch the named check.
+     */
     VALUE package_dir_check_maker_find_maker(VALUE, VALUE maker)
     {
         try
@@ -184,6 +238,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     find_maker(name)
+     *
+     * Fetch the named check.
+     */
     VALUE file_check_maker_find_maker(VALUE, VALUE maker)
     {
         try
@@ -197,6 +257,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     find_maker(name)
+     *
+     * Fetch the named check.
+     */
     VALUE ebuild_check_maker_find_maker(VALUE, VALUE maker)
     {
         try
@@ -214,28 +280,54 @@ namespace
     {
         rb_require("singleton");
 
+        /*
+         * Document-class: Paludis::QA::EbuildCheckData
+         *
+         * A collection class for EbuildCheck.
+         */
         c_ebuild_check_data = rb_define_class_under(paludis_qa_module(), "EbuildCheckData", rb_cObject);
         rb_define_singleton_method(c_ebuild_check_data, "new", RUBY_FUNC_CAST(&ebuild_check_data_new),-1);
         rb_define_method(c_ebuild_check_data, "initialize", RUBY_FUNC_CAST(&ebuild_check_data_init),-1);
 
+        /*
+         * Document-class: Paludis::QA::PackageDirCheck
+         *
+         * A QA check that operates upon a package directory.
+         */
         c_package_dir_check = rb_define_class_under(paludis_qa_module(), "PackageDirCheck", rb_cObject);
         rb_funcall(c_package_dir_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_package_dir_check, "check", RUBY_FUNC_CAST(&package_dir_check_check),1);
         rb_define_method(c_package_dir_check, "describe", RUBY_FUNC_CAST(&CheckStruct<PackageDirCheck::Pointer>::describe),0);
         rb_define_method(c_package_dir_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<PackageDirCheck::Pointer>::is_important),0);
 
+        /*
+         * Document-class: Paludis::QA::FileCheck
+         *
+         * A QA check that operates upon a file.
+         */
         c_file_check = rb_define_class_under(paludis_qa_module(), "FileCheck", rb_cObject);
         rb_funcall(c_file_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_file_check, "check", RUBY_FUNC_CAST(&file_check_check),1);
         rb_define_method(c_file_check, "describe", RUBY_FUNC_CAST(&CheckStruct<FileCheck::Pointer>::describe),0);
         rb_define_method(c_file_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<FileCheck::Pointer>::is_important),0);
 
+        /*
+         * Document-class: Paludis::QA::EbuildCheck
+         *
+         * Base class for QA checks that operate upon ebuilds.
+         */
         c_ebuild_check = rb_define_class_under(paludis_qa_module(), "EbuildCheck", rb_cObject);
         rb_funcall(c_ebuild_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_ebuild_check, "check", RUBY_FUNC_CAST(&ebuild_check_check),1);
         rb_define_method(c_ebuild_check, "describe", RUBY_FUNC_CAST(&CheckStruct<EbuildCheck::Pointer>::describe),0);
         rb_define_method(c_ebuild_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<EbuildCheck::Pointer>::is_important),0);
 
+        /*
+         * Document-class: Paludis::QA::PackageDirCheckMaker
+         *
+         * Class to access PackageDirChecks
+         *
+         */
         c_package_dir_check_maker = rb_define_class_under(paludis_qa_module(), "PackageDirCheckMaker", rb_cObject);
         rb_funcall(c_package_dir_check_maker, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_package_dir_check_maker);
@@ -244,6 +336,12 @@ namespace
         rb_define_alias(c_package_dir_check_maker, "check_names", "keys");
         rb_define_alias(c_package_dir_check_maker, "find_check", "find_maker");
 
+        /*
+         * Document-class: Paludis::QA::FileCheckMaker
+         *
+         * Class to access FileChecks
+         *
+         */
         c_file_check_maker = rb_define_class_under(paludis_qa_module(), "FileCheckMaker", rb_cObject);
         rb_funcall(c_file_check_maker, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_file_check_maker);
@@ -252,6 +350,12 @@ namespace
         rb_define_alias(c_file_check_maker, "check_names", "keys");
         rb_define_alias(c_file_check_maker, "find_check", "find_maker");
 
+        /*
+         * Document-class: Paludis::QA::EbuildCheckMaker
+         *
+         * Class to access EbuildChecks
+         *
+         */
         c_ebuild_check_maker = rb_define_class_under(paludis_qa_module(), "EbuildCheckMaker", rb_cObject);
         rb_funcall(c_ebuild_check_maker, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_ebuild_check_maker);

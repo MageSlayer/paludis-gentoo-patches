@@ -31,12 +31,24 @@ namespace
     static VALUE c_log;
     static VALUE c_log_level;
 
+    /*
+     * call-seq:
+     *     log_level -> LogLevel
+     *
+     * Fetch the current log level.
+     */
     VALUE
     log_log_level(VALUE)
     {
         return INT2FIX(Log::get_instance()->log_level());
     }
 
+    /*
+     * call-seq:
+     *     log_level=
+     *
+     * Only display messages of at least this level.
+     */
     VALUE
     log_log_level_set(VALUE self, VALUE value)
     {
@@ -47,6 +59,12 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     set_program_name(name)
+     *
+     * Set our program name.
+     */
     VALUE
     log_set_program_name(VALUE self, VALUE name)
     {
@@ -54,6 +72,12 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     message(log_level, message)
+     *
+     * Log a message at the specified level.
+     */
     VALUE
     log_message(VALUE self, VALUE log_level, VALUE message)
     {
@@ -69,6 +93,11 @@ namespace
     {
         rb_require("singleton");
 
+        /*
+         * Document-class: Paludis::Log
+         *
+         * Singleton class that handles log messages.
+         */
         c_log = rb_define_class_under(paludis_module(), "Log", rb_cObject);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_log);
         rb_define_method(c_log, "log_level", RUBY_FUNC_CAST(&log_log_level), 0);
@@ -80,6 +109,8 @@ namespace
         for (LogLevel l(static_cast<LogLevel>(0)), l_end(last_ll) ; l != l_end ;
                 l = static_cast<LogLevel>(static_cast<int>(l) + 1))
             rb_define_const(c_log_level, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/util/log.hh, LogLevel, c_log_level>
     }
 }
 

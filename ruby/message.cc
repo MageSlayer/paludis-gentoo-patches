@@ -66,7 +66,12 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
-
+    /*
+     * call-seq:
+     *     msg
+     *
+     * Message value.
+     */
     VALUE
     message_msg(VALUE self)
     {
@@ -75,6 +80,12 @@ namespace
         return rb_str_new2((ptr)->msg.c_str());
     }
 
+    /*
+     * call-seq:
+     *     level
+     *
+     * Message level.
+     */
     VALUE
     message_level(VALUE self)
     {
@@ -84,11 +95,22 @@ namespace
     }
     void do_register_message()
     {
+        /* Document-module: Paludis::QA::QALevel
+         *
+         * This module contains QALevel constants.
+         *
+         */
         c_qa_level = rb_define_module_under(paludis_qa_module(), "QALevel");
         for (QALevel l(static_cast<QALevel>(0)), l_end(last_qal) ; l != l_end ;
                 l = static_cast<QALevel>(static_cast<int>(l) + 1))
             rb_define_const(c_qa_level, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
+        // cc_enum_special<paludis/qa/message.hh, QALevel, c_qa_level>
+
+        /* Document-class: Paludis::QA::Message
+         *
+         * A QA message
+         */
         c_message = rb_define_class_under(paludis_qa_module(), "Message", rb_cObject);
         rb_define_singleton_method(c_message, "new", RUBY_FUNC_CAST(&message_new),-1);
         rb_define_method(c_message, "initialize", RUBY_FUNC_CAST(&message_init),-1);

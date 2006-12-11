@@ -33,6 +33,12 @@ namespace
     static VALUE c_repository_info;
     static VALUE c_repository_info_section;
 
+    /*
+     * call-seq:
+     *     name
+     *
+     * Returns our name.
+     */
     VALUE
     repository_name(VALUE self)
     {
@@ -48,6 +54,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     has_category_named?(category_name) -> true or false
+     *
+     * Do we have a category with the given name?
+     */
     VALUE
     repository_has_category_named(VALUE self, VALUE cat)
     {
@@ -64,6 +76,16 @@ namespace
     }
 
     VALUE
+
+    //TODO why do we need Document-method here?
+    /*
+     * Document-method: has_package_named?
+     *
+     * call-seq:
+     *     has_package_named?(package_name) -> true or false
+     *
+     * Do we have a package with the given name?
+     */
     repository_has_package_named(VALUE self, VALUE name)
     {
         try
@@ -78,6 +100,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     has_version?(package_name, version) -> true or false
+     *
+     * Do we have a version spec?
+     */
     VALUE
     repository_has_version(VALUE self, VALUE name, VALUE version)
     {
@@ -94,6 +122,12 @@ namespace
         }
     }
 
+    /*
+     *  call-seq:
+     *      category_names -> Array
+     *
+     * Fetch an Array of the names of categories that contain a named package.
+     */
     VALUE
     repository_category_names(VALUE self)
     {
@@ -113,6 +147,12 @@ namespace
         }
     }
 
+    /*
+     *  call-seq:
+     *      category_names_containing_package(package) -> Array
+     *
+     * Fetch an Array of the categories containing the named package.
+     */
     VALUE
     repository_category_names_containing_package(VALUE self, VALUE pkg)
     {
@@ -134,6 +174,12 @@ namespace
         }
     }
 
+    /*
+     *  call-seq:
+     *      package_names(category) -> Array
+     *
+     * Fetch an Array of the packages with a named category.
+     */
     VALUE
     repository_package_names(VALUE self, VALUE cat)
     {
@@ -155,6 +201,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     version_specs(qualified_package_name) -> Array
+     *
+     * Fetch our versions.
+     */
     VALUE
     repository_version_specs(VALUE self, VALUE qpn)
     {
@@ -176,6 +228,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     version_metadata(qualified_package_name, version_spec) -> VersionMetadata
+     *
+     * Fetch metadata.
+     */
     VALUE
     repository_version_metadata(VALUE self, VALUE name, VALUE version)
     {
@@ -192,6 +250,102 @@ namespace
         }
     }
 
+    /*
+     * Document-method: installable_interface
+     *
+     * call-seq:
+     *     installable_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: installed_interface
+     *
+     * call-seq:
+     *     installed_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: mask_interface
+     *
+     * call-seq:
+     *     mask_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: news_interface
+     *
+     * call-seq:
+     *     news_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: sets_interface
+     *
+     * call-seq:
+     *     sets_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: uninstallable_interface
+     *
+     * call-seq:
+     *     uninstallable_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: use_interface
+     *
+     * call-seq:
+     *     use_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: world_interface
+     *
+     * call-seq:
+     *     world_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: mirrors_interface
+     *
+     * call-seq:
+     *     mirrors_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: environment_variable_interface
+     *
+     * call-seq:
+     *     environment_variable_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: provides_interface
+     *
+     * call-seq:
+     *     provides_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
+    /*
+     * Document-method: virtuals_interface
+     *
+     * call-seq:
+     *     virtuals_interface -> self or Nil
+     *
+     * Returns self if the repository supports the interface, otherwise Nil.
+     */
     template <typename T_, T_ * RepositoryCapabilities::* m_>
     struct Interface
     {
@@ -203,6 +357,12 @@ namespace
         }
     };
 
+    /*
+     * call-seq:
+     *      repository_info(verbose) -> RepositoryInfo
+     *
+     * Fetch our RepositoryInfo
+     */
     VALUE
     repository_info(VALUE self, VALUE verbose)
     {
@@ -213,6 +373,12 @@ namespace
         return Data_Wrap_Struct(c_repository_info, 0, &Common<RepositoryInfo::ConstPointer>::free, p);
     }
 
+    /*
+     * call-seq:
+     *     info_sections -> Array
+     *
+     * Fetch an array of our sections.
+     */
     VALUE
     repository_info_sections(VALUE self)
     {
@@ -235,7 +401,12 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
-
+    /*
+     * call-seq:
+     *     kvs -> Hash
+     *
+     * Returns the key/value pairs within the section.
+     */
     VALUE
     repository_info_section_kvs(VALUE self)
     {
@@ -256,6 +427,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     header -> String
+     *
+     * Our heading
+     */
     VALUE
     repository_info_section_header(VALUE self)
     {
@@ -264,6 +441,12 @@ namespace
         return rb_str_new2((*self_ptr)->heading().c_str());
     }
 
+    /*
+     * call-seq:
+     *     contents(qualified_package_name, version_spec) -> Array or Nil
+     *
+     * Fetches the package contents, if the Repository includes the installed_interface
+     */
     VALUE
     repository_contents(VALUE self, VALUE qpn, VALUE vs)
     {
@@ -292,6 +475,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     installed_time(qualified_package_name, version_spec) -> Array or Nil
+     *
+     * Fetches the package install time, if the Repository includes the installed_interface
+     */
     VALUE
     repository_installed_time(VALUE self, VALUE qpn, VALUE vs)
     {
@@ -320,6 +509,11 @@ namespace
 
     void do_register_repository()
     {
+        /*
+         * Document-class: Paludis::Repository
+         *
+         * A Repository provides a representation of a physical repository to a PackageDatabase.
+         */
         c_repository = rb_define_class_under(paludis_module(), "Repository", rb_cObject);
         rb_funcall(c_repository, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository, "name", RUBY_FUNC_CAST(&repository_name), 0);
@@ -367,10 +561,20 @@ namespace
         rb_define_method(c_repository, "contents", RUBY_FUNC_CAST(&repository_contents), 2);
         rb_define_method(c_repository, "installed_time", RUBY_FUNC_CAST(&repository_installed_time), 2);
 
+        /*
+         * Document-class: Paludis::RepositoryInfo
+         *
+         * Information about a Repository, for the end user.
+         */
         c_repository_info = rb_define_class_under(paludis_module(), "RepositoryInfo", rb_cObject);
         rb_funcall(c_repository_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository_info, "sections", RUBY_FUNC_CAST(&repository_info_sections), 0);
 
+        /*
+         * Document-class: Paludis::RepositoryInfoSection
+         *
+         * A section of information about a Repository.
+         */
         c_repository_info_section = rb_define_class_under(paludis_module(), "RepositoryInfoSection", rb_cObject);
         rb_funcall(c_repository_info_section, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository_info_section, "kvs", RUBY_FUNC_CAST(&repository_info_section_kvs), 0);

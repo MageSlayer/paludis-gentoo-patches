@@ -59,6 +59,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     version -> VersionSpec
+     *
+     * Fetch VersionSpec.
+     */
     VALUE
     package_database_entry_version(VALUE self)
     {
@@ -74,6 +80,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     version=
+     *
+     * Set package version.
+     */
     VALUE
     package_database_entry_version_set(VALUE self, VALUE version)
     {
@@ -90,6 +102,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     name -> QualifiedPackageName
+     *
+     * Fetch package name
+     */
     VALUE
     package_database_entry_name(VALUE self)
     {
@@ -105,6 +123,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     name=
+     *
+     * Set package name.
+     */
     VALUE
     package_database_entry_name_set(VALUE self, VALUE qpn)
     {
@@ -121,6 +145,22 @@ namespace
         }
     }
 
+    /*
+     * Document-method: repository
+     *
+     * call-seq:
+     *     repository -> String
+     *
+     * Fetch the repository name.
+     */
+    /*
+     * Document-method: repository=
+     *
+     * call-seq:
+     *     repository=
+     *
+     * Set package name.
+     */
     template <typename T_, T_ PackageDatabaseEntry::* m_>
     struct EntryValue
     {
@@ -130,12 +170,12 @@ namespace
             PackageDatabaseEntry * p;
             Data_Get_Struct(self, PackageDatabaseEntry, p);
             return rb_str_new2(stringify(p->*m_).c_str());
-        } 
+        }
 
         static VALUE
         set(VALUE self, VALUE str)
         {
-            try 
+            try
             {
                 PackageDatabaseEntry * p;
                 Data_Get_Struct(self, PackageDatabaseEntry, p);
@@ -146,11 +186,16 @@ namespace
             {
                 exception_to_ruby_exception(e);
             }
-        } 
+        }
     };
-    
+
     void do_register_package_database_entry()
     {
+        /*
+         * Document-class: Paludis::PackageDatabaseEntry
+         *
+         * Holds an entry in a PackageDatabase, and used to identify a specific version of a package in a particular repository.
+         */
         c_package_database_entry = rb_define_class_under(paludis_module(), "PackageDatabaseEntry", rb_cObject);
         rb_define_singleton_method(c_package_database_entry, "new", RUBY_FUNC_CAST(&package_database_entry_new), 3);
         rb_define_method(c_package_database_entry, "initialize", RUBY_FUNC_CAST(&package_database_entry_init), 3);

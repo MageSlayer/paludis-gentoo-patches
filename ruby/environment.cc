@@ -35,6 +35,13 @@ namespace
     static VALUE c_default_config;
     static VALUE c_no_config_environment;
 
+    /*
+     * call-seq:
+     *     query_use(use_flag)
+     *     query_use(use_flag, package_database_entry)
+     *
+     * Does the user want the specified USE flag set, either globally or for a PackageDatabaseEntry.
+     */
     VALUE
     environment_query_use(int argc, VALUE * argv, VALUE self)
     {
@@ -59,6 +66,13 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     accept_keyword(keyword)
+     *     accept_keyword(keyword, package_database_entry)
+     *
+     * Is the specified KEYWORD set, either globally or for a PackageDatabaseEntry.
+     */
     VALUE
     environment_accept_keyword(int argc, VALUE * argv, VALUE self)
     {
@@ -83,6 +97,13 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     accept_license(license)
+     *     accept_license(license, package_database_entry)
+     *
+     * Is the specified LICENSE set, either globally or for a PackageDatabaseEntry.
+     */
     VALUE
     environment_accept_license(int argc, VALUE * argv, VALUE self)
     {
@@ -107,6 +128,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     mask_reasons(package_database_entry)
+     *
+     * Fetch the MaskReasons for a PackageDatabaseEntry.
+     */
     VALUE
     environment_mask_reasons(VALUE self, VALUE pde_value)
     {
@@ -125,6 +152,9 @@ namespace
         }
     }
 
+    /*
+     * Fetch our PackageDatabase.
+     */
     VALUE
     environment_package_database(VALUE self)
     {
@@ -141,6 +171,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     package_set(set_name)
+     *
+     * Fetch a named package set as a DepAtom.
+     */
     VALUE
     environment_package_set(VALUE self, VALUE set_name)
     {
@@ -157,6 +193,9 @@ namespace
         }
     }
 
+    /*
+     * Gets the config suffix.
+     */
     VALUE
     default_config_config_suffix(VALUE)
     {
@@ -170,6 +209,21 @@ namespace
         }
     }
 
+    /*
+     * Document-method: root
+     *
+     * The ROOT.
+     */
+    /*
+     * Document-method: bashrc_files
+     *
+     * Our bashrc files.
+     */
+    /*
+     * Document-method: config_dir
+     *
+     * The config directory.
+     */
     template <std::string (DefaultConfig::* m_) () const>
     struct ConfigStruct
     {
@@ -180,6 +234,12 @@ namespace
         }
     };
 
+    /*
+     * call-seq:
+     *     config_suffix=
+     *
+     * Set config suffig.
+     */
     VALUE
     default_config_config_suffix_set(VALUE klass, VALUE str)
     {
@@ -200,6 +260,12 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     new(dir)
+     *
+     * Create a new NoConfigEnvironment form the specified directory.
+     */
     VALUE
     no_config_environment_new(VALUE self, VALUE s)
     {
@@ -249,6 +315,12 @@ namespace
     void do_register_environment()
     {
         rb_require("singleton");
+        /*
+         * Document-class: Paludis::Environment
+         *
+         * Represents a working environment, which contains an available packages database and provides 
+         * various methods for querying package visibility and options.
+         */
         c_environment = environment_class();
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_environment, "query_use", RUBY_FUNC_CAST(&environment_query_use), -1);
@@ -258,10 +330,22 @@ namespace
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
         rb_define_method(c_environment, "package_set", RUBY_FUNC_CAST(&environment_package_set), 1);
 
+        /*
+         * Document-class: Paludis::DefaultEnvironment
+         *
+         * The DefaultEnvironment is an Environment that correspons to the normal operating environment
+         *
+         */
         c_default_environment = rb_define_class_under(paludis_module(), "DefaultEnvironment", c_environment);
         rb_define_singleton_method(c_default_environment, "new", RUBY_FUNC_CAST(&default_environment_new), 0);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_default_environment);
 
+
+        /*
+         * Document-class: Paludis::DefaultConfig
+         *
+         * DefaultConfig is used by DefaultEnvironment to access the user's configuration settings from on-disk configuration files.
+         */
         c_default_config = rb_define_class_under(paludis_module(), "DefaultConfig", rb_cObject);
         rb_funcall(c_default_config, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_default_config);
@@ -273,6 +357,11 @@ namespace
         rb_define_method(c_default_config, "root", RUBY_FUNC_CAST((&ConfigStruct<&DefaultConfig::root>::fetch)), 0);
         rb_define_method(c_default_config, "bashrc_files", RUBY_FUNC_CAST((&ConfigStruct<&DefaultConfig::bashrc_files>::fetch)), 0);
 
+        /*
+         * Document-class: Paludis::NoConfigEnvironment
+         *
+         * An environment that uses a single repository, with no user configuration.
+         */
         c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
         rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), 1);
         rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), 1);

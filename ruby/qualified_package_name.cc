@@ -65,6 +65,38 @@ namespace
         }
     }
 
+    /*
+     * Document-method: category
+     *
+     * call-seq:
+     *     category -> String
+     *
+     * Fetch the category part of the QualifiedPackageName.
+     */
+    /*
+     * Document-method: category=
+     *
+     * call-seq:
+     *     category=
+     *
+     * Set the category.
+     */
+    /*
+     * Document-method: package
+     *
+     * call-seq:
+     *     package -> String
+     *
+     * Fetch the package name part of the QualifiedPackageName.
+     */
+    /*
+     * Document-method: package=
+     *
+     * call-seq:
+     *     package=
+     *
+     * Set the package name.
+     */
     template <typename T_, T_ QualifiedPackageName::* m_>
     struct QPNMember
     {
@@ -110,6 +142,11 @@ namespace
 
     void do_register_qualified_package_name()
     {
+        /*
+         * Document-class: Paludis::QualifiedPackageName
+         *
+         * Represents a category plus package name.
+         */
         c_qualified_package_name = rb_define_class_under(paludis_module(), "QualifiedPackageName", rb_cObject);
         rb_define_singleton_method(c_qualified_package_name, "new", RUBY_FUNC_CAST(&qualified_package_name_new), -1);
         rb_define_method(c_qualified_package_name, "initialize", RUBY_FUNC_CAST(&qualified_package_name_init), -1);

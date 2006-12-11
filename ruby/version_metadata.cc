@@ -40,26 +40,56 @@ namespace
         return ((**self_ptr).*m)() ? self : Qnil;
     }
 
+    /*
+     * call-seq:
+     *     get_ebuild_interface -> self or Nil
+     *
+     * Returns self if the VersionMetadata supports the interface, otherwise Nil.
+     */
     VALUE version_metadata_get_ebuild_interface(VALUE self)
     {
         return version_metadata_get_interface(self, &VersionMetadata::get_ebuild_interface);
     }
 
+    /*
+     * call-seq:
+     *     get_ebin_interface -> self or Nil
+     *
+     * Returns self if the VersionMetadata supports the interface, otherwise Nil.
+     */
     VALUE version_metadata_get_ebin_interface(VALUE self)
     {
         return version_metadata_get_interface(self, &VersionMetadata::get_ebin_interface);
     }
 
+    /*
+     * call-seq:
+     *     get_cran_interface -> self or Nil
+     *
+     * Returns self if the VersionMetadata supports the interface, otherwise Nil.
+     */
     VALUE version_metadata_get_cran_interface(VALUE self)
     {
         return version_metadata_get_interface(self, &VersionMetadata::get_cran_interface);
     }
 
+    /*
+     * call-seq:
+     *     get_virtual_interface -> self or Nil
+     *
+     * Returns self if the VersionMetadata supports the interface, otherwise Nil.
+     */
     VALUE version_metadata_get_virtual_interface(VALUE self)
     {
         return version_metadata_get_interface(self, &VersionMetadata::get_virtual_interface);
     }
 
+    /*
+     * call-seq:
+     *     license
+     *
+     * Fetch our license, as a DepAtom structure.
+     */
     VALUE
     version_metadata_license(VALUE self)
     {
@@ -68,6 +98,46 @@ namespace
         return dep_atom_to_value((*self_ptr)->license());
     }
 
+    /*
+     * Document-method: slot
+     *
+     * call-seq:
+     *     slot
+     *
+     * Our slot
+     */
+    /*
+     * Document-method: license_string
+     *
+     * call-seq:
+     *     license_string
+     *
+     * Our license as a String
+     */
+    /*
+     * Document-method: eapi
+     *
+     * call-seq:
+     *     eapi
+     *
+     * Our eapi
+     */
+    /*
+     * Document-method: homepage
+     *
+     * call-seq:
+     *     homepage
+     *
+     * Our homepage
+     */
+    /*
+     * Document-method: description
+     *
+     * call-seq:
+     *     description
+     *
+     * Our description
+     */
     template <typename T_, T_ VersionMetadataBase::* m_>
     struct BaseValue
     {
@@ -80,6 +150,62 @@ namespace
         }
     };
 
+    /*
+     * Document-method: provide_string
+     *
+     * call-seq:
+     *     provide_string
+     *
+     * Fetches the package provide_string, if get_ebuild_interface is not Nil.
+     */
+    /*
+     * Document-method: src_uri
+     *
+     * call-seq:
+     *     src_uri
+     *
+     * Fetches the package src_uri, if get_ebuild_interface is not Nil.
+     */
+    /*
+     * Document-method: restrict_string
+     *
+     * call-seq:
+     *     restrict_string
+     *
+     * Fetches the package restrict_string, if get_ebuild_interface is not Nil.
+     */
+    /*
+     * Document-method: keywords
+     *
+     * call-seq:
+     *     keywords
+     *
+     * Fetches the package keywords, if get_ebuild_interface is not Nil.
+     */
+    /*
+     * Document-method: eclass_keywords
+     *
+     * call-seq:
+     *     eclass_keywords
+     *
+     * Fetches the package eclass_keywords, if get_ebuild_interface is not Nil.
+     */
+    /*
+     * Document-method: iuse
+     *
+     * call-seq:
+     *     iuse
+     *
+     * Fetches the package iuse, if get_ebuild_interface is not Nil.
+     */
+    /*
+     * Document-method: inherited
+     *
+     * call-seq:
+     *     inherited
+     *
+     * Fetches the package inherited, if get_ebuild_interface is not Nil.
+     */
     template <typename T_, T_ EbuildVersionMetadata::* m_>
     struct EbuildValue
     {
@@ -95,6 +221,30 @@ namespace
         }
     };
 
+    /*
+     * Document-method: build_depend
+     *
+     * call-seq:
+     *     build_depend -> DepAtom
+     *
+     * Fetches build_depend information as a DepAtom
+     */
+    /*
+     * Document-method: run_depend
+     *
+     * call-seq:
+     *     run_depend -> DepAtom
+     *
+     * Fetches run_depend information as a DepAtom
+     */
+    /*
+     * Document-method: post_depend
+     *
+     * call-seq:
+     *     post_depend -> DepAtom
+     *
+     * Fetches post_depend information as a DepAtom
+     */
     template <DepAtom::ConstPointer (VersionMetadataDeps::* m_) () const>
     struct DependValue
     {
@@ -108,6 +258,30 @@ namespace
         }
     };
 
+    /*
+     * Document-method: build_depend_string
+     *
+     * call-seq:
+     *     build_depend_string -> String
+     *
+     * Fetches build_depend information as a String
+     */
+    /*
+     * Document-method: run_depend_string
+     *
+     * call-seq:
+     *     run_depend_string -> String
+     *
+     * Fetches run_depend information as a String
+     */
+    /*
+     * Document-method: post_depend_string
+     *
+     * call-seq:
+     *     post_depend_string -> String
+     *
+     * Fetches post_depend information as a String
+     */
     template <std::string VersionMetadataDeps::* m_>
     struct DependValueString
     {
@@ -119,7 +293,14 @@ namespace
             return rb_str_new2(((&(*self_ptr)->deps)->*m_).c_str());
         }
     };
-
+    /*
+     * Document-method: origin_source
+     *
+     * call-seq:
+     *     origin_source -> PackageDatabaseEntry
+     *
+     * Returnd the PackageDatabaseEntry from which the package was installed.
+     */
     template <CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> VersionMetadataOrigins::* m_>
     struct VMOrigins
     {
@@ -141,6 +322,11 @@ namespace
 
     void do_register_version_metadata()
     {
+        /*
+         * Document-class: Paludis::VersionMetadata
+         *
+         * Metadata about a package version.
+         */
         c_version_metadata = rb_define_class_under(paludis_module(), "VersionMetadata", rb_cObject);
         rb_funcall(c_version_metadata, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_version_metadata, "get_ebuild_interface", RUBY_FUNC_CAST(&version_metadata_get_ebuild_interface), 0);

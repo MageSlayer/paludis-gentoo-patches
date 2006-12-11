@@ -73,6 +73,14 @@ namespace
     static VALUE c_no_such_ebuild_check_type_error;
 #endif
 
+    /* Document-method: match_package
+     *
+     * call-seq:
+     *     match_package (env, atom, target)
+     *
+     * Return whether the specified atom matches the specified target.
+     *
+     */
     VALUE paludis_match_package(VALUE, VALUE en, VALUE a, VALUE t)
     {
         try
@@ -215,6 +223,13 @@ extern "C"
 {
     void Init_Paludis()
     {
+        /*
+         * Document-module: Paludis
+         *
+         * <b>Paludis</b> is the other package mangler, this is the doc to the ruby binding. The C++ library 
+         * documentation[http://paludis.berlios.de/modules.htm] may also help.
+         *
+         */
         c_paludis_module = rb_define_module("Paludis");
         c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
         c_name_error = rb_define_class_under(c_paludis_module, "NameError", rb_eRuntimeError);

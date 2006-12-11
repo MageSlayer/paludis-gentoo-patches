@@ -30,6 +30,13 @@ namespace
 {
     static VALUE c_portage_dep_parser;
 
+    /*
+     * call-seq:
+     *     PortageDepParser.parse(dep_string) -> CompositeDepAtom
+     *     PortageDepParser.parse(dep_string, atom_type, permit_any_deps) -> CompositeDepAtom
+     *
+     * Parse a given dependency string, and return an appropriate DepAtom tree.
+     */
     VALUE
     portage_dep_parser_parse(int argc, VALUE * args, VALUE)
     {
@@ -74,6 +81,11 @@ namespace
     {
         rb_require("singleton");
 
+        /*
+         * Document-class: Paludis::PortageDepParser
+         *
+         * The PortageDepParser converts string representations of a dependency specification into a DepAtom instance.
+         */
         c_portage_dep_parser = rb_define_class_under(paludis_module(), "PortageDepParser", rb_cObject);
         rb_funcall(c_portage_dep_parser, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_singleton_method(c_portage_dep_parser, "parse",

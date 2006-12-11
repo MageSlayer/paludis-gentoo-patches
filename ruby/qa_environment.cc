@@ -38,6 +38,13 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     new(dir)
+     *     new(dir, write_cache_dir)
+     *
+     * Creates a new QAEnvironment
+     */
     VALUE
     qa_environment_new(int argc, VALUE* argv, VALUE self)
     {
@@ -70,6 +77,11 @@ namespace
 
     void do_register_qa_environment()
     {
+        /*
+         * Document-class: Paludis::QA::QAEnvironment
+         *
+         * The QAEnvironment is an environment fo running QA checks in .
+         */
         c_qa_environment = rb_define_class_under(paludis_qa_module(), "QAEnvironment", environment_class());
         rb_define_singleton_method(c_qa_environment, "new", RUBY_FUNC_CAST(&qa_environment_new),-1);
         rb_define_method(c_qa_environment, "initialize", RUBY_FUNC_CAST(&qa_environment_init),-1);

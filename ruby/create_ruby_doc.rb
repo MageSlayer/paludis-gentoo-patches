@@ -1,0 +1,85 @@
+#!/usr/bin/env ruby
+# vim: set sw=4 sts=4 et tw=80 :
+
+require 'rdoc/rdoc'
+
+module RDoc
+    #define these ourself, as they are in all files.
+#    KNOWN_CLASSES['rb_mPaludis'] = 'Paludis'
+#    KNOWN_CLASSES['rb_mQA'] = 'Paludis::QA'
+#    KNOWN_CLASSES['c_environment'] = 'Paludis::Environment'
+
+    class C_Parser_Paludis < C_Parser
+        #override C_Parse
+        parse_files_matching(/\.(c|cc|cpp|CC)$/)
+
+        def initialize(top_level, file_name, body, options, stats)
+            #Paludis and Paludis::QA are already added
+            body.gsub!('paludis_module()','c_paludis_module')
+ #           body.gsub!('c_paludis_module','rb_mPaludis')
+            body.gsub!('paludis_qa_module()','c_paludis_qa_module')
+  #          body.gsub!('c_paludis_qa_module','rb_mQA')
+            body.gsub!('environment_class()','c_environment')
+#            body.gsub!('paludis_qa_module()','rb_mQA')
+
+            #parse_c hates rb_defines over multiple lines
+            body.gsub!(/(rb_define[^;]+)\n/)  {|match| $1}
+            new_body=''
+            new_body += "\n" + 'c_paludis_module = rb_define_module("Paludis");' + "\n"
+            new_body += 'c_paludis_qa_module = rb_define_module_under(c_paludis_module, "QA");' + "\n"
+            new_body += 'c_environment = rb_define_class_under(c_paludis_module, "Environment", rb_cObject);' + "\n"
+            body.each_line do |line|
+                next if line =~ /rb_mPaludis\s*=/
+                next if line =~ /rb_mQA\s*=/
+                next if line =~ /c_environment\s*=/
+                if line =~ /cc_enum_special/
+                    line.scan(/cc_enum_special<([^,]+),\s*([^,]+),\s*([^>]+)>/) do
+                        |header_file, type, in_class|
+                        new_body+= generate_consts(header_file, type, in_class)
+                    end
+                    next
+                end
+                if line =~ /rb_define/
+                    #help rdoc recognise normal methods
+                    line.gsub!('&','')
+                    line.gsub!(/RUBY_FUNC_CAST\(*([^)]+)\)*/) {|match| $1}
+                    #help rdoc recognise template methods
+                    line.gsub!(/\w+<\s*\w+(::\w+)*(,\s*\w+)*(::\w+)?>::\w+/,'template_methods')
+                end
+                new_body+= line
+            end
+            #puts new_body
+            #exit
+            super(top_level, file_name, new_body, options, stats)
+        end
+
+        def scan
+            x = super
+            puts x.file_relative_name
+            x
+        end
+
+        def generate_consts(header, type, in_class)
+            consts = []
+            file = IO.readlines("../#{header}").join("").gsub(%r{//.*$},'').gsub(/\s+/,'')
+            if file =~ /enum#{type}\{([^}]+)\}/
+                i = 0
+                $1.split(',').each do |line|
+                    next if line =~/last/
+                    const =  line.sub(%r{^[^_]+_},'').capitalize #strip start
+                    const.gsub!(%r{_(\w)}) { |x| $1.capitalize}
+                    consts << "rb_define_const(#{in_class}, \"#{const}\", #{i});"
+                    i+=1
+                end
+            end
+            consts.join("\n")
+        end
+    end
+end
+begin
+  r = RDoc::RDoc.new
+  r.document(ARGV)
+rescue RDoc::RDocError => e
+  $stderr.puts e.message
+  exit(1)
+end

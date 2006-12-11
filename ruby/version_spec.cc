@@ -54,6 +54,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     remove_revision -> VersionSpec
+     *
+     * Returns a VersionSpec without the revision part.
+     */
     VALUE
     version_spec_remove_revision(VALUE self)
     {
@@ -67,6 +73,12 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     revision_only -> String
+     *
+     * Revision part only (or "r0").
+     */
     VALUE
     version_spec_revision_only(VALUE self)
     {
@@ -82,6 +94,12 @@ namespace
 
     void do_register_version_spec()
     {
+        /*
+         * Document-class: Paludis::VersionSpec
+         *
+         * A VersionSpec represents a version number (for example, 1.2.3b-r1).
+         *
+         */
         c_version_spec = rb_define_class_under(paludis_module(), "VersionSpec", rb_cObject);
         rb_define_singleton_method(c_version_spec, "new", RUBY_FUNC_CAST(&version_spec_new), 1);
         rb_define_method(c_version_spec, "initialize", RUBY_FUNC_CAST(&version_spec_init), 1);
