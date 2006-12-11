@@ -1,4 +1,5 @@
-SUBDIRS = cran fake nothing portage vdb virtuals
+SUBDIRS = $(BUILD_REPOSITORIES)
+DIST_SUBDIRS = $(ALL_REPOSITORIES)
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in

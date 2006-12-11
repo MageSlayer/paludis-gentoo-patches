@@ -1,0 +1,18 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_GemsRepositoryParams()
+{
+    key environment "const Environment *"
+    key package_database "const PackageDatabase *"
+    key location FSEntry
+    key distdir FSEntry
+    key sync std::string
+    key sync_exclude std::string
+    key root FSEntry
+    key buildroot FSEntry
+
+    allow_named_args
+}
+
+

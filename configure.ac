@@ -524,7 +524,7 @@ dnl }}}
 dnl {{{ gtk support
 AC_MSG_CHECKING([whether to build the gtk+ client])
 AC_ARG_ENABLE([gtk],
-   AS_HELP_STRING([--enable-gtk], [Enable gtk+ client (default: disable)]),
+   AS_HELP_STRING([--enable-gtk], [Enable gtk+ client (default: disable) (UNUSABLE)]),
    enable_gtk=$enableval,
    enable_gtk=no)
 AC_MSG_RESULT($enable_gtk)
@@ -642,7 +642,50 @@ if test "x$enable_ruby" = "xyes" ; then
 fi
 
 AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
+dnl }}}
 
+dnl {{{ repositories
+ALL_REPOSITORIES="cran fake nothing portage vdb gems virtuals"
+DEFAULT_REPOSITORIES="cran fake nothing portage vdb virtuals"
+AC_MSG_CHECKING([which repositories to build...])
+AC_ARG_WITH([repositories],
+			[  --with-repositories=foo,bar,...
+			  Build the specified repositories. Available repositories are:
+			  cran            The Comprehensive R Archive Network
+			  fake            A fake repository for test cases
+			  gems            Ruby Gems (requires libyaml) (UNUSABLE)
+			  nothing         A repository with no content
+			  portage         Gentoo Portage
+			  vdb             Gentoo installed packages
+			  virtuals        Old style Portage virtuals],
+			[repositories="`echo $with_repositories | tr ',' ' '`"],
+			[repositories="$DEFAULT_REPOSITORIES"])
+repositories=`echo $repositories | tr ' ' '\n' | sort | uniq | tr '\n' ' '`
+AC_MSG_RESULT([$repositories])
+BUILD_REPOSITORIES="$repositories"
+AC_SUBST([ALL_REPOSITORIES])
+AC_SUBST([BUILD_REPOSITORIES])
+dnl }}}
+
+dnl {{{ gems
+AC_MSG_CHECKING([whether we're building the gems repository])
+if echo $repositories | tr ' ' '\n' | sort | uniq | grep '^gems$' >/dev/null ; then
+	AC_MSG_RESULT([yes])
+	AC_MSG_CHECKING([for libyaml])
+	AC_COMPILE_IFELSE([
+#include <yaml.h>
+int main(int, char *[])
+{
+	yaml_get_version_string();
+	return 0;
+}
+],
+		[AC_MSG_RESULT([yes])],
+		[AC_MSG_RESULT([no])
+		 AC_MSG_ERROR([libyaml (http://pyyaml.org/wiki/LibYAML) is required for gems support])])
+else
+	AC_MSG_RESULT([no])
+fi
 dnl }}}
 
 dnl {{{ is sed gnu sed
@@ -710,6 +753,7 @@ AC_OUTPUT(
 	paludis/repositories/Makefile
 	paludis/repositories/cran/Makefile
 	paludis/repositories/fake/Makefile
+	paludis/repositories/gems/Makefile
 	paludis/repositories/nothing/Makefile
 	paludis/repositories/portage/Makefile
 	paludis/repositories/vdb/Makefile
