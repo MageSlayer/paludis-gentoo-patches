@@ -56,7 +56,7 @@ endif
 if ENABLE_RUBY
 
 rdoc : create_ruby_doc.rb www all-built-sources
-	$(RUBY) $(srcdir)/create_ruby_doc.rb --op www/ruby/ $(top_srcdir)/ruby/
+	$(RUBY) $(srcdir)/create_ruby_doc.rb -t "Paludis Ruby API" -m Paludis --op www/ruby/ $(top_srcdir)/ruby/*.cc
 
 else
 
