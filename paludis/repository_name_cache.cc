@@ -98,7 +98,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                 if (line != stringify(_imp->repo->name()))
                 {
                     Log::get_instance()->message(ll_warning, lc_context, "Names cache for '" + stringify(_imp->repo->name())
-                            + "' was generated fpr repository '" + line + "', so it cannot be used. You must not "
+                            + "' was generated for repository '" + line + "', so it cannot be used. You must not "
                             "have multiple name caches at the same location.");
                     _usable = false;
                     return CategoryNamePartCollection::ConstPointer(0);
