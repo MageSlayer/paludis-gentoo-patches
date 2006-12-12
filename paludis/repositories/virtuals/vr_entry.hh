@@ -32,15 +32,27 @@ namespace paludis
 
     /**
      * Sort ordering for _imp->entries for an InstalledVirtualsRepository.
+     *
+     * \ingroup grpvirtualsrepository
+     * \nosubgrouping
      */
     struct EntriesComparator
     {
+        /// Our PackageDatabase instance.
         PackageDatabase::ConstPointer const db;
+
+        ///\name Basic operations
+        ///\{
 
         EntriesComparator(PackageDatabase::ConstPointer const d) :
             db(d)
         {
         }
+
+        ///\}
+
+        ///\name Comparison operators
+        ///\{
 
         bool
         operator() (const VREntry & a, const VREntry & b) const
@@ -65,54 +77,88 @@ namespace paludis
 
             return a.provided_by_name > b.provided_by_name; // not a bug either
         }
+
+        ///\}
     };
 
     /**
      * Comparison on name only for an VREntry.
+     *
+     * \ingroup grpvirtualsrepository
+     * \nosubgrouping
      */
     struct EntriesNameComparator
     {
+        ///\name Comparison operators
+        ///\{
+
         bool
         operator() (const VREntry & a, const VREntry & b) const
         {
             return a.virtual_name < b.virtual_name;
         }
+
+        ///\}
     };
 
     /**
      * Extract only the name for an VREntry.
+     *
+     * \ingroup grpvirtualsrepository
+     * \nosubgrouping
      */
     struct EntriesNameExtractor
     {
+        ///\name Extraction function
+        ///\{
+
         QualifiedPackageName
         operator() (const VREntry & a) const
         {
             return a.virtual_name;
         }
+
+        ///\}
     };
 
     /**
      * Comparison on category name only for an VREntry.
+     *
+     * \ingroup grpvirtualsrepository
+     * \nosubgrouping
      */
     struct EntriesCategoryComparator
     {
+        ///\name Comparison operators
+        ///\{
+
         bool
         operator() (const VREntry & a, const VREntry & b) const
         {
             return a.virtual_name.category < b.virtual_name.category;
         }
+
+        ///\}
     };
 
     /**
      * Extract only the category name for an VREntry.
+     *
+     * \ingroup grpvirtualsrepository
+     * \nosubgrouping
      */
     struct EntriesCategoryExtractor
     {
+        ///\name Extraction function
+        ///\{
+
         CategoryNamePart
         operator() (const VREntry & a) const
         {
             return a.virtual_name.category;
         }
+
+        ///\}
     };
 }
 

@@ -577,12 +577,6 @@ CRANInstalledRepository::sets_list() const
     return result;
 }
 
-bool
-CRANInstalledRepository::do_sync() const
-{
-    return false;
-}
-
 void
 CRANInstalledRepository::invalidate() const
 {

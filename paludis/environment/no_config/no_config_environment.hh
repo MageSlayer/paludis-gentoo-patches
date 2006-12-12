@@ -46,28 +46,47 @@ namespace paludis
      * An environment that uses a single repository, with no user configuration.
      *
      * \ingroup grpnoconfigenvironment
+     * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoConfigEnvironment :
         private PrivateImplementationPattern<NoConfigEnvironment>,
         public Environment
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             NoConfigEnvironment(const NoConfigEnvironmentParams & params);
 
             virtual ~NoConfigEnvironment();
 
+            ///\}
+
             virtual std::string paludis_command() const;
 
+            /**
+             * What is our top level directory for our main repository?
+             */
             FSEntry main_repository_dir() const;
 
             virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
+
+            ///\name Iterate over our profiles
+            ///\{
 
             typedef libwrapiter::ForwardIterator<NoConfigEnvironment, const NoConfigEnvironmentProfilesDescLine> ProfilesIterator;
             ProfilesIterator begin_profiles() const;
             ProfilesIterator end_profiles() const;
 
+            ///\}
+
+            ///\name Profile functions
+            ///\{
+
             void set_profile(const FSEntry & location);
             void set_profile(const ProfilesIterator & iter);
+
+            ///\}
 
     };
 }

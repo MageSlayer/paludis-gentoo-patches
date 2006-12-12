@@ -29,6 +29,13 @@ namespace paludis
 {
 #include <paludis/version_requirements-sr.hh>
 
+    /**
+     * A collection of VersionRequirement instances, usually for a
+     * PackageDepAtom.
+     *
+     * \see PackageDepAtom
+     * \ingroup grpversions
+     */
     typedef SequentialCollection<VersionRequirement> VersionRequirements;
 }
 

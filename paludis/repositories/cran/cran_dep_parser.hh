@@ -14,6 +14,9 @@ namespace paludis
      */
     struct PALUDIS_VISIBLE CRANDepParser
     {
+        /**
+         * Parse function.
+         */
         static DepAtom::ConstPointer parse(const std::string & s);
     };
 }

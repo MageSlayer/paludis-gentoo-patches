@@ -44,6 +44,9 @@ namespace paludis
             void operator= (const LibXmlPtrHolder &);
 
         public:
+            ///\name Basic operations
+            ///\{
+
             LibXmlPtrHolder(PtrType_ ptr, void (* free_func) (PtrType_)) :
                 _ptr(ptr),
                 _free_func(free_func)
@@ -56,6 +59,11 @@ namespace paludis
                     _free_func(_ptr);
             }
 
+            ///\}
+
+            /**
+             * Cast to our pointer type.
+             */
             operator PtrType_ () const
             {
                 return _ptr;

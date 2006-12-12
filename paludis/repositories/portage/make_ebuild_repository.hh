@@ -24,11 +24,25 @@
 
 namespace paludis
 {
+    /**
+     * Create an ebuild format repository.
+     *
+     * \see PortageRepository
+     * \ingroup grpportagerepository
+     */
     CountedPtr<Repository>
     make_ebuild_repository(const Environment * const,
             const PackageDatabase * const,
             AssociativeCollection<std::string, std::string>::ConstPointer) PALUDIS_VISIBLE;
 
+    /**
+     * Create an ebuild format repository.
+     *
+     * This function forwards to paludis::make_ebuild_repository().
+     *
+     * \see paludis::make_ebuild_repository()
+     * \ingroup grpportagerepository
+     */
     CountedPtr<Repository>
     make_portage_repository(const Environment * const,
             const PackageDatabase * const,

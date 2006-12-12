@@ -43,6 +43,9 @@ namespace paludis
             const PackageDatabaseEntryCollection::ConstPointer _p;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             AmbiguousUnmergeTargetError(const std::string & our_target,
                     const PackageDatabaseEntryCollection::ConstPointer matches) throw () :
                 Exception("Ambiguous unmerge target '" + our_target + "'"),
@@ -52,6 +55,11 @@ namespace paludis
             }
 
             ~AmbiguousUnmergeTargetError() throw ();
+
+            ///\}
+
+            ///\name Iterate over our entries
+            ///\{
 
             typedef PackageDatabaseEntryCollection::Iterator Iterator;
 
@@ -65,6 +73,11 @@ namespace paludis
                 return _p->end();
             }
 
+            ///\}
+
+            /**
+             * What was our target?
+             */
             const std::string & target() const
             {
                 return _t;

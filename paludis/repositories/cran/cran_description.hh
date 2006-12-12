@@ -82,6 +82,9 @@ namespace paludis
          */
         struct PALUDIS_VISIBLE ComparePackage
         {
+            ///\name Comparison operators
+            ///\{
+
             bool operator() (const QualifiedPackageName & c, const CRANDescription & d) const
             {
                 return c < d.name;
@@ -91,6 +94,8 @@ namespace paludis
             {
                 return d.name < c;
             }
+
+            ///\}
         };
 
         /**
@@ -100,6 +105,9 @@ namespace paludis
          */
         struct PALUDIS_VISIBLE CompareVersion
         {
+            ///\name Comparison operators
+            ///\{
+
             bool operator() (const std::pair<QualifiedPackageName, VersionSpec> & c,
                     const CRANDescription & d) const
             {
@@ -125,6 +133,8 @@ namespace paludis
                 else
                     return false;
             }
+
+            ///\}
         };
     };
 }

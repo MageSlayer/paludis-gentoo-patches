@@ -26,14 +26,29 @@
 
 namespace paludis
 {
+    /**
+     * Holds an eclass mtimes cache for a PortageRepository.
+     *
+     * \see PortageRepository
+     * \ingroup grpportagerepository
+     * \nosubgrouping
+     */
     class EclassMtimes :
         private PrivateImplementationPattern<EclassMtimes>,
         public InternalCounted<EclassMtimes>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             EclassMtimes(FSEntryCollection::ConstPointer);
             ~EclassMtimes();
 
+            ///\}
+
+            /**
+             * Fetch the mtime for a given eclass.
+             */
             time_t mtime(const std::string &) const;
     };
 }

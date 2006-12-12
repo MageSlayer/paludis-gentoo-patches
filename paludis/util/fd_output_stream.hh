@@ -38,6 +38,7 @@ namespace paludis
         public std::streambuf
     {
         protected:
+            /// Our file descriptor.
             int fd;
 
             virtual int_type
@@ -78,6 +79,7 @@ namespace paludis
     class PALUDIS_VISIBLE FDOutputStreamBase
     {
         protected:
+            /// Our buffer.
             FDOutputStreamBuf buf;
 
         public:

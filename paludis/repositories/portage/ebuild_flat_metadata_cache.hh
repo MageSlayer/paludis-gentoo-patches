@@ -26,6 +26,15 @@
 
 namespace paludis
 {
+    /**
+     * Implements flat file metadata cache handling for a PortageRepository
+     * using EbuildEntries.
+     *
+     * \see EbuildEntries
+     * \see PortageRepository
+     * \ingroup grpportagerepository
+     * \nosubgrouping
+     */
     class EbuildFlatMetadataCache
     {
         private:
@@ -36,10 +45,21 @@ namespace paludis
             bool _silent;
 
         public:
-            EbuildFlatMetadataCache(const FSEntry &, const FSEntry &,
-                    time_t, EclassMtimes::ConstPointer, bool silent);
+            ///\name Basic operations
+            ///\{
+
+            EbuildFlatMetadataCache(const FSEntry & filename, const FSEntry & ebuild,
+                    time_t master_mtime, EclassMtimes::ConstPointer eclass_mtimes, bool silent);
+
+            ///\}
+
+            ///\name Cache operations
+            ///\{
+
             bool load(VersionMetadata::Pointer);
             void save(VersionMetadata::ConstPointer);
+
+            ///\}
     };
 }
 

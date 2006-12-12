@@ -48,6 +48,7 @@ namespace paludis
      * \see DepTag
      *
      * \ingroup grpdeptag
+     * \nosubgrouping
      */
     class DepTagCategory :
         InstantiationPolicy<DepTagCategory, instantiation_method::NonCopyableTag>,
@@ -61,15 +62,17 @@ namespace paludis
             const std::string _post_text;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             DepTagCategory(
                     bool visible,
                     const std::string & id,
                     const std::string & t,
                     const std::string & pre,
                     const std::string & post);
+
+            ///\}
 
             /**
              * Should we be displayed in a tag category summary?
@@ -118,15 +121,18 @@ namespace paludis
      *
      * \ingroup grpexceptions
      * \ingroup grpdeptag
+     * \nosubgrouping
      */
     class NoSuchDepTagCategory :
         public Exception
     {
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             NoSuchDepTagCategory(const std::string &) throw ();
+
+            ///\}
     };
 
     /**
@@ -146,6 +152,7 @@ namespace paludis
      * Visitor class for visiting the different DepTag subclasses.
      *
      * \ingroup grpdeptag
+     * \see DepTag
      */
     typedef VisitorTypes<GLSADepTag *, GeneralSetDepTag *, DependencyDepTag *> DepTagVisitorTypes;
 
@@ -157,6 +164,7 @@ namespace paludis
      * indicate an associated GLSA.
      *
      * \ingroup grpdeptag
+     * \nosubgrouping
      */
     class DepTag :
         InstantiationPolicy<DepTag, instantiation_method::NonCopyableTag>,
@@ -167,16 +175,15 @@ namespace paludis
             comparison_method::CompareByMemberFetchFunctionTag<std::string> >
     {
         protected:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             DepTag();
 
         public:
-            /**
-             * Destructor.
-             */
             virtual ~DepTag();
+
+            ///\}
 
             /**
              * Fetch our short text (for example, 'GLSA-1234') that is
@@ -188,16 +195,13 @@ namespace paludis
              * Fetch our DepTagCategory's tag.
              */
             virtual std::string category() const = 0;
-
-            /**
-             * Compare, by short_text only.
-             */
     };
 
     /**
      * DepTag subclass for GLSAs.
      *
      * \ingroup grpdeptag
+     * \nosubgrouping
      */
     class GLSADepTag :
         public DepTag,
@@ -208,10 +212,12 @@ namespace paludis
             const std::string _glsa_title;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             GLSADepTag(const std::string & id, const std::string & glsa_title);
+
+            ///\}
 
             virtual std::string short_text() const;
 
@@ -228,6 +234,7 @@ namespace paludis
      * DepTag subclass for general sets.
      *
      * \ingroup grpdeptag
+     * \nosubgrouping
      */
     class GeneralSetDepTag :
         public DepTag,
@@ -238,15 +245,20 @@ namespace paludis
             const std::string _source;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             GeneralSetDepTag(const SetName & id, const std::string & source);
+
+            ///\}
 
             virtual std::string short_text() const;
 
             virtual std::string category() const;
 
+            /**
+             * From which repository or environment did we originate?
+             */
             std::string source() const;
     };
 
@@ -254,6 +266,7 @@ namespace paludis
      * DepTag subclass for dependencies.
      *
      * \ingroup grpdeptag
+     * \nosubgrouping
      */
     class DependencyDepTag :
         public DepTag,
@@ -263,10 +276,12 @@ namespace paludis
             const PackageDatabaseEntry _dbe;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             DependencyDepTag(const PackageDatabaseEntry & dbe);
+
+            ///\}
 
             virtual std::string short_text() const;
 
@@ -277,6 +292,8 @@ namespace paludis
 
     /**
      * Tags attached to a DepListEntry.
+     *
+     * \ingroup grpdeptag
      */
     typedef SortedCollection<DepTagEntry> DepListEntryTags;
 }

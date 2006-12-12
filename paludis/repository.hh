@@ -62,6 +62,11 @@ namespace paludis
     class RepositoryProvidesInterface;
     class RepositoryVirtualsInterface;
 
+    /**
+     * What debug build option to use when installing a package.
+     *
+     * \ingroup grprepository
+     */
     enum InstallDebugOption
     {
         ido_none,
@@ -167,15 +172,22 @@ namespace paludis
             const RepositoryName _name;
 
         protected:
+            ///\name Implementation data
+            ///\{
+
             /**
              * Our information.
              */
             mutable RepositoryInfo::Pointer _info;
 
-            /**
-             * Constructor.
-             */
+            ///\}
+
+            ///\name Basic operations
+            ///\{
+
             Repository(const RepositoryName &, const RepositoryCapabilities &);
+
+            ///\}
 
             /**
              * \name Implementations: navigation functions
@@ -248,17 +260,38 @@ namespace paludis
             ///\}
 
         public:
-            virtual RepositoryInfo::ConstPointer info(bool verbose) const;
+            ///\name Basic operations
+            ///\{
+
+            virtual ~Repository();
+
+            ///\}
+
+            ///\name Repository information
+            ///\{
 
             /**
-             * Destructor.
+             * Fetch information about the repository.
              */
-            virtual ~Repository();
+            virtual RepositoryInfo::ConstPointer info(bool verbose) const;
 
             /**
              * Return our name.
              */
             const RepositoryName & name() const PALUDIS_ATTRIBUTE((nothrow));
+
+            /**
+             * Are we allowed to be favourite repository?
+             */
+            virtual bool can_be_favourite_repository() const
+            {
+                return true;
+            }
+
+            ///\}
+
+            ///\name Repository content queries
+            ///\{
 
             /**
              * Do we have a category with the given name?
@@ -337,6 +370,11 @@ namespace paludis
                 return do_is_licence(u);
             }
 
+            ///\}
+
+            ///\name Repository behaviour methods
+            ///\{
+
             /**
              * Invalidate any in memory cache.
              */
@@ -347,13 +385,8 @@ namespace paludis
              */
             virtual void regenerate_cache() const;
 
-            /**
-             * Are we allowed to be favourite repository?
-             */
-            virtual bool can_be_favourite_repository() const
-            {
-                return true;
-            }
+            ///\}
+
     };
 
     /**
@@ -366,6 +399,9 @@ namespace paludis
     class RepositoryMaskInterface
     {
         protected:
+            ///\name Implementation details
+            ///\{
+
             /**
              * Override in descendents: check for a mask.
              */
@@ -378,7 +414,12 @@ namespace paludis
             virtual bool do_query_profile_masks(const QualifiedPackageName &,
                     const VersionSpec &) const = 0;
 
+            ///\}
+
         public:
+            ///\name Mask queries
+            ///\{
+
             /**
              * Query repository masks.
              */
@@ -395,6 +436,8 @@ namespace paludis
                 return do_query_profile_masks(q, v);
             }
 
+            ///\}
+
             virtual ~RepositoryMaskInterface() { }
     };
 
@@ -408,6 +451,9 @@ namespace paludis
     class RepositoryUseInterface
     {
         protected:
+            ///\name Implementation details
+            ///\{
+
             /**
              * Override in descendents: get use.
              */
@@ -443,7 +489,12 @@ namespace paludis
              */
             virtual UseFlagNameCollection::ConstPointer do_use_expand_prefixes() const = 0;
 
+            ///\}
+
         public:
+            ///\name USE queries
+            ///\{
+
             /**
              * Query the state of the specified use flag.
              */
@@ -505,6 +556,8 @@ namespace paludis
                 return do_use_expand_prefixes();
             }
 
+            ///\}
+
             virtual ~RepositoryUseInterface() { }
     };
 
@@ -518,6 +571,9 @@ namespace paludis
     class RepositoryInstalledInterface
     {
         protected:
+            ///\name Implementation details
+            ///\{
+
             /**
              * Override in descendents: fetch the contents.
              */
@@ -535,7 +591,12 @@ namespace paludis
                 return time_t(0);
             }
 
+            ///\}
+
         public:
+            ///\name Installed content queries
+            ///\{
+
             /**
              * Fetch contents.
              */
@@ -558,6 +619,8 @@ namespace paludis
                 return do_installed_time(q, v);
             }
 
+            ///\}
+
             virtual ~RepositoryInstalledInterface() { }
     };
 
@@ -571,13 +634,21 @@ namespace paludis
     class RepositoryInstallableInterface
     {
         protected:
+            ///\name Implementation details
+            ///\{
+
             /**
              * Override in descendents: install.
              */
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const = 0;
 
+            ///\}
+
         public:
+            ///\name Installable functions
+            ///\{
+
             /**
              * Install a package.
              */
@@ -585,6 +656,8 @@ namespace paludis
             {
                 do_install(q, v, i);
             }
+
+            ///\}
 
             virtual ~RepositoryInstallableInterface() { }
     };
@@ -599,13 +672,21 @@ namespace paludis
     class RepositoryUninstallableInterface
     {
         protected:
+            ///\name Implementation details
+            ///\{
+
             /**
              * Override in descendents: uninstall.
              */
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const = 0;
 
+            ///\}
+
         public:
+            ///\name Uninstall functions
+            ///\{
+
             /**
              * Uninstall a package.
              */
@@ -614,11 +695,15 @@ namespace paludis
                 do_uninstall(q, v, i);
             }
 
+            ///\}
+
             virtual ~RepositoryUninstallableInterface() { }
     };
 
     /**
      * Contains the names of all the sets provided by the repository.
+     *
+     * \ingroup grpnames
      */
     typedef SortedCollection<SetName> SetsCollection;
 
@@ -632,12 +717,20 @@ namespace paludis
     class RepositorySetsInterface
     {
         protected:
+            ///\name Implementation details
+            ///\{
+
             /**
              * Override in descendents: package list.
              */
             virtual DepAtom::Pointer do_package_set(const SetName & id) const = 0;
 
+            ///\}
+
         public:
+            ///\name Set queries
+            ///\{
+
             /**
              * Fetch a package set.
              */
@@ -650,6 +743,8 @@ namespace paludis
              * Gives a list of the names of all the sets provided by this repo.
              */
             virtual SetsCollection::ConstPointer sets_list() const = 0;
+
+            ///\}
 
             virtual ~RepositorySetsInterface() { }
     };
@@ -664,12 +759,20 @@ namespace paludis
     class RepositorySyncableInterface
     {
         protected:
+            ///\name Implementation details
+            ///\{
+
             /**
              * Override in descendents: sync, if needed (true) or do nothing (false).
              */
             virtual bool do_sync() const = 0;
 
+            ///\}
+
         public:
+            ///\name Sync functions
+            ///\{
+
             /**
              * Sync, if necessary.
              *
@@ -679,6 +782,8 @@ namespace paludis
             {
                 return do_sync();
             }
+
+            ///\}
 
             virtual ~RepositorySyncableInterface() { }
     };
@@ -693,6 +798,9 @@ namespace paludis
     class RepositoryWorldInterface
     {
         public:
+            ///\name World functionality
+            ///\{
+
             /**
              * Add this package to world.
              */
@@ -702,6 +810,8 @@ namespace paludis
              * Remove this package from world, if it is present.
              */
             virtual void remove_from_world(const QualifiedPackageName &) const = 0;
+
+            ///\}
 
             virtual ~RepositoryWorldInterface() { }
     };
@@ -716,12 +826,15 @@ namespace paludis
     class RepositoryNewsInterface
     {
         public:
+            ///\name News functionality
+            ///\{
+
             /**
              * Update our news.unread file.
              */
-            virtual void update_news() const
-            {
-            }
+            virtual void update_news() const = 0;
+
+            ///\}
 
             virtual ~RepositoryNewsInterface() { }
     };
@@ -736,12 +849,17 @@ namespace paludis
     class RepositoryEnvironmentVariableInterface
     {
         public:
+            ///\name Environment query functionality
+            ///\{
+
             /**
              * Query an environment variable
              */
             virtual std::string get_environment_variable(
                     const PackageDatabaseEntry & for_package,
                     const std::string & var) const = 0;
+
+            ///\}
 
             virtual ~RepositoryEnvironmentVariableInterface() { }
     };
@@ -773,6 +891,8 @@ namespace paludis
                 return begin_mirrors(s) != end_mirrors(s);
             }
 
+            ///\}
+
             virtual ~RepositoryMirrorsInterface() { }
     };
 
@@ -786,12 +906,28 @@ namespace paludis
     class RepositoryVirtualsInterface
     {
         public:
+            ///\name Virtuals functionality
+            ///\{
+
+            /**
+             * A collection of virtuals.
+             *
+             * \ingroup grprepository
+             */
             typedef SortedCollection<RepositoryVirtualsEntry> VirtualsCollection;
 
+            /**
+             * Fetch our virtual packages.
+             */
             virtual VirtualsCollection::ConstPointer virtual_packages() const = 0;
 
+            /**
+             * Fetch version metadata for a virtual
+             */
             virtual VersionMetadata::ConstPointer virtual_package_version_metadata(
                     const RepositoryVirtualsEntry &, const VersionSpec & v) const = 0;
+
+            ///\}
 
             virtual ~RepositoryVirtualsInterface() { }
     };
@@ -806,12 +942,28 @@ namespace paludis
     class RepositoryProvidesInterface
     {
         public:
+            ///\name Provides functionality
+            ///\{
+
+            /**
+             * A collection of provided packages.
+             *
+             * \ingroup grprepository
+             */
             typedef SortedCollection<RepositoryProvidesEntry> ProvidesCollection;
 
+            /**
+             * Fetch our provided packages.
+             */
             virtual ProvidesCollection::ConstPointer provided_packages() const = 0;
 
+            /**
+             * Fetch version metadata for a provided package.
+             */
             virtual VersionMetadata::ConstPointer provided_package_version_metadata(
                     const RepositoryProvidesEntry &) const = 0;
+
+            ///\}
 
             virtual ~RepositoryProvidesInterface() { }
     };

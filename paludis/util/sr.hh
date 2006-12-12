@@ -42,6 +42,7 @@ namespace paludis
     template <typename IfTrue_, typename IfFalse_>
     struct Select<true, IfTrue_, IfFalse_>
     {
+        /// Our value.
         typedef IfTrue_ Type;
     };
 
@@ -53,6 +54,7 @@ namespace paludis
     template <typename IfTrue_, typename IfFalse_>
     struct Select<false, IfTrue_, IfFalse_>
     {
+        /// Our value.
         typedef IfFalse_ Type;
     };
 }

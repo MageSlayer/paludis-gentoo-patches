@@ -75,10 +75,18 @@ namespace paludis
                     const InstallOptions &) const;
 
         public:
+            ///\name Basic operations
+            //\{
+
             InstalledVirtualsRepository(const Environment * const env);
 
             virtual ~InstalledVirtualsRepository();
 
+            ///\}
+
+            /**
+             * Create an InstalledVirtualsRepository instance.
+             */
             static CountedPtr<Repository> make_installed_virtuals_repository(
                     const Environment * const env,
                     const PackageDatabase * const db,

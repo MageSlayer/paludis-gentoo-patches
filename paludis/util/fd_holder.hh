@@ -34,6 +34,9 @@ namespace paludis
             const bool _sync;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             FDHolder(const int fd, bool sync = true) :
                 _fd(fd),
                 _sync(sync)
@@ -50,6 +53,11 @@ namespace paludis
                 }
             }
 
+            ///\}
+
+            /**
+             * Fetch our file descriptor.
+             */
             operator int () const
             {
                 return _fd;

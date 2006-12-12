@@ -88,8 +88,6 @@ namespace paludis
 
             virtual SetsCollection::ConstPointer sets_list() const;
 
-            virtual bool do_sync() const;
-
         public:
             /**
              * Constructor.
@@ -108,11 +106,6 @@ namespace paludis
              * Destructor.
              */
             ~CRANInstalledRepository();
-
-            virtual bool installed() const
-            {
-                return true;
-            }
 
             virtual void invalidate() const;
 

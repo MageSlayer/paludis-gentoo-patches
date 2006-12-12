@@ -434,13 +434,6 @@ CRANRepository::do_version_metadata(
     return result;
 }
 
-Contents::ConstPointer
-CRANRepository::do_contents(
-        const CategoryNamePart &, const PackageNamePart &, const VersionSpec &) const
-{
-    return Contents::Pointer(new Contents);
-}
-
 CountedPtr<Repository>
 CRANRepository::make_cran_repository(
         const Environment * const env,

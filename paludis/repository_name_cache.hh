@@ -28,6 +28,13 @@ namespace paludis
     class FSEntry;
     class Repository;
 
+    /**
+     * Used by various Repository subclasses to implement a names cache.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
     class RepositoryNameCache :
         public InternalCounted<RepositoryNameCache>,
         private PrivateImplementationPattern<RepositoryNameCache>
@@ -36,20 +43,48 @@ namespace paludis
             mutable bool _usable;
 
         public:
+            ///\name Basic operations
+            ///\{
+
             RepositoryNameCache(
                     const FSEntry & location,
                     const Repository * const repo);
+
             virtual ~RepositoryNameCache();
 
+
+            ///\}
+
+            ///\name Cache helper functions
+            ///\{
+
+            /**
+             * Implement category_names_containing_package.
+             *
+             * May return a zero pointer, in which case the repository should
+             * fall back to Repository::do_category_names_containing_package or
+             * its own implementation.
+             */
             CategoryNamePartCollection::ConstPointer category_names_containing_package(
                     const PackageNamePart & p) const;
 
+            /**
+             * Whether or not our cache is usable.
+             *
+             * Initially this will be true. After the first query the value may
+             * change to false (the query will return a zero pointer too).
+             */
             bool usable() const PALUDIS_ATTRIBUTE((nothrow))
             {
                 return _usable;
             }
 
+            /**
+             * Implement cache regeneration.
+             */
             void regenerate_cache() const;
+
+            ///\}
     };
 }
 

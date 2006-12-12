@@ -237,6 +237,11 @@
  * \ingroup grpdependencies
  */
 
+/** \defgroup grpuninstalllist Uninstall (reverse dependency) resolution
+ *
+ * \ingroup grpuninstalllist
+ */
+
 /** \defgroup grpdepatoms Dependency atoms
  *
  * \ingroup grpdependencies
