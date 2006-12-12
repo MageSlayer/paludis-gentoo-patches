@@ -40,8 +40,12 @@ module Paludis
     end
 
     class TestCase_PackageDepAtom < Test::Unit::TestCase
+        def pda
+            PackageDepAtom.new('>=foo/bar-1:100::testrepo')
+        end
+
         def test_create
-            v = PackageDepAtom.new(">=foo/bar-1")
+            pda
         end
 
         def test_create_error
@@ -54,7 +58,23 @@ module Paludis
         end
 
         def test_to_s
-            assert_equal ">=foo/bar-1", PackageDepAtom.new(">=foo/bar-1").to_s
+            assert_equal ">=foo/bar-1:100::testrepo", pda.to_s
+        end
+
+        def test_text
+            assert_equal ">=foo/bar-1:100::testrepo", pda.text
+        end
+
+        def test_slot
+            assert_equal "100", pda.slot
+        end
+
+        def test_package
+            assert_equal "foo/bar", pda.package
+        end
+
+        def test_repository
+            assert_equal "testrepo", pda.repository
         end
     end
 

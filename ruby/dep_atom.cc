@@ -173,6 +173,66 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     package -> String
+     *
+     * Fetch the package name.
+     */
+    VALUE
+    package_dep_atom_package(VALUE self)
+    {
+        PackageDepAtom::ConstPointer * ptr;
+        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        return rb_str_new2(stringify((*ptr)->package()).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     text -> String
+     *
+     * Fetch our text.
+     */
+    VALUE
+    package_dep_atom_text(VALUE self)
+    {
+        PackageDepAtom::ConstPointer * ptr;
+        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        return rb_str_new2(stringify((*ptr)->text()).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     slot -> String or Nil
+     *
+     * Fetch the slot name.
+     */
+    VALUE
+    package_dep_atom_slot_ptr(VALUE self)
+    {
+        PackageDepAtom::ConstPointer * ptr;
+        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        if (0 == (*ptr)->slot_ptr())
+            return Qnil;
+        return rb_str_new2(stringify((*(*ptr)->slot_ptr())).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     repository -> String or Nil
+     *
+     * Fetch the repository name.
+     */
+    VALUE
+    package_dep_atom_repository_ptr(VALUE self)
+    {
+        PackageDepAtom::ConstPointer * ptr;
+        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        if (0 == (*ptr)->repository_ptr())
+            return Qnil;
+        return rb_str_new2(stringify((*(*ptr)->repository_ptr())).c_str());
+    }
+
     void do_register_dep_atom()
     {
         /*
@@ -237,6 +297,10 @@ namespace
         rb_define_singleton_method(c_package_dep_atom, "new", RUBY_FUNC_CAST(&DepAtomThings<PackageDepAtom>::dep_atom_new_1), 1);
         rb_define_method(c_package_dep_atom, "initialize", RUBY_FUNC_CAST(&dep_atom_init_1), 1);
         rb_define_method(c_package_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<PackageDepAtom::ConstPointer>::to_s_via_ptr), 0);
+        rb_define_method(c_package_dep_atom, "package", RUBY_FUNC_CAST(&package_dep_atom_package), 0);
+        rb_define_method(c_package_dep_atom, "text", RUBY_FUNC_CAST(&package_dep_atom_text), 0);
+        rb_define_method(c_package_dep_atom, "slot", RUBY_FUNC_CAST(&package_dep_atom_slot_ptr), 0);
+        rb_define_method(c_package_dep_atom, "repository", RUBY_FUNC_CAST(&package_dep_atom_repository_ptr), 0);
 
         /*
          * Document-class: Paludis::PlainTextDepAtom
