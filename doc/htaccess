@@ -1,4 +1,0 @@
-Redirect permanent /ChangeLog.html /PaludisChangeLog.html
-Redirect permanent /News.html /PaludisNews.html
-Redirect permanent /Licence.html /PaludisLicence.html
-Redirect permanent /Authors.html /PaludisAuthors.html

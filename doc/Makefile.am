@@ -22,8 +22,8 @@ docfiles = \
 	doc_programming_with_paludis.doxygen \
 	doc_cache_files.doxygen
 
-EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css $(docfiles) $(tagfiles) htaccess
-CLEANFILES = *~ html/* html
+EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css $(docfiles) $(tagfiles)
+CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
 
 libstdc++.tag :
@@ -32,14 +32,17 @@ libstdc++.tag :
 libwrapiter.tag :
 	wget -O $@ http://libwrapiter.berlios.de/libwrapiter.tag
 
-copy-htaccess : htaccess
-	cp htaccess html/.htaccess
+www :
+	mkdir -p www
+
+all-built-sources :
+	$(MAKE) -C .. built-sources
 
 if HAVE_DOXYGEN
 
 doxygen : doxygen.conf $(top_srcdir)/paludis/*.cc $(top_srcdir)/paludis/*.hh \
-		$(docfiles) $(tagfiles) copy-htaccess
-	$(MAKE) -C .. built-sources
+		$(docfiles) $(tagfiles) www all-built-sources
+	mkdir -p www/doxygen/
 	doxygen doxygen.conf
 
 else
@@ -50,18 +53,29 @@ doxygen :
 
 endif
 
+if ENABLE_RUBY
+
+rdoc : create_ruby_doc.rb www all-built-sources
+	$(RUBY) $(srcdir)/create_ruby_doc.rb --op www/ruby/ $(top_srcdir)/ruby/
+
+else
+
+rdoc :
+	@echo "You don't have ruby turned on!"
+	exit 1
+
+endif
+
 clean-local :
-	mkdir -p html
-	touch html/dummy
-	find html/ -type f | grep -v '\.svn' | xargs rm
+	rm -fr www
 
 maintainer-clean-local :
-	mkdir -p html
-	touch html/dummy
-	find html/ -type f | grep -v '\.svn' | xargs rm
+	rm -fr www
 
-upload-homepage : doxygen
-	cd `readlink -f $(top_srcdir)/doc/html` && tar jc ./ --exclude ./ | \
+homepage : doxygen rdoc
+
+upload-homepage : homepage
+	cd `readlink -f $(top_srcdir)/doc/www` && tar jc ./ --exclude ./ | \
 		ssh shell.berlios.de tar vjx -C /home/groups/paludis/htdocs/
 
 built-sources : $(BUILT_SOURCES)
