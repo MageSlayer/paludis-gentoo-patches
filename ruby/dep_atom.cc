@@ -233,6 +233,32 @@ namespace
         return rb_str_new2(stringify((*(*ptr)->repository_ptr())).c_str());
     }
 
+    /*
+     * call-seq:
+     *     version_requirements -> Array
+     *
+     * Fetch the version requirements. E.g. [ {:operator => '=', :spec => VersionSpec.new('0.1') } ]
+     */
+    VALUE
+    package_dep_atom_version_requirements_ptr(VALUE self) {
+        PackageDepAtom::ConstPointer * ptr;
+        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        VALUE result(rb_ary_new());
+        VALUE result_hash;
+        if ((*ptr)->version_requirements_ptr())
+            for (VersionRequirements::Iterator i((*ptr)->version_requirements_ptr()->begin()),
+                        i_end((*ptr)->version_requirements_ptr()->end()) ; i != i_end; ++i)
+            {
+                result_hash = rb_hash_new();
+                rb_hash_aset(result_hash, ID2SYM(rb_intern("operator")),
+                    rb_str_new2(stringify(i->version_operator).c_str()));
+                rb_hash_aset(result_hash, ID2SYM(rb_intern("spec")),
+                    version_spec_to_value(i->version_spec));
+                rb_ary_push(result, result_hash);
+            }
+        return result;
+    }
+
     void do_register_dep_atom()
     {
         /*
@@ -301,6 +327,7 @@ namespace
         rb_define_method(c_package_dep_atom, "text", RUBY_FUNC_CAST(&package_dep_atom_text), 0);
         rb_define_method(c_package_dep_atom, "slot", RUBY_FUNC_CAST(&package_dep_atom_slot_ptr), 0);
         rb_define_method(c_package_dep_atom, "repository", RUBY_FUNC_CAST(&package_dep_atom_repository_ptr), 0);
+        rb_define_method(c_package_dep_atom, "version_requirements", RUBY_FUNC_CAST(&package_dep_atom_version_requirements_ptr), 0);
 
         /*
          * Document-class: Paludis::PlainTextDepAtom

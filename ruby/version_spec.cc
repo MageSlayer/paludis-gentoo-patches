@@ -92,6 +92,30 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     bump -> VersionSpec
+     *
+     * This is used by the ~> operator. It returns a VersionSpec where the next to last number is one greater (e.g. 5.3.1 => 5.4).
+     * Any non number parts are stripped (e.g. 1.2.3_alpha4-r5 => 1.3).
+     */
+    VALUE
+    version_spec_bump(VALUE self)
+    {
+        return version_spec_to_value(value_to_version_spec(self).bump());
+    }
+
+    /*
+     * call-seq:
+     *     is_scm? -> true or false
+     *
+     * Are we an -scm package, or something pretending to be one?
+     */
+    VALUE version_spec_is_scm(VALUE self)
+    {
+        return value_to_version_spec(self).is_scm() ? Qtrue : Qfalse;
+    }
+
     void do_register_version_spec()
     {
         /*
@@ -108,6 +132,8 @@ namespace
         rb_define_method(c_version_spec, "to_s", RUBY_FUNC_CAST(&Common<VersionSpec>::to_s), 0);
         rb_define_method(c_version_spec, "remove_revision", RUBY_FUNC_CAST(&version_spec_remove_revision), 0);
         rb_define_method(c_version_spec, "revision_only", RUBY_FUNC_CAST(&version_spec_revision_only), 0);
+        rb_define_method(c_version_spec, "bump", RUBY_FUNC_CAST(&version_spec_bump), 0);
+        rb_define_method(c_version_spec, "is_scm?", RUBY_FUNC_CAST(&version_spec_is_scm), 0);
     }
 }
 

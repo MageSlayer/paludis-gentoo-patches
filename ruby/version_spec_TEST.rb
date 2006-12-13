@@ -63,6 +63,19 @@ module Paludis
         def test_version_only
             assert_equal 'r9', VersionSpec.new('0.1-r9').revision_only
         end
+
+        def test_is_scm?
+            assert_equal true, VersionSpec.new('scm').is_scm?
+            assert_equal false, VersionSpec.new('0.1').is_scm?
+        end
+
+        def test_bump
+            assert_equal VersionSpec.new('2'), VersionSpec.new('1').bump
+            assert_equal VersionSpec.new('2'), VersionSpec.new('1.2').bump
+            assert_equal VersionSpec.new('1.3'), VersionSpec.new('1.2.3').bump
+            assert_equal VersionSpec.new('1.3'), VersionSpec.new('1.2.3-r4').bump
+            assert_equal VersionSpec.new('scm'), VersionSpec.new('scm').bump
+        end
     end
 end
 

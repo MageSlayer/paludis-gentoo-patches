@@ -76,6 +76,13 @@ module Paludis
         def test_repository
             assert_equal "testrepo", pda.repository
         end
+
+        def test_version_requirements
+            assert_kind_of Array, pda.version_requirements
+            assert_equal 1, pda.version_requirements.size
+            assert_equal VersionSpec.new('1'), pda.version_requirements.first[:spec]
+            assert_equal ">=", pda.version_requirements.first[:operator]
+        end
     end
 
     class TestCase_PlainTextDepAtom < Test::Unit::TestCase

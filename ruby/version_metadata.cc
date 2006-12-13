@@ -175,14 +175,6 @@ namespace
      * Fetches the package restrict_string, if get_ebuild_interface is not Nil.
      */
     /*
-     * Document-method: keywords
-     *
-     * call-seq:
-     *     keywords
-     *
-     * Fetches the package keywords, if get_ebuild_interface is not Nil.
-     */
-    /*
      * Document-method: eclass_keywords
      *
      * call-seq:
@@ -216,6 +208,68 @@ namespace
             Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
             if ((*self_ptr)->get_ebuild_interface())
                 return rb_str_new2(stringify((*self_ptr)->get_ebuild_interface()->*m_).c_str());
+            else
+                return Qnil;
+        }
+    };
+
+    /*
+     * Document-method: bin_uri
+     *
+     * call-seq:
+     *     bin_uri -> String
+     *
+     * Fetches the package bin_uri, if get_ebin_interface is not Nil
+     */
+    /*
+     * Document-method: src_repository
+     *
+     * call-seq:
+     *     src_repository -> String
+     *
+     * Fetches the package src_repository, if get_ebin_interface is not Nil
+     */
+    template <typename T_, T_ EbinVersionMetadata::* m_>
+    struct EbinValue
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            VersionMetadata::ConstPointer * self_ptr;
+            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            if ((*self_ptr)->get_ebin_interface())
+                return rb_str_new2(stringify((*self_ptr)->get_ebin_interface()->*m_).c_str());
+            else
+                return Qnil;
+        }
+    };
+
+    /*
+     * Document-method: package
+     *
+     * call-seq:
+     *     package -> String
+     *
+     * Fetches the package name, if get_cran_interface is not Nil
+     */
+    /*
+     * Document-method: version
+     *
+     * call-seq:
+     *     version -> String
+     *
+     * Fetches the package version, if get_ebin_interface is not Nil
+     */
+    template <typename T_, T_ CRANVersionMetadata::* m_>
+    struct CRANValue
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            VersionMetadata::ConstPointer * self_ptr;
+            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            if ((*self_ptr)->get_cran_interface())
+                return rb_str_new2(stringify((*self_ptr)->get_cran_interface()->*m_).c_str());
             else
                 return Qnil;
         }
@@ -320,6 +374,58 @@ namespace
         }
     };
 
+    /*
+     * call-seq:
+     *     virtual_for -> PackageDatabaseEntry
+     *
+     * Fetch package we are a virtual for, if get_virtual_interface is not Nil.
+     */
+    VALUE version_metadata_virtual_for(VALUE self)
+    {
+        VersionMetadata::ConstPointer * self_ptr;
+        Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+        if ((*self_ptr)->get_virtual_interface())
+            return package_database_entry_to_value((*self_ptr)->get_virtual_interface()->virtual_for);
+        else
+            return Qnil;
+
+    }
+
+    /*
+     * call-seq:
+     *     is_bundle? -> true or false
+     *
+     * Are we a bundle? True or false, if get_virtual_interface is not Nil.
+     */
+    VALUE version_metadata_is_bundle(VALUE self)
+    {
+        VersionMetadata::ConstPointer * self_ptr;
+        Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+        if ((*self_ptr)->get_cran_interface())
+            return ((*self_ptr)->get_cran_interface()->is_bundle) ? Qtrue : Qfalse;
+        else
+            return Qnil;
+
+    }
+
+    /*
+     * call-seq:
+     *     keywords -> String
+     *
+     * Fetches the package keywords, if get_ebuild_interface or get_cran_interface is not Nil.
+     */
+    VALUE version_metadata_keywords(VALUE self)
+    {
+        VersionMetadata::ConstPointer * self_ptr;
+        Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+        if ((*self_ptr)->get_ebuild_interface())
+            return rb_str_new2(((*self_ptr)->get_ebuild_interface()->keywords).c_str());
+        if ((*self_ptr)->get_cran_interface())
+            return rb_str_new2(((*self_ptr)->get_cran_interface()->keywords).c_str());
+        else
+            return Qnil;
+    }
+
     void do_register_version_metadata()
     {
         /*
@@ -350,8 +456,6 @@ namespace
                         &EbuildVersionMetadata::src_uri>::fetch)), 0);
         rb_define_method(c_version_metadata, "restrict_string", RUBY_FUNC_CAST((&EbuildValue<std::string,
                         &EbuildVersionMetadata::restrict_string>::fetch)), 0);
-        rb_define_method(c_version_metadata, "keywords", RUBY_FUNC_CAST((&EbuildValue<std::string,
-                        &EbuildVersionMetadata::keywords>::fetch)), 0);
         rb_define_method(c_version_metadata, "eclass_keywords", RUBY_FUNC_CAST((&EbuildValue<std::string,
                         &EbuildVersionMetadata::eclass_keywords>::fetch)), 0);
         rb_define_method(c_version_metadata, "iuse", RUBY_FUNC_CAST((&EbuildValue<std::string,
@@ -377,6 +481,22 @@ namespace
                         &VersionMetadataOrigins::source>::fetch)), 0);
         rb_define_method(c_version_metadata, "origin_binary", RUBY_FUNC_CAST((&VMOrigins<
                         &VersionMetadataOrigins::binary>::fetch)), 0);
+
+        rb_define_method(c_version_metadata, "virtual_for", RUBY_FUNC_CAST(&version_metadata_virtual_for), 0);
+
+        rb_define_method(c_version_metadata, "bin_uri", RUBY_FUNC_CAST((&EbinValue<std::string,
+                        &EbinVersionMetadata::bin_uri>::fetch)), 0);
+        rb_define_method(c_version_metadata, "src_repository", RUBY_FUNC_CAST((&EbinValue<RepositoryName,
+                        &EbinVersionMetadata::src_repository>::fetch)), 0);
+
+        rb_define_method(c_version_metadata, "package", RUBY_FUNC_CAST((&CRANValue<std::string,
+                        &CRANVersionMetadata::package>::fetch)), 0);
+        rb_define_method(c_version_metadata, "version", RUBY_FUNC_CAST((&CRANValue<std::string,
+                        &CRANVersionMetadata::version>::fetch)), 0);
+        rb_define_method(c_version_metadata, "is_bundle?", RUBY_FUNC_CAST(&version_metadata_is_bundle), 0);
+
+        rb_define_method(c_version_metadata, "keywords", RUBY_FUNC_CAST(&version_metadata_keywords), 0);
+
     }
 }
 
