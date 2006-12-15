@@ -23,7 +23,7 @@
 
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
-logfile="${ROOT}/var/log/paludis.elog.${PALUDIS_PID}"
+logfile="${PALUDIS_HOOKS_TMPDIR:-${ROOT}/var/tmp/paludis}/elog.${PALUDIS_PID}"
 
 case "${HOOK}" in
     elog)
