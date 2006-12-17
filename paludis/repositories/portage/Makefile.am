@@ -78,6 +78,7 @@ EXTRA_DIST = \
 	portage_repository_params.sr \
 	portage_repository-sr.hh \
 	portage_repository-sr.cc \
+	portage_repository.sr \
 	xml_things_TEST.cc \
 	xml_things_TEST_setup.sh \
 	xml_things_TEST_cleanup.sh
