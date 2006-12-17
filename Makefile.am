@@ -26,7 +26,7 @@ automake-deps-dist-hack.tmp :
 dist-hook :
 	rm $(distdir)/automake-deps-dist-hack.tmp
 
-doxygen rdoc homepage upload-homepage :
+doxygen rdoc homepage htmlpages upload-homepage :
 	$(MAKE) -C doc $@
 
 check-local :

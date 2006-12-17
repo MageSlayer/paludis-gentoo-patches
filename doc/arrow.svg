@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.0" width="80" height="80">
+    <rect x="-10" y="-10" width="100" height="100" style="fill: #eeeeee;" />
+    <path d="M 10,30 L 40,30 L 40,10 L 70,40 L 40,70 L 40,50 L 10,50 z"
+        style="stroke: #999999; stroke-width: 1; stroke-dasharray: 3,3; fill: #eeeeee;" id="arrowhead"/>
+</svg>
+

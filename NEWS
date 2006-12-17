@@ -370,6 +370,6 @@ of every change, see the ChangeLog.
       appropriate.
 
 0.2.0:
-    Initial public release.
+    * Initial public release.
 
 .. vim: set tw=80 spell spelllang=en :

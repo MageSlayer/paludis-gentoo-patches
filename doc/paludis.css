@@ -371,8 +371,15 @@ HR { height: 1px;
 }
 
 code {
-    background-color: #f5f5f5;
-    border: 1px solid #cccccc;
-    padding: 2px;
+    background-color: #cccccc;
+}
+
+dd {
+    margin-left: 3em;
+    margin-bottom: 0.3em;
+}
+
+dt {
+    font-weight: bold;
 }
 

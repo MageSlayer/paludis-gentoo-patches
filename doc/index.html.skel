@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en">
+<head>
+<title>Paludis, the Other Package Mangler</title>
+<link rel="stylesheet" href="paludis.css" type="text/css" />
+</head>
+<body>
+@HEADER@
+
+    <h1>Paludis, the Other Package Mangler</h1>
+
+    <p>Paludis is a package manager for use with <a
+        href="http://www.gentoo.org/">Gentoo</a> and related distributions. It
+    is entirely independent of Portage.</p>
+
+    <h2>For prospective users:</h2>
+
+    <h2>For new and current users:</h2>
+
+    <table border="0">
+        <tr>
+            <td valign="middle">
+                <object type="image/svg+xml" width="80" height="80"
+                    data="arrow.svg">
+                    <img src="arrow.png" alt="arrow" />
+                </object>
+            </td>
+            <td>
+                <p>The <a href="news.html">release notes</a> document major
+                changes between releases. More detailed information is available
+                in the <a href="changelog.html">changelog</a>.</p>
+
+                <p>An <a href="faq.html">FAQ</a> is available. You should familiarise
+                yourself with this list before asking questions.</p>
+
+                <p>There is a <a href="migration.html">guide to migrating to
+                    Paludis</a> and a <a href="bootstrap.html">guide to
+                    bootstrapping a chroot using Paludis</a>.</p>
+
+                <p>There is <a href="configuration.html">documentation on the
+                    configuration files</a> and <a href="cachefiles.html">the
+                    various optional caches</a> used by Paludis.</p>
+
+                <p><strong>Support</strong> is available via <code>#paludis</code> on
+                <code>irc.freenode.net</code> or the <a
+                    href="lists.html">mailing lists</a>. Support is not
+                available via Gentoo's bugzilla or forums.</p>
+            </td>
+        </tr>
+    </table>
+
+    <h2>For developers:</h2>
+
+    <table border="0">
+        <tr>
+            <td valign="middle">
+                <object type="image/svg+xml" width="80" height="80"
+                    data="arrow.svg">
+                    <img src="arrow.png" alt="arrow" />
+                </object>
+            </td>
+            <td>
+                <p><strong>Subversion access</strong> is available via
+                <code>svn co svn://svn.pioto.org/paludis/trunk svn</code>. There
+                is also <a href="http://svn.pioto.org/viewvc/paludis/">viewvc</a>
+                for browsing via the web.</p>
+
+                <p>An <a href="programmingwithpaludis.html">overview of
+                    Programming with Paludis</a>, covering both the C++ and the
+                Ruby APIs, is available.</p>
+
+                <p>There is <a href="doxygen/html"/>extensive C++ core API and implementation
+                    documentation</a>. This is also available via <code>make
+                    doxygen</code>.</p>
+
+                <p>Similarly, the <a href="ruby/">Ruby API documentation</a> is also
+                available via <code>make rdoc</code>.</p>
+
+                <p><strong>Development questions</strong> should be asked in <code>#paludis</code> on
+                <code>irc.freenode.net</code> or on the <a
+                    href="lists.html">mailing lists</a>.</p>
+            </td>
+        </tr>
+    </table>
+
+@FOOTER@
+</body>
+</html>
+

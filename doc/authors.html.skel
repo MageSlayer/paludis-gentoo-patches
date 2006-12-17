@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en">
+<head>
+<title>Paludis, the Other Package Mangler: Release Notes</title>
+<link rel="stylesheet" href="paludis.css" type="text/css" />
+</head>
+<body>
+@HEADER@
+
+    <h1>Paludis, the Other Package Mangler</h1>
+
+    <h2>Authors</h2>
+
+@AUTHORS@
+
+    </li></ul>
+
+@FOOTER@
+</body>
+</html>
+
+
+
