@@ -361,6 +361,8 @@ VirtualsRepository::invalidate() const
 {
     _imp->has_entries = false;
     _imp->entries.clear();
+    _imp->has_names = false;
+    _imp->names.clear();
 }
 
 void
