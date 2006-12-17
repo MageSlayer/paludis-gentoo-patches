@@ -74,7 +74,7 @@
                     documentation</a>. This is also available via <code>make
                     doxygen</code>.</p>
 
-                <p>Similarly, the <a href="ruby/">Ruby API documentation</a> is also
+                <p>Similarly, the <a href="ruby/">Ruby API documentation</a> is
                 available via <code>make rdoc</code>.</p>
 
                 <p><strong>Development questions</strong> should be asked in <code>#paludis</code> on
