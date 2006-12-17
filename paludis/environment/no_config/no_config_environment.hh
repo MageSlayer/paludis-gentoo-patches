@@ -27,6 +27,8 @@
 
 namespace paludis
 {
+    class PortageRepository;
+
     /**
      * The type of repository to use for a NoConfigEnvironment.
      *
@@ -49,8 +51,8 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoConfigEnvironment :
-        private PrivateImplementationPattern<NoConfigEnvironment>,
-        public Environment
+        public Environment,
+        private PrivateImplementationPattern<NoConfigEnvironment>
     {
         public:
             ///\name Basic operations
@@ -71,23 +73,13 @@ namespace paludis
 
             virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
 
-            ///\name Iterate over our profiles
-            ///\{
+            /**
+             * Should we accept unstable keywords?
+             */
+            void set_accept_unstable(const bool value);
 
-            typedef libwrapiter::ForwardIterator<NoConfigEnvironment, const NoConfigEnvironmentProfilesDescLine> ProfilesIterator;
-            ProfilesIterator begin_profiles() const;
-            ProfilesIterator end_profiles() const;
-
-            ///\}
-
-            ///\name Profile functions
-            ///\{
-
-            void set_profile(const FSEntry & location);
-            void set_profile(const ProfilesIterator & iter);
-
-            ///\}
-
+            CountedPtr<PortageRepository> portage_repository();
+            CountedPtr<const PortageRepository> portage_repository() const;
     };
 }
 

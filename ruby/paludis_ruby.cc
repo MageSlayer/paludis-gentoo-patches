@@ -154,8 +154,6 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
     else if (0 != dynamic_cast<const paludis::DepStringError *>(&ee))
         rb_raise(c_dep_string_error, dynamic_cast<const paludis::DepStringError *>(&ee)->message().c_str());
 #ifdef ENABLE_RUBY_QA
-    else if (0 != dynamic_cast<const paludis::qa::ProfilesDescError *>(&ee))
-        rb_raise(c_profiles_desc_error, dynamic_cast<const paludis::qa::ProfilesDescError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::qa::NoSuchFileCheckTypeError *>(&ee))
         rb_raise(c_no_such_file_check_type_error, dynamic_cast<const paludis::qa::NoSuchFileCheckTypeError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::qa::NoSuchPackageDirCheckTypeError *>(&ee))

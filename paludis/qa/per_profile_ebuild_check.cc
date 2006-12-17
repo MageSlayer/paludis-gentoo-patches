@@ -17,23 +17,20 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_MAKE_EBUILD_REPOSITORY_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_MAKE_EBUILD_REPOSITORY_HH 1
+#include "per_profile_ebuild_check.hh"
 
-#include <paludis/repositories/portage/portage_repository.hh>
+using namespace paludis;
+using namespace paludis::qa;
 
-namespace paludis
+#include <paludis/qa/per_profile_ebuild_check-sr.cc>
+
+PerProfileEbuildCheck::PerProfileEbuildCheck()
 {
-    /**
-     * Create an ebuild format repository.
-     *
-     * \see PortageRepository
-     * \ingroup grpportagerepository
-     */
-    CountedPtr<PortageRepository>
-    make_ebuild_repository(const Environment * const,
-            const PackageDatabase * const,
-            AssociativeCollection<std::string, std::string>::ConstPointer) PALUDIS_VISIBLE;
 }
 
-#endif
+NoSuchPerProfileEbuildCheckTypeError::NoSuchPerProfileEbuildCheckTypeError(const std::string & s) throw () :
+    Exception("No such per profile ebuild check type: '" + s + "'")
+{
+}
+
+

@@ -25,7 +25,7 @@
 
 using namespace paludis;
 
-CountedPtr<Repository>
+CountedPtr<PortageRepository>
 paludis::make_ebuild_repository(
         const Environment * const env,
         const PackageDatabase * const db,
@@ -127,7 +127,7 @@ paludis::make_ebuild_repository(
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
-    return CountedPtr<Repository>(new PortageRepository(PortageRepositoryParams::create()
+    return CountedPtr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
                 .entry_format("ebuild")
                 .environment(env)
                 .package_database(db)
@@ -148,13 +148,16 @@ paludis::make_ebuild_repository(
                 .buildroot(buildroot)));
 }
 
-CountedPtr<Repository>
-paludis::make_portage_repository(
-        const Environment * const env,
-        const PackageDatabase * const db,
-        AssociativeCollection<std::string, std::string>::ConstPointer m)
+namespace
 {
-    return make_ebuild_repository(env, db, m);
+    CountedPtr<Repository>
+    make_ebuild_repository_wrapped(
+            const Environment * const env,
+            const PackageDatabase * const db,
+            AssociativeCollection<std::string, std::string>::ConstPointer m)
+    {
+        return make_ebuild_repository(env, db, m);
+    }
 }
 
 #ifdef PALUDIS_ENABLE_VISIBILITY
@@ -163,10 +166,10 @@ paludis::make_portage_repository(
 namespace
 {
     const RepositoryMaker::RegisterMaker register_portage_ebuild_repository PALUDIS_ATTRIBUTE((used)) (
-            "ebuild", &make_ebuild_repository);
+            "ebuild", &make_ebuild_repository_wrapped);
 
     const RepositoryMaker::RegisterMaker register_portage_portage_repository PALUDIS_ATTRIBUTE((used)) (
-            "portage", &make_portage_repository);
+            "portage", &make_ebuild_repository_wrapped);
 }
 #ifdef PALUDIS_ENABLE_VISIBILITY
 #  pragma GCC visibility pop

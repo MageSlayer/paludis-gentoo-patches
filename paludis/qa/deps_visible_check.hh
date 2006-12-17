@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QA_DEPS_VISIBLE_CHECK_HH
 #define PALUDIS_GUARD_PALUDIS_QA_DEPS_VISIBLE_CHECK_HH 1
 
-#include <paludis/qa/ebuild_check.hh>
+#include <paludis/qa/per_profile_ebuild_check.hh>
 #include <string>
 
 namespace paludis
@@ -33,12 +33,12 @@ namespace paludis
          * \ingroup grpqa
          */
         class DepsVisibleCheck :
-            public EbuildCheck
+            public PerProfileEbuildCheck
         {
             public:
                 DepsVisibleCheck();
 
-                CheckResult operator() (const EbuildCheckData &) const;
+                CheckResult operator() (const PerProfileEbuildCheckData &) const;
 
                 static const std::string & identifier();
 
@@ -48,8 +48,9 @@ namespace paludis
                 }
         };
 
-        static const EbuildCheckMaker::RegisterMaker register_deps_visible_check(
-                DepsVisibleCheck::identifier(), &MakeEbuildCheck<DepsVisibleCheck>::make_ebuild_check);
+        static const PerProfileEbuildCheckMaker::RegisterMaker register_deps_visible_check(
+                DepsVisibleCheck::identifier(),
+                &MakePerProfileEbuildCheck<DepsVisibleCheck>::make_per_profile_ebuild_check);
     }
 }
 

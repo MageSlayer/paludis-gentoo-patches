@@ -14,6 +14,9 @@ END
 cat <<END > profiles/profile/make.defaults
 ARCH=test
 END
+cat <<END > profiles/profiles.desc
+test profile stable
+END
 
 mkdir cat-one
 mkdir cat-one/pkg-one

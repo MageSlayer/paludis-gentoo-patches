@@ -21,9 +21,11 @@
 #define PALUDIS_GUARD_PALUDIS_PORTAGE_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
+#include <paludis/package_database.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/repositories/portage/portage_repository_params.hh>
+#include <paludis/repositories/portage/portage_repository_profile.hh>
 #include <string>
 
 /** \file
@@ -34,9 +36,10 @@
 
 namespace paludis
 {
-    class PackageDatabase;
     class PortageRepositoryProfile;
     class PortageRepositoryNews;
+
+#include <paludis/repositories/portage/portage_repository-sr.hh>
 
     /**
      * A PortageRepository is a Repository that handles the layout used by
@@ -163,6 +166,19 @@ namespace paludis
 
             typedef libwrapiter::ForwardIterator<PortageRepository, std::pair<
                 const QualifiedPackageName, PackageDepAtom::ConstPointer> > OurVirtualsIterator;
+
+            ///\}
+
+            ///\name Profile setting and querying functions
+            ///\{
+
+            typedef libwrapiter::ForwardIterator<PortageRepository,
+                    const PortageRepositoryProfilesDescLine> ProfilesIterator;
+            ProfilesIterator begin_profiles() const;
+            ProfilesIterator end_profiles() const;
+
+            ProfilesIterator find_profile(const FSEntry & location) const;
+            void set_profile(const ProfilesIterator & iter);
 
             ///\}
     };

@@ -40,9 +40,8 @@ namespace paludis
         const FSEntry write_cache;
         bool accept_unstable;
         bool is_vdb;
-        std::set<KeywordName> accepted_keywords;
-        std::list<NoConfigEnvironmentProfilesDescLine> profiles;
-        PackageDatabase::Pointer vdb_db;
+
+        PortageRepository::Pointer portage_repo;
 
         Implementation(Environment * const env, const NoConfigEnvironmentParams & params);
     };
@@ -112,66 +111,26 @@ Implementation<NoConfigEnvironment>::Implementation(
     write_cache(params.write_cache),
     accept_unstable(params.accept_unstable),
     is_vdb(is_vdb_repository(params.repository_dir, params.repository_type)),
-    vdb_db(is_vdb ? new PackageDatabase(env) : 0)
+    portage_repo(0)
 {
     Context context("When initialising NoConfigEnvironment at '" + stringify(params.repository_dir) + "':");
 
     if (! is_vdb)
     {
-        Log::get_instance()->message(ll_debug, lc_context, "Not VDB, using profiles.desc");
-        try
-        {
-            LineConfigFile profiles_desc(params.repository_dir / "profiles" / "profiles.desc");
-            for (LineConfigFile::Iterator line(profiles_desc.begin()), line_end(profiles_desc.end()) ;
-                    line != line_end ; ++line)
-            {
-                std::vector<std::string> tokens;
-                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(tokens));
+        AssociativeCollection<std::string, std::string>::Pointer keys(
+                new AssociativeCollection<std::string, std::string>::Concrete);
 
-                if (tokens.size() != 3)
-                {
-                    Log::get_instance()->message(ll_warning, lc_context, "Skipping invalid line '"
-                            + *line + "'");
-                    continue;
-                }
+        keys->insert("format", "portage");
+        keys->insert("location", stringify(params.repository_dir));
+        keys->insert("profiles", "/var/empty");
+        keys->insert("write_cache", stringify(params.write_cache));
+        keys->insert("names_cache", "/var/empty");
 
-                profiles.push_back(NoConfigEnvironmentProfilesDescLine::create()
-                        .path(params.repository_dir / "profiles" / tokens.at(1))
-                        .status(tokens.at(2))
-                        .arch(tokens.at(0))
-                        .db(PackageDatabase::Pointer(new PackageDatabase(env))));
-            }
-        }
-        catch (const ConfigFileError & e)
-        {
-            Log::get_instance()->message(ll_warning, lc_context, "Could not load profiles.desc due to exception '"
-                    + e.message() + "' (" + e.what() + ")");
-        }
-
-        if (profiles.empty())
-            profiles.push_back(NoConfigEnvironmentProfilesDescLine::create()
-                    .path(params.repository_dir / "profiles" / "base")
-                    .status("default")
-                    .arch("default")
-                    .db(PackageDatabase::Pointer(new PackageDatabase(env))));
-
-        for (std::list<NoConfigEnvironmentProfilesDescLine>::iterator
-                p(profiles.begin()), p_end(profiles.end()) ; p != p_end ; ++p)
-        {
-            AssociativeCollection<std::string, std::string>::Pointer keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
-
-            keys->insert("format", "portage");
-            keys->insert("location", stringify(params.repository_dir));
-            keys->insert("profiles", stringify(p->path));
-            keys->insert("write_cache", stringify(params.write_cache));
-            keys->insert("names_cache", "/var/empty");
-
-            p->db->add_repository(RepositoryMaker::get_instance()->find_maker("portage")(env,
-                        p->db.raw_pointer(), keys));
-            p->db->add_repository(RepositoryMaker::get_instance()->find_maker("virtuals")(env,
-                        p->db.raw_pointer(), AssociativeCollection<std::string, std::string>::Pointer(0)));
-        }
+        env->package_database()->add_repository(((portage_repo =
+                        RepositoryMaker::get_instance()->find_maker("portage")(env,
+                            env->package_database().raw_pointer(), keys))));
+        env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("virtuals")(env,
+                    env->package_database().raw_pointer(), AssociativeCollection<std::string, std::string>::Pointer(0)));
     }
     else
     {
@@ -185,21 +144,21 @@ Implementation<NoConfigEnvironment>::Implementation(
         keys->insert("provides_cache", "/var/empty");
         keys->insert("location", stringify(top_level_dir));
 
-        vdb_db->add_repository(RepositoryMaker::get_instance()->find_maker("vdb")(env,
-                    vdb_db.raw_pointer(), keys));
-        vdb_db->add_repository(RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
-                    vdb_db.raw_pointer(), AssociativeCollection<std::string, std::string>::Pointer(0)));
+        env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("vdb")(env,
+                    env->package_database().raw_pointer(), keys));
+        env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
+                    env->package_database().raw_pointer(), AssociativeCollection<std::string, std::string>::Pointer(0)));
     }
 }
 
 NoConfigEnvironment::NoConfigEnvironment(const NoConfigEnvironmentParams & params) :
+    Environment(PackageDatabase::Pointer(new PackageDatabase(this))),
     PrivateImplementationPattern<NoConfigEnvironment>(
-            new Implementation<NoConfigEnvironment>(this, params)),
-    Environment(_imp->is_vdb ? _imp->vdb_db : _imp->profiles.begin()->db)
+            new Implementation<NoConfigEnvironment>(this, params))
 {
-    /* do this to load accepted_keywords etc */
-    if (! _imp->is_vdb)
-        set_profile(ProfilesIterator(_imp->profiles.begin()));
+    if (_imp->portage_repo)
+        if (_imp->portage_repo->end_profiles() != _imp->portage_repo->begin_profiles())
+            _imp->portage_repo->set_profile(_imp->portage_repo->begin_profiles());
 }
 
 NoConfigEnvironment::~NoConfigEnvironment()
@@ -218,78 +177,76 @@ NoConfigEnvironment::main_repository_dir() const
     return _imp->top_level_dir;
 }
 
-void
-NoConfigEnvironment::set_profile(const NoConfigEnvironment::ProfilesIterator & i)
-{
-    if (_imp->is_vdb)
-        throw ConfigurationError("Calling NoConfigEnvironment::set_profile but no Portage repository was defined");
-
-    change_package_database(i->db);
-
-    _imp->accepted_keywords.clear();
-    _imp->accepted_keywords.insert(KeywordName("*"));
-    _imp->accepted_keywords.insert(KeywordName(i->arch));
-    if (_imp->accept_unstable)
-        _imp->accepted_keywords.insert(KeywordName("~" + i->arch));
-}
-
-void
-NoConfigEnvironment::set_profile(const FSEntry & location)
-{
-    Context context("When setting NoConfigEnvironment profile to '" + stringify(location) + "':");
-
-    if (_imp->is_vdb)
-        throw ConfigurationError("Calling NoConfigEnvironment::set_profile but no Portage repository was defined");
-
-    for (ProfilesIterator i(begin_profiles()), i_end(end_profiles()) ; i != i_end ; ++i)
-        if (i->path == location)
-        {
-            set_profile(i);
-            return;
-        }
-
-    Log::get_instance()->message(ll_warning, lc_context, "No profiles.desc entry found, faking it");
-
-    PackageDatabase::Pointer db(new PackageDatabase(this));
-    AssociativeCollection<std::string, std::string>::Pointer keys(
-            new AssociativeCollection<std::string, std::string>::Concrete);
-
-    keys->insert("format", "portage");
-    keys->insert("names_cache", "/var/empty");
-    keys->insert("location", stringify(_imp->top_level_dir));
-    keys->insert("profiles", stringify(location));
-    keys->insert("write_cache", stringify(_imp->write_cache));
-
-    PortageRepository::Pointer p(RepositoryMaker::get_instance()->find_maker("portage")(this,
-                db.raw_pointer(), keys));
-    db->add_repository(RepositoryMaker::get_instance()->find_maker("virtuals")(this,
-                db.raw_pointer(), AssociativeCollection<std::string, std::string>::Pointer(0)));
-    db->add_repository(p);
-
-    _imp->accepted_keywords.clear();
-    _imp->accepted_keywords.insert(KeywordName("*"));
-    _imp->accepted_keywords.insert(KeywordName(p->profile_variable("ARCH")));
-    if (_imp->accept_unstable)
-        _imp->accepted_keywords.insert(KeywordName("~" + p->profile_variable("ARCH")));
-
-    change_package_database(db);
-}
-
 bool
 NoConfigEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntry * const) const
 {
-    return _imp->is_vdb || (_imp->accepted_keywords.end() != _imp->accepted_keywords.find(k));
+    if (_imp->is_vdb)
+        return true;
+
+    Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword " + stringify(k) + ":");
+    std::string accept_keywords(_imp->portage_repo->profile_variable("ACCEPT_KEYWORDS"));
+    if (accept_keywords.empty())
+    {
+        std::string arch(_imp->portage_repo->profile_variable("ARCH"));
+        if (stringify(k) == arch)
+        {
+            Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword match on arch");
+            return true;
+        }
+
+        if (_imp->accept_unstable && ("~" + stringify(k) == arch))
+        {
+            Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword match on ~arch");
+            return true;
+        }
+
+        Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword no match on arch");
+    }
+    else
+    {
+        std::list<KeywordName> accepted;
+        WhitespaceTokeniser::get_instance()->tokenise(accept_keywords,
+                create_inserter<KeywordName>(std::back_inserter(accepted)));
+
+        if (accepted.end() != std::find(accepted.begin(), accepted.end(), k))
+        {
+            Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword match on accepted");
+            return true;
+        }
+
+        if (_imp->accept_unstable && '~' == stringify(k).at(0))
+        {
+            if (accepted.end() != std::find(accepted.begin(), accepted.end(),
+                        KeywordName(stringify(k).substr(1))))
+            {
+                Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword match on ~accepted");
+                return true;
+            }
+
+            Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword no match on ~accepted");
+        }
+        else
+            Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword no match on accepted");
+    }
+
+    return false;
 }
 
-NoConfigEnvironment::ProfilesIterator
-NoConfigEnvironment::begin_profiles() const
+void
+NoConfigEnvironment::set_accept_unstable(const bool value)
 {
-    return ProfilesIterator(_imp->profiles.begin());
+    _imp->accept_unstable = value;
 }
 
-NoConfigEnvironment::ProfilesIterator
-NoConfigEnvironment::end_profiles() const
+PortageRepository::Pointer
+NoConfigEnvironment::portage_repository()
 {
-    return ProfilesIterator(_imp->profiles.end());
+    return _imp->portage_repo;
+}
+
+PortageRepository::ConstPointer
+NoConfigEnvironment::portage_repository() const
+{
+    return _imp->portage_repo;
 }
 

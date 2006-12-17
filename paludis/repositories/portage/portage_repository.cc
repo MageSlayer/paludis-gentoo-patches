@@ -70,6 +70,8 @@
 
 using namespace paludis;
 
+#include <paludis/repositories/portage/portage_repository-sr.cc>
+
 namespace paludis
 {
     /// Map for versions.
@@ -93,6 +95,8 @@ namespace paludis
 
     /// Map for virtuals.
     typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
+
+    typedef std::list<PortageRepositoryProfilesDescLine> ProfilesDesc;
 
     /**
      * Implementation data for a PortageRepository.
@@ -156,6 +160,8 @@ namespace paludis
         /// Load profiles, if we haven't already.
         inline void need_profiles() const;
 
+        void need_profiles_desc() const;
+
         /// Our profile handler.
         mutable PortageRepositoryProfile::Pointer profile_ptr;
 
@@ -173,6 +179,10 @@ namespace paludis
 
         /// Have we loaded our virtuals?
         bool has_our_virtuals;
+
+        mutable bool has_profiles_desc;
+
+        mutable ProfilesDesc profiles_desc;
 
         RepositoryNameCache::Pointer names_cache;
 
@@ -193,6 +203,7 @@ namespace paludis
         entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
                     params.entry_format)(params.environment, r, p)),
         has_our_virtuals(false),
+        has_profiles_desc(false),
         names_cache(new RepositoryNameCache(p.names_cache, r)),
         repo(r)
     {
@@ -210,6 +221,36 @@ namespace paludis
 
         profile_ptr.assign(new PortageRepositoryProfile(
                     params.environment, repo->name(), *params.profiles));
+    }
+
+    void
+    Implementation<PortageRepository>::need_profiles_desc() const
+    {
+        if (has_profiles_desc)
+            return;
+
+        Context context("When loading profiles.desc:");
+
+        LineConfigFile p(params.location / "profiles" / "profiles.desc");
+        for (LineConfigFile::Iterator line(p.begin()), line_end(p.end()) ; line != line_end ; ++line)
+        {
+            std::vector<std::string> tokens;
+            WhitespaceTokeniser::get_instance()->tokenise(*line,
+                    std::back_inserter(tokens));
+            if (tokens.size() < 3)
+                continue;
+
+            FSEntryCollection::Concrete profiles;
+            profiles.push_back(params.location / "profiles" / tokens.at(1));
+            profiles_desc.push_back(PortageRepositoryProfilesDescLine::create()
+                    .arch(tokens.at(0))
+                    .path(*profiles.begin())
+                    .status(tokens.at(2))
+                    .profile(PortageRepositoryProfile::Pointer(new PortageRepositoryProfile(
+                                params.environment, repo->name(), profiles))));
+        }
+
+        has_profiles_desc = true;
     }
 
     void
@@ -1031,5 +1072,45 @@ PortageRepository::do_category_names_containing_package(const PackageNamePart & 
             _imp->names_cache->category_names_containing_package(p));
 
     return result ? result : Repository::do_category_names_containing_package(p);
+}
+
+PortageRepository::ProfilesIterator
+PortageRepository::begin_profiles() const
+{
+    _imp->need_profiles_desc();
+    return ProfilesIterator(_imp->profiles_desc.begin());
+}
+
+PortageRepository::ProfilesIterator
+PortageRepository::end_profiles() const
+{
+    _imp->need_profiles_desc();
+    return ProfilesIterator(_imp->profiles_desc.end());
+}
+
+PortageRepository::ProfilesIterator
+PortageRepository::find_profile(const FSEntry & location) const
+{
+    _imp->need_profiles_desc();
+    for (ProfilesDesc::const_iterator i(_imp->profiles_desc.begin()),
+            i_end(_imp->profiles_desc.end()) ; i != i_end ; ++i)
+        if (i->path == location)
+            return ProfilesIterator(i);
+    return ProfilesIterator(_imp->profiles_desc.end());
+}
+
+void
+PortageRepository::set_profile(const ProfilesIterator & iter)
+{
+    _imp->profile_ptr = iter->profile;
+
+    try
+    {
+        _imp->params.environment->package_database()->fetch_repository(
+                RepositoryName("virtuals"))->invalidate();
+    }
+    catch (const NoSuchRepositoryError &)
+    {
+    }
 }
 

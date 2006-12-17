@@ -22,6 +22,7 @@
 #define PALUDIS_GUARD_PALUDIS_QA_ENVIRONMENT_HH 1
 
 #include <paludis/environment.hh>
+#include <paludis/environment/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
@@ -36,26 +37,11 @@ namespace paludis
     namespace qa
     {
         /**
-         * Base from member holder for our package databases.
-         */
-        class QAEnvironmentBase :
-            private PrivateImplementationPattern<QAEnvironmentBase>
-        {
-            friend class QAEnvironment;
-
-            protected:
-                QAEnvironmentBase(const FSEntry & base, const FSEntry & write_cache,
-                        const Environment * const env);
-                ~QAEnvironmentBase();
-        };
-
-        /**
          * The QAEnvironment is an Environment that corresponds to the environment
          * used by Qualudis for QA checks.
          */
         class QAEnvironment :
-            public QAEnvironmentBase,
-            public Environment
+            public NoConfigEnvironment
         {
             public:
                 QAEnvironment(const FSEntry & base,
@@ -64,18 +50,6 @@ namespace paludis
                 ~QAEnvironment();
 
                 virtual std::string paludis_command() const;
-        };
-
-        /**
-         * Thrown if a profiles.desc file is broken.
-         *
-         * \ingroup grpexceptions
-         */
-        class ProfilesDescError :
-            public ConfigurationError
-        {
-            public:
-                ProfilesDescError(const std::string & message) throw ();
         };
     }
 }

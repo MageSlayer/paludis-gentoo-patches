@@ -20,6 +20,7 @@
 #include <paludis/args/args.hh>
 #include <paludis/paludis.hh>
 #include <paludis/qa/qa.hh>
+#include <paludis/repositories/portage/portage_repository.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/log.hh>
@@ -73,10 +74,10 @@ namespace
     }
 
     void
-    set_entry_heading(const std::string & s)
+    set_entry_heading(const std::string & s, bool local_quiet = false)
     {
         current_entry_heading = s;
-        if (! QualudisCommandLine::get_instance()->a_quiet.specified())
+        if (! (QualudisCommandLine::get_instance()->a_quiet.specified() || local_quiet))
             need_entry_heading();
     }
 
@@ -257,7 +258,7 @@ namespace
     }
 
     bool
-    do_check_package_dir(const FSEntry & dir, const Environment & env)
+    do_check_package_dir(const FSEntry & dir, qa::QAEnvironment & env)
     {
         Context context("When checking package '" + stringify(dir) + "':");
         cerr << xterm_title("Checking " + dir.dirname().basename() + "/" +
@@ -305,6 +306,38 @@ namespace
             }
         }
 
+        if (! fatal)
+        {
+            std::list<FSEntry> files((DirIterator(dir)), DirIterator());
+            for (std::list<FSEntry>::iterator f(files.begin()) ; f != files.end() ; ++f)
+            {
+                if (! IsFileWithExtension(".ebuild")(*f))
+                    continue;
+
+                for (PortageRepository::ProfilesIterator i(env.portage_repository()->begin_profiles()),
+                        i_end(env.portage_repository()->end_profiles()) ; i != i_end ; ++i)
+                {
+                    set_entry_heading("QA checks for package directory " + stringify(dir) +
+                            " with profile " + stringify(i->path) + ":", true);
+
+                    qa::PerProfileEbuildCheckData pd(
+                            QualifiedPackageName(CategoryNamePart(stringify(dir.dirname().basename())),
+                                PackageNamePart(stringify(dir.basename()))),
+                            VersionSpec(strip_leading_string(strip_trailing_string(f->basename(), ".ebuild"),
+                                    stringify(dir.basename()) + "-")),
+                            &env,
+                            i->path);
+                    do_check_kind<qa::PerProfileEbuildCheckMaker>(ok, fatal, pd);
+
+                    if (fatal)
+                        break;
+                }
+
+                if (fatal)
+                    break;
+            }
+        }
+
         if (! ok && (dir / "metadata.xml").is_regular_file())
         {
             cout << "metadata.xml:" << endl;
@@ -333,7 +366,7 @@ namespace
     }
 
     bool
-    do_check_category_dir(const FSEntry & dir, const Environment & env)
+    do_check_category_dir(const FSEntry & dir, qa::QAEnvironment & env)
     {
         Context context("When checking category '" + stringify(dir) + "':");
 
@@ -368,7 +401,7 @@ namespace
     }
 
     bool
-    do_check_eclass_dir(const FSEntry & dir, const Environment &)
+    do_check_eclass_dir(const FSEntry & dir, const qa::QAEnvironment &)
     {
         Context context("When checking eclass directory '" + stringify(dir) + "':");
 
@@ -530,6 +563,16 @@ int main(int argc, char *argv[])
                     i_end(ebuild_checks.end()) ; i != i_end ; ++i)
                 cout << "  " << *i << ":" << endl << "    " <<
                     (*qa::EbuildCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
+            cout << endl;
+
+            cout << "Per profile ebuild checks:" << endl;
+            std::list<std::string> per_profile_ebuild_checks;
+            qa::PerProfileEbuildCheckMaker::get_instance()->copy_keys(
+                    std::back_inserter(per_profile_ebuild_checks));
+            for (std::list<std::string>::const_iterator i(per_profile_ebuild_checks.begin()),
+                    i_end(per_profile_ebuild_checks.end()) ; i != i_end ; ++i)
+                cout << "  " << *i << ":" << endl << "    " <<
+                    (*qa::PerProfileEbuildCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
             cout << endl;
 
             return EXIT_SUCCESS;

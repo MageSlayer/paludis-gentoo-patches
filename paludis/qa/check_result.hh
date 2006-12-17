@@ -44,8 +44,8 @@ namespace paludis
             private:
                 std::list<Message> _messages;
 
-                const std::string _item;
-                const std::string _rule;
+                std::string _item;
+                std::string _rule;
 
             public:
                 CheckResult(const FSEntry &, const std::string &);
@@ -55,6 +55,11 @@ namespace paludis
                 bool empty() const
                 {
                     return _messages.empty();
+                }
+
+                void clear()
+                {
+                    _messages.clear();
                 }
 
                 CheckResult & operator<< (const Message & m)

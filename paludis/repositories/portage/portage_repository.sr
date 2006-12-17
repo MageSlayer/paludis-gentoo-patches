@@ -1,0 +1,10 @@
+make_class_PortageRepositoryProfilesDescLine()
+{
+    key path FSEntry
+    key arch std::string
+    key status std::string
+    key profile PortageRepositoryProfile::Pointer
+    allow_named_args
+}
+
+

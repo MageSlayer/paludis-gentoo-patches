@@ -62,7 +62,11 @@ libpaludisqa_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libxml/libpaludislibxml.la \
-	@LIBXML2DEPS_LIBS@
+	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
+	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
+	@LIBXML2DEPS_LIBS@ \
+	@PCREPLUSPLUS_LIBS@
 
 TESTS = testlist
 

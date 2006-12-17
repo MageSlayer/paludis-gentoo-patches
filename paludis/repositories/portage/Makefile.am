@@ -1,5 +1,8 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
-DISTCLEANFILES = portage_repository-sr.hh portage_repository-sr.cc glsa-sr.hh glsa-sr.cc
+DISTCLEANFILES = \
+	portage_repository-sr.hh portage_repository-sr.cc \
+	glsa-sr.hh glsa-sr.cc \
+	portage_repository_params-sr.hh portage_repository_params-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
@@ -17,6 +20,7 @@ libpaludisportagerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VE
 paludis_repositories_portage_include_HEADERS = \
 	glsa.hh \
 	glsa-sr.hh \
+	portage_repository-sr.hh \
 	portage_repository.hh \
 	portage_repository_profile_file.hh \
 	portage_repository_profile.hh \
@@ -72,6 +76,8 @@ EXTRA_DIST = \
 	portage_repository_params-sr.hh \
 	portage_repository_params-sr.cc \
 	portage_repository_params.sr \
+	portage_repository-sr.hh \
+	portage_repository-sr.cc \
 	xml_things_TEST.cc \
 	xml_things_TEST_setup.sh \
 	xml_things_TEST_cleanup.sh
@@ -79,6 +85,8 @@ EXTRA_DIST = \
 BUILT_SOURCES = \
 	portage_repository_params-sr.hh \
 	portage_repository_params-sr.cc \
+	portage_repository-sr.hh \
+	portage_repository-sr.cc \
 	glsa-sr.hh \
 	glsa-sr.cc
 
@@ -93,6 +101,12 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	LD_LIBRARY_PATH="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/portage/`" \
 	bash $(top_srcdir)/test/run_test.sh
+
+portage_repository-sr.hh : portage_repository.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/portage_repository.sr > $@
+
+portage_repository-sr.cc : portage_repository.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/portage_repository.sr > $@
 
 portage_repository_params-sr.hh : portage_repository_params.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/portage_repository_params.sr > $@
