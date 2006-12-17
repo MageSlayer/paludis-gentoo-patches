@@ -40,52 +40,64 @@ paludis::operator<< (std::ostream & s, const DepAtomPrettyPrinter & p)
 void
 DepAtomPrettyPrinter::visit(const AllDepAtom * const a)
 {
-    _s << std::string(_indent, ' ') << "(" << std::endl;
+    _s << indent() << "(" << newline();
     {
         Save<unsigned> old_indent(&_indent, _indent + 4);
         std::for_each(a->begin(), a->end(), accept_visitor(this));
     }
-    _s << std::string(_indent, ' ') << ")" << std::endl;
+    _s << indent() << ")" << newline();
 }
 
 void
 DepAtomPrettyPrinter::visit(const AnyDepAtom * const a)
 {
-    _s << std::string(_indent, ' ') << "|| (" << std::endl;
+    _s << indent() << "|| (" << newline();
     {
         Save<unsigned> old_indent(&_indent, _indent + 4);
         std::for_each(a->begin(), a->end(), accept_visitor(this));
     }
-    _s << std::string(_indent, ' ') << ")" << std::endl;
+    _s << indent() << ")" << newline();
 }
 
 void
 DepAtomPrettyPrinter::visit(const UseDepAtom * const a)
 {
-    _s << std::string(_indent, ' ') << (a->inverse() ? "!" : "") <<
-        a->flag() << "? (" << std::endl;
+    _s << indent() << (a->inverse() ? "!" : "") <<
+        a->flag() << "? (" << newline();
     {
         Save<unsigned> old_indent(&_indent, _indent + 4);
         std::for_each(a->begin(), a->end(), accept_visitor(this));
     }
-    _s << std::string(_indent, ' ') << ")" << std::endl;
+    _s << indent() << ")" << newline();
 }
 
 void
 DepAtomPrettyPrinter::visit(const PackageDepAtom * const p)
 {
-    _s << std::string(_indent, ' ') << *p << std::endl;
+    _s << indent() << *p << newline();
 }
 
 void
 DepAtomPrettyPrinter::visit(const PlainTextDepAtom * const p)
 {
-    _s << std::string(_indent, ' ') << p->text() << std::endl;
+    _s << indent() << p->text() << newline();
 }
 
 void
 DepAtomPrettyPrinter::visit(const BlockDepAtom * const b)
 {
-    _s << std::string(_indent, ' ') << "!" << *b->blocked_atom() << std::endl;
+    _s << indent() << "!" << *b->blocked_atom() << newline();
+}
+
+std::string
+DepAtomPrettyPrinter::newline() const
+{
+    return _use_newlines ? "\n" : " ";
+}
+
+std::string
+DepAtomPrettyPrinter::indent() const
+{
+    return _use_newlines ? std::string(_indent, ' ') : "";
 }
 

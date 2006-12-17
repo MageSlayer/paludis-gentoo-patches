@@ -44,13 +44,19 @@ namespace paludis
         private:
             std::stringstream _s;
             unsigned _indent;
+            bool _use_newlines;
+
+            std::string newline() const;
+            std::string indent() const;
 
         public:
             /**
              * Constructor.
              */
-            DepAtomPrettyPrinter(unsigned initial_indent) :
-                _indent(initial_indent)
+            DepAtomPrettyPrinter(unsigned initial_indent,
+                    bool use_newlines = true) :
+                _indent(initial_indent),
+                _use_newlines(use_newlines)
             {
             }
 
