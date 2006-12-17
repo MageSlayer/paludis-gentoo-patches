@@ -64,6 +64,7 @@ namespace
     static VALUE c_config_file_error;
 
     static VALUE c_environment;
+    static VALUE c_no_config_environment;
 
 #ifdef ENABLE_RUBY_QA
     static VALUE c_paludis_qa_module;
@@ -209,6 +210,12 @@ paludis::ruby::environment_class()
     return c_environment;
 }
 
+VALUE
+paludis::ruby::no_config_environment_class()
+{
+    return c_no_config_environment;
+}
+
 #ifdef ENABLE_RUBY_QA
 VALUE
 paludis::ruby::paludis_qa_module()
@@ -230,6 +237,7 @@ extern "C"
          */
         c_paludis_module = rb_define_module("Paludis");
         c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
+        c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
         c_name_error = rb_define_class_under(c_paludis_module, "NameError", rb_eRuntimeError);
         c_set_name_error = rb_define_class_under(c_paludis_module, "SetNameError", c_name_error);
         c_category_name_part_error = rb_define_class_under(c_paludis_module, "CategoryNamePartError", c_name_error);

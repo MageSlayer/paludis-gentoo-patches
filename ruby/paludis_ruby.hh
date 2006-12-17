@@ -70,6 +70,7 @@ namespace paludis
 
         VALUE paludis_module();
         VALUE environment_class();
+        VALUE no_config_environment_class();
 
         /* constructors */
 

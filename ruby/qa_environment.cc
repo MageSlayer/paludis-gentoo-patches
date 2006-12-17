@@ -82,7 +82,8 @@ namespace
          *
          * The QAEnvironment is an environment fo running QA checks in .
          */
-        c_qa_environment = rb_define_class_under(paludis_qa_module(), "QAEnvironment", environment_class());
+        c_qa_environment = rb_define_class_under(paludis_qa_module(), "QAEnvironment",
+                no_config_environment_class());
         rb_define_singleton_method(c_qa_environment, "new", RUBY_FUNC_CAST(&qa_environment_new),-1);
         rb_define_method(c_qa_environment, "initialize", RUBY_FUNC_CAST(&qa_environment_init),-1);
     }
