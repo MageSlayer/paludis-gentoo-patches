@@ -175,7 +175,7 @@ VirtualsRepository::need_entries() const
         if (matches->empty())
             Log::get_instance()->message(ll_warning, lc_context, "No packages matching '"
                     + stringify(*v->second) + "' for virtual '"
-                    + stringify(v->first));
+                    + stringify(v->first) + "'");
 
         for (PackageDatabaseEntryCollection::Iterator m(matches->begin()), m_end(matches->end()) ;
                 m != m_end ; ++m)
