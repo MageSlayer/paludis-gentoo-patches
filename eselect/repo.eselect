@@ -84,6 +84,13 @@ do_install() {
 		shift
 	fi
 
+	local name=$1
+	if [[ ${name} == */* ]]; then
+		# We have what looks like a full path.
+		name=$(basename $name)
+		name=${name%.templ}
+	fi
+
 	if [[ -e $(get_var config_root)/repositories/$1.conf ]] && [[ $force == 0 ]]; then
 		write_error_msg "$1 appears to be already installed. "
 		write_error_msg "To overwrite it, use --force or -f."
@@ -122,10 +129,10 @@ do_install() {
 			distdir=$(get_var distdir)
 			[[ -n ${distdir} ]] && echo "distdir=${distdir}"
 		fi
-	) >"$(get_var config_root)/repositories/$1.conf.tmp"
+	) >"$(get_var config_root)/repositories/${name}.conf.tmp"
 
-	if [[ ! -f "$(get_var config_root)/repositories/$1.conf)" ]]; then
-		mv $(get_var config_root)/repositories/$1.conf{.tmp,}
+	if [[ -f "$(get_var config_root)/repositories/${name}.conf.tmp" ]]; then
+		mv $(get_var config_root)/repositories/${name}.conf{.tmp,}
 	else
 		die -q "Error creating ${1}.conf"
 	fi
