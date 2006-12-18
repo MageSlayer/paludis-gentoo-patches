@@ -18,7 +18,7 @@ automake-deps-dist-hack.tmp :
 	$(MAKE) -C paludis/util
 	$(MAKE) -C paludis/args
 	$(MAKE) -C paludis/qa message-sr.hh
-	$(MAKE) -C src libcolour.a
+	$(MAKE) -C src liboutput.a
 	$(MAKE) -C src/paludis paludis.1
 	$(MAKE) -C src/qualudis qualudis.1
 	touch $@
