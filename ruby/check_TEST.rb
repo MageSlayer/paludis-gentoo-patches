@@ -154,10 +154,63 @@ module Paludis
             end
         end
 
+        class TestCase_PerProfileEbuildCheckMaker < Test::Unit::TestCase
+            def instance
+                PerProfileEbuildCheckMaker.instance
+            end
+
+            def test_instance
+                assert_equal PerProfileEbuildCheckMaker.instance.__id__, PerProfileEbuildCheckMaker.instance.__id__
+                assert_kind_of PerProfileEbuildCheckMaker, PerProfileEbuildCheckMaker.instance
+            end
+
+            def test_no_create
+                assert_raise NoMethodError do
+                    x = PerProfileEbuildCheckMaker.new()
+                end
+            end
+
+            def test_respond_to
+                assert_respond_to instance, :keys
+                assert_respond_to instance, :find_maker
+                assert_respond_to instance, :check_names
+                assert_respond_to instance, :find_check
+            end
+
+            def test_keys
+                assert_kind_of Array, instance.keys
+                assert_not_equal 0, instance.keys
+            end
+
+            def test_find_maker
+                name = instance.keys.first
+                assert_kind_of PerProfileEbuildCheck, instance.find_maker(name)
+            end
+            def test_check_names
+                assert_kind_of Array, instance.check_names
+                assert_equal instance.keys, instance.check_names
+            end
+
+            def test_find_check
+                name = instance.keys.first
+                assert_equal instance.find_maker(name).describe, instance.find_check(name).describe
+            end
+        end
+
         class TestCase_EbuildCheckData < Test::Unit::TestCase
             def test_create
                 env = QAEnvironment.new('check_TEST_dir/repo1')
                 ecd = EbuildCheckData.new('cat-one/pkg-one', "1", env)
+            end
+        end
+
+        class TestCase_EbuildCheckData < Test::Unit::TestCase
+            def test_create
+                env = QAEnvironment.new('check_TEST_dir/repo1')
+                ecd = PerProfileEbuildCheckData.new('cat-one/pkg-one',
+                    "1",
+                    env,
+                    'check_TEST_dir/repo1/profiles/profile')
             end
         end
 
@@ -264,6 +317,47 @@ module Paludis
             def test_is_important
                 check = get_check
                 assert_equal true, check.is_important?
+            end
+
+            def test_check
+                check = get_check
+                assert_nothing_raised do
+                    cr = check.check(get_ecd)
+                end
+            end
+        end
+
+        class TestCase_PerProfileEbuildCheck < Test::Unit::TestCase
+            def get_ecd
+                env = QAEnvironment.new('check_TEST_dir/repo1')
+                ecd = PerProfileEbuildCheckData.new('cat-one/pkg-one', "1", env, 'check_TEST_dir/repo1/profiles/profile')
+            end
+
+            def get_check
+                PerProfileEbuildCheckMaker.instance.find_maker('deps_visible')
+            end
+
+            def test_no_create
+                assert_raise NoMethodError do
+                    x = PerProfileEbuildCheck.new()
+                end
+            end
+
+            def test_respond_to
+                check = get_check
+                assert_respond_to check, :describe
+                assert_respond_to check, :is_important?
+                assert_respond_to check, :check
+            end
+
+            def test_describe
+                check = get_check
+                assert_equal "Checks that packages in *DEPEND are visible", check.describe
+            end
+
+            def test_is_important
+                check = get_check
+                assert_equal false, check.is_important?
             end
 
             def test_check

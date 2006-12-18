@@ -34,6 +34,14 @@ module Paludis
         end
     end
 
+    class TestCase_PortageRepository < Test::Unit::TestCase
+        def test_no_create
+            assert_raise NoMethodError do
+                p = PortageRepository.new
+            end
+        end
+    end
+
     module RepositoryTestCase
         def installed_repo
             db.fetch_repository "installed"
@@ -45,6 +53,10 @@ module Paludis
 
         def db
             DefaultEnvironment.instance.package_database
+        end
+
+        def no_config_testrepo
+            NoConfigEnvironment.new Dir.getwd().to_s + "/repository_TEST_dir/testrepo"
         end
     end
 
@@ -221,6 +233,42 @@ module Paludis
             assert_kind_of Hash, repo.info(false).sections.first.kvs
             assert_equal 'portage', repo.info(false).sections.first.kvs['format']
             assert_equal 'vdb', installed_repo.info(false).sections.first.kvs['format']
+        end
+    end
+
+    class TestCase_PortageRepositoryProfilesDescLine < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def profiles
+            no_config_testrepo.portage_repository.profiles
+        end
+
+        def test_profiles
+            assert_kind_of Array, profiles
+            assert_equal 1, profiles.length
+            assert_kind_of PortageRepositoryProfilesDescLine, profiles.first
+        end
+
+        def test_respond
+            assert_respond_to profiles.first, :path
+            assert_respond_to profiles.first, :arch
+            assert_respond_to profiles.first, :status
+        end
+
+        def test_profile_path
+            assert_kind_of String, profiles.first.path
+            assert_equal Dir.getwd().to_s + "/repository_TEST_dir/testrepo/profiles/testprofile",
+                profiles.first.path
+        end
+
+        def test_profile_arch
+            assert_kind_of String, profiles.first.arch
+            assert_equal 'x86', profiles.first.arch
+        end
+
+        def test_profile_status
+            assert_kind_of String, profiles.first.status
+            assert_equal 'stable', profiles.first.status
         end
     end
 end

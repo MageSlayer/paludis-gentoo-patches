@@ -14,9 +14,9 @@ def need_entry_heading
     end
 end
 
-def set_entry_heading(heading)
+def set_entry_heading(heading, local_quiet = false)
     @current_heading = heading
-    need_entry_heading
+    need_entry_heading unless @quiet || local_quiet
 end
 
 def display_header(result)
@@ -120,6 +120,23 @@ def do_check_package_dir(dir, env)
             ecd = EbuildCheckData.new(qpn, ver, env)
 
             ok, fatal = do_check_kind(EbuildCheckMaker.instance,ok,fatal, ecd)
+
+            break if fatal
+        end
+    end
+
+    unless fatal
+        Dir["#{dir}/*.ebuild"].each do |d|
+            env.portage_repository.profiles.each do |profile|
+                set_entry_heading("QA checks for package directory #{d} with profile #{profile.path}", true)
+                qpn = QualifiedPackageName.new(File.basename(File.dirname(dir)), File.basename(dir))
+                ver = File.basename(d, '.ebuild').gsub(File.basename(dir) + '-','')
+                ppecd = PerProfileEbuildCheckData.new(qpn, ver, env, profile.path)
+
+                ok, fatal = do_check_kind(PerProfileEbuildCheckMaker.instance, ok, fatal, ppecd)
+
+                break if fatal
+            end
 
             break if fatal
         end
@@ -289,6 +306,7 @@ opts.each do | opt, arg |
         describe_check("Package Directory Checks", PackageDirCheckMaker.instance)
         describe_check("File Checks", FileCheckMaker.instance)
         describe_check("Ebuild Checks", EbuildCheckMaker.instance)
+        describe_check("Per Profile Ebuild Checks", PerProfileEbuildCheckMaker.instance)
         exit 0
 
     when '--qa-check'

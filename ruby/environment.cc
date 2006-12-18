@@ -312,6 +312,25 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     portage_repository -> PortageRepository
+     *
+     * Return the PortageRepository in this environment
+     */
+    VALUE
+    no_config_environment_portage_repository(VALUE self)
+    {
+        try
+        {
+            return portage_repository_to_value(value_to_no_config_environment(self)->portage_repository());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_environment()
     {
         rb_require("singleton");
@@ -362,9 +381,10 @@ namespace
          *
          * An environment that uses a single repository, with no user configuration.
          */
-        c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
+        c_no_config_environment = no_config_environment_class();
         rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), 1);
         rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), 1);
+        rb_define_method(c_no_config_environment, "portage_repository", RUBY_FUNC_CAST(&no_config_environment_portage_repository), 0);
     }
 }
 
@@ -380,6 +400,19 @@ paludis::ruby::value_to_environment_data(VALUE v)
     else
     {
         rb_raise(rb_eTypeError, "Can't convert %s into EnvironmentData", rb_obj_classname(v));
+    }
+}
+
+NoConfigEnvironment *
+paludis::ruby::value_to_no_config_environment(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_no_config_environment))
+    {
+        return static_cast<NoConfigEnvironment *>(value_to_environment_data(v)->env_ptr);
+    }
+    else
+    {
+        rb_raise(rb_eTypeError, "Can't convert %s into NoConfigEnvironment", rb_obj_classname(v));
     }
 }
 

@@ -30,6 +30,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/mask_reasons.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/repositories/portage/portage_repository.hh>
 
 #ifdef ENABLE_RUBY_QA
 #include <paludis/qa/qa.hh>
@@ -78,12 +79,14 @@ namespace paludis
         VALUE package_database_to_value(PackageDatabase::Pointer);
         VALUE package_database_entry_to_value(const PackageDatabaseEntry &);
         VALUE repository_to_value(Repository::ConstPointer);
+        VALUE portage_repository_to_value(PortageRepository::ConstPointer);
         VALUE version_spec_to_value(const VersionSpec &);
         VALUE version_metadata_to_value(VersionMetadata::ConstPointer);
         VALUE dep_atom_to_value(DepAtom::ConstPointer);
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
         VALUE contents_to_value(Contents::ConstPointer);
         VALUE contents_entry_to_value(ContentsEntry::ConstPointer);
+        VALUE portage_repository_profiles_desc_line_to_value(const PortageRepositoryProfilesDescLine &);
 
         VersionSpec value_to_version_spec(VALUE v);
         VersionMetadata::ConstPointer value_to_version_metadata(VALUE);
@@ -91,16 +94,21 @@ namespace paludis
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
         PackageDatabaseEntry value_to_package_database_entry(VALUE v);
         EnvironmentData* value_to_environment_data(VALUE v);
+        NoConfigEnvironment* value_to_no_config_environment(VALUE v);
 
 #ifdef ENABLE_RUBY_QA
         VALUE paludis_qa_module();
         qa::Message value_to_message(VALUE v);
         qa::EbuildCheckData value_to_ebuild_check_data(VALUE v);
+        qa::PerProfileEbuildCheckData value_to_per_profile_ebuild_check_data(VALUE v);
+        qa::QAEnvironment* value_to_qa_environment(VALUE v);
         VALUE ebuild_check_data_to_value(const qa::EbuildCheckData &);
+        VALUE per_profile_ebuild_check_data_to_value(const qa::PerProfileEbuildCheckData &);
         VALUE check_result_to_value(const qa::CheckResult &);
         VALUE package_dir_check_to_value(qa::PackageDirCheck::Pointer);
         VALUE file_check_to_value(qa::FileCheck::Pointer);
         VALUE ebuild_check_to_value(qa::EbuildCheck::Pointer);
+        VALUE per_profile_ebuild_check_to_value(qa::PerProfileEbuildCheck::Pointer);
         VALUE message_to_value(const qa::Message &);
         VALUE metadata_file_to_value(const qa::MetadataFile &);
 #endif

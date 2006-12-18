@@ -19,6 +19,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/repository.hh>
+#include <paludis/repositories/portage/portage_repository.hh>
 #include <paludis/util/stringify.hh>
 #include <ruby.h>
 
@@ -32,6 +33,8 @@ namespace
     static VALUE c_repository;
     static VALUE c_repository_info;
     static VALUE c_repository_info_section;
+    static VALUE c_portage_repository;
+    static VALUE c_portage_repository_profiles_desc_line;
 
     /*
      * call-seq:
@@ -401,6 +404,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+
     /*
      * call-seq:
      *     kvs -> Hash
@@ -507,6 +511,70 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     profiles -> Array
+     *
+     * Fetch an array of our profiles, as PortageRepositoryProfilesDescLine.
+     */
+    VALUE
+    portage_repository_profiles(VALUE self)
+    {
+        try
+        {
+            PortageRepository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, PortageRepository::ConstPointer, self_ptr);
+
+            VALUE result(rb_ary_new());
+            for (PortageRepository::ProfilesIterator i((*self_ptr)->begin_profiles()),
+                    i_end((*self_ptr)->end_profiles()) ; i != i_end ; ++i)
+            {
+                rb_ary_push(result, portage_repository_profiles_desc_line_to_value(*i));
+            }
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * Document-method: arch
+     *
+     * call-seq:
+     *     arch -> String
+     *
+     * Fetch arch for this PortageRepositoryProfilesDescLine.
+     */
+    /*
+     * Document-method: status
+     *
+     * call-seq:
+     *     status -> String
+     *
+     * Fetch status for this PortageRepositoryProfilesDescLine.
+     */
+    /*
+     * Document-method: path
+     *
+     * call-seq:
+     *     path -> String
+     *
+     * Fetch path to this PortageRepositoryProfilesDescLine.
+     */
+    template <typename T_, T_ PortageRepositoryProfilesDescLine::* m_>
+    struct DescLineValue
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            PortageRepositoryProfilesDescLine * ptr;
+            Data_Get_Struct(self, PortageRepositoryProfilesDescLine, ptr);
+            return rb_str_new2(stringify((*ptr).*m_).c_str());
+        }
+    };
+
     void do_register_repository()
     {
         /*
@@ -579,6 +647,28 @@ namespace
         rb_funcall(c_repository_info_section, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository_info_section, "kvs", RUBY_FUNC_CAST(&repository_info_section_kvs), 0);
         rb_define_method(c_repository_info_section, "header", RUBY_FUNC_CAST(&repository_info_section_header), 0);
+
+        /*
+         * Document-class: Paludis::PortageRepository
+         *
+         * A PortageRepository is a Repository that handles the layout used by Portage for the main Gentoo tree.
+         */
+        c_portage_repository = rb_define_class_under(paludis_module(), "PortageRepository", c_repository);
+        rb_define_method(c_portage_repository, "profiles", RUBY_FUNC_CAST(&portage_repository_profiles), 0);
+
+        /*
+         * Document-class: Paludis::PortageRepositoryProfilesDescLine
+         *
+         *
+         */
+        c_portage_repository_profiles_desc_line = rb_define_class_under(paludis_module(), "PortageRepositoryProfilesDescLine", rb_cObject);
+        rb_funcall(c_repository_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_portage_repository_profiles_desc_line, "path",
+                RUBY_FUNC_CAST((&DescLineValue<FSEntry,&PortageRepositoryProfilesDescLine::path>::fetch)), 0);
+        rb_define_method(c_portage_repository_profiles_desc_line, "arch",
+                RUBY_FUNC_CAST((&DescLineValue<std::string,&PortageRepositoryProfilesDescLine::arch>::fetch)), 0);
+        rb_define_method(c_portage_repository_profiles_desc_line, "status",
+                RUBY_FUNC_CAST((&DescLineValue<std::string,&PortageRepositoryProfilesDescLine::status>::fetch)), 0);
     }
 }
 
@@ -596,6 +686,29 @@ paludis::ruby::repository_to_value(Repository::ConstPointer m)
         delete m_ptr;
         exception_to_ruby_exception(e);
     }
+}
+
+VALUE
+paludis::ruby::portage_repository_to_value(PortageRepository::ConstPointer m)
+{
+    PortageRepository::ConstPointer * m_ptr(0);
+    try
+    {
+        m_ptr = new PortageRepository::ConstPointer(m);
+        return Data_Wrap_Struct(c_portage_repository, 0, &Common<PortageRepository::ConstPointer>::free, m_ptr);
+    }
+    catch (const std::exception & e)
+    {
+        delete m_ptr;
+        exception_to_ruby_exception(e);
+    }
+}
+
+VALUE
+paludis::ruby::portage_repository_profiles_desc_line_to_value(const PortageRepositoryProfilesDescLine & v)
+{
+    PortageRepositoryProfilesDescLine * vv(new PortageRepositoryProfilesDescLine(v));
+    return Data_Wrap_Struct(c_portage_repository_profiles_desc_line, 0, &Common<PortageRepositoryProfilesDescLine>::free, vv);
 }
 
 RegisterRubyClass::Register paludis_ruby_register_repository PALUDIS_ATTRIBUTE((used))

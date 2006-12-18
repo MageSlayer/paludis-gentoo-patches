@@ -89,5 +89,18 @@ namespace
     }
 }
 
+QAEnvironment*
+paludis::ruby::value_to_qa_environment(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_qa_environment))
+    {
+        return static_cast<QAEnvironment *>(value_to_environment_data(v)->env_ptr);
+    }
+    else
+    {
+        rb_raise(rb_eTypeError, "Can't convert %s into QAEnvironment", rb_obj_classname(v));
+    }
+}
+
 RegisterRubyClass::Register paludis_ruby_register_qa_environment PALUDIS_ATTRIBUTE((used))
     (&do_register_qa_environment);

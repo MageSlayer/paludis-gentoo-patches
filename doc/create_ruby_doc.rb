@@ -19,6 +19,7 @@ module RDoc
  #           body.gsub!('c_paludis_module','rb_mPaludis')
             body.gsub!('paludis_qa_module()','c_paludis_qa_module')
   #          body.gsub!('c_paludis_qa_module','rb_mQA')
+            body.gsub!('no_config_environment_class()','c_no_config_environment')
             body.gsub!('environment_class()','c_environment')
 #            body.gsub!('paludis_qa_module()','rb_mQA')
 
@@ -28,10 +29,12 @@ module RDoc
             new_body += "\n" + 'c_paludis_module = rb_define_module("Paludis");' + "\n"
             new_body += 'c_paludis_qa_module = rb_define_module_under(c_paludis_module, "QA");' + "\n"
             new_body += 'c_environment = rb_define_class_under(c_paludis_module, "Environment", rb_cObject);' + "\n"
+            new_body += 'c_no_config_environment = rb_define_class_under(c_paludis_module, "NoConfigEnvironment", c_environment);' + "\n"
             body.each_line do |line|
                 next if line =~ /rb_mPaludis\s*=/
                 next if line =~ /rb_mQA\s*=/
                 next if line =~ /c_environment\s*=/
+                next if line =~ /c_no_config_environment\s*=/
                 if line =~ /cc_enum_special/
                     line.scan(/cc_enum_special<([^,]+),\s*([^,]+),\s*([^>]+)>/) do
                         |header_file, type, in_class|

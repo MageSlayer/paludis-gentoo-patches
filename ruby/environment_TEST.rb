@@ -284,6 +284,16 @@ module Paludis
         end
     end
 
+    class TestCase_NoConfigEnvirontmentPortageRepository < Test::Unit::TestCase
+        def env
+            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
+        end
+
+        def test_portage_repository
+            assert_kind_of PortageRepository, env.portage_repository
+        end
+    end
+
     class TestCase_DefaultConfig < Test::Unit::TestCase
         def test_respond_to
             assert_respond_to DefaultConfig, :config_suffix

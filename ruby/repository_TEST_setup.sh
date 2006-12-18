@@ -42,6 +42,11 @@ echo "testrepo" > profiles/repo_name || exit 1
 cat <<END > profiles/categories || exit 1
 foo
 END
+
+cat <<END > profiles/profiles.desc || exit 1
+x86 testprofile stable
+END
+
 cat <<END > profiles/testprofile/make.defaults
 ARCH=test
 USERLAND=test
