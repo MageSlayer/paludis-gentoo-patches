@@ -23,7 +23,7 @@ man_paludis_SOURCES = \
 man_paludis_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/src/libcolour.a \
+	$(top_builddir)/src/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
 paludis_SOURCES = \
@@ -35,8 +35,7 @@ paludis_SOURCES = \
 	query.hh             query.cc             \
 	sync.hh              sync.cc              \
 	licence.hh           licence.cc           \
-	use.hh               use.cc               \
-	contents.hh          contents.cc          \
+	do_contents.hh       do_contents.cc       \
 	owner.hh             owner.cc             \
 	news.hh              news.cc              \
 	report.hh            report.cc            \
@@ -49,7 +48,7 @@ paludis_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
-	$(top_builddir)/src/libcolour.a \
+	$(top_builddir)/src/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
 TESTS_ENVIRONMENT = env \

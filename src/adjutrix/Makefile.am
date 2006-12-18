@@ -23,7 +23,7 @@ man_adjutrix_SOURCES = \
 man_adjutrix_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/src/libcolour.a \
+	$(top_builddir)/src/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
 adjutrix_SOURCES = \
@@ -45,7 +45,7 @@ adjutrix_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
-	$(top_builddir)/src/libcolour.a \
+	$(top_builddir)/src/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
 TESTS_ENVIRONMENT = env \

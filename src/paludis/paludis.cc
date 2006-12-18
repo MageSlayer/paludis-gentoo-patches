@@ -20,7 +20,7 @@
 #include "applets.hh"
 #include "colour.hh"
 #include "command_line.hh"
-#include "contents.hh"
+#include "do_contents.hh"
 #include "install.hh"
 #include "list.hh"
 #include "news.hh"

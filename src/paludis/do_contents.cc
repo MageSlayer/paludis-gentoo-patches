@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "contents.hh"
+#include "do_contents.hh"
 #include "colour.hh"
 #include "command_line.hh"
 #include <paludis/paludis.hh>

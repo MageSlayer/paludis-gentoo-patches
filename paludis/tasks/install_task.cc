@@ -432,3 +432,15 @@ InstallTask::end_targets() const
     return TargetsIterator(_imp->raw_targets.end());
 }
 
+Environment *
+InstallTask::environment()
+{
+    return _imp->env;
+}
+
+const Environment *
+InstallTask::environment() const
+{
+    return _imp->env;
+}
+
