@@ -3,25 +3,6 @@ TODO
 
 Do not write Changelog entries for this file.
 
-
-System report action: 'paludis --report'
-----------------------------------------
-
-Assigned to: <nobody>
-
-  * Shall output a comprehensible and parsable report of the current
-    state of the system.
-
-  * The output format shall be suited for sending this report via mail.
-
-  * Shall be made as a task. (See libpaludistasks)
-
-  * Shall contain at least this information:
-    - QA warning in regard to installed packages
-    - Warning for installed packages which are package.masked
-    - Warning for installed packages which are marked vulnerable
-      by a GLSA.
-
 Crossdev-like repository
 ------------------------
 
