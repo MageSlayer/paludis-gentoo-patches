@@ -76,6 +76,7 @@ if ENABLE_GTK_TESTS
 
 check_PROGRAMS = prod-x-server
 check_SCRIPTS = \
+	yay_spi_TEST.py \
 	quit_TEST.py quit_TEST_setup.sh quit_TEST_cleanup.sh \
 	config_suffix_TEST.py \
 	sets_list_TEST.py sets_list_TEST_setup.sh sets_list_TEST_cleanup.sh
@@ -83,7 +84,7 @@ check_SCRIPTS = \
 prod_x_server_SOURCES = prod-x-server.cc
 prod_x_server_LDADD = -lX11
 
-TESTS = version_TEST help_TEST quit_TEST.py config_suffix_TEST.py sets_list_TEST.py
+TESTS = version_TEST help_TEST yay_spi_TEST.py quit_TEST.py config_suffix_TEST.py sets_list_TEST.py
 
 endif
 
