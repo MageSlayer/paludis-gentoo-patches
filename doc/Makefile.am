@@ -28,14 +28,15 @@ htmlfiles = \
 	changelog.html \
 	licence.html \
 	authors.html \
+	faq.html \
 	arrow.svg
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 	$(docfiles) $(tagfiles) $(htmlfiles) arrow.png htaccess \
 	news.html.skel index.html.skel changelog.html.skel licence.html.skel authors.html.skel \
-	htmlheader.html htmlfooter.html
+	faq.html.skel htmlheader.html htmlfooter.html
 
-CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html \
+CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
 	cleannews cleanchangelog cleanauthors
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles) arrow.png
@@ -137,6 +138,13 @@ index.html : index.html.skel htmlheader.html htmlfooter.html
 	    -e '/@FOOTER@/r htmlfooter.html' \
 	    -e '/@FOOTER@/d' \
 	    < index.html.skel > index.html
+
+faq.html : faq.html.skel htmlheader.html htmlfooter.html
+	sed -e '/@HEADER@/r htmlheader.html' \
+	    -e '/@HEADER@/d' \
+	    -e '/@FOOTER@/r htmlfooter.html' \
+	    -e '/@FOOTER@/d' \
+	    < faq.html.skel > faq.html
 
 licence.html : licence.html.skel htmlheader.html htmlfooter.html ../COPYING
 	sed -e '/@HEADER@/r htmlheader.html' \

@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en">
+<head>
+<title>Paludis, the Other Package Mangler</title>
+<link rel="stylesheet" href="paludis.css" type="text/css" />
+</head>
+<body>
+@HEADER@
+
+<h1>Paludis, the Other Package Mangler</h1>
+
+<h2>FAQ</h2>
+
+<p>This document describes some of the more commonly encountered problems, issues
+and things that aren't bugs but might look like they are. Pestering anyone about
+these is liable to get you hurt.</p>
+
+<p>This document also describes some things that are not bugs or missing
+functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
+
+<h2>Paludis is Stricter than Portage</h2>
+
+<h3 id="mergingweirdstuff">Merging Weird Stuff</h3>
+
+<p>Paludis will refuse to merge various things:</p>
+
+<ul>
+    <li>Device nodes, fifos and similar weird files. Portage will merge these
+    incorrectly and then leave stray garbage lying around; Paludis refuses to do
+    anything with them. Ebuilds that need to install fancy file types should do
+    so in <code>pkg_postinst</code>.</li>
+
+    <li>Things containing spaces. The VDB format, which cannot be changed
+    without breaking Portage compatibility, uses spaces as a delimiter. Portage
+    behaves incorrectly on items with spaces in the name; Paludis simply refuses
+    to touch them.</li>
+
+    <li>Non-directories on top of directories. Paludis will not let a package
+    overwrite a directory with a non-directory. This is for your own safety.
+    Portage doesn't bail out on this, but instead ends up partially merging
+    content and generally making a mess of your system.</li>
+</ul>
+
+<h3 id="testfailures">Packages Failing <code>src_test</code></h3>
+
+<p>Various packages will fail <code>src_test</code>.</p>
+
+<p>You can <code>export SKIP_FUNCTIONS="test"</code> to skip tests. This
+is best done on a per-package basis via <code>bashrc</code>:</p>
+
+<pre>
+case "${PN}" in
+
+    # These packages often fail src_test (not a complete list)
+    automake|glibc|e2fsprogs|neon|gettext|tar)
+        export SKIP_FUNCTIONS=test
+        ;;
+
+esac
+</pre>
+
+<p>Unfortunately not all package maintainers care about making their package's test
+suite work. This is a nuisance, a) because it makes things much harder for arch
+teams and b) because it makes it harder for users to catch bugs.</p>
+
+<p>At this stage, you should not consider filing a bug about packages whose test
+phases fail. This is something that is being handled by the Gentoo QA team and
+various arch teams.</p>
+
+<h3 id="sandboxwithroot">Sandbox Violations when <code>ROOT</code> is Set</h3>
+
+<p>Various packages will give sandbox violations when installing to somewhere
+other than <code>/</code>.</p>
+
+<p>Paludis enforces <code>ROOT</code> via Sandbox. However, some packages don't
+honour <code>ROOT</code>. To temporarily disable sandbox for these packages,
+<code>export SANDBOX_PREDICT=/</code> or <code>export SANDBOX_WRITE=/</code> as
+appropriate.</p>
+
+<h2>Undesirable Misfunctionality</h2>
+
+<h3>wget Resume Support</h3>
+
+<p>Non-Problem: With Portage, <code>wget -c</code> is used to attempt to resume
+downloads of partial files. With Paludis, resumes are not allowed.</p>
+
+<p>Rationale: This leads to corruption and wasted bandwidth far too frequently.
+In particular, if an error page that isn't recognised as a 404 is fetched from
+one server (this is common for <code>mirror://sourceforge/</code>), resume
+support means <code>wget</code> would then download all but the first few
+hundred bytes of the file from somewhere else, leading to a corrupt distfile
+notice only after lots of bandwidth has been wasted.</p>
+
+<p>Having said that, if you really want this functionality, you can implement it
+using a custom fetcher.</p>
+
+<h3>Build Resume / Skip First Support</h3>
+
+<p>Non-Problem: Paludis doesn't have an equivalent to --resume --skipfirst in
+Portage.</p>
+
+<p>Rationale: Too unreliable, too flaky and far too widely abused; however, if
+an ebuild exits with an error, Paludis will echo a resume command (<code>paludis
+    -i10 =sys-apps/foo-1.23-r1 =app-misc/fnord-2 ...</code>) that can be used to
+resume the build.</p>
+
+<h3>No Automatic Niceness Support</h3>
+
+<p>Non-Problem: There's no <code>PORTAGE_NICENESS</code> equivalent.</p>
+
+<p>Rationale: Learn how to use <code>nice</code>. There's no
+<code>GCC_NICENESS</code> or <code>VIM_NICENESS</code> either.</p>
+
+@FOOTER@
+</body>
+</html>
+
+

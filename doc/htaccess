@@ -2,4 +2,7 @@
 
 Redirect Permanent /News.html http://paludis.berlios.de/news.html
 Redirect Permanent /PaludisNews.html http://paludis.berlios.de/news.html
+Redirect Permanent /KnownIssues.html http://paludis.berlios.de/faq.html
+Redirect Permanent /Authors.html http://paludis.berlios.de/authors.html
+Redirect Permanent /Licence.html http://paludis.berlios.de/licence.html
 
