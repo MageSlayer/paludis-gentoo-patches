@@ -35,7 +35,9 @@ FakeInstalledRepository::FakeInstalledRepository(const RepositoryName & our_name
             .mirrors_interface(0)
             .environment_variable_interface(0)
             .provides_interface(0)
-            .virtuals_interface(0))
+            .virtuals_interface(0)
+            .destination_interface(this),
+            "fake_installed")
 {
 }
 
@@ -46,4 +48,11 @@ FakeInstalledRepository::do_contents(const QualifiedPackageName &,
     Contents::ConstPointer result(new Contents);
     return result;
 }
+
+bool
+FakeInstalledRepository::is_suitable_destination_for(const PackageDatabaseEntry &) const
+{
+    return true;
+}
+
 

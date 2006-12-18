@@ -100,7 +100,9 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
             .environment_variable_interface(0)
             .mirrors_interface(0)
             .virtuals_interface(0)
-            .provides_interface(0)),
+            .provides_interface(0)
+            .destination_interface(0),
+            "nothing"),
     PrivateImplementationPattern<NothingRepository>(new Implementation<NothingRepository>(p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));

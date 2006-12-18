@@ -259,7 +259,9 @@ GemsRepository::GemsRepository(const GemsRepositoryParams & p) :
             .environment_variable_interface(0)
             .mirrors_interface(0)
             .virtuals_interface(0)
-            .provides_interface(0)),
+            .provides_interface(0)
+            .destination_interface(0),
+            "gems"),
     PrivateImplementationPattern<GemsRepository>(new Implementation<GemsRepository>(p))
 {
 }

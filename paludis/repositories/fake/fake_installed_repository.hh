@@ -31,7 +31,8 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FakeInstalledRepository :
         public FakeRepositoryBase,
-        public RepositoryInstalledInterface
+        public RepositoryInstalledInterface,
+        public RepositoryDestinationInterface
     {
         protected:
             virtual Contents::ConstPointer do_contents(
@@ -40,6 +41,8 @@ namespace paludis
 
         public:
             FakeInstalledRepository(const RepositoryName &);
+
+            bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
     };
 }
 

@@ -49,6 +49,7 @@ namespace paludis
         public RepositoryUninstallableInterface,
         public RepositorySetsInterface,
         public RepositoryWorldInterface,
+        public RepositoryDestinationInterface,
         public PrivateImplementationPattern<CRANInstalledRepository>
     {
         protected:
@@ -112,6 +113,8 @@ namespace paludis
             virtual void add_to_world(const QualifiedPackageName &) const;
 
             virtual void remove_from_world(const QualifiedPackageName &) const;
+
+            virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
     };
 
     /**

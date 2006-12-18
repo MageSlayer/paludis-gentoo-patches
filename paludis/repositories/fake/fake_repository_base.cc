@@ -73,8 +73,9 @@ namespace paludis
     }
 }
 
-FakeRepositoryBase::FakeRepositoryBase(const RepositoryName & our_name, const RepositoryCapabilities & caps) :
-    Repository(our_name, caps),
+FakeRepositoryBase::FakeRepositoryBase(const RepositoryName & our_name, const RepositoryCapabilities & caps,
+        const std::string & f) :
+    Repository(our_name, caps, f),
     RepositoryMaskInterface(),
     RepositoryUseInterface(),
     PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>)

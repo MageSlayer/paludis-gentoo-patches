@@ -507,7 +507,9 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .environment_variable_interface(this)
             .mirrors_interface(0)
             .provides_interface(this)
-            .virtuals_interface(0)),
+            .virtuals_interface(0)
+            .destination_interface(this),
+            "vdb"),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -1425,6 +1427,12 @@ VDBRepository::do_category_names_containing_package(const PackageNamePart & p) c
             _imp->names_cache->category_names_containing_package(p));
 
     return result ? result : Repository::do_category_names_containing_package(p);
+}
+
+bool
+VDBRepository::is_suitable_destination_for(const PackageDatabaseEntry & e) const
+{
+    return _imp->env->package_database()->fetch_repository(e.repository)->format() == "ebuild";
 }
 
 #ifdef PALUDIS_ENABLE_VISIBILITY

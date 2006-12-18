@@ -35,7 +35,9 @@ FakeRepository::FakeRepository(const RepositoryName & our_name) :
             .mirrors_interface(0)
             .environment_variable_interface(0)
             .provides_interface(0)
-            .virtuals_interface(0))
+            .virtuals_interface(0)
+            .destination_interface(0),
+            "fake")
 {
 }
 

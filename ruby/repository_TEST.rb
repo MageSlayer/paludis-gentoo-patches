@@ -231,7 +231,7 @@ module Paludis
 
         def test_section_kvs
             assert_kind_of Hash, repo.info(false).sections.first.kvs
-            assert_equal 'portage', repo.info(false).sections.first.kvs['format']
+            assert_equal 'ebuild', repo.info(false).sections.first.kvs['format']
             assert_equal 'vdb', installed_repo.info(false).sections.first.kvs['format']
         end
     end

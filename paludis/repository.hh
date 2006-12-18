@@ -61,6 +61,7 @@ namespace paludis
     class RepositoryMirrorsInterface;
     class RepositoryProvidesInterface;
     class RepositoryVirtualsInterface;
+    class RepositoryDestinationInterface;
 
     /**
      * What debug build option to use when installing a package.
@@ -170,6 +171,7 @@ namespace paludis
     {
         private:
             const RepositoryName _name;
+            std::string _format;
 
         protected:
             ///\name Implementation data
@@ -185,7 +187,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Repository(const RepositoryName &, const RepositoryCapabilities &);
+            Repository(const RepositoryName &, const RepositoryCapabilities &,
+                    const std::string & our_format);
 
             ///\}
 
@@ -279,6 +282,11 @@ namespace paludis
              * Return our name.
              */
             const RepositoryName & name() const PALUDIS_ATTRIBUTE((nothrow));
+
+            /**
+             * Return our format.
+             */
+            std::string format() const;
 
             /**
              * Are we allowed to be favourite repository?
@@ -966,6 +974,26 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryProvidesInterface() { }
+    };
+
+    /**
+     * Interface for repositories that can be used as an install destination.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
+    class RepositoryDestinationInterface
+    {
+        public:
+            ///\name Destination functions
+            ///\{
+
+            virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const = 0;
+
+            ///\}
+
+            virtual ~RepositoryDestinationInterface() { }
     };
 
     /**

@@ -286,7 +286,9 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .environment_variable_interface(this)
             .mirrors_interface(this)
             .virtuals_interface(this)
-            .provides_interface(0)),
+            .provides_interface(0)
+            .destination_interface(0),
+            p.entry_format),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
 {
     // the info_vars and info_pkgs info is only added on demand, since it's
@@ -306,7 +308,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     config_info->add_kv("securitydir", stringify(_imp->params.securitydir));
     config_info->add_kv("setsdir", stringify(_imp->params.setsdir));
     config_info->add_kv("newsdir", stringify(_imp->params.newsdir));
-    config_info->add_kv("format", "portage");
+    config_info->add_kv("format", _imp->params.entry_format);
     config_info->add_kv("root", stringify(_imp->params.root));
     config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
     config_info->add_kv("sync", _imp->params.sync);

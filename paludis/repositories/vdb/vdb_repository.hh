@@ -53,6 +53,7 @@ namespace paludis
         public RepositoryWorldInterface,
         public RepositoryEnvironmentVariableInterface,
         public RepositoryProvidesInterface,
+        public RepositoryDestinationInterface,
         public PrivateImplementationPattern<VDBRepository>
     {
         private:
@@ -149,6 +150,8 @@ namespace paludis
                     const RepositoryProvidesEntry &) const;
 
             virtual SetsCollection::ConstPointer sets_list() const;
+
+            virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
 
             typedef CountedPtr<VDBRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const VDBRepository, count_policy::InternalCountTag> ConstPointer;

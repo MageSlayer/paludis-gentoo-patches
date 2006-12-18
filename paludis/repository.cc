@@ -36,9 +36,11 @@ using namespace paludis;
 
 Repository::Repository(
         const RepositoryName & our_name,
-        const RepositoryCapabilities & caps) :
+        const RepositoryCapabilities & caps,
+        const std::string & f) :
     RepositoryCapabilities(caps),
     _name(our_name),
+    _format(f),
     _info(new RepositoryInfo)
 {
 }
@@ -198,5 +200,11 @@ Repository::do_category_names_containing_package(const PackageNamePart & p) cons
 void
 Repository::regenerate_cache() const
 {
+}
+
+std::string
+Repository::format() const
+{
+    return _format;
 }
 

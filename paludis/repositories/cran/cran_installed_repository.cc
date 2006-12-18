@@ -166,7 +166,9 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .environment_variable_interface(0)
             .mirrors_interface(0)
             .virtuals_interface(0)
-            .provides_interface(0)),
+            .provides_interface(0)
+            .destination_interface(this),
+            "cran_installed"),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
@@ -650,6 +652,12 @@ CRANInstalledRepository::remove_from_world(const QualifiedPackageName & n) const
 
     std::copy(world_lines.begin(), world_lines.end(),
             std::ostream_iterator<std::string>(world_file, "\n"));
+}
+
+bool
+CRANInstalledRepository::is_suitable_destination_for(const PackageDatabaseEntry & e) const
+{
+    return _imp->env->package_database()->fetch_repository(e.repository)->format() == "cran";
 }
 
 #ifdef PALUDIS_ENABLE_VISIBILITY

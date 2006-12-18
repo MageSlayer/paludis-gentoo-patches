@@ -95,7 +95,8 @@ namespace paludis
             /**
              * Constructor.
              */
-            FakeRepositoryBase(const RepositoryName & name, const RepositoryCapabilities & caps);
+            FakeRepositoryBase(const RepositoryName & name, const RepositoryCapabilities & caps,
+                    const std::string &);
 
         public:
             /**
