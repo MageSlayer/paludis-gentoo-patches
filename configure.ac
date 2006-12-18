@@ -232,7 +232,6 @@ AC_CHECK_FUNCS([alarm],        [], [AC_MSG_ERROR([I need alarm])])
 AC_CHECK_FUNCS([strerror],     [], [AC_MSG_ERROR([I need strerror])])
 AC_CHECK_FUNCS([signal],       [], [AC_MSG_ERROR([I need signal])])
 AC_CHECK_FUNCS([popen],        [], [AC_MSG_ERROR([I need popen])])
-AC_CHECK_FUNCS([posix_openpt], [], [AC_MSG_ERROR([I need posix_openpt])])
 AC_CHECK_FUNCS([ptsname],      [], [AC_MSG_ERROR([I need ptsname])])
 AC_CHECK_FUNCS([grantpt],      [], [AC_MSG_ERROR([I need grantpt])])
 AC_CHECK_FUNCS([unlockpt],     [], [AC_MSG_ERROR([I need unlockpt])])
@@ -530,6 +529,7 @@ AC_ARG_ENABLE([gtk],
 AC_MSG_RESULT($enable_gtk)
 
 if test "x$enable_gtk" = "xyes"; then
+	AC_CHECK_FUNCS([posix_openpt], [], [AC_MSG_ERROR([I need posix_openpt])])
 	GLIBMM_LIBDIR=`pkg-config --variable=libdir glibmm-2.4`
 	GMMPROC_DIR=$GLIBMM_LIBDIR/glibmm-2.4/proc
 	AC_SUBST(GMMPROC_DIR)
