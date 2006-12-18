@@ -72,6 +72,10 @@ def do_check_kind(maker, ok, fatal, value)
     checks.sort_by {|x| maker.find_check(x).is_important? ? 1 : 0 }
     checks.each do |check_name|
         begin
+            unless @checks.empty?
+                next unless @checks.include? check_name
+            end
+
             r = maker.find_check(check_name).check(value)
 
             if r.empty?
@@ -254,25 +258,28 @@ end
 @quiet = false
 @min_level = QALevel::Info
 @write_cache_dir = '/var/empty'
-@one_check = nil
+@checks = []
 describe = false
 
-Log.instance.log_level = LogLevel::Warning
+Log.instance.log_level = LogLevel::Qa
 Log.instance.program_name = $0
 
 opts = GetoptLong.new(
     [ '--help',           '-h',  GetoptLong::NO_ARGUMENT ],
     [ '--version',        '-V',  GetoptLong::NO_ARGUMENT ],
     [ '--describe',       '-d',  GetoptLong::NO_ARGUMENT ],
-    [ '--chcek',          '-c',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--qa-check',       '-c',  GetoptLong::REQUIRED_ARGUMENT ],
     [ '--log-level',      '-L',  GetoptLong::REQUIRED_ARGUMENT ],
     [ '--message-level',  '-M',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--verbose',        '-v',  GetoptLong::NO_ARGUMENT ],
+    [ '--quiet',          '-q',  GetoptLong::NO_ARGUMENT ],
     [ '--write-cache-dir',       GetoptLong::REQUIRED_ARGUMENT ])
 
 opts.each do | opt, arg |
     case opt
     when '--help'
-        puts "Usage: " + $0 + " [options] keyword1 keyword2 ...."
+        puts "Usage: " + $0 + " [options]"
+        puts "Usage: " + $0 + " [package/category ..]"
         puts
         puts "Actions:"
         puts "  --describe, -d          Display program version"
@@ -310,10 +317,10 @@ opts.each do | opt, arg |
         exit 0
 
     when '--qa-check'
-        @one_check = arg
+        @checks << arg
 
     when '--verbose'
-        @verose = true
+        @verbose = true
 
     when '--quiet'
         @quiet = true
