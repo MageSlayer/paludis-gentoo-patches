@@ -47,3 +47,28 @@ Assigned to: Danny van Dyk <kugelfang@gentoo.org>
 
   * Unset aliases shall be filled with defaults values, based on the complete
     CTARGET.
+
+Missing QA checks
+-----------------
+
+Assigned to: <nobody>
+
+Missing counterparts for
+
+  * "ebuild.namenomatch":"Ebuild files that do not have the same name as their parent directory"
+
+  * "file.UTF8":"File is not UTF8 compliant"
+
+  * "ebuild.output":"A simple sourcing of the ebuild produces output; this breaks ebuild policy."
+
+  * "LIVEVCS.stable":"This ebuild is a live checkout from a VCS but has stable keywords."
+
+  * "ebuild.nostable":"There are no ebuilds that are marked as stable for your ARCH"
+
+  * "ebuild.badheader":"This ebuild has a malformed header"
+
+  * "virtual.exists":"PROVIDE contains existing package names"
+
+  * all digest related checks
+
+  * all CVS related checks
