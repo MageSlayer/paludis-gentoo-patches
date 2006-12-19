@@ -14,7 +14,7 @@ automake-deps-built-hack.tmp : built-sources-subdirs
 
 BUILT_SOURCES = automake-deps-built-hack.tmp
 
-automake-deps-dist-hack.tmp :
+automake-deps-dist-hack.tmp : built-sources-subdirs
 	$(MAKE) -C paludis/util
 	$(MAKE) -C paludis/args
 	$(MAKE) -C paludis/qa message-sr.hh
