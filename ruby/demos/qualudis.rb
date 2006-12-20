@@ -76,6 +76,10 @@ def do_check_kind(maker, ok, fatal, value)
                 next unless @checks.include? check_name
             end
 
+            unless @skip_checks.empty?
+                next if @skip_checks.include? check_name
+            end
+
             r = maker.find_check(check_name).check(value)
 
             if r.empty?
@@ -240,7 +244,7 @@ def do_check(dir)
         env = QAEnvironment.new(File.dirname(dir))
         return do_check_category_dir(dir, env)
     else
-        puts "qualudia.rb should be run inside a repository #{dir}"
+        $stderr.puts "qualudia.rb should be run inside a repository #{dir}"
         exit 1
     end
 end
@@ -248,9 +252,9 @@ end
 def describe_check(title, maker)
     puts title
     maker.check_names.each do |check_name|
-        puts "  #{check_name}:"
-        puts "    #{maker.find_check(check_name).describe}"
-        puts
+        $stderr.puts "  #{check_name}:"
+        $stderr.puts "    #{maker.find_check(check_name).describe}"
+        $stderr.puts
     end
 end
 
@@ -259,6 +263,7 @@ end
 @min_level = QALevel::Info
 @write_cache_dir = '/var/empty'
 @checks = []
+@skip_checks = []
 describe = false
 
 Log.instance.log_level = LogLevel::Qa
@@ -269,6 +274,7 @@ opts = GetoptLong.new(
     [ '--version',        '-V',  GetoptLong::NO_ARGUMENT ],
     [ '--describe',       '-d',  GetoptLong::NO_ARGUMENT ],
     [ '--qa-check',       '-c',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--skip-qa-check',  '-s',  GetoptLong::REQUIRED_ARGUMENT ],
     [ '--log-level',      '-L',  GetoptLong::REQUIRED_ARGUMENT ],
     [ '--message-level',  '-M',  GetoptLong::REQUIRED_ARGUMENT ],
     [ '--verbose',        '-v',  GetoptLong::NO_ARGUMENT ],
@@ -288,6 +294,7 @@ opts.each do | opt, arg |
         puts
         puts "Options for general checks:"
         puts "  --qa-check, -c          Only perform given check"
+        puts "  --skip-qa-check, -s     Skip given check"
         puts "  --verbose, -v           Be verbose"
         puts "  --quiet, -q             Be quiet"
         puts "  --log-level, -L         Set log level"
@@ -317,7 +324,18 @@ opts.each do | opt, arg |
         exit 0
 
     when '--qa-check'
+        unless @skip_checks.empty?
+            $stderr.puts "Don't specify --skip-qa-checks and --qa-checks in the same command"
+            exit 1
+        end
         @checks << arg
+
+    when '--skip-qa-check'
+        unless @checks.empty?
+            $stderr.puts "Don't specify --skip-qa-checks and --qa-checks in the same command"
+            exit 1
+        end
+        @skip_checks << arg
 
     when '--verbose'
         @verbose = true
@@ -336,7 +354,7 @@ opts.each do | opt, arg |
         when 'silent'
             Log.instance.log_level = LogLevel::Silent
         else
-            puts "Bad --log-level value " + arg
+            $stderr.puts "Bad --log-level value " + arg
             exit 1
         end
 
@@ -351,7 +369,7 @@ opts.each do | opt, arg |
         when 'fatal'
             @min_level = QALevel::Fatal
         else
-            puts "Bad --message-level value " + arg
+            $stderr.puts "Bad --message-level value " + arg
             exit 1
         end
 
@@ -366,7 +384,7 @@ unless ARGV.empty?
         if File.directory? full_dir
             do_check(full_dir)
         else
-            puts "#{full_dir} is not a directory"
+            $stderr.puts "#{full_dir} is not a directory"
         end
     end
 else
