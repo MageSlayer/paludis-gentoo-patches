@@ -6,8 +6,8 @@ MAINTAINERCLEANFILES = Makefile.in
 noinst_LIBRARIES = liboutput.a
 liboutput_a_SOURCES = \
 	colour.cc colour.hh \
-	use.cc use.hh \
-	console_install_task.cc console_install_task.hh
+	console_install_task.cc console_install_task.hh \
+	use_flag_pretty_printer.cc use_flag_pretty_printer.cc
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src @PALUDIS_CXXFLAGS@
 

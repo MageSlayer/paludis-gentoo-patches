@@ -20,7 +20,7 @@
 #include "colour.hh"
 #include "query.hh"
 #include "licence.hh"
-#include "use.hh"
+#include "use_flag_pretty_printer.hh"
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -301,9 +301,12 @@ void do_one_package_query(
                     " " << metadata->get_ebuild_interface()->provide_string << endl;
 
             if (! metadata->get_ebuild_interface()->iuse.empty())
-                cout << "    " << std::setw(22) << std::left << "Use flags:" << std::setw(0) <<
-                    " " << make_pretty_use_flags_string(DefaultEnvironment::get_instance(),
-                            display_entry, metadata) << endl;
+            {
+                cout << "    " << std::setw(22) << std::left << "Use flags:" << std::setw(0) << " ";
+                UseFlagPrettyPrinter printer(DefaultEnvironment::get_instance());
+                printer.print_package_flags(display_entry);
+                cout << endl;
+            }
         }
 
         if (metadata->get_virtual_interface())

@@ -19,7 +19,7 @@
 
 #include "console_install_task.hh"
 #include "colour.hh"
-#include "use.hh"
+#include "use_flag_pretty_printer.hh"
 
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
@@ -499,8 +499,9 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
     if (d.skip_install)
         return;
 
-    output_no_endl(make_pretty_use_flags_string(environment(), d.package,
-                d.metadata, existing->empty() ? 0 : &*existing->last()));
+    output_no_endl(" ");
+    UseFlagPrettyPrinter::Pointer printer(make_use_flag_pretty_printer());
+    printer->print_package_flags(d.package, existing->empty() ? 0 : &*existing->last());
 }
 
 void
@@ -689,6 +690,12 @@ EntryDepTagDisplayer::Pointer
 ConsoleInstallTask::make_entry_dep_tag_displayer()
 {
     return EntryDepTagDisplayer::Pointer(new EntryDepTagDisplayer());
+}
+
+UseFlagPrettyPrinter::Pointer
+ConsoleInstallTask::make_use_flag_pretty_printer()
+{
+    return UseFlagPrettyPrinter::Pointer(new UseFlagPrettyPrinter(environment()));
 }
 
 EntryDepTagDisplayer::EntryDepTagDisplayer()

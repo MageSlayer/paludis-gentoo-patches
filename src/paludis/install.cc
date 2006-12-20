@@ -20,7 +20,6 @@
 #include "colour.hh"
 #include "install.hh"
 #include "licence.hh"
-#include "use.hh"
 #include "console_install_task.hh"
 
 #include <iostream>

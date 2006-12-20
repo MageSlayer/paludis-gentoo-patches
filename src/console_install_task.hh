@@ -22,6 +22,7 @@
 
 #include <paludis/tasks/install_task.hh>
 #include <paludis/package_database_entry.hh>
+#include <src/use_flag_pretty_printer.hh>
 #include <iosfwd>
 
 namespace paludis
@@ -133,8 +134,8 @@ namespace paludis
             ///\name Output routines
             ///\{
 
-            std::ostream & output_stream() const;
-            std::ostream & output_xterm_stream() const;
+            virtual std::ostream & output_stream() const;
+            virtual std::ostream & output_xterm_stream() const;
 
             virtual void output_activity_start_message(const std::string &) const;
             virtual void output_activity_end_message() const;
@@ -232,6 +233,7 @@ namespace paludis
 
             DepTagSummaryDisplayer::Pointer make_dep_tag_summary_displayer();
             EntryDepTagDisplayer::Pointer make_entry_dep_tag_displayer();
+            UseFlagPrettyPrinter::Pointer make_use_flag_pretty_printer();
 
             ///\}
     };
