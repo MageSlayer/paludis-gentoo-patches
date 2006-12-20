@@ -112,6 +112,14 @@ resume the build.</p>
 <p>Rationale: Learn how to use <code>nice</code>. There's no
 <code>GCC_NICENESS</code> or <code>VIM_NICENESS</code> either.</p>
 
+<h2>Paludis Does Things Differently</h2>
+
+<h3>No <code>--tree</code> Equivalent</h3>
+
+<p>Paludis does not have something identical to <code>emerge --tree</code>. It
+does, however, have <code>--show-install-reasons</code>, which we find to be
+considerably more informative, useful and correct.</p>
+
 @FOOTER@
 </body>
 </html>
