@@ -21,6 +21,21 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
 
 @TOC@
 
+<h2 id="general">General Paludis Questions</h2>
+
+<h3 id="why">Why not fix Portage?</h3>
+
+<p>The Portage codebase is too broken to be fixed. It is a huge mess of
+spaghetti procedural code with no underlying design. It relies upon weird
+quirks in its own behaviour all over the place, so any change is liable to
+cause huge breakage in seemingly unrelated areas. It is almost entirely
+undocumented, and the internal names are perverse and often do not reflect what
+the code now does.</p>
+
+<h3 id="c++">Why C++?</h3>
+
+<p>Because we don't have the time or the manpower to write it in C.</p>
+
 <h2 id="stricter">Paludis is Stricter than Portage</h2>
 
 <h3 id="mergingweirdstuff">Merging Weird Stuff</h3>
@@ -114,6 +129,13 @@ resume the build.</p>
 <p>Rationale: Learn how to use <code>nice</code>. There's no
 <code>GCC_NICENESS</code> or <code>VIM_NICENESS</code> either.</p>
 
+<h3 id="digests">No Digest Generation</h3>
+
+<p>Non-Problem: Paludis doesn't do digest or Manifest creation.</p>
+
+<p>Rationale: In its current form, digest / Manifest is worthless. We will be
+implementing Manifest2 when it gets properly worked out.</p>
+
 <h2 id="differences">Paludis Does Things Differently</h2>
 
 <h3 id="tree">No <code>--tree</code> Equivalent</h3>
@@ -129,14 +151,14 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
 
 <dl>
     <dt>ccache</dt>
-    <dd>See <a href="#ccache">Using <code>ccache</code></a>.</dd>
+    <dd>See <a href="#ccache">Use <code>ccache</code></a>.</dd>
 
     <dt>collision-protect</dt>
     <dd>There are various third party hooks that implement this. We might start
     shipping one as a demo hook at some point.</dd>
 
     <dt>distcc</dt>
-    <dd>See <a href="#ccache">Using <code>ccache</code></a>, and adapt it for
+    <dd>See <a href="#ccache">Use <code>ccache</code></a>, and adapt it for
     <code>distcc</code>. Additions to this FAQ entry are welcome.</dd>
 
     <dt>keepwork, keeptemp, noclean</dt>
@@ -161,7 +183,9 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
         <code>src_test</code></a>.</dd>
 </dl>
 
-<h3 id="ccache">Using <code>ccache</code></h3>
+<h2 id="howdoi">How do I...</h2>
+
+<h3 id="ccache">Use <code>ccache</code></h3>
 
 <p>To enable <code>ccache</code>, simply set the relevant variables in your
 configuration <code>bashrc</code>:</p>
@@ -172,6 +196,29 @@ export CCACHE_DIR="/var/tmp/ccache"
 export CC="/usr/lib/ccache/bin/gcc"
 export CXX="/usr/lib/ccache/bin/g++"
 </pre>
+
+<h3 id="defaultoptions">Specify default options</h3>
+
+<p>Often users want to specify certain options by default. Common choices include:</p>
+
+<ul>
+    <li><code>--debug-build split</code>, to make debugging easier (at the cost of disk
+    space)</li>
+
+    <li><code>--log-level warning</code> (you should <strong>not</strong> use
+    <code>silent</code> in this way -- warnings are warnings because you need
+    to read them)</li>
+
+    <li><code>--show-install-reasons summary</code></li>
+
+    <li><code>--resume-command-template ~/.paludis-resume-XXXXXX</code></li>
+
+    <li><code>--dl-reinstall-scm weekly</code></li>
+</ul>
+
+<p>You can either use a shell alias, or <code>export
+    PALUDIS_OPTIONS="--options"</code> (in your environment, not in the
+configuration <code>bashrc</code>).</p>
 
 @FOOTER@
 </body>
