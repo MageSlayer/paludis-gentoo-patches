@@ -19,7 +19,9 @@ these is liable to get you hurt.</p>
 <p>This document also describes some things that are not bugs or missing
 functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
 
-<h2>Paludis is Stricter than Portage</h2>
+@TOC@
+
+<h2 id="stricter">Paludis is Stricter than Portage</h2>
 
 <h3 id="mergingweirdstuff">Merging Weird Stuff</h3>
 
@@ -78,9 +80,9 @@ honour <code>ROOT</code>. To temporarily disable sandbox for these packages,
 <code>export SANDBOX_PREDICT=/</code> or <code>export SANDBOX_WRITE=/</code> as
 appropriate.</p>
 
-<h2>Undesirable Misfunctionality</h2>
+<h2 id="misfunctionality">Undesirable Misfunctionality</h2>
 
-<h3>wget Resume Support</h3>
+<h3 id="wgetresume">wget Resume Support</h3>
 
 <p>Non-Problem: With Portage, <code>wget -c</code> is used to attempt to resume
 downloads of partial files. With Paludis, resumes are not allowed.</p>
@@ -95,7 +97,7 @@ notice only after lots of bandwidth has been wasted.</p>
 <p>Having said that, if you really want this functionality, you can implement it
 using a custom fetcher.</p>
 
-<h3>Build Resume / Skip First Support</h3>
+<h3 id="skipfirst">Build Resume / Skip First Support</h3>
 
 <p>Non-Problem: Paludis doesn't have an equivalent to --resume --skipfirst in
 Portage.</p>
@@ -105,16 +107,16 @@ an ebuild exits with an error, Paludis will echo a resume command (<code>paludis
     -i10 =sys-apps/foo-1.23-r1 =app-misc/fnord-2 ...</code>) that can be used to
 resume the build.</p>
 
-<h3>No Automatic Niceness Support</h3>
+<h3 id="nice">No Automatic Niceness Support</h3>
 
 <p>Non-Problem: There's no <code>PORTAGE_NICENESS</code> equivalent.</p>
 
 <p>Rationale: Learn how to use <code>nice</code>. There's no
 <code>GCC_NICENESS</code> or <code>VIM_NICENESS</code> either.</p>
 
-<h2>Paludis Does Things Differently</h2>
+<h2 id="differences">Paludis Does Things Differently</h2>
 
-<h3>No <code>--tree</code> Equivalent</h3>
+<h3 id="tree">No <code>--tree</code> Equivalent</h3>
 
 <p>Paludis does not have something identical to <code>emerge --tree</code>. It
 does, however, have <code>--show-install-reasons</code>, which we find to be

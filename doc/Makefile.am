@@ -37,7 +37,7 @@ EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 	faq.html.skel htmlheader.html htmlfooter.html
 
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
-	cleannews cleanchangelog cleanauthors
+	cleannews cleanchangelog cleanauthors cleanfaqtoc
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles) arrow.png
 
@@ -139,12 +139,23 @@ index.html : index.html.skel htmlheader.html htmlfooter.html
 	    -e '/@FOOTER@/d' \
 	    < index.html.skel > index.html
 
-faq.html : faq.html.skel htmlheader.html htmlfooter.html
+faq.html : faq.html.skel htmlheader.html htmlfooter.html cleanfaqtoc
 	sed -e '/@HEADER@/r htmlheader.html' \
 	    -e '/@HEADER@/d' \
 	    -e '/@FOOTER@/r htmlfooter.html' \
 	    -e '/@FOOTER@/d' \
+	    -e '/@TOC@/r cleanfaqtoc' \
+	    -e '/@TOC@/d' \
 	    < faq.html.skel > faq.html
+
+cleanfaqtoc : faq.html.skel
+	sed -n -e 's!^<h\([23]\) id="\([^"]\+\)">\(.*\)</h\1>!\1 <li><a href="#\2">\3</a></li>!gp' \
+	    < faq.html.skel \
+	    | sed -e 's!^2 <li>\(.*\)</li>!</ul></li><li><strong>\1</strong><ul>!' \
+	        -e 's!^3 !!' \
+	    | sed -e '1s!^</ul></li>!<ul>!' \
+	        -e '$$s!$$!</ul></li></ul>!' \
+	    > cleanfaqtoc
 
 licence.html : licence.html.skel htmlheader.html htmlfooter.html ../COPYING
 	sed -e '/@HEADER@/r htmlheader.html' \
