@@ -18,6 +18,8 @@ h2 {
 
 h3 {
     font-size: large;
+    text-align: left;
+    border-bottom: 1px dashed #cccccc;
 }
 
 caption {

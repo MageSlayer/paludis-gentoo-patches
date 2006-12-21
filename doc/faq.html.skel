@@ -122,6 +122,57 @@ resume the build.</p>
 does, however, have <code>--show-install-reasons</code>, which we find to be
 considerably more informative, useful and correct.</p>
 
+<h3 id="features">No <code>FEATURES</code> Equivalent</h3>
+
+<p>Paludis doesn't use the <code>FEATURES</code> variable. We find this to be
+a rather ugly way of handling things. We do have equivalents to most values:</p>
+
+<dl>
+    <dt>ccache</dt>
+    <dd>See <a href="#ccache">Using <code>ccache</code></a>.</dd>
+
+    <dt>collision-protect</dt>
+    <dd>There are various third party hooks that implement this. We might start
+    shipping one as a demo hook at some point.</dd>
+
+    <dt>distcc</dt>
+    <dd>See <a href="#ccache">Using <code>ccache</code></a>, and adapt it for
+    <code>distcc</code>. Additions to this FAQ entry are welcome.</dd>
+
+    <dt>keepwork, keeptemp, noclean</dt>
+    <dd>The <code>builtin_tidyup</code> phase does cleaning up. You can turn
+    this phase off using <code>export SKIP_FUNCTIONS="tidyup"</code>.</dd>
+
+    <dt>nodoc, noinfo, noman</dt>
+    <dd>You could write a hook that removes the relevant directories from
+    <code>$D</code>.</dd>
+
+    <dt>nostrip</dt>
+    <dd>Again, it's a function, so <code>export SKIP_FUNCTIONS="strip"</code>.</dd>
+
+    <dt>sandbox</dt>
+    <dd>Always on.</dd>
+
+    <dt>splitdebug</dt>
+    <dd>Use <code>--debug-build split</code>.</dd>
+
+    <dt>test</dt>
+    <dd>Always on. See <a href="#testfailures">Packages failing
+        <code>src_test</code></a>.</dd>
+</dl>
+
+<h3 id="ccache">Using <code>ccache</code></h3>
+
+<p>To enable <code>ccache</code>, simply set the relevant variables in your
+configuration <code>bashrc</code>:</p>
+
+<pre>
+export PATH="/usr/lib/ccache/bin/:${PATH}"
+export CCACHE_DIR="/var/tmp/ccache"
+export CC="/usr/lib/ccache/bin/gcc"
+export CXX="/usr/lib/ccache/bin/g++"
+</pre>
+
 @FOOTER@
 </body>
 </html>
