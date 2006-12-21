@@ -136,6 +136,14 @@ resume the build.</p>
 <p>Rationale: In its current form, digest / Manifest is worthless. We will be
 implementing Manifest2 when it gets properly worked out.</p>
 
+<h3 id="xtermtitles">Restoring XTerm Titles</h3>
+
+<p>Non-Problem: Paludis doesn't restore the xterm title on exit.</p>
+
+<p>Rationale: Neither does anything else. Some programs do set it to a guessed
+value based upon a default prompt for certain distributions, but they don't
+restore it. You should be using <code>PROMPT_COMMAND</code> to do that yourself.</p>
+
 <h2 id="differences">Paludis Does Things Differently</h2>
 
 <h3 id="tree">No <code>--tree</code> Equivalent</h3>
