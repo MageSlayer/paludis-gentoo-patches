@@ -32,12 +32,6 @@ CommandLine::CommandLine() :
     build_args(this, "Building",
             "Tweak toolchain creation."),
     a_fetch(&build_args,     "fetch",        'f', "Only fetch sources; don't install anything"),
-    a_show_install_reasons(&build_args, "show-install-reasons", '\0', "Show why packages are being installed",
-            paludis::args::EnumArg::EnumArgOptions
-            ("none",    "Don't show any information")
-            ("summary", "Show a summary")
-            ("full",    "Show full output (can be very verbose)"),
-            "none"),
     a_pretend(&build_args,   "pretend",      'p', "Pretend only"),
     a_stage(&build_args,     "stage",        's', "Build specified toolchain stage.",
             paludis::args::EnumArg::EnumArgOptions("binutils","Build binutils only")
@@ -46,9 +40,17 @@ CommandLine::CommandLine() :
             ("libc", "Build the C Standard Library additionally")
             ("full", "Build a full cross toolchain."),
             "binutils"),
+    a_show_install_reasons(&build_args, "show-install-reasons", '\0', "Show why packages are being installed",
+            paludis::args::EnumArg::EnumArgOptions
+            ("none",    "Don't show any information")
+            ("summary", "Show a summary")
+            ("full",    "Show full output (can be very verbose)"),
+            "none"),
     a_target(&build_args,    "target",       't', "Build for specified CTARGET."),
+    a_headers(&build_args,   "headers",      'H',
+            "Add additional stage to install kernel- and libc-headers before gcc."),
     a_always_rebuild(&build_args,   "always-rebuild",   'r',    "Always rebuild already built stages."),
-    a_headers(&build_args,   "headers",      'H', "Add additional stage to install kernel- and libc-headers before gcc."),
+
     a_debug_build(&build_args, "debug-build", '\0', "What to do with debug information",
             paludis::args::EnumArg::EnumArgOptions
             ("none",     "Discard debug information")
