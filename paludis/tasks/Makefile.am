@@ -19,7 +19,7 @@ TESTS_ENVIRONMENT = env \
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS =
 
-lib_LIBRARIES = libpaludistasks.a
+noinst_LIBRARIES = libpaludistasks.a
 paludis_tasks_includedir = $(includedir)/paludis/tasks
 paludis_tasks_include_HEADERS = \
 	install_task.hh \

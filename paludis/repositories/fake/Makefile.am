@@ -8,7 +8,16 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\"
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
+
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisfakerepository.la
+
+else
+
 paludis_repositories_lib_LTLIBRARIES = libpaludisfakerepository.la
+
+endif
 
 libpaludisfakerepository_la_SOURCES = \
 	fake_repository_base.cc fake_repository_base.hh \

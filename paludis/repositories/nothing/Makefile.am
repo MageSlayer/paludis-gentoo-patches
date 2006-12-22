@@ -9,7 +9,17 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\"
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
+
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisnothingrepository.la
+
+else
+
 paludis_repositories_lib_LTLIBRARIES = libpaludisnothingrepository.la
+
+endif
+
 libpaludisnothingrepository_la_SOURCES = nothing_repository.cc nothing_repository.hh
 libpaludisnothingrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 paludis_repositories_nothing_includedir = $(includedir)/paludis/repositories/nothing/

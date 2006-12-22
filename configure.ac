@@ -23,9 +23,25 @@ AC_SUBST([VERSION_LIB_REVISION])
 AM_INIT_AUTOMAKE(paludis, [$VERSION_FULL])
 dnl }}}
 
+dnl {{{ monolithic build
+AC_MSG_CHECKING([whether to do a monolithic build])
+AC_ARG_ENABLE([monolithic],
+			  AS_HELP_STRING([--enable-monolithic], [Make a monolithic build (developer use only)]),
+			  [MONOLITHIC=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [MONOLITHIC=no
+			   AC_MSG_RESULT([no])])
+AC_SUBST([MONOLITHIC])
+AM_CONDITIONAL([MONOLITHIC], test "x$MONOLITHIC" = "xyes")
+dnl }}}
+
 dnl {{{ basic toolchain checks
 AC_LANG([C++])
-AC_DISABLE_STATIC
+if test "x$MONOLITHIC" = "xyes" ; then
+	AC_DISABLE_SHARED
+else
+	AC_DISABLE_STATIC
+fi
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S

@@ -19,7 +19,16 @@ libpaludisdeplist_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la
 
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisdeplist.la
+
+else
+
 lib_LTLIBRARIES = libpaludisdeplist.la
+
+endif
+
 paludis_dep_list_includedir = $(includedir)/paludis/dep_list
 paludis_dep_list_include_HEADERS = dep_list.hh uninstall_list.hh dep_list-sr.hh uninstall_list-sr.hh
 

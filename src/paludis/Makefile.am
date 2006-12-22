@@ -40,6 +40,23 @@ paludis_SOURCES = \
 	report.hh            report.cc            \
 	paludis.cc
 
+if MONOLITHIC
+
+paludis_LDADD = \
+	$(top_builddir)/paludis/tasks/libpaludistasks.a \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
+	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
+	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la \
+	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
+	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
+	$(top_builddir)/src/liboutput.a \
+	$(DYNAMIC_LD_LIBS)
+
+else
+
 paludis_LDADD = \
 	$(top_builddir)/paludis/tasks/libpaludistasks.a \
 	$(top_builddir)/paludis/libpaludis.la \
@@ -49,6 +66,8 @@ paludis_LDADD = \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/src/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \

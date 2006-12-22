@@ -15,7 +15,16 @@ libpaludistestenvironment_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la
 
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludistestenvironment.la
+
+else
+
 lib_LTLIBRARIES = libpaludistestenvironment.la
+
+endif
+
 paludis_environment_test_includedir = $(includedir)/paludis/environment/test
 paludis_environment_test_include_HEADERS = test_environment.hh
 

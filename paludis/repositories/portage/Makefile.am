@@ -122,7 +122,17 @@ glsa-sr.cc : glsa.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/glsa.sr > $@
 
 if ENABLE_GLSA
+
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisportagerepositoryxmlthings.la
+
+else
+
 lib_LTLIBRARIES = libpaludisportagerepositoryxmlthings.la
+
+endif
+
 libpaludisportagerepositoryxmlthings_la_SOURCES = xml_things.cc
 libpaludisportagerepositoryxmlthings_la_CXXFLAGS = @LIBXML2DEPS_CFLAGS@
 libpaludisportagerepositoryxmlthings_la_LIBADD = @LIBXML2DEPS_LIBS@ \

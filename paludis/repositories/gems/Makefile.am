@@ -14,7 +14,17 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
+
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisgemsrepository.la
+
+else
+
 paludis_repositories_lib_LTLIBRARIES = libpaludisgemsrepository.la
+
+endif
+
 paludis_repositories_gems_includedir = $(includedir)/paludis/repositories/gems/
 libpaludisgemsrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 

@@ -19,7 +19,15 @@ libpaludisdigests_la_SOURCES = \
 
 libpaludisdigests_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisdigests.la
+
+else
+
 lib_LTLIBRARIES = libpaludisdigests.la
+
+endif
 
 TESTS = sha256_TEST rmd160_TEST md5_TEST
 EXTRA_DIST = sha256_TEST.cc rmd160_TEST.cc md5_TEST.cc

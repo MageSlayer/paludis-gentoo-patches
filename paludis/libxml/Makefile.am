@@ -20,7 +20,16 @@ check_SCRIPTS =
 
 if NEED_XML
 
+if MONOLITHIC
+
 lib_LTLIBRARIES = libpaludislibxml.la
+
+else
+
+noinst_LTLIBRARIES = libpaludislibxml.la
+
+endif
+
 paludis_libxml_includedir = $(includedir)/paludis/libxml
 paludis_libxml_include_HEADERS = \
 	libxml.hh

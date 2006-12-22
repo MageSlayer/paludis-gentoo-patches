@@ -17,6 +17,23 @@ qualudis_SOURCES = \
 	qualudis_command_line.hh      qualudis_command_line.cc      \
 	qualudis.cc
 
+if MONOLITHIC
+
+qualudis_LDADD = \
+	$(top_builddir)/paludis/qa/libpaludisqa.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/src/liboutput.a \
+	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
+	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la \
+	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
+	$(PCREPLUSPLUS_LIBS) \
+	$(LIBXML2DEPS_LIBS) \
+	$(DYNAMIC_LD_LIBS)
+
+else
+
 qualudis_LDADD = \
 	$(top_builddir)/paludis/qa/libpaludisqa.la \
 	$(top_builddir)/paludis/libpaludis.la \
@@ -26,6 +43,8 @@ qualudis_LDADD = \
 	$(PCREPLUSPLUS_LIBS) \
 	$(LIBXML2DEPS_LIBS) \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 INCLUDES = $(PCREPLUSPLUS_CFLAGS) $(LIBXML2DEPS_CFLAGS)
 

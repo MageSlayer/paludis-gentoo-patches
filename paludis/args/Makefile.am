@@ -38,7 +38,16 @@ TESTS_ENVIRONMENT = env -u PALUDIS_OPTIONS \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	bash $(top_srcdir)/test/run_test.sh
 
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisargs.la
+
+else
+
 lib_LTLIBRARIES = libpaludisargs.la
+
+endif
+
 check_PROGRAMS = $(TESTS)
 
 test_ldadd = \

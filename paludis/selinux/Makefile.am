@@ -13,7 +13,15 @@ libpaludisselinux_la_SOURCES = \
 
 libpaludisselinux_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisselinux.la
+
+else
+
 lib_LTLIBRARIES = libpaludisselinux.la
+
+endif
 
 TESTS =
 EXTRA_DIST =

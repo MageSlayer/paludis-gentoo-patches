@@ -18,7 +18,16 @@ libpaludisnoconfigenvironment_la_LIBADD = \
 	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
 	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la
 
+if MONOLITHIC
+
 lib_LTLIBRARIES = libpaludisnoconfigenvironment.la
+
+else
+
+noinst_LTLIBRARIES = libpaludisnoconfigenvironment.la
+
+endif
+
 paludis_environment_no_config_includedir = $(includedir)/paludis/environment/no_config
 paludis_environment_no_config_include_HEADERS = \
 	no_config_environment.hh \

@@ -10,7 +10,17 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
+
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisvirtualsrepository.la
+
+else
+
 paludis_repositories_lib_LTLIBRARIES = libpaludisvirtualsrepository.la
+
+endif
+
 paludis_repositories_virtuals_includedir = $(includedir)/paludis/repositories/virtuals/
 libpaludisvirtualsrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 

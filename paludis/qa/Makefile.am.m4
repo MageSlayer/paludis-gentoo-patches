@@ -79,7 +79,17 @@ TESTS_ENVIRONMENT = env \
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
+
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisqa.la
+
+else
+
 lib_LTLIBRARIES = libpaludisqa.la
+
+endif
+
 paludis_qaincludedir = $(includedir)/paludis/qa/
 paludis_qainclude_HEADERS = headerlist srheaderlist
 

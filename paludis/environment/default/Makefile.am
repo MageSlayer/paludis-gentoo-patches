@@ -20,7 +20,16 @@ libpaludisdefaultenvironment_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la
 
+if MONOLITHIC
+
+noinst_LTLIBRARIES = libpaludisdefaultenvironment.la
+
+else
+
 lib_LTLIBRARIES = libpaludisdefaultenvironment.la
+
+endif
+
 paludis_environment_default_includedir = $(includedir)/paludis/environment/default
 paludis_environment_default_include_HEADERS = \
 	default_config.hh \
