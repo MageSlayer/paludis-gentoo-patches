@@ -74,7 +74,11 @@ enum Colour
     cl_file          = cl_none,
     cl_dir           = cl_blue,
     cl_sym           = cl_pink,
-    cl_misc          = cl_red
+    cl_misc          = cl_red,
+
+    /* Contrarius colours */
+    cl_stage_short_name = cl_blue,
+    cl_stage_long_name  = cl_yellow
 };
 
 bool use_colour();

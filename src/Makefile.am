@@ -1,4 +1,4 @@
-SUBDIRS = . paludis gtkpaludis qualudis adjutrix
+SUBDIRS = . paludis gtkpaludis qualudis adjutrix contrarius
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in

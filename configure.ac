@@ -767,6 +767,7 @@ AC_OUTPUT(
 	ruby/Makefile
 	ruby/demos/Makefile
 	src/Makefile
+	src/contrarius/Makefile
 	src/paludis/Makefile
 	src/gtkpaludis/Makefile
 	src/gtkpaludis/cellrendererbutton/Makefile

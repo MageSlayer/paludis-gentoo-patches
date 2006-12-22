@@ -1,0 +1,27 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_HostTupleName()
+{
+    key architecture ArchitectureNamePart
+    key manufacturer ManufacturerNamePart
+    key kernel KernelNamePart
+    key userland UserlandNamePart
+
+    comparison_operators all all
+
+    extra_constructors <<END
+        HostTupleName(const std::string &);
+END
+
+    doxygen_comment << "END"
+        /**
+         * Represents a configuration name as expected by autotools.
+         *
+         * \ingroup grpnames
+         * \ingroup grpconfigurationname
+         * \nosubgrouping
+         */
+END
+}
+

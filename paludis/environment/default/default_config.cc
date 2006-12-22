@@ -107,6 +107,8 @@ namespace paludis
 
         std::multimap<std::string, std::string> mirrors;
 
+        std::vector<UseConfigEntry> forced_use_config;
+
         Implementation();
     };
 
@@ -481,6 +483,31 @@ DefaultConfig::DefaultConfig() :
 
 DefaultConfig::~DefaultConfig()
 {
+}
+
+void
+DefaultConfig::add_forced_use_config(const UseConfigEntry & e)
+{
+    _imp->forced_use_config.push_back(e);
+}
+
+void
+DefaultConfig::clear_forced_use_config()
+{
+    _imp->forced_use_config.clear();
+}
+
+DefaultConfig::UseConfigIterator
+DefaultConfig::begin_forced_use_config() const
+{
+    return UseConfigIterator(_imp->forced_use_config.begin());
+}
+
+
+DefaultConfig::UseConfigIterator
+DefaultConfig::end_forced_use_config() const
+{
+    return UseConfigIterator(_imp->forced_use_config.end());
 }
 
 void

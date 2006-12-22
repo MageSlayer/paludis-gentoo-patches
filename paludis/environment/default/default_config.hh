@@ -191,6 +191,23 @@ namespace paludis
             ///\}
 
             /**
+             * Add a forced USE flag to this configuration.
+             */
+            void add_forced_use_config(const UseConfigEntry & e);
+
+            /**
+             * Clear all forced USE flags.
+             */
+            void clear_forced_use_config();
+
+            ///\name Iterate over our forced USE flags
+            ///\{
+            UseConfigIterator begin_forced_use_config() const;
+            UseConfigIterator end_forced_use_config() const;
+            ///\}
+
+
+            /**
              * Our bashrc files.
              */
             std::string bashrc_files() const;

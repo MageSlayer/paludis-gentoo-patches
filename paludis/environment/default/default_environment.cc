@@ -68,6 +68,25 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
             return true;
     }
 
+    /* check use: forced use config */
+    for (DefaultConfig::UseConfigIterator
+            u(DefaultConfig::get_instance()->begin_forced_use_config()),
+            u_end(DefaultConfig::get_instance()->end_forced_use_config()) ;
+            u != u_end ; ++u)
+    {
+        if (u->dep_atom)
+            continue;
+
+        if (u->flag_name != f)
+            continue;
+
+        Log::get_instance()->message(ll_debug, lc_no_context, "Forced use flag: "
+                + stringify(u->flag_name) + ", state: "
+                + ((u->flag_state == use_enabled) ? "enabled" : "disabled"));
+
+        return u->flag_state == use_enabled;
+    }
+
     /* check use: per package user config */
     if (e)
     {
@@ -535,11 +554,27 @@ DefaultEnvironment::known_use_expand_names(const UseFlagName & prefix, const Pac
             result->insert(i->first);
 
     if (pde)
+    {
+        for (DefaultConfig::UseConfigIterator i(DefaultConfig::get_instance()->begin_forced_use_config()),
+                i_end(DefaultConfig::get_instance()->end_forced_use_config()) ; i != i_end ; ++i)
+        {
+            if (! i->dep_atom)
+                continue;
+
+            if (! match_package(this, *i->dep_atom, *pde))
+                continue;
+
+            if (i->flag_name.data().length() > prefix_lower.length() &&
+                    0 == i->flag_name.data().compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
+              result->insert(i->flag_name);
+        }
+
         for (DefaultConfig::UseConfigIterator i(DefaultConfig::get_instance()->begin_use_config(pde->name)),
                 i_end(DefaultConfig::get_instance()->end_use_config(pde->name)) ; i != i_end ; ++i)
             if (i->flag_name.data().length() > prefix_lower.length() &&
                     0 == i->flag_name.data().compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
                 result->insert(i->flag_name);
+    }
 
     Log::get_instance()->message(ll_debug, lc_no_context, "DefaultEnvironment::known_use_expand_names("
             + stringify(prefix) + ", " + (pde ? stringify(*pde) : stringify("0")) + ") -> ("
