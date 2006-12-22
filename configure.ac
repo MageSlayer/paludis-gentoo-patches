@@ -33,6 +33,9 @@ AC_ARG_ENABLE([monolithic],
 			   AC_MSG_RESULT([no])])
 AC_SUBST([MONOLITHIC])
 AM_CONDITIONAL([MONOLITHIC], test "x$MONOLITHIC" = "xyes")
+if test "x$MONOLITHIC" = "xyes" ; then
+	AC_DEFINE([MONOLITHIC], [1], [Make a monolithic build])
+fi
 dnl }}}
 
 dnl {{{ basic toolchain checks

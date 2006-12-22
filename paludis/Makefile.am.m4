@@ -85,11 +85,11 @@ check_SCRIPTS = testscriptlist
 
 if MONOLITHIC
 
-lib_LTLIBRARIES = libpaludis.la
+noinst_LTLIBRARIES = libpaludis.la
 
 else
 
-noinst_LTLIBRARIES = libpaludis.la
+lib_LTLIBRARIES = libpaludis.la
 
 endif
 
