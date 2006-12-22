@@ -1,0 +1,24 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_ContrariusStageOptions()
+{
+    key target HostTupleName
+
+    key binutils PackageDepAtom::ConstPointer
+    key gcc PackageDepAtom::ConstPointer
+    key headers PackageDepAtom::ConstPointer
+    key libc PackageDepAtom::ConstPointer
+
+    extra_constructors <<END
+        ContrariusStageOptions(const HostTupleName & target,
+                    const std::string & binutils_name,
+                    const std::string & binutils_version,
+                    const std::string & gcc_name,
+                    const std::string & gcc_version,
+                    const std::string & headers_name,
+                    const std::string & headers_version,
+                    const std::string & libc_name,
+                    const std::string & libc_version);
+END
+}

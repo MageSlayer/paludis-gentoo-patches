@@ -102,8 +102,11 @@ StageBuilderTask::execute()
                 on_build_skipped(*s);
                 continue;
             }
+
             (*s)->build(_imp->options);
-            on_build_succeed(*s);
+
+            if (! _imp->options.pretend)
+                on_build_succeed(*s);
         }
         catch (const StageBuildError & e)
         {

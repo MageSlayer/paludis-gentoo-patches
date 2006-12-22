@@ -74,10 +74,10 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
             u_end(DefaultConfig::get_instance()->end_forced_use_config()) ;
             u != u_end ; ++u)
     {
-        if (u->dep_atom)
+        if (u->flag_name != f)
             continue;
 
-        if (u->flag_name != f)
+        if (! match_package(this, *u->dep_atom, *e))
             continue;
 
         Log::get_instance()->message(ll_debug, lc_no_context, "Forced use flag: "
