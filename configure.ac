@@ -21,30 +21,32 @@ AC_SUBST([VERSION_LIB_CURRENT])
 AC_SUBST([VERSION_LIB_REVISION])
 
 AM_INIT_AUTOMAKE(paludis, [$VERSION_FULL])
+AC_LANG([C++])
 dnl }}}
 
 dnl {{{ monolithic build
 AC_MSG_CHECKING([whether to do a monolithic build])
 AC_ARG_ENABLE([monolithic],
 			  AS_HELP_STRING([--enable-monolithic], [Make a monolithic build (developer use only)]),
-			  [MONOLITHIC=$enableval
+			  [build_monolithic=$enableval
 			   AC_MSG_RESULT([$enableval])],
-			  [MONOLITHIC=no
+			  [build_monolithic=no
 			   AC_MSG_RESULT([no])])
+MONOLITHIC=$build_monolithic
 AC_SUBST([MONOLITHIC])
-AM_CONDITIONAL([MONOLITHIC], test "x$MONOLITHIC" = "xyes")
-if test "x$MONOLITHIC" = "xyes" ; then
+AM_CONDITIONAL([MONOLITHIC], test "x$build_monolithic" = "xyes")
+if test "x$build_monolithic" = "xyes" ; then
 	AC_DEFINE([MONOLITHIC], [1], [Make a monolithic build])
-fi
-dnl }}}
-
-dnl {{{ basic toolchain checks
-AC_LANG([C++])
-if test "x$MONOLITHIC" = "xyes" ; then
-	AC_DISABLE_SHARED
 else
 	AC_DISABLE_STATIC
 fi
+AC_MSG_CHECKING([whether we're building shared libaries])
+AC_MSG_RESULT([$enable_shared])
+AC_MSG_CHECKING([whether we're building static libaries])
+AC_MSG_RESULT([$enable_static])
+dnl }}}
+
+dnl {{{ basic toolchain checks
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
