@@ -7,7 +7,8 @@ noinst_LIBRARIES = liboutput.a
 liboutput_a_SOURCES = \
 	colour.cc colour.hh \
 	console_install_task.cc console_install_task.hh \
-	use_flag_pretty_printer.cc use_flag_pretty_printer.cc
+	use_flag_pretty_printer.cc use_flag_pretty_printer.hh \
+	licence.cc licence.hh
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src @PALUDIS_CXXFLAGS@
 

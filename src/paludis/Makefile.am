@@ -34,7 +34,6 @@ paludis_SOURCES = \
 	list.hh              list.cc              \
 	query.hh             query.cc             \
 	sync.hh              sync.cc              \
-	licence.hh           licence.cc           \
 	do_contents.hh       do_contents.cc       \
 	owner.hh             owner.cc             \
 	news.hh              news.cc              \
