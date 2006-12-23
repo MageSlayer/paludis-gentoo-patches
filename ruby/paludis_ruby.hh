@@ -30,6 +30,8 @@
 #include <paludis/package_database.hh>
 #include <paludis/mask_reasons.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/environment.hh>
+#include <paludis/environment/no_config/no_config_environment.hh>
 #include <paludis/repositories/portage/portage_repository.hh>
 
 #ifdef ENABLE_RUBY_QA
