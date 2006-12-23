@@ -20,11 +20,11 @@ libpaludisnoconfigenvironment_la_LIBADD = \
 
 if MONOLITHIC
 
-lib_LTLIBRARIES = libpaludisnoconfigenvironment.la
+noinst_LTLIBRARIES = libpaludisnoconfigenvironment.la
 
 else
 
-noinst_LTLIBRARIES = libpaludisnoconfigenvironment.la
+lib_LTLIBRARIES = libpaludisnoconfigenvironment.la
 
 endif
 
