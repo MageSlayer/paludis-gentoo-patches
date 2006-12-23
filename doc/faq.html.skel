@@ -32,9 +32,114 @@ cause huge breakage in seemingly unrelated areas. It is almost entirely
 undocumented, and the internal names are perverse and often do not reflect what
 the code now does.</p>
 
-<h3 id="c++">Why C++?</h3>
+<h3 id="cplusplus">Why C++?</h3>
 
 <p>Because we don't have the time or the manpower to write it in C.</p>
+
+<h2 id="howdoi">How do I...</h2>
+
+<h3 id="ccache">Use <code>ccache</code></h3>
+
+<p>To enable <code>ccache</code>, simply set the relevant variables in your
+configuration <code>bashrc</code>:</p>
+
+<pre>
+export PATH="/usr/lib/ccache/bin/:${PATH}"
+export CCACHE_DIR="/var/tmp/ccache"
+export CC="/usr/lib/ccache/bin/gcc"
+export CXX="/usr/lib/ccache/bin/g++"
+</pre>
+
+<h3 id="defaultoptions">Specify default options</h3>
+
+<p>Often users want to specify certain options by default. Common choices include:</p>
+
+<ul>
+    <li><code>--debug-build split</code>, to make debugging easier (at the cost of disk
+    space)</li>
+
+    <li><code>--log-level warning</code> (you should <strong>not</strong> use
+    <code>silent</code> in this way -- warnings are warnings because you need
+    to read them)</li>
+
+    <li><code>--show-install-reasons summary</code></li>
+
+    <li><code>--resume-command-template ~/.paludis-resume-XXXXXX</code></li>
+
+    <li><code>--dl-reinstall-scm weekly</code></li>
+</ul>
+
+<p>You can either use a shell alias, or <code>export
+    PALUDIS_OPTIONS="--options"</code> (in your environment, not in the
+configuration <code>bashrc</code>).</p>
+
+<h3 id="removeunneeded">Remove unneeded packages</h3>
+
+<p>Paludis has three ways of removing unused packages. You should <strong>always</strong>
+use <code>--pretend</code> and check the output before proceeding:</p>
+
+<dl>
+    <dt><code>--uninstall-unused</code></dt>
+    <dd>
+    <p>For the purposes of <code>--uninstall-unused</code>, an installed package
+    is <em>used</em> if any of these conditions are true:</p>
+
+    <ul>
+        <li>It is matched by any atom in any repository's <code>system</code> or
+        <code>world</code> set.</li>
+        <li>It is depended upon by another used package.</li>
+    </ul>
+
+    <p>This action will therefore flag any packages that are no longer in use,
+    for example because they were only pulled in by a package that is no longer
+    installed, or because they were required by an old version of a package but
+    no longer are.</p>
+    </dd>
+
+    <dt><code>--uninstall --with-unused-dependencies</code></dt>
+    <dd>
+    <p>This action will uninstall a package, along with any of its dependencies
+    that will no longer be used once the target package is removed.</p>
+
+    <p>This action is recursive, so if <code>foo</code> depends upon <code>bar</code>
+    and <code>bar</code> depends upon <code>baz</code>, and if neither <code>bar</code>
+    nor <code>baz</code> are otherwise required, uninstalling <code>foo</code> will
+    also uninstall <code>bar</code> then <code>baz</code>.</p>
+    </dd>
+
+    <dt><code>--uninstall --with-dependencies</code></dt>
+    <dd>
+    <p>This action will uninstall a package, along with any other package that
+    requires this package as a dependency. Again, this action is recursive.</p>
+    </dd>
+</dl>
+
+<p>Some important notes:</p>
+
+<ul>
+    <li>These actions rely upon a package's dependencies being correctly specified.
+    They do not attempt to figure out whether a package has unlisted dependencies
+    using devious trickery.</li>
+
+    <li>These actions rely upon a package correctly using <code>USE</code> flags. If
+    a package was built with, say, <code>-foo</code> whilst <code>libfoo</code> was
+    installed, Paludis will not consider the package to require <code>libfoo</code>.
+    Unfortunately, some people don't know how to use <code>autoconf</code> correctly,
+    so this assumption is currently not entirely safe in all cases.</li>
+
+    <li>Currently a package's build dependencies, as well as its runtime and post
+    dependencies, are used when determining needed packages. Experimentation has
+    shown that doing otherwise will lead to an awful lot of breakage -- in the future,
+    if ebuild authors start being more careful, this behaviour may become
+    controllable.</li>
+
+    <li>For the case of any-of (<code>|| ( foo bar )</code>) dependencies, Paludis
+    currently does the safe thing and assumes that all available options, if
+    installed, are needed. This cannot be changed safely until ebuild authors stop
+    abusing <code>|| ( )</code> -- this construct <em>should</em> only be used
+    where the dependency can be switched at runtime, but unfortunately it is
+    often used to mean "compile against one of these".</li>
+</ul>
 
 <h2 id="stricter">Paludis is Stricter than Portage</h2>
 
@@ -94,6 +199,20 @@ other than <code>/</code>.</p>
 honour <code>ROOT</code>. To temporarily disable sandbox for these packages,
 <code>export SANDBOX_PREDICT=/</code> or <code>export SANDBOX_WRITE=/</code> as
 appropriate.</p>
+
+<h3 id="repo_name">Repository names</h3>
+
+<p>Because of a requirement forced into <a
+    href="http://www.gentoo.org/proj/en/glep/glep-0042.html">GLEP 42</a> by the
+peanut gallery, repositories are required to be uniquely identifiable. The
+identifier must remain consistent even if a repository is moved, either locally
+or remotely, and thus must be independent of user configuration.</p>
+
+<p>For Portage format repositories, this is controlled by the <code>profiles/repo_name</code>
+file. It should contain a single string with no whitespace or funny characters.
+For many repositories, this has already been created for you; for some overlays,
+probably including your local overlay if you have one, the file is not yet
+there so you will have to create it.</p>
 
 <h2 id="misfunctionality">Undesirable Misfunctionality</h2>
 
@@ -191,43 +310,6 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
     <dd>Always on. See <a href="#testfailures">Packages failing
         <code>src_test</code></a>.</dd>
 </dl>
-
-<h2 id="howdoi">How do I...</h2>
-
-<h3 id="ccache">Use <code>ccache</code></h3>
-
-<p>To enable <code>ccache</code>, simply set the relevant variables in your
-configuration <code>bashrc</code>:</p>
-
-<pre>
-export PATH="/usr/lib/ccache/bin/:${PATH}"
-export CCACHE_DIR="/var/tmp/ccache"
-export CC="/usr/lib/ccache/bin/gcc"
-export CXX="/usr/lib/ccache/bin/g++"
-</pre>
-
-<h3 id="defaultoptions">Specify default options</h3>
-
-<p>Often users want to specify certain options by default. Common choices include:</p>
-
-<ul>
-    <li><code>--debug-build split</code>, to make debugging easier (at the cost of disk
-    space)</li>
-
-    <li><code>--log-level warning</code> (you should <strong>not</strong> use
-    <code>silent</code> in this way -- warnings are warnings because you need
-    to read them)</li>
-
-    <li><code>--show-install-reasons summary</code></li>
-
-    <li><code>--resume-command-template ~/.paludis-resume-XXXXXX</code></li>
-
-    <li><code>--dl-reinstall-scm weekly</code></li>
-</ul>
-
-<p>You can either use a shell alias, or <code>export
-    PALUDIS_OPTIONS="--options"</code> (in your environment, not in the
-configuration <code>bashrc</code>).</p>
 
 @FOOTER@
 </body>

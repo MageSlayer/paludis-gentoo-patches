@@ -79,7 +79,7 @@ a.elRef {
     font-family: monospace;
 }
 
-pre.fragment {
+pre {
     border: 1px solid #cccccc;
     background-color: #f5f5f5;
     margin-top: 4px;
