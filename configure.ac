@@ -798,6 +798,7 @@ AC_OUTPUT(
 	src/qualudis/Makefile
 	src/adjutrix/Makefile
 	test/Makefile
+	zsh-completion/Makefile
 	)
 dnl }}}
 

@@ -1,0 +1,60 @@
+#autoload
+
+# vim: set et sw=4 sts=4 ts=4 ft=zsh :
+# ZSH completion utility functions for paludis
+# Written by Baptiste Daroussin <baptux at free.fr>
+# Usage: _paludis_packages installed|available|repositories|categories|sets
+
+local flags prepo packages categories
+_paludis_packages_update_available() {
+    categories=(${${(M)${(f)"$(paludis --list-categories)"}:#\* *}##\* })
+    if [[ $PREFIX != */* ]];then
+        _wanted cat_packages expl "category/packages" compadd -S "/" $categories
+    else
+    compset -P '*/'
+#   packages=(${${(M)${(f)"$(paludis --category ${PREFIX//\//} --list-packages)"}:#\* *}##\* })
+    packages=(${${${(M)${(f)"$(paludis --category ${IPREFIX//\//} --list-packages)"}:#\* *}##\* }//$IPREFIX/})
+    _wanted cat_packages expl "category/packages" compadd ${(@)packages}
+    fi
+}
+
+_paludis_packages_update_installed() {
+    packages=(${${(M)${(f)"$(paludis --repository installed --list-packages)"}:#\* *}##\* })
+
+    compadd ${(@)packages}
+}
+_paludis_packages_update_categories() {
+    packages=(${${${(M)${(f)"$(paludis --list-categories)"}:#\* *}##\* }:#*(virtual|installed)*})
+    compadd ${(@)packages}
+}
+_paludis_packages_update_repositories() {
+    packages=(${${${(M)${(f)"$(paludis --list-repositories)"}:#\* *}##\* }:#*(virtual|installed)*})
+    compadd ${(@)packages}
+}
+_paludis_packages_update_sets() {
+    packages=(${${${(M)${(f)"$(paludis --list-sets)"}:#\* *}##\* }:#*(virtual|installed)*})
+    compadd ${(@)packages}
+}
+_paludis_packages() {
+    local command="$argv[$#]" expl cachevar pkgset update_policy
+    zstyle -s ":completion:*:*:$service:*" cache-policy update_policy
+    if [[ -z "$update_policy" ]]; then
+        zstyle ":completion:*:*:$service:*" cache-policy _paludis_cache_policy
+    fi
+    [[ "$command" == (installed|available|categories|repositories|sets) ]] || {
+        _message "unknown command: $command"
+        return
+    }
+    [[ "$pkgset" ==  (installed|available|categories|repositories|sets) ]] || {
+        pkgset="$command"
+    }
+    expl=("${(@)argv[1,-2]}")
+        _paludis_packages_update_$pkgset
+}
+_paludis_cache_policy () {
+#   rebuild if cache is more than a week old
+        oldp=( "$1"(mw+1) )
+        (( $#oldp )) && return 0
+}
+
+_paludis_packages "$@"
