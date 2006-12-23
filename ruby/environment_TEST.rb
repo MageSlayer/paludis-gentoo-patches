@@ -230,6 +230,30 @@ module Paludis
         end
     end
 
+    class TestCase_DefaultEnvironmentQueryUserMasks < Test::Unit::TestCase
+        def env
+            DefaultEnvironment.instance
+        end
+
+        def test_query_user_masks
+            p2 = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("2.0"), "testrepo")
+            p3 = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("3.0"), "testrepo")
+
+            assert ! env.query_user_masks(p2)
+            assert env.query_user_masks(p3)
+        end
+
+        def test_query_user_masks_bad
+            p = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("2.0"), "testrepo")
+            assert_raise ArgumentError do
+                env.query_user_masks(p, p)
+            end
+            assert_raise TypeError do
+                env.query_user_masks(123)
+            end
+        end
+    end
+
     class TestCase_DefaultEnvironmentPackageDatabase < Test::Unit::TestCase
         def db
             DefaultEnvironment.instance.package_database

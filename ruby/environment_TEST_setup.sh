@@ -24,6 +24,10 @@ cat <<END > home/.paludis/use.conf
 ~foo/bar-1 sometimes_enabled
 END
 
+cat <<END > home/.paludis/package_mask.conf
+=foo/bar-3*
+END
+
 cat <<END > home/.paludis/licenses.conf
 * *
 END

@@ -211,6 +211,186 @@ module Paludis
         end
     end
 
+    class TestCase_RepositoryQueryUse < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_query_use_global
+            assert repo.query_use('test1') == true
+            assert repo.query_use('test2') == true
+            assert repo.query_use('test3') == nil
+            assert repo.query_use('test4') == false
+            assert repo.query_use('test5') == false
+            assert repo.query_use('test6') == true
+            assert repo.query_use('test7') == nil
+        end
+
+        def test_query_use_local
+            p = PackageDatabaseEntry.new('foo/bar','2.0',repo.name)
+
+            assert repo.query_use('test1',p) == true
+            assert repo.query_use('test2',p) == false
+            assert repo.query_use('test3',p) == true
+            assert repo.query_use('test4',p) == nil
+            assert repo.query_use('test5',p) == false
+            assert repo.query_use('test6',p) == true
+            assert repo.query_use('test7',p) == true
+        end
+
+        def test_query_use_bad
+            assert_raise TypeError do
+                repo.query_use(42)
+            end
+            assert_raise TypeError do
+                repo.query_use('test1',{})
+            end
+
+            assert_raise ArgumentError do
+                repo.query_use
+                repo.query_use(1,2,3)
+            end
+        end
+    end
+
+    class TestCase_RepositoryQueryUseMask < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_query_use_mask_global
+            assert ! repo.query_use_mask('test1')
+            assert ! repo.query_use_mask('test2')
+            assert ! repo.query_use_mask('test3')
+            assert repo.query_use_mask('test4')
+            assert ! repo.query_use_mask('test5')
+            assert ! repo.query_use_mask('test6')
+            assert ! repo.query_use_mask('test7')
+        end
+
+        def test_query_use_mask_local
+            p = PackageDatabaseEntry.new('foo/bar','2.0',repo.name)
+
+            assert ! repo.query_use_mask('test1',p)
+            assert ! repo.query_use_mask('test2',p)
+            assert ! repo.query_use_mask('test3',p)
+            assert ! repo.query_use_mask('test4',p)
+            assert repo.query_use_mask('test5',p)
+            assert ! repo.query_use_mask('test6',p)
+            assert ! repo.query_use_mask('test7',p)
+        end
+
+        def test_query_use_mask_bad
+            assert_raise TypeError do
+                repo.query_use_mask(42)
+            end
+            assert_raise TypeError do
+                repo.query_use_mask('test1',{})
+            end
+
+            assert_raise ArgumentError do
+                repo.query_use_mask
+                repo.query_use_mask(1,2,3)
+            end
+        end
+    end
+
+    class TestCase_RepositoryQueryUseForce < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_query_use_force_global
+            assert ! repo.query_use_force('test1')
+            assert ! repo.query_use_force('test2')
+            assert ! repo.query_use_force('test3')
+            assert ! repo.query_use_force('test4')
+            assert ! repo.query_use_force('test5')
+            assert repo.query_use_force('test6')
+            assert ! repo.query_use_force('test7')
+        end
+
+        def test_query_use_force_local
+            p = PackageDatabaseEntry.new('foo/bar','2.0',repo.name)
+
+            assert ! repo.query_use_force('test1',p)
+            assert ! repo.query_use_force('test2',p)
+            assert ! repo.query_use_force('test3',p)
+            assert ! repo.query_use_force('test4',p)
+            assert ! repo.query_use_force('test5',p)
+            assert repo.query_use_force('test6',p)
+            assert repo.query_use_force('test7',p)
+        end
+
+        def test_query_use_force_bad
+            assert_raise TypeError do
+                repo.query_use_force(42)
+            end
+            assert_raise TypeError do
+                repo.query_use_force('test1',{})
+            end
+
+            assert_raise ArgumentError do
+                repo.query_use_force
+                repo.query_use_force(1,2,3)
+            end
+        end
+    end
+
+    class TestCase_QueryRepositoryMasks < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_repository_masks
+            assert repo.query_repository_masks("foo1/bar","1.0")
+            assert repo.query_repository_masks("foo2/bar","1.0")
+            assert ! repo.query_repository_masks("foo3/bar","1.0")
+            assert ! repo.query_repository_masks("foo4/bar","1.0")
+        end
+
+        def test_repository_masks_bad
+            assert_raise TypeError do
+                repo.query_repository_masks(42,"1.0")
+            end
+            assert_raise TypeError do
+                repo.query_repository_masks("foo/bar",[])
+            end
+
+            assert_raise ArgumentError do
+                repo.query_repository_masks
+            end
+            assert_raise ArgumentError do
+                repo.query_repository_masks("foo/bar")
+            end
+            assert_raise ArgumentError do
+                repo.query_repository_masks("foo/bar","1.0","baz")
+            end
+        end
+    end
+
+    class TestCase_QueryProfileMasks < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_profile_masks
+            assert repo.query_profile_masks("foo1/bar","1.0")
+            assert ! repo.query_profile_masks("foo2/bar","1.0")
+            assert repo.query_profile_masks("foo3/bar","1.0")
+            assert ! repo.query_profile_masks("foo4/bar","1.0")
+        end
+
+        def test_profile_masks_bad
+            assert_raise TypeError do
+                repo.query_profile_masks(42,"1.0")
+            end
+            assert_raise TypeError do
+                repo.query_profile_masks("foo/bar",[])
+            end
+
+            assert_raise ArgumentError do
+                repo.query_profile_masks
+            end
+            assert_raise ArgumentError do
+                repo.query_profile_masks("foo/bar")
+            end
+            assert_raise ArgumentError do
+                repo.query_profile_masks("foo/bar","1.0","baz")
+            end
+        end
+    end
+
     class TestCase_RepositoryInfo < Test::Unit::TestCase
         include RepositoryTestCase
 

@@ -47,10 +47,41 @@ cat <<END > profiles/profiles.desc || exit 1
 x86 testprofile stable
 END
 
-cat <<END > profiles/testprofile/make.defaults
+cat <<END > profiles/package.mask || exit 1
+foo1/bar
+foo2/bar
+END
+
+cat <<END > profiles/testprofile/make.defaults || exit 1
 ARCH=test
 USERLAND=test
 KERNEL=test
+USE="test1 test2 -test5"
+END
+
+cat <<END > profiles/testprofile/package.mask || exit 1
+foo1/bar
+foo3/bar
+END
+
+cat <<END > profiles/testprofile/package.use || exit 1
+foo/bar -test2 test3
+END
+
+cat <<END > profiles/testprofile/use.mask || exit 1
+test4
+END
+
+cat <<END > profiles/testprofile/package.use.mask || exit 1
+foo/bar -test4 test5
+END
+
+cat <<END > profiles/testprofile/use.force || exit 1
+test6
+END
+
+cat <<END > profiles/testprofile/package.use.force || exit 1
+foo/bar test7
 END
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1

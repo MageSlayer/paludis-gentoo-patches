@@ -153,6 +153,29 @@ namespace
     }
 
     /*
+     * call-seq:
+     *     query_user_masks(package_database_entry)
+     *
+     * Are there any user masks on a PackageDatabaseEntry?
+     */
+    VALUE
+    environment_query_user_masks(VALUE self, VALUE pde_value)
+    {
+        EnvironmentData * env_data;
+        Data_Get_Struct(self, EnvironmentData, env_data);
+
+        PackageDatabaseEntry pde = value_to_package_database_entry(pde_value);
+        try
+        {
+             return env_data->env_ptr->query_user_masks(pde) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
      * Fetch our PackageDatabase.
      */
     VALUE
@@ -346,6 +369,7 @@ namespace
         rb_define_method(c_environment, "accept_keyword", RUBY_FUNC_CAST(&environment_accept_keyword), -1);
         rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), -1);
         rb_define_method(c_environment, "mask_reasons", RUBY_FUNC_CAST(&environment_mask_reasons), 1);
+        rb_define_method(c_environment, "query_user_masks", RUBY_FUNC_CAST(&environment_query_user_masks), 1);
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
         rb_define_method(c_environment, "package_set", RUBY_FUNC_CAST(&environment_package_set), 1);
 
