@@ -22,11 +22,11 @@ if NEED_XML
 
 if MONOLITHIC
 
-lib_LTLIBRARIES = libpaludislibxml.la
+noinst_LTLIBRARIES = libpaludislibxml.la
 
 else
 
-noinst_LTLIBRARIES = libpaludislibxml.la
+lib_LTLIBRARIES = libpaludislibxml.la
 
 endif
 
