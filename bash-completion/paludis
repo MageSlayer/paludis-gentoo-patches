@@ -230,7 +230,7 @@ _paludis() {
                     return 0
                     ;;
                 --owner|-o)
-                    COMPREPLY=($(compgen -f -- "${cur}"))
+                    _filedir
                     return 0
                     ;;
                 #=*|>*|>*|~*)
@@ -246,7 +246,7 @@ _paludis() {
                             return 0
                             ;;
                         owner)
-                            COMPREPLY=($(compgen -f -- "${cur}"))
+                            _filedir
                             return 0
                             ;;
                         conf_variable_query)
@@ -281,8 +281,8 @@ _paludis() {
                                     $(compgen -W "$(_paludis_dolist sets)" -- "${cur}")
                                     $(compgen -W "$(_paludis_dolist categories)" -- "${cur}")
                                     $(compgen -W "$(_paludis_packagenames)" -- "${cur}")
-                                    $(compgen -f -- "${cur}")
                                     )
+                                    _filedir
                                     return 0
                                     ;;
                             esac

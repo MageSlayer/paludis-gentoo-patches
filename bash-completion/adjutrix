@@ -87,14 +87,12 @@ _adjutrix() {
                     ;;
 
                 --repository-dir|-D|--write-cache-dir)
-                    COMPREPLY=($(compgen -d -- "${cur}"))
+                    _filedir -d
                     return 0
                     ;;
 
                 --profile|-p)
-                    COMPREPLY=($(compgen -W "$(\
-                        grep -ve ^\# -ve ^\$ ${repodir}/profiles/profiles.desc \
-                        |awk '{print $2}')" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "$(sed -n 's,^[^#][^[:space:]]*[[:space:]]*\([^[:space:]]*\).*,\1,p' "${repodir}/profiles/profiles.desc")" -- "${cur}"))
                     return 0
                     ;;
 
@@ -104,4 +102,4 @@ _adjutrix() {
             ;;
     esac
 }
-complete -F _adjutrix adjutrix
+complete -o filenames -F _adjutrix adjutrix

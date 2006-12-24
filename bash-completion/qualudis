@@ -44,7 +44,7 @@ _qualudis() {
                     ;;
 
                 *)
-                    COMPREPLY=($(compgen -d -- "${cur}"))
+                    _filedir -d
                     ;;
             esac
             ;;
