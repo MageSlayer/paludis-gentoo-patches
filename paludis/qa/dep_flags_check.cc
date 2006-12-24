@@ -81,12 +81,32 @@ namespace
                     result << Message(qal_major, "Arch flag '" + stringify(u->flag()) +
                             "' in " + role);
             }
-            else if (r->use_interface->use_expand_flags()->count(u->flag()))
+            else
             {
+                do
+                {
+                    bool found_match(false);
+                    UseFlagNameCollection::ConstPointer c(r->use_interface->use_expand_prefixes());
+
+                    for (UseFlagNameCollection::Iterator i(c->begin()), i_end(c->end()) ;
+                            i != i_end ; ++i)
+                    {
+                        std::string prefix(stringify(*i)), flag(stringify(u->flag()));
+                        if (0 == flag.compare(0, prefix.length(), prefix))
+                        {
+                            found_match = true;
+                            break;
+                        }
+                    }
+
+                    if (found_match)
+                        break;
+
+                    if (iuse.end() == iuse.find(u->flag()))
+                        result << Message(qal_major, "Conditional flag '" + stringify(u->flag()) +
+                                "' in " + role + " not in IUSE");
+                } while (false);
             }
-            else if (iuse.end() == iuse.find(u->flag()))
-                result << Message(qal_major, "Conditional flag '" + stringify(u->flag()) +
-                        "' in " + role + " not in IUSE");
 
             std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
