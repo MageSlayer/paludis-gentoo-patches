@@ -4,6 +4,33 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.14.0:
+    * The merge and unmerge utilities are now called with an explicit path.
+
+    * The documentation has been tidied up and extended. Documentation for
+    the Ruby interface is now available.
+
+    * paludis --report now also reports unused packages.
+
+    * Various demonstration hooks (show new packages after a sync,
+    run report automatically after a sync, enhanced elog message logging)
+    are now included.
+
+    * Support for ranged dep atoms and the ~> version operator is now
+    available.
+
+    * QA now checks package visibility. The various QA blacklists are now in
+    text files rather than hard coded.
+
+    * A new client for handling cross toolchains, contrarius, is supplied.
+
+    * Completion for ZSH is now available.
+
+    * CVS can now be used in sync keys for repositories.
+
+    * The paludis client can now display a description of USE flags shown
+    in a --install --pretend session.
+
 0.12.0:
     * The QA library now has a Ruby interface.
 
