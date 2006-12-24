@@ -100,6 +100,7 @@ namespace paludis
             int _counts[last_count];
             SortedCollection<DepTagEntry>::Pointer _all_tags;
             SortedCollection<UseDescription>::Pointer _all_use_descriptions;
+            UseFlagNameCollection::Pointer _all_expand_prefixes;
 
             void _add_descriptions(UseFlagNameCollection::ConstPointer,
                     const PackageDatabaseEntry &, UseDescriptionState);
@@ -208,9 +209,10 @@ namespace paludis
             virtual void display_tag_summary_tag_post_text(const DepTagCategory &);
             virtual void display_tag_summary_end();
 
-            virtual void display_merge_list_post_use_descriptions();
-            virtual void display_use_summary_start();
-            virtual void display_use_summary_flag(SortedCollection<UseDescription>::Iterator,
+            virtual void display_merge_list_post_use_descriptions(const std::string &);
+            virtual void display_use_summary_start(const std::string &);
+            virtual void display_use_summary_flag(const std::string &,
+                    SortedCollection<UseDescription>::Iterator,
                     SortedCollection<UseDescription>::Iterator);
             virtual void display_use_summary_end();
 

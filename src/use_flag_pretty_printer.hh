@@ -39,6 +39,7 @@ namespace paludis
             UseFlagNameCollection::Pointer _new_flags;
             UseFlagNameCollection::Pointer _changed_flags;
             UseFlagNameCollection::Pointer _unchanged_flags;
+            UseFlagNameCollection::Pointer _expand_prefixes;
 
         protected:
             std::string::size_type use_expand_delim_pos(const UseFlagName & u,
@@ -69,6 +70,7 @@ namespace paludis
             UseFlagNameCollection::ConstPointer new_flags() const;
             UseFlagNameCollection::ConstPointer changed_flags() const;
             UseFlagNameCollection::ConstPointer unchanged_flags() const;
+            UseFlagNameCollection::ConstPointer expand_prefixes() const;
     };
 }
 

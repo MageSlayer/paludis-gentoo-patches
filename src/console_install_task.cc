@@ -25,6 +25,7 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/util/strip.hh>
 
 #include <algorithm>
 #include <set>
@@ -39,7 +40,8 @@ ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         const DepListOptions & options) :
     InstallTask(env, options),
     _all_tags(new SortedCollection<DepTagEntry>::Concrete),
-    _all_use_descriptions(new SortedCollection<UseDescription>::Concrete)
+    _all_use_descriptions(new SortedCollection<UseDescription>::Concrete),
+    _all_expand_prefixes(new UseFlagNameCollection::Concrete)
 {
     std::fill_n(_counts, static_cast<int>(last_count), 0);
 }
@@ -120,7 +122,11 @@ ConsoleInstallTask::on_display_merge_list_post()
     output_endl();
     display_merge_list_post_counts();
     display_merge_list_post_tags();
-    display_merge_list_post_use_descriptions();
+
+    display_merge_list_post_use_descriptions("");
+    for (UseFlagNameCollection::Iterator f(_all_expand_prefixes->begin()),
+            f_end(_all_expand_prefixes->end()) ; f != f_end ; ++f)
+        display_merge_list_post_use_descriptions(stringify(*f));
 }
 
 void
@@ -346,7 +352,7 @@ ConsoleInstallTask::display_merge_list_post_tags()
 }
 
 void
-ConsoleInstallTask::display_merge_list_post_use_descriptions()
+ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string & prefix)
 {
     if (! want_use_summary())
         return;
@@ -376,16 +382,33 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions()
                 break;
         }
 
+        if (prefix.empty())
+        {
+            bool prefixed(false);
+            for (UseFlagNameCollection::Iterator f(_all_expand_prefixes->begin()),
+                    f_end(_all_expand_prefixes->end()) ; f != f_end && ! prefixed ; ++f)
+                if (0 == stringify(i->flag).compare(0, stringify(*f).length(), stringify(*f)))
+                    prefixed = true;
+
+            if (prefixed)
+                continue;
+        }
+        else
+        {
+            if (0 != stringify(i->flag).compare(0, prefix.length(), prefix))
+                continue;
+        }
+
         if (! started)
         {
-            display_use_summary_start();
+            display_use_summary_start(prefix);
             started = true;
         }
 
         if (old_flag != i->flag)
         {
             if (! group->empty())
-                display_use_summary_flag(group->begin(), group->end());
+                display_use_summary_flag(prefix, group->begin(), group->end());
             old_flag = i->flag;
             group.assign(new SortedCollection<UseDescription>::Concrete);
         }
@@ -394,26 +417,31 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions()
     }
 
     if (! group->empty())
-        display_use_summary_flag(group->begin(), group->end());
+        display_use_summary_flag(prefix, group->begin(), group->end());
 
     if (started)
         display_use_summary_end();
 }
 
 void
-ConsoleInstallTask::display_use_summary_start()
+ConsoleInstallTask::display_use_summary_start(const std::string & prefix)
 {
-    output_heading("Use flags:");
+    if (! prefix.empty())
+        output_heading(prefix + ":");
+    else
+        output_heading("Use flags:");
 }
 
 void
-ConsoleInstallTask::display_use_summary_flag(SortedCollection<UseDescription>::Iterator i,
+ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
+        SortedCollection<UseDescription>::Iterator i,
         SortedCollection<UseDescription>::Iterator i_end)
 {
     if (next(i) == i_end)
     {
         std::ostringstream s;
-        s << std::left << std::setw(30) << (render_as_tag(stringify(i->flag)) + ": ");
+        s << std::left << std::setw(30) << (render_as_tag(
+                    strip_leading_string(stringify(i->flag), prefix + "_")) + ": ");
         s << i->description;
         output_starred_item(s.str());
     }
@@ -427,13 +455,16 @@ ConsoleInstallTask::display_use_summary_flag(SortedCollection<UseDescription>::I
         if (all_same)
         {
             std::ostringstream s;
-            s << std::left << std::setw(30) << (render_as_tag(stringify(i->flag)) + ": ");
+            s << std::left << std::setw(30) << (render_as_tag(
+                        strip_leading_string(stringify(i->flag), prefix + "_")) + ": ");
             s << i->description;
             output_starred_item(s.str());
         }
         else
         {
-            output_starred_item(render_as_tag(stringify(i->flag)) + ":");
+            output_starred_item(render_as_tag(
+                        strip_leading_string(stringify(i->flag), prefix + "_")) + ":");
+
             for ( ; i != i_end ; ++i)
             {
                 std::ostringstream s;
@@ -639,6 +670,8 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
     _add_descriptions(printer->new_flags(), d.package, uds_new);
     _add_descriptions(printer->changed_flags(), d.package, uds_changed);
     _add_descriptions(printer->unchanged_flags(), d.package, uds_unchanged);
+    _all_expand_prefixes->insert(printer->expand_prefixes()->begin(),
+            printer->expand_prefixes()->end());
 }
 
 void

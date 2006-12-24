@@ -33,7 +33,8 @@ UseFlagPrettyPrinter::UseFlagPrettyPrinter(const Environment * const e) :
     _need_space(false),
     _new_flags(new UseFlagNameCollection::Concrete),
     _changed_flags(new UseFlagNameCollection::Concrete),
-    _unchanged_flags(new UseFlagNameCollection::Concrete)
+    _unchanged_flags(new UseFlagNameCollection::Concrete),
+    _expand_prefixes(new UseFlagNameCollection::Concrete)
 {
 }
 
@@ -140,6 +141,8 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
 
         UseFlagName expand_name(flag->data().substr(0, delim_pos)),
                     expand_value(flag->data().substr(delim_pos + 1));
+
+        _expand_prefixes->insert(expand_name);
 
         if (expand_name != old_expand_name)
         {
@@ -277,5 +280,11 @@ UseFlagNameCollection::ConstPointer
 UseFlagPrettyPrinter::unchanged_flags() const
 {
     return _unchanged_flags;
+}
+
+UseFlagNameCollection::ConstPointer
+UseFlagPrettyPrinter::expand_prefixes() const
+{
+    return _expand_prefixes;
 }
 
