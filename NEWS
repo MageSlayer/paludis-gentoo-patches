@@ -20,7 +20,8 @@ of every change, see the ChangeLog.
     available.
 
     * QA now checks package visibility. The various QA blacklists are now in
-    text files rather than hard coded.
+    text files rather than hard coded. There is now a QA check that ensures
+    that ebuilds are correctly named.
 
     * A new client for handling cross toolchains, contrarius, is supplied.
 
