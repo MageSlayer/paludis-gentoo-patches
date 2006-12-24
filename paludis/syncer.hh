@@ -106,6 +106,22 @@ namespace paludis
     };
 
     /**
+     * Thrown if a given CVS sync URL is invalid.
+     *
+     * \ingroup grpsyncer
+     * \ingroup grpexceptions
+     */
+    class SyncCvsUrlInvalid :
+        public SyncFailedError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            SyncCvsUrlInvalid(const std::string & url) throw ();
+    };
+
+    /**
      * Thrown if a syncer of the specified type does not exist.
      *
      * \ingroup grpsyncer
