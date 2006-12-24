@@ -497,6 +497,12 @@ namespace paludis
              */
             virtual UseFlagNameCollection::ConstPointer do_use_expand_prefixes() const = 0;
 
+            /**
+             * Override in descendents: describe a use flag.
+             */
+            virtual std::string do_describe_use_flag(const UseFlagName &,
+                    const PackageDatabaseEntry * const) const = 0;
+
             ///\}
 
         public:
@@ -562,6 +568,15 @@ namespace paludis
             UseFlagNameCollection::ConstPointer use_expand_prefixes() const
             {
                 return do_use_expand_prefixes();
+            }
+
+            /**
+             * Describe a use flag.
+             */
+            std::string describe_use_flag(const UseFlagName & n,
+                    const PackageDatabaseEntry * const pkg) const
+            {
+                return do_describe_use_flag(n, pkg);
             }
 
             ///\}

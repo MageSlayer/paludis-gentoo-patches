@@ -58,6 +58,8 @@ namespace paludis
             virtual UseFlagNameCollection::ConstPointer do_use_expand_prefixes() const;
             virtual UseFlagName do_use_expand_name(const UseFlagName & u) const;
             virtual UseFlagName do_use_expand_value(const UseFlagName & u) const;
+            virtual std::string do_describe_use_flag(const UseFlagName &,
+                    const PackageDatabaseEntry * const) const;
 
             /* end of RepositoryUseInterface */
 

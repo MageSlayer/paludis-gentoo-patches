@@ -1435,6 +1435,13 @@ VDBRepository::is_suitable_destination_for(const PackageDatabaseEntry & e) const
     return _imp->env->package_database()->fetch_repository(e.repository)->format() == "ebuild";
 }
 
+std::string
+VDBRepository::do_describe_use_flag(const UseFlagName &,
+        const PackageDatabaseEntry * const) const
+{
+    return "";
+}
+
 #ifdef PALUDIS_ENABLE_VISIBILITY
 #  pragma GCC visibility push(default)
 #endif

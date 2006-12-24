@@ -153,6 +153,9 @@ namespace paludis
 
             virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
 
+            virtual std::string do_describe_use_flag(const UseFlagName &,
+                    const PackageDatabaseEntry * const) const;
+
             typedef CountedPtr<VDBRepository, count_policy::InternalCountTag> Pointer;
             typedef CountedPtr<const VDBRepository, count_policy::InternalCountTag> ConstPointer;
     };

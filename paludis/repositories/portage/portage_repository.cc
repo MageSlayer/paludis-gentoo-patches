@@ -1116,3 +1116,10 @@ PortageRepository::set_profile(const ProfilesIterator & iter)
     }
 }
 
+std::string
+PortageRepository::do_describe_use_flag(const UseFlagName &,
+        const PackageDatabaseEntry * const) const
+{
+    return "";
+}
+

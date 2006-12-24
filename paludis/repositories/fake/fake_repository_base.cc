@@ -287,3 +287,10 @@ FakeRepositoryBase::sets_list() const
     return result;
 }
 
+std::string
+FakeRepositoryBase::do_describe_use_flag(const UseFlagName &,
+        const PackageDatabaseEntry * const) const
+{
+    return "";
+}
+
