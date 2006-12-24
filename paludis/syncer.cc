@@ -57,7 +57,7 @@ namespace
                 _remote(remote)
             {
                 if ((0 == _remote.compare(0, 4, "file", 0, 4)))
-                    _remote = _remote.erase(0, 7);
+                    _remote.erase(0, 7);
             }
 
         public:
@@ -87,7 +87,7 @@ namespace
                 _remote(remote)
             {
                 if ((0 == _remote.compare(0, 8, "svn+http", 0, 8)) || (0 == _remote.compare(0, 9, "svn+https", 0, 9)))
-                    _remote = _remote.erase(0, 4);
+                    _remote.erase(0, 4);
             }
 
         public:
@@ -116,7 +116,7 @@ namespace
                 _remote(remote)
             {
                 if (0 == _remote.compare(0, 8, "git+http", 0, 8))
-                    _remote = _remote.erase(0, 4);
+                    _remote.erase(0, 4);
             }
 
         public:
@@ -124,6 +124,54 @@ namespace
             static Syncer::Pointer make(const std::string & local, const std::string & remote)
             {
                 return Syncer::Pointer(new GitSyncer(local, remote));
+            }
+    };
+
+    /**
+     * A Syncer for cvs+ext://, cvs+pserver:// (CVS) syncing.
+     *
+     * \ingroup grpsyncer
+     */
+    class CvsSyncer :
+        public Syncer
+    {
+        private:
+            std::string _local;
+            std::string _remote;
+            std::string _module;
+
+            bool _pserver;
+
+        protected:
+            CvsSyncer(const std::string & local, const std::string & remote) :
+                _local(local),
+                _remote(remote),
+                _pserver(false)
+            {
+                if (0 == _remote.compare(0, 11, "cvs+pserver", 0, 11))
+                {
+                    _remote = ":pserver:" + _remote.erase(0, 14);
+                    _pserver = true;
+                }
+                else if ((0 == _remote.compare(0, 7, "cvs+ssh", 0, 7)) || (0 == _remote.compare(0, 7, "cvs+ext", 0, 7)))
+                {
+                    _remote = ":ext:" + _remote.erase(0, 10);
+                }
+
+                std::string::size_type pos(_remote.find_last_of(":"));
+
+                if (std::string::npos == pos)
+                    throw SyncCvsUrlInvalid(_remote);
+
+                _module = std::string(_remote, pos + 1);
+                _remote.erase(pos);
+            }
+
+        public:
+            virtual void sync(const SyncOptions &) const;
+            static Syncer::Pointer make(const std::string & local, const std::string & remote)
+            {
+                return Syncer::Pointer(new CvsSyncer(local, remote));
             }
     };
 
@@ -190,6 +238,28 @@ namespace
      * \ingroup grpsyncer
      */
     static const SyncerMaker::RegisterMaker register_gitplushttp_syncer("git+http", &GitSyncer::make);
+
+    /**
+     * Register cvs+ext:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
+    static const SyncerMaker::RegisterMaker register_cvsplusext_syncer("cvs+ext", &CvsSyncer::make);
+
+    /**
+     * Register cvs+ssh:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
+    static const SyncerMaker::RegisterMaker register_cvsplusssh_syncer("cvs+ssh", &CvsSyncer::make);
+
+    /**
+     * Register cvs+pserver:// protocol.
+     *
+     * \ingroup grpsyncer
+     */
+    static const SyncerMaker::RegisterMaker register_cvspluspserver_syncer("cvs+pserver", &CvsSyncer::make);
+
 }
 
 void
@@ -248,6 +318,26 @@ GitSyncer::sync(const SyncOptions &) const
         throw SyncFailedError(_local, _remote);
 }
 
+void
+CvsSyncer::sync(const SyncOptions &) const
+{
+    Context context("When performing sync via CVS from '" + _remote + "' to '"
+            + _local + "':");
+
+    std::string cmd("cvs -d '" + _remote + "' login");
+    FSEntry d(_local);
+
+    if (_pserver)
+    {
+        if (0 != run_command_in_directory(cmd, d))
+            throw SyncFailedError(_local, _remote + ":" + _module);
+    }
+
+    cmd = std::string("cvs -d '" + _remote + "' checkout '" + _module + "'");
+    if (0 != run_command_in_directory(cmd, d))
+        throw SyncFailedError(_local, _remote + ":" + _module);
+}
+
 SyncFailedError::SyncFailedError(const std::string & local, const std::string & remote) throw () :
     PackageActionError("sync of '" + local + "' from '" + remote + "' failed")
 {
@@ -260,5 +350,10 @@ SyncFailedError::SyncFailedError(const std::string & msg) throw () :
 
 SyncGitDirectoryExists::SyncGitDirectoryExists(const std::string & local) throw () :
     SyncFailedError("'" + local + "' exists but it is not a Git repository")
+{
+}
+
+SyncCvsUrlInvalid::SyncCvsUrlInvalid(const std::string & url) throw () :
+    SyncFailedError("'" + url + "' is not a valid URL for a CVS repository")
 {
 }
