@@ -10,6 +10,7 @@ define(`srlist', `')dnl
 define(`srcleanlist', `')dnl
 define(`srheaderlist', `')dnl
 define(`testscriptlist', `')dnl
+define(`txtlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = \
@@ -29,6 +30,7 @@ $1_TEST_CXXFLAGS = -I$(top_srcdir)
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
 define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', headerlist `$1.hh')')dnl
 define(`addcc', `define(`filelist', filelist `$1.cc')')dnl
+define(`addtxt', `define(`txtlist', txtlist `$1.txt')')dnl
 define(`addimpl', `define(`filelist', filelist `$1-impl.hh')')dnl
 define(`addsr', `define(`srlist', srlist `$1.sr')dnl
 define(`srcleanlist', srcleanlist `$1-sr.hh $1-sr.cc')dnl
@@ -44,11 +46,12 @@ define(`addthis', `dnl
 ifelse(`$2', `hh', `addhh(`$1')', `')dnl
 ifelse(`$2', `cc', `addcc(`$1')', `')dnl
 ifelse(`$2', `sr', `addsr(`$1')', `')dnl
+ifelse(`$2', `txt', `addtxt(`$1')', `')dnl
 ifelse(`$2', `impl', `addimpl(`$1')', `')dnl
 ifelse(`$2', `test', `addtest(`$1')', `')dnl
 ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
 define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
-addthis(`$1',`$5')addthis(`$1',`$6')')dnl
+addthis(`$1',`$5')addthis(`$1',`$6')addthis(`$1',`$7')')dnl
 
 include(`paludis/qa/files.m4')
 
@@ -109,9 +112,14 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
-	-DBIGTEMPDIR=\"/var/tmp\"
-EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist srlist srcleanlist
+	-DBIGTEMPDIR=\"/var/tmp\" \
+	-DDATADIR=\"$(datadir)\"
+
+EXTRA_DIST = Makefile.am.m4 files.m4 qa.hh.m4 testscriptlist srlist srcleanlist txtlist
 
 built-sources : $(BUILT_SOURCES)
 	for s in $(SUBDIRS) ; do $(MAKE) -C $$s built-sources || exit 1 ; done
+
+qa_datadir = $(datadir)/paludis/qa/
+qa_data_DATA = txtlist
 

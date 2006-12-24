@@ -1,0 +1,8 @@
+# This file is used by libpaludisqa to determine which eclasses
+# should be treated as deprecated.
+
+gcc
+gtk-engines
+gtk-engines2
+kernel-mod
+kmod

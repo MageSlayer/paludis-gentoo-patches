@@ -24,6 +24,9 @@
 #include <paludis/qa/inherits_check.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/config_file.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/system.hh>
 #include <set>
 
 using namespace paludis;
@@ -53,11 +56,21 @@ InheritsCheck::operator() (const EbuildCheckData & e) const
         static std::set<std::string> inherits_blacklist;
         if (inherits_blacklist.empty())
         {
-            inherits_blacklist.insert("gcc");
-            inherits_blacklist.insert("kmod");
-            inherits_blacklist.insert("kernel-mod");
-            inherits_blacklist.insert("gtk-engines");
-            inherits_blacklist.insert("gtk-engines2");
+            inherits_blacklist.insert("often-not-been-on-boats");
+
+            try
+            {
+                LineConfigFile file(FSEntry(getenv_with_default(
+                            "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "inherits_blacklist.txt");
+                std::copy(file.begin(), file.end(), std::inserter(
+                                inherits_blacklist, inherits_blacklist.end()));
+            }
+            catch (const Exception & eee)
+            {
+                Log::get_instance()->message(ll_warning, lc_context,
+                        "Cannot load inherits blacklist from inherits_blacklist.txt due to exception '"
+                        + eee.message() + "' (" + eee.what() + ")");
+            }
         }
 
         std::set<std::string> bad_inherits;

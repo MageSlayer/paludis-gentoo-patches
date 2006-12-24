@@ -22,6 +22,9 @@
 #include <paludis/environment.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/dep_packages_check.hh>
+#include <paludis/config_file.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/system.hh>
 #include <set>
 
 using namespace paludis;
@@ -95,7 +98,21 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         static std::set<QualifiedPackageName> suspicious_depend;
         if (suspicious_depend.empty())
         {
-            suspicious_depend.insert(QualifiedPackageName("virtual/libc"));
+            suspicious_depend.insert(QualifiedPackageName("often/not-been-on-boats"));
+
+            try
+            {
+                LineConfigFile file(FSEntry(getenv_with_default(
+                            "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "suspicious_depend.txt");
+                std::copy(file.begin(), file.end(), create_inserter<QualifiedPackageName>(std::inserter(
+                                suspicious_depend, suspicious_depend.end())));
+            }
+            catch (const Exception & eee)
+            {
+                Log::get_instance()->message(ll_warning, lc_context,
+                        "Cannot load suspicious DEPEND list from suspicious_depend.txt due to exception '"
+                        + eee.message() + "' (" + eee.what() + ")");
+            }
         }
 
         Checker depend_checker(result, "DEPEND", suspicious_depend);
@@ -105,22 +122,21 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         static std::set<QualifiedPackageName> suspicious_rdepend;
         if (suspicious_rdepend.empty())
         {
-            suspicious_rdepend.insert(QualifiedPackageName("app-arch/rpm2targz"));
-            suspicious_rdepend.insert(QualifiedPackageName("app-arch/unzip"));
-            suspicious_rdepend.insert(QualifiedPackageName("dev-util/pkgconfig"));
-            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/autoconf"));
-            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/automake"));
-            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/flex"));
-            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/bison"));
-            suspicious_rdepend.insert(QualifiedPackageName("dev-util/yacc"));
-            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/gettext"));
-            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/libtool"));
-            suspicious_rdepend.insert(QualifiedPackageName("sys-devel/patch"));
-            suspicious_rdepend.insert(QualifiedPackageName("app-doc/doxygen"));
-            suspicious_rdepend.insert(QualifiedPackageName("x11-misc/imake"));
-            suspicious_rdepend.insert(QualifiedPackageName("media-gfx/ebdftopcf"));
-            suspicious_rdepend.insert(QualifiedPackageName("x11-apps/bdftopcf"));
-            suspicious_rdepend.insert(QualifiedPackageName("app-arch/cabextract"));
+            suspicious_rdepend.insert(QualifiedPackageName("often/not-been-on-boats"));
+
+            try
+            {
+                LineConfigFile file(FSEntry(getenv_with_default(
+                            "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "suspicious_rdepend.txt");
+                std::copy(file.begin(), file.end(), create_inserter<QualifiedPackageName>(std::inserter(
+                                suspicious_rdepend, suspicious_rdepend.end())));
+            }
+            catch (const Exception & eee)
+            {
+                Log::get_instance()->message(ll_warning, lc_context,
+                        "Cannot load suspicious RDEPEND list from suspicious_rdepend.txt due to exception '"
+                        + eee.message() + "' (" + eee.what() + ")");
+            }
         }
 
         Checker rdepend_checker(result, "RDEPEND", suspicious_rdepend);

@@ -1,0 +1,6 @@
+# This file is used by libpaludisqa to determine which packages
+# should be treated as suspicious in DEPEND.
+
+sys-apps/portage
+virtual/libc
+

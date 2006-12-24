@@ -22,8 +22,11 @@
 #include <algorithm>
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
+#include <paludis/config_file.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/system.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -35,6 +38,9 @@ IuseCheck::IuseCheck()
 CheckResult
 IuseCheck::operator() (const EbuildCheckData & e) const
 {
+    Context context("When performing iuse check on '" + stringify(e.name) +
+            "-" + stringify(e.version) + "'");
+
     CheckResult result(stringify(e.name) + "-" + stringify(e.version),
             identifier());
 
@@ -43,7 +49,8 @@ IuseCheck::operator() (const EbuildCheckData & e) const
         PackageDatabaseEntry ee(e.name, e.version,
                 e.environment->package_database()->favourite_repository());
         VersionMetadata::ConstPointer metadata(
-                e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
+                e.environment->package_database()->fetch_repository(ee.repository)->
+                version_metadata(ee.name, ee.version));
 
         try
         {
@@ -55,9 +62,21 @@ IuseCheck::operator() (const EbuildCheckData & e) const
             static std::set<UseFlagName> iuse_blacklist;
             if (iuse_blacklist.empty())
             {
-                iuse_blacklist.insert(UseFlagName("gtk2"));
-                iuse_blacklist.insert(UseFlagName("xml2"));
-                iuse_blacklist.insert(UseFlagName("oggvorbis"));
+                iuse_blacklist.insert(UseFlagName("OFTEN_NOT_BEEN_ON_BOATS"));
+
+                try
+                {
+                    LineConfigFile iuse_blacklist_file(FSEntry(getenv_with_default(
+                                "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "iuse_blacklist.txt");
+                    std::copy(iuse_blacklist_file.begin(), iuse_blacklist_file.end(),
+                            create_inserter<UseFlagName>(std::inserter(iuse_blacklist, iuse_blacklist.end())));
+                }
+                catch (const Exception & eee)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context,
+                            "Cannot load IUSE blacklist from iuse_check.txt due to exception '"
+                            + eee.message() + "' (" + eee.what() + ")");
+                }
             }
 
             std::set<UseFlagName> bad_iuse;
