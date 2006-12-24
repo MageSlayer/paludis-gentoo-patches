@@ -71,6 +71,9 @@ namespace
 
             virtual bool want_install_reasons() const
             {
+                if (! CommandLine::get_instance()->a_pretend.specified())
+                    return false;
+
                 return "full" == CommandLine::get_instance()->a_show_install_reasons.argument() ||
                     "summary" == CommandLine::get_instance()->a_show_install_reasons.argument();
             }
