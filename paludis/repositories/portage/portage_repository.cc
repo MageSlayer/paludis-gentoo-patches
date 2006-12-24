@@ -26,6 +26,7 @@
 #include <paludis/repositories/portage/portage_repository_sets.hh>
 #include <paludis/repositories/portage/portage_repository_exceptions.hh>
 #include <paludis/repositories/portage/portage_repository_entries.hh>
+#include <paludis/repositories/portage/use_desc.hh>
 
 #include <paludis/config_file.hh>
 #include <paludis/dep_atom.hh>
@@ -186,6 +187,8 @@ namespace paludis
 
         RepositoryNameCache::Pointer names_cache;
 
+        mutable UseDesc::Pointer use_desc;
+
         PortageRepository * const repo;
     };
 
@@ -205,6 +208,7 @@ namespace paludis
         has_our_virtuals(false),
         has_profiles_desc(false),
         names_cache(new RepositoryNameCache(p.names_cache, r)),
+        use_desc(0),
         repo(r)
     {
     }
@@ -1117,9 +1121,12 @@ PortageRepository::set_profile(const ProfilesIterator & iter)
 }
 
 std::string
-PortageRepository::do_describe_use_flag(const UseFlagName &,
-        const PackageDatabaseEntry * const) const
+PortageRepository::do_describe_use_flag(const UseFlagName & f,
+        const PackageDatabaseEntry * const e) const
 {
-    return "";
+    if (! _imp->use_desc)
+        _imp->use_desc.assign(new UseDesc(_imp->params.location / "profiles"));
+
+    return _imp->use_desc->describe(f, e);
 }
 

@@ -33,7 +33,8 @@ paludis_repositories_portage_include_HEADERS = \
 	ebuild_entries.hh \
 	ebuild_flat_metadata_cache.hh \
 	eclass_mtimes.hh \
-	make_ebuild_repository.hh
+	make_ebuild_repository.hh \
+	use_desc.hh
 
 libpaludisportagerepository_la_SOURCES = \
 	glsa.cc \
@@ -49,6 +50,7 @@ libpaludisportagerepository_la_SOURCES = \
 	eclass_mtimes.cc \
 	portage_repository_params.cc \
 	make_ebuild_repository.cc \
+	use_desc.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
 libpaludisportagerepository_la_LIBADD = \
