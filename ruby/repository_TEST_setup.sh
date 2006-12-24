@@ -84,12 +84,21 @@ cat <<END > profiles/testprofile/package.use.force || exit 1
 foo/bar test7
 END
 
+cat <<END > profiles/use.desc || exit 1
+test1 - A test use flag
+END
+
+cat <<END > profiles/use.local.desc || exit 1
+foo/bar:test2 - A test local use flag
+END
+
+
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"
 HOMEPAGE="http://paludis.berlios.de/"
 SRC_URI=""
 SLOT="0"
-IUSE=""
+IUSE="test1"
 LICENSE="GPL-2"
 KEYWORDS="test"
 END
@@ -99,7 +108,7 @@ DESCRIPTION="Test package"
 HOMEPAGE="http://paludis.berlios.de/"
 SRC_URI=""
 SLOT="0"
-IUSE=""
+IUSE="test2"
 LICENSE="GPL-2"
 KEYWORDS="~test"
 END

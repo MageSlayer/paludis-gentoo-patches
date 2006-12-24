@@ -720,6 +720,52 @@ namespace
         }
     };
 
+    /*
+     * call-seq:
+     *     describe_use_flag(flag_name) -> String or Nil
+     *     describe_use_flag(flag_name, package_database_entry) -> String or Nil
+     *
+     * Returns the description for a use flag name, or nil if the repository does not include 
+     * the use_flag_interface.
+     */
+    VALUE
+    repository_describe_use_flag(int argc, VALUE * argv, VALUE self)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            if ((*self_ptr)->use_interface) {
+                if (1 == argc || 2 ==argc)
+                {
+                    UseFlagName ufn = UseFlagName(StringValuePtr(argv[0]));
+                    PackageDatabaseEntry * pde(0);
+                    if (2 == argc)
+                    {
+                        PackageDatabaseEntry pde2 = value_to_package_database_entry(argv[1]);
+                        pde = &pde2;
+                    }
+
+                    return rb_str_new2(((*self_ptr)->use_interface->describe_use_flag(ufn, pde).c_str()));
+
+                }
+                else
+                {
+                    rb_raise(rb_eArgError, "describe_use_flag expects one or two arguments, but got %d", argc);
+                }
+            }
+            else
+            {
+                return Qnil;
+            }
+
+        }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
+    }
+
     void do_register_repository()
     {
         /*
@@ -780,6 +826,8 @@ namespace
 
         rb_define_method(c_repository, "query_repository_masks", RUBY_FUNC_CAST(&QueryMasks<&RepositoryMaskInterface::query_repository_masks>::query), 2);
         rb_define_method(c_repository, "query_profile_masks", RUBY_FUNC_CAST(&QueryMasks<&RepositoryMaskInterface::query_profile_masks>::query), 2);
+
+        rb_define_method(c_repository, "describe_use_flag", RUBY_FUNC_CAST(&repository_describe_use_flag),-1);
 
         /*
          * Document-class: Paludis::RepositoryInfo

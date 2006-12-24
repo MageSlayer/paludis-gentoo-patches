@@ -451,5 +451,24 @@ module Paludis
             assert_equal 'stable', profiles.first.status
         end
     end
+
+    class TestCase_RepositoryDescribeUseFlag < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_responds
+            assert_respond_to repo, :describe_use_flag
+        end
+
+        def test_one_arg
+            assert_kind_of String, repo.describe_use_flag('test1')
+            assert_equal 'A test use flag', repo.describe_use_flag('test1')
+        end
+
+        def test_two_args
+            pde = PackageDatabaseEntry.new('foo/bar','2.0','testrepo')
+            assert_kind_of String, repo.describe_use_flag('test1', pde)
+            assert_equal 'A test local use flag', repo.describe_use_flag('test2', pde)
+        end
+    end
 end
 
