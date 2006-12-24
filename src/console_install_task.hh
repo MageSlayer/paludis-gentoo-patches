@@ -29,6 +29,15 @@ namespace paludis
 {
     class ConsoleInstallTask;
 
+    enum UseDescriptionState
+    {
+        uds_unchanged,
+        uds_changed,
+        uds_new
+    };
+
+#include <src/console_install_task-sr.hh>
+
     class PALUDIS_VISIBLE DepTagSummaryDisplayer :
         public DepTagVisitorTypes::ConstVisitor,
         public InternalCounted<DepTagSummaryDisplayer>
@@ -90,6 +99,10 @@ namespace paludis
         private:
             int _counts[last_count];
             SortedCollection<DepTagEntry>::Pointer _all_tags;
+            SortedCollection<UseDescription>::Pointer _all_use_descriptions;
+
+            void _add_descriptions(UseFlagNameCollection::ConstPointer,
+                    const PackageDatabaseEntry &, UseDescriptionState);
 
         protected:
             ConsoleInstallTask(Environment * const env, const DepListOptions & options);
@@ -141,7 +154,7 @@ namespace paludis
             virtual void output_activity_end_message() const;
             virtual void output_heading(const std::string &) const;
             virtual void output_xterm_title(const std::string &) const;
-            virtual void output_starred_item(const std::string &) const;
+            virtual void output_starred_item(const std::string &, const unsigned indent = 0) const;
             virtual void output_starred_item_no_endl(const std::string &) const;
             virtual void output_unstarred_item(const std::string &) const;
             virtual void output_no_endl(const std::string &) const;
@@ -195,6 +208,12 @@ namespace paludis
             virtual void display_tag_summary_tag_post_text(const DepTagCategory &);
             virtual void display_tag_summary_end();
 
+            virtual void display_merge_list_post_use_descriptions();
+            virtual void display_use_summary_start();
+            virtual void display_use_summary_flag(SortedCollection<UseDescription>::Iterator,
+                    SortedCollection<UseDescription>::Iterator);
+            virtual void display_use_summary_end();
+
             ///\}
 
             ///\name Data
@@ -217,6 +236,11 @@ namespace paludis
                 return _all_tags;
             }
 
+            SortedCollection<UseDescription>::Pointer all_use_descriptions()
+            {
+                return _all_use_descriptions;
+            }
+
             ///\}
 
             ///\name Options
@@ -225,6 +249,11 @@ namespace paludis
             virtual bool want_full_install_reasons() const = 0;
             virtual bool want_install_reasons() const = 0;
             virtual bool want_tags_summary() const = 0;
+
+            virtual bool want_use_summary() const = 0;
+            virtual bool want_unchanged_use_flags() const = 0;
+            virtual bool want_changed_use_flags() const = 0;
+            virtual bool want_new_use_flags() const = 0;
 
             ///\}
 

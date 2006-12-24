@@ -72,6 +72,26 @@ namespace
                 return "full" == CommandLine::get_instance()->a_show_install_reasons.argument() ||
                     "summary" == CommandLine::get_instance()->a_show_install_reasons.argument();
             }
+
+            virtual bool want_unchanged_use_flags() const
+            {
+                return false;
+            }
+
+            virtual bool want_changed_use_flags() const
+            {
+                return false;
+            }
+
+            virtual bool want_new_use_flags() const
+            {
+                return false;
+            }
+
+            virtual bool want_use_summary() const
+            {
+                return false;
+            }
     };
 
     void show_resume_command(const InstallTask & task)

@@ -36,6 +36,10 @@ namespace paludis
             const Environment * const _env;
             bool _need_space;
 
+            UseFlagNameCollection::Pointer _new_flags;
+            UseFlagNameCollection::Pointer _changed_flags;
+            UseFlagNameCollection::Pointer _unchanged_flags;
+
         protected:
             std::string::size_type use_expand_delim_pos(const UseFlagName & u,
                     const UseFlagNameCollection::ConstPointer c) const;
@@ -61,6 +65,10 @@ namespace paludis
 
             const Environment * environment() const;
             bool need_space() const;
+
+            UseFlagNameCollection::ConstPointer new_flags() const;
+            UseFlagNameCollection::ConstPointer changed_flags() const;
+            UseFlagNameCollection::ConstPointer unchanged_flags() const;
     };
 }
 

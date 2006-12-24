@@ -95,6 +95,13 @@ CommandLine::CommandLine() :
             ("summary", "Show a summary")
             ("full",    "Show full output (can be very verbose)"),
             "none"),
+    a_show_use_descriptions(&install_args, "show-use-descriptions", '\0', "Show descriptions of USE flags",
+            paludis::args::EnumArg::EnumArgOptions
+            ("none",       "Don't show any descriptions")
+            ("new",        "Show for new use flags")
+            ("changed",    "Show for new and changed flags")
+            ("all",        "Show for all flags"),
+            "none"),
     a_with_unused_dependencies(&install_args, "with-unused-dependencies", '\0',
             "Also uninstall any dependencies of the target that are no longer used"),
     a_with_dependencies(&install_args, "with-dependencies", '\0',

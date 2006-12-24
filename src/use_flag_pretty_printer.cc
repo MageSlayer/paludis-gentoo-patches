@@ -21,6 +21,7 @@
 #include <paludis/version_metadata.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/collection_concrete.hh>
 #include "colour.hh"
 #include <iostream>
 #include <set>
@@ -29,7 +30,10 @@ using namespace paludis;
 
 UseFlagPrettyPrinter::UseFlagPrettyPrinter(const Environment * const e) :
     _env(e),
-    _need_space(false)
+    _need_space(false),
+    _new_flags(new UseFlagNameCollection::Concrete),
+    _changed_flags(new UseFlagNameCollection::Concrete),
+    _unchanged_flags(new UseFlagNameCollection::Concrete)
 {
 }
 
@@ -102,11 +106,21 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
             if (old_iuse.end() != old_iuse.find(*flag))
             {
                 if (environment()->query_use(*flag, &pkg) != environment()->query_use(*flag, old_pkg))
+                {
+                    _changed_flags->insert(*flag);
                     output_flag_changed_mark();
+                }
+                else
+                    _unchanged_flags->insert(*flag);
             }
             else
+            {
+                _new_flags->insert(*flag);
                 output_flag_is_new_mark();
+            }
         }
+        else
+            _new_flags->insert(*flag);
     }
 
     /* second pass: only expand flags */
@@ -153,11 +167,21 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
             if (old_iuse.end() != old_iuse.find(*flag))
             {
                 if (environment()->query_use(*flag, &pkg) != environment()->query_use(*flag, old_pkg))
+                {
+                    _changed_flags->insert(*flag);
                     output_flag_changed_mark();
+                }
+                else
+                    _unchanged_flags->insert(*flag);
             }
             else
+            {
+                _new_flags->insert(*flag);
                 output_flag_is_new_mark();
+            }
         }
+        else
+            _new_flags->insert(*flag);
     }
 }
 
@@ -235,5 +259,23 @@ const Environment *
 UseFlagPrettyPrinter::environment() const
 {
     return _env;
+}
+
+UseFlagNameCollection::ConstPointer
+UseFlagPrettyPrinter::new_flags() const
+{
+    return _new_flags;
+}
+
+UseFlagNameCollection::ConstPointer
+UseFlagPrettyPrinter::changed_flags() const
+{
+    return _changed_flags;
+}
+
+UseFlagNameCollection::ConstPointer
+UseFlagPrettyPrinter::unchanged_flags() const
+{
+    return _unchanged_flags;
 }
 

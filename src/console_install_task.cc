@@ -23,17 +23,23 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/compare.hh>
+#include <paludis/util/sr.hh>
 
 #include <algorithm>
 #include <set>
 #include <iostream>
+#include <iomanip>
 
 using namespace paludis;
+
+#include <src/console_install_task-sr.cc>
 
 ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         const DepListOptions & options) :
     InstallTask(env, options),
-    _all_tags(new SortedCollection<DepTagEntry>::Concrete)
+    _all_tags(new SortedCollection<DepTagEntry>::Concrete),
+    _all_use_descriptions(new SortedCollection<UseDescription>::Concrete)
 {
     std::fill_n(_counts, static_cast<int>(last_count), 0);
 }
@@ -114,6 +120,7 @@ ConsoleInstallTask::on_display_merge_list_post()
     output_endl();
     display_merge_list_post_counts();
     display_merge_list_post_tags();
+    display_merge_list_post_use_descriptions();
 }
 
 void
@@ -339,6 +346,110 @@ ConsoleInstallTask::display_merge_list_post_tags()
 }
 
 void
+ConsoleInstallTask::display_merge_list_post_use_descriptions()
+{
+    if (! want_use_summary())
+        return;
+
+    bool started(false);
+    UseFlagName old_flag("OFTEN_NOT_BEEN_ON_BOATS");
+
+    SortedCollection<UseDescription>::Pointer group(new SortedCollection<UseDescription>::Concrete);
+    for (SortedCollection<UseDescription>::Iterator i(all_use_descriptions()->begin()),
+            i_end(all_use_descriptions()->end()) ; i != i_end ; ++i)
+    {
+        switch (i->state)
+        {
+            case uds_new:
+                if (! want_new_use_flags())
+                    continue;
+                break;
+
+            case uds_unchanged:
+                if (! want_unchanged_use_flags())
+                    continue;
+                break;
+
+            case uds_changed:
+                if (! want_changed_use_flags())
+                    continue;
+                break;
+        }
+
+        if (! started)
+        {
+            display_use_summary_start();
+            started = true;
+        }
+
+        if (old_flag != i->flag)
+        {
+            if (! group->empty())
+                display_use_summary_flag(group->begin(), group->end());
+            old_flag = i->flag;
+            group.assign(new SortedCollection<UseDescription>::Concrete);
+        }
+
+        group->insert(*i);
+    }
+
+    if (! group->empty())
+        display_use_summary_flag(group->begin(), group->end());
+
+    if (started)
+        display_use_summary_end();
+}
+
+void
+ConsoleInstallTask::display_use_summary_start()
+{
+    output_heading("Use flags:");
+}
+
+void
+ConsoleInstallTask::display_use_summary_flag(SortedCollection<UseDescription>::Iterator i,
+        SortedCollection<UseDescription>::Iterator i_end)
+{
+    if (next(i) == i_end)
+    {
+        std::ostringstream s;
+        s << std::left << std::setw(30) << (render_as_tag(stringify(i->flag)) + ": ");
+        s << i->description;
+        output_starred_item(s.str());
+    }
+    else
+    {
+        bool all_same(true);
+        for (SortedCollection<UseDescription>::Iterator j(next(i)) ; all_same && j != i_end ; ++j)
+            if (j->description != i->description)
+                all_same = false;
+
+        if (all_same)
+        {
+            std::ostringstream s;
+            s << std::left << std::setw(30) << (render_as_tag(stringify(i->flag)) + ": ");
+            s << i->description;
+            output_starred_item(s.str());
+        }
+        else
+        {
+            output_starred_item(render_as_tag(stringify(i->flag)) + ":");
+            for ( ; i != i_end ; ++i)
+            {
+                std::ostringstream s;
+                s << i->description << " (for " << render_as_package_name(stringify(i->package)) << ")";
+                output_starred_item(s.str(), 1);
+            }
+        }
+    }
+}
+
+void
+ConsoleInstallTask::display_use_summary_end()
+{
+}
+
+void
 ConsoleInstallTask::display_tag_summary_start()
 {
 }
@@ -402,11 +513,11 @@ DepTagSummaryDisplayer::visit(const GeneralSetDepTag * const tag)
 {
     std::string desc;
     if (tag->short_text() == "world")
-        desc = ":      Packages that have been explicitly installed";
+        desc = ":           Packages that have been explicitly installed";
     else if (tag->short_text() == "everything")
-        desc = ": All installed packages";
+        desc = ":      All installed packages";
     else if (tag->short_text() == "system")
-        desc = ":     Packages that are part of the base system";
+        desc = ":          Packages that are part of the base system";
 
     task()->output_starred_item(task()->render_as_tag(tag->short_text()) + desc);
 }
@@ -492,6 +603,28 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 }
 
 void
+ConsoleInstallTask::_add_descriptions(UseFlagNameCollection::ConstPointer c,
+        const PackageDatabaseEntry & p, UseDescriptionState s)
+{
+    for (UseFlagNameCollection::Iterator f(c->begin()), f_end(c->end()) ;
+            f != f_end ; ++f)
+    {
+        std::string d;
+        const RepositoryUseInterface * const i(environment()->package_database()->
+                fetch_repository(p.repository)->use_interface);
+
+        if (i)
+            d = i->describe_use_flag(*f, &p);
+
+        _all_use_descriptions->insert(UseDescription::create()
+                .flag(*f)
+                .state(s)
+                .package(p)
+                .description(d));
+    }
+}
+
+void
 ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
         PackageDatabaseEntryCollection::ConstPointer existing,
         PackageDatabaseEntryCollection::ConstPointer)
@@ -502,6 +635,10 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
     output_no_endl(" ");
     UseFlagPrettyPrinter::Pointer printer(make_use_flag_pretty_printer());
     printer->print_package_flags(d.package, existing->empty() ? 0 : &*existing->last());
+
+    _add_descriptions(printer->new_flags(), d.package, uds_new);
+    _add_descriptions(printer->changed_flags(), d.package, uds_changed);
+    _add_descriptions(printer->unchanged_flags(), d.package, uds_unchanged);
 }
 
 void
@@ -603,9 +740,12 @@ ConsoleInstallTask::output_xterm_title(const std::string & s) const
 }
 
 void
-ConsoleInstallTask::output_starred_item(const std::string & s) const
+ConsoleInstallTask::output_starred_item(const std::string & s, const unsigned indent) const
 {
-    output_stream() << "* " << s << std::endl;
+    if (0 != indent)
+        output_stream() << std::string(2 * indent, ' ') << "* " << s << std::endl;
+    else
+        output_stream() << "* " << s << std::endl;
 }
 
 void

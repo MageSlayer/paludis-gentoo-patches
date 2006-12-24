@@ -74,6 +74,29 @@ namespace
                 return "full" == CommandLine::get_instance()->a_show_install_reasons.argument() ||
                     "summary" == CommandLine::get_instance()->a_show_install_reasons.argument();
             }
+
+            virtual bool want_unchanged_use_flags() const
+            {
+                return "none" != CommandLine::get_instance()->a_show_use_descriptions.argument() &&
+                    "new" != CommandLine::get_instance()->a_show_use_descriptions.argument() &&
+                    "changed" != CommandLine::get_instance()->a_show_use_descriptions.argument();
+            }
+
+            virtual bool want_changed_use_flags() const
+            {
+                return "none" != CommandLine::get_instance()->a_show_use_descriptions.argument() &&
+                    "new" != CommandLine::get_instance()->a_show_use_descriptions.argument();
+            }
+
+            virtual bool want_new_use_flags() const
+            {
+                return "none" != CommandLine::get_instance()->a_show_use_descriptions.argument();
+            }
+
+            virtual bool want_use_summary() const
+            {
+                return "none" != CommandLine::get_instance()->a_show_use_descriptions.argument();
+            }
     };
 
     void show_resume_command(const InstallTask & task)
