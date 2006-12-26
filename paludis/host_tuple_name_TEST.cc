@@ -21,7 +21,7 @@
 #include <paludis/util/exception.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-
+#include <iostream>
 using namespace test;
 using namespace paludis;
 
@@ -45,7 +45,7 @@ namespace test_cases
             HostTupleName a("i686-unknown-linux-gnu");
             TEST_CHECK(true);
         }
-    } test_configuration_name;
+    } test_host_tuple_name;
 
     /**
      * \test Validate HostTupleName tests.
@@ -62,7 +62,7 @@ namespace test_cases
             TEST_CHECK_THROWS(a = HostTupleName("foo-bar!"), HostTupleNameError);
             TEST_CHECK_THROWS(a = HostTupleName("foo-bar-baz-too-many"), HostTupleNameError);
         }
-    } test_configuration_name_validate;
+    } test_host_tuple_name_validate;
 
     /**
      * \test Compare HostTupleName tests.
@@ -85,7 +85,24 @@ namespace test_cases
 
             TEST_CHECK( (foo1 == foo4));
         }
-    } test_configuration_name_compare;
+    } test_host_tuple_name_compare;
+
+    /**
+     * \test HostTupleName stringification tests.
+     *
+     */
+    struct HostTupleNameStringificationTest : TestCase
+    {
+        HostTupleNameStringificationTest() : TestCase("stringification") { }
+
+        void run()
+        {
+            HostTupleName htn("i686-gentoo-freebsd6.2");
+
+            std::cout << "FOO: " << stringify(htn) << std::endl;
+            TEST_CHECK( ("i686-gentoo-freebsd6.2" == stringify(htn)) );
+        }
+    } test_host_tuple_name_stringification;
 
     /**
      * \test Test ArchitectureNamePart creation.

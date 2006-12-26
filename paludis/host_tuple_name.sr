@@ -16,10 +16,10 @@ END
 
     doxygen_comment << "END"
         /**
-         * Represents a configuration name as expected by autotools.
+         * Represents a host tuple name as expected by autotools.
          *
          * \ingroup grpnames
-         * \ingroup grpconfigurationname
+         * \ingroup grphosttuplename
          * \nosubgrouping
          */
 END

@@ -32,7 +32,7 @@
  * Declarations for various Name classes.
  *
  * \ingroup grpnames
- * \ingroup grpconfigurationname
+ * \ingroup grphosttuplename
  */
 
 namespace paludis
@@ -42,7 +42,7 @@ namespace paludis
      * an HostTupleName.
      *
      * \ingroup grpnames
-     * \ingroup grpconfigurationname
+     * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
     class HostTupleNameError : public NameError
@@ -62,7 +62,7 @@ namespace paludis
      * an ArchitectureNamePart.
      *
      * \ingroup grpnames
-     * \ingroup grpconfigurationname
+     * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
     class ArchitectureNamePartError : public HostTupleNameError
@@ -79,7 +79,7 @@ namespace paludis
      * of an ArchitectureNamePart.
      *
      * \ingroup grpnames
-     * \ingroup configurationname
+     * \ingroup hosttuplename
      */
     struct ArchitectureNamePartValidator :
         private InstantiationPolicy<ArchitectureNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -96,7 +96,7 @@ namespace paludis
      * architecture part of a HostTupleName.
      *
      * \ingroup grpnames
-     * \ingroup grpconfigurationname
+     * \ingroup grphosttuplename
      */
     typedef Validated<std::string, ArchitectureNamePartValidator> ArchitectureNamePart;
 
@@ -105,7 +105,7 @@ namespace paludis
      * an ManufacturerNamePart.
      *
      * \ingroup grpnames
-     * \ingroup grpconfigurationname
+     * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
     class ManufacturerNamePartError : public HostTupleNameError
@@ -122,7 +122,7 @@ namespace paludis
      * of an ManufacturerNamePart.
      *
      * \ingroup grpnames
-     * \ingroup configurationname
+     * \ingroup hosttuplename
      */
     struct ManufacturerNamePartValidator :
         private InstantiationPolicy<ManufacturerNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -139,7 +139,7 @@ namespace paludis
      * architecture part of a HostTupleName.
      *
      * \ingroup grpnames
-     * \ingroup grpconfigurationname
+     * \ingroup grphosttuplename
      */
     typedef Validated<std::string, ManufacturerNamePartValidator> ManufacturerNamePart;
 
@@ -148,7 +148,7 @@ namespace paludis
      * an KernelNamePart.
      *
      * \ingroup grpnames
-     * \ingroup grpconfigurationname
+     * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
     class KernelNamePartError : public HostTupleNameError
@@ -165,7 +165,7 @@ namespace paludis
      * of an KernelNamePart.
      *
      * \ingroup grpnames
-     * \ingroup configurationname
+     * \ingroup hosttuplename
      */
     struct KernelNamePartValidator :
         private InstantiationPolicy<KernelNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -182,7 +182,7 @@ namespace paludis
      * architecture part of a HostTupleName.
      *
      * \ingroup grpnames
-     * \ingroup grpconfigurationname
+     * \ingroup grphosttuplename
      */
     typedef Validated<std::string, KernelNamePartValidator> KernelNamePart;
 
@@ -191,7 +191,7 @@ namespace paludis
      * an UserlandNamePart.
      *
      * \ingroup grpnames
-     * \ingroup grpconfigurationname
+     * \ingroup grphosttuplename
      * \ingroup grpexceptions
      */
     class UserlandNamePartError : public HostTupleNameError
@@ -208,7 +208,7 @@ namespace paludis
      * of an UserlandNamePart.
      *
      * \ingroup grpnames
-     * \ingroup configurationname
+     * \ingroup hosttuplename
      */
     struct UserlandNamePartValidator :
         private InstantiationPolicy<UserlandNamePartValidator, instantiation_method::NonInstantiableTag>
@@ -225,7 +225,7 @@ namespace paludis
      * architecture part of a HostTupleName.
      *
      * \ingroup grpnames
-     * \ingroup grpconfigurationname
+     * \ingroup grphosttuplename
      */
     typedef Validated<std::string, UserlandNamePartValidator> UserlandNamePart;
 
@@ -236,7 +236,7 @@ namespace paludis
      * Output a QualifiedPackageName to a stream.
      *
      * \ingroup grpnames
-     * \ingroup grpconfigurationname
+     * \ingroup grphosttuplename
      */
     std::ostream & operator<< (std::ostream &, const HostTupleName &);
 }

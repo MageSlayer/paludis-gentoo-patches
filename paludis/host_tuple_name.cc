@@ -25,7 +25,7 @@
 #include <ostream>
 
 /** \file
- * Implementation of configuration_name.hh things.
+ * Implementation of host_tuple_name.hh things.
  *
  * \ingroup grpnames
  */
@@ -97,7 +97,7 @@ paludis::operator<< (std::ostream & s, const HostTupleName & c)
     s << c.architecture;
     if (! c.manufacturer.data().empty())
         s << "-" << c.manufacturer;
-    if (! c.kernel.data().empty())
+    if ((! c.kernel.data().empty()) && (c.kernel.data() != c.userland.data()))
         s << "-" << c.kernel;
     s << "-" << c.userland;
     return s;
