@@ -33,6 +33,7 @@ libexecprog_SCRIPTS = \
 	fowners \
 	fperms \
 	getmtime \
+	getfsize \
 	newbin \
 	newconfd \
 	newdoc \

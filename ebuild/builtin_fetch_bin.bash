@@ -26,7 +26,7 @@ builtin_fetch_bin()
         local aa=${a##*/}
         hasq "${aa}" ${unique_aa} || unique_aa="${unique_aa} ${aa}"
 
-        if [[ -f "${PKGDIR}/${aa}" ]] && [[ "0" != $(stat -c '%s' "${PKGDIR}/${aa}" ) ]] ; then
+        if [[ -f "${PKGDIR}/${aa}" ]] && [[ "0" != $(getfsize "${PKGDIR}/${aa}") ]] ; then
             if [[ "${old_aa}" != "${aa}" ]] ; then
                 ebuild_section "Already have ${aa}"
                 old_aa="${aa}"

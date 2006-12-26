@@ -26,7 +26,7 @@ builtin_fetch()
         local aa=${a##*/}
         hasq "${aa}" ${unique_aa} || unique_aa="${unique_aa} ${aa}"
 
-        if [[ -f "${DISTDIR}/${aa}" ]] && [[ "0" != $(stat -c '%s' "${DISTDIR}/${aa}" ) ]] ; then
+        if [[ -f "${DISTDIR}/${aa}" ]] && [[ "0" != $(getfsize "${DISTDIR}/${aa}") ]] ; then
             if [[ "${old_aa}" != "${aa}" ]] ; then
                 ebuild_section "Already have ${aa}"
                 old_aa="${aa}"
