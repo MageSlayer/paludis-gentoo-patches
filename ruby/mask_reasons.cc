@@ -85,7 +85,6 @@ namespace
         MaskReasons * m_ptr;
         Data_Get_Struct(self, MaskReasons, m_ptr);
         return m_ptr->any() ? Qfalse : Qtrue;
-        return self;
     }
 
     void do_register_mask_reasons()

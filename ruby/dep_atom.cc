@@ -39,40 +39,9 @@ namespace
     static VALUE c_string_dep_atom;
 
     VALUE
-    dep_atom_init_0(VALUE self)
-    {
-        return self;
-    }
-
-    VALUE
     dep_atom_init_1(VALUE self, VALUE)
     {
         return self;
-    }
-
-    VALUE
-    dep_atom_init_2(VALUE self, VALUE, VALUE)
-    {
-        return self;
-    }
-
-    VALUE
-    use_dep_atom_new(VALUE self, VALUE pkg, VALUE inverse)
-    {
-        UseDepAtom::ConstPointer * ptr(0);
-        try
-        {
-            ptr = new UseDepAtom::ConstPointer(new UseDepAtom(
-                        UseFlagName(StringValuePtr(pkg)), Qfalse != inverse && Qnil != inverse));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<UseDepAtom::ConstPointer>::free, ptr));
-            rb_obj_call_init(tdata, 2, &pkg);
-            return tdata;
-        }
-        catch (const std::exception & e)
-        {
-            delete ptr;
-            exception_to_ruby_exception(e);
-        }
     }
 
     VALUE
