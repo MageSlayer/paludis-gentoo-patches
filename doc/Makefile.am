@@ -28,18 +28,17 @@ htmlfiles = \
 	changelog.html \
 	licence.html \
 	authors.html \
-	faq.html \
-	arrow.svg
+	faq.html
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
-	$(docfiles) $(tagfiles) $(htmlfiles) arrow.png htaccess \
+	$(docfiles) $(tagfiles) $(htmlfiles) htaccess \
 	news.html.skel index.html.skel changelog.html.skel licence.html.skel authors.html.skel \
 	faq.html.skel htmlheader.html htmlfooter.html
 
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
 	cleannews cleanchangelog cleanauthors cleanfaqtoc
 
-MAINTAINERCLEANFILES = Makefile.in $(tagfiles) arrow.png
+MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
 
 libstdc++.tag :
 	wget -O $@ http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
@@ -169,11 +168,8 @@ licence.html : licence.html.skel htmlheader.html htmlfooter.html ../COPYING
 clean-local :
 	rm -fr www
 
-arrow.png : arrow.svg
-	convert arrow.svg arrow.png
-
-htmlpages : $(htmlfiles) paludis.css www arrow.png
-	for s in $(htmlfiles) paludis.css arrow.png ; do cp $(srcdir)/$$s www/ ; done
+htmlpages : $(htmlfiles) paludis.css www
+	for s in $(htmlfiles) paludis.css ; do cp $(srcdir)/$$s www/ ; done
 
 dothtaccess : htaccess
 	cp $(srcdir)/htaccess www/.htaccess

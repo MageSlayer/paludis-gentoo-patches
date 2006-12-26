@@ -18,71 +18,52 @@
 
     <h2>For new and current users:</h2>
 
-    <table border="0">
-        <tr>
-            <td valign="middle">
-                <object type="image/svg+xml" width="80" height="80"
-                    data="arrow.svg">
-                    <img src="arrow.png" alt="arrow" />
-                </object>
-            </td>
-            <td>
-                <p>The <a href="news.html">release notes</a> document major
-                changes between releases. More detailed information is available
-                in the <a href="changelog.html">changelog</a>.</p>
+    <ul>
+        <li>The <a href="news.html">release notes</a> document major
+        changes between releases. More detailed information is available
+        in the <a href="changelog.html">changelog</a>.</li>
 
-                <p>An <a href="faq.html">FAQ</a> is available. You should familiarise
-                yourself with this list before asking questions.</p>
+        <li>An <a href="faq.html">FAQ</a> is available. You should familiarise
+        yourself with this list before asking questions.</li>
 
-                <p>There is a <a href="migration.html">guide to migrating to
-                    Paludis</a> and a <a href="bootstrap.html">guide to
-                    bootstrapping a chroot using Paludis</a>.</p>
+        <li>There is a <a href="migration.html">guide to migrating to
+            Paludis</a> and a <a href="bootstrap.html">guide to
+            bootstrapping a chroot using Paludis</a>.</li>
 
-                <p>There is <a href="configuration.html">documentation on the
-                    configuration files</a> and <a href="cachefiles.html">the
-                    various optional caches</a> used by Paludis.</p>
+        <li>There is <a href="configuration.html">documentation on the
+            configuration files</a> and <a href="cachefiles.html">the
+            various optional caches</a> used by Paludis.</li>
 
-                <p><strong>Support</strong> is available via <code>#paludis</code> on
-                <code>irc.freenode.net</code> or the <a
-                    href="lists.html">mailing lists</a>. Support is not
-                available via Gentoo's bugzilla or forums.</p>
-            </td>
-        </tr>
-    </table>
+        <li><strong>Support</strong> is available via <code>#paludis</code> on
+        <code>irc.freenode.net</code> or the <a
+            href="lists.html">mailing lists</a>. Support is not
+        available via Gentoo's bugzilla or forums.</li>
+    </ul>
 
     <h2>For developers:</h2>
 
-    <table border="0">
-        <tr>
-            <td valign="middle">
-                <object type="image/svg+xml" width="80" height="80"
-                    data="arrow.svg">
-                    <img src="arrow.png" alt="arrow" />
-                </object>
-            </td>
-            <td>
-                <p><strong>Subversion access</strong> is available via
-                <code>svn co svn://svn.pioto.org/paludis/trunk svn</code>. There
-                is also <a href="http://svn.pioto.org/viewvc/paludis/">viewvc</a>
-                for browsing via the web.</p>
+    <ul>
+        <li><strong>Subversion access</strong> is available via
+        <code>svn co svn://svn.pioto.org/paludis/trunk svn</code>. There
+        is also <a href="http://svn.pioto.org/viewvc/paludis/">viewvc</a>
+        for browsing via the web.</li>
 
-                <p>An <a href="programmingwithpaludis.html">overview of
-                    Programming with Paludis</a>, covering both the C++ and the
-                Ruby APIs, is available.</p>
+        <li>An <a href="programmingwithpaludis.html">overview of
+            Programming with Paludis</a>, covering both the C++ and the
+        Ruby APIs, is available.</li>
 
-                <p>There is <a href="doxygen/html"/>extensive C++ core API and implementation
-                    documentation</a>. This is also available via <code>make
-                    doxygen</code>.</p>
+        <li>There is <a href="doxygen/html"/>extensive C++ core API and implementation
+            documentation</a>. This is also available via <code>make
+            doxygen</code>.</li>
 
-                <p>Similarly, the <a href="ruby/">Ruby API documentation</a> is
-                available via <code>make rdoc</code>.</p>
+        <li>Similarly, the <a href="ruby/">Ruby API documentation</a> is
+        available via <code>make rdoc</code>.</li>
 
-                <p><strong>Development questions</strong> should be asked in <code>#paludis</code> on
-                <code>irc.freenode.net</code> or on the <a
-                    href="lists.html">mailing lists</a>.</p>
-            </td>
-        </tr>
-    </table>
+        <li><strong>Development questions</strong> should be asked in <code>#paludis</code> on
+        <code>irc.freenode.net</code> or on the <a
+            href="lists.html">mailing lists</a>.</li>
+
+    </ul>
 
 @FOOTER@
 </body>
