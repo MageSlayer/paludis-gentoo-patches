@@ -38,8 +38,6 @@ Missing counterparts for
 
   * "ebuild.namenomatch":"Ebuild files that do not have the same name as their parent directory"
 
-  * "file.UTF8":"File is not UTF8 compliant"
-
   * "ebuild.output":"A simple sourcing of the ebuild produces output; this breaks ebuild policy."
 
   * "LIVEVCS.stable":"This ebuild is a live checkout from a VCS but has stable keywords."
