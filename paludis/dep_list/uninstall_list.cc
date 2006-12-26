@@ -43,6 +43,14 @@ namespace paludis
             {
                 return CRCHash<std::string>::operator() (stringify(val));
             }
+
+#if (! PALUDIS_HAVE_TR1_HASHES) && (! PALUDIS_HAVE_EXT_HASHES)
+            bool operator() (const PackageDatabaseEntry & lhs,
+                    const PackageDatabaseEntry & rhs) const
+            {
+                return stringify(lhs) < stringify(rhs);
+            }
+#endif
     };
 
     template<>
