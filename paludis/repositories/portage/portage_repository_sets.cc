@@ -175,24 +175,11 @@ PortageRepositorySets::sets_list() const
                         + stringify(e.what()) + ")");
             }
     }
-    catch (const paludis::DirOpenError & e)
+    catch (const paludis::DirOpenError &)
     {
     }
 
     return result;
-}
-
-namespace
-{
-    inline
-    PackageDepAtom::Pointer make_atom(const PackageDatabaseEntry & e)
-    {
-        QualifiedPackageName n(e.name);
-        VersionSpec v(e.version);
-
-        std::string s("=" + stringify(n) + "-" + stringify(v));
-        return PackageDepAtom::Pointer(new PackageDepAtom(s));
-    }
 }
 
 PackageDatabaseEntryCollection::Iterator
