@@ -276,7 +276,7 @@ main(int argc, char *argv[])
             paludis_command.append(" --log-level " + CommandLine::get_instance()->a_log_level.argument());
             DefaultConfig::get_instance()->set_paludis_command(paludis_command);
         }
-        catch (const DefaultConfigError & e)
+        catch (const DefaultConfigError &)
         {
             if (CommandLine::get_instance()->a_info.specified())
             {
