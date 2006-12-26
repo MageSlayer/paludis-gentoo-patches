@@ -174,7 +174,7 @@ bool
 FullStage::is_rebuild() const
 {
     PackageDatabaseEntryCollection::ConstPointer c(
-            DefaultEnvironment::get_instance()->package_database()->query(_options.headers, is_installed_only));
+            DefaultEnvironment::get_instance()->package_database()->query(_options.gcc, is_installed_only));
 
     if (c->empty())
         return false;
