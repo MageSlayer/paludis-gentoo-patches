@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that file and directory permissions are sane";
                 }
         };
-
-        static const FileCheckMaker::RegisterMaker register_file_permissions_check(
-                FilePermissionsCheck::identifier(), &MakeFileCheck<FilePermissionsCheck>::make_file_check);
     }
 }
 

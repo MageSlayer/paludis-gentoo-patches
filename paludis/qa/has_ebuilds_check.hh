@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that there are ebuilds present";
                 }
         };
-
-        static const PackageDirCheckMaker::RegisterMaker register_has_ebuilds_check(
-                HasEbuildsCheck::identifier(), &MakePackageDirCheck<HasEbuildsCheck>::make_package_dir_check);
     }
 }
 

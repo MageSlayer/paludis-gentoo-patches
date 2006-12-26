@@ -117,11 +117,18 @@ namespace paludis
      *
      * \ingroup grprepository
      */
-    typedef VirtualConstructor<std::string,
+    class PortageRepositoryEntriesMaker :
+        public VirtualConstructor<std::string,
             PortageRepositoryEntries::Pointer (*) (const Environment * const, PortageRepository * const,
                     const PortageRepositoryParams &),
-            virtual_constructor_not_found::ThrowException<NoSuchPortageRepositoryEntriesType> >
-                PortageRepositoryEntriesMaker;
+            virtual_constructor_not_found::ThrowException<NoSuchPortageRepositoryEntriesType> >,
+        public InstantiationPolicy<PortageRepositoryEntriesMaker, instantiation_method::SingletonAsNeededTag>
+    {
+        friend class InstantiationPolicy<PortageRepositoryEntriesMaker, instantiation_method::SingletonAsNeededTag>;
+
+        private:
+            PortageRepositoryEntriesMaker();
+    };
 
 }
 

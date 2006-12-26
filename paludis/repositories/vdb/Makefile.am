@@ -20,7 +20,11 @@ paludis_repositories_lib_LTLIBRARIES = libpaludisvdbrepository.la
 
 endif
 
-libpaludisvdbrepository_la_SOURCES = vdb_repository.cc vdb_repository.hh
+libpaludisvdbrepository_la_SOURCES = \
+	vdb_repository.cc \
+	vdb_repository.hh \
+	registration.cc
+
 libpaludisvdbrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 paludis_repositories_vdb_includedir = $(includedir)/paludis/repositories/vdb/
 paludis_repositories_vdb_include_HEADERS = \

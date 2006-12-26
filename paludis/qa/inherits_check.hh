@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that inherits are sane";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_inherits_check(
-                InheritsCheck::identifier(), &MakeEbuildCheck<InheritsCheck>::make_ebuild_check);
     }
 }
 

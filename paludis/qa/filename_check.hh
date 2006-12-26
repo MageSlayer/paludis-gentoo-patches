@@ -52,9 +52,6 @@ namespace paludis
                     return true;
                 }
         };
-
-        static const FileCheckMaker::RegisterMaker register_file_name_check(
-                FileNameCheck::identifier(), &MakeFileCheck<FileNameCheck>::make_file_check);
     }
 }
 

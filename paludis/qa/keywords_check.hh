@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that KEYWORDS is sane";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_keywords_check(
-                KeywordsCheck::identifier(), &MakeEbuildCheck<KeywordsCheck>::make_ebuild_check);
     }
 }
 

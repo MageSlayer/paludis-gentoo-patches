@@ -63,16 +63,4 @@ paludis::make_gems_repository(const Environment * const env,
 
 }
 
-#ifdef PALUDIS_ENABLE_VISIBILITY
-#  pragma GCC visibility push(default)
-#endif
-namespace
-{
-    const RepositoryMaker::RegisterMaker register_gems_repository PALUDIS_ATTRIBUTE((used)) (
-            "gems", &make_gems_repository);
-}
-#ifdef PALUDIS_ENABLE_VISIBILITY
-#  pragma GCC visibility pop
-#endif
-
 

@@ -23,6 +23,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repository_maker.hh>
 #include <paludis/config_file.hh>
 #include <set>
 

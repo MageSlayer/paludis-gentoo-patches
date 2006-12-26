@@ -18,6 +18,16 @@
  */
 
 #include <paludis/qa/file_check.hh>
+#include <paludis/qa/changelog_check.hh>
+#include <paludis/qa/defaults_check.hh>
+#include <paludis/qa/deprecated_functions_check.hh>
+#include <paludis/qa/filename_check.hh>
+#include <paludis/qa/file_permissions_check.hh>
+#include <paludis/qa/glep_31_check.hh>
+#include <paludis/qa/metadata_check.hh>
+#include <paludis/qa/subshell_die_check.hh>
+#include <paludis/qa/variable_assigns_check.hh>
+#include <paludis/qa/whitespace_check.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -29,5 +39,19 @@ FileCheck::FileCheck()
 NoSuchFileCheckTypeError::NoSuchFileCheckTypeError(const std::string & s) throw () :
     Exception("No such file check type: '" + s + "'")
 {
+}
+
+FileCheckMaker::FileCheckMaker()
+{
+    register_maker(ChangeLogCheck::identifier(), &MakeFileCheck<ChangeLogCheck>::make_file_check);
+    register_maker(DefaultsCheck::identifier(), &MakeFileCheck<DefaultsCheck>::make_file_check);
+    register_maker(DeprecatedFunctionsCheck::identifier(), &MakeFileCheck<DeprecatedFunctionsCheck>::make_file_check);
+    register_maker(FileNameCheck::identifier(), &MakeFileCheck<FileNameCheck>::make_file_check);
+    register_maker(FilePermissionsCheck::identifier(), &MakeFileCheck<FilePermissionsCheck>::make_file_check);
+    register_maker(Glep31Check::identifier(), &MakeFileCheck<Glep31Check>::make_file_check);
+    register_maker(MetadataCheck::identifier(), &MakeFileCheck<MetadataCheck>::make_file_check);
+    register_maker(SubshellDieCheck::identifier(), &MakeFileCheck<SubshellDieCheck>::make_file_check);
+    register_maker(VariableAssignsCheck::identifier(), &MakeFileCheck<VariableAssignsCheck>::make_file_check);
+    register_maker(WhitespaceCheck::identifier(), &MakeFileCheck<WhitespaceCheck>::make_file_check);
 }
 

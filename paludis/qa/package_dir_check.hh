@@ -87,10 +87,16 @@ namespace paludis
          *
          * \ingroup grpqa
          */
-        typedef VirtualConstructor<
-            std::string,
-            PackageDirCheck::Pointer (*) (),
-            virtual_constructor_not_found::ThrowException<NoSuchPackageDirCheckTypeError> > PackageDirCheckMaker;
+        class PackageDirCheckMaker :
+            public VirtualConstructor<std::string, PackageDirCheck::Pointer (*) (),
+                virtual_constructor_not_found::ThrowException<NoSuchPackageDirCheckTypeError> >,
+            public InstantiationPolicy<PackageDirCheckMaker, instantiation_method::SingletonAsNeededTag>
+        {
+            friend class InstantiationPolicy<PackageDirCheckMaker, instantiation_method::SingletonAsNeededTag>;
+
+            private:
+                PackageDirCheckMaker();
+        };
     }
 }
 #endif

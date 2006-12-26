@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks for call to die functions within subshells";
                 }
         };
-
-        static const FileCheckMaker::RegisterMaker register_subshell_die_check(
-                SubshellDieCheck::identifier(), &MakeFileCheck<SubshellDieCheck>::make_file_check);
     }
 }
 

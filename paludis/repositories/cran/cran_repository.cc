@@ -29,6 +29,7 @@
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
+#include <paludis/repository_maker.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -617,16 +618,3 @@ CRANRepository::invalidate() const
 {
     _imp->invalidate();
 }
-
-#ifdef PALUDIS_ENABLE_VISIBILITY
-#  pragma GCC visibility push(default)
-#endif
-namespace
-{
-    const RepositoryMaker::RegisterMaker register_cran_repository PALUDIS_ATTRIBUTE((used)) (
-            "cran", &CRANRepository::make_cran_repository);
-}
-#ifdef PALUDIS_ENABLE_VISIBILITY
-#  pragma GCC visibility pop
-#endif
-

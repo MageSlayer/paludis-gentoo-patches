@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that packages in *DEPEND exist";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_deps_exist_check(
-                DepsExistCheck::identifier(), &MakeEbuildCheck<DepsExistCheck>::make_ebuild_check);
     }
 }
 

@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that files/ (excluding digests) is below 20k";
                 }
         };
-
-        static const PackageDirCheckMaker::RegisterMaker register_files_dir_size_check(
-                FilesDirSizeCheck::identifier(), &MakePackageDirCheck<FilesDirSizeCheck>::make_package_dir_check);
     }
 }
 

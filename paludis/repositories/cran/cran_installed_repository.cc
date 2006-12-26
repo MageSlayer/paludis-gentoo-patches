@@ -660,15 +660,4 @@ CRANInstalledRepository::is_suitable_destination_for(const PackageDatabaseEntry 
     return _imp->env->package_database()->fetch_repository(e.repository)->format() == "cran";
 }
 
-#ifdef PALUDIS_ENABLE_VISIBILITY
-#  pragma GCC visibility push(default)
-#endif
-namespace
-{
-    const RepositoryMaker::RegisterMaker register_cran_installed_repository PALUDIS_ATTRIBUTE((used)) (
-            "cran_installed", &CRANInstalledRepository::make_cran_installed_repository);
-}
-#ifdef PALUDIS_ENABLE_VISIBILITY
-#  pragma GCC visibility pop
-#endif
 

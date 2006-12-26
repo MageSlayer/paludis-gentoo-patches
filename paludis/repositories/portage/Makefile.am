@@ -51,6 +51,7 @@ libpaludisportagerepository_la_SOURCES = \
 	portage_repository_params.cc \
 	make_ebuild_repository.cc \
 	use_desc.cc \
+	registration.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
 libpaludisportagerepository_la_LIBADD = \

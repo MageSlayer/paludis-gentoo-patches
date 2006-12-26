@@ -43,6 +43,7 @@ libpaludisgemsrepository_la_SOURCES = \
 	cache.cc \
 	make_gems_repository.cc \
 	yaml.cc \
+	registration.cc \
 	$(paludis_repositories_gems_include_HEADERS)
 
 libpaludisgemsrepository_la_LIBADD = \

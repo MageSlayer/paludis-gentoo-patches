@@ -18,6 +18,7 @@
  */
 
 #include "per_profile_ebuild_check.hh"
+#include <paludis/qa/deps_visible_check.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -33,4 +34,9 @@ NoSuchPerProfileEbuildCheckTypeError::NoSuchPerProfileEbuildCheckTypeError(const
 {
 }
 
+PerProfileEbuildCheckMaker::PerProfileEbuildCheckMaker()
+{
+    register_maker(DepsVisibleCheck::identifier(),
+            &MakePerProfileEbuildCheck<DepsVisibleCheck>::make_per_profile_ebuild_check);
+}
 

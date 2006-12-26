@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that SLOT is sane";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_slot_check(
-                SlotCheck::identifier(), &MakeEbuildCheck<SlotCheck>::make_ebuild_check);
     }
 }
 

@@ -47,10 +47,6 @@ namespace paludis
                     return "Checks that packages in *DEPEND are visible";
                 }
         };
-
-        static const PerProfileEbuildCheckMaker::RegisterMaker register_deps_visible_check(
-                DepsVisibleCheck::identifier(),
-                &MakePerProfileEbuildCheck<DepsVisibleCheck>::make_per_profile_ebuild_check);
     }
 }
 

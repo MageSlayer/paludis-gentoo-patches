@@ -48,9 +48,6 @@ namespace paludis
                     return "Checks for default function reimplementations";
                 }
         };
-
-        static const FileCheckMaker::RegisterMaker register_defaults_check(
-                DefaultsCheck::identifier(), &MakeFileCheck<DefaultsCheck>::make_file_check);
     }
 }
 

@@ -18,6 +18,7 @@
  */
 
 #include "portage_repository_entries.hh"
+#include "ebuild_entries.hh"
 
 using namespace paludis;
 
@@ -35,4 +36,8 @@ NoSuchPortageRepositoryEntriesType::NoSuchPortageRepositoryEntriesType(const std
 {
 }
 
+PortageRepositoryEntriesMaker::PortageRepositoryEntriesMaker()
+{
+    register_maker("ebuild", &EbuildEntries::make_ebuild_entries);
+}
 

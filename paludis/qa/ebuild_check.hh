@@ -81,10 +81,16 @@ namespace paludis
             }
         };
 
-        typedef VirtualConstructor<
-            std::string,
-            EbuildCheck::Pointer (*) (),
-            virtual_constructor_not_found::ThrowException<NoSuchEbuildCheckTypeError> > EbuildCheckMaker;
+        class EbuildCheckMaker :
+            public VirtualConstructor<std::string, EbuildCheck::Pointer (*) (),
+                virtual_constructor_not_found::ThrowException<NoSuchEbuildCheckTypeError> >,
+            public InstantiationPolicy<EbuildCheckMaker, instantiation_method::SingletonAsNeededTag>
+        {
+            friend class InstantiationPolicy<EbuildCheckMaker, instantiation_method::SingletonAsNeededTag>;
+
+            private:
+                EbuildCheckMaker();
+        };
     }
 }
 

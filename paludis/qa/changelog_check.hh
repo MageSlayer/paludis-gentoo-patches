@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that the ChangeLog is a regular file";
                 }
         };
-
-        static const FileCheckMaker::RegisterMaker register_changelog_check(
-                ChangeLogCheck::identifier(), &MakeFileCheck<ChangeLogCheck>::make_file_check);
     }
 }
 

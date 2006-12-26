@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks for PDEPEND overlap";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_pdepend_overlap_check(
-                PdependOverlapCheck::identifier(), &MakeEbuildCheck<PdependOverlapCheck>::make_ebuild_check);
     }
 }
 

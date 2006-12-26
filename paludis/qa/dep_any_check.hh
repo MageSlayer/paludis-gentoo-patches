@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks || ( ) block sanity in *DEPEND";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_dep_any_check(
-                DepAnyCheck::identifier(), &MakeEbuildCheck<DepAnyCheck>::make_ebuild_check);
     }
 }
 

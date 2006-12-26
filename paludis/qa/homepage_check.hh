@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that HOMEPAGE is sane";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_homepage_check(
-                HomepageCheck::identifier(), &MakeEbuildCheck<HomepageCheck>::make_ebuild_check);
     }
 }
 

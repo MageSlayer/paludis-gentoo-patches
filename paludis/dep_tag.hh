@@ -140,8 +140,16 @@ namespace paludis
      *
      * \ingroup grpdeptag
      */
-    typedef VirtualConstructor<std::string, DepTagCategory::ConstPointer (*) (),
-            virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> > DepTagCategoryMaker;
+    class DepTagCategoryMaker :
+        public VirtualConstructor<std::string, DepTagCategory::ConstPointer (*) (),
+            virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >,
+        public InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonAsNeededTag>
+    {
+        friend class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonAsNeededTag>;
+
+        private:
+            DepTagCategoryMaker();
+    };
 
     class DepTag;
     class GLSADepTag;

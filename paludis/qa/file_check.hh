@@ -83,10 +83,16 @@ namespace paludis
          *
          * \ingroup grpqa
          */
-        typedef VirtualConstructor<
-            std::string,
-            FileCheck::Pointer (*) (),
-            virtual_constructor_not_found::ThrowException<NoSuchFileCheckTypeError> > FileCheckMaker;
+        class FileCheckMaker :
+            public VirtualConstructor<std::string, FileCheck::Pointer (*) (),
+                virtual_constructor_not_found::ThrowException<NoSuchFileCheckTypeError> >,
+            public InstantiationPolicy<FileCheckMaker, instantiation_method::SingletonAsNeededTag>
+        {
+            friend class InstantiationPolicy<FileCheckMaker, instantiation_method::SingletonAsNeededTag>;
+
+            private:
+                FileCheckMaker();
+        };
     }
 
 }
@@ -97,6 +103,5 @@ paludis::qa::MakeFileCheck<T_>::make_file_check()
 {
     return paludis::qa::FileCheck::Pointer(new T_);
 }
-
 
 #endif

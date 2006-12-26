@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks for deprecated functions";
                 }
         };
-
-        static const FileCheckMaker::RegisterMaker register_deprecated_functions_check(
-                DeprecatedFunctionsCheck::identifier(), &MakeFileCheck<DeprecatedFunctionsCheck>::make_file_check);
     }
 }
 

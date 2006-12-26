@@ -31,107 +31,115 @@
 using namespace test;
 using namespace paludis;
 
-#ifndef DOXYGEN
-enum CookieSize
+namespace
 {
-    cs_small,
-    cs_large
-};
-
-class Cookie :
-    public InternalCounted<Cookie>
-{
-    private:
-        CookieSize _size;
-
-    protected:
-        Cookie(CookieSize size) :
-            _size(size)
-        {
-        };
-
-    public:
-        virtual std::string flavour() const = 0;
-
-        virtual ~Cookie()
-        {
-        }
-
-        CookieSize size() const
-        {
-            return _size;
-        }
-};
-
-struct NoCookie
-{
-    NoCookie(const std::string &)
+    enum CookieSize
     {
-    }
-};
+        cs_small,
+        cs_large
+    };
 
-typedef VirtualConstructor<std::string,
-        CountedPtr<Cookie> (*) (CookieSize),
-        virtual_constructor_not_found::ThrowException<NoCookie> > CookieMaker;
+    class Cookie :
+        public InternalCounted<Cookie>
+    {
+        private:
+            CookieSize _size;
 
-class ChocolateChipCookie : public Cookie
-{
-    public:
-        ChocolateChipCookie(CookieSize size) :
-            Cookie(size)
+        protected:
+            Cookie(CookieSize size) :
+                _size(size)
+            {
+            };
+
+        public:
+            virtual std::string flavour() const = 0;
+
+            virtual ~Cookie()
+            {
+            }
+
+            CookieSize size() const
+            {
+                return _size;
+            }
+    };
+
+    struct NoCookie
+    {
+        NoCookie(const std::string &)
         {
         }
+    };
 
-        std::string flavour() const
-        {
-            return "Chocolate Chip";
-        }
+    class ChocolateChipCookie : public Cookie
+    {
+        public:
+            ChocolateChipCookie(CookieSize size) :
+                Cookie(size)
+            {
+            }
 
-        static CountedPtr<Cookie> make(CookieSize size)
-        {
-            return CountedPtr<Cookie>(new ChocolateChipCookie(size));
-        }
-};
+            std::string flavour() const
+            {
+                return "Chocolate Chip";
+            }
 
-CookieMaker::RegisterMaker register_chocolate_chip("chocolate chip", &ChocolateChipCookie::make);
+            static CountedPtr<Cookie> make(CookieSize size)
+            {
+                return CountedPtr<Cookie>(new ChocolateChipCookie(size));
+            }
+    };
 
-class GingerCookie : public Cookie
-{
-    private:
-        bool _with_crunchy_bits;
+    class GingerCookie : public Cookie
+    {
+        private:
+            bool _with_crunchy_bits;
 
-    public:
-        GingerCookie(CookieSize size, bool with_crunchy_bits) :
-            Cookie(size),
-            _with_crunchy_bits(with_crunchy_bits)
-        {
-        }
+        public:
+            GingerCookie(CookieSize size, bool with_crunchy_bits) :
+                Cookie(size),
+                _with_crunchy_bits(with_crunchy_bits)
+            {
+            }
 
-        std::string flavour() const
-        {
-            return _with_crunchy_bits ? "Crunchy Ginger" : "Ginger";
-        }
+            std::string flavour() const
+            {
+                return _with_crunchy_bits ? "Crunchy Ginger" : "Ginger";
+            }
 
-        bool with_crunchy_bits() const
-        {
-            return _with_crunchy_bits;
-        }
+            bool with_crunchy_bits() const
+            {
+                return _with_crunchy_bits;
+            }
 
-        static CountedPtr<Cookie> make(CookieSize size)
-        {
-            return CountedPtr<Cookie>(new GingerCookie(size, false));
-        }
+            static CountedPtr<Cookie> make(CookieSize size)
+            {
+                return CountedPtr<Cookie>(new GingerCookie(size, false));
+            }
 
-        static CountedPtr<Cookie> make_crunchy(CookieSize size)
-        {
-            return CountedPtr<Cookie>(new GingerCookie(size, true));
-        }
-};
+            static CountedPtr<Cookie> make_crunchy(CookieSize size)
+            {
+                return CountedPtr<Cookie>(new GingerCookie(size, true));
+            }
+    };
 
-CookieMaker::RegisterMaker register_ginger("ginger", &GingerCookie::make);
-CookieMaker::RegisterMaker register_crunchy_ginger("crunchy ginger", &GingerCookie::make_crunchy);
+    class CookieMaker :
+        public VirtualConstructor<std::string,
+            CountedPtr<Cookie> (*) (CookieSize),
+            virtual_constructor_not_found::ThrowException<NoCookie> >,
+        public InstantiationPolicy<CookieMaker, instantiation_method::SingletonAsNeededTag>
+    {
+        friend class InstantiationPolicy<CookieMaker, instantiation_method::SingletonAsNeededTag>;
 
-#endif
+        private:
+            CookieMaker()
+            {
+                register_maker("chocolate chip", &ChocolateChipCookie::make);
+                register_maker("ginger", &GingerCookie::make);
+                register_maker("crunchy ginger", &GingerCookie::make_crunchy);
+            }
+    };
+}
 
 namespace test_cases
 {

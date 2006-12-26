@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_VIRTUAL_CONSTRUCTOR_HH 1
 
 #include <paludis/util/exception.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/iterator.hh>
 
@@ -120,24 +119,20 @@ namespace paludis
      */
     template <typename KeyType_, typename ValueType_, typename NotFoundBehaviour_>
     class PALUDIS_VISIBLE VirtualConstructor :
-        public NotFoundBehaviour_::template Parent<KeyType_, ValueType_>,
-        public InstantiationPolicy<VirtualConstructor<KeyType_, ValueType_, NotFoundBehaviour_>,
-            instantiation_method::SingletonAsNeededTag>
+        public NotFoundBehaviour_::template Parent<KeyType_, ValueType_>
     {
-        friend class InstantiationPolicy<
-            VirtualConstructor<KeyType_, ValueType_, NotFoundBehaviour_>,
-            instantiation_method::SingletonAsNeededTag>;
-
-        private:
-            VirtualConstructor()
-            {
-            }
-
         protected:
             /**
              * Our entries, sorted.
              */
             std::vector<std::pair<KeyType_, ValueType_> > entries;
+
+            /**
+             * Constructor.
+             */
+            VirtualConstructor()
+            {
+            }
 
         public:
             /**
@@ -170,8 +165,7 @@ namespace paludis
             }
 
             /**
-             * Register a new maker (should usually be called by the
-             * RegisterMaker child class.
+             * Register a new maker.
              */
             void register_maker(const KeyType_ & k, const ValueType_ & v);
 
@@ -180,24 +174,6 @@ namespace paludis
              */
             template <typename T_>
             void copy_keys(T_ out_iter) const;
-
-            /**
-             * An instance of this class registers a new maker with the
-             * specified key.
-             *
-             * \ingroup grpvc
-             */
-            struct RegisterMaker
-            {
-                /**
-                 * Constructor.
-                 */
-                RegisterMaker(const KeyType_ & k, const ValueType_ & v)
-                {
-                    VirtualConstructor<KeyType_, ValueType_, NotFoundBehaviour_>::get_instance()->
-                        register_maker(k, v);
-                }
-            };
     };
 
     template <typename KeyType_, typename ValueType_, typename NotFoundBehaviour_>

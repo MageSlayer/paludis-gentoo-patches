@@ -33,6 +33,7 @@ libpaludisvirtualsrepository_la_SOURCES = \
 	virtuals_repository.cc \
 	installed_virtuals_repository.cc \
 	vr_entry.cc \
+	registration.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
 libpaludisvirtualsrepository_la_LIBADD = \

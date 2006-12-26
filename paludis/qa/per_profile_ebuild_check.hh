@@ -82,10 +82,16 @@ namespace paludis
             }
         };
 
-        typedef VirtualConstructor<
-            std::string,
-            PerProfileEbuildCheck::Pointer (*) (),
-            virtual_constructor_not_found::ThrowException<NoSuchPerProfileEbuildCheckTypeError> > PerProfileEbuildCheckMaker;
+        class PerProfileEbuildCheckMaker :
+            public VirtualConstructor<std::string, PerProfileEbuildCheck::Pointer (*) (),
+                virtual_constructor_not_found::ThrowException<NoSuchPerProfileEbuildCheckTypeError> >,
+            public InstantiationPolicy<PerProfileEbuildCheckMaker, instantiation_method::SingletonAsNeededTag>
+        {
+            friend class InstantiationPolicy<PerProfileEbuildCheckMaker, instantiation_method::SingletonAsNeededTag>;
+
+            private:
+                PerProfileEbuildCheckMaker();
+        };
     }
 }
 

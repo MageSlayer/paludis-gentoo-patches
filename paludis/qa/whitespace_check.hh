@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks whitespace";
                 }
         };
-
-        static const FileCheckMaker::RegisterMaker register_whitespace_check(
-                WhitespaceCheck::identifier(), &MakeFileCheck<WhitespaceCheck>::make_file_check);
     }
 }
 

@@ -52,9 +52,6 @@ namespace paludis
                     return true;
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_create_metadata_check(
-                CreateMetadataCheck::identifier(), &MakeEbuildCheck<CreateMetadataCheck>::make_ebuild_check);
     }
 }
 

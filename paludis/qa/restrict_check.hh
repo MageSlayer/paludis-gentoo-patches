@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that RESTRICT is sane";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_restrict_check(
-                RestrictCheck::identifier(), &MakeEbuildCheck<RestrictCheck>::make_ebuild_check);
     }
 }
 

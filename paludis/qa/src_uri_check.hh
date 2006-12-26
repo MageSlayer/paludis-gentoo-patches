@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that SRC_URI is sane";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_src_uri_check(
-                SrcUriCheck::identifier(), &MakeEbuildCheck<SrcUriCheck>::make_ebuild_check);
     }
 }
 

@@ -17,37 +17,26 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_QA_EXTRACT_CHECK_HH
-#define PALUDIS_GUARD_PALUDIS_QA_EXTRACT_CHECK_HH 1
+#include <paludis/repository_maker.hh>
+#include <paludis/repositories/cran/cran_repository.hh>
+#include <paludis/repositories/cran/cran_installed_repository.hh>
+#include "config.h"
 
-#include <paludis/qa/ebuild_check.hh>
+using namespace paludis;
 
-namespace paludis
+#ifndef MONOLITHIC
+
+extern "C"
 {
-    namespace qa
-    {
-        /**
-         * QA check: extraction dependencies.
-         *
-         * \ingroup grpqacheck
-         */
-        class ExtractCheck :
-            public EbuildCheck
-        {
-            public:
-                ExtractCheck();
-
-                CheckResult operator() (const EbuildCheckData &) const;
-
-                static const std::string & identifier();
-
-                virtual std::string describe() const
-                {
-                    return "Checks that extraction dependencies are correct";
-                }
-        };
-    }
+    void register_repositories(RepositoryMaker * maker);
 }
 
+void register_repositories(RepositoryMaker * maker)
+{
+    maker->register_maker("cran", &CRANRepository::make_cran_repository);
+    maker->register_maker("cran_installed", &CRANInstalledRepository::make_cran_installed_repository);
+}
 
 #endif
+
+

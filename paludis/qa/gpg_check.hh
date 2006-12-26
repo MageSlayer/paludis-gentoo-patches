@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks whether the Manifest is signed";
                 }
         };
-
-        static const PackageDirCheckMaker::RegisterMaker register_gpg_check(
-                GPGCheck::identifier(), &MakePackageDirCheck<GPGCheck>::make_package_dir_check);
     }
 }
 

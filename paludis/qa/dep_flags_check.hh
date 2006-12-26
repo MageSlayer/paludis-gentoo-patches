@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks use? flags in metadata";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_dep_flags_check(
-                DepFlagsCheck::identifier(), &MakeEbuildCheck<DepFlagsCheck>::make_ebuild_check);
     }
 }
 

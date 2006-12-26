@@ -142,8 +142,16 @@ namespace paludis
      *
      * \ingroup grpsyncer
      */
-    typedef VirtualConstructor<std::string, Syncer::Pointer (*) (const std::string &, const std::string &),
-            virtual_constructor_not_found::ThrowException<NoSuchSyncerError> > SyncerMaker;
+    class SyncerMaker :
+        public VirtualConstructor<std::string, Syncer::Pointer (*) (const std::string &, const std::string &),
+            virtual_constructor_not_found::ThrowException<NoSuchSyncerError> >,
+        public InstantiationPolicy<SyncerMaker, instantiation_method::SingletonAsNeededTag>
+    {
+        friend class InstantiationPolicy<SyncerMaker, instantiation_method::SingletonAsNeededTag>;
+
+        private:
+            SyncerMaker();
+    };
 }
 
 #endif

@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks for digest collisions";
                 }
         };
-
-        static const PackageDirCheckMaker::RegisterMaker register_digest_collisions_check(
-                DigestCollisionsCheck::identifier(), &MakePackageDirCheck<DigestCollisionsCheck>::make_package_dir_check);
     }
 }
 

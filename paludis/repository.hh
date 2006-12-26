@@ -1110,16 +1110,6 @@ namespace paludis
 
 
     class PackageDatabase;
-
-    /**
-     * Virtual constructor for repositories.
-     *
-     * \ingroup grprepository
-     */
-    typedef VirtualConstructor<std::string,
-            Repository::Pointer (*) (const Environment * const, const PackageDatabase * const,
-                    AssociativeCollection<std::string, std::string>::ConstPointer),
-            virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> > RepositoryMaker;
 }
 
 #endif

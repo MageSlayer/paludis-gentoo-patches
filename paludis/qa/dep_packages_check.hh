@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks for packages that usually should not be in *DEPEND";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_dep_packages_check(
-                DepPackagesCheck::identifier(), &MakeEbuildCheck<DepPackagesCheck>::make_ebuild_check);
     }
 }
 

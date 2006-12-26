@@ -186,3 +186,21 @@ create_glsa_from_xml_file(const std::string & filename)
     return h.glsa();
 }
 
+#ifndef MONOLITHIC
+
+namespace paludis
+{
+    class RepositoryMaker;
+}
+
+extern "C"
+{
+    void register_repositories(RepositoryMaker * maker);
+}
+
+void register_repositories(RepositoryMaker * maker)
+{
+}
+
+#endif
+

@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks for illegal variable assigns";
                 }
         };
-
-        static const FileCheckMaker::RegisterMaker register_variable_assigns_check(
-                VariableAssignsCheck::identifier(), &MakeFileCheck<VariableAssignsCheck>::make_file_check);
     }
 }
 

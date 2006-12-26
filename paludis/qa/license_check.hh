@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that LICENSE is sane";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_license_check(
-                LicenseCheck::identifier(), &MakeEbuildCheck<LicenseCheck>::make_ebuild_check);
     }
 }
 

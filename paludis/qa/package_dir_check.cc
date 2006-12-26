@@ -18,6 +18,13 @@
  */
 
 #include <paludis/qa/package_dir_check.hh>
+#include <paludis/qa/digest_collisions_check.hh>
+#include <paludis/qa/ebuild_count_check.hh>
+#include <paludis/qa/files_dir_size_check.hh>
+#include <paludis/qa/gpg_check.hh>
+#include <paludis/qa/has_ebuilds_check.hh>
+#include <paludis/qa/has_misc_files_check.hh>
+#include <paludis/qa/package_name_check.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -29,5 +36,23 @@ PackageDirCheck::PackageDirCheck()
 NoSuchPackageDirCheckTypeError::NoSuchPackageDirCheckTypeError(const std::string & s) throw () :
     Exception("No such file check type: '" + s + "'")
 {
+}
+
+PackageDirCheckMaker::PackageDirCheckMaker()
+{
+    register_maker(DigestCollisionsCheck::identifier(),
+            &MakePackageDirCheck<DigestCollisionsCheck>::make_package_dir_check);
+    register_maker(EbuildCountCheck::identifier(),
+            &MakePackageDirCheck<EbuildCountCheck>::make_package_dir_check);
+    register_maker(FilesDirSizeCheck::identifier(),
+            &MakePackageDirCheck<FilesDirSizeCheck>::make_package_dir_check);
+    register_maker(GPGCheck::identifier(),
+            &MakePackageDirCheck<GPGCheck>::make_package_dir_check);
+    register_maker(HasEbuildsCheck::identifier(),
+            &MakePackageDirCheck<HasEbuildsCheck>::make_package_dir_check);
+    register_maker(HasMiscFilesCheck::identifier(),
+            &MakePackageDirCheck<HasMiscFilesCheck>::make_package_dir_check);
+    register_maker(PackageNameCheck::identifier(),
+            &MakePackageDirCheck<PackageNameCheck>::make_package_dir_check);
 }
 

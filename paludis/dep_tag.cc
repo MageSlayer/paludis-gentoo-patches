@@ -51,14 +51,6 @@ namespace
     }
 
     /**
-     * Register the GLSA dep tag category instance.
-     *
-     * \ingroup grpdeptag
-     */
-    static const DepTagCategoryMaker::RegisterMaker register_glsa_dep_tag("glsa",
-            &make_glsa_dep_tag);
-
-    /**
      * Create the DepTagCategory for general sets.
      *
      * \see register_general_set_dep_tag
@@ -77,14 +69,6 @@ namespace
     }
 
     /**
-     * Register the general set dep tag category instance.
-     *
-     * \ingroup grpdeptag
-     */
-    static const DepTagCategoryMaker::RegisterMaker register_general_set_dep_tag("general",
-            &make_general_set_dep_tag);
-
-    /**
      * Create the DepTagCategory for dependency sets.
      *
      * \see register_dependency_set_dep_tag
@@ -101,14 +85,6 @@ namespace
                     "",
                     ""));
     }
-
-    /**
-     * Register the general set dep tag category instance.
-     *
-     * \ingroup grpdeptag
-     */
-    static const DepTagCategoryMaker::RegisterMaker register_dependency_set_dep_tag("dependency",
-            &make_dependency_set_dep_tag);
 }
 
 DepTagCategory::DepTagCategory(
@@ -202,5 +178,12 @@ std::string
 DependencyDepTag::category() const
 {
     return "dependency";
+}
+
+DepTagCategoryMaker::DepTagCategoryMaker()
+{
+    register_maker("glsa", &make_glsa_dep_tag);
+    register_maker("general", &make_general_set_dep_tag);
+    register_maker("dependency", &make_dependency_set_dep_tag);
 }
 

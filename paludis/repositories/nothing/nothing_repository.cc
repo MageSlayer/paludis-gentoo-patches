@@ -244,15 +244,3 @@ NothingRepository::invalidate() const
 {
 }
 
-#ifdef PALUDIS_ENABLE_VISIBILITY
-#  pragma GCC visibility push(default)
-#endif
-namespace
-{
-    const RepositoryMaker::RegisterMaker register_nothing_repository PALUDIS_ATTRIBUTE((used)) (
-            "nothing", &NothingRepository::make_nothing_repository);
-}
-#ifdef PALUDIS_ENABLE_VISIBILITY
-#  pragma GCC visibility pop
-#endif
-

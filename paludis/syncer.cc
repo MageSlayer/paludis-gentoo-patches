@@ -174,92 +174,6 @@ namespace
                 return Syncer::Pointer(new CvsSyncer(local, remote));
             }
     };
-
-    /**
-     * Register rsync:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_rsync_syncer("rsync",  &RsyncSyncer::make);
-
-    /**
-     * Register file:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_file_syncer("file", &RsyncSyncer::make);
-
-    /**
-     * Register svn:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_svn_syncer("svn", &SvnSyncer::make);
-
-    /**
-     * Register svn+ssh:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_svnplusssh_syncer("svn+ssh", &SvnSyncer::make);
-
-    /**
-     * Register svn+http:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_svnplushttp_syncer("svn+http", &SvnSyncer::make);
-
-    /**
-     * Register svn+https:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_svnplushttps_syncer("svn+https", &SvnSyncer::make);
-
-
-    /**
-     * Register git:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_git_syncer("git", &GitSyncer::make);
-
-    /**
-     * Register git+ssh:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_gitplusssh_syncer("git+ssh", &GitSyncer::make);
-
-    /**
-     * Register git+http:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_gitplushttp_syncer("git+http", &GitSyncer::make);
-
-    /**
-     * Register cvs+ext:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_cvsplusext_syncer("cvs+ext", &CvsSyncer::make);
-
-    /**
-     * Register cvs+ssh:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_cvsplusssh_syncer("cvs+ssh", &CvsSyncer::make);
-
-    /**
-     * Register cvs+pserver:// protocol.
-     *
-     * \ingroup grpsyncer
-     */
-    static const SyncerMaker::RegisterMaker register_cvspluspserver_syncer("cvs+pserver", &CvsSyncer::make);
-
 }
 
 void
@@ -357,3 +271,20 @@ SyncCvsUrlInvalid::SyncCvsUrlInvalid(const std::string & url) throw () :
     SyncFailedError("'" + url + "' is not a valid URL for a CVS repository")
 {
 }
+
+SyncerMaker::SyncerMaker()
+{
+    register_maker("rsync",  &RsyncSyncer::make);
+    register_maker("file", &RsyncSyncer::make);
+    register_maker("svn", &SvnSyncer::make);
+    register_maker("svn+ssh", &SvnSyncer::make);
+    register_maker("svn+http", &SvnSyncer::make);
+    register_maker("svn+https", &SvnSyncer::make);
+    register_maker("git", &GitSyncer::make);
+    register_maker("git+ssh", &GitSyncer::make);
+    register_maker("git+http", &GitSyncer::make);
+    register_maker("cvs+ext", &CvsSyncer::make);
+    register_maker("cvs+ssh", &CvsSyncer::make);
+    register_maker("cvs+pserver", &CvsSyncer::make);
+}
+

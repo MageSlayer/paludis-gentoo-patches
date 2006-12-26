@@ -50,9 +50,6 @@ namespace paludis
                     return "Checks that files conform to GLEP 31";
                 }
         };
-
-        static const FileCheckMaker::RegisterMaker register_glep_31_check(
-                Glep31Check::identifier(), &MakeFileCheck<Glep31Check>::make_file_check);
     }
 }
 

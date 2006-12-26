@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that metadata.xml is valid";
                 }
         };
-
-        static const FileCheckMaker::RegisterMaker register_metadata_check(
-                MetadataCheck::identifier(), &MakeFileCheck<MetadataCheck>::make_file_check);
     }
 }
 

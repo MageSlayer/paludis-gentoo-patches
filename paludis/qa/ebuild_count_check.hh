@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks for a sane number of ebuilds";
                 }
         };
-
-        static const PackageDirCheckMaker::RegisterMaker register_ebuild_count_check(
-                EbuildCountCheck::identifier(), &MakePackageDirCheck<EbuildCountCheck>::make_package_dir_check);
     }
 }
 

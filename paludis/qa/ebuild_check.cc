@@ -18,6 +18,23 @@
  */
 
 #include <paludis/qa/ebuild_check.hh>
+#include <paludis/qa/create_metadata_check.hh>
+#include <paludis/qa/dep_any_check.hh>
+#include <paludis/qa/dep_flags_check.hh>
+#include <paludis/qa/dep_packages_check.hh>
+#include <paludis/qa/deps_exist_check.hh>
+#include <paludis/qa/description_check.hh>
+#include <paludis/qa/extract_check.hh>
+#include <paludis/qa/homepage_check.hh>
+#include <paludis/qa/inherits_check.hh>
+#include <paludis/qa/iuse_check.hh>
+#include <paludis/qa/keywords_check.hh>
+#include <paludis/qa/license_check.hh>
+#include <paludis/qa/parse_deps_check.hh>
+#include <paludis/qa/restrict_check.hh>
+#include <paludis/qa/src_uri_check.hh>
+#include <paludis/qa/pdepend_overlap_check.hh>
+#include <paludis/qa/slot_check.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -31,5 +48,26 @@ EbuildCheck::EbuildCheck()
 NoSuchEbuildCheckTypeError::NoSuchEbuildCheckTypeError(const std::string & s) throw () :
     Exception("No such ebuild check type: '" + s + "'")
 {
+}
+
+EbuildCheckMaker::EbuildCheckMaker()
+{
+    register_maker(CreateMetadataCheck::identifier(), &MakeEbuildCheck<CreateMetadataCheck>::make_ebuild_check);
+    register_maker(DepAnyCheck::identifier(), &MakeEbuildCheck<DepAnyCheck>::make_ebuild_check);
+    register_maker(DepFlagsCheck::identifier(), &MakeEbuildCheck<DepFlagsCheck>::make_ebuild_check);
+    register_maker(DepPackagesCheck::identifier(), &MakeEbuildCheck<DepPackagesCheck>::make_ebuild_check);
+    register_maker(DepsExistCheck::identifier(), &MakeEbuildCheck<DepsExistCheck>::make_ebuild_check);
+    register_maker(DescriptionCheck::identifier(), &MakeEbuildCheck<DescriptionCheck>::make_ebuild_check);
+    register_maker(ExtractCheck::identifier(), &MakeEbuildCheck<ExtractCheck>::make_ebuild_check);
+    register_maker(HomepageCheck::identifier(), &MakeEbuildCheck<HomepageCheck>::make_ebuild_check);
+    register_maker(InheritsCheck::identifier(), &MakeEbuildCheck<InheritsCheck>::make_ebuild_check);
+    register_maker(IuseCheck::identifier(), &MakeEbuildCheck<IuseCheck>::make_ebuild_check);
+    register_maker(KeywordsCheck::identifier(), &MakeEbuildCheck<KeywordsCheck>::make_ebuild_check);
+    register_maker(LicenseCheck::identifier(), &MakeEbuildCheck<LicenseCheck>::make_ebuild_check);
+    register_maker(ParseDepsCheck::identifier(), &MakeEbuildCheck<ParseDepsCheck>::make_ebuild_check);
+    register_maker(RestrictCheck::identifier(), &MakeEbuildCheck<RestrictCheck>::make_ebuild_check);
+    register_maker(SrcUriCheck::identifier(), &MakeEbuildCheck<SrcUriCheck>::make_ebuild_check);
+    register_maker(PdependOverlapCheck::identifier(), &MakeEbuildCheck<PdependOverlapCheck>::make_ebuild_check);
+    register_maker(SlotCheck::identifier(), &MakeEbuildCheck<SlotCheck>::make_ebuild_check);
 }
 

@@ -47,9 +47,6 @@ namespace paludis
                     return "Checks that DESCRIPTION is sane";
                 }
         };
-
-        static const EbuildCheckMaker::RegisterMaker register_description_check(
-                DescriptionCheck::identifier(), &MakeEbuildCheck<DescriptionCheck>::make_ebuild_check);
     }
 }
 

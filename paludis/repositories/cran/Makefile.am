@@ -37,6 +37,7 @@ libpaludiscranrepository_la_SOURCES = \
 	cran_dep_parser.cc \
 	cran_repository.cc \
 	cran_installed_repository.cc \
+	registration.cc \
 	$(paludis_repositories_cran_include_HEADERS)
 
 libpaludiscranrepository_la_LIBADD = \
