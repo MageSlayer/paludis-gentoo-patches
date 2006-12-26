@@ -107,11 +107,6 @@ namespace
                 return _with_crunchy_bits ? "Crunchy Ginger" : "Ginger";
             }
 
-            bool with_crunchy_bits() const
-            {
-                return _with_crunchy_bits;
-            }
-
             static CountedPtr<Cookie> make(CookieSize size)
             {
                 return CountedPtr<Cookie>(new GingerCookie(size, false));
