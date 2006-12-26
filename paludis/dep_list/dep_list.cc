@@ -535,7 +535,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
             d->add(*c);
             return;
         }
-        catch (const DepListError & e)
+        catch (const DepListError &)
         {
         }
     }
@@ -834,7 +834,6 @@ namespace
                     return true;
                 return false;
         }
-        return false;
     }
 }
 

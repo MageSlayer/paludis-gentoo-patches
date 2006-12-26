@@ -77,7 +77,7 @@ void ArgsVisitor::visit(IntegerArg * const arg)
     {
         arg->set_argument(destringify<int>(param));
     }
-    catch(DestringifyError &e)
+    catch (const DestringifyError &)
     {
         throw BadValue("--" + arg->long_name(), param);
     }

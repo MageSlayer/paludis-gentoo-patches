@@ -487,7 +487,7 @@ Implementation<PortageRepositoryProfile>::handle_profile_arch_var()
             throw PortageRepositoryConfigurationError("ARCH USE '" + arch_s + "' is use masked");
 #endif
     }
-    catch (const NameError & e)
+    catch (const NameError &)
     {
         throw PortageRepositoryConfigurationError("ARCH variable has invalid value '" + arch_s + "'");
     }
