@@ -33,7 +33,7 @@ libpaludisargs_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REV
 libpaludisargs_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la
 
-TESTS_ENVIRONMENT = env -u PALUDIS_OPTIONS \
+TESTS_ENVIRONMENT = env PALUDIS_OPTIONS="" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
 	bash $(top_srcdir)/test/run_test.sh
