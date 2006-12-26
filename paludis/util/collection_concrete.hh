@@ -114,7 +114,7 @@ namespace paludis
      * \ingroup grpcollections
      * \nosubgrouping
      */
-    template <typename T_, typename C_ = std::less<T_> >
+    template <typename T_, typename C_>
     class PALUDIS_VISIBLE SortedCollection<T_, C_>::Concrete :
         public SortedCollection<T_, C_>
     {
