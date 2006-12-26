@@ -174,23 +174,6 @@ namespace
         cerr << "Exiting with failure" << endl;
         exit(EXIT_FAILURE);
     }
-
-    DepListDepsOption
-    enum_arg_to_dep_list_deps_option(const args::EnumArg & arg)
-    {
-        if (arg.argument() == "pre")
-            return dl_deps_pre;
-        else if (arg.argument() == "pre-or-post")
-            return dl_deps_pre_or_post;
-        else if (arg.argument() == "post")
-            return dl_deps_post;
-        else if (arg.argument() == "try-post")
-            return dl_deps_try_post;
-        else if (arg.argument() == "discard")
-            return dl_deps_discard;
-        else
-            throw DoHelp("bad value for --" + arg.long_name());
-    }
 }
 
 int
