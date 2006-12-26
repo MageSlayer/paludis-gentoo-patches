@@ -22,6 +22,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/destringify.hh>
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -45,7 +46,24 @@ namespace
     static int stderr_write_fd = -1;
     static int stderr_close_fd = -1;
 
-    static pid_t paludis_pid(getpid());
+    pid_t get_paludis_pid()
+    {
+        pid_t result(0);
+        std::string str;
+
+        if (((str = getenv_with_default("PALUDIS_PID", ""))).empty())
+        {
+            result = getpid();
+            setenv("PALUDIS_PID", stringify(result).c_str(), 1);
+        }
+        else
+            result = destringify<pid_t>(str);
+
+        return result;
+    }
+
+
+    static pid_t paludis_pid(get_paludis_pid());
 
     /**
      * Runs a command in a directory if needed, wait for it to terminate
@@ -56,14 +74,6 @@ namespace
     int
     real_run_command(const std::string & cmd, const FSEntry * const fsentry)
     {
-        static bool done_paludis_pid(false);
-        if (! done_paludis_pid)
-        {
-            if (getenv_with_default("PALUDIS_PID", "").empty())
-                setenv("PALUDIS_PID", stringify(paludis_pid).c_str(), 1);
-            done_paludis_pid = true;
-        }
-
         pid_t child(fork());
         if (0 == child)
         {
