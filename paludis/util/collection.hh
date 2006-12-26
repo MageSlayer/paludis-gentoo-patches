@@ -24,6 +24,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <libwrapiter/libwrapiter.hh>
 #include <iterator>
+#include <functional>
 
 /** \file
  * Various wrappers around collections of items, for convenience and

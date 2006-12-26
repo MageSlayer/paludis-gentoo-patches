@@ -25,6 +25,7 @@
 #include <paludis/about.hh>
 #include <list>
 #include <dlfcn.h>
+#include <stdint.h>
 
 #include "config.h"
 

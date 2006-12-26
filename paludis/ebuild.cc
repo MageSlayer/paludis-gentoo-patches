@@ -28,6 +28,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 /** \file
  * Implementation for ebuild.hh things.

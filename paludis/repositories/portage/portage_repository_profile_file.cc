@@ -21,6 +21,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/config_file.hh>
 #include <list>
+#include <algorithm>
 
 using namespace paludis;
 

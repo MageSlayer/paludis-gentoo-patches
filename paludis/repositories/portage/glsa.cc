@@ -22,6 +22,7 @@
 #include <paludis/util/stringify.hh>
 #include <list>
 #include <dlfcn.h>
+#include <stdint.h>
 #include "config.h"
 
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))

@@ -24,6 +24,7 @@
 #include <test/test_runner.hh>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include <pwd.h>
 
 using namespace paludis;

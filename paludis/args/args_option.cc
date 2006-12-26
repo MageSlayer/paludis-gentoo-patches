@@ -21,6 +21,7 @@
 #include "args_error.hh"
 #include <set>
 #include <vector>
+#include <algorithm>
 
 /** \file
  * Implementation for ArgsOption.
