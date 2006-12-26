@@ -61,11 +61,15 @@
  */
 
 #if (defined(__GNUC__) || defined(DOXYGEN))
-#  if ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || defined(DOXYGEN))
-#    define PALUDIS_ATTRIBUTE(x) __attribute__(x)
-#    define PALUDIS_CAN_USE_ATTRIBUTE 1
-#  else
+#  if defined(__ICC)
 #    define PALUDIS_ATTRIBUTE(x)
+#  else
+#    if ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || defined(DOXYGEN))
+#      define PALUDIS_ATTRIBUTE(x) __attribute__(x)
+#      define PALUDIS_CAN_USE_ATTRIBUTE 1
+#    else
+#      define PALUDIS_ATTRIBUTE(x)
+#    endif
 #  endif
 #else
 #  define PALUDIS_ATTRIBUTE(x)
