@@ -25,6 +25,7 @@
 #include <paludis/dep_list/uninstall_list.hh>
 
 #include <iostream>
+#include <limits>
 
 /** \file
  * Handle the --uninstall action for the main paludis program.

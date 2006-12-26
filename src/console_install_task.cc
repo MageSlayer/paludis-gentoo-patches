@@ -31,6 +31,7 @@
 #include <set>
 #include <iostream>
 #include <iomanip>
+#include <limits>
 
 using namespace paludis;
 
