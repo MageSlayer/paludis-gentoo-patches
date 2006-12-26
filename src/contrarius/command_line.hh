@@ -77,7 +77,7 @@ class CommandLine :
         ///\}
 
         ///\name Package options
-        ///\[
+        ///\{
 
         /// Package options.
         paludis::args::ArgsGroup package_options;
