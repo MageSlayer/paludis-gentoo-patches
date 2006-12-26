@@ -711,6 +711,37 @@ else
 fi
 dnl }}}
 
+dnl {{{ clients
+ALL_CLIENTS="adjutrix contrarius gtkpaludis paludis qualudis"
+DEFAULT_CLIENTS="adjutrix paludis"
+if test x"$ENABLE_QA" = "xyes" ; then
+	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
+fi
+if test "x$enable_gtk" = "xyes"; then
+	DEFAULT_CLIENTS="$DEFAULT_CLIENTS gtkpaludis"
+fi
+AC_MSG_CHECKING([which clients to build...])
+AC_ARG_WITH([clients],
+			[  --with-clients=foo,bar,...
+			  Build the specified repositories:
+			  default         Equivalent to adjutrix,paludis
+			                  Also includes qualudis if --enable-qa
+			                  Also includes gtkpaludis if --enable-gtk
+
+			  adjutrix        A tool for tree querying
+			  contrarius      The cross toolchain creator
+			  gtkpaludis      The Gtk+ client (UNUSABLE)
+			  paludis         The Paludis console client
+			  qualudis        The QA console client],
+			[clients="`echo $with_clients | tr ',' ' '`"],
+			[clients="$DEFAULT_CLIENTS"])
+clients=`echo $clients | tr ' ' '\n' | sed -e "s,^default\$,$DEFAULT_CLIENTS," | tr ' ' '\n' | sort | uniq | tr '\n' ' '`
+AC_MSG_RESULT([$clients])
+BUILD_CLIENTS="$clients"
+AC_SUBST([ALL_CLIENTS])
+AC_SUBST([BUILD_CLIENTS])
+dnl }}}
+
 dnl {{{ is sed gnu sed
 AC_MSG_CHECKING([if we need a sed wrapper])
 AC_SUBST([NEED_SED_WRAPPER])

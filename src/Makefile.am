@@ -1,4 +1,5 @@
-SUBDIRS = . paludis gtkpaludis qualudis adjutrix contrarius
+SUBDIRS = . $(BUILD_CLIENTS)
+DIST_SUBDIRS = . $(ALL_CLIENTS)
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = console_install_task-sr.hh console_install_task-sr.cc

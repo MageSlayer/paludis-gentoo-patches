@@ -7,7 +7,9 @@ EXTRA_DIST = autogen.bash automake-deps-dist-hack.tmp
 SUBDIRS = misc test paludis cran ebuild ruby src doc hooks eselect bash-completion zsh-completion
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-qa --enable-ruby --enable-glsa \
-	--with-ruby-install-dir='$${DESTDIR}$${prefix}/ruby_dir'
+	--with-ruby-install-dir='$${DESTDIR}$${prefix}/ruby_dir' \
+	--with-repositories default \
+	--with-clients default,contrarius
 
 automake-deps-built-hack.tmp : built-sources-subdirs
 	touch $@
