@@ -125,3 +125,16 @@ RepositoryMaker::~RepositoryMaker()
 {
 }
 
+#ifndef MONOLITHIC
+
+extern "C"
+{
+    void register_repositories(RepositoryMaker * maker);
+}
+
+void register_repositories(RepositoryMaker *)
+{
+}
+
+#endif
+

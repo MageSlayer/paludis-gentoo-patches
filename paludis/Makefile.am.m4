@@ -69,7 +69,9 @@ BUILT_SOURCES = srcleanlist
 
 libpaludis_la_SOURCES = filelist
 libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
-libpaludis_la_LIBADD = $(top_builddir)/paludis/util/libpaludisutil.la @DYNAMIC_LD_LIBS@
+libpaludis_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	@DYNAMIC_LD_LIBS@
 
 TESTS = testlist
 

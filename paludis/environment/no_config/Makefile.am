@@ -16,7 +16,8 @@ libpaludisnoconfigenvironment_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
-	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la
+	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la
 
 if MONOLITHIC
 

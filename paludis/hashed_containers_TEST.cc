@@ -27,6 +27,19 @@ using namespace test;
 namespace test_cases
 {
     /**
+     * \test Test CRCHash
+     */
+    struct CRCHashTest : TestCase
+    {
+        CRCHashTest() : TestCase("crc hash") { };
+
+        void run()
+        {
+            TEST_CHECK_EQUAL(47503, (CRCHash<std::string>()("moo") & 0xffff));
+        }
+    } test_crc_hash;
+
+    /**
      * \test Test HashSet.
      *
      */

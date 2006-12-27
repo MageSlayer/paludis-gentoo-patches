@@ -17,6 +17,7 @@ libpaludisdefaultenvironment_la_SOURCES = \
 
 libpaludisdefaultenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 libpaludisdefaultenvironment_la_LIBADD = \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la
 

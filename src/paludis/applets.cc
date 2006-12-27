@@ -26,6 +26,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/environment/default/default_environment.hh>
+#include <paludis/repositories/repository_maker.hh>
 #include <string>
 #include <set>
 
