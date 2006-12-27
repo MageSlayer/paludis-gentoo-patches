@@ -16,11 +16,11 @@ $1_TEST_LDADD = \
 	ihateautomake.o \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	libpaludis.la \
 	$(DYNAMIC_LD_LIBS)
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
@@ -70,8 +70,7 @@ BUILT_SOURCES = srcleanlist
 libpaludis_la_SOURCES = filelist
 libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 libpaludis_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	@DYNAMIC_LD_LIBS@
+	$(top_builddir)/paludis/util/libpaludisutil.la
 
 TESTS = testlist
 

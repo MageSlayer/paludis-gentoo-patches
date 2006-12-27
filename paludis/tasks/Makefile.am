@@ -36,6 +36,11 @@ libpaludistasks_a_SOURCES = $(paludis_tasks_include_HEADERS) \
 	stage_builder_task.cc \
 	report_task.cc
 
+libpaludistasks_a_LIBADD = \
+	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la
+
 BUILT_SOURCES = \
 	stage_options-sr.hh \
 	stage_options-sr.cc

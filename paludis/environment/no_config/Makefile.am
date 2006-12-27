@@ -13,11 +13,11 @@ libpaludisnoconfigenvironment_la_SOURCES = \
 
 libpaludisnoconfigenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 libpaludisnoconfigenvironment_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
 	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la \
-	$(top_builddir)/paludis/repositories/libpaludisrepositories.la
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis.la
 
 if MONOLITHIC
 

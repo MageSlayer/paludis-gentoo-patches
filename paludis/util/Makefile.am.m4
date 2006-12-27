@@ -9,7 +9,10 @@ define(`testlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
-$1_TEST_LDADD = test_extras.o $(top_builddir)/test/libtest.a libpaludisutil.la
+$1_TEST_LDADD = \
+	test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	libpaludisutil.la
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
@@ -37,7 +40,8 @@ DEFS=\
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\"
 EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 \
-	testscriptlist test_extras.cc attributes.hh.in
+	testscriptlist \
+	test_extras.cc attributes.hh.in
 SUBDIRS = .
 
 libpaludisutil_la_SOURCES = filelist

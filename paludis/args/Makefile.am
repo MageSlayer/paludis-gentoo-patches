@@ -52,10 +52,7 @@ check_PROGRAMS = $(TESTS)
 
 test_ldadd = \
 	$(top_builddir)/test/libtest.a \
-	libpaludisargs.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(DYNAMIC_LD_LIBS)
+	libpaludisargs.la
 
 args_TEST_SOURCES = args_TEST.cc
 args_TEST_LDADD = $(test_ldadd)
