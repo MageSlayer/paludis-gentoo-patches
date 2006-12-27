@@ -32,6 +32,7 @@
 #include "config.h"
 
 #include <paludis/paludis.hh>
+#include <paludis/hashed_containers.hh>
 #include <paludis/util/util.hh>
 #include <paludis/util/log.hh>
 #include <paludis/environment/default/default_environment.hh>
@@ -44,6 +45,8 @@
 #include <iomanip>
 #include <string>
 #include <cstdlib>
+
+#include <time.h>
 
 /** \file
  * Main paludis program.
@@ -216,21 +219,29 @@ main(int argc, char *argv[])
         {
             if ((1 == std::distance(CommandLine::get_instance()->begin_parameters(),
                         CommandLine::get_instance()->end_parameters())) &&
-                    ("moo" == *CommandLine::get_instance()->begin_parameters()))
+                    (47503 == (0xffff & paludis::CRCHash<std::string>()
+                               (*CommandLine::get_instance()->begin_parameters()))))
             {
-                cout << endl;
-                cout << " ______________________________" << endl;
-                cout << "( Ugh. Another Portage user... )" << endl;
-                cout << " ------------------------------ " << endl;
-                cout << "    o" << endl;
-                cout << "     o" << endl;
-                cout << "    ^__^         /" << endl;
-                cout << "    (" << colour(cl_bold_pink, "oo") << ")\\_______/  _________" << endl;
-                cout << "    (__)\\       )=(  ____|_ \\_____" << endl;
-                cout << "        ||----w |  \\ \\     \\_____ |" << endl;
-                cout << "        ||     ||   ||           ||" << endl;
-                cout << endl;
-                return EXIT_SUCCESS;
+                time_t t(time(0));
+                const struct tm * tt(localtime(&t));
+                if (tt->tm_mday == 1 && tt->tm_mon == 3)
+                {
+                    cout << endl;
+                    cout << " ______________________________" << endl;
+                    cout << "( Ugh. Another Portage user... )" << endl;
+                    cout << " ------------------------------ " << endl;
+                    cout << "    o" << endl;
+                    cout << "     o" << endl;
+                    cout << "    ^__^         /" << endl;
+                    cout << "    (" << colour(cl_bold_pink, "oo") << ")\\_______/  _________" << endl;
+                    cout << "    (__)\\       )=(  ____|_ \\_____" << endl;
+                    cout << "        ||----w |  \\ \\     \\_____ |" << endl;
+                    cout << "        ||     ||   ||           ||" << endl;
+                    cout << endl;
+                    return EXIT_SUCCESS;
+                }
+                else
+                    throw DoHelp("don't be silly");
             }
             else
                 throw DoHelp("you should specify exactly one action");
