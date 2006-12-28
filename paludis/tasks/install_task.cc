@@ -309,7 +309,7 @@ InstallTask::execute()
             on_no_clean_needed(*dep);
         else
         {
-            _imp->env->perform_hook(Hook("uninstall_all_pre")("TARGETS", join(
+            _imp->env->perform_hook(Hook("clean_all_pre")("TARGETS", join(
                             clean_list.begin(), clean_list.end(), " ")));
             on_clean_all_pre(*dep, clean_list);
 
@@ -317,7 +317,7 @@ InstallTask::execute()
                     c_end(clean_list.end()) ; c != c_end ; ++c)
             {
                 /* clean one item */
-                _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", stringify(*c))
+                _imp->env->perform_hook(Hook("clean_pre")("TARGET", stringify(*c))
                         ("X_OF_Y", stringify(x) + " of " + stringify(y)));
                 on_clean_pre(*dep, *c);
 
@@ -333,17 +333,17 @@ InstallTask::execute()
                 }
                 catch (const PackageUninstallActionError & e)
                 {
-                    _imp->env->perform_hook(Hook("uninstall_fail")("TARGET", stringify(*c))("MESSAGE", e.message()));
+                    _imp->env->perform_hook(Hook("clean_fail")("TARGET", stringify(*c))("MESSAGE", e.message()));
                     throw;
                 }
 
                 on_clean_post(*dep, *c);
-                _imp->env->perform_hook(Hook("uninstall_post")("TARGET", stringify(*c))
+                _imp->env->perform_hook(Hook("clean_post")("TARGET", stringify(*c))
                         ("X_OF_Y", stringify(x) + " of " + stringify(y)));
             }
 
             /* we're done cleaning */
-            _imp->env->perform_hook(Hook("uninstall_all_post")("TARGETS", join(
+            _imp->env->perform_hook(Hook("clean_all_post")("TARGETS", join(
                             clean_list.begin(), clean_list.end(), " ")));
             on_clean_all_post(*dep, clean_list);
         }

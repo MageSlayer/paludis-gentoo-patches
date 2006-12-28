@@ -194,6 +194,10 @@ install-data-local :
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/fetch_all_post/
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/fetch_pre/
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/fetch_post/
+	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_all_pre/
+	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_all_post/
+	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_pre/
+	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_post/
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_all_pre/
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_all_post/
 	ln -sf ../common/log.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_pre/

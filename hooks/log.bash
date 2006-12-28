@@ -57,6 +57,22 @@ X_OF_Y="${X_OF_Y+ (${X_OF_Y})}"
             echo "finished uninstall of targets ${TARGETS}"
         ;;
 
+        clean_pre)
+            echo "starting clean of package ${TARGET}${X_OF_Y}"
+        ;;
+
+        clean_post)
+            echo "finished clean of package ${TARGET}${X_OF_Y}"
+        ;;
+
+        clean_all_pre)
+            echo "starting clean of targets ${TARGETS}"
+        ;;
+
+        clean_all_post)
+            echo "finished clean of targets ${TARGETS}"
+        ;;
+
         fetch_pre)
             echo "starting fetch of package ${TARGET}${X_OF_Y}"
         ;;
