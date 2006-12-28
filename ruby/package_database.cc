@@ -202,7 +202,7 @@ namespace
         /*
          * Document-module: Paludis::InstallState
          *
-         * Do we want installed, uninstalled or either when querying?
+         * Do we want only installed packages, only installable packages, or any package when querying?
          */
         c_package_database_install_state = rb_define_class_under(paludis_module(), "InstallState", rb_cObject);
         for (InstallState l(static_cast<InstallState>(0)), l_end(last_install_state) ; l != l_end ;
