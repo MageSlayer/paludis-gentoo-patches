@@ -164,6 +164,10 @@ systemhook(`fetch_all_all_pre')
 systemhook(`fetch_all_all_post')
 
 install-data-local :
+	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_all_pre/
+	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_all_post/
+	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_pre/
+	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_post/
 	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_all_pre/
 	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_all_post/
 	install -d $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_pre/
