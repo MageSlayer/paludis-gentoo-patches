@@ -29,7 +29,7 @@
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
-#include <paludis/repository_maker.hh>
+#include <paludis/repositories/repository_maker.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>

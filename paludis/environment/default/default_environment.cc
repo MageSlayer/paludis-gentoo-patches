@@ -24,7 +24,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
-#include <paludis/repository_maker.hh>
+#include <paludis/repositories/repository_maker.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
