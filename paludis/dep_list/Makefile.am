@@ -15,9 +15,14 @@ libpaludisdeplist_la_SOURCES = \
 	uninstall_list.cc uninstall_list.hh
 
 libpaludisdeplist_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+if ! MONOLITHIC
+
 libpaludisdeplist_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la
+
+endif
 
 if MONOLITHIC
 
@@ -53,25 +58,25 @@ check_PROGRAMS = $(TESTS)
 
 dep_list_TEST_SOURCES = dep_list_TEST.cc
 dep_list_TEST_LDADD = \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
-	libpaludisdeplist.la
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	libpaludisdeplist.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la
 
 uninstall_list_TEST_SOURCES = uninstall_list_TEST.cc
 uninstall_list_TEST_LDADD = \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
-	libpaludisdeplist.la
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	libpaludisdeplist.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

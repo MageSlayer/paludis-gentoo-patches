@@ -48,10 +48,8 @@ paludis_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
-	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
-	$(top_builddir)/paludis/repositories/vdb/libpaludisvdbrepository.la \
-	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/src/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 

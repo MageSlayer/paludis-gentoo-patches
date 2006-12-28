@@ -30,8 +30,13 @@ libpaludisargs_la_SOURCES = $(paludis_args_include_HEADERS) \
 	man.cc
 
 libpaludisargs_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+if ! MONOLITHIC
+
 libpaludisargs_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la
+
+endif
 
 TESTS_ENVIRONMENT = env PALUDIS_OPTIONS="" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
@@ -51,8 +56,9 @@ endif
 check_PROGRAMS = $(TESTS)
 
 test_ldadd = \
+	libpaludisargs.la \
 	$(top_builddir)/test/libtest.a \
-	libpaludisargs.la
+	$(top_builddir)/paludis/util/libpaludisutil.la
 
 args_TEST_SOURCES = args_TEST.cc
 args_TEST_LDADD = $(test_ldadd)

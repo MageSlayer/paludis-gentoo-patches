@@ -24,9 +24,13 @@ libpaludisfakerepository_la_SOURCES = \
 	fake_repository.cc fake_repository.hh \
 	fake_installed_repository.cc fake_installed_repository.hh
 
+if ! MONOLITHIC
+
 libpaludisfakerepository_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la
+
+endif
 
 libpaludisfakerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 

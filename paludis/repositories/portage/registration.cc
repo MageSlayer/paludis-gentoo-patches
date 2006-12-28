@@ -30,19 +30,6 @@ extern "C"
     void register_repositories(RepositoryMaker * maker);
 }
 
-
-namespace
-{
-    CountedPtr<Repository>
-    make_ebuild_repository_wrapped(
-            const Environment * const env,
-            const PackageDatabase * const db,
-            AssociativeCollection<std::string, std::string>::ConstPointer m)
-    {
-        return make_ebuild_repository(env, db, m);
-    }
-}
-
 void register_repositories(RepositoryMaker * maker)
 {
     maker->register_maker("ebuild", &make_ebuild_repository_wrapped);

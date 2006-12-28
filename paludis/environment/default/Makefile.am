@@ -16,10 +16,15 @@ libpaludisdefaultenvironment_la_SOURCES = \
 	default_environment.cc default_environment.hh
 
 libpaludisdefaultenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+if ! MONOLITHIC
+
 libpaludisdefaultenvironment_la_LIBADD = \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la
+
+endif
 
 if MONOLITHIC
 
@@ -59,12 +64,30 @@ check_PROGRAMS = $(TESTS)
 check_SCRIPTS = default_environment_TEST_setup.sh default_environment_TEST_cleanup.sh
 
 default_environment_TEST_SOURCES = default_environment_TEST.cc
+
+if MONOLITHIC
+
 default_environment_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
+	libpaludisdefaultenvironment.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	libpaludisdefaultenvironment.la
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
+	$(DYNAMIC_LD_LIBS)
+
+else
+
+default_environment_TEST_LDADD = \
+	libpaludisdefaultenvironment.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
+
+endif
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

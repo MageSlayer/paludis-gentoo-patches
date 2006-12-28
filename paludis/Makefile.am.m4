@@ -19,8 +19,8 @@ $1_TEST_LDADD = \
 	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
 	libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
 $1_TEST_CXXFLAGS = -I$(top_srcdir)
 ')dnl
@@ -69,8 +69,13 @@ BUILT_SOURCES = srcleanlist
 
 libpaludis_la_SOURCES = filelist
 libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+if ! MONOLITHIC
+
 libpaludis_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la
+
+endif
 
 TESTS = testlist
 

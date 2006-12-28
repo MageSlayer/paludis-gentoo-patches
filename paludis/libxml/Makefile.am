@@ -36,9 +36,15 @@ paludis_libxml_include_HEADERS = \
 libpaludislibxml_la_SOURCES = $(paludis_libxml_include_HEADERS) \
 	libxml.cc
 libpaludislibxml_la_CXXFLAGS = @LIBXML2DEPS_CFLAGS@
+
+if ! MONOLITHIC
+
 libpaludislibxml_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	@LIBXML2DEPS_LIBS@
+
+endif
+
 libpaludislibxml_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 endif

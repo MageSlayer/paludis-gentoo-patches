@@ -36,10 +36,14 @@ libpaludisvirtualsrepository_la_SOURCES = \
 	registration.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
+if ! MONOLITHIC
+
 libpaludisvirtualsrepository_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 EXTRA_DIST = \
 	vr_entry-sr.hh \

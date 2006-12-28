@@ -46,11 +46,15 @@ libpaludisgemsrepository_la_SOURCES = \
 	registration.cc \
 	$(paludis_repositories_gems_include_HEADERS)
 
+if ! MONOLITHIC
+
 libpaludisgemsrepository_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	-lyaml \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 gems_repository_TEST_SOURCES = gems_repository_TEST.cc
 

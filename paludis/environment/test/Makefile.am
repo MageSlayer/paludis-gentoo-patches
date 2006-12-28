@@ -11,9 +11,14 @@ libpaludistestenvironment_la_SOURCES = \
 	test_environment.cc test_environment.hh
 
 libpaludistestenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+if ! MONOLITHIC
+
 libpaludistestenvironment_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la
+
+endif
 
 if MONOLITHIC
 

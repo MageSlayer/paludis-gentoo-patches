@@ -34,6 +34,12 @@ namespace paludis
     make_ebuild_repository(const Environment * const,
             const PackageDatabase * const,
             AssociativeCollection<std::string, std::string>::ConstPointer) PALUDIS_VISIBLE;
+
+    CountedPtr<Repository>
+    make_ebuild_repository_wrapped(
+            const Environment * const env,
+            const PackageDatabase * const db,
+            AssociativeCollection<std::string, std::string>::ConstPointer m);
 }
 
 #endif

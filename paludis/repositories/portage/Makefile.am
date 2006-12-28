@@ -13,7 +13,34 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 
 paludis_repositories_libdir = $(libdir)/paludis/repositories
+
+if MONOLITHIC
+
+if ENABLE_GLSA
+
+noinst_LTLIBRARIES = \
+	libpaludisportagerepository.la
+
+else
+
+noinst_LTLIBRARIES = \
+	libpaludisportagerepository.la \
+	libpaludisportagerepositoryxmlthings.la
+
+endif
+
+else
+
 paludis_repositories_lib_LTLIBRARIES = libpaludisportagerepository.la
+
+if ENABLE_GLSA
+
+lib_LTLIBRARIES = libpaludisportagerepositoryxmlthings.la
+
+endif
+
+endif
+
 paludis_repositories_portage_includedir = $(includedir)/paludis/repositories/portage/
 libpaludisportagerepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
@@ -54,10 +81,19 @@ libpaludisportagerepository_la_SOURCES = \
 	registration.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 
+if MONOLITHIC
+
+libpaludisportagerepository_la_LIBADD = \
+	$(DYNAMIC_LD_LIBS)
+
+else
+
 libpaludisportagerepository_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 portage_repository_TEST_SOURCES = portage_repository_TEST.cc
 
@@ -67,7 +103,8 @@ portage_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
-	$(top_builddir)/test/libtest.a
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
 
 portage_repository_TEST_CXXFLAGS = -I$(top_srcdir)
 
@@ -124,31 +161,38 @@ glsa-sr.hh : glsa.sr $(top_srcdir)/misc/make_sr.bash
 glsa-sr.cc : glsa.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/glsa.sr > $@
 
-if ENABLE_GLSA
+libpaludisportagerepositoryxmlthings_la_SOURCES = xml_things.cc
+libpaludisportagerepositoryxmlthings_la_CXXFLAGS = @LIBXML2DEPS_CFLAGS@
 
 if MONOLITHIC
 
-noinst_LTLIBRARIES = libpaludisportagerepositoryxmlthings.la
+libpaludisportagerepositoryxmlthings_la_LIBADD = @LIBXML2DEPS_LIBS@ \
+	$(DYNAMIC_LD_LIBS)
 
 else
 
-lib_LTLIBRARIES = libpaludisportagerepositoryxmlthings.la
-
-endif
-
-libpaludisportagerepositoryxmlthings_la_SOURCES = xml_things.cc
-libpaludisportagerepositoryxmlthings_la_CXXFLAGS = @LIBXML2DEPS_CFLAGS@
 libpaludisportagerepositoryxmlthings_la_LIBADD = @LIBXML2DEPS_LIBS@ \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libxml/libpaludislibxml.la
+
+endif
+
 libpaludisportagerepositoryxmlthings_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+if ENABLE_GLSA
 
 GLSA_TESTS = xml_things_TEST
 xml_things_TEST_SOURCES = xml_things_TEST.cc
 xml_things_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	libpaludisportagerepository.la
+	libpaludisportagerepository.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
 endif
 
 TESTS = portage_repository_TEST $(GLSA_TESTS)

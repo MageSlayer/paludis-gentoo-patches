@@ -148,3 +148,12 @@ paludis::make_ebuild_repository(
                 .buildroot(buildroot)));
 }
 
+CountedPtr<Repository>
+paludis::make_ebuild_repository_wrapped(
+        const Environment * const env,
+        const PackageDatabase * const db,
+        AssociativeCollection<std::string, std::string>::ConstPointer m)
+{
+    return make_ebuild_repository(env, db, m);
+}
+

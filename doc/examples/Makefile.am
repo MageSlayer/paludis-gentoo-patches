@@ -8,11 +8,16 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 
 SUBDIRS = .
+
+if ! MONOLITHIC
+
 noinst_PROGRAMS = \
 	pwp_basic_cplusplus_app
 
 noinst_SCRIPTS = \
 	pwp_basic_ruby_app.rb
+
+endif
 
 EXTRA_DIST = $(noinst_SCRIPTS)
 

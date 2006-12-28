@@ -40,10 +40,14 @@ libpaludiscranrepository_la_SOURCES = \
 	registration.cc \
 	$(paludis_repositories_cran_include_HEADERS)
 
+if ! MONOLITHIC
+
 libpaludiscranrepository_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 TESTS = cran_dep_parser_TEST cran_repository_TEST
 

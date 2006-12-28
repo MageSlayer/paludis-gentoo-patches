@@ -29,6 +29,13 @@
 
 #include "config.h"
 
+#ifdef MONOLITHIC
+#  include <paludis/repositories/portage/make_ebuild_repository.hh>
+#  include <paludis/repositories/vdb/vdb_repository.hh>
+#  include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
+#  include <paludis/repositories/virtuals/virtuals_repository.hh>
+#endif
+
 using namespace paludis;
 
 PaludisRepositorySoDirNotADirectoryError::PaludisRepositorySoDirNotADirectoryError() throw () :
@@ -109,6 +116,12 @@ RepositoryMaker::RepositoryMaker() :
     PrivateImplementationPattern<RepositoryMaker>(new Implementation<RepositoryMaker>)
 {
 #ifdef MONOLITHIC
+
+    register_maker("ebuild", &make_ebuild_repository_wrapped);
+    register_maker("portage", &make_ebuild_repository_wrapped);
+    register_maker("vdb", &VDBRepository::make_vdb_repository);
+    register_maker("virtuals", &VirtualsRepository::make_virtuals_repository);
+    register_maker("installed_virtuals", &InstalledVirtualsRepository::make_installed_virtuals_repository);
 
 #else
     FSEntry so_dir(getenv_with_default("PALUDIS_REPOSITORY_SO_DIR", LIBDIR "/paludis/repositories"));

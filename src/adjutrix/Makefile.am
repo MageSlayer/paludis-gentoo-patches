@@ -45,6 +45,7 @@ adjutrix_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/src/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
