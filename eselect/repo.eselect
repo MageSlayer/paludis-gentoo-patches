@@ -34,7 +34,7 @@ get_var() {
 	default_repo_root="${ROOT}/var/paludis/repositories"
 	default_config_root="${ROOT}/etc/paludis"
 	if [[ -L /etc/make.profile ]]; then
-		default_profiles="$(readlink -f /etc/make.profile)"
+		default_profiles="$(canonicalise /etc/make.profile)"
 	fi
 	local var=$1
 	local defvar="default_$1"
