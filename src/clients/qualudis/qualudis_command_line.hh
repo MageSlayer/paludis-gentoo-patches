@@ -6,6 +6,7 @@
 #include <paludis/args/args.hh>
 #include <paludis/qa/message.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <src/common_args/log_level_arg.hh>
 
 class QualudisCommandLine :
     public paludis::args::ArgsHandler,
@@ -63,7 +64,7 @@ class QualudisCommandLine :
         paludis::args::SwitchArg a_quiet;
 
         /// --log-level
-        paludis::args::EnumArg a_log_level;
+        paludis::args::LogLevelArg a_log_level;
 
         /// --message-level
         paludis::args::EnumArg a_message_level;

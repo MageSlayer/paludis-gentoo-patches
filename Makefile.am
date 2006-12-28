@@ -20,9 +20,12 @@ automake-deps-dist-hack.tmp : built-sources-subdirs
 	$(MAKE) -C paludis/util
 	$(MAKE) -C paludis/args
 	$(MAKE) -C paludis/qa message-sr.hh
-	$(MAKE) -C src liboutput.a
-	$(MAKE) -C src/paludis paludis.1
-	$(MAKE) -C src/qualudis qualudis.1
+	$(MAKE) -C src/output liboutput.a
+	$(MAKE) -C src/common_args libcommonargs.a
+	$(MAKE) -C src/clients/paludis paludis.1
+	$(MAKE) -C src/clients/qualudis qualudis.1
+	$(MAKE) -C src/clients/contrarius contrarius.1
+	$(MAKE) -C src/clients/adjutrix adjutrix.1
 	touch $@
 
 dist-hook :

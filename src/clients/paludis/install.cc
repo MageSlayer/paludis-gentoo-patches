@@ -21,6 +21,7 @@
 #include "install.hh"
 #include <src/output/licence.hh>
 #include <src/output/console_install_task.hh>
+#include <src/common_args/do_help.hh>
 
 #include <iostream>
 #include <limits>
@@ -197,7 +198,7 @@ namespace
         else if (arg.argument() == "discard")
             return dl_deps_discard;
         else
-            throw DoHelp("bad value for --" + arg.long_name());
+            throw args::DoHelp("bad value for --" + arg.long_name());
     }
 }
 
@@ -219,7 +220,7 @@ do_install()
         else if (CommandLine::get_instance()->dl_reinstall.argument() == "if-use-changed")
             options.reinstall = dl_reinstall_if_use_changed;
         else
-            throw DoHelp("bad value for --dl-reinstall");
+            throw args::DoHelp("bad value for --dl-reinstall");
     }
 
     if (CommandLine::get_instance()->dl_reinstall_scm.specified())
@@ -233,7 +234,7 @@ do_install()
         else if (CommandLine::get_instance()->dl_reinstall_scm.argument() == "weekly")
             options.reinstall_scm = dl_reinstall_scm_weekly;
         else
-            throw DoHelp("bad value for --dl-reinstall-scm");
+            throw args::DoHelp("bad value for --dl-reinstall-scm");
     }
 
     if (CommandLine::get_instance()->dl_upgrade.specified())
@@ -243,7 +244,7 @@ do_install()
         else if (CommandLine::get_instance()->dl_upgrade.argument() == "always")
             options.upgrade = dl_upgrade_always;
         else
-            throw DoHelp("bad value for --dl-upgrade");
+            throw args::DoHelp("bad value for --dl-upgrade");
     }
 
     if (CommandLine::get_instance()->dl_circular.specified())
@@ -253,7 +254,7 @@ do_install()
         else if (CommandLine::get_instance()->dl_circular.argument() == "error")
             options.circular = dl_circular_error;
         else
-            throw DoHelp("bad value for --dl-circular");
+            throw args::DoHelp("bad value for --dl-circular");
     }
 
     if (CommandLine::get_instance()->dl_fall_back.specified())
@@ -265,7 +266,7 @@ do_install()
         else if (CommandLine::get_instance()->dl_fall_back.argument() == "never")
             options.fall_back = dl_fall_back_never;
         else
-            throw DoHelp("bad value for --dl-fall-back");
+            throw args::DoHelp("bad value for --dl-fall-back");
     }
 
     if (CommandLine::get_instance()->dl_installed_deps_pre.specified())
@@ -299,16 +300,7 @@ do_install()
     task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
 
     if (CommandLine::get_instance()->a_debug_build.specified())
-    {
-        if (CommandLine::get_instance()->a_debug_build.argument() == "none")
-            task.set_debug_mode(ido_none);
-        else if (CommandLine::get_instance()->a_debug_build.argument() == "split")
-            task.set_debug_mode(ido_split);
-        else if (CommandLine::get_instance()->a_debug_build.argument() == "internal")
-            task.set_debug_mode(ido_internal);
-        else
-            throw DoHelp("bad value for --debug-build");
-    }
+        task.set_debug_mode(CommandLine::get_instance()->a_debug_build.option());
 
     InstallKilledCatcher install_killed_catcher(task);
 

@@ -17,25 +17,26 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_COMMON_ARGS_DEBUG_BUILD_ARG_HH
-#define PALUDIS_GUARD_SRC_COMMON_ARGS_DEBUG_BUILD_ARG_HH 1
+#ifndef PALUDIS_GUARD_SRC_COMMON_ARGS_LOG_LEVEL_ARG_HH
+#define PALUDIS_GUARD_SRC_COMMON_ARGS_LOG_LEVEL_ARG_HH 1
 
 #include <paludis/args/args_option.hh>
-#include <paludis/repository.hh>
+#include <paludis/util/log.hh>
 
 namespace paludis
 {
     namespace args
     {
-        class DebugBuildArg :
+        class LogLevelArg :
             public EnumArg
         {
             public:
-                DebugBuildArg(ArgsGroup * const, const std::string &, char);
-                ~DebugBuildArg();
+                LogLevelArg(ArgsGroup * const, const std::string &, char);
+                ~LogLevelArg();
 
-                InstallDebugOption option() const;
+                LogLevel option() const;
         };
+
     }
 }
 

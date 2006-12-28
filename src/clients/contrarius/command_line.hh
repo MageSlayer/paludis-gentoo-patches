@@ -6,6 +6,7 @@
 #include <paludis/args/args.hh>
 #include <paludis/qa/message.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <src/common_args/log_level_arg.hh>
 
 class CommandLine :
     public paludis::args::ArgsHandler,
@@ -118,7 +119,7 @@ class CommandLine :
         paludis::args::SwitchArg a_verbose;
 
         /// --log-level
-        paludis::args::EnumArg a_log_level;
+        paludis::args::LogLevelArg a_log_level;
 
         /// --no-colour
         paludis::args::SwitchArg a_no_colour;

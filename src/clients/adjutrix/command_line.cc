@@ -58,12 +58,7 @@ CommandLine::CommandLine() :
 
     general_args(this, "General options",
             "Options which are relevant for most or all actions."),
-    a_log_level(&general_args, "log-level",  '\0', "Specify the log level",
-            paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
-            ("qa",      "Show QA messages and warnings only")
-            ("warning", "Show warnings only")
-            ("silent",  "Suppress all log messages"),
-            "qa"),
+    a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
 

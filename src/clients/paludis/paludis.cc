@@ -18,8 +18,8 @@
  */
 
 #include "applets.hh"
-#include <src/output/colour.hh>
 #include "command_line.hh"
+#include "config.h"
 #include "do_contents.hh"
 #include "install.hh"
 #include "list.hh"
@@ -29,7 +29,9 @@
 #include "report.hh"
 #include "sync.hh"
 #include "uninstall.hh"
-#include "config.h"
+
+#include <src/common_args/do_help.hh>
+#include <src/output/colour.hh>
 
 #include <paludis/paludis.hh>
 #include <paludis/hashed_containers.hh>
@@ -141,23 +143,15 @@ main(int argc, char *argv[])
         set_use_colour(! CommandLine::get_instance()->a_no_color.specified());
 
         if (CommandLine::get_instance()->a_help.specified())
-            throw DoHelp();
+            throw args::DoHelp();
 
         if (CommandLine::get_instance()->a_version.specified())
             throw DoVersion();
 
-        if (! CommandLine::get_instance()->a_log_level.specified())
-            Log::get_instance()->set_log_level(ll_qa);
-        else if (CommandLine::get_instance()->a_log_level.argument() == "debug")
-            Log::get_instance()->set_log_level(ll_debug);
-        else if (CommandLine::get_instance()->a_log_level.argument() == "qa")
-            Log::get_instance()->set_log_level(ll_qa);
-        else if (CommandLine::get_instance()->a_log_level.argument() == "warning")
-            Log::get_instance()->set_log_level(ll_warning);
-        else if (CommandLine::get_instance()->a_log_level.argument() == "silent")
-            Log::get_instance()->set_log_level(ll_silent);
+        if (CommandLine::get_instance()->a_log_level.specified())
+            Log::get_instance()->set_log_level(CommandLine::get_instance()->a_log_level.option());
         else
-            throw DoHelp("bad value for --log-level");
+            Log::get_instance()->set_log_level(ll_qa);
 
         Log::get_instance()->set_program_name(argv[0]);
 
@@ -241,10 +235,10 @@ main(int argc, char *argv[])
                     return EXIT_SUCCESS;
                 }
                 else
-                    throw DoHelp("don't be silly");
+                    throw args::DoHelp("don't be silly");
             }
             else
-                throw DoHelp("you should specify exactly one action");
+                throw args::DoHelp("you should specify exactly one action");
         }
 
         /* these actions don't need DefaultConfig */
@@ -252,7 +246,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_list_sync_protocols.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("list-sync-protocols action takes no parameters");
+                throw args::DoHelp("list-sync-protocols action takes no parameters");
 
             return do_list_sync_protocols();
         }
@@ -260,7 +254,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_list_repository_formats.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("list-repository-formats action takes no parameters");
+                throw args::DoHelp("list-repository-formats action takes no parameters");
 
             return do_list_repository_formats();
         }
@@ -268,7 +262,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_list_dep_tag_categories.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("list-dep-tag-categories action takes no parameters");
+                throw args::DoHelp("list-dep-tag-categories action takes no parameters");
 
             return do_list_dep_tag_categories();
         }
@@ -303,7 +297,7 @@ main(int argc, char *argv[])
             // The template should contain at least XXXXXX
             std::string resume_template = CommandLine::get_instance()->a_resume_command_template.argument();
             if (resume_template.find("XXXXXX", 0) == std::string::npos )
-                throw DoHelp("resume-command-template must contain at least XXXXXX");
+                throw args::DoHelp("resume-command-template must contain at least XXXXXX");
         }
 
         if (CommandLine::get_instance()->a_info.specified())
@@ -318,7 +312,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_query.specified())
         {
             if (CommandLine::get_instance()->empty())
-                throw DoHelp("query action requires at least one parameter");
+                throw args::DoHelp("query action requires at least one parameter");
 
             return do_query();
         }
@@ -326,7 +320,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_install.specified())
         {
             if (CommandLine::get_instance()->empty())
-                throw DoHelp("install action requires at least one parameter");
+                throw args::DoHelp("install action requires at least one parameter");
 
             return do_install();
         }
@@ -334,7 +328,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_uninstall.specified())
         {
             if (CommandLine::get_instance()->empty())
-                throw DoHelp("uninstall action requires at least one parameter");
+                throw args::DoHelp("uninstall action requires at least one parameter");
 
             return do_uninstall();
         }
@@ -342,7 +336,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_uninstall_unused.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("uninstall-unused action takes no parameters");
+                throw args::DoHelp("uninstall-unused action takes no parameters");
 
             return do_uninstall_unused();
         }
@@ -355,14 +349,14 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_report.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("report action takes no parameters");
+                throw args::DoHelp("report action takes no parameters");
             return do_report();
         }
 
         if (CommandLine::get_instance()->a_list_repositories.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("list-repositories action takes no parameters");
+                throw args::DoHelp("list-repositories action takes no parameters");
 
             return do_list_repositories();
         }
@@ -370,7 +364,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_list_categories.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("list-categories action takes no parameters");
+                throw args::DoHelp("list-categories action takes no parameters");
 
             return do_list_categories();
         }
@@ -378,7 +372,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_list_packages.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("list-packages action takes no parameters");
+                throw args::DoHelp("list-packages action takes no parameters");
 
             return do_list_packages();
         }
@@ -386,7 +380,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_list_sets.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("list-sets action takes no parameters");
+                throw args::DoHelp("list-sets action takes no parameters");
 
             return do_list_sets();
         }
@@ -394,7 +388,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_contents.specified())
         {
             if (CommandLine::get_instance()->empty())
-                throw DoHelp("contents action requires at least one parameter");
+                throw args::DoHelp("contents action requires at least one parameter");
 
             return do_contents();
         }
@@ -402,7 +396,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_owner.specified())
         {
             if (CommandLine::get_instance()->empty())
-                throw DoHelp("owner action requires at least one parameter");
+                throw args::DoHelp("owner action requires at least one parameter");
 
             return do_owner();
         }
@@ -411,7 +405,7 @@ main(int argc, char *argv[])
         {
             if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
                         CommandLine::get_instance()->end_parameters()))
-                throw DoHelp("has-version action takes exactly one parameter");
+                throw args::DoHelp("has-version action takes exactly one parameter");
 
             return do_has_version();
         }
@@ -420,7 +414,7 @@ main(int argc, char *argv[])
         {
             if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
                         CommandLine::get_instance()->end_parameters()))
-                throw DoHelp("best-version action takes exactly one parameter");
+                throw args::DoHelp("best-version action takes exactly one parameter");
 
             return do_best_version();
         }
@@ -429,7 +423,7 @@ main(int argc, char *argv[])
         {
             if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
                         CommandLine::get_instance()->end_parameters()))
-                throw DoHelp("environment-variable action takes exactly two parameters (depatom var)");
+                throw args::DoHelp("environment-variable action takes exactly two parameters (depatom var)");
 
             return do_environment_variable();
         }
@@ -438,7 +432,7 @@ main(int argc, char *argv[])
         {
             if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
                         CommandLine::get_instance()->end_parameters()))
-                throw DoHelp("configuration-variable action takes exactly two parameters (repository var)");
+                throw args::DoHelp("configuration-variable action takes exactly two parameters (repository var)");
 
             return do_configuration_variable();
         }
@@ -446,7 +440,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_update_news.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("update-news action takes no parameters");
+                throw args::DoHelp("update-news action takes no parameters");
 
             return do_update_news();
         }
@@ -455,7 +449,7 @@ main(int argc, char *argv[])
                 CommandLine::get_instance()->a_regenerate_installable_cache.specified())
         {
             if (! CommandLine::get_instance()->empty())
-                throw DoHelp("regenerate cache actions takes no parameters");
+                throw args::DoHelp("regenerate cache actions takes no parameters");
 
             return do_regenerate_cache(CommandLine::get_instance()->a_regenerate_installed_cache.specified());
         }
@@ -478,7 +472,7 @@ main(int argc, char *argv[])
         cerr << "Try " << argv[0] << " --help" << endl;
         return EXIT_FAILURE;
     }
-    catch (const DoHelp & h)
+    catch (const args::DoHelp & h)
     {
         if (h.message.empty())
         {

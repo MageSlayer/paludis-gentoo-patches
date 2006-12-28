@@ -71,12 +71,7 @@ CommandLine::CommandLine() :
     output_options(this, "Options for output verbosity",
             ""),
     a_verbose(&output_options,   "verbose", 'v', "Be verbose"),
-    a_log_level(&output_options, "log-level", 'L', "Specify the log level",
-            paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
-            ("qa",      "Show QA messages and warnings only")
-            ("warning", "Show warnings only")
-            ("silent", "Suppress all log messages"),
-            "warning"),
+    a_log_level(&output_options, "log-level", 'L'),
     a_no_colour(&output_options, "no-colour", 'C', "Do not use colour"),
     a_no_color(&a_no_colour,     "no-color"),
     a_resume_command_template(&output_options, "resume-command-template", '\0', "Save the resume command to a file made using mkstemp(3)")

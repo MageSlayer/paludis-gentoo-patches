@@ -17,37 +17,41 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "debug_build_arg.hh"
+#include "log_level_arg.hh"
 #include "do_help.hh"
 
 using namespace paludis;
 using namespace paludis::args;
 
-DebugBuildArg::DebugBuildArg(ArgsGroup * const grp, const std::string & ln,
+LogLevelArg::LogLevelArg(ArgsGroup * const grp, const std::string & ln,
         char sh) :
-    EnumArg(grp, ln, sh, "What to do with debug information",
+    EnumArg(grp, ln, sh, "Specify the log level",
             EnumArgOptions
-            ("none",              "Discard debug information")
-            ("split",             "Split debug information")
-            ("internal",          "Keep debug information"),
-            "none")
+            ("debug",   "Show debug output (noisy)")
+            ("qa",      "Show QA messages and warnings only")
+            ("warning", "Show warnings only")
+            ("silent",  "Suppress all log messages (UNSAFE)"),
+            "qa")
 {
 }
 
-DebugBuildArg::~DebugBuildArg()
+LogLevelArg::~LogLevelArg()
 {
 }
 
-InstallDebugOption
-DebugBuildArg::option() const
+LogLevel
+LogLevelArg::option() const
 {
-    if ("none" == argument())
-        return ido_none;
-    if ("split" == argument())
-        return ido_split;
-    if ("internal" == argument())
-        return ido_internal;
+    if ("debug" == argument())
+        return ll_debug;
+    if ("qa" == argument())
+        return ll_qa;
+    if ("warning" == argument())
+        return ll_warning;
+    if ("silent" == argument())
+        return ll_silent;
 
     throw DoHelp("Bad value for --" + long_name());
 }
+
 

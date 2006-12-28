@@ -504,18 +504,10 @@ int main(int argc, char *argv[])
         if (QualudisCommandLine::get_instance()->a_help.specified())
             throw DoHelp();
 
-        if (! QualudisCommandLine::get_instance()->a_log_level.specified())
-            Log::get_instance()->set_log_level(ll_qa);
-        else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "debug")
-            Log::get_instance()->set_log_level(ll_debug);
-        else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "qa")
-            Log::get_instance()->set_log_level(ll_qa);
-        else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "warning")
-            Log::get_instance()->set_log_level(ll_warning);
-        else if (QualudisCommandLine::get_instance()->a_log_level.argument() == "silent")
-            Log::get_instance()->set_log_level(ll_silent);
+        if (QualudisCommandLine::get_instance()->a_log_level.specified())
+            Log::get_instance()->set_log_level(QualudisCommandLine::get_instance()->a_log_level.option());
         else
-            throw DoHelp("bad value for --log-level");
+            Log::get_instance()->set_log_level(ll_qa);
 
         if (! QualudisCommandLine::get_instance()->a_message_level.specified())
             QualudisCommandLine::get_instance()->message_level = qa::qal_info;

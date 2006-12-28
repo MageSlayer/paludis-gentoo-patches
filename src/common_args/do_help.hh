@@ -17,26 +17,24 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_COMMON_ARGS_DEBUG_BUILD_ARG_HH
-#define PALUDIS_GUARD_SRC_COMMON_ARGS_DEBUG_BUILD_ARG_HH 1
-
-#include <paludis/args/args_option.hh>
-#include <paludis/repository.hh>
+#ifndef PALUDIS_GUARD_SRC_COMMON_ARGS_DO_HELP_HH
+#define PALUDIS_GUARD_SRC_COMMON_ARGS_DO_HELP_HH 1
 
 namespace paludis
 {
     namespace args
     {
-        class DebugBuildArg :
-            public EnumArg
+        struct DoHelp
         {
-            public:
-                DebugBuildArg(ArgsGroup * const, const std::string &, char);
-                ~DebugBuildArg();
+            const std::string message;
 
-                InstallDebugOption option() const;
+            DoHelp(const std::string & m = "") :
+                message(m)
+            {
+            }
         };
     }
 }
+
 
 #endif

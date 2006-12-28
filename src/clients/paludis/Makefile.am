@@ -23,6 +23,7 @@ man_paludis_SOURCES = \
 man_paludis_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
 
@@ -51,6 +52,7 @@ paludis_LDADD = \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/src/output/liboutput.a \
+	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(DYNAMIC_LD_LIBS)
 
 else
@@ -63,6 +65,7 @@ paludis_LDADD = \
 	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/src/output/liboutput.a \
+	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(DYNAMIC_LD_LIBS)
 
 endif

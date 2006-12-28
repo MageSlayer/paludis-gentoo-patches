@@ -121,18 +121,10 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_version.specified())
             throw DoVersion();
 
-        if (! CommandLine::get_instance()->a_log_level.specified())
-            Log::get_instance()->set_log_level(ll_qa);
-        else if (CommandLine::get_instance()->a_log_level.argument() == "debug")
-            Log::get_instance()->set_log_level(ll_debug);
-        else if (CommandLine::get_instance()->a_log_level.argument() == "qa")
-            Log::get_instance()->set_log_level(ll_qa);
-        else if (CommandLine::get_instance()->a_log_level.argument() == "warning")
-            Log::get_instance()->set_log_level(ll_warning);
-        else if (CommandLine::get_instance()->a_log_level.argument() == "silent")
-            Log::get_instance()->set_log_level(ll_silent);
+        if (CommandLine::get_instance()->a_log_level.specified())
+            Log::get_instance()->set_log_level(CommandLine::get_instance()->a_log_level.option());
         else
-            throw DoHelp("bad value for --log-level");
+            Log::get_instance()->set_log_level(ll_qa);
 
         if (1 != (
                     CommandLine::get_instance()->a_find_stable_candidates.specified() +

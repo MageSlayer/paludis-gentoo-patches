@@ -36,12 +36,7 @@ QualudisCommandLine::QualudisCommandLine() :
     a_qa_checks(&check_options, "qa-check", 'c', "Only perform given check."),
     a_verbose(&check_options, "verbose", 'v', "Be verbose"),
     a_quiet(&check_options, "quiet", 'q', "Be quiet"),
-    a_log_level(&check_options, "log-level", 'L', "Specify the log level",
-            paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
-            ("qa",      "Show QA messages and warnings only")
-            ("warning", "Show warnings only")
-            ("silent", "Suppress all log messages"),
-            "warning"),
+    a_log_level(&check_options, "log-level", 'L'),
 
     a_message_level(&check_options, "message-level", 'M', "Specify the message level",
             paludis::args::EnumArg::EnumArgOptions("info", "Show info and upwards")

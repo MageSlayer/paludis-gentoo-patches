@@ -22,6 +22,8 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/util/instantiation_policy.hh>
+#include <src/common_args/debug_build_arg.hh>
+#include <src/common_args/log_level_arg.hh>
 
 /** \file
  * Declarations for the CommandLine class.
@@ -146,7 +148,7 @@ class CommandLine :
         paludis::args::ArgsGroup general_args;
 
         /// --log-level
-        paludis::args::EnumArg a_log_level;
+        paludis::args::LogLevelArg a_log_level;
 
         /// --no-colour
         paludis::args::SwitchArg a_no_colour;
@@ -192,7 +194,7 @@ class CommandLine :
         paludis::args::SwitchArg a_no_config_protection;
 
         /// --debug-build
-        paludis::args::EnumArg a_debug_build;
+        paludis::args::DebugBuildArg a_debug_build;
 
         /// --fetch
         paludis::args::SwitchArg a_fetch;
@@ -274,19 +276,6 @@ class CommandLine :
         paludis::args::SwitchArg a_dl_no_unnecessary_upgrades;
         paludis::args::SwitchArg a_dl_drop_all;
         paludis::args::SwitchArg a_dl_ignore_installed;
-};
-
-/**
- * Show the help message.
- */
-struct DoHelp
-{
-    const std::string message;
-
-    DoHelp(const std::string & m = "") :
-        message(m)
-    {
-    }
 };
 
 #endif

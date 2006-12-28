@@ -61,12 +61,7 @@ CommandLine::CommandLine() :
 
     general_args(this, "General options",
             "Options which are relevant for most or all actions."),
-    a_log_level(&general_args, "log-level",  '\0', "Specify the log level",
-            paludis::args::EnumArg::EnumArgOptions("debug", "Show debug output (noisy)")
-            ("qa",      "Show QA messages and warnings only")
-            ("warning", "Show warnings only")
-            ("silent",  "Suppress all log messages"),
-            "qa"),
+    a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
     a_config_suffix(&general_args, "config-suffix", 'c', "Config directory suffix"),
@@ -82,12 +77,7 @@ CommandLine::CommandLine() :
     a_pretend(&install_args, "pretend", 'p', "Pretend only"),
     a_preserve_world(&install_args, "preserve-world", '1', "Don't modify the world file"),
     a_no_config_protection(&install_args, "no-config-protection", '\0', "Disable config file protection (dangerous)"),
-    a_debug_build(&install_args, "debug-build", '\0', "What to do with debug information",
-            paludis::args::EnumArg::EnumArgOptions
-            ("none",     "Discard debug information")
-            ("split",    "Split debug information")
-            ("internal", "Keep debug information with binaries"),
-            "none"),
+    a_debug_build(&install_args, "debug-build", '\0'),
     a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
     a_show_install_reasons(&install_args, "show-install-reasons", '\0', "Show why packages are being installed",
             paludis::args::EnumArg::EnumArgOptions
