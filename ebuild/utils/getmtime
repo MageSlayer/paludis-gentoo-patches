@@ -1,5 +1,5 @@
 #!/bin/bash
 case $(uname -s) in
-	FreeBSD) stat -f '%m' $@ ;;
-	*) stat -c '%Y' $@ ;;
+	FreeBSD) stat -f '%m' "$@" ;;
+	*) stat -c '%Y' "$@" ;;
 esac
