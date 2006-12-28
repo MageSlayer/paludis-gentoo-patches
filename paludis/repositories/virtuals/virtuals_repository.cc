@@ -172,7 +172,7 @@ VirtualsRepository::need_entries() const
             v(_imp->names.begin()), v_end(_imp->names.end()) ; v != v_end ; ++v)
     {
         PackageDatabaseEntryCollection::ConstPointer matches(_imp->env->package_database()->query(v->second,
-                    is_uninstalled_only));
+                    is_installable_only));
 
         if (matches->empty())
             Log::get_instance()->message(ll_warning, lc_context, "No packages matching '"

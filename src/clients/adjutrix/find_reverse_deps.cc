@@ -121,7 +121,7 @@ namespace
     void
     ReverseDepChecker::visit(const PackageDepAtom * const a)
     {
-        PackageDatabaseEntryCollection::ConstPointer dep_entries(_db->query(*a, is_either));
+        PackageDatabaseEntryCollection::ConstPointer dep_entries(_db->query(*a, is_any));
         PackageDatabaseEntryCollection::Pointer matches(new PackageDatabaseEntryCollection::Concrete);
 
         bool header_written = false;
@@ -181,7 +181,7 @@ namespace
         Context context("When checking package '" + stringify(p) + "':");
 
         PackageDatabaseEntryCollection::Pointer p_entries(env.package_database()->query(
-                PackageDepAtom::Pointer(new PackageDepAtom(stringify(p))), is_either));
+                PackageDepAtom::Pointer(new PackageDepAtom(stringify(p))), is_any));
 
         bool found_matches(false);
 
@@ -241,7 +241,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 4;
     }
 
-    PackageDatabaseEntryCollection::Pointer entries(env.package_database()->query(atom, is_either));
+    PackageDatabaseEntryCollection::Pointer entries(env.package_database()->query(atom, is_any));
     int ret(0);
 
     if (entries->empty())

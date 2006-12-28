@@ -204,8 +204,8 @@ namespace paludis
     enum InstallState
     {
         is_installed_only,    ///< Installed only
-        is_uninstalled_only,  ///< Uninstalled only
-        is_either,            ///< Either
+        is_installable_only,  ///< Installable only
+        is_any,               ///< Either
         last_install_state
     };
 

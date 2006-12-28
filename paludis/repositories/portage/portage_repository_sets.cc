@@ -297,7 +297,7 @@ PortageRepositorySets::security_set(bool insecurity) const
             {
                 PackageDatabaseEntryCollection::ConstPointer candidates(_imp->environment->package_database()->query(
                             PackageDepAtom::Pointer(new PackageDepAtom(stringify(glsa_pkg->name()))),
-                            insecurity ? is_either : is_installed_only));
+                            insecurity ? is_any : is_installed_only));
                 for (PackageDatabaseEntryCollection::Iterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
                 {
@@ -326,7 +326,7 @@ PortageRepositorySets::security_set(bool insecurity) const
 
                         PackageDatabaseEntryCollection::ConstPointer available(
                                 _imp->environment->package_database()->query(PackageDepAtom::Pointer(
-                                        new PackageDepAtom(stringify(glsa_pkg->name()))), is_uninstalled_only));
+                                        new PackageDepAtom(stringify(glsa_pkg->name()))), is_installable_only));
                         for (PackageDatabaseEntryCollection::ReverseIterator r(available->rbegin()),
                                 r_end(available->rend()) ; r != r_end ; ++r)
                         {

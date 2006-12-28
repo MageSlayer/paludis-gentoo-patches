@@ -406,7 +406,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
     /* find installable candidates, and find the best visible candidate */
     const PackageDatabaseEntry * best_visible_candidate(0);
     PackageDatabaseEntryCollection::ConstPointer installable_candidates(
-            d->_imp->env->package_database()->query(*a, is_uninstalled_only));
+            d->_imp->env->package_database()->query(*a, is_installable_only));
 
     for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
             p_end(installable_candidates->rend()) ; p != p_end ; ++p)
@@ -450,7 +450,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         if (already_installed->empty() || ! can_fall_back)
         {
             if (a->use_requirements_ptr() && d->_imp->env->package_database()->query(
-                        a->without_use_requirements(), is_either))
+                        a->without_use_requirements(), is_any))
                 throw UseRequirementsNotMetError(stringify(*a));
             else
                 throw AllMaskedError(stringify(*a));

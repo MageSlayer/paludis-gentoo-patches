@@ -165,7 +165,7 @@ namespace
                 {
                     is_installed = false;
                     results = DefaultEnvironment::get_instance()->package_database()->query(
-                            PackageDepAtom::Pointer(new PackageDepAtom(stringify(i->first))), is_either);
+                            PackageDepAtom::Pointer(new PackageDepAtom(stringify(i->first))), is_any);
                 }
                 if (results->empty())
                     continue;

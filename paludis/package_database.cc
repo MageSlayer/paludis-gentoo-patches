@@ -215,7 +215,7 @@ PackageDatabase::_do_query(const PackageDepAtom & a, const InstallState installe
         if ((installed_state == is_installed_only) && ! r->installed_interface)
             continue;
 
-        if ((installed_state == is_uninstalled_only) && r->installed_interface)
+        if ((installed_state == is_installable_only) && ! r->installable_interface)
             continue;
 
         VersionSpecCollection::ConstPointer versions(r->version_specs(a.package()));
@@ -310,12 +310,12 @@ paludis::operator<< (std::ostream & o, const InstallState & s)
                 o << "installed_only";
                 continue;
 
-            case is_uninstalled_only:
-                o << "uninstalled_only";
+            case is_installable_only:
+                o << "installable_only";
                 continue;
 
-            case is_either:
-                o << "either";
+            case is_any:
+                o << "any";
                 continue;
 
             case last_install_state:

@@ -65,18 +65,18 @@ module Paludis
         end
 
         def test_package_database_query
-            a = db.query("=foo/bar-1.0", InstallState::UninstalledOnly)
+            a = db.query("=foo/bar-1.0", InstallState::InstallableOnly)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
-            a = db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Either)
+            a = db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Any)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
-            a = db.query("foo/bar", InstallState::UninstalledOnly)
+            a = db.query("foo/bar", InstallState::InstallableOnly)
             assert_equal a, [
                 PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo"),
                 PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo") ]
 
-            a = db.query(">=foo/bar-27", InstallState::UninstalledOnly)
+            a = db.query(">=foo/bar-27", InstallState::InstallableOnly)
             assert a.empty?
 
             a = db.query("foo/bar", InstallState::InstalledOnly)
@@ -85,7 +85,7 @@ module Paludis
 
         def test_package_database_query_bad
             assert_raise TypeError do
-                db.query(123, InstallState::Either)
+                db.query(123, InstallState::Any)
             end
             assert_raise TypeError do
                 db.query(PackageDepAtom.new("foo/bar"), "Either")

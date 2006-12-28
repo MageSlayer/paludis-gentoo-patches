@@ -115,7 +115,7 @@ int do_environment_variable()
                 atom, is_installed_only));
 
     if (entries->empty())
-        entries = env->package_database()->query(atom, is_uninstalled_only);
+        entries = env->package_database()->query(atom, is_any);
 
     if (entries->empty())
         throw NoSuchPackageError(atom_str);

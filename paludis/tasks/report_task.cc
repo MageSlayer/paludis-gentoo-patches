@@ -95,7 +95,7 @@ namespace
     VulnerableChecker::visit(const PackageDepAtom * const a)
     {
         PackageDatabaseEntryCollection::ConstPointer insecure(
-                _env.package_database()->query(*a, is_either));
+                _env.package_database()->query(*a, is_any));
         for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
             if (a->tag())
