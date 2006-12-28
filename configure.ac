@@ -819,15 +819,18 @@ AC_OUTPUT(
 	ruby/Makefile
 	ruby/demos/Makefile
 	src/Makefile
-	src/contrarius/Makefile
-	src/paludis/Makefile
-	src/gtkpaludis/Makefile
-	src/gtkpaludis/cellrendererbutton/Makefile
-	src/gtkpaludis/vtemm/Makefile
-	src/gtkpaludis/vtemm/converts/Makefile
-	src/gtkpaludis/vtemm/defs/Makefile
-	src/qualudis/Makefile
-	src/adjutrix/Makefile
+	src/output/Makefile
+	src/common_args/Makefile
+	src/clients/Makefile
+	src/clients/contrarius/Makefile
+	src/clients/paludis/Makefile
+	src/clients/gtkpaludis/Makefile
+	src/clients/gtkpaludis/cellrendererbutton/Makefile
+	src/clients/gtkpaludis/vtemm/Makefile
+	src/clients/gtkpaludis/vtemm/converts/Makefile
+	src/clients/gtkpaludis/vtemm/defs/Makefile
+	src/clients/qualudis/Makefile
+	src/clients/adjutrix/Makefile
 	test/Makefile
 	zsh-completion/Makefile
 	)
