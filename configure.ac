@@ -743,14 +743,58 @@ AC_SUBST([BUILD_CLIENTS])
 dnl }}}
 
 dnl {{{ is sed gnu sed
+
 AC_MSG_CHECKING([if we need a sed wrapper])
 AC_SUBST([NEED_SED_WRAPPER])
-AM_CONDITIONAL([NEED_SED_WRAPPER], test x`sed --version &>/dev/null || echo yes` = "xyes")
-if test x`sed --version &>/dev/null || echo yes` = "xyes"; then
+AC_CACHE_VAL(paludis_need_sed_wrapper,[sed --version &>/dev/null || paludis_need_sed_wrapper=yes])
+AM_CONDITIONAL([NEED_SED_WRAPPER], test x$paludis_need_sed_wrapper = "xyes")
+if test x$paludis_need_sed_wrapper = "xyes"; then
 	AC_DEFINE([NEED_SED_WRAPPER], 1, [Do we need sed wrapper?])
 	AC_MSG_RESULT([yes])
 else
 	AC_DEFINE([NEED_SED_WRAPPER], 0)
+	AC_MSG_RESULT([no])
+fi
+dnl }}}
+
+dnl {{{ is awk gnu awk
+AC_MSG_CHECKING([if we need an awk wrapper])
+AC_SUBST([NEED_AWK_WRAPPER])
+AC_CACHE_VAL(paludis_need_awk_wrapper,[awk --version &>/dev/null || paludis_need_awk_wrapper=yes])
+AM_CONDITIONAL([NEED_AWK_WRAPPER], test x$paludis_need_awk_wrapper = "xyes")
+if test x$paludis_need_awk_wrapper = "xyes"; then
+	AC_DEFINE([NEED_AWK_WRAPPER], 1, [Do we need awk wrapper?])
+	AC_MSG_RESULT([yes])
+else
+	AC_DEFINE([NEED_AWK_WRAPPER], 0)
+	AC_MSG_RESULT([no])
+fi
+dnl }}}
+
+dnl {{{ is make gnu make
+AC_MSG_CHECKING([if we need a make wrapper])
+AC_SUBST([NEED_MAKE_WRAPPER])
+AC_CACHE_VAL(paludis_need_make_wrapper,[make --version &>/dev/null || paludis_need_make_wrapper=yes])
+AM_CONDITIONAL([NEED_MAKE_WRAPPER], test x$paludis_need_make_wrapper = "xyes")
+if test x$paludis_need_make_wrapper = "xyes"; then
+	AC_DEFINE([NEED_MAKE_WRAPPER], 1, [Do we need make wrapper?])
+	AC_MSG_RESULT([yes])
+else
+	AC_DEFINE([NEED_MAKE_WRAPPER], 0)
+	AC_MSG_RESULT([no])
+fi
+dnl }}}
+
+dnl {{{ is patch gnu patch
+AC_MSG_CHECKING([if we need a patch wrapper])
+AC_SUBST([NEED_PATCH_WRAPPER])
+AC_CACHE_VAL(paludis_need_patch_wrapper,[patch -g0 < /dev/null &>/dev/null || paludis_need_patch_wrapper=yes])
+AM_CONDITIONAL([NEED_PATCH_WRAPPER], test x$paludis_need_patch_wrapper = "xyes")
+if test x$paludis_need_patch_wrapper = "xyes"; then
+	AC_DEFINE([NEED_PATCH_WRAPPER], 1, [Do we need patch wrapper?])
+	AC_MSG_RESULT([yes])
+else
+	AC_DEFINE([NEED_PATCH_WRAPPER], 0)
 	AC_MSG_RESULT([no])
 fi
 dnl }}}

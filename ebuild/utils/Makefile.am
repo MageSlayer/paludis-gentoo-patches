@@ -2,8 +2,22 @@ MAINTAINERCLEANFILES = Makefile.in
 
 libexecprogdir = $(libexecdir)/paludis/utils
 
+libexecprog_SCRIPTS_extra =
+
 if NEED_SED_WRAPPER
-libexecprog_SCRIPTS_extra = sed
+libexecprog_SCRIPTS_extra += sed
+endif
+
+if NEED_AWK_WRAPPER
+libexecprog_SCRIPTS_extra +=  awk
+endif
+
+if NEED_MAKE_WRAPPER
+libexecprog_SCRIPTS_extra += make
+endif
+
+if NEED_PATCH_WRAPPER
+libexecprog_SCRIPTS_extra += patch
 endif
 
 libexecprog_SCRIPTS = \
@@ -87,6 +101,15 @@ dolib.a : dolib.a.in
 	cat $< > $@
 
 sed : sed.in
+	cat $< > $@
+
+awk: awk.in
+	cat $< > $@
+
+make: make.in
+	cat $< > $@
+
+patch: patch.in
 	cat $< > $@
 
 $(prep_scripts) : prep.in
