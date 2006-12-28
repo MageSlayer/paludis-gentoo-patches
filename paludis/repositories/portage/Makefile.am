@@ -19,13 +19,13 @@ if MONOLITHIC
 if ENABLE_GLSA
 
 noinst_LTLIBRARIES = \
-	libpaludisportagerepository.la
+	libpaludisportagerepository.la \
+	libpaludisportagerepositoryxmlthings.la
 
 else
 
 noinst_LTLIBRARIES = \
-	libpaludisportagerepository.la \
-	libpaludisportagerepositoryxmlthings.la
+	libpaludisportagerepository.la
 
 endif
 
