@@ -31,6 +31,10 @@ using namespace paludis;
 
 #include "glsa-sr.cc"
 
+#ifdef MONOLITHIC
+#  include <paludis/repositories/portage/xml_things.hh>
+#endif
+
 namespace paludis
 {
     template<>
@@ -178,6 +182,8 @@ GLSA::title() const
     return _imp->title;
 }
 
+#ifndef MONOLITHIC
+
 namespace
 {
     struct LibXMLHandle
@@ -200,22 +206,21 @@ namespace
     } libxmlhandle;
 }
 
+#endif
+
 GLSA::Pointer
 GLSA::create_from_xml_file(const std::string & filename)
 {
 #if ENABLE_GLSA
+#  ifdef MONOLITHIC
+
+#  else
     if (0 == libxmlhandle.handle)
         libxmlhandle.handle = dlopen("libpaludisportagerepositoryxmlthings.so",
                 RTLD_NOW | RTLD_GLOBAL);
     if (0 == libxmlhandle.handle)
         throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
                 + stringify(dlerror()) + "' when dlopen(libpaludisportagerepositoryxmlthings.so)");
-#else
-    /* avoid noreturn warning */
-    if (0 == libxmlhandle.handle)
-        throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' because Paludis was built "
-                "without GLSA support");
-#endif
 
     if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
         libxmlhandle.create_glsa_from_xml_file_handle = STUPID_CAST(GLSA::Pointer (*)(const std::string &),
@@ -224,7 +229,21 @@ GLSA::create_from_xml_file(const std::string & filename)
         throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
                 + stringify(dlerror()) + "' when dlsym(libpaludisportagerepositoryxmlthings.so, create_glsa_from_xml_file)");
 
+#  endif
+#else
+#  ifndef MONOLITHIC
+    /* avoid noreturn warning */
+    if (0 == libxmlhandle.handle)
+        throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' because Paludis was built "
+                "without GLSA support");
+#  endif
+#endif
+
+#ifdef MONOLITHIC
+    return create_glsa_from_xml_file(filename);
+#else
     return (*libxmlhandle.create_glsa_from_xml_file_handle)(filename);
+#endif
 }
 
 GLSAError::GLSAError(const std::string & msg, const std::string & filename) throw () :

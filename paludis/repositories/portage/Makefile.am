@@ -97,6 +97,21 @@ endif
 
 portage_repository_TEST_SOURCES = portage_repository_TEST.cc
 
+if MONOLITHIC
+
+portage_repository_TEST_LDADD = \
+	libpaludisportagerepository.la \
+	libpaludisportagerepositoryxmlthings.la \
+	$(top_builddir)/paludis/libxml/libpaludislibxml.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+else
+
 portage_repository_TEST_LDADD = \
 	libpaludisportagerepository.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -105,6 +120,8 @@ portage_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 portage_repository_TEST_CXXFLAGS = -I$(top_srcdir)
 
@@ -161,7 +178,7 @@ glsa-sr.hh : glsa.sr $(top_srcdir)/misc/make_sr.bash
 glsa-sr.cc : glsa.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/glsa.sr > $@
 
-libpaludisportagerepositoryxmlthings_la_SOURCES = xml_things.cc
+libpaludisportagerepositoryxmlthings_la_SOURCES = xml_things.cc xml_things.hh
 libpaludisportagerepositoryxmlthings_la_CXXFLAGS = @LIBXML2DEPS_CFLAGS@
 
 if MONOLITHIC
@@ -183,6 +200,23 @@ if ENABLE_GLSA
 
 GLSA_TESTS = xml_things_TEST
 xml_things_TEST_SOURCES = xml_things_TEST.cc
+
+if MONOLITHIC
+
+xml_things_TEST_LDADD = \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	libpaludisportagerepository.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
+	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepositoryxmlthings.la \
+	$(top_builddir)/paludis/libxml/libpaludislibxml.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(DYNAMIC_LD_LIBS)
+
+else
+
 xml_things_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
@@ -192,6 +226,8 @@ xml_things_TEST_LDADD = \
 	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 endif
 
