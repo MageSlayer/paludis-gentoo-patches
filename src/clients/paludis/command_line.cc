@@ -19,6 +19,8 @@
 
 #include "command_line.hh"
 
+using namespace paludis;
+
 CommandLine::CommandLine() :
     ArgsHandler(),
 
@@ -80,13 +82,13 @@ CommandLine::CommandLine() :
     a_debug_build(&install_args, "debug-build", '\0'),
     a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
     a_show_install_reasons(&install_args, "show-install-reasons", '\0', "Show why packages are being installed",
-            paludis::args::EnumArg::EnumArgOptions
+            args::EnumArg::EnumArgOptions
             ("none",    "Don't show any information")
             ("summary", "Show a summary")
             ("full",    "Show full output (can be very verbose)"),
             "none"),
     a_show_use_descriptions(&install_args, "show-use-descriptions", '\0', "Show descriptions of USE flags",
-            paludis::args::EnumArg::EnumArgOptions
+            args::EnumArg::EnumArgOptions
             ("none",       "Don't show any descriptions")
             ("new",        "Show for new use flags")
             ("changed",    "Show for new and changed flags")
@@ -101,82 +103,52 @@ CommandLine::CommandLine() :
             "Modify dependency list generation behaviour. Use with caution."),
 
     dl_reinstall(&dl_args, "dl-reinstall", '\0', "When to reinstall packages",
-            paludis::args::EnumArg::EnumArgOptions
+            args::EnumArg::EnumArgOptions
             ("never",          "Never")
             ("always",         "Always")
             ("if-use-changed", "If USE flags have changed"),
             "never"),
     dl_reinstall_scm(&dl_args, "dl-reinstall-scm", '\0', "When to reinstall scm packages",
-            paludis::args::EnumArg::EnumArgOptions
+            args::EnumArg::EnumArgOptions
             ("never",          "Never")
             ("always",         "Always")
             ("daily",          "If they are over a day old")
             ("weekly",         "If they are over a week old"),
             "never"),
     dl_upgrade(&dl_args, "dl-upgrade", '\0', "When to upgrade packages",
-            paludis::args::EnumArg::EnumArgOptions
+            args::EnumArg::EnumArgOptions
             ("always",        "Always")
             ("as-needed",     "As needed"),
             "always"),
 
-    dl_installed_deps_pre(&dl_args, "dl-installed-deps-pre", '\0', "How to handle pre dependencies for installed packages",
-            paludis::args::EnumArg::EnumArgOptions
-            ("pre",           "As pre dependencies")
-            ("pre-or-post",   "As pre dependencies, or post depenencies where needed")
-            ("post",          "As post dependencies")
-            ("try-post",      "As post dependencies, with no error for failures")
-            ("discard",       "Discard"),
-            "discard"),
-    dl_installed_deps_runtime(&dl_args, "dl-installed-deps-runtime", '\0', "How to handle runtime dependencies for installed packages",
-            paludis::args::EnumArg::EnumArgOptions
-            ("pre",           "As pre dependencies")
-            ("pre-or-post",   "As pre dependencies, or post depenencies where needed")
-            ("post",          "As post dependencies")
-            ("try-post",      "As post dependencies, with no error for failures")
-            ("discard",       "Discard"),
-            "try-post"),
-    dl_installed_deps_post(&dl_args, "dl-installed-deps-post", '\0', "How to handle post dependencies for installed packages",
-            paludis::args::EnumArg::EnumArgOptions
-            ("pre",           "As pre dependencies")
-            ("pre-or-post",   "As pre dependencies, or post depenencies where needed")
-            ("post",          "As post dependencies")
-            ("try-post",      "As post dependencies, with no error for failures")
-            ("discard",       "Discard"),
-            "try-post"),
+    dl_installed_deps_pre(&dl_args, "dl-installed-deps-pre", '\0',
+            "How to handle pre dependencies for installed packages",
+            dl_deps_discard),
+    dl_installed_deps_runtime(&dl_args, "dl-installed-deps-runtime", '\0',
+            "How to handle runtime dependencies for installed packages",
+            dl_deps_try_post),
+    dl_installed_deps_post(&dl_args, "dl-installed-deps-post", '\0',
+            "How to handle post dependencies for installed packages",
+            dl_deps_try_post),
 
-    dl_uninstalled_deps_pre(&dl_args, "dl-uninstalled-deps-pre", '\0', "How to handle pre dependencies for uninstalled packages",
-            paludis::args::EnumArg::EnumArgOptions
-            ("pre",           "As pre dependencies")
-            ("pre-or-post",   "As pre dependencies, or post depenencies where needed")
-            ("post",          "As post dependencies")
-            ("try-post",      "As post dependencies, with no error for failures")
-            ("discard",       "Discard"),
-            "pre"),
-    dl_uninstalled_deps_runtime(&dl_args, "dl-uninstalled-deps-runtime", '\0', "How to handle runtime dependencies for uninstalled packages",
-            paludis::args::EnumArg::EnumArgOptions
-            ("pre",           "As pre dependencies")
-            ("pre-or-post",   "As pre dependencies, or post depenencies where needed")
-            ("post",          "As post dependencies")
-            ("try-post",      "As post dependencies, with no error for failures")
-            ("discard",       "Discard"),
-            "pre-or-post"),
-    dl_uninstalled_deps_post(&dl_args, "dl-uninstalled-deps-post", '\0', "How to handle post dependencies for uninstalled packages",
-            paludis::args::EnumArg::EnumArgOptions
-            ("pre",           "As pre dependencies")
-            ("pre-or-post",   "As pre dependencies, or post depenencies where needed")
-            ("post",          "As post dependencies")
-            ("try-post",      "As post dependencies, with no error for failures")
-            ("discard",       "Discard"),
-            "post"),
+    dl_uninstalled_deps_pre(&dl_args, "dl-uninstalled-deps-pre", '\0',
+            "How to handle pre dependencies for uninstalled packages",
+            dl_deps_pre),
+    dl_uninstalled_deps_runtime(&dl_args, "dl-uninstalled-deps-runtime", '\0',
+            "How to handle runtime dependencies for uninstalled packages",
+            dl_deps_pre_or_post),
+    dl_uninstalled_deps_post(&dl_args, "dl-uninstalled-deps-post", '\0',
+            "How to handle post dependencies for uninstalled packages",
+            dl_deps_post),
 
     dl_circular(&dl_args, "dl-circular", '\0', "How to handle circular dependencies",
-            paludis::args::EnumArg::EnumArgOptions
+            args::EnumArg::EnumArgOptions
             ("error",         "Raise an error")
             ("discard",       "Discard"),
             "error"),
 
     dl_fall_back(&dl_args, "dl-fall-back", '\0', "When to fall back to installed packages",
-            paludis::args::EnumArg::EnumArgOptions
+            args::EnumArg::EnumArgOptions
             ("as-needed-except-targets", "Where necessary, but not for target packages")
             ("as-needed",                "Where necessary, including for target packages")
             ("never",                    "Never"),

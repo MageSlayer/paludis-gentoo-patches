@@ -24,6 +24,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <src/common_args/debug_build_arg.hh>
 #include <src/common_args/log_level_arg.hh>
+#include <src/common_args/deps_option_arg.hh>
 
 /** \file
  * Declarations for the CommandLine class.
@@ -223,13 +224,13 @@ class CommandLine :
         paludis::args::EnumArg dl_reinstall_scm;
         paludis::args::EnumArg dl_upgrade;
 
-        paludis::args::EnumArg dl_installed_deps_pre;
-        paludis::args::EnumArg dl_installed_deps_runtime;
-        paludis::args::EnumArg dl_installed_deps_post;
+        paludis::args::DepsOptionArg dl_installed_deps_pre;
+        paludis::args::DepsOptionArg dl_installed_deps_runtime;
+        paludis::args::DepsOptionArg dl_installed_deps_post;
 
-        paludis::args::EnumArg dl_uninstalled_deps_pre;
-        paludis::args::EnumArg dl_uninstalled_deps_runtime;
-        paludis::args::EnumArg dl_uninstalled_deps_post;
+        paludis::args::DepsOptionArg dl_uninstalled_deps_pre;
+        paludis::args::DepsOptionArg dl_uninstalled_deps_runtime;
+        paludis::args::DepsOptionArg dl_uninstalled_deps_post;
 
         paludis::args::EnumArg dl_circular;
 
