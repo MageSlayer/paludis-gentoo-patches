@@ -831,6 +831,7 @@ AC_OUTPUT(
 	ebuild/fetchers/Makefile
 	ebuild/utils/Makefile
 	ebuild/echo_functions.bash
+	ebuild/portability.bash
 	eselect/Makefile
 	hooks/Makefile
 	hooks/demos/Makefile

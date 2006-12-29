@@ -2,24 +2,6 @@ MAINTAINERCLEANFILES = Makefile.in
 
 libexecprogdir = $(libexecdir)/paludis/utils
 
-libexecprog_SCRIPTS_extra =
-
-if NEED_SED_WRAPPER
-libexecprog_SCRIPTS_extra += sed
-endif
-
-if NEED_AWK_WRAPPER
-libexecprog_SCRIPTS_extra +=  awk
-endif
-
-if NEED_MAKE_WRAPPER
-libexecprog_SCRIPTS_extra += make
-endif
-
-if NEED_PATCH_WRAPPER
-libexecprog_SCRIPTS_extra += patch
-endif
-
 libexecprog_SCRIPTS = \
 	canonicalise \
 	dobin \
@@ -67,8 +49,7 @@ libexecprog_SCRIPTS = \
 	prepallinfo \
 	prepinfo \
 	prepdocs \
-	prepalldocs \
-	$(libexecprog_SCRIPTS_extra)
+	prepalldocs
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
@@ -86,34 +67,22 @@ prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman pre
 EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash \
 	newlib.so.in newlib.a.in dolib.so.in dolib.a.in prep.in $(TESTS)
 
-CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a sed awk make patch $(prep_scripts)
+CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a $(prep_scripts)
 
 newlib.a : newlib.a.in
-	cat $< > $@
+	cat $? > $@
 
 newlib.so : newlib.so.in
-	cat $< > $@
+	cat $? > $@
 
 dolib.so : dolib.so.in
-	cat $< > $@
+	cat $? > $@
 
 dolib.a : dolib.a.in
-	cat $< > $@
-
-sed : sed.in
-	cat $< > $@
-
-awk: awk.in
-	cat $< > $@
-
-make: make.in
-	cat $< > $@
-
-patch: patch.in
-	cat $< > $@
+	cat $? > $@
 
 $(prep_scripts) : prep.in
-	cat $< > $@
+	cat $? > $@
 
 check_PROGRAMS =
 
