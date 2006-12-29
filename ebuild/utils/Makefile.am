@@ -86,7 +86,7 @@ prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman pre
 EXTRA_DIST = $(libexecprog_SCRIPTS) $(check_SCRIPTS) run_test.bash \
 	newlib.so.in newlib.a.in dolib.so.in dolib.a.in prep.in $(TESTS)
 
-CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a sed $(prep_scripts)
+CLEANFILES = *~ newlib.so newlib.a dolib.so dolib.a sed awk make patch $(prep_scripts)
 
 newlib.a : newlib.a.in
 	cat $< > $@
