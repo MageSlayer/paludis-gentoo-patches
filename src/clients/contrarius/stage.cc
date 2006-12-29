@@ -65,7 +65,7 @@ BinutilsStage::build(const StageOptions &) const
 
     DefaultConfig::get_instance()->clear_forced_use_config();
 
-    return do_install(_options.binutils);
+    return 0 == do_install(_options.binutils);
 }
 
 bool
@@ -85,7 +85,7 @@ KernelHeadersStage::build(const StageOptions &) const
             _options.headers, UseFlagName("crosscompile_opts_headers-only"),
             use_disabled));
 
-    return do_install(_options.headers);
+    return 0 == do_install(_options.headers);
 }
 
 bool
@@ -120,7 +120,7 @@ MinimalStage::build(const StageOptions &) const
     DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
             _options.gcc, UseFlagName("crosscompile_opts_bootstrap"), use_enabled));
 
-    return do_install(_options.gcc);
+    return 0 == do_install(_options.gcc);
 }
 
 bool
@@ -137,7 +137,7 @@ LibCStage::build(const StageOptions &) const
 
     DefaultConfig::get_instance()->clear_forced_use_config();
 
-    return do_install(_options.libc);
+    return 0 == do_install(_options.libc);
 }
 
 bool
@@ -167,7 +167,7 @@ FullStage::build(const StageOptions &) const
     DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
             _options.gcc, UseFlagName("objc-gc"), use_disabled));
 
-    return do_install(_options.gcc);
+    return 0 == do_install(_options.gcc);
 }
 
 bool

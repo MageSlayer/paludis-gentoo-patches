@@ -80,11 +80,6 @@ StageBuilderTask::execute()
 {
     Context context("When executing stage builder task:");
 
-#if 0
-    if (_imp->stages.empty())
-        throw NoStageListError(); //TODO: Needed?
-#endif
-
     on_build_all_pre();
 
     for (std::list<StageBase::ConstPointer>::const_iterator
@@ -103,9 +98,7 @@ StageBuilderTask::execute()
                 continue;
             }
 
-            (*s)->build(_imp->options);
-
-            if (! _imp->options.pretend)
+            if (((*s)->build(_imp->options)) && (! _imp->options.pretend))
                 on_build_succeed(*s);
         }
         catch (const StageBuildError & e)
