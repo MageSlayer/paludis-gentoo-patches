@@ -143,8 +143,13 @@ LibCStage::build(const StageOptions &) const
 bool
 LibCStage::is_rebuild() const
 {
-    return (! DefaultEnvironment::get_instance()->package_database()
-            ->query(_options.libc, is_installed_only)->empty());
+    PackageDatabaseEntryCollection::ConstPointer c(
+            DefaultEnvironment::get_instance()->package_database()->query(_options.libc, is_installed_only));
+
+    if (c->empty())
+        return false;
+
+    return (! DefaultEnvironment::get_instance()->query_use(UseFlagName("crosscompile_opts_headers-only"), &(*c->last())));
 }
 
 int

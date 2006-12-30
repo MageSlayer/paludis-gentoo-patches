@@ -58,7 +58,7 @@ namespace paludis
             virtual std::string description() const
             {
                 return "Building the GNU binutils (" + stringify(*_options.binutils)
-                        + ") as part of cross toolchain";
+                        + ") as part of the cross toolchain";
             };
 
             virtual bool is_rebuild() const;
@@ -83,7 +83,7 @@ namespace paludis
             virtual std::string description() const
             {
                 return "Building the kernel headers (" + stringify(*_options.headers)
-                        + ") as part of cross toolchain";
+                        + ") as part of the cross toolchain";
             };
 
             virtual bool is_rebuild() const;

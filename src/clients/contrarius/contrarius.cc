@@ -86,29 +86,36 @@ int main(int argc, char *argv[])
 
         OurStageBuilderTask builder(stage_opts);
 
-        builder.queue_stage(StageBase::ConstPointer(new BinutilsStage(contrarius_opts)));
+        do
+        {
+            builder.queue_stage(StageBase::ConstPointer(new BinutilsStage(contrarius_opts)));
 
-        if (stage == "binutils")
-            goto run;
+            if (stage == "binutils")
+                break;
 
-        builder.queue_stage(StageBase::ConstPointer(new MinimalStage(contrarius_opts)));
+            if (CommandLine::get_instance()->a_headers.specified())
+                builder.queue_stage(StageBase::ConstPointer(new KernelHeadersStage(contrarius_opts)));
 
-        if (stage == "minimal")
-            goto run;
+            builder.queue_stage(StageBase::ConstPointer(new MinimalStage(contrarius_opts)));
 
-        builder.queue_stage(StageBase::ConstPointer(new KernelHeadersStage(contrarius_opts)));
+            if (stage == "minimal")
+                break;
 
-        if (stage == "headers")
-            goto run;
+            if (! CommandLine::get_instance()->a_headers.specified())
+                builder.queue_stage(StageBase::ConstPointer(new KernelHeadersStage(contrarius_opts)));
 
-        builder.queue_stage(StageBase::ConstPointer(new LibCStage(contrarius_opts)));
+            if (stage == "headers")
+                break;
 
-        if (stage == "libc")
-            goto run;
+            builder.queue_stage(StageBase::ConstPointer(new LibCStage(contrarius_opts)));
 
-        builder.queue_stage(StageBase::ConstPointer(new FullStage(contrarius_opts)));
+            if (stage == "libc")
+                break;
 
-    run:
+            builder.queue_stage(StageBase::ConstPointer(new FullStage(contrarius_opts)));
+
+        } while (false);
+
         builder.execute();
 
         return EXIT_SUCCESS;
