@@ -32,13 +32,13 @@ libexecprog_SCRIPTS = \
 	pkg_prerm.bash \
 	pkg_setup.bash \
 	portage_stubs.bash \
-	portability.bash \
 	sandbox.bash \
 	src_compile.bash \
 	src_install.bash \
 	src_test.bash \
 	src_unpack.bash \
-	usage_error.bash
+	usage_error.bash \
+	work_around_broken_utilities.bash
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \

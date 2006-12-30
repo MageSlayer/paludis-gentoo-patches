@@ -96,7 +96,7 @@ ebuild_load_module multilib_functions
 ebuild_load_module install_functions
 ebuild_load_module build_functions
 ebuild_load_module eclass_functions
-ebuild_load_module portability
+ebuild_load_module work_around_broken_utilities
 
 export PALUDIS_HOME="$(canonicalise ${PALUDIS_HOME:-${HOME}} )"
 
@@ -267,7 +267,7 @@ perform_hook()
 
 ebuild_main()
 {
-    if ! [[ -e /proc/self ]] ; then
+    if ! [[ -e /proc/self ]] && [[ "$(uname -s)" == Linux ]] ; then
         ebuild_notice "warning" "/proc appears to be unmounted or unreadable."
         ebuild_notice "warning" "This will cause problems."
     fi

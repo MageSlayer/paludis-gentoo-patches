@@ -29,6 +29,7 @@
 #include <limits.h>
 #include <cstring>
 #include <cstdlib>
+#include "config.h"
 
 /** \file
  * Implementation of paludis::FSEntry.
@@ -368,6 +369,15 @@ FSEntry::mkdir(mode_t mode)
 bool
 FSEntry::unlink()
 {
+#ifdef HAVE_CHFLAGS
+    if (0 != ::chflags(_path.c_str(), 0))
+    {
+        int e(errno);
+        if (e != ENOENT)
+            throw FSError("chflags for unlink '" + _path + "' failed: " + ::strerror(e));
+    }
+#endif
+
     if (0 == ::unlink(_path.c_str()))
         return true;
 

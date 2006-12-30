@@ -258,8 +258,13 @@ AC_CHECK_FUNCS([grantpt],      [], [AC_MSG_ERROR([I need grantpt])])
 AC_CHECK_FUNCS([unlockpt],     [], [AC_MSG_ERROR([I need unlockpt])])
 dnl }}}
 
+dnl {{{ check for chflags function
+AC_CHECK_FUNCS([chflags])
+AM_CONDITIONAL(HAVE_CHFLAGS, test x$ac_cv_func_chflags = xyes)
+dnl }}}
+
 dnl {{{ check for cxxflags
-if test x == x"$LET_ME_RICE"
+if test x = x"$LET_ME_RICE"
 then
 	AC_MSG_CHECKING([for go faster stripes])
 	for x in "as-needed" "visibility" "enforce-eh" "fast-math" "rtti"
@@ -831,7 +836,7 @@ AC_OUTPUT(
 	ebuild/fetchers/Makefile
 	ebuild/utils/Makefile
 	ebuild/echo_functions.bash
-	ebuild/portability.bash
+	ebuild/work_around_broken_utilities.bash
 	eselect/Makefile
 	hooks/Makefile
 	hooks/demos/Makefile

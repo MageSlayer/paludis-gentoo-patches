@@ -87,7 +87,9 @@ econf()
 einstall()
 {
     if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
-        local cmd="${EINSTALL_WRAPPER} make prefix=${D}/usr"
+        local makecmd=""
+        type -p gmake &>/dev/null && makecmd="gmake" || makecmd="make"
+        local cmd="${EINSTALL_WRAPPER} ${makecmd} prefix=${D}/usr"
         cmd="${cmd} mandir=${D}/usr/share/man"
         cmd="${cmd} infodir=${D}/usr/share/info"
         cmd="${cmd} datadir=${D}/usr/share"
