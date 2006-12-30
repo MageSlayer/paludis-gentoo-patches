@@ -112,13 +112,7 @@ namespace
         if (task.current_dep_list_entry() != task.dep_list().end())
         {
             std::string resume_command = DefaultEnvironment::get_instance()->paludis_command() + " "
-                "--dl-installed-deps-pre discard "
-                "--dl-installed-deps-runtime discard "
-                "--dl-installed-deps-post discard "
-                "--dl-uninstalled-deps-pre discard "
-                "--dl-uninstalled-deps-runtime discard "
-                "--dl-uninstalled-deps-post discard "
-                "--install --preserve-world";
+                "--dl-deps-default discard --install --preserve-world";
             for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
                     i != i_end ; ++i)
                 if (! i->skip_install)
@@ -267,6 +261,17 @@ do_install()
             options.fall_back = dl_fall_back_never;
         else
             throw args::DoHelp("bad value for --dl-fall-back");
+    }
+
+    if (CommandLine::get_instance()->dl_deps_default.specified())
+    {
+        DepListDepsOption x(CommandLine::get_instance()->dl_deps_default.option());
+        options.installed_deps_pre = x;
+        options.installed_deps_post = x;
+        options.installed_deps_runtime = x;
+        options.uninstalled_deps_pre = x;
+        options.uninstalled_deps_post = x;
+        options.uninstalled_deps_runtime = x;
     }
 
     if (CommandLine::get_instance()->dl_installed_deps_pre.specified())

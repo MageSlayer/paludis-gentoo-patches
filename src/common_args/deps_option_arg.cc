@@ -27,6 +27,9 @@ namespace
 {
     std::string def_to_string(const DepListDepsOption d)
     {
+        if (-1 == d)
+            return "none";
+
         switch (d)
         {
             case dl_deps_discard:

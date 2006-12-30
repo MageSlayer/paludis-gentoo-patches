@@ -121,6 +121,10 @@ CommandLine::CommandLine() :
             ("as-needed",     "As needed"),
             "always"),
 
+    dl_deps_default(&dl_args, "dl-deps-default", '\0',
+            "Override default behaviour for all dependency classes",
+            static_cast<DepListDepsOption>(-1)),
+
     dl_installed_deps_pre(&dl_args, "dl-installed-deps-pre", '\0',
             "How to handle pre dependencies for installed packages",
             dl_deps_discard),
