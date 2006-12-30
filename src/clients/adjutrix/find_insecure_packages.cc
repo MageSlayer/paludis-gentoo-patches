@@ -64,7 +64,8 @@ namespace
     {
         private:
             const Environment & _env;
-            std::multimap<PackageDatabaseEntry, std::string> _found;
+            std::multimap<PackageDatabaseEntry, std::string,
+                ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> _found;
 
         public:
             ListInsecureVisitor(const Environment & e) :
@@ -113,7 +114,8 @@ namespace
     std::ostream & operator<< (std::ostream & s, const ListInsecureVisitor & v)
     {
         QualifiedPackageName old_name("dormouse/teapot");
-        for (std::multimap<PackageDatabaseEntry, std::string>::const_iterator
+        for (std::multimap<PackageDatabaseEntry, std::string,
+                ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator>::const_iterator
                 f(v._found.begin()), f_end(v._found.end()) ; f != f_end ; ++f)
         {
             if (f->first.name != old_name)

@@ -37,10 +37,11 @@ namespace paludis
      *
      * \ingroup grpvalidated
      */
-    template <typename ValidatedDataType_, typename Validator_>
+    template <typename ValidatedDataType_, typename Validator_,
+             typename ComparisonMode_ = comparison_mode::FullComparisonTag>
     class Validated : public ComparisonPolicy<
-                          Validated<ValidatedDataType_, Validator_>,
-                          comparison_mode::FullComparisonTag,
+                          Validated<ValidatedDataType_, Validator_, ComparisonMode_>,
+                          ComparisonMode_,
                           comparison_method::CompareByMemberTag<ValidatedDataType_> >
     {
         private:
@@ -53,7 +54,7 @@ namespace paludis
             /**
              * Copy constructor (no validation needed).
              */
-            Validated(const Validated<ValidatedDataType_, Validator_> & other);
+            Validated(const Validated<ValidatedDataType_, Validator_, ComparisonMode_> & other);
 
             /**
              * Constructor (validation needed).
@@ -63,8 +64,8 @@ namespace paludis
             /**
              * Assignment (no validation needed).
              */
-            const Validated<ValidatedDataType_, Validator_> & operator=
-                (const Validated<ValidatedDataType_,Validator_> & other)
+            const Validated<ValidatedDataType_, Validator_, ComparisonMode_> & operator=
+                (const Validated<ValidatedDataType_, Validator_, ComparisonMode_> & other)
             {
                 _value = other._value;
                 return *this;
@@ -83,25 +84,25 @@ namespace paludis
     };
 
 
-    template <typename ValidatedDataType_, typename Validator_>
-    Validated<ValidatedDataType_, Validator_>::Validated(
-            const Validated<ValidatedDataType_, Validator_> & other) :
+    template <typename ValidatedDataType_, typename Validator_, typename ComparisonMode_>
+    Validated<ValidatedDataType_, Validator_, ComparisonMode_>::Validated(
+            const Validated<ValidatedDataType_, Validator_, ComparisonMode_> & other) :
         ComparisonPolicy<
-            Validated<ValidatedDataType_, Validator_>,
-            comparison_mode::FullComparisonTag,
+            Validated<ValidatedDataType_, Validator_, ComparisonMode_>,
+            ComparisonMode_,
             comparison_method::CompareByMemberTag<ValidatedDataType_> >
                 (other),
         _value(other._value)
     {
     }
 
-    template <typename ValidatedDataType_, typename Validator_>
-    Validated<ValidatedDataType_, Validator_>::Validated(const ValidatedDataType_ & value) :
+    template <typename ValidatedDataType_, typename Validator_, typename ComparisonMode_>
+    Validated<ValidatedDataType_, Validator_, ComparisonMode_>::Validated(const ValidatedDataType_ & value) :
         ComparisonPolicy<
-            Validated<ValidatedDataType_, Validator_>,
-            comparison_mode::FullComparisonTag,
+            Validated<ValidatedDataType_, Validator_, ComparisonMode_>,
+            ComparisonMode_,
             comparison_method::CompareByMemberTag<ValidatedDataType_> >
-                (&Validated<ValidatedDataType_, Validator_>::_value),
+                (&Validated<ValidatedDataType_, Validator_, ComparisonMode_>::_value),
         _value(value)
     {
         Validator_::validate(_value);
@@ -112,9 +113,9 @@ namespace paludis
      *
      * \ingroup grpvalidated
      */
-    template <typename D_, typename V_>
+    template <typename D_, typename V_, typename C_>
     std::ostream &
-    operator<< (std::ostream & s, const Validated<D_, V_> & v)
+    operator<< (std::ostream & s, const Validated<D_, V_, C_> & v)
     {
         s << v.data();
         return s;

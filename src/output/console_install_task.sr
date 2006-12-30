@@ -8,8 +8,6 @@ make_class_UseDescription()
     key state UseDescriptionState
     key description std::string
 
-    comparison_operators all flag package
-
     allow_named_args
 }
 

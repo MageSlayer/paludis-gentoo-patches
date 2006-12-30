@@ -199,8 +199,7 @@ namespace
         c_package_database_entry = rb_define_class_under(paludis_module(), "PackageDatabaseEntry", rb_cObject);
         rb_define_singleton_method(c_package_database_entry, "new", RUBY_FUNC_CAST(&package_database_entry_new), 3);
         rb_define_method(c_package_database_entry, "initialize", RUBY_FUNC_CAST(&package_database_entry_init), 3);
-        rb_define_method(c_package_database_entry, "<=>", RUBY_FUNC_CAST(&Common<PackageDatabaseEntry>::compare), 1);
-        rb_include_module(c_package_database_entry, rb_mComparable);
+        rb_define_method(c_package_database_entry, "==", RUBY_FUNC_CAST(&Common<PackageDatabaseEntry>::equal), 1);
         rb_define_method(c_package_database_entry, "to_s", RUBY_FUNC_CAST(&Common<PackageDatabaseEntry>::to_s), 0);
         rb_define_method(c_package_database_entry, "name", RUBY_FUNC_CAST(&package_database_entry_name), 0);
         rb_define_method(c_package_database_entry, "name=", RUBY_FUNC_CAST(&package_database_entry_name_set), 1);

@@ -31,7 +31,8 @@ namespace
         public DepAtomVisitorTypes::ConstVisitor
     {
         private:
-            std::multimap<PackageDatabaseEntry, DepTag::ConstPointer> _found;
+            std::multimap<PackageDatabaseEntry, DepTag::ConstPointer,
+                ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> _found;
             const Environment & _env;
 
         public:
@@ -167,7 +168,7 @@ ReportTask::execute()
 
     UninstallList unused_list(e, UninstallListOptions());
     unused_list.add_unused();
-    std::set<PackageDatabaseEntry> unused;
+    std::set<PackageDatabaseEntry, ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> unused;
     for (UninstallList::Iterator i(unused_list.begin()), i_end(unused_list.end());
             i != i_end ; ++i)
         if (! i->skip_uninstall)

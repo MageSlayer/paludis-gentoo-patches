@@ -59,7 +59,7 @@ namespace paludis
         {
         }
 
-        void add_repositories(const std::set<RepositoryName> & c)
+        void add_repositories(const std::set<RepositoryName, RepositoryNameComparator> & c)
         {
             for (std::set<RepositoryName>::const_iterator n(c.begin()), n_end(c.end()) ; n != n_end ; ++n)
             {
@@ -90,7 +90,7 @@ namespace
     void
     Populate::operator() ()
     {
-        std::set<RepositoryName> names;
+        std::set<RepositoryName, RepositoryNameComparator> names;
 
         StatusBarMessage m1(this, "Loading repository names...");
 

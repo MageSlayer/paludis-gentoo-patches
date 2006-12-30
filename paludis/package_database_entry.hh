@@ -30,8 +30,27 @@ namespace paludis
 
     /**
      * A collection of PackageDatabaseEntry instances.
+     *
+     * Often this will have been ordered by
+     * PackageDatabase::sort_package_database_entry_collection . There is no intrinsic
+     * ordering because RepositoryName is not comparable except via a PackageDatabase .
      */
-    typedef SortedCollection<PackageDatabaseEntry> PackageDatabaseEntryCollection;
+    typedef SequentialCollection<PackageDatabaseEntry> PackageDatabaseEntryCollection;
+
+    /**
+     * Comparator for ArbitrarilyOrderedPackageDatabaseEntryCollection.
+     */
+    struct ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator
+    {
+        bool operator () (const PackageDatabaseEntry & lhs, const PackageDatabaseEntry & rhs) const;
+    };
+
+    /**
+     * A collection of PackageDatabaseEntry instances that are ordered, but not
+     * by best first.
+     */
+    typedef SortedCollection<PackageDatabaseEntry, ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator>
+        ArbitrarilyOrderedPackageDatabaseEntryCollection;
 
     /**
      * A PackageDatabaseEntry can be written to a stream.

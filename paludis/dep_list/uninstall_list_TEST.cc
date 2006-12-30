@@ -87,7 +87,7 @@ namespace test_cases
 
             void add_target(const std::string & p, const std::string & v)
             {
-                targets->insert(PackageDatabaseEntry(
+                targets->push_back(PackageDatabaseEntry(
                             QualifiedPackageName(p),
                             VersionSpec(v),
                             RepositoryName("installed")));
@@ -304,9 +304,9 @@ namespace test_cases
 
         void populate_expected()
         {
+            expected.push_back("foo/moo-3::installed");
             expected.push_back("foo/bar-1::installed");
             expected.push_back("foo/baz-2::installed");
-            expected.push_back("foo/moo-3::installed");
             expected.push_back("foo/oink-1::installed");
         }
 

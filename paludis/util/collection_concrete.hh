@@ -86,6 +86,16 @@ namespace paludis
                 return Iterator(std::find(_items.begin(), _items.end(), v));
             }
 
+            virtual ReverseIterator rbegin() const
+            {
+                return ReverseIterator(_items.rbegin());
+            }
+
+            virtual ReverseIterator rend() const
+            {
+                return ReverseIterator(_items.rend());
+            }
+
             virtual bool append(T_ v)
             {
                 if (end() != find(v))
@@ -105,6 +115,20 @@ namespace paludis
             {
                 return _items.empty();
             }
+
+            ///\name Extra functions
+            ///\{
+
+            template <typename C_>
+            void sort(const C_ & t)
+            {
+                _items.sort(t);
+            }
+
+            //\}
+
+            typedef CountedPtr<Concrete, count_policy::InternalCountTag> ConstPointer;
+            typedef CountedPtr<Concrete, count_policy::InternalCountTag> Pointer;
     };
 
     /**

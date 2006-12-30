@@ -82,7 +82,7 @@ int do_best_version()
                 "new style virtuals.");
         PackageDatabaseEntryCollection::Pointer new_entries(
                 new PackageDatabaseEntryCollection::Concrete);
-        new_entries->insert(metadata->get_virtual_interface()->virtual_for);
+        new_entries->push_back(metadata->get_virtual_interface()->virtual_for);
         entries = new_entries;
     }
 

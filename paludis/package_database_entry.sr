@@ -18,6 +18,6 @@ make_class_PackageDatabaseEntry()
          */
 END
 
-    comparison_operators all all
+    comparison_operators equality all
 }
 

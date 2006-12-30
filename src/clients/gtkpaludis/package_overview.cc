@@ -149,7 +149,7 @@ namespace
         StatusBarMessage m1(this, "Querying package...");
 
         Glib::RefPtr<Gtk::TreeStore> model(Gtk::TreeStore::create(_imp->columns));
-        std::map<RepositoryName, Gtk::TreeModel::iterator> repository_rows;
+        std::map<RepositoryName, Gtk::TreeModel::iterator, RepositoryNameComparator> repository_rows;
 
         Gtk::TreeModel::Row top_row = *model->append();
         top_row[_imp->columns.col_left] = stringify(_pkg);
@@ -178,7 +178,8 @@ namespace
             for (PackageDatabaseEntryCollection::Iterator i(entries->begin()), i_end(entries->end()) ;
                     i != i_end ; ++i)
             {
-                std::map<RepositoryName, Gtk::TreeModel::iterator>::iterator r(repository_rows.find(i->repository));
+                std::map<RepositoryName, Gtk::TreeModel::iterator, RepositoryNameComparator>::iterator
+                    r(repository_rows.find(i->repository));
                 if (repository_rows.end() == r)
                 {
                     r = repository_rows.insert(std::make_pair(i->repository, model->append(versions_row.children()))).first;

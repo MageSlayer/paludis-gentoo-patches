@@ -91,6 +91,13 @@ namespace paludis
 
             virtual Iterator last() const = 0;
 
+            struct ReverseTag;
+            typedef libwrapiter::ForwardIterator<ReverseTag, const T_> ReverseIterator;
+
+            virtual ReverseIterator rbegin() const = 0;
+
+            virtual ReverseIterator rend() const = 0;
+
             ///\}
 
             ///\name Finding items

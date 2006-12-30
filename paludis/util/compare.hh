@@ -124,6 +124,8 @@ namespace paludis
     /**
      * Compare t1 and t2.
      *
+     * This is deliberately not specialised for the three parameter Validated.
+     *
      * \retval -1 if t1 < t2, 1 if t1 > t2, 0 otherwise.
      *
      * \ingroup grpcompare

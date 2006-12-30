@@ -43,10 +43,13 @@ namespace paludis
             void move_package_to_end(const PackageDatabaseEntry &);
             void add_unused_dependencies();
             void add_dependencies(const PackageDatabaseEntry &);
-            PackageDatabaseEntryCollection::ConstPointer collect_depped_upon(
-                    const PackageDatabaseEntryCollection::ConstPointer targets) const;
-            PackageDatabaseEntryCollection::ConstPointer collect_all_installed() const;
-            PackageDatabaseEntryCollection::ConstPointer collect_world() const;
+
+            ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer collect_depped_upon(
+                    const ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer targets) const;
+
+            ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer collect_all_installed() const;
+
+            ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer collect_world() const;
 
         public:
             UninstallList(const Environment * const, const UninstallListOptions &);

@@ -205,7 +205,7 @@ PackageDatabase::fetch_unique_qualified_package_name(
 PackageDatabaseEntryCollection::Pointer
 PackageDatabase::_do_query(const PackageDepAtom & a, const InstallState installed_state) const
 {
-    PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection::Concrete);
+    PackageDatabaseEntryCollection::Concrete::Pointer result(new PackageDatabaseEntryCollection::Concrete);
 
     IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
         r(_imp->repositories.begin()),
@@ -226,9 +226,11 @@ PackageDatabase::_do_query(const PackageDepAtom & a, const InstallState installe
             if (! match_package(_imp->environment, a, e))
                 continue;
 
-            result->insert(e);
+            result->push_back(e);
         }
     }
+
+    _sort_package_database_entry_collection(*result);
 
     return result;
 }
@@ -252,6 +254,17 @@ PackageDatabase::fetch_repository(const RepositoryName & n) const
     throw NoSuchRepositoryError(stringify(n));
 }
 
+RepositoryName
+PackageDatabase::favourite_repository() const
+{
+    for (RepositoryIterator r(_imp->repositories.begin()), r_end(_imp->repositories.end()) ;
+            r != r_end ; ++r)
+        if ((*r)->can_be_favourite_repository())
+            return (*r)->name();
+
+    return RepositoryName("unnamed");
+}
+
 const RepositoryName &
 PackageDatabase::better_repository(const RepositoryName & r1,
         const RepositoryName & r2) const
@@ -270,15 +283,69 @@ PackageDatabase::better_repository(const RepositoryName & r1,
     throw InternalError(PALUDIS_HERE, "better_repository called on non-owned repositories");
 }
 
-RepositoryName
-PackageDatabase::favourite_repository() const
+namespace
 {
-    for (RepositoryIterator r(_imp->repositories.begin()), r_end(_imp->repositories.end()) ;
-            r != r_end ; ++r)
-        if ((*r)->can_be_favourite_repository())
-            return (*r)->name();
+    struct PDEComparator
+    {
+        const PackageDatabase * const pde;
+        std::map<std::string, int> rank;
 
-    return RepositoryName("unnamed");
+        PDEComparator(const PackageDatabase * const p) :
+            pde(p)
+        {
+            int x(0);
+            for (PackageDatabase::RepositoryIterator r(pde->begin_repositories()), r_end(pde->end_repositories()) ;
+                    r != r_end ; ++r)
+                rank.insert(std::make_pair(stringify((*r)->name()), ++x));
+        }
+
+        bool operator() (const PackageDatabaseEntry & lhs, const PackageDatabaseEntry & rhs) const
+        {
+            switch (compare(lhs.name, rhs.name))
+            {
+                case -1:
+                    return true;
+
+                case 1:
+                    return false;
+            }
+
+            switch (compare(lhs.version, rhs.version))
+            {
+                case -1:
+                    return true;
+
+                case 1:
+                    return false;
+            }
+
+            std::map<std::string, int>::const_iterator l(rank.find(stringify(lhs.repository)));
+            if (l == rank.end())
+                throw InternalError(PALUDIS_HERE, "lhs.repository '" + stringify(lhs.repository) + "' not in rank");
+
+            std::map<std::string, int>::const_iterator r(rank.find(stringify(rhs.repository)));
+            if (r == rank.end())
+                throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs.repository) + "' not in rank");
+
+            switch (compare(l->second, r->second))
+            {
+                case -1:
+                    return true;
+
+                case 1:
+                    return false;
+            }
+
+            return false;
+        }
+    };
+}
+
+void
+PackageDatabase::_sort_package_database_entry_collection(PackageDatabaseEntryCollection::Concrete & p) const
+{
+    if (! p.empty())
+        p.sort(PDEComparator(this));
 }
 
 PackageDatabaseEntryCollection::Pointer

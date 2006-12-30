@@ -157,6 +157,14 @@ namespace paludis
                 return INT2FIX(paludis::compare(*left_ptr, *right_ptr));
             }
 
+            static VALUE equal(VALUE left, VALUE right)
+            {
+                T_ * left_ptr, * right_ptr;
+                Data_Get_Struct(left, T_, left_ptr);
+                Data_Get_Struct(right, T_, right_ptr);
+                return (*left_ptr == *right_ptr) ? Qtrue : Qfalse;
+            }
+
             static VALUE to_s(VALUE self)
             {
                 T_ * self_ptr;

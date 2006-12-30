@@ -473,7 +473,9 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
         if (d->_imp->env->package_database()->fetch_repository(aa->repository)->
                 version_metadata(aa->name, aa->version)->slot == slot)
-            already_installed_in_same_slot->insert(*aa);
+            already_installed_in_same_slot->push_back(*aa);
+    /* no need to sort already_installed_in_same_slot here, although if the above is
+     * changed then check that this still holds... */
 
     /* we have an already installed version. do we want to use it? */
     if (! already_installed_in_same_slot->empty())

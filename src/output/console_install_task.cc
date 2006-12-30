@@ -37,11 +37,35 @@ using namespace paludis;
 
 #include <src/output/console_install_task-sr.cc>
 
+bool
+UseDescriptionComparator::operator() (const UseDescription & lhs, const UseDescription & rhs) const
+{
+    if (lhs.flag < rhs.flag)
+        return true;
+    if (lhs.flag > rhs.flag)
+        return false;
+
+    if (lhs.package.name < rhs.package.name)
+        return true;
+    if (lhs.package.name > rhs.package.name)
+        return false;
+
+    if (lhs.package.version < rhs.package.version)
+        return true;
+    if (lhs.package.version < rhs.package.version)
+        return false;
+
+    if (lhs.package.repository.data() < rhs.package.repository.data())
+        return true;
+
+    return false;
+}
+
 ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         const DepListOptions & options) :
     InstallTask(env, options),
     _all_tags(new SortedCollection<DepTagEntry>::Concrete),
-    _all_use_descriptions(new SortedCollection<UseDescription>::Concrete),
+    _all_use_descriptions(new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete),
     _all_expand_prefixes(new UseFlagNameCollection::Concrete)
 {
     std::fill_n(_counts, static_cast<int>(last_count), 0);
@@ -361,8 +385,9 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
     bool started(false);
     UseFlagName old_flag("OFTEN_NOT_BEEN_ON_BOATS");
 
-    SortedCollection<UseDescription>::Pointer group(new SortedCollection<UseDescription>::Concrete);
-    for (SortedCollection<UseDescription>::Iterator i(all_use_descriptions()->begin()),
+    SortedCollection<UseDescription, UseDescriptionComparator>::Pointer group(
+            new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete);
+    for (SortedCollection<UseDescription, UseDescriptionComparator>::Iterator i(all_use_descriptions()->begin()),
             i_end(all_use_descriptions()->end()) ; i != i_end ; ++i)
     {
         switch (i->state)
@@ -411,7 +436,7 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
             if (! group->empty())
                 display_use_summary_flag(prefix, group->begin(), group->end());
             old_flag = i->flag;
-            group.assign(new SortedCollection<UseDescription>::Concrete);
+            group.assign(new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete);
         }
 
         group->insert(*i);
@@ -435,8 +460,8 @@ ConsoleInstallTask::display_use_summary_start(const std::string & prefix)
 
 void
 ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
-        SortedCollection<UseDescription>::Iterator i,
-        SortedCollection<UseDescription>::Iterator i_end)
+        SortedCollection<UseDescription, UseDescriptionComparator>::Iterator i,
+        SortedCollection<UseDescription, UseDescriptionComparator>::Iterator i_end)
 {
     if (next(i) == i_end)
     {
@@ -449,7 +474,7 @@ ConsoleInstallTask::display_use_summary_flag(const std::string & prefix,
     else
     {
         bool all_same(true);
-        for (SortedCollection<UseDescription>::Iterator j(next(i)) ; all_same && j != i_end ; ++j)
+        for (SortedCollection<UseDescription, UseDescriptionComparator>::Iterator j(next(i)) ; all_same && j != i_end ; ++j)
             if (j->description != i->description)
                 all_same = false;
 

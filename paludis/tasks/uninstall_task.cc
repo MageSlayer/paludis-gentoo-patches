@@ -155,7 +155,7 @@ UninstallTask::execute()
                         *t, is_installed_only));
             if (r->empty())
                 throw NoSuchPackageError(stringify(**t));
-            else if (r->size() > 1)
+            else if (next(r->begin()) != r->end())
                 throw AmbiguousUnmergeTargetError(stringify(**t), r);
             else
                 list.add(*r->begin());

@@ -299,7 +299,7 @@ namespace paludis
      *
      * \ingroup grpnames
      */
-    typedef Validated<std::string, RepositoryNameValidator> RepositoryName;
+    typedef Validated<std::string, RepositoryNameValidator, comparison_mode::EqualityComparisonTag> RepositoryName;
 
     /**
      * Holds a collection of RepositoryName instances.
@@ -307,6 +307,19 @@ namespace paludis
      * \ingroup grpnames
      */
     typedef SequentialCollection<RepositoryName> RepositoryNameCollection;
+
+    /**
+     * Arbitrary useless comparator for RepositoryName.
+     *
+     * \ingroup grpnames
+     */
+    struct RepositoryNameComparator
+    {
+        bool operator() (const RepositoryName & lhs, const RepositoryName & rhs) const
+        {
+            return lhs.data() < rhs.data();
+        }
+    };
 
     /**
      * A KeywordNameValidator handles validation rules for the value of a

@@ -300,7 +300,9 @@ InstallTask::execute()
         for (PackageDatabaseEntryCollection::Iterator c(collision_list->begin()),
                 c_end(collision_list->end()) ; c != c_end ; ++c)
             if (dep->package.version != c->version)
-                clean_list.insert(*c);
+                clean_list.push_back(*c);
+        /* no need to sort clean_list here, although if the above is
+         * changed then check that this still holds... */
 
         on_build_cleanlist_post(*dep);
 

@@ -61,7 +61,7 @@ namespace paludis
         UninstallListOptions options;
         std::list<UninstallListEntry> uninstall_list;
 
-        mutable MakeHashedMap<PackageDatabaseEntry, PackageDatabaseEntryCollection::ConstPointer>::Type
+        mutable MakeHashedMap<PackageDatabaseEntry, ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer>::Type
             dep_collector_cache;
 
         Implementation(const Environment * const e, const UninstallListOptions & o) :
@@ -198,12 +198,12 @@ UninstallList::add_unused()
 {
     Context context("When finding unused packages:");
 
-    PackageDatabaseEntryCollection::ConstPointer world(collect_world()),
+    ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer world(collect_world()),
         everything(collect_all_installed());
 
-    PackageDatabaseEntryCollection::Pointer
-        world_plus_deps(new PackageDatabaseEntryCollection::Concrete),
-        unused(new PackageDatabaseEntryCollection::Concrete);
+    ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer
+        world_plus_deps(new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete),
+        unused(new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
 
     world_plus_deps->insert(world->begin(), world->end());
 
@@ -211,13 +211,13 @@ UninstallList::add_unused()
     while (old_size != world_plus_deps->size())
     {
         old_size = world_plus_deps->size();
-        PackageDatabaseEntryCollection::ConstPointer new_world_deps(
-                collect_depped_upon(world_plus_deps));
+        ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer new_world_deps(collect_depped_upon(world_plus_deps));
         world_plus_deps->insert(new_world_deps->begin(), new_world_deps->end());
     }
 
     std::set_difference(everything->begin(), everything->end(),
-            world_plus_deps->begin(), world_plus_deps->end(), unused->inserter());
+            world_plus_deps->begin(), world_plus_deps->end(), unused->inserter(),
+            ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator());
 
     for (PackageDatabaseEntryCollection::Iterator i(unused->begin()),
             i_end(unused->end()) ; i != i_end ; ++i)
@@ -269,12 +269,13 @@ UninstallList::move_package_to_end(const PackageDatabaseEntry & e)
         _imp->uninstall_list.splice(_imp->uninstall_list.end(), _imp->uninstall_list, i);
 }
 
-PackageDatabaseEntryCollection::ConstPointer
+ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer
 UninstallList::collect_all_installed() const
 {
     Context context("When collecting all installed packages:");
 
-    PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection::Concrete);
+    ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer result(
+            new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
     for (PackageDatabase::RepositoryIterator i(_imp->env->package_database()->begin_repositories()),
             i_end(_imp->env->package_database()->end_repositories()) ; i != i_end ; ++i)
     {
@@ -307,12 +308,12 @@ namespace
     {
         const Environment * const env;
         const PackageDatabaseEntry pkg;
-        PackageDatabaseEntryCollection::Pointer matches;
+        ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer matches;
 
         DepCollector(const Environment * const ee, const PackageDatabaseEntry & e) :
             env(ee),
             pkg(e),
-            matches(new PackageDatabaseEntryCollection::Concrete)
+            matches(new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete)
         {
         }
 
@@ -350,19 +351,20 @@ namespace
     };
 }
 
-PackageDatabaseEntryCollection::ConstPointer
-UninstallList::collect_depped_upon(PackageDatabaseEntryCollection::ConstPointer targets) const
+ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer
+UninstallList::collect_depped_upon(ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer targets) const
 {
     Context context("When collecting depended upon packages:");
 
-    PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection::Concrete);
+    ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer result(
+            new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
 
     for (PackageDatabaseEntryCollection::Iterator i(targets->begin()), i_end(targets->end()) ;
             i != i_end ; ++i)
     {
         Context local_context("When collecting depended upon packages for '" + stringify(*i) + "':");
 
-        MakeHashedMap<PackageDatabaseEntry, PackageDatabaseEntryCollection::ConstPointer>::Type::const_iterator
+        MakeHashedMap<PackageDatabaseEntry, ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer>::Type::const_iterator
             cache(_imp->dep_collector_cache.find(*i));
         if (cache == _imp->dep_collector_cache.end())
         {
@@ -373,7 +375,7 @@ UninstallList::collect_depped_upon(PackageDatabaseEntryCollection::ConstPointer 
             metadata->deps.run_depend()->accept(&c);
             metadata->deps.post_depend()->accept(&c);
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
-                        PackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
+                        ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
         }
 
         result->insert(cache->second->begin(), cache->second->end());
@@ -388,40 +390,42 @@ UninstallList::add_unused_dependencies()
     Context context("When adding unused dependencies:");
 
     bool added(true);
-    PackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
+    ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
     while (added)
     {
         added = false;
 
         /* find packages that're depped upon by anything in our uninstall list */
-        PackageDatabaseEntryCollection::Pointer uninstall_list_targets(
-                new PackageDatabaseEntryCollection::Concrete);
+        ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer uninstall_list_targets(
+                new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
         for (std::list<UninstallListEntry>::const_iterator i(_imp->uninstall_list.begin()),
                 i_end(_imp->uninstall_list.end()) ; i != i_end ; ++i)
             uninstall_list_targets->insert(i->package);
 
-        PackageDatabaseEntryCollection::ConstPointer depped_upon_list(
+        ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer depped_upon_list(
                 collect_depped_upon(uninstall_list_targets));
 
         /* find packages that're depped upon by anything not in our uninstall list */
-        PackageDatabaseEntryCollection::Pointer everything_except_uninstall_list_targets(
-                new PackageDatabaseEntryCollection::Concrete);
+        ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer everything_except_uninstall_list_targets(
+                new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
         std::set_difference(everything->begin(), everything->end(),
                 uninstall_list_targets->begin(), uninstall_list_targets->end(),
-                everything_except_uninstall_list_targets->inserter());
+                everything_except_uninstall_list_targets->inserter(),
+                ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator());
 
         Log::get_instance()->message(ll_debug, lc_context, "everything_except_uninstall_list_targets is '"
                 + join(everything_except_uninstall_list_targets->begin(),
                     everything_except_uninstall_list_targets->end(), " ") + "'");
 
-        PackageDatabaseEntryCollection::ConstPointer depped_upon_not_list(
+        ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer depped_upon_not_list(
                 collect_depped_upon(everything_except_uninstall_list_targets));
 
         /* find unused dependencies */
-        PackageDatabaseEntryCollection::Pointer unused_dependencies(
-                new PackageDatabaseEntryCollection::Concrete);
+        ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer unused_dependencies(
+                new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
         std::set_difference(depped_upon_list->begin(), depped_upon_list->end(),
-                depped_upon_not_list->begin(), depped_upon_not_list->end(), unused_dependencies->inserter());
+                depped_upon_not_list->begin(), depped_upon_not_list->end(), unused_dependencies->inserter(),
+                ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator());
 
         /* if any of them aren't already on the list, and aren't in world, add them and recurse */
         IsWorld w(_imp->env);
@@ -446,13 +450,13 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
 {
     Context context("When adding things that depend upon '" + stringify(e) + "':");
 
-    PackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
+    ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
     for (PackageDatabaseEntryCollection::Iterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
     {
         Context local_context("When seeing whether '" + stringify(*i) + "' has a dep:");
 
-        MakeHashedMap<PackageDatabaseEntry, PackageDatabaseEntryCollection::ConstPointer>::Type::const_iterator
+        MakeHashedMap<PackageDatabaseEntry, ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer>::Type::const_iterator
             cache(_imp->dep_collector_cache.find(*i));
         if (cache == _imp->dep_collector_cache.end())
         {
@@ -463,7 +467,7 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
             metadata->deps.run_depend()->accept(&c);
             metadata->deps.post_depend()->accept(&c);
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
-                        PackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
+                        ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
         }
 
         if (cache->second->end() == cache->second->find(e))
@@ -476,13 +480,14 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
     }
 }
 
-PackageDatabaseEntryCollection::ConstPointer
+ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer
 UninstallList::collect_world() const
 {
     Context local_context("When collecting world packages:");
 
-    PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection::Concrete);
-    PackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
+    ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer result(
+            new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
+    ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
 
     IsWorld w(_imp->env);
     for (PackageDatabaseEntryCollection::Iterator i(everything->begin()),

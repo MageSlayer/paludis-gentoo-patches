@@ -119,35 +119,35 @@ namespace test_cases
 
             PackageDepAtom d1("r1c1/r1c1p1");
             const PackageDatabaseEntryCollection::Pointer q1(p.query(d1, is_any));
-            TEST_CHECK_EQUAL(q1->size(), 1);
+            TEST_CHECK_EQUAL(std::distance(q1->begin(), q1->end()), 1);
 
             PackageDepAtom d2("r1c1/r1c1p2");
             const PackageDatabaseEntryCollection::Pointer q2(p.query(d2, is_any));
-            TEST_CHECK_EQUAL(q2->size(), 2);
+            TEST_CHECK_EQUAL(std::distance(q2->begin(), q2->end()), 2);
 
             PackageDepAtom d3(">=r1c1/r1c1p2-1");
             const PackageDatabaseEntryCollection::Pointer q3(p.query(d3, is_any));
-            TEST_CHECK_EQUAL(q3->size(), 2);
+            TEST_CHECK_EQUAL(std::distance(q3->begin(), q3->end()), 2);
 
             PackageDepAtom d4(">=r1c1/r1c1p2-2");
             const PackageDatabaseEntryCollection::Pointer q4(p.query(d4, is_any));
-            TEST_CHECK_EQUAL(q4->size(), 1);
+            TEST_CHECK_EQUAL(std::distance(q4->begin(), q4->end()), 1);
 
             PackageDepAtom d5(">=r1c1/r1c1p2-3");
             const PackageDatabaseEntryCollection::Pointer q5(p.query(d5, is_any));
-            TEST_CHECK_EQUAL(q5->size(), 0);
+            TEST_CHECK_EQUAL(std::distance(q5->begin(), q5->end()), 0);
 
             PackageDepAtom d6("<r1c1/r1c1p2-3");
             const PackageDatabaseEntryCollection::Pointer q6(p.query(d6, is_any));
-            TEST_CHECK_EQUAL(q6->size(), 2);
+            TEST_CHECK_EQUAL(std::distance(q6->begin(), q6->end()), 2);
 
             PackageDepAtom d7("rac1/rac1pa");
             const PackageDatabaseEntryCollection::Pointer q7(p.query(d7, is_any));
-            TEST_CHECK_EQUAL(q7->size(), 4);
+            TEST_CHECK_EQUAL(std::distance(q7->begin(), q7->end()), 4);
 
             PackageDepAtom d8("foo/bar");
             const PackageDatabaseEntryCollection::Pointer q8(p.query(d8, is_any));
-            TEST_CHECK_EQUAL(q8->size(), 0);
+            TEST_CHECK_EQUAL(std::distance(q8->begin(), q8->end()), 0);
         }
     } package_database_query_test;
 

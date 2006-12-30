@@ -223,6 +223,9 @@ namespace paludis
             PackageDatabaseEntryCollection::Pointer _do_query(
                     const PackageDepAtom & a, const InstallState) const;
 
+           void _sort_package_database_entry_collection(
+                   PackageDatabaseEntryCollection::Concrete &) const;
+
         public:
             /**
              * Constructor.
@@ -252,6 +255,9 @@ namespace paludis
              * Fetch the name of our 'favourite' repository (if a repository's
              * name matches this when doing a graphical display, the repository
              * name part may be omitted).
+             *
+             * Note that this is the repository with the <i>lowest</i> importance
+             * that is not a virtuals or installed_virtuals repository.
              */
             RepositoryName favourite_repository() const;
 

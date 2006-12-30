@@ -38,6 +38,11 @@ namespace paludis
 
 #include <src/output/console_install_task-sr.hh>
 
+    struct UseDescriptionComparator
+    {
+        bool operator() (const UseDescription &, const UseDescription &) const;
+    };
+
     class PALUDIS_VISIBLE DepTagSummaryDisplayer :
         public DepTagVisitorTypes::ConstVisitor,
         public InternalCounted<DepTagSummaryDisplayer>
@@ -99,7 +104,7 @@ namespace paludis
         private:
             int _counts[last_count];
             SortedCollection<DepTagEntry>::Pointer _all_tags;
-            SortedCollection<UseDescription>::Pointer _all_use_descriptions;
+            SortedCollection<UseDescription, UseDescriptionComparator>::Pointer _all_use_descriptions;
             UseFlagNameCollection::Pointer _all_expand_prefixes;
 
             void _add_descriptions(UseFlagNameCollection::ConstPointer,
@@ -212,8 +217,8 @@ namespace paludis
             virtual void display_merge_list_post_use_descriptions(const std::string &);
             virtual void display_use_summary_start(const std::string &);
             virtual void display_use_summary_flag(const std::string &,
-                    SortedCollection<UseDescription>::Iterator,
-                    SortedCollection<UseDescription>::Iterator);
+                    SortedCollection<UseDescription, UseDescriptionComparator>::Iterator,
+                    SortedCollection<UseDescription, UseDescriptionComparator>::Iterator);
             virtual void display_use_summary_end();
 
             ///\}
@@ -238,7 +243,7 @@ namespace paludis
                 return _all_tags;
             }
 
-            SortedCollection<UseDescription>::Pointer all_use_descriptions()
+            SortedCollection<UseDescription, UseDescriptionComparator>::Pointer all_use_descriptions()
             {
                 return _all_use_descriptions;
             }
