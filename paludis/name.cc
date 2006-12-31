@@ -57,7 +57,7 @@ UseFlagNameValidator::validate(const std::string & s)
         if (s.empty())
             break;
 
-        if ('-' == s.at(0))
+        if ('-' == s.at(0) || '.' == s[0])
             break;
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
@@ -95,7 +95,7 @@ SlotNameValidator::validate(const std::string & s)
         if (s.empty())
             break;
 
-        if ('-' == s.at(0))
+        if ('-' == s.at(0) || '.' == s[0])
             break;
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
@@ -128,7 +128,7 @@ PackageNamePartValidator::validate(const std::string & s)
     static const std::string number_chars(
             "0123456789");
 
-    if (s.empty() || '-' == s.at(0))
+    if (s.empty() || '-' == s.at(0) || '.' == s[0])
     {
         Context c("When validating package name part '" + s + "':");
         throw PackageNamePartError(s);
@@ -166,7 +166,7 @@ CategoryNamePartValidator::validate(const std::string & s)
         if (s.empty())
             break;
 
-        if ('-' == s.at(0))
+        if ('-' == s.at(0) || '.' == s[0])
             break;
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
@@ -198,7 +198,7 @@ RepositoryNameValidator::validate(const std::string & s)
         if (s.empty())
             break;
 
-        if ('-' == s.at(0))
+        if ('-' == s.at(0) || '.' == s[0])
             break;
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
@@ -309,7 +309,7 @@ SetNameValidator::validate(const std::string & s)
         if (s.empty())
             break;
 
-        if ('-' == s.at(0))
+        if ('-' == s.at(0) || '.' == s[0])
             break;
 
         if (std::string::npos != s.find_first_not_of(allowed_chars))
