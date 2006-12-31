@@ -8,6 +8,7 @@ dnl the base filename with no extension; later parameters can be `hh', `cc',
 dnl `test', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
+add(`categories_check',               `hh', `cc')
 add(`changelog_check',                `hh', `cc')
 add(`check',                          `hh', `cc')
 add(`check_result',                   `hh', `cc', `test')
