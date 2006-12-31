@@ -45,6 +45,11 @@ namespace paludis
                 {
                     return "Checks that profile paths exist";
                 }
+
+                virtual bool is_important() const
+                {
+                    return true;
+                }
         };
 
     }
