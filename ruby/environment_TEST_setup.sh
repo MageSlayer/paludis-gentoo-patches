@@ -16,12 +16,12 @@ END
 
 cat <<END > home/.paludis/keywords.conf
 * test
-~foo/bar-1 ~test
+~foo/bar-1.0 ~test
 END
 
 cat <<END > home/.paludis/use.conf
 * enabled
-~foo/bar-1 sometimes_enabled
+~foo/bar-1.0 sometimes_enabled
 END
 
 cat <<END > home/.paludis/package_mask.conf

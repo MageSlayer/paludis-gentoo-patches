@@ -102,6 +102,9 @@ VersionSpec::VersionSpec(const std::string & text) :
 {
     Context c("When parsing version spec '" + text + "':");
 
+    if (text.empty())
+        throw BadVersionSpecError(text);
+
     /* set us up with some sane defaults */
     _imp->text = text;
 
@@ -139,14 +142,6 @@ VersionSpec::VersionSpec(const std::string & text) :
                 break;
         }
         _imp->parts.push_back(Part(number, x));
-
-        while (_imp->parts.size() > 1)
-        {
-            if (0 == _imp->parts[_imp->parts.size() - 1].value)
-                _imp->parts.pop_back();
-            else
-                break;
-        }
 
         /* letter */
         if (p < text.length())

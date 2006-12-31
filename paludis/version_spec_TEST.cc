@@ -66,7 +66,7 @@ namespace test_cases
             VersionSpec v20("1_rc1-r1");
             VersionSpec v21("1_p1-r1");
             VersionSpec v22("1_alpha_p");
-
+            VersionSpec v23("scm");
 
             TEST_CHECK(true);
         }
@@ -82,6 +82,7 @@ namespace test_cases
 
         void run()
         {
+            TEST_CHECK_THROWS(VersionSpec v1(""), BadVersionSpecError);
             TEST_CHECK_THROWS(VersionSpec v1("b"), BadVersionSpecError);
             TEST_CHECK_THROWS(VersionSpec v1("1-r1_pre"), BadVersionSpecError);
             TEST_CHECK_THROWS(VersionSpec v1("1-pre"), BadVersionSpecError);
@@ -104,9 +105,9 @@ namespace test_cases
         void run()
         {
             VersionSpec v("1.2.3");
-            TEST_CHECK(v == VersionSpec("1.2.3.0"));
+            TEST_CHECK(v == VersionSpec("1.2.3"));
             VersionSpec v1("1.2_pre2-r1");
-            TEST_CHECK(v1 == VersionSpec("1.2.0_pre2-r1"));
+            TEST_CHECK(v1 == VersionSpec("1.2_pre2-r1"));
         }
     } test_version_spec_parse;
 
@@ -248,11 +249,11 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK(VersionSpec("0").hash_value() == VersionSpec("0.0").hash_value());
-            TEST_CHECK(VersionSpec("1").hash_value() == VersionSpec("1.0").hash_value());
-            TEST_CHECK(VersionSpec("1.0").hash_value() == VersionSpec("1").hash_value());
-            TEST_CHECK(VersionSpec("1.0_alpha").hash_value() == VersionSpec("1_alpha").hash_value());
-            TEST_CHECK(VersionSpec("1_alpha").hash_value() == VersionSpec("1.0_alpha").hash_value());
+            TEST_CHECK(VersionSpec("0").hash_value() != VersionSpec("0.0").hash_value());
+            TEST_CHECK(VersionSpec("1").hash_value() != VersionSpec("1.0").hash_value());
+            TEST_CHECK(VersionSpec("1.0").hash_value() != VersionSpec("1").hash_value());
+            TEST_CHECK(VersionSpec("1.0_alpha").hash_value() != VersionSpec("1_alpha").hash_value());
+            TEST_CHECK(VersionSpec("1_alpha").hash_value() != VersionSpec("1.0_alpha").hash_value());
         }
     } test_version_spec_hash_value;
 
@@ -271,18 +272,12 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK(VersionSpec("1.0") == VersionSpec("1"));
-            TEST_CHECK(VersionSpec("1") == VersionSpec("1.0"));
-            TEST_CHECK(! (VersionSpec("1") < VersionSpec("1.0")));
-            TEST_CHECK(! (VersionSpec("1") > VersionSpec("1.0")));
-            TEST_CHECK(! (VersionSpec("1.0") < VersionSpec("1")));
-            TEST_CHECK(! (VersionSpec("1.0") > VersionSpec("1")));
-            TEST_CHECK(VersionSpec("1.0_alpha") == VersionSpec("1_alpha"));
-            TEST_CHECK(VersionSpec("1_alpha") == VersionSpec("1.0_alpha"));
-            TEST_CHECK(! (VersionSpec("1_alpha") < VersionSpec("1.0_alpha")));
-            TEST_CHECK(! (VersionSpec("1_alpha") > VersionSpec("1.0_alpha")));
-            TEST_CHECK(! (VersionSpec("1.0_alpha") < VersionSpec("1_alpha")));
-            TEST_CHECK(! (VersionSpec("1.0_alpha") > VersionSpec("1_alpha")));
+            TEST_CHECK(VersionSpec("1.0") > VersionSpec("1"));
+            TEST_CHECK(VersionSpec("1") < VersionSpec("1.0"));
+            TEST_CHECK(VersionSpec("1.0_alpha") > VersionSpec("1_alpha"));
+            TEST_CHECK(VersionSpec("1.0_alpha") > VersionSpec("1"));
+            TEST_CHECK(VersionSpec("1.0_alpha") < VersionSpec("1.0"));
+            TEST_CHECK(VersionSpec("1.2.0.0_alpha7-r4") > VersionSpec("1.2_alpha7-r4"));
 
             std::vector<VersionSpec> v;
             v.push_back(VersionSpec("1_alpha"));
@@ -314,6 +309,8 @@ namespace test_cases
             v.push_back(VersionSpec("1_p1"));
             v.push_back(VersionSpec("1-try2"));
             v.push_back(VersionSpec("1p"));
+            v.push_back(VersionSpec("1.0"));
+            v.push_back(VersionSpec("1.0a"));
             v.push_back(VersionSpec("1.1_alpha3"));
             v.push_back(VersionSpec("1.1"));
             v.push_back(VersionSpec("1.1-r1"));
