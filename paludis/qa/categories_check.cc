@@ -58,6 +58,19 @@ CategoriesCheck::operator() (const FSEntry & d) const
                     else if (next(r.first) != c.end())
                         result << Message(qal_minor, "Categories file '" + stringify(cats) + "' entry '"
                                 + stringify(*line) + "' is not in order");
+                    else
+                    {
+                        FSEntry f(d.dirname() / stringify(n));
+                        if (! f.is_directory())
+                        {
+                            if (f.exists())
+                                result << Message(qal_major, "Categories file '" + stringify(cats) + "' entry '"
+                                        + stringify(*line) + "' exists but is not a directory");
+                            else
+                                result << Message(qal_minor, "Categories file '" + stringify(cats) + "' entry '"
+                                        + stringify(*line) + "' does not exist");
+                        }
+                    }
                 }
                 catch (const NameError &)
                 {
