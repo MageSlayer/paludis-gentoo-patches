@@ -17,26 +17,38 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef PALUDIS_GUARD_PALUDIS_QA_REPO_NAME_CHECK_HH
+#define PALUDIS_GUARD_PALUDIS_QA_REPO_NAME_CHECK_HH 1
+
 #include <paludis/qa/profiles_check.hh>
-#include <paludis/qa/categories_check.hh>
-#include <paludis/qa/repo_name_check.hh>
 
-using namespace paludis;
-using namespace paludis::qa;
-
-ProfilesCheck::ProfilesCheck()
+namespace paludis
 {
+    namespace qa
+    {
+        /**
+         * QA check: profiles/repo_name.
+         *
+         * \ingroup grpqa
+         */
+        class RepoNameCheck :
+            public ProfilesCheck
+        {
+            public:
+                RepoNameCheck();
+
+                CheckResult operator() (const FSEntry &) const;
+
+                static const std::string & identifier();
+
+                virtual std::string describe() const
+                {
+                    return "Checks that repo_name is sane";
+                }
+        };
+
+    }
 }
 
-NoSuchProfilesCheckTypeError::NoSuchProfilesCheckTypeError(const std::string & s) throw () :
-    Exception("No such profiles check type: '" + s + "'")
-{
-}
 
-ProfilesCheckMaker::ProfilesCheckMaker()
-{
-    register_maker(CategoriesCheck::identifier(), &MakeProfilesCheck<CategoriesCheck>::make_profiles_check);
-    register_maker(RepoNameCheck::identifier(), &MakeProfilesCheck<RepoNameCheck>::make_profiles_check);
-}
-
-
+#endif
