@@ -19,9 +19,8 @@ of every change, see the ChangeLog.
     * Support for ranged dep atoms and the ~> version operator is now
     available.
 
-    * QA now checks package visibility. The various QA blacklists are now in
-    text files rather than hard coded. There is now a QA check that ensures
-    that ebuilds are correctly named.
+    * QA now checks package visibility and profiles. The various QA blacklists
+    are now in text files rather than hard coded.
 
     * A new client for handling cross toolchains, contrarius, is supplied.
 
@@ -30,7 +29,13 @@ of every change, see the ChangeLog.
     * CVS can now be used in sync keys for repositories.
 
     * The paludis client can now display a description of USE flags shown
-    in a --install --pretend session.
+    in a --install --pretend session. The --dl-deps-default parameter can
+    be used to specify default values for all six dependency classes.
+
+    * Various icc and BSD portability fixes.
+
+    * The uninstall_ hooks are now called only for real uninstalls. When
+    cleaning a package, clean_ is used instead.
 
 0.12.0:
     * The QA library now has a Ruby interface.
