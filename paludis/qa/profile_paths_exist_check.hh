@@ -17,26 +17,38 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "profile_check.hh"
+#ifndef PALUDIS_GUARD_PALUDIS_QA_PROFILE_PATHS_EXIST_CHECK_HH
+#define PALUDIS_GUARD_PALUDIS_QA_PROFILE_PATHS_EXIST_CHECK_HH 1
+
 #include <paludis/qa/profile_check.hh>
-#include <paludis/qa/profile_paths_exist_check.hh>
 
-using namespace paludis;
-using namespace paludis::qa;
-
-#include <paludis/qa/profile_check-sr.cc>
-
-ProfileCheck::ProfileCheck()
+namespace paludis
 {
+    namespace qa
+    {
+        /**
+         * QA check: profile paths exist.
+         *
+         * \ingroup grpqa
+         */
+        class ProfilePathsExistsCheck :
+            public ProfileCheck
+        {
+            public:
+                ProfilePathsExistsCheck();
+
+                CheckResult operator() (const ProfileCheckData &) const;
+
+                static const std::string & identifier();
+
+                virtual std::string describe() const
+                {
+                    return "Checks that profile paths exist";
+                }
+        };
+
+    }
 }
 
-NoSuchProfileCheckTypeError::NoSuchProfileCheckTypeError(const std::string & s) throw () :
-    Exception("No such profile check type: '" + s + "'")
-{
-}
 
-ProfileCheckMaker::ProfileCheckMaker()
-{
-    register_maker(ProfilePathsExistsCheck::identifier(), &MakeProfileCheck<ProfilePathsExistsCheck>::make_profile_check);
-}
-
+#endif

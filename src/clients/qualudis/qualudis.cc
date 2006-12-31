@@ -458,8 +458,8 @@ namespace
             if (fatal)
                 break;
 
-            set_entry_heading("QA checks for profile.desc entry " + stringify(p->path) + " " +
-                    stringify(p->arch) + " " + stringify(p->status) + ":");
+            set_entry_heading("QA checks for profile.desc entry " + stringify(p->arch) + " " +
+                    stringify(p->path) + " " + stringify(p->status) + ":");
 
             qa::ProfileCheckData data(dir, *p);
             do_check_kind<qa::ProfileCheckMaker>(ok, fatal, data);
