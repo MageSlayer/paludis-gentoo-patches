@@ -57,6 +57,9 @@ class QualudisCommandLine :
         /// --qa-checks
         paludis::args::StringSetArg a_qa_checks;
 
+        /// --exclude-qa-checks
+        paludis::args::StringSetArg a_exclude_qa_checks;
+
         /// --verbose
         paludis::args::SwitchArg a_verbose;
 

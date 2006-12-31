@@ -197,6 +197,13 @@ namespace
                             *i))
                     continue;
 
+            if (QualudisCommandLine::get_instance()->a_exclude_qa_checks.specified())
+                if (QualudisCommandLine::get_instance()->a_exclude_qa_checks.args_end() != std::find(
+                            QualudisCommandLine::get_instance()->a_exclude_qa_checks.args_begin(),
+                            QualudisCommandLine::get_instance()->a_exclude_qa_checks.args_end(),
+                            *i))
+                    continue;
+
             try
             {
                 Context context("When performing check '" + stringify(*i) + "':");
@@ -434,6 +441,34 @@ namespace
     }
 
     bool
+    do_check_profiles_dir(const FSEntry & dir, const qa::QAEnvironment & env)
+    {
+        Context context("When checking profiles directory '" + stringify(dir) + "':");
+
+        cerr << xterm_title("Checking " + dir.basename() + " - qualudis") << std::flush;
+
+        set_entry_heading("QA checks for profiles directory " + stringify(dir) + ":");
+
+        bool ok(true), fatal(false);
+        do_check_kind<qa::ProfilesCheckMaker>(ok, fatal, dir);
+
+        for (PortageRepository::ProfilesIterator p(env.portage_repository()->begin_profiles()),
+                p_end(env.portage_repository()->end_profiles()) ; p != p_end ; ++p)
+        {
+            if (fatal)
+                break;
+
+            set_entry_heading("QA checks for profile.desc entry " + stringify(p->path) + " " +
+                    stringify(p->arch) + " " + stringify(p->status) + ":");
+
+            qa::ProfileCheckData data(dir, *p);
+            do_check_kind<qa::ProfileCheckMaker>(ok, fatal, data);
+        }
+
+        return ok;
+    }
+
+    bool
     do_check_top_level(const FSEntry & dir)
     {
         Context context("When checking top level '" + stringify(dir) + "':");
@@ -451,6 +486,8 @@ namespace
                 continue;
             if (d->basename() == "eclass")
                 ok &= do_check_eclass_dir(*d, env);
+            else if (d->basename() == "profiles")
+                ok &= do_check_profiles_dir(*d, env);
             else if (env.package_database()->fetch_repository(
                         env.package_database()->favourite_repository())->
                     has_category_named(CategoryNamePart(d->basename())))
@@ -472,24 +509,29 @@ namespace
             return do_check_eclass_dir(dir, env);
         }
 
-        else if (std::count_if(DirIterator(dir), DirIterator(), IsFileWithExtension(
+        if (dir.basename() == "profiles" && dir.is_directory())
+        {
+            qa::QAEnvironment env(dir.dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument());
+            return do_check_profiles_dir(dir, env);
+        }
+
+        if (std::count_if(DirIterator(dir), DirIterator(), IsFileWithExtension(
                         dir.basename() + "-", ".ebuild")))
         {
             qa::QAEnvironment env(dir.dirname().dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument());
             return do_check_package_dir(dir, env);
         }
 
-        else if ((dir / "profiles").is_directory())
+        if ((dir / "profiles").is_directory())
             return do_check_top_level(dir);
 
-        else if ((dir.dirname() / "profiles").is_directory())
+        if ((dir.dirname() / "profiles").is_directory())
         {
             qa::QAEnvironment env(dir.dirname(), QualudisCommandLine::get_instance()->a_write_cache_dir.argument());
             return do_check_category_dir(dir, env);
         }
 
-        else
-            throw DoHelp("qualudis should be run inside a repository");
+        throw DoHelp("qualudis should be run inside a repository");
     }
 }
 
@@ -567,6 +609,26 @@ int main(int argc, char *argv[])
                     (*qa::PerProfileEbuildCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
             cout << endl;
 
+            cout << "Top level profiles/ checks:" << endl;
+            std::list<std::string> profiles_checks;
+            qa::ProfilesCheckMaker::get_instance()->copy_keys(
+                    std::back_inserter(profiles_checks));
+            for (std::list<std::string>::const_iterator i(profiles_checks.begin()),
+                    i_end(profiles_checks.end()) ; i != i_end ; ++i)
+                cout << "  " << *i << ":" << endl << "    " <<
+                    (*qa::ProfilesCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
+            cout << endl;
+
+            cout << "Per profiles.desc entry checks:" << endl;
+            std::list<std::string> profile_checks;
+            qa::ProfileCheckMaker::get_instance()->copy_keys(
+                    std::back_inserter(profile_checks));
+            for (std::list<std::string>::const_iterator i(profile_checks.begin()),
+                    i_end(profile_checks.end()) ; i != i_end ; ++i)
+                cout << "  " << *i << ":" << endl << "    " <<
+                    (*qa::ProfileCheckMaker::get_instance()->find_maker(*i))()->describe() << endl;
+            cout << endl;
+
             return EXIT_SUCCESS;
         }
 
@@ -582,7 +644,10 @@ int main(int argc, char *argv[])
                 std::string arg = *argit;
                 try
                 {
-                    do_check(FSEntry::cwd() / arg);
+                    if (arg.empty() || '/' != arg.at(0))
+                        do_check(FSEntry::cwd() / arg);
+                    else
+                        do_check(FSEntry(arg));
                 }
                 catch(const DirOpenError & e)
                 {

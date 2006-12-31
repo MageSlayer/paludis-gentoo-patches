@@ -1,0 +1,12 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_ProfileCheckData()
+{
+    key profiles_dir FSEntry
+    key profiles_desc_line PortageRepositoryProfilesDescLine
+
+    allow_named_args
+}
+
+
