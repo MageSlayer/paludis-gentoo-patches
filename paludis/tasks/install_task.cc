@@ -355,6 +355,10 @@ InstallTask::execute()
                             clean_list.begin(), clean_list.end(), " ")));
             on_clean_all_post(*dep, clean_list);
         }
+
+        /* if we installed paludis and a re-exec is available, use it. */
+        if (dep->package.name == QualifiedPackageName("sys-apps/paludis") && (next(dep) != dep_end))
+            on_installed_paludis();
     }
 
     /* update world */
@@ -460,5 +464,10 @@ const Environment *
 InstallTask::environment() const
 {
     return _imp->env;
+}
+
+void
+InstallTask::on_installed_paludis()
+{
 }
 

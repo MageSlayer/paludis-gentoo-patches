@@ -32,13 +32,16 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 #include <errno.h>
 
 #include <paludis/tasks/install_task.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/system.hh>
 #include <paludis/environment/default/default_environment.hh>
+#include <paludis/environment/default/default_config.hh>
 
 /** \file
  * Handle the --install action for the main paludis program.
@@ -52,6 +55,83 @@ using std::endl;
 
 namespace
 {
+    std::string make_resume_command(const InstallTask & task, bool skip_first)
+    {
+        std::string resume_command = DefaultEnvironment::get_instance()->paludis_command()
+            + " --" + CommandLine::get_instance()->dl_deps_default.long_name() + " discard --"
+            + CommandLine::get_instance()->a_install.long_name();
+
+        for (DepList::Iterator i(skip_first ?
+                    (task.current_dep_list_entry() == task.dep_list().end() ?
+                     task.current_dep_list_entry() :
+                     next(task.current_dep_list_entry())) :
+                    task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
+                i != i_end ; ++i)
+            if (! i->skip_install)
+                resume_command = resume_command + " '="
+                    + stringify(i->package.name) + "-"
+                    + stringify(i->package.version) + "::"
+                    + stringify(i->package.repository) + "'";
+
+        if (CommandLine::get_instance()->a_add_to_world_atom.specified())
+            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
+                + " '" + CommandLine::get_instance()->a_add_to_world_atom.argument() + "'";
+        else
+            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
+                + " '( " + join(task.begin_targets(), task.end_targets(), " ") + " )'";
+
+        return resume_command;
+    }
+
+    void show_resume_command(const InstallTask & task)
+    {
+        if (CommandLine::get_instance()->a_fetch.specified() ||
+                CommandLine::get_instance()->a_pretend.specified())
+            return;
+
+        if (task.current_dep_list_entry() != task.dep_list().end())
+        {
+            std::string resume_command(make_resume_command(task, false));
+
+            if (CommandLine::get_instance()->a_resume_command_template.specified())
+            {
+                std::string file_name(CommandLine::get_instance()->a_resume_command_template.argument());
+                char* resume_template = strdup(file_name.c_str());
+                int fd(mkstemp(resume_template));
+                if (-1 != fd)
+                {
+                    FDOutputStream resume_command_file(fd);
+                    resume_command_file << resume_command << endl;
+
+                    if (resume_command_file)
+                    {
+                        cerr << endl;
+                        cerr << "Resume command saved to file: " << resume_template;
+                        cerr << endl;
+                    }
+                    else
+                    {
+                        cerr << "Resume command NOT saved to file: " << resume_template << " due to error "
+                            << strerror(errno) << endl;
+                        cerr << "Resume command: " << resume_command << endl;
+                    }
+                }
+                else
+                {
+                    cerr << "Resume command NOT saved to file: " << resume_template << " due to error "
+                        << strerror(errno) << endl;
+                    cerr << "Resume command: " << resume_command << endl;
+                }
+                std::free(resume_template);
+            }
+            else
+            {
+                cerr << endl;
+                cerr << "Resume command: " << resume_command << endl;
+            }
+        }
+    }
+
     class OurInstallTask :
         public ConsoleInstallTask
     {
@@ -102,73 +182,29 @@ namespace
             {
                 return "none" != CommandLine::get_instance()->a_show_use_descriptions.argument();
             }
+
+            virtual void on_installed_paludis()
+            {
+                std::string r(DefaultConfig::get_instance()->root());
+                std::string exec_mode(getenv_with_default("PALUDIS_EXEC_PALUDIS", ""));
+
+                if ("always" != exec_mode)
+                {
+                    if ("never" == exec_mode)
+                        return;
+                    else if (! (r.empty() || r == "/"))
+                        return;
+                }
+
+                std::string resume_command(make_resume_command(*this, true));
+
+                output_heading("Paludis has just upgraded Paludis");
+                output_starred_item("Using '" + resume_command + "' to start a new Paludis instance...");
+                output_endl();
+
+                execl("/bin/sh", "sh", "-c", resume_command.c_str(), static_cast<const char *>(0));
+            }
     };
-
-    void show_resume_command(const InstallTask & task)
-    {
-        if (CommandLine::get_instance()->a_fetch.specified() ||
-                CommandLine::get_instance()->a_pretend.specified())
-            return;
-
-        if (task.current_dep_list_entry() != task.dep_list().end())
-        {
-            std::string resume_command = DefaultEnvironment::get_instance()->paludis_command()
-                + " --" + CommandLine::get_instance()->dl_deps_default.long_name() + " discard --"
-                + CommandLine::get_instance()->a_install.long_name();
-
-            for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
-                    i != i_end ; ++i)
-                if (! i->skip_install)
-                    resume_command = resume_command + " '="
-                        + stringify(i->package.name) + "-"
-                        + stringify(i->package.version) + "::"
-                        + stringify(i->package.repository) + "'";
-
-            if (CommandLine::get_instance()->a_add_to_world_atom.specified())
-                resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
-                    + " '" + CommandLine::get_instance()->a_add_to_world_atom.argument() + "'";
-            else
-                resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
-                    + " '( " + join(task.begin_targets(), task.end_targets(), " ") + " )'";
-
-            if (CommandLine::get_instance()->a_resume_command_template.specified())
-            {
-                std::string file_name(CommandLine::get_instance()->a_resume_command_template.argument());
-                char* resume_template = strdup(file_name.c_str());
-                int fd(mkstemp(resume_template));
-                if (-1 != fd)
-                {
-                    FDOutputStream resume_command_file(fd);
-                    resume_command_file << resume_command << endl;
-
-                    if (resume_command_file)
-                    {
-                        cerr << endl;
-                        cerr << "Resume command saved to file: " << resume_template;
-                        cerr << endl;
-                    }
-                    else
-                    {
-                        cerr << "Resume command NOT saved to file: " << resume_template << " due to error "
-                            << strerror(errno) << endl;
-                        cerr << "Resume command: " << resume_command << endl;
-                    }
-                }
-                else
-                {
-                    cerr << "Resume command NOT saved to file: " << resume_template << " due to error "
-                        << strerror(errno) << endl;
-                    cerr << "Resume command: " << resume_command << endl;
-                }
-                std::free(resume_template);
-            }
-            else
-            {
-                cerr << endl;
-                cerr << "Resume command: " << resume_command << endl;
-            }
-        }
-    }
 
     class InstallKilledCatcher
     {

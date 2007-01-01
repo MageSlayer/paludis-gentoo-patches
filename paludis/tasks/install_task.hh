@@ -142,6 +142,8 @@ namespace paludis
             virtual void on_update_world_post() = 0;
             virtual void on_preserve_world() = 0;
 
+            virtual void on_installed_paludis();
+
             ///\}
 
             /**
