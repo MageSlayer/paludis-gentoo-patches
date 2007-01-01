@@ -10,7 +10,6 @@ docfiles = \
 	doc_coding_standards.doxygen \
 	doc_namespaces.doxygen \
 	doc_references.doxygen \
-	doc_bootstrap_howto.doxygen \
 	doc_portage_differences.doxygen \
 	doc_configuration_files.doxygen \
 	doc_programming_with_paludis.doxygen \

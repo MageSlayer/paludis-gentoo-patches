@@ -27,8 +27,7 @@
         yourself with this list before asking questions.</li>
 
         <li>There is a <a href="migration.html">guide to migrating to
-            Paludis</a> and a <a href="bootstrap.html">guide to
-            bootstrapping a chroot using Paludis</a>.</li>
+            Paludis</a>.</li>
 
         <li>There is <a href="configuration.html">documentation on the
             configuration files</a> and <a href="cachefiles.html">the
