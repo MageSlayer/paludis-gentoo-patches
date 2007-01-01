@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,15 +30,30 @@ namespace paludis
     class FSEntry;
     class PackageDatabaseEntry;
 
+    /**
+     * Implements use.desc options for PortageRepository.
+     *
+     * \ingroup grpportagerepository
+     */
     class UseDesc :
         private PrivateImplementationPattern<UseDesc>,
         private InstantiationPolicy<UseDesc, instantiation_method::NonCopyableTag>,
         public InternalCounted<UseDesc>
     {
         public:
+            ///\name Basic operations
+            ///\{
+
             UseDesc(const FSEntry &);
             ~UseDesc();
 
+            ///\}
+
+            /**
+             * Describe the given use flag, possibly for the specified package.
+             *
+             * May return an empty string.
+             */
             std::string describe(const UseFlagName &, const PackageDatabaseEntry * const) const;
     };
 }
