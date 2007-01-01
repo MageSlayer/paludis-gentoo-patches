@@ -32,6 +32,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -103,6 +104,7 @@ namespace
                 int fd(mkstemp(resume_template));
                 if (-1 != fd)
                 {
+                    ::fchmod(fd, 0644);
                     FDOutputStream resume_command_file(fd);
                     resume_command_file << resume_command << endl;
 
