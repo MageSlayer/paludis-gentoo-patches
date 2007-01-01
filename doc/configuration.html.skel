@@ -1,0 +1,296 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en">
+<head>
+<title>Paludis, the Other Package Mangler</title>
+<link rel="stylesheet" href="paludis.css" type="text/css" />
+</head>
+<body>
+@HEADER@
+
+<h1>Paludis, the Other Package Mangler</h1>
+
+<h2>Configuration Files</h2>
+
+<h3>Overview</h3>
+
+<p>This document explains where Paludis looks for user configuration files, and
+describes the format of these files.</p>
+
+<h3>General File Format</h3>
+
+<p>Except where otherwise noted, configuration files are plain text files where
+blank lines and lines starting with optional whitespace followed by a hash
+symbol are ignored.</p>
+
+<p>Many files use a key = value format. Here, any whitespace around the outside
+of key and value is stripped. The value may be quoted using single or double
+quotes. Variable expansion on previously defined keys (and sometimes on
+predefined special values) may be done using <code>${variable}</code>. To
+include a literal dollar, use <code>\$</code>.</p>
+
+<h3>Locations</h3>
+
+<p>Paludis tries the following locations for its configuration directory:</p>
+
+<ul>
+  <li><code>${PALUDIS_HOME}/.paludis/</code>, if the <code>PALUDIS_HOME</code>
+  environment variable is set, or <code>${HOME}/.paludis/</code> otherwise.</li>
+  <li><code>SYSCONFDIR/paludis/</code>, where <code>SYSCONFDIR</code> is
+  <code>/etc</code> on most systems.</li>
+</ul>
+
+<p>If the <code>--config-suffix</code> commandline argument is supplied, Paludis
+will use <code>.paludis-thesuffix</code> or <code>paludis-thesuffix</code>
+instead.</p>
+
+<p>If a file named <code>specpath</code> exists in this directory, Paludis uses
+this file to determine the real configuration directory. The <code>specpath</code>
+file is a standard key / value configuration file (see above). The keys that
+are used are:</p>
+
+<ul>
+    <li><code>root</code>, which specifies the install root for packages and the
+    real configuration directory, which is <code>${root}/SYSCONFDIR/paludis/</code>
+    (note that the HOME values are <em>not</em> used here). This value is set in
+    <code>specpath</code> rather than the real configuration directory so
+    that chrooting into an image can work with no configuration changes.</li>
+
+    <li><code>config-suffix</code>, which specifies a new configuration suffix. By
+    default, no configuration suffix is used under root.</li>
+</ul>
+
+<p>If no <code>specpath</code> file is present, the original directory is
+used.</p>
+
+<h3>The use.conf File</h3>
+
+<p>User <code>USE</code> preferences are controlled by the <code>use.conf</code>
+file. The basic format of a line is <code>atom use use use ...</code>, where
+<code>atom</code> is a package depend atom or <code>*</code> for "all packages",
+and <code>use use use ...</code> is one or more USE flag names, prefixed by
+a minus if they are to be disabled.</p>
+
+<p>For <code>USE_EXPAND</code> variables such as <code>LINGUAS</code> and
+<code>VIDEO_CARDS</code>, <code>atom VARIABLE: value value ...</code> should be
+used. To avoid inheriting values from your profile, include <code>-*</code>.</p>
+
+<pre>
+# By default, apply these to all packages
+* -doc nls -apache2
+
+# Turn off nls for vim
+app-editors/vim -nls
+
+# For gvim 7, turn on and off various interpreters
+&gt;=app-editors/gvim-7_alpha mzscheme perl -python ruby
+
+# For gtk+ with SLOT=2, enable tiff support
+x11-libs/gtk+:2 tiff
+
+# We like English
+* LINGUAS: -* en_GB en
+</pre>
+
+<p>Note that if a package matches multiple lines, <em>all</em> of these lines will
+be considered, not just the best or last match.</p>
+
+<h3>The keywords.conf File</h3>
+
+<p>Which <code>ARCH KEYWORDS</code> to accept is controlled by the 
+<code>keywords.conf</code> file. The format of a line is
+<code>atom keyword1 keywords2 ...</code>, where <code>atom</code> is a package
+depend atom or <code>*</code> for "all packages" and 
+<code>keyword1 keyword2 ...</code> is one or more arch keywords. As with Portage,
+accepting <code>~arch</code> does <em>not</em> 
+implicitly accept <code>arch</code>, however, if a package matches multiple lines,
+<em>all</em> of these lines will be considered, not just the best or last match.
+For example:</p>
+
+<pre>
+# We want a mostly stable system:
+* x86
+
+# But some ~arch packages:
+app-editors/vim ~x86
+app-editors/vim-core ~x86
+</pre>
+
+<p>If <code>*</code> is not used, then every package that is to be installed will require
+an entry in <code>keywords.conf</code>. It is also generally assumed within the gentoo
+portage tree that if <code>~ARCH</code> is accepted for a package, then so is
+<code>ARCH</code>; not doing so may result in all versions or the latest version of a
+package being masked, as the package is stabilised.</p>
+
+<h3>The package_mask.conf File</h3>
+
+<p>Packages can be masked through the use of the <code>package_mask.conf</code>
+file. The format of the file is one <code>atom</code> per line. For example:</p>
+
+<pre>
+# Hide vim 7
+&gt;=app-editors/vim-core-7
+&gt;=app-editors/vim-7
+
+# Hide gvim
+app-editors/gvim
+</pre>
+
+<h3>The package_unmask.conf File</h3>
+
+<p>Packages can be unmasked through the use of the
+<code>package_unmask.conf</code> file. The format of the file is one
+<code>atom</code> per line. For example:</p>
+
+<pre>
+# I need banshee 0.11.0
+=media-sound/banshee-0.11.0
+</pre>
+
+<h3>The licenses.conf File</h3>
+
+<p>Licence filtering can be controlled via <code>licenses.conf</code>. If no
+filtering is desired, use:</p>
+
+<pre>
+* *
+</pre>
+
+<p>For filtering, the format is similar to the keywords and use files:</p>
+
+<pre>
+* GPL-2 BSD
+app-editors/vim-core vim
+</pre>
+
+<h3>The mirrors.conf File</h3>
+
+<p>Mirrors and downloading can be controlled via <code>mirrors.conf</code>. Each
+line takes the form <code>mirrorname http://mirror/blah/ http://another.mirror/</code>.
+A special mirror named <code>*</code>, if present, will be consulted <em>before</em>
+any other location for all files. For example:</p>
+
+<pre>
+* file:///mnt/nfs/distfiles
+gentoo http://gentoo.blueyonder.co.uk/distfiles
+</pre>
+
+<h3>The bashrc File</h3>
+
+<p>Paludis will source <code>bashrc</code> when doing ebuild work. This file
+can be used to set environment variables (<code>CHOST</code>, <code>CFLAGS</code>
+and so on), but <em>cannot</em> be used to change metadata-affecting variables
+such as <code>USE</code> or <code>LINGUAS</code>.</p>
+
+<h3>The repositories/ Files</h3>
+
+<p>Each file named <code>*.conf</code> in the <code>repositories/</code> subdirectory
+creates a repository for Paludis. This is a key = value format file, and the special
+variable <code>${ROOT}</code> is defined based upon <code>specpath</code>. All
+files must define a <code>format =</code> key; depending upon the value used, other
+optional and mandatory keys are available.</p>
+
+<p>Each repository can have a key named <code>importance</code>. This is used when
+two different repositories contain an identical package atom (e.g. foo/bar-1.0).
+The repository with the higher importance will always be chosen first. If not
+provided, the default is 0.</p>
+
+<h4>portage Format Repositories</h4>
+
+<p>Note: The name <code>portage</code> is used here to refer to repositories in the
+format used by the <code>gentoo-portage</code> (or <code>gentoo-x86</code>) tree.
+The name is far from ideal... In future, this may be changed to <code>format =
+    ebuild</code>.</p>
+
+<p>The following keys are available for <code>format = portage</code>:</p>
+
+<ul>
+    <li><code>location</code> (mandatory), which points to the location of the
+    tree.</li>
+    <li><code>profiles</code> (mandatory), which should be a space separated list of
+    directories used for profile data. Later directories have priority.</li>
+    <li><code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which controls
+    the temporary directory used by Paludis for compiling software.</li>
+    <li><code>cache</code> (default: <code>${location}/metadata/cache</code>), which
+  controls the location of the metadata cache for a repository. It should be set
+  to <code>/var/empty</code> if there is no metadata cache available.</li>
+  <li><code>write_cache</code>, which can be set to a directory that will be used
+  to write generated cache files.</li>
+  <li><code>names_cache</code>, which should be either <code>/var/empty</code> or
+  <code>${location}/.cache/names</code>. See <a href="cachefiles.html">the cache
+      documentation</a>.</li>
+  <li><code>distdir</code> (default: <code>${location}/distfiles</code>), which
+  controls where downloaded files are saved.</li>
+  <li><code>eclassdirs</code> (default: <code>${location}/eclass</code>), which
+  is a space separated list of locations of eclasses. The value of ECLASSDIR
+  is taken from the <em>first</em> entry, but eclasses from later entries are
+  favoured.</li>
+  <li><code>newsdir</code> (default: <code>${location}/metadata/news</code>), which
+  controls where GLEP 42 news items are located.</li>
+  <li><code>securitydir</code> (default: <code>${location}/metadata/security</code>),
+  which controls where security advisories are located.</li>
+  <li><code>setsdir</code> (default: <code>${location}/sets</code>), which controls
+  where package set files are located.</li>
+  <li><code>sync</code> (default: empty), which controls how the repository is
+  synced. Typically values are in the form <code>rsync://rsync.europe.gentoo.org/gentoo-portage</code>
+  or <code>svn://svn.pioto.org/paludis/overlay</code>. Use
+  <code>paludis --list-sync-protocols</code> to see supported protocols.</li>
+  <li><code>sync_exclude</code> (default: empty), which can point to a file that
+  contains a list of directories to exclude when syncing via
+  <code>rsync://</code>.</li>
+  </ul>
+
+<h4>vdb Format Repositories</h4>
+
+<p>You should have exactly one VDB format repository. It holds packages that have
+been installed from a <code>portage</code> format repository.</p>
+
+<p>The following keys are available for <code>format = vdb</code>:</p>
+
+<ul>
+    <li><code>location</code> (mandatory), which <strong>must</strong> be set to
+    <code>${ROOT}/var/db/pkg</code>.</li>
+    <li><code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which is
+    used as a temporary directory when carrying out uninstall operations,</li>
+    <li><code>provides_cache</code>, which should be either <code>/var/empty</code> or
+    <code>${location}/.cache/provides</code>. See <a href="cachefiles.html">the
+        cache documentation</a>.</li>
+    <li><code>world</code> (default: <code>${location}/world</code>), which is used
+    for the world file.</li>
+</ul>
+
+<h4>CRAN Format Repositories</h4>
+
+<p>The following keys are available for <code>format = cran</code>:</p>
+
+<ul>
+    <li><code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which controls
+    the temporary directory used by Paludis for compiling software.</li>
+    <li><code>distdir</code> (default: <code>${location}/distfiles</code>), which
+    controls where downloaded files are saved.</li>
+    <li><code>library</code> (mandatory), which should be set to <code>${ROOT}/usr/${libdir}/R/library</code>, unless
+    you know what you're doing.</li>
+    <li><code>location</code> (mandatory), which points to the location of the
+    CRAN tree.</li>
+    <li><code>sync</code> (default: empty), as per <code>format =
+        portage</code>.</li>
+</ul>
+
+<h4>CRAN Installed Format Repositories</h4>
+
+<p>The following keys are available for <code>format =
+    cran_installed</code>:</p>
+
+<ul>
+    <li><code>location</code> (mandatory), which should be set to <code>${ROOT}/usr/${libdir}/R/library</code>, unless
+    you know what you're doing. This must point to the same directory as
+    <code>library</code> for <code>format = cran</code>.</li>
+</ul>
+
+@FOOTER@
+</body>
+</html>
+
+
+
+
