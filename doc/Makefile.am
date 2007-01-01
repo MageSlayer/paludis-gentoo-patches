@@ -10,15 +10,9 @@ docfiles = \
 	doc_coding_standards.doxygen \
 	doc_namespaces.doxygen \
 	doc_references.doxygen \
-	doc_licence.doxygen \
-	doc_authors.doxygen \
 	doc_bootstrap_howto.doxygen \
-	doc_changelog.doxygen \
 	doc_portage_differences.doxygen \
-	doc_news.doxygen \
 	doc_configuration_files.doxygen \
-	doc_migration_howto.doxygen \
-	doc_known_issues.doxygen \
 	doc_programming_with_paludis.doxygen \
 	doc_cache_files.doxygen
 
@@ -28,15 +22,16 @@ htmlfiles = \
 	changelog.html \
 	licence.html \
 	authors.html \
-	faq.html
+	faq.html \
+	migration.html
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 	$(docfiles) $(tagfiles) $(htmlfiles) htaccess \
 	news.html.skel index.html.skel changelog.html.skel licence.html.skel authors.html.skel \
-	faq.html.skel htmlheader.html htmlfooter.html
+	faq.html.skel htmlheader.html htmlfooter.html migration.html.skel
 
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
-	cleannews cleanchangelog cleanauthors cleanfaqtoc
+	migration.html cleannews cleanchangelog cleanauthors cleanfaqtoc
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
 
@@ -137,6 +132,13 @@ index.html : index.html.skel htmlheader.html htmlfooter.html
 	    -e '/@FOOTER@/r htmlfooter.html' \
 	    -e '/@FOOTER@/d' \
 	    < index.html.skel > index.html
+
+migration.html : migration.html.skel htmlheader.html htmlfooter.html
+	sed -e '/@HEADER@/r htmlheader.html' \
+	    -e '/@HEADER@/d' \
+	    -e '/@FOOTER@/r htmlfooter.html' \
+	    -e '/@FOOTER@/d' \
+	    < migration.html.skel > migration.html
 
 faq.html : faq.html.skel htmlheader.html htmlfooter.html cleanfaqtoc
 	sed -e '/@HEADER@/r htmlheader.html' \
