@@ -96,6 +96,8 @@ namespace paludis
 
             void add_target(const std::string &);
             void clear();
+            bool had_set_targets() const;
+            bool had_package_targets() const;
 
             typedef libwrapiter::ForwardIterator<InstallTask, const std::string> TargetsIterator;
             TargetsIterator begin_targets() const;

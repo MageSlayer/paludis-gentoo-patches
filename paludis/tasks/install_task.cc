@@ -469,3 +469,15 @@ InstallTask::on_installed_paludis()
 {
 }
 
+bool
+InstallTask::had_set_targets() const
+{
+    return _imp->had_set_targets;
+}
+
+bool
+InstallTask::had_package_targets() const
+{
+    return _imp->had_package_targets;
+}
+

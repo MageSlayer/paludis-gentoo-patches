@@ -76,6 +76,9 @@ namespace
         if (CommandLine::get_instance()->a_add_to_world_atom.specified())
             resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
                 + " '" + CommandLine::get_instance()->a_add_to_world_atom.argument() + "'";
+        else if (task.had_set_targets())
+            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
+                + " '( )'";
         else
             resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
                 + " '( " + join(task.begin_targets(), task.end_targets(), " ") + " )'";
