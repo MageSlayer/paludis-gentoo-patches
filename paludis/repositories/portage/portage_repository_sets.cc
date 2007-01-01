@@ -121,8 +121,7 @@ PortageRepositorySets::package_set(const SetName & s) const
             {
                 PackageDepAtom::Pointer p(new PackageDepAtom(tokens.at(1)));
                 p->set_tag(tag);
-                if (! _imp->environment->package_database()->query(
-                            PackageDepAtom::Pointer(new PackageDepAtom(p->package())),
+                if (! _imp->environment->package_database()->query(PackageDepAtom(p->package()),
                             is_installed_only)->empty())
                     result->add_child(p);
             }
@@ -296,8 +295,7 @@ PortageRepositorySets::security_set(bool insecurity) const
                     glsa_pkg_end(glsa->end_packages()) ; glsa_pkg != glsa_pkg_end ; ++glsa_pkg)
             {
                 PackageDatabaseEntryCollection::ConstPointer candidates(_imp->environment->package_database()->query(
-                            PackageDepAtom::Pointer(new PackageDepAtom(stringify(glsa_pkg->name()))),
-                            insecurity ? is_any : is_installed_only));
+                            PackageDepAtom(glsa_pkg->name()), insecurity ? is_any : is_installed_only));
                 for (PackageDatabaseEntryCollection::Iterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
                 {
@@ -325,8 +323,7 @@ PortageRepositorySets::security_set(bool insecurity) const
                                     c->repository)->version_metadata(c->name, c->version)->slot);
 
                         PackageDatabaseEntryCollection::ConstPointer available(
-                                _imp->environment->package_database()->query(PackageDepAtom::Pointer(
-                                        new PackageDepAtom(stringify(glsa_pkg->name()))), is_installable_only));
+                                _imp->environment->package_database()->query(PackageDepAtom(glsa_pkg->name()), is_installable_only));
                         for (PackageDatabaseEntryCollection::ReverseIterator r(available->rbegin()),
                                 r_end(available->rend()) ; r != r_end ; ++r)
                         {

@@ -78,14 +78,10 @@ namespace test_cases
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo2"))->name(),
                     RepositoryName("repo2"));
 
-            TEST_CHECK_EQUAL(p.better_repository(RepositoryName("repo1"), RepositoryName("repo2")),
-                    RepositoryName("repo2"));
-            TEST_CHECK_EQUAL(p.better_repository(RepositoryName("repo2"), RepositoryName("repo1")),
-                    RepositoryName("repo2"));
-            TEST_CHECK_EQUAL(p.better_repository(RepositoryName("repo2"), RepositoryName("repo2")),
-                    RepositoryName("repo2"));
-            TEST_CHECK_EQUAL(p.better_repository(RepositoryName("repo1"), RepositoryName("repo1")),
-                    RepositoryName("repo1"));
+            TEST_CHECK(! p.more_important_than(RepositoryName("repo1"), RepositoryName("repo2")));
+            TEST_CHECK(p.more_important_than(RepositoryName("repo2"), RepositoryName("repo1")));
+            TEST_CHECK(! p.more_important_than(RepositoryName("repo2"), RepositoryName("repo2")));
+            TEST_CHECK(! p.more_important_than(RepositoryName("repo1"), RepositoryName("repo1")));
         }
     } package_database_repository_test;
 

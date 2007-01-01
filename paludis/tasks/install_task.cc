@@ -296,9 +296,7 @@ InstallTask::execute()
 
         // look for packages with the same name in the same slot
         PackageDatabaseEntryCollection::Pointer collision_list(_imp->env->package_database()->query(
-                    PackageDepAtom::Pointer(new PackageDepAtom(
-                            stringify(dep->package.name) + ":" +
-                            stringify(dep->metadata->slot))),
+                    PackageDepAtom(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)),
                     is_installed_only));
 
         // don't clean the thing we just installed

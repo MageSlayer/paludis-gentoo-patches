@@ -180,7 +180,15 @@ namespace paludis
             /**
              * Fetch our package database.
              */
-            PackageDatabase::Pointer package_database() const
+            PackageDatabase::ConstPointer package_database() const
+            {
+                return _package_database;
+            }
+
+            /**
+             * Fetch our package database.
+             */
+            PackageDatabase::Pointer package_database()
             {
                 return _package_database;
             }

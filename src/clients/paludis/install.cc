@@ -443,8 +443,7 @@ do_install()
         {
             PackageDatabaseEntryCollection::ConstPointer p(
                     DefaultEnvironment::get_instance()->package_database()->query(
-                        PackageDepAtom::ConstPointer(new PackageDepAtom(e.query())),
-                        is_installable_only));
+                        PackageDepAtom(e.query()), is_installable_only));
             if (p->empty())
             {
                 cout << endl;

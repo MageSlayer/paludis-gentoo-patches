@@ -90,7 +90,7 @@ namespace
             Data_Get_Struct(self, PackageDatabase::Pointer, self_ptr);
 
             PackageDatabaseEntryCollection::ConstPointer items((*self_ptr)->query(
-                        value_to_package_dep_atom(atom),
+                        *value_to_package_dep_atom(atom),
                         static_cast<InstallState>(NUM2INT(state))));
 
             VALUE result(rb_ary_new());
@@ -156,22 +156,20 @@ namespace
 
     /*
      * call-seq:
-     *     better_repository(repository_name_a, repository_name_b) -> String
+     *     more_important_than(repository_name_a, repository_name_b) -> bool
      *
-     * Which repository is better?
+     * True if repository_name_a is more important than repository_name_b .
      */
     VALUE
-    package_database_better_repository(VALUE self, VALUE name1, VALUE name2)
+    package_database_more_important_than(VALUE self, VALUE name1, VALUE name2)
     {
         try
         {
             PackageDatabase::Pointer * self_ptr;
             Data_Get_Struct(self, PackageDatabase::Pointer, self_ptr);
 
-            return rb_str_new2(stringify((*self_ptr)->better_repository(
-                        RepositoryName(StringValuePtr(name1)),
-                        RepositoryName(StringValuePtr(name2))
-                        )).c_str());
+            return (*self_ptr)->more_important_than(RepositoryName(StringValuePtr(name1)),
+                    RepositoryName(StringValuePtr(name2))) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -197,8 +195,8 @@ namespace
                 RUBY_FUNC_CAST(&package_database_repositories), 0);
         rb_define_method(c_package_database, "fetch_repository",
                 RUBY_FUNC_CAST(&package_database_fetch_repository), 1);
-        rb_define_method(c_package_database, "better_repository",
-                RUBY_FUNC_CAST(&package_database_better_repository), 2);
+        rb_define_method(c_package_database, "more_important_than",
+                RUBY_FUNC_CAST(&package_database_more_important_than), 2);
         /*
          * Document-module: Paludis::InstallState
          *

@@ -120,8 +120,9 @@ module Paludis
             end
         end
 
-        def test_better_repository
-            assert_equal 'testrepo', db.better_repository('testrepo', 'virtuals')
+        def test_more_important_than
+            assert db.more_important_than('testrepo', 'virtuals')
+            assert ! db.more_important_than('virtuals', 'testrepo')
         end
     end
 end

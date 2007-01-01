@@ -141,7 +141,7 @@ namespace paludis
         /**
          * Our Repository instances.
          */
-        std::list<Repository::ConstPointer> repositories;
+        std::list<Repository::Pointer> repositories;
 
         /// Our environment.
         const Environment * environment;
@@ -159,11 +159,11 @@ PackageDatabase::~PackageDatabase()
 }
 
 void
-PackageDatabase::add_repository(const Repository::ConstPointer r)
+PackageDatabase::add_repository(const Repository::Pointer r)
 {
     Context c("When adding a repository named '" + stringify(r->name()) + "':");
 
-    IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
+    IndirectIterator<std::list<Repository::Pointer>::const_iterator, const Repository>
         r_c(_imp->repositories.begin()),
         r_end(_imp->repositories.end());
     for ( ; r_c != r_end ; ++r_c)
@@ -181,7 +181,7 @@ PackageDatabase::fetch_unique_qualified_package_name(
 
     QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
 
-    IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
+    IndirectIterator<std::list<Repository::Pointer>::const_iterator, const Repository>
         r(_imp->repositories.begin()),
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
@@ -203,11 +203,11 @@ PackageDatabase::fetch_unique_qualified_package_name(
 }
 
 PackageDatabaseEntryCollection::Pointer
-PackageDatabase::_do_query(const PackageDepAtom & a, const InstallState installed_state) const
+PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_state) const
 {
     PackageDatabaseEntryCollection::Concrete::Pointer result(new PackageDatabaseEntryCollection::Concrete);
 
-    IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
+    IndirectIterator<std::list<Repository::Pointer>::const_iterator, const Repository>
         r(_imp->repositories.begin()),
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
@@ -235,16 +235,23 @@ PackageDatabase::_do_query(const PackageDepAtom & a, const InstallState installe
     return result;
 }
 
-PackageDatabaseEntryCollection::Pointer
-PackageDatabase::query(const PackageDepAtom & a, const InstallState s) const
-{
-    return _do_query(a, s);
-}
-
 Repository::ConstPointer
 PackageDatabase::fetch_repository(const RepositoryName & n) const
 {
-    std::list<Repository::ConstPointer>::const_iterator
+    std::list<Repository::Pointer>::const_iterator
+        r(_imp->repositories.begin()),
+        r_end(_imp->repositories.end());
+    for ( ; r != r_end ; ++r)
+        if ((*r)->name() == n)
+            return *r;
+
+    throw NoSuchRepositoryError(stringify(n));
+}
+
+Repository::Pointer
+PackageDatabase::fetch_repository(const RepositoryName & n)
+{
+    std::list<Repository::Pointer>::const_iterator
         r(_imp->repositories.begin()),
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
@@ -265,20 +272,25 @@ PackageDatabase::favourite_repository() const
     return RepositoryName("unnamed");
 }
 
-const RepositoryName &
-PackageDatabase::better_repository(const RepositoryName & r1,
-        const RepositoryName & r2) const
+bool
+PackageDatabase::more_important_than(const RepositoryName & lhs,
+        const RepositoryName & rhs) const
 {
-    IndirectIterator<std::list<Repository::ConstPointer>::const_iterator, const Repository>
-        r(_imp->repositories.begin()),
-        r_end(_imp->repositories.end());
-    for ( ; r != r_end ; ++r)
-    {
-        if (r->name() == r1)
-            return r2;
-        else if (r->name() == r2)
-            return r1;
-    }
+    std::map<std::string, int> rank;
+    int x(0);
+    for (PackageDatabase::RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
+            r != r_end ; ++r)
+        rank.insert(std::make_pair(stringify((*r)->name()), ++x));
+
+    std::map<std::string, int>::const_iterator l(rank.find(stringify(lhs)));
+    if (l == rank.end())
+        throw InternalError(PALUDIS_HERE, "lhs.repository '" + stringify(lhs) + "' not in rank");
+
+    std::map<std::string, int>::const_iterator r(rank.find(stringify(rhs)));
+    if (r == rank.end())
+        throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs) + "' not in rank");
+
+    return l->second > r->second;
 
     throw InternalError(PALUDIS_HERE, "better_repository called on non-owned repositories");
 }
@@ -346,12 +358,6 @@ PackageDatabase::_sort_package_database_entry_collection(PackageDatabaseEntryCol
 {
     if (! p.empty())
         p.sort(PDEComparator(this));
-}
-
-PackageDatabaseEntryCollection::Pointer
-PackageDatabase::query(PackageDepAtom::ConstPointer a, const InstallState s) const
-{
-    return _do_query(*a.raw_pointer(), s);
 }
 
 PackageDatabase::RepositoryIterator

@@ -152,7 +152,7 @@ UninstallTask::execute()
             Context local_context("When looking for target '" + stringify(**t) + "':");
 
             PackageDatabaseEntryCollection::ConstPointer r(_imp->env->package_database()->query(
-                        *t, is_installed_only));
+                        **t, is_installed_only));
             if (r->empty())
                 throw NoSuchPackageError(stringify(**t));
             else if (next(r->begin()) != r->end())

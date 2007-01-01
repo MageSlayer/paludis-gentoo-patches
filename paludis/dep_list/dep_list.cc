@@ -450,7 +450,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         if (already_installed->empty() || ! can_fall_back)
         {
             if (a->use_requirements_ptr() && d->_imp->env->package_database()->query(
-                        a->without_use_requirements(), is_any))
+                        *a->without_use_requirements(), is_any))
                 throw UseRequirementsNotMetError(stringify(*a));
             else
                 throw AllMaskedError(stringify(*a));

@@ -69,8 +69,7 @@ namespace paludis
             if (a.provided_by_repository != b.provided_by_repository)
             {
                 // not a bug
-                if (a.provided_by_repository == db->better_repository(a.provided_by_repository,
-                            b.provided_by_repository))
+                if (db->more_important_than(a.provided_by_repository, b.provided_by_repository))
                     return true;
                 return false;
             }

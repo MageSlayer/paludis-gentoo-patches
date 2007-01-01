@@ -337,8 +337,7 @@ QueueList::Populate::display_entry(const paludis::DepListEntry & e)
     row[_q->_imp->columns.col_left] = left;
 
     PackageDatabaseEntryCollection::Pointer existing(DefaultEnvironment::get_instance()->package_database()->
-            query(PackageDepAtom::Pointer(new PackageDepAtom(stringify(
-                            e.package.name))), is_installed_only));
+            query(PackageDepAtom(e.package.name), is_installed_only));
 
     std::string right = stringify(e.package.version);
 
@@ -346,9 +345,8 @@ QueueList::Populate::display_entry(const paludis::DepListEntry & e)
         right.append(" [N]");
     else
     {
-        existing = DefaultEnvironment::get_instance()->package_database()->query(PackageDepAtom::Pointer(
-                    new PackageDepAtom(stringify(e.package.name) + ":" +
-                        stringify(e.metadata->slot))),
+        existing = DefaultEnvironment::get_instance()->package_database()->query(PackageDepAtom(
+                    stringify(e.package.name) + ":" + stringify(e.metadata->slot)),
                 is_installed_only);
         if (existing->empty())
             right.append(" [S]");

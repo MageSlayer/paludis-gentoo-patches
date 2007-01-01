@@ -160,12 +160,12 @@ namespace
                 bool is_installed(true);
 
                 PackageDatabaseEntryCollection::ConstPointer results(DefaultEnvironment::get_instance()->package_database()->query(
-                            PackageDepAtom::Pointer(new PackageDepAtom(stringify(i->first))), is_installed_only));
+                            PackageDepAtom(i->first), is_installed_only));
                 if (results->empty())
                 {
                     is_installed = false;
                     results = DefaultEnvironment::get_instance()->package_database()->query(
-                            PackageDepAtom::Pointer(new PackageDepAtom(stringify(i->first))), is_any);
+                            PackageDepAtom(i->first), is_any);
                 }
                 if (results->empty())
                     continue;

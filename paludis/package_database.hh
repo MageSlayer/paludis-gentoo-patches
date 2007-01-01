@@ -220,9 +220,6 @@ namespace paludis
         public InternalCounted<PackageDatabase>
     {
         private:
-            PackageDatabaseEntryCollection::Pointer _do_query(
-                    const PackageDepAtom & a, const InstallState) const;
-
            void _sort_package_database_entry_collection(
                    PackageDatabaseEntryCollection::Concrete &) const;
 
@@ -244,12 +241,17 @@ namespace paludis
              * same name as the new Repository already exists in our
              * collection.
              */
-            void add_repository(Repository::ConstPointer);
+            void add_repository(Repository::Pointer);
 
             /**
              * Fetch a named repository.
              */
             Repository::ConstPointer fetch_repository(const RepositoryName &) const;
+
+            /**
+             * Fetch a named repository.
+             */
+            Repository::Pointer fetch_repository(const RepositoryName &);
 
             /**
              * Fetch the name of our 'favourite' repository (if a repository's
@@ -275,23 +277,14 @@ namespace paludis
                     const InstallState) const;
 
             /**
-             * Query the repository (overload for a CountedPtr)
+             * Return true if the first repository is more important than the second.
              */
-            PackageDatabaseEntryCollection::Pointer query(
-                    PackageDepAtom::ConstPointer a,
-                    const InstallState) const;
-
-            /**
-             * Which repository is better?
-             */
-            const RepositoryName & better_repository(const RepositoryName &,
-                    const RepositoryName &) const;
+            bool more_important_than(const RepositoryName &, const RepositoryName &) const;
 
             ///\name Iterate over our repositories
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageDatabase,
-                    const Repository::ConstPointer> RepositoryIterator;
+            typedef libwrapiter::ForwardIterator<PackageDatabase, const Repository::Pointer> RepositoryIterator;
 
             RepositoryIterator begin_repositories() const;
 

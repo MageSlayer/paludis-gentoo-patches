@@ -181,7 +181,7 @@ namespace
         Context context("When checking package '" + stringify(p) + "':");
 
         PackageDatabaseEntryCollection::Pointer p_entries(env.package_database()->query(
-                PackageDepAtom::Pointer(new PackageDepAtom(stringify(p))), is_any));
+                PackageDepAtom(p), is_any));
 
         bool found_matches(false);
 
@@ -241,7 +241,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 4;
     }
 
-    PackageDatabaseEntryCollection::Pointer entries(env.package_database()->query(atom, is_any));
+    PackageDatabaseEntryCollection::Pointer entries(env.package_database()->query(*atom, is_any));
     int ret(0);
 
     if (entries->empty())

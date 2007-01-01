@@ -857,8 +857,7 @@ PortageRepository::info(bool verbose) const
                 i_end(info_pkgs.end()) ; i != i_end ; ++i)
         {
             PackageDatabaseEntryCollection::ConstPointer q(
-                    _imp->params.environment->package_database()->query(
-                        PackageDepAtom::ConstPointer(new PackageDepAtom(*i)), is_installed_only));
+                    _imp->params.environment->package_database()->query(PackageDepAtom(*i), is_installed_only));
             if (q->empty())
                 package_info->add_kv(*i, "(none)");
             else
