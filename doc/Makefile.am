@@ -88,8 +88,8 @@ authors.html : authors.html.skel cleanauthors htmlheader.html htmlfooter.html
 	    -e '/@FOOTER@/r htmlfooter.html' \
 	    -e '/@FOOTER@/d' < authors.html.skel > authors.html
 
-cleannews : ../NEWS
-	sed -e '1,6d' -e '$$d' < ../NEWS > cleannews
+cleannews : $(top_srcdir)/NEWS
+	sed -e '1,6d' -e '$$d' < $(top_srcdir)/NEWS > cleannews
 
 news.html : news.html.skel cleannews htmlheader.html htmlfooter.html
 	sed -e '/@RELEASE_NOTES@/r cleannews' -e '/@RELEASE_NOTES@/d' \
@@ -106,9 +106,9 @@ news.html : news.html.skel cleannews htmlheader.html htmlfooter.html
 	        -e 's~<ul>\a*</li>~<ul>~g' \
 	    | tr '\007' '\012' > news.html
 
-cleanchangelog : ../ChangeLog
+cleanchangelog : $(top_srcdir)/ChangeLog
 	sed -e '1,7d' -e '$$d' -e 's,&,\&amp;,g' -e 's,<,\&lt;,g' -e 's,>,\&gt;,g' -e 's,@, at ,g' \
-	    < ../ChangeLog \
+	    < $(top_srcdir)/ChangeLog \
 	    | sed \
 	        -e 's~^\(200[0-9]-[0-9][0-9].*\)~<dt>&</dt>~' \
 	    | tr '\012' '\007' \
