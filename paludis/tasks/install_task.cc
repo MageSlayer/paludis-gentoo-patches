@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@ namespace paludis
 
         std::list<std::string> raw_targets;
         AllDepAtom::Pointer targets;
+        DepAtom::ConstPointer add_to_world_atom;
 
         bool pretend;
         bool preserve_world;
@@ -51,6 +52,7 @@ namespace paludis
             current_dep_list_entry(dep_list.begin()),
             install_options(false, false, ido_none),
             targets(new AllDepAtom),
+            add_to_world_atom(0),
             pretend(false),
             preserve_world(false),
             had_set_targets(false),
@@ -95,6 +97,7 @@ InstallTask::add_target(const std::string & target)
     Context context("When adding install target '" + target + "':");
 
     DepAtom::Pointer s(0);
+    std::string modified_target(target);
 
     bool done(false);
     try
@@ -128,12 +131,15 @@ InstallTask::add_target(const std::string & target)
         if (std::string::npos != target.find('/'))
             _imp->targets->add_child(PortageDepParser::parse(target));
         else
-            _imp->targets->add_child(DepAtom::Pointer(new PackageDepAtom(
-                            _imp->env->package_database()->fetch_unique_qualified_package_name(
-                                PackageNamePart(target)))));
+        {
+            QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
+                        PackageNamePart(target)));
+            modified_target = stringify(q);
+            _imp->targets->add_child(DepAtom::Pointer(new PackageDepAtom(q)));
+        }
     }
 
-    _imp->raw_targets.push_back(target);
+    _imp->raw_targets.push_back(modified_target);
 }
 
 namespace
@@ -358,7 +364,10 @@ InstallTask::execute()
         {
             on_update_world_pre();
             WorldCallbacks w(this);
-            _imp->env->add_appropriate_to_world(_imp->targets, &w);
+            if (_imp->add_to_world_atom)
+                _imp->env->add_appropriate_to_world(_imp->add_to_world_atom, &w);
+            else
+                _imp->env->add_appropriate_to_world(_imp->targets, &w);
             on_update_world_post();
         }
         else
@@ -420,6 +429,13 @@ void
 InstallTask::set_debug_mode(const InstallDebugOption value)
 {
     _imp->install_options.debug_build = value;
+}
+
+void
+InstallTask::set_add_to_world_atom(const std::string & value)
+{
+    Context context("When setting world atom to '" + value + "':");
+    _imp->add_to_world_atom = PortageDepParser::parse_depend(value);
 }
 
 InstallTask::TargetsIterator

@@ -37,7 +37,16 @@ profiles = \${location}/profiles/testprofile \${location}/profiles/anothertestpr
 buildroot = `pwd`/build
 END
 
+cat <<END > root/${SYSCONFDIR}/paludis/repositories/installed.conf
+location = `pwd`/root/var/db/pkg
+format = vdb
+names_cache = /var/empty
+provides_cache = /var/empty
+buildroot = `pwd`/build
+END
+
 mkdir -p root/tmp
+mkdir -p root/var/db/pkg
 touch root/${SYSCONFDIR}/ld.so.conf
 
 mkdir -p repo1/{eclass,distfiles,profiles/{testprofile,anothertestprofile},test-category/target/files} || exit 1

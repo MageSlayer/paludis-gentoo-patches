@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -241,7 +241,7 @@ main(int argc, char *argv[])
                 throw args::DoHelp("you should specify exactly one action");
         }
 
-        /* these actions don't need DefaultConfig */
+        /* these actions don't need DefaultConfig or paludis_command. */
 
         if (CommandLine::get_instance()->a_list_sync_protocols.specified())
         {
@@ -267,7 +267,7 @@ main(int argc, char *argv[])
             return do_list_dep_tag_categories();
         }
 
-        /* these actions do need DefaultConfig */
+        /* these actions do need DefaultConfig or paludis_command */
 
         try
         {
@@ -275,11 +275,32 @@ main(int argc, char *argv[])
             if (CommandLine::get_instance()->a_config_suffix.specified())
             {
                 DefaultConfig::set_config_suffix(CommandLine::get_instance()->a_config_suffix.argument());
-                paludis_command.append(" --config-suffix " +
+                paludis_command.append(" --" + CommandLine::get_instance()->a_config_suffix.long_name() + " " +
                         CommandLine::get_instance()->a_config_suffix.argument());
             }
-            paludis_command.append(" --log-level " + CommandLine::get_instance()->a_log_level.argument());
+
+            paludis_command.append(" --" + CommandLine::get_instance()->a_log_level.long_name() + " " +
+                    CommandLine::get_instance()->a_log_level.argument());
+
+            if (CommandLine::get_instance()->a_resume_command_template.specified())
+                paludis_command.append(" --" + CommandLine::get_instance()->a_resume_command_template.long_name() + " "
+                        + CommandLine::get_instance()->a_resume_command_template.argument());
+
+            if (CommandLine::get_instance()->a_no_color.specified())
+                paludis_command.append(" --" + CommandLine::get_instance()->a_no_color.long_name());
+
+            if (CommandLine::get_instance()->a_no_config_protection.specified())
+                paludis_command.append(" --" + CommandLine::get_instance()->a_no_config_protection.long_name());
+
+            if (CommandLine::get_instance()->a_preserve_world.specified())
+                paludis_command.append(" --" + CommandLine::get_instance()->a_preserve_world.long_name());
+
+            if (CommandLine::get_instance()->a_debug_build.specified())
+                paludis_command.append(" --" + CommandLine::get_instance()->a_debug_build.long_name() + " "
+                        + CommandLine::get_instance()->a_debug_build.argument());
+
             DefaultConfig::get_instance()->set_paludis_command(paludis_command);
+
         }
         catch (const DefaultConfigError &)
         {

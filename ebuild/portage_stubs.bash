@@ -60,7 +60,9 @@ best_version()
 
 vdb_path()
 {
-    ${PALUDIS_COMMAND} --configuration-variable installed location
+    if ! ${PALUDIS_COMMAND} --configuration-variable installed location ; then
+        die "Could not find vdb_path"
+    fi
 }
 
 check_KV()

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 #include <paludis/tasks/install_task.hh>
 #include <paludis/util/fd_output_stream.hh>
@@ -111,29 +112,61 @@ namespace
 
         if (task.current_dep_list_entry() != task.dep_list().end())
         {
-            std::string resume_command = DefaultEnvironment::get_instance()->paludis_command() + " "
-                "--dl-deps-default discard --install --preserve-world";
+            std::string resume_command = DefaultEnvironment::get_instance()->paludis_command()
+                + " --" + CommandLine::get_instance()->dl_deps_default.long_name() + " discard --"
+                + CommandLine::get_instance()->a_install.long_name();
+
             for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
                     i != i_end ; ++i)
                 if (! i->skip_install)
-                    resume_command = resume_command + " ="
+                    resume_command = resume_command + " '="
                         + stringify(i->package.name) + "-"
                         + stringify(i->package.version) + "::"
-                        + stringify(i->package.repository);
+                        + stringify(i->package.repository) + "'";
+
+            if (CommandLine::get_instance()->a_add_to_world_atom.specified())
+                resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
+                    + " '" + CommandLine::get_instance()->a_add_to_world_atom.argument() + "'";
+            else
+                resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
+                    + " '( " + join(task.begin_targets(), task.end_targets(), " ") + " )'";
 
             if (CommandLine::get_instance()->a_resume_command_template.specified())
             {
                 std::string file_name(CommandLine::get_instance()->a_resume_command_template.argument());
                 char* resume_template = strdup(file_name.c_str());
-                FDOutputStream resume_command_file(mkstemp(resume_template));
-                cerr << endl;
-                cerr << "Resume command saved to file: " << resume_template;
-                cerr << endl;
-                resume_command_file << resume_command << endl;
+                int fd(mkstemp(resume_template));
+                if (-1 != fd)
+                {
+                    FDOutputStream resume_command_file(fd);
+                    resume_command_file << resume_command << endl;
+
+                    if (resume_command_file)
+                    {
+                        cerr << endl;
+                        cerr << "Resume command saved to file: " << resume_template;
+                        cerr << endl;
+                    }
+                    else
+                    {
+                        cerr << "Resume command NOT saved to file: " << resume_template << " due to error "
+                            << strerror(errno) << endl;
+                        cerr << "Resume command: " << resume_command << endl;
+                    }
+                }
+                else
+                {
+                    cerr << "Resume command NOT saved to file: " << resume_template << " due to error "
+                        << strerror(errno) << endl;
+                    cerr << "Resume command: " << resume_command << endl;
+                }
                 std::free(resume_template);
             }
             else
+            {
+                cerr << endl;
                 cerr << "Resume command: " << resume_command << endl;
+            }
         }
     }
 
@@ -303,6 +336,9 @@ do_install()
     task.set_fetch_only(CommandLine::get_instance()->a_fetch.specified());
     task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
     task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
+
+    if (CommandLine::get_instance()->a_add_to_world_atom.specified())
+        task.set_add_to_world_atom(CommandLine::get_instance()->a_add_to_world_atom.argument());
 
     if (CommandLine::get_instance()->a_debug_build.specified())
         task.set_debug_mode(CommandLine::get_instance()->a_debug_build.option());
