@@ -2,40 +2,17 @@
 
 /** \mainpage
 
-\section mainpageoverview Overview
+This is the documentation for the Paludis C++ core API. There is rather a lot
+of it, and you will probably have trouble finding your way around if you just
+jump right into the middle of it. Instead, start by reading the
+<a href="/programmingwithpaludis.html">Programming with Paludis</a> guide.
+Once you've done that, try the <a href="modules.html">Modules</a> link rather
+than the full class lists.
 
-This is the documentation for Paludis, the other package manager. It is available as part of Paludis via <code>make doxygen</code>, or on the web at <a href="http://paludis.berlios.de/">the Paludis project page</a>.
+Some classes you may find useful:
 
-\warning Read the \link KnownIssues known issues \endlink list.
-
-\section userdocs For End Users
-
-Paludis is still undergoing heavy development. It is not a mature solution, and
-still has quite a few missing features. For the sake of covering our asses, we
-remind you that using Paludis might break your system (using Portage might break
-your system too, but they don't like to admit that up front). Paludis is much
-stricter than Portage when it comes to circular dependencies, ebuilds doing dodgy
-things, enforcing ROOT, merging non-directories over directories and the like, so
-expect to see error messages when using naughty ebuilds.
-
-If you find this acceptable, read \link BootstrapHowto the Bootstrap HOWTO
-\endlink for how to set up a chroot or make a stage, or \link MigrationHowto the
-Migration HOWTO \endlink for how to migrate an existing install (this is less
-reliable). You may also like to read about \link PortageDifferences some of the
-differences between Paludis and Portage \endlink.
-
-We have a <a href="https://developer.berlios.de/bugs/?group_id=6360">bug
-tracker</a> and some
-<a href="https://developer.berlios.de/mail/?group_id=6360">mailing lists</a>, but
-you shouldn't try to use these until after you've discussed your problem in our
-IRC channel. Read the howto for more details.
-
-\section developerdocs For Developers
-
-You should also read \link CodingStandards the Coding Standards \endlink
-before tinkering.
-
-A \link ProgrammingWithPaludis rough guide to programming with Paludis \endlink
-is available. You are encouraged to extend this document by submitting patches.
+- paludis::Environment
+- paludis::PackageDatabase
+- paludis::Repository and the associated interface classes
 
 */
