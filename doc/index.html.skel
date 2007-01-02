@@ -16,18 +16,23 @@
 
     <h2>For prospective users:</h2>
 
-    <h2>For new and current users:</h2>
+    <ul>
+        <li>An overview of <a href="portagedifferences.html">the differences between
+            Paludis and its predecessor, Portage</a>.</li>
+
+        <li>A <a href="migration.html">guide to migrating to
+            Paludis</a>.</li>
+    </ul>
+
+    <h2>For current users:</h2>
 
     <ul>
-        <li>The <a href="news.html">release notes</a> document major
-        changes between releases. More detailed information is available
-        in the <a href="changelog.html">changelog</a>.</li>
-
         <li>An <a href="faq.html">FAQ</a> is available. You should familiarise
         yourself with this list before asking questions.</li>
 
-        <li>There is a <a href="migration.html">guide to migrating to
-            Paludis</a>.</li>
+        <li>The <a href="news.html">release notes</a> document major
+        changes between releases. More detailed information is available
+        in the <a href="changelog.html">changelog</a>.</li>
 
         <li>There is <a href="configuration.html">documentation on the
             configuration files</a> and <a href="cachefiles.html">the
@@ -35,8 +40,7 @@
 
         <li><strong>Support</strong> is available via <code>#paludis</code> on
         <code>irc.freenode.net</code> or the <a
-            href="lists.html">mailing lists</a>. Support is not
-        available via Gentoo's bugzilla or forums.</li>
+            href="lists.html">mailing lists</a>.</li>
     </ul>
 
     <h2>For developers:</h2>

@@ -22,16 +22,17 @@ htmlfiles = \
 	faq.html \
 	migration.html \
 	cachefiles.html \
-	configuration.html
+	configuration.html \
+	portagedifferences.html
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 	$(docfiles) $(tagfiles) htaccess \
 	news.html.skel index.html.skel changelog.html.skel licence.html.skel authors.html.skel \
 	faq.html.skel htmlheader.html htmlfooter.html migration.html.skel cachefiles.html.skel \
-	configuration.html.skel
+	configuration.html.skel portagedifferences.html.skel
 
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
-	migration.html cachefiles.html configuration.html \
+	migration.html cachefiles.html configuration.html portagedifferences.html \
 	cleannews cleanchangelog cleanauthors cleanfaqtoc
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
@@ -147,6 +148,13 @@ migration.html : migration.html.skel htmlheader.html htmlfooter.html
 	    -e '/@FOOTER@/r htmlfooter.html' \
 	    -e '/@FOOTER@/d' \
 	    < $(srcdir)/migration.html.skel > migration.html
+
+portagedifferences.html : portagedifferences.html.skel htmlheader.html htmlfooter.html
+	sed -e '/@HEADER@/r htmlheader.html' \
+	    -e '/@HEADER@/d' \
+	    -e '/@FOOTER@/r htmlfooter.html' \
+	    -e '/@FOOTER@/d' \
+	    < $(srcdir)/portagedifferences.html.skel > portagedifferences.html
 
 cachefiles.html : cachefiles.html.skel htmlheader.html htmlfooter.html
 	sed -e '/@HEADER@/r htmlheader.html' \
