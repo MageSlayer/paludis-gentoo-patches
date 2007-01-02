@@ -31,7 +31,7 @@ EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 	configuration.html.skel portagedifferences.html.skel programmingwithpaludis.html.skel
 
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
-	migration.html cachefiles.html configuration.html portagedifferences.html programmingwithpaludis.html.skel \
+	migration.html cachefiles.html configuration.html portagedifferences.html programmingwithpaludis.html \
 	cleannews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
@@ -159,9 +159,9 @@ cleanbasiccppapp : $(srcdir)/examples/pwp_basic_cplusplus_app.cc
 	sed -e 's,&,\&amp;,g' -e 's,<,\&lt;,g' -e 's,>,\&gt;,g' \
 	    < $(srcdir)/examples/pwp_basic_cplusplus_app.cc > cleanbasiccppapp
 
-cleanbasicrubyapp : $(srcdir)/examples/pwp_basic_ruby_app.cc
+cleanbasicrubyapp : $(srcdir)/examples/pwp_basic_ruby_app.rb
 	sed -e 's,&,\&amp;,g' -e 's,<,\&lt;,g' -e 's,>,\&gt;,g' \
-	    < $(srcdir)/examples/pwp_basic_ruby_app.cc > cleanbasicrubyapp
+	    < $(srcdir)/examples/pwp_basic_ruby_app.rb > cleanbasicrubyapp
 
 programmingwithpaludis.html : programmingwithpaludis.html.skel htmlheader.html htmlfooter.html \
 		cleanbasiccppapp cleanbasicrubyapp
