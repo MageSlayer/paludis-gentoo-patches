@@ -21,7 +21,7 @@
         <ul>
 
             <li>A whole different <a
-                href="configurationfiles.html">configuration system</a>, making it far easier to maintain
+                href="configuration.html">configuration system</a>, making it far easier to maintain
             multiple systems, some in chroots, with entirely separate configuration
             files.</li>
 

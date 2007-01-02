@@ -9,9 +9,7 @@ docfiles = \
 	doc_mainpage.doxygen \
 	doc_coding_standards.doxygen \
 	doc_namespaces.doxygen \
-	doc_references.doxygen \
-	doc_portage_differences.doxygen \
-	doc_programming_with_paludis.doxygen
+	doc_references.doxygen
 
 htmlfiles = \
 	index.html \
@@ -23,17 +21,18 @@ htmlfiles = \
 	migration.html \
 	cachefiles.html \
 	configuration.html \
-	portagedifferences.html
+	portagedifferences.html \
+	programmingwithpaludis.html
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 	$(docfiles) $(tagfiles) htaccess \
 	news.html.skel index.html.skel changelog.html.skel licence.html.skel authors.html.skel \
 	faq.html.skel htmlheader.html htmlfooter.html migration.html.skel cachefiles.html.skel \
-	configuration.html.skel portagedifferences.html.skel
+	configuration.html.skel portagedifferences.html.skel programmingwithpaludis.html.skel
 
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
-	migration.html cachefiles.html configuration.html portagedifferences.html \
-	cleannews cleanchangelog cleanauthors cleanfaqtoc
+	migration.html cachefiles.html configuration.html portagedifferences.html programmingwithpaludis.html.skel \
+	cleannews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
 
@@ -77,12 +76,12 @@ rdoc :
 
 endif
 
-cleanauthors : ../AUTHORS
+cleanauthors : $(top_srcdir)/AUTHORS
 	sed -e '1,3d' \
 	    -e 's,&,\&amp;,g' -e 's,<,\&lt;,g' -e 's,>,\&gt;,g' -e 's,@, at ,g' \
 	    -e 's,^    \(.*\),<dd>\1</dd>,' \
 	    -e 's,^\([^ <].*\),<dt>\1</dt>,' \
-	    < ../AUTHORS > cleanauthors
+	    < $(top_srcdir)/AUTHORS > cleanauthors
 
 authors.html : authors.html.skel cleanauthors htmlheader.html htmlfooter.html
 	sed -e '/@AUTHORS@/r cleanauthors' -e '/@AUTHORS@/d' \
@@ -156,6 +155,26 @@ portagedifferences.html : portagedifferences.html.skel htmlheader.html htmlfoote
 	    -e '/@FOOTER@/d' \
 	    < $(srcdir)/portagedifferences.html.skel > portagedifferences.html
 
+cleanbasiccppapp : $(srcdir)/examples/pwp_basic_cplusplus_app.cc
+	sed -e 's,&,\&amp;,g' -e 's,<,\&lt;,g' -e 's,>,\&gt;,g' \
+	    < $(srcdir)/examples/pwp_basic_cplusplus_app.cc > cleanbasiccppapp
+
+cleanbasicrubyapp : $(srcdir)/examples/pwp_basic_ruby_app.cc
+	sed -e 's,&,\&amp;,g' -e 's,<,\&lt;,g' -e 's,>,\&gt;,g' \
+	    < $(srcdir)/examples/pwp_basic_ruby_app.cc > cleanbasicrubyapp
+
+programmingwithpaludis.html : programmingwithpaludis.html.skel htmlheader.html htmlfooter.html \
+		cleanbasiccppapp cleanbasicrubyapp
+	sed -e '/@HEADER@/r htmlheader.html' \
+	    -e '/@HEADER@/d' \
+	    -e '/@FOOTER@/r htmlfooter.html' \
+	    -e '/@FOOTER@/d' \
+	    -e '/@BASIC_CPP_APP@/r cleanbasiccppapp' \
+	    -e '/@BASIC_CPP_APP@/d' \
+	    -e '/@BASIC_RUBY_APP@/r cleanbasicrubyapp' \
+	    -e '/@BASIC_RUBY_APP@/d' \
+	    < $(srcdir)/programmingwithpaludis.html.skel > programmingwithpaludis.html
+
 cachefiles.html : cachefiles.html.skel htmlheader.html htmlfooter.html
 	sed -e '/@HEADER@/r htmlheader.html' \
 	    -e '/@HEADER@/d' \
@@ -203,7 +222,7 @@ homepage : doxygen rdoc htmlpages dothtaccess
 
 upload-homepage : homepage
 	cd `readlink -f $(top_srcdir)/doc/www` && tar jc ./ --exclude ./ | \
-		ssh shell.berlios.de tar vjx -C /home/groups/paludis/htdocs/
+		ssh svn.pioto.org tar vjx -C /srv/paludis.pioto.org/www/htdocs/
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
