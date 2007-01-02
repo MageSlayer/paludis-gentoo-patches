@@ -47,7 +47,7 @@
 
     <ul>
         <li><strong>Subversion access</strong> is available via
-        <code>svn co svn://svn.pioto.org/paludis/trunk svn</code>. There
+        <code>svn co svn://svn.pioto.org/paludis/trunk paludis</code>. There
         is also <a href="http://svn.pioto.org/viewvc/paludis/">viewvc</a>
         for browsing via the web.</li>
 
