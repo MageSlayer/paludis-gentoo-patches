@@ -355,8 +355,20 @@ InstallTask::execute()
         }
 
         /* if we installed paludis and a re-exec is available, use it. */
-        if (dep->package.name == QualifiedPackageName("sys-apps/paludis") && (next(dep) != dep_end))
-            on_installed_paludis();
+        if (dep->package.name == QualifiedPackageName("sys-apps/paludis"))
+        {
+            DepList::Iterator d(dep);
+            do
+            {
+                ++d;
+                if (d == dep_end)
+                    break;
+            }
+            while (d->skip_install);
+
+            if (d != dep_end)
+                on_installed_paludis();
+        }
     }
 
     /* update world */
