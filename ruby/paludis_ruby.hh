@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -97,20 +98,25 @@ namespace paludis
         PackageDatabaseEntry value_to_package_database_entry(VALUE v);
         EnvironmentData* value_to_environment_data(VALUE v);
         NoConfigEnvironment* value_to_no_config_environment(VALUE v);
+        PortageRepositoryProfilesDescLine value_to_portage_repository_profiles_desc_line(VALUE v);
 
 #ifdef ENABLE_RUBY_QA
         VALUE paludis_qa_module();
         qa::Message value_to_message(VALUE v);
         qa::EbuildCheckData value_to_ebuild_check_data(VALUE v);
         qa::PerProfileEbuildCheckData value_to_per_profile_ebuild_check_data(VALUE v);
+        qa::ProfileCheckData value_to_profile_check_data(VALUE v);
         qa::QAEnvironment* value_to_qa_environment(VALUE v);
         VALUE ebuild_check_data_to_value(const qa::EbuildCheckData &);
         VALUE per_profile_ebuild_check_data_to_value(const qa::PerProfileEbuildCheckData &);
+        VALUE profile_check_data_to_value(const qa::ProfileCheckData &);
         VALUE check_result_to_value(const qa::CheckResult &);
         VALUE package_dir_check_to_value(qa::PackageDirCheck::Pointer);
         VALUE file_check_to_value(qa::FileCheck::Pointer);
         VALUE ebuild_check_to_value(qa::EbuildCheck::Pointer);
         VALUE per_profile_ebuild_check_to_value(qa::PerProfileEbuildCheck::Pointer);
+        VALUE profiles_check_to_value(qa::ProfilesCheck::Pointer);
+        VALUE profile_check_to_value(qa::ProfileCheck::Pointer);
         VALUE message_to_value(const qa::Message &);
         VALUE metadata_file_to_value(const qa::MetadataFile &);
 #endif

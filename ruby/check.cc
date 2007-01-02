@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Richard Brown <mynamewasgone@gmail.com>
+ * Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,6 +37,7 @@ namespace
 {
     static VALUE c_ebuild_check_data;
     static VALUE c_per_profile_ebuild_check_data;
+    static VALUE c_profile_check_data;
     static VALUE c_package_dir_check;
     static VALUE c_package_dir_check_maker;
     static VALUE c_file_check;
@@ -45,6 +46,10 @@ namespace
     static VALUE c_ebuild_check_maker;
     static VALUE c_per_profile_ebuild_check;
     static VALUE c_per_profile_ebuild_check_maker;
+    static VALUE c_profiles_check;
+    static VALUE c_profiles_check_maker;
+    static VALUE c_profile_check;
+    static VALUE c_profile_check_maker;
 
     VALUE
     ebuild_check_data_init(int, VALUE *, VALUE self)
@@ -119,6 +124,46 @@ namespace
                 rb_raise(rb_eArgError, "PerProfileEbuildCheckData expects three arguments, but got %d",argc);
             }
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<PerProfileEbuildCheckData>::free, ptr));
+            rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    profile_check_data_init(int, VALUE *, VALUE self)
+    {
+        return self;
+    }
+
+    /*
+     * call-seq:
+     *     new(profiles_dir, profiles_desc_line)
+     *
+     * Creates a new ProfileCheckData for ProfileCheck.
+     */
+    VALUE
+    profile_check_data_new(int argc, VALUE *argv, VALUE self)
+    {
+        ProfileCheckData * ptr(0);
+        try
+        {
+            if (2 == argc)
+            {
+                ptr = new ProfileCheckData(
+                    FSEntry(StringValuePtr(argv[0])),
+                    value_to_portage_repository_profiles_desc_line(argv[1])
+                );
+            }
+            else
+            {
+                rb_raise(rb_eArgError, "ProfileCheckData expects two arguments, but got %d",argc);
+            }
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<ProfileCheckData>::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -258,6 +303,44 @@ namespace
     }
 
     /*
+     * call-seq:
+     *     check(dir) -> CheckResult
+     *
+     * Runs check on directory.
+     */
+    VALUE
+    profiles_check_check(VALUE self, VALUE f)
+    {
+        try
+        {
+            return (check_check <ProfilesCheck::Pointer, FSEntry> (self, FSEntry(StringValuePtr(f))));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     check(profile_check_data) -> CheckResult
+     *
+     * Runs check on ProfileCheckData.
+     */
+    VALUE
+    profile_check_check(VALUE self, VALUE f)
+    {
+        try
+        {
+            return (check_check <ProfileCheck::Pointer, ProfileCheckData> (self, value_to_profile_check_data(f)));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
      * Document-method: keys
      *
      * call-seq:
@@ -359,6 +442,44 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     find_maker(name)
+     *
+     * Fetch the named check.
+     */
+    VALUE profiles_check_maker_find_maker(VALUE, VALUE maker)
+    {
+        try
+        {
+            ProfilesCheck::Pointer p = (ProfilesCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
+            return profiles_check_to_value(p);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     find_maker(name)
+     *
+     * Fetch the named check.
+     */
+    VALUE profile_check_maker_find_maker(VALUE, VALUE maker)
+    {
+        try
+        {
+            ProfileCheck::Pointer p = (ProfileCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
+            return profile_check_to_value(p);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_check()
     {
         rb_require("singleton");
@@ -372,7 +493,6 @@ namespace
         rb_define_singleton_method(c_ebuild_check_data, "new", RUBY_FUNC_CAST(&ebuild_check_data_new),-1);
         rb_define_method(c_ebuild_check_data, "initialize", RUBY_FUNC_CAST(&ebuild_check_data_init),-1);
 
-
         /*
          * Document-class: Paludis::QA::PerProfileEbuildCheckData
          *
@@ -381,6 +501,15 @@ namespace
         c_per_profile_ebuild_check_data = rb_define_class_under(paludis_qa_module(), "PerProfileEbuildCheckData", rb_cObject);
         rb_define_singleton_method(c_per_profile_ebuild_check_data, "new", RUBY_FUNC_CAST(&per_profile_ebuild_check_data_new),-1);
         rb_define_method(c_per_profile_ebuild_check_data, "initialize", RUBY_FUNC_CAST(&per_profile_ebuild_check_data_init),-1);
+
+        /*
+         * Document-class: Paludis::QA::ProfileCheckData
+         *
+         * A collection class for ProfileCheck.
+         */
+        c_profile_check_data = rb_define_class_under(paludis_qa_module(), "ProfileCheckData", rb_cObject);
+        rb_define_singleton_method(c_profile_check_data, "new", RUBY_FUNC_CAST(&profile_check_data_new),-1);
+        rb_define_method(c_profile_check_data, "initialize", RUBY_FUNC_CAST(&profile_check_data_init),-1);
 
         /*
          * Document-class: Paludis::QA::PackageDirCheck
@@ -425,6 +554,28 @@ namespace
         rb_define_method(c_per_profile_ebuild_check, "check", RUBY_FUNC_CAST(&per_profile_ebuild_check_check),1);
         rb_define_method(c_per_profile_ebuild_check, "describe", RUBY_FUNC_CAST(&CheckStruct<PerProfileEbuildCheck::Pointer>::describe),0);
         rb_define_method(c_per_profile_ebuild_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<PerProfileEbuildCheck::Pointer>::is_important),0);
+
+        /*
+         * Document-class: Paludis::QA::ProfilesCheck
+         *
+         * Base class for QA checks that operate upon the top level /profiles directory.
+         */
+        c_profiles_check = rb_define_class_under(paludis_qa_module(), "ProfilesCheck", rb_cObject);
+        rb_funcall(c_profiles_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_profiles_check, "check", RUBY_FUNC_CAST(&profiles_check_check),1);
+        rb_define_method(c_profiles_check, "describe", RUBY_FUNC_CAST(&CheckStruct<ProfilesCheck::Pointer>::describe),0);
+        rb_define_method(c_profiles_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<ProfilesCheck::Pointer>::is_important),0);
+
+        /*
+         * Document-class: Paludis::QA::ProfileCheck
+         *
+         * Base class for QA checks that operate upon a profiles.desc entry directory.
+         */
+        c_profile_check = rb_define_class_under(paludis_qa_module(), "ProfileCheck", rb_cObject);
+        rb_funcall(c_profile_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_profile_check, "check", RUBY_FUNC_CAST(&profile_check_check),1);
+        rb_define_method(c_profile_check, "describe", RUBY_FUNC_CAST(&CheckStruct<ProfileCheck::Pointer>::describe),0);
+        rb_define_method(c_profile_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<ProfileCheck::Pointer>::is_important),0);
 
         /*
          * Document-class: Paludis::QA::PackageDirCheckMaker
@@ -481,6 +632,34 @@ namespace
         rb_define_method(c_per_profile_ebuild_check_maker, "find_maker", RUBY_FUNC_CAST(&per_profile_ebuild_check_maker_find_maker),1);
         rb_define_alias(c_per_profile_ebuild_check_maker, "check_names", "keys");
         rb_define_alias(c_per_profile_ebuild_check_maker, "find_check", "find_maker");
+
+        /*
+         * Document-class: Paludis::QA::ProfilesCheckMaker
+         *
+         * Class to access ProfilesChecks
+         *
+         */
+        c_profiles_check_maker = rb_define_class_under(paludis_qa_module(), "ProfilesCheckMaker", rb_cObject);
+        rb_funcall(c_profiles_check_maker, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_profiles_check_maker);
+        rb_define_method(c_profiles_check_maker, "keys", RUBY_FUNC_CAST(&CheckMakerStruct<ProfilesCheckMaker>::keys),0);
+        rb_define_method(c_profiles_check_maker, "find_maker", RUBY_FUNC_CAST(&profiles_check_maker_find_maker),1);
+        rb_define_alias(c_profiles_check_maker, "check_names", "keys");
+        rb_define_alias(c_profiles_check_maker, "find_check", "find_maker");
+
+        /*
+         * Document-class: Paludis::QA::ProfileCheckMaker
+         *
+         * Class to access ProfileChecks
+         *
+         */
+        c_profile_check_maker = rb_define_class_under(paludis_qa_module(), "ProfileCheckMaker", rb_cObject);
+        rb_funcall(c_profile_check_maker, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_profile_check_maker);
+        rb_define_method(c_profile_check_maker, "keys", RUBY_FUNC_CAST(&CheckMakerStruct<ProfileCheckMaker>::keys),0);
+        rb_define_method(c_profile_check_maker, "find_maker", RUBY_FUNC_CAST(&profile_check_maker_find_maker),1);
+        rb_define_alias(c_profile_check_maker, "check_names", "keys");
+        rb_define_alias(c_profile_check_maker, "find_check", "find_maker");
     }
 }
 
@@ -533,6 +712,38 @@ paludis::ruby::ebuild_check_to_value(EbuildCheck::Pointer m)
 }
 
 VALUE
+paludis::ruby::profiles_check_to_value(ProfilesCheck::Pointer m)
+{
+    ProfilesCheck::Pointer * m_ptr(0);
+    try
+    {
+        m_ptr = new ProfilesCheck::Pointer(m);
+        return Data_Wrap_Struct(c_profiles_check, 0, &Common<ProfilesCheck::Pointer>::free, m_ptr);
+    }
+    catch (const std::exception & e)
+    {
+        delete m_ptr;
+        exception_to_ruby_exception(e);
+    }
+}
+
+VALUE
+paludis::ruby::profile_check_to_value(ProfileCheck::Pointer m)
+{
+    ProfileCheck::Pointer * m_ptr(0);
+    try
+    {
+        m_ptr = new ProfileCheck::Pointer(m);
+        return Data_Wrap_Struct(c_profile_check, 0, &Common<ProfileCheck::Pointer>::free, m_ptr);
+    }
+    catch (const std::exception & e)
+    {
+        delete m_ptr;
+        exception_to_ruby_exception(e);
+    }
+}
+
+VALUE
 paludis::ruby::per_profile_ebuild_check_to_value(PerProfileEbuildCheck::Pointer m)
 {
     PerProfileEbuildCheck::Pointer * m_ptr(0);
@@ -545,6 +756,21 @@ paludis::ruby::per_profile_ebuild_check_to_value(PerProfileEbuildCheck::Pointer 
     {
         delete m_ptr;
         exception_to_ruby_exception(e);
+    }
+}
+
+EbuildCheckData
+paludis::ruby::value_to_ebuild_check_data(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_ebuild_check_data))
+    {
+        EbuildCheckData * v_ptr;
+        Data_Get_Struct(v, EbuildCheckData, v_ptr);
+        return *v_ptr;
+    }
+    else
+    {
+        rb_raise(rb_eTypeError, "Can't convert %s into EbuildCheckData", rb_obj_classname(v));
     }
 }
 
@@ -577,19 +803,26 @@ paludis::ruby::per_profile_ebuild_check_data_to_value(const PerProfileEbuildChec
     return Data_Wrap_Struct(c_per_profile_ebuild_check_data, 0, &Common<PerProfileEbuildCheckData>::free, vv);
 }
 
-EbuildCheckData
-paludis::ruby::value_to_ebuild_check_data(VALUE v)
+ProfileCheckData
+paludis::ruby::value_to_profile_check_data(VALUE v)
 {
-    if (rb_obj_is_kind_of(v, c_ebuild_check_data))
+    if (rb_obj_is_kind_of(v, c_profile_check_data))
     {
-        EbuildCheckData * v_ptr;
-        Data_Get_Struct(v, EbuildCheckData, v_ptr);
+        ProfileCheckData * v_ptr;
+        Data_Get_Struct(v, ProfileCheckData, v_ptr);
         return *v_ptr;
     }
     else
     {
-        rb_raise(rb_eTypeError, "Can't convert %s into EbuildCheckData", rb_obj_classname(v));
+        rb_raise(rb_eTypeError, "Can't convert %s into ProfileCheckData", rb_obj_classname(v));
     }
+}
+
+VALUE
+paludis::ruby::profile_check_data_to_value(const ProfileCheckData & v)
+{
+    ProfileCheckData * vv(new ProfileCheckData(v));
+    return Data_Wrap_Struct(c_profile_check_data, 0, &Common<ProfileCheckData>::free, vv);
 }
 
 RegisterRubyClass::Register paludis_ruby_register_check PALUDIS_ATTRIBUTE((used))

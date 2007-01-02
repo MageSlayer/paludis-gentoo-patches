@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -909,6 +910,21 @@ paludis::ruby::portage_repository_profiles_desc_line_to_value(const PortageRepos
 {
     PortageRepositoryProfilesDescLine * vv(new PortageRepositoryProfilesDescLine(v));
     return Data_Wrap_Struct(c_portage_repository_profiles_desc_line, 0, &Common<PortageRepositoryProfilesDescLine>::free, vv);
+}
+
+PortageRepositoryProfilesDescLine
+paludis::ruby::value_to_portage_repository_profiles_desc_line(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_portage_repository_profiles_desc_line))
+    {
+        PortageRepositoryProfilesDescLine * v_ptr;
+        Data_Get_Struct(v, PortageRepositoryProfilesDescLine, v_ptr);
+        return *v_ptr;
+    }
+    else
+    {
+        rb_raise(rb_eTypeError, "Can't convert %s into PortageRepositoryProfilesDescLine", rb_obj_classname(v));
+    }
 }
 
 RegisterRubyClass::Register paludis_ruby_register_repository PALUDIS_ATTRIBUTE((used))

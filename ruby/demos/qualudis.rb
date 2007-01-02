@@ -47,7 +47,7 @@ def display_errors(result)
             when QALevel::Skip
                 next unless @verbose
                 done_out = display_header_once(done_out, result)
-                print "  skip:        "
+                print "  exlude:        "
             when QALevel::Minor
                 done_out = display_header_once(done_out, result)
                 print "  minor:       "
@@ -76,8 +76,8 @@ def do_check_kind(maker, ok, fatal, value)
                 next unless @checks.include? check_name
             end
 
-            unless @skip_checks.empty?
-                next if @skip_checks.include? check_name
+            unless @exlude_checks.empty?
+                next if @exlude_checks.include? check_name
             end
 
             r = maker.find_check(check_name).check(value)
@@ -212,6 +212,20 @@ def do_check_eclass_dir(dir, env)
     return ok
 end
 
+def do_check_profiles_dir(dir, env)
+    set_entry_heading "QA checks for profiles directory #{dir}:"
+
+    ok, fatal = do_check_kind(ProfilesCheckMaker.instance, ok, fatal, dir)
+
+    env.portage_repository.profiles.each do |p|
+        break if fatal;
+        set_entry_heading "QA checks for profile.desc entry #{p.path} #{p.arch} #{p.status}:"
+
+        ok, fatal = do_check_kind(ProfileCheckMaker.instance, ok, fatal, ProfileCheckData.new(dir, p));
+
+    end
+end
+
 def do_check_top_level(dir)
     set_entry_heading "QA checks for top level directory #{dir}"
 
@@ -224,6 +238,8 @@ def do_check_top_level(dir)
         next unless File.directory? full_dir
         if d == 'eclass'
             ok &= do_check_eclass_dir("#{full_dir}/eclass", env)
+        elsif d == 'profiles'
+            ok &= do_check_profiles_dir("#{full_dir}/profiles", env)
         elsif env.package_database.fetch_repository(env.package_database.favourite_repository).has_category_named?(d)
             ok &= do_check_category_dir("#{full_dir}", env)
         end
@@ -235,6 +251,9 @@ def do_check(dir)
     if File.basename(dir) == 'eclass'
         env = QAEnvironment.new(File.dirname(dir), @write_cache_dir)
         return do_check_eclass_dir(dir, env)
+    elsif File.basename(dir) == 'profiles'
+        env = QAEnvironment.new(File.dirname(dir), @write_cache_dir)
+        return do_check_profiles_dir(dir, env)
     elsif Dir["#{dir}/*\-*.ebuild"].length>0
         env = QAEnvironment.new(File.dirname(File.dirname(dir)))
         return do_check_package_dir(dir,env)
@@ -250,12 +269,12 @@ def do_check(dir)
 end
 
 def describe_check(title, maker)
-    puts title
+    puts "#{title}:"
     maker.check_names.each do |check_name|
         $stderr.puts "  #{check_name}:"
         $stderr.puts "    #{maker.find_check(check_name).describe}"
-        $stderr.puts
     end
+    $stderr.puts
 end
 
 @verbose = false
@@ -263,7 +282,7 @@ end
 @min_level = QALevel::Info
 @write_cache_dir = '/var/empty'
 @checks = []
-@skip_checks = []
+@exlude_checks = []
 describe = false
 
 Log.instance.log_level = LogLevel::Qa
@@ -274,7 +293,7 @@ opts = GetoptLong.new(
     [ '--version',        '-V',  GetoptLong::NO_ARGUMENT ],
     [ '--describe',       '-d',  GetoptLong::NO_ARGUMENT ],
     [ '--qa-check',       '-c',  GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--skip-qa-check',  '-s',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--exlude-qa-check','-s',  GetoptLong::REQUIRED_ARGUMENT ],
     [ '--log-level',      '-L',  GetoptLong::REQUIRED_ARGUMENT ],
     [ '--message-level',  '-M',  GetoptLong::REQUIRED_ARGUMENT ],
     [ '--verbose',        '-v',  GetoptLong::NO_ARGUMENT ],
@@ -294,15 +313,15 @@ opts.each do | opt, arg |
         puts
         puts "Options for general checks:"
         puts "  --qa-check, -c          Only perform given check"
-        puts "  --skip-qa-check, -s     Skip given check"
+        puts "  --exlude-qa-check, -s   Exlude given check"
         puts "  --verbose, -v           Be verbose"
         puts "  --quiet, -q             Be quiet"
         puts "  --log-level, -L         Set log level"
         puts "      debug                 Show debug output (noisy)"
-        puts "      qa                    Show QA messages and warnings only"
-        puts "      warning               Show warnings only (default)"
-        puts "      silent                Suppress all log messages"
-        puts "  --message-level, -M       Set log level (debug, qa, warning, silent)"
+        puts "      qa                    Show QA messages and warnings only (default)"
+        puts "      warning               Show warnings only"
+        puts "      silent                Suppress all log messages (UNSAFE)"
+        puts "  --message-level, -M     Specify the message level"
         puts "      info                  Show info and upwards (default)"
         puts "      minor                 Show minor and upwards"
         puts "      major                 Show major and upwards"
@@ -321,21 +340,23 @@ opts.each do | opt, arg |
         describe_check("File Checks", FileCheckMaker.instance)
         describe_check("Ebuild Checks", EbuildCheckMaker.instance)
         describe_check("Per Profile Ebuild Checks", PerProfileEbuildCheckMaker.instance)
+        describe_check("Top level profiles/ checks", ProfilesCheckMaker.instance)
+        describe_check("Per profiles.desc entry checks", ProfileCheckMaker.instance)
         exit 0
 
     when '--qa-check'
-        unless @skip_checks.empty?
-            $stderr.puts "Don't specify --skip-qa-checks and --qa-checks in the same command"
+        unless @exlude_checks.empty?
+            $stderr.puts "Don't specify --exlude-qa-checks and --qa-checks in the same command"
             exit 1
         end
         @checks << arg
 
-    when '--skip-qa-check'
+    when '--exlude-qa-check'
         unless @checks.empty?
-            $stderr.puts "Don't specify --skip-qa-checks and --qa-checks in the same command"
+            $stderr.puts "Don't specify --exlude-qa-checks and --qa-checks in the same command"
             exit 1
         end
-        @skip_checks << arg
+        @exlude_checks << arg
 
     when '--verbose'
         @verbose = true
