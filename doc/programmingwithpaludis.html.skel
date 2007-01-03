@@ -188,7 +188,8 @@ Multiple instances of this environment can be created if necessary.</p>
 <code>paludis::TestEnvironment</code> class that is used in some test cases. These are less useful
 for most client authors.</p>
 
-<p>There is currently no Ruby wrapper for either of these.</p>
+<p>In Ruby the class for a QA environment is <code>Paludis::QA::QAEnvironment</code>, there is 
+currently no Ruby wrapper for the test environment.</p>
 
 <h2>The Package Database</h2>
 
@@ -217,7 +218,7 @@ only be obtained by calling <code>some_environment.package_database</code>.
 Rather than providing iterator pairs, repositories are available through the
 <code>repositories</code> method, whose return value behaves like an array of
 <code>Paludis::Repository</code> subclass instances. The
-<code>fetch_repository</code> and
+<code>fetch_repository</code>, <code>query</code> and
 <code>fetch_unique_qualified_package_name</code> methods are available.</p>
 
 <h2>Repositories</h2>
