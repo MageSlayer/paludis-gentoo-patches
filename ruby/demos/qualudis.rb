@@ -237,9 +237,9 @@ def do_check_top_level(dir)
         full_dir = "#{dir}/#{d}"
         next unless File.directory? full_dir
         if d == 'eclass'
-            ok &= do_check_eclass_dir("#{full_dir}/eclass", env)
+            ok &= do_check_eclass_dir("#{full_dir}", env)
         elsif d == 'profiles'
-            ok &= do_check_profiles_dir("#{full_dir}/profiles", env)
+            ok &= do_check_profiles_dir("#{full_dir}", env)
         elsif env.package_database.fetch_repository(env.package_database.favourite_repository).has_category_named?(d)
             ok &= do_check_category_dir("#{full_dir}", env)
         end
