@@ -63,10 +63,11 @@ namespace test_cases
             VersionSpec v17("1_alpha1-r1");
             VersionSpec v18("1_beta1-r1");
             VersionSpec v19("1_pre1-r1");
-            VersionSpec v20("1_rc1-r1");
-            VersionSpec v21("1_p1-r1");
-            VersionSpec v22("1_alpha_p");
-            VersionSpec v23("scm");
+            VersionSpec v20("1_pre1-r1.2");
+            VersionSpec v21("1_rc1-r1");
+            VersionSpec v22("1_p1-r1");
+            VersionSpec v23("1_alpha_p");
+            VersionSpec v24("scm");
 
             TEST_CHECK(true);
         }
@@ -148,8 +149,10 @@ namespace test_cases
         {
             TEST_CHECK(VersionSpec("1.2").tilde_compare(VersionSpec("1.2")));
             TEST_CHECK(VersionSpec("1.2").tilde_compare(VersionSpec("1.2-r1")));
+            TEST_CHECK(VersionSpec("1.2").tilde_compare(VersionSpec("1.2-r1.2.3")));
             TEST_CHECK(! VersionSpec("1.2").tilde_compare(VersionSpec("1.3")));
             TEST_CHECK(VersionSpec("1.2-r1").tilde_compare(VersionSpec("1.2-r2")));
+            TEST_CHECK(VersionSpec("1.2-r1").tilde_compare(VersionSpec("1.2-r2.3")));
         }
     } test_version_spec_tilde_compare;
 
@@ -183,6 +186,12 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2").remove_revision(), "1.2");
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r").remove_revision(), "1.2");
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r99").remove_revision(), "1.2");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r3.4").remove_revision(), "1.2");
+
+            TEST_CHECK_EQUAL(VersionSpec("1.2").remove_revision(), VersionSpec("1.2"));
+            TEST_CHECK_EQUAL(VersionSpec("1.2-r").remove_revision(), VersionSpec("1.2"));
+            TEST_CHECK_EQUAL(VersionSpec("1.2-r99").remove_revision(), VersionSpec("1.2"));
+            TEST_CHECK_EQUAL(VersionSpec("1.2-r3.4").remove_revision(), VersionSpec("1.2"));
         }
     } test_version_remove_revision;
 
@@ -217,6 +226,7 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2").revision_only(), "r0");
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r").revision_only(), "r0");
             TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r99").revision_only(), "r99");
+            TEST_CHECK_STRINGIFY_EQUAL(VersionSpec("1.2-r3.4").revision_only(), "r3.4");
         }
     } test_version_revision_only;
 
@@ -283,6 +293,9 @@ namespace test_cases
             v.push_back(VersionSpec("1_alpha"));
             v.push_back(VersionSpec("1_alpha10"));
             v.push_back(VersionSpec("1_alpha10-r1"));
+            v.push_back(VersionSpec("1_alpha10-r1.0"));
+            v.push_back(VersionSpec("1_alpha10-r1.1"));
+            v.push_back(VersionSpec("1_alpha10-r2"));
             v.push_back(VersionSpec("1_alpha10_p1"));
             v.push_back(VersionSpec("1_alpha10_p1-r1"));
             v.push_back(VersionSpec("1_alpha11"));
@@ -337,6 +350,7 @@ namespace test_cases
             v.push_back(VersionSpec("2_alpha"));
             v.push_back(VersionSpec("scm"));
             v.push_back(VersionSpec("scm-r3"));
+            v.push_back(VersionSpec("scm-r3.4"));
 
             std::vector<VersionSpec>::iterator v1(v.begin()), v_end(v.end());
             for ( ; v1 != v_end ; ++v1)

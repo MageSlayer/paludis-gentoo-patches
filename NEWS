@@ -4,6 +4,9 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.14.1:
+    * Versions can include -rx.y, -rx.y.z etc.
+
 0.14.0:
     * The merge and unmerge utilities are now called with an explicit path.
 
