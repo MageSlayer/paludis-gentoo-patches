@@ -315,6 +315,16 @@ do_install()
             throw args::DoHelp("bad value for --dl-upgrade");
     }
 
+    if (CommandLine::get_instance()->dl_new_slots.specified())
+    {
+        if (CommandLine::get_instance()->dl_new_slots.argument() == "as-needed")
+            options.new_slots = dl_new_slots_as_needed;
+        else if (CommandLine::get_instance()->dl_new_slots.argument() == "always")
+            options.new_slots = dl_new_slots_always;
+        else
+            throw args::DoHelp("bad value for --dl-new-slots");
+    }
+
     if (CommandLine::get_instance()->dl_circular.specified())
     {
         if (CommandLine::get_instance()->dl_circular.argument() == "discard")

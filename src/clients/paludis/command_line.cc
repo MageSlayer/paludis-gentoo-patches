@@ -122,6 +122,11 @@ CommandLine::CommandLine() :
             ("always",        "Always")
             ("as-needed",     "As needed"),
             "always"),
+    dl_new_slots(&dl_args, "dl-new-slots", '\0', "When to pull in new slots (works with --dl-upgrade)",
+            args::EnumArg::EnumArgOptions
+            ("always",        "Always")
+            ("as-needed",     "As needed"),
+            "always"),
 
     dl_deps_default(&dl_args, "dl-deps-default", '\0',
             "Override default behaviour for all dependency classes",

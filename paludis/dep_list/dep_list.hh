@@ -95,6 +95,17 @@ namespace paludis
     };
 
     /**
+     * When should we pull in a new slot.
+     *
+     * \ingroup grpdepresolver
+     */
+    enum DepListNewSlotsOption
+    {
+        dl_new_slots_always,
+        dl_new_slots_as_needed
+    };
+
+    /**
      * How should we handle a dep class.
      *
      * \ingroup grpdepresolver

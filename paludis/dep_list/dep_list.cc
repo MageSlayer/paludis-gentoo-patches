@@ -70,6 +70,7 @@ DepListOptions::DepListOptions() :
     reinstall_scm(dl_reinstall_scm_never),
     target_type(dl_target_package),
     upgrade(dl_upgrade_always),
+    new_slots(dl_new_slots_always),
     fall_back(dl_fall_back_as_needed_except_targets),
     installed_deps_pre(dl_deps_discard),
     installed_deps_runtime(dl_deps_try_post),
@@ -490,6 +491,23 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         else
             Log::get_instance()->message(ll_debug, lc_context, "Not taking installed package '"
                     + stringify(*already_installed_in_same_slot->last()) + "' over '" + stringify(*best_visible_candidate) + "'");
+    }
+    else if ((! already_installed->empty()) && (dl_new_slots_as_needed == d->_imp->opts.new_slots))
+    {
+        /* we have an already installed, but not in the same slot, and our options
+         * allow us to take this. */
+        if (d->prefer_installed_over_uninstalled(*already_installed->last(), *best_visible_candidate))
+        {
+            Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
+                    + stringify(*already_installed->last()) + "' over '" + stringify(*best_visible_candidate)
+                    + "' (in different slot)");
+            d->add_already_installed_package(*already_installed->last(), a->tag());
+            return;
+        }
+        else
+            Log::get_instance()->message(ll_debug, lc_context, "Not taking installed package '"
+                    + stringify(*already_installed->last()) + "' over '" + stringify(*best_visible_candidate)
+                    + "' (in different slot)");
     }
     else
         Log::get_instance()->message(ll_debug, lc_context, "No installed packages in SLOT '"
