@@ -209,13 +209,23 @@ class CommandLine :
         /// --show-use-descriptions
         paludis::args::EnumArg a_show_use_descriptions;
 
+        /// }
+
+        /// \name Uninstall arguments
+        ///\{
+
+        paludis::args::ArgsGroup uninstall_args;
+
         /// --with-unused-dependencies
         paludis::args::SwitchArg a_with_unused_dependencies;
 
         /// --with-dependencies
         paludis::args::SwitchArg a_with_dependencies;
 
-        /// }
+        /// --all-versions
+        paludis::args::SwitchArg a_all_versions;
+
+        ///\}
 
         /// \name DepList behaviour arguments
         /// {

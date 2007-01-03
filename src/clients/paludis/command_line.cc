@@ -96,10 +96,15 @@ CommandLine::CommandLine() :
             ("changed",    "Show for new and changed flags")
             ("all",        "Show for all flags"),
             "none"),
-    a_with_unused_dependencies(&install_args, "with-unused-dependencies", '\0',
+
+    uninstall_args(this, "Uninstall options",
+            "Options which are relevant for --uninstall."),
+    a_with_unused_dependencies(&uninstall_args, "with-unused-dependencies", '\0',
             "Also uninstall any dependencies of the target that are no longer used"),
-    a_with_dependencies(&install_args, "with-dependencies", '\0',
+    a_with_dependencies(&uninstall_args, "with-dependencies", '\0',
             "Also uninstall packages that depend upon the target"),
+    a_all_versions(&uninstall_args, "all-versions", '\0',
+            "Uninstall all versions of a package"),
 
     dl_args(this, "DepList behaviour",
             "Modify dependency list generation behaviour. Use with caution."),

@@ -39,6 +39,7 @@ namespace paludis
 
         bool pretend;
         bool preserve_world;
+        bool all_versions;
         bool with_unused_dependencies;
         bool with_dependencies;
         bool unused;
@@ -48,6 +49,7 @@ namespace paludis
             install_options(false, false, ido_none),
             pretend(false),
             preserve_world(false),
+            all_versions(false),
             with_unused_dependencies(false),
             with_dependencies(false),
             unused(false)
@@ -156,7 +158,22 @@ UninstallTask::execute()
             if (r->empty())
                 throw NoSuchPackageError(stringify(**t));
             else if (next(r->begin()) != r->end())
-                throw AmbiguousUnmergeTargetError(stringify(**t), r);
+            {
+                if (_imp->all_versions)
+                {
+                    /* all_versions, not all_packages. */
+                    for (PackageDatabaseEntryCollection::Iterator i_start(r->begin()), i(r->begin()),
+                            i_end(r->end()) ; i != i_end ; ++i)
+                        if (i->name != i_start->name)
+                            throw AmbiguousUnmergeTargetError(stringify(**t), r);
+
+                    for (PackageDatabaseEntryCollection::Iterator i(r->begin()), i_end(r->end()) ;
+                            i != i_end ; ++i)
+                        list.add(*i);
+                }
+                else
+                    throw AmbiguousUnmergeTargetError(stringify(**t), r);
+            }
             else
                 list.add(*r->begin());
         }
@@ -251,5 +268,11 @@ void
 UninstallTask::set_with_dependencies(const bool value)
 {
     _imp->with_dependencies = value;
+}
+
+void
+UninstallTask::set_all_versions(const bool value)
+{
+    _imp->all_versions = value;
 }
 

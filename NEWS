@@ -11,6 +11,9 @@ of every change, see the ChangeLog.
     via --dl-new-slots as-needed. This must be used in conjunction with the
     existing --dl-upgrade.
 
+    * Paludis can now uninstall all versions of a package by --uninstall
+    --all-versions.
+
 0.14.0:
     * The merge and unmerge utilities are now called with an explicit path.
 

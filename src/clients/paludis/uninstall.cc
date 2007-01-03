@@ -184,6 +184,7 @@ namespace
         task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
         task.set_with_unused_dependencies(CommandLine::get_instance()->a_with_unused_dependencies.specified());
         task.set_with_dependencies(CommandLine::get_instance()->a_with_dependencies.specified());
+        task.set_all_versions(CommandLine::get_instance()->a_all_versions.specified());
 
         try
         {
