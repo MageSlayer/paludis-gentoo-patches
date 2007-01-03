@@ -10,9 +10,11 @@ touch dir_a/file_in_a || exit 6
 touch all_perms || exit 7
 chmod 777 all_perms || exit 8
 touch no_perms || exit 9
+sleep 1
 chmod 000 no_perms || exit 10
 
 mkdir dir_a/dir_in_a
 
 echo -n '0123456789' > ten_bytes || exit 11
 ln -s dir_a/file_in_a symlink_to_file_in_a || exit 12
+sleep 1

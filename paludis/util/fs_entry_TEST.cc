@@ -41,6 +41,42 @@ using namespace test;
 namespace test_cases
 {
     /**
+     * \test Test FSEntry ctime and mtime methods
+     *
+     * \ingroup grpfilesystem
+     */
+    struct FSEntryTime : TestCase
+    {
+        FSEntryTime() : TestCase("ctime and mtime") {}
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            FSEntry a("fs_entry_TEST_dir");
+            FSEntry b("fs_entry_TEST_dir/no_perms");
+            FSEntry c("fs_entry_TEST_dir/no_such_file");
+            FSEntry d("fs_entry_TEST_dir/dir_a/dir_in_a");
+
+            TEST_CHECK(a.ctime() < std::time(0));
+            TEST_CHECK(a.mtime() < std::time(0));
+            TEST_CHECK(b.ctime() < std::time(0));
+            TEST_CHECK(b.mtime() < std::time(0));
+            TEST_CHECK(d.ctime() < std::time(0));
+            TEST_CHECK(d.mtime() < std::time(0));
+
+            TEST_CHECK(b.mtime() < b.ctime());
+            TEST_CHECK(d.mtime() == d.ctime());
+
+            TEST_CHECK_THROWS(c.ctime(), FSError);
+            TEST_CHECK_THROWS(c.mtime(), FSError);
+        }
+    } test_fs_entry_time;
+
+    /**
      * \test Test FSEntry construction and manipulation.
      *
      * \ingroup grpfilesystem
@@ -172,33 +208,6 @@ namespace test_cases
             TEST_CHECK_THROWS(c.has_permission(fs_ug_owner, fs_perm_read), FSError);
         }
     } test_fs_entry_permission;
-
-    /**
-     * \test Test FSEntry ctime and mtime methods
-     *
-     * \ingroup grpfilesystem
-     */
-    struct FSEntryTime : TestCase
-    {
-        FSEntryTime() : TestCase("ctime and mtime") {}
-
-        void run()
-        {
-            FSEntry a("fs_entry_TEST_dir");
-            FSEntry b("fs_entry_TEST_dir/no_perms");
-            FSEntry c("fs_entry_TEST_dir/no_such_file");
-            FSEntry d("fs_entry_TEST_dir/dir_a/dir_in_a");
-
-            TEST_CHECK(a.ctime() <= std::time(NULL));
-            TEST_CHECK(b.ctime() <= std::time(NULL));
-            TEST_CHECK((b.mtime() >= b.ctime()) && (b.mtime() <= std::time(NULL)));
-            TEST_CHECK(d.ctime() <= std::time(NULL));
-            TEST_CHECK((d.mtime() >= d.ctime()) && (d.mtime() <= std::time(NULL)));
-
-            TEST_CHECK_THROWS(c.ctime(), FSError);
-            TEST_CHECK_THROWS(c.mtime(), FSError);
-        }
-    } test_fs_entry_time;
 
     /**
      * \test Test FSEntry file_size
