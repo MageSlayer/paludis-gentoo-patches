@@ -37,6 +37,8 @@ of every change, see the ChangeLog.
     * The uninstall_ hooks are now called only for real uninstalls. When
     cleaning a package, clean_ is used instead.
 
+    * Paludis handles upgrading itself much more elegantly.
+
 0.12.0:
     * The QA library now has a Ruby interface.
 
