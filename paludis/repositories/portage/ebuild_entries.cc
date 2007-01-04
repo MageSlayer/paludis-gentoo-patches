@@ -455,7 +455,8 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .flat_src_uri(flat_src_uri)
             .root(stringify(_imp->params.root) + "/")
             .profiles(_imp->params.profiles)
-            .no_fetch(fetch_restrict));
+            .no_fetch(fetch_restrict)
+            .safe_resume(o.safe_resume));
 
     fetch_cmd();
 

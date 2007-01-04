@@ -279,6 +279,7 @@ EbuildFetchCommand::extend_command(const MakeEnvCommand & cmd)
             ("USE_EXPAND", fetch_params.use_expand)
             ("FLAT_SRC_URI", fetch_params.flat_src_uri)
             ("ROOT", fetch_params.root)
+            ("PALUDIS_USE_SAFE_RESUME", fetch_params.safe_resume ? "oohyesplease" : "")
             ("PALUDIS_PROFILE_DIR", stringify(*fetch_params.profiles->begin()))
             ("PALUDIS_PROFILE_DIRS", join(fetch_params.profiles->begin(),
                                           fetch_params.profiles->end(), " ")));

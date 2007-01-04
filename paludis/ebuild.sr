@@ -36,6 +36,7 @@ make_class_EbuildFetchCommandParams()
     key profiles FSEntryCollection::ConstPointer
     key expand_vars "AssociativeCollection<std::string, std::string>::ConstPointer"
     key no_fetch bool
+    key safe_resume bool
 
     doxygen_comment << "END"
         /**

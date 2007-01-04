@@ -67,6 +67,8 @@ export CXX="/usr/lib/ccache/bin/g++"
     <li><code>--resume-command-template ~/.paludis-resume-XXXXXX</code></li>
 
     <li><code>--dl-reinstall-scm weekly</code></li>
+
+    <li><code>--safe-resume</code></li>
 </ul>
 
 <p>You can either use a shell alias, or <code>export
@@ -219,7 +221,7 @@ there so you will have to create it.</p>
 <h3 id="wgetresume">wget Resume Support</h3>
 
 <p>Non-Problem: With Portage, <code>wget -c</code> is used to attempt to resume
-downloads of partial files. With Paludis, resumes are not allowed.</p>
+downloads of partial files. With Paludis, this is not done by default.</p>
 
 <p>Rationale: This leads to corruption and wasted bandwidth far too frequently.
 In particular, if an error page that isn't recognised as a 404 is fetched from
@@ -228,8 +230,28 @@ support means <code>wget</code> would then download all but the first few
 hundred bytes of the file from somewhere else, leading to a corrupt distfile
 notice only after lots of bandwidth has been wasted.</p>
 
-<p>Having said that, if you really want this functionality, you can implement it
-using a custom fetcher.</p>
+<p>Paludis provides a <code>--safe-resume</code> option. When enabled, the download
+logic is as follows:</p>
+
+<ul>
+    <li>If <code>output_file.-PARTIAL-</code> exists and is below a certain
+    arbitrary threshold (currently somewhere in the 100KBytes region), delete it.</li>
+
+    <li>Rather than downloading straight to <code>output_file</code>, download to
+    <code>output_file.-PARTIAL-</code>. If this file already exists, resume rather than
+    starting from scratch.</li>
+
+    <li>If <code>wget</code> exits with success, move <code>output_file.-PARTIAL-</code>
+    to <code>output_file</code>.</li>
+</ul>
+
+<p>Note that you mush <strong>always</strong> specify this option,
+not just after a download has already been interrupted. See <a href="#defaultoptions">the
+    discussion on default options</a> for how to do this easily.</a>.</p>
+
+<p>This logic is handled by the default fetcher for <code>http://</code>, <code>https://</code>
+and <code>ftp://</code>. This can be overridden by a custom fetcher if finer grained control
+is required.</p>
 
 <h3 id="skipfirst">Build Resume / Skip First Support</h3>
 

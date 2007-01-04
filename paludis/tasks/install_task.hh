@@ -88,6 +88,7 @@ namespace paludis
             void set_preserve_world(const bool value);
             void set_debug_mode(const InstallDebugOption value);
             void set_add_to_world_atom(const std::string &);
+            void set_safe_resume(const bool);
 
             ///\}
 

@@ -1,10 +1,54 @@
 #!/bin/bash
+# vim: set sw=4 sts=4 et :
 
-echo ${WGET_WRAPPER} ${LOCAL_WGET:-wget} ${EXTRA_WGET} -T 30 -t 1 -O "${2}" "${1}" 1>&2
-if ${WGET_WRAPPER} ${LOCAL_WGET:-wget} ${EXTRA_WGET} -T 30 -t 1 -O "${2}" "${1}" ; then
-    exit 0
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+#
+# This file is part of the Paludis package manager. Paludis is free software;
+# you can redistribute it and/or modify it under the terms of the GNU General
+# Public License, version 2, as published by the Free Software Foundation.
+#
+# Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA  02111-1307  USA
+
+export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
+source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
+
+if [[ -n "${PALUDIS_USE_SAFE_RESUME}" ]] ; then
+
+    if [[ -f "${2}.-PARTIAL-" ]] ; then
+        if [[ $(getfsize "${2}".-PARTIAL- ) -ge 123456 ]] ; then
+            einfo_unhooked "Attempting resume using ${2}.-PARTIAL-"
+        else
+            einfo_unhooked "Not attempting resume using ${2}.-PARTIAL- (too small)"
+            echo rm -f "${2}".-PARTIAL-
+            rm -f "${2}".-PARTIAL-
+        fi
+    fi
+
+    echo ${WGET_WRAPPER} ${LOCAL_WGET:-wget} ${EXTRA_WGET} -T 30 -t 1 --continue -O "${2}".-PARTIAL- "${1}" 1>&2
+    if ${WGET_WRAPPER} ${LOCAL_WGET:-wget} ${EXTRA_WGET} -T 30 -t 1 --continue -O "${2}".-PARTIAL- "${1}" ; then
+        echo mv -f "${2}".-PARTIAL- "${2}"
+        mv -f "${2}".-PARTIAL- "${2}"
+        exit 0
+    else
+        rm -f "${2}"
+        exit 1
+    fi
+
 else
-    rm -f "${2}"
-    exit 1
+    echo ${WGET_WRAPPER} ${LOCAL_WGET:-wget} ${EXTRA_WGET} -T 30 -t 1 -O "${2}" "${1}" 1>&2
+    if ${WGET_WRAPPER} ${LOCAL_WGET:-wget} ${EXTRA_WGET} -T 30 -t 1 -O "${2}" "${1}" ; then
+        exit 0
+    else
+        rm -f "${2}"
+        exit 1
+    fi
+
 fi
 

@@ -387,6 +387,7 @@ do_install()
     task.set_fetch_only(CommandLine::get_instance()->a_fetch.specified());
     task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
     task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
+    task.set_safe_resume(CommandLine::get_instance()->a_safe_resume.specified());
 
     if (CommandLine::get_instance()->a_add_to_world_atom.specified())
         task.set_add_to_world_atom(CommandLine::get_instance()->a_add_to_world_atom.argument());

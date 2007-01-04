@@ -50,7 +50,7 @@ namespace paludis
             env(e),
             dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
-            install_options(false, false, ido_none),
+            install_options(false, false, ido_none, false),
             targets(new AllDepAtom),
             add_to_world_atom(0),
             pretend(false),
@@ -491,5 +491,11 @@ bool
 InstallTask::had_package_targets() const
 {
     return _imp->had_package_targets;
+}
+
+void
+InstallTask::set_safe_resume(const bool value)
+{
+    _imp->install_options.safe_resume = value;
 }
 
