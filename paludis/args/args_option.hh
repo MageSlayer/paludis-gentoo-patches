@@ -238,6 +238,11 @@ namespace paludis
                 {
                     _other->set_specified(value);
                 }
+
+                ArgsOption * other() const
+                {
+                    return _other;
+                }
         };
 
         /**

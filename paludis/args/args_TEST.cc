@@ -44,6 +44,8 @@ struct CommandLine : public ArgsHandler
     SwitchArg arg_baz;
     AliasArg arg_other_baz;
     StringArg arg_something;
+    StringArg arg_monkey;
+    AliasArg arg_other_monkey;
     IntegerArg arg_somenum;
     EnumArg arg_enum;
 
@@ -80,6 +82,8 @@ CommandLine::CommandLine() :
     arg_baz(&group_two, "baz", 'z', "Enable baz"),
     arg_other_baz(&arg_baz, "other-baz"),
     arg_something(&group_two, "something", 's', "Value of something"),
+    arg_monkey(&group_two, "monkey", 'm', "A monkey?"),
+    arg_other_monkey(&arg_monkey, "other-monkey"),
     arg_somenum(&group_two, "num", 'n', "Some number"),
     arg_enum(&group_two, "enum", 'e', "One of three", EnumArg::EnumArgOptions("one", "Option one")("two", "option two")("three", "option three"), "two"),
 
@@ -107,10 +111,10 @@ namespace test_cases
 
         void run()
         {
-            const char * args[] = { "program-name", "--other-baz", "-fsne", "blah", "7", "three", "--", "--dummy",
-                "one", "two" };
+            const char * args[] = { "program-name", "--other-monkey", "chimp", "--other-baz",
+                "-fsne", "blah", "7", "three", "--", "--dummy", "one", "two" };
             CommandLine c1;
-            c1.run(10, args);
+            c1.run(12, args);
             TEST_CHECK(c1.arg_foo.specified());
             TEST_CHECK(! c1.arg_bar.specified());
             TEST_CHECK(c1.arg_baz.specified());
@@ -124,6 +128,8 @@ namespace test_cases
             TEST_CHECK(! c1.arg_dummy.specified());
             TEST_CHECK(! c1.arg_other_enum.specified());
             TEST_CHECK(c1.arg_other_enum.argument() == "b");
+            TEST_CHECK(c1.arg_monkey.specified());
+            TEST_CHECK(c1.arg_monkey.argument() == "chimp");
 
             TEST_CHECK_EQUAL(std::distance(c1.begin_parameters(), c1.end_parameters()), 3);
             TEST_CHECK_EQUAL(*c1.begin_parameters(), "--dummy");

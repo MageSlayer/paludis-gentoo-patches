@@ -61,7 +61,7 @@ void ArgsVisitor::visit(StringArg * const arg)
 
 void ArgsVisitor::visit(AliasArg * const arg)
 {
-    visit(static_cast<ArgsOption *>(arg));
+    arg->other()->accept(this);
 }
 
 void ArgsVisitor::visit(SwitchArg * const arg)
