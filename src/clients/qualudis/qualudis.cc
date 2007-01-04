@@ -324,6 +324,20 @@ namespace
                 for (PortageRepository::ProfilesIterator i(env.portage_repository()->begin_profiles()),
                         i_end(env.portage_repository()->end_profiles()) ; i != i_end ; ++i)
                 {
+                    if (QualudisCommandLine::get_instance()->a_archs.specified())
+                        if (QualudisCommandLine::get_instance()->a_archs.args_end() == std::find(
+                                    QualudisCommandLine::get_instance()->a_archs.args_begin(),
+                                    QualudisCommandLine::get_instance()->a_archs.args_end(),
+                                    i->arch))
+                            continue;
+
+                    if (QualudisCommandLine::get_instance()->a_exclude_archs.specified())
+                        if (QualudisCommandLine::get_instance()->a_exclude_archs.args_end() != std::find(
+                                    QualudisCommandLine::get_instance()->a_exclude_archs.args_begin(),
+                                    QualudisCommandLine::get_instance()->a_exclude_archs.args_end(),
+                                    i->arch))
+                            continue;
+
                     set_entry_heading("QA checks for package directory " + stringify(dir) +
                             " with profile " + stringify(i->path) + ":", true);
 

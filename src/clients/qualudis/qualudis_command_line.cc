@@ -35,6 +35,8 @@ QualudisCommandLine::QualudisCommandLine() :
             "Options relevant for the --owner actions."),
     a_qa_checks(&check_options, "qa-check", 'c', "Only perform given check."),
     a_exclude_qa_checks(&check_options, "exclude-qa-check", 'C', "Exclude given check."),
+    a_archs(&check_options, "archs", 'a', "Only perform checks for the specified arch."),
+    a_exclude_archs(&check_options, "exclude-archs", 'A', "Do not perform checks for the specified arch."),
     a_verbose(&check_options, "verbose", 'v', "Be verbose"),
     a_quiet(&check_options, "quiet", 'q', "Be quiet"),
     a_log_level(&check_options, "log-level", 'L'),
