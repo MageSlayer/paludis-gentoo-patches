@@ -638,14 +638,14 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
     else if (existing_slot->last()->version < d.package.version)
     {
         output_no_endl(render_as_update_mode(" [U " +
-                    stringify(existing->last()->version) + "]"));
+                    stringify(existing_slot->last()->version) + "]"));
         set_count<upgrade_count>(count<upgrade_count>() + 1);
         set_count<max_count>(count<max_count>() + 1);
     }
     else if (existing_slot->last()->version > d.package.version)
     {
         output_no_endl(render_as_update_mode(" [D " +
-                    stringify(existing->last()->version) + "]"));
+                    stringify(existing_slot->last()->version) + "]"));
         set_count<downgrade_count>(count<downgrade_count>() + 1);
         set_count<max_count>(count<max_count>() + 1);
     }
