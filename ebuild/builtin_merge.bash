@@ -89,6 +89,9 @@ builtin_merge()
         fi
     fi
 
+    echo hash -r
+    hash -r
+
     if ! /bin/sh -c 'echo Good, our shell is still usable' ; then
         echo "Looks like our shell broke. Trying an ldconfig to fix it..."
         ldconfig -r ${ROOT}
@@ -96,6 +99,9 @@ builtin_merge()
 
     if [[ -n "${reinstall}" ]] ; then
         ${unmerge} "${ROOT%/}/" "${dbdir}/OLDCONTENTS" || die "unmerge failed"
+
+        echo hash -r
+        hash -r
 
         if ! /bin/sh -c 'echo Good, our shell is still usable' ; then
             echo "Looks like our shell broke. Trying an ldconfig to fix it..."
