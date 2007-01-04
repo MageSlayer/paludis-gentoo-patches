@@ -443,6 +443,9 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
                 case dl_fall_back_as_needed:
                     can_fall_back = true;
                     continue;
+
+                case dl_fall_back_last:
+                    ;
             }
 
             throw InternalError(PALUDIS_HERE, "Bad fall_back value '" + stringify(d->_imp->opts.fall_back) + "'");
@@ -876,6 +879,9 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
 
             case dl_target_set:
                 continue;
+
+            case dl_target_last:
+                ;
         }
 
         throw InternalError(PALUDIS_HERE, "Bad target_type value '" + stringify(_imp->opts.target_type) + "'");
@@ -911,8 +917,11 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
                             return false;
                         continue;
 
-                    case dl_reinstall_never:
+                    case dl_reinstall_scm_never:
                         ; /* nothing */
+
+                    case dl_reinstall_scm_last:
+                        ;
                 }
 
                 throw InternalError(PALUDIS_HERE, "Bad value for opts.reinstall_scm");
