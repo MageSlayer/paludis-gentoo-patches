@@ -206,8 +206,8 @@ class CommandLine :
         /// --safe-resume
         paludis::args::SwitchArg a_safe_resume;
 
-        /// --show-install-reasons
-        paludis::args::EnumArg a_show_install_reasons;
+        /// --show-reasons
+        paludis::args::EnumArg a_show_reasons;
 
         /// --show-use-descriptions
         paludis::args::EnumArg a_show_use_descriptions;
@@ -296,6 +296,9 @@ class CommandLine :
         paludis::args::SwitchArg a_dl_no_unnecessary_upgrades;
         paludis::args::SwitchArg a_dl_drop_all;
         paludis::args::SwitchArg a_dl_ignore_installed;
+        paludis::args::StringArg a_show_install_reasons;
+
+        ///\}
 };
 
 #endif

@@ -84,7 +84,7 @@ CommandLine::CommandLine() :
     a_debug_build(&install_args, "debug-build", '\0'),
     a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
     a_safe_resume(&install_args, "safe-resume", '\0', "Allow interrupted downloads to be resumed safely"),
-    a_show_install_reasons(&install_args, "show-install-reasons", '\0', "Show why packages are being installed",
+    a_show_reasons(&install_args, "show-reasons", '\0', "Show why packages are being (un)installed",
             args::EnumArg::EnumArgOptions
             ("none",    "Don't show any information")
             ("summary", "Show a summary")
@@ -186,9 +186,11 @@ CommandLine::CommandLine() :
     a_dl_no_unnecessary_upgrades(&deprecated_args, "dl-no-unnecessary-upgrades", 'U',
             "Replaced by --dl-upgrade as-needed"),
     a_dl_drop_all(&deprecated_args, "dl-drop-all", '0',
-            "Drop all dependencies"),
+            "Replaced by --dl-deps-default discard"),
     a_dl_ignore_installed(&deprecated_args, "dl-ignore-installed", 'e',
-            "Replaced by --dl-reinstall always")
+            "Replaced by --dl-reinstall always"),
+    a_show_install_reasons(&deprecated_args, "show-install-reasons",
+            '\0', "Replaced by --show-reasons")
 {
     add_usage_line("--query [query options] target ...");
     add_usage_line("--install [install options] target ...");

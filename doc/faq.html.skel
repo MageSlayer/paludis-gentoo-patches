@@ -62,7 +62,7 @@ export CXX="/usr/lib/ccache/bin/g++"
     <code>silent</code> in this way -- warnings are warnings because you need
     to read them)</li>
 
-    <li><code>--show-install-reasons summary</code></li>
+    <li><code>--show-reasons summary</code></li>
 
     <li><code>--resume-command-template ~/.paludis-resume-XXXXXX</code></li>
 
@@ -291,7 +291,7 @@ restore it. You should be using <code>PROMPT_COMMAND</code> to do that yourself
 <h3 id="tree">No <code>--tree</code> Equivalent</h3>
 
 <p>Paludis does not have something identical to <code>emerge --tree</code>. It
-does, however, have <code>--show-install-reasons</code>, which we find to be
+does, however, have <code>--show-reasons</code>, which we find to be
 considerably more informative, useful and correct.</p>
 
 <h3 id="features">No <code>FEATURES</code> Equivalent</h3>

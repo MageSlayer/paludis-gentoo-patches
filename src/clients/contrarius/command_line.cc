@@ -33,7 +33,7 @@ CommandLine::CommandLine() :
             "Tweak toolchain creation."),
     a_fetch(&build_args,     "fetch",        'f', "Only fetch sources; don't install anything"),
     a_pretend(&build_args,   "pretend",      'p', "Pretend only"),
-    a_show_install_reasons(&build_args, "show-install-reasons", '\0', "Show why packages are being installed",
+    a_show_reasons(&build_args, "show-reasons", '\0', "Show why packages are being installed",
             paludis::args::EnumArg::EnumArgOptions
             ("none",    "Don't show any information")
             ("summary", "Show a summary")

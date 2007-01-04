@@ -17,6 +17,8 @@ of every change, see the ChangeLog.
     * Paludis now supports resuming of interrupted downloads. Consult the FAQ
     for how to use this.
 
+    * --show-install-reasons is now called --show-reasons.
+
 0.14.0:
     * The merge and unmerge utilities are now called with an explicit path.
 

@@ -78,18 +78,18 @@ namespace
             virtual void on_display_unmerge_list_entry(const UninstallListEntry & d)
             {
                 if (d.skip_uninstall)
-                    if (CommandLine::get_instance()->a_show_install_reasons.argument() != "full")
+                    if (CommandLine::get_instance()->a_show_reasons.argument() != "full")
                         return;
 
                 cout << "* " << colour(d.skip_uninstall ? cl_unimportant : cl_package_name, stringify(d.package));
                 ++_count;
 
-                if ((CommandLine::get_instance()->a_show_install_reasons.argument() == "summary") ||
-                        (CommandLine::get_instance()->a_show_install_reasons.argument() == "full"))
+                if ((CommandLine::get_instance()->a_show_reasons.argument() == "summary") ||
+                        (CommandLine::get_instance()->a_show_reasons.argument() == "full"))
                 {
                     std::string deps;
                     unsigned count(0), max_count;
-                    if (CommandLine::get_instance()->a_show_install_reasons.argument() == "summary")
+                    if (CommandLine::get_instance()->a_show_reasons.argument() == "summary")
                         max_count = 3;
                     else
                         max_count = std::numeric_limits<long>::max();

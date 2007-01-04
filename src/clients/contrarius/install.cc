@@ -59,7 +59,7 @@ namespace
 
             virtual bool want_full_install_reasons() const
             {
-                return "full" == CommandLine::get_instance()->a_show_install_reasons.argument();
+                return "full" == CommandLine::get_instance()->a_show_reasons.argument();
             }
 
             virtual bool want_tags_summary() const
@@ -69,8 +69,8 @@ namespace
 
             virtual bool want_install_reasons() const
             {
-                return "full" == CommandLine::get_instance()->a_show_install_reasons.argument() ||
-                    "summary" == CommandLine::get_instance()->a_show_install_reasons.argument();
+                return "full" == CommandLine::get_instance()->a_show_reasons.argument() ||
+                    "summary" == CommandLine::get_instance()->a_show_reasons.argument();
             }
 
             virtual bool want_unchanged_use_flags() const

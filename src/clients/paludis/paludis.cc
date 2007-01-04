@@ -162,6 +162,7 @@ main(int argc, char *argv[])
             CommandLine::get_instance()->dl_upgrade.set_argument("as-needed");
             CommandLine::get_instance()->dl_upgrade.set_specified(true);
         }
+
         if (CommandLine::get_instance()->a_dl_drop_all.specified())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "--dl-drop-all / -0 is deprecated");
@@ -178,11 +179,20 @@ main(int argc, char *argv[])
             CommandLine::get_instance()->dl_uninstalled_deps_runtime.set_argument("discard");
             CommandLine::get_instance()->dl_uninstalled_deps_runtime.set_specified(true);
         }
+
         if (CommandLine::get_instance()->a_dl_ignore_installed.specified())
         {
             Log::get_instance()->message(ll_warning, lc_no_context, "--dl-ignore-installed / -e is deprecated");
             CommandLine::get_instance()->dl_reinstall.set_argument("always");
-            CommandLine::get_instance()->dl_reinstall.set_specified("always");
+            CommandLine::get_instance()->dl_reinstall.set_specified(true);
+        }
+
+        if (CommandLine::get_instance()->a_show_install_reasons.specified())
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "--show-install-reasons is deprecated, use --show-reasons");
+            CommandLine::get_instance()->a_show_reasons.set_argument(
+                    CommandLine::get_instance()->a_show_install_reasons.argument());
+            CommandLine::get_instance()->a_show_reasons.set_specified(true);
         }
 
         /* need an action */

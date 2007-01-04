@@ -57,8 +57,8 @@ class CommandLine :
         /// --pretend
         paludis::args::SwitchArg a_pretend;
 
-        /// --show-install-reasons
-        paludis::args::EnumArg a_show_install_reasons;
+        /// --show-reasons
+        paludis::args::EnumArg a_show_reasons;
 
         /// --stage
         paludis::args::EnumArg a_stage;
