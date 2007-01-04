@@ -47,7 +47,7 @@ def display_errors(result)
             when QALevel::Skip
                 next unless @verbose
                 done_out = display_header_once(done_out, result)
-                print "  exlude:        "
+                print "  exclude:        "
             when QALevel::Minor
                 done_out = display_header_once(done_out, result)
                 print "  minor:       "
@@ -76,8 +76,8 @@ def do_check_kind(maker, ok, fatal, value)
                 next unless @checks.include? check_name
             end
 
-            unless @exlude_checks.empty?
-                next if @exlude_checks.include? check_name
+            unless @exclude_checks.empty?
+                next if @exclude_checks.include? check_name
             end
 
             r = maker.find_check(check_name).check(value)
@@ -136,6 +136,14 @@ def do_check_package_dir(dir, env)
     unless fatal
         Dir["#{dir}/*.ebuild"].each do |d|
             env.portage_repository.profiles.each do |profile|
+                unless @arches.empty?
+                    next unless @arches.include? profile.arch
+                end
+
+                unless @exclude_arches.empty?
+                    next if @exclude_arches.include? profile.arch
+                end
+
                 set_entry_heading("QA checks for package directory #{d} with profile #{profile.path}", true)
                 qpn = QualifiedPackageName.new(File.basename(File.dirname(dir)), File.basename(dir))
                 ver = File.basename(d, '.ebuild').gsub(File.basename(dir) + '-','')
@@ -282,22 +290,26 @@ end
 @min_level = QALevel::Info
 @write_cache_dir = '/var/empty'
 @checks = []
-@exlude_checks = []
+@exclude_checks = []
+@arches = []
+@exclude_arches = []
 describe = false
 
 Log.instance.log_level = LogLevel::Qa
 Log.instance.program_name = $0
 
 opts = GetoptLong.new(
-    [ '--help',           '-h',  GetoptLong::NO_ARGUMENT ],
-    [ '--version',        '-V',  GetoptLong::NO_ARGUMENT ],
-    [ '--describe',       '-d',  GetoptLong::NO_ARGUMENT ],
-    [ '--qa-check',       '-c',  GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--exlude-qa-check','-s',  GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--log-level',      '-L',  GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--message-level',  '-M',  GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--verbose',        '-v',  GetoptLong::NO_ARGUMENT ],
-    [ '--quiet',          '-q',  GetoptLong::NO_ARGUMENT ],
+    [ '--help',            '-h',  GetoptLong::NO_ARGUMENT ],
+    [ '--version',         '-V',  GetoptLong::NO_ARGUMENT ],
+    [ '--describe',        '-d',  GetoptLong::NO_ARGUMENT ],
+    [ '--qa-check',        '-c',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--exclude-qa-check','-C',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--arch',            '-a',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--exclude-arch',    '-A',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--log-level',       '-L',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--message-level',   '-M',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--verbose',         '-v',  GetoptLong::NO_ARGUMENT ],
+    [ '--quiet',           '-q',  GetoptLong::NO_ARGUMENT ],
     [ '--write-cache-dir',       GetoptLong::REQUIRED_ARGUMENT ])
 
 opts.each do | opt, arg |
@@ -313,7 +325,9 @@ opts.each do | opt, arg |
         puts
         puts "Options for general checks:"
         puts "  --qa-check, -c          Only perform given check"
-        puts "  --exlude-qa-check, -s   Exlude given check"
+        puts "  --exclude-qa-check, -C   exclude given check"
+        puts "  --arch, -a              Only perform checks for the specified arch"
+        puts "  --exclude-arch, -A       Do not perform checks for the specified arch"
         puts "  --verbose, -v           Be verbose"
         puts "  --quiet, -q             Be quiet"
         puts "  --log-level, -L         Set log level"
@@ -345,18 +359,32 @@ opts.each do | opt, arg |
         exit 0
 
     when '--qa-check'
-        unless @exlude_checks.empty?
-            $stderr.puts "Don't specify --exlude-qa-checks and --qa-checks in the same command"
+        unless @exclude_checks.empty?
+            $stderr.puts "Don't specify --exclude-qa-check and --qa-check in the same command"
             exit 1
         end
         @checks << arg
 
-    when '--exlude-qa-check'
+    when '--exclude-qa-check'
         unless @checks.empty?
-            $stderr.puts "Don't specify --exlude-qa-checks and --qa-checks in the same command"
+            $stderr.puts "Don't specify --exclude-qa-check and --qa-check in the same command"
             exit 1
         end
-        @exlude_checks << arg
+        @exclude_checks << arg
+
+    when '--arch'
+        unless @exclude_arches.empty?
+            $stderr.puts "Don't specify --exclude-arch and --arch in the same command"
+            exit 1
+        end
+        @arches << arg
+
+    when '--exclude-arch'
+        unless @arches.empty?
+            $stderr.puts "Don't specify --exclude-arch and --arch in the same command"
+            exit 1
+        end
+        @exclude_arches << arg
 
     when '--verbose'
         @verbose = true
@@ -401,7 +429,11 @@ opts.each do | opt, arg |
 end
 unless ARGV.empty?
     ARGV.each do |dir|
-        full_dir = "#{Dir.getwd}/#{dir}"
+        if dir.include? '/'
+            full_dir = dir
+        else
+            full_dir = "#{Dir.getwd}/#{dir}"
+        end
         if File.directory? full_dir
             do_check(full_dir)
         else
