@@ -347,6 +347,78 @@ namespace paludis
 
             ///\}
     };
+
+    /**
+     * Write a DepListTargetType to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListTargetType &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListReinstallOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListReinstallOption &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListFallBackOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListFallBackOption &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListReinstallScmOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListReinstallScmOption &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListUpgradeOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListUpgradeOption &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListNewSlotsOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListNewSlotsOption &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListDepsOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListDepsOption &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListCircularOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListCircularOption &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListEntryState to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListEntryState &) PALUDIS_VISIBLE;
 }
 
 #endif
