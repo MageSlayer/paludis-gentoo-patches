@@ -18,3 +18,89 @@ make_class_UseConfigEntry()
 END
 }
 
+make_class_SetUseConfigEntry()
+{
+    key set_name SetName
+    key dep_atom DepAtom::ConstPointer
+    key flag_name UseFlagName
+    key flag_state UseFlagState
+
+    doxygen_comment << "END"
+        /**
+         * Represents a DefaultConfig set use configuration entry.
+         *
+         * \see DefaultConfig
+         * \ingroup grpdefaultconfig
+         * \nosubgrouping
+         */
+END
+}
+
+make_class_SetUseConfigMinusStarEntry()
+{
+    key set_name SetName
+    key dep_atom DepAtom::ConstPointer
+    key prefix std::string
+
+    doxygen_comment << "END"
+        /**
+         * Represents a DefaultConfig set -* use configuration entry.
+         *
+         * \see DefaultConfig
+         * \ingroup grpdefaultconfig
+         * \nosubgrouping
+         */
+END
+}
+
+make_class_SetKeywordConfigEntry()
+{
+    key set_name SetName
+    key dep_atom DepAtom::ConstPointer
+    key keyword KeywordName
+
+    doxygen_comment << "END"
+        /**
+         * Represents a DefaultConfig set keywords configuration entry.
+         *
+         * \see DefaultConfig
+         * \ingroup grpdefaultconfig
+         * \nosubgrouping
+         */
+END
+}
+
+make_class_SetLicenseConfigEntry()
+{
+    key set_name SetName
+    key dep_atom DepAtom::ConstPointer
+    key license std::string
+
+    doxygen_comment << "END"
+        /**
+         * Represents a DefaultConfig set licence configuration entry.
+         *
+         * \see DefaultConfig
+         * \ingroup grpdefaultconfig
+         * \nosubgrouping
+         */
+END
+}
+
+make_class_SetMaskConfigEntry()
+{
+    key set_name SetName
+    key dep_atom DepAtom::ConstPointer
+
+    doxygen_comment << "END"
+        /**
+         * Represents a DefaultConfig set mask or unmask configuration entry.
+         *
+         * \see DefaultConfig
+         * \ingroup grpdefaultconfig
+         * \nosubgrouping
+         */
+END
+}
+
+

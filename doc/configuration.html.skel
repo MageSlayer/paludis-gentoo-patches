@@ -67,7 +67,8 @@ used.</p>
 
 <p>User <code>USE</code> preferences are controlled by the <code>use.conf</code>
 file. The basic format of a line is <code>atom use use use ...</code>, where
-<code>atom</code> is a package depend atom or <code>*</code> for "all packages",
+<code>atom</code> is a package depend atom, <a href="sets.html">package set</a>
+or <code>*</code> for "all packages",
 and <code>use use use ...</code> is one or more USE flag names, prefixed by
 a minus if they are to be disabled.</p>
 
@@ -100,7 +101,7 @@ be considered, not just the best or last match.</p>
 <p>Which <code>ARCH KEYWORDS</code> to accept is controlled by the 
 <code>keywords.conf</code> file. The format of a line is
 <code>atom keyword1 keywords2 ...</code>, where <code>atom</code> is a package
-depend atom or <code>*</code> for "all packages" and 
+depend atom, <a href="sets.html">set name</a> or <code>*</code> for "all packages" and 
 <code>keyword1 keyword2 ...</code> is one or more arch keywords. As with Portage,
 accepting <code>~arch</code> does <em>not</em> 
 implicitly accept <code>arch</code>, however, if a package matches multiple lines,
@@ -125,7 +126,8 @@ package being masked, as the package is stabilised.</p>
 <h3>The package_mask.conf File</h3>
 
 <p>Packages can be masked through the use of the <code>package_mask.conf</code>
-file. The format of the file is one <code>atom</code> per line. For example:</p>
+file. The format of the file is one <code>atom</code> or <a href="sets.html">set name</a>
+per line. For example:</p>
 
 <pre>
 # Hide vim 7
@@ -140,7 +142,7 @@ app-editors/gvim
 
 <p>Packages can be unmasked through the use of the
 <code>package_unmask.conf</code> file. The format of the file is one
-<code>atom</code> per line. For example:</p>
+<code>atom</code> or <a href="sets.html">set name</a> per line. For example:</p>
 
 <pre>
 # I need banshee 0.11.0

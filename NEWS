@@ -21,7 +21,10 @@ of every change, see the ChangeLog.
 
     * qualudis now supports --archs and --exclude-archs.
 
-    * Documentation on sets is now provided.
+    * Documentation on sets and hooks is now provided.
+
+    * Set names can now be used for the atom column in use.conf, keywords.conf,
+    licenses.conf, package_unmask.conf, package_mask.conf.
 
 0.14.0:
     * The merge and unmerge utilities are now called with an explicit path.

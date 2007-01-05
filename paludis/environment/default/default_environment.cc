@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,6 +51,76 @@ DefaultEnvironment::DefaultEnvironment() :
 
 DefaultEnvironment::~DefaultEnvironment()
 {
+}
+
+namespace
+{
+    struct IsInSet :
+        DepAtomVisitorTypes::ConstVisitor,
+        std::unary_function<PackageDatabaseEntry, bool>
+    {
+        const Environment * const env;
+        DepAtom::ConstPointer set;
+        const PackageDatabaseEntry * dbe;
+        bool matched;
+
+        IsInSet(const Environment * const e, DepAtom::ConstPointer s) :
+            env(e),
+            set(s),
+            matched(false)
+        {
+        }
+
+        bool operator() (const PackageDatabaseEntry & e)
+        {
+            dbe = &e;
+            matched = false;
+            set->accept(this);
+            return matched;
+        }
+
+        void visit(const AllDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const PackageDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            if (match_package(env, a, *dbe))
+                matched = true;
+        }
+
+        void visit(const UseDepAtom * const u)
+        {
+            if (matched)
+                return;
+
+            std::for_each(u->begin(), u->end(), accept_visitor(this));
+        }
+
+        void visit(const AnyDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const BlockDepAtom * const)
+        {
+        }
+
+        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+        }
+    };
 }
 
 bool
@@ -151,6 +221,71 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         }
     }
 
+    /* check use: set user config */
+    if (e)
+    {
+        UseFlagState s(use_unspecified);
+
+        for (DefaultConfig::SetUseConfigIterator
+                u(DefaultConfig::get_instance()->begin_set_use_config()),
+                u_end(DefaultConfig::get_instance()->end_set_use_config()) ;
+                u != u_end ; ++u)
+        {
+            if (f != u->flag_name)
+                continue;
+
+            IsInSet q(this, u->dep_atom);
+            if (! q(*e))
+                continue;
+
+            switch (u->flag_state)
+            {
+                case use_enabled:
+                    s = use_enabled;
+                    continue;
+
+                case use_disabled:
+                    s = use_disabled;
+                    continue;
+
+                case use_unspecified:
+                    continue;
+            }
+
+            throw InternalError(PALUDIS_HERE, "Bad state");
+        }
+
+        do
+        {
+            switch (s)
+            {
+                case use_enabled:
+                    return true;
+
+                case use_disabled:
+                    return false;
+
+                case use_unspecified:
+                    continue;
+            }
+            throw InternalError(PALUDIS_HERE, "Bad state");
+        } while (false);
+
+        /* and the -* bit */
+        for (DefaultConfig::SetUseMinusStarIterator
+                i(DefaultConfig::get_instance()->begin_set_use_prefixes_with_minus_star()),
+                i_end(DefaultConfig::get_instance()->end_set_use_prefixes_with_minus_star()) ;
+                i != i_end ; ++i)
+        {
+            IsInSet q(this, i->dep_atom);
+            if (! q(*e))
+                continue;
+
+            if (0 == i->prefix.compare(0, i->prefix.length(), stringify(f), 0, i->prefix.length()))
+                return false;
+        }
+    }
+
     /* check use: general user config */
     do
     {
@@ -237,6 +372,7 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
     bool result(false);
 
     if (d)
+    {
         for (DefaultConfig::PackageKeywordsIterator
                 k(DefaultConfig::get_instance()->begin_package_keywords(d->name)),
                 k_end(DefaultConfig::get_instance()->end_package_keywords(d->name)) ;
@@ -247,6 +383,19 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
 
             result |= k->second == keyword;
         }
+
+        for (DefaultConfig::SetKeywordsIterator
+                k(DefaultConfig::get_instance()->begin_set_keywords()),
+                k_end(DefaultConfig::get_instance()->end_set_keywords()) ;
+                k != k_end ; ++k)
+        {
+            IsInSet q(this, k->dep_atom);
+            if (! q(*d))
+                continue;
+
+            result |= k->keyword == keyword;
+        }
+    }
 
     result |= DefaultConfig::get_instance()->end_default_keywords() !=
         std::find(DefaultConfig::get_instance()->begin_default_keywords(),
@@ -268,6 +417,7 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
     bool result(false);
 
     if (d)
+    {
         for (DefaultConfig::PackageLicensesIterator
                 k(DefaultConfig::get_instance()->begin_package_licenses(d->name)),
                 k_end(DefaultConfig::get_instance()->end_package_licenses(d->name)) ;
@@ -279,6 +429,20 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
             result |= k->second == license;
             result |= k->second == "*";
         }
+
+        for (DefaultConfig::SetLicensesIterator
+                k(DefaultConfig::get_instance()->begin_set_licenses()),
+                k_end(DefaultConfig::get_instance()->end_set_licenses()) ;
+                k != k_end ; ++k)
+        {
+            IsInSet q(this, k->dep_atom);
+            if (! q(*d))
+                continue;
+
+            result |= k->license == license;
+            result |= k->license == "*";
+        }
+    }
 
     result |= DefaultConfig::get_instance()->end_default_licenses() !=
         std::find(DefaultConfig::get_instance()->begin_default_licenses(),
@@ -307,6 +471,18 @@ DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
         return true;
     }
 
+    for (DefaultConfig::UserMasksSetsIterator
+            k(DefaultConfig::get_instance()->begin_user_masks_sets()),
+            k_end(DefaultConfig::get_instance()->end_user_masks_sets()) ;
+            k != k_end ; ++k)
+    {
+        IsInSet q(this, k->dep_atom);
+        if (! q(d))
+            continue;
+
+        return true;
+    }
+
     return false;
 }
 
@@ -319,6 +495,18 @@ DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
             k != k_end ; ++k)
     {
         if (! match_package(this, *k, d))
+            continue;
+
+        return true;
+    }
+
+    for (DefaultConfig::UserMasksSetsIterator
+            k(DefaultConfig::get_instance()->begin_user_unmasks_sets()),
+            k_end(DefaultConfig::get_instance()->end_user_unmasks_sets()) ;
+            k != k_end ; ++k)
+    {
+        IsInSet q(this, k->dep_atom);
+        if (! q(d))
             continue;
 
         return true;

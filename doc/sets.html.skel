@@ -75,8 +75,9 @@ user defined sets above.</p>
 <h3>Using Sets</h3>
 
 <p>Sets can currently be used as targets for <code>paludis --query</code> and
-<code>paludis --install</code>. In future they may be allowed in <code>use.conf</code> etc.,
-but this is currently unsupported.</p>
+<code>paludis --install</code>. They can also be used as the atom column in the
+<code>use.conf</code>, <code>keywords.conf</code>, <code>licenses.conf</code>,
+<code>package_mask.conf</code> and <code>package_unmask.conf</code>.</p>
 
 @FOOTER@
 </body>

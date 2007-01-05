@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,6 +18,7 @@
  */
 
 #include <paludis/environment/default/default_config.hh>
+#include <paludis/environment/default/default_environment.hh>
 #include <paludis/config_file.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/compare.hh>
@@ -70,6 +71,8 @@ namespace paludis
         std::string config_dir;
         std::string bashrc_files;
 
+        mutable bool sets_expanded;
+
         std::list<RepositoryConfigEntry> repos;
 
         std::map<QualifiedPackageName, std::vector<
@@ -79,6 +82,8 @@ namespace paludis
 
         std::vector<KeywordName> default_keywords;
 
+        mutable std::vector<SetKeywordConfigEntry> set_keywords;
+
         std::map<QualifiedPackageName, std::vector<
             std::pair<PackageDepAtom::ConstPointer, std::string> > > licenses;
 
@@ -86,13 +91,22 @@ namespace paludis
 
         std::vector<std::string> default_licenses;
 
+        mutable std::vector<SetLicenseConfigEntry> set_licenses;
+
         std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > user_masks;
 
         std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > user_unmasks;
 
         std::vector<PackageDepAtom::ConstPointer> empty_masks;
 
+        mutable std::vector<SetMaskConfigEntry> set_masks;
+        mutable std::vector<SetMaskConfigEntry> set_unmasks;
+
         std::map<QualifiedPackageName, std::vector<UseConfigEntry> > use;
+
+        mutable std::vector<SetUseConfigEntry> set_use;
+
+        mutable std::vector<SetUseConfigMinusStarEntry> set_use_prefixes_that_have_minus_star;
 
         std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > empty_use_prefixes;
 
@@ -110,12 +124,122 @@ namespace paludis
         std::vector<UseConfigEntry> forced_use_config;
 
         Implementation();
+
+        void need_sets_expanded() const;
     };
 
     Implementation<DefaultConfig>::Implementation() :
         paludis_command("paludis"),
-        config_dir("(unset)")
+        config_dir("(unset)"),
+        sets_expanded(false)
     {
+    }
+
+    void
+    Implementation<DefaultConfig>::need_sets_expanded() const
+    {
+        if (sets_expanded)
+            return;
+
+        {
+            Context context("When expanding set names from use.conf:");
+
+            for (std::vector<SetUseConfigEntry>::iterator s(set_use.begin()), s_end(set_use.end()) ;
+                    s != s_end ; ++s)
+                if (! s->dep_atom)
+                {
+                    s->dep_atom = DefaultEnvironment::get_instance()->package_set(s->set_name);
+                    if (! s->dep_atom)
+                    {
+                        Log::get_instance()->message(ll_warning, lc_context, "Set '" +
+                                stringify(s->set_name) + "' doesn't exist");
+                        s->dep_atom.assign(new AllDepAtom);
+                    }
+                }
+
+            for (std::vector<SetUseConfigMinusStarEntry>::iterator s(set_use_prefixes_that_have_minus_star.begin()),
+                    s_end(set_use_prefixes_that_have_minus_star.end()) ; s != s_end ; ++s)
+                if (! s->dep_atom)
+                {
+                    s->dep_atom = DefaultEnvironment::get_instance()->package_set(s->set_name);
+                    if (! s->dep_atom)
+                    {
+                        Log::get_instance()->message(ll_warning, lc_context, "Set '" +
+                                stringify(s->set_name) + "' doesn't exist");
+                        s->dep_atom.assign(new AllDepAtom);
+                    }
+                }
+        }
+
+        {
+            Context context("When expanding set names from keywords.conf:");
+
+            for (std::vector<SetKeywordConfigEntry>::iterator s(set_keywords.begin()), s_end(set_keywords.end()) ;
+                    s != s_end ; ++s)
+                if (! s->dep_atom)
+                {
+                    s->dep_atom = DefaultEnvironment::get_instance()->package_set(s->set_name);
+                    if (! s->dep_atom)
+                    {
+                        Log::get_instance()->message(ll_warning, lc_context, "Set '" +
+                                stringify(s->set_name) + "' doesn't exist");
+                        s->dep_atom.assign(new AllDepAtom);
+                    }
+                }
+        }
+
+        {
+            Context context("When expanding set names from licenses.conf:");
+
+            for (std::vector<SetLicenseConfigEntry>::iterator s(set_licenses.begin()), s_end(set_licenses.end()) ;
+                    s != s_end ; ++s)
+                if (! s->dep_atom)
+                {
+                    s->dep_atom = DefaultEnvironment::get_instance()->package_set(s->set_name);
+                    if (! s->dep_atom)
+                    {
+                        Log::get_instance()->message(ll_warning, lc_context, "Set '" +
+                                stringify(s->set_name) + "' doesn't exist");
+                        s->dep_atom.assign(new AllDepAtom);
+                    }
+                }
+        }
+
+        {
+            Context context("When expanding set names from package_unmask.conf:");
+
+            for (std::vector<SetMaskConfigEntry>::iterator s(set_unmasks.begin()), s_end(set_unmasks.end()) ;
+                    s != s_end ; ++s)
+                if (! s->dep_atom)
+                {
+                    s->dep_atom = DefaultEnvironment::get_instance()->package_set(s->set_name);
+                    if (! s->dep_atom)
+                    {
+                        Log::get_instance()->message(ll_warning, lc_context, "Set '" +
+                                stringify(s->set_name) + "' doesn't exist");
+                        s->dep_atom.assign(new AllDepAtom);
+                    }
+                }
+        }
+
+        {
+            Context context("When expanding set names from package_mask.conf:");
+
+            for (std::vector<SetMaskConfigEntry>::iterator s(set_masks.begin()), s_end(set_masks.end()) ;
+                    s != s_end ; ++s)
+                if (! s->dep_atom)
+                {
+                    s->dep_atom = DefaultEnvironment::get_instance()->package_set(s->set_name);
+                    if (! s->dep_atom)
+                    {
+                        Log::get_instance()->message(ll_warning, lc_context, "Set '" +
+                                stringify(s->set_name) + "' doesn't exist");
+                        s->dep_atom.assign(new AllDepAtom);
+                    }
+                }
+        }
+
+        sets_expanded = true;
     }
 
     std::string Implementation<DefaultConfig>::config_suffix;
@@ -260,6 +384,13 @@ DefaultConfig::DefaultConfig() :
                 if ("*" == tokens.at(0))
                     std::copy(next(tokens.begin()), tokens.end(),
                             create_inserter<KeywordName>(std::back_inserter(_imp->default_keywords)));
+                else if (std::string::npos == tokens.at(0).find('/'))
+                {
+                    for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+                            t != t_end ; ++t)
+                        _imp->set_keywords.push_back(SetKeywordConfigEntry(
+                                    SetName(tokens.at(0)), DepAtom::Pointer(0), KeywordName(*t)));
+                }
                 else
                 {
                     PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
@@ -331,8 +462,17 @@ DefaultConfig::DefaultConfig() :
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
-                PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
-                _imp->user_masks[a->package()].push_back(a);
+                if (line->empty())
+                    continue;
+
+                if (std::string::npos == line->find('/'))
+                    _imp->set_masks.push_back(SetMaskConfigEntry(SetName(*line),
+                                DepAtom::ConstPointer(0)));
+                else
+                {
+                    PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
+                    _imp->user_masks[a->package()].push_back(a);
+                }
             }
         }
     }
@@ -354,8 +494,17 @@ DefaultConfig::DefaultConfig() :
             for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
             {
-                PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
-                _imp->user_unmasks[a->package()].push_back(a);
+                if (line->empty())
+                    continue;
+
+                if (std::string::npos == line->find('/'))
+                    _imp->set_unmasks.push_back(SetMaskConfigEntry(SetName(*line),
+                                DepAtom::ConstPointer(0)));
+                else
+                {
+                    PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
+                    _imp->user_unmasks[a->package()].push_back(a);
+                }
             }
         }
     }
@@ -411,6 +560,32 @@ DefaultConfig::DefaultConfig() :
                         else
                             _imp->default_use.push_back(std::make_pair(UseFlagName(
                                             prefix + *t), use_enabled));
+                    }
+                }
+                else if (std::string::npos == tokens.at(0).find('/'))
+                {
+                    for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+                            t != t_end ; ++t)
+                    {
+                        if ('-' == t->at(0))
+                        {
+                            if ("-*" == *t)
+                                _imp->set_use_prefixes_that_have_minus_star.push_back(SetUseConfigMinusStarEntry(
+                                            SetName(tokens.at(0)), DepAtom::ConstPointer(0), prefix));
+                            else
+                                _imp->set_use.push_back(SetUseConfigEntry(SetName(tokens.at(0)),
+                                            DepAtom::ConstPointer(0), UseFlagName(prefix + t->substr(1)), use_disabled));
+                        }
+                        else if (':' == t->at(t->length() - 1))
+                        {
+                            prefix.clear();
+                            std::transform(t->begin(), previous(t->end()), std::back_inserter(prefix),
+                                    &::tolower);
+                            prefix.append("_");
+                        }
+                        else
+                            _imp->set_use.push_back(SetUseConfigEntry(SetName(tokens.at(0)),
+                                        DepAtom::ConstPointer(0), UseFlagName(prefix + *t), use_enabled));
                     }
                 }
                 else
@@ -764,4 +939,87 @@ DefaultConfig::end_package_use_prefixes_with_minus_star(const QualifiedPackageNa
         return PackageUseMinusStarIterator(_imp->empty_use_prefixes.end());
 }
 
+DefaultConfig::SetUseMinusStarIterator
+DefaultConfig::begin_set_use_prefixes_with_minus_star() const
+{
+    _imp->need_sets_expanded();
+    return SetUseMinusStarIterator(_imp->set_use_prefixes_that_have_minus_star.begin());
+}
+
+DefaultConfig::SetUseMinusStarIterator
+DefaultConfig::end_set_use_prefixes_with_minus_star() const
+{
+    _imp->need_sets_expanded();
+    return SetUseMinusStarIterator(_imp->set_use_prefixes_that_have_minus_star.end());
+}
+
+DefaultConfig::SetUseConfigIterator
+DefaultConfig::begin_set_use_config() const
+{
+    _imp->need_sets_expanded();
+    return SetUseConfigIterator(_imp->set_use.begin());
+}
+
+DefaultConfig::SetUseConfigIterator
+DefaultConfig::end_set_use_config() const
+{
+    _imp->need_sets_expanded();
+    return SetUseConfigIterator(_imp->set_use.end());
+}
+
+DefaultConfig::SetKeywordsIterator
+DefaultConfig::begin_set_keywords() const
+{
+    _imp->need_sets_expanded();
+    return SetKeywordsIterator(_imp->set_keywords.begin());
+}
+
+DefaultConfig::SetKeywordsIterator
+DefaultConfig::end_set_keywords() const
+{
+    _imp->need_sets_expanded();
+    return SetKeywordsIterator(_imp->set_keywords.end());
+}
+
+DefaultConfig::SetLicensesIterator
+DefaultConfig::begin_set_licenses() const
+{
+    _imp->need_sets_expanded();
+    return SetLicensesIterator(_imp->set_licenses.begin());
+}
+
+DefaultConfig::SetLicensesIterator
+DefaultConfig::end_set_licenses() const
+{
+    _imp->need_sets_expanded();
+    return SetLicensesIterator(_imp->set_licenses.end());
+}
+
+DefaultConfig::UserMasksSetsIterator
+DefaultConfig::begin_user_masks_sets() const
+{
+    _imp->need_sets_expanded();
+    return UserMasksSetsIterator(_imp->set_masks.begin());
+}
+
+DefaultConfig::UserMasksSetsIterator
+DefaultConfig::end_user_masks_sets() const
+{
+    _imp->need_sets_expanded();
+    return UserMasksSetsIterator(_imp->set_masks.end());
+}
+
+DefaultConfig::UserMasksSetsIterator
+DefaultConfig::begin_user_unmasks_sets() const
+{
+    _imp->need_sets_expanded();
+    return UserMasksSetsIterator(_imp->set_unmasks.begin());
+}
+
+DefaultConfig::UserMasksSetsIterator
+DefaultConfig::end_user_unmasks_sets() const
+{
+    _imp->need_sets_expanded();
+    return UserMasksSetsIterator(_imp->set_unmasks.end());
+}
 

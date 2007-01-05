@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -108,7 +108,7 @@ namespace paludis
 
             ///\}
 
-            ///\name Iterate over our default and per-package keywords
+            ///\name Iterate over our default, set and per-package keywords
             ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig,
@@ -124,9 +124,14 @@ namespace paludis
 
             DefaultKeywordsIterator end_default_keywords() const;
 
+            typedef libwrapiter::ForwardIterator<DefaultConfig, SetKeywordConfigEntry> SetKeywordsIterator;
+
+            SetKeywordsIterator begin_set_keywords() const;
+            SetKeywordsIterator end_set_keywords() const;
+
             ///\}
 
-            ///\name Iterate over our default and per-package licenses
+            ///\name Iterate over our default, set and per-package licenses
             ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig,
@@ -141,6 +146,11 @@ namespace paludis
             DefaultLicensesIterator begin_default_licenses() const;
 
             DefaultLicensesIterator end_default_licenses() const;
+
+            typedef libwrapiter::ForwardIterator<DefaultConfig, SetLicenseConfigEntry> SetLicensesIterator;
+
+            SetLicensesIterator begin_set_licenses() const;
+            SetLicensesIterator end_set_licenses() const;
 
             ///\}
 
@@ -159,9 +169,16 @@ namespace paludis
 
             UserUnmasksIterator end_user_unmasks(const QualifiedPackageName & d) const;
 
+            typedef libwrapiter::ForwardIterator<DefaultConfig, SetMaskConfigEntry> UserMasksSetsIterator;
+
+            UserMasksSetsIterator begin_user_masks_sets() const;
+            UserMasksSetsIterator end_user_masks_sets() const;
+            UserMasksSetsIterator begin_user_unmasks_sets() const;
+            UserMasksSetsIterator end_user_unmasks_sets() const;
+
             ///\}
 
-            ///\name Iterate over our default and per-package use flags
+            ///\name Iterate over our default and per-package and per-set use flags
             ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig, const UseConfigEntry> UseConfigIterator;
@@ -187,6 +204,16 @@ namespace paludis
 
             PackageUseMinusStarIterator begin_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;
             PackageUseMinusStarIterator end_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;
+
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const SetUseConfigEntry> SetUseConfigIterator;
+
+            SetUseConfigIterator begin_set_use_config() const;
+            SetUseConfigIterator end_set_use_config() const;
+
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const SetUseConfigMinusStarEntry> SetUseMinusStarIterator;
+
+            SetUseMinusStarIterator begin_set_use_prefixes_with_minus_star() const;
+            SetUseMinusStarIterator end_set_use_prefixes_with_minus_star() const;
 
             ///\}
 
