@@ -4,7 +4,7 @@
 require 'Paludis'
 
 packages = Paludis::DefaultEnvironment.instance.package_database.query(
-    "app-editors/vim", Paludis::InstallState::InstalledOnly)
+    "app-editors/vim", Paludis::InstallState::InstalledOnly, Paludis::QueryOrder::OrderByVersion)
 
 if packages.empty?
     puts "Vim is not installed"
