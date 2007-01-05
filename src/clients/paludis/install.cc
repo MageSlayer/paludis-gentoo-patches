@@ -239,17 +239,33 @@ namespace
     void
     InstallKilledCatcher::_signal_handler(int sig)
     {
-        cout << endl;
-        cerr << "Caught signal " << sig << endl;
-        cerr << "Waiting for children..." << endl;
-        while (-1 != wait(0))
-            ;
-        cerr << endl;
-        if (_task)
-            show_resume_command(*_task);
-        cerr << endl;
-        cerr << "Exiting with failure" << endl;
-        exit(EXIT_FAILURE);
+        static bool recursing(false);
+
+        if (recursing)
+        {
+            cout << endl;
+            cerr << "Caught signal " << sig << " inside signal" << endl;
+            cerr << "NOT waiting for children any more..." << endl;
+            cerr << endl;
+            cerr << "Exiting with failure" << endl;
+            exit(EXIT_FAILURE);
+        }
+        else
+        {
+            recursing = true;
+
+            cout << endl;
+            cerr << "Caught signal " << sig << endl;
+            cerr << "Waiting for children..." << endl;
+            while (-1 != wait(0))
+                ;
+            cerr << endl;
+            if (_task)
+                show_resume_command(*_task);
+            cerr << endl;
+            cerr << "Exiting with failure" << endl;
+            exit(EXIT_FAILURE);
+        }
     }
 
     DepListDepsOption
