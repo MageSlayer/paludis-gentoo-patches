@@ -325,6 +325,14 @@ namespace paludis
      */
     std::ostream &
     operator<< (std::ostream &, const InstallState &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a QueryOrder to a stream.
+     *
+     * \ingroup grppackagedatabase
+     */
+    std::ostream &
+    operator<< (std::ostream &, const QueryOrder &) PALUDIS_VISIBLE;
 }
 
 #endif

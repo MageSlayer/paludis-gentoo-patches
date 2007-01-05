@@ -455,3 +455,31 @@ paludis::operator<< (std::ostream & o, const InstallState & s)
     return o;
 }
 
+std::ostream &
+paludis::operator<< (std::ostream & o, const QueryOrder & s)
+{
+    do
+    {
+        switch (s)
+        {
+            case qo_order_by_version:
+                o << "order_by_version";
+                continue;
+
+            case qo_group_by_slot:
+                o << "group_by_slot";
+                continue;
+
+            case qo_whatever:
+                o << "whatever";
+                continue;
+
+            case last_query_order:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad QueryOrder");
+    } while (false);
+
+    return o;
+}

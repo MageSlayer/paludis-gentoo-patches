@@ -64,22 +64,41 @@ module Paludis
             return DefaultEnvironment.instance.package_database
         end
 
+        def test_arg_count
+            assert_raise ArgumentError do
+                db.query(1);
+            end
+
+            #outputs a deprecation warning
+            assert_nothing_raised do
+                db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Any)
+            end
+
+            assert_nothing_raised do
+                db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Any, QueryOrder::Whatever)
+            end
+
+            assert_raise ArgumentError do
+                db.query(1,2,3,4);
+            end
+        end
+
         def test_package_database_query
-            a = db.query("=foo/bar-1.0", InstallState::InstallableOnly)
+            a = db.query("=foo/bar-1.0", InstallState::InstallableOnly, QueryOrder::Whatever)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
-            a = db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Any)
+            a = db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Any, QueryOrder::Whatever)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
-            a = db.query("foo/bar", InstallState::InstallableOnly)
+            a = db.query("foo/bar", InstallState::InstallableOnly, QueryOrder::OrderByVersion)
             assert_equal a, [
                 PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo"),
                 PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo") ]
 
-            a = db.query(">=foo/bar-27", InstallState::InstallableOnly)
+            a = db.query(">=foo/bar-27", InstallState::InstallableOnly, QueryOrder::Whatever)
             assert a.empty?
 
-            a = db.query("foo/bar", InstallState::InstalledOnly)
+            a = db.query("foo/bar", InstallState::InstalledOnly, QueryOrder::Whatever)
             assert a.empty?
         end
 
