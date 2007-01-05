@@ -44,7 +44,7 @@ namespace paludis
     {
         dl_target_package,   ///\< A package, so force reinstalls.
         dl_target_set,       ///\< A set, so don't force reinstalls.
-        dl_target_last
+        last_dl_target
     };
 
     /**
@@ -57,7 +57,7 @@ namespace paludis
         dl_reinstall_never,             ///\< Never.
         dl_reinstall_always,            ///\< Always.
         dl_reinstall_if_use_changed,    ///\< If a USE flag has changed.
-        dl_reinstall_last
+        last_dl_reinstall
     };
 
     /**
@@ -70,7 +70,7 @@ namespace paludis
         dl_fall_back_as_needed_except_targets,
         dl_fall_back_as_needed,
         dl_fall_back_never,
-        dl_fall_back_last
+        last_dl_fall_back
     };
 
     /**
@@ -84,7 +84,7 @@ namespace paludis
         dl_reinstall_scm_always,
         dl_reinstall_scm_daily,
         dl_reinstall_scm_weekly,
-        dl_reinstall_scm_last
+        last_dl_reinstall_scm
     };
 
     /**
@@ -96,7 +96,7 @@ namespace paludis
     {
         dl_upgrade_always,          ///\< Always.
         dl_upgrade_as_needed,       ///\< Only as needed.
-        dl_upgrade_last
+        last_dl_upgrade
     };
 
     /**
@@ -108,7 +108,7 @@ namespace paludis
     {
         dl_new_slots_always,
         dl_new_slots_as_needed,
-        dl_new_slots_last
+        last_dl_new_slots
     };
 
     /**
@@ -123,7 +123,7 @@ namespace paludis
         dl_deps_pre_or_post,       ///\< As a pre dependency with fallback to post
         dl_deps_post,              ///\< As a post dependency
         dl_deps_try_post,          ///\< As an optional post dependency
-        dl_deps_last
+        last_dl_deps
     };
 
     /**
@@ -135,7 +135,7 @@ namespace paludis
     {
         dl_circular_error,    ///\< As an error
         dl_circular_discard,  ///\< Discard them
-        dl_circular_last
+        last_dl_circular
     };
 
     /**
@@ -148,7 +148,7 @@ namespace paludis
         dle_no_deps,         ///\< Dependencies have yet to be added
         dle_has_pre_deps,    ///\< Predependencies have been added
         dle_has_all_deps,    ///\< All dependencies have been added
-        dle_last
+        last_dle
     };
 
 #include <paludis/dep_list/dep_list-sr.hh>

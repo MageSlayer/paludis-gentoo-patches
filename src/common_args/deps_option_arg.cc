@@ -42,6 +42,8 @@ namespace
                 return "post";
             case dl_deps_try_post:
                 return "try-post";
+            case last_dl_deps:
+                ;
         };
 
         throw InternalError(PALUDIS_HERE, "Unexpected DepListDepsOption value");

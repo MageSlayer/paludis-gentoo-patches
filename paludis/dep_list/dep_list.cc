@@ -444,7 +444,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
                     can_fall_back = true;
                     continue;
 
-                case dl_fall_back_last:
+                case last_dl_fall_back:
                     ;
             }
 
@@ -880,7 +880,7 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
             case dl_target_set:
                 continue;
 
-            case dl_target_last:
+            case last_dl_target:
                 ;
         }
 
@@ -920,7 +920,7 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
                     case dl_reinstall_scm_never:
                         ; /* nothing */
 
-                    case dl_reinstall_scm_last:
+                    case last_dl_reinstall_scm:
                         ;
                 }
 
