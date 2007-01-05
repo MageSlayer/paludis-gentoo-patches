@@ -35,7 +35,7 @@ EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
 	migration.html cachefiles.html configuration.html portagedifferences.html programmingwithpaludis.html \
-	sets.html hooks.html.skel \
+	sets.html hooks.html \
 	cleannews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
