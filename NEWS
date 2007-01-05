@@ -21,6 +21,8 @@ of every change, see the ChangeLog.
 
     * qualudis now supports --archs and --exclude-archs.
 
+    * Documentation on sets is now provided.
+
 0.14.0:
     * The merge and unmerge utilities are now called with an explicit path.
 

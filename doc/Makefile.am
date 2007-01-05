@@ -22,17 +22,19 @@ htmlfiles = \
 	cachefiles.html \
 	configuration.html \
 	portagedifferences.html \
-	programmingwithpaludis.html
+	programmingwithpaludis.html \
+	sets.html
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 	$(docfiles) $(tagfiles) htaccess \
 	news.html.skel index.html.skel changelog.html.skel licence.html.skel authors.html.skel \
 	faq.html.skel htmlheader.html htmlfooter.html migration.html.skel cachefiles.html.skel \
-	configuration.html.skel portagedifferences.html.skel programmingwithpaludis.html.skel
+	configuration.html.skel portagedifferences.html.skel programmingwithpaludis.html.skel \
+	sets.html.skel
 
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
 	migration.html cachefiles.html configuration.html portagedifferences.html programmingwithpaludis.html \
-	cleannews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
+	sets.html cleannews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
 
@@ -140,6 +142,13 @@ configuration.html : configuration.html.skel htmlheader.html htmlfooter.html
 	    -e '/@FOOTER@/r htmlfooter.html' \
 	    -e '/@FOOTER@/d' \
 	    < $(srcdir)/configuration.html.skel > configuration.html
+
+sets.html :sets.html.skel htmlheader.html htmlfooter.html
+	sed -e '/@HEADER@/r htmlheader.html' \
+	    -e '/@HEADER@/d' \
+	    -e '/@FOOTER@/r htmlfooter.html' \
+	    -e '/@FOOTER@/d' \
+	    < $(srcdir)/sets.html.skel >sets.html
 
 migration.html : migration.html.skel htmlheader.html htmlfooter.html
 	sed -e '/@HEADER@/r htmlheader.html' \
