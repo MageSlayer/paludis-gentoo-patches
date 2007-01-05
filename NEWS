@@ -29,6 +29,8 @@ of every change, see the ChangeLog.
     * use.conf and licenses.conf atomed entries can now override less specific
     entries' contents by using "-*".
 
+    * The adjutrix keywords graph now indicates unused packages visually.
+
 0.14.0:
     * The merge and unmerge utilities are now called with an explicit path.
 
