@@ -50,7 +50,7 @@ namespace
     };
 
     void
-    write_keywords_graph(const Environment &, const Repository & repo,
+    write_keywords_graph(const Environment & e, const Repository & repo,
             const QualifiedPackageName & package)
     {
         Context context("When writing keyword graph for '" + stringify(package) + "' in '"
@@ -60,7 +60,12 @@ namespace
         cout << endl;
 
         VersionSpecCollection::ConstPointer versions(repo.version_specs(package));
-        if (versions->empty())
+        PackageDatabaseEntryCollection::ConstPointer packages(e.package_database()->query(
+                PackageDepAtom(stringify(package) + "::" + stringify(repo.name())),
+                is_installable_only,
+                qo_group_by_slot));
+
+        if (packages->empty())
             return;
 
         if (! repo.use_interface)
@@ -71,15 +76,15 @@ namespace
             return;
 
         std::set<SlotName> slots;
-        for (VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end()) ;
-                v != v_end ; ++v)
-            slots.insert(repo.version_metadata(package, *v)->slot);
+        for (PackageDatabaseEntryCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
+                p != p_end ; ++p)
+            slots.insert(repo.version_metadata(package, p->version)->slot);
 
         unsigned version_specs_columns_width(stringify(*std::max_element(versions->begin(),
                         versions->end(), CompareByStringLength())).length() + 1);
 
         unsigned tallest_arch_name(std::max(stringify(*std::max_element(arch_flags->begin(),
-                            arch_flags->end(), CompareByStringLength())).length(), static_cast<std::size_t>(4)));
+                            arch_flags->end(), CompareByStringLength())).length(), static_cast<std::size_t>(6)));
 
         unsigned longest_slot_name(stringify(*std::max_element(slots.begin(),
                         slots.end(), CompareByStringLength())).length());
@@ -96,20 +101,69 @@ namespace
                     cout << a->data().at(a->data().length() - tallest_arch_name + h) << " ";
             }
             cout << "| ";
+            if ((tallest_arch_name - h) <= 6)
+                cout << std::string("unused").at(6 - tallest_arch_name + h);
+            else
+                cout << " ";
+
+            cout << " ";
             if ((tallest_arch_name - h) <= 4)
                 cout << std::string("slot").at(4 - tallest_arch_name + h);
+
             cout << endl;
         }
 
         cout << std::string(version_specs_columns_width, '-') << "+"
             << std::string(arch_flags->size() * 2 + 1, '-') << "+"
-            << std::string(longest_slot_name + 1, '-') << endl;
+            << std::string(longest_slot_name + 3, '-') << endl;
 
-        SlotName old_slot("first_slot");
-        for (VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end()) ;
-                v != v_end ; ++v)
+        SlotName old_slot("unused_round");
+        std::map<VersionSpec, bool> unused_versions;
+        std::set<KeywordName> keywords;
+
+        for (PackageDatabaseEntryCollection::ReverseIterator p(packages->rbegin()), p_end(packages->rend()) ;
+                p != p_end ; ++p)
         {
-            VersionMetadata::ConstPointer metadata(repo.version_metadata(package, *v));
+            VersionMetadata::ConstPointer metadata(repo.version_metadata(package, p->version));
+            if (! metadata->get_ebuild_interface())
+                continue;
+
+            if (metadata->slot != old_slot)
+            {
+                keywords.clear();
+                old_slot = metadata->slot;
+            }
+
+            std::set<KeywordName> current_keywords;
+            WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->keywords,
+                    create_inserter<KeywordName>(std::inserter(current_keywords, current_keywords.end())));
+
+            bool used(false);
+            for (std::set<KeywordName>::const_iterator k(current_keywords.begin()), k_end(current_keywords.end()) ;
+                    k != k_end ; ++k)
+            {
+                std::string stable_keyword(stringify(*k));
+                if (stable_keyword[0] == '~')
+                    stable_keyword.erase(0, 1);
+
+                if ((keywords.end() == keywords.find(*k)) && (keywords.end() == keywords.find(KeywordName(stable_keyword))))
+                {
+                    used = true;
+                    break;
+                }
+            }
+
+            if (! used)
+                unused_versions[p->version] = true;
+
+            keywords.insert(current_keywords.begin(), current_keywords.end());
+        }
+
+        old_slot = SlotName("first_slot");
+        for (PackageDatabaseEntryCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
+                p != p_end ; ++p)
+        {
+            VersionMetadata::ConstPointer metadata(repo.version_metadata(package, p->version));
             if (! metadata->get_ebuild_interface())
                 continue;
 
@@ -119,9 +173,9 @@ namespace
                         << std::string(arch_flags->size() * 2 + 1, '-') << "+"
                         << std::string(longest_slot_name + 1, '-') << endl;
 
-            cout << std::left << std::setw(version_specs_columns_width) << *v << "| ";
+            cout << std::left << std::setw(version_specs_columns_width) << p->version << "| ";
 
-            std::set<KeywordName> keywords;
+            keywords.clear();
             WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->keywords,
                     create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
 
@@ -140,7 +194,8 @@ namespace
                     cout << "  ";
             }
 
-            cout << "| ";
+            cout << "| " << (unused_versions[p->version] ? "* " : "  ");
+
             if (metadata->slot != old_slot)
             {
                 cout << metadata->slot;
