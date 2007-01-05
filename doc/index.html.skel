@@ -37,7 +37,8 @@
         <li>There is <a href="configuration.html">documentation on the
             configuration files</a> and <a href="cachefiles.html">the
             various optional caches</a> used by Paludis. There is also documentation on
-        <a href="sets.html">sets (including how user defined sets work)</a>.</li>
+        <a href="sets.html">sets (including how user defined sets work)</a> and
+        <a href="hooks.html">hooks (and how user defined hooks work)</a>.</li>
 
         <li><strong>Support</strong> is available via <code>#paludis</code> on
         <code>irc.freenode.net</code> or the <a

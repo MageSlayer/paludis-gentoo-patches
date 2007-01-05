@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en">
+<head>
+<title>Paludis, the Other Package Mangler</title>
+<link rel="stylesheet" href="paludis.css" type="text/css" />
+</head>
+<body>
+@HEADER@
+
+<h1>Paludis, the Other Package Mangler</h1>
+
+<h2>Hooks</h2>
+
+<h3>Overview</h3>
+
+<p>This document describes the Paludis hooks interface. A hook is a piece of code
+that is executed when a particular well defined action occurs.</p>
+
+<p>There are currently three categories of hook:</p>
+
+<ul>
+    <li>General hooks. These have access to a limited environment.</li>
+
+    <li>Ebuild phase hooks. These have <code>ebuild</code> in the hook name, and
+    have full access to the ebuild environment (including the ability to call
+    <code>die</code>), but are only used for ebuild-based activities.</li>
+
+    <li>Ebuild message hooks. These are special hooks that are called for
+    <code>einfo</code>, <code>ewarn</code> etc.</li>
+</ul>
+
+<h3>Available Hooks</h3>
+
+<h4>General Hooks</h4>
+
+<p>The following general normal hooks are available:</p>
+
+<ul>
+    <li><code>install_pre</code></li>
+    <li><code>install_fail</code></li>
+    <li><code>install_post</code></li>
+    <li><code>install_all_pre</code></li>
+    <li><code>install_all_post</code></li>
+    <li><code>install_pretend_pre</code></li>
+    <li><code>install_pretend_post</code></li>
+    <li><code>uninstall_pre</code></li>
+    <li><code>uninstall_fail</code></li>
+    <li><code>uninstall_post</code></li>
+    <li><code>uninstall_all_pre</code></li>
+    <li><code>uninstall_all_post</code></li>
+    <li><code>sync_pre</code></li>
+    <li><code>sync_fail</code></li>
+    <li><code>sync_post</code></li>
+    <li><code>sync_all_pre</code></li>
+    <li><code>sync_all_post</code></li>
+    <li><code>fetch_pre</code></li>
+    <li><code>fetch_post</code></li>
+    <li><code>fetch_all_pre</code></li>
+    <li><code>fetch_all_post</code></li>
+</ul>
+
+<p>In general, certain special environment variables will be set. <code>HOOK</code> will contain
+the name of the hook. For <code>all</code> hooks, <code>TARGETS</code> will contain the targets
+for the operation. For non-<code>all</code> hooks, <code>TARGET</code> will contain the current
+target.</p>
+
+<h4>Ebuild Hooks</h4>
+
+<p>The following ebuild hooks are available:</p>
+
+<ul>
+    <li><code>ebuild_metadata_pre</code></li>
+    <li><code>ebuild_metadata_fail</code></li>
+    <li><code>ebuild_metadata_post</code></li>
+    <li><code>ebuild_init_pre</code></li>
+    <li><code>ebuild_init_fail</code></li>
+    <li><code>ebuild_init_post</code></li>
+    <li><code>ebuild_fetch_pre</code></li>
+    <li><code>ebuild_fetch_fail</code></li>
+    <li><code>ebuild_fetch_post</code></li>
+    <li><code>ebuild_merge_pre</code></li>
+    <li><code>ebuild_merge_fail</code></li>
+    <li><code>ebuild_merge_post</code></li>
+    <li><code>ebuild_unmerge_pre</code></li>
+    <li><code>ebuild_unmerge_fail</code></li>
+    <li><code>ebuild_unmerge_post</code></li>
+    <li><code>ebuild_tidyup_pre</code></li>
+    <li><code>ebuild_tidyup_fail</code></li>
+    <li><code>ebuild_tidyup_post</code></li>
+    <li><code>ebuild_strip_pre</code></li>
+    <li><code>ebuild_strip_fail</code></li>
+    <li><code>ebuild_strip_post</code></li>
+    <li><code>ebuild_unpack_pre</code></li>
+    <li><code>ebuild_unpack_fail</code></li>
+    <li><code>ebuild_unpack_post</code></li>
+    <li><code>ebuild_compile_pre</code></li>
+    <li><code>ebuild_compile_fail</code></li>
+    <li><code>ebuild_compile_post</code></li>
+    <li><code>ebuild_install_pre</code></li>
+    <li><code>ebuild_install_fail</code></li>
+    <li><code>ebuild_install_post</code></li>
+    <li><code>ebuild_test_pre</code></li>
+    <li><code>ebuild_test_fail</code></li>
+    <li><code>ebuild_test_post</code></li>
+    <li><code>ebuild_setup_pre</code></li>
+    <li><code>ebuild_setup_fail</code></li>
+    <li><code>ebuild_setup_post</code></li>
+    <li><code>ebuild_config_pre</code></li>
+    <li><code>ebuild_config_fail</code></li>
+    <li><code>ebuild_config_post</code></li>
+    <li><code>ebuild_nofetch_pre</code></li>
+    <li><code>ebuild_nofetch_fail</code></li>
+    <li><code>ebuild_nofetch_post</code></li>
+    <li><code>ebuild_preinst_pre</code></li>
+    <li><code>ebuild_preinst_fail</code></li>
+    <li><code>ebuild_preinst_post</code></li>
+    <li><code>ebuild_postinst_pre</code></li>
+    <li><code>ebuild_postinst_fail</code></li>
+    <li><code>ebuild_postinst_post</code></li>
+    <li><code>ebuild_prerm_pre</code></li>
+    <li><code>ebuild_prerm_fail</code></li>
+    <li><code>ebuild_prerm_post</code></li>
+    <li><code>ebuild_postrm_pre</code></li>
+    <li><code>ebuild_postrm_fail</code></li>
+    <li><code>ebuild_postrm_post</code></li>
+</ul>
+
+<p>As well as the full ebuild environment, the <code>HOOK</code> environment variable
+will contain the name of the hook being called.</p>
+
+<h4>Ebuild Message Hooks</h4>
+
+<p>The following ebuild message hooks are available:</p>
+
+<ul>
+    <li><code>einfo</code></li>
+    <li><code>ewarn</code></li>
+    <li><code>eerror</code></li>
+    <li><code>elog</code></li>
+</ul>
+
+<p>The <code>HOOK</code> environment variable will contain the name of the hook
+being called, and the <code>MESSAGE</code> environment variable will contain the
+message being passed to the function.</p>
+
+<h3>User Defined Hooks</h3>
+
+<p>User defined hooks should be executable (<code>chmod a+x</code>) scripts named
+<code>*.bash</code>. They can live in two locations (or be symlinked there, to
+allow a single script to be shared between hooks):</p>
+
+<ul>
+    <li><code><em>confdir</em>/hooks/<em>hookname</em>/</code>, where
+    <code><em>confdir</em></code> is the directory in which <code>use.conf</code>
+    et al. reside.</li>
+
+    <li><code><em>DATADIR</em>/paludis/hooks/<em>hookname</em>/</code>. On most
+    systems, <code><em>DATADIR</em></code> is <code>/usr/share</code>.</li>
+</ul>
+
+<h3>Package Manager Defined Hooks</h3>
+
+<p>Paludis places some of its own hooks in
+<code><em>LIBEXECDIR</em>/hooks/<em>hookname</em></code>. These directories are
+not for end user use.</p>
+
+<h3>Example Hooks</h3>
+
+<p>Paludis ships certain example hooks that many users would find useful, but that
+are not suitably general to be enabled by default -- these live in
+<code>DATADIR/paludis/hooks/demos/</code>. You may also find the default
+hooks useful -- these live in various places in <code>LIBEXECDIR/paludis/hooks/</code>.</p>
+
+@FOOTER@
+</body>
+</html>
+
+
