@@ -52,11 +52,15 @@ namespace paludis
             std::list<T_> _items;
 
         public:
+            /// Access to the underlying data structure
+            std::list<T_> & list;
+
             ///\name Basic operations
             ///\{
 
             Concrete() :
-                SequentialCollection()
+                SequentialCollection(),
+                list(_items)
             {
             }
 
@@ -114,6 +118,11 @@ namespace paludis
             virtual bool empty() const
             {
                 return _items.empty();
+            }
+
+            virtual Inserter inserter()
+            {
+                return Inserter(std::back_inserter(_items));
             }
 
             ///\name Extra functions

@@ -47,7 +47,7 @@ int do_has_version()
     std::string query(*CommandLine::get_instance()->begin_parameters());
     PackageDepAtom::Pointer atom(new PackageDepAtom(query));
     PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
-                *atom, is_installed_only));
+                *atom, is_installed_only, qo_whatever));
 
     if (entries->empty())
         return_code = 1;
@@ -65,7 +65,7 @@ int do_best_version()
     std::string query(*CommandLine::get_instance()->begin_parameters());
     PackageDepAtom::Pointer atom(new PackageDepAtom(query));
     PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
-                *atom, is_installed_only));
+                *atom, is_installed_only, qo_order_by_version));
 
     /* make built_with_use work for virtuals... icky... */
     while (! entries->empty())
@@ -112,10 +112,10 @@ int do_environment_variable()
     PackageDepAtom::Pointer atom(new PackageDepAtom(atom_str));
 
     PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
-                *atom, is_installed_only));
+                *atom, is_installed_only, qo_order_by_version));
 
     if (entries->empty())
-        entries = env->package_database()->query(*atom, is_any);
+        entries = env->package_database()->query(*atom, is_any, qo_order_by_version);
 
     if (entries->empty())
         throw NoSuchPackageError(atom_str);

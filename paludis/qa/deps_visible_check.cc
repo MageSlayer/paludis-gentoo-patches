@@ -99,7 +99,7 @@ namespace
             bool found(false);
             std::string candidates;
             PackageDatabaseEntryCollection::Pointer matches(env->package_database()->query(
-                        *p, is_any));
+                        *p, is_any, qo_order_by_version));
             for (PackageDatabaseEntryCollection::ReverseIterator m(matches->rbegin()),
                     m_end(matches->rend()) ; m != m_end ; ++m)
             {

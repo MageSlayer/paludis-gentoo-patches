@@ -167,8 +167,10 @@ namespace
 
         PackageDepAtom::Pointer atom(new PackageDepAtom(stringify(_pkg)));
         PackageDatabaseEntryCollection::ConstPointer
-            entries(DefaultEnvironment::get_instance()->package_database()->query(*atom, is_any)),
-            preferred_entries(DefaultEnvironment::get_instance()->package_database()->query(*atom, is_installed_only));
+            entries(DefaultEnvironment::get_instance()->package_database()->query(
+                        *atom, is_any, qo_order_by_version)),
+            preferred_entries(DefaultEnvironment::get_instance()->package_database()->query(
+                        *atom, is_installed_only, qo_order_by_version));
         if (preferred_entries->empty())
             preferred_entries = entries;
 

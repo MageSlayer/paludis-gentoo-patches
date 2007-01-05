@@ -325,7 +325,7 @@ namespace
         void visit(const PackageDepAtom * const a)
         {
             PackageDatabaseEntryCollection::ConstPointer m(env->package_database()->query(
-                        *a, is_installed_only));
+                        *a, is_installed_only, qo_order_by_version));
             matches->insert(m->begin(), m->end());
         }
 

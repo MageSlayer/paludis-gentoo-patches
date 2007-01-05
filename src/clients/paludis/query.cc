@@ -47,8 +47,8 @@ void do_one_package_query(
     /* prefer the best installed version, then the best visible version, then
      * the best version */
     PackageDatabaseEntryCollection::ConstPointer
-        entries(env->package_database()->query(*atom, is_any)),
-        preferred_entries(env->package_database()->query(*atom, is_installed_only));
+        entries(env->package_database()->query(*atom, is_any, qo_order_by_version)),
+        preferred_entries(env->package_database()->query(*atom, is_installed_only, qo_order_by_version));
     if (entries->empty())
         throw NoSuchPackageError(q);
     if (preferred_entries->empty())

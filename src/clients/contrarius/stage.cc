@@ -72,7 +72,7 @@ bool
 BinutilsStage::is_rebuild() const
 {
     return (! DefaultEnvironment::get_instance()->package_database()->query(
-                *_options.binutils, is_installed_only)->empty());
+                *_options.binutils, is_installed_only, qo_whatever)->empty());
 }
 
 int
@@ -93,7 +93,7 @@ bool
 KernelHeadersStage::is_rebuild() const
 {
     return (! DefaultEnvironment::get_instance()->package_database()->query(
-                *_options.headers, is_installed_only)->empty());
+                *_options.headers, is_installed_only, qo_whatever)->empty());
 }
 
 int
@@ -129,7 +129,7 @@ bool
 MinimalStage::is_rebuild() const
 {
    return (! DefaultEnvironment::get_instance()->package_database()->query(
-               *_options.gcc, is_installed_only)->empty());
+               *_options.gcc, is_installed_only, qo_whatever)->empty());
 }
 
 int
@@ -147,7 +147,7 @@ LibCStage::is_rebuild() const
 {
     PackageDatabaseEntryCollection::ConstPointer c(
             DefaultEnvironment::get_instance()->package_database()->query(
-                *_options.libc, is_installed_only));
+                *_options.libc, is_installed_only, qo_whatever));
 
     if (c->empty())
         return false;
@@ -182,7 +182,8 @@ bool
 FullStage::is_rebuild() const
 {
     PackageDatabaseEntryCollection::ConstPointer c(
-            DefaultEnvironment::get_instance()->package_database()->query(*_options.gcc, is_installed_only));
+            DefaultEnvironment::get_instance()->package_database()->query(
+                *_options.gcc, is_installed_only, qo_whatever));
 
     if (c->empty())
         return false;

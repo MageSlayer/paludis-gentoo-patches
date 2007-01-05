@@ -197,7 +197,7 @@ namespace paludis
     };
 
     /**
-     * Do we want installed, uninstalled or either when querying?
+     * Do we want installed, installable or either when querying?
      *
      * \ingroup grppackagedatabase
      */
@@ -207,6 +207,19 @@ namespace paludis
         is_installable_only,  ///< Installable only
         is_any,               ///< Either
         last_install_state
+    };
+
+    /**
+     * How to order query results.
+     *
+     * \ingroup grppackagedatabase
+     */
+    enum QueryOrder
+    {
+        qo_order_by_version, ///< By version
+        qo_group_by_slot,    ///< By version, with like slots adjacent
+        qo_whatever,         ///< No particular order
+        last_query_order
     };
 
     /**
@@ -221,6 +234,8 @@ namespace paludis
     {
         private:
            void _sort_package_database_entry_collection(
+                   PackageDatabaseEntryCollection::Concrete &) const;
+           void _group_package_database_entry_collection(
                    PackageDatabaseEntryCollection::Concrete &) const;
 
         public:
@@ -271,10 +286,20 @@ namespace paludis
 
             /**
              * Query the repository.
+             *
+             * \deprecated Use the three argument form.
              */
             PackageDatabaseEntryCollection::Pointer query(
                     const PackageDepAtom & a,
-                    const InstallState) const;
+                    const InstallState) const PALUDIS_ATTRIBUTE((deprecated));
+
+            /**
+             * Query the repository.
+             */
+            PackageDatabaseEntryCollection::Pointer query(
+                    const PackageDepAtom & a,
+                    const InstallState,
+                    const QueryOrder) const;
 
             /**
              * Return true if the first repository is more important than the second.

@@ -47,7 +47,7 @@ namespace
 
         void visit(const PackageDepAtom * const p)
         {
-            if (env->package_database()->query(PackageDepAtom(p->package()), is_any)->empty())
+            if (env->package_database()->query(PackageDepAtom(p->package()), is_any, qo_whatever)->empty())
             {
                 if (in_any)
                     result << Message(qal_maybe, "No match for " + role + " entry '"
@@ -77,7 +77,7 @@ namespace
 
         void visit(const BlockDepAtom * const b)
         {
-            if (env->package_database()->query(*b->blocked_atom(), is_any)->empty())
+            if (env->package_database()->query(*b->blocked_atom(), is_any, qo_whatever)->empty())
                 result << Message(qal_maybe, "No match for " + role + " block '!"
                         + stringify(*b->blocked_atom()) + "'");
         }

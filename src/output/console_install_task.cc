@@ -161,10 +161,11 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
         return;
 
     PackageDatabaseEntryCollection::Pointer existing(environment()->package_database()->
-            query(PackageDepAtom(d.package.name), is_installed_only));
+            query(PackageDepAtom(d.package.name), is_installed_only, qo_order_by_version));
 
     PackageDatabaseEntryCollection::Pointer existing_slot(environment()->package_database()->
-            query(PackageDepAtom(stringify(d.package.name) + ":" + stringify(d.metadata->slot)), is_installed_only));
+            query(PackageDepAtom(stringify(d.package.name) + ":" + stringify(d.metadata->slot)),
+                is_installed_only, qo_order_by_version));
 
     display_merge_list_entry_start(d);
     display_merge_list_entry_package_name(d);

@@ -205,6 +205,13 @@ PackageDatabase::fetch_unique_qualified_package_name(
 PackageDatabaseEntryCollection::Pointer
 PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_state) const
 {
+    return query(a, installed_state, qo_order_by_version);
+}
+
+PackageDatabaseEntryCollection::Pointer
+PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_state,
+        const QueryOrder query_order) const
+{
     PackageDatabaseEntryCollection::Concrete::Pointer result(new PackageDatabaseEntryCollection::Concrete);
 
     IndirectIterator<std::list<Repository::Pointer>::const_iterator, const Repository>
@@ -230,7 +237,29 @@ PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_st
         }
     }
 
-    _sort_package_database_entry_collection(*result);
+    do
+    {
+        switch (query_order)
+        {
+            case qo_order_by_version:
+                _sort_package_database_entry_collection(*result);
+                continue;
+
+            case qo_group_by_slot:
+                _sort_package_database_entry_collection(*result);
+                _group_package_database_entry_collection(*result);
+                continue;
+
+            case qo_whatever:
+                continue;
+
+            case last_query_order:
+                break;
+        };
+
+        throw InternalError(PALUDIS_HERE, "Bad query_order");
+    }
+    while (false);
 
     return result;
 }
@@ -358,6 +387,31 @@ PackageDatabase::_sort_package_database_entry_collection(PackageDatabaseEntryCol
 {
     if (! p.empty())
         p.sort(PDEComparator(this));
+}
+
+void
+PackageDatabase::_group_package_database_entry_collection(PackageDatabaseEntryCollection::Concrete & p) const
+{
+    if (p.empty())
+        return;
+
+    for (std::list<PackageDatabaseEntry>::reverse_iterator r(p.list.rbegin()) ;
+            r != p.list.rend() ; ++r)
+    {
+        SlotName r_slot(fetch_repository(r->repository)->version_metadata(r->name, r->version)->slot);
+
+        for (std::list<PackageDatabaseEntry>::reverse_iterator rr(next(r)) ;
+                rr != p.list.rend() ; ++rr)
+        {
+            SlotName rr_slot(fetch_repository(rr->repository)->version_metadata(rr->name, rr->version)->slot);
+            if (rr_slot != r_slot)
+                continue;
+
+            p.list.splice(previous(r.base()), p.list, previous(rr.base()));
+            if (p.list.rend() == ((rr = ++r)))
+                return;
+        }
+    }
 }
 
 PackageDatabase::RepositoryIterator

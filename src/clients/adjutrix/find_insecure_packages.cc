@@ -91,7 +91,7 @@ namespace
             void visit(const PackageDepAtom * const a)
             {
                 PackageDatabaseEntryCollection::ConstPointer insecure(
-                        _env.package_database()->query(*a, is_any));
+                        _env.package_database()->query(*a, is_any, qo_order_by_version));
                 for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
                     if (a->tag())

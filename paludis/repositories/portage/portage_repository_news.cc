@@ -118,7 +118,8 @@ PortageRepositoryNews::update_news() const
                 bool local_show(false);
                 for (NewsFile::DisplayIfInstalledIterator i(news.begin_display_if_installed()),
                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
-                    if (! _imp->environment->package_database()->query(PackageDepAtom(*i), is_installed_only)->empty())
+                    if (! _imp->environment->package_database()->query(PackageDepAtom(*i), is_installed_only,
+                                qo_whatever)->empty())
                         local_show = true;
                 show &= local_show;
             }

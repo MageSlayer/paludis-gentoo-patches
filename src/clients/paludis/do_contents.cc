@@ -95,7 +95,7 @@ do_one_contents(
             new p::PackageDepAtom(q));
 
     p::PackageDatabaseEntryCollection::ConstPointer
-        entries(env->package_database()->query(*atom, p::is_installed_only));
+        entries(env->package_database()->query(*atom, p::is_installed_only, p::qo_order_by_version));
 
     if (entries->empty())
         throw p::NoSuchPackageError(q);

@@ -123,6 +123,16 @@ namespace paludis
              */
             virtual void push_back(const T_ & v) = 0;
 
+            /**
+             * Our insert iterator type.
+             */
+            typedef libwrapiter::OutputIterator<SequentialCollection<T_>, T_> Inserter;
+
+            /**
+             * Fetch an inserter.
+             */
+            virtual Inserter inserter() = 0;
+
             ///\}
 
             ///\name Queries

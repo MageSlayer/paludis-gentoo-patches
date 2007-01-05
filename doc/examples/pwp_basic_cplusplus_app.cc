@@ -16,7 +16,7 @@ int main(int, char *[])
     {
         paludis::PackageDatabaseEntryCollection::ConstPointer packages(
                 paludis::DefaultEnvironment::get_instance()->package_database()->query(
-                    paludis::PackageDepAtom("app-editors/vim"), paludis::is_installed_only));
+                    paludis::PackageDepAtom("app-editors/vim"), paludis::is_installed_only, paludis::qo_order_by_version));
 
         if (packages->empty())
             cout << "Vim is not installed" << endl;

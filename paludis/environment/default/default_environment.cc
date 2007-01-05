@@ -491,7 +491,7 @@ DefaultEnvironment::local_package_set(const SetName & s) const
             {
                 PackageDepAtom::Pointer p(new PackageDepAtom(tokens.at(1)));
                 p->set_tag(tag);
-                if (! package_database()->query(PackageDepAtom(p->package()), is_installed_only)->empty())
+                if (! package_database()->query(PackageDepAtom(p->package()), is_installed_only, qo_whatever)->empty())
                     result->add_child(p);
             }
             else

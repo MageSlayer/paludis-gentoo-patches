@@ -266,7 +266,7 @@ do_install(PackageDepAtom::ConstPointer atom)
         {
             PackageDatabaseEntryCollection::ConstPointer p(
                     DefaultEnvironment::get_instance()->package_database()->query(
-                        PackageDepAtom(e.query()), is_installable_only));
+                        PackageDepAtom(e.query()), is_installable_only, qo_order_by_version));
 
             if (p->empty())
             {

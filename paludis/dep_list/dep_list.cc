@@ -268,7 +268,7 @@ DepList::QueryVisitor::visit(const PackageDepAtom * const a)
     /* a pda matches either if we're already installed, or if we will be installed
      * by the time the current point in the dep list is reached. */
 
-    if (! d->_imp->env->package_database()->query(*a, is_installed_only)->empty())
+    if (! d->_imp->env->package_database()->query(*a, is_installed_only, qo_whatever)->empty())
         result = true;
     else if (d->_imp->merge_list.end() != std::find_if(
                 d->_imp->merge_list.begin(),
@@ -365,7 +365,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
 
     /* find already installed things */
     PackageDatabaseEntryCollection::ConstPointer already_installed(d->_imp->env->package_database()->query(
-                *a, is_installed_only));
+                *a, is_installed_only, qo_order_by_version));
 
     /* are we already on the merge list? */
     MergeList::iterator existing_merge_list_entry(std::find_if(d->_imp->merge_list.begin(),
@@ -407,7 +407,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
     /* find installable candidates, and find the best visible candidate */
     const PackageDatabaseEntry * best_visible_candidate(0);
     PackageDatabaseEntryCollection::ConstPointer installable_candidates(
-            d->_imp->env->package_database()->query(*a, is_installable_only));
+            d->_imp->env->package_database()->query(*a, is_installable_only, qo_order_by_version));
 
     for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
             p_end(installable_candidates->rend()) ; p != p_end ; ++p)
@@ -454,7 +454,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         if (already_installed->empty() || ! can_fall_back)
         {
             if (a->use_requirements_ptr() && d->_imp->env->package_database()->query(
-                        *a->without_use_requirements(), is_any))
+                        *a->without_use_requirements(), is_any, qo_whatever))
                 throw UseRequirementsNotMetError(stringify(*a));
             else
                 throw AllMaskedError(stringify(*a));
