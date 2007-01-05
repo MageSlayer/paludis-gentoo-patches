@@ -60,7 +60,7 @@ TESTS_ENVIRONMENT = env \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	bash $(top_srcdir)/ebuild/utils/run_test.bash
 
-TESTS = dobin_TEST.bash
+TESTS = dobin_TEST.bash getfsize_TEST.bash
 
 prep_scripts = prepall prepallstrip prepallman prepallinfo prepstrip prepman prepinfo prepdocs prepalldocs
 
