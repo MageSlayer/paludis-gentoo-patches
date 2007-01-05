@@ -171,7 +171,7 @@ namespace
                 if (old_slot != SlotName("first_slot"))
                     cout << std::string(version_specs_columns_width, '-') << "+"
                         << std::string(arch_flags->size() * 2 + 1, '-') << "+"
-                        << std::string(longest_slot_name + 1, '-') << endl;
+                        << std::string(longest_slot_name + 3, '-') << endl;
 
             cout << std::left << std::setw(version_specs_columns_width) << p->version << "| ";
 
