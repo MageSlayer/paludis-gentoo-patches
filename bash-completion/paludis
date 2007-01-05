@@ -65,6 +65,8 @@ _paludis() {
     deplist_opts="--dl-reinstall \
         --dl-reinstall-scm \
         --dl-upgrade \
+        --dl-new-slots \
+        --dl-deps-default \
         --dl-installed-deps-pre \
         --dl-installed-deps-runtime \
         --dl-installed-deps-post \
@@ -78,17 +80,22 @@ _paludis() {
         --show-metadata -M"
     install_opts="--pretend -p \
         --preserve-world -1 \
+        --add-to-world-atom \
         --no-config-protection \
         --debug-build \
         --fetch -f \
-        --show-install-reasons \
+        --safe-resume \
+        --show-reasons \
+        --show-use-descriptions \
         ${deplist_opts}"
     uninstall_opts="--pretend -p \
         --preserve-world -1 \
         --no-config-protection \
-        --show-install-reasons \
+        --show-reasons \
+        --show-use-descriptions \
         --with-unused-dependencies \
         --with-dependencies \
+        --all-versions \
         ${deplist_opts}"
     sync_opts=""
     report_opts=""
@@ -184,10 +191,15 @@ _paludis() {
                     COMPREPLY=($(compgen -W "none split internal" -- "${cur}"))
                     return 0
                     ;;
-                --show-install-reasons)
+                --show-reasons)
                     COMPREPLY=($(compgen -W "none summary full" -- "${cur}"))
                     return 0
                     ;;
+                --show-use-descriptions)
+                    COMPREPLY=($(compgen -W "none new changed all" -- "${cur}"))
+                    return 0
+                    ;;
+
                 --dl-reinstall)
                     COMPREPLY=($(compgen -W "never always if-use-changed" -- "${cur}"))
                     return 0
@@ -200,7 +212,12 @@ _paludis() {
                     COMPREPLY=($(compgen -W "always as-needed" -- "${cur}"))
                     return 0
                     ;;
-                --dl-installed-deps-pre|--dl-installed-deps-runtime|--dl-installed-deps-post|--dl-uninstalled-deps-pre|--dl-uninstalled-deps-runtime|--dl-uninstalled-deps-post)
+                --dl-new-slots)
+                    COMPREPLY=($(compgen -w "always as-needed" -- "${cur}"))
+                    return 0
+                    ;;
+
+                --dl-deps-default|--dl-installed-deps-pre|--dl-installed-deps-runtime|--dl-installed-deps-post|--dl-uninstalled-deps-pre|--dl-uninstalled-deps-runtime|--dl-uninstalled-deps-post)
                     COMPREPLY=($(compgen -W "pre pre-or-post post try-post discard" -- "${cur}"))
                     return 0
                     ;;
