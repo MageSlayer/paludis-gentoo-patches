@@ -245,7 +245,7 @@ logic is as follows:</p>
     to <code>output_file</code>.</li>
 </ul>
 
-<p>Note that you mush <strong>always</strong> specify this option,
+<p>Note that you must <strong>always</strong> specify this option,
 not just after a download has already been interrupted. See <a href="#defaultoptions">the
     discussion on default options</a> for how to do this easily.</a>.</p>
 
