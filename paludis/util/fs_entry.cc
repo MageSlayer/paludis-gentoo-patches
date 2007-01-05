@@ -93,9 +93,16 @@ FSEntry::operator/ (const std::string & rhs) const
 const FSEntry &
 FSEntry::operator/= (const FSEntry & rhs)
 {
-    _path.append("/");
-    _path.append(rhs._path);
-    _normalise();
+    if (_path.empty() || '/' != _path.at(_path.length() - 1))
+        _path.append("/");
+
+    if (! rhs._path.empty())
+    {
+        if ('/' == rhs._path.at(0))
+            _path.append(rhs._path.substr(1));
+        else
+            _path.append(rhs._path);
+    }
 
     _checked = false;
     _exists = false;
@@ -216,21 +223,24 @@ FSEntry::_normalise()
 {
     try
     {
-        std::string new_path;
-        std::string::size_type p(0);
-        while (p < _path.length())
+        if (std::string::npos != _path.find("//"))
         {
-            if ('/' == _path[p])
+            std::string new_path;
+            std::string::size_type p(0);
+            while (p < _path.length())
             {
-                new_path += '/';
-                while (++p < _path.length())
-                    if ('/' != _path[p])
-                        break;
+                if ('/' == _path[p])
+                {
+                    new_path += '/';
+                    while (++p < _path.length())
+                        if ('/' != _path[p])
+                            break;
+                }
+                else
+                    new_path += _path[p++];
             }
-            else
-                new_path += _path[p++];
+            _path = new_path;
         }
-        _path = new_path;
 
         if (! _path.empty())
             if ('/' == _path.at(_path.length() - 1))
