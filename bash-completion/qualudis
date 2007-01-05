@@ -5,16 +5,34 @@
 # NOTE: This is still a work in progress, don't expect it to work well or
 # properly right now.
 
+_qualudis_get_repodir() {
+    local repodir starting_dir="${1}"
+    [[ -f ./profiles/repo_name ]] && repodir=$(readlink -f ${starting_dir})
+    [[ -z "${repodir}" && -f ../profiles/repo_name ]] \
+        && repodir=$(readlink -f ${starting_dir}/..)
+    [[ -z "${repodir}" && -f ../../profiles/repo_name ]] \
+        && repodir=$(readlink -f ${starting_dir}/../..)
+    [[ -z "${repodir}" ]] && return 1
+    echo "${repodir}"
+}
+
 _qualudis() {
     local cur prev opts repodir
     COMPREPLY=()
     cur=${COMP_WORDS[COMP_CWORD]}
     prev=${COMP_WORDS[COMP_CWORD-1]}
 
+    # Figure out what our repository dir is
+    [[ -d ${cur} ]] && repodir="$(_qualudis_get_repodir "${cur}")"
+    [[ -z "${repodir}" ]] && repodir="$(_qualudis_get_repodir "$(pwd)")"
+
     opts="--describe -d \
         --version -V \
         --help -h \
         --qa-check -c \
+        --exclude-qa-check -C \
+        --archs -a \
+        --excluded-arches -A \
         --verbose -v \
         --quiet -q \
         --log-level -L \
@@ -38,8 +56,13 @@ _qualudis() {
                     return 0
                     ;;
 
-                --qa-check|-c)
+                --qa-check|-c|--exclude-qa-check|-C)
                     COMPREPLY=($(compgen -W "$(qualudis --log-level silent --describe |sed -n 's/^  \(.*\):$/\1/p')" -- "${cur}"))
+                    return 0
+                    ;;
+
+                --arches|-a|--exclude-arches|-A)
+                    COMPREPLY=($(compgen -W "$(< "${repodir}/profiles/arch.list")" -- "${cur}"))
                     return 0
                     ;;
 
