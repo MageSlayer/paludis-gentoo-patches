@@ -453,11 +453,18 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
 
         if (already_installed->empty() || ! can_fall_back)
         {
-            if (a->use_requirements_ptr() && d->_imp->env->package_database()->query(
-                        *a->without_use_requirements(), is_any, qo_whatever))
-                throw UseRequirementsNotMetError(stringify(*a));
-            else
+            if (! a->use_requirements_ptr())
                 throw AllMaskedError(stringify(*a));
+
+            PackageDatabaseEntryCollection::ConstPointer match_except_reqs(d->_imp->env->package_database()->query(
+                        *a->without_use_requirements(), is_any, qo_whatever));
+
+            for (PackageDatabaseEntryCollection::Iterator i(match_except_reqs->begin()),
+                    i_end(match_except_reqs->end()) ; i != i_end ; ++i)
+                if (! (d->_imp->env->mask_reasons(*i).any()))
+                    throw UseRequirementsNotMetError(stringify(*a));
+
+            throw AllMaskedError(stringify(*a));
         }
         else
         {
