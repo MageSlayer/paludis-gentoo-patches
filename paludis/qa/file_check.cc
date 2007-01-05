@@ -24,6 +24,7 @@
 #include <paludis/qa/filename_check.hh>
 #include <paludis/qa/file_permissions_check.hh>
 #include <paludis/qa/glep_31_check.hh>
+#include <paludis/qa/header_check.hh>
 #include <paludis/qa/metadata_check.hh>
 #include <paludis/qa/subshell_die_check.hh>
 #include <paludis/qa/variable_assigns_check.hh>
@@ -49,6 +50,7 @@ FileCheckMaker::FileCheckMaker()
     register_maker(FileNameCheck::identifier(), &MakeFileCheck<FileNameCheck>::make_file_check);
     register_maker(FilePermissionsCheck::identifier(), &MakeFileCheck<FilePermissionsCheck>::make_file_check);
     register_maker(Glep31Check::identifier(), &MakeFileCheck<Glep31Check>::make_file_check);
+    register_maker(HeaderCheck::identifier(), &MakeFileCheck<HeaderCheck>::make_file_check);
     register_maker(MetadataCheck::identifier(), &MakeFileCheck<MetadataCheck>::make_file_check);
     register_maker(SubshellDieCheck::identifier(), &MakeFileCheck<SubshellDieCheck>::make_file_check);
     register_maker(VariableAssignsCheck::identifier(), &MakeFileCheck<VariableAssignsCheck>::make_file_check);
