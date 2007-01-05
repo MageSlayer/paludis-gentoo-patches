@@ -320,8 +320,6 @@ PackageDatabase::more_important_than(const RepositoryName & lhs,
         throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs) + "' not in rank");
 
     return l->second > r->second;
-
-    throw InternalError(PALUDIS_HERE, "better_repository called on non-owned repositories");
 }
 
 namespace
