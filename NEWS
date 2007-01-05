@@ -24,10 +24,9 @@ of every change, see the ChangeLog.
     * Documentation on sets and hooks is now provided.
 
     * Set names can now be used for the atom column in use.conf, keywords.conf,
-    licenses.conf, package_unmask.conf, package_mask.conf.
-
-    * use.conf and licenses.conf atomed entries can now override less specific
-    entries' contents by using "-*".
+    licenses.conf, package_unmask.conf, package_mask.conf.  use.conf and
+    licenses.conf atomed entries can now override less specific entries'
+    contents by using "-*".
 
     * The adjutrix keywords graph now indicates unused packages visually.
 
