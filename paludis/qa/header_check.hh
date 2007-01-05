@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_QA_HEADER_CHECK_HH
 #define PALUDIS_GUARD_PALUDIS_QA_HEADER_CHECK_HH 1
 
-#include <istream>
 #include <paludis/qa/file_check.hh>
 #include <string>
 
@@ -45,7 +44,7 @@ namespace paludis
 
                 virtual std::string describe() const
                 {
-                    return "Checks that ebuild headers are well-formed.";
+                    return "Checks that ebuild headers are well-formed";
                 }
         };
     }
