@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,8 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SAVE_HH
 #define PALUDIS_GUARD_PALUDIS_SAVE_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
-
 /** \file
  * Declarations for the Save class.
  *
@@ -39,12 +37,14 @@ namespace paludis
      * \nosubgrouping
      */
     template <typename T_>
-    class Save :
-        private InstantiationPolicy<Save<T_>, instantiation_method::NonCopyableTag>
+    class Save
     {
         private:
             T_ * const _ptr;
             const T_ _value;
+
+            Save(const Save &);
+            void operator= (const Save &);
 
         public:
             ///\name Basic operations
@@ -82,3 +82,4 @@ namespace paludis
 }
 
 #endif
+

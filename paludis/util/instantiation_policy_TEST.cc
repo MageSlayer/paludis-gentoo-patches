@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -97,6 +97,21 @@ namespace
     };
 
     int MyLoadAtStartupClass::instances = 0;
+
+    class MyRecursiveClass :
+        public InstantiationPolicy<MyRecursiveClass, instantiation_method::SingletonAsNeededTag>
+    {
+        friend class InstantiationPolicy<MyRecursiveClass, instantiation_method::SingletonAsNeededTag>;
+
+        public:
+            std::string s;
+
+        private:
+            MyRecursiveClass() :
+                s(MyRecursiveClass::get_instance()->s)
+            {
+            }
+    };
 }
 
 namespace test_cases
@@ -155,6 +170,16 @@ namespace test_cases
             TEST_CHECK(MyClassTwo::get_instance()->s.empty());
         }
     } test_singleton_pattern_delete;
+
+    struct SingletonPatternRecursiveTest : TestCase
+    {
+        SingletonPatternRecursiveTest() : TestCase("singleton recursive test") { }
+
+        void run()
+        {
+            TEST_CHECK_THROWS(MyRecursiveClass::get_instance(), InternalError);
+        }
+    } test_singleton_pattern_recurse;
 
     /**
      * \test Test singleton create at startup behaviour.

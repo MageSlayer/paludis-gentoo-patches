@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_INSTANTIATION_POLICY_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/save.hh>
 
 /** \file
  * InstantiationPolicy patterns.
@@ -276,9 +278,18 @@ namespace paludis
     OurType_ *
     InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>::get_instance()
     {
+        static bool recursive(false);
         OurType_ * * i(_get_instance_ptr());
+
         if (0 == *i)
+        {
+            if (recursive)
+                throw InternalError(PALUDIS_HERE, "Recursive instantiation");
+
+            Save<bool> save_recursive(&recursive, true);
             *i = new OurType_;
+        }
+
         return *i;
     }
 
