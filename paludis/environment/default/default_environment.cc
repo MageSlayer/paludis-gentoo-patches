@@ -365,11 +365,18 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
 {
     if (keyword == KeywordName("*"))
         return true;
+    if (keyword == KeywordName("-*"))
+        return false;
 
     Context context("When checking accept_keyword of '" + stringify(keyword) +
             (d ? "' for " + stringify(*d) : stringify("'")) + ":");
 
     bool result(false);
+
+    result |= DefaultConfig::get_instance()->end_default_keywords() !=
+        std::find(DefaultConfig::get_instance()->begin_default_keywords(),
+                DefaultConfig::get_instance()->end_default_keywords(),
+                keyword);
 
     if (d)
     {
@@ -381,7 +388,10 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
             if (! match_package(this, k->first, d))
                 continue;
 
-            result |= k->second == keyword;
+            if (k->second == KeywordName("-*"))
+                result = false;
+            else
+                result |= k->second == keyword;
         }
 
         for (DefaultConfig::SetKeywordsIterator
@@ -393,14 +403,12 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
             if (! q(*d))
                 continue;
 
-            result |= k->keyword == keyword;
+            if (k->keyword == KeywordName("-*"))
+                result = false;
+            else
+                result |= k->keyword == keyword;
         }
     }
-
-    result |= DefaultConfig::get_instance()->end_default_keywords() !=
-        std::find(DefaultConfig::get_instance()->begin_default_keywords(),
-                DefaultConfig::get_instance()->end_default_keywords(),
-                keyword);
 
     return result;
 }
@@ -410,11 +418,23 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
 {
     if (license == "*")
         return true;
+    if (license == "-*")
+        return false;
 
     Context context("When checking license of '" + license +
             (d ? "' for " + stringify(*d) : stringify("'")) + ":");
 
     bool result(false);
+
+    result |= DefaultConfig::get_instance()->end_default_licenses() !=
+        std::find(DefaultConfig::get_instance()->begin_default_licenses(),
+                DefaultConfig::get_instance()->end_default_licenses(),
+                license);
+
+    result |= DefaultConfig::get_instance()->end_default_licenses() !=
+        std::find(DefaultConfig::get_instance()->begin_default_licenses(),
+                DefaultConfig::get_instance()->end_default_licenses(),
+                "*");
 
     if (d)
     {
@@ -426,8 +446,13 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
             if (! match_package(this, k->first, d))
                 continue;
 
-            result |= k->second == license;
-            result |= k->second == "*";
+            if (k->second == "-*")
+                result = false;
+            else
+            {
+                result |= k->second == license;
+                result |= k->second == "*";
+            }
         }
 
         for (DefaultConfig::SetLicensesIterator
@@ -439,20 +464,15 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
             if (! q(*d))
                 continue;
 
-            result |= k->license == license;
-            result |= k->license == "*";
+            if (k->license == "-*")
+                result = false;
+            else
+            {
+                result |= k->license == license;
+                result |= k->license == "*";
+            }
         }
     }
-
-    result |= DefaultConfig::get_instance()->end_default_licenses() !=
-        std::find(DefaultConfig::get_instance()->begin_default_licenses(),
-                DefaultConfig::get_instance()->end_default_licenses(),
-                license);
-
-    result |= DefaultConfig::get_instance()->end_default_licenses() !=
-        std::find(DefaultConfig::get_instance()->begin_default_licenses(),
-                DefaultConfig::get_instance()->end_default_licenses(),
-                "*");
 
     return result;
 }

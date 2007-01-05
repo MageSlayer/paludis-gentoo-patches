@@ -26,6 +26,9 @@ of every change, see the ChangeLog.
     * Set names can now be used for the atom column in use.conf, keywords.conf,
     licenses.conf, package_unmask.conf, package_mask.conf.
 
+    * use.conf and licenses.conf atomed entries can now override less specific
+    entries' contents by using "-*".
+
 0.14.0:
     * The merge and unmerge utilities are now called with an explicit path.
 
