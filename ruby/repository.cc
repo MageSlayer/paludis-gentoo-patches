@@ -448,7 +448,7 @@ namespace
 
     /*
      * call-seq:
-     *     contents(qualified_package_name, version_spec) -> Array or Nil
+     *     contents(qualified_package_name, version_spec) -> Contents or Nil
      *
      * Fetches the package contents, if the Repository includes the installed_interface
      */
