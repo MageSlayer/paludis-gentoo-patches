@@ -21,6 +21,7 @@
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/match_package.hh>
+#include <paludis/hashed_containers.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
@@ -87,6 +88,7 @@ DepListOptions::DepListOptions() :
 namespace paludis
 {
     typedef std::list<DepListEntry> MergeList;
+    typedef MakeHashedMultiMap<QualifiedPackageName, MergeList::iterator>::Type MergeListIndex;
 
     template<>
     struct Implementation<DepList> :
@@ -99,6 +101,8 @@ namespace paludis
         MergeList::const_iterator current_merge_list_entry;
         MergeList::iterator merge_list_insert_position;
         long merge_list_generation;
+
+        MergeListIndex merge_list_index;
 
         DepAtom::ConstPointer current_top_level_target;
 
@@ -167,13 +171,15 @@ namespace
     {
         protected:
             MergeList & _list;
+            MergeListIndex & _index;
             long & _generation;
             int _initial_generation;
             bool _committed;
 
         public:
-            DepListTransaction(MergeList & l, long & g) :
+            DepListTransaction(MergeList & l, MergeListIndex & i, long & g) :
                 _list(l),
+                _index(i),
                 _generation(g),
                 _initial_generation(g),
                 _committed(false)
@@ -188,11 +194,30 @@ namespace
 
             ~DepListTransaction()
             {
-                if (! _committed)
+                if (_committed)
+                    return;
+
+                /* See EffSTL 9 */
+                GenerationGreaterThan pred(_initial_generation);
+                for (MergeList::iterator i(_list.begin()) ; i != _list.end() ; )
                 {
-                    _list.remove_if(GenerationGreaterThan(_initial_generation));
-                    std::for_each(_list.begin(), _list.end(), RemoveTagsWithGenerationGreaterThan(_initial_generation));
+                    if (! pred(*i))
+                        ++i;
+                    else
+                    {
+                        for (std::pair<MergeListIndex::iterator, MergeListIndex::iterator> p(
+                                    _index.equal_range(i->package.name)) ; p.first != p.second ; )
+                            if (p.first->second == i)
+                                _index.erase(p.first++);
+                            else
+                                ++p.first;
+
+                        _list.erase(i++);
+                    }
                 }
+
+                std::for_each(_list.begin(), _list.end(),
+                        RemoveTagsWithGenerationGreaterThan(_initial_generation));
             }
     };
 
@@ -211,6 +236,11 @@ namespace
         bool operator() (const DepListEntry & e)
         {
             return match_package(env, a, e.package);
+        }
+
+        bool operator() (const std::pair<const QualifiedPackageName, MergeList::const_iterator> & e)
+        {
+            return match_package(env, a, e.second->package);
         }
     };
 
@@ -270,13 +300,17 @@ DepList::QueryVisitor::visit(const PackageDepAtom * const a)
 
     if (! d->_imp->env->package_database()->query(*a, is_installed_only, qo_whatever)->empty())
         result = true;
-    else if (d->_imp->merge_list.end() != std::find_if(
-                d->_imp->merge_list.begin(),
-                d->_imp->merge_list.end(),
-                MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, a)))
-        result = true;
     else
-        result = false;
+    {
+        std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
+                d->_imp->merge_list_index.equal_range(a->package()));
+
+        if (p.second != std::find_if(p.first, p.second,
+                MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, a)))
+            result = true;
+        else
+            result = false;
+    }
 }
 
 void
@@ -368,8 +402,12 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
                 *a, is_installed_only, qo_order_by_version));
 
     /* are we already on the merge list? */
-    MergeList::iterator existing_merge_list_entry(std::find_if(d->_imp->merge_list.begin(),
-                d->_imp->merge_list.end(), MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, a)));
+    std::pair<MergeListIndex::iterator, MergeListIndex::iterator> q(
+            d->_imp->merge_list_index.equal_range(a->package()));
+    MergeListIndex::iterator qq(std::find_if(q.first, q.second,
+                MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, a)));
+
+    MergeList::iterator existing_merge_list_entry(qq == q.second ? d->_imp->merge_list.end() : qq->second);
     if (existing_merge_list_entry != d->_imp->merge_list.end())
     {
         /* tag it */
@@ -653,7 +691,7 @@ DepList::add_in_role(DepAtom::ConstPointer atom, const std::string & role)
 void
 DepList::add(DepAtom::ConstPointer atom)
 {
-    DepListTransaction transaction(_imp->merge_list, _imp->merge_list_generation);
+    DepListTransaction transaction(_imp->merge_list, _imp->merge_list_index, _imp->merge_list_generation);
 
     Save<DepAtom::ConstPointer> save_current_top_level_target(&_imp->current_top_level_target,
             _imp->current_top_level_target ? _imp->current_top_level_target : atom);
@@ -687,6 +725,8 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                 .skip_install(metadata->get_virtual_interface()))),
         our_merge_entry_post_position(our_merge_entry_position);
 
+    _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
+
     if (tag)
         our_merge_entry_position->tags->insert(DepTagEntry::create()
                 .generation(_imp->merge_list_generation)
@@ -709,9 +749,13 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
         for (DepAtomFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
             PackageDepAtom::Pointer pp(new PackageDepAtom("=" + (*i)->text() + "-" + stringify(p.version)));
-            if (_imp->merge_list.end() != std::find_if(_imp->merge_list.begin(),
-                        _imp->merge_list.end(), MatchDepListEntryAgainstPackageDepAtom(_imp->env,
-                            pp.raw_pointer())))
+
+            std::pair<MergeListIndex::iterator, MergeListIndex::iterator> z(
+                    _imp->merge_list_index.equal_range(pp->package()));
+            MergeListIndex::iterator zz(std::find_if(z.first, z.second,
+                MatchDepListEntryAgainstPackageDepAtom(_imp->env, pp.raw_pointer())));
+
+            if (z.first != z.second)
                 continue;
 
             VersionMetadata::ConstPointer m(0);
@@ -738,6 +782,7 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                         .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                         .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
                         .skip_install(m->get_virtual_interface())));
+            _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
         }
     }
 
@@ -814,6 +859,7 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::C
                 .state(dle_has_pre_deps)
                 .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
                 .skip_install(true)));
+    _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry));
 
     if (tag)
         our_merge_entry->tags->insert(DepTagEntry::create()
