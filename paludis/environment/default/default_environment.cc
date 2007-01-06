@@ -364,6 +364,7 @@ bool
 DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const d) const
 {
     static KeywordName star_keyword(KeywordName("*"));
+    static KeywordName minus_star_keyword(KeywordName("-*"));
 
     if (keyword == star_keyword)
         return true;
@@ -373,10 +374,13 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
 
     bool result(false);
 
-    result |= DefaultConfig::get_instance()->end_default_keywords() !=
-        std::find(DefaultConfig::get_instance()->begin_default_keywords(),
-                DefaultConfig::get_instance()->end_default_keywords(),
-                keyword);
+    if (keyword != minus_star_keyword)
+    {
+        result |= DefaultConfig::get_instance()->end_default_keywords() !=
+            std::find(DefaultConfig::get_instance()->begin_default_keywords(),
+                    DefaultConfig::get_instance()->end_default_keywords(),
+                    keyword);
+    }
 
     result |= DefaultConfig::get_instance()->end_default_keywords() !=
         std::find(DefaultConfig::get_instance()->begin_default_keywords(),
@@ -393,7 +397,7 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
             if (! match_package(this, k->first, d))
                 continue;
 
-            if (k->second == star_keyword)
+            if (k->second == minus_star_keyword)
                 result = false;
             else
             {
@@ -411,7 +415,7 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
             if (! q(*d))
                 continue;
 
-            if (k->keyword == KeywordName("-*"))
+            if (k->keyword == minus_star_keyword)
                 result = false;
             else
             {
