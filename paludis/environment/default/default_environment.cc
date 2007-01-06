@@ -363,10 +363,10 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 bool
 DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const d) const
 {
-    if (keyword == KeywordName("*"))
+    static KeywordName star_keyword(KeywordName("*"));
+
+    if (keyword == star_keyword)
         return true;
-    if (keyword == KeywordName("-*"))
-        return false;
 
     Context context("When checking accept_keyword of '" + stringify(keyword) +
             (d ? "' for " + stringify(*d) : stringify("'")) + ":");
@@ -381,7 +381,7 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
     result |= DefaultConfig::get_instance()->end_default_keywords() !=
         std::find(DefaultConfig::get_instance()->begin_default_keywords(),
                 DefaultConfig::get_instance()->end_default_keywords(),
-                KeywordName("*"));
+                star_keyword);
 
     if (d)
     {
@@ -393,12 +393,12 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
             if (! match_package(this, k->first, d))
                 continue;
 
-            if (k->second == KeywordName("-*"))
+            if (k->second == star_keyword)
                 result = false;
             else
             {
                 result |= k->second == keyword;
-                result |= k->second == KeywordName("*");
+                result |= k->second == star_keyword;
             }
         }
 
@@ -416,7 +416,7 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
             else
             {
                 result |= k->keyword == keyword;
-                result |= k->keyword == KeywordName("*");
+                result |= k->keyword == star_keyword;
             }
         }
     }
