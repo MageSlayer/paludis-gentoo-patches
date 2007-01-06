@@ -378,6 +378,11 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
                 DefaultConfig::get_instance()->end_default_keywords(),
                 keyword);
 
+    result |= DefaultConfig::get_instance()->end_default_keywords() !=
+        std::find(DefaultConfig::get_instance()->begin_default_keywords(),
+                DefaultConfig::get_instance()->end_default_keywords(),
+                KeywordName("*"));
+
     if (d)
     {
         for (DefaultConfig::PackageKeywordsIterator
@@ -391,7 +396,10 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
             if (k->second == KeywordName("-*"))
                 result = false;
             else
+            {
                 result |= k->second == keyword;
+                result |= k->second == KeywordName("*");
+            }
         }
 
         for (DefaultConfig::SetKeywordsIterator
@@ -406,7 +414,10 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
             if (k->keyword == KeywordName("-*"))
                 result = false;
             else
+            {
                 result |= k->keyword == keyword;
+                result |= k->keyword == KeywordName("*");
+            }
         }
     }
 
