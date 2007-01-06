@@ -28,7 +28,8 @@ IF_RUBY_TESTS = \
 	version_metadata_TEST.rb \
 	portage_dep_parser_TEST.rb \
 	qualified_package_name_TEST.rb \
-	contents_TEST.rb
+	contents_TEST.rb \
+	dep_list_TEST.rb
 
 IF_RUBY_QA_TESTS = \
 	message_TEST.rb \
@@ -50,7 +51,8 @@ IF_RUBY_SOURCES = \
 	version_metadata.cc \
 	portage_dep_parser.cc \
 	qualified_package_name.cc \
-	contents.cc
+	contents.cc \
+	dep_list.cc
 
 IF_RUBY_QA_SOURCES = \
 	message.cc \
@@ -67,7 +69,8 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	version_metadata_TEST_setup.sh version_metadata_TEST_cleanup.sh \
 	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
 	qa_environment_TEST_setup.sh qa_environment_TEST_cleanup.sh \
-	check_TEST_setup.sh check_TEST_cleanup.sh
+	check_TEST_setup.sh check_TEST_cleanup.sh \
+	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
@@ -80,6 +83,7 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/default/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/no_config/.libs\`: \
+			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/dep_list/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/qa/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/libxml/.libs\`" \
 			| tr -d ' '` \
@@ -100,6 +104,7 @@ BASE_OBJECTS = \
 	portage_dep_parser.o \
 	qualified_package_name.o \
 	contents.o \
+	dep_list.o \
 	paludis_ruby.o
 
 if ENABLE_QA
@@ -169,6 +174,9 @@ qualified_package_name.o : qualified_package_name.cc paludis_ruby.hh
 contents.o : contents.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/contents.cc
 
+dep_list.o : dep_list.cc paludis_ruby.hh
+	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/dep_list.cc
+
 message.o : message.cc paludis_ruby.hh
 	$(OUR_CXXCOMPILE) -o $@ $(srcdir)/message.cc
 
@@ -198,6 +206,7 @@ if ENABLE_QA
 	    $(top_builddir)/paludis/.libs/libpaludis.so \
 	    $(top_builddir)/paludis/environment/default/.libs/libpaludisdefaultenvironment.so \
 	    $(top_builddir)/paludis/environment/no_config/.libs/libpaludisnoconfigenvironment.so \
+	    $(top_builddir)/paludis/dep_list/.libs/libpaludisdeplist.so \
 	    $(top_builddir)/paludis/qa/.libs/libpaludisqa.so \
 	    $(top_builddir)/paludis/libxml/.libs/libpaludislibxml.so \
 	    $(PCREPLUSPLUS_LIBS)
@@ -213,6 +222,7 @@ Paludis.so : $(OUR_OBJECTS)
 	    -L$(top_builddir)/paludis/.libs/ -lpaludis \
 	    -L$(top_builddir)/paludis/environment/default/.libs/ -lpaludisdefaultenvironment \
 	    -L$(top_builddir)/paludis/environment/no_config/.libs/ -lpaludisnoconfigenvironment \
+	    -L$(top_builddir)/paludis/dep_list/.libs -lpaludisdeplist \
 	    -L$(top_builddir)/paludis/qa/.libs/ -lpaludisqa \
 	    -L$(top_builddir)/paludis/libxml/.libs/ -lpaludislibxml \
 	    $(PCREPLUSPLUS_LIBS)
@@ -230,7 +240,8 @@ else
 	    $(top_builddir)/paludis/util/.libs/libpaludisutil.so \
 	    $(top_builddir)/paludis/.libs/libpaludis.so \
 	    $(top_builddir)/paludis/environment/default/.libs/libpaludisdefaultenvironment.so \
-	    $(top_builddir)/paludis/environment/no_config/.libs/libpaludisnoconfigenvironment.so
+	    $(top_builddir)/paludis/environment/no_config/.libs/libpaldisnoconfigenvironment.so \
+	    $(top_builddir)/paludis/dep_list/.libs/libpaludisdeplist.so
 
 Paludis.so : $(OUR_OBJECTS)
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -242,7 +253,8 @@ Paludis.so : $(OUR_OBJECTS)
 	    -L$(top_builddir)/paludis/util/.libs/ -lpaludisutil \
 	    -L$(top_builddir)/paludis/.libs/ -lpaludis \
 	    -L$(top_builddir)/paludis/environment/default/.libs/ -lpaludisdefaultenvironment \
-	    -L$(top_builddir)/paludis/environment/no_config/.libs/ -lpaludisnoconfigenvironment
+	    -L$(top_builddir)/paludis/environment/no_config/.libs/ -lpaludisnoconfigenvironment \
+	    -L$(top_builddir)/paludis/dep_list/.libs -lpaludisdeplist
 
 endif
 

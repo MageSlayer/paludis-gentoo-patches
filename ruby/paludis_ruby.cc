@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +21,7 @@
 #include <paludis/paludis.hh>
 #include <paludis_ruby.hh>
 #include <paludis/config_file.hh>
+#include <paludis/dep_list/dep_list.hh>
 #include <ruby.h>
 #include <list>
 #include <ctype.h>
@@ -62,6 +64,11 @@ namespace
     static VALUE c_dep_string_nesting_error;
     static VALUE c_configuration_error;
     static VALUE c_config_file_error;
+    static VALUE c_dep_list_error;
+    static VALUE c_all_masked_error;
+    static VALUE c_block_error;
+    static VALUE c_circular_dependency_error;
+    static VALUE c_use_requirements_not_met_error;
 
     static VALUE c_environment;
     static VALUE c_no_config_environment;
@@ -154,6 +161,16 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_dep_string_parse_error, dynamic_cast<const paludis::DepStringParseError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::DepStringError *>(&ee))
         rb_raise(c_dep_string_error, dynamic_cast<const paludis::DepStringError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::AllMaskedError *>(&ee))
+        rb_raise(c_all_masked_error, dynamic_cast<const paludis::AllMaskedError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::BlockError *>(&ee))
+        rb_raise(c_block_error, dynamic_cast<const paludis::BlockError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::CircularDependencyError *>(&ee))
+        rb_raise(c_circular_dependency_error, dynamic_cast<const paludis::CircularDependencyError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::UseRequirementsNotMetError *>(&ee))
+        rb_raise(c_use_requirements_not_met_error, dynamic_cast<const paludis::UseRequirementsNotMetError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::DepListError *>(&ee))
+        rb_raise(c_dep_list_error, dynamic_cast<const paludis::DepListError *>(&ee)->message().c_str());
 #ifdef ENABLE_RUBY_QA
     else if (0 != dynamic_cast<const paludis::qa::NoSuchFileCheckTypeError *>(&ee))
         rb_raise(c_no_such_file_check_type_error, dynamic_cast<const paludis::qa::NoSuchFileCheckTypeError *>(&ee)->message().c_str());
@@ -254,6 +271,11 @@ extern "C"
         c_dep_string_nesting_error = rb_define_class_under(c_paludis_module, "DepStringNestingError", c_dep_string_parse_error);
         c_configuration_error = rb_define_class_under(c_paludis_module, "ConfigurationError", rb_eRuntimeError);
         c_config_file_error = rb_define_class_under(c_paludis_module, "ConfigFileError", c_configuration_error);
+        c_dep_list_error = rb_define_class_under(c_paludis_module, "DepListError", rb_eRuntimeError);
+        c_all_masked_error = rb_define_class_under(c_paludis_module, "AllMaskedError", c_dep_list_error);
+        c_block_error = rb_define_class_under(c_paludis_module, "BlockError", c_dep_list_error);
+        c_circular_dependency_error = rb_define_class_under(c_paludis_module, "CircularDependencyError", c_dep_list_error);
+        c_use_requirements_not_met_error = rb_define_class_under(c_paludis_module, "UseRequirementsNotMetError", c_dep_list_error);
 
         rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
 

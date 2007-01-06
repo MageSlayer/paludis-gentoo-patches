@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -332,6 +333,21 @@ paludis::ruby::value_to_package_dep_atom(VALUE v)
     {
         PackageDepAtom::ConstPointer * v_ptr;
         Data_Get_Struct(v, PackageDepAtom::ConstPointer, v_ptr);
+        return *v_ptr;
+    }
+    else
+    {
+        rb_raise(rb_eTypeError, "Can't convert %s into PackageDepAtom", rb_obj_classname(v));
+    }
+}
+
+DepAtom::ConstPointer
+paludis::ruby::value_to_dep_atom(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_dep_atom))
+    {
+        DepAtom::ConstPointer * v_ptr;
+        Data_Get_Struct(v, DepAtom::ConstPointer, v_ptr);
         return *v_ptr;
     }
     else
