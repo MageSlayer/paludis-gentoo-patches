@@ -18,10 +18,11 @@
 
 builtin_unmerge()
 {
-    local v=$(vdb_path)
+    local v=$(${PALUDIS_COMMAND} --configuration-variable installed location 2>/dev/null )
     if [[ -z "${v}" ]] ; then
         v=${ROOT}/var/db/pkg
     fi
+
     local dbdir="${v}/${CATEGORY}/${PF}" entry
     [[ -d "${dbdir}" ]] || die "couldn't find pkg db directory (\"${dbdir}\")"
 
