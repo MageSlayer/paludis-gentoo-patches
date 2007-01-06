@@ -66,18 +66,21 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
             value = strip_leading(strip_trailing(line.substr(pos + 1), " \t\r\n"), " \t\r\n");
         }
 
-        if ("Package" == key)
+        if (("Package" == key) || ("Bundle" == key))
         {
             metadata->get_cran_interface()->package = value;
             metadata->homepage = "http://cran.r-project.org/src/contrib/Descriptions/" + value + ".html";
-            CRANDescription::normalise_name(value);
-            if (n != value)
-                Log::get_instance()->message(ll_warning, lc_context, "Inconsistent package name in file '" +
-                            stringify(name) + "': '" + n + "', '" + value + "':");
-        }
-        else if ("Bundle" == key)
-        {
-            metadata->get_cran_interface()->is_bundle = true;
+            if ("Package" == key)
+            {
+                CRANDescription::normalise_name(value);
+                if (n != value)
+                    Log::get_instance()->message(ll_warning, lc_context, "Inconsistent package name in file '" +
+                                stringify(name) + "': '" + n + "', '" + value + "':");
+            }
+            else
+            {
+                metadata->get_cran_interface()->is_bundle = true;
+            }
         }
         else if ("Version" == key)
         {

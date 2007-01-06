@@ -126,19 +126,23 @@ cran_do_install() {
 
     # \todo Sandbox this?
     R CMD INSTALL -l "${IMAGE}/${PALUDIS_CRAN_LIBRARY##${ROOT}}" ${PN}
+
+    if [[ ${IS_BUNDLE} == "yes" ]] ; then
+        cp "${PN}/DESCRIPTION" "${IMAGE}/${PALUDIS_CRAN_LIBRARY##${ROOT}}/paludis/bundles/"
+    fi
 }
 
 cran_do_merge() {
     [[ -e "${IMAGE}/${INSTALL_TO##${ROOT}}/R.css" ]] \
         && rm -f "${IMAGE}/${PALUDIS_CRAN_LIBRARY##${ROOT}}/R.css"
     mkdir -p "${PALUDIS_CRAN_LIBRARY}/paludis/${PN}"
-    ${PALUDIS_EBUILD_DIR}/utils/merge "${IMAGE}" "${ROOT}" "${PALUDIS_CRAN_LIBRARY}/paludis/${PN}/CONTENTS"
+    ${PALUDIS_EBUILD_DIR}/merge "${IMAGE}" "${ROOT}" "${PALUDIS_CRAN_LIBRARY}/paludis/${PN}/CONTENTS"
     echo ${REPOSITORY} > "${PALUDIS_CRAN_LIBRARY}/paludis/${PN}/REPOSITORY"
 }
 
 cran_do_unmerge() {
     [[ -e "${PALUDIS_CRAN_LIBRARY}/paludis/${PN}/CONTENTS" ]] || die "CONTENTS file is missing for package ${PN}"
-    ${PALUDIS_EBUILD_DIR}/utils/unmerge "${ROOT}" "${PALUDIS_CRAN_LIBRARY}/paludis/${PN}/CONTENTS"
+    ${PALUDIS_EBUILD_DIR}/unmerge "${ROOT}" "${PALUDIS_CRAN_LIBRARY}/paludis/${PN}/CONTENTS"
 }
 
 for cmd in $* ; do

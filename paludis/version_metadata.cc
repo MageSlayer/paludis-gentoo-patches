@@ -62,7 +62,8 @@ VersionMetadata::CRAN::CRAN(ParserFunction f) :
             .keywords("")
             .package("")
             .version("")
-            .is_bundle(false))
+            .is_bundle(false)
+            .is_bundle_member(false))
 {
 }
 

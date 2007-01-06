@@ -136,6 +136,35 @@ Implementation<CRANInstalledRepository>::load_entries() const
             QualifiedPackageName q("cran/" + n);
             metadata.insert(std::make_pair(std::make_pair(q, VersionSpec(desc.version)), desc.metadata));
         }
+
+        if (! FSEntry(location / "paludis" / "bundles").is_directory())
+            return;
+
+        // Load Bundle Metadata
+        Log::get_instance()->message(ll_warning, lc_no_context, "Bundles start now REMOVE");
+        for (DirIterator f(location / "paludis" / "bundles"), f_end ; f != f_end ; ++f)
+        {
+            Context local_context("When parsing file '" + stringify(*f) + "'.");
+            Log::get_instance()->message(ll_warning, lc_no_context, "REMOVE Bundle: " + strinfify(*f));
+
+            if (! f.is_regular_file())
+            {
+                continue;
+            }
+
+            std::string n(f->basename());
+            std::string::size_type pos(n.find_last_of("."));
+            if (std::string::npos != pos)
+                n.erase(pos);
+            CRANDescription::normalise_name(n);
+
+            CRANDescription desc(n, f);
+            entries.push_back(desc);
+
+            QualifiedPackageName q("cran/" + n);
+            metadata.insert(std::make_pair(std::make_pair(q, VersionSpec(desc.version)), desc.metadata));
+        }
+
     }
     catch (...)
     {

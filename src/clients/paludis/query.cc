@@ -191,6 +191,8 @@ void do_one_package_query(
                 " " << metadata->get_cran_interface()->version << endl;
             cout << "    " << std::setw(22) << std::left << "IS_BUNDLE:" << std::setw(0) <<
                 " " << std::boolalpha << metadata->get_cran_interface()->is_bundle << endl;
+            cout << "    " << std::setw(22) << std::left << "IS_BUNDLE_MEMBER:" << std::setw(0) <<
+                " " << std::boolalpha << metadata->get_cran_interface()->is_bundle_member << endl;
         }
 
         if (metadata->get_ebuild_interface())

@@ -365,7 +365,7 @@ CRANRepository::need_packages() const
             for ( ; i != i_end ; ++i)
             {
                 Context c("When processing 'Contains:' line: '" + stringify(*i) + "':");
-
+                Log::get_instance()->message(ll_warning, lc_no_context, "Contains: " + stringify(*i));
                 if (*i == last_package_name)
                     continue;
 
@@ -378,6 +378,7 @@ CRANRepository::need_packages() const
                 else
                     dep += "," + pkg;
                 d.metadata->deps.build_depend_string = dep;
+                d.metadata->get_cran_interface()->is_bundle_member = true;
 
                 _imp->package_names[d.name] = true;
                 _imp->metadata.insert(std::make_pair(std::make_pair(d.name, d.version), d.metadata));
@@ -421,6 +422,7 @@ CRANRepository::do_version_metadata(
 
     if (d.is_regular_file())
     {
+        Log::get_instance()->message(ll_warning, lc_no_context, "do_version_metadata: " + stringify(p));
         CRANDescription desc(stringify(p), d);
         result = desc.metadata;
     }
@@ -505,6 +507,16 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     PackageNamePart pn(q.package);
     CategoryNamePart c("cran");
     VersionMetadata::ConstPointer vm(do_version_metadata(q, vn));
+
+    if (vm->get_cran_interface()->is_bundle_member)
+    {
+        MakeEnvCommand cmd(LIBEXECDIR "/paludis/cran.bash skip", "");
+        cmd = cmd("CATEGORY", "cran");
+        cmd = cmd("PN", stringify(pn));
+        cmd = cmd("PV", stringify(vn));
+        return;
+    }
+
     std::string p(vm->get_cran_interface()->package);
     std::string v(vm->get_cran_interface()->version);
 
@@ -534,6 +546,8 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     cmd = cmd("DISTDIR", stringify(_imp->distdir));
     cmd = cmd("DISTFILE", std::string(p + "_" + v + ".tar.gz"));
     cmd = cmd("IMAGE", image);
+    cmd = cmd("IS_BUNDLE", (vm->get_cran_interface()->is_bundle() ? "yes" : ""));
+    cmd = cmd("LOCATION", stringify(_imp->location));
     cmd = cmd("PN", stringify(pn));
     cmd = cmd("PV", stringify(vn));
     cmd = cmd("PALUDIS_CRAN_LIBRARY", stringify(_imp->library));
