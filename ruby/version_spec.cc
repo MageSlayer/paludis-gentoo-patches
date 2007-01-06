@@ -121,8 +121,8 @@ namespace
         /*
          * Document-class: Paludis::VersionSpec
          *
-         * A VersionSpec represents a version number (for example, 1.2.3b-r1).
-         *
+         * A VersionSpec represents a version number (for example, 1.2.3b-r1). Includes
+         * Comparable[http://www.ruby-doc.org/core/classes/Comparable.html]
          */
         c_version_spec = rb_define_class_under(paludis_module(), "VersionSpec", rb_cObject);
         rb_define_singleton_method(c_version_spec, "new", RUBY_FUNC_CAST(&version_spec_new), 1);

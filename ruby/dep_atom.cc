@@ -242,6 +242,8 @@ namespace
          * Document-class: Paludis::CompositeDepAtom
          *
          * Class for dependency atoms that have a number of child dependency atoms.
+         * Includes Enumerable[http://www.ruby-doc.org/core/classes/Enumerable.html]
+         * but not Comparable.
          */
         c_composite_dep_atom = rb_define_class_under(paludis_module(), "CompositeDepAtom", c_dep_atom);
         rb_funcall(c_composite_dep_atom, rb_intern("private_class_method"), 1, rb_str_new2("new"));
