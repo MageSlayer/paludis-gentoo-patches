@@ -213,7 +213,7 @@ _paludis() {
                     return 0
                     ;;
                 --dl-new-slots)
-                    COMPREPLY=($(compgen -w "always as-needed" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "always as-needed" -- "${cur}"))
                     return 0
                     ;;
 

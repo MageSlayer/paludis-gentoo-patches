@@ -8,8 +8,10 @@
 _adjutrix_get_repodir() {
     local repodir
     [[ -f ./profiles/repo_name ]] && repodir=$(readlink -f $(pwd))
-    [[ -f ../profiles/repo_name ]] && repodir=$(readlink -f $(pwd)/..)
-    [[ -f ../../profiles/repo_name ]] && repodir=$(readlink -f $(pwd)/../..)
+    [[ -z "${repodir}" && -f ../profiles/repo_name ]] \
+        && repodir=$(readlink -f $(pwd)/..)
+    [[ -z "${repodir}" && -f ../../profiles/repo_name ]] \
+        && repodir=$(readlink -f $(pwd)/../..)
     [[ -z "${repodir}" ]] && return 1
     echo "${repodir}"
 }
