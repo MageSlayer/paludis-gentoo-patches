@@ -16,6 +16,8 @@ of every change, see the ChangeLog.
     * Profile incremental variables are now handled in compliance with the
     current PMS draft.
 
+    * Various extensions to the Ruby interface.
+
 0.14.1:
     * Versions can include -rx.y, -rx.y.z etc.
 
