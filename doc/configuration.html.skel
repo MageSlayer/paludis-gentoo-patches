@@ -98,10 +98,10 @@ be considered, not just the best or last match.</p>
 
 <h3>The keywords.conf File</h3>
 
-<p>Which <code>ARCH KEYWORDS</code> to accept is controlled by the 
+<p>Which <code>ARCH KEYWORDS</code> to accept is controlled by the
 <code>keywords.conf</code> file. The format of a line is
 <code>atom keyword1 keywords2 ...</code>, where <code>atom</code> is a package
-depend atom, <a href="sets.html">set name</a> or <code>*</code> for "all packages" and 
+depend atom, <a href="sets.html">set name</a> or <code>*</code> for "all packages" and
 <code>keyword1 keyword2 ...</code> is one or more arch keywords. As with Portage,
 accepting <code>~arch</code> does <em>not</em> 
 implicitly accept <code>arch</code>, however, if a package matches multiple lines,
@@ -122,6 +122,10 @@ an entry in <code>keywords.conf</code>. It is also generally assumed within the 
 portage tree that if <code>~ARCH</code> is accepted for a package, then so is
 <code>ARCH</code>; not doing so may result in all versions or the latest version of a
 package being masked, as the package is stabilised.</p>
+
+<p>The <code>-*</code> special keyword can be used to remove previously accepted
+keywords from a less specific match. The <code>*</code> special keyword can be
+used to accept anything.</p>
 
 <h3>The package_mask.conf File</h3>
 

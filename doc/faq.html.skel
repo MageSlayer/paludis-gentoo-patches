@@ -23,6 +23,20 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
 
 <h2 id="general">General Paludis Questions</h2>
 
+<h3 id="ihaveaquestion">I have an Unanswered Question</h3>
+
+<p>If you've checked the documentation, and your question really isn't answered,
+you should ask it in one of these places:</p>
+
+<ul>
+    <li>The <code>#paludis</code> channel on <code>irc.freenode.net</code></li>
+    <li>The <a href="https://developer.berlios.de/mail/?group_id=6360">paludis-user
+        mailing list</a></li>
+</ul>
+
+<p>You are encouraged to submit an entry for this document once your question
+has been answered.</p>
+
 <h3 id="why">Why not fix Portage?</h3>
 
 <p>The Portage codebase is too broken to be fixed. It is a huge mess of
@@ -143,6 +157,52 @@ use <code>--pretend</code> and check the output before proceeding:</p>
     often used to mean "compile against one of these".</li>
 </ul>
 
+<h3 id="unmask">Unmask a Package</h3>
+
+<p>First, you need to determine how a package is masked. The easiest way to do
+this is to use <code>paludis --query</code>. Then, if you're sure you really
+want to unmask a package, and bearing in mind that doing so might break your
+system, you need to override the mask. How to do this depends upon the mask
+reasons:</p>
+
+<dl>
+    <dt>keyword</dt>
+
+    <dd>You need to add an entry to your <code>keywords.conf</code> accepting
+    one of the ebuild's keywords. The special <code>-*</code> keyword cannot be
+    accepted this way; if an ebuild only has this in its keywords, report it
+    to <a href="https://bugs.gentoo.org/show_bug.cgi?id=160519">Gentoo bug
+        160519</a> and work around it by using <code>*</code>.</dd>
+
+    <dt>user mask</dt>
+
+    <dd>Either remove your <code>package_mask.conf</code> entry or override it
+    with <code>package_unmask.conf</code>.</dd>
+
+    <dt>profile mask</dt>
+
+    <dd>Override with <code>package_unmask.conf</code>.</dd>
+
+    <dt>repository mask</dt>
+
+    <dd>Override with <code>package_unmask.conf</code>.</dd>
+
+    <dt>eapi</dt>
+
+    <dd>You cannot override this mask. It indicates either a broken ebuild (if
+    <code>EAPI=unknown</code> or an ebuild not supported by your current version
+    of Paludis.</dd>
+
+    <dt>license</dt>
+
+    <dd>Accept the appropriate licences in <code>licenses.conf</code>.</dd>
+
+    <dt>by association</dt>
+
+    <dd>Unmask the associated package. This mask reason is currently only used
+    for old style virtuals.</dd>
+</dl>
+
 <h2 id="stricter">Paludis is Stricter than Portage</h2>
 
 <h3 id="mergingweirdstuff">Merging Weird Stuff</h3>
@@ -201,20 +261,6 @@ other than <code>/</code>.</p>
 honour <code>ROOT</code>. To temporarily disable sandbox for these packages,
 <code>export SANDBOX_PREDICT=/</code> or <code>export SANDBOX_WRITE=/</code> as
 appropriate.</p>
-
-<h3 id="repo_name">Repository names</h3>
-
-<p>Because of a requirement forced into <a
-    href="http://www.gentoo.org/proj/en/glep/glep-0042.html">GLEP 42</a> by the
-peanut gallery, repositories are required to be uniquely identifiable. The
-identifier must remain consistent even if a repository is moved, either locally
-or remotely, and thus must be independent of user configuration.</p>
-
-<p>For Portage format repositories, this is controlled by the <code>profiles/repo_name</code>
-file. It should contain a single string with no whitespace or funny characters.
-For many repositories, this has already been created for you; for some overlays,
-probably including your local overlay if you have one, the file is not yet
-there so you will have to create it.</p>
 
 <h2 id="misfunctionality">Undesirable Misfunctionality</h2>
 
@@ -332,6 +378,32 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
     <dd>Always on. See <a href="#testfailures">Packages failing
         <code>src_test</code></a>.</dd>
 </dl>
+
+<h2 id="repos">Repository Questions</h2>
+
+<h3 id="profiles">Profiles vs Profiles</h3>
+
+<p>Don't confuse the <code>profiles/</code> directory with the <code>profiles
+    =</code> setting for Portage format repositories. The special files
+immediately under <code>profiles/</code>, such as
+<code>profiles/thirdpartymirrors</code>, <code>profiles/use.desc</code>
+and <code>profiles/package.mask</code>, are specific to that particular profile
+and no other; the <code>profiles =</code> key has no effect upon them.</p>
+
+<h3 id="repo_name">Repository names</h3>
+
+<p>Because of a requirement forced into <a
+    href="http://www.gentoo.org/proj/en/glep/glep-0042.html">GLEP 42</a> by the
+peanut gallery, repositories are required to be uniquely identifiable. The
+identifier must remain consistent even if a repository is moved, either locally
+or remotely, and thus must be independent of user configuration.</p>
+
+<p>For Portage format repositories, this is controlled by the <code>profiles/repo_name</code>
+file. It should contain a single string with no whitespace or funny characters.
+For many repositories, this has already been created for you; for some overlays,
+probably including your local overlay if you have one, the file is not yet
+there so you will have to create it.</p>
+
 
 @FOOTER@
 </body>
