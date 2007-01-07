@@ -203,7 +203,16 @@ namespace
                 }
                 else
                 {
-                    FSEntry(dst).unlink();
+                    if (dst.is_regular_file())
+                    {
+                        mode_t mode(dst.permissions());
+                        if ((mode & S_ISUID) || (mode & S_ISGID))
+                        {
+                            mode &= 0400;
+                            FSEntry(dst).chmod(mode);
+                        }
+                        FSEntry(dst).unlink();
+                    }
                     cout << endl;
                 }
             }
@@ -273,7 +282,15 @@ namespace
                 throw Failure("Can't overwrite directory '" + stringify(dst) +
                         "' with symlink to '" + src.readlink() + "'");
             else
+            {
+                mode_t mode(dst.permissions());
+                if ((mode & S_ISUID) || (mode & S_ISGID))
+                {
+                    mode &= 0400;
+                    FSEntry(dst).chmod(mode);
+                }
                 FSEntry(dst).unlink();
+            }
         }
 
 #ifdef HAVE_SELINUX

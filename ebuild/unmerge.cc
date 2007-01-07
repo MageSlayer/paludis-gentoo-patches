@@ -98,6 +98,13 @@ namespace
                     else
                     {
                         cout << "<<<         " << tokens.at(1) << endl;
+
+                        mode_t mode((root / tokens.at(1)).permissions());
+                        if ((mode & S_ISUID) || (mode & S_ISGID))
+                        {
+                            mode &= 0400;
+                            (root / tokens.at(1)).chmod(mode);
+                        }
                         (root / tokens.at(1)).unlink();
                     }
                 }
