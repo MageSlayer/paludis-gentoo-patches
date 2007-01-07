@@ -293,7 +293,7 @@ logic is as follows:</p>
 
 <p>Note that you must <strong>always</strong> specify this option,
 not just after a download has already been interrupted. See <a href="#defaultoptions">the
-    discussion on default options</a> for how to do this easily.</a>.</p>
+    discussion on default options</a> for how to do this easily.</p>
 
 <p>This logic is handled by the default fetcher for <code>http://</code>, <code>https://</code>
 and <code>ftp://</code>. This can be overridden by a custom fetcher if finer grained control
