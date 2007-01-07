@@ -22,6 +22,7 @@
 
 #include <paludis/version_metadata.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/log.hh>
 
 namespace paludis
 {

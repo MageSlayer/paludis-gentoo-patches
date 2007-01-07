@@ -141,13 +141,11 @@ Implementation<CRANInstalledRepository>::load_entries() const
             return;
 
         // Load Bundle Metadata
-        Log::get_instance()->message(ll_warning, lc_no_context, "Bundles start now REMOVE");
         for (DirIterator f(location / "paludis" / "bundles"), f_end ; f != f_end ; ++f)
         {
             Context local_context("When parsing file '" + stringify(*f) + "'.");
-            Log::get_instance()->message(ll_warning, lc_no_context, "REMOVE Bundle: " + strinfify(*f));
 
-            if (! f.is_regular_file())
+            if (! f->is_regular_file())
             {
                 continue;
             }
@@ -158,7 +156,7 @@ Implementation<CRANInstalledRepository>::load_entries() const
                 n.erase(pos);
             CRANDescription::normalise_name(n);
 
-            CRANDescription desc(n, f);
+            CRANDescription desc(n, *f);
             entries.push_back(desc);
 
             QualifiedPackageName q("cran/" + n);
@@ -280,12 +278,10 @@ CRANInstalledRepository::do_version_specs(const QualifiedPackageName & n) const
     if (! _imp->entries_valid)
         _imp->load_entries();
 
-    std::pair<std::vector<CRANDescription>::const_iterator, std::vector<CRANDescription>::const_iterator>
-        r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), n,
-                    CRANDescription::ComparePackage()));
-
-    for ( ; r.first != r.second ; ++(r.first))
-        result->insert(r.first->version);
+    for (std::vector<CRANDescription>::const_iterator e(_imp->entries.begin()), e_end(_imp->entries.end()) ;
+            e != e_end ; ++e)
+        if (n == e->name)
+            result->insert(e->version);
 
     return result;
 }
@@ -457,32 +453,35 @@ CRANInstalledRepository::do_installed_time(const QualifiedPackageName & q,
     if (! _imp->entries_valid)
         _imp->load_entries();
 
-    std::pair<std::vector<CRANDescription>::iterator, std::vector<CRANDescription>::iterator>
-        r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), std::make_pair(
-                        q, v), CRANDescription::CompareVersion()));
-    std::string pn = stringify(q.package);
-    CRANDescription::normalise_name(pn);
+    std::vector<CRANDescription>::iterator r(_imp->entries.begin()), r_end(_imp->entries.end());
+    for ( ; r != r_end ; ++r)
+    {
+        if (q == r->name)
+            break;
+    }
 
-    if (r.first == r.second)
+    if (r == r_end)
         throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
     else
     {
-        if (0 == r.first->installed_time)
+        if (0 == r->installed_time)
         {
+            std::string pn(stringify(q.package));
+            CRANDescription::normalise_name(pn);
             FSEntry f(_imp->location / "paludis" / pn / "CONTENTS");
             try
             {
-                r.first->installed_time = f.ctime();
+                r->installed_time = f.ctime();
             }
             catch (const FSError & e)
             {
                 Log::get_instance()->message(ll_warning, lc_no_context, "Can't get ctime of '"
                         + stringify(f) + "' due to exception '" + e.message() + "' (" + e.what()
                         + ")");
-                r.first->installed_time = 1;
+                r->installed_time = 1;
             }
         }
-        return r.first->installed_time;
+        return r->installed_time;
     }
 }
 

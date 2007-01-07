@@ -365,7 +365,6 @@ CRANRepository::need_packages() const
             for ( ; i != i_end ; ++i)
             {
                 Context c("When processing 'Contains:' line: '" + stringify(*i) + "':");
-                Log::get_instance()->message(ll_warning, lc_no_context, "Contains: " + stringify(*i));
                 if (*i == last_package_name)
                     continue;
 
@@ -422,7 +421,6 @@ CRANRepository::do_version_metadata(
 
     if (d.is_regular_file())
     {
-        Log::get_instance()->message(ll_warning, lc_no_context, "do_version_metadata: " + stringify(p));
         CRANDescription desc(stringify(p), d);
         result = desc.metadata;
     }
@@ -546,7 +544,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     cmd = cmd("DISTDIR", stringify(_imp->distdir));
     cmd = cmd("DISTFILE", std::string(p + "_" + v + ".tar.gz"));
     cmd = cmd("IMAGE", image);
-    cmd = cmd("IS_BUNDLE", (vm->get_cran_interface()->is_bundle() ? "yes" : ""));
+    cmd = cmd("IS_BUNDLE", (vm->get_cran_interface()->is_bundle ? "yes" : ""));
     cmd = cmd("LOCATION", stringify(_imp->location));
     cmd = cmd("PN", stringify(pn));
     cmd = cmd("PV", stringify(vn));
