@@ -112,6 +112,13 @@ module Paludis
             assert_equal VersionSpec.new("1.0"), a[0]
             assert_equal VersionSpec.new("2.0"), a[1]
 
+            assert_nothing_raised do
+                repo.version_specs('foo/bar') do |version|
+                    assert_equal VersionSpec.new('1.0'), version
+                    break
+                end
+            end
+
             b = repo.version_specs "bar/baz"
             assert b.empty?
         end
@@ -124,6 +131,11 @@ module Paludis
             a = repo.category_names
             assert_equal 1, a.length
             assert_equal "foo", a.first
+            assert_nothing_raised do
+                repo.category_names do |name|
+                    assert_equal 'foo', name
+                end
+            end
         end
     end
 
@@ -134,6 +146,11 @@ module Paludis
             a = repo.category_names_containing_package('bar')
             assert_equal 1, a.length
             assert_equal "foo", a.first
+            assert_nothing_raised do
+                repo.category_names_containing_package('bar') do |name|
+                    assert_equal 'foo', name
+                end
+            end
         end
     end
 
@@ -144,6 +161,12 @@ module Paludis
             a = repo.package_names "foo"
             assert_equal 1, a.length
             assert_equal "foo/bar", a[0]
+
+            assert_nothing_raised do
+                repo.package_names('foo') do |name|
+                    assert_equal 'foo/bar', name
+                end
+            end
 
             assert repo.package_names("bar").empty?
         end

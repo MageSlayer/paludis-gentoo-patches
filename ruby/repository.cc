@@ -129,8 +129,9 @@ namespace
     /*
      *  call-seq:
      *      category_names -> Array
+     *      category_names {|category_name| block } -> Nil
      *
-     * Fetch an Array of the names of categories that contain a named package.
+     * Returns the names of all categories, either as an Array or as the parameters to a block.
      */
     VALUE
     repository_category_names(VALUE self)
@@ -139,6 +140,13 @@ namespace
         {
             Repository::ConstPointer * self_ptr;
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            if (rb_block_given_p())
+            {
+                CategoryNamePartCollection::ConstPointer c((*self_ptr)->category_names());
+                for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                    rb_yield(rb_str_new2(stringify(*i).c_str()));
+                return Qnil;
+            }
             VALUE result(rb_ary_new());
             CategoryNamePartCollection::ConstPointer c((*self_ptr)->category_names());
             for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
@@ -154,8 +162,10 @@ namespace
     /*
      *  call-seq:
      *      category_names_containing_package(package) -> Array
+     *      category_names_containing_package(package) {|category_name| block } -> Nil
      *
-     * Fetch an Array of the categories containing the named package.
+     * Returns the names of all categories containing the given package, either as an Array
+     * or as the parameters to a block.
      */
     VALUE
     repository_category_names_containing_package(VALUE self, VALUE pkg)
@@ -166,6 +176,13 @@ namespace
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
             PackageNamePart package(StringValuePtr(pkg));
 
+            if (rb_block_given_p())
+            {
+                CategoryNamePartCollection::ConstPointer c((*self_ptr)->category_names_containing_package(package));
+                for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                    rb_yield(rb_str_new2(stringify(*i).c_str()));
+                return Qnil;
+            }
             VALUE result(rb_ary_new());
             CategoryNamePartCollection::ConstPointer c((*self_ptr)->category_names_containing_package(package));
             for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
@@ -181,8 +198,10 @@ namespace
     /*
      *  call-seq:
      *      package_names(category) -> Array
+     *      package_names(category) {|qualified_package_name| block } -> Nil
      *
-     * Fetch an Array of the packages with a named category.
+     * Returns the names of all packages within the given package, either as an Array,
+     * or as the parameteris to a block.
      */
     VALUE
     repository_package_names(VALUE self, VALUE cat)
@@ -193,6 +212,13 @@ namespace
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
             CategoryNamePart category(StringValuePtr(cat));
 
+            if (rb_block_given_p())
+            {
+                QualifiedPackageNameCollection::ConstPointer c((*self_ptr)->package_names(category));
+                for (QualifiedPackageNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                    rb_yield(qualified_package_name_to_value(*i));
+                return Qnil;
+            }
             VALUE result(rb_ary_new());
             QualifiedPackageNameCollection::ConstPointer c((*self_ptr)->package_names(category));
             for (QualifiedPackageNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
@@ -208,8 +234,10 @@ namespace
     /*
      * call-seq:
      *     version_specs(qualified_package_name) -> Array
+     *     version_specs(qualified_package_name) {|version_spec| block } -> Qnil
      *
-     * Fetch our versions.
+     * Returns the versions for the given package, either as an Array, or as the parameters
+     * to a block.
      */
     VALUE
     repository_version_specs(VALUE self, VALUE qpn)
@@ -220,6 +248,13 @@ namespace
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
             QualifiedPackageName q = value_to_qualified_package_name(qpn);
 
+            if (rb_block_given_p())
+            {
+                VersionSpecCollection::ConstPointer c((*self_ptr)->version_specs(q));
+                for (VersionSpecCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                    rb_yield(version_spec_to_value(*i));
+                return Qnil;
+            }
             VALUE result(rb_ary_new());
             VersionSpecCollection::ConstPointer c((*self_ptr)->version_specs(q));
             for (VersionSpecCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
