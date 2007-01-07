@@ -363,8 +363,8 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 bool
 DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const d) const
 {
-    static KeywordName star_keyword(KeywordName("*"));
-    static KeywordName minus_star_keyword(KeywordName("-*"));
+    static KeywordName star_keyword("*");
+    static KeywordName minus_star_keyword("-*");
 
     if (keyword == star_keyword)
         return true;
@@ -389,23 +389,6 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
 
     if (d)
     {
-        for (DefaultConfig::PackageKeywordsIterator
-                k(DefaultConfig::get_instance()->begin_package_keywords(d->name)),
-                k_end(DefaultConfig::get_instance()->end_package_keywords(d->name)) ;
-                k != k_end ; ++k)
-        {
-            if (! match_package(this, k->first, d))
-                continue;
-
-            if (k->second == minus_star_keyword)
-                result = false;
-            else
-            {
-                result |= k->second == keyword;
-                result |= k->second == star_keyword;
-            }
-        }
-
         for (DefaultConfig::SetKeywordsIterator
                 k(DefaultConfig::get_instance()->begin_set_keywords()),
                 k_end(DefaultConfig::get_instance()->end_set_keywords()) ;
@@ -423,6 +406,24 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
                 result |= k->keyword == star_keyword;
             }
         }
+
+        for (DefaultConfig::PackageKeywordsIterator
+                k(DefaultConfig::get_instance()->begin_package_keywords(d->name)),
+                k_end(DefaultConfig::get_instance()->end_package_keywords(d->name)) ;
+                k != k_end ; ++k)
+        {
+            if (! match_package(this, k->first, d))
+                continue;
+
+            if (k->second == minus_star_keyword)
+                result = false;
+            else
+            {
+                result |= k->second == keyword;
+                result |= k->second == star_keyword;
+            }
+        }
+
     }
 
     return result;
@@ -453,23 +454,6 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
 
     if (d)
     {
-        for (DefaultConfig::PackageLicensesIterator
-                k(DefaultConfig::get_instance()->begin_package_licenses(d->name)),
-                k_end(DefaultConfig::get_instance()->end_package_licenses(d->name)) ;
-                k != k_end ; ++k)
-        {
-            if (! match_package(this, k->first, d))
-                continue;
-
-            if (k->second == "-*")
-                result = false;
-            else
-            {
-                result |= k->second == license;
-                result |= k->second == "*";
-            }
-        }
-
         for (DefaultConfig::SetLicensesIterator
                 k(DefaultConfig::get_instance()->begin_set_licenses()),
                 k_end(DefaultConfig::get_instance()->end_set_licenses()) ;
@@ -485,6 +469,23 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
             {
                 result |= k->license == license;
                 result |= k->license == "*";
+            }
+        }
+
+        for (DefaultConfig::PackageLicensesIterator
+                k(DefaultConfig::get_instance()->begin_package_licenses(d->name)),
+                k_end(DefaultConfig::get_instance()->end_package_licenses(d->name)) ;
+                k != k_end ; ++k)
+        {
+            if (! match_package(this, k->first, d))
+                continue;
+
+            if (k->second == "-*")
+                result = false;
+            else
+            {
+                result |= k->second == license;
+                result |= k->second == "*";
             }
         }
     }
