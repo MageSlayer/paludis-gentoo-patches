@@ -39,7 +39,7 @@
             <li>Support for repositories of different types (e.g. CRAN).</li>
 
             <li>Simple per-(category, package, version, anything else) environment variable
-            setting (e.g. CFLAGS).</li>
+            setting (e.g. CFLAGS) without having to add on nasty external hacks.</li>
 
             <li>Licence filtering.</li>
 
@@ -78,6 +78,10 @@
 
             <li>Ability to display additional information, such as USE flag
             descriptions, when installing a package.</li>
+
+            <li>Secure installation and uninstallation of set*id files,
+            preventing your system from being left vulnerable after having
+            uninstalled or replaced an insecure application.</li>
         </ul>
 
         <h3>For the Ebuild Developer</h3>

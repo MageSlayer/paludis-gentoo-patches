@@ -4,6 +4,15 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.14.2:
+    * Various performance tweaks.
+
+    * keywords.conf can now use * to accept packages that brokenly set only "-*"
+    in KEYWORDS.
+
+    * Installing and uninstalling set*id files is now done differently to
+    prevent exploitation of supposedly uninstalled vulnerable applications.
+
 0.14.1:
     * Versions can include -rx.y, -rx.y.z etc.
 
