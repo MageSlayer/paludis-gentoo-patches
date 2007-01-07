@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
+# Copyright (c) 2006,2007 Danny van Dyk <kugelfang@gentoo.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -128,7 +128,8 @@ cran_do_install() {
     R CMD INSTALL -l "${IMAGE}/${PALUDIS_CRAN_LIBRARY##${ROOT}}" ${PN}
 
     if [[ ${IS_BUNDLE} == "yes" ]] ; then
-        cp "${PN}/DESCRIPTION" "${IMAGE}/${PALUDIS_CRAN_LIBRARY##${ROOT}}/paludis/bundles/"
+        mkdir -p "${IMAGE}/${PALUDIS_CRAN_LIBRARY##${ROOT}}/paludis/bundles/"
+        cp "${PN}/DESCRIPTION" "${IMAGE}/${PALUDIS_CRAN_LIBRARY##${ROOT}}/paludis/bundles/${PN}.DESCRIPTION"
     fi
 }
 
