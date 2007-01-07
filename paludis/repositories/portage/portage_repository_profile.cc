@@ -54,7 +54,6 @@ namespace
     {
         std::string origin;
 
-        FlagStatusMap use;
         FlagStatusMap use_mask;
         FlagStatusMap use_force;
         PackageFlagStatusMapList package_use;
@@ -93,10 +92,14 @@ namespace paludis
             void add_use_expand_to_use();
             void make_vars_from_file_vars();
             void handle_profile_arch_var();
+            void load_special_make_defaults_vars();
 
             ProfileFile packages_file;
             ProfileFile virtuals_file;
             ProfileFile package_mask_file;
+
+            bool is_incremental(const std::string & s) const;
+
 
         public:
             ///\name General variables
@@ -131,6 +134,7 @@ namespace paludis
             ///\name USE related values
             ///\{
 
+            UseFlagSet use;
             UseFlagSet use_expand;
             UseFlagSet use_expand_hidden;
             StackedValuesList stacked_values_list;
@@ -157,8 +161,9 @@ namespace paludis
                         d != d_end ; ++d)
                     load_profile_directory_recursively(*d);
 
-                add_use_expand_to_use();
                 make_vars_from_file_vars();
+                load_special_make_defaults_vars();
+                add_use_expand_to_use();
                 handle_profile_arch_var();
             }
 
@@ -245,17 +250,58 @@ Implementation<PortageRepositoryProfile>::load_profile_make_defaults(const FSEnt
 
     KeyValueConfigFile file(dir / "make.defaults");
 
+    for (KeyValueConfigFile::Iterator k(file.begin()), k_end(file.end()) ;
+            k != k_end ; ++k)
+    {
+        if (is_incremental(k->first))
+        {
+            std::list<std::string> val, val_add;
+            WhitespaceTokeniser::get_instance()->tokenise(environment_variables[k->first], std::back_inserter(val));
+            WhitespaceTokeniser::get_instance()->tokenise(k->second, std::back_inserter(val_add));
+
+            for (std::list<std::string>::const_iterator v(val_add.begin()), v_end(val_add.end()) ;
+                    v != v_end ; ++v)
+            {
+                if (v->empty())
+                    continue;
+                if (*v == "-*")
+                    val.clear();
+                else if ('-' == v->at(0))
+                    val.remove(v->substr(1));
+                else
+                    val.push_back(*v);
+            }
+
+            environment_variables[k->first] = join(val.begin(), val.end(), " ");
+        }
+        else
+            environment_variables[k->first] = k->second;
+
+        Log::get_instance()->message(ll_debug, lc_context, "Profile environment variable '" +
+                stringify(k->first) + "' is now '" + stringify(environment_variables[k->first]) + "'");
+    }
+
     try
     {
-        std::list<std::string> uses;
-        WhitespaceTokeniser::get_instance()->tokenise(file.get("USE"), std::back_inserter(uses));
+        use_expand.clear();
+        WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE_EXPAND"],
+                create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
+    }
+    catch (const NameError & e)
+    {
+        Log::get_instance()->message(ll_warning, lc_context, "Loading USE_EXPAND failed due to exception: "
+                + e.message() + " (" + e.what() + ")");
+    }
+}
 
-        for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
-                u != u_end ; ++u)
-            if ('-' == u->at(0))
-                stacked_values_list.back().use[UseFlagName(u->substr(1))] = false;
-            else
-                stacked_values_list.back().use[UseFlagName(*u)] = true;
+void
+Implementation<PortageRepositoryProfile>::load_special_make_defaults_vars()
+{
+    try
+    {
+        use.clear();
+        WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE"],
+                create_inserter<UseFlagName>(std::inserter(use, use.end())));
     }
     catch (const NameError & e)
     {
@@ -265,34 +311,41 @@ Implementation<PortageRepositoryProfile>::load_profile_make_defaults(const FSEnt
 
     try
     {
-        WhitespaceTokeniser::get_instance()->tokenise(
-                file.get("USE_EXPAND"), create_inserter<UseFlagName>(
-                    std::inserter(use_expand, use_expand.begin())));
+        use_expand.clear();
+        WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE_EXPAND"],
+                create_inserter<UseFlagName>(std::inserter(use_expand, use_expand.end())));
     }
     catch (const NameError & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading USE_EXPAND failed due to exception: "
                 + e.message() + " (" + e.what() + ")");
     }
-
     try
     {
-        WhitespaceTokeniser::get_instance()->tokenise(
-                file.get("USE_EXPAND_HIDDEN"), create_inserter<UseFlagName>(
-                    std::inserter(use_expand_hidden, use_expand_hidden.begin())));
+        use_expand_hidden.clear();
+        WhitespaceTokeniser::get_instance()->tokenise(environment_variables["USE_EXPAND_HIDDEN"],
+                create_inserter<UseFlagName>(std::inserter(use_expand_hidden, use_expand_hidden.end())));
     }
     catch (const NameError & e)
     {
         Log::get_instance()->message(ll_warning, lc_context, "Loading USE_EXPAND_HIDDEN failed due to exception: "
                 + e.message() + " (" + e.what() + ")");
     }
+}
 
-    for (KeyValueConfigFile::Iterator k(file.begin()), k_end(file.end()) ;
-            k != k_end ; ++k)
+bool
+Implementation<PortageRepositoryProfile>::is_incremental(const std::string & s) const
+{
+    try
     {
-        Log::get_instance()->message(ll_debug, lc_context, "Profile environment variable '" +
-                stringify(k->first) + "' is '" + stringify(k->second) + "'");
-        environment_variables[k->first] = k->second;
+        return (s == "USE") || (s == "USE_EXPAND") || (s == "USE_EXPAND_HIDDEN")
+            || (s == "CONFIG_PROTECT") || (s == "CONFIG_PROTECT_MASK")
+            || (use_expand.end() != use_expand.find(UseFlagName(s)));
+    }
+    catch (const NameError &)
+    {
+        return (s == "USE") || (s == "USE_EXPAND") || (s == "USE_EXPAND_HIDDEN")
+            || (s == "CONFIG_PROTECT") || (s == "CONFIG_PROTECT_MASK");
     }
 }
 
@@ -462,7 +515,7 @@ Implementation<PortageRepositoryProfile>::add_use_expand_to_use()
                 std::back_inserter(uses));
         for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                 u != u_end ; ++u)
-            stacked_values_list.back().use[UseFlagName(lower_x + "_" + *u)] = true;
+            use.insert(UseFlagName(lower_x + "_" + *u));
     }
 }
 
@@ -480,12 +533,8 @@ Implementation<PortageRepositoryProfile>::handle_profile_arch_var()
     {
         UseFlagName arch(arch_s);
 
-        stacked_values_list.back().use[arch] = true;
+        use.insert(arch);
         stacked_values_list.back().use_force[arch] = true;
-#if 0
-        if (use_mask.end() != use_mask.find(arch))
-            throw PortageRepositoryConfigurationError("ARCH USE '" + arch_s + "' is use masked");
-#endif
     }
     catch (const NameError &)
     {
@@ -566,13 +615,11 @@ PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
 {
     UseFlagState result(use_unspecified);
 
+    result = _imp->use.end() != _imp->use.find(u) ? use_enabled : use_unspecified;
+
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
             i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
     {
-        FlagStatusMap::const_iterator f(i->use.find(u));
-        if (i->use.end() != f)
-            result = f->second ? use_enabled : use_disabled;
-
         if (e)
             for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
                     g_end(i->package_use.end()) ; g != g_end ; ++g)

@@ -119,9 +119,10 @@ ebuild_source_profile()
     fi
 }
 
-save_vars="USE USE_EXPAND ${USE_EXPAND}"
+save_vars="USE USE_EXPAND USE_EXPAND_HIDDEN ${USE_EXPAND}"
+default_save_vars="CONFIG_PROTECT CONFIG_PROTECT_MASK"
 
-for var in ${save_vars} ; do
+for var in ${save_vars} ${default_save_vars} ; do
     ebuild_notice "debug" "Saving ${var}=${!var}"
     eval "export save_var_${var}='${!var}'"
 done
@@ -153,6 +154,14 @@ done
 
 for var in ${save_vars} ; do
     eval "export ${var}=\${save_var_${var}}"
+done
+
+for var in ${default_save_vars} ; do
+    if [[ -z ${!var} ]] ; then
+        eval "export ${var}=\${save_var_${var}}"
+    else
+        ebuild_notice "debug" "Not restoring ${var}"
+    fi
 done
 
 [[ -z "${CBUILD}" ]] && export CBUILD="${CHOST}"

@@ -243,7 +243,7 @@ module Paludis
             assert repo.query_use('test2') == true
             assert repo.query_use('test3') == nil
             assert repo.query_use('test4') == false
-            assert repo.query_use('test5') == false
+            assert repo.query_use('test5') == nil
             assert repo.query_use('test6') == true
             assert repo.query_use('test7') == nil
         end

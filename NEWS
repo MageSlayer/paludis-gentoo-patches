@@ -13,6 +13,9 @@ of every change, see the ChangeLog.
     * Installing and uninstalling set*id files is now done differently to
     prevent exploitation of supposedly uninstalled vulnerable applications.
 
+    * Profile incremental variables are now handled in compliance with the
+    current PMS draft.
+
 0.14.1:
     * Versions can include -rx.y, -rx.y.z etc.
 
