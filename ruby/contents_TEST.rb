@@ -218,8 +218,7 @@ module Paludis
 
         def test_responds_to
             c = get_c
-            assert_respond_to c, :add
-            assert_respond_to c, :entries
+            [:add, :entries, :each].each {|sym| assert_respond_to c, sym}
         end
 
         def test_add

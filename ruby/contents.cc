@@ -92,20 +92,19 @@ namespace
 
     /*
      * call-seq:
-     *     entries -> Array
+     *     each {|contents_entry| block}
      *
-     * Gets an array of entries.
+     * Iterate through our entries.
      */
     VALUE
-    contents_entries(VALUE self)
+    contents_each(VALUE self)
     {
         Contents::Pointer * ptr;
         Data_Get_Struct(self, Contents::Pointer, ptr);
 
-        VALUE result(rb_ary_new());
         for (Contents::Iterator i ((*ptr)->begin()), i_end((*ptr)->end()) ; i != i_end; ++i)
-            rb_ary_push(result, contents_entry_to_value(*i));
-        return result;
+            rb_yield(contents_entry_to_value(*i));
+        return self;
     }
 
     VALUE
@@ -194,12 +193,14 @@ namespace
         /*
          * Document-class: Paludis::Contents
          *
-         * A package's contents.
+         * A package's contents. Includes Enumerable[http://www.ruby-doc.org/core/classes/Enumerable.html],
+         * but not Comparable.
          */
         c_contents = rb_define_class_under(paludis_module(), "Contents", rb_cObject);
+        rb_include_module(c_contents, rb_mEnumerable);
         rb_define_singleton_method(c_contents, "new", RUBY_FUNC_CAST(&contents_new), 0);
         rb_define_method(c_contents, "initialize", RUBY_FUNC_CAST(&contents_init), 0);
-        rb_define_method(c_contents, "entries", RUBY_FUNC_CAST(&contents_entries), 0);
+        rb_define_method(c_contents, "each", RUBY_FUNC_CAST(&contents_each), 0);
         rb_define_method(c_contents, "add", RUBY_FUNC_CAST(&contents_add), 1);
 
         /*
@@ -231,7 +232,7 @@ namespace
 
         /*
          * Document-class: Paludis::ContentsMiscEntry
-         
+         *
          *  A miscellaneous ContentsEntry
          */
         c_contents_misc_entry = rb_define_class_under(paludis_module(), "ContentsMiscEntry", c_contents_entry);
