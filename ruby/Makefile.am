@@ -240,7 +240,7 @@ else
 	    $(top_builddir)/paludis/util/.libs/libpaludisutil.so \
 	    $(top_builddir)/paludis/.libs/libpaludis.so \
 	    $(top_builddir)/paludis/environment/default/.libs/libpaludisdefaultenvironment.so \
-	    $(top_builddir)/paludis/environment/no_config/.libs/libpaldisnoconfigenvironment.so \
+	    $(top_builddir)/paludis/environment/no_config/.libs/libpaludisnoconfigenvironment.so \
 	    $(top_builddir)/paludis/dep_list/.libs/libpaludisdeplist.so
 
 Paludis.so : $(OUR_OBJECTS)
