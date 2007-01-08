@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Alexander H. Færøy <eroyf@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -292,6 +293,14 @@ namespace
      * Fetches run_depend information as a DepAtom
      */
     /*
+     * Document-method: suggested_depend
+     *
+     * call-seq:
+     *     suggested_depend -> DepAtom
+     *
+     * Fetches sugest_depend information as a DepAtom
+     */
+    /*
      * Document-method: post_depend
      *
      * call-seq:
@@ -327,6 +336,14 @@ namespace
      *     run_depend_string -> String
      *
      * Fetches run_depend information as a String
+     */
+    /*
+     * Document-method: suggested_depend_string
+     *
+     * call-seq:
+     *     suggested_depend_string -> String
+     *
+     * Fetches suggested_depend information as a String
      */
     /*
      * Document-method: post_depend_string
@@ -467,6 +484,8 @@ namespace
                         &VersionMetadataDeps::build_depend>::fetch)), 0);
         rb_define_method(c_version_metadata, "run_depend", RUBY_FUNC_CAST((&DependValue<
                         &VersionMetadataDeps::run_depend>::fetch)), 0);
+        rb_define_method(c_version_metadata, "suggested_depend", RUBY_FUNC_CAST((&DependValue<
+                        &VersionMetadataDeps::suggested_depend>::fetch)), 0);
         rb_define_method(c_version_metadata, "post_depend", RUBY_FUNC_CAST((&DependValue<
                         &VersionMetadataDeps::post_depend>::fetch)), 0);
 
@@ -474,6 +493,8 @@ namespace
                         &VersionMetadataDeps::build_depend_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "run_depend_string", RUBY_FUNC_CAST((&DependValueString<
                         &VersionMetadataDeps::run_depend_string>::fetch)), 0);
+        rb_define_method(c_version_metadata, "suggested_depend_string", RUBY_FUNC_CAST((&DependValueString<
+                        &VersionMetadataDeps::suggested_depend_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "post_depend_string", RUBY_FUNC_CAST((&DependValueString<
                         &VersionMetadataDeps::post_depend_string>::fetch)), 0);
 
