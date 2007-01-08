@@ -59,7 +59,7 @@ namespace
 
     /*
      * call-seq:
-     *     new(qualified_package_name, version_spec, environment_data)
+     *     EbuildCheckData.new(qualified_package_name, version_spec, environment_data)
      *
      * Creates a new EbuildCheckData for EbuildCheck.
      */
@@ -100,9 +100,9 @@ namespace
 
     /*
      * call-seq:
-     *     new(qualified_package_name, version_spec, environment_data, profile)
+     *     PerProfileEbuildCheckData.new(qualified_package_name, version_spec, environment_data, profile)
      *
-     * Creates a new PerProfileEbuildCheckData for PerProfileEbuildCheck.
+     * Creates a new PerProfileEbuildCheckData for PerProfileEbuildCheck.2
      */
     VALUE
     per_profile_ebuild_check_data_new(int argc, VALUE *argv, VALUE self)
@@ -142,7 +142,7 @@ namespace
 
     /*
      * call-seq:
-     *     new(profiles_dir, profiles_desc_line)
+     *     ProfileCheckData.new(profiles_dir, profiles_desc_line)
      *
      * Creates a new ProfileCheckData for ProfileCheck.
      */

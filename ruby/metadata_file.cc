@@ -38,6 +38,12 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     MetadataFile.new(file_name) -> MetadataFile
+     *
+     * Create a new MetadataFile instance from the specified file.
+     */
     VALUE
     metadata_file_new(int argc, VALUE *argv, VALUE self)
     {

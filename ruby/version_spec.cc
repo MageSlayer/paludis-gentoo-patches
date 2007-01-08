@@ -36,6 +36,12 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     VersionsSpec.new(version_string) -> VersionSpec
+     *
+     * Creates a new VersionSpec from the given string.
+     */
     VALUE
     version_spec_new(VALUE self, VALUE s)
     {

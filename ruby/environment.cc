@@ -285,7 +285,7 @@ namespace
 
     /*
      * call-seq:
-     *     new(dir)
+     *     NoConfigEnvironment.new(dir) -> NoConfigEnvironment
      *
      * Create a new NoConfigEnvironment form the specified directory.
      */

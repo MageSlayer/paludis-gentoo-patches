@@ -36,6 +36,13 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     QualifiedPackageName.new(category_and_package_string) -> QualifiedPackageName
+     *     QualifiedPackageName.new(category_name, package_name) -> QualifiedPackageName
+     *
+     * Creates a new QualifiedPackageName.
+     */
     VALUE
     qualified_package_name_new(int argc, VALUE *argv, VALUE self)
     {

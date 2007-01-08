@@ -16,12 +16,9 @@ module RDoc
         def initialize(top_level, file_name, body, options, stats)
             #Paludis and Paludis::QA are already added
             body.gsub!('paludis_module()','c_paludis_module')
- #           body.gsub!('c_paludis_module','rb_mPaludis')
             body.gsub!('paludis_qa_module()','c_paludis_qa_module')
-  #          body.gsub!('c_paludis_qa_module','rb_mQA')
             body.gsub!('no_config_environment_class()','c_no_config_environment')
             body.gsub!('environment_class()','c_environment')
-#            body.gsub!('paludis_qa_module()','rb_mQA')
 
             #parse_c hates rb_defines over multiple lines
             body.gsub!(/(rb_define[^;]+)\n/)  {|match| $1}
@@ -54,12 +51,6 @@ module RDoc
             #puts new_body
             #exit
             super(top_level, file_name, new_body, options, stats)
-        end
-
-        def scan
-            x = super
-            puts x.file_relative_name
-            x
         end
 
         def generate_consts(header, type, in_class)

@@ -40,8 +40,8 @@ namespace
 
     /*
      * call-seq:
-     *     new(dir)
-     *     new(dir, write_cache_dir)
+     *     QAEnvironment.new(dir) -> QAEnvironment
+     *     QAEnvironment.new(dir, write_cache_dir) -> QAEnvironment
      *
      * Creates a new QAEnvironment
      */
