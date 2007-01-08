@@ -51,6 +51,12 @@ VersionMetadataDeps::post_depend() const
     return parser(post_depend_string);
 }
 
+DepAtom::ConstPointer
+VersionMetadataDeps::suggested_depend() const
+{
+    return parser(suggested_depend_string);
+}
+
 VersionMetadataDeps::VersionMetadataDeps(const ParserFunction & p) :
     parser(p)
 {
