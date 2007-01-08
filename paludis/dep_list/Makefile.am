@@ -10,7 +10,18 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
+paludis_dep_list_includedir = $(includedir)/paludis/dep_list
+paludis_dep_list_include_HEADERS = \
+	dep_list.hh \
+	uninstall_list.hh \
+	exceptions.hh \
+	options.hh \
+	dep_list-sr.hh \
+	uninstall_list-sr.hh
+
 libpaludisdeplist_la_SOURCES = \
+	options.cc        options.hh \
+	exceptions.cc     exceptions.hh \
 	dep_list.cc       dep_list.hh \
 	uninstall_list.cc uninstall_list.hh
 
@@ -33,9 +44,6 @@ else
 lib_LTLIBRARIES = libpaludisdeplist.la
 
 endif
-
-paludis_dep_list_includedir = $(includedir)/paludis/dep_list
-paludis_dep_list_include_HEADERS = dep_list.hh uninstall_list.hh dep_list-sr.hh uninstall_list-sr.hh
 
 EXTRA_DIST = \
 	dep_list_TEST.cc \

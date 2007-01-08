@@ -22,6 +22,7 @@
 #include <paludis_ruby.hh>
 #include <paludis/config_file.hh>
 #include <paludis/dep_list/dep_list.hh>
+#include <paludis/dep_list/exceptions.hh>
 #include <ruby.h>
 #include <list>
 #include <ctype.h>

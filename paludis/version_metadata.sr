@@ -7,6 +7,7 @@ make_class_VersionMetadataDeps()
     key build_depend_string std::string
     key run_depend_string std::string
     key post_depend_string std::string
+    key suggested_depend_string std::string
 
     extra_constructors <<END
             VersionMetadataDeps(const ParserFunction &);
@@ -27,6 +28,11 @@ END
              * Our post depends.
              */
             DepAtom::ConstPointer post_depend() const;
+
+            /**
+             * Our suggested depends.
+             */
+            DepAtom::ConstPointer suggested_depend() const;
 END
 
     doxygen_comment << "END"

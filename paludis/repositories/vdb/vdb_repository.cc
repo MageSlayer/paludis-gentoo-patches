@@ -1194,7 +1194,7 @@ VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry &
     result->license_string = m->license_string;
     result->eapi = m->eapi;
     result->deps = VersionMetadataDeps(&PortageDepParser::parse_depend,
-            stringify(p.provided_by_name), stringify(p.provided_by_name), "");
+            stringify(p.provided_by_name), stringify(p.provided_by_name), "", "");
 
     return result;
 }

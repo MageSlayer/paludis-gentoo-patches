@@ -28,6 +28,7 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/dep_list/dep_list.hh>
+#include <paludis/dep_list/exceptions.hh>
 
 #include <iostream>
 #include <iomanip>

@@ -968,7 +968,7 @@ PortageRepository::virtual_package_version_metadata(const RepositoryVirtualsEntr
     result->eapi = m->eapi;
     result->deps = VersionMetadataDeps(&PortageDepParser::parse_depend,
             "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v),
-            "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v), "");
+            "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v), "", "");
 
     return result;
 

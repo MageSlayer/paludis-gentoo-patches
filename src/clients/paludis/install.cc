@@ -43,6 +43,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/environment/default/default_environment.hh>
 #include <paludis/environment/default/default_config.hh>
+#include <paludis/dep_list/exceptions.hh>
 
 /** \file
  * Handle the --install action for the main paludis program.
