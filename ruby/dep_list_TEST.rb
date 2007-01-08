@@ -46,22 +46,6 @@ module Paludis
             )
         end
 
-        def env
-            DefaultEnvironment.instance
-        end
-
-        def dl
-            DepList.new(env,dlo)
-        end
-
-        def pda
-            PackageDepAtom.new('foo/bar')
-        end
-    end
-
-    class TestCase_DepListOptions < Test::Unit::TestCase
-        include Shared
-
         def options_hash
             {
                 :reinstall => DepListReinstallOption::ReinstallAlways,
@@ -81,17 +65,49 @@ module Paludis
             }
         end
 
+        def dlo_hash
+            DepListOptions.new(options_hash)
+        end
+
+        def env
+            DefaultEnvironment.instance
+        end
+
+        def dl
+            DepList.new(env,dlo)
+        end
+
+        def pda
+            PackageDepAtom.new('foo/bar')
+        end
+    end
+
+    class TestCase_DepListOptions < Test::Unit::TestCase
+        include Shared
+
         def test_create
             assert_nothing_raised do
                 dlo
             end
+
+            assert_nothing_raised do
+                dlo_hash
+            end
         end
 
-        def test_respond_to
+        def test_members
             options = dlo
             options_hash.each_pair do |method, value|
                 assert_respond_to options, method
                 assert_equal value, options.send(method)
+            end
+        end
+
+        def test_bad_create
+            options_hash.each_key do |key|
+                assert_raises ArgumentError do
+                    DepListOptions.new(options_hash.delete(key))
+                end
             end
         end
     end

@@ -23,13 +23,10 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/qa/qa.hh>
 #include <ruby.h>
-#include <cstdlib>
-#include <iostream>
 
 using namespace paludis;
 using namespace paludis::qa;
 using namespace paludis::ruby;
-using std::cerr;
 
 #define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
 

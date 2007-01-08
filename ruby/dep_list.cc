@@ -69,76 +69,158 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     DepListOptions.new(reinstall, reinstall_scm, target_type, upgrade, new_slots, fall_back, installed_deps_prem installed_deps_runtime, installed_deps_post, uninstalled_deps_pre, uninstalled_deps_runtime, uninstalled_deps_post, circular, dependency_tags) -> DepListOptions
+     *     DepListOptions.new(Hash) -> DepListOptions
+     *
+     * DepListOptions.new can either be called with all parameters in order, or with one hash parameter, where the hash keys are symbols with the names above.
+     */
     VALUE
     dep_list_options_new(int argc, VALUE *argv, VALUE self)
     {
         DepListOptions * ptr(0);
         try
         {
-            if (14 == argc)
+            int value_for_reinstall;
+            int value_for_reinstall_scm;
+            int value_for_target_type;
+            int value_for_upgrade;
+            int value_for_new_slots;
+            int value_for_fall_back;
+            int value_for_installed_deps_pre;
+            int value_for_installed_deps_runtime;
+            int value_for_installed_deps_post;
+            int value_for_uninstalled_deps_pre;
+            int value_for_uninstalled_deps_runtime;
+            int value_for_uninstalled_deps_post;
+            int value_for_circular;
+            bool value_for_dependency_tags;
+
+            if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
             {
-                int value_for_reinstall                = NUM2INT(argv[0]);
-                int value_for_reinstall_scm            = NUM2INT(argv[1]);
-                int value_for_target_type              = NUM2INT(argv[2]);
-                int value_for_upgrade                  = NUM2INT(argv[3]);
-                int value_for_new_slots                = NUM2INT(argv[4]);
-                int value_for_fall_back                = NUM2INT(argv[5]);
-                int value_for_installed_deps_pre       = NUM2INT(argv[6]);
-                int value_for_installed_deps_runtime   = NUM2INT(argv[7]);
-                int value_for_installed_deps_post      = NUM2INT(argv[8]);
-                int value_for_uninstalled_deps_pre     = NUM2INT(argv[9]);
-                int value_for_uninstalled_deps_runtime = NUM2INT(argv[10]);
-                int value_for_uninstalled_deps_post    = NUM2INT(argv[11]);
-                int value_for_circular                 = NUM2INT(argv[12]);
-                bool value_for_dependency_tags = Qtrue == argv[13] ? true : false;
-
-                if (value_for_reinstall< 0|| value_for_reinstall>= last_dl_reinstall)
-                    rb_raise(rb_eArgError, "DepListReinstallOption out of range");
-                if (value_for_reinstall_scm< 0|| value_for_reinstall_scm>= last_dl_reinstall_scm)
-                    rb_raise(rb_eArgError, "DepListReinstallScmOption out of range");
-                if (value_for_target_type< 0|| value_for_target_type>= last_dl_target)
-                    rb_raise(rb_eArgError, "DepListTargetType out of range");
-                if (value_for_upgrade< 0|| value_for_upgrade>= last_dl_upgrade)
-                    rb_raise(rb_eArgError, "DepListUpgradeOption out of range");
-                if (value_for_new_slots< 0|| value_for_new_slots>= last_dl_new_slots)
-                    rb_raise(rb_eArgError, "DepListNewSlotsOption out of range");
-                if (value_for_fall_back< 0|| value_for_fall_back>= last_dl_fall_back)
-                    rb_raise(rb_eArgError, "DepListFallBack out of range");
-                if (value_for_installed_deps_pre< 0|| value_for_installed_deps_pre>= last_dl_deps)
-                    rb_raise(rb_eArgError, "DepListDepsOption out of range");
-                if (value_for_installed_deps_runtime< 0|| value_for_installed_deps_runtime>= last_dl_deps)
-                    rb_raise(rb_eArgError, "DepListDepsOption out of range");
-                if (value_for_installed_deps_post< 0|| value_for_installed_deps_post>= last_dl_deps)
-                    rb_raise(rb_eArgError, "DepListDepsOption out of range");
-                if (value_for_uninstalled_deps_pre< 0|| value_for_uninstalled_deps_pre>= last_dl_deps)
-                    rb_raise(rb_eArgError, "DepListDepsOption out of range");
-                if (value_for_uninstalled_deps_runtime< 0|| value_for_uninstalled_deps_runtime>= last_dl_deps)
-                    rb_raise(rb_eArgError, "DepListDepsOption out of range");
-                if (value_for_uninstalled_deps_post< 0|| value_for_uninstalled_deps_post>= last_dl_deps)
-                    rb_raise(rb_eArgError, "DepListDepsOption out of range");
-                if (value_for_circular< 0|| value_for_circular>= last_dl_circular)
-                    rb_raise(rb_eArgError, "DepListReinstallScmOption out of range");
-
-                ptr = new DepListOptions(static_cast<DepListReinstallOption>(value_for_reinstall),
-                        static_cast<DepListReinstallScmOption>(value_for_reinstall_scm),
-                        static_cast<DepListTargetType>(value_for_target_type),
-                        static_cast<DepListUpgradeOption>(value_for_upgrade),
-                        static_cast<DepListNewSlotsOption>(value_for_new_slots),
-                        static_cast<DepListFallBackOption>(value_for_fall_back),
-                        static_cast<DepListDepsOption>(value_for_installed_deps_pre),
-                        static_cast<DepListDepsOption>(value_for_installed_deps_runtime),
-                        static_cast<DepListDepsOption>(value_for_installed_deps_post),
-                        static_cast<DepListDepsOption>(value_for_uninstalled_deps_pre),
-                        static_cast<DepListDepsOption>(value_for_uninstalled_deps_runtime),
-                        static_cast<DepListDepsOption>(value_for_uninstalled_deps_post),
-                        static_cast<DepListCircularOption>(value_for_circular),
-                        value_for_dependency_tags
-                        );
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("reinstall"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: reinstall");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("reinstall_scm"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: reinstall_scm");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("target_type"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: target_type");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("upgrade"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: upgrade");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("new_slots"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: new_slots");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("fall_back"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: fall_back");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("installed_deps_pre"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: installed_deps_pre");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("installed_deps_runtime"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: installed_deps_runtime");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("installed_deps_post"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: installed_deps_post");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("uninstalled_deps_pre"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: uninstalled_deps_pre");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("installed_deps_runtime"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: uninstalled_deps_runtime");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("uninstalled_deps_post"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: uninstalled_deps_post");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("circular"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: circular");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("dependency_tags"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: dependency_tags");
+                value_for_reinstall =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("reinstall"))));
+                value_for_reinstall_scm =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("reinstall_scm"))));
+                value_for_target_type =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("target_type"))));
+                value_for_upgrade =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("upgrade"))));
+                value_for_new_slots =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("new_slots"))));
+                value_for_fall_back =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("fall_back"))));
+                value_for_installed_deps_pre =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("installed_deps_pre"))));
+                value_for_installed_deps_runtime =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("installed_deps_runtime"))));
+                value_for_installed_deps_post =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("installed_deps_post"))));
+                value_for_uninstalled_deps_pre =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("uninstalled_deps_pre"))));
+                value_for_uninstalled_deps_runtime =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("uninstalled_deps_runtime"))));
+                value_for_uninstalled_deps_post =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("uninstalled_deps_post"))));
+                value_for_circular =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("circular"))));
+                value_for_dependency_tags =
+                    Qtrue == (rb_hash_aref(argv[0], ID2SYM(rb_intern("dependency_tags")))) ? true : false;
+            }
+            else if (14 == argc)
+            {
+                value_for_reinstall                = NUM2INT(argv[0]);
+                value_for_reinstall_scm            = NUM2INT(argv[1]);
+                value_for_target_type              = NUM2INT(argv[2]);
+                value_for_upgrade                  = NUM2INT(argv[3]);
+                value_for_new_slots                = NUM2INT(argv[4]);
+                value_for_fall_back                = NUM2INT(argv[5]);
+                value_for_installed_deps_pre       = NUM2INT(argv[6]);
+                value_for_installed_deps_runtime   = NUM2INT(argv[7]);
+                value_for_installed_deps_post      = NUM2INT(argv[8]);
+                value_for_uninstalled_deps_pre     = NUM2INT(argv[9]);
+                value_for_uninstalled_deps_runtime = NUM2INT(argv[10]);
+                value_for_uninstalled_deps_post    = NUM2INT(argv[11]);
+                value_for_circular                 = NUM2INT(argv[12]);
+                value_for_dependency_tags = Qtrue == argv[13] ? true : false;
             }
             else
             {
                 rb_raise(rb_eArgError, "DepListOptions expects fourteen arguments, but got %d",argc);
             }
+
+            if (value_for_reinstall < 0 ||  value_for_reinstall >= last_dl_reinstall)
+                rb_raise(rb_eArgError, "reinstall out of range");
+            if (value_for_reinstall_scm < 0 ||  value_for_reinstall_scm >= last_dl_reinstall_scm)
+                rb_raise(rb_eArgError, "reinstall_scm out of range");
+            if (value_for_target_type < 0 ||  value_for_target_type >= last_dl_target)
+                rb_raise(rb_eArgError, "target_type out of range");
+            if (value_for_upgrade < 0 ||  value_for_upgrade >= last_dl_upgrade)
+                rb_raise(rb_eArgError, "upgrade out of range");
+            if (value_for_new_slots < 0 ||  value_for_new_slots >= last_dl_new_slots)
+                rb_raise(rb_eArgError, "new_slots out of range");
+            if (value_for_fall_back < 0 ||  value_for_fall_back >= last_dl_fall_back)
+                rb_raise(rb_eArgError, "fall_back out of range");
+            if (value_for_installed_deps_pre < 0 ||  value_for_installed_deps_pre >= last_dl_deps)
+                rb_raise(rb_eArgError, "installed_deps_pre out of range");
+            if (value_for_installed_deps_runtime < 0 ||  value_for_installed_deps_runtime >= last_dl_deps)
+                rb_raise(rb_eArgError, "installed_deps_runtime out of range");
+            if (value_for_installed_deps_post < 0 ||  value_for_installed_deps_post >= last_dl_deps)
+                rb_raise(rb_eArgError, "installed_deps_post out of range");
+            if (value_for_uninstalled_deps_pre < 0 ||  value_for_uninstalled_deps_pre >= last_dl_deps)
+                rb_raise(rb_eArgError, "uninstalled_deps_pre out of range");
+            if (value_for_uninstalled_deps_runtime < 0 ||  value_for_uninstalled_deps_runtime >= last_dl_deps)
+                rb_raise(rb_eArgError, "uninstalled_deps_runtime out of range");
+            if (value_for_uninstalled_deps_post < 0 ||  value_for_uninstalled_deps_post >= last_dl_deps)
+                rb_raise(rb_eArgError, "uninstalled_deps_post out of range");
+            if (value_for_circular < 0 ||  value_for_circular >= last_dl_circular)
+                rb_raise(rb_eArgError, "circular out of range");
+
+            ptr = new DepListOptions(static_cast<DepListReinstallOption>(value_for_reinstall),
+                    static_cast<DepListReinstallScmOption>(value_for_reinstall_scm),
+                    static_cast<DepListTargetType>(value_for_target_type),
+                    static_cast<DepListUpgradeOption>(value_for_upgrade),
+                    static_cast<DepListNewSlotsOption>(value_for_new_slots),
+                    static_cast<DepListFallBackOption>(value_for_fall_back),
+                    static_cast<DepListDepsOption>(value_for_installed_deps_pre),
+                    static_cast<DepListDepsOption>(value_for_installed_deps_runtime),
+                    static_cast<DepListDepsOption>(value_for_installed_deps_post),
+                    static_cast<DepListDepsOption>(value_for_uninstalled_deps_pre),
+                    static_cast<DepListDepsOption>(value_for_uninstalled_deps_runtime),
+                    static_cast<DepListDepsOption>(value_for_uninstalled_deps_post),
+                    static_cast<DepListCircularOption>(value_for_circular),
+                    value_for_dependency_tags
+                    );
+
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<DepListOptions>::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
