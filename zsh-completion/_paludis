@@ -5,7 +5,7 @@
 # Written by Baptiste Daroussin <baptux at free.fr>
 
 _paludis() {
-    local actions action_args query_args general_args deplist_args install_uninstall_args list_args lists 
+    local actions action_args query_args general_args deplist_args install_uninstall_args list_args lists owner_args
     actions=( --query --install -i --uninstall -u --sync -s --report --contents -k --owner -o --version -V --info -I --help -h \
     --has-version  --best-version --environnement-variable --list-repositories --list-categories --list-packages --list-sets --list-sync-protocols --list-repository-formats --list-dep-tag-categories --regenerate-installed-cache  --update-news --regenerate-installable-cache)
 
@@ -20,9 +20,11 @@ _paludis() {
         '--no-config-protection[Disable config file protection (dangerous)]'
         '--debug-build[What to do with debug information]:Debug Build:(( none\:Discard\ debug\ information split\:Split\ debug\ information internal\:Keep\ debug\ information\ with\ binaries ))'
         '(--fetch -f)'{--fetch,-f}'[Only fetch sources; don t install anything]'
-        '--show-install-reasons[Show why packages are being installed]:Verbosity:((none\:Don\ t\ show\ any\ information summary\:Show\ a\ summary full\:Show\ full\ output))'
+        '--show-reasons[Show why packages are being (un)installed]:Verbosity:((none\:Don\ t\ show\ any\ information summary\:Show\ a\ summary full\:Show\ full\ output))'
         '--with-unused-dependencies[Also uninstall any dependencies of the target that are no longer used]'
         '--with-dependencies[Also uninstall packages that depend upon the target]'
+        '--show-use-descriptions[Show descriptions of USE flags]:case to show:((none\:Don\ t\ show\ any\ descriptions new\:Show\ for\ new\ use\ flags changed\:Show\ for\ new\ and\ changed\ flags all\:Show for all flags))'
+        '--add-to-world-atom[Use this atom, rather than all targets, for updating world (for resume commands)]'
     )
     list_args=(
         '--repository[Matches with this repository name only]:repository:_paludis_packages repositories'
@@ -54,7 +56,7 @@ _paludis() {
         "($actions)--uninstall-unused[Uninstall unused packages]"
         "(: -)"{--report,-r}"[Report the current state of the system]"
         "(: -)"{--contents,-k}"[Display contents of a package]:package:_paludis_packages installed"
-        "(: -)"{--owner,-o}"[Display the owner of a file]:File:_files"
+        "(: -)"{--owner,-o}"[Display the owner of a file]"
         "(: -)"{--version,-V}"[Display program version]"
         "(: -)"{--info,-I}"[Display program version and system information]"
         "(: -)"{--help,-h}"[Display program help]"
@@ -66,10 +68,14 @@ _paludis() {
         "(: -)--regenerate-installed-cache[Regenerate (non-metadata) cache for installed repositories]"
         "(: -)--regenerate-installable-cache[Regenerate (non-metadata) cache for installable repositories]"
     )
+    owner_args=(
+        "--full-match[Match whole filename]"
+    )
     deplist_args=(
         "--dl-reinstall[When to reinstall packages]:When:(never always if-use-changed)"
         "--dl-reinstall-scm[When to reinstall scm packages]:When:(never always daily weekly)"
         "--dl-upgrade[When to upgrade packages]:When:(always as-needed)"
+        "--dl-deps-default[Override default behaviour for all dependency classes]:How::How:(pre pre-or-post post try-post discard)"
         "--dl-installed-deps-pre[How to handle pre dependencies for installed packages]:How:(pre pre-or-post post try-post discard)"
         "--dl-installed-deps-runtime[How to handle runtime dependencies for installed packages]:How:(pre pre-or-post post try-post discard)"
         "--dl-installed-deps-post[How to handle post dependencies for installed packages]:How:(pre pre-or-post post try-post discard)"
@@ -77,6 +83,7 @@ _paludis() {
         "--dl-uninstalled-deps-post[How to handle post dependencies for uninstalled packages]:How:(pre pre-or-post post try-post discard)"
         "--dl-circular[How to handle circular dependencies]:How:(error discard)"
         "--dl-fall-back[When to fall back to installed packages]:When:(as-needed-except-targets as-needed never)"
+        "--dl-new-slots[When to pull in new slots (works with --dl-upgrade)]:When:(always as-needed)"
     )
     #dispatch
     if (( $words[(I)(--(uninstall)|-[[:alpha:]]#(u)[[:alpha:]]#)] )) ; then
@@ -86,6 +93,10 @@ _paludis() {
     elif (( $words[(I)--uninstall-unused] )) ; then
             _arguments -s \
                 $deplist_args[@] $install_uninstall_args[@] && return 0
+    elif (( $words[(I)(--(owner)|-[[:alpha:]]#(o)[[:alpha:]]#)] )) ;then
+        _arguments -s \
+                $general_args[@] $owner_args[@]\
+                "*:Files:_files" && return 0
     elif (( $words[(I)(--(install)|-[[:alpha:]]#(i)[[:alpha:]]#)] )) ;then
         _arguments -s \
                 $general_args[@] $deplist_args[@] $install_uninstall_args[@] \
@@ -96,7 +107,7 @@ _paludis() {
             "*:available packages:_paludis_packages available" && return 0
     elif (( $words[(I)--(repository|package|category|set)] ));then
         _arguments \
-            $lists[@] && reruen 0
+            $lists[@] && return 0
     else
         _arguments -s \
             $general_args[@] $deplist_args[@] $list_args[@] $lists[@] $install_uninstall_args[@] "$action_args[@]" && return 0
