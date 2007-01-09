@@ -200,8 +200,8 @@ namespace
      *      package_names(category) -> Array
      *      package_names(category) {|qualified_package_name| block } -> Nil
      *
-     * Returns the names of all packages within the given package, either as an Array,
-     * or as the parameteris to a block.
+     * Returns the names of all packages within the given category, either as an Array,
+     * or as the parameters to a block.
      */
     VALUE
     repository_package_names(VALUE self, VALUE cat)
