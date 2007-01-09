@@ -84,6 +84,7 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/default/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/no_config/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/dep_list/.libs\`: \
+			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/qa/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/libxml/.libs\`" \
 			| tr -d ' '` \
@@ -207,6 +208,7 @@ if ENABLE_QA
 	    $(top_builddir)/paludis/environment/default/.libs/libpaludisdefaultenvironment.so \
 	    $(top_builddir)/paludis/environment/no_config/.libs/libpaludisnoconfigenvironment.so \
 	    $(top_builddir)/paludis/dep_list/.libs/libpaludisdeplist.so \
+	    $(top_builddir)/paludis/repositories/.libs/libpaludisrepositories.so \
 	    $(top_builddir)/paludis/qa/.libs/libpaludisqa.so \
 	    $(top_builddir)/paludis/libxml/.libs/libpaludislibxml.so \
 	    $(PCREPLUSPLUS_LIBS)
@@ -223,6 +225,7 @@ Paludis.so : $(OUR_OBJECTS)
 	    -L$(top_builddir)/paludis/environment/default/.libs/ -lpaludisdefaultenvironment \
 	    -L$(top_builddir)/paludis/environment/no_config/.libs/ -lpaludisnoconfigenvironment \
 	    -L$(top_builddir)/paludis/dep_list/.libs -lpaludisdeplist \
+	    -L$(top_builddir)/paludis/repositories/.libs -lpaludisrepositories \
 	    -L$(top_builddir)/paludis/qa/.libs/ -lpaludisqa \
 	    -L$(top_builddir)/paludis/libxml/.libs/ -lpaludislibxml \
 	    $(PCREPLUSPLUS_LIBS)
@@ -241,7 +244,8 @@ else
 	    $(top_builddir)/paludis/.libs/libpaludis.so \
 	    $(top_builddir)/paludis/environment/default/.libs/libpaludisdefaultenvironment.so \
 	    $(top_builddir)/paludis/environment/no_config/.libs/libpaludisnoconfigenvironment.so \
-	    $(top_builddir)/paludis/dep_list/.libs/libpaludisdeplist.so
+	    $(top_builddir)/paludis/dep_list/.libs/libpaludisdeplist.so \
+	    $(top_builddir)/paludis/repositories/.libs/libpaludisrepositories.so
 
 Paludis.so : $(OUR_OBJECTS)
 	$(CXX) -fPIC -shared $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -254,7 +258,8 @@ Paludis.so : $(OUR_OBJECTS)
 	    -L$(top_builddir)/paludis/.libs/ -lpaludis \
 	    -L$(top_builddir)/paludis/environment/default/.libs/ -lpaludisdefaultenvironment \
 	    -L$(top_builddir)/paludis/environment/no_config/.libs/ -lpaludisnoconfigenvironment \
-	    -L$(top_builddir)/paludis/dep_list/.libs -lpaludisdeplist
+	    -L$(top_builddir)/paludis/dep_list/.libs -lpaludisdeplist \
+	    -L$(top_builddir)/paludis/repositories/.libs -lpaludisrepositories
 
 endif
 
