@@ -25,38 +25,38 @@ Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 
 module Paludis
     module QA
-        class TestCase_FileCheckMaker < Test::Unit::TestCase
+        module MakerTests
             def instance
-                FileCheckMaker.instance
+                maker_class.instance
             end
 
             def test_instance
-                assert_equal FileCheckMaker.instance.__id__, FileCheckMaker.instance.__id__
-                assert_kind_of FileCheckMaker, FileCheckMaker.instance
+                assert_equal instance.__id__, instance.__id__
+                assert_kind_of maker_class, instance
             end
 
             def test_no_create
                 assert_raise NoMethodError do
-                    x = FileCheckMaker.new()
+                    x = maker_class.new()
                 end
             end
 
             def test_respond_to
-                assert_respond_to instance, :keys
-                assert_respond_to instance, :find_maker
-                assert_respond_to instance, :check_names
-                assert_respond_to instance, :find_check
+                [:keys, :find_maker, :check_names, :find_check].each {|sym| assert_respond_to instance, sym}
             end
 
             def test_keys
                 assert_kind_of Array, instance.keys
                 assert_not_equal 0, instance.keys
+
+                assert_equal(nil, instance.keys {|x| x})
             end
 
             def test_find_maker
                 name = instance.keys.first
-                assert_kind_of FileCheck, instance.find_maker(name)
+                assert_kind_of made_class, instance.find_maker(name)
             end
+
             def test_check_names
                 assert_kind_of Array, instance.check_names
                 assert_equal instance.keys, instance.check_names
@@ -66,221 +66,42 @@ module Paludis
                 name = instance.keys.first
                 assert_equal instance.find_maker(name).describe, instance.find_check(name).describe
             end
+        end
+
+        class TestCase_FileCheckMaker < Test::Unit::TestCase
+            include MakerTests
+            def made_class; FileCheck; end
+            def maker_class; FileCheckMaker; end
         end
 
         class TestCase_PackageDirCheckMaker < Test::Unit::TestCase
-            def instance
-                PackageDirCheckMaker.instance
-            end
-
-            def test_instance
-                assert_equal PackageDirCheckMaker.instance.__id__, PackageDirCheckMaker.instance.__id__
-                assert_kind_of PackageDirCheckMaker, PackageDirCheckMaker.instance
-            end
-
-            def test_no_create
-                assert_raise NoMethodError do
-                    x = PackageDirCheckMaker.new()
-                end
-            end
-
-            def test_respond_to
-                assert_respond_to instance, :keys
-                assert_respond_to instance, :find_maker
-                assert_respond_to instance, :check_names
-                assert_respond_to instance, :find_check
-            end
-
-            def test_keys
-                assert_kind_of Array, instance.keys
-                assert_not_equal 0, instance.keys
-            end
-
-            def test_find_maker
-                name = instance.keys.first
-                assert_kind_of PackageDirCheck, instance.find_maker(name)
-            end
-            def test_check_names
-                assert_kind_of Array, instance.check_names
-                assert_equal instance.keys, instance.check_names
-            end
-
-            def test_find_check
-                name = instance.keys.first
-                assert_equal instance.find_maker(name).describe, instance.find_check(name).describe
-            end
+            include MakerTests
+            def made_class; PackageDirCheck; end
+            def maker_class; PackageDirCheckMaker; end
         end
 
         class TestCase_EbuildCheckMaker < Test::Unit::TestCase
-            def instance
-                EbuildCheckMaker.instance
-            end
-
-            def test_instance
-                assert_equal EbuildCheckMaker.instance.__id__, EbuildCheckMaker.instance.__id__
-                assert_kind_of EbuildCheckMaker, EbuildCheckMaker.instance
-            end
-
-            def test_no_create
-                assert_raise NoMethodError do
-                    x = EbuildCheckMaker.new()
-                end
-            end
-
-            def test_respond_to
-                assert_respond_to instance, :keys
-                assert_respond_to instance, :find_maker
-                assert_respond_to instance, :check_names
-                assert_respond_to instance, :find_check
-            end
-
-            def test_keys
-                assert_kind_of Array, instance.keys
-                assert_not_equal 0, instance.keys
-            end
-
-            def test_find_maker
-                name = instance.keys.first
-                assert_kind_of EbuildCheck, instance.find_maker(name)
-            end
-            def test_check_names
-                assert_kind_of Array, instance.check_names
-                assert_equal instance.keys, instance.check_names
-            end
-
-            def test_find_check
-                name = instance.keys.first
-                assert_equal instance.find_maker(name).describe, instance.find_check(name).describe
-            end
+            include MakerTests
+            def made_class; EbuildCheck; end
+            def maker_class; EbuildCheckMaker; end
         end
 
         class TestCase_PerProfileEbuildCheckMaker < Test::Unit::TestCase
-            def instance
-                PerProfileEbuildCheckMaker.instance
-            end
-
-            def test_instance
-                assert_equal PerProfileEbuildCheckMaker.instance.__id__, PerProfileEbuildCheckMaker.instance.__id__
-                assert_kind_of PerProfileEbuildCheckMaker, PerProfileEbuildCheckMaker.instance
-            end
-
-            def test_no_create
-                assert_raise NoMethodError do
-                    x = PerProfileEbuildCheckMaker.new()
-                end
-            end
-
-            def test_respond_to
-                assert_respond_to instance, :keys
-                assert_respond_to instance, :find_maker
-                assert_respond_to instance, :check_names
-                assert_respond_to instance, :find_check
-            end
-
-            def test_keys
-                assert_kind_of Array, instance.keys
-                assert_not_equal 0, instance.keys
-            end
-
-            def test_find_maker
-                name = instance.keys.first
-                assert_kind_of PerProfileEbuildCheck, instance.find_maker(name)
-            end
-            def test_check_names
-                assert_kind_of Array, instance.check_names
-                assert_equal instance.keys, instance.check_names
-            end
-
-            def test_find_check
-                name = instance.keys.first
-                assert_equal instance.find_maker(name).describe, instance.find_check(name).describe
-            end
+            include MakerTests
+            def made_class; PerProfileEbuildCheck; end
+            def maker_class; PerProfileEbuildCheckMaker; end
         end
 
         class TestCase_ProfilesCheckMaker < Test::Unit::TestCase
-            def instance
-                ProfilesCheckMaker.instance
-            end
-
-            def test_instance
-                assert_equal ProfilesCheckMaker.instance.__id__, ProfilesCheckMaker.instance.__id__
-                assert_kind_of ProfilesCheckMaker, ProfilesCheckMaker.instance
-            end
-
-            def test_no_create
-                assert_raise NoMethodError do
-                    x = ProfilesCheckMaker.new()
-                end
-            end
-
-            def test_respond_to
-                assert_respond_to instance, :keys
-                assert_respond_to instance, :find_maker
-                assert_respond_to instance, :check_names
-                assert_respond_to instance, :find_check
-            end
-
-            def test_keys
-                assert_kind_of Array, instance.keys
-                assert_not_equal 0, instance.keys
-            end
-
-            def test_find_maker
-                name = instance.keys.first
-                assert_kind_of ProfilesCheck, instance.find_maker(name)
-            end
-            def test_check_names
-                assert_kind_of Array, instance.check_names
-                assert_equal instance.keys, instance.check_names
-            end
-
-            def test_find_check
-                name = instance.keys.first
-                assert_equal instance.find_maker(name).describe, instance.find_check(name).describe
-            end
+            include MakerTests
+            def made_class; ProfilesCheck; end
+            def maker_class; ProfilesCheckMaker; end
         end
 
         class TestCase_ProfileCheckMaker < Test::Unit::TestCase
-            def instance
-                ProfileCheckMaker.instance
-            end
-
-            def test_instance
-                assert_equal ProfileCheckMaker.instance.__id__, ProfileCheckMaker.instance.__id__
-                assert_kind_of ProfileCheckMaker, ProfileCheckMaker.instance
-            end
-
-            def test_no_create
-                assert_raise NoMethodError do
-                    x = ProfileCheckMaker.new()
-                end
-            end
-
-            def test_respond_to
-                assert_respond_to instance, :keys
-                assert_respond_to instance, :find_maker
-                assert_respond_to instance, :check_names
-                assert_respond_to instance, :find_check
-            end
-
-            def test_keys
-                assert_kind_of Array, instance.keys
-                assert_not_equal 0, instance.keys
-            end
-
-            def test_find_maker
-                name = instance.keys.first
-                assert_kind_of ProfileCheck, instance.find_maker(name)
-            end
-            def test_check_names
-                assert_kind_of Array, instance.check_names
-                assert_equal instance.keys, instance.check_names
-            end
-
-            def test_find_check
-                name = instance.keys.first
-                assert_equal instance.find_maker(name).describe, instance.find_check(name).describe
-            end
+            include MakerTests
+            def made_class; ProfileCheck; end
+            def maker_class; ProfileCheckMaker; end
         end
 
         class TestCase_EbuildCheckData < Test::Unit::TestCase
@@ -307,7 +128,16 @@ module Paludis
             end
         end
 
+        module CheckTests
+            def test_respond_to
+                check = get_check
+                [:describe, :is_important?, :check].each {|sym| assert_respond_to get_check, sym}
+            end
+        end
+
         class TestCase_PackageDirCheck < Test::Unit::TestCase
+            include CheckTests
+
             def get_check
                 PackageDirCheckMaker.instance.find_maker('package_name')
             end
@@ -316,13 +146,6 @@ module Paludis
                 assert_raise NoMethodError do
                     x = PackageDirCheck.new()
                 end
-            end
-
-            def test_respond_to
-                check = get_check
-                assert_respond_to check, :describe
-                assert_respond_to check, :is_important?
-                assert_respond_to check, :check
             end
 
             def test_describe
@@ -344,6 +167,8 @@ module Paludis
         end
 
         class TestCase_FileCheck < Test::Unit::TestCase
+            include CheckTests
+
             def get_check
                 FileCheckMaker.instance.find_maker('whitespace')
             end
@@ -352,13 +177,6 @@ module Paludis
                 assert_raise NoMethodError do
                     x = FileCheck.new()
                 end
-            end
-
-            def test_respond_to
-                check = get_check
-                assert_respond_to check, :describe
-                assert_respond_to check, :is_important?
-                assert_respond_to check, :check
             end
 
             def test_describe
@@ -380,6 +198,8 @@ module Paludis
         end
 
         class TestCase_EbuildCheck < Test::Unit::TestCase
+            include CheckTests
+
             def get_ecd
                 env = QAEnvironment.new('check_TEST_dir/repo1')
                 ecd = EbuildCheckData.new('cat-one/pkg-one', "1", env)
@@ -393,13 +213,6 @@ module Paludis
                 assert_raise NoMethodError do
                     x = EbuildCheck.new()
                 end
-            end
-
-            def test_respond_to
-                check = get_check
-                assert_respond_to check, :describe
-                assert_respond_to check, :is_important?
-                assert_respond_to check, :check
             end
 
             def test_describe
@@ -421,6 +234,8 @@ module Paludis
         end
 
         class TestCase_PerProfileEbuildCheck < Test::Unit::TestCase
+            include CheckTests
+
             def get_ecd
                 env = QAEnvironment.new('check_TEST_dir/repo1')
                 PerProfileEbuildCheckData.new('cat-one/pkg-one', "1", env, 'check_TEST_dir/repo1/profiles/profile')
@@ -434,13 +249,6 @@ module Paludis
                 assert_raise NoMethodError do
                     x = PerProfileEbuildCheck.new()
                 end
-            end
-
-            def test_respond_to
-                check = get_check
-                assert_respond_to check, :describe
-                assert_respond_to check, :is_important?
-                assert_respond_to check, :check
             end
 
             def test_describe
@@ -462,6 +270,8 @@ module Paludis
         end
 
         class TestCase_ProfilesCheck < Test::Unit::TestCase
+            include CheckTests
+
             def get_check
                 ProfilesCheckMaker.instance.find_maker('repo_name')
             end
@@ -470,13 +280,6 @@ module Paludis
                 assert_raise NoMethodError do
                     x = ProfilesCheck.new()
                 end
-            end
-
-            def test_respond_to
-                check = get_check
-                assert_respond_to check, :describe
-                assert_respond_to check, :is_important?
-                assert_respond_to check, :check
             end
 
             def test_describe
@@ -498,6 +301,8 @@ module Paludis
         end
 
         class TestCase_ProfileCheck < Test::Unit::TestCase
+            include CheckTests
+
             def get_pcd
                 env = QAEnvironment.new('check_TEST_dir/repo1')
                 ProfileCheckData.new('check_TEST_dir/repo1/profiles', env.portage_repository.profiles.first)
@@ -511,13 +316,6 @@ module Paludis
                 assert_raise NoMethodError do
                     x = ProfileCheck.new()
                 end
-            end
-
-            def test_respond_to
-                check = get_check
-                assert_respond_to check, :describe
-                assert_respond_to check, :is_important?
-                assert_respond_to check, :check
             end
 
             def test_describe

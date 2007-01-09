@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Richard Brown <mynamewasgone@gmail.com>
+ * Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -111,8 +111,9 @@ namespace
     /*
      * call-seq:
      *     messages -> Array
+     *     messages -> {|message| block } -> Qnil
      *
-     * Array with all result Messages in.
+     * Returns all the Messages in the CheckResult, either as an Array, or as the parameters to a block.
      */
     VALUE
     check_result_messages(VALUE self)
@@ -120,6 +121,12 @@ namespace
         CheckResult * ptr;
         Data_Get_Struct(self, CheckResult, ptr);
 
+        if (rb_block_given_p())
+        {
+            for (CheckResult::Iterator i (ptr->begin()), i_end(ptr->end()) ; i != i_end; ++i)
+                rb_yield(message_to_value(*i));
+            return Qnil;
+        }
         VALUE result(rb_ary_new());
         for (CheckResult::Iterator i (ptr->begin()), i_end(ptr->end()) ; i != i_end; ++i)
             rb_ary_push(result, message_to_value(*i));

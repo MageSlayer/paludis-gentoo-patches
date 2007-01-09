@@ -38,7 +38,7 @@ end
 
 def display_errors(result)
     done_out = false
-    result.messages.each do |message|
+    result.messages do |message|
         next if message.level < @min_level
         case message.level
             when QALevel::Info
@@ -278,7 +278,7 @@ end
 
 def describe_check(title, maker)
     puts "#{title}:"
-    maker.check_names.each do |check_name|
+    maker.check_names do |check_name|
         $stderr.puts "  #{check_name}:"
         $stderr.puts "    #{maker.find_check(check_name).describe}"
     end

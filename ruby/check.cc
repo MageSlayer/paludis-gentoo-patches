@@ -342,8 +342,9 @@ namespace
      *
      * call-seq:
      *     keys -> Array
+     *     keys {|check_name| block } -> Qnil
      *
-     * Fetch the check names for this class.
+     * Returns the names of all checks in this maker, either as an Array or as the parameters to a block.
      */
     template <typename T_>
     struct CheckMakerStruct
@@ -353,12 +354,17 @@ namespace
         {
             std::list<std::string> checks;
             T_::get_instance()->copy_keys(std::back_inserter(checks));
+            if (rb_block_given_p())
+            {
+                for (std::list<std::string>::const_iterator i(checks.begin()),
+                    i_end(checks.end()) ; i != i_end ; ++i)
+                        rb_yield(rb_str_new2((*i).c_str()));
+                return Qnil;
+            }
             VALUE result(rb_ary_new());
             for (std::list<std::string>::const_iterator i(checks.begin()),
                 i_end(checks.end()) ; i != i_end ; ++i)
-            {
-                rb_ary_push(result, rb_str_new2((*i).c_str()));
-            }
+                    rb_ary_push(result, rb_str_new2((*i).c_str()));
             return result;
         }
     };

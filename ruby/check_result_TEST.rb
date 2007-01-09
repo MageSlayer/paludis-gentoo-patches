@@ -99,6 +99,13 @@ module Paludis
                     Message.new(QALevel::Fatal, 'test2')
                 ]
                 cr << msgs[0]
+
+                assert_nothing_raised do
+                   cr.messages do |message|
+                       assert_equal msgs.first.to_s, message.to_s
+                   end
+                end
+
                 cr << msgs[1]
                 assert_equal msgs.to_s, cr.messages.to_s
             end
