@@ -3,8 +3,6 @@
 #
 require 'Paludis'
 require 'getoptlong'
-require 'Pathname'
-
 
 include Paludis
 include Paludis::QA
@@ -432,16 +430,16 @@ end
 unless ARGV.empty?
     ARGV.each do |dir|
         if dir.include? '/'
-            full_dir = Pathname.new(dir)
+            full_dir = dir
         else
-            full_dir = Pathname.getwd + dir
+            full_dir = "#{Dir.getwd}/#{dir}"
         end
-        if full_dir.directory?
+        if File.directory? full_dir
             do_check(full_dir)
         else
             $stderr.puts "#{full_dir} is not a directory"
         end
     end
 else
-    do_check(Pathname.getwd)
+    do_check(Dir.getwd)
 end
