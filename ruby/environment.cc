@@ -278,41 +278,48 @@ namespace
     }
 
     VALUE
-    no_config_environment_init(VALUE self, VALUE)
+    no_config_environment_init(int, VALUE*, VALUE self)
     {
         return self;
     }
 
     /*
      * call-seq:
-     *     NoConfigEnvironment.new(dir) -> NoConfigEnvironment
+     *     NoConfigEnvironment.new(environment_dir) -> NoConfigEnvironment
+     *     NoConfigEnvironment.new(environment_dir, write_cache_dir) -> NoConfigEnvironment
      *
-     * Create a new NoConfigEnvironment form the specified directory.
+     * Create a new NoConfigEnvironment from the specified directory. A write_cache may also be specified.
      */
     VALUE
-    no_config_environment_new(VALUE self, VALUE s)
+    no_config_environment_new(int argc, VALUE* argv, VALUE self)
     {
-        std::string path;
         try
         {
-            if (T_STRING == TYPE(s))
-                path = StringValuePtr(s);
-            else if (rb_obj_is_kind_of(s, rb_cDir))
+            std::string write_cache;
+            if (1 == argc)
+                write_cache = "/var/empty/";
+            else if (2 == argc)
+                write_cache = StringValuePtr(argv[1]);
+            else
+                rb_raise(rb_eArgError, "NoConfigEnvironment.new expects one or two arguments, but got %d", argc);
+
+            std::string path;
+            if (rb_obj_is_kind_of(argv[0], rb_cDir))
             {
-                VALUE v = rb_funcall(s, rb_intern("path"), 0);
+                VALUE v = rb_funcall(argv[0], rb_intern("path"), 0);
                 path = StringValuePtr(v);
             }
             else
-                rb_raise(rb_eTypeError, "NoConfigEnvironment.new expects a string or Dir");
+                path = StringValuePtr(argv[0]);
 
             NoConfigEnvironment * e(new NoConfigEnvironment(NoConfigEnvironmentParams::create()
                         .repository_dir(FSEntry(path))
-                        .write_cache(FSEntry("/var/empty"))
+                        .write_cache(write_cache)
                         .accept_unstable(false)
                         .repository_type(ncer_auto)));
             EnvironmentData * ptr(new EnvironmentData(e, e));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<EnvironmentData>::free, ptr));
-            rb_obj_call_init(tdata, 1, &s);
+            rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
         catch (const std::exception & e)
@@ -406,8 +413,8 @@ namespace
          * An environment that uses a single repository, with no user configuration.
          */
         c_no_config_environment = no_config_environment_class();
-        rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), 1);
-        rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), 1);
+        rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), -1);
+        rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), -1);
         rb_define_method(c_no_config_environment, "portage_repository", RUBY_FUNC_CAST(&no_config_environment_portage_repository), 0);
     }
 }

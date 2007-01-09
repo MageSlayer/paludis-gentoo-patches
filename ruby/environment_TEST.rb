@@ -43,16 +43,38 @@ module Paludis
 
     class TestCase_NoConfigEnvironment < Test::Unit::TestCase
         def test_create
-            e = NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-            assert_kind_of Environment, e
-            assert_kind_of NoConfigEnvironment, e
+            assert_nothing_raised do
+                e = NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
+                assert_kind_of Environment, e
+                assert_kind_of NoConfigEnvironment, e
+            end
 
-            e = NoConfigEnvironment.new(Dir.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo"))
-            assert_kind_of Environment, e
-            assert_kind_of NoConfigEnvironment, e
+            assert_nothing_raised do
+                e = NoConfigEnvironment.new(Dir.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo"))
+                assert_kind_of Environment, e
+                assert_kind_of NoConfigEnvironment, e
+            end
+
+            assert_nothing_raised do
+                e = NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo", '/var/empty')
+                assert_kind_of Environment, e
+                assert_kind_of NoConfigEnvironment, e
+            end
 
             assert_raise TypeError do
-                e = NoConfigEnvironment.new(123)
+                e = NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo", 7)
+            end
+
+            assert_raise TypeError do
+                e = NoConfigEnvironment.new(7, '/var/empty')
+            end
+
+            assert_raise ArgumentError do
+                e = NoConfigEnvironment.new
+            end
+
+            assert_raise ArgumentError do
+                e = NoConfigEnvironment.new(1,2,3)
             end
         end
     end
