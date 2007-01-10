@@ -127,8 +127,10 @@ namespace
     /*
      * call-seq:
      *     repositories -> Array
+     *     repositories {|repository| block } -> Nil
      *
-     *  Returns an array of Repository
+     *  Returns all the repositories in the package database, either as an Array, or as
+     *  the parameters to a block.
      */
     VALUE
     package_database_repositories(VALUE self)
@@ -138,6 +140,13 @@ namespace
             PackageDatabase::Pointer * self_ptr;
             Data_Get_Struct(self, PackageDatabase::Pointer, self_ptr);
 
+            if (rb_block_given_p())
+            {
+                for (PackageDatabase::RepositoryIterator r((*self_ptr)->begin_repositories()),
+                        r_end((*self_ptr)->end_repositories()) ; r != r_end ; ++r)
+                    rb_yield(repository_to_value(*r));
+                return Qnil;
+            }
             VALUE result(rb_ary_new());
             for (PackageDatabase::RepositoryIterator r((*self_ptr)->begin_repositories()),
                     r_end((*self_ptr)->end_repositories()) ; r != r_end ; ++r)

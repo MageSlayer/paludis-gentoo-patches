@@ -129,6 +129,8 @@ module Paludis
                 repo.name == "foorepo"
             end
             assert a.empty?
+
+            assert_equal nil, db.repositories {|repo| assert_kind_of Repository, repo}
         end
 
         def test_fetch_repository

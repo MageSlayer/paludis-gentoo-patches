@@ -39,7 +39,7 @@ namespace
 
     /*
      * call-seq:
-     *     name
+     *     name -> String
      *
      * Returns our name.
      */
@@ -51,6 +51,27 @@ namespace
             Repository::ConstPointer * self_ptr;
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->name()).c_str());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     format -> String
+     *
+     * Returns our format.
+     */
+    VALUE
+    repository_format(VALUE self)
+    {
+        try
+        {
+            Repository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            return rb_str_new2(stringify((*self_ptr)->format()).c_str());
         }
         catch (const std::exception & e)
         {
@@ -812,6 +833,7 @@ namespace
         c_repository = rb_define_class_under(paludis_module(), "Repository", rb_cObject);
         rb_funcall(c_repository, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_repository, "name", RUBY_FUNC_CAST(&repository_name), 0);
+        rb_define_method(c_repository, "format", RUBY_FUNC_CAST(&repository_format), 0);
 
         rb_define_method(c_repository, "has_category_named?", RUBY_FUNC_CAST(&repository_has_category_named), 1);
         rb_define_method(c_repository, "has_package_named?", RUBY_FUNC_CAST(&repository_has_package_named), 1);

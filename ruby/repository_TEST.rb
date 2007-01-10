@@ -61,6 +61,20 @@ module Paludis
         end
     end
 
+    class TestCase_Repository < Test::Unit::TestCase
+        include RepositoryTestCase
+
+        def test_name
+            assert_equal "installed", installed_repo.name
+            assert_equal "testrepo", repo.name
+        end
+
+        def test_format
+            assert_equal "vdb", installed_repo.format
+            assert_equal "ebuild", repo.format
+        end
+    end
+
     class TestCase_RepositoryHasVersion < Test::Unit::TestCase
         include RepositoryTestCase
 

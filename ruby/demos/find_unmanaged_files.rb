@@ -95,8 +95,8 @@ Find.find(*files) {|file| in_fs << file}
 Paludis::DefaultConfig::config_suffix = config_suffix
 db = DefaultEnvironment.instance.package_database
 
-db.repositories.each do |repo|
-    next unless repo.installed_interface
+db.repositories do |repo|
+    next unless repo.format == 'vdb'
     in_fs-= get_contents(repo, files)
 end
 
