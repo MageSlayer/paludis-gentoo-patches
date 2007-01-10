@@ -37,6 +37,12 @@ namespace
         return self;
     }
 
+    /*
+     * call-seq:
+     *     PackageDatabaseEntry.new (qualified_package_name, version_spec, repository_name) -> PackageDatabaseEntry
+     *
+     *  Create a new PackageDatabaseEntry.
+     */
     VALUE
     package_database_entry_new(VALUE self, VALUE q, VALUE v, VALUE n)
     {

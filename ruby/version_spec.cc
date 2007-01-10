@@ -38,7 +38,7 @@ namespace
 
     /*
      * call-seq:
-     *     VersionsSpec.new(version_string) -> VersionSpec
+     *     VersionSpec.new(version_string) -> VersionSpec
      *
      * Creates a new VersionSpec from the given string.
      */
