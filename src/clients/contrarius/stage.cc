@@ -34,7 +34,7 @@ namespace
         const std::string & default_name,
         const std::string & version)
     {
-        return new PackageDepAtom("cross-" + stringify(target) + "/"
+        return new PackageDepAtom(std::string(version.empty() ? "" : "=") + "cross-" + stringify(target) + "/"
                 + (name.empty() ? default_name : name) + (version.empty() ? "" : "-" + version));
     }
 }
