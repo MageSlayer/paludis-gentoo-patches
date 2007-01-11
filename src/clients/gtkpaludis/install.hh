@@ -39,6 +39,7 @@ namespace gtkpaludis
             virtual void on_display_merge_list_pre();
             virtual void on_display_merge_list_post();
             virtual void on_display_merge_list_entry(const paludis::DepListEntry &);
+            virtual void on_not_continuing_due_to_errors();
 
             virtual void on_fetch_all_pre();
             virtual void on_fetch_pre(const paludis::DepListEntry &);

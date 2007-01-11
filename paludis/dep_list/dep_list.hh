@@ -59,10 +59,14 @@ namespace paludis
             void add_in_role(DepAtom::ConstPointer, const std::string & role);
             bool prefer_installed_over_uninstalled(const PackageDatabaseEntry &,
                     const PackageDatabaseEntry &);
+
             void add_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
             void add_already_installed_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
+            void add_blocked_package(const PackageDatabaseEntry &);
+
             void add_predeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
             void add_postdeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
+
             bool is_top_level_target(const PackageDatabaseEntry &) const;
 
         public:
@@ -100,6 +104,11 @@ namespace paludis
              * Is an atom structure already installed (overloaded for raw pointer)?
              */
             bool already_installed(const DepAtom * const) const;
+
+            /**
+             * Whether we have any errors.
+             */
+            bool has_errors() const;
 
             ///\name Iterate over our dependency list entries.
             ///\{

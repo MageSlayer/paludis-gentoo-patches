@@ -178,7 +178,6 @@ module Paludis
                 assert_respond_to dep_list_entry, method
                 assert_kind_of returns, dep_list_entry.send(method)
             end
-            assert_respond_to dep_list_entry, :skip_install
         end
     end
 end

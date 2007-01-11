@@ -55,6 +55,11 @@ OurInstallTask::on_build_deplist_post()
 }
 
 void
+OurInstallTask::on_not_continuing_due_to_errors()
+{
+}
+
+void
 OurInstallTask::on_build_cleanlist_pre(const DepListEntry &)
 {
 }

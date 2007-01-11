@@ -142,6 +142,23 @@ namespace paludis
     };
 
     /**
+     * Kind of a DepListEntry.
+     *
+     * \ingroup grpdepresolver
+     */
+    enum DepListEntryKind
+    {
+        dlk_package,           ///< A package to be installed
+        dlk_subpackage,        ///< A package to be installed as part of the previous dlk_package
+        dlk_already_installed, ///< An already installed package
+        dlk_virtual,           ///< A virtual package
+        dlk_provided,          ///< A package provided by the previous dlk_package
+        dlk_block,             ///< A blocked package that must be removed
+        dlk_masked,            ///< A masked package that must be unmasked
+        last_dlk
+    };
+
+    /**
      * Write a DepListTargetType to a stream.
      *
      * \ingroup grpdepresolver

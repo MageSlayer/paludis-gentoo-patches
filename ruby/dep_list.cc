@@ -557,27 +557,6 @@ namespace
         }
     }
 
-    /*
-     * call-seq:
-     *     skip_install -> true or false
-     *
-     * Our skip_install.
-     */
-    VALUE
-    dep_list_entry_skip_install(VALUE self)
-    {
-        try
-        {
-            DepListEntry * p;
-            Data_Get_Struct(self, DepListEntry, p);
-            return p->skip_install == true ? Qtrue : Qfalse;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
     void do_register_dep_list()
     {
         /*
@@ -760,7 +739,6 @@ namespace
         rb_define_method(c_dep_list_entry, "metadata", RUBY_FUNC_CAST(&dep_list_entry_metadata),0);
         rb_define_method(c_dep_list_entry, "destinations", RUBY_FUNC_CAST(&dep_list_entry_destinations),0);
         rb_define_method(c_dep_list_entry, "state", RUBY_FUNC_CAST(&dep_list_entry_state),0);
-        rb_define_method(c_dep_list_entry, "skip_install", RUBY_FUNC_CAST(&dep_list_entry_skip_install),0);
     }
 }
 

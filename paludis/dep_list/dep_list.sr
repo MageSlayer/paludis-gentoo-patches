@@ -41,6 +41,8 @@ END
 
 make_class_DepListEntry()
 {
+    key kind DepListEntryKind
+
     key package PackageDatabaseEntry
     key metadata VersionMetadata::ConstPointer
     key tags DepListEntryTags::Pointer
@@ -48,7 +50,6 @@ make_class_DepListEntry()
 
     key generation long
     key state DepListEntryState
-    key skip_install bool
 
     allow_named_args
 

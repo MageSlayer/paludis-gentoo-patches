@@ -202,6 +202,12 @@ InstallTask::execute()
         return;
     }
 
+    if (_imp->dep_list.has_errors())
+    {
+        on_not_continuing_due_to_errors();
+        return;
+    }
+
     /* we're about to fetch / install the entire list */
     if (_imp->install_options.fetch_only)
     {
@@ -220,14 +226,15 @@ InstallTask::execute()
     int x(0), y(0);
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
-        if (! dep->skip_install)
+        if (dlk_package == dep->kind)
             ++y;
 
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
-        if (dep->skip_install)
+        if (dlk_package != dep->kind)
             continue;
+
         ++x;
         _imp->current_dep_list_entry = dep;
 
@@ -364,7 +371,7 @@ InstallTask::execute()
                 if (d == dep_end)
                     break;
             }
-            while (d->skip_install);
+            while (dlk_package != d->kind);
 
             if (d != dep_end)
                 on_installed_paludis();

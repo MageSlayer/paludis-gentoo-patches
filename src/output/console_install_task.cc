@@ -155,10 +155,45 @@ ConsoleInstallTask::on_display_merge_list_post()
 }
 
 void
+ConsoleInstallTask::on_not_continuing_due_to_errors()
+{
+    output_endl();
+    output_starred_item(render_as_error("Cannot continue with install due to the errors indicated above"));
+}
+
+void
 ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 {
-    if (d.skip_install && ! want_full_install_reasons())
-        return;
+    DisplayMode m;
+
+    do
+    {
+        switch (d.kind)
+        {
+            case dlk_provided:
+            case dlk_virtual:
+            case dlk_already_installed:
+                if (! want_full_install_reasons())
+                    return;
+                m = unimportant_entry;
+                continue;
+
+            case dlk_package:
+            case dlk_subpackage:
+                m = normal_entry;
+                continue;
+
+            case dlk_masked:
+            case dlk_block:
+                m = error_entry;
+                continue;
+
+            case last_dlk:
+                break;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad d.kind");
+    } while (false);
 
     PackageDatabaseEntryCollection::Pointer existing(environment()->package_database()->
             query(PackageDepAtom(d.package.name), is_installed_only, qo_order_by_version));
@@ -167,15 +202,15 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
             query(PackageDepAtom(stringify(d.package.name) + ":" + stringify(d.metadata->slot)),
                 is_installed_only, qo_order_by_version));
 
-    display_merge_list_entry_start(d);
-    display_merge_list_entry_package_name(d);
-    display_merge_list_entry_version(d);
-    display_merge_list_entry_repository(d);
-    display_merge_list_entry_slot(d);
-    display_merge_list_entry_status_and_update_counts(d, existing, existing_slot);
-    display_merge_list_entry_use(d, existing, existing_slot);
-    display_merge_list_entry_tags(d);
-    display_merge_list_entry_end(d);
+    display_merge_list_entry_start(d, m);
+    display_merge_list_entry_package_name(d, m);
+    display_merge_list_entry_version(d, m);
+    display_merge_list_entry_repository(d, m);
+    display_merge_list_entry_slot(d, m);
+    display_merge_list_entry_status_and_update_counts(d, existing, existing_slot, m);
+    display_merge_list_entry_use(d, existing, existing_slot, m);
+    display_merge_list_entry_tags(d, m);
+    display_merge_list_entry_end(d, m);
 }
 
 void
@@ -333,6 +368,14 @@ ConsoleInstallTask::display_merge_list_post_counts()
         }
         s << ")";
     }
+
+    if (count<max_count>() && count<error_count>())
+        s << " and ";
+
+    if (count<error_count>())
+        s << render_as_error(stringify(count<error_count>()) +
+                render_plural(count<error_count>(), " error", " errors"));
+
     output_unstarred_item(s.str());
 }
 
@@ -579,21 +622,32 @@ DepTagSummaryDisplayer::visit(const GeneralSetDepTag * const tag)
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_start(const DepListEntry &)
+ConsoleInstallTask::display_merge_list_entry_start(const DepListEntry &, const DisplayMode)
 {
     output_starred_item_no_endl("");
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_package_name(const DepListEntry & d)
+ConsoleInstallTask::display_merge_list_entry_package_name(const DepListEntry & d, const DisplayMode m)
 {
-    output_no_endl(d.skip_install ?
-            render_as_unimportant(stringify(d.package.name)) :
-            render_as_package_name(stringify(d.package.name)));
+    switch (m)
+    {
+        case normal_entry:
+            output_no_endl(render_as_package_name(stringify(d.package.name)));
+            break;
+
+        case unimportant_entry:
+            output_no_endl(render_as_unimportant(stringify(d.package.name)));
+            break;
+
+        case error_entry:
+            output_no_endl(render_as_error(stringify(d.package.name)));
+            break;
+    }
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_version(const DepListEntry & d)
+ConsoleInstallTask::display_merge_list_entry_version(const DepListEntry & d, const DisplayMode)
 {
     if ((VersionSpec("0") != d.package.version) ||
             CategoryNamePart("virtual") != d.package.name.category)
@@ -601,60 +655,104 @@ ConsoleInstallTask::display_merge_list_entry_version(const DepListEntry & d)
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d)
+ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, const DisplayMode)
 {
     if (environment()->package_database()->favourite_repository() != d.package.repository)
         output_no_endl("::" + stringify(d.package.repository));
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d)
+ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const DisplayMode m)
 {
-    if (SlotName("0") != d.metadata->slot)
-        output_no_endl(d.skip_install ?
-                render_as_unimportant(" {:" + stringify(d.metadata->slot) + "}") :
-                render_as_slot_name(" {:" + stringify(d.metadata->slot) + "}"));
+    switch (m)
+    {
+        case normal_entry:
+            output_no_endl(render_as_slot_name(" {:" + stringify(d.metadata->slot) + "}"));
+            break;
 
+        case unimportant_entry:
+            output_no_endl(render_as_unimportant(" {:" + stringify(d.metadata->slot) + "}"));
+            break;
+
+        case error_entry:
+            output_no_endl(render_as_slot_name(" {:" + stringify(d.metadata->slot) + "}"));
+            break;
+    }
 }
 
 void
 ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepListEntry & d,
         PackageDatabaseEntryCollection::ConstPointer existing,
-        PackageDatabaseEntryCollection::ConstPointer existing_slot)
+        PackageDatabaseEntryCollection::ConstPointer existing_slot,
+        const DisplayMode m)
 {
-    if (d.skip_install)
-        output_no_endl(render_as_unimportant(" [-]"));
-    else if (existing->empty())
+    switch (m)
     {
-        output_no_endl(render_as_update_mode(" [N]"));
-        set_count<new_count>(count<new_count>() + 1);
-        set_count<max_count>(count<max_count>() + 1);
-    }
-    else if (existing_slot->empty())
-    {
-        output_no_endl(render_as_update_mode(" [S]"));
-        set_count<new_slot_count>(count<new_slot_count>() + 1);
-        set_count<max_count>(count<max_count>() + 1);
-    }
-    else if (existing_slot->last()->version < d.package.version)
-    {
-        output_no_endl(render_as_update_mode(" [U " +
-                    stringify(existing_slot->last()->version) + "]"));
-        set_count<upgrade_count>(count<upgrade_count>() + 1);
-        set_count<max_count>(count<max_count>() + 1);
-    }
-    else if (existing_slot->last()->version > d.package.version)
-    {
-        output_no_endl(render_as_update_mode(" [D " +
-                    stringify(existing_slot->last()->version) + "]"));
-        set_count<downgrade_count>(count<downgrade_count>() + 1);
-        set_count<max_count>(count<max_count>() + 1);
-    }
-    else
-    {
-        output_no_endl(render_as_update_mode(" [R]"));
-        set_count<rebuild_count>(count<rebuild_count>() + 1);
-        set_count<max_count>(count<max_count>() + 1);
+        case unimportant_entry:
+            output_no_endl(render_as_unimportant(" [-]"));
+            break;
+
+        case normal_entry:
+            if (existing->empty())
+            {
+                output_no_endl(render_as_update_mode(" [N]"));
+                set_count<new_count>(count<new_count>() + 1);
+                set_count<max_count>(count<max_count>() + 1);
+            }
+            else if (existing_slot->empty())
+            {
+                output_no_endl(render_as_update_mode(" [S]"));
+                set_count<new_slot_count>(count<new_slot_count>() + 1);
+                set_count<max_count>(count<max_count>() + 1);
+            }
+            else if (existing_slot->last()->version < d.package.version)
+            {
+                output_no_endl(render_as_update_mode(" [U " +
+                            stringify(existing_slot->last()->version) + "]"));
+                set_count<upgrade_count>(count<upgrade_count>() + 1);
+                set_count<max_count>(count<max_count>() + 1);
+            }
+            else if (existing_slot->last()->version > d.package.version)
+            {
+                output_no_endl(render_as_update_mode(" [D " +
+                            stringify(existing_slot->last()->version) + "]"));
+                set_count<downgrade_count>(count<downgrade_count>() + 1);
+                set_count<max_count>(count<max_count>() + 1);
+            }
+            else
+            {
+                output_no_endl(render_as_update_mode(" [R]"));
+                set_count<rebuild_count>(count<rebuild_count>() + 1);
+                set_count<max_count>(count<max_count>() + 1);
+            }
+            break;
+
+        case error_entry:
+            set_count<error_count>(count<error_count>() + 1);
+            do
+            {
+                switch (d.kind)
+                {
+                    case dlk_masked:
+                        output_no_endl(render_as_update_mode(" [! masked]"));
+                        continue;
+
+                    case dlk_block:
+                        output_no_endl(render_as_update_mode(" [! blocking]"));
+                        continue;
+
+                    case dlk_provided:
+                    case dlk_virtual:
+                    case dlk_already_installed:
+                    case dlk_package:
+                    case dlk_subpackage:
+                    case last_dlk:
+                        ;
+                }
+
+                throw InternalError(PALUDIS_HERE, "Bad d.kind");
+            } while (false);
+            break;
     }
 }
 
@@ -683,9 +781,10 @@ ConsoleInstallTask::_add_descriptions(UseFlagNameCollection::ConstPointer c,
 void
 ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
         PackageDatabaseEntryCollection::ConstPointer existing,
-        PackageDatabaseEntryCollection::ConstPointer)
+        PackageDatabaseEntryCollection::ConstPointer,
+        const DisplayMode m)
 {
-    if (d.skip_install)
+    if (normal_entry != m)
         return;
 
     output_no_endl(" ");
@@ -700,7 +799,7 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d)
+ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const DisplayMode m)
 {
     if (d.tags->empty())
         return;
@@ -728,13 +827,25 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d)
         tag_titles.erase(tag_titles.length() - 2);
 
         if (! tag_titles.empty())
-            output_no_endl(" " + (d.skip_install ?
-                        render_as_unimportant("<" + tag_titles + ">") :
-                        render_as_tag("<" + tag_titles + ">")));
+            switch (m)
+            {
+                case normal_entry:
+                    output_no_endl(" " + render_as_tag("<" + tag_titles + ">"));
+                    break;
+
+                case error_entry:
+                    output_no_endl(" " + render_as_tag("<" + tag_titles + ">"));
+                    break;
+
+                case unimportant_entry:
+                    output_no_endl(" " + render_as_unimportant("<" + tag_titles + ">"));
+                    break;
+            }
     }
 
     if (! want_install_reasons())
-        return;
+        if (d.kind != dlk_block)
+            return;
 
     std::string deps;
     unsigned c(0), max_c(want_full_install_reasons() ? std::numeric_limits<long>::max() : 3);
@@ -760,15 +871,27 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d)
             deps.append(stringify(c - max_c + 1) + " more, ");
 
         deps.erase(deps.length() - 2);
+
         if (! deps.empty())
-            output_no_endl(" " + (d.skip_install ?
-                        render_as_unimportant("<" + deps + ">") :
-                        render_as_tag("<" + deps + ">")));
+            switch (m)
+            {
+                case normal_entry:
+                    output_no_endl(" " + render_as_tag("<" + deps + ">"));
+                    break;
+
+                case error_entry:
+                    output_no_endl(" " + render_as_tag("<" + deps + ">"));
+                    break;
+
+                case unimportant_entry:
+                    output_no_endl(" " + render_as_unimportant("<" + deps + ">"));
+                    break;
+            }
     }
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_end(const DepListEntry &)
+ConsoleInstallTask::display_merge_list_entry_end(const DepListEntry &, const DisplayMode)
 {
     output_endl();
 }
@@ -870,6 +993,12 @@ std::string
 ConsoleInstallTask::render_as_update_mode(const std::string & s) const
 {
     return colour(cl_updatemode, s);
+}
+
+std::string
+ConsoleInstallTask::render_as_error(const std::string & s) const
+{
+    return colour(cl_error, s);
 }
 
 std::string

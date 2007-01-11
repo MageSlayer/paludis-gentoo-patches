@@ -119,6 +119,8 @@ namespace paludis
             virtual void on_display_merge_list_post() = 0;
             virtual void on_display_merge_list_entry(const DepListEntry &) = 0;
 
+            virtual void on_not_continuing_due_to_errors() = 0;
+
             virtual void on_fetch_all_pre() = 0;
             virtual void on_fetch_pre(const DepListEntry &) = 0;
             virtual void on_fetch_post(const DepListEntry &) = 0;

@@ -318,7 +318,7 @@ QueueList::Populate::operator() ()
 void
 QueueList::Populate::display_entry(const paludis::DepListEntry & e)
 {
-    if (e.skip_install)
+    if (e.kind != dlk_package)
         return;
 
     Gtk::TreeModel::Row row = *(_model->append());

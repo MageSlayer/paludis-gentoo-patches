@@ -80,6 +80,8 @@ namespace paludis
 
         DepAtom::ConstPointer current_top_level_target;
 
+        bool throw_on_blocker;
+
         const PackageDatabaseEntry * current_pde() const
         {
             if (current_merge_list_entry != merge_list.end())
@@ -93,7 +95,8 @@ namespace paludis
             current_merge_list_entry(merge_list.end()),
             merge_list_insert_position(merge_list.end()),
             merge_list_generation(0),
-            current_top_level_target(0)
+            current_top_level_target(0),
+            throw_on_blocker(false)
         {
         }
     };
@@ -209,7 +212,24 @@ namespace
 
         bool operator() (const std::pair<const QualifiedPackageName, MergeList::const_iterator> & e)
         {
-            return match_package(env, a, e.second->package);
+            switch (e.second->kind)
+            {
+                case dlk_virtual:
+                case dlk_package:
+                case dlk_provided:
+                case dlk_already_installed:
+                case dlk_subpackage:
+                    return match_package(env, a, e.second->package);
+
+                case dlk_block:
+                case dlk_masked:
+                    return false;
+
+                case last_dlk:
+                    ;
+            }
+
+            throw InternalError(PALUDIS_HERE, "Bad e.second->kind");
         }
     };
 
@@ -569,6 +589,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
     {
         try
         {
+            Save<bool> save_t(&d->_imp->throw_on_blocker, true);
             d->add(*c);
             return;
         }
@@ -624,7 +645,23 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
         }
     }
 
-    throw BlockError(stringify(*a->blocked_atom()));
+    if (d->_imp->throw_on_blocker)
+        throw BlockError(stringify(*a->blocked_atom()));
+    else
+    {
+        PackageDatabaseEntryCollection::ConstPointer m(d->_imp->env->package_database()->query(
+                    *a->blocked_atom(), is_installed_only, qo_order_by_version));
+        if (m->empty())
+        {
+            /* this happens if we match an already on the list package, so always
+             * throw */
+            throw BlockError(stringify(*a->blocked_atom()));
+        }
+        else
+            for (PackageDatabaseEntryCollection::Iterator p(m->begin()), p_end(m->end()) ;
+                    p != p_end ; ++p)
+                d->add_blocked_package(*p);
+    }
 }
 
 void
@@ -691,7 +728,7 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                 .state(dle_no_deps)
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
-                .skip_install(metadata->get_virtual_interface()))),
+                .kind(metadata->get_virtual_interface() ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
 
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
@@ -750,7 +787,7 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                         .state(dle_has_all_deps)
                         .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                         .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
-                        .skip_install(m->get_virtual_interface())));
+                        .kind(dlk_provided)));
             _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
         }
     }
@@ -768,6 +805,44 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
     add_postdeps(metadata->deps.post_depend(), _imp->opts.uninstalled_deps_post, "post");
 
     our_merge_entry_position->state = dle_has_all_deps;
+}
+
+void
+DepList::add_blocked_package(const PackageDatabaseEntry & p)
+{
+    std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
+            _imp->merge_list_index.equal_range(p.name));
+
+    for ( ; pp.first != pp.second ; ++pp.first)
+    {
+        if (pp.first->second->kind == dlk_block && pp.first->second->package == p)
+        {
+            if (_imp->current_pde())
+                pp.first->second->tags->insert(DepTagEntry::create()
+                        .tag(DepTag::Pointer(new DependencyDepTag(*_imp->current_pde())))
+                        .generation(_imp->merge_list_generation));
+            return;
+        }
+    }
+
+    MergeList::iterator our_merge_entry_position(
+            _imp->merge_list.insert(_imp->merge_list.begin(),
+                DepListEntry::create()
+                .package(p)
+                .metadata(_imp->env->package_database()->fetch_repository(
+                        p.repository)->version_metadata(p.name, p.version))
+                .generation(_imp->merge_list_generation)
+                .state(dle_has_all_deps)
+                .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
+                .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                .kind(dlk_block)));
+
+    if (_imp->current_pde())
+        our_merge_entry_position->tags->insert(DepTagEntry::create()
+                .tag(DepTag::Pointer(new DependencyDepTag(*_imp->current_pde())))
+                .generation(_imp->merge_list_generation));
+
+    _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
 }
 
 void
@@ -827,7 +902,7 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::C
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
                 .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
-                .skip_install(true)));
+                .kind(dlk_already_installed)));
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry));
 
     if (tag)
@@ -1087,4 +1162,37 @@ DepList::is_top_level_target(const PackageDatabaseEntry & e) const
     return t(e);
 }
 
+namespace
+{
+    struct IsError
+    {
+        bool operator() (const DepListEntry & e) const
+        {
+            switch (e.kind)
+            {
+                case dlk_virtual:
+                case dlk_package:
+                case dlk_provided:
+                case dlk_already_installed:
+                case dlk_subpackage:
+                    return false;
+
+                case dlk_block:
+                case dlk_masked:
+                    return true;
+
+                case last_dlk:
+                    ;
+            }
+
+            throw InternalError(PALUDIS_HERE, "Bad e.kind");
+        }
+    };
+}
+
+bool
+DepList::has_errors() const
+{
+    return end() != std::find_if(begin(), end(), IsError());
+}
 

@@ -98,7 +98,15 @@ namespace paludis
                 downgrade_count,
                 new_slot_count,
                 rebuild_count,
+                error_count,
                 last_count
+            };
+
+            enum DisplayMode
+            {
+                normal_entry,
+                unimportant_entry,
+                error_entry
             };
 
         private:
@@ -122,6 +130,7 @@ namespace paludis
 
             virtual void on_display_merge_list_pre();
             virtual void on_display_merge_list_post();
+            virtual void on_not_continuing_due_to_errors();
             virtual void on_display_merge_list_entry(const DepListEntry &);
 
             virtual void on_fetch_all_pre();
@@ -174,6 +183,7 @@ namespace paludis
             virtual std::string render_as_package_name(const std::string &) const;
             virtual std::string render_as_tag(const std::string &) const;
             virtual std::string render_as_unimportant(const std::string &) const;
+            virtual std::string render_as_error(const std::string &) const;
             virtual std::string render_as_slot_name(const std::string &) const;
             virtual std::string render_as_update_mode(const std::string &) const;
             virtual std::string render_plural(int count, const std::string &, const std::string &) const;
@@ -193,19 +203,19 @@ namespace paludis
             virtual void display_merge_list_post_counts();
             virtual void display_merge_list_post_tags();
 
-            virtual void display_merge_list_entry_start(const DepListEntry &);
-            virtual void display_merge_list_entry_package_name(const DepListEntry &);
-            virtual void display_merge_list_entry_version(const DepListEntry &);
-            virtual void display_merge_list_entry_repository(const DepListEntry &);
-            virtual void display_merge_list_entry_slot(const DepListEntry &);
+            virtual void display_merge_list_entry_start(const DepListEntry &, const DisplayMode);
+            virtual void display_merge_list_entry_package_name(const DepListEntry &, const DisplayMode);
+            virtual void display_merge_list_entry_version(const DepListEntry &, const DisplayMode);
+            virtual void display_merge_list_entry_repository(const DepListEntry &, const DisplayMode);
+            virtual void display_merge_list_entry_slot(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_status_and_update_counts(const DepListEntry &,
                     PackageDatabaseEntryCollection::ConstPointer,
-                    PackageDatabaseEntryCollection::ConstPointer);
+                    PackageDatabaseEntryCollection::ConstPointer, const DisplayMode);
             virtual void display_merge_list_entry_use(const DepListEntry &,
                     PackageDatabaseEntryCollection::ConstPointer,
-                    PackageDatabaseEntryCollection::ConstPointer);
-            virtual void display_merge_list_entry_tags(const DepListEntry &);
-            virtual void display_merge_list_entry_end(const DepListEntry &);
+                    PackageDatabaseEntryCollection::ConstPointer, const DisplayMode);
+            virtual void display_merge_list_entry_tags(const DepListEntry &, const DisplayMode);
+            virtual void display_merge_list_entry_end(const DepListEntry &, const DisplayMode);
 
             virtual void display_tag_summary_start();
             virtual void display_tag_summary_tag_title(const DepTagCategory &);

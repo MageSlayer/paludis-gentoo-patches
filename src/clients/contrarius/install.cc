@@ -113,7 +113,7 @@ namespace
                 "--install --preserve-world";
             for (DepList::Iterator i(task.current_dep_list_entry()), i_end(task.dep_list().end()) ;
                     i != i_end ; ++i)
-                if (! i->skip_install)
+                if (dlk_package == i->kind)
                     resume_command = resume_command + " ="
                         + stringify(i->package.name) + "-"
                         + stringify(i->package.version) + "::"
@@ -220,6 +220,9 @@ do_install(PackageDepAtom::ConstPointer atom)
         task.execute();
 
         cout << endl;
+
+        if (task.dep_list().has_errors())
+            return_code |= 1;
     }
     catch (const AmbiguousPackageNameError & e)
     {

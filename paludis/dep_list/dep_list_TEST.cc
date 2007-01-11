@@ -964,7 +964,7 @@ namespace test_cases
 
         void populate_expected()
         {
-            merge_target="cat/one";
+            merge_target = "cat/one";
         }
 
         void check_lists()
