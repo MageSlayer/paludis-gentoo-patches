@@ -91,7 +91,7 @@ MetadataCheck::operator() (const FSEntry & f) const
         else
         {
             LibXmlPtrHolder<xmlDocPtr> xml_doc(xmlCtxtReadFile(
-                        xml_parser_context, stringify(f).c_str(), 0, XML_PARSE_DTDLOAD), &xmlFreeDoc);
+                        xml_parser_context, stringify(f).c_str(), 0, XML_PARSE_NONET), &xmlFreeDoc);
             if (! xml_doc)
                 result << Message(qal_major, "Unable to parse '" + stringify(f) + "'");
             else
