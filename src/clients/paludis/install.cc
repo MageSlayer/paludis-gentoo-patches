@@ -364,6 +364,24 @@ do_install()
             throw args::DoHelp("bad value for --dl-blocks");
     }
 
+    if (CommandLine::get_instance()->dl_override_masks.specified())
+    {
+        for (args::StringSetArg::Iterator a(CommandLine::get_instance()->dl_override_masks.args_begin()),
+                a_end(CommandLine::get_instance()->dl_override_masks.args_end()) ; a != a_end ; ++a)
+        {
+            if (*a == "keyword")
+                options.override_mask_reasons.set(mr_keyword);
+            else if (*a == "profile")
+                options.override_mask_reasons.set(mr_profile_mask);
+            else if (*a == "repository")
+                options.override_mask_reasons.set(mr_repository_mask);
+            else if (*a == "license")
+                options.override_mask_reasons.set(mr_license);
+            else
+                throw args::DoHelp("bad value for --dl-override-masks");
+        }
+    }
+
     if (CommandLine::get_instance()->dl_fall_back.specified())
     {
         if (CommandLine::get_instance()->dl_fall_back.argument() == "as-needed-except-targets")

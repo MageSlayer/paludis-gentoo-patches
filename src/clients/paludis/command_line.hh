@@ -253,6 +253,7 @@ class CommandLine :
 
         paludis::args::EnumArg dl_circular;
         paludis::args::EnumArg dl_blocks;
+        paludis::args::StringSetArg dl_override_masks;
 
         paludis::args::EnumArg dl_fall_back;
 

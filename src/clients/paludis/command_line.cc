@@ -169,6 +169,13 @@ CommandLine::CommandLine() :
             ("error",              "Error straight away")
             ("discard",            "Discard (dangerous)"),
             "error"),
+    dl_override_masks(&dl_args, "dl-override-masks", '\0',
+            "Zero or more mask kinds that can be overridden as necessary",
+            args::StringSetArg::StringSetArgOptions
+            ("keyword",           "Keyword masks")
+            ("profile",           "Profile masks")
+            ("repository",        "Repository masks")
+            ("license",           "License masks")),
 
     dl_fall_back(&dl_args, "dl-fall-back", '\0', "When to fall back to installed packages",
             args::EnumArg::EnumArgOptions
