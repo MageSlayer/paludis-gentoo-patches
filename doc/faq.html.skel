@@ -316,6 +316,14 @@ resume the build.</p>
 <p>Rationale: Learn how to use <code>nice</code>. There's no
 <code>GCC_NICENESS</code> or <code>VIM_NICENESS</code> either.</p>
 
+<h3 id="ask">No Ask Support</h3>
+
+<p>Non-Problem: There's nothing like <code>emerge --ask</code>.</p>
+
+<p>Rationale: the <code>paludis</code> client is non-interactive. If someone is
+making an interactive client, there are much better ways of doing it than
+the limited functionality that <code>emerge --ask</code> provides.</p>
+
 <h3 id="digests">No Digest Generation</h3>
 
 <p>Non-Problem: Paludis doesn't do digest or Manifest creation.</p>
