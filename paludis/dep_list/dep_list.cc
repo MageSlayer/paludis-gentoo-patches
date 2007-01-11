@@ -445,6 +445,19 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
             break;
         }
 
+    /* are we allowed to override mask reasons? */
+    if (! best_visible_candidate && d->_imp->opts.override_mask_reasons.any())
+    {
+        for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
+                p_end(installable_candidates->rend()) ; p != p_end ; ++p)
+            if (! (d->_imp->env->mask_reasons(*p) & ~d->_imp->opts.override_mask_reasons).any())
+            {
+                d->add_error_package(*p, dlk_masked);
+                best_visible_candidate = &*p;
+                break;
+            }
+    }
+
     /* no installable candidates. if we're already installed, that's ok (except for top level
      * package targets), otherwise error. */
     if (! best_visible_candidate)
@@ -667,7 +680,7 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
                 else
                     for (PackageDatabaseEntryCollection::Iterator p(m->begin()), p_end(m->end()) ;
                             p != p_end ; ++p)
-                        d->add_blocked_package(*p);
+                        d->add_error_package(*p, dlk_block);
             }
             break;
 
@@ -825,14 +838,14 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
 }
 
 void
-DepList::add_blocked_package(const PackageDatabaseEntry & p)
+DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKind kind)
 {
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
             _imp->merge_list_index.equal_range(p.name));
 
     for ( ; pp.first != pp.second ; ++pp.first)
     {
-        if (pp.first->second->kind == dlk_block && pp.first->second->package == p)
+        if (pp.first->second->kind == kind && pp.first->second->package == p)
         {
             if (_imp->current_pde())
                 pp.first->second->tags->insert(DepTagEntry::create()
@@ -852,7 +865,7 @@ DepList::add_blocked_package(const PackageDatabaseEntry & p)
                 .state(dle_has_all_deps)
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
-                .kind(dlk_block)));
+                .kind(kind)));
 
     if (_imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()

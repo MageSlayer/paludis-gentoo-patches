@@ -20,6 +20,7 @@ make_class_DepListOptions()
 
     key circular DepListCircularOption
     key blocks DepListBlocksOption
+    key override_mask_reasons MaskReasons
 
     key dependency_tags bool
 

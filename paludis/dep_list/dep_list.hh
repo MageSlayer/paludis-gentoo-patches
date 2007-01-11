@@ -62,7 +62,7 @@ namespace paludis
 
             void add_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
             void add_already_installed_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
-            void add_blocked_package(const PackageDatabaseEntry &);
+            void add_error_package(const PackageDatabaseEntry &, const DepListEntryKind);
 
             void add_predeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
             void add_postdeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
