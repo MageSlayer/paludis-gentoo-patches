@@ -250,7 +250,7 @@ extern "C"
          * Document-module: Paludis
          *
          * <b>Paludis</b> is the other package mangler, this is the doc to the ruby binding. The C++ library
-         * documentation[http://paludis.org/doxygen/html/] may also help.
+         * documentation[http://paludis.pioto.org/doxygen/html/] may also help.
          *
          */
         c_paludis_module = rb_define_module("Paludis");
