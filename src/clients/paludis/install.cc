@@ -352,6 +352,18 @@ do_install()
             throw args::DoHelp("bad value for --dl-circular");
     }
 
+    if (CommandLine::get_instance()->dl_blocks.specified())
+    {
+        if (CommandLine::get_instance()->dl_blocks.argument() == "discard")
+            options.blocks = dl_blocks_discard;
+        else if (CommandLine::get_instance()->dl_blocks.argument() == "error")
+            options.blocks = dl_blocks_error;
+        else if (CommandLine::get_instance()->dl_blocks.argument() == "accumulate")
+            options.blocks = dl_blocks_accumulate;
+        else
+            throw args::DoHelp("bad value for --dl-blocks");
+    }
+
     if (CommandLine::get_instance()->dl_fall_back.specified())
     {
         if (CommandLine::get_instance()->dl_fall_back.argument() == "as-needed-except-targets")

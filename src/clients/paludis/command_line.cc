@@ -163,6 +163,12 @@ CommandLine::CommandLine() :
             ("error",         "Raise an error")
             ("discard",       "Discard"),
             "error"),
+    dl_blocks(&dl_args, "dl-blocks", '\0', "How to handle blocks",
+            args::EnumArg::EnumArgOptions
+            ("accumulate",         "Accumulate and show in the dependency list")
+            ("error",              "Error straight away")
+            ("discard",            "Discard (dangerous)"),
+            "error"),
 
     dl_fall_back(&dl_args, "dl-fall-back", '\0', "When to fall back to installed packages",
             args::EnumArg::EnumArgOptions

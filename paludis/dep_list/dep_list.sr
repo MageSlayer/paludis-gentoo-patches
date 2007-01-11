@@ -19,6 +19,7 @@ make_class_DepListOptions()
     key uninstalled_deps_post DepListDepsOption
 
     key circular DepListCircularOption
+    key blocks DepListBlocksOption
 
     key dependency_tags bool
 

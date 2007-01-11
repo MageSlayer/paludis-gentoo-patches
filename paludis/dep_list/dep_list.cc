@@ -54,6 +54,7 @@ DepListOptions::DepListOptions() :
     uninstalled_deps_runtime(dl_deps_pre_or_post),
     uninstalled_deps_post(dl_deps_post),
     circular(dl_circular_error),
+    blocks(dl_blocks_accumulate),
     dependency_tags(false)
 {
     /* when changing the above, also see src/paludis/command_line.cc. */
@@ -96,7 +97,7 @@ namespace paludis
             merge_list_insert_position(merge_list.end()),
             merge_list_generation(0),
             current_top_level_target(0),
-            throw_on_blocker(false)
+            throw_on_blocker(o.blocks == dl_blocks_error)
         {
         }
     };
@@ -645,22 +646,38 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
         }
     }
 
-    if (d->_imp->throw_on_blocker)
-        throw BlockError(stringify(*a->blocked_atom()));
-    else
+    switch (d->_imp->opts.blocks)
     {
-        PackageDatabaseEntryCollection::ConstPointer m(d->_imp->env->package_database()->query(
-                    *a->blocked_atom(), is_installed_only, qo_order_by_version));
-        if (m->empty())
-        {
-            /* this happens if we match an already on the list package, so always
-             * throw */
+        case dl_blocks_error:
             throw BlockError(stringify(*a->blocked_atom()));
-        }
-        else
-            for (PackageDatabaseEntryCollection::Iterator p(m->begin()), p_end(m->end()) ;
-                    p != p_end ; ++p)
-                d->add_blocked_package(*p);
+
+        case dl_blocks_accumulate:
+            if (d->_imp->throw_on_blocker)
+                throw BlockError(stringify(*a->blocked_atom()));
+            else
+            {
+                PackageDatabaseEntryCollection::ConstPointer m(d->_imp->env->package_database()->query(
+                            *a->blocked_atom(), is_installed_only, qo_order_by_version));
+                if (m->empty())
+                {
+                    /* this happens if we match an already on the list package, so always
+                     * throw */
+                    throw BlockError(stringify(*a->blocked_atom()));
+                }
+                else
+                    for (PackageDatabaseEntryCollection::Iterator p(m->begin()), p_end(m->end()) ;
+                            p != p_end ; ++p)
+                        d->add_blocked_package(*p);
+            }
+            break;
+
+        case dl_blocks_discard:
+            Log::get_instance()->message(ll_warning, lc_context, "Discarding block '!"
+                    + stringify(*a->blocked_atom()) + "'");
+            break;
+
+        case last_dl_blocks:
+            ;
     }
 }
 

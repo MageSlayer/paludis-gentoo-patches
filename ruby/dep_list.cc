@@ -69,6 +69,7 @@ namespace
         return self;
     }
 
+#ifdef CIARANM_TURNED_THIS_OFF
     /*
      * call-seq:
      *     DepListOptions.new(reinstall, reinstall_scm, target_type, upgrade, new_slots, fall_back, installed_deps_prem installed_deps_runtime, installed_deps_post, uninstalled_deps_pre, uninstalled_deps_runtime, uninstalled_deps_post, circular, dependency_tags) -> DepListOptions
@@ -231,6 +232,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+#endif
 
     /*
      * Document-method: reinstall
@@ -682,7 +684,11 @@ namespace
          * Parameters for a DepList.
          */
         c_dep_list_options = rb_define_class_under(paludis_module(), "DepListOptions", rb_cObject);
+#ifdef CIARANM_TURNED_THIS_OFF
         rb_define_singleton_method(c_dep_list_options, "new", RUBY_FUNC_CAST(&dep_list_options_new), -1);
+#else
+        rb_funcall(c_dep_list_options, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+#endif
         rb_define_method(c_dep_list_options, "initialize", RUBY_FUNC_CAST(&dep_list_options_init), -1);
         rb_define_method(c_dep_list_options, "reinstall",
                 RUBY_FUNC_CAST((&OptionsMember<DepListReinstallOption, &DepListOptions::reinstall>::fetch)),0);
@@ -720,7 +726,11 @@ namespace
          * but not Comparable.
          */
         c_dep_list= rb_define_class_under(paludis_module(), "DepList", rb_cObject);
+#ifdef CIARANM_TURNED_THIS_OFF
         rb_define_singleton_method(c_dep_list, "new", RUBY_FUNC_CAST(&dep_list_new), -1);
+#else
+        rb_funcall(c_dep_list, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+#endif
         rb_define_method(c_dep_list, "initialize", RUBY_FUNC_CAST(&dep_list_init), -1);
         rb_define_method(c_dep_list, "add", RUBY_FUNC_CAST(&dep_list_add), 1);
         rb_define_method(c_dep_list, "clear", RUBY_FUNC_CAST(&dep_list_clear), 0);

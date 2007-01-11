@@ -252,6 +252,7 @@ class CommandLine :
         paludis::args::DepsOptionArg dl_uninstalled_deps_post;
 
         paludis::args::EnumArg dl_circular;
+        paludis::args::EnumArg dl_blocks;
 
         paludis::args::EnumArg dl_fall_back;
 
