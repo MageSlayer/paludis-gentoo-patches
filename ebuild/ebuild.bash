@@ -212,6 +212,7 @@ ebuild_load_ebuild()
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?..\?ID=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?LD_/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?CATEGORY=/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?\(PN\|PV\|P\|PVR\|PF\)=/d' \
             "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}"
 
         export PALUDIS_EXTRA_DIE_MESSAGE="${real_PALUDIS_EXTRA_DIE_MESSAGE}"
