@@ -65,7 +65,7 @@ MetadataCheck::operator() (const FSEntry & f) const
                 throw ConfigurationError("~/.qualudis/cache/ does not exist and cannot be created");
 
         dtd /= "metadata.dtd";
-        if (! dtd.exists() || dtd.mtime() > (std::time(0) + (24 * 60 * 60)))
+        if (! dtd.exists() || dtd.mtime() < (std::time(0) - (24 * 60 * 60)))
         {
             PStream wget("wget -O- http://www.gentoo.org/dtd/metadata.dtd");
 
