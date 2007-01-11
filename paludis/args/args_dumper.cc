@@ -50,7 +50,6 @@ void ArgsDumper::visit(const ArgsOption * const a)
     _os << " " << a->description() << std::endl;
 }
 
-#ifndef DOXYGEN
 #define VISIT(type) void ArgsDumper::visit(const type * const a) \
     { visit(static_cast<const ArgsOption *>(a)); }
 
@@ -58,8 +57,24 @@ VISIT(SwitchArg)
 VISIT(StringArg)
 VISIT(IntegerArg)
 VISIT(AliasArg)
-VISIT(StringSetArg)
-#endif
+
+void ArgsDumper::visit(const StringSetArg * const a)
+{
+    visit(static_cast<const ArgsOption *>(a));
+
+    if (a->begin_allowed_args() != a->end_allowed_args())
+        for (StringSetArg::AllowedArgIterator it = a->begin_allowed_args(), it_end = a->end_allowed_args();
+                it != it_end; ++it)
+        {
+            std::stringstream p;
+            p << "      " << (*it).first;
+            if (p.str().length() < 26)
+                p << std::string(26 - p.str().length(), ' ');
+            _os << p.str();
+            _os << " " << (*it).second;
+            _os << std::endl;
+        }
+}
 
 void ArgsDumper::visit(const EnumArg * const a)
 {

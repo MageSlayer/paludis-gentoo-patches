@@ -31,6 +31,32 @@
 
 using namespace paludis::args;
 
+namespace
+{
+    /**
+     * Is an arg a particular value?
+     *
+     * \ingroup grplibpaludisargs
+     */
+    struct ArgIs
+    {
+        /// The argument.
+        const std::string arg;
+
+        /// Constructor.
+        ArgIs(const std::string & a) :
+            arg(a)
+        {
+        }
+
+        /// Comparator.
+        bool operator() (const std::pair<std::string, std::string> & p) const
+        {
+            return p.first == arg;
+        }
+    };
+}
+
 ArgsOption::ArgsOption(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description) :
     _group(g),
@@ -82,14 +108,30 @@ namespace paludis
         InternalCounted<Implementation<StringSetArg> >
     {
         std::set<std::string> args;
+        std::vector<std::pair<std::string, std::string> > allowed_args;
+    };
+
+    /**
+     * Implementation data for StringSetArg::StringSetArgOptions.
+     *
+     * \ingroup grplibpaludisargs
+     */
+    template<>
+    struct Implementation<StringSetArg::StringSetArgOptions> :
+        InternalCounted<Implementation<StringSetArg::StringSetArgOptions> >
+    {
+        std::vector<std::pair<std::string, std::string> > options;
     };
 }
 
 StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_name,
-        const char our_short_name, const std::string & our_description) :
+        const char our_short_name, const std::string & our_description,
+        const StringSetArgOptions & opts) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
     PrivateImplementationPattern<StringSetArg>(new Implementation<StringSetArg>)
 {
+    std::copy(opts._imp->options.begin(), opts._imp->options.end(),
+            std::back_inserter(_imp->allowed_args));
 }
 
 StringSetArg::Iterator
@@ -107,6 +149,11 @@ StringSetArg::args_end() const
 void
 StringSetArg::add_argument(const std::string & arg)
 {
+    if (! _imp->allowed_args.empty())
+        if (_imp->allowed_args.end() == std::find_if(_imp->allowed_args.begin(),
+                    _imp->allowed_args.end(), ArgIs(arg)))
+            throw (BadValue("--" + long_name(), arg));
+
     _imp->args.insert(arg);
 }
 
@@ -114,32 +161,6 @@ IntegerArg::IntegerArg(ArgsGroup * const our_group, const std::string & our_long
                 char our_short_name, const std::string & our_description) :
     ArgsOption(our_group, our_long_name, our_short_name, our_description)
 {
-}
-
-namespace
-{
-    /**
-     * Is an arg a particular value?
-     *
-     * \ingroup grplibpaludisargs
-     */
-    struct ArgIs
-    {
-        /// The argument.
-        const std::string arg;
-
-        /// Constructor.
-        ArgIs(const std::string & a) :
-            arg(a)
-        {
-        }
-
-        /// Comparator.
-        bool operator() (const std::pair<std::string, std::string> & p) const
-        {
-            return p.first == arg;
-        }
-    };
 }
 
 namespace paludis
@@ -167,6 +188,35 @@ namespace paludis
     {
         std::vector<std::pair<std::string, std::string> > options;
     };
+}
+
+StringSetArg::StringSetArgOptions::StringSetArgOptions(std::string opt, std::string desc) :
+    PrivateImplementationPattern<StringSetArgOptions>(new Implementation<StringSetArgOptions>)
+{
+    _imp->options.push_back(std::make_pair(opt, desc));
+}
+
+StringSetArg::StringSetArgOptions &
+StringSetArg::StringSetArgOptions::operator() (std::string opt, std::string desc)
+{
+    _imp->options.push_back(std::make_pair(opt, desc));
+    return *this;
+}
+
+StringSetArg::StringSetArgOptions::StringSetArgOptions(const StringSetArg::StringSetArgOptions & o) :
+    PrivateImplementationPattern<StringSetArgOptions>(new Implementation<StringSetArgOptions>)
+{
+    std::copy(o._imp->options.begin(), o._imp->options.end(),
+            std::back_inserter(_imp->options));
+}
+
+StringSetArg::StringSetArgOptions::~StringSetArgOptions()
+{
+}
+
+StringSetArg::StringSetArgOptions::StringSetArgOptions() :
+    PrivateImplementationPattern<StringSetArgOptions>(new Implementation<StringSetArgOptions>)
+{
 }
 
 void EnumArg::set_argument(const std::string & arg)
@@ -223,5 +273,17 @@ EnumArg::end_allowed_args() const
 
 StringSetArg::~StringSetArg()
 {
+}
+
+StringSetArg::AllowedArgIterator
+StringSetArg::begin_allowed_args() const
+{
+    return AllowedArgIterator(_imp->allowed_args.begin());
+}
+
+StringSetArg::AllowedArgIterator
+StringSetArg::end_allowed_args() const
+{
+    return AllowedArgIterator(_imp->allowed_args.end());
 }
 

@@ -183,11 +183,50 @@ namespace paludis
             private PrivateImplementationPattern<StringSetArg>
         {
             public:
+                /**
+                 * Helper class for passing available options and associated descriptions
+                 * to the StringSetArg constructor.
+                 *
+                 * \ingroup grplibpaludisargs
+                 */
+                class PALUDIS_VISIBLE StringSetArgOptions :
+                    private PrivateImplementationPattern<StringSetArgOptions>
+                {
+                    friend class StringSetArg;
+
+                    public:
+                        /**
+                         * Constructor
+                         */
+                        StringSetArgOptions(const std::string, const std::string);
+
+                        /**
+                         * Blank constructor
+                         */
+                        explicit StringSetArgOptions();
+
+                        /**
+                         * Copy constructor
+                         */
+                        StringSetArgOptions(const StringSetArgOptions &);
+
+                        /**
+                         * Destructor.
+                         */
+                        ~StringSetArgOptions();
+
+                        /**
+                         * Adds another (option, description) pair.
+                         */
+                        StringSetArgOptions & operator() (const std::string, const std::string);
+                };
+
                 ///\name Basic operations
                 ///\{
 
                 StringSetArg(ArgsGroup * const, const std::string & long_name,
-                        const char short_name, const std::string & description);
+                        const char short_name, const std::string & description,
+                        const StringSetArgOptions & options = StringSetArgOptions());
 
                 ~StringSetArg();
 
@@ -208,6 +247,18 @@ namespace paludis
                  * Add an argument to the set.
                  */
                 void add_argument(const std::string & arg);
+
+                ///\name Iterate over our allowed arguments and associated descriptions
+                ///\{
+
+                typedef libwrapiter::ForwardIterator<StringSetArg,
+                        const std::pair<std::string, std::string> > AllowedArgIterator;
+
+                AllowedArgIterator begin_allowed_args() const;
+
+                AllowedArgIterator end_allowed_args() const;
+
+                ///\}
         };
 
 
