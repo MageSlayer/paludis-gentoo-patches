@@ -28,6 +28,10 @@ cat <<END > home/.paludis/package_mask.conf
 =foo/bar-3*
 END
 
+cat <<END > home/.paludis/package_unmask.conf
+=foo/bar-2*
+END
+
 cat <<END > home/.paludis/licenses.conf
 * *
 END

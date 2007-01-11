@@ -265,6 +265,14 @@ module Paludis
             assert env.query_user_masks(p3)
         end
 
+        def test_query_user_unmasks
+            p2 = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("2.0"), "testrepo")
+            p3 = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("3.0"), "testrepo")
+
+            assert env.query_user_unmasks(p2)
+            assert ! env.query_user_unmasks(p3)
+        end
+
         def test_query_user_masks_bad
             p = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("2.0"), "testrepo")
             assert_raise ArgumentError do
@@ -272,6 +280,16 @@ module Paludis
             end
             assert_raise TypeError do
                 env.query_user_masks(123)
+            end
+        end
+
+        def test_query_user_unmasks_bad
+            p = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("2.0"), "testrepo")
+            assert_raise ArgumentError do
+                env.query_user_unmasks(p, p)
+            end
+            assert_raise TypeError do
+                env.query_user_unmasks(123)
             end
         end
     end
