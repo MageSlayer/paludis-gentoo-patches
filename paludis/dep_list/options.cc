@@ -252,6 +252,35 @@ paludis::operator<< (std::ostream & o, const DepListCircularOption & s)
 }
 
 std::ostream &
+paludis::operator<< (std::ostream & o, const DepListBlocksOption & s)
+{
+    do
+    {
+        switch (s)
+        {
+            case dl_blocks_accumulate:
+                o << "blocks_accumulate";
+                continue;
+
+            case dl_blocks_error:
+                o << "blocks_error";
+                continue;
+
+            case dl_blocks_discard:
+                o << "blocks_discard";
+                continue;
+
+            case last_dl_blocks:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad DepListBlocksOption");
+    } while (false);
+
+    return o;
+}
+
+std::ostream &
 paludis::operator<< (std::ostream & o, const DepListEntryState & s)
 {
     do
@@ -275,6 +304,51 @@ paludis::operator<< (std::ostream & o, const DepListEntryState & s)
         }
 
         throw InternalError(PALUDIS_HERE, "Bad DepListEntryState");
+    } while (false);
+
+    return o;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & o, const DepListEntryKind & s)
+{
+    do
+    {
+        switch (s)
+        {
+            case dlk_package:
+                o << "package";
+                continue;
+
+            case dlk_subpackage:
+                o << "sub_package";
+                continue;
+
+            case dlk_already_installed:
+                o << "already_installed";
+                continue;
+
+            case dlk_virtual:
+                o << "virtual";
+                continue;
+
+            case dlk_provided:
+                o << "provided";
+                continue;
+
+            case dlk_block:
+                o << "block";
+                continue;
+
+            case dlk_masked:
+                o << "masked";
+                continue;
+
+            case last_dlk:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad DepListEntryKind");
     } while (false);
 
     return o;

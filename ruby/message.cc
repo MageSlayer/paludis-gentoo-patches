@@ -91,7 +91,7 @@ namespace
     {
         Message * ptr;
         Data_Get_Struct(self, Message, ptr);
-        return INT2NUM((ptr)->level);
+        return INT2FIX((ptr)->level);
     }
     void do_register_message()
     {

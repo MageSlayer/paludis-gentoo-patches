@@ -26,7 +26,6 @@ require 'Paludis'
 Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 
 module Paludis
-
     class TestCase_DefaultEnvironment < Test::Unit::TestCase
         def test_instance
             assert_equal DefaultEnvironment.instance.__id__, DefaultEnvironment.instance.__id__
@@ -230,8 +229,8 @@ module Paludis
 
             m = env.mask_reasons(p)
             assert ! m.empty?
-            assert m.include?("keyword")
-            assert_equal ["keyword"], m.to_a
+            assert m.include?(MaskReason::Keyword)
+            assert_equal([MaskReason::Keyword], m.to_a)
         end
 
         def test_mask_reasons_no_such_repo

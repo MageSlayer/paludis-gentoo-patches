@@ -236,12 +236,28 @@ namespace paludis
     operator<< (std::ostream &, const DepListCircularOption &) PALUDIS_VISIBLE;
 
     /**
+     * Write a DepListCircularOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListBlocksOption &) PALUDIS_VISIBLE;
+
+    /**
      * Write a DepListEntryState to a stream.
      *
      * \ingroup grpdepresolver
      */
     std::ostream &
     operator<< (std::ostream &, const DepListEntryState &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListEntryKind to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListEntryKind &) PALUDIS_VISIBLE;
 }
 
 #endif

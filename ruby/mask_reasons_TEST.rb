@@ -23,7 +23,6 @@ require 'Paludis'
 
 module Paludis
     class TestCase_MaskReasons < Test::Unit::TestCase
-
         def test_create
             m = MaskReasons.new
         end
@@ -38,6 +37,16 @@ module Paludis
             assert m.empty?
         end
 
+        def test_set
+            m = MaskReasons.new
+            m.set MaskReason::Keyword
+            m.set MaskReason::ProfileMask
+
+            assert ! m.empty?
+
+            assert m.include?(MaskReason::Keyword)
+            assert m.include?(MaskReason::ProfileMask)
+        end
     end
 end
 

@@ -18,9 +18,6 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-# CIARANM_TURNED_THIS_OFF
-exit 0
-
 ENV['PALUDIS_HOME'] = Dir.getwd() + '/dep_list_TEST_dir/home'
 
 require 'test/unit'
@@ -45,6 +42,8 @@ module Paludis
                 DepListDepsOption::DepsDiscard,
                 DepListDepsOption::DepsDiscard,
                 DepListCircularOption::CircularDiscard,
+                DepListBlocksOption::BlocksError,
+                MaskReasons.new,
                 false
             )
         end
@@ -64,6 +63,8 @@ module Paludis
                 :uninstalled_deps_runtime => DepListDepsOption::DepsDiscard,
                 :uninstalled_deps_post => DepListDepsOption::DepsDiscard,
                 :circular => DepListCircularOption::CircularDiscard,
+                :blocks => DepListBlocksOption::BlocksError,
+                :override_mask_reasons => MaskReasons.new,
                 :dependency_tags => false
             }
         end
@@ -102,6 +103,7 @@ module Paludis
             options = dlo
             options_hash.each_pair do |method, value|
                 assert_respond_to options, method
+#                next if method == :override_mask_reasons
                 assert_equal value, options.send(method)
             end
         end

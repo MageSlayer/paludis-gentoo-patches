@@ -30,6 +30,7 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_mask_reasons;
+    static VALUE c_mask_reason;
 
     VALUE
     mask_reasons_init(VALUE self)
@@ -57,7 +58,7 @@ namespace
 
     /*
      * call-seq:
-     *     each {|mask_reason| block }
+     *     each {|mask_reason| block } -> Nil
      *
      * Iterate through the mask reasons.
      */
@@ -69,8 +70,8 @@ namespace
         for (MaskReason i(static_cast<MaskReason>(0)), i_end(last_mr) ; i != i_end ;
                 i = static_cast<MaskReason>(static_cast<int>(i) + 1))
             if ((*m_ptr)[i])
-                rb_yield(rb_str_new2(stringify(i).c_str()));
-        return self;
+                rb_yield(INT2FIX(i));
+        return Qnil;
     }
 
     /*
@@ -85,6 +86,54 @@ namespace
         MaskReasons * m_ptr;
         Data_Get_Struct(self, MaskReasons, m_ptr);
         return m_ptr->any() ? Qfalse : Qtrue;
+    }
+
+    /*
+     * call-seq:
+     *     set(mask_reason) -> Nil
+     *
+     * Add MaskReason to collection.
+     */
+    VALUE
+    mask_reasons_set(VALUE self, VALUE mask_reason)
+    {
+        MaskReasons * m_ptr;
+        Data_Get_Struct(self, MaskReasons, m_ptr);
+        try
+        {
+            int mr = NUM2INT(mask_reason);
+            if (mr < 0 || mr >= last_mr)
+                rb_raise(rb_eArgError, "MaskReason out of range");
+            m_ptr->set(mr);
+            return Qnil;
+
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     == other_mask_reason -> True or False
+     *
+     * Are two MaskReasons equal
+     */
+    VALUE
+    mask_reasons_equal(VALUE self, VALUE other)
+    {
+        MaskReasons * m_ptr;
+        Data_Get_Struct(self, MaskReasons, m_ptr);
+        try
+        {
+            MaskReasons mr = value_to_mask_reasons(other);
+            return (*m_ptr) == mr ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
     void do_register_mask_reasons()
@@ -102,6 +151,20 @@ namespace
         rb_define_method(c_mask_reasons, "each", RUBY_FUNC_CAST(&mask_reasons_each), 0);
         rb_include_module(c_mask_reasons, rb_mEnumerable);
         rb_define_method(c_mask_reasons, "empty?", RUBY_FUNC_CAST(&mask_reasons_empty), 0);
+        rb_define_method(c_mask_reasons, "set", RUBY_FUNC_CAST(&mask_reasons_set), 1);
+        rb_define_method(c_mask_reasons, "==", RUBY_FUNC_CAST(&mask_reasons_equal), 1);
+
+        /*
+         * Document-module: Paludis::MaskReason
+         *
+         * Each value represents one reason for a package being masked.
+         */
+        c_mask_reason = rb_define_module_under(paludis_module(), "MaskReason");
+        for (MaskReason l(static_cast<MaskReason>(0)), l_end(last_mr) ; l != l_end ;
+                l = static_cast<MaskReason>(static_cast<int>(l) + 1))
+            rb_define_const(c_mask_reason, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/mask_reasons.hh, MaskReason, c_mask_reason>
     }
 }
 
@@ -109,6 +172,21 @@ VALUE
 paludis::ruby::mask_reasons_to_value(const MaskReasons & m)
 {
     return Data_Wrap_Struct(c_mask_reasons, 0, &Common<MaskReasons>::free, new MaskReasons(m));
+}
+
+MaskReasons
+paludis::ruby::value_to_mask_reasons(VALUE v)
+{
+    if (rb_obj_is_kind_of(v, c_mask_reasons))
+    {
+        MaskReasons * v_ptr;
+        Data_Get_Struct(v, MaskReasons, v_ptr);
+        return *v_ptr;
+    }
+    else
+    {
+        rb_raise(rb_eTypeError, "Can't convert %s into MaskReasons", rb_obj_classname(v));
+    }
 }
 
 RegisterRubyClass::Register paludis_ruby_register_mask_reasons PALUDIS_ATTRIBUTE((used))

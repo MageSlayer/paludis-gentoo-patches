@@ -36,7 +36,9 @@ namespace
     static VALUE c_dep_list_new_slots_option;
     static VALUE c_dep_list_deps_option;
     static VALUE c_dep_list_circular_option;
+    static VALUE c_dep_list_blocks_option;
     static VALUE c_dep_list_entry_state;
+    static VALUE c_dep_list_entry_kind;
     static VALUE c_dep_list_options;
     static VALUE c_dep_list;
     static VALUE c_dep_list_entry;
@@ -69,10 +71,9 @@ namespace
         return self;
     }
 
-#ifdef CIARANM_TURNED_THIS_OFF
     /*
      * call-seq:
-     *     DepListOptions.new(reinstall, reinstall_scm, target_type, upgrade, new_slots, fall_back, installed_deps_prem installed_deps_runtime, installed_deps_post, uninstalled_deps_pre, uninstalled_deps_runtime, uninstalled_deps_post, circular, dependency_tags) -> DepListOptions
+     *     DepListOptions.new(reinstall, reinstall_scm, target_type, upgrade, new_slots, fall_back, installed_deps_prem installed_deps_runtime, installed_deps_post, uninstalled_deps_pre, uninstalled_deps_runtime, uninstalled_deps_post, circular, blocks, dependency_tags) -> DepListOptions
      *     DepListOptions.new(Hash) -> DepListOptions
      *
      * DepListOptions.new can either be called with all parameters in order, or with one hash parameter, where the hash keys are symbols with the names above.
@@ -96,6 +97,8 @@ namespace
             int value_for_uninstalled_deps_runtime;
             int value_for_uninstalled_deps_post;
             int value_for_circular;
+            int value_for_blocks;
+            MaskReasons value_for_override_mask_reasons;
             bool value_for_dependency_tags;
 
             if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
@@ -126,6 +129,10 @@ namespace
                     rb_raise(rb_eArgError, "Missing Parameter: uninstalled_deps_post");
                 if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("circular"))))
                     rb_raise(rb_eArgError, "Missing Parameter: circular");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("blocks"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: blocks");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("override_mask_reasons"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: override_mask_reasons");
                 if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("dependency_tags"))))
                     rb_raise(rb_eArgError, "Missing Parameter: dependency_tags");
                 value_for_reinstall =
@@ -154,10 +161,15 @@ namespace
                     NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("uninstalled_deps_post"))));
                 value_for_circular =
                     NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("circular"))));
+                value_for_blocks =
+                    NUM2INT(rb_hash_aref(argv[0], ID2SYM(rb_intern("blocks"))));
+                value_for_override_mask_reasons = value_to_mask_reasons(
+                    rb_hash_aref(argv[0], ID2SYM(rb_intern("override_mask_reasons")))
+                        );
                 value_for_dependency_tags =
                     Qtrue == (rb_hash_aref(argv[0], ID2SYM(rb_intern("dependency_tags")))) ? true : false;
             }
-            else if (14 == argc)
+            else if (16 == argc)
             {
                 value_for_reinstall                = NUM2INT(argv[0]);
                 value_for_reinstall_scm            = NUM2INT(argv[1]);
@@ -172,7 +184,9 @@ namespace
                 value_for_uninstalled_deps_runtime = NUM2INT(argv[10]);
                 value_for_uninstalled_deps_post    = NUM2INT(argv[11]);
                 value_for_circular                 = NUM2INT(argv[12]);
-                value_for_dependency_tags = Qtrue == argv[13] ? true : false;
+                value_for_blocks                   = NUM2INT(argv[13]);
+                value_for_override_mask_reasons    = value_to_mask_reasons(argv[14]);
+                value_for_dependency_tags = Qtrue == argv[15] ? true : false;
             }
             else
             {
@@ -205,6 +219,8 @@ namespace
                 rb_raise(rb_eArgError, "uninstalled_deps_post out of range");
             if (value_for_circular < 0 ||  value_for_circular >= last_dl_circular)
                 rb_raise(rb_eArgError, "circular out of range");
+            if (value_for_circular < 0 ||  value_for_blocks >= last_dl_blocks)
+                rb_raise(rb_eArgError, "blocks out of range");
 
             ptr = new DepListOptions(static_cast<DepListReinstallOption>(value_for_reinstall),
                     static_cast<DepListReinstallScmOption>(value_for_reinstall_scm),
@@ -219,6 +235,8 @@ namespace
                     static_cast<DepListDepsOption>(value_for_uninstalled_deps_runtime),
                     static_cast<DepListDepsOption>(value_for_uninstalled_deps_post),
                     static_cast<DepListCircularOption>(value_for_circular),
+                    static_cast<DepListBlocksOption>(value_for_blocks),
+                    value_for_override_mask_reasons,
                     value_for_dependency_tags
                     );
 
@@ -232,7 +250,6 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
-#endif
 
     /*
      * Document-method: reinstall
@@ -346,9 +363,23 @@ namespace
         {
             DepListOptions * p;
             Data_Get_Struct(self, DepListOptions, p);
-            return INT2NUM(p->*m_);
+            return INT2FIX(p->*m_);
         }
     };
+
+    /*
+     * call-seq:
+     *     override_mask_reasons -> MaskReasons
+     *
+     * Our override MaskReasons.
+     */
+    VALUE
+    dep_list_options_mask_reasons(VALUE self)
+    {
+        DepListOptions * p;
+        Data_Get_Struct(self, DepListOptions, p);
+        return mask_reasons_to_value(p->override_mask_reasons);
+    }
 
     /*
      * call-seq:
@@ -471,6 +502,27 @@ namespace
 
     /*
      * call-seq:
+     *     entry_state -> DepListEntryState
+     *
+     * Our DepListEntryState.
+     */
+    VALUE
+    dep_list_entry_kind(VALUE self)
+    {
+        try
+        {
+            DepListEntry * p;
+            Data_Get_Struct(self, DepListEntry, p);
+            return INT2FIX(p->kind);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
      *     package -> PackageDatabaseEntry
      *
      * Our PackageDatabaseEntry.
@@ -551,7 +603,7 @@ namespace
         {
             DepListEntry * p;
             Data_Get_Struct(self, DepListEntry, p);
-            return INT2NUM(p->state);
+            return INT2FIX(p->state);
         }
         catch (const std::exception & e)
         {
@@ -572,7 +624,7 @@ namespace
                 l = static_cast<DepListTargetType>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_target_type, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/dep_list.hh, DepListTargetType, c_dep_list_target_type>
+        // cc_enum_special<paludis/dep_list/options.hh, DepListTargetType, c_dep_list_target_type>
 
         /*
          * Document-module: Paludis::DepListReinstallOption
@@ -585,7 +637,7 @@ namespace
                 l = static_cast<DepListReinstallOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_reinstall_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/dep_list.hh, DepListReinstallOption, c_dep_list_reinstall_option>
+        // cc_enum_special<paludis/dep_list/options.hh, DepListReinstallOption, c_dep_list_reinstall_option>
 
         /*
          * Document-module: Paludis::DepListFallBackOption
@@ -598,7 +650,7 @@ namespace
                 l = static_cast<DepListFallBackOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_fall_back_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/dep_list.hh, DepListFallBackOption, c_dep_list_fall_back_option>
+        // cc_enum_special<paludis/dep_list/options.hh, DepListFallBackOption, c_dep_list_fall_back_option>
 
         /*
          * Document-module: Paludis::DepListReinstallScmOption
@@ -611,7 +663,7 @@ namespace
                 l = static_cast<DepListReinstallScmOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_reinstall_scm_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/dep_list.hh, DepListReinstalScmlOption, c_dep_list_reinstall_scm_option>
+        // cc_enum_special<paludis/dep_list/options.hh, DepListReinstalScmlOption, c_dep_list_reinstall_scm_option>
 
         /*
          * Document-module: Paludis::DepListUpgradeOption
@@ -624,7 +676,7 @@ namespace
                 l = static_cast<DepListUpgradeOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_upgrade_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/dep_list.hh, DepListUpgradeOption, c_dep_list_upgrade_option>
+        // cc_enum_special<paludis/dep_list/options.hh, DepListUpgradeOption, c_dep_list_upgrade_option>
 
         /*
          * Document-module: Paludis::DepListNewSlotsOption
@@ -637,7 +689,7 @@ namespace
                 l = static_cast<DepListNewSlotsOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_new_slots_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/dep_list.hh, DepListNewSlotsOption, c_dep_list_new_slots_option>
+        // cc_enum_special<paludis/dep_list/options.hh, DepListNewSlotsOption, c_dep_list_new_slots_option>
 
         /*
          * Document-module: Paludis::DepListDepsOption
@@ -650,7 +702,7 @@ namespace
                 l = static_cast<DepListDepsOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_deps_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/dep_list.hh, DepListDepsOption, c_dep_list_deps_option>
+        // cc_enum_special<paludis/dep_list/options.hh, DepListDepsOption, c_dep_list_deps_option>
 
         /*
          * Document-module: Paludis::DepListCircularOption
@@ -663,7 +715,20 @@ namespace
                 l = static_cast<DepListCircularOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_circular_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/dep_list.hh, DepListCircularOption, c_dep_list_circular_option>
+        // cc_enum_special<paludis/dep_list/options.hh, DepListCircularOption, c_dep_list_circular_option>
+
+        /*
+         * Document-module: Paludis::DepListBlocksOption
+         *
+         * How we handle blocks.
+         *
+         */
+        c_dep_list_blocks_option = rb_define_module_under(paludis_module(), "DepListBlocksOption");
+        for (DepListBlocksOption l(static_cast<DepListBlocksOption>(0)), l_end(last_dl_blocks) ; l != l_end ;
+                l = static_cast<DepListBlocksOption>(static_cast<int>(l) + 1))
+            rb_define_const(c_dep_list_blocks_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/dep_list/options.hh, DepListBlocksOption, c_dep_list_blocks_option>
 
         /*
          * Document-module: Paludis::DepListEntryState
@@ -671,12 +736,25 @@ namespace
          * State of a DepListEntry.
          *
          */
-        c_dep_list_entry_state= rb_define_module_under(paludis_module(), "DepListEntryState");
+        c_dep_list_entry_state = rb_define_module_under(paludis_module(), "DepListEntryState");
         for (DepListEntryState l(static_cast<DepListEntryState>(0)), l_end(last_dle) ; l != l_end ;
                 l = static_cast<DepListEntryState>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_entry_state, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/dep_list.hh, DepListEntryState, c_dep_list_entry_state>
+        // cc_enum_special<paludis/dep_list/options.hh, DepListEntryState, c_dep_list_entry_state>
+
+        /*
+         * Document-module: Paludis::DepListEntryKind
+         *
+         * Kind of a DepListEntry.
+         *
+         */
+        c_dep_list_entry_kind = rb_define_module_under(paludis_module(), "DepListEntryKind");
+        for (DepListEntryKind l(static_cast<DepListEntryKind>(0)), l_end(last_dlk) ; l != l_end ;
+                l = static_cast<DepListEntryKind>(static_cast<int>(l) + 1))
+            rb_define_const(c_dep_list_entry_kind, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/dep_list/options.hh, DepListEntryKind, c_dep_list_entry_kind>
 
         /*
          * Document-class: Paludis::DepListOptions
@@ -684,11 +762,7 @@ namespace
          * Parameters for a DepList.
          */
         c_dep_list_options = rb_define_class_under(paludis_module(), "DepListOptions", rb_cObject);
-#ifdef CIARANM_TURNED_THIS_OFF
         rb_define_singleton_method(c_dep_list_options, "new", RUBY_FUNC_CAST(&dep_list_options_new), -1);
-#else
-        rb_funcall(c_dep_list_options, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-#endif
         rb_define_method(c_dep_list_options, "initialize", RUBY_FUNC_CAST(&dep_list_options_init), -1);
         rb_define_method(c_dep_list_options, "reinstall",
                 RUBY_FUNC_CAST((&OptionsMember<DepListReinstallOption, &DepListOptions::reinstall>::fetch)),0);
@@ -716,7 +790,12 @@ namespace
                 RUBY_FUNC_CAST((&OptionsMember<DepListDepsOption, &DepListOptions::installed_deps_post>::fetch)),0);
         rb_define_method(c_dep_list_options, "circular",
                 RUBY_FUNC_CAST((&OptionsMember<DepListCircularOption, &DepListOptions::circular>::fetch)),0);
+        rb_define_method(c_dep_list_options, "blocks",
+                RUBY_FUNC_CAST((&OptionsMember<DepListBlocksOption, &DepListOptions::blocks>::fetch)),0);
+        rb_define_method(c_dep_list_options, "ovveride_mask_reasons",
+                RUBY_FUNC_CAST((&OptionsMember<DepListBlocksOption, &DepListOptions::blocks>::fetch)),0);
 
+        rb_define_method(c_dep_list_options, "override_mask_reasons", RUBY_FUNC_CAST(&dep_list_options_mask_reasons),0);
         rb_define_method(c_dep_list_options, "dependency_tags", RUBY_FUNC_CAST(&dep_list_options_dependency_tags),0);
 
         /*
@@ -726,11 +805,7 @@ namespace
          * but not Comparable.
          */
         c_dep_list= rb_define_class_under(paludis_module(), "DepList", rb_cObject);
-#ifdef CIARANM_TURNED_THIS_OFF
         rb_define_singleton_method(c_dep_list, "new", RUBY_FUNC_CAST(&dep_list_new), -1);
-#else
-        rb_funcall(c_dep_list, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-#endif
         rb_define_method(c_dep_list, "initialize", RUBY_FUNC_CAST(&dep_list_init), -1);
         rb_define_method(c_dep_list, "add", RUBY_FUNC_CAST(&dep_list_add), 1);
         rb_define_method(c_dep_list, "clear", RUBY_FUNC_CAST(&dep_list_clear), 0);
@@ -745,6 +820,7 @@ namespace
          */
         c_dep_list_entry = rb_define_class_under(paludis_module(), "DepListEntry", rb_cObject);
         rb_funcall(c_dep_list_entry, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_dep_list_entry, "kind", RUBY_FUNC_CAST(&dep_list_entry_kind),0);
         rb_define_method(c_dep_list_entry, "package", RUBY_FUNC_CAST(&dep_list_entry_package),0);
         rb_define_method(c_dep_list_entry, "metadata", RUBY_FUNC_CAST(&dep_list_entry_metadata),0);
         rb_define_method(c_dep_list_entry, "destinations", RUBY_FUNC_CAST(&dep_list_entry_destinations),0);

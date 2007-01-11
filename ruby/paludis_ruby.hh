@@ -100,6 +100,7 @@ namespace paludis
         EnvironmentData* value_to_environment_data(VALUE v);
         NoConfigEnvironment* value_to_no_config_environment(VALUE v);
         PortageRepositoryProfilesDescLine value_to_portage_repository_profiles_desc_line(VALUE v);
+        MaskReasons value_to_mask_reasons(VALUE v);
 
 #ifdef ENABLE_RUBY_QA
         VALUE paludis_qa_module();

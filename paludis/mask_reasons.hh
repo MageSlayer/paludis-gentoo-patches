@@ -46,9 +46,9 @@ namespace paludis
         mr_profile_mask,          ///< profile package.mask
         mr_repository_mask,       ///< repository package.mask
         mr_eapi,                  ///< unknown eapi
+        mr_by_association,        ///< masked by association with another package (for virtuals)
         mr_license,               ///< unaccepted license
         mr_licence = mr_license,  ///< convenience alias for those who can spell,
-        mr_by_association,        ///< masked by association with another package (for virtuals)
         last_mr                   ///< number of entries
     };
 

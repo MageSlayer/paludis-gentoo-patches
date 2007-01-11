@@ -88,7 +88,7 @@ namespace
     {
         CheckResult * ptr;
         Data_Get_Struct(self, CheckResult, ptr);
-        return INT2NUM((ptr)->most_severe_level());
+        return INT2FIX((ptr)->most_severe_level());
     }
 
     VALUE

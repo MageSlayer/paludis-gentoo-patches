@@ -61,7 +61,7 @@ module RDoc
                 $1.split(',').each do |line|
                     next if line =~/last/
                     const =  line.sub(%r{^[^_]+_},'').capitalize #strip start
-                    const.gsub!(%r{_(\w)}) { |x| $1.capitalize}
+                    const.gsub!(%r{[_\s](\w)}) { |x| $1.capitalize}
                     consts << "rb_define_const(#{in_class}, \"#{const}\", #{i});"
                     i+=1
                 end

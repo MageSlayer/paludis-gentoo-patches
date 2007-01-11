@@ -202,7 +202,7 @@ paludis::ruby::value_case_to_RubyCase(const std::string & s)
     std::string result;
     for (std::string::size_type p(0), p_end(s.length()) ; p != p_end ; ++p)
     {
-        if ('_' == s[p])
+        if ('_' == s[p] || ' ' == s[p])
             upper_next = true;
         else if (upper_next)
         {
