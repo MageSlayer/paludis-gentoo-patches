@@ -615,7 +615,10 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
 
     Log::get_instance()->message(ll_debug, lc_context, "No resolvable item in || ( ) block. Using "
             "first item for error message");
-    d->add(*viable_children.begin());
+    {
+        Context block_context("Inside || ( ) block with other options:");
+        d->add(*viable_children.begin());
+    }
 }
 
 void
