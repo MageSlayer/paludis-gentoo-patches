@@ -36,6 +36,8 @@ CommandLine::CommandLine() :
             "keyword-graph",          'k',  "Display keywords graphically"),
     a_reverse_deps(&tree_action_args,
             "reverse-deps",           'r',  "Find all package that depend on a given dep atom"),
+    a_what_needs_keywording(&tree_action_args,
+            "what-needs-keywording", 'w', "Display what needs to be done to keyword a target"),
 
     profile_action_args(this, "Profile-Oriented Actions",
             "Selects which basic profile-oriented action to perform. Exactly one action should "

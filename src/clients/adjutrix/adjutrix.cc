@@ -26,6 +26,7 @@
 #include "keywords_graph.hh"
 #include "display_profiles_use.hh"
 #include "display_default_system_resolution.hh"
+#include "what_needs_keywording.hh"
 
 #include <paludis/about.hh>
 #include <paludis/util/join.hh>
@@ -133,7 +134,8 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_keywords_graph.specified() +
                     CommandLine::get_instance()->a_reverse_deps.specified() +
                     CommandLine::get_instance()->a_display_profiles_use.specified() +
-                    CommandLine::get_instance()->a_display_default_system_resolution.specified()
+                    CommandLine::get_instance()->a_display_default_system_resolution.specified() +
+                    CommandLine::get_instance()->a_what_needs_keywording.specified()
                     ))
             throw DoHelp("you should specify exactly one action");
 
@@ -215,6 +217,16 @@ main(int argc, char *argv[])
                 throw DoHelp("display-default-system-resolution action takes no parameters");
 
             return do_display_default_system_resolution(env);
+        }
+
+        if (CommandLine::get_instance()->a_what_needs_keywording.specified())
+        {
+            if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters()))
+                throw DoHelp("what-needs-keywording action takes exactly two parameters "
+                        "(the target keyword and the target package)");
+
+            return do_what_needs_keywording(env);
         }
 
         throw InternalError(__PRETTY_FUNCTION__, "no action?");

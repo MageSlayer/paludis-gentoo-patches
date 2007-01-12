@@ -65,6 +65,7 @@ class CommandLine :
         paludis::args::SwitchArg a_find_insecure_packages;
         paludis::args::SwitchArg a_keywords_graph;
         paludis::args::SwitchArg a_reverse_deps;
+        paludis::args::SwitchArg a_what_needs_keywording;
 
         paludis::args::ArgsGroup profile_action_args;
         paludis::args::SwitchArg a_display_profiles_use;

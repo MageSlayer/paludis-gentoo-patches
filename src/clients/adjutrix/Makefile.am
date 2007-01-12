@@ -36,6 +36,7 @@ adjutrix_SOURCES = \
 	keywords_graph.hh                     keywords_graph.cc \
 	display_profiles_use.hh               display_profiles_use.cc \
 	display_default_system_resolution.hh  display_default_system_resolution.cc \
+	what_needs_keywording.hh              what_needs_keywording.cc \
 	adjutrix.cc
 
 adjutrix_LDADD = \
