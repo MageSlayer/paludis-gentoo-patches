@@ -18,7 +18,8 @@ IF_RUBY_DEMOS = \
 	version_spec_distributions.rb \
 	find_unused_distfiles.rb \
 	latest_stable.rb \
-	qualudis.rb
+	qualudis.rb \
+	find_unmanaged_files.rb
 
 EXTRA_DIST = $(IF_RUBY_DEMOS)
 
