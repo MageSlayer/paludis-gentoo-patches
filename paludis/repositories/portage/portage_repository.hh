@@ -181,6 +181,7 @@ namespace paludis
 
             ProfilesIterator find_profile(const FSEntry & location) const;
             void set_profile(const ProfilesIterator & iter);
+            void set_profile_by_arch(const UseFlagName &);
 
             ///\}
     };

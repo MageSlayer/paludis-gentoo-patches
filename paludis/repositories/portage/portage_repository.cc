@@ -1108,6 +1108,8 @@ PortageRepository::find_profile(const FSEntry & location) const
 void
 PortageRepository::set_profile(const ProfilesIterator & iter)
 {
+    Context context("When setting profile by iterator:");
+
     _imp->profile_ptr = iter->profile;
 
     try
@@ -1118,6 +1120,28 @@ PortageRepository::set_profile(const ProfilesIterator & iter)
     catch (const NoSuchRepositoryError &)
     {
     }
+}
+
+void
+PortageRepository::set_profile_by_arch(const UseFlagName & arch)
+{
+    Context context("When setting profile by arch '" + stringify(arch) + "':");
+
+    for (ProfilesIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
+        if (p->arch == stringify(arch) && p->status == "stable")
+        {
+            set_profile(p);
+            return;
+        }
+
+    for (ProfilesIterator p(begin_profiles()), p_end(end_profiles()) ; p != p_end ; ++p)
+        if (p->arch == stringify(arch))
+        {
+            set_profile(p);
+            return;
+        }
+
+    throw ConfigurationError("Cannot find a profile appropriate for '" + stringify(arch) + "'");
 }
 
 std::string
