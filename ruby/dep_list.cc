@@ -663,7 +663,7 @@ namespace
                 l = static_cast<DepListReinstallScmOption>(static_cast<int>(l) + 1))
             rb_define_const(c_dep_list_reinstall_scm_option, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/dep_list/options.hh, DepListReinstalScmlOption, c_dep_list_reinstall_scm_option>
+        // cc_enum_special<paludis/dep_list/options.hh, DepListReinstallScmOption, c_dep_list_reinstall_scm_option>
 
         /*
          * Document-module: Paludis::DepListUpgradeOption

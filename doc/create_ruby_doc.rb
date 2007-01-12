@@ -55,14 +55,21 @@ module RDoc
 
         def generate_consts(header, type, in_class)
             consts = []
-            file = IO.readlines("../#{header}").join("").gsub(%r{//.*$},'').gsub(/\s+/,'')
-            if file =~ /enum#{type}\{([^}]+)\}/
+            file = File.read("../#{header}")
+            match = Regexp.new(/enum\s+#{type}\s+\{([^}]+)\}/, Regexp::MULTILINE)
+            if file =~ match
                 i = 0
-                $1.split(',').each do |line|
+                $1.each_line do |line|
                     next if line =~/last/
-                    const =  line.sub(%r{^[^_]+_},'').capitalize #strip start
+                    next if line.strip == ''
+                    next unless line =~ /,/
+                    (const, comment) = line.split (',',2)
+                    const.strip!
+                    comment.strip!
+                    comment.gsub!(%r{^[^a-zA-Z0-9]*},'')
+                    const.sub!(%r{^[^_]+_},'').capitalize! #strip start
                     const.gsub!(%r{[_\s](\w)}) { |x| $1.capitalize}
-                    consts << "rb_define_const(#{in_class}, \"#{const}\", #{i});"
+                    consts << "/*\n*#{comment}\n*/\nrb_define_const(#{in_class}, \"#{const}\", #{i});"
                     i+=1
                 end
             end
