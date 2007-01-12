@@ -604,6 +604,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
         try
         {
             Save<bool> save_t(&d->_imp->throw_on_blocker, true);
+            Save<MaskReasons> save_o(&d->_imp->opts.override_mask_reasons, MaskReasons());
             d->add(*c);
             return;
         }
