@@ -420,7 +420,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
 
             if (d->_imp->opts.circular == dl_circular_discard)
             {
-                Log::get_instance()->message(ll_warning, lc_context, "Dropping circular dependency on '"
+                Log::get_instance()->message(ll_qa, lc_context, "Dropping circular dependency on '"
                         + stringify(existing_merge_list_entry->package) + "'");
                 return;
             }
