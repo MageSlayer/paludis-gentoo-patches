@@ -613,7 +613,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
         }
     }
 
-    Log::get_instance()->message(ll_warning, lc_context, "No resolvable item in || ( ) block. Using "
+    Log::get_instance()->message(ll_debug, lc_context, "No resolvable item in || ( ) block. Using "
             "first item for error message");
     d->add(*viable_children.begin());
 }
