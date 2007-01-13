@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -185,9 +185,9 @@ void do_find_stable_candidates(const Environment & env)
                 c != c_end ; ++c)
         {
             if (CommandLine::get_instance()->a_category.specified())
-                if (CommandLine::get_instance()->a_category.args_end() == std::find(
-                            CommandLine::get_instance()->a_category.args_begin(),
-                            CommandLine::get_instance()->a_category.args_end(),
+                if (CommandLine::get_instance()->a_category.end_args() == std::find(
+                            CommandLine::get_instance()->a_category.begin_args(),
+                            CommandLine::get_instance()->a_category.end_args(),
                             stringify(*c)))
                     continue;
 
@@ -196,9 +196,9 @@ void do_find_stable_candidates(const Environment & env)
                     p != p_end ; ++p)
             {
                 if (CommandLine::get_instance()->a_package.specified())
-                    if (CommandLine::get_instance()->a_package.args_end() == std::find(
-                                CommandLine::get_instance()->a_package.args_begin(),
-                                CommandLine::get_instance()->a_package.args_end(),
+                    if (CommandLine::get_instance()->a_package.end_args() == std::find(
+                                CommandLine::get_instance()->a_package.begin_args(),
+                                CommandLine::get_instance()->a_package.end_args(),
                                 stringify(p->package)))
                         continue;
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -168,10 +168,10 @@ namespace test_cases
             CommandLine c1;
             c1.run(8, args);
             TEST_CHECK(c1.arg_stringset.specified());
-            TEST_CHECK(std::find(c1.arg_stringset.args_begin(), c1.arg_stringset.args_end(), "one") != c1.arg_stringset.args_end());
-            TEST_CHECK(std::find(c1.arg_stringset.args_begin(), c1.arg_stringset.args_end(), "two") != c1.arg_stringset.args_end());
-            TEST_CHECK(std::find(c1.arg_stringset.args_begin(), c1.arg_stringset.args_end(), "three") != c1.arg_stringset.args_end());
-            TEST_CHECK(std::find(c1.arg_stringset.args_begin(), c1.arg_stringset.args_end(), "fnord") == c1.arg_stringset.args_end());
+            TEST_CHECK(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "one") != c1.arg_stringset.end_args());
+            TEST_CHECK(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "two") != c1.arg_stringset.end_args());
+            TEST_CHECK(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "three") != c1.arg_stringset.end_args());
+            TEST_CHECK(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "fnord") == c1.arg_stringset.end_args());
         }
     } test_args_string_set;
 }

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -151,8 +151,8 @@ void do_display_profiles_use(NoConfigEnvironment & env)
         }
     }
 
-    if (CommandLine::get_instance()->a_profile.args_begin() ==
-            CommandLine::get_instance()->a_profile.args_end())
+    if (CommandLine::get_instance()->a_profile.begin_args() ==
+            CommandLine::get_instance()->a_profile.end_args())
     {
         for (PortageRepository::ProfilesIterator p(env.portage_repository()->begin_profiles()),
                 p_end(env.portage_repository()->end_profiles()) ; p != p_end ; ++p)
@@ -164,8 +164,8 @@ void do_display_profiles_use(NoConfigEnvironment & env)
     }
     else
     {
-        for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_profile.args_begin()),
-                i_end(CommandLine::get_instance()->a_profile.args_end()) ; i != i_end ; ++i)
+        for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_profile.begin_args()),
+                i_end(CommandLine::get_instance()->a_profile.end_args()) ; i != i_end ; ++i)
         {
             PortageRepository::ProfilesIterator p(env.portage_repository()->find_profile(
                         env.main_repository_dir() / "profiles" / (*i)));

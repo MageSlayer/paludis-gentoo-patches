@@ -366,8 +366,8 @@ do_install()
 
     if (CommandLine::get_instance()->dl_override_masks.specified())
     {
-        for (args::StringSetArg::Iterator a(CommandLine::get_instance()->dl_override_masks.args_begin()),
-                a_end(CommandLine::get_instance()->dl_override_masks.args_end()) ; a != a_end ; ++a)
+        for (args::StringSetArg::Iterator a(CommandLine::get_instance()->dl_override_masks.begin_args()),
+                a_end(CommandLine::get_instance()->dl_override_masks.end_args()) ; a != a_end ; ++a)
         {
             if (*a == "keyword")
                 options.override_mask_reasons.set(mr_keyword);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -44,9 +44,9 @@ do_list_repositories()
             r != r_end ; ++r)
     {
         if (CommandLine::get_instance()->a_repository.specified())
-            if (CommandLine::get_instance()->a_repository.args_end() == std::find(
-                        CommandLine::get_instance()->a_repository.args_begin(),
-                        CommandLine::get_instance()->a_repository.args_end(),
+            if (CommandLine::get_instance()->a_repository.end_args() == std::find(
+                        CommandLine::get_instance()->a_repository.begin_args(),
+                        CommandLine::get_instance()->a_repository.end_args(),
                         stringify(r->name())))
                 continue;
 
@@ -85,9 +85,9 @@ do_list_categories()
             r != r_end ; ++r)
     {
         if (CommandLine::get_instance()->a_repository.specified())
-            if (CommandLine::get_instance()->a_repository.args_end() == std::find(
-                        CommandLine::get_instance()->a_repository.args_begin(),
-                        CommandLine::get_instance()->a_repository.args_end(),
+            if (CommandLine::get_instance()->a_repository.end_args() == std::find(
+                        CommandLine::get_instance()->a_repository.begin_args(),
+                        CommandLine::get_instance()->a_repository.end_args(),
                         stringify(r->name())))
                 continue;
 
@@ -101,9 +101,9 @@ do_list_categories()
             c(cats.begin()), c_end(cats.end()) ; c != c_end ; ++c)
     {
         if (CommandLine::get_instance()->a_category.specified())
-            if (CommandLine::get_instance()->a_category.args_end() == std::find(
-                        CommandLine::get_instance()->a_category.args_begin(),
-                        CommandLine::get_instance()->a_category.args_end(),
+            if (CommandLine::get_instance()->a_category.end_args() == std::find(
+                        CommandLine::get_instance()->a_category.begin_args(),
+                        CommandLine::get_instance()->a_category.end_args(),
                         stringify(c->first)))
                 continue;
 
@@ -133,9 +133,9 @@ do_list_packages()
             r != r_end ; ++r)
     {
         if (CommandLine::get_instance()->a_repository.specified())
-            if (CommandLine::get_instance()->a_repository.args_end() == std::find(
-                        CommandLine::get_instance()->a_repository.args_begin(),
-                        CommandLine::get_instance()->a_repository.args_end(),
+            if (CommandLine::get_instance()->a_repository.end_args() == std::find(
+                        CommandLine::get_instance()->a_repository.begin_args(),
+                        CommandLine::get_instance()->a_repository.end_args(),
                         stringify(r->name())))
                 continue;
 
@@ -144,9 +144,9 @@ do_list_packages()
                 c != c_end ; ++c)
         {
             if (CommandLine::get_instance()->a_category.specified())
-                if (CommandLine::get_instance()->a_category.args_end() == std::find(
-                            CommandLine::get_instance()->a_category.args_begin(),
-                            CommandLine::get_instance()->a_category.args_end(),
+                if (CommandLine::get_instance()->a_category.end_args() == std::find(
+                            CommandLine::get_instance()->a_category.begin_args(),
+                            CommandLine::get_instance()->a_category.end_args(),
                             stringify(*c)))
                     continue;
 
@@ -161,9 +161,9 @@ do_list_packages()
             p(pkgs.begin()), p_end(pkgs.end()) ; p != p_end ; ++p)
     {
         if (CommandLine::get_instance()->a_package.specified())
-            if (CommandLine::get_instance()->a_package.args_end() == std::find(
-                        CommandLine::get_instance()->a_package.args_begin(),
-                        CommandLine::get_instance()->a_package.args_end(),
+            if (CommandLine::get_instance()->a_package.end_args() == std::find(
+                        CommandLine::get_instance()->a_package.begin_args(),
+                        CommandLine::get_instance()->a_package.end_args(),
                         stringify(p->first.package)))
                 continue;
 
@@ -196,9 +196,9 @@ do_list_sets()
             continue;
 
         if (CommandLine::get_instance()->a_repository.specified())
-            if (CommandLine::get_instance()->a_repository.args_end() == std::find(
-                        CommandLine::get_instance()->a_repository.args_begin(),
-                        CommandLine::get_instance()->a_repository.args_end(),
+            if (CommandLine::get_instance()->a_repository.end_args() == std::find(
+                        CommandLine::get_instance()->a_repository.begin_args(),
+                        CommandLine::get_instance()->a_repository.end_args(),
                         stringify(r->name())))
                 continue;
 
@@ -220,9 +220,9 @@ do_list_sets()
             s(sets.begin()), s_end(sets.end()) ; s != s_end ; ++s)
     {
         if (CommandLine::get_instance()->a_set.specified())
-            if (CommandLine::get_instance()->a_set.args_end() == std::find(
-                        CommandLine::get_instance()->a_set.args_begin(),
-                        CommandLine::get_instance()->a_set.args_end(),
+            if (CommandLine::get_instance()->a_set.end_args() == std::find(
+                        CommandLine::get_instance()->a_set.begin_args(),
+                        CommandLine::get_instance()->a_set.end_args(),
                         stringify(s->first)))
                 continue;
 

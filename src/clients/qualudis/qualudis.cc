@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -191,16 +191,16 @@ namespace
                 i_end(checks.end()) ; i != i_end ; ++i)
         {
             if (QualudisCommandLine::get_instance()->a_qa_checks.specified())
-                if (QualudisCommandLine::get_instance()->a_qa_checks.args_end() == std::find(
-                            QualudisCommandLine::get_instance()->a_qa_checks.args_begin(),
-                            QualudisCommandLine::get_instance()->a_qa_checks.args_end(),
+                if (QualudisCommandLine::get_instance()->a_qa_checks.end_args() == std::find(
+                            QualudisCommandLine::get_instance()->a_qa_checks.begin_args(),
+                            QualudisCommandLine::get_instance()->a_qa_checks.end_args(),
                             *i))
                     continue;
 
             if (QualudisCommandLine::get_instance()->a_exclude_qa_checks.specified())
-                if (QualudisCommandLine::get_instance()->a_exclude_qa_checks.args_end() != std::find(
-                            QualudisCommandLine::get_instance()->a_exclude_qa_checks.args_begin(),
-                            QualudisCommandLine::get_instance()->a_exclude_qa_checks.args_end(),
+                if (QualudisCommandLine::get_instance()->a_exclude_qa_checks.end_args() != std::find(
+                            QualudisCommandLine::get_instance()->a_exclude_qa_checks.begin_args(),
+                            QualudisCommandLine::get_instance()->a_exclude_qa_checks.end_args(),
                             *i))
                     continue;
 
@@ -325,16 +325,16 @@ namespace
                         i_end(env.portage_repository()->end_profiles()) ; i != i_end ; ++i)
                 {
                     if (QualudisCommandLine::get_instance()->a_archs.specified())
-                        if (QualudisCommandLine::get_instance()->a_archs.args_end() == std::find(
-                                    QualudisCommandLine::get_instance()->a_archs.args_begin(),
-                                    QualudisCommandLine::get_instance()->a_archs.args_end(),
+                        if (QualudisCommandLine::get_instance()->a_archs.end_args() == std::find(
+                                    QualudisCommandLine::get_instance()->a_archs.begin_args(),
+                                    QualudisCommandLine::get_instance()->a_archs.end_args(),
                                     i->arch))
                             continue;
 
                     if (QualudisCommandLine::get_instance()->a_exclude_archs.specified())
-                        if (QualudisCommandLine::get_instance()->a_exclude_archs.args_end() != std::find(
-                                    QualudisCommandLine::get_instance()->a_exclude_archs.args_begin(),
-                                    QualudisCommandLine::get_instance()->a_exclude_archs.args_end(),
+                        if (QualudisCommandLine::get_instance()->a_exclude_archs.end_args() != std::find(
+                                    QualudisCommandLine::get_instance()->a_exclude_archs.begin_args(),
+                                    QualudisCommandLine::get_instance()->a_exclude_archs.end_args(),
                                     i->arch))
                             continue;
 

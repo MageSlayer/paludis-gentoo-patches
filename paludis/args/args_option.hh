@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006 Stephen Bennett <spb@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -237,9 +237,9 @@ namespace paludis
 
                 typedef libwrapiter::ForwardIterator<StringArg, const std::string> Iterator;
 
-                Iterator args_begin() const;
+                Iterator begin_args() const;
 
-                Iterator args_end() const;
+                Iterator end_args() const;
 
                 ///\}
 

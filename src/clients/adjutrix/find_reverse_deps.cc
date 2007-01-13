@@ -262,9 +262,9 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
             cerr << xterm_title("Checking " + stringify(*c) + " - adjutrix");
 
             if (CommandLine::get_instance()->a_category.specified())
-                if (CommandLine::get_instance()->a_category.args_end() == std::find(
-                            CommandLine::get_instance()->a_category.args_begin(),
-                            CommandLine::get_instance()->a_category.args_end(),
+                if (CommandLine::get_instance()->a_category.end_args() == std::find(
+                            CommandLine::get_instance()->a_category.begin_args(),
+                            CommandLine::get_instance()->a_category.end_args(),
                             stringify(*c)))
                     continue;
 
@@ -273,9 +273,9 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
                     p != p_end ; ++p)
             {
                 if (CommandLine::get_instance()->a_package.specified())
-                    if (CommandLine::get_instance()->a_package.args_end() == std::find(
-                                CommandLine::get_instance()->a_package.args_begin(),
-                                CommandLine::get_instance()->a_package.args_end(),
+                    if (CommandLine::get_instance()->a_package.end_args() == std::find(
+                                CommandLine::get_instance()->a_package.begin_args(),
+                                CommandLine::get_instance()->a_package.end_args(),
                                 stringify(p->package)))
                         continue;
 
