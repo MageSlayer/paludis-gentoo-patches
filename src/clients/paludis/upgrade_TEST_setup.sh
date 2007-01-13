@@ -31,7 +31,7 @@ END
 cat <<END > root/${SYSCONFDIR}/paludis/repositories/repo1.conf
 location = `pwd`/repo1
 cache = /var/empty
-format = portage
+format = ebuild
 names_cache = /var/empty
 profiles = \${location}/profiles/testprofile
 buildroot = `pwd`/build

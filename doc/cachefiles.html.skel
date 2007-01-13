@@ -52,7 +52,7 @@ user explicitly enable or disable it.</p>
 <p>Turning an unqualified package name, like <code>vim</code>, into a qualified
 name, like <code>app-editors/vim</code>, involves scanning every category
 directory. This can take several seconds on a cold filesystem cache. Paludis can
-cache unqualified to qualified name mappings for <code>portage</code> and
+cache unqualified to qualified name mappings for <code>ebuild</code> and
 <code>vdb</code> repository formats. This makes certain common tasks much
 faster.</p>
 

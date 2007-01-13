@@ -33,7 +33,7 @@ cat <<END > home1/.paludis/licenses.conf
 * keyword
 END
 cat <<END > home1/.paludis/repositories/foo.conf
-format = portage
+format = ebuild
 names_cache = /var/empty
 location = `pwd`/repo
 profiles = `pwd`/repo/profile
@@ -53,7 +53,7 @@ cat <<END > home2/.paludis/licenses.conf
 * *
 END
 cat <<END > home2/.paludis/repositories/foo.conf
-format = portage
+format = ebuild
 names_cache = /var/empty
 location = `pwd`/repo
 profiles = `pwd`/repo/profile
@@ -73,7 +73,7 @@ cat <<END > home3/.paludis/licenses.conf
 * *
 END
 cat <<END > home3/.paludis/repositories/foo.conf
-format = portage
+format = ebuild
 names_cache = /var/empty
 location = `pwd`/repo
 profiles = `pwd`/repo/profile

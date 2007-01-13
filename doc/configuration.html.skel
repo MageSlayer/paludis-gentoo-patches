@@ -119,7 +119,7 @@ app-editors/vim-core ~x86
 
 <p>If <code>*</code> is not used, then every package that is to be installed will require
 an entry in <code>keywords.conf</code>. It is also generally assumed within the gentoo
-portage tree that if <code>~ARCH</code> is accepted for a package, then so is
+tree that if <code>~ARCH</code> is accepted for a package, then so is
 <code>ARCH</code>; not doing so may result in all versions or the latest version of a
 package being masked, as the package is stabilised.</p>
 
@@ -201,14 +201,9 @@ two different repositories contain an identical package atom (e.g. foo/bar-1.0).
 The repository with the higher importance will always be chosen first. If not
 provided, the default is 0.</p>
 
-<h4>portage Format Repositories</h4>
+<h4>ebuild Format Repositories</h4>
 
-<p>Note: The name <code>portage</code> is used here to refer to repositories in the
-format used by the <code>gentoo-portage</code> (or <code>gentoo-x86</code>) tree.
-The name is far from ideal... In future, this may be changed to <code>format =
-    ebuild</code>.</p>
-
-<p>The following keys are available for <code>format = portage</code>:</p>
+<p>The following keys are available for <code>format = ebuild</code>:</p>
 
 <ul>
     <li><code>location</code> (mandatory), which points to the location of the
@@ -249,7 +244,7 @@ The name is far from ideal... In future, this may be changed to <code>format =
 <h4>vdb Format Repositories</h4>
 
 <p>You should have exactly one VDB format repository. It holds packages that have
-been installed from a <code>portage</code> format repository.</p>
+been installed from a <code>ebuild</code> format repository.</p>
 
 <p>The following keys are available for <code>format = vdb</code>:</p>
 
@@ -279,7 +274,7 @@ been installed from a <code>portage</code> format repository.</p>
     <li><code>location</code> (mandatory), which points to the location of the
     CRAN tree.</li>
     <li><code>sync</code> (default: empty), as per <code>format =
-        portage</code>.</li>
+        ebuild</code>.</li>
 </ul>
 
 <h4>CRAN Installed Format Repositories</h4>

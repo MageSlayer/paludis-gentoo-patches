@@ -121,14 +121,14 @@ Implementation<NoConfigEnvironment>::Implementation(
         AssociativeCollection<std::string, std::string>::Pointer keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
 
-        keys->insert("format", "portage");
+        keys->insert("format", "ebuild");
         keys->insert("location", stringify(params.repository_dir));
         keys->insert("profiles", "/var/empty");
         keys->insert("write_cache", stringify(params.write_cache));
         keys->insert("names_cache", "/var/empty");
 
         env->package_database()->add_repository(((portage_repo =
-                        RepositoryMaker::get_instance()->find_maker("portage")(env, keys))));
+                        RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
         env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("virtuals")(env,
                     AssociativeCollection<std::string, std::string>::Pointer(0)));
     }
