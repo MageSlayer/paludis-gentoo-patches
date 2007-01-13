@@ -544,7 +544,11 @@ do_install()
                                             pp->repository)->version_metadata(
                                             pp->name, pp->version)->eapi);
 
-                                cerr << " ( " << colour(cl_masked, eapi_str) << " )";
+                                if (eapi_str == "UNKNOWN")
+                                    cerr << " ( " << colour(cl_masked, eapi_str) <<
+                                        " ) (probably a broken ebuild)";
+                                else
+                                    cerr << " ( " << colour(cl_masked, eapi_str) << " )";
                             }
                             else if (mr_license == mm)
                             {
