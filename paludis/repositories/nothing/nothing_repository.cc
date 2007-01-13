@@ -182,6 +182,9 @@ NothingRepository::make_nothing_repository(
 
     Context context("When making Nothing repository from repo_file '" + repo_file + "':");
 
+    Log::get_instance()->message(ll_warning, lc_context, "Format 'nothing' is "
+            "deprecated, use 'ebuild' or hook scripts instead");
+
     std::string location;
     if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
         throw NothingRepositoryConfigurationError("Key 'location' not specified or empty");
