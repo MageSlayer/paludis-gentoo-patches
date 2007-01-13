@@ -28,7 +28,10 @@ using namespace paludis;
 namespace
 {
     class VulnerableChecker :
-        public DepAtomVisitorTypes::ConstVisitor
+        public DepAtomVisitorTypes::ConstVisitor,
+        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AllDepAtom>,
+        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AnyDepAtom>,
+        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepAtom>
     {
         private:
             std::multimap<PackageDatabaseEntry, DepTag::ConstPointer,
@@ -37,6 +40,10 @@ namespace
 
         public:
             typedef std::multimap<PackageDatabaseEntry, DepTag::ConstPointer>::const_iterator ConstIterator;
+
+            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AllDepAtom>::visit;
+            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepAtom>::visit;
+            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AnyDepAtom>::visit;
 
             /**
              * Constructor.
@@ -48,11 +55,6 @@ namespace
 
             /// \name Visit functions
             ///{
-            void visit(const AllDepAtom * const);
-
-            void visit(const AnyDepAtom * const);
-
-            void visit(const UseDepAtom * const);
 
             void visit(const PackageDepAtom * const);
 
@@ -73,24 +75,6 @@ namespace
                 return _found.equal_range(pde);
             }
     };
-
-    void
-    VulnerableChecker::visit(const AllDepAtom * const a)
-    {
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-    }
-
-    void
-    VulnerableChecker::visit(const AnyDepAtom * const a)
-    {
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-    }
-
-    void
-    VulnerableChecker::visit(const UseDepAtom * const a)
-    {
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-    }
 
     void
     VulnerableChecker::visit(const PackageDepAtom * const a)

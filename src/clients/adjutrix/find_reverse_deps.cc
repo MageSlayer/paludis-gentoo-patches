@@ -40,7 +40,8 @@ using std::endl;
 namespace
 {
     class ReverseDepChecker :
-        public DepAtomVisitorTypes::ConstVisitor
+        public DepAtomVisitorTypes::ConstVisitor,
+        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepAtom>
     {
         private:
             PackageDatabase::ConstPointer _db;
@@ -55,6 +56,8 @@ namespace
             bool _found_matches;
 
         public:
+            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepAtom>::visit;
+
             ReverseDepChecker(PackageDatabase::ConstPointer db, PackageDatabaseEntryCollection::ConstPointer entries,
                     const std::string & p) :
                 _db(db),
@@ -78,8 +81,6 @@ namespace
                 return _found_matches;
             }
 
-            void visit(const AllDepAtom * const);
-
             void visit(const AnyDepAtom * const);
 
             void visit(const UseDepAtom * const);
@@ -90,12 +91,6 @@ namespace
 
             void visit(const BlockDepAtom * const);
     };
-
-    void
-    ReverseDepChecker::visit(const AllDepAtom * const a)
-    {
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-    }
 
     void
     ReverseDepChecker::visit(const AnyDepAtom * const a)

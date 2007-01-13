@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -52,8 +52,11 @@ namespace
      * Check whether licences for a package are accepted.
      */
     struct LicenceChecker :
-        DepAtomVisitorTypes::ConstVisitor
+        DepAtomVisitorTypes::ConstVisitor,
+        DepAtomVisitorTypes::ConstVisitor::VisitChildren<LicenceChecker, AllDepAtom>
     {
+        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<LicenceChecker, AllDepAtom>::visit;
+
         /// Are all necessary licences ok?
         bool ok;
 
@@ -73,10 +76,6 @@ namespace
 
         ///\name Visit methods
         ///{
-        void visit(const AllDepAtom * atom)
-        {
-            std::for_each(atom->begin(), atom->end(), accept_visitor(this));
-        }
 
         void visit(const AnyDepAtom * atom)
         {
@@ -235,8 +234,11 @@ namespace
      * from the world file.
      */
     struct WorldTargetFinder :
-        DepAtomVisitorTypes::ConstVisitor
+        DepAtomVisitorTypes::ConstVisitor,
+        DepAtomVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepAtom>
     {
+        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepAtom>::visit;
+
         /// Matches
         std::list<const PackageDepAtom *> items;
 
@@ -259,11 +261,6 @@ namespace
 
         ///\name Visit methods
         ///{
-        void visit(const AllDepAtom * a)
-        {
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
         void visit(const AnyDepAtom * a)
         {
             Save<bool> save_inside_any(&inside_any, true);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,12 @@
  *
  * \ingroup grpvisitor
  */
+
+namespace std
+{
+    template <typename A_, typename B_>
+    B_ for_each(A_, A_, B_);
+}
 
 namespace paludis
 {
@@ -246,15 +252,15 @@ namespace paludis
              * A ConstVisitor descendent visits nodes via a const pointer.
              */
             class ConstVisitor :
-                public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N1_>::Type>,
-                public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N2_>::Type>,
-                public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N3_>::Type>,
-                public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N4_>::Type>,
-                public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N5_>::Type>,
-                public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N6_>::Type>,
-                public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N7_>::Type>,
-                public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N8_>::Type>,
-                public visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N9_>::Type>
+                public virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N1_>::Type>,
+                public virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N2_>::Type>,
+                public virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N3_>::Type>,
+                public virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N4_>::Type>,
+                public virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N5_>::Type>,
+                public virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N6_>::Type>,
+                public virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N7_>::Type>,
+                public virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N8_>::Type>,
+                public virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<N9_>::Type>
             {
                 protected:
                     ///\name Basic operations
@@ -263,21 +269,25 @@ namespace paludis
                     ~ConstVisitor();
 
                     ///\}
+
+                public:
+                    template <typename OurType_, typename T_>
+                    struct VisitChildren;
             };
 
             /**
              * A Visitor descendent visits nodes via a non-const pointer.
              */
             class Visitor :
-                public visitor_internals::Visits<N1_>,
-                public visitor_internals::Visits<N2_>,
-                public visitor_internals::Visits<N3_>,
-                public visitor_internals::Visits<N4_>,
-                public visitor_internals::Visits<N5_>,
-                public visitor_internals::Visits<N6_>,
-                public visitor_internals::Visits<N7_>,
-                public visitor_internals::Visits<N8_>,
-                public visitor_internals::Visits<N9_>
+                public virtual visitor_internals::Visits<N1_>,
+                public virtual visitor_internals::Visits<N2_>,
+                public virtual visitor_internals::Visits<N3_>,
+                public virtual visitor_internals::Visits<N4_>,
+                public virtual visitor_internals::Visits<N5_>,
+                public virtual visitor_internals::Visits<N6_>,
+                public virtual visitor_internals::Visits<N7_>,
+                public virtual visitor_internals::Visits<N8_>,
+                public virtual visitor_internals::Visits<N9_>
             {
                 protected:
                     ///\name Basic operations
@@ -361,6 +371,26 @@ namespace paludis
     {
         return AcceptVisitor<VisitorPointer_>(p);
     }
+
+    template <
+        typename N1_,
+        typename N2_,
+        typename N3_,
+        typename N4_,
+        typename N5_,
+        typename N6_,
+        typename N7_,
+        typename N8_,
+        typename N9_>
+    template <typename OurType_, typename C1_>
+    struct VisitorTypes<N1_, N2_, N3_, N4_, N5_, N6_, N7_, N8_, N9_>::ConstVisitor::VisitChildren :
+        virtual visitor_internals::Visits<typename visitor_internals::MakePointerToConst<C1_ *>::Type>
+    {
+        virtual void visit(typename visitor_internals::MakePointerToConst<C1_ *>::Type const c)
+        {
+            std::for_each(c->begin(), c->end(), accept_visitor(static_cast<OurType_ *>(this)));
+        }
+    };
 }
 
 #endif

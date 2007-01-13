@@ -359,7 +359,8 @@ DepList::QueryVisitor::visit(const AllDepAtom * const a)
 }
 
 struct DepList::AddVisitor :
-    DepAtomVisitorTypes::ConstVisitor
+    DepAtomVisitorTypes::ConstVisitor,
+    DepAtomVisitorTypes::ConstVisitor::VisitChildren<AddVisitor, AllDepAtom>
 {
     DepList * const d;
 
@@ -373,7 +374,7 @@ struct DepList::AddVisitor :
     void visit(const UseDepAtom * const);
     void visit(const AnyDepAtom * const);
     void visit(const BlockDepAtom * const);
-    void visit(const AllDepAtom * const);
+    using DepAtomVisitorTypes::ConstVisitor::VisitChildren<AddVisitor, AllDepAtom>::visit;
 };
 
 void
@@ -696,12 +697,6 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
         case last_dl_blocks:
             ;
     }
-}
-
-void
-DepList::AddVisitor::visit(const AllDepAtom * const a)
-{
-    std::for_each(a->begin(), a->end(), accept_visitor(this));
 }
 
 DepList::DepList(const Environment * const e, const DepListOptions & o) :

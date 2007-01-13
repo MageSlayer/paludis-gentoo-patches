@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,8 +30,15 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepAtomVisitorTypes::ConstVisitor
+        DepAtomVisitorTypes::ConstVisitor,
+        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepAtom>,
+        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>,
+        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>
     {
+        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>::visit;
+        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>::visit;
+        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepAtom>::visit;
+
         CheckResult & result;
         const Environment * const env;
 
@@ -46,21 +53,6 @@ namespace
             if (! env->package_database()->fetch_repository(
                         env->package_database()->favourite_repository())->is_license(a->text()))
                 result << Message(qal_major, "Item '" + a->text() + "' is not a licence");
-        }
-
-        void visit(const AllDepAtom * const a)
-        {
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const AnyDepAtom * const a)
-        {
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const UseDepAtom * const u)
-        {
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
         void visit(const BlockDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));

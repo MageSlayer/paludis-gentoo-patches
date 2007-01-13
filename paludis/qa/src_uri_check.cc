@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,8 +31,13 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepAtomVisitorTypes::ConstVisitor
+        DepAtomVisitorTypes::ConstVisitor,
+        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>,
+        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>
     {
+        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>::visit;
+        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>::visit;
+
         CheckResult & result;
         bool fetch_restrict;
         const Environment * const env;
@@ -92,16 +97,6 @@ namespace
                     }
                 }
             }
-        }
-
-        void visit(const AllDepAtom * const a)
-        {
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const UseDepAtom * const u)
-        {
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
         void visit(const AnyDepAtom * const u)

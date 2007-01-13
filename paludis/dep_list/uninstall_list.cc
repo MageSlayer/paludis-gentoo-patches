@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -304,8 +304,13 @@ UninstallList::collect_all_installed() const
 namespace
 {
     struct DepCollector :
-        DepAtomVisitorTypes::ConstVisitor
+        DepAtomVisitorTypes::ConstVisitor,
+        DepAtomVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AllDepAtom>,
+        DepAtomVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AnyDepAtom>
     {
+        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AllDepAtom>::visit;
+        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AnyDepAtom>::visit;
+
         const Environment * const env;
         const PackageDatabaseEntry pkg;
         ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer matches;
@@ -315,11 +320,6 @@ namespace
             pkg(e),
             matches(new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete)
         {
-        }
-
-        void visit(const AllDepAtom * const a)
-        {
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
         void visit(const PackageDepAtom * const a)
@@ -333,11 +333,6 @@ namespace
         {
             if (env->query_use(UseFlagName(u->flag()), &pkg) ^ u->inverse())
                 std::for_each(u->begin(), u->end(), accept_visitor(this));
-        }
-
-        void visit(const AnyDepAtom * const a)
-        {
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
         void visit(const BlockDepAtom * const)

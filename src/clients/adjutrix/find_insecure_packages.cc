@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -60,7 +60,10 @@ namespace
     }
 
     class ListInsecureVisitor :
-        public DepAtomVisitorTypes::ConstVisitor
+        public DepAtomVisitorTypes::ConstVisitor,
+        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AllDepAtom>,
+        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AnyDepAtom>,
+        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, UseDepAtom>
     {
         private:
             const Environment & _env;
@@ -68,24 +71,13 @@ namespace
                 ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> _found;
 
         public:
+            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AllDepAtom>::visit;
+            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AnyDepAtom>::visit;
+            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, UseDepAtom>::visit;
+
             ListInsecureVisitor(const Environment & e) :
                 _env(e)
             {
-            }
-
-            void visit(const AllDepAtom * const a)
-            {
-                std::for_each(a->begin(), a->end(), accept_visitor(this));
-            }
-
-            void visit(const AnyDepAtom * const a)
-            {
-                std::for_each(a->begin(), a->end(), accept_visitor(this));
-            }
-
-            void visit(const UseDepAtom * const a)
-            {
-                std::for_each(a->begin(), a->end(), accept_visitor(this));
             }
 
             void visit(const PackageDepAtom * const a)
