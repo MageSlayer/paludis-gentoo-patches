@@ -71,8 +71,8 @@ namespace paludis
      */
     class PALUDIS_VISIBLE RepositoryMaker :
         public VirtualConstructor<std::string,
-            Repository::Pointer (*) (const Environment * const, const PackageDatabase * const,
-                AssociativeCollection<std::string, std::string>::ConstPointer),
+            Repository::Pointer (*) (Environment * const,
+                    AssociativeCollection<std::string, std::string>::ConstPointer),
             virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> >,
         public InstantiationPolicy<RepositoryMaker, instantiation_method::SingletonAsNeededTag>,
         private PrivateImplementationPattern<RepositoryMaker>

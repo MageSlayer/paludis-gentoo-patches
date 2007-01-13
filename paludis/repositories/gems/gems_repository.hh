@@ -57,7 +57,7 @@ namespace paludis
             GemsRepository(const GemsRepositoryParams &);
             ~GemsRepository();
 
-            virtual void invalidate() const;
+            virtual void invalidate();
             virtual void regenerate_cache() const;
 
             typedef CountedPtr<GemsRepository, count_policy::InternalCountTag> Pointer;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -128,10 +128,9 @@ Implementation<NoConfigEnvironment>::Implementation(
         keys->insert("names_cache", "/var/empty");
 
         env->package_database()->add_repository(((portage_repo =
-                        RepositoryMaker::get_instance()->find_maker("portage")(env,
-                            env->package_database().raw_pointer(), keys))));
+                        RepositoryMaker::get_instance()->find_maker("portage")(env, keys))));
         env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("virtuals")(env,
-                    env->package_database().raw_pointer(), AssociativeCollection<std::string, std::string>::Pointer(0)));
+                    AssociativeCollection<std::string, std::string>::Pointer(0)));
     }
     else
     {
@@ -145,10 +144,9 @@ Implementation<NoConfigEnvironment>::Implementation(
         keys->insert("provides_cache", "/var/empty");
         keys->insert("location", stringify(top_level_dir));
 
-        env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("vdb")(env,
-                    env->package_database().raw_pointer(), keys));
+        env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
         env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
-                    env->package_database().raw_pointer(), AssociativeCollection<std::string, std::string>::Pointer(0)));
+                    AssociativeCollection<std::string, std::string>::Pointer(0)));
     }
 }
 

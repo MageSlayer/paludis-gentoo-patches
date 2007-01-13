@@ -4,7 +4,6 @@
 make_class_CRANRepositoryParams()
 {
     key environment "const Environment *"
-    key package_database "const PackageDatabase *"
     key location FSEntry
     key distdir FSEntry
     key mirror std::string

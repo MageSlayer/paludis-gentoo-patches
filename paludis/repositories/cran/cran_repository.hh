@@ -101,8 +101,7 @@ namespace paludis
              * Virtual constructor.
              */
             static CountedPtr<Repository> make_cran_repository(
-                    const Environment * const env,
-                    const PackageDatabase * const db,
+                    Environment * const env,
                     AssociativeCollection<std::string, std::string>::ConstPointer m);
 
             /**
@@ -110,7 +109,7 @@ namespace paludis
              */
             virtual ~CRANRepository();
 
-            virtual void invalidate() const;
+            virtual void invalidate();
     };
 
     /**

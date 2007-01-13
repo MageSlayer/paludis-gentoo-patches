@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,8 +27,7 @@ using namespace paludis;
 
 CountedPtr<PortageRepository>
 paludis::make_ebuild_repository(
-        const Environment * const env,
-        const PackageDatabase * const db,
+        Environment * const env,
         AssociativeCollection<std::string, std::string>::ConstPointer m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
@@ -130,7 +129,6 @@ paludis::make_ebuild_repository(
     return CountedPtr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
                 .entry_format("ebuild")
                 .environment(env)
-                .package_database(db)
                 .location(location)
                 .profiles(profiles)
                 .cache(cache)
@@ -150,10 +148,9 @@ paludis::make_ebuild_repository(
 
 CountedPtr<Repository>
 paludis::make_ebuild_repository_wrapped(
-        const Environment * const env,
-        const PackageDatabase * const db,
+        Environment * const env,
         AssociativeCollection<std::string, std::string>::ConstPointer m)
 {
-    return make_ebuild_repository(env, db, m);
+    return make_ebuild_repository(env, m);
 }
 

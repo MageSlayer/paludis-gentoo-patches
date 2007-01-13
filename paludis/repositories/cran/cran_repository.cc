@@ -89,8 +89,7 @@ namespace paludis
     struct Implementation<CRANRepository> :
         InternalCounted<Implementation<CRANRepository> >
     {
-        /// Our owning db.
-        const PackageDatabase * const db;
+        CRANRepositoryParams params;
 
         /// Our owning env.
         const Environment * const env;
@@ -141,16 +140,13 @@ namespace paludis
         /// Destructor.
         ~Implementation();
 
-        /// Invalidate our cache.
-        void invalidate() const;
-
         /// (Empty) provides map.
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
     };
 }
 
 Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p) :
-    db(p.package_database),
+    params(p),
     env(p.environment),
     location(p.location),
     distdir(p.distdir),
@@ -166,17 +162,6 @@ Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p) :
 
 Implementation<CRANRepository>::~Implementation()
 {
-}
-
-void
-Implementation<CRANRepository>::invalidate() const
-{
-    package_names.clear();
-    has_packages = false;
-    version_specs.clear();
-    metadata.clear();
-    has_mirrors = false;
-    mirrors.clear();
 }
 
 
@@ -439,8 +424,7 @@ CRANRepository::do_version_metadata(
 
 CountedPtr<Repository>
 CRANRepository::make_cran_repository(
-        const Environment * const env,
-        const PackageDatabase * const db,
+        Environment * const env,
         AssociativeCollection<std::string, std::string>::ConstPointer m)
 {
     Context context("When making CRAN repository from repo_file '" +
@@ -476,7 +460,6 @@ CRANRepository::make_cran_repository(
 
     return CountedPtr<Repository>(new CRANRepository(CRANRepositoryParams::create()
                 .environment(env)
-                .package_database(db)
                 .location(location)
                 .distdir(distdir)
                 .sync(sync)
@@ -626,7 +609,8 @@ CRANRepository::do_sync() const
 }
 
 void
-CRANRepository::invalidate() const
+CRANRepository::invalidate()
 {
-    _imp->invalidate();
+    _imp.assign(new Implementation<CRANRepository>(_imp->params));
 }
+

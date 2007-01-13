@@ -4,8 +4,7 @@
 make_class_PortageRepositoryParams()
 {
     key entry_format std::string
-    key environment "const Environment *"
-    key package_database "const PackageDatabase *"
+    key environment "Environment *"
     key location FSEntry
     key profiles FSEntryCollection::ConstPointer
     key cache FSEntry

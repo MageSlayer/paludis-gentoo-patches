@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -386,7 +386,7 @@ namespace paludis
             /**
              * Invalidate any in memory cache.
              */
-            virtual void invalidate() const = 0;
+            virtual void invalidate() = 0;
 
             /**
              * Regenerate any on disk cache.

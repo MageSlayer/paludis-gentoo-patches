@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -152,9 +152,6 @@ namespace paludis
         /// Destructor.
         ~Implementation();
 
-        /// Invalidate our cache.
-        void invalidate() const;
-
         /// (Empty) provides map.
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
@@ -255,23 +252,6 @@ namespace paludis
         }
 
         has_profiles_desc = true;
-    }
-
-    void
-    Implementation<PortageRepository>::invalidate() const
-    {
-        profile_ptr.zero();
-        has_category_names = false;
-        category_names.clear();
-        package_names.clear();
-        version_specs.clear();
-        metadata.clear();
-        repo_mask.clear();
-        has_repo_mask = false;
-        has_virtuals = false;
-        arch_flags.assign(0);
-        has_mirrors = false;
-        mirrors.clear();
     }
 }
 
@@ -805,9 +785,9 @@ PortageRepository::do_sync() const
 }
 
 void
-PortageRepository::invalidate() const
+PortageRepository::invalidate()
 {
-    _imp->invalidate();
+    _imp.assign(new Implementation<PortageRepository>(this, _imp->params));
 }
 
 void

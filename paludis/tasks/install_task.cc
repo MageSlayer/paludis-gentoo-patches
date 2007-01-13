@@ -299,7 +299,7 @@ InstallTask::execute()
         for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
                 r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
             if ((*r)->installed_interface)
-                (*r)->invalidate();
+                ((*r).raw_pointer())->invalidate();
 
         // look for packages with the same name in the same slot
         PackageDatabaseEntryCollection::Pointer collision_list(_imp->env->package_database()->query(

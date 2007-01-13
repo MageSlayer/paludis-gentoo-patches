@@ -53,8 +53,7 @@ namespace paludis
     struct Implementation<CRANInstalledRepository> :
         InternalCounted<Implementation<CRANInstalledRepository> >
     {
-        /// Our owning db..
-        const PackageDatabase * const db;
+        CRANInstalledRepositoryParams params;
 
         /// Our owning env.
         const Environment * const env;
@@ -87,14 +86,11 @@ namespace paludis
 
         /// Destructor.
         ~Implementation();
-
-        /// Invalidate.
-        void invalidate() const;
     };
 }
 
 Implementation<CRANInstalledRepository>::Implementation(const CRANInstalledRepositoryParams & p) :
-    db(p.package_database),
+    params(p),
     env(p.environment),
     location(p.location),
     root(p.root),
@@ -169,13 +165,6 @@ Implementation<CRANInstalledRepository>::load_entries() const
         entries_valid = false;
         throw;
     }
-}
-
-void
-Implementation<CRANInstalledRepository>::invalidate() const
-{
-    entries_valid = false;
-    entries.clear();
 }
 
 CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryParams & p) :
@@ -487,8 +476,7 @@ CRANInstalledRepository::do_installed_time(const QualifiedPackageName & q,
 
 CountedPtr<Repository>
 CRANInstalledRepository::make_cran_installed_repository(
-        const Environment * const env,
-        const PackageDatabase * const db,
+        Environment * const env,
         AssociativeCollection<std::string, std::string>::ConstPointer m)
 {
     Context context("When making CRAN installed repository from repo_file '" + 
@@ -508,7 +496,6 @@ CRANInstalledRepository::make_cran_installed_repository(
 
     return CountedPtr<Repository>(new CRANInstalledRepository(CRANInstalledRepositoryParams::create()
                 .environment(env)
-                .package_database(db)
                 .location(location)
                 .root(root)
                 .world(world)));
@@ -608,9 +595,9 @@ CRANInstalledRepository::sets_list() const
 }
 
 void
-CRANInstalledRepository::invalidate() const
+CRANInstalledRepository::invalidate()
 {
-    _imp->invalidate();
+    _imp.assign(new Implementation<CRANInstalledRepository>(_imp->params));
 }
 
 void

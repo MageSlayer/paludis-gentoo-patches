@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -197,8 +197,7 @@ VirtualsRepository::need_entries() const
 
 CountedPtr<Repository>
 VirtualsRepository::make_virtuals_repository(
-        const Environment * const env,
-        const PackageDatabase * const,
+        Environment * const env,
         AssociativeCollection<std::string, std::string>::ConstPointer)
 {
     return CountedPtr<Repository>(new VirtualsRepository(env));
@@ -359,12 +358,9 @@ VirtualsRepository::do_is_licence(const std::string &) const
 }
 
 void
-VirtualsRepository::invalidate() const
+VirtualsRepository::invalidate()
 {
-    _imp->has_entries = false;
-    _imp->entries.clear();
-    _imp->has_names = false;
-    _imp->names.clear();
+    _imp.assign(new Implementation<VirtualsRepository>(_imp->env));
 }
 
 void

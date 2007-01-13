@@ -45,8 +45,7 @@ DefaultEnvironment::DefaultEnvironment() :
     for (DefaultConfig::RepositoryIterator r(DefaultConfig::get_instance()->begin_repositories()),
             r_end(DefaultConfig::get_instance()->end_repositories()) ; r != r_end ; ++r)
         package_database()->add_repository(
-                RepositoryMaker::get_instance()->find_maker(r->format)(
-                    this, package_database().raw_pointer(), r->keys));
+                RepositoryMaker::get_instance()->find_maker(r->format)(this, r->keys));
 }
 
 DefaultEnvironment::~DefaultEnvironment()

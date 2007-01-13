@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -298,8 +298,7 @@ namespace paludis
     struct Implementation<VDBRepository> :
         InternalCounted<Implementation<VDBRepository> >
     {
-        /// Our owning db.
-        const PackageDatabase * const db;
+        VDBRepositoryParams params;
 
         /// Our owning env.
         const Environment * const env;
@@ -354,7 +353,7 @@ namespace paludis
 
     Implementation<VDBRepository>::Implementation(const VDBRepository * const r,
             const VDBRepositoryParams & p) :
-        db(p.package_database),
+        params(p),
         env(p.environment),
         location(p.location),
         root(p.root),
@@ -829,8 +828,7 @@ VDBRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEn
 
 CountedPtr<Repository>
 VDBRepository::make_vdb_repository(
-        const Environment * const env,
-        const PackageDatabase * const db,
+        Environment * const env,
         AssociativeCollection<std::string, std::string>::ConstPointer m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second);
@@ -872,7 +870,6 @@ VDBRepository::make_vdb_repository(
 
     return CountedPtr<Repository>(new VDBRepository(VDBRepositoryParams::create()
                 .environment(env)
-                .package_database(db)
                 .location(location)
                 .root(root)
                 .world(world)
@@ -1012,9 +1009,9 @@ VDBRepository::sets_list() const
 }
 
 void
-VDBRepository::invalidate() const
+VDBRepository::invalidate()
 {
-    _imp->invalidate();
+    _imp.assign(new Implementation<VDBRepository>(this, _imp->params));
 }
 
 void

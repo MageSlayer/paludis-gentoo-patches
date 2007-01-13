@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,7 +53,7 @@ namespace test_cases
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
-                        &env, env.package_database().raw_pointer(), keys));
+                        &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "installed");
         }
     } test_vdb_repository_repo_name;
@@ -76,7 +76,7 @@ namespace test_cases
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
-                        &env, env.package_database().raw_pointer(), keys));
+                        &env, keys));
 
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-one")));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-two")));
@@ -102,7 +102,7 @@ namespace test_cases
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
-                        &env, env.package_database().raw_pointer(), keys));
+                        &env, keys));
 
             PackageDatabaseEntry e1(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"),
                     VersionSpec("1"), RepositoryName("installed"));
@@ -135,7 +135,7 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-new-file");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
-                        &env, env.package_database().raw_pointer(), keys));
+                        &env, keys));
             repo->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-new-file");
             std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
@@ -161,7 +161,7 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-empty");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
-                        &env, env.package_database().raw_pointer(), keys));
+                        &env, keys));
             repo->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-empty");
             std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
@@ -187,7 +187,7 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-no-match");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
-                        &env, env.package_database().raw_pointer(), keys));
+                        &env, keys));
             repo->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-no-match");
             std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
@@ -213,7 +213,7 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-match");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
-                        &env, env.package_database().raw_pointer(), keys));
+                        &env, keys));
             repo->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-match");
             std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
@@ -239,7 +239,7 @@ namespace test_cases
             keys->insert("location", "vdb_repository_TEST_dir/repo1");
             keys->insert("world", "vdb_repository_TEST_dir/world-no-match-no-eol");
             VDBRepository::Pointer repo(VDBRepository::make_vdb_repository(
-                        &env, env.package_database().raw_pointer(), keys));
+                        &env, keys));
             repo->add_to_world(QualifiedPackageName("cat-one/foofoo"));
             std::ifstream world("vdb_repository_TEST_dir/world-no-match-no-eol");
             std::string world_content((std::istreambuf_iterator<char>(world)), std::istreambuf_iterator<char>());
