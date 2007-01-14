@@ -35,7 +35,7 @@ paludis_libxml_include_HEADERS = \
 	libxml.hh
 libpaludislibxml_la_SOURCES = $(paludis_libxml_include_HEADERS) \
 	libxml.cc
-libpaludislibxml_la_CXXFLAGS = @LIBXML2DEPS_CFLAGS@
+libpaludislibxml_la_CXXFLAGS = $(AM_CXXFLAGS) @LIBXML2DEPS_CFLAGS@
 
 if ! MONOLITHIC
 
