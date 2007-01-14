@@ -71,6 +71,7 @@ namespace
         return self;
     }
 
+#ifdef CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     DepListOptions.new(reinstall, reinstall_scm, target_type, upgrade, new_slots, fall_back, installed_deps_prem installed_deps_runtime, installed_deps_post, uninstalled_deps_pre, uninstalled_deps_runtime, uninstalled_deps_post, circular, blocks, dependency_tags) -> DepListOptions
@@ -250,6 +251,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+#endif
 
     /*
      * Document-method: reinstall
@@ -367,6 +369,7 @@ namespace
         }
     };
 
+#ifdef CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     override_mask_reasons -> MaskReasons
@@ -380,6 +383,7 @@ namespace
         Data_Get_Struct(self, DepListOptions, p);
         return mask_reasons_to_value(p->override_mask_reasons);
     }
+#endif
 
     /*
      * call-seq:
@@ -762,7 +766,9 @@ namespace
          * Parameters for a DepList.
          */
         c_dep_list_options = rb_define_class_under(paludis_module(), "DepListOptions", rb_cObject);
+#ifdef CIARANM_REMOVED_THIS
         rb_define_singleton_method(c_dep_list_options, "new", RUBY_FUNC_CAST(&dep_list_options_new), -1);
+#endif
         rb_define_method(c_dep_list_options, "initialize", RUBY_FUNC_CAST(&dep_list_options_init), -1);
         rb_define_method(c_dep_list_options, "reinstall",
                 RUBY_FUNC_CAST((&OptionsMember<DepListReinstallOption, &DepListOptions::reinstall>::fetch)),0);
@@ -792,10 +798,12 @@ namespace
                 RUBY_FUNC_CAST((&OptionsMember<DepListCircularOption, &DepListOptions::circular>::fetch)),0);
         rb_define_method(c_dep_list_options, "blocks",
                 RUBY_FUNC_CAST((&OptionsMember<DepListBlocksOption, &DepListOptions::blocks>::fetch)),0);
+#ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_dep_list_options, "ovveride_mask_reasons",
                 RUBY_FUNC_CAST((&OptionsMember<DepListBlocksOption, &DepListOptions::blocks>::fetch)),0);
 
         rb_define_method(c_dep_list_options, "override_mask_reasons", RUBY_FUNC_CAST(&dep_list_options_mask_reasons),0);
+#endif
         rb_define_method(c_dep_list_options, "dependency_tags", RUBY_FUNC_CAST(&dep_list_options_dependency_tags),0);
 
         /*

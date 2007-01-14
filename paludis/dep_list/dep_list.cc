@@ -447,16 +447,53 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         }
 
     /* are we allowed to override mask reasons? */
-    if (! best_visible_candidate && d->_imp->opts.override_mask_reasons.any())
+    if (! best_visible_candidate && d->_imp->opts.override_masks.any())
     {
-        for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
-                p_end(installable_candidates->rend()) ; p != p_end ; ++p)
-            if (! (d->_imp->env->mask_reasons(*p) & ~d->_imp->opts.override_mask_reasons).any())
+        DepListOverrideMask next(static_cast<DepListOverrideMask>(0));
+        DepListOverrideMasks masks_to_override;
+
+        do
+        {
+            while (next != last_dl_override)
             {
-                d->add_error_package(*p, dlk_masked);
-                best_visible_candidate = &*p;
-                break;
+                if (masks_to_override.test(next))
+                    next = static_cast<DepListOverrideMask>(static_cast<int>(next) + 1);
+                else if (d->_imp->opts.override_masks.test(next))
+                {
+                    masks_to_override.set(next);
+                    break;
+                }
+                else
+                    next = static_cast<DepListOverrideMask>(static_cast<int>(next) + 1);
             }
+
+            if (next == last_dl_override)
+                break;
+
+            MaskReasons mask_mask;
+            if (masks_to_override.test(dl_override_repository_masks))
+                mask_mask.set(mr_repository_mask);
+            if (masks_to_override.test(dl_override_profile_masks))
+                mask_mask.set(mr_profile_mask);
+            if (masks_to_override.test(dl_override_licenses))
+                mask_mask.set(mr_license);
+            mask_mask.flip();
+
+            bool override_tilde_keywords(masks_to_override.test(dl_override_tilde_keywords));
+            bool override_unkeyworded(masks_to_override.test(dl_override_unkeyworded));
+
+            for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
+                    p_end(installable_candidates->rend()) ; p != p_end ; ++p)
+            {
+                if (! (d->_imp->env->mask_reasons(*p, override_tilde_keywords, override_unkeyworded)
+                            & mask_mask).any())
+                {
+                    d->add_error_package(*p, dlk_masked);
+                    best_visible_candidate = &*p;
+                    break;
+                }
+            }
+        } while (! best_visible_candidate);
     }
 
     /* no installable candidates. if we're already installed, that's ok (except for top level
@@ -605,7 +642,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
         try
         {
             Save<bool> save_t(&d->_imp->throw_on_blocker, true);
-            Save<MaskReasons> save_o(&d->_imp->opts.override_mask_reasons, MaskReasons());
+            Save<DepListOverrideMasks> save_o(&d->_imp->opts.override_masks, DepListOverrideMasks());
             d->add(*c);
             return;
         }

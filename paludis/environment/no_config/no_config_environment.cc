@@ -177,7 +177,8 @@ NoConfigEnvironment::main_repository_dir() const
 }
 
 bool
-NoConfigEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntry * const) const
+NoConfigEnvironment::accept_keyword(const KeywordName & k, const PackageDatabaseEntry * const,
+        const bool override_tilde_keywords) const
 {
     if (_imp->is_vdb)
         return true;
@@ -193,7 +194,7 @@ NoConfigEnvironment::accept_keyword(const KeywordName & k, const PackageDatabase
             return true;
         }
 
-        if (_imp->accept_unstable && ("~" + stringify(k) == arch))
+        if ((_imp->accept_unstable || override_tilde_keywords) && ("~" + stringify(k) == arch))
         {
             Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword match on ~arch");
             return true;
@@ -213,7 +214,7 @@ NoConfigEnvironment::accept_keyword(const KeywordName & k, const PackageDatabase
             return true;
         }
 
-        if (_imp->accept_unstable && '~' == stringify(k).at(0))
+        if ((_imp->accept_unstable || override_tilde_keywords) && '~' == stringify(k).at(0))
         {
             if (accepted.end() != std::find(accepted.begin(), accepted.end(),
                         KeywordName(stringify(k).substr(1))))

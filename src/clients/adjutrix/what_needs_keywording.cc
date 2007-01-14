@@ -53,7 +53,8 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
     DepListOptions d_options;
     d_options.circular = dl_circular_discard;
-    d_options.override_mask_reasons.set(mr_keyword);
+    d_options.override_masks.set(dl_override_tilde_keywords);
+    d_options.override_masks.set(dl_override_unkeyworded);
 
     DepList d(&env, d_options);
 

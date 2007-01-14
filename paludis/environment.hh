@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -149,7 +149,8 @@ namespace paludis
              *
              * Default behaviour: only "*" accepted.
              */
-            virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const) const;
+            virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const,
+                    const bool override_tilde_keywords = false) const;
 
             /**
              * Is the specified LICENSE accepted?
@@ -161,7 +162,9 @@ namespace paludis
             /**
              * Fetch the masks for a particular package.
              */
-            MaskReasons mask_reasons(const PackageDatabaseEntry &) const;
+            MaskReasons mask_reasons(const PackageDatabaseEntry &,
+                    const bool override_tilde_keywords = false,
+                    const bool override_unkeyworded = false) const;
 
             /**
              * Are there any user masks on a package?

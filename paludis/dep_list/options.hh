@@ -22,6 +22,7 @@
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
+#include <bitset>
 
 namespace paludis
 {
@@ -170,6 +171,30 @@ namespace paludis
         dlk_masked,            ///< A masked package that must be unmasked
         last_dlk
     };
+
+    /**
+     * Masks that can be overridden.
+     *
+     * \ingroup grpdepresolver
+     * \see DepListOverrideMasks
+     */
+    enum DepListOverrideMask
+    {
+        dl_override_licenses,         ///< Override unaccepted licences
+        dl_override_tilde_keywords,   ///< Override ~keywords
+        dl_override_unkeyworded,      ///< Override unkeyworded
+        dl_override_repository_masks, ///< Override repository masks
+        dl_override_profile_masks,    ///< Override profile masks
+        last_dl_override
+    };
+
+    /**
+     * Set of masks that can be overridden.
+     *
+     * \ingroup grpdepresolver
+     * \see DepListOverrideMask
+     */
+    typedef std::bitset<last_dl_override> DepListOverrideMasks;
 
     /**
      * Write a DepListTargetType to a stream.

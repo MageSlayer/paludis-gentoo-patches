@@ -123,7 +123,8 @@ namespace
 }
 
 MaskReasons
-Environment::mask_reasons(const PackageDatabaseEntry & e) const
+Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_tilde_keywords,
+        const bool override_unkeyworded) const
 {
     Context context("When checking mask reasons for '" + stringify(e) + "'");
 
@@ -153,11 +154,26 @@ Environment::mask_reasons(const PackageDatabaseEntry & e) const
             result.set(mr_keyword);
             for (std::set<KeywordName>::const_iterator i(keywords.begin()),
                     i_end(keywords.end()) ; i != i_end ; ++i)
-                if (accept_keyword(*i, &e))
+                if (accept_keyword(*i, &e, override_tilde_keywords))
                 {
                     result.reset(mr_keyword);
                     break;
                 }
+
+            if (override_unkeyworded && result.test(mr_keyword))
+            {
+                result.reset(mr_keyword);
+                for (std::set<KeywordName>::const_iterator i(keywords.begin()),
+                        i_end(keywords.end()) ; i != i_end ; ++i)
+                    if ("-*" == stringify(*i))
+                        result.set(mr_keyword);
+                    else if ('-' == stringify(*i).at(0))
+                        if (accept_keyword(KeywordName(stringify(*i).substr(1)), &e, override_tilde_keywords))
+                        {
+                            result.set(mr_keyword);
+                            break;
+                        }
+            }
         }
 
         LicenceChecker lc(this, &e);
@@ -402,7 +418,8 @@ Environment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) co
 }
 
 bool
-Environment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const) const
+Environment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const,
+        const bool) const
 {
     if (keyword == KeywordName("*"))
         return true;

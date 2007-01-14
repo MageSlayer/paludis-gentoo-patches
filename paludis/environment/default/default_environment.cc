@@ -360,7 +360,8 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 }
 
 bool
-DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const d) const
+DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const d,
+        const bool override_tilde_keywords) const
 {
     static KeywordName star_keyword("*");
     static KeywordName minus_star_keyword("-*");
@@ -424,6 +425,9 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
         }
 
     }
+
+    if ((! result) && override_tilde_keywords && ('~' == stringify(keyword).at(0)))
+        result = accept_keyword(KeywordName(stringify(keyword).substr(1)), d, false);
 
     return result;
 }

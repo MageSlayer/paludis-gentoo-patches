@@ -369,14 +369,16 @@ do_install()
         for (args::StringSetArg::Iterator a(CommandLine::get_instance()->dl_override_masks.begin_args()),
                 a_end(CommandLine::get_instance()->dl_override_masks.end_args()) ; a != a_end ; ++a)
         {
-            if (*a == "keyword")
-                options.override_mask_reasons.set(mr_keyword);
-            else if (*a == "profile")
-                options.override_mask_reasons.set(mr_profile_mask);
+            if (*a == "tilde-keyword")
+                options.override_masks.set(dl_override_tilde_keywords);
+            else if (*a == "unkeyworded")
+                options.override_masks.set(dl_override_unkeyworded);
             else if (*a == "repository")
-                options.override_mask_reasons.set(mr_repository_mask);
+                options.override_masks.set(dl_override_repository_masks);
+            else if (*a == "profile")
+                options.override_masks.set(dl_override_repository_masks);
             else if (*a == "license")
-                options.override_mask_reasons.set(mr_license);
+                options.override_masks.set(dl_override_licenses);
             else
                 throw args::DoHelp("bad value for --dl-override-masks");
         }
