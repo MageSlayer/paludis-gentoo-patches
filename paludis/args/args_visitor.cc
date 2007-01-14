@@ -1,6 +1,6 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,8 +21,12 @@
 
 #include <paludis/util/visitor.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/system.hh>
+#include <paludis/util/join.hh>
 
+#include <algorithm>
 #include <sstream>
+#include <stdlib.h>
 
 /** \file
  * Implementation for ArgsVisitor.
@@ -34,7 +38,11 @@ using namespace paludis;
 using namespace args;
 
 ArgsVisitor::ArgsVisitor(libwrapiter::ForwardIterator<ArgsVisitor, std::string> * ai,
-        libwrapiter::ForwardIterator<ArgsVisitor, std::string> ae) : _args_index(ai), _args_end(ae)
+        libwrapiter::ForwardIterator<ArgsVisitor, std::string> ae,
+        const std::string & env_prefix) :
+    _args_index(ai),
+    _args_end(ae),
+    _env_prefix(env_prefix)
 {
 }
 
@@ -42,21 +50,27 @@ const std::string &
 ArgsVisitor::get_param(const ArgsOption * const arg)
 {
     if (++(*_args_index) == _args_end)
-    {
         throw MissingValue("--" + arg->long_name());
-    }
+
     return **_args_index;
 }
 
 void ArgsVisitor::visit(ArgsOption * const arg)
 {
     arg->set_specified(true);
+
+    if (! _env_prefix.empty())
+        setenv(env_name(arg->long_name()).c_str(), "1", 1);
 }
 
 void ArgsVisitor::visit(StringArg * const arg)
 {
     visit(static_cast<ArgsOption *>(arg));
-    arg->set_argument(get_param(arg));
+    std::string p(get_param(arg));
+    arg->set_argument(p);
+
+    if (! _env_prefix.empty())
+        setenv(env_name(arg->long_name()).c_str(), p.c_str(), 1);
 }
 
 void ArgsVisitor::visit(AliasArg * const arg)
@@ -75,7 +89,11 @@ void ArgsVisitor::visit(IntegerArg * const arg)
     std::string param = get_param(arg);
     try
     {
-        arg->set_argument(destringify<int>(param));
+        int a(destringify<int>(param));
+        arg->set_argument(a);
+
+        if (! _env_prefix.empty())
+            setenv(env_name(arg->long_name()).c_str(), stringify(a).c_str(), 1);
     }
     catch (const DestringifyError &)
     {
@@ -86,7 +104,11 @@ void ArgsVisitor::visit(IntegerArg * const arg)
 void ArgsVisitor::visit(EnumArg * const arg)
 {
     visit(static_cast<ArgsOption*>(arg));
-    arg->set_argument(get_param(arg));
+    std::string p(get_param(arg));
+    arg->set_argument(p);
+
+    if (! _env_prefix.empty())
+        setenv(env_name(arg->long_name()).c_str(), p.c_str(), 1);
 }
 
 void ArgsVisitor::visit(StringSetArg * const arg)
@@ -94,4 +116,17 @@ void ArgsVisitor::visit(StringSetArg * const arg)
     visit(static_cast<ArgsOption *>(arg));
     std::string param = get_param(arg);
     arg->add_argument(param);
+
+    if (! _env_prefix.empty())
+        setenv(env_name(arg->long_name()).c_str(), join(arg->begin_args(),
+                    arg->end_args(), " ").c_str(), 1);
 }
+
+std::string
+ArgsVisitor::env_name(const std::string & long_name) const
+{
+    std::string result(_env_prefix + "_" + long_name);
+    std::replace(result.begin(), result.end(), '-', '_');
+    return result;
+}
+

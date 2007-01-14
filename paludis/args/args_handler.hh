@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -84,11 +84,13 @@ namespace paludis
                 ///\}
 
                 /**
-                 * Parse command line arguments. The last (optional) argument is the name
+                 * Parse command line arguments. The third (optional) argument is the name
                  * of an environment variable holding arguments which are prepended to the
-                 * command line arguments.
+                 * command line arguments. The fourth (optional) argument is used as a prefix
+                 * to export our command line via the environment.
                  */
-                void run(const int, const char * const * const, const std::string & env_var = "");
+                void run(const int, const char * const * const, const std::string & env_var = "",
+                        const std::string & env_prefix = "");
 
                 ///\name Iterate over our parameters (non - and -- switches and their values)
                 ///\{

@@ -63,7 +63,7 @@ that is executed when a particular well defined action occurs.</p>
 <p>In general, certain special environment variables will be set. <code>HOOK</code> will contain
 the name of the hook. For <code>all</code> hooks, <code>TARGETS</code> will contain the targets
 for the operation. For non-<code>all</code> hooks, <code>TARGET</code> will contain the current
-target.</p>
+target. The <code>PALUDIS_CMDLINE</code> variables described below are also available.</p>
 
 <h4>Ebuild Hooks</h4>
 
@@ -126,8 +126,9 @@ target.</p>
     <li><code>ebuild_postrm_post</code></li>
 </ul>
 
-<p>As well as the full ebuild environment, the <code>HOOK</code> environment variable
-will contain the name of the hook being called.</p>
+<p>As well as the full ebuild environment, the <code>HOOK</code> environment
+variable will contain the name of the hook being called. The
+<code>PALUDIS_CMDLINE</code> variables described below are also available.</p>
 
 <h4>Ebuild Message Hooks</h4>
 
@@ -141,8 +142,9 @@ will contain the name of the hook being called.</p>
 </ul>
 
 <p>The <code>HOOK</code> environment variable will contain the name of the hook
-being called, and the <code>MESSAGE</code> environment variable will contain the
-message being passed to the function.</p>
+being called, and the <code>MESSAGE</code> environment variable will contain
+the message being passed to the function.  The <code>PALUDIS_CMDLINE</code>
+variables described below are also available.</p>
 
 <h3>User Defined Hooks</h3>
 
@@ -171,6 +173,27 @@ not for end user use.</p>
 are not suitably general to be enabled by default -- these live in
 <code>DATADIR/paludis/hooks/demos/</code>. You may also find the default
 hooks useful -- these live in various places in <code>LIBEXECDIR/paludis/hooks/</code>.</p>
+
+<h3>The <code>PALUDIS_CMDLINE</code> Variables</h3>
+
+<p>Sometimes hooks need access to the commandline used to invoke
+<code>paludis</code>.  However, manual parsing of the commandline by hooks will
+lead to bugs when people forget to emulate certain behaviour (say, short
+options, aliases or <code>--</code> support).  To work around this issue,
+Paludis provides environment variables prefixed <code>PALUDIS_CMDLINE_</code>
+that specify the parsed command line:</p>
+
+<ul>
+    <li>The <code>PALUDIS_CMDLINE_PARAMS</code> variable contains the parameters (that is,
+    the parts that aren't <code>-x</code> or <code>--blah</code> or values for these).</li>
+
+    <li>For each <code>--param-name</code>, <code>PALUDIS_CMDLINE_param_name</code> (note
+    the case and the underscores) is set. If <code>--param-name</code> takes an argument,
+    this argument is used for the environment variable's value.</li>
+
+    <li>For short options (<code>-x</code>) and aliases, the appropriate long option's
+    variable is set instead.</li>
+</ul>
 
 @FOOTER@
 </body>

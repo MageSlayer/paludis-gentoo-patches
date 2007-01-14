@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,7 @@
 #include "args.hh"
 #include "args_dumper.hh"
 #include <paludis/util/system.hh>
+#include <paludis/util/join.hh>
 #include <algorithm>
 #include <sstream>
 #include <list>
@@ -83,7 +84,8 @@ ArgsHandler::add(ArgsGroup * const g)
 }
 
 void
-ArgsHandler::run(const int argc, const char * const * const argv, const std::string & env_var)
+ArgsHandler::run(const int argc, const char * const * const argv, const std::string & env_var,
+        const std::string & env_prefix)
 {
     std::list<std::string> args;
     std::string env_options;
@@ -93,10 +95,10 @@ ArgsHandler::run(const int argc, const char * const * const argv, const std::str
 
     std::istringstream iss(env_options);
     std::string option;
-    while(iss.good())
+    while (iss.good())
     {
         iss >> option;
-        if(!option.empty())
+        if (!option.empty())
             args.push_back(option);
     }
 
@@ -104,7 +106,7 @@ ArgsHandler::run(const int argc, const char * const * const argv, const std::str
 
     libwrapiter::ForwardIterator<ArgsVisitor, std::string> argit(args.begin()), arge(args.end());
 
-    ArgsVisitor visitor(&argit, arge);
+    ArgsVisitor visitor(&argit, arge, env_prefix);
 
     for ( ; argit != arge; ++argit )
     {
@@ -144,6 +146,10 @@ ArgsHandler::run(const int argc, const char * const * const argv, const std::str
 
     _imp->parameters.insert(_imp->parameters.end(),
             argit, libwrapiter::ForwardIterator<ArgsVisitor, std::string>(args.end()));
+
+    if (! env_prefix.empty())
+        setenv((env_prefix + "_PARAMS").c_str(), join(_imp->parameters.begin(),
+                    _imp->parameters.end(), " ").c_str(), 1);
 }
 
 void
