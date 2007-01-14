@@ -123,7 +123,7 @@ portage_repository_TEST_LDADD = \
 
 endif
 
-portage_repository_TEST_CXXFLAGS = -I$(top_srcdir)
+portage_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
 EXTRA_DIST = \
 	glsa.sr \
@@ -179,7 +179,7 @@ glsa-sr.cc : glsa.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/glsa.sr > $@
 
 libpaludisportagerepositoryxmlthings_la_SOURCES = xml_things.cc xml_things.hh
-libpaludisportagerepositoryxmlthings_la_CXXFLAGS = @LIBXML2DEPS_CFLAGS@
+libpaludisportagerepositoryxmlthings_la_CXXFLAGS = $(AM_CXXFLAGS) @LIBXML2DEPS_CFLAGS@
 
 if MONOLITHIC
 

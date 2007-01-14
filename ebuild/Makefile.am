@@ -2,6 +2,8 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~
 SUBDIRS = . digests fetchers utils
 
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
+
 libexecprogdir = $(libexecdir)/paludis/
 
 libexecprog_SCRIPTS = \
