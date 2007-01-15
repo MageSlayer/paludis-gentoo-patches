@@ -128,7 +128,9 @@ VirtualsRepository::need_names() const
                             new PackageDepAtom(stringify(p->provided_by_name)))));
     }
 
-    std::sort(_imp->names.begin(), _imp->names.end());
+    std::sort(_imp->names.begin(), _imp->names.end(), NamesNameComparator());
+
+    std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> > new_names;
 
     for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
@@ -149,11 +151,14 @@ VirtualsRepository::need_names() const
                             NamesNameComparator()));
 
             if (p.first == p.second)
-                _imp->names.push_back(std::make_pair(v->virtual_name, v->provided_by_atom));
+                new_names.push_back(std::make_pair(v->virtual_name, v->provided_by_atom));
         }
     }
 
-    std::sort(_imp->names.begin(), _imp->names.end());
+    std::copy(new_names.begin(), new_names.end(), std::back_inserter(_imp->names));
+    std::sort(_imp->names.begin(), _imp->names.end(), NamesNameComparator());
+
+    _imp->has_names = true;
 }
 
 void
