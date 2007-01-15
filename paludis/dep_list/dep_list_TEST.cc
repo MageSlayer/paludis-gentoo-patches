@@ -1062,14 +1062,14 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->deps.build_depend_string = "|| ( cat/two cat/three )";
-            repo->add_version("cat", "two", "1")->deps.run_depend_string = "cat/one";
+            repo->add_version("cat", "two", "1")->deps.post_depend_string = "cat/one";
             repo->add_version("cat", "three", "1");
         }
 
         void populate_expected()
         {
             merge_target="cat/one";
-            expected.push_back("cat/three-1:0::repo");
+            expected.push_back("cat/two-1:0::repo");
             expected.push_back("cat/one-1:0::repo");
         }
     } test_dep_list_43;

@@ -981,7 +981,17 @@ DepList::add_postdeps(DepAtom::ConstPointer d, const DepListDepsOption opt, cons
     {
         try
         {
-            add_in_role(d, s + " dependencies as post dependencies");
+            try
+            {
+                add_in_role(d, s + " dependencies as post dependencies");
+            }
+            catch (const CircularDependencyError &)
+            {
+                Save<DepListCircularOption> save_circular(&_imp->opts.circular, dl_circular_discard);
+                Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position,
+                        _imp->merge_list.end());
+                add_in_role(d, s + " dependencies as post dependencies with cycle breaking");
+            }
         }
         catch (const DepListError & e)
         {
