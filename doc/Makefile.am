@@ -11,6 +11,10 @@ docfiles = \
 	doc_namespaces.doxygen \
 	doc_references.doxygen
 
+images = \
+	 paludis.svg \
+	 paludis_270.png
+
 htmlfiles = \
 	index.html \
 	news.html \
@@ -27,7 +31,7 @@ htmlfiles = \
 	hooks.html
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
-	$(docfiles) $(tagfiles) htaccess \
+	$(docfiles) $(tagfiles) $(images) htaccess \
 	news.html.skel index.html.skel changelog.html.skel licence.html.skel authors.html.skel \
 	faq.html.skel htmlheader.html htmlfooter.html migration.html.skel cachefiles.html.skel \
 	configuration.html.skel portagedifferences.html.skel programmingwithpaludis.html.skel \
@@ -236,7 +240,10 @@ htmlpages : $(htmlfiles) paludis.css www
 dothtaccess : htaccess
 	cp $(srcdir)/htaccess www/.htaccess
 
-homepage : doxygen rdoc htmlpages dothtaccess
+homepage : doxygen rdoc htmlpages dothtaccess images
+
+images : $(images)
+	for s in $(images) ; do cp $(srcdir)/$$s www/ ; done
 
 upload-homepage : homepage
 	cd `readlink -f $(top_srcdir)/doc/www` && tar jc ./ --exclude ./ | \
