@@ -1,8 +1,10 @@
 # vim: set ft=apache :
 
-Redirect Permanent /News.html http://paludis.berlios.de/news.html
-Redirect Permanent /PaludisNews.html http://paludis.berlios.de/news.html
-Redirect Permanent /KnownIssues.html http://paludis.berlios.de/faq.html
-Redirect Permanent /Authors.html http://paludis.berlios.de/authors.html
-Redirect Permanent /Licence.html http://paludis.berlios.de/licence.html
+AddCharset UTF-8 .html
+
+Redirect Permanent /News.html http://paludis.pioto.org/news.html
+Redirect Permanent /PaludisNews.html http://paludis.pioto.org/news.html
+Redirect Permanent /KnownIssues.html http://paludis.pioto.org/faq.html
+Redirect Permanent /Authors.html http://paludis.pioto.org/authors.html
+Redirect Permanent /Licence.html http://paludis.pioto.org/licence.html
 
