@@ -43,8 +43,8 @@ namespace paludis
 
 #include <paludis/tasks/stage_options-sr.cc>
 
-StageBuildError::StageBuildError(const std::string & message) throw () :
-    Exception(message)
+StageBuildError::StageBuildError(const std::string & m) throw () :
+    Exception(m)
 {
 }
 
