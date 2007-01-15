@@ -37,7 +37,7 @@ namespace paludis
     class StageBuildError :
         public Exception
     {
-        protected:
+        public:
             /**
              * Constructor
              *

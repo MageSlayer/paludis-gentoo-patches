@@ -43,6 +43,11 @@ namespace paludis
 
 #include <paludis/tasks/stage_options-sr.cc>
 
+StageBuildError::StageBuildError(const std::string & message) throw () :
+    Exception(message)
+{
+}
+
 StageBase::~StageBase()
 {
 }
@@ -98,8 +103,13 @@ StageBuilderTask::execute()
                 continue;
             }
 
-            if (((*s)->build(_imp->options)) && (! _imp->options.pretend))
-                on_build_succeed(*s);
+            if (! (*s)->build(_imp->options))
+                throw StageBuildError("Failed building stage '" + (*s)->short_name() + "'");
+
+            if (_imp->options.pretend)
+                continue;
+
+            on_build_succeed(*s);
         }
         catch (const StageBuildError & e)
         {
