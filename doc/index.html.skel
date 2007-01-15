@@ -12,7 +12,12 @@
 
     <p>Paludis is a package manager for use with <a
         href="http://www.gentoo.org/">Gentoo</a> and related distributions. It
-    is entirely independent of Portage.</p>
+    is entirely independent of Portage. The current version is <strong>@VERSION@</strong>,
+    with the following changes:</p>
+
+@RECENTNEWS@
+
+    <p>See the <a href="news.html">Release Notes</a> for previous releases.</p>
 
     <h2>For prospective users:</h2>
 

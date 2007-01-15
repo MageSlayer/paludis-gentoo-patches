@@ -40,7 +40,7 @@ EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
 	migration.html cachefiles.html configuration.html portagedifferences.html programmingwithpaludis.html \
 	sets.html hooks.html \
-	cleannews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
+	cleannews cleanrecentnews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
 
@@ -135,11 +135,18 @@ changelog.html : changelog.html.skel cleanchangelog htmlheader.html htmlfooter.h
 	    -e '/@FOOTER@/r htmlfooter.html' \
 	    -e '/@FOOTER@/d' < $(srcdir)/changelog.html.skel > changelog.html
 
-index.html : index.html.skel htmlheader.html htmlfooter.html
-	sed -e '/@HEADER@/r htmlheader.html' \
-	    -e '/@HEADER@/d' \
-	    -e '/@FOOTER@/r htmlfooter.html' \
-	    -e '/@FOOTER@/d' \
+cleanrecentnews : news.html
+	sed -n -e '/^<h3>[0-9]\+\.[^:]\+:/,/<.li><.ul><h3>/p' < news.html \
+	    | sed -e '1s/.*<.h3>//' -e '$$s,.*,</ul>,' > cleanrecentnews
+
+index.html : index.html.skel htmlheader.html htmlfooter.html cleanrecentnews
+	sed -e '/[@]HEADER@/r htmlheader.html' \
+	    -e '/[@]HEADER@/d' \
+	    -e '/[@]FOOTER@/r htmlfooter.html' \
+	    -e '/[@]FOOTER@/d' \
+	    -e 's/[@]VERSION@/$(VERSION_FULL)/g' \
+	    -e '/[@]RECENTNEWS@/r cleanrecentnews' \
+	    -e '/[@]RECENTNEWS@/d' \
 	    < $(srcdir)/index.html.skel > index.html
 
 configuration.html : configuration.html.skel htmlheader.html htmlfooter.html
