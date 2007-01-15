@@ -67,6 +67,10 @@ a:hover {
     color: #ffffff;
 }
 
+a:hover img {
+    background-color: #996600;
+}
+
 a.el {
     font-weight: bold;
 }
