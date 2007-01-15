@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
+#include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/environment/test/test_environment.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -56,7 +57,9 @@ namespace test_cases
         protected:
             TestEnvironment env;
             FakeRepository::Pointer repo;
+            FakeInstalledRepository::Pointer installed_repo;
             VirtualsRepository::Pointer virtuals_repo;
+            InstalledVirtualsRepository::Pointer installed_virtuals_repo;
             std::list<std::string> expected;
             std::string merge_target;
             bool done_populate;
@@ -68,11 +71,15 @@ namespace test_cases
                 TestCase("dep list " + stringify(i)),
                 env(),
                 repo(new FakeRepository(RepositoryName("repo"))),
+                installed_repo(new FakeInstalledRepository(RepositoryName("installed"))),
                 virtuals_repo(new VirtualsRepository(&env)),
+                installed_virtuals_repo(new InstalledVirtualsRepository(&env)),
                 done_populate(false)
             {
                 env.package_database()->add_repository(repo);
+                env.package_database()->add_repository(installed_repo);
                 env.package_database()->add_repository(virtuals_repo);
+                env.package_database()->add_repository(installed_virtuals_repo);
             }
 
             /**
@@ -1395,6 +1402,50 @@ namespace test_cases
             expected.push_back("cat/two-1:0::virtuals");
         }
     } test_dep_list_58;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase59 : DepListTestCase<59>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->deps.build_depend_string = "|| ( cat/two >=cat/three-2 )";
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "2");
+            installed_repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/three-2:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_59;
+
+    /**
+     * \test Test DepList resolution behaviour.
+     *
+     */
+    struct DepListTestCase60 : DepListTestCase<60>
+    {
+        void populate_repo()
+        {
+            repo->add_version("cat", "one", "1")->deps.build_depend_string = "|| ( cat/two >=cat/three-3 )";
+            repo->add_version("cat", "two", "1");
+            repo->add_version("cat", "three", "2");
+            installed_repo->add_version("cat", "three", "1");
+        }
+
+        void populate_expected()
+        {
+            merge_target = "cat/one";
+            expected.push_back("cat/two-1:0::repo");
+            expected.push_back("cat/one-1:0::repo");
+        }
+    } test_dep_list_60;
 
     /**
      * \test Test DepList transactional add behaviour.

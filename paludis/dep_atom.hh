@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -87,6 +87,12 @@ namespace paludis
              * UseDepAtom.
              */
             virtual const UseDepAtom * as_use_dep_atom() const;
+
+            /**
+             * Return us as a PackageDepAtom, or 0 if we are not a
+             * UseDepAtom.
+             */
+            virtual const PackageDepAtom * as_package_dep_atom() const;
 
             ///\}
     };
@@ -426,6 +432,8 @@ namespace paludis
              * Fetch a copy of ourself without the USE requirements.
              */
             Pointer without_use_requirements() const;
+
+            virtual const PackageDepAtom * as_package_dep_atom() const;
     };
 
     /**

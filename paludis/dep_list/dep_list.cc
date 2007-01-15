@@ -254,6 +254,28 @@ namespace
                 return true;
         }
     };
+
+    struct IsInterestingPDADepAtomChild
+    {
+        const Environment * const env;
+
+        IsInterestingPDADepAtomChild(const Environment * const e) :
+            env(e)
+        {
+        }
+
+        bool operator() (PackageDepAtom::ConstPointer atom)
+        {
+            const PackageDepAtom * const u(atom->as_package_dep_atom());
+            if (0 != u)
+            {
+                return ! env->package_database()->query(PackageDepAtom(u->package()),
+                        is_installed_only, qo_whatever)->empty();
+            }
+            else
+                return false;
+        }
+    };
 }
 
 struct DepList::QueryVisitor :
@@ -632,6 +654,27 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
         {
             d->add(*c);
             return;
+        }
+    }
+
+    /* if we have something like || ( a >=b-2 ) and b-1 is installed, try to go for
+     * the b-2 bit first */
+    std::list<DepAtom::ConstPointer> pda_children;
+    std::copy(viable_children.begin(), viable_children.end(),
+            filter_inserter(std::back_inserter(pda_children), IsInterestingPDADepAtomChild(d->_imp->env)));
+
+    for (std::list<DepAtom::ConstPointer>::const_iterator c(pda_children.begin()),
+            c_end(pda_children.end()) ; c != c_end ; ++c)
+    {
+        try
+        {
+            Save<bool> save_t(&d->_imp->throw_on_blocker, true);
+            Save<DepListOverrideMasks> save_o(&d->_imp->opts.override_masks, DepListOverrideMasks());
+            d->add(*c);
+            return;
+        }
+        catch (const DepListError &)
+        {
         }
     }
 
