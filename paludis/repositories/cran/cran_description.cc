@@ -101,6 +101,8 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
             metadata->deps.build_depend_string = value;
             metadata->deps.run_depend_string = value;
         }
+        else if ("Suggests" == key)
+            metadata->deps.suggested_depend_string = value;
     }
 }
 

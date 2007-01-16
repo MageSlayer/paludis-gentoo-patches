@@ -53,6 +53,8 @@ DepListOptions::DepListOptions() :
     uninstalled_deps_pre(dl_deps_pre),
     uninstalled_deps_runtime(dl_deps_pre_or_post),
     uninstalled_deps_post(dl_deps_post),
+    uninstalled_deps_suggested(dl_deps_try_post),
+    suggested(dl_suggested_show),
     circular(dl_circular_error),
     blocks(dl_blocks_accumulate),
     dependency_tags(false)
@@ -224,6 +226,7 @@ namespace
 
                 case dlk_block:
                 case dlk_masked:
+                case dlk_suggested:
                     return false;
 
                 case last_dlk:
@@ -779,6 +782,70 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
     }
 }
 
+struct DepList::ShowSuggestVisitor :
+    DepAtomVisitorTypes::ConstVisitor,
+    DepAtomVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AllDepAtom>,
+    DepAtomVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AnyDepAtom>
+{
+    DepList * const d;
+
+    ShowSuggestVisitor(DepList * const dd) :
+        d(dd)
+    {
+    }
+
+    void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
+    void visit(const PackageDepAtom * const);
+    void visit(const UseDepAtom * const);
+    void visit(const BlockDepAtom * const);
+    using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AllDepAtom>::visit;
+    using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AnyDepAtom>::visit;
+};
+
+void
+DepList::ShowSuggestVisitor::visit(const PlainTextDepAtom * const)
+{
+    throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+}
+
+void
+DepList::ShowSuggestVisitor::visit(const UseDepAtom * const a)
+{
+    if (d->_imp->env->query_use(a->flag(), d->_imp->current_pde()) ^ a->inverse())
+        std::for_each(a->begin(), a->end(), accept_visitor(this));
+}
+
+void
+DepList::ShowSuggestVisitor::visit(const BlockDepAtom * const)
+{
+}
+
+void
+DepList::ShowSuggestVisitor::visit(const PackageDepAtom * const a)
+{
+    Context context("When adding suggested dep '" + stringify(*a) + "':");
+
+    PackageDatabaseEntryCollection::ConstPointer matches(d->_imp->env->package_database()->query(
+                *a, is_installable_only, qo_order_by_version));
+    if (matches->empty())
+    {
+        Log::get_instance()->message(ll_warning, lc_context, "Nothing found for '" + stringify(*a) + "'");
+        return;
+    }
+
+    for (PackageDatabaseEntryCollection::Iterator m(matches->begin()), m_end(matches->end()) ;
+            m != m_end ; ++m)
+    {
+        if (d->_imp->env->mask_reasons(*m).any())
+            continue;
+
+        d->add_suggested_package(*m);
+        return;
+    }
+
+    Log::get_instance()->message(ll_warning, lc_context, "Nothing visible found for '" + stringify(*a) + "'");
+}
+
 DepList::DepList(const Environment * const e, const DepListOptions & o) :
     PrivateImplementationPattern<DepList>(new Implementation<DepList>(e, o)),
     options(_imp->opts)
@@ -901,17 +968,33 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
         }
     }
 
+    /* add suggests */
+    if (_imp->opts.suggested == dl_suggested_show)
+    {
+        Context c("When showing suggestions:");
+        Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
+                next(our_merge_entry_position));
+        ShowSuggestVisitor visitor(this);
+        metadata->deps.suggested_depend()->accept(&visitor);
+    }
+
     /* add pre dependencies */
     add_predeps(metadata->deps.build_depend(), _imp->opts.uninstalled_deps_pre, "build");
     add_predeps(metadata->deps.run_depend(), _imp->opts.uninstalled_deps_runtime, "run");
     add_predeps(metadata->deps.post_depend(), _imp->opts.uninstalled_deps_post, "post");
+    if (_imp->opts.suggested == dl_suggested_install)
+        add_predeps(metadata->deps.suggested_depend(), _imp->opts.uninstalled_deps_suggested, "suggest");
 
     our_merge_entry_position->state = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry_post_position);
 
+    /* add post dependencies */
     add_postdeps(metadata->deps.build_depend(), _imp->opts.uninstalled_deps_pre, "build");
     add_postdeps(metadata->deps.run_depend(), _imp->opts.uninstalled_deps_runtime, "run");
     add_postdeps(metadata->deps.post_depend(), _imp->opts.uninstalled_deps_post, "post");
+
+    if (_imp->opts.suggested == dl_suggested_install)
+        add_postdeps(metadata->deps.suggested_depend(), _imp->opts.uninstalled_deps_suggested, "suggest");
 
     our_merge_entry_position->state = dle_has_all_deps;
 }
@@ -945,6 +1028,40 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
                 .kind(kind)));
+
+    if (_imp->current_pde())
+        our_merge_entry_position->tags->insert(DepTagEntry::create()
+                .tag(DepTag::Pointer(new DependencyDepTag(*_imp->current_pde())))
+                .generation(_imp->merge_list_generation));
+
+    _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
+}
+
+void
+DepList::add_suggested_package(const PackageDatabaseEntry & p)
+{
+    std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
+            _imp->merge_list_index.equal_range(p.name));
+
+    for ( ; pp.first != pp.second ; ++pp.first)
+    {
+        if ((pp.first->second->kind == dlk_suggested || pp.first->second->kind == dlk_already_installed
+                    || pp.first->second->kind == dlk_package || pp.first->second->kind == dlk_provided
+                    || pp.first->second->kind == dlk_subpackage) && pp.first->second->package == p)
+            return;
+    }
+
+    MergeList::iterator our_merge_entry_position(
+            _imp->merge_list.insert(_imp->merge_list_insert_position,
+                DepListEntry::create()
+                .package(p)
+                .metadata(_imp->env->package_database()->fetch_repository(
+                        p.repository)->version_metadata(p.name, p.version))
+                .generation(_imp->merge_list_generation)
+                .state(dle_has_all_deps)
+                .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
+                .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                .kind(dlk_suggested)));
 
     if (_imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
@@ -1294,6 +1411,7 @@ namespace
                 case dlk_provided:
                 case dlk_already_installed:
                 case dlk_subpackage:
+                case dlk_suggested:
                     return false;
 
                 case dlk_block:

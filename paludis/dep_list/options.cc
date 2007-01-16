@@ -324,6 +324,10 @@ paludis::operator<< (std::ostream & o, const DepListEntryKind & s)
                 o << "sub_package";
                 continue;
 
+            case dlk_suggested:
+                o << "suggested";
+                continue;
+
             case dlk_already_installed:
                 o << "already_installed";
                 continue;

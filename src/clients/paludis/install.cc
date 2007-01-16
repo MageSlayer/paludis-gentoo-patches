@@ -352,6 +352,18 @@ do_install()
             throw args::DoHelp("bad value for --dl-circular");
     }
 
+    if (CommandLine::get_instance()->dl_suggested.specified())
+    {
+        if (CommandLine::get_instance()->dl_suggested.argument() == "show")
+            options.suggested = dl_suggested_show;
+        else if (CommandLine::get_instance()->dl_suggested.argument() == "discard")
+            options.suggested = dl_suggested_discard;
+        else if (CommandLine::get_instance()->dl_suggested.argument() == "install")
+            options.suggested = dl_suggested_install;
+        else
+            throw args::DoHelp("bad value for --dl-suggested");
+    }
+
     if (CommandLine::get_instance()->dl_blocks.specified())
     {
         if (CommandLine::get_instance()->dl_blocks.argument() == "discard")
@@ -405,6 +417,7 @@ do_install()
         options.uninstalled_deps_pre = x;
         options.uninstalled_deps_post = x;
         options.uninstalled_deps_runtime = x;
+        options.uninstalled_deps_suggested = x;
     }
 
     if (CommandLine::get_instance()->dl_installed_deps_pre.specified())
@@ -426,6 +439,9 @@ do_install()
     if (CommandLine::get_instance()->dl_uninstalled_deps_post.specified())
         options.uninstalled_deps_post = enum_arg_to_dep_list_deps_option(
                 CommandLine::get_instance()->dl_uninstalled_deps_post);
+    if (CommandLine::get_instance()->dl_uninstalled_deps_suggested.specified())
+        options.uninstalled_deps_suggested = enum_arg_to_dep_list_deps_option(
+                CommandLine::get_instance()->dl_uninstalled_deps_suggested);
 
     if ((CommandLine::get_instance()->a_show_reasons.argument() == "summary") ||
             (CommandLine::get_instance()->a_show_reasons.argument() == "full"))

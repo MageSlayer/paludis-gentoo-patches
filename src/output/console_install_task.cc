@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -181,6 +181,10 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
             case dlk_package:
             case dlk_subpackage:
                 m = normal_entry;
+                continue;
+
+            case dlk_suggested:
+                m = suggested_entry;
                 continue;
 
             case dlk_masked:
@@ -370,11 +374,22 @@ ConsoleInstallTask::display_merge_list_post_counts()
     }
 
     if (count<max_count>() && count<error_count>())
-        s << " and ";
+    {
+        if (count<suggested_count>())
+            s << " and ";
+        else
+            s << ", ";
+    }
 
     if (count<error_count>())
         s << render_as_error(stringify(count<error_count>()) +
                 render_plural(count<error_count>(), " error", " errors"));
+
+    if ((count<max_count>() || count<error_count>()) && count<suggested_count>())
+        s << " and ";
+
+    if (count<suggested_count>())
+        s << count<suggested_count>() << render_plural(count<suggested_count>(), " suggestion", " suggestions");
 
     output_unstarred_item(s.str());
 }
@@ -622,8 +637,25 @@ DepTagSummaryDisplayer::visit(const GeneralSetDepTag * const tag)
 }
 
 void
-ConsoleInstallTask::display_merge_list_entry_start(const DepListEntry &, const DisplayMode)
+ConsoleInstallTask::display_merge_list_entry_start(const DepListEntry & e, const DisplayMode)
 {
+    switch (e.kind)
+    {
+        case dlk_subpackage:
+        case dlk_suggested:
+        case dlk_provided:
+            output_no_endl("    ");
+            break;
+
+        case dlk_virtual:
+        case dlk_masked:
+        case dlk_block:
+        case dlk_already_installed:
+        case dlk_package:
+        case last_dlk:
+            break;
+    }
+
     output_starred_item_no_endl("");
 }
 
@@ -633,6 +665,7 @@ ConsoleInstallTask::display_merge_list_entry_package_name(const DepListEntry & d
     switch (m)
     {
         case normal_entry:
+        case suggested_entry:
             output_no_endl(render_as_package_name(stringify(d.package.name)));
             break;
 
@@ -667,6 +700,7 @@ ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const 
     switch (m)
     {
         case normal_entry:
+        case suggested_entry:
             output_no_endl(render_as_slot_name(" {:" + stringify(d.metadata->slot) + "}"));
             break;
 
@@ -689,7 +723,15 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
     switch (m)
     {
         case unimportant_entry:
-            output_no_endl(render_as_unimportant(" [-]"));
+            if (d.kind == dlk_provided)
+                output_no_endl(render_as_unimportant(" [provided]"));
+            else
+                output_no_endl(render_as_unimportant(" [-]"));
+            break;
+
+        case suggested_entry:
+            output_no_endl(render_as_update_mode(" [suggestion]"));
+            set_count<suggested_count>(count<suggested_count>() + 1);
             break;
 
         case normal_entry:
@@ -746,6 +788,7 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
                     case dlk_already_installed:
                     case dlk_package:
                     case dlk_subpackage:
+                    case dlk_suggested:
                     case last_dlk:
                         ;
                 }
@@ -784,7 +827,7 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
         PackageDatabaseEntryCollection::ConstPointer,
         const DisplayMode m)
 {
-    if (normal_entry != m)
+    if (normal_entry != m && suggested_entry != m)
         return;
 
     output_no_endl(" ");
@@ -830,9 +873,7 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
             switch (m)
             {
                 case normal_entry:
-                    output_no_endl(" " + render_as_tag("<" + tag_titles + ">"));
-                    break;
-
+                case suggested_entry:
                 case error_entry:
                     output_no_endl(" " + render_as_tag("<" + tag_titles + ">"));
                     break;
@@ -876,9 +917,7 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
             switch (m)
             {
                 case normal_entry:
-                    output_no_endl(" " + render_as_tag("<" + deps + ">"));
-                    break;
-
+                case suggested_entry:
                 case error_entry:
                     output_no_endl(" " + render_as_tag("<" + deps + ">"));
                     break;

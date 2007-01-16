@@ -369,6 +369,7 @@ UninstallList::collect_depped_upon(ArbitrarilyOrderedPackageDatabaseEntryCollect
             metadata->deps.build_depend()->accept(&c);
             metadata->deps.run_depend()->accept(&c);
             metadata->deps.post_depend()->accept(&c);
+            metadata->deps.suggested_depend()->accept(&c);
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
                         ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
         }
@@ -461,6 +462,7 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
             metadata->deps.build_depend()->accept(&c);
             metadata->deps.run_depend()->accept(&c);
             metadata->deps.post_depend()->accept(&c);
+            metadata->deps.suggested_depend()->accept(&c);
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
                         ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
         }

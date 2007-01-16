@@ -157,7 +157,16 @@ CommandLine::CommandLine() :
     dl_uninstalled_deps_post(&dl_args, "dl-uninstalled-deps-post", '\0',
             "How to handle post dependencies for uninstalled packages",
             dl_deps_post),
+    dl_uninstalled_deps_suggested(&dl_args, "dl-uninstalled-deps-suggested", '\0',
+            "How to handle suggested dependencies for uninstalled packages (only with --dl-suggested install)",
+            dl_deps_post),
 
+    dl_suggested(&dl_args, "dl-suggested", '\0', "How to handle suggested dependencies",
+            args::EnumArg::EnumArgOptions
+            ("show",         "Display, but do not install")
+            ("install",      "Install")
+            ("discard",      "Discard"),
+            "show"),
     dl_circular(&dl_args, "dl-circular", '\0', "How to handle circular dependencies",
             args::EnumArg::EnumArgOptions
             ("error",         "Raise an error")

@@ -118,6 +118,19 @@ namespace paludis
     };
 
     /**
+     * How should we handle suggested deps.
+     *
+     * \ingroup grpdepresolver
+     */
+    enum DepListSuggestedOption
+    {
+        dl_suggested_show,         ///< Show
+        dl_suggested_discard,      ///< Discard
+        dl_suggested_install,      ///< Install
+        last_dl_suggested
+    };
+
+    /**
      * How we handle circular deps.
      *
      * \ingroup grpdepresolver
@@ -167,6 +180,7 @@ namespace paludis
         dlk_already_installed, ///< An already installed package
         dlk_virtual,           ///< A virtual package
         dlk_provided,          ///< A package provided by the previous dlk_package
+        dlk_suggested,         ///< A package suggested by the previous dlk_package
         dlk_block,             ///< A blocked package that must be removed
         dlk_masked,            ///< A masked package that must be unmasked
         last_dlk

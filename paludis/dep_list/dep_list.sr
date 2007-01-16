@@ -17,7 +17,9 @@ make_class_DepListOptions()
     key uninstalled_deps_pre DepListDepsOption
     key uninstalled_deps_runtime DepListDepsOption
     key uninstalled_deps_post DepListDepsOption
+    key uninstalled_deps_suggested DepListDepsOption
 
+    key suggested DepListSuggestedOption
     key circular DepListCircularOption
     key blocks DepListBlocksOption
     key override_masks DepListOverrideMasks

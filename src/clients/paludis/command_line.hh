@@ -250,7 +250,9 @@ class CommandLine :
         paludis::args::DepsOptionArg dl_uninstalled_deps_pre;
         paludis::args::DepsOptionArg dl_uninstalled_deps_runtime;
         paludis::args::DepsOptionArg dl_uninstalled_deps_post;
+        paludis::args::DepsOptionArg dl_uninstalled_deps_suggested;
 
+        paludis::args::EnumArg dl_suggested;
         paludis::args::EnumArg dl_circular;
         paludis::args::EnumArg dl_blocks;
         paludis::args::StringSetArg dl_override_masks;

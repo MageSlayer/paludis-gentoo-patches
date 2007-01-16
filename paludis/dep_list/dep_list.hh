@@ -52,9 +52,11 @@ namespace paludis
         protected:
             class AddVisitor;
             class QueryVisitor;
+            class ShowSuggestVisitor;
 
             friend class AddVisitor;
             friend class QueryVisitor;
+            friend class ShowSuggestVisitor;
 
             void add_in_role(DepAtom::ConstPointer, const std::string & role);
             bool prefer_installed_over_uninstalled(const PackageDatabaseEntry &,
@@ -63,6 +65,7 @@ namespace paludis
             void add_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
             void add_already_installed_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
             void add_error_package(const PackageDatabaseEntry &, const DepListEntryKind);
+            void add_suggested_package(const PackageDatabaseEntry &);
 
             void add_predeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
             void add_postdeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
