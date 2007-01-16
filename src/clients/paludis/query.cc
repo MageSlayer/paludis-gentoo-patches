@@ -180,6 +180,8 @@ void do_one_package_query(
             " " << metadata->deps.run_depend_string << endl;
         cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
             " " << metadata->deps.post_depend_string << endl;
+        cout << "    " << std::setw(22) << std::left << "SDEPEND:" << std::setw(0) <<
+            " " << metadata->deps.suggested_depend_string << endl;
 
         if (metadata->get_cran_interface())
         {
@@ -274,6 +276,14 @@ void do_one_package_query(
                 metadata->deps.post_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Post dependencies:" << std::setw(0)
                     << endl << p_depend;
+            }
+
+            if (! metadata->deps.suggested_depend_string.empty())
+            {
+                DepAtomPrettyPrinter s_depend(12);
+                metadata->deps.suggested_depend()->accept(&s_depend);
+                cout << "    " << std::setw(22) << std::left << "Suggested dependencies:" << std::setw(0)
+                    << endl << s_depend;
             }
         }
 
