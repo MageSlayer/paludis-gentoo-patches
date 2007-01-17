@@ -253,7 +253,7 @@ PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_st
             case qo_whatever:
                 continue;
 
-            case last_query_order:
+            case last_qo:
                 break;
         };
 
@@ -443,7 +443,7 @@ paludis::operator<< (std::ostream & o, const InstallState & s)
                 o << "any";
                 continue;
 
-            case last_install_state:
+            case last_is:
                 ;
         }
 
@@ -472,7 +472,7 @@ paludis::operator<< (std::ostream & o, const QueryOrder & s)
                 o << "whatever";
                 continue;
 
-            case last_query_order:
+            case last_qo:
                 ;
         }
 

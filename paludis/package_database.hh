@@ -206,7 +206,7 @@ namespace paludis
         is_installed_only,    ///< Installed only
         is_installable_only,  ///< Installable only
         is_any,               ///< Either
-        last_install_state
+        last_is
     };
 
     /**
@@ -219,7 +219,7 @@ namespace paludis
         qo_order_by_version, ///< By version
         qo_group_by_slot,    ///< By version, with like slots adjacent
         qo_whatever,         ///< No particular order
-        last_query_order
+        last_qo
     };
 
     /**
