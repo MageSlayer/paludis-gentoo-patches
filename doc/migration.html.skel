@@ -131,7 +131,7 @@ END
 <code>/usr/portage</code> for the main tree because sticking data that gets
 changed on <code>/usr</code> is silly.</p>
 
-<p>You will also need to specify <code>names_cache</code> for the Portage format
+<p>You will also need to specify <code>names_cache</code> for the ebuild format
 repositories and <code>provides_cache</code> for the VDB repositories.
 See <a href="cachefiles.html">the cache documentation</a>.</p>
 

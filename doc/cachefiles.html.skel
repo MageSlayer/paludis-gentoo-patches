@@ -83,7 +83,7 @@ cache may not be available.</p>
 <p>Paludis can generate metadata cache locally on demand. This will not speed up the
 first time cache is accessed for a particular ebuild, but subsequent invocations
 will be several orders of magnitude faster. To enable this cache where it is needed,
-set the <code>write_cache</code> key in a Portage format repository. Recommended
+set the <code>write_cache</code> key in an ebuild format repository. Recommended
 values are <code>/var/cache/paludis/metadata</code> or
 <code>/home/username/.paludis-cache</code>. Note that Paludis will place the
 write cache for a repository into a subdirectory named for that repository, so

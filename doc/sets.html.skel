@@ -67,7 +67,7 @@ in which <code>use.conf</code> et al. reside. The format is as follows:</p>
 
 <h3>Portage Repositories Defined Sets</h3>
 
-<p>Portage format repositories can supply their own sets. The <code>system</code> and
+<p>Ebuild format repositories can supply their own sets. The <code>system</code> and
 <code>security</code> sets are defined programmatically; other sets are defined by a file
 named <code>sets/<em>setname</em>.conf</code>, which should be in the format described for
 user defined sets above.</p>
