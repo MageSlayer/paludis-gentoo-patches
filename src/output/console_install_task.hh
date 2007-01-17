@@ -186,6 +186,7 @@ namespace paludis
             virtual std::string render_as_tag(const std::string &) const;
             virtual std::string render_as_unimportant(const std::string &) const;
             virtual std::string render_as_error(const std::string &) const;
+            virtual std::string render_as_masked(const std::string &) const;
             virtual std::string render_as_slot_name(const std::string &) const;
             virtual std::string render_as_update_mode(const std::string &) const;
             virtual std::string render_plural(int count, const std::string &, const std::string &) const;
@@ -218,6 +219,8 @@ namespace paludis
                     PackageDatabaseEntryCollection::ConstPointer, const DisplayMode);
             virtual void display_merge_list_entry_tags(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_end(const DepListEntry &, const DisplayMode);
+
+            virtual void display_merge_list_entry_mask_reasons(const DepListEntry &);
 
             virtual void display_tag_summary_start();
             virtual void display_tag_summary_tag_title(const DepTagCategory &);

@@ -20,12 +20,16 @@
 #include "console_install_task.hh"
 #include "colour.hh"
 #include "use_flag_pretty_printer.hh"
+#include "licence.hh"
 
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/iterator.hh>
 
 #include <algorithm>
 #include <set>
@@ -215,6 +219,9 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     display_merge_list_entry_use(d, existing, existing_slot, m);
     display_merge_list_entry_tags(d, m);
     display_merge_list_entry_end(d, m);
+
+    if (d.kind == dlk_masked)
+        display_merge_list_entry_mask_reasons(d);
 }
 
 void
@@ -1041,6 +1048,12 @@ ConsoleInstallTask::render_as_error(const std::string & s) const
 }
 
 std::string
+ConsoleInstallTask::render_as_masked(const std::string & s) const
+{
+    return colour(cl_masked, s);
+}
+
+std::string
 ConsoleInstallTask::render_plural(int c, const std::string & s, const std::string & p) const
 {
     return 1 == c ? s : p;
@@ -1087,5 +1100,58 @@ void
 EntryDepTagDisplayer::visit(const GeneralSetDepTag * const tag)
 {
     text() = tag->short_text(); // + "<" + tag->source() + ">";
+}
+
+void
+ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e)
+{
+    MaskReasons r(environment()->mask_reasons(e.package));
+    bool need_comma(false);
+
+    output_no_endl("    Masked by: ");
+
+    for (unsigned mm = 0 ; mm < r.size() ; ++mm)
+        if (r[mm])
+        {
+            if (need_comma)
+                output_no_endl(", ");
+            output_no_endl(stringify(MaskReason(mm)));
+
+            if (mr_eapi == mm)
+            {
+                std::string eapi_str(environment()->package_database()->fetch_repository(
+                            e.package.repository)->version_metadata(e.package.name, e.package.version)->eapi);
+
+                if (eapi_str == "UNKNOWN")
+                    output_no_endl(" ( " + render_as_masked(eapi_str) + " ) (probably a broken ebuild)");
+                else
+                    output_no_endl(" ( " + render_as_masked(eapi_str) + " )");
+            }
+            else if (mr_license == mm)
+            {
+                output_no_endl(" ");
+
+                LicenceDisplayer ld(output_stream(), environment(), &e.package);
+                environment()->package_database()->fetch_repository(
+                        e.package.repository)->version_metadata(e.package.name, e.package.version)->license()->accept(&ld);
+            }
+            else if (mr_keyword == mm)
+            {
+                VersionMetadata::ConstPointer meta(environment()->package_database()->fetch_repository(
+                            e.package.repository)->version_metadata(e.package.name, e.package.version));
+                if (meta->get_ebuild_interface())
+                {
+                    std::set<KeywordName> keywords;
+                    WhitespaceTokeniser::get_instance()->tokenise(meta->get_ebuild_interface()->keywords,
+                            create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
+
+                    output_no_endl(" ( " + render_as_masked(join(keywords.begin(), keywords.end(), " ")) + " )");
+                }
+            }
+
+            need_comma = true;
+        }
+
+    output_endl();
 }
 
