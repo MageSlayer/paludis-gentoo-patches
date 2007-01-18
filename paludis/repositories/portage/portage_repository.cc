@@ -659,7 +659,8 @@ bool
 PortageRepository::do_query_use_mask(const UseFlagName & u, const PackageDatabaseEntry * e) const
 {
     _imp->need_profiles();
-    return _imp->profile_ptr->use_masked(u, e);
+    return _imp->profile_ptr->use_masked(u, e) ||
+        (arch_flags()->end() != arch_flags()->find(u) && use_enabled != do_query_use(u, e));
 }
 
 bool
@@ -675,10 +676,19 @@ PortageRepository::do_arch_flags() const
     if (! _imp->arch_flags)
     {
         Context context("When loading arch list:");
-
-        LineConfigFile archs(_imp->params.location / "profiles" / "arch.list");
         _imp->arch_flags.assign(new UseFlagNameCollection::Concrete);
-        std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(_imp->arch_flags->inserter()));
+
+        FSEntry a(_imp->params.location / "profiles" / "arch.list");
+        if (a.exists())
+        {
+            LineConfigFile archs(a);
+            std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(_imp->arch_flags->inserter()));
+        }
+        else
+        {
+            Log::get_instance()->message(ll_qa, lc_no_context, "Couldn't open arch.list file in '"
+                    + stringify(a) + "', arch flags may incorrectly show up as unmasked");
+        }
     }
 
     return _imp->arch_flags;
