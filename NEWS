@@ -4,6 +4,17 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.14.3:
+    * Updated zsh completion
+
+    * The QA metadata check now handles the cached dtd properly.
+
+    * Packages that were updated inconsistently by Portage can now be
+    uninstalled without strange errors.
+
+    * Hooks now have access to the parsed commandline via various environment
+    variables.
+
 0.14.2:
     * Various performance tweaks.
 
