@@ -342,6 +342,18 @@ do_install()
             throw args::DoHelp("bad value for --dl-new-slots");
     }
 
+    if (CommandLine::get_instance()->dl_downgrade.specified())
+    {
+        if (CommandLine::get_instance()->dl_downgrade.argument() == "as-needed")
+            options.downgrade = dl_downgrade_as_needed;
+        else if (CommandLine::get_instance()->dl_downgrade.argument() == "warning")
+            options.downgrade = dl_downgrade_warning;
+        else if (CommandLine::get_instance()->dl_downgrade.argument() == "error")
+            options.downgrade = dl_downgrade_error;
+        else
+            throw args::DoHelp("bad value for --dl-downgrade");
+    }
+
     if (CommandLine::get_instance()->dl_circular.specified())
     {
         if (CommandLine::get_instance()->dl_circular.argument() == "discard")

@@ -7,6 +7,7 @@ make_class_DepListOptions()
     key reinstall_scm DepListReinstallScmOption
     key target_type DepListTargetType
     key upgrade DepListUpgradeOption
+    key downgrade DepListDowngradeOption
     key new_slots DepListNewSlotsOption
     key fall_back DepListFallBackOption
 

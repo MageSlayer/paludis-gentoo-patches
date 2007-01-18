@@ -45,6 +45,7 @@ DepListOptions::DepListOptions() :
     reinstall_scm(dl_reinstall_scm_never),
     target_type(dl_target_package),
     upgrade(dl_upgrade_always),
+    downgrade(dl_downgrade_as_needed),
     new_slots(dl_new_slots_always),
     fall_back(dl_fall_back_as_needed_except_targets),
     installed_deps_pre(dl_deps_discard),
@@ -631,6 +632,39 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
     else
         Log::get_instance()->message(ll_debug, lc_context, "No installed packages in SLOT '"
                 + stringify(slot) + "', taking uninstalled package '" + stringify(*best_visible_candidate) + "'");
+
+    /* if this is a downgrade, make sure that that's ok */
+    switch (d->_imp->opts.downgrade)
+    {
+        case dl_downgrade_as_needed:
+            break;
+
+        case dl_downgrade_error:
+        case dl_downgrade_warning:
+            {
+                PackageDatabaseEntryCollection::Pointer are_we_downgrading(
+                        d->_imp->env->package_database()->query(PackageDepAtom(
+                                stringify(a->package()) + ":" + stringify(slot)),
+                            is_installed_only, qo_order_by_version));
+
+                if (are_we_downgrading->empty())
+                    break;
+
+                if (are_we_downgrading->last()->version <= best_visible_candidate->version)
+                    break;
+
+                if (d->_imp->opts.downgrade == dl_downgrade_error)
+                    throw DowngradeNotAllowedError(stringify(*best_visible_candidate),
+                            stringify(*are_we_downgrading->last()));
+
+                Log::get_instance()->message(ll_warning, lc_context, "Downgrade to '" + stringify(*best_visible_candidate)
+                        + "' from '" + stringify(*are_we_downgrading->last()) + "' forced");
+            }
+            break;
+
+        case last_dl_downgrade:
+            ;
+    }
 
     d->add_package(*best_visible_candidate, a->tag());
 }

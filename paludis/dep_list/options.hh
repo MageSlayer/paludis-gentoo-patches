@@ -91,6 +91,19 @@ namespace paludis
     };
 
     /**
+     * What to do when we downgrade.
+     *
+     * \ingroup grpdepresolver
+     */
+    enum DepListDowngradeOption
+    {
+        dl_downgrade_as_needed,      ///< As needed
+        dl_downgrade_warning,        ///< As needed, but warn
+        dl_downgrade_error,          ///< Don't
+        last_dl_downgrade
+    };
+
+    /**
      * When should we pull in a new slot.
      *
      * \ingroup grpdepresolver

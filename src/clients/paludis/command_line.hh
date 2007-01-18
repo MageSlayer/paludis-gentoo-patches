@@ -240,6 +240,7 @@ class CommandLine :
         paludis::args::EnumArg dl_reinstall_scm;
         paludis::args::EnumArg dl_upgrade;
         paludis::args::EnumArg dl_new_slots;
+        paludis::args::EnumArg dl_downgrade;
 
         paludis::args::DepsOptionArg dl_deps_default;
 

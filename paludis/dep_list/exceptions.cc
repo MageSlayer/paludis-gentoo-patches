@@ -48,4 +48,12 @@ CircularDependencyError::CircularDependencyError(const std::string & msg) throw 
 {
 }
 
+DowngradeNotAllowedError::DowngradeNotAllowedError(const std::string & to, const std::string & from) throw () :
+    DepListError("Downgrade to '" + to + "' from '" + from + "' forbidden")
+{
+}
+
+DowngradeNotAllowedError::~DowngradeNotAllowedError() throw ()
+{
+}
 

@@ -110,6 +110,26 @@ namespace paludis
     };
 
     /**
+     * Thrown if a downgrade is forced and we're not allowed to downgrade.
+     *
+     * \ingroup grpexceptions
+     * \ingroup grpdepresolver
+     * \nosubgrouping
+     */
+    class DowngradeNotAllowedError : public DepListError
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            DowngradeNotAllowedError(const std::string & to, const std::string & from) throw ();
+
+            virtual ~DowngradeNotAllowedError() throw ();
+
+            ///\}
+    };
+
+    /**
      * Thrown if a block is encountered.
      *
      * \ingroup grpdepresolver

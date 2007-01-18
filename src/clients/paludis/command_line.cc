@@ -133,6 +133,12 @@ CommandLine::CommandLine() :
             ("always",        "Always")
             ("as-needed",     "As needed"),
             "always"),
+    dl_downgrade(&dl_args, "dl-downgrade", '\0', "When to downgrade packages",
+            args::EnumArg::EnumArgOptions
+            ("as-needed",     "As needed")
+            ("warning",       "As needed, but warn when doing so")
+            ("error",         "Downgrades should be treated as errors"),
+            "as-needed"),
 
     dl_deps_default(&dl_args, "dl-deps-default", '\0',
             "Override default behaviour for all dependency classes",
