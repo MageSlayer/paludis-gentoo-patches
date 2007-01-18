@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -227,6 +227,8 @@ ebuild_load_ebuild()
     fi
 
     export EBUILD="${1}"
+    unset IUSE DEPEND RDEPEND PDEPEND KEYWORDS
+
     if [[ "${CATEGORY}" == "virtual" ]] ; then
         if [[ -f "${1}" ]] ; then
             source ${1} || die "Error sourcing ebuild '${1}'"

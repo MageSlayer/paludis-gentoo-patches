@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -55,9 +55,11 @@ inherit()
         local old_ECLASS="${ECLASS}"
         export ECLASS="${e}"
 
-        local current_IUSE="${IUSE}" current_DEPEND="${DEPEND}"
-        local current_RDEPEND="${RDEPEND}" current_PDEPEND="${PDEPEND}"
-        local current_KEYWORDS="${KEYWORDS}"
+        local current_IUSE="${IUSE}" unset_IUSE="${IUSE-unset}"
+        local current_DEPEND="${DEPEND}" unset_DEPEND="${DEPEND-unset}"
+        local current_RDEPEND="${RDEPEND}" unset_RDEPEND="${RDEPEND-unset}"
+        local current_PDEPEND="${PDEPEND}" unset_PDEPEND="${PDEPEND-unset}"
+        local current_KEYWORDS="${KEYWORDS}" unset_KEYWORDS="${KEYWORDS-unset}"
 
         unset IUSE DEPEND RDEPEND PDEPEND KEYWORDS
 
@@ -71,11 +73,11 @@ inherit()
         E_DEPEND="${E_DEPEND} ${DEPEND}"
         E_KEYWORDS="${KEYWORDS:+${KEYWORDS} }${E_KEYWORDS}"
 
-        IUSE="${current_IUSE}"
-        DEPEND="${current_DEPEND}"
-        RDEPEND="${current_RDEPEND}"
-        PDEPEND="${current_PDEPEND}"
-        KEYWORDS="${current_KEYWORDS}"
+        [[ "unset" == "${unset_IUSE}" ]] && unset IUSE || IUSE="${current_IUSE}"
+        [[ "unset" == "${unset_DEPEND}" ]] && unset DEPEND || DEPEND="${current_DEPEND}"
+        [[ "unset" == "${unset_RDEPEND}" ]] && unset RDEPEND || RDEPEND="${current_RDEPEND}"
+        [[ "unset" == "${unset_PDEPEND}" ]] && unset PDEPEND || PDEPEND="${current_PDEPEND}"
+        [[ "unset" == "${unset_KEYWORDS}" ]] && unset KEYWORDS || KEYWORDS="${current_KEYWORDS}"
 
         export ECLASS="${old_ECLASS}"
     done
