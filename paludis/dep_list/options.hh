@@ -279,6 +279,14 @@ namespace paludis
     operator<< (std::ostream &, const DepListUpgradeOption &) PALUDIS_VISIBLE;
 
     /**
+     * Write a DepListDowngradeOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListDowngradeOption &) PALUDIS_VISIBLE;
+
+    /**
      * Write a DepListNewSlotsOption to a stream.
      *
      * \ingroup grpdepresolver
@@ -295,6 +303,14 @@ namespace paludis
     operator<< (std::ostream &, const DepListDepsOption &) PALUDIS_VISIBLE;
 
     /**
+     * Write a DepListSuggestedOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListSuggestedOption &) PALUDIS_VISIBLE;
+
+    /**
      * Write a DepListCircularOption to a stream.
      *
      * \ingroup grpdepresolver
@@ -303,12 +319,20 @@ namespace paludis
     operator<< (std::ostream &, const DepListCircularOption &) PALUDIS_VISIBLE;
 
     /**
-     * Write a DepListCircularOption to a stream.
+     * Write a DepListBlocksOption to a stream.
      *
      * \ingroup grpdepresolver
      */
     std::ostream &
     operator<< (std::ostream &, const DepListBlocksOption &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListUseOption to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListUseOption &) PALUDIS_VISIBLE;
 
     /**
      * Write a DepListEntryState to a stream.
@@ -325,6 +349,14 @@ namespace paludis
      */
     std::ostream &
     operator<< (std::ostream &, const DepListEntryKind &) PALUDIS_VISIBLE;
+
+    /**
+     * Write a DepListOverrideMask to a stream.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::ostream &
+    operator<< (std::ostream &, const DepListOverrideMask &) PALUDIS_VISIBLE;
 }
 
 #endif

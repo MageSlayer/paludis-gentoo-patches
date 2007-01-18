@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
-
 #
 # Copyright (c) 2007 Richard Brown <mynamewasgone@gmail.com>
 #
@@ -18,9 +17,6 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-# CIARANM_REMOVED_THIS
-exit 0
-
 ENV['PALUDIS_HOME'] = Dir.getwd() + '/dep_list_TEST_dir/home'
 
 require 'test/unit'
@@ -32,48 +28,85 @@ module Paludis
     module Shared
         def dlo
             DepListOptions.new(
-                DepListReinstallOption::ReinstallAlways,
-                DepListReinstallScmOption::ReinstallScmAlways,
-                DepListTargetType::TargetPackage,
-                DepListUpgradeOption::UpgradeAlways,
-                DepListNewSlotsOption::NewSlotsAlways,
-                DepListFallBackOption::FallBackAsNeededExceptTargets,
-                DepListDepsOption::DepsDiscard,
-                DepListDepsOption::DepsDiscard,
-                DepListDepsOption::DepsDiscard,
-                DepListDepsOption::DepsDiscard,
-                DepListDepsOption::DepsDiscard,
-                DepListDepsOption::DepsDiscard,
-                DepListCircularOption::CircularDiscard,
-                DepListBlocksOption::BlocksError,
-                MaskReasons.new,
+                DepListReinstallOption::Never,
+                DepListReinstallScmOption::Never,
+                DepListTargetType::Package,
+                DepListUpgradeOption::Always,
+                DepListDowngradeOption::AsNeeded,
+                DepListNewSlotsOption::Always,
+                DepListFallBackOption::AsNeededExceptTargets,
+                DepListDepsOption::Discard,
+                DepListDepsOption::TryPost,
+                DepListDepsOption::TryPost,
+                DepListDepsOption::Pre,
+                DepListDepsOption::PreOrPost,
+                DepListDepsOption::Post,
+                DepListDepsOption::TryPost,
+                DepListSuggestedOption::Show,
+                DepListCircularOption::Error,
+                DepListUseOption::Standard,
+                DepListBlocksOption::Accumulate,
+                DepListOverrideMasks.new,
                 false
             )
         end
 
-        def options_hash
+        def default_options
             {
-                :reinstall => DepListReinstallOption::ReinstallAlways,
-                :reinstall_scm => DepListReinstallScmOption::ReinstallScmAlways,
-                :target_type => DepListTargetType::TargetPackage,
-                :upgrade => DepListUpgradeOption::UpgradeAlways,
-                :new_slots => DepListNewSlotsOption::NewSlotsAlways,
-                :fall_back => DepListFallBackOption::FallBackAsNeededExceptTargets,
-                :installed_deps_pre => DepListDepsOption::DepsDiscard,
-                :installed_deps_runtime => DepListDepsOption::DepsDiscard,
-                :installed_deps_post => DepListDepsOption::DepsDiscard,
-                :uninstalled_deps_pre => DepListDepsOption::DepsDiscard,
-                :uninstalled_deps_runtime => DepListDepsOption::DepsDiscard,
-                :uninstalled_deps_post => DepListDepsOption::DepsDiscard,
-                :circular => DepListCircularOption::CircularDiscard,
-                :blocks => DepListBlocksOption::BlocksError,
-                :override_mask_reasons => MaskReasons.new,
+                :reinstall => DepListReinstallOption::Never,
+                :reinstall_scm => DepListReinstallScmOption::Never,
+                :target_type => DepListTargetType::Package,
+                :upgrade => DepListUpgradeOption::Always,
+                :downgrade => DepListDowngradeOption::AsNeeded,
+                :new_slots => DepListNewSlotsOption::Always,
+                :fall_back => DepListFallBackOption::AsNeededExceptTargets,
+                :installed_deps_pre => DepListDepsOption::Discard,
+                :installed_deps_runtime => DepListDepsOption::TryPost,
+                :installed_deps_post => DepListDepsOption::TryPost,
+                :uninstalled_deps_pre => DepListDepsOption::Pre,
+                :uninstalled_deps_runtime => DepListDepsOption::PreOrPost,
+                :uninstalled_deps_post => DepListDepsOption::Post,
+                :uninstalled_deps_suggested => DepListDepsOption::TryPost,
+                :suggested => DepListSuggestedOption::Show,
+                :circular => DepListCircularOption::Error,
+                :use => DepListUseOption::Standard,
+                :blocks => DepListBlocksOption::Accumulate,
+                :override_masks => DepListOverrideMasks.new,
                 :dependency_tags => false
             }
         end
 
         def dlo_hash
             DepListOptions.new(options_hash)
+        end
+
+        def options_hash
+            {
+                :reinstall => DepListReinstallOption::Always,
+                :reinstall_scm => DepListReinstallScmOption::Always,
+                :target_type => DepListTargetType::Set,
+                :upgrade => DepListUpgradeOption::AsNeeded,
+                :downgrade => DepListDowngradeOption::Warning,
+                :new_slots => DepListNewSlotsOption::AsNeeded,
+                :fall_back => DepListFallBackOption::AsNeeded,
+                :installed_deps_pre => DepListDepsOption::Pre,
+                :installed_deps_runtime => DepListDepsOption::Discard,
+                :installed_deps_post => DepListDepsOption::Discard,
+                :uninstalled_deps_pre => DepListDepsOption::Discard,
+                :uninstalled_deps_runtime => DepListDepsOption::Discard,
+                :uninstalled_deps_post => DepListDepsOption::Discard,
+                :uninstalled_deps_suggested => DepListDepsOption::Discard,
+                :suggested => DepListSuggestedOption::Discard,
+                :circular => DepListCircularOption::Discard,
+                :use => DepListUseOption::TakeAll,
+                :blocks => DepListBlocksOption::Error,
+                :override_masks => DepListOverrideMasks.new,
+                :dependency_tags => true
+            }
+        end
+
+        def dlo_default
+            DepListOptions.new()
         end
 
         def env
@@ -100,14 +133,23 @@ module Paludis
             assert_nothing_raised do
                 dlo_hash
             end
+
+            assert_nothing_raised do
+                dlo_default
+            end
         end
 
         def test_members
-            options = dlo
-            options_hash.each_pair do |method, value|
+            options = dlo_default
+            #This will fail if the defaults change, please also update the rdoc.
+            default_options.each_pair do |method, value|
                 assert_respond_to options, method
-#                next if method == :override_mask_reasons
                 assert_equal value, options.send(method)
+                #check setters work
+                assert_nothing_raised do
+                    options.send("#{method}=", options_hash[method])
+                    assert_equal options_hash[method], options.send(method)
+                end
             end
         end
 
@@ -131,7 +173,7 @@ module Paludis
 
         def test_respond
             dep_list = dl
-            [:add, :clear, :already_installed?, :each].each {|sym| assert_respond_to dep_list, sym}
+            [:add, :clear, :already_installed?, :each, :options].each {|sym| assert_respond_to dep_list, sym}
         end
 
         def test_add
@@ -163,6 +205,19 @@ module Paludis
                 dl.add(PackageDepAtom.new('foo/ba'))
             end
         end
+
+        def test_options
+            dep_list = dl
+            assert_kind_of DepListOptions, dep_list.options
+            assert_equal DepListReinstallOption::Never, dep_list.options.reinstall
+
+            assert_nothing_raised do
+                dep_list.options.reinstall = DepListReinstallOption::Always
+            end
+
+            assert_equal DepListReinstallOption::Always, dep_list.options.reinstall
+
+        end
     end
 
     class TestCase_DepListEntry < Test::Unit::TestCase
@@ -186,6 +241,35 @@ module Paludis
                 assert_respond_to dep_list_entry, method
                 assert_kind_of returns, dep_list_entry.send(method)
             end
+        end
+    end
+
+
+    class TestCase_DepListOverrideMasks < Test::Unit::TestCase
+        def test_create
+            m = DepListOverrideMasks.new
+        end
+
+        def test_each
+            m = DepListOverrideMasks.new
+            assert_equal [], m.to_a
+        end
+
+        def test_empty
+            m = DepListOverrideMasks.new
+            assert m.empty?
+        end
+
+        def test_set
+            m = DepListOverrideMasks.new
+            m.set DepListOverrideMask::Licenses
+            m.set DepListOverrideMask::ProfileMasks
+
+            assert ! m.empty?
+            assert_equal 2, m.entries.length
+
+            assert m.include?(DepListOverrideMask::Licenses)
+            assert m.include?(DepListOverrideMask::ProfileMasks)
         end
     end
 end

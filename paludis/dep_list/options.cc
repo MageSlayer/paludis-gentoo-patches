@@ -31,11 +31,11 @@ paludis::operator<< (std::ostream & o, const DepListTargetType & s)
         switch (s)
         {
             case dl_target_package:
-                o << "target_package";
+                o << "package";
                 continue;
 
             case dl_target_set:
-                o << "target_set";
+                o << "set";
                 continue;
 
             case last_dl_target:
@@ -56,15 +56,15 @@ paludis::operator<< (std::ostream & o, const DepListReinstallOption & s)
         switch (s)
         {
             case dl_reinstall_never:
-                o << "reinstall_never";
+                o << "never";
                 continue;
 
             case dl_reinstall_always:
-                o << "reinstall_always";
+                o << "always";
                 continue;
 
             case dl_reinstall_if_use_changed:
-                o << "reinstall_if_use_changed";
+                o << "if_use_changed";
                 continue;
 
             case last_dl_reinstall:
@@ -85,15 +85,15 @@ paludis::operator<< (std::ostream & o, const DepListFallBackOption & s)
         switch (s)
         {
             case dl_fall_back_as_needed_except_targets:
-                o << "fall_back_as_needed_except_targets";
+                o << "as_needed_except_targets";
                 continue;
 
             case dl_fall_back_as_needed:
-                o << "fall_back_as_needed";
+                o << "as_needed";
                 continue;
 
             case dl_fall_back_never:
-                o << "fall_back_never";
+                o << "never";
                 continue;
 
             case last_dl_fall_back:
@@ -114,19 +114,19 @@ paludis::operator<< (std::ostream & o, const DepListReinstallScmOption & s)
         switch (s)
         {
             case dl_reinstall_scm_never:
-                o << "reinstall_scm_never";
+                o << "never";
                 continue;
 
             case dl_reinstall_scm_always:
-                o << "reinstall_scm_always";
+                o << "always";
                 continue;
 
             case dl_reinstall_scm_daily:
-                o << "reinstall_scm_daily";
+                o << "daily";
                 continue;
 
             case dl_reinstall_scm_weekly:
-                o << "reinstall_scm_weekly";
+                o << "weekly";
                 continue;
 
             case last_dl_reinstall_scm:
@@ -147,11 +147,11 @@ paludis::operator<< (std::ostream & o, const DepListUpgradeOption & s)
         switch (s)
         {
             case dl_upgrade_always:
-                o << "upgrade_always";
+                o << "always";
                 continue;
 
             case dl_upgrade_as_needed:
-                o << "upgrade_as_needed";
+                o << "as_needed";
                 continue;
 
             case last_dl_upgrade:
@@ -165,6 +165,35 @@ paludis::operator<< (std::ostream & o, const DepListUpgradeOption & s)
 }
 
 std::ostream &
+paludis::operator<< (std::ostream & o, const DepListDowngradeOption & s)
+{
+    do
+    {
+        switch (s)
+        {
+            case dl_downgrade_as_needed:
+                o << "as_needed";
+                continue;
+
+            case dl_downgrade_warning:
+               o << "warning";
+                continue;
+
+            case dl_downgrade_error:
+               o << "error";
+                continue;
+
+            case last_dl_downgrade:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad DepListDowngradeOption");
+    } while (false);
+
+    return o;
+}
+
+std::ostream &
 paludis::operator<< (std::ostream & o, const DepListNewSlotsOption & s)
 {
     do
@@ -172,11 +201,11 @@ paludis::operator<< (std::ostream & o, const DepListNewSlotsOption & s)
         switch (s)
         {
             case dl_new_slots_always:
-                o << "new_slots_always";
+                o << "always";
                 continue;
 
             case dl_new_slots_as_needed:
-                o << "new_slots_as_needed";
+                o << "as_needed";
                 continue;
 
             case last_dl_new_slots:
@@ -197,23 +226,23 @@ paludis::operator<< (std::ostream & o, const DepListDepsOption & s)
         switch (s)
         {
             case dl_deps_discard:
-                o << "deps_discard";
+                o << "discard";
                 continue;
 
             case dl_deps_pre:
-                o << "deps_pre";
+                o << "pre";
                 continue;
 
             case dl_deps_pre_or_post:
-                o << "deps_pre_or_post";
+                o << "pre_or_post";
                 continue;
 
             case dl_deps_post:
-                o << "deps_post";
+                o << "post";
                 continue;
 
             case dl_deps_try_post:
-                o << "deps_try_post";
+                o << "try_post";
                 continue;
 
             case last_dl_deps:
@@ -227,6 +256,35 @@ paludis::operator<< (std::ostream & o, const DepListDepsOption & s)
 }
 
 std::ostream &
+paludis::operator<< (std::ostream & o, const DepListSuggestedOption & s)
+{
+    do
+    {
+        switch (s)
+        {
+            case dl_suggested_show:
+                o << "show";
+                continue;
+
+            case dl_suggested_discard:
+                o << "discard";
+                continue;
+
+            case dl_suggested_install:
+                o << "install";
+                continue;
+
+            case last_dl_suggested:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad DepListSuggestedOption");
+    } while (false);
+
+    return o;
+}
+
+std::ostream &
 paludis::operator<< (std::ostream & o, const DepListCircularOption & s)
 {
     do
@@ -234,11 +292,11 @@ paludis::operator<< (std::ostream & o, const DepListCircularOption & s)
         switch (s)
         {
             case dl_circular_error:
-                o << "circular_error";
+                o << "error";
                 continue;
 
             case dl_circular_discard:
-                o << "circular_discard";
+                o << "discard";
                 continue;
 
             case dl_circular_discard_silently:
@@ -263,15 +321,15 @@ paludis::operator<< (std::ostream & o, const DepListBlocksOption & s)
         switch (s)
         {
             case dl_blocks_accumulate:
-                o << "blocks_accumulate";
+                o << "accumulate";
                 continue;
 
             case dl_blocks_error:
-                o << "blocks_error";
+                o << "error";
                 continue;
 
             case dl_blocks_discard:
-                o << "blocks_discard";
+                o << "discard";
                 continue;
 
             case last_dl_blocks:
@@ -279,6 +337,31 @@ paludis::operator<< (std::ostream & o, const DepListBlocksOption & s)
         }
 
         throw InternalError(PALUDIS_HERE, "Bad DepListBlocksOption");
+    } while (false);
+
+    return o;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & o, const DepListUseOption & s)
+{
+    do
+    {
+        switch (s)
+        {
+            case dl_use_deps_standard:
+                o << "standard";
+                continue;
+
+            case dl_use_deps_take_all:
+                o << "take_all";
+                continue;
+
+            case last_dl_use_deps:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad DepListUseOption");
     } while (false);
 
     return o;
@@ -353,6 +436,43 @@ paludis::operator<< (std::ostream & o, const DepListEntryKind & s)
                 continue;
 
             case last_dlk:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad DepListEntryKind");
+    } while (false);
+
+    return o;
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & o, const DepListOverrideMask & s)
+{
+    do
+    {
+        switch (s)
+        {
+            case dl_override_licenses:
+                o << "licenses";
+                continue;
+
+            case dl_override_tilde_keywords:
+                o << "tilde_keywords";
+                continue;
+
+            case dl_override_unkeyworded:
+                o << "unkeyworded";
+                continue;
+
+            case dl_override_repository_masks:
+                o << "repository_masks";
+                continue;
+
+            case dl_override_profile_masks:
+                o << "profile_masks";
+                continue;
+
+            case last_dl_override:
                 ;
         }
 

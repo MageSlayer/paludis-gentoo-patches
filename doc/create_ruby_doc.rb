@@ -56,10 +56,12 @@ module RDoc
         def generate_consts(header, type, in_class)
             consts = []
             file = File.read("../#{header}")
-            match = Regexp.new(/enum\s+#{type}\s+\{([^}]+)\}/, Regexp::MULTILINE)
+            match = Regexp.new(/enum\s+#{type}\s+\{([^}]+)\}/)#, Regexp::MULTILINE)
             if file =~ match
+                enum = $1
+                last = enum[Regexp.new(/\slast_(\w+)\s/),1]
                 i = 0
-                $1.each_line do |line|
+                enum.each_line do |line|
                     next if line =~/last/
                     next if line.strip == ''
                     next unless line =~ /,/
@@ -67,7 +69,7 @@ module RDoc
                     const.strip!
                     comment.strip!
                     comment.gsub!(%r{^[^a-zA-Z0-9]*},'')
-                    const.sub!(%r{^[^_]+_},'').capitalize! #strip start
+                    const.sub!("#{last}_",'').capitalize! #strip start
                     const.gsub!(%r{[_\s](\w)}) { |x| $1.capitalize}
                     consts << "/*\n*#{comment}\n*/\nrb_define_const(#{in_class}, \"#{const}\", #{i});"
                     i+=1
