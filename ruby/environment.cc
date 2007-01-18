@@ -367,7 +367,7 @@ namespace
     {
         try
         {
-            return portage_repository_to_value(value_to_no_config_environment(self)->portage_repository());
+            return repository_to_value(value_to_no_config_environment(self)->portage_repository());
         }
         catch (const std::exception & e)
         {

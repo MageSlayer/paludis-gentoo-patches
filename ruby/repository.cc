@@ -930,14 +930,14 @@ namespace
     }
 }
 
-VALUE
-paludis::ruby::repository_to_value(Repository::ConstPointer m)
+template <typename T_>
+VALUE repo_to_value(T_ m, VALUE * klass)
 {
-    Repository::ConstPointer * m_ptr(0);
+    T_ * m_ptr(0);
     try
     {
-        m_ptr = new Repository::ConstPointer(m);
-        return Data_Wrap_Struct(c_repository, 0, &Common<Repository::ConstPointer>::free, m_ptr);
+        m_ptr = new T_(m);
+        return Data_Wrap_Struct(*klass, 0, &Common<T_>::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -947,19 +947,12 @@ paludis::ruby::repository_to_value(Repository::ConstPointer m)
 }
 
 VALUE
-paludis::ruby::portage_repository_to_value(PortageRepository::ConstPointer m)
+paludis::ruby::repository_to_value(Repository::ConstPointer m)
 {
-    PortageRepository::ConstPointer * m_ptr(0);
-    try
-    {
-        m_ptr = new PortageRepository::ConstPointer(m);
-        return Data_Wrap_Struct(c_portage_repository, 0, &Common<PortageRepository::ConstPointer>::free, m_ptr);
-    }
-    catch (const std::exception & e)
-    {
-        delete m_ptr;
-        exception_to_ruby_exception(e);
-    }
+    if (0 != dynamic_cast<const PortageRepository *>(m.raw_pointer()))
+        return repo_to_value<PortageRepository::ConstPointer>(m, &c_portage_repository);
+    else
+        return repo_to_value<Repository::ConstPointer>(m, &c_repository);
 }
 
 VALUE

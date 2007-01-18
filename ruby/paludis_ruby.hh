@@ -82,7 +82,6 @@ namespace paludis
         VALUE package_database_to_value(PackageDatabase::Pointer);
         VALUE package_database_entry_to_value(const PackageDatabaseEntry &);
         VALUE repository_to_value(Repository::ConstPointer);
-        VALUE portage_repository_to_value(PortageRepository::ConstPointer);
         VALUE version_spec_to_value(const VersionSpec &);
         VALUE version_metadata_to_value(VersionMetadata::ConstPointer);
         VALUE dep_atom_to_value(DepAtom::ConstPointer);
