@@ -111,7 +111,7 @@ InstallTask::add_target(const std::string & target)
                 throw HadBothPackageAndSetTargets();
 
             _imp->had_set_targets = true;
-            _imp->dep_list.options.target_type = dl_target_set;
+            _imp->dep_list.options()->target_type = dl_target_set;
             _imp->targets->add_child(s);
             done = true;
         }
@@ -126,7 +126,7 @@ InstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
 
         _imp->had_package_targets = true;
-        _imp->dep_list.options.target_type = dl_target_package;
+        _imp->dep_list.options()->target_type = dl_target_package;
 
         if (std::string::npos != target.find('/'))
             _imp->targets->add_child(PortageDepParser::parse(target));

@@ -85,7 +85,7 @@ namespace paludis
             /**
              * Our options.
              */
-            DepListOptions & options;
+            CountedPtr<DepListOptions, count_policy::ExternalCountTag> options();
 
             /**
              * Add the packages required to resolve an additional dependency
