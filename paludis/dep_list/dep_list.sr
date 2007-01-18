@@ -21,6 +21,7 @@ make_class_DepListOptions()
 
     key suggested DepListSuggestedOption
     key circular DepListCircularOption
+    key use DepListUseOption
     key blocks DepListBlocksOption
     key override_masks DepListOverrideMasks
 

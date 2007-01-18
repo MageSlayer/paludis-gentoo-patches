@@ -137,8 +137,9 @@ namespace paludis
      */
     enum DepListCircularOption
     {
-        dl_circular_error,    ///< As an error
-        dl_circular_discard,  ///< Discard them
+        dl_circular_error,             ///< As an error
+        dl_circular_discard,           ///< Discard them
+        dl_circular_discard_silently,  ///< Discard them silently (not for user visible use)
         last_dl_circular
     };
 
@@ -153,6 +154,20 @@ namespace paludis
         dl_blocks_error,      ///< Error on the first one
         dl_blocks_discard,    ///< Discard (dangerous)
         last_dl_blocks
+    };
+
+    /**
+     * How we handle use deps.
+     *
+     * Not for end user use. Used by adjutrix and qa.
+     *
+     * \ingroup grpdepresolver
+     */
+    enum DepListUseOption
+    {
+        dl_use_deps_standard,  ///< Behave as standard
+        dl_use_deps_take_all,  ///< Take both sides of use conditionals except on masks
+        last_dl_use_deps
     };
 
     /**

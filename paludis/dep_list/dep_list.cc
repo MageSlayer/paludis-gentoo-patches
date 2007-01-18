@@ -56,6 +56,7 @@ DepListOptions::DepListOptions() :
     uninstalled_deps_suggested(dl_deps_try_post),
     suggested(dl_suggested_show),
     circular(dl_circular_error),
+    use(dl_use_deps_standard),
     blocks(dl_blocks_accumulate),
     dependency_tags(false)
 {
@@ -450,6 +451,9 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
                         + stringify(existing_merge_list_entry->package) + "'");
                 return;
             }
+            else if (d->_imp->opts.circular == dl_circular_discard_silently)
+                return;
+
             throw CircularDependencyError("Atom '" + stringify(*a) + "' matched by merge list entry '" +
                     stringify(existing_merge_list_entry->package) + "', which does not yet have its "
                     "dependencies installed");
@@ -502,6 +506,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
                 mask_mask.set(mr_profile_mask);
             if (masks_to_override.test(dl_override_licenses))
                 mask_mask.set(mr_license);
+            mask_mask.set(mr_by_association);
             mask_mask.flip();
 
             bool override_tilde_keywords(masks_to_override.test(dl_override_tilde_keywords));
@@ -633,8 +638,28 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
 void
 DepList::AddVisitor::visit(const UseDepAtom * const a)
 {
-    if (d->_imp->env->query_use(a->flag(), d->_imp->current_pde()) ^ a->inverse())
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
+    if (d->_imp->opts.use == dl_use_deps_standard)
+    {
+        if (d->_imp->env->query_use(a->flag(), d->_imp->current_pde()) ^ a->inverse())
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+    }
+    else
+    {
+        RepositoryUseInterface * u;
+        if ((! d->_imp->current_pde()) || (! ((u = d->_imp->env->package_database()->fetch_repository(
+                                d->_imp->current_pde()->repository)->use_interface))))
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        else if (a->inverse())
+        {
+            if (! u->query_use_force(a->flag(), d->_imp->current_pde()))
+                std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+        else
+        {
+            if (! u->query_use_mask(a->flag(), d->_imp->current_pde()))
+                std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+    }
 }
 
 void
@@ -1104,7 +1129,9 @@ DepList::add_postdeps(DepAtom::ConstPointer d, const DepListDepsOption opt, cons
             }
             catch (const CircularDependencyError &)
             {
-                Save<DepListCircularOption> save_circular(&_imp->opts.circular, dl_circular_discard);
+                Save<DepListCircularOption> save_circular(&_imp->opts.circular,
+                        _imp->opts.circular == dl_circular_discard_silently ?
+                        dl_circular_discard_silently : dl_circular_discard);
                 Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position,
                         _imp->merge_list.end());
                 add_in_role(d, s + " dependencies as post dependencies with cycle breaking");

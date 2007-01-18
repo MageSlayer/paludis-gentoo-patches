@@ -241,6 +241,10 @@ paludis::operator<< (std::ostream & o, const DepListCircularOption & s)
                 o << "circular_discard";
                 continue;
 
+            case dl_circular_discard_silently:
+                o << "circular_discard_silently";
+                continue;
+
             case last_dl_circular:
                 ;
         }

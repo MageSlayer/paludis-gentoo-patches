@@ -52,19 +52,24 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     env.set_accept_unstable('~' == stringify(target_keyword).at(0));
 
     DepListOptions d_options;
-    d_options.circular = dl_circular_discard;
+    d_options.circular = dl_circular_discard_silently;
+    d_options.use = dl_use_deps_take_all;
+    d_options.blocks = dl_blocks_discard;
     d_options.override_masks.set(dl_override_tilde_keywords);
     d_options.override_masks.set(dl_override_unkeyworded);
+    d_options.override_masks.set(dl_override_repository_masks);
+    d_options.override_masks.set(dl_override_profile_masks);
 
     DepList d(&env, d_options);
 
     cout << std::setw(30) << std::left << "Package";
     cout << std::setw(20) << std::left << "Version";
-    cout << std::setw(20) << std::left << "Current Keywords";
+    cout << std::setw(18) << std::left << "Current Keywords";
+    cout << std::setw(10) << std::left << "Masks";
     cout << endl;
 
     cout << std::string(29, '=') << " " << std::string(19, '=') << " "
-        << std::string(19, '=') << endl;
+        << std::string(17, '=') << " " << std::string(9, '=') << endl;
 
     for (CommandLine::ParametersIterator p(next(CommandLine::get_instance()->begin_parameters())),
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
@@ -75,6 +80,8 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
         {
             cout << std::setw(30) << std::left << stringify(p->package.name);
             cout << std::setw(20) << std::left << stringify(p->package.version);
+
+            std::string current;
 
             VersionMetadata::ConstPointer m(env.package_database()->fetch_repository(
                         p->package.repository)->version_metadata(p->package.name,
@@ -89,8 +96,20 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
                     if (*k == "-*"
                             || *k == stringify(target_keyword)
                             || k->substr(1) == stringify(target_arch))
-                        cout << *k << " ";
+                        current.append(stringify(*k) + " ");
             }
+
+            cout << std::setw(18) << std::left << current;
+
+            std::string masks;
+
+            MaskReasons r(env.mask_reasons(p->package));
+            if (r.test(mr_repository_mask))
+                    masks.append("R");
+            if (r.test(mr_profile_mask))
+                    masks.append("P");
+
+            cout << std::setw(10) << std::left << masks;
 
             cout << endl;
         }

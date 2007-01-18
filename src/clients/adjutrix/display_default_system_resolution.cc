@@ -69,7 +69,7 @@ namespace
         cout << std::left << std::setw(20) << (desc + ":") << display_profile << endl;
 
         DepListOptions d_options;
-        d_options.circular = dl_circular_discard;
+        d_options.circular = dl_circular_discard_silently;
         DepList d(&env, d_options);
 
         try
