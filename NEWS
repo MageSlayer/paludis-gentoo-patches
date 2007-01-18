@@ -4,6 +4,24 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.16.0:
+    * Enhanced DepList. Most blocks are now shown as errors in the list.
+    Suggested dependencies are now supported. Paludis can continue resolving
+    dependencies when encountering a masked package, and show a summary of
+    everything that needs to be unmasked as part of the output. Post
+    dependencies can now be installed much later on if necessary to resolve
+    cycles. Deps in the form || ( a >=b-2 ) where b-1 is installed are handled
+    more elegantly.
+
+    * New adjutrix --what-needs-keywording action, for use by arch and security
+    teams to obtain a full list of what would need to be keyworded to mark a
+    target to a particular keyword level.
+
+    * In repository configurations, format=portage is deprecated in favour of
+    format=ebuild, and format=nothing is deprecated in favour of hooks.
+
+    * Paludis now has a logo.
+
 0.14.3:
     * Updated zsh completion
 
