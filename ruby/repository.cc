@@ -597,6 +597,54 @@ namespace
     }
 
     /*
+     * call-seq:
+     *     find_profile(profile_location) -> PortageRepositoryProfilesDescLine
+     *
+     * Fetches the named profile.
+     */
+    VALUE
+    portage_repository_find_profile(VALUE self, VALUE profile)
+    {
+        try
+        {
+            PortageRepository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, PortageRepository::ConstPointer, self_ptr);
+
+            PortageRepository::ProfilesIterator p((*self_ptr)->find_profile(FSEntry(StringValuePtr(profile))));
+
+            if (p == (*self_ptr)->end_profiles())
+                return Qnil;
+
+            return portage_repository_profiles_desc_line_to_value(*p);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     profile_variable(variable) -> String
+     *
+     * Fetches the named variable.
+     */
+    VALUE
+    portage_repository_profile_variable(VALUE self, VALUE var)
+    {
+        try
+        {
+            PortageRepository::ConstPointer * self_ptr;
+            Data_Get_Struct(self, PortageRepository::ConstPointer, self_ptr);
+            return rb_str_new2(((*self_ptr)->profile_variable(StringValuePtr(var))).c_str());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
      * Document-method: arch
      *
      * call-seq:
@@ -913,6 +961,8 @@ namespace
          */
         c_portage_repository = rb_define_class_under(paludis_module(), "PortageRepository", c_repository);
         rb_define_method(c_portage_repository, "profiles", RUBY_FUNC_CAST(&portage_repository_profiles), 0);
+        rb_define_method(c_portage_repository, "find_profile", RUBY_FUNC_CAST(&portage_repository_find_profile), 1);
+        rb_define_method(c_portage_repository, "profile_variable", RUBY_FUNC_CAST(&portage_repository_profile_variable), 1);
 
         /*
          * Document-class: Paludis::PortageRepositoryProfilesDescLine

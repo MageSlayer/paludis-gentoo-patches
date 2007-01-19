@@ -36,9 +36,42 @@ module Paludis
     end
 
     class TestCase_PortageRepository < Test::Unit::TestCase
+        def no_config_testrepo
+            NoConfigEnvironment.new Dir.getwd().to_s + "/repository_TEST_dir/testrepo"
+        end
+
         def test_no_create
             assert_raise NoMethodError do
                 p = PortageRepository.new
+            end
+        end
+
+        def test_responds
+            repo = no_config_testrepo.portage_repository
+            [:profile_variable, :profiles, :find_profile].each do |sym|
+                assert_respond_to repo, sym
+            end
+        end
+
+        def test_profiles
+            repo = no_config_testrepo.portage_repository
+            assert_kind_of Array, repo.profiles
+        end
+
+        def test_find_profile
+            repo = no_config_testrepo.portage_repository
+            assert_nothing_raised do
+                profile = repo.find_profile(Dir.getwd().to_s + '/repository_TEST_dir/testrepo/profiles/testprofile')
+                assert_kind_of PortageRepositoryProfilesDescLine, profile
+                profile = repo.find_profile('broken')
+                assert profile.nil?
+            end
+        end
+
+        def test_profile_variable
+            repo = no_config_testrepo.portage_repository
+            assert_nothing_raised do
+                assert_equal 'test', repo.profile_variable('ARCH')
             end
         end
     end
