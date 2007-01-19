@@ -21,7 +21,6 @@
 #include <paludis/paludis.hh>
 #include <paludis_ruby.hh>
 #include <paludis/config_file.hh>
-#include <paludis/dep_list/dep_list.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <ruby.h>
 #include <list>
@@ -70,6 +69,7 @@ namespace
     static VALUE c_block_error;
     static VALUE c_circular_dependency_error;
     static VALUE c_use_requirements_not_met_error;
+    static VALUE c_downgrade_not_allowed_error;
 
     static VALUE c_environment;
     static VALUE c_no_config_environment;
@@ -170,6 +170,8 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_circular_dependency_error, dynamic_cast<const paludis::CircularDependencyError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::UseRequirementsNotMetError *>(&ee))
         rb_raise(c_use_requirements_not_met_error, dynamic_cast<const paludis::UseRequirementsNotMetError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::DowngradeNotAllowedError *>(&ee))
+        rb_raise(c_downgrade_not_allowed_error, dynamic_cast<const paludis::DowngradeNotAllowedError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::DepListError *>(&ee))
         rb_raise(c_dep_list_error, dynamic_cast<const paludis::DepListError *>(&ee)->message().c_str());
 #ifdef ENABLE_RUBY_QA
@@ -277,6 +279,7 @@ extern "C"
         c_block_error = rb_define_class_under(c_paludis_module, "BlockError", c_dep_list_error);
         c_circular_dependency_error = rb_define_class_under(c_paludis_module, "CircularDependencyError", c_dep_list_error);
         c_use_requirements_not_met_error = rb_define_class_under(c_paludis_module, "UseRequirementsNotMetError", c_dep_list_error);
+        c_downgrade_not_allowed_error = rb_define_class_under(c_paludis_module, "DowngradeNotAllowedError", c_dep_list_error);
 
         rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
 
