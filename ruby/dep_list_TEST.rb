@@ -258,6 +258,8 @@ module Paludis
         def test_empty
             m = DepListOverrideMasks.new
             assert m.empty?
+            m.set DepListOverrideMask::Licenses
+            assert !m.empty?
         end
 
         def test_set
@@ -270,6 +272,19 @@ module Paludis
 
             assert m.include?(DepListOverrideMask::Licenses)
             assert m.include?(DepListOverrideMask::ProfileMasks)
+        end
+
+        def test_clear
+            m = DepListOverrideMasks.new
+            m.set DepListOverrideMask::Licenses
+            m.set DepListOverrideMask::ProfileMasks
+            m.set DepListOverrideMask::TildeKeywords
+
+            assert_equal 3, m.entries.length
+            m.reset DepListOverrideMask::TildeKeywords
+            assert_equal 2, m.entries.length
+            m.reset
+            assert m.empty?
         end
     end
 end

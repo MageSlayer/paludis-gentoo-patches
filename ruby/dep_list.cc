@@ -1097,6 +1097,38 @@ namespace
         }
     }
 
+    VALUE
+    dep_list_override_masks_reset(int argc, VALUE * argv, VALUE self)
+    {
+        DepListOverrideMasks * m_ptr;
+        Data_Get_Struct(self, DepListOverrideMasks, m_ptr);
+        if (argc == 0)
+        {
+            m_ptr->reset();
+            return Qnil;
+        }
+        else if (argc == 1)
+        {
+            try
+            {
+                int mr = NUM2INT(argv[0]);
+                if (mr < 0 || mr >= last_dl_override)
+                    rb_raise(rb_eArgError, "DepListOverrideMask out of range");
+                m_ptr->reset(mr);
+                return Qnil;
+
+            }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
+        }
+        else
+        {
+            rb_raise(rb_eArgError, "clear expects one or zero arguments, but got %d",argc);
+        }
+    }
+
     /*
      * call-seq:
      *     == other_mask_reason -> True or False
@@ -1445,6 +1477,7 @@ namespace
         rb_include_module(c_dep_list_override_masks, rb_mEnumerable);
         rb_define_method(c_dep_list_override_masks, "empty?", RUBY_FUNC_CAST(&dep_list_override_masks_empty), 0);
         rb_define_method(c_dep_list_override_masks, "set", RUBY_FUNC_CAST(&dep_list_override_masks_set), 1);
+        rb_define_method(c_dep_list_override_masks, "reset", RUBY_FUNC_CAST(&dep_list_override_masks_reset), -1);
         rb_define_method(c_dep_list_override_masks, "==", RUBY_FUNC_CAST(&dep_list_override_masks_equal), 1);
     }
 }
