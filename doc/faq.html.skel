@@ -388,6 +388,10 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
         <code>src_test</code></a>.</dd>
 </dl>
 
+<h3 id="emptytree_usechanged">No <code>--emptytree</code> Equivalent or No <code>--newuse</code> Equivalent</h3>
+
+<p>The option <code>--dl-reinstall</code> handles both these cases.
+
 <h2 id="repos">Repository Questions</h2>
 
 <h3 id="profiles">Profiles vs Profiles</h3>
