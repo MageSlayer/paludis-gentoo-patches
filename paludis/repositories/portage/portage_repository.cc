@@ -579,7 +579,8 @@ PortageRepository::fetch_repo_name(const std::string & location)
     {
     }
     Log::get_instance()->message(ll_qa, lc_no_context, "Couldn't open repo_name file in '"
-            + location + "/profiles/'. Falling back to a generated name.");
+            + location + "/profiles/', falling back to a generated name (ignore this message if "
+            "you have yet to sync this repository).");
 
     std::string modified_location(FSEntry(location).basename());
     std::replace(modified_location.begin(), modified_location.end(), '/', '-');
