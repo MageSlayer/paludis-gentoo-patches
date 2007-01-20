@@ -239,7 +239,7 @@ CvsSyncer::sync(const SyncOptions &) const
             + _local + "':");
 
     std::string cmd("cvs -d '" + _remote + "' login");
-    FSEntry d(_local);
+    FSEntry d(FSEntry(_local).dirname());
 
     if (_pserver)
     {
