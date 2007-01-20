@@ -204,6 +204,14 @@ reasons:</p>
     for old style virtuals.</dd>
 </dl>
 
+<h3 id="syncfromcvs">Sync from CVS</h3>
+
+<p>Syncing from CVS requires use of either the cvs+pserver or the cvs+ssh protocol.
+The syntax for the configuration file line is
+<code>sync = cvs+ssh://username@host:/path/to/cvsroot:modulename</code>. As an example,
+for syncing with the <code>gentoo</code> repository via CVS, you would use
+<code>sync = cvs+ssh://username@cvs.gentoo.org:/var/cvsroot:gentoo-x86</code>.</p>
+
 <h2 id="stricter">Paludis is Stricter than Portage</h2>
 
 <h3 id="mergingweirdstuff">Merging Weird Stuff</h3>
