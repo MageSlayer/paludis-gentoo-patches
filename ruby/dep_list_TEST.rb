@@ -204,6 +204,12 @@ module Paludis
             assert_raise AllMaskedError do
                 dl.add(PackageDepAtom.new('foo/ba'))
             end
+            begin
+                dl.add(PackageDepAtom.new('foo/ba'))
+            rescue AllMaskedError => error
+                assert_equal 'foo/ba', error.query
+            end
+
         end
 
         def test_options

@@ -163,7 +163,12 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
     else if (0 != dynamic_cast<const paludis::DepStringError *>(&ee))
         rb_raise(c_dep_string_error, dynamic_cast<const paludis::DepStringError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::AllMaskedError *>(&ee))
-        rb_raise(c_all_masked_error, dynamic_cast<const paludis::AllMaskedError *>(&ee)->message().c_str());
+    {
+        VALUE ex_args[2];
+        ex_args[0] = rb_str_new2(dynamic_cast<const paludis::AllMaskedError *>(&ee)->message().c_str());
+        ex_args[1] = rb_str_new2(dynamic_cast<const paludis::AllMaskedError *>(&ee)->query().c_str());
+        rb_exc_raise(rb_class_new_instance(2, ex_args, c_all_masked_error));
+    }
     else if (0 != dynamic_cast<const paludis::BlockError *>(&ee))
         rb_raise(c_block_error, dynamic_cast<const paludis::BlockError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::CircularDependencyError *>(&ee))
@@ -244,6 +249,29 @@ paludis::ruby::paludis_qa_module()
 }
 #endif
 
+static VALUE
+all_masked_error_init(int argc, VALUE* argv, VALUE self)
+{
+    VALUE query;
+
+    query = (argc > 1) ? argv[--argc] : Qnil;
+    rb_call_super(argc, argv);
+    rb_iv_set(self, "query", query);
+    return self;
+}
+
+/*
+ * call-seq:
+ *     query -> String or Nil
+ *
+ * Our query.
+ */
+VALUE
+all_masked_error_query(VALUE self)
+{
+    return rb_attr_get(self, rb_intern("query"));
+}
+
 extern "C"
 {
     void Init_Paludis()
@@ -275,7 +303,15 @@ extern "C"
         c_configuration_error = rb_define_class_under(c_paludis_module, "ConfigurationError", rb_eRuntimeError);
         c_config_file_error = rb_define_class_under(c_paludis_module, "ConfigFileError", c_configuration_error);
         c_dep_list_error = rb_define_class_under(c_paludis_module, "DepListError", rb_eRuntimeError);
+
+        /*
+         * Document-class: Paludis::AllMaskedError
+         *
+         * Thrown if all versions of a particular atom are masked.
+         */
         c_all_masked_error = rb_define_class_under(c_paludis_module, "AllMaskedError", c_dep_list_error);
+        rb_define_method(c_all_masked_error, "initialize", RUBY_FUNC_CAST(&all_masked_error_init), -1);
+        rb_define_method(c_all_masked_error, "query", RUBY_FUNC_CAST(&all_masked_error_query), 0);
         c_block_error = rb_define_class_under(c_paludis_module, "BlockError", c_dep_list_error);
         c_circular_dependency_error = rb_define_class_under(c_paludis_module, "CircularDependencyError", c_dep_list_error);
         c_use_requirements_not_met_error = rb_define_class_under(c_paludis_module, "UseRequirementsNotMetError", c_dep_list_error);
