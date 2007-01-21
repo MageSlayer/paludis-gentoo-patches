@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -59,9 +59,21 @@ ebuild_f_test()
     elif hasq "test" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_test (SKIP_FUNCTIONS)"
     else
+        if [[ $(type -t pre_src_test ) == "function" ]] ; then
+            ebuild_section "Starting pre_src_test"
+            pre_src_test
+            ebuild_section "Done pre_src_test"
+        fi
+
         ebuild_section "Starting src_test"
         src_test
         ebuild_section "Done src_test"
+
+        if [[ $(type -t post_src_test ) == "function" ]] ; then
+            ebuild_section "Starting post_src_test"
+            post_src_test
+            ebuild_section "Done post_src_test"
+        fi
     fi
 
     export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"

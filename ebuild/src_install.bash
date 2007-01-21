@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -36,9 +36,21 @@ ebuild_f_install()
     elif hasq "install" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_install (SKIP_FUNCTIONS)"
     else
+        if [[ $(type -t pre_src_install ) == "function" ]] ; then
+            ebuild_section "Starting pre_src_install"
+            pre_src_install
+            ebuild_section "Done pre_src_install"
+        fi
+
         ebuild_section "Starting src_install"
         src_install
         ebuild_section "Done src_install"
+
+        if [[ $(type -t post_src_install ) == "function" ]] ; then
+            ebuild_section "Starting post_src_install"
+            post_src_install
+            ebuild_section "Done post_src_install"
+        fi
     fi
 }
 

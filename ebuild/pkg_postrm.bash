@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -35,9 +35,21 @@ ebuild_f_postrm()
     elif hasq "postrm" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_postrm (SKIP_FUNCTIONS)"
     else
+        if [[ $(type -t pre_pkg_postrm ) == "function" ]] ; then
+            ebuild_section "Starting pre_pkg_postrm"
+            pre_pkg_postrm
+            ebuild_section "Done pre_pkg_postrm"
+        fi
+
         ebuild_section "Starting pkg_postrm"
         pkg_postrm
         ebuild_section "Done pkg_postrm"
+
+        if [[ $(type -t post_pkg_postrm ) == "function" ]] ; then
+            ebuild_section "Starting post_pkg_postrm"
+            post_pkg_postrm
+            ebuild_section "Done post_pkg_postrm"
+        fi
     fi
 
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"

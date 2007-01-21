@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -34,9 +34,21 @@ ebuild_f_unpack()
     elif hasq "unpack" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping src_unpack (SKIP_FUNCTIONS)"
     else
+        if [[ $(type -t pre_src_unpack ) == "function" ]] ; then
+            ebuild_section "Starting pre_src_unpack"
+            pre_src_unpack
+            ebuild_section "Done pre_src_unpack"
+        fi
+
         ebuild_section "Starting src_unpack"
         src_unpack
         ebuild_section "Done src_unpack"
+
+        if [[ $(type -t post_src_unpack ) == "function" ]] ; then
+            ebuild_section "Starting post_src_unpack"
+            post_src_unpack
+            ebuild_section "Done post_src_unpack"
+        fi
     fi
 }
 
