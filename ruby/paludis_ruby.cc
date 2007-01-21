@@ -250,7 +250,7 @@ paludis::ruby::paludis_qa_module()
 #endif
 
 static VALUE
-all_masked_error_init(int argc, VALUE* argv, VALUE self)
+has_query_property_error_init(int argc, VALUE* argv, VALUE self)
 {
     VALUE query;
 
@@ -267,7 +267,7 @@ all_masked_error_init(int argc, VALUE* argv, VALUE self)
  * Our query.
  */
 VALUE
-all_masked_error_query(VALUE self)
+has_query_property_error_query(VALUE self)
 {
     return rb_attr_get(self, rb_intern("query"));
 }
@@ -310,11 +310,31 @@ extern "C"
          * Thrown if all versions of a particular atom are masked.
          */
         c_all_masked_error = rb_define_class_under(c_paludis_module, "AllMaskedError", c_dep_list_error);
-        rb_define_method(c_all_masked_error, "initialize", RUBY_FUNC_CAST(&all_masked_error_init), -1);
-        rb_define_method(c_all_masked_error, "query", RUBY_FUNC_CAST(&all_masked_error_query), 0);
+        rb_define_method(c_all_masked_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
+        rb_define_method(c_all_masked_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
+
+        /*
+         * Document-class: Paludis::BlockError
+         *
+         * Thrown if a block is encountered.
+         */
         c_block_error = rb_define_class_under(c_paludis_module, "BlockError", c_dep_list_error);
+
+        /*
+         * Document-class: Paludis::AllMaskedError
+         *
+         * Thrown if a circular dependency is encountered.
+         */
         c_circular_dependency_error = rb_define_class_under(c_paludis_module, "CircularDependencyError", c_dep_list_error);
+
+        /*
+         * Document-class: Paludis::AllMaskedError
+         *
+         * Thrown if all versions of a particular atom are masked, but would not be if use requirements were not in effect.
+         */
         c_use_requirements_not_met_error = rb_define_class_under(c_paludis_module, "UseRequirementsNotMetError", c_dep_list_error);
+        rb_define_method(c_use_requirements_not_met_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
+        rb_define_method(c_use_requirements_not_met_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
         c_downgrade_not_allowed_error = rb_define_class_under(c_paludis_module, "DowngradeNotAllowedError", c_dep_list_error);
 
         rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
