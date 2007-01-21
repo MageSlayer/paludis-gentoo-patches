@@ -680,6 +680,24 @@ DefaultEnvironment::hook_dirs() const
     return join(hook_dirs_ref.begin(), hook_dirs_ref.end(), " ");
 }
 
+std::string
+DefaultEnvironment::fetchers_dirs() const
+{
+    std::string dirs(stringify(FSEntry(DefaultConfig::get_instance()->config_dir()) / "fetchers"));
+    if (getenv_with_default("PALUDIS_NO_GLOBAL_FETCHERS", "").empty())
+        dirs += " " + Environment::fetchers_dirs();
+    return dirs;
+}
+
+std::string
+DefaultEnvironment::syncers_dirs() const
+{
+    std::string dirs(stringify(FSEntry(DefaultConfig::get_instance()->config_dir()) / "syncers"));
+    if (getenv_with_default("PALUDIS_NO_GLOBAL_SYNCERS", "").empty())
+        dirs += " " + Environment::syncers_dirs();
+    return dirs;
+}
+
 CompositeDepAtom::Pointer
 DefaultEnvironment::local_package_set(const SetName & s) const
 {

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+LOCAL="$1"
+REMOTE="$2"
+
+if [[ "${REMOTE}" == darcs+ssh* ]]; then
+    REMOTE="${REMOTE:12}"
+elif [[ "${REMOTE}" == darcs+* ]]; then
+    REMOTE="${REMOTE:6}"
+fi
+
+if [[ -d "${LOCAL}" && ! -d "${LOCAL}/_darcs" ]]; then
+    source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
+    eerror "'${LOCAL}' exists but it is not a Darcs repository"
+    exit 1
+fi
+
+if [[ -d "${LOCAL}/_darcs" ]]; then
+    cd "${LOCAL}" && darcs pull --all --set-scripts-executable "${REMOTE}"
+else
+    darcs get --partial --set-scripts-executable --repo-name="${LOCAL}" \
+        "${REMOTE}"
+fi
+

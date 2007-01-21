@@ -65,6 +65,9 @@ namespace paludis
         /// (Empty) provides map.
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
+        /// Environment (for syncing)
+        const Environment * environment;
+
         /// Constructor.
         Implementation(const NothingRepositoryParams &);
 
@@ -76,7 +79,8 @@ namespace paludis
         name(p.name),
         location(p.location),
         sync(p.sync),
-        sync_exclude(p.sync_exclude)
+        sync_exclude(p.sync_exclude),
+        environment(p.environment)
     {
     }
 
@@ -174,7 +178,7 @@ NothingRepository::do_version_metadata(
 
 CountedPtr<Repository>
 NothingRepository::make_nothing_repository(
-        Environment * const,
+        Environment * const env,
         AssociativeCollection<std::string, std::string>::ConstPointer m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
@@ -206,7 +210,8 @@ NothingRepository::make_nothing_repository(
                 .name(name)
                 .location(location)
                 .sync(sync)
-                .sync_exclude(sync_exclude)));
+                .sync_exclude(sync_exclude)
+                .environment(env)));
 }
 
 NothingRepositoryConfigurationError::NothingRepositoryConfigurationError(
@@ -229,14 +234,12 @@ NothingRepository::do_sync() const
     if (_imp->sync.empty())
         return false;
 
-    std::string::size_type p(_imp->sync.find("://")), q(_imp->sync.find(":"));
-    if (std::string::npos == p)
-        throw NoSuchSyncerError(_imp->sync);
-
+    DefaultSyncer syncer(SyncerParams::create()
+                             .environment(_imp->environment)
+                             .local(stringify(_imp->location))
+                             .remote(_imp->sync));
     SyncOptions opts(_imp->sync_exclude);
-
-    SyncerMaker::get_instance()->find_maker(_imp->sync.substr(0, std::min(p, q)))(
-            stringify(_imp->location), _imp->sync.substr(q < p ? q + 1 : 0))->sync(opts);
+    syncer.sync(opts);
 
     return true;
 }

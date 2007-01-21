@@ -69,6 +69,10 @@ namespace paludis
 
             virtual std::string hook_dirs() const;
 
+            virtual std::string fetchers_dirs() const;
+
+            virtual std::string syncers_dirs() const;
+
             virtual std::string paludis_command() const;
 
             virtual UseFlagNameCollection::ConstPointer known_use_expand_names(const UseFlagName &,

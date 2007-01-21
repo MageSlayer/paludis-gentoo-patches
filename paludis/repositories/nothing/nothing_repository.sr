@@ -8,6 +8,8 @@ make_class_NothingRepositoryParams()
     key sync std::string
     key sync_exclude std::string
 
+    key environment "const Environment *"
+
     allow_named_args
 
     doxygen_comment << "END"

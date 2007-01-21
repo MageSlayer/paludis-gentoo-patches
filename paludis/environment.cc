@@ -467,6 +467,15 @@ Environment::fetchers_dirs() const
         ;
 }
 
+std::string
+Environment::syncers_dirs() const
+{
+    return
+        DATADIR "/paludis/syncers" " "
+        LIBEXECDIR "/paludis/syncers" " "
+        ;
+}
+
 namespace
 {
     static const std::multimap<std::string, std::string> environment_mirrors;

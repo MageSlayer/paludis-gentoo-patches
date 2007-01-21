@@ -218,6 +218,13 @@ namespace paludis
             virtual std::string fetchers_dirs() const;
 
             /**
+             * Our syncers directories.
+             *
+             * Default behaviour: user then paludis syncer dirs.
+             */
+            virtual std::string syncers_dirs() const;
+
+            /**
              * How to run paludis.
              */
             virtual std::string paludis_command() const = 0;

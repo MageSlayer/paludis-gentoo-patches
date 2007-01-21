@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~
-SUBDIRS = . digests fetchers utils
+SUBDIRS = . digests fetchers syncers utils
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 

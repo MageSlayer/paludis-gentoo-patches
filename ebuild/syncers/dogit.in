@@ -1,0 +1,19 @@
+#!/bin/bash
+
+LOCAL="$1"
+REMOTE="$2"
+
+[[ "${REMOTE}" == git+http* ]] && REMOTE="${REMOTE:4}"
+
+if [[ -d "${LOCAL}" && ! -d "${LOCAL}/.git" ]]; then
+    source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
+    eerror "'${LOCAL}' exists but it is not a Git repository"
+    exit 1
+fi
+
+if [[ -d "${LOCAL}/.git" ]]; then
+    cd "${LOCAL}" && git pull
+else
+    git clone "${REMOTE}" "${LOCAL}"
+fi
+

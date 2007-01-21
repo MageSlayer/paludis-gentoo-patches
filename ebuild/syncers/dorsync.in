@@ -1,0 +1,18 @@
+#!/bin/bash
+
+LOCAL="$1"
+REMOTE="$2"
+
+[[ "${REMOTE}" == file* ]] && REMOTE="${REMOTE:7}"
+
+if [[ -n "${PALUDIS_SYNC_EXCLUDE_FROM}" ]]; then
+    EXCLUDE=( --exclude-from "${PALUDIS_SYNC_EXCLUDE_FROM}" )
+else
+    EXCLUDE=( )
+fi
+
+rsync --recursive --links --safe-links --perms --times --compress --force \
+    --whole-file --delete --delete-after --stats --timeout=180 \
+    --exclude=/distfiles --exclude=/packages --exclude=/local \
+    --exclude=/.cache --progress "${EXCLUDE[@]}" "${REMOTE}" "${LOCAL}/"
+

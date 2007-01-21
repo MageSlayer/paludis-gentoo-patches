@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SYNCER_HH
 #define PALUDIS_GUARD_PALUDIS_SYNCER_HH 1
 
-#include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/repository.hh>
 #include <string>
@@ -68,6 +67,39 @@ namespace paludis
     };
 
     /**
+     * A Syncer subclass that uses a program from the syncers/ directory.
+     *
+     * \ingroup grpsyncer
+     */
+    class DefaultSyncer :
+        public Syncer
+    {
+        private:
+            std::string _local, _remote;
+            const Environment *_environment;
+
+            std::string _syncer;
+
+        public:
+            /**
+             * Constructor.
+             */
+            DefaultSyncer(const SyncerParams &);
+
+            /**
+             * Destructor.
+             */
+            virtual ~DefaultSyncer()
+            {
+            }
+
+            /**
+             * Perform the sync.
+             */
+            virtual void sync(const SyncOptions &) const;
+    };
+
+    /**
      * Thrown if a sync fails.
      *
      * \ingroup grpsyncer
@@ -90,38 +122,6 @@ namespace paludis
     };
 
     /**
-     * Thrown if a directory exists where a Git repository should be cloned.
-     *
-     * \ingroup grpsyncer
-     * \ingroup grpexceptions
-     */
-    class SyncGitDirectoryExists :
-        public SyncFailedError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            SyncGitDirectoryExists(const std::string & local) throw ();
-    };
-
-    /**
-     * Thrown if a given CVS sync URL is invalid.
-     *
-     * \ingroup grpsyncer
-     * \ingroup grpexceptions
-     */
-    class SyncCvsUrlInvalid :
-        public SyncFailedError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            SyncCvsUrlInvalid(const std::string & url) throw ();
-    };
-
-    /**
      * Thrown if a syncer of the specified type does not exist.
      *
      * \ingroup grpsyncer
@@ -134,23 +134,6 @@ namespace paludis
              * Constructor.
              */
             NoSuchSyncerError(const std::string & format) throw ();
-    };
-
-
-    /**
-     * Virtual constructor for Syncer subclasses.
-     *
-     * \ingroup grpsyncer
-     */
-    class SyncerMaker :
-        public VirtualConstructor<std::string, Syncer::Pointer (*) (const std::string &, const std::string &),
-            virtual_constructor_not_found::ThrowException<NoSuchSyncerError> >,
-        public InstantiationPolicy<SyncerMaker, instantiation_method::SingletonAsNeededTag>
-    {
-        friend class InstantiationPolicy<SyncerMaker, instantiation_method::SingletonAsNeededTag>;
-
-        private:
-            SyncerMaker();
     };
 }
 

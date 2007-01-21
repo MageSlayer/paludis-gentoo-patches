@@ -16,3 +16,22 @@ make_class_SyncOptions()
 END
 }
 
+make_class_SyncerParams()
+{
+    key local std::string
+    key remote std::string
+
+    key environment "const Environment *"
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for a Syncer.
+         *
+         * \see Syncer
+         * \ingroup grpsyncer
+         * \nosubgrouping
+         */
+END
+
+    allow_named_args
+}

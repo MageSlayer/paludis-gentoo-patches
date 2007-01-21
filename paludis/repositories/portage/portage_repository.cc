@@ -782,15 +782,12 @@ PortageRepository::do_sync() const
     if (_imp->params.sync.empty())
         return false;
 
-    std::string::size_type p(_imp->params.sync.find("://")), q(_imp->params.sync.find(":"));
-    if (std::string::npos == p)
-        throw NoSuchSyncerError(_imp->params.sync);
-
+    DefaultSyncer syncer(SyncerParams::create()
+                             .environment(_imp->params.environment)
+                             .local(stringify(_imp->params.location))
+                             .remote(_imp->params.sync));
     SyncOptions opts(_imp->params.sync_exclude);
-
-    SyncerMaker::get_instance()->find_maker(_imp->params.sync.substr(0, std::min(p, q)))(
-            stringify(_imp->params.location),
-            _imp->params.sync.substr(q < p ? q + 1 : 0))->sync(opts);
+    syncer.sync(opts);
 
     return true;
 }

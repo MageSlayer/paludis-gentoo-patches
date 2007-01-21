@@ -267,19 +267,10 @@ dnl {{{ check for cxxflags
 if test x = x"$LET_ME_RICE"
 then
 	AC_MSG_CHECKING([for go faster stripes])
-	for x in "as-needed" "visibility" "enforce-eh" "fast-math" "rtti"
+	for x in "enforce-eh" "fast-math" "rtti"
 	do
 		if echo "${LDFLAGS} ${CFLAGS} ${CXXFLAGS}" | grep "$x" >/dev/null ; then
 			AC_MSG_RESULT([$x])
-			if test $x = "as-needed" ; then
-				echo "You shouldn't have as-needed as a global flag. It makes the linker break" 1>&2
-				echo "legitimate code. For more details, read http://ciaranm.org/show_post.pl?post_id=13" 1>&2
-			fi
-			if test $x = "visibility" ; then
-				echo "Don't use visibility except for applications that're designed for" 1>&2
-				echo "it. At present, Paludis can't be used with visibility because of what" 1>&2
-				echo "appears to be an ld.so bug." 1>&2
-			fi
 			AC_MSG_ERROR([Bad ricer. No bagel.])
 		fi
 	done
@@ -834,6 +825,7 @@ AC_OUTPUT(
 	ebuild/Makefile
 	ebuild/digests/Makefile
 	ebuild/fetchers/Makefile
+	ebuild/syncers/Makefile
 	ebuild/utils/Makefile
 	ebuild/echo_functions.bash
 	ebuild/work_around_broken_utilities.bash

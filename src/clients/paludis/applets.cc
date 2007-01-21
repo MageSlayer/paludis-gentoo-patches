@@ -25,6 +25,8 @@
 #include <paludis/paludis.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/tokeniser.hh>
 #include <paludis/environment/default/default_environment.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <string>
@@ -185,10 +187,33 @@ int do_list_repository_formats()
 
 int do_list_sync_protocols()
 {
-    int return_code(1);
-
     std::set<std::string> keys;
-    SyncerMaker::get_instance()->copy_keys(std::inserter(keys, keys.begin()));
+
+    Environment * const env(DefaultEnvironment::get_instance());
+    std::list<std::string> syncers_dirs;
+    WhitespaceTokeniser::get_instance()->tokenise(env->syncers_dirs(),
+            std::back_inserter(syncers_dirs));
+
+    for (std::list<std::string>::const_iterator d(syncers_dirs.begin()),
+            d_end(syncers_dirs.end()) ; d != d_end ; ++d)
+    {
+        FSEntry dir(*d);
+        if (! dir.is_directory())
+            continue;
+
+        for (DirIterator f(dir), f_end; f != f_end; ++f)
+        {
+            std::string name(f->basename());
+            if (f->has_permission(fs_ug_owner, fs_perm_execute) &&
+                   0 == name.compare(0, 2, "do", 0, 2))
+            {
+                name.erase(0, 2);
+                keys.insert(name);
+            }
+        }
+    }
+
+    int return_code(1);
 
     if (! keys.empty())
     {

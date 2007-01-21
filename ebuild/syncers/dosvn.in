@@ -1,0 +1,10 @@
+#!/bin/bash
+
+LOCAL="$1"
+REMOTE="$2"
+
+[[ "${REMOTE}" == svn+http* || "${REMOTE}" == svn+https* ]] &&
+    REMOTE="${REMOTE:4}"
+
+svn checkout "${REMOTE}" "${LOCAL}/"
+

@@ -191,6 +191,7 @@ else
 
 libpaludisportagerepositoryxmlthings_la_LIBADD = @LIBXML2DEPS_LIBS@ \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/libxml/libpaludislibxml.la
 
 endif

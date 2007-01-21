@@ -81,7 +81,7 @@ TESTS_ENVIRONMENT = env \
 	SYSCONFDIR="$(sysconfdir)" \
 	bash $(top_srcdir)/test/run_test.sh bash
 
-TESTS = version_TEST help_TEST list_sync_formats_TEST \
+TESTS = version_TEST help_TEST \
 	list_repository_formats_TEST list_dep_tag_categories_TEST \
 	exception_TEST install_TEST upgrade_TEST args_from_environment_TEST
 

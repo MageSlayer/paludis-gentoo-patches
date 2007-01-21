@@ -1,0 +1,25 @@
+#!/bin/bash
+
+LOCAL="$1"
+REMOTE="$2"
+
+if [[ "${REMOTE}" == cvs+pserver* ]]; then
+    PSERVER=true
+    REMOTE=":pserver:${REMOTE:14}"
+elif [[ "${REMOTE}" == cvs+ssh* || "${REMOTE}" == cvs+ext* ]]; then
+    PSERVER=false
+    REMOTE=":ext:${REMOTE:10}"
+fi
+
+MODULE="${REMOTE##*:}"
+if [[ "${MODULE}" == "${REMOTE}" ]]; then
+    source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
+    eerror "'${REMOTE}' is not a valid URL for a CVS repository"
+    exit 1
+fi
+REMOTE="${REMOTE%:*}"
+
+[[ ! -d "${LOCAL}" ]] && mkdir -p "${LOCAL}"
+cd "${LOCAL}" && ( ! ${PSERVER} || cvs -d "${REMOTE}" login ) &&
+    cvs -d "${REMOTE}" checkout "${MODULE}"
+
