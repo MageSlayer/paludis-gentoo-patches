@@ -19,7 +19,9 @@ if [[ "${MODULE}" == "${REMOTE}" ]]; then
 fi
 REMOTE="${REMOTE%:*}"
 
-[[ ! -d "${LOCAL}" ]] && mkdir -p "${LOCAL}"
-cd "${LOCAL}" && ( ! ${PSERVER} || cvs -d "${REMOTE}" login ) &&
-    cvs -d "${REMOTE}" checkout "${MODULE}"
+LOCAL=${LOCAL%/}
+WORKING="${LOCAL%/*}"
+[[ ! -d "${WORKING}" ]] && mkdir -p "${WORKING}"
+cd "${WORKING}" && ( ! ${PSERVER} || cvs -d "${REMOTE}" login ) &&
+    cvs -d "${REMOTE}" checkout -P -d "${LOCAL##*/}" "${MODULE}"
 
