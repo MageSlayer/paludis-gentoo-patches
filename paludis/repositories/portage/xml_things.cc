@@ -151,9 +151,9 @@ namespace
                                                 n->xmlChildrenNode, 1))));
                         else if (name == "package")
                         {
-                            std::string name;
-                            handle_package_name(doc, n->properties, name);
-                            GLSAPackage::Pointer pkg(new GLSAPackage(QualifiedPackageName(name)));
+                            std::string m;
+                            handle_package_name(doc, n->properties, m);
+                            GLSAPackage::Pointer pkg(new GLSAPackage(QualifiedPackageName(m)));
                             handle_package_archs(doc, n->properties, pkg);
                             handle_package_children(doc, n->children, pkg);
                             _glsa->add_package(pkg);
@@ -198,7 +198,7 @@ extern "C"
     void register_repositories(RepositoryMaker * maker);
 }
 
-void register_repositories(RepositoryMaker * maker)
+void register_repositories(RepositoryMaker *)
 {
 }
 
