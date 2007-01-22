@@ -22,6 +22,7 @@ check_SCRIPTS =
 noinst_LIBRARIES = libpaludistasks.a
 paludis_tasks_includedir = $(includedir)/paludis/tasks
 paludis_tasks_include_HEADERS = \
+	find_unused_packages_task.hh \
 	install_task.hh \
 	uninstall_task.hh \
 	sync_task.hh \
@@ -30,6 +31,7 @@ paludis_tasks_include_HEADERS = \
 	report_task.hh
 
 libpaludistasks_a_SOURCES = $(paludis_tasks_include_HEADERS) \
+	find_unused_packages_task.cc \
 	install_task.cc \
 	uninstall_task.cc \
 	sync_task.cc \

@@ -22,6 +22,7 @@ man_adjutrix_SOURCES = \
 
 man_adjutrix_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
+	$(top_builddir)/paludis/tasks/libpaludistasks.a \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(top_builddir)/src/common_args/libcommonargs.a \
@@ -33,6 +34,7 @@ adjutrix_SOURCES = \
 	find_dropped_keywords.hh              find_dropped_keywords.cc \
 	find_insecure_packages.hh             find_insecure_packages.cc \
 	find_reverse_deps.hh                  find_reverse_deps.cc \
+	find_unused_packages.hh               find_unused_packages.cc \
 	keywords_graph.hh                     keywords_graph.cc \
 	display_profiles_use.hh               display_profiles_use.cc \
 	display_default_system_resolution.hh  display_default_system_resolution.cc \

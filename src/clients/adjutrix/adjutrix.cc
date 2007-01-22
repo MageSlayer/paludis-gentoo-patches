@@ -23,6 +23,7 @@
 #include "find_dropped_keywords.hh"
 #include "find_insecure_packages.hh"
 #include "find_reverse_deps.hh"
+#include "find_unused_packages.hh"
 #include "keywords_graph.hh"
 #include "display_profiles_use.hh"
 #include "display_default_system_resolution.hh"
@@ -131,6 +132,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_find_stable_candidates.specified() +
                     CommandLine::get_instance()->a_find_dropped_keywords.specified() +
                     CommandLine::get_instance()->a_find_insecure_packages.specified() +
+                    CommandLine::get_instance()->a_find_unused_packages.specified() +
                     CommandLine::get_instance()->a_keywords_graph.specified() +
                     CommandLine::get_instance()->a_reverse_deps.specified() +
                     CommandLine::get_instance()->a_display_profiles_use.specified() +
@@ -177,6 +179,16 @@ main(int argc, char *argv[])
                 throw DoHelp("find-dropped-keywords action takes no parameters");
 
             do_find_insecure_packages(env);
+            return EXIT_SUCCESS;
+        }
+
+        if (CommandLine::get_instance()->a_find_unused_packages.specified())
+        {
+            if (CommandLine::get_instance()->begin_parameters() !=
+                        CommandLine::get_instance()->end_parameters())
+                throw DoHelp("find-unused-packages action takes no parameters");
+
+            do_find_unused_packages(env);
             return EXIT_SUCCESS;
         }
 

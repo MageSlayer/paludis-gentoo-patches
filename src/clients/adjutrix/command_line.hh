@@ -63,6 +63,7 @@ class CommandLine :
         paludis::args::SwitchArg a_find_stable_candidates;
         paludis::args::SwitchArg a_find_dropped_keywords;
         paludis::args::SwitchArg a_find_insecure_packages;
+        paludis::args::SwitchArg a_find_unused_packages;
         paludis::args::SwitchArg a_keywords_graph;
         paludis::args::SwitchArg a_reverse_deps;
         paludis::args::SwitchArg a_what_needs_keywording;

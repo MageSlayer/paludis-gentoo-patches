@@ -21,6 +21,7 @@
 #include "command_line.hh"
 #include <output/colour.hh>
 
+#include <paludis/tasks/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/compare.hh>
 
@@ -60,10 +61,12 @@ namespace
         cout << endl;
 
         VersionSpecCollection::ConstPointer versions(repo.version_specs(package));
+        FindUnusedPackagesTask task(&e, &repo);
         PackageDatabaseEntryCollection::ConstPointer packages(e.package_database()->query(
                 PackageDepAtom(stringify(package) + "::" + stringify(repo.name())),
                 is_installable_only,
                 qo_group_by_slot));
+        PackageDatabaseEntryCollection::ConstPointer unused(task.execute(package));
 
         if (packages->empty())
             return;
@@ -118,48 +121,6 @@ namespace
             << std::string(longest_slot_name + 3, '-') << endl;
 
         SlotName old_slot("unused_round");
-        std::map<VersionSpec, bool> unused_versions;
-        std::set<KeywordName> keywords;
-
-        for (PackageDatabaseEntryCollection::ReverseIterator p(packages->rbegin()), p_end(packages->rend()) ;
-                p != p_end ; ++p)
-        {
-            VersionMetadata::ConstPointer metadata(repo.version_metadata(package, p->version));
-            if (! metadata->get_ebuild_interface())
-                continue;
-
-            if (metadata->slot != old_slot)
-            {
-                keywords.clear();
-                old_slot = metadata->slot;
-            }
-
-            std::set<KeywordName> current_keywords;
-            WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->keywords,
-                    create_inserter<KeywordName>(std::inserter(current_keywords, current_keywords.end())));
-
-            bool used(false);
-            for (std::set<KeywordName>::const_iterator k(current_keywords.begin()), k_end(current_keywords.end()) ;
-                    k != k_end ; ++k)
-            {
-                std::string stable_keyword(stringify(*k));
-                if (stable_keyword[0] == '~')
-                    stable_keyword.erase(0, 1);
-
-                if ((keywords.end() == keywords.find(*k)) && (keywords.end() == keywords.find(KeywordName(stable_keyword))))
-                {
-                    used = true;
-                    break;
-                }
-            }
-
-            if (! used)
-                unused_versions[p->version] = true;
-
-            keywords.insert(current_keywords.begin(), current_keywords.end());
-        }
-
-        old_slot = SlotName("first_slot");
         for (PackageDatabaseEntryCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
                 p != p_end ; ++p)
         {
@@ -175,7 +136,7 @@ namespace
 
             cout << std::left << std::setw(version_specs_columns_width) << p->version << "| ";
 
-            keywords.clear();
+            std::set<KeywordName> keywords;
             WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->keywords,
                     create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
 
@@ -194,7 +155,7 @@ namespace
                     cout << "  ";
             }
 
-            cout << "| " << (unused_versions[p->version] ? "* " : "  ");
+            cout << "| " << (unused->find(*p) != unused->end() ? "* " : "  ");
 
             if (metadata->slot != old_slot)
             {
