@@ -93,8 +93,14 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params)
 void
 DefaultSyncer::sync(const SyncOptions & opts) const
 {
+    std::list<std::string> remote_list;
+    WhitespaceTokeniser::get_instance()->tokenise(_remote, std::back_inserter(remote_list));
 
-    MakeEnvCommand cmd(make_env_command(stringify(_syncer) + " '" + _local + "' '" + _remote + "'")
+    bool ok(false);
+    for (std::list<std::string>::const_iterator r(remote_list.begin()),
+            r_end(remote_list.end()) ; r != r_end ; ++r)
+    {
+        MakeEnvCommand cmd(make_env_command(stringify(_syncer) + " '" + _local + "' '" + *r + "'")
                 ("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                          stringify(PALUDIS_VERSION_MINOR) + "." +
                          stringify(PALUDIS_VERSION_MICRO) +
@@ -109,8 +115,14 @@ DefaultSyncer::sync(const SyncOptions & opts) const
                 ("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
                 ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
                 ("PALUDIS_SYNC_EXCLUDE_FROM", opts.exclude_from));
+        if (! run_command(cmd))
+        {
+            ok = true;
+            break;
+        }
+    }
 
-    if (run_command(cmd))
+    if (! ok)
         throw SyncFailedError(_local, _remote);
 }
 
