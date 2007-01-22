@@ -18,9 +18,15 @@
  */
 
 #include <fstream>
+#include <paludis/config_file.hh>
 #include <paludis/qa/deprecated_functions_check.hh>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/system.hh>
 #include <pcre++.h>
+
+#include <set>
+#include <utility>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -35,7 +41,6 @@ DeprecatedFunctionsCheck::operator() (const FSEntry & f) const
     CheckResult result(f, identifier());
 
     static pcrepp::Pcre::Pcre r_comment("^\\s*#");
-    static pcrepp::Pcre::Pcre r_check_kv("\\bcheck_KV\\b");
 
     if (! f.is_regular_file())
         result << Message(qal_skip, "Not a regular file");
@@ -49,6 +54,27 @@ DeprecatedFunctionsCheck::operator() (const FSEntry & f) const
             result << Message(qal_major, "Can't read file");
         else
         {
+            static std::list<std::pair<std::string, pcrepp::Pcre::Pcre> > deprecated_functions;
+            if (deprecated_functions.empty())
+            {
+                deprecated_functions.push_back(std::make_pair(std::string("OFTEN_NOT_BEEN_ON_BOATS"), pcrepp::Pcre::Pcre("OFTEN_NOT_BEEN_ON_BOATS")));
+
+                try
+                {
+                    LineConfigFile deprecated_functions_file(FSEntry(getenv_with_default(
+                                "PALUDIS_QA_DATA_DIR", DATADIR "/paludis/qa/")) / "deprecated_functions.txt");
+                    for (LineConfigFile::Iterator l(deprecated_functions_file.begin()),
+                            l_end(deprecated_functions_file.end()) ; l != l_end ; ++l)
+                        deprecated_functions.push_back(std::make_pair(*l, pcrepp::Pcre::Pcre("\\b" + *l + "\\b")));
+                }
+                catch (const Exception & eee)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context,
+                            "Cannot load list of deprecated functions from deprecated_functions.txt due to exception '"
+                            + eee.message() + "' (" + eee.what() + ")");
+                }
+            }
+
             std::string s;
             unsigned line_number(0);
             while (std::getline(ff, s))
@@ -58,11 +84,13 @@ DeprecatedFunctionsCheck::operator() (const FSEntry & f) const
                 if (s.empty() || r_comment.search(s))
                     continue;
 
-                if (r_check_kv.search(s))
+                for (std::list<std::pair<std::string, pcrepp::Pcre::Pcre> >::iterator
+                        r(deprecated_functions.begin()), r_end(deprecated_functions.end()) ;
+                        r != r_end ; ++r )
                 {
-                    result << Message(qal_major, "Deprecated call to check_KV on line "
+                    if (r->second.search(s))
+                        result << Message(qal_major, "Deprecated call to " + r->first + " on line "
                             + stringify(line_number));
-                    continue;
                 }
             }
         }
