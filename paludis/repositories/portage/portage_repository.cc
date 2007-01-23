@@ -782,12 +782,33 @@ PortageRepository::do_sync() const
     if (_imp->params.sync.empty())
         return false;
 
-    DefaultSyncer syncer(SyncerParams::create()
-                             .environment(_imp->params.environment)
-                             .local(stringify(_imp->params.location))
-                             .remote(_imp->params.sync));
-    SyncOptions opts(_imp->params.sync_exclude);
-    syncer.sync(opts);
+    std::list<std::string> sync_list;
+    WhitespaceTokeniser::get_instance()->tokenise(_imp->params.sync, std::back_inserter(sync_list));
+
+    bool ok(false);
+    for (std::list<std::string>::const_iterator s(sync_list.begin()),
+            s_end(sync_list.end()) ; s != s_end ; ++s)
+    {
+        DefaultSyncer syncer(SyncerParams::create()
+                                .environment(_imp->params.environment)
+                                .local(stringify(_imp->params.location))
+                                .remote(*s));
+        SyncOptions opts(_imp->params.sync_exclude);
+        try
+        {
+            syncer.sync(opts);
+        }
+        catch (const SyncFailedError & e)
+        {
+            continue;
+        }
+
+        ok=true;
+        break;
+    }
+
+    if (! ok)
+        throw SyncFailedError(stringify(_imp->params.location), _imp->params.sync);
 
     return true;
 }
