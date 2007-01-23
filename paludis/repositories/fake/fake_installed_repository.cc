@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,11 +18,14 @@
  */
 
 #include "fake_installed_repository.hh"
+#include <paludis/util/collection_concrete.hh>
+#include <paludis/portage_dep_parser.hh>
+#include <paludis/dep_atom_flattener.hh>
 
 using namespace paludis;
 
-FakeInstalledRepository::FakeInstalledRepository(const RepositoryName & our_name) :
-    FakeRepositoryBase(our_name, RepositoryCapabilities::create()
+FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, const RepositoryName & our_name) :
+    FakeRepositoryBase(e, our_name, RepositoryCapabilities::create()
             .installable_interface(0)
             .installed_interface(this)
             .mask_interface(this)
@@ -34,7 +37,7 @@ FakeInstalledRepository::FakeInstalledRepository(const RepositoryName & our_name
             .world_interface(0)
             .mirrors_interface(0)
             .environment_variable_interface(0)
-            .provides_interface(0)
+            .provides_interface(this)
             .virtuals_interface(0)
             .destination_interface(this),
             "fake_installed")
@@ -55,4 +58,58 @@ FakeInstalledRepository::is_suitable_destination_for(const PackageDatabaseEntry 
     return true;
 }
 
+FakeInstalledRepository::ProvidesCollection::ConstPointer
+FakeInstalledRepository::provided_packages() const
+{
+    ProvidesCollection::Pointer result(new ProvidesCollection::Concrete);
+
+    CategoryNamePartCollection::ConstPointer cats(category_names());
+    for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+            c != c_end ; ++c)
+    {
+        QualifiedPackageNameCollection::ConstPointer pkgs(package_names(*c));
+        for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+                p != p_end ; ++p)
+        {
+            VersionSpecCollection::ConstPointer vers(version_specs(*p));
+            for (VersionSpecCollection::Iterator v(vers->begin()), v_end(vers->end()) ;
+                    v != v_end ; ++v)
+            {
+                VersionMetadata::ConstPointer m(version_metadata(*p, *v));
+                if (! m->get_ebuild_interface())
+                    continue;
+
+                DepAtom::ConstPointer provide(PortageDepParser::parse(m->get_ebuild_interface()->provide_string,
+                            PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
+                PackageDatabaseEntry dbe(*p, *v, name());
+                DepAtomFlattener f(environment(), &dbe, provide);
+
+                for (DepAtomFlattener::Iterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
+                    result->insert(RepositoryProvidesEntry::create()
+                            .virtual_name(QualifiedPackageName((*q)->text()))
+                            .version(*v)
+                            .provided_by_name(*p));
+            }
+        }
+    }
+
+    return result;
+}
+
+VersionMetadata::ConstPointer
+FakeInstalledRepository::provided_package_version_metadata(const RepositoryProvidesEntry & p) const
+{
+    VersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, p.version));
+    VersionMetadata::Virtual::Pointer result(new VersionMetadata::Virtual(
+                PortageDepParser::parse_depend, PackageDatabaseEntry(p.provided_by_name,
+                    p.version, name())));
+
+    result->slot = m->slot;
+    result->license_string = m->license_string;
+    result->eapi = m->eapi;
+    result->deps = VersionMetadataDeps(&PortageDepParser::parse_depend,
+            stringify(p.provided_by_name), stringify(p.provided_by_name), "", "");
+
+    return result;
+}
 

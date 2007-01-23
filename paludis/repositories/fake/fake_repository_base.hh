@@ -97,8 +97,8 @@ namespace paludis
             /**
              * Constructor.
              */
-            FakeRepositoryBase(const RepositoryName & name, const RepositoryCapabilities & caps,
-                    const std::string &);
+            FakeRepositoryBase(const Environment * const env, const RepositoryName & name,
+                    const RepositoryCapabilities & caps, const std::string &);
 
         public:
             /**
@@ -151,6 +151,8 @@ namespace paludis
             typedef CountedPtr<const FakeRepositoryBase, count_policy::InternalCountTag> ConstPointer;
 
             virtual void invalidate();
+
+            const Environment * environment() const;
     };
 }
 

@@ -288,10 +288,12 @@ struct DepList::QueryVisitor :
 {
     bool result;
     const DepList * const d;
+    bool ignore_current_pde;
 
-    QueryVisitor(const DepList * const dd) :
+    QueryVisitor(const DepList * const dd, const bool i) :
         result(true),
-        d(dd)
+        d(dd),
+        ignore_current_pde(i)
     {
     }
 
@@ -312,21 +314,74 @@ DepList::QueryVisitor::visit(const PlainTextDepAtom * const)
 void
 DepList::QueryVisitor::visit(const PackageDepAtom * const a)
 {
-    /* a pda matches either if we're already installed, or if we will be installed
-     * by the time the current point in the dep list is reached. */
+    /* a pda matches if we'll be installed by the time we reach the current point. This
+     * means that merely being installed is not enough, if we'll have our version changed
+     * by something in the merge list. */
 
-    if (! d->_imp->env->package_database()->query(*a, is_installed_only, qo_whatever)->empty())
-        result = true;
-    else
+    result = false;
+
+    PackageDatabaseEntryCollection::ConstPointer matches(d->_imp->env->package_database()->query(
+                *a, is_installed_only, qo_whatever));
+
+    for (PackageDatabaseEntryCollection::Iterator m(matches->begin()), m_end(matches->end()) ;
+            m != m_end ; ++m)
     {
+        /* check that we haven't been replaced by something in the same slot */
+        VersionMetadata::ConstPointer vm(d->_imp->env->package_database()->fetch_repository(m->repository)->
+                version_metadata(m->name, m->version));
+        SlotName slot(vm->slot);
+        const VirtualMetadata * const vif(vm->get_virtual_interface());
+
         std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
                 d->_imp->merge_list_index.equal_range(a->package()));
 
-        if (p.second != std::find_if(p.first, p.second,
-                MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, a)))
+        bool replaced(false);
+        PackageDepAtom atom(a->package());
+        while (p.second != ((p.first = std::find_if(p.first, p.second,
+                            MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, &atom)))))
+        {
+            if (p.first->second->metadata->slot != slot)
+                p.first = next(p.first);
+            else if (ignore_current_pde &&
+                    p.first->second == d->_imp->current_merge_list_entry)
+                p.first = next(p.first);
+            else if (ignore_current_pde &&
+                    d->_imp->current_merge_list_entry != d->_imp->merge_list.end() &&
+                    p.first->second->associated_entry == &*d->_imp->current_merge_list_entry &&
+                    (a->version_requirements_ptr() || a->slot_ptr() ||
+                     (vif && vif->virtual_for.name != p.first->second->associated_entry->package.name)))
+                p.first = next(p.first);
+            else
+            {
+                replaced = true;
+                break;
+            }
+        }
+
+        if (! replaced)
+        {
             result = true;
+            return;
+        }
+    }
+
+    /* check the merge list for any new packages that match */
+    std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
+            d->_imp->merge_list_index.equal_range(a->package()));
+
+    while (p.second != ((p.first = std::find_if(p.first, p.second,
+                        MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, a)))))
+    {
+        if (ignore_current_pde && p.first->second == d->_imp->current_merge_list_entry)
+            p.first = next(p.first);
+        else if (ignore_current_pde && d->_imp->current_merge_list_entry != d->_imp->merge_list.end()
+                && p.first->second->associated_entry == &*d->_imp->current_merge_list_entry)
+            p.first = next(p.first);
         else
-            result = false;
+        {
+            result = true;
+            return;
+        }
     }
 }
 
@@ -767,44 +822,17 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
 void
 DepList::AddVisitor::visit(const BlockDepAtom * const a)
 {
-    if (! d->already_installed(a->blocked_atom()))
-        return;
-
-    Context context("When checking BlockDepAtom '!" + stringify(*a->blocked_atom()) + "':");
-
     /* special case: the provider of virtual/blah can DEPEND upon !virtual/blah. */
     /* special case: foo/bar can DEPEND upon !foo/bar. */
 
-    if (d->_imp->current_pde())
-    {
-        if (d->_imp->current_pde()->name == a->blocked_atom()->package())
-        {
-            Log::get_instance()->message(ll_debug, lc_context, "Ignoring self block '"
-                    + stringify(*a->blocked_atom()) + "' for package '"
-                    + stringify(*d->_imp->current_pde()) + "'");
+    if (d->_imp->current_merge_list_entry != d->_imp->merge_list.end())
+        if (d->_imp->current_merge_list_entry->kind == dlk_already_installed)
             return;
-        }
 
-        VersionMetadata::ConstPointer metadata(d->_imp->env->package_database()->fetch_repository(
-                    d->_imp->current_pde()->repository)->version_metadata(d->_imp->current_pde()->name,
-                    d->_imp->current_pde()->version));
-        if (metadata->get_ebuild_interface())
-        {
-            bool skip(false);
-            DepAtomFlattener f(d->_imp->env, d->_imp->current_pde(), metadata->get_ebuild_interface()->provide());
-            for (DepAtomFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end && ! skip ; ++i)
-                if ((*i)->text() == stringify(a->blocked_atom()->package()))
-                    skip = true;
+    if (! d->already_installed(a->blocked_atom(), true))
+        return;
 
-            if (skip)
-            {
-                Log::get_instance()->message(ll_debug, lc_context,
-                        "Ignoring self block (via PROVIDE) '" + stringify(*a->blocked_atom())
-                        + "' for package '" + stringify(*d->_imp->current_pde()) + "'");
-                return;
-            }
-        }
-    }
+    Context context("When checking BlockDepAtom '!" + stringify(*a->blocked_atom()) + "':");
 
     switch (d->_imp->opts->blocks)
     {
@@ -968,6 +996,7 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                 .state(dle_no_deps)
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                .associated_entry(0)
                 .kind(metadata->get_virtual_interface() ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
 
@@ -1027,6 +1056,7 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                         .state(dle_has_all_deps)
                         .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                         .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                        .associated_entry(&*_imp->current_merge_list_entry)
                         .kind(dlk_provided)));
             _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
         }
@@ -1091,6 +1121,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
                 .state(dle_has_all_deps)
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(kind)));
 
     if (_imp->current_pde())
@@ -1125,6 +1156,7 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p)
                 .state(dle_has_all_deps)
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(dlk_suggested)));
 
     if (_imp->current_pde())
@@ -1204,6 +1236,7 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::C
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
                 .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                .associated_entry(0)
                 .kind(dlk_already_installed)));
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry));
 
@@ -1358,15 +1391,15 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
 }
 
 bool
-DepList::already_installed(DepAtom::ConstPointer atom) const
+DepList::already_installed(DepAtom::ConstPointer atom, const bool ignore_current_pde) const
 {
-    return already_installed(atom.raw_pointer());
+    return already_installed(atom.raw_pointer(), ignore_current_pde);
 }
 
 bool
-DepList::already_installed(const DepAtom * const atom) const
+DepList::already_installed(const DepAtom * const atom, const bool ignore_current_pde) const
 {
-    QueryVisitor visitor(this);
+    QueryVisitor visitor(this, ignore_current_pde);
     atom->accept(&visitor);
     return visitor.result;
 }

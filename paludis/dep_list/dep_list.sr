@@ -50,6 +50,7 @@ make_class_DepListEntry()
     key kind DepListEntryKind
 
     key package PackageDatabaseEntry
+    key associated_entry "const DepListEntry *"
     key metadata VersionMetadata::ConstPointer
     key tags DepListEntryTags::Pointer
     key destinations RepositoryNameCollection::Pointer

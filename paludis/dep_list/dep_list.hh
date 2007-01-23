@@ -101,12 +101,12 @@ namespace paludis
             /**
              * Is an atom structure already installed?
              */
-            bool already_installed(DepAtom::ConstPointer) const;
+            bool already_installed(DepAtom::ConstPointer, const bool ignore_current_pde = false) const;
 
             /**
              * Is an atom structure already installed (overloaded for raw pointer)?
              */
-            bool already_installed(const DepAtom * const) const;
+            bool already_installed(const DepAtom * const, const bool ignore_current_pde = false) const;
 
             /**
              * Whether we have any errors.

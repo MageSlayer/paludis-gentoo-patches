@@ -47,12 +47,15 @@ endif
 
 EXTRA_DIST = \
 	dep_list_TEST.cc \
+	dep_list_TEST.hh \
+	dep_list_TEST_blockers.cc \
 	uninstall_list_TEST.cc \
 	dep_list.sr dep_list-sr.hh dep_list-sr.cc \
 	uninstall_list.sr uninstall_list-sr.hh uninstall_list-sr.cc
 
 TESTS = \
 	dep_list_TEST \
+	dep_list_TEST_blockers \
 	uninstall_list_TEST
 
 TESTS_ENVIRONMENT = env \
@@ -66,6 +69,17 @@ check_PROGRAMS = $(TESTS)
 
 dep_list_TEST_SOURCES = dep_list_TEST.cc
 dep_list_TEST_LDADD = \
+	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
+	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/test/libtest.a \
+	libpaludisdeplist.la \
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la
+
+dep_list_TEST_blockers_SOURCES = dep_list_TEST_blockers.cc
+dep_list_TEST_blockers_LDADD = \
 	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \

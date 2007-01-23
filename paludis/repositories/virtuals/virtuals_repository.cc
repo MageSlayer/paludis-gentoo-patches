@@ -241,8 +241,14 @@ VirtualsRepository::do_version_metadata(
             + stringify(p.first->virtual_name) + "', '" + stringify(p.first->version) + "', '"
             + stringify(p.first->provided_by_name) + "', '" + stringify(p.first->provided_by_repository) + "'");
 
-    return _imp->env->package_database()->fetch_repository(
-            p.first->provided_by_repository)->virtuals_interface->virtual_package_version_metadata(
+    const RepositoryVirtualsInterface * const vif(_imp->env->package_database()->fetch_repository(
+                p.first->provided_by_repository)->virtuals_interface);
+    if (! vif)
+        throw InternalError(PALUDIS_HERE, "vif is 0 for do_version_metadata(" + stringify(q) + ", "
+                + stringify(v) + ") using (" + stringify(p.first->virtual_name) + ", "
+                + stringify(p.first->provided_by_name) + ", " + stringify(p.first->provided_by_repository) + ")");
+
+    return vif->virtual_package_version_metadata(
                 RepositoryVirtualsEntry::create()
                 .virtual_name(p.first->virtual_name)
                 .provided_by_atom(PackageDepAtom::Pointer(new PackageDepAtom(p.first->provided_by_name))), v);

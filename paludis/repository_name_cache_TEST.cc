@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,7 +37,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
             RepositoryNameCache cache(FSEntry("/var/empty"), repo.raw_pointer());
@@ -52,7 +52,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_generated"), repo.raw_pointer());
@@ -69,7 +69,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_existing"), repo.raw_pointer());
@@ -86,7 +86,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/old_format"), repo.raw_pointer());
@@ -103,7 +103,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/bad_repo"), repo.raw_pointer());
@@ -120,7 +120,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/good_repo"), repo.raw_pointer());
@@ -145,7 +145,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/generated"), repo.raw_pointer());

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,14 +31,28 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FakeRepository :
         public FakeRepositoryBase,
-        public RepositoryInstallableInterface
+        public RepositoryInstallableInterface,
+        public RepositoryVirtualsInterface
     {
+        private:
+            VirtualsCollection::Pointer _virtual_packages;
+
         protected:
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
+            virtual VirtualsCollection::ConstPointer virtual_packages() const;
+
+            virtual VersionMetadata::ConstPointer virtual_package_version_metadata(
+                    const RepositoryVirtualsEntry &, const VersionSpec & v) const;
+
         public:
-            FakeRepository(const RepositoryName &);
+            FakeRepository(const Environment * const, const RepositoryName &);
+
+            void add_virtual_package(const QualifiedPackageName &, PackageDepAtom::ConstPointer);
+
+            typedef CountedPtr<const FakeRepository, count_policy::InternalCountTag> ConstPointer;
+            typedef CountedPtr<FakeRepository, count_policy::InternalCountTag> Pointer;
     };
 }
 

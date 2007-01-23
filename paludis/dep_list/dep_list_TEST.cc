@@ -17,123 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_list/dep_list.hh>
-#include <paludis/dep_list/exceptions.hh>
-#include <paludis/portage_dep_parser.hh>
-#include <paludis/repositories/fake/fake_repository.hh>
-#include <paludis/repositories/fake/fake_installed_repository.hh>
-#include <paludis/repositories/virtuals/virtuals_repository.hh>
-#include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
-#include <paludis/environment/test/test_environment.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
-#include <string>
-#include <list>
-#include <ostream>
+#include "dep_list_TEST.hh"
 
 using namespace paludis;
 using namespace test;
 
-namespace paludis
-{
-    std::ostream &
-    operator<< (std::ostream & s, const DepListEntry & e)
-    {
-        s << e.package.name << "-" << e.package.version << ":" <<
-            e.metadata->slot << "::" << e.package.repository;
-        return s;
-    }
-}
-
 namespace test_cases
 {
-    /**
-     * Convenience base class used by many of the DepList tests.
-     *
-     */
-    class DepListTestCaseBase :
-        public TestCase
-    {
-        protected:
-            TestEnvironment env;
-            FakeRepository::Pointer repo;
-            FakeInstalledRepository::Pointer installed_repo;
-            VirtualsRepository::Pointer virtuals_repo;
-            InstalledVirtualsRepository::Pointer installed_virtuals_repo;
-            std::list<std::string> expected;
-            std::string merge_target;
-            bool done_populate;
-
-            /**
-             * Constructor.
-             */
-            DepListTestCaseBase(const int i) :
-                TestCase("dep list " + stringify(i)),
-                env(),
-                repo(new FakeRepository(RepositoryName("repo"))),
-                installed_repo(new FakeInstalledRepository(RepositoryName("installed"))),
-                virtuals_repo(new VirtualsRepository(&env)),
-                installed_virtuals_repo(new InstalledVirtualsRepository(&env)),
-                done_populate(false)
-            {
-                env.package_database()->add_repository(repo);
-                env.package_database()->add_repository(installed_repo);
-                env.package_database()->add_repository(virtuals_repo);
-                env.package_database()->add_repository(installed_virtuals_repo);
-            }
-
-            /**
-             * Populate our repo member.
-             */
-            virtual void populate_repo() = 0;
-
-            /**
-             * Populate our expected member.
-             */
-            virtual void populate_expected() = 0;
-
-            /**
-             * Check expected is what we got.
-             */
-            virtual void check_lists()
-            {
-                TEST_CHECK(true);
-                DepList d(&env, DepListOptions());
-                d.add(PortageDepParser::parse(merge_target));
-                TEST_CHECK(true);
-
-                unsigned n(0);
-                std::list<std::string>::const_iterator exp(expected.begin());
-                DepList::Iterator got(d.begin());
-                while (true)
-                {
-                    TestMessageSuffix s(stringify(n++), true);
-
-                    TEST_CHECK((exp == expected.end()) == (got == d.end()));
-                    if (got == d.end())
-                        break;
-                    TEST_CHECK_STRINGIFY_EQUAL(*got, *exp);
-                    ++exp;
-                    ++got;
-                }
-
-                d.clear();
-                TEST_CHECK(d.begin() == d.end());
-            }
-
-        public:
-            void run()
-            {
-                if (! done_populate)
-                {
-                    populate_repo();
-                    populate_expected();
-                    done_populate = true;
-                }
-                check_lists();
-            }
-    };
-
     /**
      * Convenience sub base class used by the numbered DepList tests.
      *
@@ -145,7 +35,7 @@ namespace test_cases
          * Constructor.
          */
         DepListTestCase() :
-            DepListTestCaseBase(i_)
+            DepListTestCaseBase("dep list " + stringify(i_))
         {
         }
     };
@@ -942,100 +832,6 @@ namespace test_cases
      * \test Test DepList resolution behaviour.
      *
      */
-    struct DepListTestCase38 : DepListTestCase<38>
-    {
-        void populate_repo()
-        {
-            repo->add_version("cat", "one", "1")->deps.build_depend_string = "!cat/two";
-            repo->add_version("cat", "two", "1");
-        }
-
-        void populate_expected()
-        {
-            merge_target = "cat/one";
-            expected.push_back("cat/one-1:0::repo");
-        }
-    } test_dep_list_38;
-
-    /**
-     * \test Test DepList resolution behaviour.
-     *
-     */
-    struct DepListTestCase39 : DepListTestCase<39>
-    {
-        void populate_repo()
-        {
-            repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two !cat/two";
-            repo->add_version("cat", "two", "1");
-        }
-
-        void populate_expected()
-        {
-            merge_target = "cat/one";
-        }
-
-        void check_lists()
-        {
-            TEST_CHECK(true);
-            DepList d(&env, DepListOptions());
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
-            TEST_CHECK(d.begin() == d.end());
-        }
-    } test_dep_list_39;
-
-    /**
-     * \test Test DepList resolution behaviour.
-     *
-     */
-    struct DepListTestCase40 : DepListTestCase<40>
-    {
-        void populate_repo()
-        {
-            repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two cat/three";
-            repo->add_version("cat", "two", "1");
-            repo->add_version("cat", "three", "1")->deps.build_depend_string = "!cat/two";
-        }
-
-        void populate_expected()
-        {
-            merge_target="cat/one";
-        }
-
-        void check_lists()
-        {
-            TEST_CHECK(true);
-            DepList d(&env, DepListOptions());
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
-            TEST_CHECK(d.begin() == d.end());
-        }
-    } test_dep_list_40;
-
-    /**
-     * \test Test DepList resolution behaviour.
-     *
-     */
-    struct DepListTestCase41 : DepListTestCase<41>
-    {
-        void populate_repo()
-        {
-            repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/three cat/two";
-            repo->add_version("cat", "two", "1");
-            repo->add_version("cat", "three", "1")->deps.build_depend_string = "!cat/two";
-        }
-
-        void populate_expected()
-        {
-            merge_target="cat/one";
-            expected.push_back("cat/three-1:0::repo");
-            expected.push_back("cat/two-1:0::repo");
-            expected.push_back("cat/one-1:0::repo");
-        }
-    } test_dep_list_41;
-
-    /**
-     * \test Test DepList resolution behaviour.
-     *
-     */
     struct DepListTestCase42 : DepListTestCase<42>
     {
         void populate_repo()
@@ -1458,7 +1254,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
             repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two cat/three";
@@ -1492,7 +1288,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
             repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two cat/three";
@@ -1527,12 +1323,12 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
             repo->add_version("cat", "one", "1");
 
             FakeInstalledRepository::Pointer installed_repo(
-                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(installed_repo);
             installed_repo->add_version("cat", "one", "2");
 
@@ -1553,12 +1349,12 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
             repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two";
 
             FakeInstalledRepository::Pointer installed_repo(
-                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(installed_repo);
             installed_repo->add_version("cat", "two", "2");
 
@@ -1579,12 +1375,12 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
             repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two";
 
             FakeInstalledRepository::Pointer installed_repo(
-                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(installed_repo);
             installed_repo->add_version("cat", "two", "2");
 
@@ -1607,12 +1403,12 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
             repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two";
 
             FakeInstalledRepository::Pointer installed_repo(
-                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(installed_repo);
             installed_repo->add_version("cat", "two", "2");
             installed_repo->add_version("cat", "three", "3");
@@ -1648,13 +1444,13 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
             repo->add_version("cat", "one", "1")->deps.build_depend_string = "cat/two";
             repo->add_version("cat", "two", "2");
 
             FakeInstalledRepository::Pointer installed_repo(
-                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(installed_repo);
             installed_repo->add_version("cat", "two", "0");
 
@@ -1681,7 +1477,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            FakeRepository::Pointer repo(new FakeRepository(RepositoryName("repo")));
+            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
             repo->add_version("cat", "zero", "1")->deps.build_depend_string =
                 "( cat/one cat/two cat/three-live cat/four-cvs cat/five-svn )";
@@ -1692,7 +1488,7 @@ namespace test_cases
             repo->add_version("cat", "five-svn", "0");
 
             FakeInstalledRepository::Pointer installed_repo(
-                    new FakeInstalledRepository(RepositoryName("installed_repo")));
+                    new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
             env.package_database()->add_repository(installed_repo);
             installed_repo->add_version("cat", "one", "scm");
             installed_repo->add_version("cat", "two", "2");

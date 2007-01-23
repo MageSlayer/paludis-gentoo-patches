@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -46,8 +46,8 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            FakeRepository::Pointer r1(new FakeRepository(RepositoryName("repo1")));
-            FakeRepository::Pointer r2(new FakeRepository(RepositoryName("repo2")));
+            FakeRepository::Pointer r1(new FakeRepository(&e, RepositoryName("repo1")));
+            FakeRepository::Pointer r2(new FakeRepository(&e, RepositoryName("repo2")));
 
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo1")), NoSuchRepositoryError);
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
@@ -98,7 +98,7 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            FakeRepository::Pointer r1(new FakeRepository(RepositoryName("repo1")));
+            FakeRepository::Pointer r1(new FakeRepository(&e, RepositoryName("repo1")));
             r1->add_version("r1c1", "r1c1p1", "1");
             r1->add_version("r1c1", "r1c1p2", "1");
             r1->add_version("r1c1", "r1c1p2", "2");
@@ -107,7 +107,7 @@ namespace test_cases
             p.add_repository(r1);
             TEST_CHECK(true);
 
-            FakeRepository::Pointer r2(new FakeRepository(RepositoryName("repo2")));
+            FakeRepository::Pointer r2(new FakeRepository(&e, RepositoryName("repo2")));
             r2->add_version("rac1", "rac1pa", "1");
             r2->add_version("rac1", "rac1pa", "3");
             p.add_repository(r2);
@@ -156,7 +156,7 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            FakeRepository::Pointer r1(new FakeRepository(RepositoryName("repo1")));
+            FakeRepository::Pointer r1(new FakeRepository(&e, RepositoryName("repo1")));
             r1->add_version("cat", "pkg", "1")->slot = SlotName("a");
             r1->add_version("cat", "pkg", "2")->slot = SlotName("c");
             r1->add_version("cat", "pkg", "3")->slot = SlotName("c");
@@ -164,7 +164,7 @@ namespace test_cases
             p.add_repository(r1);
             TEST_CHECK(true);
 
-            FakeRepository::Pointer r2(new FakeRepository(RepositoryName("repo2")));
+            FakeRepository::Pointer r2(new FakeRepository(&e, RepositoryName("repo2")));
             r2->add_version("cat", "pkg", "1")->slot = SlotName("a");
             r2->add_version("cat", "pkg", "3")->slot = SlotName("b");
             p.add_repository(r2);
@@ -195,7 +195,7 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            FakeRepository::Pointer r1(new FakeRepository(RepositoryName("repo1")));
+            FakeRepository::Pointer r1(new FakeRepository(&e, RepositoryName("repo1")));
             r1->add_package(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"));
             r1->add_package(CategoryNamePart("cat-one") + PackageNamePart("pkg-two"));
             r1->add_package(CategoryNamePart("cat-two") + PackageNamePart("pkg-two"));
@@ -203,7 +203,7 @@ namespace test_cases
             p.add_repository(r1);
             TEST_CHECK(true);
 
-            FakeRepository::Pointer r2(new FakeRepository(RepositoryName("repo2")));
+            FakeRepository::Pointer r2(new FakeRepository(&e, RepositoryName("repo2")));
             r1->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"));
             r1->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"));
             p.add_repository(r2);

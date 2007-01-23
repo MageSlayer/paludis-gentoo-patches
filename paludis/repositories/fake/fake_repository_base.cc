@@ -63,22 +63,26 @@ namespace paludis
         /// (Empty) provides map.
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
+        const Environment * const env;
+
         /// Constructor.
-        Implementation();
+        Implementation(const Environment * const);
     };
 
-    Implementation<FakeRepositoryBase>::Implementation() :
-        category_names(new CategoryNamePartCollection::Concrete)
+    Implementation<FakeRepositoryBase>::Implementation(const Environment * const e) :
+        category_names(new CategoryNamePartCollection::Concrete),
+        env(e)
     {
     }
 }
 
-FakeRepositoryBase::FakeRepositoryBase(const RepositoryName & our_name, const RepositoryCapabilities & caps,
+FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
+        const RepositoryName & our_name, const RepositoryCapabilities & caps,
         const std::string & f) :
     Repository(our_name, caps, f),
     RepositoryMaskInterface(),
     RepositoryUseInterface(),
-    PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>)
+    PrivateImplementationPattern<FakeRepositoryBase>(new Implementation<FakeRepositoryBase>(e))
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
     config_info->add_kv("format", "fake");
@@ -292,5 +296,11 @@ FakeRepositoryBase::do_describe_use_flag(const UseFlagName &,
         const PackageDatabaseEntry * const) const
 {
     return "";
+}
+
+const Environment *
+FakeRepositoryBase::environment() const
+{
+    return _imp->env;
 }
 
