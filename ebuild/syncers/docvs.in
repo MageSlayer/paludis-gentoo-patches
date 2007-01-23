@@ -1,27 +1,84 @@
 #!/bin/bash
 
-LOCAL="$1"
-REMOTE="$2"
+source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
 
-if [[ "${REMOTE}" == cvs+pserver* ]]; then
-    PSERVER=true
-    REMOTE=":pserver:${REMOTE:14}"
-elif [[ "${REMOTE}" == cvs+ssh* || "${REMOTE}" == cvs+ext* ]]; then
-    PSERVER=false
-    REMOTE=":ext:${REMOTE:10}"
+LOCAL=
+REMOTE=
+
+CVS_OPTIONS=( )
+CVS_CHECKOUT_OPTIONS=( )
+
+while [[ $# -gt 0 ]]; do
+    case "${1}" in
+
+        --cvs-option=*)
+            CVS_OPTIONS+=( "${1#*=}" )
+            ;;
+
+        --cvs-checkout-option=*)
+            CVS_CHECKOUT_OPTIONS+=( "${1#*=}" )
+            ;;
+
+        --help)
+            PROTO="${0##*/do}"
+            if [[ "${PROTO}" == cvs+pserver || "${PROTO}" == cvs+ext || "${PROTO}" == cvs+ssh ]]; then
+                echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER:/PATH:MODULE"
+            else
+                ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
+            fi
+
+            echo "    Options:"
+            echo "        --cvs-option=OPTION             Pass OPTION to cvs as a global option"
+            echo "        --cvs-checkout-option=OPTION    Pass OPTION to cvs checkout"
+            exit 0
+            ;;
+
+        --*)
+            ewarn "${0}: unknown option '${1%%=*}'"
+            ;;
+
+        *)
+            if [[ -z "${LOCAL}" ]]; then
+                LOCAL="${1}"
+            elif [[ -z "${REMOTE}" ]]; then
+                REMOTE="${1}"
+            else
+                eerror "${0}: extra argument '${1}'"
+                exit 1
+            fi
+            ;;
+                
+    esac
+    shift
+done
+
+if [[ -z "${LOCAL}" ]]; then
+    eerror "${0}: unspecified local repository directory"
+    exit 1
+elif [[ -z "${REMOTE}" ]]; then
+    eerror "${0}: unspecified remote repository URL"
+    exit 1
 fi
 
-MODULE="${REMOTE##*:}"
-if [[ "${MODULE}" == "${REMOTE}" ]]; then
-    source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
+PSERVER=false
+SERVER="${REMOTE}"
+if [[ "${SERVER}" == cvs+pserver* ]]; then
+    PSERVER=true
+    SERVER=":pserver:${SERVER#cvs+pserver://}"
+elif [[ "${SERVER}" == cvs+ssh* || "${SERVER}" == cvs+ext* ]]; then
+    SERVER=":ext:${SERVER#cvs+???://}"
+fi
+
+MODULE="${SERVER##*:}"
+if [[ "${MODULE}" == "${SERVER}" ]]; then
     eerror "'${REMOTE}' is not a valid URL for a CVS repository"
     exit 1
 fi
-REMOTE="${REMOTE%:*}"
+CVSROOT="${SERVER%:*}"
 
 LOCAL=${LOCAL%/}
 WORKING="${LOCAL%/*}"
 [[ ! -d "${WORKING}" ]] && mkdir -p "${WORKING}"
-cd "${WORKING}" && ( ! ${PSERVER} || cvs -d "${REMOTE}" login ) &&
-    cvs -d "${REMOTE}" checkout -P -d "${LOCAL##*/}" "${MODULE}"
+cd "${WORKING}" && ( ! ${PSERVER} || cvs "${CVS_OPTIONS[@]}" -d "${CVSROOT}" login ) &&
+    cvs -d "${CVSROOT}" "${CVS_OPTIONS[@]}" checkout -P -d "${LOCAL##*/}" "${CVS_CHECKOUT_OPTIONS[@]}" "${MODULE}"
 

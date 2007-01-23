@@ -1,19 +1,79 @@
 #!/bin/bash
 
-LOCAL="$1"
-REMOTE="$2"
+source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
 
-[[ "${REMOTE}" == git+http* ]] && REMOTE="${REMOTE:4}"
+LOCAL=
+REMOTE=
+
+GIT_CLONE_OPTIONS=( )
+GIT_PULL_OPTIONS=( )
+
+while [[ $# -gt 0 ]]; do
+    case "${1}" in
+
+        --git-clone-option=*)
+            GIT_CLONE_OPTIONS+=( "${1#*=}" )
+            ;;
+
+        --git-pull-option=*)
+            GIT_PULL_OPTIONS+=( "${1#*=}" )
+            ;;
+
+        --help)
+            PROTO="${0##*/do}"
+            if [[ "${PROTO}" == git ]]; then
+                echo "    URL syntax: git://SERVER/PATH"
+            elif [[ "${PROTO}" == git+ssh ]]; then
+                echo "    URL syntax: git+ssh://[USERNAME[:PASSWORD]@]SERVER/PATH"
+            elif [[ "${PROTO}" == git+http ]]; then
+                echo "    URL syntax: git+http://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
+            else
+                ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
+            fi
+
+            echo "    Options:"
+            echo "        --git-clone-option=OPTION       Pass OPTION to git clone"
+            echo "        --git-pull-option=OPTION        Pass OPTION to git pull"
+            exit 0
+            ;;
+
+        --*)
+            ewarn "${0}: unknown option '${1%%=*}'"
+            ;;
+
+        *)
+            if [[ -z "${LOCAL}" ]]; then
+                LOCAL="${1}"
+            elif [[ -z "${REMOTE}" ]]; then
+                REMOTE="${1}"
+            else
+                eerror "${0}: extra argument '${1}'"
+                exit 1
+            fi
+            ;;
+                
+    esac
+    shift
+done
+
+if [[ -z "${LOCAL}" ]]; then
+    eerror "${0}: unspecified local repository directory"
+    exit 1
+elif [[ -z "${REMOTE}" ]]; then
+    eerror "${0}: unspecified remote repository URL"
+    exit 1
+fi
+
+[[ "${REMOTE}" == git+http* ]] && REMOTE="${REMOTE#git+}"
 
 if [[ -d "${LOCAL}" && ! -d "${LOCAL}/.git" ]]; then
-    source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
     eerror "'${LOCAL}' exists but it is not a Git repository"
     exit 1
 fi
 
 if [[ -d "${LOCAL}/.git" ]]; then
-    cd "${LOCAL}" && git pull
+    cd "${LOCAL}" && git pull "${GIT_PULL_OPTIONS[@]}"
 else
-    git clone "${REMOTE}" "${LOCAL}"
+    git clone "${GIT_CLONE_OPTIONS[@]}" "${REMOTE}" "${LOCAL}"
 fi
 

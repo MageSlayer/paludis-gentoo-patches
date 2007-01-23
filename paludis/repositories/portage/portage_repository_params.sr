@@ -17,7 +17,7 @@ make_class_PortageRepositoryParams()
     key securitydir FSEntry
     key newsdir FSEntry
     key sync std::string
-    key sync_exclude std::string
+    key sync_options std::string
     key root FSEntry
     key buildroot FSEntry
 

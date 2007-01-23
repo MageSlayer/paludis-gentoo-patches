@@ -3,7 +3,7 @@
 
 make_class_SyncOptions()
 {
-    key exclude_from std::string
+    key options std::string
 
     doxygen_comment << "END"
         /**

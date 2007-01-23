@@ -59,8 +59,8 @@ namespace paludis
         /// Sync URL
         std::string sync;
 
-        /// Sync exclude file
-        std::string sync_exclude;
+        /// Sync options
+        std::string sync_options;
 
         /// (Empty) provides map.
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
@@ -79,7 +79,7 @@ namespace paludis
         name(p.name),
         location(p.location),
         sync(p.sync),
-        sync_exclude(p.sync_exclude),
+        sync_options(p.sync_options),
         environment(p.environment)
     {
     }
@@ -111,7 +111,7 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
 {
     RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
     config_info->add_kv("sync", _imp->sync);
-    config_info->add_kv("sync_exclude", _imp->sync_exclude);
+    config_info->add_kv("sync_options", _imp->sync_options);
     config_info->add_kv("location", stringify(_imp->location));
 
     _info->add_section(config_info);
@@ -202,15 +202,24 @@ NothingRepository::make_nothing_repository(
         throw NothingRepositoryConfigurationError("Key 'name' not specified or empty in '"
                 + repo_file + "'");
 
-    std::string sync_exclude;
+    std::string sync_options;
+    if (m->end() != m->find("sync_options"))
+        sync_options = m->find("sync_options")->second;
+
     if (m->end() != m->find("sync_exclude"))
-        sync_exclude = m->find("sync_exclude")->second;
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, "The sync_exclude key in '"
+                + repo_file + "' is deprecated in favour of sync_options = --exclude-from=");
+        if (! sync_options.empty())
+            sync_options += " ";
+        sync_options += "--exclude-from='" + m->find("sync_exclude")->second + "'";
+    }
 
     return CountedPtr<Repository>(new NothingRepository(NothingRepositoryParams::create()
                 .name(name)
                 .location(location)
                 .sync(sync)
-                .sync_exclude(sync_exclude)
+                .sync_options(sync_options)
                 .environment(env)));
 }
 
@@ -238,7 +247,7 @@ NothingRepository::do_sync() const
                              .environment(_imp->environment)
                              .local(stringify(_imp->location))
                              .remote(_imp->sync));
-    SyncOptions opts(_imp->sync_exclude);
+    SyncOptions opts(_imp->sync_options);
     syncer.sync(opts);
 
     return true;

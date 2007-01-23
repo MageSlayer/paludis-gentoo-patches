@@ -6,7 +6,7 @@ make_class_NothingRepositoryParams()
     key location FSEntry
     key name std::string
     key sync std::string
-    key sync_exclude std::string
+    key sync_options std::string
 
     key environment "const Environment *"
 

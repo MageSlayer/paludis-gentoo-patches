@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-CLEANFILES = *~ .keep docvs+ext docvs+pserver docvs+ssh dodarcs+http dodarcs+ssh dofile dogit dogit+http dogit+ssh dorsync dosvn dosvn+http dosvn+https dosvn+ssh
+CLEANFILES = *~ .keep docvs+ext docvs+pserver docvs+ssh dodarcs+http dodarcs+ssh dofile dogit dogit+http dogit+ssh dorsync dosvn dosvn+http dosvn+https dosvn+ssh dotar+file dotar+ftp dotar+http
 SUBDIRS = .
 
 .keep :
@@ -21,7 +21,10 @@ libexecprog_SCRIPTS = \
 	dosvn \
 	dosvn+http \
 	dosvn+https \
-	dosvn+ssh
+	dosvn+ssh \
+	dotar+file \
+	dotar+ftp \
+	dotar+http
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_EBUILD_DIR="$(srcdir)/paludis/syncers/" \
@@ -32,7 +35,7 @@ installusersyncersdir = $(datadir)/paludis/syncers
 installusersyncers_DATA = .keep
 
 TESTS =
-EXTRA_DIST = $(libexecprog_SCRIPTS) docvs.in dodarcs.in dogit.in dorsync.in dosvn.in
+EXTRA_DIST = $(libexecprog_SCRIPTS) docvs.in dodarcs.in dogit.in dorsync.in dosvn.in dotar.in
 
 check_SCRIPTS =
 check_PROGRAMS = $(TESTS)
@@ -48,6 +51,8 @@ dogit dogit+http dogit+ssh : dogit.in
 dofile dorsync : dorsync.in
 	cat $? > $@
 dosvn dosvn+http dosvn+https dosvn+ssh : dosvn.in
+	cat $? > $@
+dotar+file dotar+ftp dotar+http : dotar.in
 	cat $? > $@
 
 built-sources : $(BUILT_SOURCES)

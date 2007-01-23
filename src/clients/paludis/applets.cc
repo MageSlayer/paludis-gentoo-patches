@@ -26,11 +26,13 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/environment/default/default_environment.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <string>
 #include <set>
+#include <map>
 
 /** \file
  * Handle the --has-version, --best-version and various --list actions for the
@@ -187,9 +189,9 @@ int do_list_repository_formats()
 
 int do_list_sync_protocols()
 {
-    std::set<std::string> keys;
-
+    std::map<std::string, std::string> syncers;
     Environment * const env(DefaultEnvironment::get_instance());
+
     std::list<std::string> syncers_dirs;
     WhitespaceTokeniser::get_instance()->tokenise(env->syncers_dirs(),
             std::back_inserter(syncers_dirs));
@@ -208,19 +210,26 @@ int do_list_sync_protocols()
                    0 == name.compare(0, 2, "do", 0, 2))
             {
                 name.erase(0, 2);
-                keys.insert(name);
+                if (syncers.find(name) == syncers.end())
+                    syncers[name] = stringify(*f);
             }
         }
     }
 
     int return_code(1);
 
-    if (! keys.empty())
+    if (! syncers.empty())
     {
         return_code = 0;
-        for (std::set<std::string>::const_iterator k(keys.begin()), k_end(keys.end()) ;
-                k != k_end ; ++k)
-            std::cout << "* " << colour(cl_key_name, *k) << std::endl;
+        for (std::map<std::string, std::string>::const_iterator s(syncers.begin()), s_end(syncers.end()) ;
+                s != s_end ; ++s)
+        {
+            std::cout << "* " << colour(cl_key_name, s->first) << std::endl;
+            MakeEnvCommand cmd(make_env_command(s->second + " --help")
+                        ("PALUDIS_FETCHERS_DIRS", env->fetchers_dirs())
+                        ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
+            run_command(cmd);
+        }
     }
 
     return return_code;

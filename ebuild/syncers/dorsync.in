@@ -1,18 +1,71 @@
 #!/bin/bash
 
-LOCAL="$1"
-REMOTE="$2"
 
-[[ "${REMOTE}" == file* ]] && REMOTE="${REMOTE:7}"
+source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
 
-if [[ -n "${PALUDIS_SYNC_EXCLUDE_FROM}" ]]; then
-    EXCLUDE=( --exclude-from "${PALUDIS_SYNC_EXCLUDE_FROM}" )
-else
-    EXCLUDE=( )
+LOCAL=
+REMOTE=
+
+RSYNC_OPTIONS=( )
+
+while [[ $# -gt 0 ]]; do
+    case "${1}" in
+
+        --exclude-from=*)
+            RSYNC_OPTIONS+=( --exclude-from "${1#*=}" )
+            ;;
+
+        --rsync-option=*)
+            RSYNC_OPTIONS+=( "${1#*=}" )
+            ;;
+
+        --help)
+            PROTO="${0##*/do}"
+            if [[ "${PROTO}" == rsync ]]; then
+                echo "    URL syntax: ${PROTO}://[USERNAME@]SERVER[:PORT]/PATH"
+            elif [[ "${PROTO}" == file ]]; then
+                echo "    URL syntax: file:///PATH"
+            else
+                ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
+            fi
+
+            echo "    Options:"
+            echo "        --exclude-from=FILE             Use FILE as a list of exclude patterns"
+            echo "        --rsync-option=OPTION           Pass OPTION to rsync"
+            exit 0
+            ;;
+
+        --*)
+            ewarn "${0}: unknown option '${1%%=*}'"
+            ;;
+
+        *)
+            if [[ -z "${LOCAL}" ]]; then
+                LOCAL="${1}"
+            elif [[ -z "${REMOTE}" ]]; then
+                REMOTE="${1}"
+            else
+                eerror "${0}: extra argument '${1}'"
+                exit 1
+            fi
+            ;;
+                
+    esac
+    shift
+done
+
+if [[ -z "${LOCAL}" ]]; then
+    eerror "${0}: unspecified local repository directory"
+    exit 1
+elif [[ -z "${REMOTE}" ]]; then
+    eerror "${0}: unspecified remote repository URL"
+    exit 1
 fi
+
+REMOTE="${REMOTE#file://}"
 
 rsync --recursive --links --safe-links --perms --times --compress --force \
     --whole-file --delete --delete-after --stats --timeout=180 \
     --exclude=/distfiles --exclude=/packages --exclude=/local \
-    --exclude=/.cache --progress "${EXCLUDE[@]}" "${REMOTE}" "${LOCAL}/"
+    --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${REMOTE}" "${LOCAL}/"
 

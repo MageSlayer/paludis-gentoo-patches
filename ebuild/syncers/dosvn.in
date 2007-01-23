@@ -1,10 +1,63 @@
 #!/bin/bash
 
-LOCAL="$1"
-REMOTE="$2"
+source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
 
-[[ "${REMOTE}" == svn+http* || "${REMOTE}" == svn+https* ]] &&
-    REMOTE="${REMOTE:4}"
+LOCAL=
+REMOTE=
 
-svn checkout "${REMOTE}" "${LOCAL}/"
+SVN_CHECKOUT_OPTIONS=( )
+
+while [[ $# -gt 0 ]]; do
+    case "${1}" in
+
+        --svn-checkout-option=*)
+            SVN_CHECKOUT_OPTIONS+=( "${1#*=}" )
+            ;;
+
+        --help)
+            PROTO="${0##*/do}"
+            if [[ "${PROTO}" == svn ]]; then
+                echo "    URL syntax: svn://[USERNAME@]SERVER/PATH"
+            elif [[ "${PROTO}" == svn+ssh ]]; then
+                echo "    URL syntax: svn+ssh://[USERNAME[:PASSWORD]@]SERVER:/PATH"
+            elif [[ "${PROTO}" == svn+http || "${PROTO}" == svn+https ]]; then
+                echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
+            else
+                ewarn "URL syntax for ${PROTO} is unknown.  This script will likely not work with the ${PROTO} protocol"
+            fi
+            echo "    Options:"
+            echo "        --svn-checkout-option=OPTION    Pass OPTION to svn checkout"
+            exit 0
+            ;;
+
+        --*)
+            ewarn "${0}: unknown option '${1%%=*}'"
+            ;;
+
+        *)
+            if [[ -z "${LOCAL}" ]]; then
+                LOCAL="${1}"
+            elif [[ -z "${REMOTE}" ]]; then
+                REMOTE="${1}"
+            else
+                eerror "${0}: extra argument '${1}'"
+                exit 1
+            fi
+            ;;
+                
+    esac
+    shift
+done
+
+if [[ -z "${LOCAL}" ]]; then
+    eerror "${0}: unspecified local repository directory"
+    exit 1
+elif [[ -z "${REMOTE}" ]]; then
+    eerror "${0}: unspecified remote repository URL"
+    exit 1
+fi
+
+[[ "${REMOTE}" == svn+http* ]] && REMOTE="${REMOTE#svn+}"
+
+svn checkout "${SVN_CHECKOUT_OPTIONS[@]}" "${REMOTE}" "${LOCAL}/"
 

@@ -114,9 +114,18 @@ paludis::make_ebuild_repository(
     if (m->end() != m->find("sync"))
             sync = m->find("sync")->second;
 
-    std::string sync_exclude;
+    std::string sync_options;
+    if (m->end() != m->find("sync_options"))
+        sync_options = m->find("sync_options")->second;
+
     if (m->end() != m->find("sync_exclude"))
-        sync_exclude = m->find("sync_exclude")->second;
+    {
+        Log::get_instance()->message(ll_warning, lc_no_context, "The sync_exclude key in '"
+                + repo_file + "' is deprecated in favour of sync_options = --exclude-from=");
+        if (! sync_options.empty())
+            sync_options += " ";
+        sync_options += "--exclude-from='" + m->find("sync_exclude")->second + "'";
+    }
 
     std::string root;
     if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
@@ -141,7 +150,7 @@ paludis::make_ebuild_repository(
                 .setsdir(setsdir)
                 .newsdir(newsdir)
                 .sync(sync)
-                .sync_exclude(sync_exclude)
+                .sync_options(sync_options)
                 .root(root)
                 .buildroot(buildroot)));
 }

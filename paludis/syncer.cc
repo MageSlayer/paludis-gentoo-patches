@@ -20,7 +20,6 @@
  */
 
 #include "syncer.hh"
-#include <paludis/about.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -94,21 +93,9 @@ void
 DefaultSyncer::sync(const SyncOptions & opts) const
 {
 
-    MakeEnvCommand cmd(make_env_command(stringify(_syncer) + " '" + _local + "' '" + _remote + "'")
-                ("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
-                         stringify(PALUDIS_VERSION_MINOR) + "." +
-                         stringify(PALUDIS_VERSION_MICRO) +
-                         (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
-                          std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
-                ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
-                ("PALUDIS_BASHRC_FILES", _environment->bashrc_files())
-                ("PALUDIS_HOOK_DIRS", _environment->hook_dirs())
+    MakeEnvCommand cmd(make_env_command(stringify(_syncer) + " " + opts.options + " '" + _local + "' '" + _remote + "'")
                 ("PALUDIS_FETCHERS_DIRS", _environment->fetchers_dirs())
-                ("PALUDIS_SYNCERS_DIRS", _environment->syncers_dirs())
-                ("PALUDIS_COMMAND", _environment->paludis_command())
-                ("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                ("PALUDIS_SYNC_EXCLUDE_FROM", opts.exclude_from));
+                ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
     if (run_command(cmd))
         throw SyncFailedError(_local, _remote);

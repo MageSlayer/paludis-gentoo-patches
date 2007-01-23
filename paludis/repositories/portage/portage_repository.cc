@@ -296,7 +296,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     config_info->add_kv("root", stringify(_imp->params.root));
     config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
     config_info->add_kv("sync", _imp->params.sync);
-    config_info->add_kv("sync_exclude", _imp->params.sync_exclude);
+    config_info->add_kv("sync_options", _imp->params.sync_options);
 
     _info->add_section(config_info);
 }
@@ -793,7 +793,7 @@ PortageRepository::do_sync() const
                                 .environment(_imp->params.environment)
                                 .local(stringify(_imp->params.location))
                                 .remote(*s));
-        SyncOptions opts(_imp->params.sync_exclude);
+        SyncOptions opts(_imp->params.sync_options);
         try
         {
             syncer.sync(opts);
