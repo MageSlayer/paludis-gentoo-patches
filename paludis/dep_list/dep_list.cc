@@ -1297,6 +1297,10 @@ namespace
                 return false;
 
             default:
+                if (0 == pkg.compare(pkg.length() - 6, 6, "-darcs"))
+                    return true;
+
+            case 5:
                 if (0 == pkg.compare(pkg.length() - 5, 5, "-live"))
                     return true;
 

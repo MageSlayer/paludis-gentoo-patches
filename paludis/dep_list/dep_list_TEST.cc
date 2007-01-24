@@ -1480,12 +1480,13 @@ namespace test_cases
             FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
             repo->add_version("cat", "zero", "1")->deps.build_depend_string =
-                "( cat/one cat/two cat/three-live cat/four-cvs cat/five-svn )";
+                "( cat/one cat/two cat/three-live cat/four-cvs cat/five-svn cat/six-darcs )";
             repo->add_version("cat", "one", "scm");
             repo->add_version("cat", "two", "2");
             repo->add_version("cat", "three-live", "0");
             repo->add_version("cat", "four-cvs", "0");
             repo->add_version("cat", "five-svn", "0");
+            repo->add_version("cat", "six-darcs", "0");
 
             FakeInstalledRepository::Pointer installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
@@ -1495,12 +1496,14 @@ namespace test_cases
             installed_repo->add_version("cat", "three-live", "0");
             installed_repo->add_version("cat", "four-cvs", "0");
             installed_repo->add_version("cat", "five-svn", "0");
+            installed_repo->add_version("cat", "six-darcs", "0");
 
             DepList d1(&env, DepListOptions());
             d1.options()->reinstall_scm = dl_reinstall_scm_always;
             d1.add(PortageDepParser::parse("cat/zero"));
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/one-scm:0::repo cat/two-2:0::installed_repo "
-                    "cat/three-live-0:0::repo cat/four-cvs-0:0::repo cat/five-svn-0:0::repo cat/zero-1:0::repo");
+                    "cat/three-live-0:0::repo cat/four-cvs-0:0::repo cat/five-svn-0:0::repo cat/six-darcs-0:0::repo "
+                    "cat/zero-1:0::repo");
         }
     } test_dep_list_upgrade_reinstall_scm;
 }
