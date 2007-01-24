@@ -11,7 +11,9 @@ of every change, see the ChangeLog.
     everything that needs to be unmasked as part of the output. Post
     dependencies can now be installed much later on if necessary to resolve
     cycles. Deps in the form || ( a >=b-2 ) where b-1 is installed are handled
-    more elegantly.
+    more elegantly. Deps in the form || ( =a-1 =a-2 ) are rewritten to a single
+    package dependency. Blockers are now handled correctly. Downgrades are now
+    user controllable.
 
     * New adjutrix --what-needs-keywording action, for use by arch and security
     teams to obtain a full list of what would need to be keyworded to mark a
@@ -19,6 +21,22 @@ of every change, see the ChangeLog.
 
     * In repository configurations, format=portage is deprecated in favour of
     format=ebuild, and format=nothing is deprecated in favour of hooks.
+
+    * A bug whereby Paludis would sometimes use the default virtual provider
+    even when an alternate virtual provider is installed is fixed.
+
+    * We now work around a sandbox 'feature' that results in PATH being
+    clobbered. This fixes build issues with openoffice, dev86 and probably
+    others.
+
+    * Emulate Portage's silly and highly limited hooks system so that
+    misbehaving Java ebuilds still work. Users should not use these hooks for
+    anything.
+
+    * Syncers are now pluggable. Syncing via darcs and tar+http is now possible.
+    Syncers can now take various options via the sync_options key (use
+    --list-sync-protocols for a list), and sync_exclude is deprecated. Multiple
+    syncers can be specifed, in which case later syncers are used as a fallback.
 
     * Paludis now has a logo.
 
