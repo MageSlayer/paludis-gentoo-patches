@@ -29,8 +29,7 @@ libpaludisvdbrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSIO
 paludis_repositories_vdb_includedir = $(includedir)/paludis/repositories/vdb/
 paludis_repositories_vdb_include_HEADERS = \
 	vdb_repository.hh \
-	vdb_repository-sr.hh \
-	vdb_repository-sr.cc
+	vdb_repository-sr.hh
 
 if ! MONOLITHIC
 
