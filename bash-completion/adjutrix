@@ -35,8 +35,10 @@ _adjutrix() {
     opts="--find-stable-candidates -s \
         --find-dropped-keywords -d \
         --find-insecure-packages -i \
+        --find-unused-packages -U \
         --keyword-graph -k \
         --reverse-deps -r \
+        --what-needs-keywording -w \
         --display-profiles-use -u \
         --display-default-system-resolution -S \
         --version -V \
@@ -84,6 +86,11 @@ _adjutrix() {
 
                 --find-stable-candidates|-s|--find-dropped-keywords|-d)
                     [[ -z "${repodir}" ]] && return 0
+                    COMPREPLY=($(compgen -W "$(< ${repodir}/profiles/arch.list)" -- "${cur}"))
+                    return 0
+                    ;;
+                --what-needs-keywording|-w)
+                    # still needs some improvement to do package names as the second arg...
                     COMPREPLY=($(compgen -W "$(< ${repodir}/profiles/arch.list)" -- "${cur}"))
                     return 0
                     ;;
