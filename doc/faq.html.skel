@@ -51,6 +51,30 @@ the code now does.</p>
 
 <p>Because we don't have the time or the manpower to write it in C.</p>
 
+<h3 id="contribute">Contributing</h3>
+
+<p>Contributions to Paludis are welcome:</p>
+
+<ul>
+    <li>Patches can be submitted via <a
+        href="http://trac.pioto.org:8000/paludis/">trac</a>. It's best to
+    discuss ideas before spending too much time on the code, because we don't
+    have any qualms about rejecting things we think are a bad idea.</li>
+
+    <li>We could probably use some more documentation. Again, ask first.</li>
+
+    <li>Translations aren't currently possible. We don't have anything against
+    internationalisation in principle, but as we're not gettextised it'll be a
+    fair bit of effort.</li>
+
+    <li>If you're thinking about donating cash, hardware, etc., it's probably
+    easiest to talk to us on IRC first. Alternatively, Ciaran has an <a
+        href="http://www.amazon.co.uk/gp/registry/registry.html/026-3388518-6349216?ie=UTF8&amp;type=wishlist&amp;id=16LVEYP610005">Amazon
+        wishlist</a>.</li>
+
+    <li>We're pretty much ok for hosting currently.</li>
+</ul>
+
 <h2 id="howdoi">How do I...</h2>
 
 <h3 id="ccache">Use <code>ccache</code></h3>
