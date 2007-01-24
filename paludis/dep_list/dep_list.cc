@@ -19,8 +19,10 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_atom_pretty_printer.hh>
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/dep_list/exceptions.hh>
+#include <paludis/dep_list/range_rewriter.hh>
 #include <paludis/match_package.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/collection_concrete.hh>
@@ -412,6 +414,14 @@ DepList::QueryVisitor::visit(const AnyDepAtom * const a)
     std::copy(a->begin(), a->end(), filter_inserter(std::back_inserter(viable_children),
                 IsViableAnyDepAtomChild(d->_imp->env, d->_imp->current_pde())));
 
+    RangeRewriter r;
+    std::for_each(viable_children.begin(), viable_children.end(), accept_visitor(&r));
+    if (r.atom())
+    {
+        viable_children.clear();
+        viable_children.push_back(r.atom());
+    }
+
     result = true;
     for (std::list<DepAtom::ConstPointer>::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
@@ -761,6 +771,14 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
 
     if (viable_children.empty())
         return;
+
+    RangeRewriter r;
+    std::for_each(viable_children.begin(), viable_children.end(), accept_visitor(&r));
+    if (r.atom())
+    {
+        viable_children.clear();
+        viable_children.push_back(r.atom());
+    }
 
     /* see if any of our children is already installed. if any is, add it so that
      * any upgrades kick in */

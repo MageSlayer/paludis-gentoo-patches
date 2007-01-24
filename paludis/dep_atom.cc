@@ -143,13 +143,15 @@ PackageDepAtom::PackageDepAtom(const PackageDepAtom & other) :
     StringDepAtom(stringify(other)),
     Visitable<PackageDepAtom, DepAtomVisitorTypes>(other),
     _package(other._package),
-    _version_requirements(other._version_requirements),
+    _version_requirements(new VersionRequirements::Concrete),
     _version_requirements_mode(other._version_requirements_mode),
     _slot(other._slot),
     _repository(other._repository),
     _use_requirements(other._use_requirements),
     _tag(other._tag)
 {
+    std::copy(other._version_requirements->begin(), other._version_requirements->end(),
+            _version_requirements->inserter());
 }
 
 PackageDepAtom::PackageDepAtom(const std::string & ss) :
@@ -325,14 +327,20 @@ paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
 
     if (a.version_requirements_ptr())
     {
-        bool need_comma(false);
+        bool need_comma(false), need_hyphen(true);
         for (VersionRequirements::Iterator r(a.version_requirements_ptr()->begin()),
                 r_end(a.version_requirements_ptr()->end()) ; r != r_end ; ++r)
         {
             if (need_comma)
                 s << ",";
 
-            s << "-" << r->version_spec;
+            if (need_hyphen)
+            {
+                s << "-";
+                need_hyphen = false;
+            }
+
+            s << r->version_spec;
 
             if (r->version_operator == vo_equal_star)
                 s << "*";

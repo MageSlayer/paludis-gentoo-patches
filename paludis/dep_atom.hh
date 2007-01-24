@@ -335,6 +335,8 @@ namespace paludis
             UseRequirements::Pointer _use_requirements;
             DepTag::ConstPointer _tag;
 
+            const PackageDepAtom & operator= (const PackageDepAtom &);
+
         public:
             ///\name Basic operations
             ///\{
@@ -375,11 +377,27 @@ namespace paludis
             }
 
             /**
+             * Fetch the version requirements (may be a zero pointer).
+             */
+            VersionRequirements::Pointer version_requirements_ptr()
+            {
+                return _version_requirements;
+            }
+
+            /**
              * Fetch the version requirements mode.
              */
             VersionRequirementsMode version_requirements_mode() const
             {
                 return _version_requirements_mode;
+            }
+
+            /**
+             * Set the version requirements mode.
+             */
+            void set_version_requirements_mode(const VersionRequirementsMode m)
+            {
+                _version_requirements_mode = m;
             }
 
             /**
