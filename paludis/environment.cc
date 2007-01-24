@@ -150,6 +150,8 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
             WhitespaceTokeniser::get_instance()->tokenise(
                     metadata->get_ebuild_interface()->keywords,
                     create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
+            if (keywords.empty())
+                keywords.insert(KeywordName("empty"));
 
             result.set(mr_keyword);
             for (std::set<KeywordName>::const_iterator i(keywords.begin()),
