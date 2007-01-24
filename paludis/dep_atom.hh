@@ -329,6 +329,7 @@ namespace paludis
         private:
             QualifiedPackageName _package;
             VersionRequirements::Pointer _version_requirements;
+            VersionRequirementsMode _version_requirements_mode;
             CountedPtr<SlotName, count_policy::ExternalCountTag> _slot;
             CountedPtr<RepositoryName, count_policy::ExternalCountTag> _repository;
             UseRequirements::Pointer _use_requirements;
@@ -371,6 +372,14 @@ namespace paludis
             VersionRequirements::ConstPointer version_requirements_ptr() const
             {
                 return _version_requirements;
+            }
+
+            /**
+             * Fetch the version requirements mode.
+             */
+            VersionRequirementsMode version_requirements_mode() const
+            {
+                return _version_requirements_mode;
             }
 
             /**

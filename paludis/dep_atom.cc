@@ -130,6 +130,7 @@ PackageDepAtom::PackageDepAtom(const QualifiedPackageName & our_package) :
     StringDepAtom(stringify(our_package)),
     _package(our_package),
     _version_requirements(0),
+    _version_requirements_mode(vr_and),
     _slot(0),
     _repository(0),
     _use_requirements(0),
@@ -143,6 +144,7 @@ PackageDepAtom::PackageDepAtom(const PackageDepAtom & other) :
     Visitable<PackageDepAtom, DepAtomVisitorTypes>(other),
     _package(other._package),
     _version_requirements(other._version_requirements),
+    _version_requirements_mode(other._version_requirements_mode),
     _slot(other._slot),
     _repository(other._repository),
     _use_requirements(other._use_requirements),
@@ -154,6 +156,7 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
     StringDepAtom(ss),
     _package(CategoryNamePart("later"), PackageNamePart("later")),
     _version_requirements(0),
+    _version_requirements_mode(vr_and),
     _slot(0),
     _repository(0),
     _use_requirements(0),
@@ -288,19 +291,33 @@ paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
 {
     if (a.version_requirements_ptr())
     {
-        bool need_comma(false);
+        bool need_op(false);
         for (VersionRequirements::Iterator r(a.version_requirements_ptr()->begin()),
                 r_end(a.version_requirements_ptr()->end()) ; r != r_end ; ++r)
         {
-            if (need_comma)
-                s << ",";
+            if (need_op)
+            {
+                switch (a.version_requirements_mode())
+                {
+                    case vr_and:
+                        s << "&";
+                        break;
+
+                    case vr_or:
+                        s << "|";
+                        break;
+
+                    case last_vr:
+                        ;
+                }
+            }
 
             if (r->version_operator == vo_equal_star)
                 s << "=";
             else
                s << r->version_operator;
 
-            need_comma = true;
+            need_op = true;
         }
     }
 
