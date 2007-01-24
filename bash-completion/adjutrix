@@ -49,8 +49,8 @@ _adjutrix() {
         --repository-dir -D \
         --category -C \
         --package -P \
-        --profile -p \
-        --unstable -U \
+        --profile \
+        --unstable \
         --write-cache-dir"
 
     case "${cur}" in

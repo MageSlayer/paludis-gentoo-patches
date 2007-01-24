@@ -23,8 +23,8 @@ _adjutrix() {
         '(--package -P)'{--package,-P}'[Matches with this package name only (may be specified multiple times)]:Packages:'
     )
     profile_options=(
-        '(--profile -p)'{--profile,-p}'[Display results for this profile path, rather than all profiles (may be specified multiple times)]:Profile:_files -/'
-        '(--unstable -U)'{--unstable,-U}'[Accept ~arch as well as arch]'
+        '--profile[Display results for this profile path, rather than all profiles (may be specified multiple times)]:Profile:_files -/'
+        '--unstable[Accept ~arch as well as arch]'
     )
     general_options=(
         '--log-level[Specify the log level]:log level:((debug\:Show\ debug\ output qa\:Show\ QA\ messages\ and\ warnings\ only warning\:Show\ warnings\ only silent\:Suppress\ all\ log\ messages))' 

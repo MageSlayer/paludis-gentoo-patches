@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -78,9 +78,9 @@ CommandLine::CommandLine() :
 
     profile_args(this, "Profile action options",
             "Options which are relevant for profile actions."),
-    a_profile(&profile_args,    "profile",    'p',
+    a_profile(&profile_args,    "profile",    '\0',
             "Display results for this profile path, rather than all profiles (may be specified multiple times)"),
-    a_unstable(&profile_args,   "unstable",    'U',
+    a_unstable(&profile_args,   "unstable",    '\0',
             "Accept ~arch as well as arch"),
 
     configuration_options(this, "Configuration options",
