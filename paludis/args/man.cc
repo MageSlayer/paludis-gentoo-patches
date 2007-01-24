@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,10 +19,78 @@
 
 #include "man.hh"
 #include <ostream>
+#include <sstream>
 
 using namespace paludis;
 using namespace paludis::args;
 using std::endl;
+
+namespace
+{
+    struct ExtraText :
+        ArgsVisitorTypes::ConstVisitor
+    {
+        std::stringstream s;
+
+        ExtraText()
+        {
+        }
+
+        void visit(const ArgsOption * const)
+        {
+        }
+
+        void visit(const StringArg * const)
+        {
+        }
+
+        void visit(const AliasArg * const)
+        {
+        }
+
+        void visit(const SwitchArg * const)
+        {
+        }
+
+        void visit(const IntegerArg * const)
+        {
+        }
+
+        void visit(const EnumArg * const e)
+        {
+            for (EnumArg::AllowedArgIterator a(e->begin_allowed_args()), a_end(e->end_allowed_args()) ;
+                    a != a_end ; ++a)
+            {
+                s << ".RS" << endl;
+                s << ".TP" << endl;
+                s << ".B \"" << a->first << "\"" << endl;
+                s << a->second << endl;
+                s << ".RE" << endl;
+            }
+        }
+
+        void visit(const StringSetArg * const e)
+        {
+            for (StringSetArg::AllowedArgIterator a(e->begin_allowed_args()), a_end(e->end_allowed_args()) ;
+                    a != a_end ; ++a)
+            {
+                s << ".RS" << endl;
+                s << ".TP" << endl;
+                s << ".B \"" << a->first << "\"" << endl;
+                s << ".BR" << endl;
+                s << a->second << endl;
+                s << ".RE" << endl;
+            }
+        }
+    };
+
+    std::ostream &
+    operator<< (std::ostream & s, const ExtraText & t)
+    {
+        s << t.s.str();
+        return s;
+    }
+}
 
 void
 paludis::args::generate_man(std::ostream & f, const ArgsHandler * const h)
@@ -60,6 +128,10 @@ paludis::args::generate_man(std::ostream & f, const ArgsHandler * const h)
                 f << "\\-" << (*b)->short_name() << " , ";
             f << "\\-\\-" << (*b)->long_name() << "\"" << endl;
             f << (*b)->description() << endl;
+
+            ExtraText t;
+            (*b)->accept(&t);
+            f << t;
         }
     }
 
