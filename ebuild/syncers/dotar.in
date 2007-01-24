@@ -1,0 +1,122 @@
+#!/bin/bash
+
+source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
+
+LOCAL=
+REMOTE=
+
+FETCHER_OPTIONS=( )
+DOUNPACK_OPTIONS=( )
+
+while [[ $# -gt 0 ]]; do
+    case "${1}" in
+
+        --strip-components=*)
+            DOUNPACK_OPTIONS+=( --tar-option="${1}" )
+            ;;
+
+        --fetcher-option=*)
+            FETCHER_OPTIONS+=( "${1#*=}" )
+            ;;
+
+        --tar-option=*)
+            DOUNPACK_OPTIONS+=( "${1}" )
+            ;;
+
+        --help)
+            PROTO="${0##*/do}"
+            if [[ "${PROTO}" == tar+file ]]; then
+                echo "    URL syntax: tar+file:///PATH"
+            elif [[ "${PROTO}" == tar+http || "${PROTO}" == tar+https || "${PROTO}" == tar+ftp ]]; then
+                echo "    URL syntax: ${PROTO}://[USERNAME[:PASSWORD]@]SERVER[:PORT]/PATH"
+            else
+                # This syncer can handle any protocol for which there
+                # is a fetcher.  The user can symlink/copy this syncer
+                # to enable support for other protocols, but we can't
+                # give them much help with the syntax....
+                PROTO="${PROTO#tar+}"
+                echo "    URL syntax: tar+${PROTO}://[$( tr [:lower:] [:upper:] <<<"${PROTO}" )-URL]"
+            fi
+
+            echo "    Options:"
+            echo "        --strip-components=N            Ignore the first N components of the"
+            echo "                                          paths from the tarball"
+            echo "        --fetcher-option=OPTION         Pass OPTION to the fetcher"
+            echo "                                          (The standard fetchers do not"
+            echo "                                           accept any options - this is only"
+            echo "                                           useful with custom fetchers)"
+            echo "        --tar-option=OPTION             Pass OPTION to tar"
+            exit 0
+            ;;
+
+        --*)
+            ewarn "${0}: unknown option '${1%%=*}'"
+            ;;
+
+        *)
+            if [[ -z "${LOCAL}" ]]; then
+                LOCAL="${1}"
+            elif [[ -z "${REMOTE}" ]]; then
+                REMOTE="${1}"
+            else
+                eerror "${0}: extra argument '${1}'"
+                exit 1
+            fi
+            ;;
+                
+    esac
+    shift
+done
+
+if [[ -z "${LOCAL}" ]]; then
+    eerror "${0}: unspecified local repository directory"
+    exit 1
+elif [[ -z "${REMOTE}" ]]; then
+    eerror "${0}: unspecified remote repository URL"
+    exit 1
+fi
+
+URL="${REMOTE#tar+}"
+
+PROTOCOL="${URL%%://*}"
+if [[ -z "${PROTOCOL}" ]]; then
+    eerror "'${REMOTE}' is not a valid URL"
+    exit 1
+fi
+
+if [[ -e "${LOCAL}" && ! -d "${LOCAL}" ]]; then
+    eerror "'${LOCAL}' exists but is not a directory"
+    exit 1
+fi
+
+FETCHER=
+FETCHER_NAME="do$( tr '[:upper:]' '[:lower:]' <<<"${PROTOCOL}" )"
+for d in ${PALUDIS_FETCHER_DIRS:-${PALUDIS_EBUILD_DIR}/fetchers/}; do
+    if [[ -x "${d}/${FETCHER_NAME}" ]]; then
+        FETCHER="${d}/${FETCHER_NAME}"
+        break
+    fi
+done
+
+if [[ -z "${FETCHER}" ]]; then
+    eerror "Could not find a fetcher for '${PROTOCOL}'"
+    exit 1
+fi
+
+TARDIR="${LOCAL%/}"
+TARDIR="${TARDIR%/*}"
+TARFILE="${URL##*/}"
+
+"${FETCHER}" "${FETCHER_OPTIONS[@]}" "${URL}" "${TARDIR}/${TARFILE}" || exit $?
+
+[[ -d "${LOCAL}" ]] && rm -rf "${LOCAL}"
+mkdir -p "${LOCAL}"
+
+cd "${LOCAL}" && "${PALUDIS_EBUILD_DIR}/utils/dounpack" "${DOUNPACK_OPTIONS[@]}" "${TARDIR}/${TARFILE}" || exit $?
+rm "${TARDIR}/${TARFILE}"
+
+if [[ -z "$( ls -A )" ]]; then
+    eerror "No files were extracted (not an archive?)"
+    exit 1
+fi
+
