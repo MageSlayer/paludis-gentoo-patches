@@ -1117,7 +1117,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
             _imp->merge_list_index.equal_range(p.name));
 
-    for ( ; pp.first != pp.second ; ++pp.first)
+    for ( ; pp.second != pp.first ; ++pp.first)
     {
         if (pp.first->second->kind == kind && pp.first->second->package == p)
         {
@@ -1156,7 +1156,7 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p)
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
             _imp->merge_list_index.equal_range(p.name));
 
-    for ( ; pp.first != pp.second ; ++pp.first)
+    for ( ; pp.second != pp.first ; ++pp.first)
     {
         if ((pp.first->second->kind == dlk_suggested || pp.first->second->kind == dlk_already_installed
                     || pp.first->second->kind == dlk_package || pp.first->second->kind == dlk_provided
