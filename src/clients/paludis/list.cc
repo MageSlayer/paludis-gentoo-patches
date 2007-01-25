@@ -49,6 +49,12 @@ do_list_repositories()
                         CommandLine::get_instance()->a_repository.end_args(),
                         stringify(r->name())))
                 continue;
+        if (CommandLine::get_instance()->a_repository_format.specified())
+            if (CommandLine::get_instance()->a_repository_format.end_args() == std::find(
+                        CommandLine::get_instance()->a_repository_format.begin_args(),
+                        CommandLine::get_instance()->a_repository_format.end_args(),
+                        r->format()))
+                continue;
 
         ret_code = 0;
 
@@ -89,6 +95,12 @@ do_list_categories()
                         CommandLine::get_instance()->a_repository.begin_args(),
                         CommandLine::get_instance()->a_repository.end_args(),
                         stringify(r->name())))
+                continue;
+        if (CommandLine::get_instance()->a_repository_format.specified())
+            if (CommandLine::get_instance()->a_repository_format.end_args() == std::find(
+                        CommandLine::get_instance()->a_repository_format.begin_args(),
+                        CommandLine::get_instance()->a_repository_format.end_args(),
+                        r->format()))
                 continue;
 
         p::CategoryNamePartCollection::ConstPointer cat_names(r->category_names());
@@ -137,6 +149,12 @@ do_list_packages()
                         CommandLine::get_instance()->a_repository.begin_args(),
                         CommandLine::get_instance()->a_repository.end_args(),
                         stringify(r->name())))
+                continue;
+        if (CommandLine::get_instance()->a_repository_format.specified())
+            if (CommandLine::get_instance()->a_repository_format.end_args() == std::find(
+                        CommandLine::get_instance()->a_repository_format.begin_args(),
+                        CommandLine::get_instance()->a_repository_format.end_args(),
+                        r->format()))
                 continue;
 
         p::CategoryNamePartCollection::ConstPointer cat_names(r->category_names());
@@ -200,6 +218,12 @@ do_list_sets()
                         CommandLine::get_instance()->a_repository.begin_args(),
                         CommandLine::get_instance()->a_repository.end_args(),
                         stringify(r->name())))
+                continue;
+        if (CommandLine::get_instance()->a_repository_format.specified())
+            if (CommandLine::get_instance()->a_repository_format.end_args() == std::find(
+                        CommandLine::get_instance()->a_repository_format.begin_args(),
+                        CommandLine::get_instance()->a_repository_format.end_args(),
+                        r->format()))
                 continue;
 
         p::SetsCollection::ConstPointer set_names(r->sets_interface->sets_list());

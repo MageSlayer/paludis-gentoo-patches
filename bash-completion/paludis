@@ -111,6 +111,7 @@ _paludis() {
     env_variable_query_opts=""
     conf_variable_query_opts=""
     list_opts="--repository \
+        --repository-format \
         --category \
         --package \
         --set"
@@ -255,6 +256,10 @@ _paludis() {
                 ## list specifiers
                 --repository)
                     COMPREPLY=($(compgen -W "$(_paludis_dolist repositories)" -- "${cur}"))
+                    return 0
+                    ;;
+                --repository-format)
+                    COMPREPLY=($(compgen -W "$(_paludis_dolist repository-formats)" -- "${cur}"))
                     return 0
                     ;;
                 --category)

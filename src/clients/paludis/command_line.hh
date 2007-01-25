@@ -271,6 +271,9 @@ class CommandLine :
         /// --repository
         paludis::args::StringSetArg a_repository;
 
+        /// --repository-format
+        paludis::args::StringSetArg a_repository_format;
+
         /// --category
         paludis::args::StringSetArg a_category;
 

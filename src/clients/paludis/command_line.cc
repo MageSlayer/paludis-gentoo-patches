@@ -203,6 +203,7 @@ CommandLine::CommandLine() :
     list_args(this, "List options",
             "Options relevant for one or more of the --list actions."),
     a_repository(&list_args, "repository", '\0', "Matches with this repository name only"),
+    a_repository_format(&list_args, "repository-format", '\0', "Matches with this repository format only"),
     a_category(&list_args,   "category",   '\0', "Matches with this category name only"),
     a_package(&list_args,    "package",    '\0', "Matches with this package name only"),
     a_set(&list_args,        "set",        '\0', "Matches with this package set name only"),
