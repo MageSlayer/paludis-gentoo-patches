@@ -235,10 +235,15 @@ provided, the default is 0.</p>
   <li><code>sync</code> (default: empty), which controls how the repository is
   synced. Typically values are in the form <code>rsync://rsync.europe.gentoo.org/gentoo-portage</code>
   or <code>svn://svn.pioto.org/paludis/overlay</code>. Use
-  <code>paludis --list-sync-protocols</code> to see supported protocols.</li>
+  <code>paludis --list-sync-protocols</code> to see supported protocols.  This
+  can be a space-separated list, in which case each will be tried in order
+  until one succeeds.</li>
+  <li><code>sync_options</code> (default: empty), which specifies additional
+  options to pass to the syncing script.</li>
   <li><code>sync_exclude</code> (default: empty), which can point to a file that
   contains a list of directories to exclude when syncing via
-  <code>rsync://</code>.</li>
+  <code>rsync://</code>.  This key is deprecated, use
+  <code>sync_options = --exclude-from=FILE</code> instead.</li>
   </ul>
 
 <h4>vdb Format Repositories</h4>

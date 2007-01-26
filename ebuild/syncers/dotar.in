@@ -7,6 +7,7 @@ REMOTE=
 
 FETCHER_OPTIONS=( )
 DOUNPACK_OPTIONS=( )
+RSYNC_OPTIONS=( )
 
 while [[ $# -gt 0 ]]; do
     case "${1}" in
@@ -15,12 +16,20 @@ while [[ $# -gt 0 ]]; do
             DOUNPACK_OPTIONS+=( --tar-option="${1}" )
             ;;
 
+        --exclude-from=*)
+            RSYNC_OPTIONS+=( --exclude-from "${1#*=}" )
+            ;;
+
         --fetcher-option=*)
             FETCHER_OPTIONS+=( "${1#*=}" )
             ;;
 
         --tar-option=*)
             DOUNPACK_OPTIONS+=( "${1}" )
+            ;;
+
+        --rsync-option=*)
+            RSYNC_OPTIONS+=( "${1#*=}" )
             ;;
 
         --help)
@@ -39,12 +48,14 @@ while [[ $# -gt 0 ]]; do
             fi
 
             echo "    Options:"
+            echo "        --exclude-from=FILE             Use FILE as a list of exclude patterns"
             echo "        --strip-components=N            Ignore the first N components of the"
             echo "                                          paths from the tarball"
             echo "        --fetcher-option=OPTION         Pass OPTION to the fetcher"
             echo "                                          (The standard fetchers do not"
             echo "                                           accept any options - this is only"
             echo "                                           useful with custom fetchers)"
+            echo "        --rsync-option=OPTION           Pass OPTION to the local rsync"
             echo "        --tar-option=OPTION             Pass OPTION to tar"
             exit 0
             ;;
@@ -63,7 +74,7 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             ;;
-                
+
     esac
     shift
 done
@@ -103,20 +114,26 @@ if [[ -z "${FETCHER}" ]]; then
     exit 1
 fi
 
-TARDIR="${LOCAL%/}"
-TARDIR="${TARDIR%/*}"
+TEMP="$( mktemp -d -p /var/tmp paludis-tarsync-XXXXXX )" || exit $?
 TARFILE="${URL##*/}"
 
-"${FETCHER}" "${FETCHER_OPTIONS[@]}" "${URL}" "${TARDIR}/${TARFILE}" || exit $?
+"${FETCHER}" "${FETCHER_OPTIONS[@]}" "${URL}" "${TEMP}/${TARFILE}" || exit $?
 
-[[ -d "${LOCAL}" ]] && rm -rf "${LOCAL}"
-mkdir -p "${LOCAL}"
+( cd "${TEMP}" && "${PALUDIS_EBUILD_DIR}/utils/dounpack" "${DOUNPACK_OPTIONS[@]}" "${TEMP}/${TARFILE}" ) || exit $?
 
-cd "${LOCAL}" && "${PALUDIS_EBUILD_DIR}/utils/dounpack" "${DOUNPACK_OPTIONS[@]}" "${TARDIR}/${TARFILE}" || exit $?
-rm "${TARDIR}/${TARFILE}"
+rm "${TEMP}/${TARFILE}"
 
-if [[ -z "$( ls -A )" ]]; then
+if [[ -z "$( ls -A "${TEMP}" )" ]]; then
     eerror "No files were extracted (not an archive?)"
+    rmdir "${TEMP}"
     exit 1
 fi
+
+[[ -d "${LOCAL}" ]] || mkdir -p "${LOCAL}"
+rsync --recursive --links --safe-links --perms --times --compress --force \
+    --whole-file --delete --delete-after --stats --timeout=180 \
+    --exclude=/distfiles --exclude=/packages --exclude=/local \
+    --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${TEMP}/" "${LOCAL}/" || exit $?
+
+rm -rf "${TEMP}"
 
