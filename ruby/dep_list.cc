@@ -885,7 +885,7 @@ namespace
     {
         DepList * p;
         Data_Get_Struct(self, DepList, p);
-        return p->already_installed(value_to_dep_atom(da)) ? Qtrue : Qfalse;
+        return p->already_installed(*value_to_dep_atom(da)) ? Qtrue : Qfalse;
     }
 
     /*

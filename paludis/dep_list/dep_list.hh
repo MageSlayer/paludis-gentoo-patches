@@ -99,14 +99,25 @@ namespace paludis
             void clear();
 
             /**
-             * Is an atom structure already installed?
+             * Return whether an atom structure already installed.
+             *
+             * \deprecated Use the one arg form.
              */
-            bool already_installed(DepAtom::ConstPointer, const bool ignore_current_pde = false) const;
+            bool already_installed(DepAtom::ConstPointer, const bool dummy) const
+                PALUDIS_ATTRIBUTE((deprecated));
 
             /**
-             * Is an atom structure already installed (overloaded for raw pointer)?
+             * Return whether an atom structure already installed (overloaded for raw pointer).
+             *
+             * \deprecated Use the one arg form.
              */
-            bool already_installed(const DepAtom * const, const bool ignore_current_pde = false) const;
+            bool already_installed(const DepAtom * const, const bool dummy) const
+                PALUDIS_ATTRIBUTE((deprecated));
+
+            /**
+             * Return whether an atom structure already installed.
+             */
+            bool already_installed(const DepAtom &) const;
 
             /**
              * Whether we have any errors.

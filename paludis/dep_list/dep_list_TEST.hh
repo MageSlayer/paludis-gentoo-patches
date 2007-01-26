@@ -119,12 +119,17 @@ namespace test_cases
              */
             virtual void populate_expected() = 0;
 
+            virtual void set_options(DepListOptions &)
+            {
+            }
+
             /**
              * Check expected is what we got.
              */
             virtual void check_lists()
             {
                 DepList d(&env, DepListOptions());
+                set_options(*d.options());
                 d.add(PortageDepParser::parse(merge_target));
                 TEST_CHECK(true);
 

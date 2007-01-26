@@ -225,6 +225,34 @@ namespace test_cases
         }
     } test_dep_list_no_block_on_no_upgrade_via_provided;
 
+    struct DepListTestCaseNoBlockOnNoReinstallViaProvided : DepListTestCaseBase
+    {
+        DepListTestCaseNoBlockOnNoReinstallViaProvided() : DepListTestCaseBase("no block on no reinstall via provided") { }
+
+        void populate_repo()
+        {
+            VersionMetadata::Pointer one_m(repo->add_version("cat", "one", "1"));
+            one_m->get_ebuild_interface()->provide_string = "virtual/one";
+            one_m->deps.build_depend_string = "!virtual/one";
+            one_m->deps.run_depend_string = "!virtual/one";
+            VersionMetadata::Pointer i_one_m(installed_repo->add_version("cat", "one", "1"));
+            i_one_m->get_ebuild_interface()->provide_string = "virtual/one";
+            i_one_m->deps.run_depend_string = "!virtual/one";
+        }
+
+        void populate_expected()
+        {
+            merge_target = "virtual/one";
+            expected.push_back("cat/one-1:0::repo");
+            expected.push_back("virtual/one-1:0::virtuals");
+        }
+
+        virtual void set_options(DepListOptions & p)
+        {
+            p.reinstall = dl_reinstall_always;
+        }
+    } test_dep_list_no_block_on_no_reinstall_via_provided;
+
     struct DepListTestCaseNoBlockOnReplacedProvide : DepListTestCaseBase
     {
         DepListTestCaseNoBlockOnReplacedProvide() : DepListTestCaseBase("no block on replaced provide") { }
