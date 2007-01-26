@@ -44,6 +44,14 @@ namespace paludis
         vr_and,    ///\< Must match all
         last_vr
     };
+
+    /**
+     * Write a VersionRequirementsMode to a stream.
+     *
+     * \ingroup grpversions
+     */
+    std::ostream &
+    operator<< (std::ostream &, const VersionRequirementsMode &) PALUDIS_VISIBLE;
 }
 
 #endif

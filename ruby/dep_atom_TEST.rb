@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
-
 #
 # Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2007 Richard Brown <mynamewasgone@gmail.com>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -82,6 +82,11 @@ module Paludis
             assert_equal 1, pda.version_requirements.size
             assert_equal VersionSpec.new('1'), pda.version_requirements.first[:spec]
             assert_equal ">=", pda.version_requirements.first[:operator]
+        end
+
+        def test_version_requirements_mode
+            assert_kind_of Fixnum, pda.version_requirements_mode
+            assert_equal VersionRequirementsMode::And, pda.version_requirements_mode
         end
     end
 

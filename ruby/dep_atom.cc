@@ -38,6 +38,7 @@ namespace
     static VALUE c_use_dep_atom;
     static VALUE c_block_dep_atom;
     static VALUE c_string_dep_atom;
+    static VALUE c_version_requirements_mode;
 
     VALUE
     dep_atom_init_1(VALUE self, VALUE)
@@ -210,7 +211,8 @@ namespace
      * Fetch the version requirements. E.g. [ {:operator => '=', :spec => VersionSpec.new('0.1') } ]
      */
     VALUE
-    package_dep_atom_version_requirements_ptr(VALUE self) {
+    package_dep_atom_version_requirements_ptr(VALUE self)
+    {
         PackageDepAtom::ConstPointer * ptr;
         Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
         VALUE result(rb_ary_new());
@@ -227,6 +229,14 @@ namespace
                 rb_ary_push(result, result_hash);
             }
         return result;
+    }
+
+    VALUE
+    package_dep_atom_version_requirements_mode(VALUE self)
+    {
+        PackageDepAtom::ConstPointer * ptr;
+        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        return INT2FIX((*ptr)->version_requirements_mode());
     }
 
     void do_register_dep_atom()
@@ -300,6 +310,7 @@ namespace
         rb_define_method(c_package_dep_atom, "slot", RUBY_FUNC_CAST(&package_dep_atom_slot_ptr), 0);
         rb_define_method(c_package_dep_atom, "repository", RUBY_FUNC_CAST(&package_dep_atom_repository_ptr), 0);
         rb_define_method(c_package_dep_atom, "version_requirements", RUBY_FUNC_CAST(&package_dep_atom_version_requirements_ptr), 0);
+        rb_define_method(c_package_dep_atom, "version_requirements_mode", RUBY_FUNC_CAST(&package_dep_atom_version_requirements_mode), 0);
 
         /*
          * Document-class: Paludis::PlainTextDepAtom
@@ -321,6 +332,19 @@ namespace
         rb_define_singleton_method(c_block_dep_atom, "new", RUBY_FUNC_CAST(&block_dep_atom_new), 1);
         rb_define_method(c_block_dep_atom, "initialize", RUBY_FUNC_CAST(&dep_atom_init_1), 1);
         rb_define_method(c_block_dep_atom, "blocked_atom", RUBY_FUNC_CAST(&block_dep_atom_blocked_atom), 0);
+
+        /*
+         * Document-module: Paludis::VersionRequirementsMode
+         *
+         * What sort of VersionRequirements to we have.
+         *
+         */
+        c_version_requirements_mode = rb_define_module_under(paludis_module(), "VersionRequirementsMode");
+        for (VersionRequirementsMode l(static_cast<VersionRequirementsMode>(0)), l_end(last_vr) ; l != l_end ;
+                l = static_cast<VersionRequirementsMode>(static_cast<int>(l) + 1))
+            rb_define_const(c_version_requirements_mode, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/version_requirements.hh, VersionRequirementsMode, c_version_requirements_mode>
     }
 }
 

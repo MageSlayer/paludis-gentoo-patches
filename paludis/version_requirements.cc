@@ -23,3 +23,27 @@ using namespace paludis;
 
 #include <paludis/version_requirements-sr.cc>
 
+std::ostream &
+paludis::operator<< (std::ostream & o, const VersionRequirementsMode & s)
+{
+    do
+    {
+        switch (s)
+        {
+            case vr_and:
+                o << "and";
+                continue;
+
+            case vr_or:
+                o << "or";
+                continue;
+
+            case last_vr:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Bad VersionRequirementsMode");
+    } while (false);
+
+    return o;
+}
