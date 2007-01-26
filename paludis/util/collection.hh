@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -356,6 +356,21 @@ namespace paludis
              * Are we empty?
              */
             virtual bool empty() const = 0;
+
+            ///\}
+
+            ///\name Inserter
+            ///\{
+
+            /**
+             * Our insert iterator type.
+             */
+            typedef libwrapiter::OutputIterator<AssociativeCollection<K_, V_>, std::pair<K_, V_> > Inserter;
+
+            /**
+             * Fetch an inserter.
+             */
+            virtual Inserter inserter() = 0;
 
             ///\}
     };

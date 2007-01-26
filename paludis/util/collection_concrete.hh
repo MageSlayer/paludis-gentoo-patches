@@ -315,6 +315,11 @@ namespace paludis
             {
                 return _items.empty();
             }
+
+            virtual Inserter inserter()
+            {
+                return Inserter(std::inserter(_items, _items.begin()));
+            }
     };
 }
 

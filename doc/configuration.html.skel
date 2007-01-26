@@ -201,6 +201,12 @@ two different repositories contain an identical package atom (e.g. foo/bar-1.0).
 The repository with the higher importance will always be chosen first. If not
 provided, the default is 0.</p>
 
+<p>To avoid duplication across configuration files, a file named
+<code>repository_defaults.conf</code> can be used to specify defaults (this file
+does <strong>not</strong> live in the <code>repositories/</code> subdirectory).
+Keys in this file are overridden by identically named keys in individual
+configuration files.</p>
+
 <h4>ebuild Format Repositories</h4>
 
 <p>The following keys are available for <code>format = ebuild</code>:</p>

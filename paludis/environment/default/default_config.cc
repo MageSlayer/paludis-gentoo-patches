@@ -307,6 +307,13 @@ DefaultConfig::DefaultConfig() :
 
     /* repositories */
     {
+        if ((local_config_dir / "repository_defaults.conf").exists())
+        {
+            KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf");
+            std::copy(defaults_file.begin(), defaults_file.end(),
+                    conf_vars->inserter());
+        }
+
         std::list<FSEntry> dirs;
         dirs.push_back(local_config_dir / "repositories");
 
