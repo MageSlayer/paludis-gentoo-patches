@@ -4,13 +4,22 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.16.1:
+    * 0.16.0 had a bug that would cause blocks to be reported incorrectly for
+    certain virtuals. This is now fixed.
+
+    * paludis --list-* now supports a --repository-format option for
+    restricting output.
+
+    * g++-3.4 ships with broken iterators. We now work around this.
+
 0.16.0:
     * Enhanced DepList. Most blocks are now shown as errors in the list.
     Suggested dependencies are now supported. Paludis can continue resolving
     dependencies when encountering a masked package, and show a summary of
     everything that needs to be unmasked as part of the output. Post
     dependencies can now be installed much later on if necessary to resolve
-    cycles. Deps in the form || ( a >=b-2 ) where b-1 is installed are handled
+    cycles. Deps in the form || ( a =b-2 ) where b-1 is installed are handled
     more elegantly. Deps in the form || ( =a-1 =a-2 ) are rewritten to a single
     package dependency. Blockers are now handled correctly. Downgrades are now
     user controllable.
