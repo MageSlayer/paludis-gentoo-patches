@@ -37,6 +37,14 @@ src_unpack() {
 	:
 }
 END
+cat <<"END" > cat-one/pkg-one/pkg-one-3.ebuild
+DESCRIPTION="foo"
+SLOT="foo"
+
+src_unpack() {
+	echo "blah" > foo
+}
+END
 
 cd ..
 

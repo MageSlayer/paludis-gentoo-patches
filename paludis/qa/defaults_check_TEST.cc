@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -52,6 +52,15 @@ namespace test_cases
             {
                 TestMessageSuffix suffix("r2=" + r2.item() + ": " + join(r2.begin(), r2.end(), "; "), false);
                 TEST_CHECK(! r2.empty());
+            }
+
+            FSEntry f3(FSEntry::cwd() / "defaults_check_TEST_dir/repo1/cat-one/pkg-one/pkg-one-3.ebuild");
+            TEST_CHECK(f3.is_regular_file());
+            CheckResult r3((*(*FileCheckMaker::get_instance()->find_maker(
+                            DefaultsCheck::identifier()))())(f3));
+            {
+                TestMessageSuffix suffix("r3=" + r2.item() + ": " + join(r3.begin(), r3.end(), "; "), false);
+                TEST_CHECK(r3.empty());
             }
         }
     } qa_environment_defaults_check_src_unpack_test;
