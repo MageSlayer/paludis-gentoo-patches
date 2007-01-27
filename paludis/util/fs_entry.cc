@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006 Mark Loeser <halcy0n@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -126,6 +126,28 @@ FSEntry::is_directory() const
 
     if (_exists)
         return S_ISDIR((*_stat_info).st_mode);
+
+    return false;
+}
+
+bool
+FSEntry::is_fifo() const
+{
+    _stat();
+
+    if (_exists)
+        return S_ISFIFO((*_stat_info).st_mode);
+
+    return false;
+}
+
+bool
+FSEntry::is_device() const
+{
+    _stat();
+
+    if (_exists)
+        return S_ISBLK((*_stat_info).st_mode) || S_ISCHR((*_stat_info).st_mode);
 
     return false;
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -57,6 +57,34 @@ unmerge_files_TEST()
 
     ok=
     for a in unmerge_TEST_dir/files_dst/* ; do
+        [[ -e "$a" ]] || continue
+        test_equality "$a" ""
+        ok=no
+    done
+    test_equality "$ok" ""
+}
+
+unmerge_spaces_TEST()
+{
+    ${TOP_BUILD_DIR}/ebuild/merge "unmerge_TEST_dir/spaces_src" \
+        "unmerge_TEST_dir/spaces_dst" \
+        "unmerge_TEST_dir/spaces_contents"
+    test_return_code
+
+    ok=
+    for a in unmerge_TEST_dir/spaces_dst/* ; do
+        [[ -e "$a" ]] || continue
+        ok=yes
+        break
+    done
+    test_equality "$ok" "yes"
+
+    ${TOP_BUILD_DIR}/ebuild/unmerge "unmerge_TEST_dir/spaces_dst" \
+        "unmerge_TEST_dir/spaces_contents"
+    test_return_code
+
+    ok=
+    for a in unmerge_TEST_dir/spaces_dst/* ; do
         [[ -e "$a" ]] || continue
         test_equality "$a" ""
         ok=no

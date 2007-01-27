@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006 Mark Loeser <halcy0n@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -192,6 +192,16 @@ namespace paludis
              * is it a symbolic link?
              */
             bool is_symbolic_link() const;
+
+            /**
+             * Whether we exist and are a device file.
+             */
+            bool is_device() const;
+
+            /**
+             * Whether we exist and are a fifo.
+             */
+            bool is_fifo() const;
 
             /**
              * Check if filesystem entry has `perm` for `user_group`.

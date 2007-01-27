@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -72,6 +72,17 @@ namespace
 
             if ("obj" == tokens.at(0))
             {
+                while (tokens.size() > 4)
+                {
+                    if (std::string::npos != tokens.at(4).find('='))
+                        break;
+
+                    tokens.at(1).append(" " + tokens.at(2));
+                    for (unsigned i = 2 ; i < tokens.size() - 1 ; ++i)
+                        tokens.at(i) = tokens.at(i + 1);
+                    tokens.pop_back();
+                }
+
                 if (tokens.size() != 4)
                 {
                     Log::get_instance()->message(ll_warning, lc_no_context,
@@ -111,6 +122,34 @@ namespace
             }
             else if ("sym" == tokens.at(0))
             {
+                while (tokens.size() > 5)
+                {
+                    if (std::string::npos != tokens.at(2).find('='))
+                        break;
+
+                    if (tokens.at(2) == "->")
+                        break;
+
+                    tokens.at(1).append(" " + tokens.at(2));
+                    for (unsigned i = 2 ; i < tokens.size() - 1; ++i)
+                        tokens.at(i) = tokens.at(i + 1);
+                    tokens.pop_back();
+                }
+
+                while (tokens.size() > 5)
+                {
+                    if (std::string::npos != tokens.at(2).find('='))
+                        break;
+
+                    if (tokens.at(4) == "->")
+                        break;
+
+                    tokens.at(3).append(" " + tokens.at(4));
+                    for (unsigned i = 4 ; i < tokens.size() - 1; ++i)
+                        tokens.at(i) = tokens.at(i + 1);
+                    tokens.pop_back();
+                }
+
                 if (tokens.size() != 5)
                 {
                     Log::get_instance()->message(ll_warning, lc_no_context,
@@ -131,7 +170,35 @@ namespace
             }
             else if ("misc" == tokens.at(0))
             {
+            }
+            else if ("fif" == tokens.at(0) || "dev" == tokens.at(0))
+            {
+                while (tokens.size() > 2)
+                {
+                    if (std::string::npos != tokens.at(2).find('='))
+                        break;
 
+                    tokens.at(1).append(" " + tokens.at(2));
+                    for (unsigned i = 2 ; i < tokens.size() - 1; ++i)
+                        tokens.at(i) = tokens.at(i + 1);
+                    tokens.pop_back();
+                }
+
+                if (tokens.size() != 2)
+                {
+                    Log::get_instance()->message(ll_warning, lc_no_context,
+                            "Malformed VDB entry '" + *cur + "'");
+                    exit_status |= 8;
+                }
+                else if ("fif" == tokens.at(0) && ! (root / tokens.at(1)).is_fifo())
+                    cout << "--- [!type] " << tokens.at(1) << endl;
+                else if ("dev" == tokens.at(0) && ! (root / tokens.at(1)).is_device())
+                    cout << "--- [!type] " << tokens.at(1) << endl;
+                else
+                {
+                    cout << "<<<         " << tokens.at(1) << endl;
+                    (root / tokens.at(1)).unlink();
+                }
             }
             else if ("dir" == tokens.at(0))
                 /* nothing */ ;
@@ -158,6 +225,17 @@ namespace
 
             if ("dir" == tokens.at(0))
             {
+                while (tokens.size() > 2)
+                {
+                    if (std::string::npos != tokens.at(2).find('='))
+                        break;
+
+                    tokens.at(1).append(" " + tokens.at(2));
+                    for (unsigned i = 2 ; i < tokens.size() - 1; ++i)
+                        tokens.at(i) = tokens.at(i + 1);
+                    tokens.pop_back();
+                }
+
                 if (tokens.size() != 2)
                 {
                     Log::get_instance()->message(ll_warning, lc_no_context,
