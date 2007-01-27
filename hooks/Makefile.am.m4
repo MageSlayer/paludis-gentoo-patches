@@ -213,6 +213,7 @@ install-data-local :
 	ln -sf ../common/installable_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/sync_all_post/
 	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/install_post/
 	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/uninstall_post/
+	ln -sf ../common/installed_cache_regen.bash $(DESTDIR)/$(libexecdir)/paludis/hooks/clean_post/
 
 uninstall-local :
 	rm $(DESTDIR)/$(libexecdir)/paludis/hooks/*/gnu_info_index.bash
