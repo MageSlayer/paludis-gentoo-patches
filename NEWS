@@ -4,6 +4,17 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.16.2:
+    * Defaults for repository conf files can now be specified via
+    repository_defaults.conf.
+
+    * Hooks can now determine which client is being used via the PALUDIS_CLIENT
+    environment variable.
+
+    * For unmerging, VDB parsing of Portage-generated entries is less strict.
+
+    * Various bug fixes.
+
 0.16.1:
     * 0.16.0 had a bug that would cause blocks to be reported incorrectly for
     certain virtuals. This is now fixed.
