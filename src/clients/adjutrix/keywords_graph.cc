@@ -120,7 +120,7 @@ namespace
             << std::string(arch_flags->size() * 2 + 1, '-') << "+"
             << std::string(longest_slot_name + 3, '-') << endl;
 
-        SlotName old_slot("unused_round");
+        SlotName old_slot("first_slot");
         for (PackageDatabaseEntryCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
                 p != p_end ; ++p)
         {
