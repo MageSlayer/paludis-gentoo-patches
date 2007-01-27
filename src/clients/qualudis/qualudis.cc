@@ -555,7 +555,8 @@ int main(int argc, char *argv[])
 
     try
     {
-        QualudisCommandLine::get_instance()->run(argc, argv, "QUALUDIS_OPTIONS");
+        QualudisCommandLine::get_instance()->run(argc, argv, "qualudis", "QUALUDIS_OPTIONS",
+                "QUALUDIS_CMDLINE");
 
         if (QualudisCommandLine::get_instance()->a_help.specified())
             throw DoHelp();

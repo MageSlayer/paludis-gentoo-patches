@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        CommandLine::get_instance()->run(argc, argv);
+        CommandLine::get_instance()->run(argc, argv, "contrarius", "CONTRARIUS_OPTIONS", "CONTRARIUS_CMDLINE");
 
         if (CommandLine::get_instance()->a_help.specified())
             throw DoHelp();

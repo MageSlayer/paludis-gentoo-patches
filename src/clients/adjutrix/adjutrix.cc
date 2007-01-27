@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 
     try
     {
-        CommandLine::get_instance()->run(argc, argv, "ADJUTRIX_OPTIONS");
+        CommandLine::get_instance()->run(argc, argv, "adjutrix", "ADJUTRIX_OPTIONS", "ADJUTRIX_CMDLINE");
         set_use_colour(! CommandLine::get_instance()->a_no_color.specified());
 
         if (CommandLine::get_instance()->a_help.specified())

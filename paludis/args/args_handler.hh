@@ -84,13 +84,21 @@ namespace paludis
                 ///\}
 
                 /**
-                 * Parse command line arguments. The third (optional) argument is the name
-                 * of an environment variable holding arguments which are prepended to the
-                 * command line arguments. The fourth (optional) argument is used as a prefix
-                 * to export our command line via the environment.
+                 * \deprecated Use the five arg form.
                  */
                 void run(const int, const char * const * const, const std::string & env_var = "",
-                        const std::string & env_prefix = "");
+                        const std::string & env_prefix = "") PALUDIS_ATTRIBUTE((deprecated));
+
+                /**
+                 * Parse command line arguments. The third argument is used to
+                 * set PALUDIS_CLIENT.  The fourth argument is the name of an
+                 * environment variable holding arguments which are prepended
+                 * to the command line arguments. The fifth argument is used as
+                 * a prefix to export our command line via the environment.
+                 */
+                void run(const int, const char * const * const,
+                        const std::string & client, const std::string & env_var,
+                        const std::string & env_prefix);
 
                 ///\name Iterate over our parameters (non - and -- switches and their values)
                 ///\{

@@ -139,7 +139,7 @@ main(int argc, char *argv[])
 
     try
     {
-        CommandLine::get_instance()->run(argc, argv, "PALUDIS_OPTIONS", "PALUDIS_CMDLINE");
+        CommandLine::get_instance()->run(argc, argv, "paludis", "PALUDIS_OPTIONS", "PALUDIS_CMDLINE");
         set_use_colour(! CommandLine::get_instance()->a_no_color.specified());
 
         if (CommandLine::get_instance()->a_help.specified())

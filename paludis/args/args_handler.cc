@@ -87,10 +87,21 @@ void
 ArgsHandler::run(const int argc, const char * const * const argv, const std::string & env_var,
         const std::string & env_prefix)
 {
+    run(argc, argv, "", env_var, env_prefix);
+}
+
+void
+ArgsHandler::run(const int argc, const char * const * const argv,
+        const std::string & client,
+        const std::string & env_var,
+        const std::string & env_prefix)
+{
     std::list<std::string> args;
     std::string env_options;
 
-    if (!env_var.empty())
+    setenv("PALUDIS_CLIENT", client.c_str(), 1);
+
+    if (! env_var.empty())
         env_options = paludis::getenv_with_default(env_var, "");
 
     std::istringstream iss(env_options);

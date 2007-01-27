@@ -114,7 +114,7 @@ namespace test_cases
             const char * args[] = { "program-name", "--other-monkey", "chimp", "--other-baz",
                 "-fsne", "blah", "7", "three", "--", "--dummy", "one", "two" };
             CommandLine c1;
-            c1.run(12, args);
+            c1.run(12, args, "", "", "");
             TEST_CHECK(c1.arg_foo.specified());
             TEST_CHECK(! c1.arg_bar.specified());
             TEST_CHECK(c1.arg_baz.specified());
@@ -150,7 +150,7 @@ namespace test_cases
         {
             const char *args[] = { "program-name", "-e" };
             CommandLine c1;
-            TEST_CHECK_THROWS(c1.run(2, args), MissingValue);
+            TEST_CHECK_THROWS(c1.run(2, args, "", "", ""), MissingValue);
         }
     } test_args_no_param;
 
@@ -166,7 +166,7 @@ namespace test_cases
         {
             const char *args[] = { "program-name", "--stringset", "one", "-t", "two", "-t", "three", "fnord" };
             CommandLine c1;
-            c1.run(8, args);
+            c1.run(8, args, "", "", "");
             TEST_CHECK(c1.arg_stringset.specified());
             TEST_CHECK(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "one") != c1.arg_stringset.end_args());
             TEST_CHECK(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "two") != c1.arg_stringset.end_args());
