@@ -46,7 +46,7 @@ ebuild_f_test()
     local save_PALUDIS_EXTRA_DIE_MESSAGE="${PALUDIS_EXTRA_DIE_MESSAGE}"
     export PALUDIS_EXTRA_DIE_MESSAGE="
 !!! This package failed inside the test phase. You should read
-!!!    http://paludis.berlios.de/KnownIssues.html
+!!!    http://paludis.pioto.org/faq.html
 !!! for more information on packages with test phase failures.
 "
 

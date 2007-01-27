@@ -107,7 +107,7 @@ cat <<"END" > test-category/target/target-1.ebuild || exit 1
 inherit myeclass
 
 DESCRIPTION="Test target"
-HOMEPAGE="http://paludis.berlios.de/"
+HOMEPAGE="http://paludis.pioto.org/"
 SRC_URI="http://invalid.domain/${P}.tar.gz"
 SLOT="0"
 IUSE=""
@@ -140,7 +140,7 @@ END
 
 cat <<"END" > test-category/target/target-2.ebuild || exit 1
 DESCRIPTION="Test target"
-HOMEPAGE="http://paludis.berlios.de/"
+HOMEPAGE="http://paludis.pioto.org/"
 SRC_URI="http://invalid.domain/${P}.tar.gz"
 SLOT="0"
 IUSE=""
