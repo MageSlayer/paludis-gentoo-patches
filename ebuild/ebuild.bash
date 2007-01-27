@@ -33,7 +33,7 @@ if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
     export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/proc/self/task:/selinux/context"
     export SANDBOX_ON="1"
     export SANDBOX_BASHRC="/dev/null"
-    export BASH_ENV
+    unset BASH_ENV
 fi
 export REAL_CHOST="${CHOST}"
 
