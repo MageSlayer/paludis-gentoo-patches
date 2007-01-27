@@ -52,6 +52,15 @@
             href="http://trac.pioto.org:8000/paludis/">bug tracker</a> that can
         be used for bug reports and feature requests.</li>
 
+        <li>Manual pages:
+        <ul>
+            <li><a href="man-adjutrix.html">adjutrix</a></li>
+            <li><a href="man-contrarius.html">contrarius</a></li>
+            <li><a href="man-paludis.html">paludis</a></li>
+            <li><a href="man-qualudis.html">qualudis</a></li>
+        </ul>
+        </li>
+
     </ul>
 
     <h2>For developers:</h2>

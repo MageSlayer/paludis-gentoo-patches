@@ -9,11 +9,15 @@ SUBDIRS = .
 
 bin_PROGRAMS = adjutrix
 noinst_PROGRAMS = man-adjutrix
+noinst_DATA = adjutrix.html
 
 man_MANS = adjutrix.1
 
 adjutrix.1 : man-adjutrix
-	./man-adjutrix | tee $@ | sed -e 's/^/    /'
+	./man-adjutrix > $@
+
+adjutrix.html : man-adjutrix
+	./man-adjutrix --html > $@
 
 man_adjutrix_SOURCES = \
 	man_adjutrix.cc \
@@ -73,7 +77,8 @@ EXTRA_DIST = \
 	find_stable_candidates_TEST_setup.sh find_stable_candidates_TEST_cleanup.sh
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
-DISTCLEANFILES = $(man_MANS) find_stable_candidates-sr.hh find_stable_candidates-sr.cc
+DISTCLEANFILES = $(man_MANS) $(noinst_DATA) \
+	find_stable_candidates-sr.hh find_stable_candidates-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
 BUILT_SOURCES = \
 	find_stable_candidates-sr.hh find_stable_candidates-sr.cc \

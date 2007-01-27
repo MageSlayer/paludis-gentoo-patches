@@ -6,6 +6,7 @@ DEFS= \
 SUBDIRS = .
 
 man_pages = qualudis.1
+noinst_DATA = qualudis.html
 
 if ENABLE_QA
 
@@ -64,7 +65,10 @@ version_TEST :
 endif
 
 qualudis.1 : man-qualudis
-	./man-qualudis | tee $@ | sed -e 's/^/    /'
+	./man-qualudis > $@
+
+qualudis.html : man-qualudis
+	./man-qualudis --html > $@
 
 man_qualudis_SOURCES = \
 	man_qualudis.cc \
@@ -79,7 +83,7 @@ man_qualudis_LDADD = \
 	$(DYNAMIC_LD_LIBS)
 
 CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno *.gcda
-DISTCLEANFILES = $(man_pages)
+DISTCLEANFILES = $(man_pages) $(noinst_DATA)
 MAINTAINERCLEANFILES = Makefile.in
 EXTRA_DIST = $(man_pages)
 

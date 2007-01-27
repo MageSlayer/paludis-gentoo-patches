@@ -97,10 +97,23 @@ CommandLine::CommandLine() :
     add_usage_line("--find-insecure-packages [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
             "[ --package foo --package fnord ... ] ");
+    add_usage_line("--find-unused-packages [ --repository-dir /path ] "
+            "[ --category app-misc --category sys-apps ... ] "
+            "[ --package foo --package fnord ... ] ");
     add_usage_line("--keywords-graph [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
             "[ --package foo --package fnord ... ]");
+    add_usage_line("--reverse-deps [ --repository-dir /path ] "
+            "[ --category app-misc --category sys-apps ... ] "
+            "[ --package foo --package fnord ... ]"
+            "target-atom");
+    add_usage_line("--what-needs-keywording [ --repository-dir /path ] "
+            "[ --category app-misc --category sys-apps ... ] "
+            "[ --package foo --package fnord ... ]"
+            "target-keyword target-atom");
     add_usage_line("--display-profiles-use [ --profile default-linux/x86/2006.0 "
+            "--profile default-linux/x86/2006.1 ... ] [ --repository-dir /path ]");
+    add_usage_line("--display-default-system-resolution [ --profile default-linux/x86/2006.0 "
             "--profile default-linux/x86/2006.1 ... ] [ --repository-dir /path ]");
 
     add_usage_line("--version");

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,10 +26,45 @@
 using std::cout;
 using std::endl;
 
-int
-main(int, char *[])
+namespace
 {
-    paludis::args::generate_man(cout, CommandLine::get_instance());
+    struct ManCommandLine :
+        paludis::args::ArgsHandler
+    {
+        paludis::args::ArgsGroup group;
+        paludis::args::SwitchArg a_html;
+
+        ManCommandLine() :
+            group(this, "", ""),
+            a_html(&group, "html", '\0', "")
+        {
+        }
+
+        virtual std::string app_name() const
+        {
+            return "";
+        }
+
+        virtual std::string app_description() const
+        {
+            return "";
+        }
+
+        virtual std::string app_synopsis() const
+        {
+            return "";
+        }
+    };
+}
+
+int
+main(int argc, char * argv[])
+{
+    ManCommandLine cmdline;
+    cmdline.run(argc, argv, "", "", "");
+
+    paludis::args::generate_man(cout, CommandLine::get_instance(),
+            cmdline.a_html.specified() ? paludis::args::mf_html : paludis::args::mf_man);
     return EXIT_SUCCESS;
 }
 

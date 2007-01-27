@@ -9,11 +9,14 @@ SUBDIRS = .
 
 bin_PROGRAMS = paludis
 noinst_PROGRAMS = man-paludis
-
+noinst_DATA = paludis.html
 man_MANS = paludis.1
 
 paludis.1 : man-paludis
-	./man-paludis | tee $@ | sed -e 's/^/    /'
+	./man-paludis > $@
+
+paludis.html : man-paludis
+	./man-paludis --html > $@
 
 man_paludis_SOURCES = \
 	man_paludis.cc \
@@ -92,7 +95,7 @@ EXTRA_DIST = \
 	upgrade_TEST_setup.sh upgrade_TEST_cleanup.sh
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
-DISTCLEANFILES = $(man_MANS)
+DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
 MAINTAINERCLEANFILES = Makefile.in
 
 built-sources : $(BUILT_SOURCES)

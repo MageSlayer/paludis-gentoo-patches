@@ -10,6 +10,7 @@ man_pages = contrarius.1
 
 bin_PROGRAMS = contrarius
 noinst_PROGRAMS = man-contrarius
+noinst_DATA = contrarius.html
 man_MANS = $(man_pages)
 
 contrarius_SOURCES = \
@@ -55,7 +56,10 @@ version_TEST :
 	echo -e "#!/bin/sh\n./contrarius --version" > $@
 
 contrarius.1 : man-contrarius
-	./man-contrarius | tee $@ | sed -e 's/^/    /'
+	./man-contrarius > $@
+
+contrarius.html : man-contrarius
+	./man-contrarius --html > $@
 
 man_contrarius_SOURCES = \
 	man_contrarius.cc \
@@ -70,7 +74,8 @@ man_contrarius_LDADD = \
 	$(DYNAMIC_LD_LIBS)
 
 CLEANFILES = *~ version_TEST gmon.out *.gcov *.gcno *.gcda
-DISTCLEANFILES = $(man_pages) contrarius_stage_options-sr.hh contrarius_stage_options-sr.cc
+DISTCLEANFILES = $(man_pages) $(noinst_DATA) \
+	contrarius_stage_options-sr.hh contrarius_stage_options-sr.cc
 MAINTAINERCLEANFILES = Makefile.in
 EXTRA_DIST = \
 	$(man_pages) \
