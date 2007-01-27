@@ -19,6 +19,7 @@ BUILT_SOURCES = automake-deps-built-hack.tmp
 automake-deps-dist-hack.tmp : built-sources-subdirs
 	$(MAKE) -C paludis/util
 	$(MAKE) -C paludis/args
+	$(MAKE) -C paludis/ libpaludismanpagethings.la
 	$(MAKE) -C paludis/qa message-sr.hh
 	$(MAKE) -C src/output liboutput.a
 	$(MAKE) -C src/common_args libcommonargs.a

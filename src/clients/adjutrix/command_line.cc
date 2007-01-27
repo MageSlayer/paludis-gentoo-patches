@@ -18,6 +18,7 @@
  */
 
 #include "command_line.hh"
+#include <paludis/name.hh>
 
 CommandLine::CommandLine() :
     ArgsHandler(),
@@ -72,9 +73,11 @@ CommandLine::CommandLine() :
     tree_args(this, "Tree action options",
             "Options which are relevant for tree actions."),
     a_category(&tree_args,   "category",   'C',
-            "Matches with this category name only (may be specified multiple times)"),
+            "Matches with this category name only (may be specified multiple times)",
+            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::CategoryNamePartValidator::validate),
     a_package(&tree_args,    "package",    'P',
-            "Matches with this package name only (may be specified multiple times)"),
+            "Matches with this package name only (may be specified multiple times)",
+            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate),
 
     profile_args(this, "Profile action options",
             "Options which are relevant for profile actions."),

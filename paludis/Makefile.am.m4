@@ -70,9 +70,14 @@ BUILT_SOURCES = srcleanlist
 libpaludis_la_SOURCES = filelist
 libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
+libpaludismanpagethings_la_SOURCES = name.cc
+
 if ! MONOLITHIC
 
 libpaludis_la_LIBADD = \
+	$(top_builddir)/paludis/util/libpaludisutil.la
+
+libpaludismanpagethings_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la
 
 endif
@@ -91,11 +96,12 @@ check_SCRIPTS = testscriptlist
 
 if MONOLITHIC
 
-noinst_LTLIBRARIES = libpaludis.la
+noinst_LTLIBRARIES = libpaludis.la libpaludismanpagethings.la
 
 else
 
 lib_LTLIBRARIES = libpaludis.la
+noinst_LTLIBRARIES = libpaludismanpagethings.la
 
 endif
 

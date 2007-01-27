@@ -92,7 +92,16 @@ AliasArg::AliasArg(ArgsOption * const o, const std::string & our_long_name) :
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description) :
-    ArgsOption(g, our_long_name, our_short_name, our_description)
+    ArgsOption(g, our_long_name, our_short_name, our_description),
+    _validator(0)
+{
+}
+
+StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
+        const char our_short_name, const std::string & our_description,
+        void (* v) (const std::string &)) :
+    ArgsOption(g, our_long_name, our_short_name, our_description),
+    _validator(v)
 {
 }
 
@@ -128,7 +137,19 @@ StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_nam
         const char our_short_name, const std::string & our_description,
         const StringSetArgOptions & opts) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
-    PrivateImplementationPattern<StringSetArg>(new Implementation<StringSetArg>)
+    PrivateImplementationPattern<StringSetArg>(new Implementation<StringSetArg>),
+    _validator(0)
+{
+    std::copy(opts._imp->options.begin(), opts._imp->options.end(),
+            std::back_inserter(_imp->allowed_args));
+}
+
+StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_name,
+        const char our_short_name, const std::string & our_description,
+        const StringSetArgOptions & opts, void (* v) (const std::string &)) :
+    ArgsOption(g, our_long_name, our_short_name, our_description),
+    PrivateImplementationPattern<StringSetArg>(new Implementation<StringSetArg>),
+    _validator(v)
 {
     std::copy(opts._imp->options.begin(), opts._imp->options.end(),
             std::back_inserter(_imp->allowed_args));
@@ -149,10 +170,15 @@ StringSetArg::end_args() const
 void
 StringSetArg::add_argument(const std::string & arg)
 {
+    Context context("When handling argument '" + arg + "' for '--" + long_name() + "':");
+
     if (! _imp->allowed_args.empty())
         if (_imp->allowed_args.end() == std::find_if(_imp->allowed_args.begin(),
                     _imp->allowed_args.end(), ArgIs(arg)))
             throw (BadValue("--" + long_name(), arg));
+
+    if (_validator)
+        (*_validator)(arg);
 
     _imp->args.insert(arg);
 }
@@ -219,11 +245,25 @@ StringSetArg::StringSetArgOptions::StringSetArgOptions() :
 {
 }
 
-void EnumArg::set_argument(const std::string & arg)
+void
+EnumArg::set_argument(const std::string & arg)
 {
+    Context context("When handling argument '" + arg + "' for '--" + long_name() + "':");
+
     if (_imp->allowed_args.end() == std::find_if(_imp->allowed_args.begin(),
                 _imp->allowed_args.end(), ArgIs(arg)))
         throw (BadValue("--" + long_name(), arg));
+
+    _argument = arg;
+}
+
+void
+StringArg::set_argument(const std::string & arg)
+{
+    Context context("When handling argument '" + arg + "' for '--" + long_name() + "':");
+
+    if (_validator)
+        (*_validator)(arg);
 
     _argument = arg;
 }

@@ -152,6 +152,7 @@ namespace paludis
         {
             private:
                 std::string _argument;
+                void (* _validator) (const std::string &);
 
             public:
                 /**
@@ -161,6 +162,13 @@ namespace paludis
                        const char short_name, const std::string & description);
 
                 /**
+                 * Constructor with validator.
+                 */
+                StringArg(ArgsGroup * const, const std::string & long_name,
+                       const char short_name, const std::string & description,
+                       void (* validator) (const std::string &));
+
+                /**
                  * Fetch the argument that was given to this option.
                  */
                 const std::string& argument() const { return _argument; }
@@ -168,7 +176,7 @@ namespace paludis
                 /**
                  * Set the argument returned by argument().
                  */
-                void set_argument(const std::string& arg) { _argument = arg; }
+                void set_argument(const std::string& arg);
         };
 
         /**
@@ -182,6 +190,9 @@ namespace paludis
             public Visitable<StringSetArg, ArgsVisitorTypes>,
             private PrivateImplementationPattern<StringSetArg>
         {
+            private:
+                void (* _validator) (const std::string &);
+
             public:
                 /**
                  * Helper class for passing available options and associated descriptions
@@ -227,6 +238,11 @@ namespace paludis
                 StringSetArg(ArgsGroup * const, const std::string & long_name,
                         const char short_name, const std::string & description,
                         const StringSetArgOptions & options = StringSetArgOptions());
+
+                StringSetArg(ArgsGroup * const, const std::string & long_name,
+                        const char short_name, const std::string & description,
+                        const StringSetArgOptions & options,
+                        void (* validator) (const std::string &));
 
                 ~StringSetArg();
 

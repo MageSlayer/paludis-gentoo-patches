@@ -78,6 +78,7 @@ man_qualudis_SOURCES = \
 man_qualudis_LDADD = \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/libpaludismanpagethings.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(DYNAMIC_LD_LIBS)
