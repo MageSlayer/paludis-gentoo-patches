@@ -28,6 +28,7 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
     FakeRepositoryBase(e, our_name, RepositoryCapabilities::create()
             .installable_interface(0)
             .installed_interface(this)
+            .contents_interface(0)
             .mask_interface(this)
             .news_interface(0)
             .sets_interface(this)
@@ -42,14 +43,6 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
             .destination_interface(this),
             "fake_installed")
 {
-}
-
-Contents::ConstPointer
-FakeInstalledRepository::do_contents(const QualifiedPackageName &,
-        const VersionSpec &) const
-{
-    Contents::ConstPointer result(new Contents);
-    return result;
 }
 
 bool

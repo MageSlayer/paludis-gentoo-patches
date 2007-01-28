@@ -62,6 +62,7 @@ namespace paludis
     class RepositoryProvidesInterface;
     class RepositoryVirtualsInterface;
     class RepositoryDestinationInterface;
+    class RepositoryContentsInterface;
 
     /**
      * What debug build option to use when installing a package.
@@ -446,7 +447,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryMaskInterface() { }
+            virtual ~RepositoryMaskInterface();
     };
 
     /**
@@ -581,7 +582,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryUseInterface() { }
+            virtual ~RepositoryUseInterface();
     };
 
     /**
@@ -596,13 +597,6 @@ namespace paludis
         protected:
             ///\name Implementation details
             ///\{
-
-            /**
-             * Override in descendents: fetch the contents.
-             */
-            virtual Contents::ConstPointer do_contents(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const = 0;
 
             /**
              * Override in descendents: when was a package installed.
@@ -621,16 +615,6 @@ namespace paludis
             ///\{
 
             /**
-             * Fetch contents.
-             */
-            Contents::ConstPointer contents(
-                    const QualifiedPackageName & q,
-                    const VersionSpec & v) const
-            {
-                return do_contents(q, v);
-            }
-
-            /**
              * When was a package installed.
              *
              * Can return time_t(0) if the installed time is unknown.
@@ -644,7 +628,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryInstalledInterface() { }
+            virtual ~RepositoryInstalledInterface();
     };
 
     /**
@@ -682,7 +666,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryInstallableInterface() { }
+            virtual ~RepositoryInstallableInterface();
     };
 
     /**
@@ -720,7 +704,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryUninstallableInterface() { }
+            virtual ~RepositoryUninstallableInterface();
     };
 
     /**
@@ -769,7 +753,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositorySetsInterface() { }
+            virtual ~RepositorySetsInterface();
     };
 
     /**
@@ -808,7 +792,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositorySyncableInterface() { }
+            virtual ~RepositorySyncableInterface();
     };
 
     /**
@@ -836,7 +820,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryWorldInterface() { }
+            virtual ~RepositoryWorldInterface();
     };
 
     /**
@@ -859,7 +843,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryNewsInterface() { }
+            virtual ~RepositoryNewsInterface();
     };
 
     /**
@@ -884,7 +868,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryEnvironmentVariableInterface() { }
+            virtual ~RepositoryEnvironmentVariableInterface();
     };
 
     /**
@@ -916,7 +900,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryMirrorsInterface() { }
+            virtual ~RepositoryMirrorsInterface();
     };
 
     /**
@@ -952,7 +936,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryVirtualsInterface() { }
+            virtual ~RepositoryVirtualsInterface();
     };
 
     /**
@@ -988,7 +972,7 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryProvidesInterface() { }
+            virtual ~RepositoryProvidesInterface();
     };
 
     /**
@@ -1008,7 +992,48 @@ namespace paludis
 
             ///\}
 
-            virtual ~RepositoryDestinationInterface() { }
+            virtual ~RepositoryDestinationInterface();
+    };
+
+    /**
+     * Interface for handling actions for repositories supporting contents queries.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
+    class RepositoryContentsInterface
+    {
+        protected:
+            ///\name Implementation details
+            ///\{
+
+            /**
+             * Override in descendents: fetch the contents.
+             */
+            virtual Contents::ConstPointer do_contents(
+                    const QualifiedPackageName &,
+                    const VersionSpec &) const = 0;
+
+            ///\}
+
+        public:
+            ///\name Installed content queries
+            ///\{
+
+            /**
+             * Fetch contents.
+             */
+            Contents::ConstPointer contents(
+                    const QualifiedPackageName & q,
+                    const VersionSpec & v) const
+            {
+                return do_contents(q, v);
+            }
+
+            ///\}
+
+            virtual ~RepositoryContentsInterface();
     };
 
     /**

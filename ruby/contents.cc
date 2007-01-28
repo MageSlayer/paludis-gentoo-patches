@@ -34,6 +34,8 @@ namespace
     static VALUE c_contents_dir_entry;
     static VALUE c_contents_sym_entry;
     static VALUE c_contents_misc_entry;
+    static VALUE c_contents_dev_entry;
+    static VALUE c_contents_fifo_entry;
 
     VALUE
     contents_init(VALUE self)
@@ -238,6 +240,24 @@ namespace
         c_contents_misc_entry = rb_define_class_under(paludis_module(), "ContentsMiscEntry", c_contents_entry);
         rb_define_singleton_method(c_contents_misc_entry, "new", RUBY_FUNC_CAST((&ContentsNew<ContentsMiscEntry>::contents_entry_new)), -1);
 
+
+        /*
+         * Document-class: Paludis::ContentsFifoEntry
+         *
+         *  A fifo ContentsEntry
+         */
+        c_contents_fifo_entry = rb_define_class_under(paludis_module(), "ContentsFifoEntry", c_contents_entry);
+        rb_define_singleton_method(c_contents_fifo_entry, "new", RUBY_FUNC_CAST((&ContentsNew<ContentsFifoEntry>::contents_entry_new)), -1);
+
+
+        /*
+         * Document-class: Paludis::ContentsDevEntry
+         *
+         *  A device ContentsEntry
+         */
+        c_contents_misc_entry = rb_define_class_under(paludis_module(), "ContentsDevEntry", c_contents_entry);
+        rb_define_singleton_method(c_contents_dev_entry, "new", RUBY_FUNC_CAST((&ContentsNew<ContentsDevEntry>::contents_entry_new)), -1);
+
         /*
          * Document-class: Paludis::ContentsSymEntry
          *
@@ -286,6 +306,18 @@ paludis::ruby::contents_entry_to_value(ContentsEntry::ConstPointer m)
         {
             value = Data_Wrap_Struct(c_contents_sym_entry, 0, &Common<ContentsSymEntry::ConstPointer>::free,
                     new ContentsSymEntry::ConstPointer(mm));
+        }
+
+        void visit(const ContentsFifoEntry *)
+        {
+            value = Data_Wrap_Struct(c_contents_fifo_entry, 0, &Common<ContentsFifoEntry::ConstPointer>::free,
+                    new ContentsFifoEntry::ConstPointer(mm));
+        }
+
+        void visit(const ContentsDevEntry *)
+        {
+            value = Data_Wrap_Struct(c_contents_dev_entry, 0, &Common<ContentsDevEntry::ConstPointer>::free,
+                    new ContentsDevEntry::ConstPointer(mm));
         }
     };
 

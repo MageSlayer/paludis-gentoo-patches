@@ -36,10 +36,6 @@ namespace paludis
         public RepositoryProvidesInterface
     {
         protected:
-            virtual Contents::ConstPointer do_contents(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
             virtual ProvidesCollection::ConstPointer provided_packages() const;
 
             virtual VersionMetadata::ConstPointer provided_package_version_metadata(

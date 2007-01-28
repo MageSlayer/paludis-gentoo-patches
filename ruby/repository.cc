@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -515,11 +515,11 @@ namespace
         {
             Repository::ConstPointer * self_ptr;
             Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
-            const RepositoryInstalledInterface * const installed_interface ((**self_ptr).installed_interface);
-            if (installed_interface)
+            const RepositoryContentsInterface * const contents_interface ((**self_ptr).contents_interface);
+            if (contents_interface)
             {
                 return contents_to_value(
-                        installed_interface->contents(
+                        contents_interface->contents(
                             value_to_qualified_package_name(qpn),
                             value_to_version_spec(vs)
                             )
@@ -921,6 +921,8 @@ namespace
                         &Repository::provides_interface>::fetch)), 0);
         rb_define_method(c_repository, "virtuals_interface", RUBY_FUNC_CAST((&Interface<RepositoryVirtualsInterface,
                         &Repository::virtuals_interface>::fetch)), 0);
+        rb_define_method(c_repository, "contents_interface", RUBY_FUNC_CAST((&Interface<RepositoryContentsInterface,
+                        &Repository::contents_interface>::fetch)), 0);
 
         rb_define_method(c_repository, "info", RUBY_FUNC_CAST(&repository_info), 1);
         rb_define_method(c_repository, "contents", RUBY_FUNC_CAST(&repository_contents), 2);

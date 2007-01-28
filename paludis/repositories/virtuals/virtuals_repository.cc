@@ -89,7 +89,8 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
             .world_interface(0)
             .provides_interface(0)
             .virtuals_interface(0)
-            .destination_interface(0),
+            .destination_interface(0)
+            .contents_interface(0),
             "virtuals"),
     PrivateImplementationPattern<VirtualsRepository>(
             new Implementation<VirtualsRepository>(env))

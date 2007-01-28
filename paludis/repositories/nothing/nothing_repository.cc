@@ -95,6 +95,7 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
             .mask_interface(0)
             .installable_interface(0)
             .installed_interface(0)
+            .contents_interface(0)
             .news_interface(0)
             .sets_interface(0)
             .syncable_interface(this)

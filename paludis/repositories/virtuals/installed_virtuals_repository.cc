@@ -63,6 +63,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .world_interface(0)
             .provides_interface(0)
             .virtuals_interface(0)
+            .contents_interface(0)
             .destination_interface(0),
             "installed_virtuals"),
     PrivateImplementationPattern<InstalledVirtualsRepository>(
@@ -125,17 +126,6 @@ InstalledVirtualsRepository::make_installed_virtuals_repository(
         AssociativeCollection<std::string, std::string>::ConstPointer)
 {
     return CountedPtr<Repository>(new InstalledVirtualsRepository(env));
-}
-
-Contents::ConstPointer
-InstalledVirtualsRepository::do_contents(
-        const QualifiedPackageName &, const VersionSpec &) const
-{
-    /* virtual packages don't have any genuine contents. don't return the
-     * content of our real package -- that'll cause extreme confusion with
-     * paludis --owner. */
-
-    return Contents::ConstPointer(new Contents);
 }
 
 bool

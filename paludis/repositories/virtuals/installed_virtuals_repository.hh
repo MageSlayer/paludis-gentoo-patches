@@ -40,10 +40,6 @@ namespace paludis
             void need_entries() const;
 
         protected:
-            virtual Contents::ConstPointer do_contents(
-                    const QualifiedPackageName &,
-                    const VersionSpec &) const;
-
             virtual bool do_query_repository_masks(const QualifiedPackageName &,
                     const VersionSpec &) const;
 

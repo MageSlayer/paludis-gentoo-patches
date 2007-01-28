@@ -46,6 +46,7 @@ namespace paludis
     class PALUDIS_VISIBLE CRANInstalledRepository :
         public Repository,
         public RepositoryInstalledInterface,
+        public RepositoryContentsInterface,
         public RepositoryUninstallableInterface,
         public RepositorySetsInterface,
         public RepositoryWorldInterface,

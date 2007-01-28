@@ -54,6 +54,7 @@ namespace paludis
         public RepositoryEnvironmentVariableInterface,
         public RepositoryProvidesInterface,
         public RepositoryDestinationInterface,
+        public RepositoryContentsInterface,
         public PrivateImplementationPattern<VDBRepository>
     {
         private:

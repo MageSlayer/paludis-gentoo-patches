@@ -507,7 +507,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .mirrors_interface(0)
             .provides_interface(this)
             .virtuals_interface(0)
-            .destination_interface(this),
+            .destination_interface(this)
+            .contents_interface(this),
             "vdb"),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p))
 {

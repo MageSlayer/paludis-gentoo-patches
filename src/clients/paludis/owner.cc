@@ -98,6 +98,8 @@ do_one_owner(
     {
         if (! (*r)->installed_interface)
             continue;
+        if (! (*r)->contents_interface)
+            continue;
 
         p::CategoryNamePartCollection::ConstPointer cats((*r)->category_names());
         for (p::CategoryNamePartCollection::Iterator c(cats->begin()),
@@ -112,8 +114,7 @@ do_one_owner(
                         v_end(vers->end()) ; v != v_end ; ++v)
                 {
                     p::PackageDatabaseEntry e(*p, *v, (*r)->name());
-                    p::Contents::ConstPointer contents((*r)->installed_interface->
-                            contents(*p, *v));
+                    p::Contents::ConstPointer contents((*r)->contents_interface->contents(*p, *v));
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
                     std::for_each(contents->begin(), contents->end(), accept_visitor(&d));
                     if (d.found)

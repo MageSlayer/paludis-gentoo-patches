@@ -248,6 +248,7 @@ GemsRepository::GemsRepository(const GemsRepositoryParams & p) :
     Repository(RepositoryName("gems"),
             RepositoryCapabilities::create()
             .mask_interface(0)
+            .contents_interface(0)
             .installable_interface(this)
             .installed_interface(0)
             .news_interface(0)

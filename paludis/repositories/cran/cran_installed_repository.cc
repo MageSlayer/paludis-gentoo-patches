@@ -173,6 +173,7 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .mask_interface(0)
             .installable_interface(0)
             .installed_interface(this)
+            .contents_interface(this)
             .news_interface(0)
             .sets_interface(this)
             .syncable_interface(0)

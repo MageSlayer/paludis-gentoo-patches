@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -206,5 +206,65 @@ std::string
 Repository::format() const
 {
     return _format;
+}
+
+RepositoryInstallableInterface::~RepositoryInstallableInterface()
+{
+}
+
+RepositoryInstalledInterface::~RepositoryInstalledInterface()
+{
+}
+
+RepositoryMaskInterface::~RepositoryMaskInterface()
+{
+}
+
+RepositoryNewsInterface::~RepositoryNewsInterface()
+{
+}
+
+RepositorySetsInterface::~RepositorySetsInterface()
+{
+}
+
+RepositorySyncableInterface::~RepositorySyncableInterface()
+{
+}
+
+RepositoryUninstallableInterface::~RepositoryUninstallableInterface()
+{
+}
+
+RepositoryUseInterface::~RepositoryUseInterface()
+{
+}
+
+RepositoryWorldInterface::~RepositoryWorldInterface()
+{
+}
+
+RepositoryEnvironmentVariableInterface::~RepositoryEnvironmentVariableInterface()
+{
+}
+
+RepositoryMirrorsInterface::~RepositoryMirrorsInterface()
+{
+}
+
+RepositoryProvidesInterface::~RepositoryProvidesInterface()
+{
+}
+
+RepositoryVirtualsInterface::~RepositoryVirtualsInterface()
+{
+}
+
+RepositoryDestinationInterface::~RepositoryDestinationInterface()
+{
+}
+
+RepositoryContentsInterface::~RepositoryContentsInterface()
+{
 }
 
