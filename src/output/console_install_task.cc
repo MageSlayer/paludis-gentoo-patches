@@ -830,8 +830,8 @@ ConsoleInstallTask::_add_descriptions(UseFlagNameCollection::ConstPointer c,
 
 void
 ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
-        PackageDatabaseEntryCollection::ConstPointer existing,
         PackageDatabaseEntryCollection::ConstPointer,
+        PackageDatabaseEntryCollection::ConstPointer existing_slot,
         const DisplayMode m)
 {
     if (normal_entry != m && suggested_entry != m)
@@ -839,7 +839,7 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
 
     output_no_endl(" ");
     UseFlagPrettyPrinter::Pointer printer(make_use_flag_pretty_printer());
-    printer->print_package_flags(d.package, existing->empty() ? 0 : &*existing->last());
+    printer->print_package_flags(d.package, existing_slot->empty() ? 0 : &*existing_slot->last());
 
     _add_descriptions(printer->new_flags(), d.package, uds_new);
     _add_descriptions(printer->changed_flags(), d.package, uds_changed);
