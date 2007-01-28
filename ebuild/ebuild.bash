@@ -206,6 +206,7 @@ ebuild_load_ebuild()
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_EBUILD_DIR=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_COMMAND=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_HOME=/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_PID=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?EBUILD_KILL_PID=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?ROOT=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?SANDBOX/d' \

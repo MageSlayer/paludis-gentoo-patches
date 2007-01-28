@@ -12,6 +12,7 @@
 #     @DATADIR@/paludis/hooks/uninstall_all_pre/
 #     @DATADIR@/paludis/hooks/uninstall_all_post/
 #     @DATADIR@/paludis/hooks/uninstall_fail/
+#     @DATADIR@/paludis/hooks/clean_fail/
 #
 # And optionally:
 #
@@ -47,7 +48,7 @@ case "${HOOK}" in
     touch "${logfile}" || die "Couldn't create '${logfile}' for elog hooks"
     ;;
 
-    install_all_post|uninstall_all_post|install_fail|uninstall_fail)
+    install_all_post|uninstall_all_post|install_fail|uninstall_fail|clean_fail)
     echo
     old_pf=""
     while read line ; do
