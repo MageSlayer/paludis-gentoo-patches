@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,6 +53,16 @@ namespace
         void visit(const p::ContentsMiscEntry * const e)
         {
             cout << "    " << colour(cl_misc, e->name()) << endl;
+        }
+
+        void visit(const p::ContentsFifoEntry * const e)
+        {
+            cout << "    " << colour(cl_fifo, e->name()) << endl;
+        }
+
+        void visit(const p::ContentsDevEntry * const e)
+        {
+            cout << "    " << colour(cl_dev, e->name()) << endl;
         }
     };
 }

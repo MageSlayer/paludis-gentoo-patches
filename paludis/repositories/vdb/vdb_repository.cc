@@ -729,6 +729,10 @@ VDBRepository::do_contents(
             result->add(ContentsEntry::Pointer(new ContentsDirEntry(tokens.at(1))));
         else if ("misc" == tokens.at(0))
             result->add(ContentsEntry::Pointer(new ContentsMiscEntry(tokens.at(1))));
+        else if ("fif" == tokens.at(0))
+            result->add(ContentsEntry::Pointer(new ContentsFifoEntry(tokens.at(1))));
+        else if ("dev" == tokens.at(0))
+            result->add(ContentsEntry::Pointer(new ContentsDevEntry(tokens.at(1))));
         else if ("sym" == tokens.at(0))
         {
             if (tokens.size() < 4)

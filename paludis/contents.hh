@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,6 +40,8 @@ namespace paludis
     struct ContentsFileEntry;
     struct ContentsDirEntry;
     struct ContentsSymEntry;
+    struct ContentsFifoEntry;
+    struct ContentsDevEntry;
     struct ContentsMiscEntry;
 
     /**
@@ -48,7 +50,7 @@ namespace paludis
      * \ingroup grpcontents
      */
     typedef VisitorTypes<ContentsFileEntry *, ContentsDirEntry *,
-            ContentsSymEntry *, ContentsMiscEntry *> ContentsVisitorTypes;
+            ContentsSymEntry *, ContentsFifoEntry *, ContentsDevEntry *, ContentsMiscEntry *> ContentsVisitorTypes;
 
     /**
      * Base class for a contents entry.
@@ -157,6 +159,52 @@ namespace paludis
             typedef CountedPtr<ContentsMiscEntry, count_policy::InternalCountTag> Pointer;
 
             typedef CountedPtr<const ContentsMiscEntry, count_policy::InternalCountTag> ConstPointer;
+    };
+
+    /**
+     * A fifo contents entry.
+     *
+     * \ingroup grpcontents
+     * \nosubgrouping
+     */
+    class ContentsFifoEntry :
+        public ContentsEntry,
+        public Visitable<ContentsFifoEntry, ContentsVisitorTypes>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            ContentsFifoEntry(const std::string & name);
+
+            ///\}
+
+            typedef CountedPtr<ContentsFifoEntry, count_policy::InternalCountTag> Pointer;
+
+            typedef CountedPtr<const ContentsFifoEntry, count_policy::InternalCountTag> ConstPointer;
+    };
+
+    /**
+     * A device contents entry.
+     *
+     * \ingroup grpcontents
+     * \nosubgrouping
+     */
+    class ContentsDevEntry :
+        public ContentsEntry,
+        public Visitable<ContentsDevEntry, ContentsVisitorTypes>
+    {
+        public:
+            ///\name Basic operations
+            ///\{
+
+            ContentsDevEntry(const std::string & name);
+
+            ///\}
+
+            typedef CountedPtr<ContentsDevEntry, count_policy::InternalCountTag> Pointer;
+
+            typedef CountedPtr<const ContentsDevEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
