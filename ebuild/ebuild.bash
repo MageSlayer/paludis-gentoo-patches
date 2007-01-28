@@ -206,8 +206,10 @@ ebuild_load_ebuild()
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_EBUILD_DIR=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_COMMAND=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_CLIENT=/d' \
-            -e '/^\(declare \(-[^ ]\+ \)\?\)\?[^=]*_CMDLINE_.*=/d' \
-            -e '/^\(declare \(-[^ ]\+ \)\?\)\?[^=]*_OPTIONS=/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?\(PALUDIS\|CONTRARIUS\|GTKPALUDIS\)_CMDLINE_.*=/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?\(ADJUTRIX\|QUALUDIS\)_CMDLINE_.*=/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?\(PALUDIS\|CONTRARIUS\|GTKPALUDIS\)_OPTIONS=/d' \
+            -e '/^\(declare \(-[^ ]\+ \)\?\)\?\(ADJUTRIX\|QUALUDIS\)_OPTIONS=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_HOME=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?PALUDIS_PID=/d' \
             -e '/^\(declare \(-[^ ]\+ \)\?\)\?EBUILD_KILL_PID=/d' \
