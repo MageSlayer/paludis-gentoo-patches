@@ -86,10 +86,10 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
             VersionMetadata::ConstPointer m(env.package_database()->fetch_repository(
                         p->package.repository)->version_metadata(p->package.name,
                             p->package.version));
-            if (m->get_ebuild_interface())
+            if (m->ebuild_interface)
             {
                 std::set<std::string> keywords;
-                WhitespaceTokeniser::get_instance()->tokenise(m->get_ebuild_interface()->keywords,
+                WhitespaceTokeniser::get_instance()->tokenise(m->ebuild_interface->keywords,
                         std::inserter(keywords, keywords.end()));
                 for (std::set<std::string>::const_iterator k(keywords.begin()), k_end(keywords.end()) ;
                         k != k_end ; ++k)

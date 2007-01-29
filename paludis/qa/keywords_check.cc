@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,7 +47,7 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
         {
             //std::set<KeywordName> keywords(metadata->begin_keywords(), metadata->end_keywords());
             std::set<KeywordName> keywords;
-            WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
+            WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->
                 keywords, create_inserter<KeywordName>(std::inserter(keywords, keywords.begin())));
 
             if (keywords.end() != keywords.find(KeywordName("-*")) &&
@@ -63,7 +63,7 @@ KeywordsCheck::operator() (const EbuildCheckData & e) const
             result << Message(qal_major, "Bad entries in KEYWORDS");
         }
 
-        if (! metadata->get_ebuild_interface()->eclass_keywords.empty())
+        if (! metadata->ebuild_interface->eclass_keywords.empty())
             result << Message(qal_major, "KEYWORDS was altered by an eclass");
     }
     catch (const InternalError &)

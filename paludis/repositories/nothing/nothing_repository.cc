@@ -20,6 +20,7 @@
 #include "config.h"
 
 #include <paludis/repositories/nothing/nothing_repository.hh>
+#include <paludis/package_database.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/syncer.hh>
@@ -170,11 +171,7 @@ VersionMetadata::ConstPointer
 NothingRepository::do_version_metadata(
         const QualifiedPackageName & q, const VersionSpec & v) const
 {
-    Log::get_instance()->message(ll_warning, lc_context, "has_version failed for request for '" +
-            stringify(q) + "-" + stringify(v) + "' in repository '" +
-            stringify(name()) + "'");
-    return VersionMetadata::ConstPointer(new VersionMetadata::Ebuild(
-                PortageDepParser::parse_depend));
+    throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
 }
 
 CountedPtr<Repository>

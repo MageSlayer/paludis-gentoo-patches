@@ -24,6 +24,7 @@
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
+#include <paludis/repositories/cran/cran_version_metadata.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -126,7 +127,7 @@ Implementation<CRANInstalledRepository>::load_entries() const
             std::string n(d->basename());
             CRANDescription::normalise_name(n);
 
-            CRANDescription desc(n, f);
+            CRANDescription desc(n, f, true);
             entries.push_back(desc);
 
             QualifiedPackageName q("cran/" + n);
@@ -152,7 +153,7 @@ Implementation<CRANInstalledRepository>::load_entries() const
                 n.erase(pos);
             CRANDescription::normalise_name(n);
 
-            CRANDescription desc(n, *f);
+            CRANDescription desc(n, *f, true);
             entries.push_back(desc);
 
             QualifiedPackageName q("cran/" + n);
@@ -335,11 +336,11 @@ CRANInstalledRepository::do_version_metadata(
 
     if (d.is_regular_file())
     {
-        CRANDescription description(stringify(q.package), d);
+        CRANDescription description(stringify(q.package), d, true);
         // Don't put this into CRANDescription, as it's only relevant to CRANInstalledRepository
         std::string repo(file_contents(_imp->location, q, "REPOSITORY"));
         if (! repo.empty())
-            description.metadata->origins.source.assign(new PackageDatabaseEntry(stringify(q.package), v,
+            description.metadata->origins_interface->source.assign(new PackageDatabaseEntry(stringify(q.package), v,
                     RepositoryName(repo)));
         result = description.metadata;
     }
@@ -348,7 +349,7 @@ CRANInstalledRepository::do_version_metadata(
         Log::get_instance()->message(ll_warning, lc_no_context, "has_version failed for request for '" +
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "': No DESCRIPTION file present.");
-        result.assign(new VersionMetadata(CRANDepParser::parse));
+        result.assign(new CRANVersionMetadata(true));
         result->eapi = "UNKNOWN";
         return result;
     }
@@ -528,7 +529,7 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
     VersionMetadata::ConstPointer vm(do_version_metadata(q, v));
 
     MakeEnvCommand cmd(LIBEXECDIR "/paludis/cran.bash unmerge", "");
-    cmd = cmd("PN", vm->get_cran_interface()->package);
+    cmd = cmd("PN", vm->cran_interface->package);
     cmd = cmd("PV", stringify(v));
     cmd = cmd("PALUDIS_CRAN_LIBRARY", stringify(_imp->location));
     cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));

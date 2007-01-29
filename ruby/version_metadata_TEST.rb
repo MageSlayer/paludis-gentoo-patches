@@ -58,10 +58,9 @@ module Paludis
         end
 
         def test_interfaces
-            assert vmd("1.0").get_ebuild_interface
-            assert ! vmd("1.0").get_ebin_interface
-            assert ! vmd("1.0").get_cran_interface
-            assert ! vmd("1.0").get_virtual_interface
+            assert vmd("1.0").ebuild_interface
+            assert ! vmd("1.0").cran_interface
+            assert ! vmd("1.0").virtual_interface
         end
 
         def test_members

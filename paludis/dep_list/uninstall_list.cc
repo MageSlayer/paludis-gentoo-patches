@@ -252,7 +252,7 @@ UninstallList::add_package(const PackageDatabaseEntry & e, const PackageDatabase
 
     std::list<UninstallListEntry>::iterator i(_imp->uninstall_list.insert(
                 _imp->uninstall_list.end(), UninstallListEntry(
-                    e, m->get_virtual_interface(), SortedCollection<DepTag::Pointer>::Pointer(
+                    e, m->virtual_interface, SortedCollection<DepTag::Pointer>::Pointer(
                         new SortedCollection<DepTag::Pointer>::Concrete))));
     if (t)
         i->tags->insert(DepTag::Pointer(new DependencyDepTag(*t)));
@@ -366,10 +366,13 @@ UninstallList::collect_depped_upon(ArbitrarilyOrderedPackageDatabaseEntryCollect
             DepCollector c(_imp->env, *i);
             VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
                         i->repository)->version_metadata(i->name, i->version));
-            metadata->deps.build_depend()->accept(&c);
-            metadata->deps.run_depend()->accept(&c);
-            metadata->deps.post_depend()->accept(&c);
-            metadata->deps.suggested_depend()->accept(&c);
+            if (metadata->deps_interface)
+            {
+                metadata->deps_interface->build_depend()->accept(&c);
+                metadata->deps_interface->run_depend()->accept(&c);
+                metadata->deps_interface->post_depend()->accept(&c);
+                metadata->deps_interface->suggested_depend()->accept(&c);
+            }
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
                         ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
         }
@@ -459,10 +462,13 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
             DepCollector c(_imp->env, *i);
             VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
                         i->repository)->version_metadata(i->name, i->version));
-            metadata->deps.build_depend()->accept(&c);
-            metadata->deps.run_depend()->accept(&c);
-            metadata->deps.post_depend()->accept(&c);
-            metadata->deps.suggested_depend()->accept(&c);
+            if (metadata->deps_interface)
+            {
+                metadata->deps_interface->build_depend()->accept(&c);
+                metadata->deps_interface->run_depend()->accept(&c);
+                metadata->deps_interface->post_depend()->accept(&c);
+                metadata->deps_interface->suggested_depend()->accept(&c);
+            }
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
                         ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
         }

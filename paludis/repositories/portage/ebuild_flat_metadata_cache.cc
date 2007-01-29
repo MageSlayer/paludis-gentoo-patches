@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,7 +38,7 @@ EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
 }
 
 bool
-EbuildFlatMetadataCache::load(VersionMetadata::Pointer result)
+EbuildFlatMetadataCache::load(EbuildVersionMetadata::Pointer result)
 {
     Context context("When loading version metadata to '" + stringify(_filename) + "':");
 
@@ -47,20 +47,20 @@ EbuildFlatMetadataCache::load(VersionMetadata::Pointer result)
 
     if (cache)
     {
-        std::getline(cache, line); result->deps.build_depend_string = line;
-        std::getline(cache, line); result->deps.run_depend_string = line;
+        std::getline(cache, line); result->build_depend_string = line;
+        std::getline(cache, line); result->run_depend_string = line;
         std::getline(cache, line); result->slot = SlotName(line);
-        std::getline(cache, line); result->get_ebuild_interface()->src_uri = line;
-        std::getline(cache, line); result->get_ebuild_interface()->restrict_string = line;
+        std::getline(cache, line); result->src_uri = line;
+        std::getline(cache, line); result->restrict_string = line;
         std::getline(cache, line); result->homepage = line;
         std::getline(cache, line); result->license_string = line;
         std::getline(cache, line); result->description = line;
-        std::getline(cache, line); result->get_ebuild_interface()->keywords = line;
-        std::getline(cache, line); result->get_ebuild_interface()->inherited = line;
-        std::getline(cache, line); result->get_ebuild_interface()->iuse = line;
+        std::getline(cache, line); result->keywords = line;
+        std::getline(cache, line); result->inherited = line;
+        std::getline(cache, line); result->iuse = line;
         std::getline(cache, line);
-        std::getline(cache, line); result->deps.post_depend_string = line;
-        std::getline(cache, line); result->get_ebuild_interface()->provide_string = line;
+        std::getline(cache, line); result->post_depend_string = line;
+        std::getline(cache, line); result->provide_string = line;
         std::getline(cache, line); result->eapi = line;
 
         // check mtimes
@@ -73,7 +73,7 @@ EbuildFlatMetadataCache::load(VersionMetadata::Pointer result)
         {
             std::set<std::string> inherits;
             WhitespaceTokeniser::get_instance()->tokenise(
-                    stringify(result->get_ebuild_interface()->inherited),
+                    stringify(result->inherited),
                     std::inserter(inherits, inherits.end()));
 
             for (std::set<std::string>::const_iterator i(inherits.begin()),
@@ -111,7 +111,7 @@ namespace
 }
 
 void
-EbuildFlatMetadataCache::save(VersionMetadata::ConstPointer v)
+EbuildFlatMetadataCache::save(EbuildVersionMetadata::ConstPointer v)
 {
     Context context("When saving version metadata to '" + stringify(_filename) + "':");
 
@@ -121,20 +121,20 @@ EbuildFlatMetadataCache::save(VersionMetadata::ConstPointer v)
 
     if (cache)
     {
-        cache << normalise(v->deps.build_depend_string) << std::endl;
-        cache << normalise(v->deps.run_depend_string) << std::endl;
+        cache << normalise(v->build_depend_string) << std::endl;
+        cache << normalise(v->run_depend_string) << std::endl;
         cache << normalise(v->slot) << std::endl;
-        cache << normalise(v->get_ebuild_interface()->src_uri) << std::endl;
-        cache << normalise(v->get_ebuild_interface()->restrict_string) << std::endl;
+        cache << normalise(v->src_uri) << std::endl;
+        cache << normalise(v->restrict_string) << std::endl;
         cache << normalise(v->homepage) << std::endl;
         cache << normalise(v->license_string) << std::endl;
         cache << normalise(v->description) << std::endl;
-        cache << normalise(v->get_ebuild_interface()->keywords) << std::endl;
-        cache << normalise(v->get_ebuild_interface()->inherited) << std::endl;
-        cache << normalise(v->get_ebuild_interface()->iuse) << std::endl;
+        cache << normalise(v->keywords) << std::endl;
+        cache << normalise(v->inherited) << std::endl;
+        cache << normalise(v->iuse) << std::endl;
         cache << std::endl;
-        cache << normalise(v->deps.post_depend_string) << std::endl;
-        cache << normalise(v->get_ebuild_interface()->provide_string) << std::endl;
+        cache << normalise(v->post_depend_string) << std::endl;
+        cache << normalise(v->provide_string) << std::endl;
         cache << normalise(v->eapi) << std::endl;
     }
     else

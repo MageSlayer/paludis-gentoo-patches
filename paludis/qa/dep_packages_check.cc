@@ -108,7 +108,7 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         }
 
         Checker depend_checker(result, "DEPEND", suspicious_depend);
-        std::string depend(metadata->deps.build_depend_string);
+        std::string depend(metadata->deps_interface->build_depend_string);
         PortageDepParser::parse(depend)->accept(&depend_checker);
 
         static std::set<QualifiedPackageName> suspicious_rdepend;
@@ -132,7 +132,7 @@ DepPackagesCheck::operator() (const EbuildCheckData & e) const
         }
 
         Checker rdepend_checker(result, "RDEPEND", suspicious_rdepend);
-        std::string rdepend(metadata->deps.run_depend_string);
+        std::string rdepend(metadata->deps_interface->run_depend_string);
         PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
     }
     catch (const InternalError &)

@@ -141,7 +141,7 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
             VersionMetadata::ConstPointer metadata(
                     e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-            std::string src_uri(metadata->get_ebuild_interface()->src_uri);
+            std::string src_uri(metadata->ebuild_interface->src_uri);
 
             DepAtom::ConstPointer src_uri_parts(0);
             try
@@ -151,7 +151,7 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
 
                 std::set<std::string> restricts;
                 Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-                tokeniser.tokenise(metadata->get_ebuild_interface()->restrict_string,
+                tokeniser.tokenise(metadata->ebuild_interface->restrict_string,
                         std::inserter(restricts, restricts.begin()));
 
                 bool fetch_restrict(restricts.end() != restricts.find("fetch"));

@@ -22,6 +22,7 @@
 using namespace paludis;
 
 #include <paludis/repositories/gems/gems_repository-sr.cc>
+#include <paludis/repositories/gems/gems_version_metadata.hh>
 #include <paludis/repositories/gems/cache.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
@@ -69,8 +70,7 @@ namespace paludis
         for (GemsCache::Iterator g(cache.begin()), g_end(cache.end()) ;
                 g != g_end ; ++g)
         {
-            VersionMetadata::Pointer m(new VersionMetadata(PortageDepParser::parse_depend));
-            m->slot = SlotName(stringify(g->version));
+            VersionMetadata::Pointer m(new GemsVersionMetadata(g->version));
             m->homepage = g->homepage;
             if (g->description.empty())
                 m->description = g->summary;

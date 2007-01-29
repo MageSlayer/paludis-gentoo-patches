@@ -61,7 +61,8 @@ paludis_repositories_portage_include_HEADERS = \
 	ebuild_flat_metadata_cache.hh \
 	eclass_mtimes.hh \
 	make_ebuild_repository.hh \
-	use_desc.hh
+	use_desc.hh \
+	portage_virtual_version_metadata.hh
 
 libpaludisportagerepository_la_SOURCES = \
 	glsa.cc \
@@ -78,6 +79,7 @@ libpaludisportagerepository_la_SOURCES = \
 	portage_repository_params.cc \
 	make_ebuild_repository.cc \
 	use_desc.cc \
+	portage_virtual_version_metadata.cc \
 	registration.cc \
 	$(paludis_repositories_portage_include_HEADERS)
 

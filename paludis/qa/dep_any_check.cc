@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -109,17 +109,20 @@ DepAnyCheck::operator() (const EbuildCheckData & e) const
         VersionMetadata::ConstPointer metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-        Checker depend_checker(result, "DEPEND");
-        std::string depend(metadata->deps.build_depend_string);
-        PortageDepParser::parse(depend)->accept(&depend_checker);
+        if (metadata->deps_interface)
+        {
+            Checker depend_checker(result, "DEPEND");
+            std::string depend(metadata->deps_interface->build_depend_string);
+            PortageDepParser::parse(depend)->accept(&depend_checker);
 
-        Checker rdepend_checker(result, "RDEPEND");
-        std::string rdepend(metadata->deps.run_depend_string);
-        PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
+            Checker rdepend_checker(result, "RDEPEND");
+            std::string rdepend(metadata->deps_interface->run_depend_string);
+            PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
 
-        Checker pdepend_checker(result, "PDEPEND");
-        std::string pdepend(metadata->deps.post_depend_string);
-        PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
+            Checker pdepend_checker(result, "PDEPEND");
+            std::string pdepend(metadata->deps_interface->post_depend_string);
+            PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
+        }
     }
     catch (const InternalError &)
     {

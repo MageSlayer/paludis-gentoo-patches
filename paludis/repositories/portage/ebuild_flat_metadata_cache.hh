@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_EBUILD_FLAT_METADATA_CACHE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_EBUILD_FLAT_METADATA_CACHE_HH 1
 
+#include <paludis/ebuild.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/repositories/portage/eclass_mtimes.hh>
@@ -56,8 +57,8 @@ namespace paludis
             ///\name Cache operations
             ///\{
 
-            bool load(VersionMetadata::Pointer);
-            void save(VersionMetadata::ConstPointer);
+            bool load(EbuildVersionMetadata::Pointer);
+            void save(EbuildVersionMetadata::ConstPointer);
 
             ///\}
     };

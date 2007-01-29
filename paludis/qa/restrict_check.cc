@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,7 +47,7 @@ RestrictCheck::operator() (const EbuildCheckData & e) const
 
         std::set<std::string> restricts;
         Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-        tokeniser.tokenise(metadata->get_ebuild_interface()->restrict_string,
+        tokeniser.tokenise(metadata->ebuild_interface->restrict_string,
                 std::inserter(restricts, restricts.begin()));
 
         static std::set<std::string> allowed_restricts;

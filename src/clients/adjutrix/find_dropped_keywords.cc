@@ -117,11 +117,11 @@ namespace
                 v != v_end ; ++v)
         {
             VersionMetadata::ConstPointer metadata(repo.version_metadata(package, *v));
-            if (! metadata->get_ebuild_interface())
+            if (! metadata->ebuild_interface)
                 continue;
 
             std::set<KeywordName> keywords;
-            WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->keywords,
+            WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->keywords,
                     create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
 
             /* ensure that there's an entry for this SLOT */

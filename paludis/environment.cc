@@ -132,23 +132,22 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
     VersionMetadata::ConstPointer metadata(package_database()->fetch_repository(
                 e.repository)->version_metadata(e.name, e.version));
 
-    if (metadata->eapi != "0" && metadata->eapi != ""
-            && metadata->eapi != "paludis-1" && metadata->eapi != "CRAN-0")
+    if (! accept_eapi(metadata->eapi))
         result.set(mr_eapi);
     else
     {
-        if (metadata->get_virtual_interface())
+        if (metadata->virtual_interface)
         {
-            result |= mask_reasons(metadata->get_virtual_interface()->virtual_for);
+            result |= mask_reasons(metadata->virtual_interface->virtual_for);
             if (result.any())
                 result.set(mr_by_association);
         }
 
-        if (metadata->get_ebuild_interface())
+        if (metadata->ebuild_interface)
         {
             std::set<KeywordName> keywords;
             WhitespaceTokeniser::get_instance()->tokenise(
-                    metadata->get_ebuild_interface()->keywords,
+                    metadata->ebuild_interface->keywords,
                     create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
             if (keywords.empty())
                 keywords.insert(KeywordName("empty"));
@@ -178,10 +177,13 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
             }
         }
 
-        LicenceChecker lc(this, &e);
-        metadata->license()->accept(&lc);
-        if (! lc.ok)
-            result.set(mr_license);
+        if (metadata->license_interface)
+        {
+            LicenceChecker lc(this, &e);
+            metadata->license_interface->license()->accept(&lc);
+            if (! lc.ok)
+                result.set(mr_license);
+        }
 
         if (! query_user_unmasks(e))
         {
@@ -510,5 +512,11 @@ SetsCollection::ConstPointer
 Environment::sets_list() const
 {
     return SetsCollection::ConstPointer(new SetsCollection::Concrete);
+}
+
+bool
+Environment::accept_eapi(const std::string & e) const
+{
+    return e == "0" || e == "" || e == "paludis-1" || e == "CRAN-0";
 }
 

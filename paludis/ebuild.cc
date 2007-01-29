@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -175,25 +175,25 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
 {
     PStream prog(cmd);
     KeyValueConfigFile f(&prog);
-    _metadata.assign(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
+    _metadata.assign(new EbuildVersionMetadata);
 
     bool ok(false);
     try
     {
-        _metadata->deps.build_depend_string = f.get("DEPEND");
-        _metadata->deps.run_depend_string = f.get("RDEPEND");
+        _metadata->build_depend_string = f.get("DEPEND");
+        _metadata->run_depend_string = f.get("RDEPEND");
         _metadata->slot = SlotName(f.get("SLOT"));
-        _metadata->get_ebuild_interface()->src_uri = f.get("SRC_URI");
-        _metadata->get_ebuild_interface()->restrict_string = f.get("RESTRICT");
+        _metadata->src_uri = f.get("SRC_URI");
+        _metadata->restrict_string = f.get("RESTRICT");
         _metadata->homepage = f.get("HOMEPAGE");
-        _metadata->license_string = f.get("LICENSE");
+        _metadata->license_interface->license_string = f.get("LICENSE");
         _metadata->description = f.get("DESCRIPTION");
-        _metadata->get_ebuild_interface()->keywords = f.get("KEYWORDS");
-        _metadata->get_ebuild_interface()->eclass_keywords = f.get("E_KEYWORDS");
-        _metadata->get_ebuild_interface()->inherited = f.get("INHERITED");
-        _metadata->get_ebuild_interface()->iuse = f.get("IUSE");
-        _metadata->deps.post_depend_string = f.get("PDEPEND");
-        _metadata->get_ebuild_interface()->provide_string = f.get("PROVIDE");
+        _metadata->keywords = f.get("KEYWORDS");
+        _metadata->eclass_keywords = f.get("E_KEYWORDS");
+        _metadata->inherited = f.get("INHERITED");
+        _metadata->iuse = f.get("IUSE");
+        _metadata->post_depend_string = f.get("PDEPEND");
+        _metadata->provide_string = f.get("PROVIDE");
         _metadata->eapi = f.get("EAPI");
 
         if (0 == prog.exit_status())
@@ -404,6 +404,27 @@ EbuildUninstallCommand::EbuildUninstallCommand(const EbuildCommandParams & p,
         const EbuildUninstallCommandParams & f) :
     EbuildCommand(p),
     uninstall_params(f)
+{
+}
+
+EbuildVersionMetadata::EbuildVersionMetadata() :
+    VersionMetadata(
+            VersionMetadataBase(SlotName("unset"), "", "", "UNKNOWN"),
+            VersionMetadataCapabilities::create()
+            .ebuild_interface(this)
+            .cran_interface(0)
+            .deps_interface(this)
+            .license_interface(this)
+            .virtual_interface(0)
+            .origins_interface(0)
+            ),
+    VersionMetadataEbuildInterface(),
+    VersionMetadataDepsInterface(PortageDepParser::parse_depend),
+    VersionMetadataLicenseInterface(PortageDepParser::parse_license)
+{
+}
+
+EbuildVersionMetadata::~EbuildVersionMetadata()
 {
 }
 

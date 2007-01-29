@@ -171,11 +171,10 @@ FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpe
     _imp->versions.find(q)->second->insert(v);
     _imp->metadata.insert(
             std::make_pair(stringify(q) + "-" + stringify(v),
-                VersionMetadata::Pointer(new VersionMetadata::Ebuild(PortageDepParser::parse_depend))));
+                VersionMetadata::Pointer(new FakeVersionMetadata)));
     VersionMetadata::Pointer r(_imp->metadata.find(stringify(q) + "-" + stringify(v))->second);
     r->slot = SlotName("0");
     r->eapi = "0";
-    r->get_ebuild_interface()->keywords = "test";
     return r;
 }
 
@@ -302,5 +301,50 @@ const Environment *
 FakeRepositoryBase::environment() const
 {
     return _imp->env;
+}
+
+FakeVersionMetadata::FakeVersionMetadata() :
+    VersionMetadata(
+            VersionMetadataBase(SlotName("0"), "", "", "paludis-1"),
+            VersionMetadataCapabilities::create()
+            .ebuild_interface(this)
+            .deps_interface(this)
+            .license_interface(this)
+            .cran_interface(0)
+            .virtual_interface(0)
+            .origins_interface(0)
+            ),
+    VersionMetadataEbuildInterface(),
+    VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
+    VersionMetadataLicenseInterface(&PortageDepParser::parse_license)
+{
+    keywords = "test";
+}
+
+FakeVersionMetadata::~FakeVersionMetadata()
+{
+}
+
+FakeVirtualVersionMetadata::FakeVirtualVersionMetadata(const SlotName & s, const PackageDatabaseEntry & p) :
+    VersionMetadata(
+            VersionMetadataBase(s, "", "", "paludis-1"),
+            VersionMetadataCapabilities::create()
+            .ebuild_interface(this)
+            .deps_interface(this)
+            .license_interface(this)
+            .cran_interface(0)
+            .virtual_interface(this)
+            .origins_interface(0)
+            ),
+    VersionMetadataEbuildInterface(),
+    VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
+    VersionMetadataLicenseInterface(&PortageDepParser::parse_license),
+    VersionMetadataVirtualInterface(p)
+{
+    keywords = "test";
+}
+
+FakeVirtualVersionMetadata::~FakeVirtualVersionMetadata()
+{
 }
 

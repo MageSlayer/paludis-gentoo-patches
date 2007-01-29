@@ -111,6 +111,26 @@ namespace paludis
 
 namespace
 {
+    class FakedVirtualVersionMetadata :
+        public VersionMetadata,
+        public VersionMetadataVirtualInterface
+    {
+        public:
+            FakedVirtualVersionMetadata(const SlotName & s, const PackageDatabaseEntry & e) :
+                VersionMetadata(
+                        VersionMetadataBase(s, "", "", "paludis-1"),
+                        VersionMetadataCapabilities::create()
+                        .cran_interface(0)
+                        .virtual_interface(this)
+                        .ebuild_interface(0)
+                        .deps_interface(0)
+                        .origins_interface(0)
+                        .license_interface(0)),
+                VersionMetadataVirtualInterface(e)
+            {
+            }
+    };
+
     struct GenerationGreaterThan
     {
         long g;
@@ -864,9 +884,9 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
             if ((*r)->metadata->slot == metadata->slot)
             {
                 /* if it's a virtual, it only replaces if it's the same package. */
-                if ((*r)->metadata->get_virtual_interface())
+                if ((*r)->metadata->virtual_interface)
                 {
-                    if ((*r)->metadata->get_virtual_interface()->virtual_for.name == aa->name)
+                    if ((*r)->metadata->virtual_interface->virtual_for.name == aa->name)
                         replaced = true;
                 }
                 else
@@ -885,8 +905,8 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
             if (aa->name == d->_imp->current_pde()->name)
                 continue;
 
-            if (metadata->get_virtual_interface() &&
-                    metadata->get_virtual_interface()->virtual_for.name == d->_imp->current_pde()->name)
+            if (metadata->virtual_interface &&
+                    metadata->virtual_interface->virtual_for.name == d->_imp->current_pde()->name)
                 continue;
         }
 
@@ -924,8 +944,8 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
             if ((*r)->package.name == d->_imp->current_pde()->name)
                 continue;
 
-            if ((*r)->metadata->get_virtual_interface() &&
-                    (*r)->metadata->get_virtual_interface()->virtual_for.name == d->_imp->current_pde()->name)
+            if ((*r)->metadata->virtual_interface &&
+                    (*r)->metadata->virtual_interface->virtual_for.name == d->_imp->current_pde()->name)
                 continue;
         }
 
@@ -1061,7 +1081,7 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                 .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
                 .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
                 .associated_entry(0)
-                .kind(metadata->get_virtual_interface() ? dlk_virtual : dlk_package))),
+                .kind(metadata->virtual_interface ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
 
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
@@ -1082,9 +1102,9 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
     _imp->merge_list_insert_position = our_merge_entry_position;
 
     /* add provides */
-    if (metadata->get_ebuild_interface())
+    if (metadata->ebuild_interface)
     {
-        DepAtomFlattener f(_imp->env, _imp->current_pde(), metadata->get_ebuild_interface()->provide());
+        DepAtomFlattener f(_imp->env, _imp->current_pde(), metadata->ebuild_interface->provide());
         for (DepAtomFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
             PackageDepAtom::Pointer pp(new PackageDepAtom("=" + (*i)->text() + "-" + stringify(p.version)));
@@ -1106,9 +1126,8 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
             else
             {
                 VersionMetadata::Pointer mm(0);
-                mm.assign(new VersionMetadata::Virtual(metadata->deps.parser,
+                mm.assign(new FakedVirtualVersionMetadata(metadata->slot,
                             PackageDatabaseEntry(p.name, p.version, RepositoryName("virtuals"))));
-                mm->slot = metadata->slot;
                 m = mm;
             }
 
@@ -1126,33 +1145,39 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
         }
     }
 
-    /* add suggests */
-    if (_imp->opts->suggested == dl_suggested_show)
+    if (metadata->deps_interface)
     {
-        Context c("When showing suggestions:");
-        Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
-                next(our_merge_entry_position));
-        ShowSuggestVisitor visitor(this);
-        metadata->deps.suggested_depend()->accept(&visitor);
-    }
+        /* add suggests */
+        if (_imp->opts->suggested == dl_suggested_show)
+        {
+            Context c("When showing suggestions:");
+            Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
+                    next(our_merge_entry_position));
+            ShowSuggestVisitor visitor(this);
+            metadata->deps_interface->suggested_depend()->accept(&visitor);
+        }
 
-    /* add pre dependencies */
-    add_predeps(metadata->deps.build_depend(), _imp->opts->uninstalled_deps_pre, "build");
-    add_predeps(metadata->deps.run_depend(), _imp->opts->uninstalled_deps_runtime, "run");
-    add_predeps(metadata->deps.post_depend(), _imp->opts->uninstalled_deps_post, "post");
-    if (_imp->opts->suggested == dl_suggested_install)
-        add_predeps(metadata->deps.suggested_depend(), _imp->opts->uninstalled_deps_suggested, "suggest");
+        /* add pre dependencies */
+        add_predeps(metadata->deps_interface->build_depend(), _imp->opts->uninstalled_deps_pre, "build");
+        add_predeps(metadata->deps_interface->run_depend(), _imp->opts->uninstalled_deps_runtime, "run");
+        add_predeps(metadata->deps_interface->post_depend(), _imp->opts->uninstalled_deps_post, "post");
+        if (_imp->opts->suggested == dl_suggested_install)
+            add_predeps(metadata->deps_interface->suggested_depend(), _imp->opts->uninstalled_deps_suggested, "suggest");
+    }
 
     our_merge_entry_position->state = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry_post_position);
 
-    /* add post dependencies */
-    add_postdeps(metadata->deps.build_depend(), _imp->opts->uninstalled_deps_pre, "build");
-    add_postdeps(metadata->deps.run_depend(), _imp->opts->uninstalled_deps_runtime, "run");
-    add_postdeps(metadata->deps.post_depend(), _imp->opts->uninstalled_deps_post, "post");
+    if (metadata->deps_interface)
+    {
+        /* add post dependencies */
+        add_postdeps(metadata->deps_interface->build_depend(), _imp->opts->uninstalled_deps_pre, "build");
+        add_postdeps(metadata->deps_interface->run_depend(), _imp->opts->uninstalled_deps_runtime, "run");
+        add_postdeps(metadata->deps_interface->post_depend(), _imp->opts->uninstalled_deps_post, "post");
 
-    if (_imp->opts->suggested == dl_suggested_install)
-        add_postdeps(metadata->deps.suggested_depend(), _imp->opts->uninstalled_deps_suggested, "suggest");
+        if (_imp->opts->suggested == dl_suggested_install)
+            add_postdeps(metadata->deps_interface->suggested_depend(), _imp->opts->uninstalled_deps_suggested, "suggest");
+    }
 
     our_merge_entry_position->state = dle_has_all_deps;
 }
@@ -1317,16 +1342,22 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::C
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
             our_merge_entry);
 
-    add_predeps(metadata->deps.build_depend(), _imp->opts->installed_deps_pre, "build");
-    add_predeps(metadata->deps.run_depend(), _imp->opts->installed_deps_runtime, "run");
-    add_predeps(metadata->deps.post_depend(), _imp->opts->installed_deps_post, "post");
+    if (metadata->deps_interface)
+    {
+        add_predeps(metadata->deps_interface->build_depend(), _imp->opts->installed_deps_pre, "build");
+        add_predeps(metadata->deps_interface->run_depend(), _imp->opts->installed_deps_runtime, "run");
+        add_predeps(metadata->deps_interface->post_depend(), _imp->opts->installed_deps_post, "post");
+    }
 
     our_merge_entry->state = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry);
 
-    add_postdeps(metadata->deps.build_depend(), _imp->opts->installed_deps_pre, "build");
-    add_postdeps(metadata->deps.run_depend(), _imp->opts->installed_deps_runtime, "run");
-    add_postdeps(metadata->deps.post_depend(), _imp->opts->installed_deps_post, "post");
+    if (metadata->deps_interface)
+    {
+        add_postdeps(metadata->deps_interface->build_depend(), _imp->opts->installed_deps_pre, "build");
+        add_postdeps(metadata->deps_interface->run_depend(), _imp->opts->installed_deps_runtime, "run");
+        add_postdeps(metadata->deps_interface->post_depend(), _imp->opts->installed_deps_post, "post");
+    }
 }
 
 namespace
@@ -1435,10 +1466,10 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
 
     if (dl_reinstall_if_use_changed == _imp->opts->reinstall)
     {
-        const EbuildVersionMetadata * const evm_i(_imp->env->package_database()->fetch_repository(
-                    installed.repository)->version_metadata(installed.name, installed.version)->get_ebuild_interface());
-        const EbuildVersionMetadata * const evm_u(_imp->env->package_database()->fetch_repository(
-                    uninstalled.repository)->version_metadata(uninstalled.name, uninstalled.version)->get_ebuild_interface());
+        const VersionMetadataEbuildInterface * const evm_i(_imp->env->package_database()->fetch_repository(
+                    installed.repository)->version_metadata(installed.name, installed.version)->ebuild_interface);
+        const VersionMetadataEbuildInterface * const evm_u(_imp->env->package_database()->fetch_repository(
+                    uninstalled.repository)->version_metadata(uninstalled.name, uninstalled.version)->ebuild_interface);
 
         std::set<std::string> use_i, use_u, use_common;
         if (evm_i)

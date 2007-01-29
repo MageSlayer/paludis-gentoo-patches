@@ -1,16 +1,39 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-make_class_VersionMetadataDeps()
+make_class_VersionMetadataCapabilities()
+{
+    key ebuild_interface "VersionMetadataEbuildInterface *"
+    key cran_interface "VersionMetadataCRANInterface *"
+    key deps_interface "VersionMetadataDepsInterface *"
+    key origins_interface "VersionMetadataOriginsInterface *"
+    key virtual_interface "VersionMetadataVirtualInterface *"
+    key license_interface "VersionMetadataLicenseInterface *"
+
+    doxygen_comment << "END"
+        /**
+         * Optional interfaces that may be provided by VersionMetadata.
+         *
+         * \see VersionMetadata
+         * \ingroup grpversions
+         * \nosubgrouping
+         */
+END
+
+    allow_named_args
+}
+
+make_class_VersionMetadataDepsInterface()
 {
     key parser ParserFunction
+
     key build_depend_string std::string
     key run_depend_string std::string
     key post_depend_string std::string
     key suggested_depend_string std::string
 
     extra_constructors <<END
-            VersionMetadataDeps(const ParserFunction &);
+            VersionMetadataDepsInterface(const ParserFunction &);
 END
 
     extra_methods <<END
@@ -45,13 +68,40 @@ END
 END
 }
 
-make_class_VersionMetadataOrigins()
+make_class_VersionMetadataLicenseInterface()
+{
+    key parser ParserFunction
+
+    key license_string std::string
+
+    extra_constructors <<END
+            VersionMetadataLicenseInterface(const ParserFunction &);
+END
+
+    extra_methods <<END
+            /**
+             * Our licences.
+             */
+            DepAtom::ConstPointer license() const;
+END
+
+    doxygen_comment << "END"
+        /**
+         * License data for VersionMetadata.
+         *
+         * \see VersionMetadata
+         * \ingroup grpversions
+         */
+END
+}
+
+make_class_VersionMetadataOriginsInterface()
 {
     key "source" "CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>"
     key "binary" "CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>"
 
     extra_constructors <<END
-            VersionMetadataOrigins();
+            VersionMetadataOriginsInterface();
 END
 
     doxygen_comment << "END"
@@ -66,13 +116,10 @@ END
 
 make_class_VersionMetadataBase()
 {
-    key deps VersionMetadataDeps
-    key origins VersionMetadataOrigins
     key slot SlotName
-    key license_string std::string
-    key eapi std::string
     key homepage std::string
     key description std::string
+    key eapi std::string
 
     allow_named_args
 
@@ -86,7 +133,7 @@ make_class_VersionMetadataBase()
 END
 }
 
-make_class_EbuildVersionMetadata()
+make_class_VersionMetadataEbuildInterface()
 {
     key provide_string std::string
     key src_uri std::string
@@ -97,7 +144,7 @@ make_class_EbuildVersionMetadata()
     key inherited std::string
 
     extra_constructors <<END
-            EbuildVersionMetadata();
+            VersionMetadataEbuildInterface();
 END
 
     extra_methods <<END
@@ -119,14 +166,13 @@ END
 END
 }
 
-make_class_CRANVersionMetadata()
+make_class_VersionMetadataCRANInterface()
 {
     key keywords std::string
     key package std::string
     key version std::string
     key is_bundle bool
     key is_bundle_member bool
-
 
     allow_named_args
 
@@ -140,26 +186,7 @@ make_class_CRANVersionMetadata()
 END
 }
 
-make_class_EbinVersionMetadata()
-{
-    key bin_uri std::string
-    key src_repository RepositoryName
-
-    extra_constructors <<END
-            EbinVersionMetadata();
-END
-
-    doxygen_comment << "END"
-        /**
-         * Version metadata for ebin packages.
-         *
-         * \see VersionMetadata
-         * \ingroup grpversions
-         */
-END
-}
-
-make_class_VirtualMetadata()
+make_class_VersionMetadataVirtualInterface()
 {
     key virtual_for PackageDatabaseEntry
 

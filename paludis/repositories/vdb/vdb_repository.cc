@@ -18,11 +18,12 @@
  */
 
 #include <paludis/repositories/vdb/vdb_repository.hh>
+#include <paludis/repositories/vdb/vdb_version_metadata.hh>
 
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
-#include <paludis/portage_dep_parser.hh>
 #include <paludis/ebuild.hh>
+#include <paludis/portage_dep_parser.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
@@ -72,7 +73,7 @@ namespace
         VersionSpec version;
 
         /// Our metadata, may be zero.
-        VersionMetadata::Pointer metadata;
+        VDBVersionMetadata::Pointer metadata;
 
         /// Our built USE flags.
         std::set<UseFlagName> use;
@@ -449,21 +450,16 @@ namespace paludis
         Context context("When loading VDBRepository entry for '" + stringify(p->name)
                 + "-" + stringify(p->version) + "' from '" + stringify(location) + "':");
 
-        p->metadata = VersionMetadata::Pointer(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
-        p->metadata->deps.build_depend_string = file_contents(location, p->name, p->version, "DEPEND");
-        p->metadata->deps.run_depend_string = file_contents(location, p->name, p->version, "RDEPEND");
+        p->metadata = VDBVersionMetadata::Pointer(new VDBVersionMetadata);
+        p->metadata->build_depend_string = file_contents(location, p->name, p->version, "DEPEND");
+        p->metadata->run_depend_string = file_contents(location, p->name, p->version, "RDEPEND");
         p->metadata->license_string = file_contents(location, p->name, p->version, "LICENSE");
-        p->metadata->get_ebuild_interface()->keywords = "*";
-        p->metadata->get_ebuild_interface()->inherited =
-                file_contents(location, p->name, p->version, "INHERITED");
-        p->metadata->get_ebuild_interface()->iuse =
-                file_contents(location, p->name, p->version, "IUSE");
-        p->metadata->deps.post_depend_string =
-                file_contents(location, p->name, p->version, "PDEPEND");
-        p->metadata->get_ebuild_interface()->provide_string =
-                file_contents(location, p->name, p->version, "PROVIDE");
-        p->metadata->get_ebuild_interface()->src_uri =
-                file_contents(location, p->name, p->version, "SRC_URI");
+        p->metadata->keywords = "*";
+        p->metadata->inherited = file_contents(location, p->name, p->version, "INHERITED");
+        p->metadata->iuse = file_contents(location, p->name, p->version, "IUSE");
+        p->metadata->post_depend_string = file_contents(location, p->name, p->version, "PDEPEND");
+        p->metadata->provide_string = file_contents(location, p->name, p->version, "PROVIDE");
+        p->metadata->src_uri = file_contents(location, p->name, p->version, "SRC_URI");
         p->metadata->eapi = file_contents(location, p->name, p->version, "EAPI");
         p->metadata->homepage = file_contents(location, p->name, p->version, "HOMEPAGE");
         p->metadata->description = file_contents(location, p->name, p->version, "DESCRIPTION");
@@ -480,7 +476,7 @@ namespace paludis
 
         std::string repo(file_contents(location, p->name, p->version, "REPOSITORY"));
         if (! repo.empty())
-            p->metadata->origins.source.assign(new PackageDatabaseEntry(p->name, p->version,
+            p->metadata->source.assign(new PackageDatabaseEntry(p->name, p->version,
                         RepositoryName(repo)));
 
         std::string raw_use(file_contents(location, p->name, p->version, "USE"));
@@ -1187,16 +1183,14 @@ VDBRepository::provided_packages() const
 VersionMetadata::ConstPointer
 VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry & p) const
 {
-    VersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, p.version));
-    VersionMetadata::Virtual::Pointer result(new VersionMetadata::Virtual(
-                PortageDepParser::parse_depend, PackageDatabaseEntry(p.provided_by_name,
-                    p.version, name())));
+    VDBVersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, p.version));
+    VDBVirtualVersionMetadata::Pointer result(new VDBVirtualVersionMetadata(
+                m->slot, PackageDatabaseEntry(p.provided_by_name, p.version, name())));
 
-    result->slot = m->slot;
     result->license_string = m->license_string;
     result->eapi = m->eapi;
-    result->deps = VersionMetadataDeps(&PortageDepParser::parse_depend,
-            stringify(p.provided_by_name), stringify(p.provided_by_name), "", "");
+    result->build_depend_string = stringify(p.provided_by_name);
+    result->run_depend_string = stringify(p.provided_by_name);
 
     return result;
 }
@@ -1322,7 +1316,7 @@ VDBRepository::load_provided_the_slow_way() const
         {
             std::string provide_str;
             if (e->metadata)
-                provide_str = e->metadata->get_ebuild_interface()->provide_string;
+                provide_str = e->metadata->ebuild_interface->provide_string;
             else
             {
                 // _imp->load_entry(e); slow
@@ -1407,7 +1401,7 @@ VDBRepository::regenerate_provides_cache() const
     {
         std::string provide_str;
         if (c->metadata)
-            provide_str = c->metadata->get_ebuild_interface()->provide_string;
+            provide_str = c->metadata->ebuild_interface->provide_string;
         else
             provide_str = file_contents(_imp->location, c->name, c->version, "PROVIDE");
 

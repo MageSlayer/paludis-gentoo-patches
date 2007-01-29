@@ -29,6 +29,7 @@
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
+#include <paludis/repositories/cran/cran_version_metadata.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/collection_concrete.hh>
@@ -354,16 +355,16 @@ CRANRepository::need_packages() const
                 if (*i == last_package_name)
                     continue;
 
-                CRANDescription d(*i, FSEntry(_imp->location / std::string(last_package_name + ".DESCRIPTION")));
+                CRANDescription d(*i, FSEntry(_imp->location / std::string(last_package_name + ".DESCRIPTION")), false);
 
-                std::string dep(d.metadata->deps.build_depend_string);
-                std::string pkg(d.metadata->get_cran_interface()->package);
+                std::string dep(d.metadata->deps_interface->build_depend_string);
+                std::string pkg(d.metadata->cran_interface->package);
                 if ("" == dep)
                     dep = pkg;
                 else
                     dep += "," + pkg;
-                d.metadata->deps.build_depend_string = dep;
-                d.metadata->get_cran_interface()->is_bundle_member = true;
+                d.metadata->deps_interface->build_depend_string = dep;
+                d.metadata->cran_interface->is_bundle_member = true;
 
                 _imp->package_names[d.name] = true;
                 _imp->metadata.insert(std::make_pair(std::make_pair(d.name, d.version), d.metadata));
@@ -397,7 +398,7 @@ CRANRepository::do_version_metadata(
     if (! has_version(q, v))
         throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
 
-    VersionMetadata::Pointer result(new VersionMetadata(CRANDepParser::parse));
+    VersionMetadata::Pointer result(new CRANVersionMetadata(false));
 
     FSEntry d(_imp->location);
     PackageNamePart p(q.package);
@@ -407,7 +408,7 @@ CRANRepository::do_version_metadata(
 
     if (d.is_regular_file())
     {
-        CRANDescription desc(stringify(p), d);
+        CRANDescription desc(stringify(p), d, false);
         result = desc.metadata;
     }
     else
@@ -415,7 +416,7 @@ CRANRepository::do_version_metadata(
         Log::get_instance()->message(ll_warning, lc_no_context, "has_version failed for request for '" +
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "': File '" + n + ".DESCRIPTION' not present.");
-        result.assign(new VersionMetadata(CRANDepParser::parse));
+        result.assign(new CRANVersionMetadata(false));
         result->eapi = "UNKNOWN";
     }
 
@@ -490,7 +491,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     CategoryNamePart c("cran");
     VersionMetadata::ConstPointer vm(do_version_metadata(q, vn));
 
-    if (vm->get_cran_interface()->is_bundle_member)
+    if (vm->cran_interface->is_bundle_member)
     {
         MakeEnvCommand cmd(LIBEXECDIR "/paludis/cran.bash skip", "");
         cmd = cmd("CATEGORY", "cran");
@@ -499,8 +500,8 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         return;
     }
 
-    std::string p(vm->get_cran_interface()->package);
-    std::string v(vm->get_cran_interface()->version);
+    std::string p(vm->cran_interface->package);
+    std::string v(vm->cran_interface->version);
 
     MakeEnvCommand cmd(LIBEXECDIR "/paludis/cran.bash fetch", "");
     cmd = cmd("CATEGORY", "cran");
@@ -528,7 +529,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     cmd = cmd("DISTDIR", stringify(_imp->distdir));
     cmd = cmd("DISTFILE", std::string(p + "_" + v + ".tar.gz"));
     cmd = cmd("IMAGE", image);
-    cmd = cmd("IS_BUNDLE", (vm->get_cran_interface()->is_bundle ? "yes" : ""));
+    cmd = cmd("IS_BUNDLE", (vm->cran_interface->is_bundle ? "yes" : ""));
     cmd = cmd("LOCATION", stringify(_imp->location));
     cmd = cmd("PN", stringify(pn));
     cmd = cmd("PV", stringify(vn));

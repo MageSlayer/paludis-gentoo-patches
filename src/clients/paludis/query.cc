@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -171,60 +171,58 @@ void do_one_package_query(
             " " << metadata->description << endl;
         cout << "    " << std::setw(22) << std::left << "HOMEPAGE:" << std::setw(0) <<
             " " << metadata->homepage << endl;
-        cout << "    " << std::setw(22) << std::left << "LICENSE:" << std::setw(0) <<
-            " " << metadata->license_string << endl;
 
-        cout << "    " << std::setw(22) << std::left << "DEPEND:" << std::setw(0) <<
-            " " << metadata->deps.build_depend_string << endl;
-        cout << "    " << std::setw(22) << std::left << "RDEPEND:" << std::setw(0) <<
-            " " << metadata->deps.run_depend_string << endl;
-        cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
-            " " << metadata->deps.post_depend_string << endl;
-        cout << "    " << std::setw(22) << std::left << "SDEPEND:" << std::setw(0) <<
-            " " << metadata->deps.suggested_depend_string << endl;
+        if (metadata->license_interface)
+            cout << "    " << std::setw(22) << std::left << "LICENSE:" << std::setw(0) <<
+                " " << metadata->license_interface->license_string << endl;
 
-        if (metadata->get_cran_interface())
+        if (metadata->deps_interface)
         {
-            cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
-                " " << metadata->get_cran_interface()->keywords << endl;
-            cout << "    " << std::setw(22) << std::left << "PACKAGE:" << std::setw(0) <<
-                " " << metadata->get_cran_interface()->package << endl;
-            cout << "    " << std::setw(22) << std::left << "VERSION:" << std::setw(0) <<
-                " " << metadata->get_cran_interface()->version << endl;
-            cout << "    " << std::setw(22) << std::left << "IS_BUNDLE:" << std::setw(0) <<
-                " " << std::boolalpha << metadata->get_cran_interface()->is_bundle << endl;
-            cout << "    " << std::setw(22) << std::left << "IS_BUNDLE_MEMBER:" << std::setw(0) <<
-                " " << std::boolalpha << metadata->get_cran_interface()->is_bundle_member << endl;
+            cout << "    " << std::setw(22) << std::left << "DEPEND:" << std::setw(0) <<
+                " " << metadata->deps_interface->build_depend_string << endl;
+            cout << "    " << std::setw(22) << std::left << "RDEPEND:" << std::setw(0) <<
+                " " << metadata->deps_interface->run_depend_string << endl;
+            cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
+                " " << metadata->deps_interface->post_depend_string << endl;
+            cout << "    " << std::setw(22) << std::left << "SDEPEND:" << std::setw(0) <<
+                " " << metadata->deps_interface->suggested_depend_string << endl;
         }
 
-        if (metadata->get_ebuild_interface())
+        if (metadata->cran_interface)
+        {
+            cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
+                " " << metadata->cran_interface->keywords << endl;
+            cout << "    " << std::setw(22) << std::left << "PACKAGE:" << std::setw(0) <<
+                " " << metadata->cran_interface->package << endl;
+            cout << "    " << std::setw(22) << std::left << "VERSION:" << std::setw(0) <<
+                " " << metadata->cran_interface->version << endl;
+            cout << "    " << std::setw(22) << std::left << "IS_BUNDLE:" << std::setw(0) <<
+                " " << std::boolalpha << metadata->cran_interface->is_bundle << endl;
+            cout << "    " << std::setw(22) << std::left << "IS_BUNDLE_MEMBER:" << std::setw(0) <<
+                " " << std::boolalpha << metadata->cran_interface->is_bundle_member << endl;
+        }
+
+        if (metadata->ebuild_interface)
         {
             cout << "    " << std::setw(22) << std::left << "IUSE:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->iuse << endl;
+                " " << metadata->ebuild_interface->iuse << endl;
             cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->keywords << endl;
+                " " << metadata->ebuild_interface->keywords << endl;
             cout << "    " << std::setw(22) << std::left << "PROVIDE:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->provide_string << endl;
+                " " << metadata->ebuild_interface->provide_string << endl;
             cout << "    " << std::setw(22) << std::left << "RESTRICT:" << std::setw(0) <<
-                " " << metadata->get_ebuild_interface()->restrict_string << endl;
+                " " << metadata->ebuild_interface->restrict_string << endl;
             cout << "    " << std::setw(22) << std::left << "SRC_URI:" << std::setw(0) <<
-                 " " << metadata->get_ebuild_interface()->src_uri << endl;
+                " " << metadata->ebuild_interface->src_uri << endl;
         }
 
-        if (metadata->get_ebin_interface())
-        {
-            cout << "    " << std::setw(22) << std::left << "BIN_URI:" << std::setw(0) <<
-                 " " << metadata->get_ebin_interface()->bin_uri << endl;
-            cout << "    " << std::setw(22) << std::left << "SRC_REPOSITORY:" << std::setw(0) <<
-                 " " << metadata->get_ebin_interface()->src_repository << endl;
-        }
-
-        if (metadata->origins.source)
+        if (metadata->origins_interface && metadata->origins_interface->source)
             cout << "    " << std::setw(22) << std::left << "SOURCE_ORIGIN:" << std::setw(0)
-                << " " << *metadata->origins.source << endl;
-        if (metadata->origins.binary)
+                << " " << *metadata->origins_interface->source << endl;
+        if (metadata->origins_interface && metadata->origins_interface->binary)
             cout << "    " << std::setw(22) << std::left << "BINARY_ORIGIN::" << std::setw(0)
-                << " " << *metadata->origins.binary << endl;
+                << " " << *metadata->origins_interface->binary << endl;
+
         if (0 != env->package_database()->fetch_repository(display_entry.repository)->installed_interface)
         {
             time_t t(env->package_database()->fetch_repository(display_entry.repository
@@ -244,55 +242,56 @@ void do_one_package_query(
             cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
                 " " << metadata->description << endl;
 
-        if (! metadata->license_string.empty())
+        if (metadata->license_interface && ! metadata->license_interface->license_string.empty())
         {
             cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) << " ";
             LicenceDisplayer d(cout, env, &display_entry);
-            metadata->license()->accept(&d);
+            metadata->license_interface->license()->accept(&d);
             cout << endl;
         }
 
-        if (CommandLine::get_instance()->a_show_deps.specified())
+        if (CommandLine::get_instance()->a_show_deps.specified() && metadata->deps_interface)
         {
-            if (! metadata->deps.build_depend_string.empty())
+            if (! metadata->deps_interface->build_depend_string.empty())
             {
                 DepAtomPrettyPrinter p_depend(12);
-                metadata->deps.build_depend()->accept(&p_depend);
+                metadata->deps_interface->build_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Build dependencies:" << std::setw(0)
                     << endl << p_depend;
             }
 
-            if (! metadata->deps.run_depend_string.empty())
+            if (! metadata->deps_interface->run_depend_string.empty())
             {
                 DepAtomPrettyPrinter p_depend(12);
-                metadata->deps.run_depend()->accept(&p_depend);
+                metadata->deps_interface->run_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Runtime dependencies:" << std::setw(0)
                     << endl << p_depend;
             }
 
-            if (! metadata->deps.post_depend_string.empty())
+            if (! metadata->deps_interface->post_depend_string.empty())
             {
                 DepAtomPrettyPrinter p_depend(12);
-                metadata->deps.post_depend()->accept(&p_depend);
+                metadata->deps_interface->post_depend()->accept(&p_depend);
                 cout << "    " << std::setw(22) << std::left << "Post dependencies:" << std::setw(0)
                     << endl << p_depend;
             }
 
-            if (! metadata->deps.suggested_depend_string.empty())
+            if (! metadata->deps_interface->suggested_depend_string.empty())
             {
                 DepAtomPrettyPrinter s_depend(12);
-                metadata->deps.suggested_depend()->accept(&s_depend);
+                metadata->deps_interface->suggested_depend()->accept(&s_depend);
                 cout << "    " << std::setw(22) << std::left << "Suggested dependencies:" << std::setw(0)
                     << endl << s_depend;
             }
         }
 
-        if (metadata->origins.source)
+        if (metadata->origins_interface && metadata->origins_interface->source)
             cout << "    " << std::setw(22) << std::left << "Source origin:" << std::setw(0)
-                << " " << colour(cl_package_name, *metadata->origins.source) << endl;
-        if (metadata->origins.binary)
+                << " " << colour(cl_package_name, *metadata->origins_interface->source) << endl;
+        if (metadata->origins_interface && metadata->origins_interface->binary)
             cout << "    " << std::setw(22) << std::left << "Binary origin:" << std::setw(0)
-                << " " << colour(cl_package_name, *metadata->origins.binary) << endl;
+                << " " << colour(cl_package_name, *metadata->origins_interface->binary) << endl;
+
         if (0 != env->package_database()->fetch_repository(display_entry.repository)->installed_interface)
         {
             time_t t(env->package_database()->fetch_repository(display_entry.repository
@@ -306,13 +305,13 @@ void do_one_package_query(
             }
         }
 
-        if (metadata->get_ebuild_interface())
+        if (metadata->ebuild_interface)
         {
-            if (! metadata->get_ebuild_interface()->provide_string.empty())
+            if (! metadata->ebuild_interface->provide_string.empty())
                 cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
-                    " " << metadata->get_ebuild_interface()->provide_string << endl;
+                    " " << metadata->ebuild_interface->provide_string << endl;
 
-            if (! metadata->get_ebuild_interface()->iuse.empty())
+            if (! metadata->ebuild_interface->iuse.empty())
             {
                 cout << "    " << std::setw(22) << std::left << "Use flags:" << std::setw(0) << " ";
                 UseFlagPrettyPrinter printer(DefaultEnvironment::get_instance());
@@ -321,9 +320,9 @@ void do_one_package_query(
             }
         }
 
-        if (metadata->get_virtual_interface())
+        if (metadata->virtual_interface)
             cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
-                " " << metadata->get_virtual_interface()->virtual_for << endl;
+                " " << metadata->virtual_interface->virtual_for << endl;
     }
 
 

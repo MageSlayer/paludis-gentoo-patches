@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,18 +61,18 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
     VersionMetadata::ConstPointer metadata(environment()->package_database()->
             fetch_repository(pkg.repository)->version_metadata(pkg.name, pkg.version));
 
-    if (! metadata->get_ebuild_interface())
+    if (! metadata->ebuild_interface)
         return;
 
-    WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->iuse,
+    WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->iuse,
             create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
 
     if (old_pkg)
     {
         VersionMetadata::ConstPointer old_metadata(environment()->package_database()->
                 fetch_repository(old_pkg->repository)->version_metadata(old_pkg->name, old_pkg->version));
-        if (old_metadata->get_ebuild_interface())
-            WhitespaceTokeniser::get_instance()->tokenise(old_metadata->get_ebuild_interface()->iuse,
+        if (old_metadata->ebuild_interface)
+            WhitespaceTokeniser::get_instance()->tokenise(old_metadata->ebuild_interface->iuse,
                     create_inserter<UseFlagName>(std::inserter(old_iuse, old_iuse.begin())));
     }
 

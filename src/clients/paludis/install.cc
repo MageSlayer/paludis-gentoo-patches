@@ -582,13 +582,18 @@ do_install()
                             }
                             else if (mr_license == mm)
                             {
-                                cerr << " ";
+                                VersionMetadata::ConstPointer meta(DefaultEnvironment::get_instance()->
+                                        package_database()->fetch_repository(
+                                            pp->repository)->version_metadata(
+                                                pp->name, pp->version));
 
-                                LicenceDisplayer ld(cerr, DefaultEnvironment::get_instance(), &*pp);
-                                DefaultEnvironment::get_instance()->package_database()->fetch_repository(
-                                        pp->repository)->version_metadata(
-                                        pp->name, pp->version)->license()->
-                                        accept(&ld);
+                                if (meta->license_interface)
+                                {
+                                    cerr << " ";
+
+                                    LicenceDisplayer ld(cerr, DefaultEnvironment::get_instance(), &*pp);
+                                    meta->license_interface->license()->accept(&ld);
+                                }
                             }
                             else if (mr_keyword == mm)
                             {
@@ -596,11 +601,11 @@ do_install()
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                             pp->name, pp->version));
-                                if (meta->get_ebuild_interface())
+                                if (meta->ebuild_interface)
                                 {
                                     std::set<KeywordName> keywords;
                                     WhitespaceTokeniser::get_instance()->tokenise(
-                                            meta->get_ebuild_interface()->keywords,
+                                            meta->ebuild_interface->keywords,
                                             create_inserter<KeywordName>(
                                                 std::inserter(keywords, keywords.end())));
 

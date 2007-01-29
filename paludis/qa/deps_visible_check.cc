@@ -205,15 +205,15 @@ DepsVisibleCheck::operator() (const PerProfileEbuildCheckData & e) const
             else
             {
                 Checker depend_checker(result, "DEPEND", e.environment, ee, unstable);
-                std::string depend(metadata->deps.build_depend_string);
+                std::string depend(metadata->deps_interface->build_depend_string);
                 PortageDepParser::parse(depend)->accept(&depend_checker);
 
                 Checker rdepend_checker(result, "RDEPEND", e.environment, ee, unstable);
-                std::string rdepend(metadata->deps.run_depend_string);
+                std::string rdepend(metadata->deps_interface->run_depend_string);
                 PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
 
                 Checker pdepend_checker(result, "PDEPEND", e.environment, ee, unstable);
-                std::string pdepend(metadata->deps.post_depend_string);
+                std::string pdepend(metadata->deps_interface->post_depend_string);
                 PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
             }
 

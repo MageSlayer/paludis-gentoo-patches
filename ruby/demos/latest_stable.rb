@@ -67,7 +67,7 @@ def check_one_package(env, search_keywords, repo, pkg)
     results = {}
     repo.version_specs(pkg).each do |ver|
         md = repo.version_metadata(pkg, ver)
-        next if md.get_ebuild_interface.nil?
+        next if md.ebuild_interface.nil?
         keywords = md.keywords.split(/\s+/)
         search_keywords.each do |keyword|
             if keywords.include? keyword

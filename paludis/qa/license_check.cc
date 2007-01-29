@@ -92,7 +92,7 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
                     e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
 
-            std::string license(metadata->license_string);
+            std::string license(metadata->license_interface->license_string);
 
             DepAtom::ConstPointer license_parts(0);
             try

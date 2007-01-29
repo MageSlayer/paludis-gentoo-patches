@@ -1,7 +1,8 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006,2007 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2006, 2007 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,6 +20,7 @@
 
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
+#include <paludis/repositories/cran/cran_version_metadata.hh>
 #include <paludis/config_file.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
@@ -26,18 +28,17 @@
 
 using namespace paludis;
 
-CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
+CRANDescription::CRANDescription(const std::string & n, const FSEntry & f, bool installed) :
     name("cran/" + n),
     version("0"),
-    metadata(new VersionMetadata::CRAN(CRANDepParser::parse))
+    metadata(new CRANVersionMetadata(installed))
 {
     Context context("When parsing file '" + stringify(f) + "' for package '" + n + "':");
 
     if (! f.is_regular_file())
     {
+        metadata->eapi = "UNKNOWN";
         Log::get_instance()->message(ll_warning, lc_context, "Unexpected irregular file: '" + stringify(f) + "'.");
-        metadata->eapi = "INVALID";
-
         return;
     }
 
@@ -46,8 +47,8 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
 
     // Fill in default values
     metadata->slot = SlotName("0");
-    metadata->eapi = "CRAN-0";
-    metadata->get_cran_interface()->keywords = std::string("*");
+    metadata->cran_interface->keywords = std::string("*");
+    metadata->eapi = "CRAN-1";
 
     std::string key;
     for ( ; l != l_end ; ++l)
@@ -68,7 +69,7 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
 
         if (("Package" == key) || ("Bundle" == key))
         {
-            metadata->get_cran_interface()->package = value;
+            metadata->cran_interface->package = value;
             metadata->homepage = "http://cran.r-project.org/src/contrib/Descriptions/" + value + ".html";
             if ("Package" == key)
             {
@@ -79,12 +80,12 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
             }
             else
             {
-                metadata->get_cran_interface()->is_bundle = true;
+                metadata->cran_interface->is_bundle = true;
             }
         }
         else if ("Version" == key)
         {
-            metadata->get_cran_interface()->version = value;
+            metadata->cran_interface->version = value;
             normalise_version(value);
             version = VersionSpec(value);
         }
@@ -98,11 +99,11 @@ CRANDescription::CRANDescription(const std::string & n, const FSEntry & f) :
                 value = "R";
             else
                 value.append(", R");
-            metadata->deps.build_depend_string = value;
-            metadata->deps.run_depend_string = value;
+            metadata->deps_interface->build_depend_string = value;
+            metadata->deps_interface->run_depend_string = value;
         }
         else if ("Suggests" == key)
-            metadata->deps.suggested_depend_string = value;
+            metadata->deps_interface->suggested_depend_string = value;
     }
 }
 

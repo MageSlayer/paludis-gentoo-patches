@@ -190,9 +190,9 @@ ReportTask::execute()
                     {
                         VersionMetadata::ConstPointer m(rr->version_metadata(pde.name, pde.version));
 
-                        if (m->origins.source)
+                        if (m->origins_interface && m->origins_interface->source)
                         {
-                            mr = e->mask_reasons(*(m->origins.source));
+                            mr = e->mask_reasons(*(m->origins_interface->source));
                             if (mr.any())
                                 is_masked = true;
                         }

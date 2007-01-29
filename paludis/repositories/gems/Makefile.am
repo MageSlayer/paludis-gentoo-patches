@@ -35,7 +35,8 @@ paludis_repositories_gems_include_HEADERS = \
 	cache.hh \
 	cache-sr.hh \
 	make_gems_repository.hh \
-	yaml.hh
+	yaml.hh \
+	gems_version_metadata.hh
 
 libpaludisgemsrepository_la_SOURCES = \
 	gems_repository.cc \
@@ -43,6 +44,7 @@ libpaludisgemsrepository_la_SOURCES = \
 	cache.cc \
 	make_gems_repository.cc \
 	yaml.cc \
+	gems_version_metadata.cc \
 	registration.cc \
 	$(paludis_repositories_gems_include_HEADERS)
 

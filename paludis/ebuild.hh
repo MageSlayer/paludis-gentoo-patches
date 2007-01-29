@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -59,6 +59,20 @@ namespace paludis
     class MakeEnvCommand;
 
 #include <paludis/ebuild-sr.hh>
+
+    class EbuildVersionMetadata :
+        public VersionMetadata,
+        public VersionMetadataEbuildInterface,
+        public VersionMetadataDepsInterface,
+        public VersionMetadataLicenseInterface
+    {
+        public:
+            typedef CountedPtr<EbuildVersionMetadata, count_policy::InternalCountTag> Pointer;
+            typedef CountedPtr<const EbuildVersionMetadata, count_policy::InternalCountTag> ConstPointer;
+
+            EbuildVersionMetadata();
+            virtual ~EbuildVersionMetadata();
+    };
 
     /**
      * An EbuildCommand is the base class from which specific ebuild
@@ -148,7 +162,7 @@ namespace paludis
         public EbuildCommand
     {
         private:
-            VersionMetadata::Ebuild::Pointer _metadata;
+            EbuildVersionMetadata::Pointer _metadata;
 
         protected:
             virtual std::string commands() const;
@@ -169,7 +183,7 @@ namespace paludis
              * Return a pointer to our generated metadata. If operator() has not
              * yet been called, will be a zero pointer.
              */
-            VersionMetadata::Pointer metadata() const
+            EbuildVersionMetadata::Pointer metadata() const
             {
                 return _metadata;
             }

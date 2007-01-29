@@ -62,16 +62,15 @@ FakeRepository::virtual_package_version_metadata(
         const RepositoryVirtualsEntry & p, const VersionSpec & v) const
 {
     VersionMetadata::ConstPointer m(version_metadata(p.provided_by_atom->package(), v));
-    VersionMetadata::Virtual::Pointer result(new VersionMetadata::Virtual(
-                PortageDepParser::parse_depend, PackageDatabaseEntry(
-                    p.provided_by_atom->package(), v, name())));
+    FakeVirtualVersionMetadata::Pointer result(new FakeVirtualVersionMetadata(
+                m->slot, PackageDatabaseEntry(p.provided_by_atom->package(), v, name())));
 
-    result->slot = m->slot;
-    result->license_string = m->license_string;
+    if (m->license_interface)
+        result->license_interface->license_string = m->license_interface->license_string;
+
     result->eapi = m->eapi;
-    result->deps = VersionMetadataDeps(&PortageDepParser::parse_depend,
-            "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v),
-            "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v), "", "");
+    result->deps_interface->build_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
+    result->deps_interface->run_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
 
     return result;
 }

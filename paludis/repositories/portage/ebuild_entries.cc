@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -89,7 +89,7 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
 {
     Context context("When generating version metadata for '" + stringify(q) + "-" + stringify(v) + "':");
 
-    VersionMetadata::Pointer result(new VersionMetadata::Ebuild(PortageDepParser::parse_depend));
+    EbuildVersionMetadata::Pointer result(new EbuildVersionMetadata);
 
     FSEntry ebuild_file(_imp->params.location / stringify(q.category) /
             stringify(q.package) / (stringify(q.package) + "-" + stringify(v) + ".ebuild"));
@@ -243,7 +243,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     {
         std::list<std::string> restricts;
         WhitespaceTokeniser::get_instance()->tokenise(
-                metadata->get_ebuild_interface()->restrict_string, std::back_inserter(restricts));
+                metadata->ebuild_interface->restrict_string, std::back_inserter(restricts));
         fetch_restrict = (restricts.end() != std::find(restricts.begin(), restricts.end(), "fetch")) ||
             (restricts.end() != std::find(restricts.begin(), restricts.end(), "nofetch"));
         no_mirror = (restricts.end() != std::find(restricts.begin(), restricts.end(), "mirror")) ||
@@ -255,7 +255,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_archives;
 
         /* make A and FLAT_SRC_URI */
-        DepAtom::ConstPointer f_atom(PortageDepParser::parse(metadata->get_ebuild_interface()->src_uri,
+        DepAtom::ConstPointer f_atom(PortageDepParser::parse(metadata->ebuild_interface->src_uri,
                     PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
         DepAtomFlattener f(_imp->params.environment, &e, f_atom);
 
@@ -339,7 +339,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
         /* make AA */
         DepAtom::ConstPointer g_atom(PortageDepParser::parse(
-                    metadata->get_ebuild_interface()->src_uri,
+                    metadata->ebuild_interface->src_uri,
                     PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
         AAFinder g(g_atom);
         std::set<std::string> already_in_all_archives;
@@ -378,7 +378,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     std::string use;
     {
         std::set<UseFlagName> iuse;
-        WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
+        WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->
                 iuse, create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
         for (std::set<UseFlagName>::const_iterator iuse_it(iuse.begin()), iuse_end(iuse.end()) ;
                 iuse_it != iuse_end; ++iuse_it)

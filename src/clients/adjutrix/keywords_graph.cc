@@ -125,7 +125,7 @@ namespace
                 p != p_end ; ++p)
         {
             VersionMetadata::ConstPointer metadata(repo.version_metadata(package, p->version));
-            if (! metadata->get_ebuild_interface())
+            if (! metadata->ebuild_interface)
                 continue;
 
             if (metadata->slot != old_slot)
@@ -137,7 +137,7 @@ namespace
             cout << std::left << std::setw(version_specs_columns_width) << p->version << "| ";
 
             std::set<KeywordName> keywords;
-            WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->keywords,
+            WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->keywords,
                     create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
 
             for (UseFlagNameCollection::Iterator a(arch_flags->begin()), a_end(arch_flags->end()) ;

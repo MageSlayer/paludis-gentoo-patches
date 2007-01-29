@@ -189,9 +189,13 @@ namespace
                 ReverseDepChecker checker(env.package_database(), PackageDatabaseEntryCollection::ConstPointer(&entries),
                         stringify(p) + "-" + stringify(e->version));
 
-                checker.check(metadata->deps.parser(metadata->deps.build_depend_string), std::string("DEPEND"));
-                checker.check(metadata->deps.parser(metadata->deps.run_depend_string), std::string("RDEPEND"));
-                checker.check(metadata->deps.parser(metadata->deps.post_depend_string), std::string("PDEPEND"));
+                if (metadata->deps_interface)
+                {
+                    checker.check(metadata->deps_interface->build_depend(), std::string("DEPEND"));
+                    checker.check(metadata->deps_interface->run_depend(), std::string("RDEPEND"));
+                    checker.check(metadata->deps_interface->post_depend(), std::string("PDEPEND"));
+                    checker.check(metadata->deps_interface->suggested_depend(), std::string("SDEPEND"));
+                }
 
                 found_matches |= checker.found_matches();
             }

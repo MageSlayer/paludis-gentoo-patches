@@ -296,7 +296,7 @@ ebuild_main()
 
     for action in $@ ; do
         case ${action} in
-            metadata|variable|init|fetch|merge|unmerge|tidyup|strip|init_bin|unpack_bin|fetch_bin)
+            metadata|variable|init|fetch|merge|unmerge|tidyup|strip)
                 ebuild_load_module builtin_${action}
             ;;
 
@@ -331,9 +331,7 @@ ebuild_main()
         fi
         perform_hook ebuild_${action}_post
     else
-        if [[ "${ebuild%.ebin}" == "${ebuild}" ]] ; then
-            ebuild_load_ebuild "${ebuild}"
-        fi
+        ebuild_load_ebuild "${ebuild}"
         for action in $@ ; do
             export EBUILD_PHASE="${action}"
             perform_hook ebuild_${action}_pre

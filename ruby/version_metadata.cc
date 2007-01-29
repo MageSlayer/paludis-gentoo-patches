@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2007 Alexander H. Færøy <eroyf@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -34,69 +34,112 @@ namespace
     static VALUE c_version_metadata;
 
     template <typename T_>
-    VALUE version_metadata_get_interface(VALUE self, const T_ * (VersionMetadata::* m) () const)
+    VALUE version_metadata_get_interface(VALUE self, T_ * (VersionMetadataCapabilities::* m))
     {
         VersionMetadata::ConstPointer * self_ptr;
         Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-        return ((**self_ptr).*m)() ? self : Qnil;
+        return ((**self_ptr).*m) ? self : Qnil;
     }
 
     /*
      * call-seq:
-     *     get_ebuild_interface -> self or Nil
+     *     ebuild_interface -> self or Nil
      *
      * Returns self if the VersionMetadata supports the interface, otherwise Nil.
      */
-    VALUE version_metadata_get_ebuild_interface(VALUE self)
+    VALUE version_metadata_ebuild_interface(VALUE self)
     {
-        return version_metadata_get_interface(self, &VersionMetadata::get_ebuild_interface);
+        return version_metadata_get_interface(self, &VersionMetadata::ebuild_interface);
     }
 
     /*
      * call-seq:
-     *     get_ebin_interface -> self or Nil
+     *     cran_interface -> self or Nil
      *
      * Returns self if the VersionMetadata supports the interface, otherwise Nil.
      */
-    VALUE version_metadata_get_ebin_interface(VALUE self)
+    VALUE version_metadata_cran_interface(VALUE self)
     {
-        return version_metadata_get_interface(self, &VersionMetadata::get_ebin_interface);
+        return version_metadata_get_interface(self, &VersionMetadata::cran_interface);
     }
 
     /*
      * call-seq:
-     *     get_cran_interface -> self or Nil
+     *     virtual_interface -> self or Nil
      *
      * Returns self if the VersionMetadata supports the interface, otherwise Nil.
      */
-    VALUE version_metadata_get_cran_interface(VALUE self)
+    VALUE version_metadata_virtual_interface(VALUE self)
     {
-        return version_metadata_get_interface(self, &VersionMetadata::get_cran_interface);
+        return version_metadata_get_interface(self, &VersionMetadata::virtual_interface);
     }
 
     /*
      * call-seq:
-     *     get_virtual_interface -> self or Nil
+     *     deps_interface -> self or Nil
      *
      * Returns self if the VersionMetadata supports the interface, otherwise Nil.
      */
-    VALUE version_metadata_get_virtual_interface(VALUE self)
+    VALUE version_metadata_deps_interface(VALUE self)
     {
-        return version_metadata_get_interface(self, &VersionMetadata::get_virtual_interface);
+        return version_metadata_get_interface(self, &VersionMetadata::deps_interface);
+    }
+
+    /*
+     * call-seq:
+     *     license_interface -> self or Nil
+     *
+     * Returns self if the VersionMetadata supports the interface, otherwise Nil.
+     */
+    VALUE version_metadata_license_interface(VALUE self)
+    {
+        return version_metadata_get_interface(self, &VersionMetadata::license_interface);
+    }
+
+    /*
+     * call-seq:
+     *     origins_interface -> self or Nil
+     *
+     * Returns self if the VersionMetadata supports the interface, otherwise Nil.
+     */
+    VALUE version_metadata_origins_interface(VALUE self)
+    {
+        return version_metadata_get_interface(self, &VersionMetadata::origins_interface);
     }
 
     /*
      * call-seq:
      *     license
      *
-     * Fetch our license, as a DepAtom structure.
+     * Fetch our license, as a DepAtom structure, or Nil if we don't support
+     * license_interface.
      */
     VALUE
     version_metadata_license(VALUE self)
     {
         VersionMetadata::ConstPointer * self_ptr;
         Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-        return dep_atom_to_value((*self_ptr)->license());
+        if ((*self_ptr)->license_interface)
+            return dep_atom_to_value((*self_ptr)->license_interface->license());
+        else
+            return Qnil;
+    }
+
+    /*
+     * call-seq:
+     *     license_string
+     *
+     * Fetch our license, as a string, or Nil if we don't support license_interface.
+     */
+    VALUE
+    version_metadata_license_string(VALUE self)
+    {
+        VersionMetadata::ConstPointer * self_ptr;
+        Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+        if ((*self_ptr)->license_interface)
+            return rb_str_new2((*self_ptr)->license_interface->license_string.c_str());
+        else
+            return Qnil;
     }
 
     /*
@@ -106,14 +149,6 @@ namespace
      *     slot
      *
      * Our slot
-     */
-    /*
-     * Document-method: license_string
-     *
-     * call-seq:
-     *     license_string
-     *
-     * Our license as a String
      */
     /*
      * Document-method: eapi
@@ -157,7 +192,7 @@ namespace
      * call-seq:
      *     provide_string
      *
-     * Fetches the package provide_string, if get_ebuild_interface is not Nil.
+     * Fetches the package provide_string, if ebuild_interface is not Nil.
      */
     /*
      * Document-method: src_uri
@@ -165,7 +200,7 @@ namespace
      * call-seq:
      *     src_uri
      *
-     * Fetches the package src_uri, if get_ebuild_interface is not Nil.
+     * Fetches the package src_uri, if ebuild_interface is not Nil.
      */
     /*
      * Document-method: restrict_string
@@ -173,7 +208,7 @@ namespace
      * call-seq:
      *     restrict_string
      *
-     * Fetches the package restrict_string, if get_ebuild_interface is not Nil.
+     * Fetches the package restrict_string, if ebuild_interface is not Nil.
      */
     /*
      * Document-method: eclass_keywords
@@ -181,7 +216,7 @@ namespace
      * call-seq:
      *     eclass_keywords
      *
-     * Fetches the package eclass_keywords, if get_ebuild_interface is not Nil.
+     * Fetches the package eclass_keywords, if ebuild_interface is not Nil.
      */
     /*
      * Document-method: iuse
@@ -189,7 +224,7 @@ namespace
      * call-seq:
      *     iuse
      *
-     * Fetches the package iuse, if get_ebuild_interface is not Nil.
+     * Fetches the package iuse, if ebuild_interface is not Nil.
      */
     /*
      * Document-method: inherited
@@ -197,9 +232,9 @@ namespace
      * call-seq:
      *     inherited
      *
-     * Fetches the package inherited, if get_ebuild_interface is not Nil.
+     * Fetches the package inherited, if ebuild_interface is not Nil.
      */
-    template <typename T_, T_ EbuildVersionMetadata::* m_>
+    template <typename T_, T_ VersionMetadataEbuildInterface::* m_>
     struct EbuildValue
     {
         static VALUE
@@ -207,39 +242,8 @@ namespace
         {
             VersionMetadata::ConstPointer * self_ptr;
             Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-            if ((*self_ptr)->get_ebuild_interface())
-                return rb_str_new2(stringify((*self_ptr)->get_ebuild_interface()->*m_).c_str());
-            else
-                return Qnil;
-        }
-    };
-
-    /*
-     * Document-method: bin_uri
-     *
-     * call-seq:
-     *     bin_uri -> String
-     *
-     * Fetches the package bin_uri, if get_ebin_interface is not Nil
-     */
-    /*
-     * Document-method: src_repository
-     *
-     * call-seq:
-     *     src_repository -> String
-     *
-     * Fetches the package src_repository, if get_ebin_interface is not Nil
-     */
-    template <typename T_, T_ EbinVersionMetadata::* m_>
-    struct EbinValue
-    {
-        static VALUE
-        fetch(VALUE self)
-        {
-            VersionMetadata::ConstPointer * self_ptr;
-            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-            if ((*self_ptr)->get_ebin_interface())
-                return rb_str_new2(stringify((*self_ptr)->get_ebin_interface()->*m_).c_str());
+            if ((*self_ptr)->ebuild_interface)
+                return rb_str_new2(stringify((*self_ptr)->ebuild_interface->*m_).c_str());
             else
                 return Qnil;
         }
@@ -251,7 +255,7 @@ namespace
      * call-seq:
      *     package -> String
      *
-     * Fetches the package name, if get_cran_interface is not Nil
+     * Fetches the package name, if cran_interface is not Nil
      */
     /*
      * Document-method: version
@@ -259,9 +263,9 @@ namespace
      * call-seq:
      *     version -> String
      *
-     * Fetches the package version, if get_ebin_interface is not Nil
+     * Fetches the package version, if ebin_interface is not Nil
      */
-    template <typename T_, T_ CRANVersionMetadata::* m_>
+    template <typename T_, T_ VersionMetadataCRANInterface::* m_>
     struct CRANValue
     {
         static VALUE
@@ -269,8 +273,8 @@ namespace
         {
             VersionMetadata::ConstPointer * self_ptr;
             Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-            if ((*self_ptr)->get_cran_interface())
-                return rb_str_new2(stringify((*self_ptr)->get_cran_interface()->*m_).c_str());
+            if ((*self_ptr)->cran_interface)
+                return rb_str_new2(stringify((*self_ptr)->cran_interface->*m_).c_str());
             else
                 return Qnil;
         }
@@ -282,7 +286,8 @@ namespace
      * call-seq:
      *     build_depend -> DepAtom
      *
-     * Fetches build_depend information as a DepAtom
+     * Fetches build_depend information as a DepAtom, or Nil if we have no deps
+     * interface.
      */
     /*
      * Document-method: run_depend
@@ -290,7 +295,8 @@ namespace
      * call-seq:
      *     run_depend -> DepAtom
      *
-     * Fetches run_depend information as a DepAtom
+     * Fetches run_depend information as a DepAtom, or Nil if we have no deps
+     * interface.
      */
     /*
      * Document-method: suggested_depend
@@ -298,7 +304,8 @@ namespace
      * call-seq:
      *     suggested_depend -> DepAtom
      *
-     * Fetches sugest_depend information as a DepAtom
+     * Fetches sugest_depend information as a DepAtom, or Nil if we have no deps
+     * interface.
      */
     /*
      * Document-method: post_depend
@@ -306,9 +313,10 @@ namespace
      * call-seq:
      *     post_depend -> DepAtom
      *
-     * Fetches post_depend information as a DepAtom
+     * Fetches post_depend information as a DepAtom, or Nil if we have no deps
+     * interface.
      */
-    template <DepAtom::ConstPointer (VersionMetadataDeps::* m_) () const>
+    template <DepAtom::ConstPointer (VersionMetadataDepsInterface::* m_) () const>
     struct DependValue
     {
         static VALUE
@@ -316,8 +324,10 @@ namespace
         {
             VersionMetadata::ConstPointer * self_ptr;
             Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-            // don't change the line below to something cleaner, it makes g++-4.1 puke
-            return dep_atom_to_value(((&(*self_ptr)->deps)->*m_)());
+            if ((*self_ptr)->deps_interface)
+                return dep_atom_to_value(((*self_ptr)->deps_interface->*m_)());
+            else
+                return Qnil;
         }
     };
 
@@ -327,7 +337,8 @@ namespace
      * call-seq:
      *     build_depend_string -> String
      *
-     * Fetches build_depend information as a String
+     * Fetches build_depend information as a String, or Nil if we have no deps
+     * interface
      */
     /*
      * Document-method: run_depend_string
@@ -335,7 +346,8 @@ namespace
      * call-seq:
      *     run_depend_string -> String
      *
-     * Fetches run_depend information as a String
+     * Fetches run_depend information as a String, or Nil if we have no deps
+     * interface
      */
     /*
      * Document-method: suggested_depend_string
@@ -343,7 +355,8 @@ namespace
      * call-seq:
      *     suggested_depend_string -> String
      *
-     * Fetches suggested_depend information as a String
+     * Fetches suggested_depend information as a String, or Nil if we have no
+     * deps interface
      */
     /*
      * Document-method: post_depend_string
@@ -351,9 +364,10 @@ namespace
      * call-seq:
      *     post_depend_string -> String
      *
-     * Fetches post_depend information as a String
+     * Fetches post_depend information as a String, or Nil if we have no deps
+     * interface
      */
-    template <std::string VersionMetadataDeps::* m_>
+    template <std::string VersionMetadataDepsInterface::* m_>
     struct DependValueString
     {
         static VALUE
@@ -361,9 +375,13 @@ namespace
         {
             VersionMetadata::ConstPointer * self_ptr;
             Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-            return rb_str_new2(((&(*self_ptr)->deps)->*m_).c_str());
+            if ((*self_ptr)->deps_interface)
+                return rb_str_new2((((*self_ptr)->deps_interface)->*m_).c_str());
+            else
+                return Qnil;
         }
     };
+
     /*
      * Document-method: origin_source
      *
@@ -372,7 +390,7 @@ namespace
      *
      * Returnd the PackageDatabaseEntry from which the package was installed.
      */
-    template <CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> VersionMetadataOrigins::* m_>
+    template <CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> VersionMetadataOriginsInterface::* m_>
     struct VMOrigins
     {
         static VALUE
@@ -380,14 +398,10 @@ namespace
         {
             VersionMetadata::ConstPointer * self_ptr;
             Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-            if ((&(*self_ptr)->origins)->*m_)
-            {
-                return package_database_entry_to_value(*((&(*self_ptr)->origins)->*m_));
-            }
+            if ((*self_ptr)->origins_interface && (((*self_ptr)->origins_interface)->*m_))
+                return package_database_entry_to_value(*(((*self_ptr)->origins_interface)->*m_));
             else
-            {
                 return Qnil;
-            }
         }
     };
 
@@ -395,14 +409,14 @@ namespace
      * call-seq:
      *     virtual_for -> PackageDatabaseEntry
      *
-     * Fetch package we are a virtual for, if get_virtual_interface is not Nil.
+     * Fetch package we are a virtual for, if virtual_interface is not Nil.
      */
     VALUE version_metadata_virtual_for(VALUE self)
     {
         VersionMetadata::ConstPointer * self_ptr;
         Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-        if ((*self_ptr)->get_virtual_interface())
-            return package_database_entry_to_value((*self_ptr)->get_virtual_interface()->virtual_for);
+        if ((*self_ptr)->virtual_interface)
+            return package_database_entry_to_value((*self_ptr)->virtual_interface->virtual_for);
         else
             return Qnil;
 
@@ -412,14 +426,14 @@ namespace
      * call-seq:
      *     is_bundle? -> true or false
      *
-     * Are we a bundle? True or false, if get_virtual_interface is not Nil.
+     * Are we a bundle? True or false, if virtual_interface is not Nil.
      */
     VALUE version_metadata_is_bundle(VALUE self)
     {
         VersionMetadata::ConstPointer * self_ptr;
         Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-        if ((*self_ptr)->get_cran_interface())
-            return ((*self_ptr)->get_cran_interface()->is_bundle) ? Qtrue : Qfalse;
+        if ((*self_ptr)->cran_interface)
+            return ((*self_ptr)->cran_interface->is_bundle) ? Qtrue : Qfalse;
         else
             return Qnil;
 
@@ -429,16 +443,16 @@ namespace
      * call-seq:
      *     keywords -> String
      *
-     * Fetches the package keywords, if get_ebuild_interface or get_cran_interface is not Nil.
+     * Fetches the package keywords, if ebuild_interface or cran_interface is not Nil.
      */
     VALUE version_metadata_keywords(VALUE self)
     {
         VersionMetadata::ConstPointer * self_ptr;
         Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
-        if ((*self_ptr)->get_ebuild_interface())
-            return rb_str_new2(((*self_ptr)->get_ebuild_interface()->keywords).c_str());
-        if ((*self_ptr)->get_cran_interface())
-            return rb_str_new2(((*self_ptr)->get_cran_interface()->keywords).c_str());
+        if ((*self_ptr)->ebuild_interface)
+            return rb_str_new2(((*self_ptr)->ebuild_interface->keywords).c_str());
+        if ((*self_ptr)->cran_interface)
+            return rb_str_new2(((*self_ptr)->cran_interface->keywords).c_str());
         else
             return Qnil;
     }
@@ -452,68 +466,64 @@ namespace
          */
         c_version_metadata = rb_define_class_under(paludis_module(), "VersionMetadata", rb_cObject);
         rb_funcall(c_version_metadata, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_version_metadata, "get_ebuild_interface", RUBY_FUNC_CAST(&version_metadata_get_ebuild_interface), 0);
-        rb_define_method(c_version_metadata, "get_virtual_interface", RUBY_FUNC_CAST(&version_metadata_get_virtual_interface), 0);
-        rb_define_method(c_version_metadata, "get_ebin_interface", RUBY_FUNC_CAST(&version_metadata_get_ebin_interface), 0);
-        rb_define_method(c_version_metadata, "get_cran_interface", RUBY_FUNC_CAST(&version_metadata_get_cran_interface), 0);
+        rb_define_method(c_version_metadata, "ebuild_interface", RUBY_FUNC_CAST(&version_metadata_ebuild_interface), 0);
+        rb_define_method(c_version_metadata, "virtual_interface", RUBY_FUNC_CAST(&version_metadata_virtual_interface), 0);
+        rb_define_method(c_version_metadata, "cran_interface", RUBY_FUNC_CAST(&version_metadata_cran_interface), 0);
+        rb_define_method(c_version_metadata, "license_interface", RUBY_FUNC_CAST(&version_metadata_license_interface), 0);
+        rb_define_method(c_version_metadata, "deps_interface", RUBY_FUNC_CAST(&version_metadata_deps_interface), 0);
+        rb_define_method(c_version_metadata, "origins_interface", RUBY_FUNC_CAST(&version_metadata_origins_interface), 0);
 
         rb_define_method(c_version_metadata, "license", RUBY_FUNC_CAST(&version_metadata_license), 0);
+        rb_define_method(c_version_metadata, "license_string", RUBY_FUNC_CAST(&version_metadata_license_string), 0);
 
         rb_define_method(c_version_metadata, "slot", RUBY_FUNC_CAST((&BaseValue<SlotName, &VersionMetadataBase::slot>::fetch)), 0);
-        rb_define_method(c_version_metadata, "license_string", RUBY_FUNC_CAST((&BaseValue<std::string,
-                        &VersionMetadataBase::license_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "eapi", RUBY_FUNC_CAST((&BaseValue<std::string, &VersionMetadataBase::eapi>::fetch)), 0);
         rb_define_method(c_version_metadata, "homepage", RUBY_FUNC_CAST((&BaseValue<std::string, &VersionMetadataBase::homepage>::fetch)), 0);
         rb_define_method(c_version_metadata, "description", RUBY_FUNC_CAST((&BaseValue<std::string,
                         &VersionMetadataBase::description>::fetch)), 0);
 
         rb_define_method(c_version_metadata, "provide_string", RUBY_FUNC_CAST((&EbuildValue<std::string,
-                        &EbuildVersionMetadata::provide_string>::fetch)), 0);
+                        &VersionMetadataEbuildInterface::provide_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "src_uri", RUBY_FUNC_CAST((&EbuildValue<std::string,
-                        &EbuildVersionMetadata::src_uri>::fetch)), 0);
+                        &VersionMetadataEbuildInterface::src_uri>::fetch)), 0);
         rb_define_method(c_version_metadata, "restrict_string", RUBY_FUNC_CAST((&EbuildValue<std::string,
-                        &EbuildVersionMetadata::restrict_string>::fetch)), 0);
+                        &VersionMetadataEbuildInterface::restrict_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "eclass_keywords", RUBY_FUNC_CAST((&EbuildValue<std::string,
-                        &EbuildVersionMetadata::eclass_keywords>::fetch)), 0);
+                        &VersionMetadataEbuildInterface::eclass_keywords>::fetch)), 0);
         rb_define_method(c_version_metadata, "iuse", RUBY_FUNC_CAST((&EbuildValue<std::string,
-                        &EbuildVersionMetadata::iuse>::fetch)), 0);
+                        &VersionMetadataEbuildInterface::iuse>::fetch)), 0);
         rb_define_method(c_version_metadata, "inherited", RUBY_FUNC_CAST((&EbuildValue<std::string,
-                        &EbuildVersionMetadata::inherited>::fetch)), 0);
+                        &VersionMetadataEbuildInterface::inherited>::fetch)), 0);
 
         rb_define_method(c_version_metadata, "build_depend", RUBY_FUNC_CAST((&DependValue<
-                        &VersionMetadataDeps::build_depend>::fetch)), 0);
+                        &VersionMetadataDepsInterface::build_depend>::fetch)), 0);
         rb_define_method(c_version_metadata, "run_depend", RUBY_FUNC_CAST((&DependValue<
-                        &VersionMetadataDeps::run_depend>::fetch)), 0);
+                        &VersionMetadataDepsInterface::run_depend>::fetch)), 0);
         rb_define_method(c_version_metadata, "suggested_depend", RUBY_FUNC_CAST((&DependValue<
-                        &VersionMetadataDeps::suggested_depend>::fetch)), 0);
+                        &VersionMetadataDepsInterface::suggested_depend>::fetch)), 0);
         rb_define_method(c_version_metadata, "post_depend", RUBY_FUNC_CAST((&DependValue<
-                        &VersionMetadataDeps::post_depend>::fetch)), 0);
+                        &VersionMetadataDepsInterface::post_depend>::fetch)), 0);
 
         rb_define_method(c_version_metadata, "build_depend_string", RUBY_FUNC_CAST((&DependValueString<
-                        &VersionMetadataDeps::build_depend_string>::fetch)), 0);
+                        &VersionMetadataDepsInterface::build_depend_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "run_depend_string", RUBY_FUNC_CAST((&DependValueString<
-                        &VersionMetadataDeps::run_depend_string>::fetch)), 0);
+                        &VersionMetadataDepsInterface::run_depend_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "suggested_depend_string", RUBY_FUNC_CAST((&DependValueString<
-                        &VersionMetadataDeps::suggested_depend_string>::fetch)), 0);
+                        &VersionMetadataDepsInterface::suggested_depend_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "post_depend_string", RUBY_FUNC_CAST((&DependValueString<
-                        &VersionMetadataDeps::post_depend_string>::fetch)), 0);
+                        &VersionMetadataDepsInterface::post_depend_string>::fetch)), 0);
 
         rb_define_method(c_version_metadata, "origin_source", RUBY_FUNC_CAST((&VMOrigins<
-                        &VersionMetadataOrigins::source>::fetch)), 0);
+                        &VersionMetadataOriginsInterface::source>::fetch)), 0);
         rb_define_method(c_version_metadata, "origin_binary", RUBY_FUNC_CAST((&VMOrigins<
-                        &VersionMetadataOrigins::binary>::fetch)), 0);
+                        &VersionMetadataOriginsInterface::binary>::fetch)), 0);
 
         rb_define_method(c_version_metadata, "virtual_for", RUBY_FUNC_CAST(&version_metadata_virtual_for), 0);
 
-        rb_define_method(c_version_metadata, "bin_uri", RUBY_FUNC_CAST((&EbinValue<std::string,
-                        &EbinVersionMetadata::bin_uri>::fetch)), 0);
-        rb_define_method(c_version_metadata, "src_repository", RUBY_FUNC_CAST((&EbinValue<RepositoryName,
-                        &EbinVersionMetadata::src_repository>::fetch)), 0);
-
         rb_define_method(c_version_metadata, "package", RUBY_FUNC_CAST((&CRANValue<std::string,
-                        &CRANVersionMetadata::package>::fetch)), 0);
+                        &VersionMetadataCRANInterface::package>::fetch)), 0);
         rb_define_method(c_version_metadata, "version", RUBY_FUNC_CAST((&CRANValue<std::string,
-                        &CRANVersionMetadata::version>::fetch)), 0);
+                        &VersionMetadataCRANInterface::version>::fetch)), 0);
         rb_define_method(c_version_metadata, "is_bundle?", RUBY_FUNC_CAST(&version_metadata_is_bundle), 0);
 
         rb_define_method(c_version_metadata, "keywords", RUBY_FUNC_CAST(&version_metadata_keywords), 0);

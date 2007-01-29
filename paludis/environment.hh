@@ -153,6 +153,13 @@ namespace paludis
                     const bool override_tilde_keywords = false) const;
 
             /**
+             * Is the specified EAPI accepted?
+             *
+             * Default behaviour: known EAPIs accepted.
+             */
+            virtual bool accept_eapi(const std::string &) const;
+
+            /**
              * Is the specified LICENSE accepted?
              *
              * Default behaviour: yes.

@@ -1129,20 +1129,25 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
             }
             else if (mr_license == mm)
             {
-                output_no_endl(" ");
+                VersionMetadata::ConstPointer metadata(environment()->package_database()->fetch_repository(
+                            e.package.repository)->version_metadata(e.package.name, e.package.version));
 
-                LicenceDisplayer ld(output_stream(), environment(), &e.package);
-                environment()->package_database()->fetch_repository(
-                        e.package.repository)->version_metadata(e.package.name, e.package.version)->license()->accept(&ld);
+                if (metadata->license_interface)
+                {
+                    output_no_endl(" ");
+
+                    LicenceDisplayer ld(output_stream(), environment(), &e.package);
+                    metadata->license_interface->license()->accept(&ld);
+                }
             }
             else if (mr_keyword == mm)
             {
                 VersionMetadata::ConstPointer meta(environment()->package_database()->fetch_repository(
                             e.package.repository)->version_metadata(e.package.name, e.package.version));
-                if (meta->get_ebuild_interface())
+                if (meta->ebuild_interface)
                 {
                     std::set<KeywordName> keywords;
-                    WhitespaceTokeniser::get_instance()->tokenise(meta->get_ebuild_interface()->keywords,
+                    WhitespaceTokeniser::get_instance()->tokenise(meta->ebuild_interface->keywords,
                             create_inserter<KeywordName>(std::inserter(keywords, keywords.end())));
 
                     output_no_endl(" ( " + render_as_masked(join(keywords.begin(), keywords.end(), " ")) + " )");

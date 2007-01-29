@@ -23,12 +23,15 @@ endif
 libpaludisvdbrepository_la_SOURCES = \
 	vdb_repository.cc \
 	vdb_repository.hh \
+	vdb_version_metadata.hh \
+	vdb_version_metadata.cc \
 	registration.cc
 
 libpaludisvdbrepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 paludis_repositories_vdb_includedir = $(includedir)/paludis/repositories/vdb/
 paludis_repositories_vdb_include_HEADERS = \
 	vdb_repository.hh \
+	vdb_version_metadata.hh \
 	vdb_repository-sr.hh
 
 if ! MONOLITHIC

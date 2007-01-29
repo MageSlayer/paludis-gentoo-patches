@@ -64,7 +64,7 @@ namespace paludis
 
             virtual VersionMetadata::ConstPointer do_version_metadata(
                     const QualifiedPackageName &,
-                    const VersionSpec &) const;
+                    const VersionSpec &) const PALUDIS_ATTRIBUTE((noreturn));
 
             virtual bool do_is_licence(const std::string &) const;
 

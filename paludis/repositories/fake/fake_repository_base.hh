@@ -32,6 +32,44 @@
 namespace paludis
 {
     /**
+     * FakeVersionMetadata is used by FakeRepository and
+     * FakeInstalledRepository for version metadata.
+     *
+     * \see FakeInstalledRepository
+     * \see FakeRepository
+     * \ingroup grpfakerepository
+     */
+    class FakeVersionMetadata :
+        public VersionMetadata,
+        public VersionMetadataEbuildInterface,
+        public VersionMetadataDepsInterface,
+        public VersionMetadataLicenseInterface
+    {
+        public:
+            FakeVersionMetadata();
+            virtual ~FakeVersionMetadata();
+    };
+
+    /**
+     * FakeVirtualVersionMetadata is used by FakeRepository for virtual
+     * version metadata.
+     *
+     * \see FakeRepository
+     * \ingroup grpfakerepository
+     */
+    class FakeVirtualVersionMetadata :
+        public VersionMetadata,
+        public VersionMetadataEbuildInterface,
+        public VersionMetadataDepsInterface,
+        public VersionMetadataLicenseInterface,
+        public VersionMetadataVirtualInterface
+    {
+        public:
+            FakeVirtualVersionMetadata(const SlotName &, const PackageDatabaseEntry &);
+            virtual ~FakeVirtualVersionMetadata();
+    };
+
+    /**
      * A FakeRepositoryBase is a Repository subclass whose subclasses are used for
      * various test cases.
      *

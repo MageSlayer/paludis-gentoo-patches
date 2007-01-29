@@ -133,39 +133,42 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
         VersionMetadata::ConstPointer metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-        std::set<UseFlagName> iuse;
-        WhitespaceTokeniser::get_instance()->tokenise(metadata->get_ebuild_interface()->
-                iuse, create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
-        iuse.insert(UseFlagName("bootstrap"));
-        iuse.insert(UseFlagName("build"));
-
-        Checker depend_checker(result, "DEPEND", e.environment, iuse);
-        std::string depend(metadata->deps.build_depend_string);
-        PortageDepParser::parse(depend)->accept(&depend_checker);
-
-        Checker rdepend_checker(result, "RDEPEND", e.environment, iuse);
-        std::string rdepend(metadata->deps.run_depend_string);
-        PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
-
-        Checker pdepend_checker(result, "PDEPEND", e.environment, iuse);
-        std::string pdepend(metadata->deps.post_depend_string);
-        PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
-
-        Checker provide_checker(result, "PROVIDE", e.environment, iuse);
-        std::string provide(metadata->get_ebuild_interface()->provide_string);
-        PortageDepParser::parse(provide, PortageDepParserPolicy<PackageDepAtom, false>::get_instance())->accept(&provide_checker);
-
-        Checker license_checker(result, "LICENSE", e.environment, iuse);
-        std::string license(metadata->license_string);
-        PortageDepParser::parse(license, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&license_checker);
-
-        Checker src_uri_checker(result, "SRC_URI", e.environment, iuse);
-        if (metadata->get_ebuild_interface() == 0)
+        if (metadata->ebuild_interface == 0)
             result << Message(qal_fatal, "Not an ebuild");
+        else
+        {
+            std::set<UseFlagName> iuse;
+            WhitespaceTokeniser::get_instance()->tokenise(metadata->ebuild_interface->
+                    iuse, create_inserter<UseFlagName>(std::inserter(iuse, iuse.begin())));
+            iuse.insert(UseFlagName("bootstrap"));
+            iuse.insert(UseFlagName("build"));
 
-        std::string src_uri(metadata->get_ebuild_interface()->src_uri);
+            Checker depend_checker(result, "DEPEND", e.environment, iuse);
+            std::string depend(metadata->deps_interface->build_depend_string);
+            PortageDepParser::parse(depend)->accept(&depend_checker);
 
-        PortageDepParser::parse(src_uri, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&src_uri_checker);
+            Checker rdepend_checker(result, "RDEPEND", e.environment, iuse);
+            std::string rdepend(metadata->deps_interface->run_depend_string);
+            PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
+
+            Checker pdepend_checker(result, "PDEPEND", e.environment, iuse);
+            std::string pdepend(metadata->deps_interface->post_depend_string);
+            PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
+
+            Checker provide_checker(result, "PROVIDE", e.environment, iuse);
+            std::string provide(metadata->ebuild_interface->provide_string);
+            PortageDepParser::parse(provide, PortageDepParserPolicy<PackageDepAtom, false>::get_instance())->accept(&provide_checker);
+
+            Checker license_checker(result, "LICENSE", e.environment, iuse);
+            std::string license(metadata->license_interface->license_string);
+            PortageDepParser::parse(license, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&license_checker);
+
+            Checker src_uri_checker(result, "SRC_URI", e.environment, iuse);
+
+            std::string src_uri(metadata->ebuild_interface->src_uri);
+
+            PortageDepParser::parse(src_uri, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&src_uri_checker);
+        }
     }
     catch (const InternalError &)
     {

@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,7 +63,7 @@ namespace paludis
         }
 
         /// Constructor
-        CRANDescription(const std::string & n, const FSEntry & f);
+        CRANDescription(const std::string & n, const FSEntry & f, bool installed);
 
         /// Comparison operator
         bool operator< (const CRANDescription & other) const

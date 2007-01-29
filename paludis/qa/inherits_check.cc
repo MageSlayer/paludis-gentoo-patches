@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,7 +51,7 @@ InheritsCheck::operator() (const EbuildCheckData & e) const
 
         std::set<std::string> inherits;
         Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");
-        tokeniser.tokenise(metadata->get_ebuild_interface()->inherited, std::inserter(inherits, inherits.begin()));
+        tokeniser.tokenise(metadata->ebuild_interface->inherited, std::inserter(inherits, inherits.begin()));
 
         static std::set<std::string> inherits_blacklist;
         if (inherits_blacklist.empty())
