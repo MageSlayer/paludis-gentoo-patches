@@ -46,8 +46,8 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            FakeRepository::Pointer r1(new FakeRepository(&e, RepositoryName("repo1")));
-            FakeRepository::Pointer r2(new FakeRepository(&e, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
 
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo1")), NoSuchRepositoryError);
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
@@ -98,7 +98,7 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            FakeRepository::Pointer r1(new FakeRepository(&e, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
             r1->add_version("r1c1", "r1c1p1", "1");
             r1->add_version("r1c1", "r1c1p2", "1");
             r1->add_version("r1c1", "r1c1p2", "2");
@@ -107,42 +107,42 @@ namespace test_cases
             p.add_repository(r1);
             TEST_CHECK(true);
 
-            FakeRepository::Pointer r2(new FakeRepository(&e, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
             r2->add_version("rac1", "rac1pa", "1");
             r2->add_version("rac1", "rac1pa", "3");
             p.add_repository(r2);
             TEST_CHECK(true);
 
             PackageDepAtom d1("r1c1/r1c1p1");
-            const PackageDatabaseEntryCollection::Pointer q1(p.query(d1, is_any, qo_order_by_version));
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q1(p.query(d1, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q1->begin(), q1->end()), 1);
 
             PackageDepAtom d2("r1c1/r1c1p2");
-            const PackageDatabaseEntryCollection::Pointer q2(p.query(d2, is_any, qo_order_by_version));
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q2(p.query(d2, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q2->begin(), q2->end()), 2);
 
             PackageDepAtom d3(">=r1c1/r1c1p2-1");
-            const PackageDatabaseEntryCollection::Pointer q3(p.query(d3, is_any, qo_order_by_version));
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q3(p.query(d3, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q3->begin(), q3->end()), 2);
 
             PackageDepAtom d4(">=r1c1/r1c1p2-2");
-            const PackageDatabaseEntryCollection::Pointer q4(p.query(d4, is_any, qo_order_by_version));
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q4(p.query(d4, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q4->begin(), q4->end()), 1);
 
             PackageDepAtom d5(">=r1c1/r1c1p2-3");
-            const PackageDatabaseEntryCollection::Pointer q5(p.query(d5, is_any, qo_order_by_version));
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q5(p.query(d5, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q5->begin(), q5->end()), 0);
 
             PackageDepAtom d6("<r1c1/r1c1p2-3");
-            const PackageDatabaseEntryCollection::Pointer q6(p.query(d6, is_any, qo_order_by_version));
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q6(p.query(d6, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q6->begin(), q6->end()), 2);
 
             PackageDepAtom d7("rac1/rac1pa");
-            const PackageDatabaseEntryCollection::Pointer q7(p.query(d7, is_any, qo_order_by_version));
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q7(p.query(d7, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q7->begin(), q7->end()), 4);
 
             PackageDepAtom d8("foo/bar");
-            const PackageDatabaseEntryCollection::Pointer q8(p.query(d8, is_any, qo_order_by_version));
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q8(p.query(d8, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q8->begin(), q8->end()), 0);
         }
     } package_database_query_test;
@@ -156,7 +156,7 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            FakeRepository::Pointer r1(new FakeRepository(&e, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
             r1->add_version("cat", "pkg", "1")->slot = SlotName("a");
             r1->add_version("cat", "pkg", "2")->slot = SlotName("c");
             r1->add_version("cat", "pkg", "3")->slot = SlotName("c");
@@ -164,7 +164,7 @@ namespace test_cases
             p.add_repository(r1);
             TEST_CHECK(true);
 
-            FakeRepository::Pointer r2(new FakeRepository(&e, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
             r2->add_version("cat", "pkg", "1")->slot = SlotName("a");
             r2->add_version("cat", "pkg", "3")->slot = SlotName("b");
             p.add_repository(r2);
@@ -172,11 +172,11 @@ namespace test_cases
 
             PackageDepAtom d("cat/pkg");
 
-            const PackageDatabaseEntryCollection::Pointer q1(p.query(d, is_any, qo_order_by_version));
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q1(p.query(d, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(join(q1->begin(), q1->end(), " "),
                     "cat/pkg-1::repo1 cat/pkg-1::repo2 cat/pkg-2::repo1 cat/pkg-3::repo1 cat/pkg-3::repo2 cat/pkg-4::repo1");
 
-            const PackageDatabaseEntryCollection::Pointer q2(p.query(d, is_any, qo_group_by_slot));
+            const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q2(p.query(d, is_any, qo_group_by_slot));
             TEST_CHECK_EQUAL(join(q2->begin(), q2->end(), " "),
                     "cat/pkg-2::repo1 cat/pkg-3::repo1 cat/pkg-3::repo2 cat/pkg-1::repo1 cat/pkg-1::repo2 cat/pkg-4::repo1");
         }
@@ -195,7 +195,7 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            FakeRepository::Pointer r1(new FakeRepository(&e, RepositoryName("repo1")));
+            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(&e, RepositoryName("repo1")));
             r1->add_package(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"));
             r1->add_package(CategoryNamePart("cat-one") + PackageNamePart("pkg-two"));
             r1->add_package(CategoryNamePart("cat-two") + PackageNamePart("pkg-two"));
@@ -203,7 +203,7 @@ namespace test_cases
             p.add_repository(r1);
             TEST_CHECK(true);
 
-            FakeRepository::Pointer r2(new FakeRepository(&e, RepositoryName("repo2")));
+            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
             r1->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"));
             r1->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"));
             p.add_repository(r2);

@@ -8,10 +8,10 @@ make_class_GemsCacheEntry()
     key summary std::string
     key description std::string
     key homepage std::string
-    key required_ruby_version "VersionRequirements::Pointer"
-    key authors "SequentialCollection<std::string>::Pointer"
-    key dependencies "SequentialCollection<std::string>::Pointer"
-    key requirements "SequentialCollection<std::string>::Pointer"
+    key required_ruby_version "std::tr1::shared_ptr<VersionRequirements>"
+    key authors "std::tr1::shared_ptr<SequentialCollection<std::string> >"
+    key dependencies "std::tr1::shared_ptr<SequentialCollection<std::string> >"
+    key requirements "std::tr1::shared_ptr<SequentialCollection<std::string> >"
 
     allow_named_args
 }

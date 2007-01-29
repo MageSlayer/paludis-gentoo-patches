@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,8 +29,7 @@ using namespace gtkpaludis;
 namespace paludis
 {
     template<>
-    struct Implementation<PaludisThread> :
-        InternalCounted<Implementation<PaludisThread> >
+    struct Implementation<PaludisThread>
     {
         Glib::Dispatcher dispatcher;
         Glib::Mutex queue_mutex, single_mutex;
@@ -67,7 +66,7 @@ PaludisThread::Launchable::~Launchable()
 }
 
 void
-PaludisThread::launch(Launchable::Pointer l)
+PaludisThread::launch(std::tr1::shared_ptr<Launchable> l)
 {
     MainWindow::get_instance()->lock_controls();
     Glib::Thread::create(sigc::bind<1>(sigc::mem_fun(this, &PaludisThread::_thread_func), l), false);
@@ -104,7 +103,7 @@ PaludisThread::_queue_run()
 }
 
 void
-PaludisThread::_thread_func(PaludisThread::Launchable::Pointer l)
+PaludisThread::_thread_func(std::tr1::shared_ptr<PaludisThread::Launchable> l)
 {
     {
         Glib::Mutex::Lock lock(_imp->single_mutex);

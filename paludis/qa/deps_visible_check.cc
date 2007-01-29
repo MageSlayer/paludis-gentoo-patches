@@ -63,7 +63,7 @@ namespace
                     return false;
 
                 /* arch flags aren't necessarily use masked. stupid! */
-                UseFlagNameCollection::ConstPointer arch_flags(i->arch_flags());
+                std::tr1::shared_ptr<const UseFlagNameCollection> arch_flags(i->arch_flags());
                 if (stringify(u->flag()) != env->portage_repository()->profile_variable("ARCH"))
                     if (arch_flags->end() != arch_flags->find(u->flag()))
                         return u->inverse();
@@ -101,7 +101,7 @@ namespace
         {
             bool found(false);
             std::string candidates;
-            PackageDatabaseEntryCollection::Pointer matches(env->package_database()->query(
+            std::tr1::shared_ptr<PackageDatabaseEntryCollection> matches(env->package_database()->query(
                         *p, is_any, qo_order_by_version));
             for (PackageDatabaseEntryCollection::ReverseIterator m(matches->rbegin()),
                     m_end(matches->rend()) ; m != m_end ; ++m)
@@ -132,7 +132,7 @@ namespace
 
         void visit(const AnyDepAtom * const a)
         {
-            std::list<DepAtom::ConstPointer> viable_children;
+            std::list<std::tr1::shared_ptr<const DepAtom> > viable_children;
             std::copy(a->begin(), a->end(), filter_inserter(std::back_inserter(viable_children),
                         IsViableAnyDepAtomChild(env, pde)));
 
@@ -140,7 +140,7 @@ namespace
                 return;
 
             bool found(false);
-            for (std::list<DepAtom::ConstPointer>::const_iterator c(viable_children.begin()),
+            for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(viable_children.begin()),
                     c_end(viable_children.end()) ; c != c_end && ! found ; ++c)
             {
                 Save<CheckResult> save_result(&result);
@@ -192,7 +192,7 @@ DepsVisibleCheck::operator() (const PerProfileEbuildCheckData & e) const
 
         PackageDatabaseEntry ee(e.name, e.version,
                 e.environment->package_database()->favourite_repository());
-        VersionMetadata::ConstPointer metadata(
+        std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         bool unstable(false);

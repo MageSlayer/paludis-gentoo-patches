@@ -61,13 +61,13 @@ namespace
     };
 }
 
-CompositeDepAtom::Pointer
+std::tr1::shared_ptr<CompositeDepAtom>
 PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInterface * const policy)
 {
     Context context("When parsing dependency string '" + s + "':");
 
-    std::stack<CompositeDepAtom::Pointer> stack;
-    stack.push(CompositeDepAtom::Pointer(new AllDepAtom));
+    std::stack<std::tr1::shared_ptr<CompositeDepAtom> > stack;
+    stack.push(std::tr1::shared_ptr<CompositeDepAtom>(new AllDepAtom));
 
     PortageDepParserState state(dps_initial);
     PortageDepLexer lexer(s);
@@ -99,7 +99,7 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
 
                             case dpl_open_paren:
                                  {
-                                     CompositeDepAtom::Pointer a(new AllDepAtom);
+                                     std::tr1::shared_ptr<CompositeDepAtom> a(new AllDepAtom);
                                      stack.top()->add_child(a);
                                      stack.push(a);
                                      state = dps_had_paren;
@@ -118,7 +118,7 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
                             case dpl_double_bar:
                                  if (policy->permit_any_deps())
                                  {
-                                     CompositeDepAtom::Pointer a(new AnyDepAtom);
+                                     std::tr1::shared_ptr<CompositeDepAtom> a(new AnyDepAtom);
                                      stack.top()->add_child(a);
                                      stack.push(a);
                                      state = dps_had_double_bar;
@@ -143,7 +143,7 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
                                                  "Use flag name '" + i->second + "' missing '?'");
 
                                      f.erase(f.length() - 1);
-                                     CompositeDepAtom::Pointer a(
+                                     std::tr1::shared_ptr<CompositeDepAtom> a(
                                              new UseDepAtom(UseFlagName(f), inv));
                                      stack.top()->add_child(a);
                                      stack.push(a);
@@ -272,20 +272,20 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
 
     if (stack.empty())
         throw DepStringNestingError(s);
-    CompositeDepAtom::Pointer result(stack.top());
+    std::tr1::shared_ptr<CompositeDepAtom> result(stack.top());
     stack.pop();
     if (! stack.empty())
         throw DepStringNestingError(s);
     return result;
 }
 
-DepAtom::ConstPointer
+std::tr1::shared_ptr<const CompositeDepAtom>
 PortageDepParser::parse_depend(const std::string & s)
 {
     return PortageDepParser::parse(s);
 }
 
-DepAtom::ConstPointer
+std::tr1::shared_ptr<const CompositeDepAtom>
 PortageDepParser::parse_license(const std::string & s)
 {
     return PortageDepParser::parse(s, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance());

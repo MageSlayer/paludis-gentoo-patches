@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,7 +33,7 @@ namespace test_cases
 
         void run()
         {
-            GLSA::Pointer glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-123456-78.xml"));
+            std::tr1::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-123456-78.xml"));
             TEST_CHECK(glsa);
 
             TEST_CHECK_EQUAL("123456-78", glsa->id());
@@ -63,7 +63,7 @@ namespace test_cases
 
         void run()
         {
-            GLSA::Pointer glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-987654-32.xml"));
+            std::tr1::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-987654-32.xml"));
             TEST_CHECK(glsa);
 
             TEST_CHECK_EQUAL("987654-32", glsa->id());

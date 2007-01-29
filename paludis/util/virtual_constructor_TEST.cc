@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/virtual_constructor.hh>
-#include <set>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <set>
+#include <tr1/memory>
 
 /** \file
  * Test cases for VirtualConstructor.
@@ -39,8 +39,7 @@ namespace
         cs_large
     };
 
-    class Cookie :
-        public InternalCounted<Cookie>
+    class Cookie
     {
         private:
             CookieSize _size;
@@ -84,9 +83,9 @@ namespace
                 return "Chocolate Chip";
             }
 
-            static CountedPtr<Cookie> make(CookieSize size)
+            static std::tr1::shared_ptr<Cookie> make(CookieSize size)
             {
-                return CountedPtr<Cookie>(new ChocolateChipCookie(size));
+                return std::tr1::shared_ptr<Cookie>(new ChocolateChipCookie(size));
             }
     };
 
@@ -107,24 +106,24 @@ namespace
                 return _with_crunchy_bits ? "Crunchy Ginger" : "Ginger";
             }
 
-            static CountedPtr<Cookie> make(CookieSize size)
+            static std::tr1::shared_ptr<Cookie> make(CookieSize size)
             {
-                return CountedPtr<Cookie>(new GingerCookie(size, false));
+                return std::tr1::shared_ptr<Cookie>(new GingerCookie(size, false));
             }
 
-            static CountedPtr<Cookie> make_crunchy(CookieSize size)
+            static std::tr1::shared_ptr<Cookie> make_crunchy(CookieSize size)
             {
-                return CountedPtr<Cookie>(new GingerCookie(size, true));
+                return std::tr1::shared_ptr<Cookie>(new GingerCookie(size, true));
             }
     };
 
     class CookieMaker :
         public VirtualConstructor<std::string,
-            CountedPtr<Cookie> (*) (CookieSize),
+            std::tr1::shared_ptr<Cookie> (*) (CookieSize),
             virtual_constructor_not_found::ThrowException<NoCookie> >,
-        public InstantiationPolicy<CookieMaker, instantiation_method::SingletonAsNeededTag>
+        public InstantiationPolicy<CookieMaker, instantiation_method::SingletonTag>
     {
-        friend class InstantiationPolicy<CookieMaker, instantiation_method::SingletonAsNeededTag>;
+        friend class InstantiationPolicy<CookieMaker, instantiation_method::SingletonTag>;
 
         private:
             CookieMaker()

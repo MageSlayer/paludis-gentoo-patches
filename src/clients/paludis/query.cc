@@ -42,11 +42,11 @@ void do_one_package_query(
         const Environment * const env,
         const std::string & q,
         MaskReasons & mask_reasons_to_explain,
-        PackageDepAtom::Pointer atom)
+        std::tr1::shared_ptr<PackageDepAtom> atom)
 {
     /* prefer the best installed version, then the best visible version, then
      * the best version */
-    PackageDatabaseEntryCollection::ConstPointer
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
         entries(env->package_database()->query(*atom, is_any, qo_order_by_version)),
         preferred_entries(env->package_database()->query(*atom, is_installed_only, qo_order_by_version));
     if (entries->empty())
@@ -92,7 +92,7 @@ void do_one_package_query(
 
             if (e->repository == *r)
             {
-                VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
+                std::tr1::shared_ptr<const VersionMetadata> metadata(env->package_database()->fetch_repository(
                             e->repository)->version_metadata(e->name,
                             e->version));
 
@@ -161,7 +161,7 @@ void do_one_package_query(
     }
 
     /* display metadata */
-    VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
+    std::tr1::shared_ptr<const VersionMetadata> metadata(env->package_database()->fetch_repository(
                 display_entry.repository)->version_metadata(
                 display_entry.name, display_entry.version));
 
@@ -334,7 +334,7 @@ void do_one_set_query(
         const Environment * const,
         const std::string & q,
         MaskReasons &,
-        DepAtom::Pointer set)
+        std::tr1::shared_ptr<DepAtom> set)
 {
     cout << "* " << colour(cl_package_name, q) << endl;
     DepAtomPrettyPrinter packages(12);
@@ -352,8 +352,8 @@ void do_one_query(
 
     /* we might have a dep atom, but we might just have a simple package name
      * without a category. or it might be a set... all should work. */
-    PackageDepAtom::Pointer atom(0);
-    DepAtom::Pointer set(0);
+    std::tr1::shared_ptr<PackageDepAtom> atom;
+    std::tr1::shared_ptr<DepAtom> set;
     if (std::string::npos == q.find('/'))
     {
         try
@@ -364,11 +364,11 @@ void do_one_query(
         {
         }
         if (0 == set)
-            atom.assign(new PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
+            atom.reset(new PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
                             PackageNamePart(q))));
     }
     else
-        atom.assign(new PackageDepAtom(q));
+        atom.reset(new PackageDepAtom(q));
 
     if (atom)
         do_one_package_query(env, q, mask_reasons_to_explain, atom);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,7 +36,6 @@ namespace paludis
      * \nosubgrouping
      */
     class RepositoryNameCache :
-        public InternalCounted<RepositoryNameCache>,
         private PrivateImplementationPattern<RepositoryNameCache>
     {
         private:
@@ -65,7 +64,7 @@ namespace paludis
              * fall back to Repository::do_category_names_containing_package or
              * its own implementation.
              */
-            CategoryNamePartCollection::ConstPointer category_names_containing_package(
+            std::tr1::shared_ptr<const CategoryNamePartCollection> category_names_containing_package(
                     const PackageNamePart & p) const;
 
             /**

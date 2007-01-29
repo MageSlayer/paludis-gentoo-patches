@@ -10,9 +10,9 @@
 
 class QualudisCommandLine :
     public paludis::args::ArgsHandler,
-    public paludis::InstantiationPolicy<QualudisCommandLine, paludis::instantiation_method::SingletonAsNeededTag>
+    public paludis::InstantiationPolicy<QualudisCommandLine, paludis::instantiation_method::SingletonTag>
 {
-    friend class paludis::InstantiationPolicy<QualudisCommandLine, paludis::instantiation_method::SingletonAsNeededTag>;
+    friend class paludis::InstantiationPolicy<QualudisCommandLine, paludis::instantiation_method::SingletonTag>;
 
     private:
         /// Constructor.

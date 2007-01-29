@@ -3,7 +3,7 @@ make_class_PortageRepositoryProfilesDescLine()
     key path FSEntry
     key arch std::string
     key status std::string
-    key profile PortageRepositoryProfile::Pointer
+    key profile "std::tr1::shared_ptr<PortageRepositoryProfile>"
     allow_named_args
 }
 

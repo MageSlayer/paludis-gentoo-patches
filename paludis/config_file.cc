@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -163,8 +163,7 @@ namespace paludis
      * \ingroup grplineconfigfile
      */
     template<>
-    struct Implementation<LineConfigFile> :
-        InternalCounted<Implementation<LineConfigFile> >
+    struct Implementation<LineConfigFile>
     {
         mutable std::list<std::string> lines;
     };
@@ -228,8 +227,7 @@ namespace paludis
      * \ingroup grpkvconfigfile
      */
     template <>
-    struct Implementation<KeyValueConfigFile> :
-        InternalCounted<Implementation<KeyValueConfigFile> >
+    struct Implementation<KeyValueConfigFile>
     {
         mutable std::map<std::string, std::string> entries;
         mutable std::string accum;
@@ -259,7 +257,7 @@ KeyValueConfigFile::KeyValueConfigFile(const FSEntry & our_filename) :
 }
 
 KeyValueConfigFile::KeyValueConfigFile(std::istream * const s,
-        AssociativeCollection<std::string, std::string>::ConstPointer m) :
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m) :
     ConfigFile(s),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
@@ -268,7 +266,7 @@ KeyValueConfigFile::KeyValueConfigFile(std::istream * const s,
 }
 
 KeyValueConfigFile::KeyValueConfigFile(const std::string & our_filename,
-        AssociativeCollection<std::string, std::string>::ConstPointer m) :
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m) :
     ConfigFile(our_filename),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {
@@ -277,7 +275,7 @@ KeyValueConfigFile::KeyValueConfigFile(const std::string & our_filename,
 }
 
 KeyValueConfigFile::KeyValueConfigFile(const FSEntry & our_filename,
-        AssociativeCollection<std::string, std::string>::ConstPointer m) :
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m):
     ConfigFile(our_filename),
     PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
 {

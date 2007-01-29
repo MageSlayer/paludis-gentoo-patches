@@ -28,7 +28,7 @@
 using namespace paludis;
 
 EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
-        const FSEntry & e, time_t t, EclassMtimes::ConstPointer m, bool s) :
+        const FSEntry & e, time_t t, std::tr1::shared_ptr<const EclassMtimes> m, bool s) :
     _filename(f),
     _ebuild(e),
     _master_mtime(t),
@@ -38,7 +38,7 @@ EbuildFlatMetadataCache::EbuildFlatMetadataCache(const FSEntry & f,
 }
 
 bool
-EbuildFlatMetadataCache::load(EbuildVersionMetadata::Pointer result)
+EbuildFlatMetadataCache::load(std::tr1::shared_ptr<EbuildVersionMetadata> result)
 {
     Context context("When loading version metadata to '" + stringify(_filename) + "':");
 
@@ -111,7 +111,7 @@ namespace
 }
 
 void
-EbuildFlatMetadataCache::save(EbuildVersionMetadata::ConstPointer v)
+EbuildFlatMetadataCache::save(std::tr1::shared_ptr<const EbuildVersionMetadata> v)
 {
     Context context("When saving version metadata to '" + stringify(_filename) + "':");
 

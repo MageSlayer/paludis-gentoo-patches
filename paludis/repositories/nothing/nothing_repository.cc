@@ -48,8 +48,7 @@ namespace paludis
      * \ingroup grpnothingrepository
      */
     template <>
-    struct Implementation<NothingRepository> :
-        InternalCounted<Implementation<NothingRepository> >
+    struct Implementation<NothingRepository>
     {
         /// Our name
         std::string name;
@@ -111,7 +110,7 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
             "nothing"),
     PrivateImplementationPattern<NothingRepository>(new Implementation<NothingRepository>(p))
 {
-    RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
+    std::tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
     config_info->add_kv("sync", _imp->sync);
     config_info->add_kv("sync_options", _imp->sync_options);
     config_info->add_kv("location", stringify(_imp->location));
@@ -140,24 +139,24 @@ NothingRepository::do_has_package_named(const QualifiedPackageName &) const
     return false;
 }
 
-CategoryNamePartCollection::ConstPointer
+std::tr1::shared_ptr<const CategoryNamePartCollection>
 NothingRepository::do_category_names() const
 {
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
+    std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     return result;
 }
 
-QualifiedPackageNameCollection::ConstPointer
+std::tr1::shared_ptr<const QualifiedPackageNameCollection>
 NothingRepository::do_package_names(const CategoryNamePart &) const
 {
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
+    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
     return result;
 }
 
-VersionSpecCollection::ConstPointer
+std::tr1::shared_ptr<const VersionSpecCollection>
 NothingRepository::do_version_specs(const QualifiedPackageName &) const
 {
-    return VersionSpecCollection::Pointer(new VersionSpecCollection::Concrete);
+    return std::tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
 }
 
 bool
@@ -167,17 +166,17 @@ NothingRepository::do_has_version(const QualifiedPackageName &,
     return false;
 }
 
-VersionMetadata::ConstPointer
+std::tr1::shared_ptr<const VersionMetadata>
 NothingRepository::do_version_metadata(
         const QualifiedPackageName & q, const VersionSpec & v) const
 {
     throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
 }
 
-CountedPtr<Repository>
+std::tr1::shared_ptr<Repository>
 NothingRepository::make_nothing_repository(
         Environment * const env,
-        AssociativeCollection<std::string, std::string>::ConstPointer m)
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
             m->find("repo_file")->second);
@@ -213,7 +212,7 @@ NothingRepository::make_nothing_repository(
         sync_options += "--exclude-from='" + m->find("sync_exclude")->second + "'";
     }
 
-    return CountedPtr<Repository>(new NothingRepository(NothingRepositoryParams::create()
+    return std::tr1::shared_ptr<Repository>(new NothingRepository(NothingRepositoryParams::create()
                 .name(name)
                 .location(location)
                 .sync(sync)

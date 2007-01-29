@@ -34,9 +34,6 @@ namespace paludis
         public:
             VDBVersionMetadata();
             virtual ~VDBVersionMetadata();
-
-            typedef CountedPtr<const VDBVersionMetadata, count_policy::InternalCountTag> ConstPointer;
-            typedef CountedPtr<VDBVersionMetadata, count_policy::InternalCountTag> Pointer;
     };
 
     class VDBVirtualVersionMetadata :
@@ -50,9 +47,6 @@ namespace paludis
         public:
             VDBVirtualVersionMetadata(const SlotName &, const PackageDatabaseEntry &);
             virtual ~VDBVirtualVersionMetadata();
-
-            typedef CountedPtr<const VDBVirtualVersionMetadata, count_policy::InternalCountTag> ConstPointer;
-            typedef CountedPtr<VDBVirtualVersionMetadata, count_policy::InternalCountTag> Pointer;
     };
 }
 

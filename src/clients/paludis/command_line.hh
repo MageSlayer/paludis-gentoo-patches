@@ -35,9 +35,9 @@
  */
 class CommandLine :
     public paludis::args::ArgsHandler,
-    public paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonAsNeededTag>
+    public paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>
 {
-    friend class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonAsNeededTag>;
+    friend class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>;
 
     private:
         /// Constructor.

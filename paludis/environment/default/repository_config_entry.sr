@@ -5,7 +5,7 @@ make_class_RepositoryConfigEntry()
 {
     key format std::string
     key importance int
-    key keys "AssociativeCollection<std::string, std::string>::Pointer"
+    key keys "std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >"
 
     doxygen_comment << "END"
         /**

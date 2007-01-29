@@ -76,14 +76,8 @@ iterator range. This is slower, but much easier.</p>
 
 <h3>Pointers</h3>
 
-<p>We have a reference-counted smart pointer template class,
-<code>paludis::CountedPtr</code>. It's
-used to avoid expensive copying and tricky memory management. Most classes that
-are suitable for being held by a smart pointer have member typedefs named
-<code>Pointer</code> and <code>ConstPointer</code>.</p>
-
-<p>We don't use <code>std::tr1::shared_ptr</code> because most of our target compilers don't have
-it yet. This is mildly annoying.</p>
+<p>We make extensive use of <code>std::tr1::shared_ptr</code>. Make sure you know how it
+works. See <a href="doc/html/References.html">TCppSLE</a>.</p>
 
 <p>This is all hidden in the Ruby interface. You shouldn't have to care about
 memory management.</p>

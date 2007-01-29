@@ -47,7 +47,6 @@ FSError::FSError(const std::string & our_message) throw () :
 FSEntry::FSEntry(const std::string & path) :
     ComparisonPolicyType(&FSEntry::_path),
     _path(path),
-    _stat_info(0),
     _exists(false),
     _checked(false)
 {
@@ -106,7 +105,7 @@ FSEntry::operator/= (const FSEntry & rhs)
 
     _checked = false;
     _exists = false;
-    _stat_info = CountedPtr<struct ::stat, count_policy::ExternalCountTag>(0);
+    _stat_info.reset();
 
     return *this;
 }
@@ -284,15 +283,15 @@ FSEntry::_stat() const
     if (_checked)
         return;
 
-    _stat_info = CountedPtr<struct stat, count_policy::ExternalCountTag>(new struct stat);
-    if (0 != lstat(_path.c_str(), _stat_info.raw_pointer()))
+    _stat_info.reset(new struct stat);
+    if (0 != lstat(_path.c_str(), _stat_info.get()))
     {
         if (errno != ENOENT)
             throw FSError("Error running stat() on '" + stringify(_path) + "': "
                     + strerror(errno));
 
         _exists = false;
-        _stat_info = CountedPtr<struct stat, count_policy::ExternalCountTag>(0);
+        _stat_info.reset();
     }
     else
         _exists = true;

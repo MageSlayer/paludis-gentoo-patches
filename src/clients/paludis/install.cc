@@ -537,7 +537,7 @@ do_install()
     {
         try
         {
-            PackageDatabaseEntryCollection::ConstPointer p(
+            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
                     DefaultEnvironment::get_instance()->package_database()->query(
                         PackageDepAtom(e.query()), is_installable_only, qo_order_by_version));
             if (p->empty())
@@ -582,7 +582,7 @@ do_install()
                             }
                             else if (mr_license == mm)
                             {
-                                VersionMetadata::ConstPointer meta(DefaultEnvironment::get_instance()->
+                                std::tr1::shared_ptr<const VersionMetadata> meta(DefaultEnvironment::get_instance()->
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                                 pp->name, pp->version));
@@ -597,7 +597,7 @@ do_install()
                             }
                             else if (mr_keyword == mm)
                             {
-                                VersionMetadata::ConstPointer meta(DefaultEnvironment::get_instance()->
+                                std::tr1::shared_ptr<const VersionMetadata> meta(DefaultEnvironment::get_instance()->
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                             pp->name, pp->version));

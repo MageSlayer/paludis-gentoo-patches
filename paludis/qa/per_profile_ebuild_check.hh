@@ -23,7 +23,6 @@
 #include <paludis/name.hh>
 #include <paludis/qa/check.hh>
 #include <paludis/qa/check_result.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/version_spec.hh>
 
@@ -43,8 +42,7 @@ namespace paludis
          * \ingroup grpqa
          */
         class PALUDIS_VISIBLE PerProfileEbuildCheck :
-            public Check,
-            public InternalCounted<PerProfileEbuildCheck>
+            public Check
         {
             protected:
                 PerProfileEbuildCheck();
@@ -75,10 +73,10 @@ namespace paludis
         template <typename T_>
         struct MakePerProfileEbuildCheck
         {
-            static PerProfileEbuildCheck::Pointer
+            static std::tr1::shared_ptr<PerProfileEbuildCheck>
             make_per_profile_ebuild_check()
             {
-                return PerProfileEbuildCheck::Pointer(new T_);
+                return std::tr1::shared_ptr<PerProfileEbuildCheck>(new T_);
             }
         };
 
@@ -88,11 +86,11 @@ namespace paludis
          * \ingroup grpqa
          */
         class PerProfileEbuildCheckMaker :
-            public VirtualConstructor<std::string, PerProfileEbuildCheck::Pointer (*) (),
+            public VirtualConstructor<std::string, std::tr1::shared_ptr<PerProfileEbuildCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchPerProfileEbuildCheckTypeError> >,
-            public InstantiationPolicy<PerProfileEbuildCheckMaker, instantiation_method::SingletonAsNeededTag>
+            public InstantiationPolicy<PerProfileEbuildCheckMaker, instantiation_method::SingletonTag>
         {
-            friend class InstantiationPolicy<PerProfileEbuildCheckMaker, instantiation_method::SingletonAsNeededTag>;
+            friend class InstantiationPolicy<PerProfileEbuildCheckMaker, instantiation_method::SingletonTag>;
 
             private:
                 PerProfileEbuildCheckMaker();

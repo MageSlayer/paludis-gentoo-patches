@@ -73,7 +73,7 @@ namespace
         VersionSpec version;
 
         /// Our metadata, may be zero.
-        VDBVersionMetadata::Pointer metadata;
+        std::tr1::shared_ptr<VDBVersionMetadata> metadata;
 
         /// Our built USE flags.
         std::set<UseFlagName> use;
@@ -85,7 +85,6 @@ namespace
         VDBEntry(const QualifiedPackageName & n, const VersionSpec & v) :
             name(n),
             version(v),
-            metadata(0),
             installed_time(0)
         {
         }
@@ -296,8 +295,7 @@ namespace paludis
      * \ingroup grpvdbrepository
      */
     template <>
-    struct Implementation<VDBRepository> :
-        InternalCounted<Implementation<VDBRepository> >
+    struct Implementation<VDBRepository>
     {
         VDBRepositoryParams params;
 
@@ -336,11 +334,11 @@ namespace paludis
         void load_entry(std::vector<VDBEntry>::iterator) const;
 
         /// Provieds data
-        mutable RepositoryProvidesInterface::ProvidesCollection::Pointer provides;
+        mutable std::tr1::shared_ptr<RepositoryProvidesInterface::ProvidesCollection> provides;
 
         const FSEntry names_cache_dir;
 
-        RepositoryNameCache::Pointer names_cache;
+        std::tr1::shared_ptr<RepositoryNameCache> names_cache;
 
         /// Constructor.
         Implementation(const VDBRepository * const, const VDBRepositoryParams &);
@@ -362,7 +360,6 @@ namespace paludis
         world_file(p.world),
         provides_cache(p.provides_cache),
         entries_valid(false),
-        provides(0),
         names_cache_dir(p.names_cache),
         names_cache(new RepositoryNameCache(names_cache_dir, r))
     {
@@ -450,7 +447,7 @@ namespace paludis
         Context context("When loading VDBRepository entry for '" + stringify(p->name)
                 + "-" + stringify(p->version) + "' from '" + stringify(location) + "':");
 
-        p->metadata = VDBVersionMetadata::Pointer(new VDBVersionMetadata);
+        p->metadata = std::tr1::shared_ptr<VDBVersionMetadata>(new VDBVersionMetadata);
         p->metadata->build_depend_string = file_contents(location, p->name, p->version, "DEPEND");
         p->metadata->run_depend_string = file_contents(location, p->name, p->version, "RDEPEND");
         p->metadata->license_string = file_contents(location, p->name, p->version, "LICENSE");
@@ -476,7 +473,7 @@ namespace paludis
 
         std::string repo(file_contents(location, p->name, p->version, "REPOSITORY"));
         if (! repo.empty())
-            p->metadata->source.assign(new PackageDatabaseEntry(p->name, p->version,
+            p->metadata->source.reset(new PackageDatabaseEntry(p->name, p->version,
                         RepositoryName(repo)));
 
         std::string raw_use(file_contents(location, p->name, p->version, "USE"));
@@ -508,7 +505,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             "vdb"),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p))
 {
-    RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
+    std::tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
 
     config_info->add_kv("location", stringify(_imp->location));
     config_info->add_kv("root", stringify(_imp->root));
@@ -555,7 +552,7 @@ VDBRepository::do_has_package_named(const QualifiedPackageName & q) const
     return r.first != r.second;
 }
 
-CategoryNamePartCollection::ConstPointer
+std::tr1::shared_ptr<const CategoryNamePartCollection>
 VDBRepository::do_category_names() const
 {
     Context context("When fetching category names in " + stringify(name()) + ":");
@@ -563,7 +560,7 @@ VDBRepository::do_category_names() const
     if (! _imp->entries_valid)
         _imp->load_entries();
 
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
+    std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
 
 #if 0
     for (std::vector<VDBEntry>::const_iterator c(_imp->entries.begin()), c_end(_imp->entries.end()) ;
@@ -578,7 +575,7 @@ VDBRepository::do_category_names() const
     return result;
 }
 
-QualifiedPackageNameCollection::ConstPointer
+std::tr1::shared_ptr<const QualifiedPackageNameCollection>
 VDBRepository::do_package_names(const CategoryNamePart & c) const
 {
     /* this isn't particularly fast because it isn't called very often. avoid
@@ -588,7 +585,7 @@ VDBRepository::do_package_names(const CategoryNamePart & c) const
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
+    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
 
     std::pair<std::vector<VDBEntry>::const_iterator, std::vector<VDBEntry>::const_iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), c,
@@ -604,7 +601,7 @@ VDBRepository::do_package_names(const CategoryNamePart & c) const
     return result;
 }
 
-VersionSpecCollection::ConstPointer
+std::tr1::shared_ptr<const VersionSpecCollection>
 VDBRepository::do_version_specs(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
@@ -613,7 +610,7 @@ VDBRepository::do_version_specs(const QualifiedPackageName & n) const
     if (! _imp->entries_valid)
         _imp->load_entries_for(n.category);
 
-    VersionSpecCollection::Pointer result(new VersionSpecCollection::Concrete);
+    std::tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
 
     std::pair<std::vector<VDBEntry>::const_iterator, std::vector<VDBEntry>::const_iterator>
         r(std::equal_range(_imp->entries.begin(), _imp->entries.end(), n,
@@ -632,11 +629,11 @@ VDBRepository::do_has_version(const QualifiedPackageName & q,
     Context context("When checking for version '" + stringify(v) + "' in '"
             + stringify(q) + "' in " + stringify(name()) + ":");
 
-    VersionSpecCollection::ConstPointer versions(do_version_specs(q));
+    std::tr1::shared_ptr<const VersionSpecCollection> versions(do_version_specs(q));
     return versions->end() != versions->find(v);
 }
 
-VersionMetadata::ConstPointer
+std::tr1::shared_ptr<const VersionMetadata>
 VDBRepository::do_version_metadata(
         const QualifiedPackageName & q, const VersionSpec & v) const
 {
@@ -660,7 +657,7 @@ VDBRepository::do_version_metadata(
     }
 }
 
-Contents::ConstPointer
+std::tr1::shared_ptr<const Contents>
 VDBRepository::do_contents(
         const QualifiedPackageName & q, const VersionSpec & v) const
 {
@@ -680,10 +677,10 @@ VDBRepository::do_contents(
                 "version lookup failed for request for '" +
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "'");
-        return Contents::ConstPointer(new Contents);
+        return std::tr1::shared_ptr<const Contents>(new Contents);
     }
 
-    Contents::Pointer result(new Contents);
+    std::tr1::shared_ptr<Contents> result(new Contents);
 
     FSEntry f(_imp->location / stringify(q.category) /
             (stringify(q.package) + "-" + stringify(v)));
@@ -721,15 +718,15 @@ VDBRepository::do_contents(
         }
 
         if ("obj" == tokens.at(0))
-            result->add(ContentsEntry::Pointer(new ContentsFileEntry(tokens.at(1))));
+            result->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsFileEntry(tokens.at(1))));
         else if ("dir" == tokens.at(0))
-            result->add(ContentsEntry::Pointer(new ContentsDirEntry(tokens.at(1))));
+            result->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsDirEntry(tokens.at(1))));
         else if ("misc" == tokens.at(0))
-            result->add(ContentsEntry::Pointer(new ContentsMiscEntry(tokens.at(1))));
+            result->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsMiscEntry(tokens.at(1))));
         else if ("fif" == tokens.at(0))
-            result->add(ContentsEntry::Pointer(new ContentsFifoEntry(tokens.at(1))));
+            result->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsFifoEntry(tokens.at(1))));
         else if ("dev" == tokens.at(0))
-            result->add(ContentsEntry::Pointer(new ContentsDevEntry(tokens.at(1))));
+            result->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsDevEntry(tokens.at(1))));
         else if ("sym" == tokens.at(0))
         {
             if (tokens.size() < 4)
@@ -741,7 +738,7 @@ VDBRepository::do_contents(
                 continue;
             }
 
-            result->add(ContentsEntry::Pointer(new ContentsSymEntry(
+            result->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsSymEntry(
                             tokens.at(1), tokens.at(3))));
         }
     }
@@ -827,10 +824,10 @@ VDBRepository::do_query_use_force(const UseFlagName & u, const PackageDatabaseEn
     return use_enabled == do_query_use(u, e);
 }
 
-CountedPtr<Repository>
+std::tr1::shared_ptr<Repository>
 VDBRepository::make_vdb_repository(
         Environment * const env,
-        AssociativeCollection<std::string, std::string>::ConstPointer m)
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second);
     Context context("When making VDB repository from repo_file '" + repo_file + "':");
@@ -869,7 +866,7 @@ VDBRepository::make_vdb_repository(
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
-    return CountedPtr<Repository>(new VDBRepository(VDBRepositoryParams::create()
+    return std::tr1::shared_ptr<Repository>(new VDBRepository(VDBRepositoryParams::create()
                 .environment(env)
                 .location(location)
                 .root(root)
@@ -907,7 +904,7 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
         throw PackageInstallActionError("Couldn't uninstall '" + stringify(q) + "-" +
                 stringify(v) + "' because root ('" + stringify(_imp->root) + "') is not a directory");
 
-    VersionMetadata::ConstPointer metadata(0);
+    std::tr1::shared_ptr<const VersionMetadata> metadata;
     if (! has_version(q, v))
         throw PackageInstallActionError("Couldn't uninstall '" + stringify(q) + "-" +
                 stringify(v) + "' because has_version failed");
@@ -916,16 +913,16 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
 
     PackageDatabaseEntry e(q, v, name());
 
-    FSEntryCollection::Pointer eclassdirs(new FSEntryCollection::Concrete);
+    std::tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
     eclassdirs->append(FSEntry(_imp->location / stringify(q.category) /
                 (stringify(q.package) + "-" + stringify(v))));
 
     FSEntry pkg_dir(_imp->location / stringify(q.category) /
             (stringify(q.package) + "-" + stringify(v)));
 
-    CountedPtr<FSEntry, count_policy::ExternalCountTag> load_env(0);
+    std::tr1::shared_ptr<FSEntry> load_env;
     if (is_full_env(pkg_dir))
-        load_env.assign(new FSEntry(pkg_dir / "environment.bz2"));
+        load_env.reset(new FSEntry(pkg_dir / "environment.bz2"));
 
     EbuildUninstallCommand uninstall_cmd(EbuildCommandParams::create()
             .environment(_imp->env)
@@ -941,12 +938,12 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
             .root(stringify(_imp->root) + "/")
             .disable_cfgpro(o.no_config_protect)
             .unmerge_only(is_ebuilded(pkg_dir))
-            .load_environment(load_env.raw_pointer()));
+            .load_environment(load_env.get()));
 
     uninstall_cmd();
 }
 
-DepAtom::Pointer
+std::tr1::shared_ptr<DepAtom>
 VDBRepository::do_package_set(const SetName & s) const
 {
     Context context("When fetching package set '" + stringify(s) + "' from '" +
@@ -954,8 +951,8 @@ VDBRepository::do_package_set(const SetName & s) const
 
     if ("everything" == s.data())
     {
-        AllDepAtom::Pointer result(new AllDepAtom);
-        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(SetName("everything"), stringify(name())));
+        std::tr1::shared_ptr<AllDepAtom> result(new AllDepAtom);
+        std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("everything"), stringify(name())));
 
         if (! _imp->entries_valid)
             _imp->load_entries();
@@ -963,7 +960,7 @@ VDBRepository::do_package_set(const SetName & s) const
         for (std::vector<VDBEntry>::const_iterator p(_imp->entries.begin()),
                 p_end(_imp->entries.end()) ; p != p_end ; ++p)
         {
-            PackageDepAtom::Pointer atom(new PackageDepAtom(p->name));
+            std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(p->name));
             atom->set_tag(tag);
             result->add_child(atom);
         }
@@ -972,8 +969,8 @@ VDBRepository::do_package_set(const SetName & s) const
     }
     else if ("world" == s.data())
     {
-        AllDepAtom::Pointer result(new AllDepAtom);
-        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
+        std::tr1::shared_ptr<AllDepAtom> result(new AllDepAtom);
+        std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
 
         if (_imp->world_file.exists())
         {
@@ -982,7 +979,7 @@ VDBRepository::do_package_set(const SetName & s) const
             for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
                     line != line_end ; ++line)
             {
-                PackageDepAtom::Pointer atom(new PackageDepAtom(QualifiedPackageName(*line)));
+                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(QualifiedPackageName(*line)));
                 atom->set_tag(tag);
                 result->add_child(atom);
             }
@@ -995,15 +992,15 @@ VDBRepository::do_package_set(const SetName & s) const
         return result;
     }
     else
-        return DepAtom::Pointer(0);
+        return std::tr1::shared_ptr<DepAtom>();
 }
 
-SetsCollection::ConstPointer
+std::tr1::shared_ptr<const SetsCollection>
 VDBRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    SetsCollection::Pointer result(new SetsCollection::Concrete);
+    std::tr1::shared_ptr<SetsCollection> result(new SetsCollection::Concrete);
     result->insert(SetName("everything"));
     result->insert(SetName("world"));
     return result;
@@ -1012,7 +1009,7 @@ VDBRepository::sets_list() const
 void
 VDBRepository::invalidate()
 {
-    _imp.assign(new Implementation<VDBRepository>(this, _imp->params));
+    _imp.reset(new Implementation<VDBRepository>(this, _imp->params));
 }
 
 void
@@ -1168,7 +1165,7 @@ VDBRepository::get_environment_variable(
                 + stringify(for_package) + "'");
 }
 
-RepositoryProvidesInterface::ProvidesCollection::ConstPointer
+std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesCollection>
 VDBRepository::provided_packages() const
 {
     if (_imp->provides)
@@ -1180,14 +1177,15 @@ VDBRepository::provided_packages() const
     return _imp->provides;
 }
 
-VersionMetadata::ConstPointer
+std::tr1::shared_ptr<const VersionMetadata>
 VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry & p) const
 {
-    VDBVersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, p.version));
-    VDBVirtualVersionMetadata::Pointer result(new VDBVirtualVersionMetadata(
+    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_name, p.version));
+    std::tr1::shared_ptr<VDBVirtualVersionMetadata> result(new VDBVirtualVersionMetadata(
                 m->slot, PackageDatabaseEntry(p.provided_by_name, p.version, name())));
 
-    result->license_string = m->license_string;
+    if (m->license_interface)
+        result->license_string = m->license_interface->license_string;
     result->eapi = m->eapi;
     result->build_depend_string = stringify(p.provided_by_name);
     result->run_depend_string = stringify(p.provided_by_name);
@@ -1195,28 +1193,28 @@ VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry &
     return result;
 }
 
-UseFlagNameCollection::ConstPointer
+std::tr1::shared_ptr<const UseFlagNameCollection>
 VDBRepository::do_arch_flags() const
 {
-    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+    return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
-UseFlagNameCollection::ConstPointer
+std::tr1::shared_ptr<const UseFlagNameCollection>
 VDBRepository::do_use_expand_flags() const
 {
-    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+    return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
-UseFlagNameCollection::ConstPointer
+std::tr1::shared_ptr<const UseFlagNameCollection>
 VDBRepository::do_use_expand_prefixes() const
 {
-    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+    return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
-UseFlagNameCollection::ConstPointer
+std::tr1::shared_ptr<const UseFlagNameCollection>
 VDBRepository::do_use_expand_hidden_prefixes() const
 {
-    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+    return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
 UseFlagName
@@ -1239,7 +1237,7 @@ VDBRepository::load_provided_using_cache() const
 
     Context context("When loading VDB PROVIDEs map using '" + stringify(_imp->provides_cache) + "':");
 
-    ProvidesCollection::Pointer result(new ProvidesCollection::Concrete);
+    std::tr1::shared_ptr<ProvidesCollection> result(new ProvidesCollection::Concrete);
 
     if (! _imp->provides_cache.is_regular_file())
     {
@@ -1301,7 +1299,7 @@ VDBRepository::load_provided_the_slow_way() const
 
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting VDB PROVIDEs map creation");
 
-    ProvidesCollection::Pointer result(new ProvidesCollection::Concrete);
+    std::tr1::shared_ptr<ProvidesCollection> result(new ProvidesCollection::Concrete);
 
     if (! _imp->entries_valid)
         _imp->load_entries();
@@ -1325,7 +1323,7 @@ VDBRepository::load_provided_the_slow_way() const
             if (provide_str.empty())
                 continue;
 
-            DepAtom::ConstPointer provide(PortageDepParser::parse(provide_str,
+            std::tr1::shared_ptr<const DepAtom> provide(PortageDepParser::parse(provide_str,
                         PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
             PackageDatabaseEntry dbe(e->name, e->version, name());
             DepAtomFlattener f(_imp->env, &dbe, provide);
@@ -1413,13 +1411,13 @@ VDBRepository::regenerate_provides_cache() const
     }
 }
 
-CategoryNamePartCollection::ConstPointer
+std::tr1::shared_ptr<const CategoryNamePartCollection>
 VDBRepository::do_category_names_containing_package(const PackageNamePart & p) const
 {
     if (! _imp->names_cache->usable())
         return Repository::do_category_names_containing_package(p);
 
-    CategoryNamePartCollection::ConstPointer result(
+    std::tr1::shared_ptr<const CategoryNamePartCollection> result(
             _imp->names_cache->category_names_containing_package(p));
 
     return result ? result : Repository::do_category_names_containing_package(p);

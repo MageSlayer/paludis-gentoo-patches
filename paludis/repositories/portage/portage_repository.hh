@@ -78,20 +78,20 @@ namespace paludis
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const;
 
-            virtual CategoryNamePartCollection::ConstPointer do_category_names() const;
+            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
 
-            CategoryNamePartCollection::ConstPointer do_category_names_containing_package(
+            std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
                     const PackageNamePart & p) const;
 
-            virtual QualifiedPackageNameCollection::ConstPointer do_package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
                     const CategoryNamePart &) const;
 
-            virtual VersionSpecCollection::ConstPointer do_version_specs(
+            virtual std::tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
                     const QualifiedPackageName &) const;
 
             virtual bool do_has_version(const QualifiedPackageName &, const VersionSpec &) const;
 
-            virtual VersionMetadata::ConstPointer do_version_metadata(
+            virtual std::tr1::shared_ptr<const VersionMetadata> do_version_metadata(
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
@@ -106,15 +106,15 @@ namespace paludis
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
-            virtual DepAtom::Pointer do_package_set(const SetName &) const;
+            virtual std::tr1::shared_ptr<DepAtom> do_package_set(const SetName &) const;
 
-            virtual SetsCollection::ConstPointer sets_list() const;
+            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 
             virtual bool do_sync() const;
 
-            virtual VirtualsCollection::ConstPointer virtual_packages() const;
+            virtual std::tr1::shared_ptr<const VirtualsCollection> virtual_packages() const;
 
-            virtual VersionMetadata::ConstPointer virtual_package_version_metadata(
+            virtual std::tr1::shared_ptr<const VersionMetadata> virtual_package_version_metadata(
                     const RepositoryVirtualsEntry &, const VersionSpec & v) const;
 
             /* RepositoryUseInterface */
@@ -122,19 +122,19 @@ namespace paludis
             virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
             virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const;
             virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const;
-            virtual UseFlagNameCollection::ConstPointer do_arch_flags() const;
-            virtual UseFlagNameCollection::ConstPointer do_use_expand_flags() const;
-            virtual UseFlagNameCollection::ConstPointer do_use_expand_hidden_prefixes() const;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
             virtual UseFlagName do_use_expand_name(const UseFlagName & u) const;
             virtual UseFlagName do_use_expand_value(const UseFlagName & u) const;
-            virtual UseFlagNameCollection::ConstPointer do_use_expand_prefixes() const;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
             virtual std::string do_describe_use_flag(const UseFlagName &,
                     const PackageDatabaseEntry * const) const;
 
             /* end of RepositoryUseInterface */
 
         public:
-            virtual RepositoryInfo::ConstPointer info(bool verbose) const;
+            virtual std::tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const;
 
             /**
              * Constructor.
@@ -158,16 +158,13 @@ namespace paludis
             virtual MirrorsIterator begin_mirrors(const std::string & s) const;
             virtual MirrorsIterator end_mirrors(const std::string & s) const;
 
-            typedef CountedPtr<PortageRepository, count_policy::InternalCountTag> Pointer;
-            typedef CountedPtr<const PortageRepository, count_policy::InternalCountTag> ConstPointer;
-
             ///\name Information about PortageRepository
             ///\{
 
             std::string profile_variable(const std::string &) const;
 
             typedef libwrapiter::ForwardIterator<PortageRepository, std::pair<
-                const QualifiedPackageName, PackageDepAtom::ConstPointer> > OurVirtualsIterator;
+                const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > > OurVirtualsIterator;
 
             ///\}
 

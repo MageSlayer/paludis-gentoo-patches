@@ -71,10 +71,9 @@ namespace paludis
      * \ingroup grpcontents
      */
     template<>
-    struct Implementation<Contents> :
-        InternalCounted<Implementation<Contents> >
+    struct Implementation<Contents>
     {
-        std::list<ContentsEntry::ConstPointer> c;
+        std::list<std::tr1::shared_ptr<const ContentsEntry> > c;
     };
 }
 
@@ -88,7 +87,7 @@ Contents::~Contents()
 }
 
 void
-Contents::add(ContentsEntry::ConstPointer c)
+Contents::add(std::tr1::shared_ptr<const ContentsEntry> c)
 {
     _imp->c.push_back(c);
 }

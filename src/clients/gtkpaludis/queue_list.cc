@@ -64,7 +64,7 @@ namespace
     }
 
     std::string::size_type
-    use_expand_delim_pos(const UseFlagName & u, const UseFlagNameCollection::ConstPointer c)
+    use_expand_delim_pos(const UseFlagName & u, const std::tr1::shared_ptr<const UseFlagNameCollection> c)
     {
         for (UseFlagNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
             if (0 == u.data().compare(0, i->data().length(), i->data(), 0, i->data().length()))
@@ -78,7 +78,7 @@ namespace
             Gtk::TreeModelColumn<Glib::ustring> & col_left,
             Gtk::TreeModelColumn<Glib::ustring> & col_right,
             const Environment * const env, const PackageDatabaseEntry & p,
-            VersionMetadata::ConstPointer metadata, const PackageDatabaseEntry * const other_p)
+            std::tr1::shared_ptr<const VersionMetadata> metadata, const PackageDatabaseEntry * const other_p)
     {
         static const std::string cl_flag_on("#00cc00");
         static const std::string cl_flag_off("#cc0000");
@@ -200,8 +200,7 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<QueueList> :
-        InternalCounted<Implementation<QueueList> >
+    struct Implementation<QueueList>
     {
         QueuePage * const page;
 
@@ -336,7 +335,7 @@ QueueList::Populate::display_entry(const paludis::DepListEntry & e)
 
     row[_q->_imp->columns.col_left] = left;
 
-    PackageDatabaseEntryCollection::Pointer existing(DefaultEnvironment::get_instance()->package_database()->
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing(DefaultEnvironment::get_instance()->package_database()->
             query(PackageDepAtom(e.package.name), is_installed_only, qo_order_by_version));
 
     std::string right = stringify(e.package.version);
@@ -367,7 +366,7 @@ QueueList::Populate::display_entry(const paludis::DepListEntry & e)
 void
 QueueList::calculate()
 {
-    PaludisThread::get_instance()->launch(Populate::Pointer(new Populate(this,
+    PaludisThread::get_instance()->launch(std::tr1::shared_ptr<Populate>(new Populate(this,
                     Gtk::TreeStore::create(_imp->columns))));
 }
 

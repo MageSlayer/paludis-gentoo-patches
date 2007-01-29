@@ -37,11 +37,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "gems");
             keys->insert("location", "gems_repository_TEST_dir/repo1");
-            GemsRepository::Pointer repo(make_gems_repository(
+            std::tr1::shared_ptr<Repository> repo(make_gems_repository(
                         &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "gems");
         }

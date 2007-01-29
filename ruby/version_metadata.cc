@@ -36,8 +36,8 @@ namespace
     template <typename T_>
     VALUE version_metadata_get_interface(VALUE self, T_ * (VersionMetadataCapabilities::* m))
     {
-        VersionMetadata::ConstPointer * self_ptr;
-        Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+        std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
         return ((**self_ptr).*m) ? self : Qnil;
     }
 
@@ -117,8 +117,8 @@ namespace
     VALUE
     version_metadata_license(VALUE self)
     {
-        VersionMetadata::ConstPointer * self_ptr;
-        Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+        std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
         if ((*self_ptr)->license_interface)
             return dep_atom_to_value((*self_ptr)->license_interface->license());
         else
@@ -134,8 +134,8 @@ namespace
     VALUE
     version_metadata_license_string(VALUE self)
     {
-        VersionMetadata::ConstPointer * self_ptr;
-        Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+        std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
         if ((*self_ptr)->license_interface)
             return rb_str_new2((*self_ptr)->license_interface->license_string.c_str());
         else
@@ -180,8 +180,8 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            VersionMetadata::ConstPointer * self_ptr;
-            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
             return rb_str_new2(stringify((**self_ptr).*m_).c_str());
         }
     };
@@ -240,8 +240,8 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            VersionMetadata::ConstPointer * self_ptr;
-            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
             if ((*self_ptr)->ebuild_interface)
                 return rb_str_new2(stringify((*self_ptr)->ebuild_interface->*m_).c_str());
             else
@@ -271,8 +271,8 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            VersionMetadata::ConstPointer * self_ptr;
-            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
             if ((*self_ptr)->cran_interface)
                 return rb_str_new2(stringify((*self_ptr)->cran_interface->*m_).c_str());
             else
@@ -316,14 +316,14 @@ namespace
      * Fetches post_depend information as a DepAtom, or Nil if we have no deps
      * interface.
      */
-    template <DepAtom::ConstPointer (VersionMetadataDepsInterface::* m_) () const>
+    template <std::tr1::shared_ptr<const DepAtom> (VersionMetadataDepsInterface::* m_) () const>
     struct DependValue
     {
         static VALUE
         fetch(VALUE self)
         {
-            VersionMetadata::ConstPointer * self_ptr;
-            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
             if ((*self_ptr)->deps_interface)
                 return dep_atom_to_value(((*self_ptr)->deps_interface->*m_)());
             else
@@ -373,8 +373,8 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            VersionMetadata::ConstPointer * self_ptr;
-            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
             if ((*self_ptr)->deps_interface)
                 return rb_str_new2((((*self_ptr)->deps_interface)->*m_).c_str());
             else
@@ -390,14 +390,14 @@ namespace
      *
      * Returnd the PackageDatabaseEntry from which the package was installed.
      */
-    template <CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag> VersionMetadataOriginsInterface::* m_>
+    template <std::tr1::shared_ptr<PackageDatabaseEntry> VersionMetadataOriginsInterface::* m_>
     struct VMOrigins
     {
         static VALUE
         fetch(VALUE self)
         {
-            VersionMetadata::ConstPointer * self_ptr;
-            Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
             if ((*self_ptr)->origins_interface && (((*self_ptr)->origins_interface)->*m_))
                 return package_database_entry_to_value(*(((*self_ptr)->origins_interface)->*m_));
             else
@@ -413,8 +413,8 @@ namespace
      */
     VALUE version_metadata_virtual_for(VALUE self)
     {
-        VersionMetadata::ConstPointer * self_ptr;
-        Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+        std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
         if ((*self_ptr)->virtual_interface)
             return package_database_entry_to_value((*self_ptr)->virtual_interface->virtual_for);
         else
@@ -430,8 +430,8 @@ namespace
      */
     VALUE version_metadata_is_bundle(VALUE self)
     {
-        VersionMetadata::ConstPointer * self_ptr;
-        Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+        std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
         if ((*self_ptr)->cran_interface)
             return ((*self_ptr)->cran_interface->is_bundle) ? Qtrue : Qfalse;
         else
@@ -447,8 +447,8 @@ namespace
      */
     VALUE version_metadata_keywords(VALUE self)
     {
-        VersionMetadata::ConstPointer * self_ptr;
-        Data_Get_Struct(self, VersionMetadata::ConstPointer, self_ptr);
+        std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
         if ((*self_ptr)->ebuild_interface)
             return rb_str_new2(((*self_ptr)->ebuild_interface->keywords).c_str());
         if ((*self_ptr)->cran_interface)
@@ -532,13 +532,13 @@ namespace
 }
 
 VALUE
-paludis::ruby::version_metadata_to_value(VersionMetadata::ConstPointer m)
+paludis::ruby::version_metadata_to_value(std::tr1::shared_ptr<const VersionMetadata> m)
 {
-    VersionMetadata::ConstPointer * m_ptr(0);
+    std::tr1::shared_ptr<const VersionMetadata> * m_ptr(0);
     try
     {
-        m_ptr = new VersionMetadata::ConstPointer(m);
-        return Data_Wrap_Struct(c_version_metadata, 0, &Common<VersionMetadata::ConstPointer>::free, m_ptr);
+        m_ptr = new std::tr1::shared_ptr<const VersionMetadata>(m);
+        return Data_Wrap_Struct(c_version_metadata, 0, &Common<std::tr1::shared_ptr<const VersionMetadata> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -547,13 +547,13 @@ paludis::ruby::version_metadata_to_value(VersionMetadata::ConstPointer m)
     }
 }
 
-VersionMetadata::ConstPointer
+std::tr1::shared_ptr<const VersionMetadata>
 paludis::ruby::value_to_version_metadata(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_version_metadata))
     {
-        VersionMetadata::ConstPointer * v_ptr;
-        Data_Get_Struct(v, VersionMetadata::ConstPointer, v_ptr);
+        std::tr1::shared_ptr<const VersionMetadata> * v_ptr;
+        Data_Get_Struct(v, std::tr1::shared_ptr<const VersionMetadata>, v_ptr);
         return *v_ptr;
     }
     else

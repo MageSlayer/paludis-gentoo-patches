@@ -23,7 +23,6 @@
 #include <paludis/mask_reasons.hh>
 #include <paludis/name.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 
 /** \file
@@ -97,7 +96,7 @@ namespace paludis
         private InstantiationPolicy<Environment, instantiation_method::NonCopyableTag>
     {
         private:
-            PackageDatabase::Pointer _package_database;
+            std::tr1::shared_ptr<PackageDatabase> _package_database;
 
             mutable bool _has_provide_map;
 
@@ -107,20 +106,20 @@ namespace paludis
             /**
              * Constructor.
              */
-            Environment(PackageDatabase::Pointer);
+            Environment(std::tr1::shared_ptr<PackageDatabase>);
 
             /**
              * Local package set, or zero.
              */
-            virtual CompositeDepAtom::Pointer local_package_set(const SetName &) const
+            virtual std::tr1::shared_ptr<CompositeDepAtom> local_package_set(const SetName &) const
             {
-                return AllDepAtom::Pointer(0);
+                return std::tr1::shared_ptr<AllDepAtom>();
             }
 
             /**
              * Change our package database.
              */
-            void change_package_database(PackageDatabase::Pointer _p)
+            void change_package_database(std::tr1::shared_ptr<PackageDatabase> _p)
             {
                 _package_database = _p;
             }
@@ -141,7 +140,7 @@ namespace paludis
              *
              * Default behaviour: no names known.
              */
-            virtual UseFlagNameCollection::ConstPointer known_use_expand_names(const UseFlagName &,
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(const UseFlagName &,
                     const PackageDatabaseEntry *) const;
 
             /**
@@ -190,7 +189,7 @@ namespace paludis
             /**
              * Fetch our package database.
              */
-            PackageDatabase::ConstPointer package_database() const
+            std::tr1::shared_ptr<const PackageDatabase> package_database() const
             {
                 return _package_database;
             }
@@ -198,7 +197,7 @@ namespace paludis
             /**
              * Fetch our package database.
              */
-            PackageDatabase::Pointer package_database()
+            std::tr1::shared_ptr<PackageDatabase> package_database()
             {
                 return _package_database;
             }
@@ -265,14 +264,14 @@ namespace paludis
             /**
              * Fetch a named package set.
              */
-            DepAtom::Pointer package_set(const SetName &) const;
+            std::tr1::shared_ptr<DepAtom> package_set(const SetName &) const;
 
             /**
              * Fetch all named sets. Does not include sets from repositories.
              *
              * Default behaviour: no sets.
              */
-            virtual SetsCollection::ConstPointer sets_list() const;
+            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 
             /**
              * Subclass for callbacks used by add_appropriate_to_world and
@@ -331,12 +330,12 @@ namespace paludis
              * not a restricted atom.
              */
             void
-            add_appropriate_to_world(DepAtom::ConstPointer a, WorldCallbacks * const) const;
+            add_appropriate_to_world(std::tr1::shared_ptr<const DepAtom> a, WorldCallbacks * const) const;
 
             /**
              * Remove packages from world, if they are there.
              */
-            void remove_appropriate_from_world(DepAtom::ConstPointer, WorldCallbacks * const) const;
+            void remove_appropriate_from_world(std::tr1::shared_ptr<const DepAtom>, WorldCallbacks * const) const;
 
             /**
              * Perform a hook.

@@ -51,28 +51,28 @@ FakeInstalledRepository::is_suitable_destination_for(const PackageDatabaseEntry 
     return true;
 }
 
-FakeInstalledRepository::ProvidesCollection::ConstPointer
+std::tr1::shared_ptr<const FakeInstalledRepository::ProvidesCollection>
 FakeInstalledRepository::provided_packages() const
 {
-    ProvidesCollection::Pointer result(new ProvidesCollection::Concrete);
+    std::tr1::shared_ptr<ProvidesCollection> result(new ProvidesCollection::Concrete);
 
-    CategoryNamePartCollection::ConstPointer cats(category_names());
+    std::tr1::shared_ptr<const CategoryNamePartCollection> cats(category_names());
     for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
-        QualifiedPackageNameCollection::ConstPointer pkgs(package_names(*c));
+        std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs(package_names(*c));
         for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
         {
-            VersionSpecCollection::ConstPointer vers(version_specs(*p));
+            std::tr1::shared_ptr<const VersionSpecCollection> vers(version_specs(*p));
             for (VersionSpecCollection::Iterator v(vers->begin()), v_end(vers->end()) ;
                     v != v_end ; ++v)
             {
-                VersionMetadata::ConstPointer m(version_metadata(*p, *v));
+                std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(*p, *v));
                 if (! m->ebuild_interface)
                     continue;
 
-                DepAtom::ConstPointer provide(PortageDepParser::parse(m->ebuild_interface->provide_string,
+                std::tr1::shared_ptr<const DepAtom> provide(PortageDepParser::parse(m->ebuild_interface->provide_string,
                             PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
                 PackageDatabaseEntry dbe(*p, *v, name());
                 DepAtomFlattener f(environment(), &dbe, provide);
@@ -89,11 +89,11 @@ FakeInstalledRepository::provided_packages() const
     return result;
 }
 
-VersionMetadata::ConstPointer
+std::tr1::shared_ptr<const VersionMetadata>
 FakeInstalledRepository::provided_package_version_metadata(const RepositoryProvidesEntry & p) const
 {
-    VersionMetadata::ConstPointer m(version_metadata(p.provided_by_name, p.version));
-    FakeVirtualVersionMetadata::Pointer result(new FakeVirtualVersionMetadata(
+    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_name, p.version));
+    std::tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
                 m->slot, PackageDatabaseEntry(p.provided_by_name, p.version, name())));
 
     if (m->license_interface)

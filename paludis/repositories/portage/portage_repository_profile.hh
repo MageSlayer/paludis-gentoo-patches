@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,8 +48,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PortageRepositoryProfile :
         private PrivateImplementationPattern<PortageRepositoryProfile>,
-        private InstantiationPolicy<PortageRepositoryProfile, instantiation_method::NonCopyableTag>,
-        public InternalCounted<PortageRepositoryProfile>
+        private InstantiationPolicy<PortageRepositoryProfile, instantiation_method::NonCopyableTag>
     {
         public:
             ///\name Basic operations
@@ -107,7 +106,7 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            AllDepAtom::Pointer system_packages() const;
+            std::tr1::shared_ptr<AllDepAtom> system_packages() const;
 
             ///\}
 
@@ -115,7 +114,7 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<PortageRepositoryProfile,
-                const std::pair<const QualifiedPackageName, PackageDepAtom::ConstPointer> > VirtualsIterator;
+                const std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > > VirtualsIterator;
 
             VirtualsIterator begin_virtuals() const;
             VirtualsIterator end_virtuals() const;

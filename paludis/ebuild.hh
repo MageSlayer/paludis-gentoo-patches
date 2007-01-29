@@ -67,9 +67,6 @@ namespace paludis
         public VersionMetadataLicenseInterface
     {
         public:
-            typedef CountedPtr<EbuildVersionMetadata, count_policy::InternalCountTag> Pointer;
-            typedef CountedPtr<const EbuildVersionMetadata, count_policy::InternalCountTag> ConstPointer;
-
             EbuildVersionMetadata();
             virtual ~EbuildVersionMetadata();
     };
@@ -162,7 +159,7 @@ namespace paludis
         public EbuildCommand
     {
         private:
-            EbuildVersionMetadata::Pointer _metadata;
+            std::tr1::shared_ptr<EbuildVersionMetadata> _metadata;
 
         protected:
             virtual std::string commands() const;
@@ -183,7 +180,7 @@ namespace paludis
              * Return a pointer to our generated metadata. If operator() has not
              * yet been called, will be a zero pointer.
              */
-            EbuildVersionMetadata::Pointer metadata() const
+            std::tr1::shared_ptr<EbuildVersionMetadata> metadata() const
             {
                 return _metadata;
             }

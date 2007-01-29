@@ -23,7 +23,6 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/virtual_constructor.hh>
@@ -86,7 +85,6 @@ namespace paludis
      * \nosubgrouping
      */
     class RepositoryInfoSection :
-        public InternalCounted<RepositoryInfoSection>,
         private PrivateImplementationPattern<RepositoryInfoSection>
     {
         public:
@@ -125,7 +123,6 @@ namespace paludis
      * \nosubgrouping
      */
     class RepositoryInfo :
-        public InternalCounted<RepositoryInfo>,
         private PrivateImplementationPattern<RepositoryInfo>
     {
         public:
@@ -141,7 +138,7 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<RepositoryInfo,
-                    const RepositoryInfoSection::ConstPointer> SectionIterator;
+                    const std::tr1::shared_ptr<const RepositoryInfoSection> > SectionIterator;
 
             SectionIterator begin_sections() const;
 
@@ -150,7 +147,7 @@ namespace paludis
             ///\}
 
             /// Add a section.
-            RepositoryInfo & add_section(RepositoryInfoSection::ConstPointer);
+            RepositoryInfo & add_section(std::tr1::shared_ptr<const RepositoryInfoSection>);
     };
 
     /**
@@ -167,7 +164,6 @@ namespace paludis
      */
     class Repository :
         private InstantiationPolicy<Repository, instantiation_method::NonCopyableTag>,
-        public InternalCounted<Repository>,
         public RepositoryCapabilities
     {
         private:
@@ -181,7 +177,7 @@ namespace paludis
             /**
              * Our information.
              */
-            mutable RepositoryInfo::Pointer _info;
+            mutable std::tr1::shared_ptr<RepositoryInfo> _info;
 
             ///\}
 
@@ -203,7 +199,7 @@ namespace paludis
             /**
              * Override in descendents: fetch the metadata.
              */
-            virtual VersionMetadata::ConstPointer do_version_metadata(
+            virtual std::tr1::shared_ptr<const VersionMetadata> do_version_metadata(
                     const QualifiedPackageName &,
                     const VersionSpec &) const = 0;
 
@@ -216,25 +212,25 @@ namespace paludis
             /**
              * Override in descendents: fetch version specs.
              */
-            virtual VersionSpecCollection::ConstPointer do_version_specs(
+            virtual std::tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
                     const QualifiedPackageName &) const = 0;
 
             /**
              * Override in descendents: fetch package names.
              */
-            virtual QualifiedPackageNameCollection::ConstPointer do_package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
                     const CategoryNamePart &) const = 0;
 
             /**
              * Override in descendents: fetch category names.
              */
-            virtual CategoryNamePartCollection::ConstPointer do_category_names() const = 0;
+            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const = 0;
 
             /**
              * Override in descendents if a fast implementation is available: fetch category names
              * that contain a particular package.
              */
-            virtual CategoryNamePartCollection::ConstPointer do_category_names_containing_package(
+            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
                     const PackageNamePart &) const;
 
             /**
@@ -277,7 +273,7 @@ namespace paludis
             /**
              * Fetch information about the repository.
              */
-            virtual RepositoryInfo::ConstPointer info(bool verbose) const;
+            virtual std::tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const;
 
             /**
              * Return our name.
@@ -321,7 +317,7 @@ namespace paludis
             /**
              * Fetch our category names.
              */
-            CategoryNamePartCollection::ConstPointer category_names() const
+            std::tr1::shared_ptr<const CategoryNamePartCollection> category_names() const
             {
                 return do_category_names();
             }
@@ -329,7 +325,7 @@ namespace paludis
             /**
              * Fetch categories that contain a named package.
              */
-            CategoryNamePartCollection::ConstPointer category_names_containing_package(
+            std::tr1::shared_ptr<const CategoryNamePartCollection> category_names_containing_package(
                     const PackageNamePart & p) const
             {
                 return do_category_names_containing_package(p);
@@ -338,7 +334,7 @@ namespace paludis
             /**
              * Fetch our package names.
              */
-            QualifiedPackageNameCollection::ConstPointer package_names(
+            std::tr1::shared_ptr<const QualifiedPackageNameCollection> package_names(
                     const CategoryNamePart & c) const
             {
                 return do_package_names(c);
@@ -347,7 +343,7 @@ namespace paludis
             /**
              * Fetch our versions.
              */
-            VersionSpecCollection::ConstPointer version_specs(
+            std::tr1::shared_ptr<const VersionSpecCollection> version_specs(
                     const QualifiedPackageName & p) const
             {
                 return do_version_specs(p);
@@ -364,7 +360,7 @@ namespace paludis
             /**
              * Fetch metadata.
              */
-            VersionMetadata::ConstPointer version_metadata(
+            std::tr1::shared_ptr<const VersionMetadata> version_metadata(
                     const QualifiedPackageName & q,
                     const VersionSpec & v) const
             {
@@ -481,22 +477,22 @@ namespace paludis
             /**
              * Override in descendents: fetch all arch flags.
              */
-            virtual UseFlagNameCollection::ConstPointer do_arch_flags() const = 0;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const = 0;
 
             /**
              * Override in descendents: fetch all use expand flags.
              */
-            virtual UseFlagNameCollection::ConstPointer do_use_expand_flags() const = 0;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const = 0;
 
             /**
              * Override in descendents: fetch all use expand hidden prefixes.
              */
-            virtual UseFlagNameCollection::ConstPointer do_use_expand_hidden_prefixes() const = 0;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const = 0;
 
             /**
              * Override in descendents: fetch all use expand prefixes.
              */
-            virtual UseFlagNameCollection::ConstPointer do_use_expand_prefixes() const = 0;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const = 0;
 
             /**
              * Override in descendents: describe a use flag.
@@ -542,7 +538,7 @@ namespace paludis
             /**
              * Fetch all arch flags.
              */
-            UseFlagNameCollection::ConstPointer arch_flags() const
+            std::tr1::shared_ptr<const UseFlagNameCollection> arch_flags() const
             {
                 return do_arch_flags();
             }
@@ -550,7 +546,7 @@ namespace paludis
             /**
              * Fetch all expand flags.
              */
-            UseFlagNameCollection::ConstPointer use_expand_flags() const
+            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_flags() const
             {
                 return do_use_expand_flags();
             }
@@ -558,7 +554,7 @@ namespace paludis
             /**
              * Fetch all expand hidden flags.
              */
-            UseFlagNameCollection::ConstPointer use_expand_hidden_prefixes() const
+            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_hidden_prefixes() const
             {
                 return do_use_expand_hidden_prefixes();
             }
@@ -566,7 +562,7 @@ namespace paludis
             /**
              * Fetch all use expand prefixes.
              */
-            UseFlagNameCollection::ConstPointer use_expand_prefixes() const
+            std::tr1::shared_ptr<const UseFlagNameCollection> use_expand_prefixes() const
             {
                 return do_use_expand_prefixes();
             }
@@ -730,7 +726,7 @@ namespace paludis
             /**
              * Override in descendents: package list.
              */
-            virtual DepAtom::Pointer do_package_set(const SetName & id) const = 0;
+            virtual std::tr1::shared_ptr<DepAtom> do_package_set(const SetName & id) const = 0;
 
             ///\}
 
@@ -741,7 +737,7 @@ namespace paludis
             /**
              * Fetch a package set.
              */
-            DepAtom::Pointer package_set(const SetName & s) const
+            std::tr1::shared_ptr<DepAtom> package_set(const SetName & s) const
             {
                 return do_package_set(s);
             }
@@ -749,7 +745,7 @@ namespace paludis
             /**
              * Gives a list of the names of all the sets provided by this repo.
              */
-            virtual SetsCollection::ConstPointer sets_list() const = 0;
+            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const = 0;
 
             ///\}
 
@@ -926,12 +922,12 @@ namespace paludis
             /**
              * Fetch our virtual packages.
              */
-            virtual VirtualsCollection::ConstPointer virtual_packages() const = 0;
+            virtual std::tr1::shared_ptr<const VirtualsCollection> virtual_packages() const = 0;
 
             /**
              * Fetch version metadata for a virtual
              */
-            virtual VersionMetadata::ConstPointer virtual_package_version_metadata(
+            virtual std::tr1::shared_ptr<const VersionMetadata> virtual_package_version_metadata(
                     const RepositoryVirtualsEntry &, const VersionSpec & v) const = 0;
 
             ///\}
@@ -962,12 +958,12 @@ namespace paludis
             /**
              * Fetch our provided packages.
              */
-            virtual ProvidesCollection::ConstPointer provided_packages() const = 0;
+            virtual std::tr1::shared_ptr<const ProvidesCollection> provided_packages() const = 0;
 
             /**
              * Fetch version metadata for a provided package.
              */
-            virtual VersionMetadata::ConstPointer provided_package_version_metadata(
+            virtual std::tr1::shared_ptr<const VersionMetadata> provided_package_version_metadata(
                     const RepositoryProvidesEntry &) const = 0;
 
             ///\}
@@ -1011,7 +1007,7 @@ namespace paludis
             /**
              * Override in descendents: fetch the contents.
              */
-            virtual Contents::ConstPointer do_contents(
+            virtual std::tr1::shared_ptr<const Contents> do_contents(
                     const QualifiedPackageName &,
                     const VersionSpec &) const = 0;
 
@@ -1024,7 +1020,7 @@ namespace paludis
             /**
              * Fetch contents.
              */
-            Contents::ConstPointer contents(
+            std::tr1::shared_ptr<const Contents> contents(
                     const QualifiedPackageName & q,
                     const VersionSpec & v) const
             {

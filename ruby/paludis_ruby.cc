@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -38,8 +38,7 @@ using namespace paludis::ruby;
 namespace paludis
 {
     template<>
-    struct Implementation<RegisterRubyClass> :
-        InternalCounted<Implementation<RegisterRubyClass> >
+    struct Implementation<RegisterRubyClass>
     {
         std::list<void (*)()> funcs;
     };
@@ -95,9 +94,9 @@ namespace
         try
         {
             Environment * env = value_to_environment_data(en)->env_ptr;
-            PackageDepAtom::ConstPointer atom = value_to_package_dep_atom(a);
+            std::tr1::shared_ptr<const PackageDepAtom> atom = value_to_package_dep_atom(a);
             PackageDatabaseEntry target = value_to_package_database_entry(t);
-            return match_package(env, atom, target) ? Qtrue : Qfalse;
+            return match_package(*env, *atom, target) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {

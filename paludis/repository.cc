@@ -93,8 +93,7 @@ namespace paludis
      * \ingroup grprepository
      */
     template<>
-    struct Implementation<RepositoryInfoSection> :
-        InternalCounted<Implementation<RepositoryInfoSection> >
+    struct Implementation<RepositoryInfoSection>
     {
         std::string heading;
         std::map<std::string, std::string> kvs;
@@ -106,15 +105,14 @@ namespace paludis
      * \ingroup grprepository
      */
     template<>
-    struct Implementation<RepositoryInfo> :
-        InternalCounted<Implementation<RepositoryInfo> >
+    struct Implementation<RepositoryInfo>
     {
-        std::list<RepositoryInfoSection::ConstPointer> sections;
+        std::list<std::tr1::shared_ptr<const RepositoryInfoSection> > sections;
     };
 }
 
 RepositoryInfo &
-RepositoryInfo::add_section(RepositoryInfoSection::ConstPointer s)
+RepositoryInfo::add_section(std::tr1::shared_ptr<const RepositoryInfoSection> s)
 {
     _imp->sections.push_back(s);
     return *this;
@@ -155,7 +153,7 @@ RepositoryInfoSection::add_kv(const std::string & k, const std::string & v)
     return *this;
 }
 
-RepositoryInfo::ConstPointer
+std::tr1::shared_ptr<const RepositoryInfo>
 Repository::info(bool) const
 {
     return _info;
@@ -182,13 +180,13 @@ RepositoryInfo::end_sections() const
     return SectionIterator(_imp->sections.end());
 }
 
-CategoryNamePartCollection::ConstPointer
+std::tr1::shared_ptr<const CategoryNamePartCollection>
 Repository::do_category_names_containing_package(const PackageNamePart & p) const
 {
     Context context("When finding category names containing package '" + stringify(p) + "':");
 
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
-    CategoryNamePartCollection::ConstPointer cats(category_names());
+    std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+    std::tr1::shared_ptr<const CategoryNamePartCollection> cats(category_names());
     for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
         if (has_package_named(*c + p))

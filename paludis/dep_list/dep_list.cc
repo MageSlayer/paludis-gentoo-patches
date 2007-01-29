@@ -72,11 +72,10 @@ namespace paludis
     typedef MakeHashedMultiMap<QualifiedPackageName, MergeList::iterator>::Type MergeListIndex;
 
     template<>
-    struct Implementation<DepList> :
-        InternalCounted<Implementation<DepList> >
+    struct Implementation<DepList>
     {
         const Environment * const env;
-        CountedPtr<DepListOptions, count_policy::ExternalCountTag> opts;
+        std::tr1::shared_ptr<DepListOptions> opts;
 
         MergeList merge_list;
         MergeList::const_iterator current_merge_list_entry;
@@ -85,7 +84,7 @@ namespace paludis
 
         MergeListIndex merge_list_index;
 
-        DepAtom::ConstPointer current_top_level_target;
+        std::tr1::shared_ptr<const DepAtom> current_top_level_target;
 
         bool throw_on_blocker;
 
@@ -102,7 +101,6 @@ namespace paludis
             current_merge_list_entry(merge_list.end()),
             merge_list_insert_position(merge_list.end()),
             merge_list_generation(0),
-            current_top_level_target(0),
             throw_on_blocker(o.blocks == dl_blocks_error)
         {
         }
@@ -161,7 +159,7 @@ namespace
             /* see EffSTL 9 for why this is so painful */
             if (e.tags->empty())
                 return;
-            DepListEntryTags::Pointer t(new DepListEntryTags::Concrete);
+            std::tr1::shared_ptr<DepListEntryTags> t(new DepListEntryTags::Concrete);
             GenerationGreaterThan pred(g);
             for (DepListEntryTags::Iterator i(e.tags->begin()), i_end(e.tags->end()) ;
                     i != i_end ; ++i)
@@ -246,7 +244,7 @@ namespace
                 case dlk_provided:
                 case dlk_already_installed:
                 case dlk_subpackage:
-                    return match_package(env, a, e.second->package);
+                    return match_package(*env, *a, e.second->package);
 
                 case dlk_block:
                 case dlk_masked:
@@ -272,7 +270,7 @@ namespace
         {
         }
 
-        bool operator() (PackageDepAtom::ConstPointer atom)
+        bool operator() (std::tr1::shared_ptr<const DepAtom> atom)
         {
             const UseDepAtom * const u(atom->as_use_dep_atom());
             if (0 != u)
@@ -291,7 +289,7 @@ namespace
         {
         }
 
-        bool operator() (PackageDepAtom::ConstPointer atom)
+        bool operator() (std::tr1::shared_ptr<const DepAtom> atom)
         {
             const PackageDepAtom * const u(atom->as_package_dep_atom());
             if (0 != u)
@@ -340,14 +338,14 @@ DepList::QueryVisitor::visit(const PackageDepAtom * const a)
 
     result = false;
 
-    PackageDatabaseEntryCollection::ConstPointer matches(d->_imp->env->package_database()->query(
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(d->_imp->env->package_database()->query(
                 *a, is_installed_only, qo_whatever));
 
     for (PackageDatabaseEntryCollection::Iterator m(matches->begin()), m_end(matches->end()) ;
             m != m_end ; ++m)
     {
         /* check that we haven't been replaced by something in the same slot */
-        VersionMetadata::ConstPointer vm(d->_imp->env->package_database()->fetch_repository(m->repository)->
+        std::tr1::shared_ptr<const VersionMetadata> vm(d->_imp->env->package_database()->fetch_repository(m->repository)->
                 version_metadata(m->name, m->version));
         SlotName slot(vm->slot);
 
@@ -410,7 +408,7 @@ void
 DepList::QueryVisitor::visit(const AnyDepAtom * const a)
 {
     /* empty || ( ) must resolve to true */
-    std::list<DepAtom::ConstPointer> viable_children;
+    std::list<std::tr1::shared_ptr<const DepAtom> > viable_children;
     std::copy(a->begin(), a->end(), filter_inserter(std::back_inserter(viable_children),
                 IsViableAnyDepAtomChild(d->_imp->env, d->_imp->current_pde())));
 
@@ -423,7 +421,7 @@ DepList::QueryVisitor::visit(const AnyDepAtom * const a)
     }
 
     result = true;
-    for (std::list<DepAtom::ConstPointer>::const_iterator c(viable_children.begin()),
+    for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
     {
         (*c)->accept(this);
@@ -481,7 +479,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
     Context context("When adding PackageDepAtom '" + stringify(*a) + "':");
 
     /* find already installed things */
-    PackageDatabaseEntryCollection::ConstPointer already_installed(d->_imp->env->package_database()->query(
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed(d->_imp->env->package_database()->query(
                 *a, is_installed_only, qo_order_by_version));
 
     /* are we already on the merge list? */
@@ -501,7 +499,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
 
         if (d->_imp->opts->dependency_tags && d->_imp->current_pde())
             existing_merge_list_entry->tags->insert(DepTagEntry::create()
-                    .tag(DepTag::Pointer(new DependencyDepTag(*d->_imp->current_pde())))
+                    .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*d->_imp->current_pde())))
                     .generation(d->_imp->merge_list_generation));
 
         /* have our deps been merged already, or is this a circular dep? */
@@ -530,7 +528,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
 
     /* find installable candidates, and find the best visible candidate */
     const PackageDatabaseEntry * best_visible_candidate(0);
-    PackageDatabaseEntryCollection::ConstPointer installable_candidates(
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> installable_candidates(
             d->_imp->env->package_database()->query(*a, is_installable_only, qo_order_by_version));
 
     for (PackageDatabaseEntryCollection::ReverseIterator p(installable_candidates->rbegin()),
@@ -631,7 +629,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
             if (! a->use_requirements_ptr())
                 throw AllMaskedError(stringify(*a));
 
-            PackageDatabaseEntryCollection::ConstPointer match_except_reqs(d->_imp->env->package_database()->query(
+            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> match_except_reqs(d->_imp->env->package_database()->query(
                         *a->without_use_requirements(), is_any, qo_whatever));
 
             for (PackageDatabaseEntryCollection::Iterator i(match_except_reqs->begin()),
@@ -653,7 +651,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
 
     SlotName slot(d->_imp->env->package_database()->fetch_repository(best_visible_candidate->repository)->
             version_metadata(best_visible_candidate->name, best_visible_candidate->version)->slot);
-    PackageDatabaseEntryCollection::Pointer already_installed_in_same_slot(
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection> already_installed_in_same_slot(
             new PackageDatabaseEntryCollection::Concrete);
     for (PackageDatabaseEntryCollection::Iterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
@@ -707,7 +705,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         case dl_downgrade_error:
         case dl_downgrade_warning:
             {
-                PackageDatabaseEntryCollection::Pointer are_we_downgrading(
+                std::tr1::shared_ptr<PackageDatabaseEntryCollection> are_we_downgrading(
                         d->_imp->env->package_database()->query(PackageDepAtom(
                                 stringify(a->package()) + ":" + stringify(slot)),
                             is_installed_only, qo_order_by_version));
@@ -744,7 +742,7 @@ DepList::AddVisitor::visit(const UseDepAtom * const a)
     }
     else
     {
-        RepositoryUseInterface * u;
+        RepositoryUseInterface * u(0);
         if ((! d->_imp->current_pde()) || (! ((u = d->_imp->env->package_database()->fetch_repository(
                                 d->_imp->current_pde()->repository)->use_interface))))
             std::for_each(a->begin(), a->end(), accept_visitor(this));
@@ -765,7 +763,7 @@ void
 DepList::AddVisitor::visit(const AnyDepAtom * const a)
 {
     /* annoying requirement: || ( foo? ( ... ) ) resolves to empty if !foo. */
-    std::list<DepAtom::ConstPointer> viable_children;
+    std::list<std::tr1::shared_ptr<const DepAtom> > viable_children;
     std::copy(a->begin(), a->end(), filter_inserter(std::back_inserter(viable_children),
                 IsViableAnyDepAtomChild(d->_imp->env, d->_imp->current_pde())));
 
@@ -782,7 +780,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
 
     /* see if any of our children is already installed. if any is, add it so that
      * any upgrades kick in */
-    for (std::list<DepAtom::ConstPointer>::const_iterator c(viable_children.begin()),
+    for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
     {
         if (d->already_installed(**c))
@@ -794,11 +792,11 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
 
     /* if we have something like || ( a >=b-2 ) and b-1 is installed, try to go for
      * the b-2 bit first */
-    std::list<DepAtom::ConstPointer> pda_children;
+    std::list<std::tr1::shared_ptr<const DepAtom> > pda_children;
     std::copy(viable_children.begin(), viable_children.end(),
             filter_inserter(std::back_inserter(pda_children), IsInterestingPDADepAtomChild(d->_imp->env)));
 
-    for (std::list<DepAtom::ConstPointer>::const_iterator c(pda_children.begin()),
+    for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(pda_children.begin()),
             c_end(pda_children.end()) ; c != c_end ; ++c)
     {
         try
@@ -814,7 +812,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
     }
 
     /* install first available viable option */
-    for (std::list<DepAtom::ConstPointer>::const_iterator c(viable_children.begin()),
+    for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
     {
         try
@@ -845,7 +843,7 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
     Context context("When checking BlockDepAtom '!" + stringify(*a->blocked_atom()) + "':");
 
     PackageDepAtom just_package(a->blocked_atom()->package());
-    PackageDatabaseEntryCollection::ConstPointer already_installed(d->_imp->env->package_database()->query(
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed(d->_imp->env->package_database()->query(
                 just_package, is_installed_only, qo_whatever));
 
     std::list<MergeList::const_iterator> will_be_installed;
@@ -873,10 +871,10 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
     for (PackageDatabaseEntryCollection::Iterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
     {
-        if (! match_package(d->_imp->env, *a->blocked_atom(), *aa))
+        if (! match_package(*d->_imp->env, *a->blocked_atom(), *aa))
             continue;
 
-        VersionMetadata::ConstPointer metadata(d->_imp->env->package_database()->fetch_repository(
+        std::tr1::shared_ptr<const VersionMetadata> metadata(d->_imp->env->package_database()->fetch_repository(
                     aa->repository)->version_metadata(aa->name, aa->version));
         bool replaced(false);
         for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
@@ -932,7 +930,7 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
     for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
             r_end(will_be_installed.end()) ; r != r_end ; ++r)
     {
-        if (! match_package(d->_imp->env, *a->blocked_atom(), (*r)->package))
+        if (! match_package(*d->_imp->env, *a->blocked_atom(), (*r)->package))
             continue;
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
@@ -996,7 +994,7 @@ DepList::ShowSuggestVisitor::visit(const PackageDepAtom * const a)
 {
     Context context("When adding suggested dep '" + stringify(*a) + "':");
 
-    PackageDatabaseEntryCollection::ConstPointer matches(d->_imp->env->package_database()->query(
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(d->_imp->env->package_database()->query(
                 *a, is_installable_only, qo_order_by_version));
     if (matches->empty())
     {
@@ -1026,7 +1024,7 @@ DepList::~DepList()
 {
 }
 
-CountedPtr<DepListOptions, count_policy::ExternalCountTag>
+std::tr1::shared_ptr<DepListOptions>
 DepList::options()
 {
     return _imp->opts;
@@ -1036,22 +1034,22 @@ void
 DepList::clear()
 {
     DepListOptions o(*options());
-    _imp.assign(new Implementation<DepList>(_imp->env, o));
+    _imp.reset(new Implementation<DepList>(_imp->env, o));
 }
 
 void
-DepList::add_in_role(DepAtom::ConstPointer atom, const std::string & role)
+DepList::add_in_role(std::tr1::shared_ptr<const DepAtom> atom, const std::string & role)
 {
     Context context("When adding " + role + ":");
     add(atom);
 }
 
 void
-DepList::add(DepAtom::ConstPointer atom)
+DepList::add(std::tr1::shared_ptr<const DepAtom> atom)
 {
     DepListTransaction transaction(_imp->merge_list, _imp->merge_list_index, _imp->merge_list_generation);
 
-    Save<DepAtom::ConstPointer> save_current_top_level_target(&_imp->current_top_level_target,
+    Save<std::tr1::shared_ptr<const DepAtom> > save_current_top_level_target(&_imp->current_top_level_target,
             _imp->current_top_level_target ? _imp->current_top_level_target : atom);
 
     AddVisitor visitor(this);
@@ -1060,13 +1058,13 @@ DepList::add(DepAtom::ConstPointer atom)
 }
 
 void
-DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
+DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const DepTag> tag)
 {
     Context context("When adding package '" + stringify(p) + "':");
 
     Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position);
 
-    VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
+    std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(
                 p.repository)->version_metadata(p.name, p.version));
 
     /* create our merge list entry. insert pre deps before ourself in the list. insert
@@ -1078,8 +1076,8 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                 .metadata(metadata)
                 .generation(_imp->merge_list_generation)
                 .state(dle_no_deps)
-                .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
-                .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
+                .destinations(std::tr1::shared_ptr<RepositoryNameCollection>(new RepositoryNameCollection::Concrete))
                 .associated_entry(0)
                 .kind(metadata->virtual_interface ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
@@ -1093,7 +1091,7 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
 
     if (_imp->opts->dependency_tags && _imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(DepTag::Pointer(new DependencyDepTag(*_imp->current_pde())))
+                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
                 .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
@@ -1107,17 +1105,17 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
         DepAtomFlattener f(_imp->env, _imp->current_pde(), metadata->ebuild_interface->provide());
         for (DepAtomFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            PackageDepAtom::Pointer pp(new PackageDepAtom("=" + (*i)->text() + "-" + stringify(p.version)));
+            std::tr1::shared_ptr<PackageDepAtom> pp(new PackageDepAtom("=" + (*i)->text() + "-" + stringify(p.version)));
 
             std::pair<MergeListIndex::iterator, MergeListIndex::iterator> z(
                     _imp->merge_list_index.equal_range(pp->package()));
             MergeListIndex::iterator zz(std::find_if(z.first, z.second,
-                MatchDepListEntryAgainstPackageDepAtom(_imp->env, pp.raw_pointer())));
+                MatchDepListEntryAgainstPackageDepAtom(_imp->env, pp.get())));
 
             if (z.first != z.second)
                 continue;
 
-            VersionMetadata::ConstPointer m(0);
+            std::tr1::shared_ptr<const VersionMetadata> m;
 
             if (_imp->env->package_database()->fetch_repository(RepositoryName("virtuals"))->has_version(
                         QualifiedPackageName((*i)->text()), p.version))
@@ -1125,8 +1123,7 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                         QualifiedPackageName((*i)->text()), p.version);
             else
             {
-                VersionMetadata::Pointer mm(0);
-                mm.assign(new FakedVirtualVersionMetadata(metadata->slot,
+                std::tr1::shared_ptr<VersionMetadata> mm(new FakedVirtualVersionMetadata(metadata->slot,
                             PackageDatabaseEntry(p.name, p.version, RepositoryName("virtuals"))));
                 m = mm;
             }
@@ -1137,8 +1134,8 @@ DepList::add_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
                         .metadata(m)
                         .generation(_imp->merge_list_generation)
                         .state(dle_has_all_deps)
-                        .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
-                        .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                        .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
+                        .destinations(std::tr1::shared_ptr<RepositoryNameCollection>(new RepositoryNameCollection::Concrete))
                         .associated_entry(&*_imp->current_merge_list_entry)
                         .kind(dlk_provided)));
             _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
@@ -1194,7 +1191,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
         {
             if (_imp->current_pde())
                 pp.first->second->tags->insert(DepTagEntry::create()
-                        .tag(DepTag::Pointer(new DependencyDepTag(*_imp->current_pde())))
+                        .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
                         .generation(_imp->merge_list_generation));
             return;
         }
@@ -1208,14 +1205,14 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
                         p.repository)->version_metadata(p.name, p.version))
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
-                .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
-                .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
+                .destinations(std::tr1::shared_ptr<RepositoryNameCollection>(new RepositoryNameCollection::Concrete))
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(kind)));
 
     if (_imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(DepTag::Pointer(new DependencyDepTag(*_imp->current_pde())))
+                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
                 .generation(_imp->merge_list_generation));
 
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
@@ -1243,21 +1240,21 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p)
                         p.repository)->version_metadata(p.name, p.version))
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
-                .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
-                .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
+                .destinations(std::tr1::shared_ptr<RepositoryNameCollection>(new RepositoryNameCollection::Concrete))
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(dlk_suggested)));
 
     if (_imp->current_pde())
         our_merge_entry_position->tags->insert(DepTagEntry::create()
-                .tag(DepTag::Pointer(new DependencyDepTag(*_imp->current_pde())))
+                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
                 .generation(_imp->merge_list_generation));
 
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry_position));
 }
 
 void
-DepList::add_predeps(DepAtom::ConstPointer d, const DepListDepsOption opt, const std::string & s)
+DepList::add_predeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOption opt, const std::string & s)
 {
     if (dl_deps_pre == opt || dl_deps_pre_or_post == opt)
     {
@@ -1277,7 +1274,7 @@ DepList::add_predeps(DepAtom::ConstPointer d, const DepListDepsOption opt, const
 }
 
 void
-DepList::add_postdeps(DepAtom::ConstPointer d, const DepListDepsOption opt, const std::string & s)
+DepList::add_postdeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOption opt, const std::string & s)
 {
     if (dl_deps_pre_or_post == opt || dl_deps_post == opt || dl_deps_try_post == opt)
     {
@@ -1309,12 +1306,12 @@ DepList::add_postdeps(DepAtom::ConstPointer d, const DepListDepsOption opt, cons
 }
 
 void
-DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::ConstPointer tag)
+DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const DepTag> tag)
 {
     Context context("When adding installed package '" + stringify(p) + "':");
 
     Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position);
-    VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
+    std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(
                 p.repository)->version_metadata(p.name, p.version));
 
     MergeList::iterator our_merge_entry(_imp->merge_list.insert(_imp->merge_list_insert_position,
@@ -1322,9 +1319,9 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::C
                 .package(p)
                 .metadata(metadata)
                 .generation(_imp->merge_list_generation)
-                .tags(DepListEntryTags::Pointer(new DepListEntryTags::Concrete))
+                .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
-                .destinations(RepositoryNameCollection::Pointer(new RepositoryNameCollection::Concrete))
+                .destinations(std::tr1::shared_ptr<RepositoryNameCollection>(new RepositoryNameCollection::Concrete))
                 .associated_entry(0)
                 .kind(dlk_already_installed)));
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry));
@@ -1336,7 +1333,7 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, DepTag::C
 
     if (_imp->opts->dependency_tags && _imp->current_pde())
         our_merge_entry->tags->insert(DepTagEntry::create()
-                .tag(DepTag::Pointer(new DependencyDepTag(*_imp->current_pde())))
+                .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*_imp->current_pde())))
                 .generation(_imp->merge_list_generation));
 
     Save<MergeList::const_iterator> save_current_merge_list_entry(&_imp->current_merge_list_entry,
@@ -1490,9 +1487,9 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
 }
 
 bool
-DepList::already_installed(DepAtom::ConstPointer atom, const bool) const
+DepList::already_installed(std::tr1::shared_ptr<const DepAtom> atom, const bool) const
 {
-    return already_installed(*atom.raw_pointer());
+    return already_installed(*atom.get());
 }
 
 bool
@@ -1528,11 +1525,11 @@ namespace
         std::unary_function<PackageDatabaseEntry, bool>
     {
         const Environment * const env;
-        DepAtom::ConstPointer target;
+        std::tr1::shared_ptr<const DepAtom> target;
         const PackageDatabaseEntry * dbe;
         bool matched;
 
-        IsTopLevelTarget(const Environment * const e, DepAtom::ConstPointer t) :
+        IsTopLevelTarget(const Environment * const e, std::tr1::shared_ptr<const DepAtom> t) :
             env(e),
             target(t),
             matched(false)
@@ -1560,7 +1557,7 @@ namespace
             if (matched)
                 return;
 
-            if (match_package(env, a, *dbe))
+            if (match_package(*env, *a, *dbe))
                 matched = true;
         }
 

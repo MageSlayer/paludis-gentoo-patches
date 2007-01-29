@@ -51,18 +51,18 @@ FakeRepository::do_install(const QualifiedPackageName &, const VersionSpec &,
 {
 }
 
-FakeRepository::VirtualsCollection::ConstPointer
+std::tr1::shared_ptr<const FakeRepository::VirtualsCollection>
 FakeRepository::virtual_packages() const
 {
     return _virtual_packages;
 }
 
-VersionMetadata::ConstPointer
+std::tr1::shared_ptr<const VersionMetadata>
 FakeRepository::virtual_package_version_metadata(
         const RepositoryVirtualsEntry & p, const VersionSpec & v) const
 {
-    VersionMetadata::ConstPointer m(version_metadata(p.provided_by_atom->package(), v));
-    FakeVirtualVersionMetadata::Pointer result(new FakeVirtualVersionMetadata(
+    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_atom->package(), v));
+    std::tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
                 m->slot, PackageDatabaseEntry(p.provided_by_atom->package(), v, name())));
 
     if (m->license_interface)
@@ -76,7 +76,7 @@ FakeRepository::virtual_package_version_metadata(
 }
 
 void
-FakeRepository::add_virtual_package(const QualifiedPackageName & q, PackageDepAtom::ConstPointer p)
+FakeRepository::add_virtual_package(const QualifiedPackageName & q, std::tr1::shared_ptr<const PackageDepAtom> p)
 {
     _virtual_packages->insert(RepositoryVirtualsEntry(q, p));
 }

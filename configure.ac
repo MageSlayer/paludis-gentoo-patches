@@ -197,6 +197,21 @@ AC_DEFINE_UNQUOTED([HAVE_STD_HASHES], $have_std_hashes, [Do we have std:: hashes
 AC_SUBST([HAVE_STD_HASHES])
 dnl }}}
 
+dnl {{{ tr1 shared pointers
+AC_MSG_CHECKING([for std::tr1::shared_ptr<>])
+AC_COMPILE_IFELSE([
+#include <tr1/memory>
+int main(int, char *[])
+{
+	std::tr1::shared_ptr<int> x(new int(10));
+	return *x;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your compiler doesn't support std::tr1])])
+dnl }}}
+
 need_xml_check=
 
 dnl {{{ we need libebt.

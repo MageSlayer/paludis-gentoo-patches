@@ -67,8 +67,7 @@ PaludisRepositorySoDirCannotDlopenError::what() const throw ()
 namespace paludis
 {
     template<>
-    struct Implementation<RepositoryMaker> :
-        InternalCounted<Implementation<RepositoryMaker> >
+    struct Implementation<RepositoryMaker>
     {
         std::list<void *> dl_opened;
     };

@@ -35,8 +35,7 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<GemsCache> :
-        InternalCounted<Implementation<GemsCache> >
+    struct Implementation<GemsCache>
     {
         std::list<GemsCacheEntry> entries;
     };
@@ -72,7 +71,7 @@ namespace
     };
 
     std::string
-    as_string(YamlNode::ConstPointer n, const std::string & join = "")
+    as_string(std::tr1::shared_ptr<const YamlNode> n, const std::string & join = "")
     {
         AsStringVisitor v;
         v.join = join;
@@ -107,13 +106,13 @@ namespace
     struct RequirementsVisitor :
         YamlNodeVisitorTypes::ConstVisitor
     {
-        VersionRequirements::Pointer r;
+        std::tr1::shared_ptr<VersionRequirements> r;
         bool top_level;
 
         std::string op;
         std::string v;
 
-        RequirementsVisitor(VersionRequirements::Pointer rr) :
+        RequirementsVisitor(std::tr1::shared_ptr<VersionRequirements> rr) :
             r(rr),
             top_level(true)
         {
@@ -190,7 +189,7 @@ namespace
         std::string summary;
         std::string description;
         std::string homepage;
-        VersionRequirements::Pointer required_ruby_version;
+        std::tr1::shared_ptr<VersionRequirements> required_ruby_version;
 
         EntryVisitor(const std::string & _id) :
             id(_id),
@@ -210,9 +209,9 @@ namespace
                 .description(description)
                 .homepage(homepage)
                 .required_ruby_version(required_ruby_version)
-                .authors(SequentialCollection<std::string>::Pointer(0))
-                .dependencies(SequentialCollection<std::string>::Pointer(0))
-                .requirements(SequentialCollection<std::string>::Pointer(0));
+                .authors(std::tr1::shared_ptr<SequentialCollection<std::string> >())
+                .dependencies(std::tr1::shared_ptr<SequentialCollection<std::string> >())
+                .requirements(std::tr1::shared_ptr<SequentialCollection<std::string> >());
         }
 
         void visit(const YamlSequenceNode *) PALUDIS_ATTRIBUTE((noreturn))
@@ -261,10 +260,10 @@ namespace
     {
         using YamlNodeVisitorTypes::ConstVisitor::VisitChildren<TopLevelVisitor, YamlSequenceNode>::visit;
 
-        Implementation<GemsCache>::Pointer imp;
+        Implementation<GemsCache> * imp;
         bool top_level;
 
-        TopLevelVisitor(Implementation<GemsCache>::Pointer p) :
+        TopLevelVisitor(Implementation<GemsCache> * p) :
             imp(p),
             top_level(true)
         {
@@ -317,7 +316,7 @@ GemsCache::GemsCache(const FSEntry & loc) :
 
     YamlDocument doc(loc);
 
-    TopLevelVisitor v(_imp);
+    TopLevelVisitor v(_imp.operator-> ());
     doc.top()->accept(&v);
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -79,21 +79,21 @@ namespace paludis
         /* constructors */
 
         VALUE mask_reasons_to_value(const MaskReasons &);
-        VALUE package_database_to_value(PackageDatabase::Pointer);
+        VALUE package_database_to_value(std::tr1::shared_ptr<PackageDatabase>);
         VALUE package_database_entry_to_value(const PackageDatabaseEntry &);
-        VALUE repository_to_value(Repository::ConstPointer);
+        VALUE repository_to_value(std::tr1::shared_ptr<const Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
-        VALUE version_metadata_to_value(VersionMetadata::ConstPointer);
-        VALUE dep_atom_to_value(DepAtom::ConstPointer);
+        VALUE version_metadata_to_value(std::tr1::shared_ptr<const VersionMetadata>);
+        VALUE dep_atom_to_value(std::tr1::shared_ptr<const DepAtom>);
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
-        VALUE contents_to_value(Contents::ConstPointer);
-        VALUE contents_entry_to_value(ContentsEntry::ConstPointer);
+        VALUE contents_to_value(std::tr1::shared_ptr<const Contents>);
+        VALUE contents_entry_to_value(std::tr1::shared_ptr<const ContentsEntry>);
         VALUE portage_repository_profiles_desc_line_to_value(const PortageRepositoryProfilesDescLine &);
 
         VersionSpec value_to_version_spec(VALUE v);
-        VersionMetadata::ConstPointer value_to_version_metadata(VALUE);
-        PackageDepAtom::ConstPointer value_to_package_dep_atom(VALUE v);
-        DepAtom::ConstPointer value_to_dep_atom(VALUE v);
+        std::tr1::shared_ptr<const VersionMetadata> value_to_version_metadata(VALUE);
+        std::tr1::shared_ptr<const PackageDepAtom> value_to_package_dep_atom(VALUE v);
+        std::tr1::shared_ptr<const DepAtom> value_to_dep_atom(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
         PackageDatabaseEntry value_to_package_database_entry(VALUE v);
         EnvironmentData* value_to_environment_data(VALUE v);
@@ -112,12 +112,12 @@ namespace paludis
         VALUE per_profile_ebuild_check_data_to_value(const qa::PerProfileEbuildCheckData &);
         VALUE profile_check_data_to_value(const qa::ProfileCheckData &);
         VALUE check_result_to_value(const qa::CheckResult &);
-        VALUE package_dir_check_to_value(qa::PackageDirCheck::Pointer);
-        VALUE file_check_to_value(qa::FileCheck::Pointer);
-        VALUE ebuild_check_to_value(qa::EbuildCheck::Pointer);
-        VALUE per_profile_ebuild_check_to_value(qa::PerProfileEbuildCheck::Pointer);
-        VALUE profiles_check_to_value(qa::ProfilesCheck::Pointer);
-        VALUE profile_check_to_value(qa::ProfileCheck::Pointer);
+        VALUE package_dir_check_to_value(std::tr1::shared_ptr<qa::PackageDirCheck>);
+        VALUE file_check_to_value(std::tr1::shared_ptr<qa::FileCheck>);
+        VALUE ebuild_check_to_value(std::tr1::shared_ptr<qa::EbuildCheck>);
+        VALUE per_profile_ebuild_check_to_value(std::tr1::shared_ptr<qa::PerProfileEbuildCheck>);
+        VALUE profiles_check_to_value(std::tr1::shared_ptr<qa::ProfilesCheck>);
+        VALUE profile_check_to_value(std::tr1::shared_ptr<qa::ProfileCheck>);
         VALUE message_to_value(const qa::Message &);
         VALUE metadata_file_to_value(const qa::MetadataFile &);
 #endif
@@ -125,10 +125,10 @@ namespace paludis
         /* registration */
 
         class RegisterRubyClass :
-            public InstantiationPolicy<RegisterRubyClass, instantiation_method::SingletonAsNeededTag>,
+            public InstantiationPolicy<RegisterRubyClass, instantiation_method::SingletonTag>,
             private PrivateImplementationPattern<RegisterRubyClass>
         {
-            friend class InstantiationPolicy<RegisterRubyClass, instantiation_method::SingletonAsNeededTag>;
+            friend class InstantiationPolicy<RegisterRubyClass, instantiation_method::SingletonTag>;
 
             private:
                 RegisterRubyClass();

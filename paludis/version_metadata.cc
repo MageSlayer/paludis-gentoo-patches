@@ -33,25 +33,25 @@ using namespace paludis;
 
 #include <paludis/version_metadata-sr.cc>
 
-DepAtom::ConstPointer
+std::tr1::shared_ptr<const DepAtom>
 VersionMetadataDepsInterface::build_depend() const
 {
     return parser(build_depend_string);
 }
 
-DepAtom::ConstPointer
+std::tr1::shared_ptr<const DepAtom>
 VersionMetadataDepsInterface::run_depend() const
 {
     return parser(run_depend_string);
 }
 
-DepAtom::ConstPointer
+std::tr1::shared_ptr<const DepAtom>
 VersionMetadataDepsInterface::post_depend() const
 {
     return parser(post_depend_string);
 }
 
-DepAtom::ConstPointer
+std::tr1::shared_ptr<const DepAtom>
 VersionMetadataDepsInterface::suggested_depend() const
 {
     return parser(suggested_depend_string);
@@ -72,16 +72,14 @@ VersionMetadata::VersionMetadata(const VersionMetadataBase & base, const Version
 {
 }
 
-DepAtom::ConstPointer
+std::tr1::shared_ptr<const DepAtom>
 VersionMetadataEbuildInterface::provide() const
 {
     return PortageDepParser::parse(provide_string, PortageDepParserPolicy<PackageDepAtom,
             false>::get_instance());
 }
 
-VersionMetadataOriginsInterface::VersionMetadataOriginsInterface() :
-    source(0),
-    binary(0)
+VersionMetadataOriginsInterface::VersionMetadataOriginsInterface()
 {
 }
 
@@ -90,7 +88,7 @@ VersionMetadataLicenseInterface::VersionMetadataLicenseInterface(const ParserFun
 {
 }
 
-DepAtom::ConstPointer
+std::tr1::shared_ptr<const DepAtom>
 VersionMetadataLicenseInterface::license() const
 {
     return parser(license_string);

@@ -9,12 +9,12 @@
 
 using namespace paludis;
 
-DepAtom::ConstPointer
+std::tr1::shared_ptr<const CompositeDepAtom>
 CRANDepParser::parse(const std::string & s)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
 
-    CompositeDepAtom::Pointer result(new AllDepAtom);
+    std::tr1::shared_ptr<CompositeDepAtom> result(new AllDepAtom);
     Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> atom_tokeniser(",");
 
     std::list<std::string> atoms;
@@ -53,7 +53,7 @@ CRANDepParser::parse(const std::string & s)
             atom_string = name;
         else
             atom_string = range + name + "-" + version;
-        PackageDepAtom::Pointer atom(new PackageDepAtom(atom_string));
+        std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(atom_string));
         result->add_child(atom);
     }
 

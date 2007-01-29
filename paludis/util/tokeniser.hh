@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -233,10 +233,10 @@ namespace paludis
      * \ingroup grptokenise
      */
     class PALUDIS_VISIBLE WhitespaceTokeniser :
-        public InstantiationPolicy<WhitespaceTokeniser, instantiation_method::SingletonAtStartupTag>,
+        public InstantiationPolicy<WhitespaceTokeniser, instantiation_method::SingletonTag>,
         public Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag>
     {
-        friend class InstantiationPolicy<WhitespaceTokeniser, instantiation_method::SingletonAtStartupTag>;
+        friend class InstantiationPolicy<WhitespaceTokeniser, instantiation_method::SingletonTag>;
 
         private:
             WhitespaceTokeniser();

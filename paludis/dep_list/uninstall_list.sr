@@ -27,7 +27,7 @@ make_class_UninstallListEntry()
 {
     key package PackageDatabaseEntry
     key skip_uninstall bool
-    key tags "SortedCollection<DepTag::Pointer>::Pointer"
+    key tags "std::tr1::shared_ptr<SortedCollection<std::tr1::shared_ptr<DepTag> > >"
 
     allow_named_args
 

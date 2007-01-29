@@ -145,7 +145,7 @@ LibCStage::build(const StageOptions &) const
 bool
 LibCStage::is_rebuild() const
 {
-    PackageDatabaseEntryCollection::ConstPointer c(
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
             DefaultEnvironment::get_instance()->package_database()->query(
                 *_options.libc, is_installed_only, qo_whatever));
 
@@ -181,7 +181,7 @@ FullStage::build(const StageOptions &) const
 bool
 FullStage::is_rebuild() const
 {
-    PackageDatabaseEntryCollection::ConstPointer c(
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
             DefaultEnvironment::get_instance()->package_database()->query(
                 *_options.gcc, is_installed_only, qo_whatever));
 

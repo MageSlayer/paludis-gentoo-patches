@@ -54,14 +54,13 @@ namespace paludis
     };
 
     template<>
-    struct Implementation<UninstallList> :
-        InternalCounted<Implementation<UninstallList> >
+    struct Implementation<UninstallList>
     {
         const Environment * const env;
         UninstallListOptions options;
         std::list<UninstallListEntry> uninstall_list;
 
-        mutable MakeHashedMap<PackageDatabaseEntry, ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer>::Type
+        mutable MakeHashedMap<PackageDatabaseEntry, std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> >::Type
             dep_collector_cache;
 
         Implementation(const Environment * const e, const UninstallListOptions & o) :
@@ -94,7 +93,7 @@ namespace
         std::unary_function<PackageDatabaseEntry, bool>
     {
         const Environment * const env;
-        DepAtom::ConstPointer world;
+        std::tr1::shared_ptr<const DepAtom> world;
         const PackageDatabaseEntry * dbe;
         bool matched;
 
@@ -126,7 +125,7 @@ namespace
             if (matched)
                 return;
 
-            if (match_package(env, a, *dbe))
+            if (match_package(*env, *a, *dbe))
                 matched = true;
         }
 
@@ -175,7 +174,7 @@ UninstallList::add(const PackageDatabaseEntry & e, const PackageDatabaseEntry * 
                         _imp->uninstall_list.end(), MatchUninstallListEntry(e)))))
     {
         if (t)
-            i->tags->insert(DepTag::Pointer(new DependencyDepTag(*t)));
+            i->tags->insert(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*t)));
 
         return;
     }
@@ -198,10 +197,10 @@ UninstallList::add_unused()
 {
     Context context("When finding unused packages:");
 
-    ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer world(collect_world()),
+    std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> world(collect_world()),
         everything(collect_all_installed());
 
-    ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer
+    std::tr1::shared_ptr<ArbitrarilyOrderedPackageDatabaseEntryCollection>
         world_plus_deps(new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete),
         unused(new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
 
@@ -211,7 +210,7 @@ UninstallList::add_unused()
     while (old_size != world_plus_deps->size())
     {
         old_size = world_plus_deps->size();
-        ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer new_world_deps(collect_depped_upon(world_plus_deps));
+        std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> new_world_deps(collect_depped_upon(world_plus_deps));
         world_plus_deps->insert(new_world_deps->begin(), new_world_deps->end());
     }
 
@@ -247,15 +246,15 @@ UninstallList::add_package(const PackageDatabaseEntry & e, const PackageDatabase
 {
     Context context("When adding package '" + stringify(e) + "' to the uninstall list:");
 
-    VersionMetadata::ConstPointer m(_imp->env->package_database()->fetch_repository(
+    std::tr1::shared_ptr<const VersionMetadata> m(_imp->env->package_database()->fetch_repository(
                 e.repository)->version_metadata(e.name, e.version));
 
     std::list<UninstallListEntry>::iterator i(_imp->uninstall_list.insert(
                 _imp->uninstall_list.end(), UninstallListEntry(
-                    e, m->virtual_interface, SortedCollection<DepTag::Pointer>::Pointer(
-                        new SortedCollection<DepTag::Pointer>::Concrete))));
+                    e, m->virtual_interface, std::tr1::shared_ptr<SortedCollection<std::tr1::shared_ptr<DepTag> > >(
+                        new SortedCollection<std::tr1::shared_ptr<DepTag> >::Concrete))));
     if (t)
-        i->tags->insert(DepTag::Pointer(new DependencyDepTag(*t)));
+        i->tags->insert(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*t)));
 }
 
 void
@@ -269,12 +268,12 @@ UninstallList::move_package_to_end(const PackageDatabaseEntry & e)
         _imp->uninstall_list.splice(_imp->uninstall_list.end(), _imp->uninstall_list, i);
 }
 
-ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer
+std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection>
 UninstallList::collect_all_installed() const
 {
     Context context("When collecting all installed packages:");
 
-    ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer result(
+    std::tr1::shared_ptr<ArbitrarilyOrderedPackageDatabaseEntryCollection> result(
             new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
     for (PackageDatabase::RepositoryIterator i(_imp->env->package_database()->begin_repositories()),
             i_end(_imp->env->package_database()->end_repositories()) ; i != i_end ; ++i)
@@ -282,15 +281,15 @@ UninstallList::collect_all_installed() const
         if (! (*i)->installed_interface)
             continue;
 
-        CategoryNamePartCollection::ConstPointer cats((*i)->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartCollection> cats((*i)->category_names());
         for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
                 c != c_end ; ++c)
         {
-            QualifiedPackageNameCollection::ConstPointer pkgs((*i)->package_names(*c));
+            std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs((*i)->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                     p != p_end ; ++p)
             {
-                VersionSpecCollection::ConstPointer vers((*i)->version_specs(*p));
+                std::tr1::shared_ptr<const VersionSpecCollection> vers((*i)->version_specs(*p));
                 for (VersionSpecCollection::Iterator v(vers->begin()), v_end(vers->end()) ;
                         v != v_end ; ++v)
                     result->insert(PackageDatabaseEntry(*p, *v, (*i)->name()));
@@ -313,7 +312,7 @@ namespace
 
         const Environment * const env;
         const PackageDatabaseEntry pkg;
-        ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer matches;
+        std::tr1::shared_ptr<ArbitrarilyOrderedPackageDatabaseEntryCollection> matches;
 
         DepCollector(const Environment * const ee, const PackageDatabaseEntry & e) :
             env(ee),
@@ -324,7 +323,7 @@ namespace
 
         void visit(const PackageDepAtom * const a)
         {
-            PackageDatabaseEntryCollection::ConstPointer m(env->package_database()->query(
+            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> m(env->package_database()->query(
                         *a, is_installed_only, qo_order_by_version));
             matches->insert(m->begin(), m->end());
         }
@@ -346,12 +345,12 @@ namespace
     };
 }
 
-ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer
-UninstallList::collect_depped_upon(ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer targets) const
+std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection>
+UninstallList::collect_depped_upon(std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> targets) const
 {
     Context context("When collecting depended upon packages:");
 
-    ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer result(
+    std::tr1::shared_ptr<ArbitrarilyOrderedPackageDatabaseEntryCollection> result(
             new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
 
     for (PackageDatabaseEntryCollection::Iterator i(targets->begin()), i_end(targets->end()) ;
@@ -359,12 +358,14 @@ UninstallList::collect_depped_upon(ArbitrarilyOrderedPackageDatabaseEntryCollect
     {
         Context local_context("When collecting depended upon packages for '" + stringify(*i) + "':");
 
-        MakeHashedMap<PackageDatabaseEntry, ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer>::Type::const_iterator
-            cache(_imp->dep_collector_cache.find(*i));
+        MakeHashedMap<PackageDatabaseEntry,
+            std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> >::Type::const_iterator
+                cache(_imp->dep_collector_cache.find(*i));
+
         if (cache == _imp->dep_collector_cache.end())
         {
             DepCollector c(_imp->env, *i);
-            VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
+            std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(
                         i->repository)->version_metadata(i->name, i->version));
             if (metadata->deps_interface)
             {
@@ -374,7 +375,7 @@ UninstallList::collect_depped_upon(ArbitrarilyOrderedPackageDatabaseEntryCollect
                 metadata->deps_interface->suggested_depend()->accept(&c);
             }
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
-                        ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
+                        std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection>(c.matches))).first;
         }
 
         result->insert(cache->second->begin(), cache->second->end());
@@ -389,23 +390,23 @@ UninstallList::add_unused_dependencies()
     Context context("When adding unused dependencies:");
 
     bool added(true);
-    ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
+    std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> everything(collect_all_installed());
     while (added)
     {
         added = false;
 
         /* find packages that're depped upon by anything in our uninstall list */
-        ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer uninstall_list_targets(
+        std::tr1::shared_ptr<ArbitrarilyOrderedPackageDatabaseEntryCollection> uninstall_list_targets(
                 new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
         for (std::list<UninstallListEntry>::const_iterator i(_imp->uninstall_list.begin()),
                 i_end(_imp->uninstall_list.end()) ; i != i_end ; ++i)
             uninstall_list_targets->insert(i->package);
 
-        ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer depped_upon_list(
+        std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> depped_upon_list(
                 collect_depped_upon(uninstall_list_targets));
 
         /* find packages that're depped upon by anything not in our uninstall list */
-        ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer everything_except_uninstall_list_targets(
+        std::tr1::shared_ptr<ArbitrarilyOrderedPackageDatabaseEntryCollection> everything_except_uninstall_list_targets(
                 new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
         std::set_difference(everything->begin(), everything->end(),
                 uninstall_list_targets->begin(), uninstall_list_targets->end(),
@@ -416,11 +417,11 @@ UninstallList::add_unused_dependencies()
                 + join(everything_except_uninstall_list_targets->begin(),
                     everything_except_uninstall_list_targets->end(), " ") + "'");
 
-        ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer depped_upon_not_list(
+        std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> depped_upon_not_list(
                 collect_depped_upon(everything_except_uninstall_list_targets));
 
         /* find unused dependencies */
-        ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer unused_dependencies(
+        std::tr1::shared_ptr<ArbitrarilyOrderedPackageDatabaseEntryCollection> unused_dependencies(
                 new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
         std::set_difference(depped_upon_list->begin(), depped_upon_list->end(),
                 depped_upon_not_list->begin(), depped_upon_not_list->end(), unused_dependencies->inserter(),
@@ -449,18 +450,20 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
 {
     Context context("When adding things that depend upon '" + stringify(e) + "':");
 
-    ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
+    std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> everything(collect_all_installed());
     for (PackageDatabaseEntryCollection::Iterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
     {
         Context local_context("When seeing whether '" + stringify(*i) + "' has a dep:");
 
-        MakeHashedMap<PackageDatabaseEntry, ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer>::Type::const_iterator
-            cache(_imp->dep_collector_cache.find(*i));
+        MakeHashedMap<PackageDatabaseEntry,
+            std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> >::Type::const_iterator
+                cache(_imp->dep_collector_cache.find(*i));
+
         if (cache == _imp->dep_collector_cache.end())
         {
             DepCollector c(_imp->env, *i);
-            VersionMetadata::ConstPointer metadata(_imp->env->package_database()->fetch_repository(
+            std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(
                         i->repository)->version_metadata(i->name, i->version));
             if (metadata->deps_interface)
             {
@@ -470,7 +473,7 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
                 metadata->deps_interface->suggested_depend()->accept(&c);
             }
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
-                        ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer(c.matches))).first;
+                        std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection>(c.matches))).first;
         }
 
         if (cache->second->end() == cache->second->find(e))
@@ -483,14 +486,14 @@ UninstallList::add_dependencies(const PackageDatabaseEntry & e)
     }
 }
 
-ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer
+std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection>
 UninstallList::collect_world() const
 {
     Context local_context("When collecting world packages:");
 
-    ArbitrarilyOrderedPackageDatabaseEntryCollection::Pointer result(
+    std::tr1::shared_ptr<ArbitrarilyOrderedPackageDatabaseEntryCollection> result(
             new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
-    ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer everything(collect_all_installed());
+    std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> everything(collect_all_installed());
 
     IsWorld w(_imp->env);
     for (PackageDatabaseEntryCollection::Iterator i(everything->begin()),

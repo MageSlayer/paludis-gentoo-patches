@@ -28,8 +28,7 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<InstallTask> :
-        InternalCounted<Implementation<InstallTask> >
+    struct Implementation<InstallTask>
     {
         Environment * const env;
         DepList dep_list;
@@ -37,8 +36,8 @@ namespace paludis
         InstallOptions install_options;
 
         std::list<std::string> raw_targets;
-        AllDepAtom::Pointer targets;
-        DepAtom::ConstPointer add_to_world_atom;
+        std::tr1::shared_ptr<AllDepAtom> targets;
+        std::tr1::shared_ptr<const DepAtom> add_to_world_atom;
 
         bool pretend;
         bool preserve_world;
@@ -52,7 +51,6 @@ namespace paludis
             current_dep_list_entry(dep_list.begin()),
             install_options(false, false, ido_none, false),
             targets(new AllDepAtom),
-            add_to_world_atom(0),
             pretend(false),
             preserve_world(false),
             had_set_targets(false),
@@ -84,7 +82,7 @@ InstallTask::~InstallTask()
 void
 InstallTask::clear()
 {
-    _imp->targets.assign(new AllDepAtom);
+    _imp->targets.reset(new AllDepAtom);
     _imp->had_set_targets = false;
     _imp->had_package_targets = false;
     _imp->dep_list.clear();
@@ -96,7 +94,7 @@ InstallTask::add_target(const std::string & target)
 {
     Context context("When adding install target '" + target + "':");
 
-    DepAtom::Pointer s(0);
+    std::tr1::shared_ptr<DepAtom> s;
     std::string modified_target(target);
 
     bool done(false);
@@ -135,7 +133,7 @@ InstallTask::add_target(const std::string & target)
             QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
                         PackageNamePart(target)));
             modified_target = stringify(q);
-            _imp->targets->add_child(DepAtom::Pointer(new PackageDepAtom(q)));
+            _imp->targets->add_child(std::tr1::shared_ptr<DepAtom>(new PackageDepAtom(q)));
         }
     }
 
@@ -299,10 +297,10 @@ InstallTask::execute()
         for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
                 r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
             if ((*r)->installed_interface)
-                ((*r).raw_pointer())->invalidate();
+                ((*r).get())->invalidate();
 
         // look for packages with the same name in the same slot
-        PackageDatabaseEntryCollection::Pointer collision_list(_imp->env->package_database()->query(
+        std::tr1::shared_ptr<PackageDatabaseEntryCollection> collision_list(_imp->env->package_database()->query(
                     PackageDepAtom(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)),
                     is_installed_only, qo_order_by_version));
 

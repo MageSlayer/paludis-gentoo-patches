@@ -42,8 +42,7 @@ namespace paludis
      * \ingroup grplibpaludisargs
      */
     template<>
-    struct Implementation<ArgsHandler> :
-        InternalCounted<Implementation<ArgsHandler> >
+    struct Implementation<ArgsHandler>
     {
         std::list<ArgsGroup *> groups;
         std::list<std::string> parameters;

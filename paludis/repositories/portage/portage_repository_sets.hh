@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -43,8 +43,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PortageRepositorySets :
         private PrivateImplementationPattern<PortageRepositorySets>,
-        private InstantiationPolicy<PortageRepositorySets, instantiation_method::NonCopyableTag>,
-        public InternalCounted<PortageRepositorySets>
+        private InstantiationPolicy<PortageRepositorySets, instantiation_method::NonCopyableTag>
     {
         private:
             PackageDatabaseEntryCollection::Iterator
@@ -63,17 +62,17 @@ namespace paludis
             /**
              * Fetch a package set other than system.
              */
-            DepAtom::Pointer package_set(const SetName & s) const;
+            std::tr1::shared_ptr<DepAtom> package_set(const SetName & s) const;
 
             /**
              * Fetch the security or insecurity set.
              */
-            DepAtom::Pointer security_set(bool insecure) const;
+            std::tr1::shared_ptr<DepAtom> security_set(bool insecure) const;
 
             /**
              * Give a list of all the sets in this repo.
              */
-            SetsCollection::ConstPointer sets_list() const;
+            std::tr1::shared_ptr<const SetsCollection> sets_list() const;
     };
 }
 

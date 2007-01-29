@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_PORTAGE_USE_DESC_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/name.hh>
 
@@ -37,8 +36,7 @@ namespace paludis
      */
     class UseDesc :
         private PrivateImplementationPattern<UseDesc>,
-        private InstantiationPolicy<UseDesc, instantiation_method::NonCopyableTag>,
-        public InternalCounted<UseDesc>
+        private InstantiationPolicy<UseDesc, instantiation_method::NonCopyableTag>
     {
         public:
             ///\name Basic operations

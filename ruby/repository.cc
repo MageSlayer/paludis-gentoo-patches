@@ -48,8 +48,8 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->name()).c_str());
         }
         catch (const std::exception & e)
@@ -69,8 +69,8 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->format()).c_str());
         }
         catch (const std::exception & e)
@@ -90,8 +90,8 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             return (*self_ptr)->has_category_named(CategoryNamePart(StringValuePtr(cat))) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
@@ -115,8 +115,8 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             return (*self_ptr)->has_package_named(value_to_qualified_package_name(name)) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
@@ -136,8 +136,8 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             return (*self_ptr)->has_version(value_to_qualified_package_name(name),
                     value_to_version_spec(version)) ? Qtrue : Qfalse;
         }
@@ -159,17 +159,17 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             if (rb_block_given_p())
             {
-                CategoryNamePartCollection::ConstPointer c((*self_ptr)->category_names());
+                std::tr1::shared_ptr<const CategoryNamePartCollection> c((*self_ptr)->category_names());
                 for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            CategoryNamePartCollection::ConstPointer c((*self_ptr)->category_names());
+            std::tr1::shared_ptr<const CategoryNamePartCollection> c((*self_ptr)->category_names());
             for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
@@ -193,19 +193,19 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             PackageNamePart package(StringValuePtr(pkg));
 
             if (rb_block_given_p())
             {
-                CategoryNamePartCollection::ConstPointer c((*self_ptr)->category_names_containing_package(package));
+                std::tr1::shared_ptr<const CategoryNamePartCollection> c((*self_ptr)->category_names_containing_package(package));
                 for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            CategoryNamePartCollection::ConstPointer c((*self_ptr)->category_names_containing_package(package));
+            std::tr1::shared_ptr<const CategoryNamePartCollection> c((*self_ptr)->category_names_containing_package(package));
             for (CategoryNamePartCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
@@ -229,19 +229,19 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             CategoryNamePart category(StringValuePtr(cat));
 
             if (rb_block_given_p())
             {
-                QualifiedPackageNameCollection::ConstPointer c((*self_ptr)->package_names(category));
+                std::tr1::shared_ptr<const QualifiedPackageNameCollection> c((*self_ptr)->package_names(category));
                 for (QualifiedPackageNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(qualified_package_name_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            QualifiedPackageNameCollection::ConstPointer c((*self_ptr)->package_names(category));
+            std::tr1::shared_ptr<const QualifiedPackageNameCollection> c((*self_ptr)->package_names(category));
             for (QualifiedPackageNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, qualified_package_name_to_value(*i));
             return result;
@@ -265,19 +265,19 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             QualifiedPackageName q = value_to_qualified_package_name(qpn);
 
             if (rb_block_given_p())
             {
-                VersionSpecCollection::ConstPointer c((*self_ptr)->version_specs(q));
+                std::tr1::shared_ptr<const VersionSpecCollection> c((*self_ptr)->version_specs(q));
                 for (VersionSpecCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(version_spec_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            VersionSpecCollection::ConstPointer c((*self_ptr)->version_specs(q));
+            std::tr1::shared_ptr<const VersionSpecCollection> c((*self_ptr)->version_specs(q));
             for (VersionSpecCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, version_spec_to_value(*i));
             return result;
@@ -299,8 +299,8 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             return version_metadata_to_value((*self_ptr)->version_metadata(value_to_qualified_package_name(name),
                         value_to_version_spec(version)));
         }
@@ -411,8 +411,8 @@ namespace
     {
         static VALUE fetch(VALUE self)
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             return ((**self_ptr).*m_) ? self : Qnil;
         }
     };
@@ -426,11 +426,11 @@ namespace
     VALUE
     repository_info(VALUE self, VALUE verbose)
     {
-        Repository::ConstPointer * self_ptr;
-        Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+        std::tr1::shared_ptr<const Repository> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
 
-        RepositoryInfo::ConstPointer * p = new RepositoryInfo::ConstPointer((*self_ptr)->info(Qfalse == verbose));
-        return Data_Wrap_Struct(c_repository_info, 0, &Common<RepositoryInfo::ConstPointer>::free, p);
+        std::tr1::shared_ptr<const RepositoryInfo> * p = new std::tr1::shared_ptr<const RepositoryInfo>((*self_ptr)->info(Qfalse == verbose));
+        return Data_Wrap_Struct(c_repository_info, 0, &Common<std::tr1::shared_ptr<const RepositoryInfo> >::free, p);
     }
 
     /*
@@ -444,15 +444,15 @@ namespace
     {
         try
         {
-            RepositoryInfo::ConstPointer * self_ptr;
-            Data_Get_Struct(self, RepositoryInfo::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const RepositoryInfo> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const RepositoryInfo>, self_ptr);
 
             VALUE result(rb_ary_new());
             for (RepositoryInfo::SectionIterator i((*self_ptr)->begin_sections()),
                     i_end((*self_ptr)->end_sections()) ; i != i_end ; ++i)
             {
-                RepositoryInfoSection::ConstPointer * s(new RepositoryInfoSection::ConstPointer(*i));
-                rb_ary_push(result, Data_Wrap_Struct(c_repository_info_section, 0, &Common<RepositoryInfo::ConstPointer>::free, s));
+                std::tr1::shared_ptr<const RepositoryInfoSection> * s(new std::tr1::shared_ptr<const RepositoryInfoSection>(*i));
+                rb_ary_push(result, Data_Wrap_Struct(c_repository_info_section, 0, &Common<std::tr1::shared_ptr<const RepositoryInfo> >::free, s));
             }
             return result;
         }
@@ -473,8 +473,8 @@ namespace
     {
         try
         {
-            RepositoryInfoSection::ConstPointer * self_ptr;
-            Data_Get_Struct(self, RepositoryInfoSection::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const RepositoryInfoSection> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const RepositoryInfoSection>, self_ptr);
 
             VALUE result(rb_hash_new());
             for (RepositoryInfoSection::KeyValueIterator i((*self_ptr)->begin_kvs()),
@@ -497,8 +497,8 @@ namespace
     VALUE
     repository_info_section_header(VALUE self)
     {
-        RepositoryInfoSection::ConstPointer * self_ptr;
-        Data_Get_Struct(self, RepositoryInfoSection::ConstPointer, self_ptr);
+        std::tr1::shared_ptr<const RepositoryInfoSection> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const RepositoryInfoSection>, self_ptr);
         return rb_str_new2((*self_ptr)->heading().c_str());
     }
 
@@ -513,8 +513,8 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             const RepositoryContentsInterface * const contents_interface ((**self_ptr).contents_interface);
             if (contents_interface)
             {
@@ -547,8 +547,8 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             const RepositoryInstalledInterface * const installed_interface ((**self_ptr).installed_interface);
             if (installed_interface)
             {
@@ -579,8 +579,8 @@ namespace
     {
         try
         {
-            PortageRepository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, PortageRepository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const PortageRepository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const PortageRepository>, self_ptr);
 
             VALUE result(rb_ary_new());
             for (PortageRepository::ProfilesIterator i((*self_ptr)->begin_profiles()),
@@ -607,8 +607,8 @@ namespace
     {
         try
         {
-            PortageRepository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, PortageRepository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const PortageRepository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const PortageRepository>, self_ptr);
 
             PortageRepository::ProfilesIterator p((*self_ptr)->find_profile(FSEntry(StringValuePtr(profile))));
 
@@ -634,8 +634,8 @@ namespace
     {
         try
         {
-            PortageRepository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, PortageRepository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const PortageRepository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const PortageRepository>, self_ptr);
             return rb_str_new2(((*self_ptr)->profile_variable(StringValuePtr(var))).c_str());
         }
         catch (const std::exception & e)
@@ -722,8 +722,8 @@ namespace
         {
             try
             {
-                Repository::ConstPointer * self_ptr;
-                Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+                std::tr1::shared_ptr<const Repository> * self_ptr;
+                Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
                 const RepositoryUseInterface * const use_interface ((**self_ptr).use_interface);
 
                 if (use_interface)
@@ -802,8 +802,8 @@ namespace
         {
             try
             {
-                Repository::ConstPointer * self_ptr;
-                Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+                std::tr1::shared_ptr<const Repository> * self_ptr;
+                Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
                 const RepositoryMaskInterface * const mask_interface ((**self_ptr).mask_interface);
 
                 if (mask_interface)
@@ -838,8 +838,8 @@ namespace
     {
         try
         {
-            Repository::ConstPointer * self_ptr;
-            Data_Get_Struct(self, Repository::ConstPointer, self_ptr);
+            std::tr1::shared_ptr<const Repository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
             if ((*self_ptr)->use_interface) {
                 if (1 == argc || 2 ==argc)
                 {
@@ -999,12 +999,13 @@ VALUE repo_to_value(T_ m, VALUE * klass)
 }
 
 VALUE
-paludis::ruby::repository_to_value(Repository::ConstPointer m)
+paludis::ruby::repository_to_value(std::tr1::shared_ptr<const Repository> m)
 {
-    if (0 != dynamic_cast<const PortageRepository *>(m.raw_pointer()))
-        return repo_to_value<PortageRepository::ConstPointer>(m, &c_portage_repository);
+    if (0 != dynamic_cast<const PortageRepository *>(m.get()))
+        return repo_to_value<std::tr1::shared_ptr<const PortageRepository> >(
+                std::tr1::static_pointer_cast<const PortageRepository>(m), &c_portage_repository);
     else
-        return repo_to_value<Repository::ConstPointer>(m, &c_repository);
+        return repo_to_value<std::tr1::shared_ptr<const Repository> >(m, &c_repository);
 }
 
 VALUE

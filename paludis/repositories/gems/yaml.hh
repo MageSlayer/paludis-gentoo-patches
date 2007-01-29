@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/util/visitor.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -44,8 +45,7 @@ namespace paludis
 
     class YamlNode :
         public virtual VisitableInterface<YamlNodeVisitorTypes>,
-        private InstantiationPolicy<YamlNode, instantiation_method::NonCopyableTag>,
-        public InternalCounted<YamlNode>
+        private InstantiationPolicy<YamlNode, instantiation_method::NonCopyableTag>
     {
         protected:
             YamlNode();
@@ -63,9 +63,6 @@ namespace paludis
             std::string _tag;
 
         public:
-            typedef CountedPtr<const YamlScalarNode, count_policy::InternalCountTag> ConstPointer;
-            typedef CountedPtr<YamlScalarNode, count_policy::InternalCountTag> Pointer;
-
             YamlScalarNode(const std::string &, const std::string &);
 
             std::string value() const
@@ -85,19 +82,16 @@ namespace paludis
         private PrivateImplementationPattern<YamlMappingNode>
     {
         public:
-            typedef CountedPtr<const YamlMappingNode, count_policy::InternalCountTag> ConstPointer;
-            typedef CountedPtr<YamlMappingNode, count_policy::InternalCountTag> Pointer;
-
             YamlMappingNode();
 
-            void add(YamlScalarNode::Pointer, YamlNode::Pointer);
+            void add(std::tr1::shared_ptr<YamlScalarNode>, std::tr1::shared_ptr<YamlNode>);
 
             typedef libwrapiter::ForwardIterator<YamlMappingNode,
-                    const std::pair<YamlScalarNode::Pointer, YamlNode::Pointer> > Iterator;
+                    const std::pair<std::tr1::shared_ptr<YamlScalarNode>, std::tr1::shared_ptr<YamlNode> > > Iterator;
             Iterator begin() const;
             Iterator end() const;
 
-            std::pair<YamlScalarNode::Pointer, YamlNode::Pointer> & back();
+            std::pair<std::tr1::shared_ptr<YamlScalarNode>, std::tr1::shared_ptr<YamlNode> > & back();
 
             bool empty() const
             {
@@ -111,16 +105,13 @@ namespace paludis
         private PrivateImplementationPattern<YamlSequenceNode>
     {
         public:
-            typedef CountedPtr<YamlSequenceNode, count_policy::InternalCountTag> Pointer;
-            typedef CountedPtr<const YamlSequenceNode, count_policy::InternalCountTag> ConstPointer;
-
             YamlSequenceNode();
 
-            typedef libwrapiter::ForwardIterator<YamlSequenceNode, const YamlNode::Pointer> Iterator;
+            typedef libwrapiter::ForwardIterator<YamlSequenceNode, const std::tr1::shared_ptr<YamlNode> > Iterator;
             Iterator begin() const;
             Iterator end() const;
 
-            void add(YamlNode::Pointer);
+            void add(std::tr1::shared_ptr<YamlNode>);
     };
 
     class YamlDocument :
@@ -132,7 +123,7 @@ namespace paludis
             YamlDocument(const FSEntry &);
             ~YamlDocument();
 
-            YamlNode::ConstPointer top() const;
+            std::tr1::shared_ptr<const YamlNode> top() const;
     };
 }
 

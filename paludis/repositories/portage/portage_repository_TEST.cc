@@ -46,13 +46,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo1");
             keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "test-repo-1");
         }
@@ -69,13 +69,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo2");
             keys->insert("profile", "portage_repository_TEST_dir/repo2/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo2");
         }
@@ -92,13 +92,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo3");
             keys->insert("profile", "portage_repository_TEST_dir/repo3/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo3");
         }
@@ -115,13 +115,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo1");
             keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -147,20 +147,20 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo1");
             keys->insert("profile", "portage_repository_TEST_dir/repo1/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                CategoryNamePartCollection::ConstPointer c(repo->category_names());
+                std::tr1::shared_ptr<const CategoryNamePartCollection> c(repo->category_names());
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-one")));
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-two")));
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-three")));
@@ -181,13 +181,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -221,13 +221,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             repo->package_names(CategoryNamePart("cat-one"));
@@ -265,16 +265,16 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
-            QualifiedPackageNameCollection::ConstPointer names(0);
+            std::tr1::shared_ptr<const QualifiedPackageNameCollection> names;
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -318,16 +318,16 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo5");
             keys->insert("profile", "portage_repository_TEST_dir/repo5/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
-            QualifiedPackageNameCollection::ConstPointer names(0);
+            std::tr1::shared_ptr<const QualifiedPackageNameCollection> names;
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -352,13 +352,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -396,20 +396,20 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo4");
             keys->insert("profile", "portage_repository_TEST_dir/repo4/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                VersionSpecCollection::ConstPointer versions(0);
+                std::tr1::shared_ptr<const VersionSpecCollection> versions;
 
                 versions = repo->version_specs(QualifiedPackageName("cat-one/pkg-one"));
                 TEST_CHECK(! versions->empty());
@@ -439,20 +439,20 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo8");
             keys->insert("profile", "portage_repository_TEST_dir/repo8/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                VersionSpecCollection::ConstPointer versions(0);
+                std::tr1::shared_ptr<const VersionSpecCollection> versions;
 
                 versions = repo->version_specs(QualifiedPackageName("cat-one/pkg-one"));
                 TEST_CHECK(! versions->empty());
@@ -482,19 +482,19 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo6");
             keys->insert("profile", "portage_repository_TEST_dir/repo6/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
-                VersionMetadata::ConstPointer m(0);
+                std::tr1::shared_ptr<const VersionMetadata> m;
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
                 TEST_CHECK_EQUAL(m->description, "the-description");
@@ -523,19 +523,19 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo7");
             keys->insert("profile", "portage_repository_TEST_dir/repo7/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
-                VersionMetadata::ConstPointer m(0);
+                std::tr1::shared_ptr<const VersionMetadata> m;
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
                 TEST_CHECK_EQUAL(m->description, "The Description");
@@ -560,19 +560,19 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo7");
             keys->insert("profile", "portage_repository_TEST_dir/repo7/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
-                VersionMetadata::ConstPointer m(0);
+                std::tr1::shared_ptr<const VersionMetadata> m;
 
                 m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-two"), VersionSpec("1"));
                 TEST_CHECK_EQUAL(m->eapi, "UNKNOWN");
@@ -591,13 +591,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo9");
             keys->insert("profile", "portage_repository_TEST_dir/repo9/profiles/profile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
@@ -639,13 +639,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "ebuild");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", "portage_repository_TEST_dir/repo10");
             keys->insert("profiles", "portage_repository_TEST_dir/repo10/profiles/profile/subprofile");
-            PortageRepository::Pointer repo(make_ebuild_repository(
+            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
                         &env, keys));
 
             for (int pass = 1 ; pass <= 2 ; ++pass)

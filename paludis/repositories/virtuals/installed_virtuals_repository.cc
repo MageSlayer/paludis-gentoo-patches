@@ -31,8 +31,7 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<InstalledVirtualsRepository> :
-        InternalCounted<Implementation<InstalledVirtualsRepository> >
+    struct Implementation<InstalledVirtualsRepository>
     {
         const Environment * const env;
 
@@ -69,7 +68,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
     PrivateImplementationPattern<InstalledVirtualsRepository>(
             new Implementation<InstalledVirtualsRepository>(env))
 {
-    RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
+    std::tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
     config_info->add_kv("format", "installed_virtuals");
     _info->add_section(config_info);
 }
@@ -93,7 +92,7 @@ InstalledVirtualsRepository::need_entries() const
         if (! (*r)->provides_interface)
             continue;
 
-        RepositoryProvidesInterface::ProvidesCollection::ConstPointer pp(
+        std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesCollection> pp(
                 (*r)->provides_interface->provided_packages());
 
         for (RepositoryProvidesInterface::ProvidesCollection::Iterator p(
@@ -120,12 +119,12 @@ InstalledVirtualsRepository::need_entries() const
     _imp->has_entries = true;
 }
 
-CountedPtr<Repository>
+std::tr1::shared_ptr<Repository>
 InstalledVirtualsRepository::make_installed_virtuals_repository(
         Environment * const env,
-        AssociativeCollection<std::string, std::string>::ConstPointer)
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >)
 {
-    return CountedPtr<Repository>(new InstalledVirtualsRepository(env));
+    return std::tr1::shared_ptr<Repository>(new InstalledVirtualsRepository(env));
 }
 
 bool
@@ -142,7 +141,7 @@ InstalledVirtualsRepository::do_query_profile_masks(const QualifiedPackageName &
     return false;
 }
 
-VersionMetadata::ConstPointer
+std::tr1::shared_ptr<const VersionMetadata>
 InstalledVirtualsRepository::do_version_metadata(
         const QualifiedPackageName & q,
         const VersionSpec & v) const
@@ -180,11 +179,11 @@ InstalledVirtualsRepository::do_has_version(const QualifiedPackageName & q,
     return p.first != p.second;
 }
 
-VersionSpecCollection::ConstPointer
+std::tr1::shared_ptr<const VersionSpecCollection>
 InstalledVirtualsRepository::do_version_specs(const QualifiedPackageName & q) const
 {
     if (q.category.data() != "virtual")
-        return VersionSpecCollection::Pointer(new VersionSpecCollection::Concrete);
+        return std::tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
 
     need_entries();
 
@@ -193,18 +192,18 @@ InstalledVirtualsRepository::do_version_specs(const QualifiedPackageName & q) co
                 VREntry(q, VersionSpec("0"), QualifiedPackageName("dummy/package"),
                     RepositoryName("dummy_repository")), EntriesNameComparator()));
 
-    VersionSpecCollection::Pointer result(new VersionSpecCollection::Concrete);
+    std::tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
     for ( ; p.first != p.second ; ++p.first)
         result->insert(p.first->version);
 
     return result;
 }
 
-QualifiedPackageNameCollection::ConstPointer
+std::tr1::shared_ptr<const QualifiedPackageNameCollection>
 InstalledVirtualsRepository::do_package_names(const CategoryNamePart & c) const
 {
     if (c.data() != "virtual")
-        return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection::Concrete);
+        return std::tr1::shared_ptr<QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
 
     need_entries();
 
@@ -214,7 +213,7 @@ InstalledVirtualsRepository::do_package_names(const CategoryNamePart & c) const
                     RepositoryName("dummy_repository")), EntriesCategoryComparator()));
 
 
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
+    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
 #if 0
     /// \todo: in theory, this can be a lot faster
     for ( ; p.first != p.second ; ++p.first)
@@ -228,10 +227,10 @@ InstalledVirtualsRepository::do_package_names(const CategoryNamePart & c) const
     return result;
 }
 
-CategoryNamePartCollection::ConstPointer
+std::tr1::shared_ptr<const CategoryNamePartCollection>
 InstalledVirtualsRepository::do_category_names() const
 {
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
+    std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     result->insert(CategoryNamePart("virtual"));
 
 #if 0
@@ -286,7 +285,7 @@ InstalledVirtualsRepository::do_is_licence(const std::string &) const
 void
 InstalledVirtualsRepository::invalidate()
 {
-    _imp.assign(new Implementation<InstalledVirtualsRepository>(_imp->env));
+    _imp.reset(new Implementation<InstalledVirtualsRepository>(_imp->env));
 }
 
 void

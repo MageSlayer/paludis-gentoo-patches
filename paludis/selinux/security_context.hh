@@ -22,7 +22,6 @@
 
 #include <string>
 #include <paludis/util/exception.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
@@ -61,8 +60,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE SecurityContext :
         private PrivateImplementationPattern<SecurityContext>,
-        private InstantiationPolicy<SecurityContext, instantiation_method::NonCopyableTag>,
-        public InternalCounted<SecurityContext>
+        private InstantiationPolicy<SecurityContext, instantiation_method::NonCopyableTag>
     {
         public:
             /**
@@ -87,12 +85,12 @@ namespace paludis
             /**
              * Returns a SecurityContext referring to the current process's context
              */
-            static SecurityContext::ConstPointer current_context();
+            static std::tr1::shared_ptr<const SecurityContext> current_context();
 
             /**
              * Returns a SecurityContext referring to the current filesystem creation context
              */
-            static SecurityContext::ConstPointer fs_create_context();
+            static std::tr1::shared_ptr<const SecurityContext> fs_create_context();
     };
 
     /**
@@ -116,14 +114,14 @@ namespace paludis
     class PALUDIS_VISIBLE FSCreateCon
     {
         private:
-            SecurityContext::ConstPointer _context;
-            SecurityContext::ConstPointer _prev_context;
+            std::tr1::shared_ptr<const SecurityContext> _context;
+            std::tr1::shared_ptr<const SecurityContext> _prev_context;
 
         public:
             /**
              * Constructor
              */
-            FSCreateCon(SecurityContext::ConstPointer);
+            FSCreateCon(std::tr1::shared_ptr<const SecurityContext>);
 
             /**
              * Destructor
@@ -137,7 +135,7 @@ namespace paludis
      * \ingroup grplibpaludisselinux
      */
     class PALUDIS_VISIBLE MatchPathCon :
-        public InstantiationPolicy<MatchPathCon, instantiation_method::SingletonAsNeededTag>
+        public InstantiationPolicy<MatchPathCon, instantiation_method::SingletonTag>
     {
         private:
             bool _good;
@@ -156,7 +154,7 @@ namespace paludis
             /**
              * Retrieve the default context for a given pathname
              */
-            SecurityContext::ConstPointer match(const std::string &, mode_t = 0) const;
+            std::tr1::shared_ptr<const SecurityContext> match(const std::string &, mode_t = 0) const;
 
             /**
              * Did the initialisation succeed?

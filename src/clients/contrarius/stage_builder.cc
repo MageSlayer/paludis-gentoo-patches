@@ -53,32 +53,32 @@ OurStageBuilderTask::on_build_all_pre()
 }
 
 void
-OurStageBuilderTask::on_build_pre(StageBase::ConstPointer s)
+OurStageBuilderTask::on_build_pre(std::tr1::shared_ptr<const StageBase> s)
 {
     cout << colour(cl_heading, "Contents of stage ")
         << colour(cl_stage_short_name, s->short_name()) << endl;
 }
 
 void
-OurStageBuilderTask::on_build_post(StageBase::ConstPointer)
+OurStageBuilderTask::on_build_post(std::tr1::shared_ptr<const StageBase>)
 {
 }
 
 void
-OurStageBuilderTask::on_build_fail(StageBase::ConstPointer s, const StageBuildError & e)
+OurStageBuilderTask::on_build_fail(std::tr1::shared_ptr<const StageBase> s, const StageBuildError & e)
 {
     cout << "Build of stage '" << s->short_name() << "' failed:" << endl;
     cout << "Error: " << e.message() << endl << endl;
 }
 
 void
-OurStageBuilderTask::on_build_succeed(StageBase::ConstPointer s)
+OurStageBuilderTask::on_build_succeed(std::tr1::shared_ptr<const StageBase> s)
 {
     cout << "Build of stage '" << s->short_name() << "' succeeded." << endl << endl;
 }
 
 void
-OurStageBuilderTask::on_build_skipped(StageBase::ConstPointer s)
+OurStageBuilderTask::on_build_skipped(std::tr1::shared_ptr<const StageBase> s)
 {
     cout << "Skipped rebuild of stage '" << s->short_name() << "'" << endl << endl;
 }

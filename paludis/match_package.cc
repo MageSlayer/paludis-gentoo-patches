@@ -28,30 +28,30 @@
 using namespace paludis;
 
 bool
-match_package_internals::do_match(
-        const Environment * const env,
-        const PackageDepAtom * const atom,
-        const PackageDatabaseEntry * const entry)
+paludis::match_package(
+        const Environment & env,
+        const PackageDepAtom & atom,
+        const PackageDatabaseEntry & entry)
 {
-    if (atom->package() != entry->name)
+    if (atom.package() != entry.name)
         return false;
 
-    if (atom->version_requirements_ptr())
-        switch (atom->version_requirements_mode())
+    if (atom.version_requirements_ptr())
+        switch (atom.version_requirements_mode())
         {
             case vr_and:
-                for (VersionRequirements::Iterator r(atom->version_requirements_ptr()->begin()),
-                        r_end(atom->version_requirements_ptr()->end()) ; r != r_end ; ++r)
-                    if (! (((entry->version).*(r->version_operator.as_version_spec_operator()))(r->version_spec)))
+                for (VersionRequirements::Iterator r(atom.version_requirements_ptr()->begin()),
+                        r_end(atom.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                    if (! (((entry.version).*(r->version_operator.as_version_spec_operator()))(r->version_spec)))
                         return false;
                 break;
 
             case vr_or:
                 {
                     bool matched(false);
-                    for (VersionRequirements::Iterator r(atom->version_requirements_ptr()->begin()),
-                            r_end(atom->version_requirements_ptr()->end()) ; r != r_end ; ++r)
-                        if ((((entry->version).*(r->version_operator.as_version_spec_operator()))(r->version_spec)))
+                    for (VersionRequirements::Iterator r(atom.version_requirements_ptr()->begin()),
+                            r_end(atom.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                        if ((((entry.version).*(r->version_operator.as_version_spec_operator()))(r->version_spec)))
                         {
                             matched = true;
                             break;
@@ -66,24 +66,24 @@ match_package_internals::do_match(
                 ;
         }
 
-    if (atom->repository_ptr())
-        if (*atom->repository_ptr() != entry->repository)
+    if (atom.repository_ptr())
+        if (*atom.repository_ptr() != entry.repository)
             return false;
 
-    if (atom->slot_ptr() || atom->use_requirements_ptr())
+    if (atom.slot_ptr() || atom.use_requirements_ptr())
     {
-        VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
-                    entry->repository)->version_metadata(
-                    entry->name, entry->version));
+        std::tr1::shared_ptr<const VersionMetadata> metadata(env.package_database()->fetch_repository(
+                    entry.repository)->version_metadata(
+                    entry.name, entry.version));
 
-        if (atom->slot_ptr())
-            if (*atom->slot_ptr() != SlotName(metadata->slot))
+        if (atom.slot_ptr())
+            if (*atom.slot_ptr() != SlotName(metadata->slot))
                 return false;
 
-        if (atom->use_requirements_ptr())
+        if (atom.use_requirements_ptr())
         {
-            for (UseRequirements::Iterator u(atom->use_requirements_ptr()->begin()),
-                    u_end(atom->use_requirements_ptr()->end()) ; u != u_end ; ++u)
+            for (UseRequirements::Iterator u(atom.use_requirements_ptr()->begin()),
+                    u_end(atom.use_requirements_ptr()->end()) ; u != u_end ; ++u)
             {
                 switch (u->second)
                 {
@@ -91,12 +91,12 @@ match_package_internals::do_match(
                         continue;
 
                     case use_enabled:
-                        if (! env->query_use(u->first, entry))
+                        if (! env.query_use(u->first, &entry))
                             return false;
                         continue;
 
                     case use_disabled:
-                        if (env->query_use(u->first, entry))
+                        if (env.query_use(u->first, &entry))
                             return false;
                         continue;
                 }

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -44,12 +44,12 @@ namespace paludis
             void add_unused_dependencies();
             void add_dependencies(const PackageDatabaseEntry &);
 
-            ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer collect_depped_upon(
-                    const ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer targets) const;
+            std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_depped_upon(
+                    const std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> targets) const;
 
-            ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer collect_all_installed() const;
+            std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_all_installed() const;
 
-            ArbitrarilyOrderedPackageDatabaseEntryCollection::ConstPointer collect_world() const;
+            std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> collect_world() const;
 
         public:
             UninstallList(const Environment * const, const UninstallListOptions &);

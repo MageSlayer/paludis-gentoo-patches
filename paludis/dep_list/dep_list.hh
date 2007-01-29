@@ -58,17 +58,17 @@ namespace paludis
             friend class QueryVisitor;
             friend class ShowSuggestVisitor;
 
-            void add_in_role(DepAtom::ConstPointer, const std::string & role);
+            void add_in_role(std::tr1::shared_ptr<const DepAtom>, const std::string & role);
             bool prefer_installed_over_uninstalled(const PackageDatabaseEntry &,
                     const PackageDatabaseEntry &);
 
-            void add_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
-            void add_already_installed_package(const PackageDatabaseEntry &, DepTag::ConstPointer);
+            void add_package(const PackageDatabaseEntry &, std::tr1::shared_ptr<const DepTag>);
+            void add_already_installed_package(const PackageDatabaseEntry &, std::tr1::shared_ptr<const DepTag>);
             void add_error_package(const PackageDatabaseEntry &, const DepListEntryKind);
             void add_suggested_package(const PackageDatabaseEntry &);
 
-            void add_predeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
-            void add_postdeps(DepAtom::ConstPointer, const DepListDepsOption, const std::string &);
+            void add_predeps(std::tr1::shared_ptr<const DepAtom>, const DepListDepsOption, const std::string &);
+            void add_postdeps(std::tr1::shared_ptr<const DepAtom>, const DepListDepsOption, const std::string &);
 
             bool is_top_level_target(const PackageDatabaseEntry &) const;
 
@@ -85,13 +85,13 @@ namespace paludis
             /**
              * Our options.
              */
-            CountedPtr<DepListOptions, count_policy::ExternalCountTag> options();
+            std::tr1::shared_ptr<DepListOptions> options();
 
             /**
              * Add the packages required to resolve an additional dependency
              * atom.
              */
-            void add(DepAtom::ConstPointer);
+            void add(std::tr1::shared_ptr<const DepAtom>);
 
             /**
              * Clear the list.
@@ -103,7 +103,7 @@ namespace paludis
              *
              * \deprecated Use the one arg form.
              */
-            bool already_installed(DepAtom::ConstPointer, const bool dummy) const
+            bool already_installed(std::tr1::shared_ptr<const DepAtom>, const bool dummy) const
                 PALUDIS_ATTRIBUTE((deprecated));
 
             /**

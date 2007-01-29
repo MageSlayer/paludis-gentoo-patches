@@ -23,7 +23,6 @@
 #include <paludis/dep_tag.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/version_requirements.hh>
@@ -31,6 +30,8 @@
 #include <paludis/version_spec.hh>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
+
+#include <tr1/memory>
 
 /** \file
  * Declarations for the DepAtom classes.
@@ -65,8 +66,7 @@ namespace paludis
      */
     class DepAtom :
         public virtual VisitableInterface<DepAtomVisitorTypes>,
-        private InstantiationPolicy<DepAtom, instantiation_method::NonCopyableTag>,
-        public InternalCounted<DepAtom>
+        private InstantiationPolicy<DepAtom, instantiation_method::NonCopyableTag>
     {
         protected:
             DepAtom();
@@ -130,24 +130,19 @@ namespace paludis
             /**
              * Append a child to our collection.
              */
-            virtual void add_child(DepAtom::ConstPointer);
+            virtual void add_child(std::tr1::shared_ptr<const DepAtom>);
 
             ///\}
 
             ///\name Iterate over our children
             ///\{
 
-            typedef libwrapiter::ForwardIterator<CompositeDepAtom, const DepAtom::ConstPointer> Iterator;
+            typedef libwrapiter::ForwardIterator<CompositeDepAtom, const std::tr1::shared_ptr<const DepAtom> > Iterator;
 
             Iterator begin() const;
 
             Iterator end() const;
 
-            ///\name Pointer types
-            ///\{
-            typedef CountedPtr<CompositeDepAtom, count_policy::InternalCountTag> Pointer;
-
-            typedef CountedPtr<const CompositeDepAtom, count_policy::InternalCountTag> ConstPointer;
             ///\}
     };
 
@@ -229,16 +224,6 @@ namespace paludis
             }
 
             virtual const UseDepAtom * as_use_dep_atom() const;
-
-            /**
-             * A non-constant smart pointer to ourself.
-             */
-            typedef CountedPtr<UseDepAtom, count_policy::InternalCountTag> Pointer;
-
-            /**
-             * A constant smart pointer to ourself.
-             */
-            typedef CountedPtr<const UseDepAtom, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
@@ -281,7 +266,6 @@ namespace paludis
      * \nosubgrouping
      */
     class UseRequirements :
-        public InternalCounted<UseRequirements>,
         private PrivateImplementationPattern<UseRequirements>
     {
         public:
@@ -328,12 +312,12 @@ namespace paludis
     {
         private:
             QualifiedPackageName _package;
-            VersionRequirements::Pointer _version_requirements;
+            std::tr1::shared_ptr<VersionRequirements> _version_requirements;
             VersionRequirementsMode _version_requirements_mode;
-            CountedPtr<SlotName, count_policy::ExternalCountTag> _slot;
-            CountedPtr<RepositoryName, count_policy::ExternalCountTag> _repository;
-            UseRequirements::Pointer _use_requirements;
-            DepTag::ConstPointer _tag;
+            std::tr1::shared_ptr<SlotName> _slot;
+            std::tr1::shared_ptr<RepositoryName> _repository;
+            std::tr1::shared_ptr<UseRequirements> _use_requirements;
+            std::tr1::shared_ptr<const DepTag> _tag;
 
             const PackageDepAtom & operator= (const PackageDepAtom &);
 
@@ -371,7 +355,7 @@ namespace paludis
             /**
              * Fetch the version requirements (may be a zero pointer).
              */
-            VersionRequirements::ConstPointer version_requirements_ptr() const
+            std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const
             {
                 return _version_requirements;
             }
@@ -379,7 +363,7 @@ namespace paludis
             /**
              * Fetch the version requirements (may be a zero pointer).
              */
-            VersionRequirements::Pointer version_requirements_ptr()
+            std::tr1::shared_ptr<VersionRequirements> version_requirements_ptr()
             {
                 return _version_requirements;
             }
@@ -403,7 +387,7 @@ namespace paludis
             /**
              * Fetch the slot name (may be a zero pointer).
              */
-            CountedPtr<SlotName, count_policy::ExternalCountTag> slot_ptr() const
+            std::tr1::shared_ptr<const SlotName> slot_ptr() const
             {
                 return _slot;
             }
@@ -411,7 +395,7 @@ namespace paludis
             /**
              * Fetch the repo name (may be a zero pointer).
              */
-            CountedPtr<RepositoryName, count_policy::ExternalCountTag> repository_ptr() const
+            std::tr1::shared_ptr<const RepositoryName> repository_ptr() const
             {
                 return _repository;
             }
@@ -419,30 +403,15 @@ namespace paludis
             /**
              * Fetch the use requirements (may be a zero pointer).
              */
-            UseRequirements::ConstPointer use_requirements_ptr() const
+            std::tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const
             {
                 return _use_requirements;
             }
 
-            ///\name Pointer types
-            ///\{
-
-            /**
-             * A non-constant smart pointer to ourself.
-             */
-            typedef CountedPtr<PackageDepAtom, count_policy::InternalCountTag> Pointer;
-
-            /**
-             * A constant smart pointer to ourself.
-             */
-            typedef CountedPtr<const PackageDepAtom, count_policy::InternalCountTag> ConstPointer;
-
-            ///\}
-
             /**
              * Fetch our tag.
              */
-            DepTag::ConstPointer tag() const
+            std::tr1::shared_ptr<const DepTag> tag() const
             {
                 return _tag;
             }
@@ -450,7 +419,7 @@ namespace paludis
             /**
              * Set our tag.
              */
-            void set_tag(const DepTag::ConstPointer & s)
+            void set_tag(const std::tr1::shared_ptr<const DepTag> & s)
             {
                 _tag = s;
             }
@@ -458,7 +427,7 @@ namespace paludis
             /**
              * Fetch a copy of ourself without the USE requirements.
              */
-            Pointer without_use_requirements() const;
+            std::tr1::shared_ptr<PackageDepAtom> without_use_requirements() const;
 
             virtual const PackageDepAtom * as_package_dep_atom() const;
     };
@@ -479,21 +448,6 @@ namespace paludis
             ///\{
 
             PlainTextDepAtom(const std::string &);
-
-            ///\}
-
-            ///\name Pointer types
-            ///\{
-
-            /**
-             * A non-constant smart pointer to ourself.
-             */
-            typedef CountedPtr<PlainTextDepAtom, count_policy::InternalCountTag> Pointer;
-
-            /**
-             * A constant smart pointer to ourself.
-             */
-            typedef CountedPtr<const PlainTextDepAtom, count_policy::InternalCountTag> ConstPointer;
 
             ///\}
     };
@@ -544,7 +498,7 @@ namespace paludis
         public Visitable<BlockDepAtom, DepAtomVisitorTypes>
     {
         private:
-            PackageDepAtom::ConstPointer _atom;
+            std::tr1::shared_ptr<const PackageDepAtom> _atom;
 
         public:
             ///\name Basic operations
@@ -553,32 +507,17 @@ namespace paludis
             /**
              * Constructor, with blocking atom.
              */
-            BlockDepAtom(PackageDepAtom::ConstPointer atom);
+            BlockDepAtom(std::tr1::shared_ptr<const PackageDepAtom> atom);
 
             ///\}
 
             /**
              * Fetch the atom we're blocking.
              */
-            PackageDepAtom::ConstPointer blocked_atom() const
+            std::tr1::shared_ptr<const PackageDepAtom> blocked_atom() const
             {
                 return _atom;
             }
-
-            ///\name Pointer operations
-            ///\{
-
-            /**
-             * A non-constant smart pointer to ourself.
-             */
-            typedef CountedPtr<BlockDepAtom, count_policy::InternalCountTag> Pointer;
-
-            /**
-             * A constant smart pointer to ourself.
-             */
-            typedef CountedPtr<const BlockDepAtom, count_policy::InternalCountTag> ConstPointer;
-
-            ///\}
     };
 
 }

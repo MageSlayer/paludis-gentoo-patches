@@ -21,10 +21,10 @@
 #define PALUDIS_GUARD_PALUDIS_CONTENTS_HH 1
 
 #include <paludis/util/visitor.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <string>
+#include <tr1/memory>
 
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
@@ -60,7 +60,6 @@ namespace paludis
      */
     class ContentsEntry :
         private InstantiationPolicy<ContentsEntry, instantiation_method::NonCopyableTag>,
-        public InternalCounted<ContentsEntry>,
         public virtual VisitableInterface<ContentsVisitorTypes>
     {
         private:
@@ -109,10 +108,6 @@ namespace paludis
             ContentsFileEntry(const std::string & name);
 
             ///\}
-
-            typedef CountedPtr<ContentsFileEntry, count_policy::InternalCountTag> Pointer;
-
-            typedef CountedPtr<const ContentsFileEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
@@ -132,10 +127,6 @@ namespace paludis
             ContentsDirEntry(const std::string & name);
 
             ///\}
-
-            typedef CountedPtr<ContentsDirEntry, count_policy::InternalCountTag> Pointer;
-
-            typedef CountedPtr<const ContentsDirEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
@@ -155,10 +146,6 @@ namespace paludis
             ContentsMiscEntry(const std::string & name);
 
             ///\}
-
-            typedef CountedPtr<ContentsMiscEntry, count_policy::InternalCountTag> Pointer;
-
-            typedef CountedPtr<const ContentsMiscEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
@@ -178,10 +165,6 @@ namespace paludis
             ContentsFifoEntry(const std::string & name);
 
             ///\}
-
-            typedef CountedPtr<ContentsFifoEntry, count_policy::InternalCountTag> Pointer;
-
-            typedef CountedPtr<const ContentsFifoEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
@@ -201,10 +184,6 @@ namespace paludis
             ContentsDevEntry(const std::string & name);
 
             ///\}
-
-            typedef CountedPtr<ContentsDevEntry, count_policy::InternalCountTag> Pointer;
-
-            typedef CountedPtr<const ContentsDevEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
@@ -233,10 +212,6 @@ namespace paludis
             {
                 return _target;
             }
-
-            typedef CountedPtr<ContentsSymEntry, count_policy::InternalCountTag> Pointer;
-
-            typedef CountedPtr<const ContentsSymEntry, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**
@@ -247,8 +222,7 @@ namespace paludis
      */
     class Contents :
         private InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>,
-        private PrivateImplementationPattern<Contents>,
-        public InternalCounted<Contents>
+        private PrivateImplementationPattern<Contents>
     {
         public:
             ///\name Basic operations
@@ -260,12 +234,12 @@ namespace paludis
             ///\}
 
             /// Add a new entry.
-            void add(ContentsEntry::ConstPointer c);
+            void add(std::tr1::shared_ptr<const ContentsEntry> c);
 
             ///\name Iterate over our entries
             ///\{
 
-            typedef libwrapiter::ForwardIterator<Contents, const ContentsEntry::ConstPointer> Iterator;
+            typedef libwrapiter::ForwardIterator<Contents, const std::tr1::shared_ptr<const ContentsEntry> > Iterator;
 
             Iterator begin() const;
 

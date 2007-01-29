@@ -26,17 +26,17 @@ namespace paludis
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const;
 
-            virtual CategoryNamePartCollection::ConstPointer do_category_names() const;
+            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
 
-            virtual QualifiedPackageNameCollection::ConstPointer do_package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
                     const CategoryNamePart &) const;
 
-            virtual VersionSpecCollection::ConstPointer do_version_specs(
+            virtual std::tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
                     const QualifiedPackageName &) const;
 
             virtual bool do_has_version(const QualifiedPackageName &, const VersionSpec &) const;
 
-            virtual VersionMetadata::ConstPointer do_version_metadata(
+            virtual std::tr1::shared_ptr<const VersionMetadata> do_version_metadata(
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
@@ -45,23 +45,20 @@ namespace paludis
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
-            virtual DepAtom::Pointer do_package_set(const SetName &) const;
+            virtual std::tr1::shared_ptr<DepAtom> do_package_set(const SetName &) const;
 
-            virtual SetsCollection::ConstPointer sets_list() const;
+            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 
             virtual bool do_sync() const;
 
         public:
-            virtual RepositoryInfo::ConstPointer info(bool verbose) const;
+            virtual std::tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const;
 
             GemsRepository(const GemsRepositoryParams &);
             ~GemsRepository();
 
             virtual void invalidate();
             virtual void regenerate_cache() const;
-
-            typedef CountedPtr<GemsRepository, count_policy::InternalCountTag> Pointer;
-            typedef CountedPtr<const GemsRepository, count_policy::InternalCountTag> ConstPointer;
     };
 }
 

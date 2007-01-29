@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,14 +37,13 @@ namespace paludis
      * \ingroup grpdepatomflattener
      */
     template<>
-    struct Implementation<DepAtomFlattener> :
-        InternalCounted<Implementation<DepAtomFlattener> >
+    struct Implementation<DepAtomFlattener>
     {
         const Environment * const env;
 
         const PackageDatabaseEntry * const pkg;
 
-        DepAtom::ConstPointer a;
+        std::tr1::shared_ptr<const DepAtom> a;
 
         mutable std::list<const StringDepAtom *> atoms;
 
@@ -52,7 +51,7 @@ namespace paludis
 
         Implementation(const Environment * const e,
                 const PackageDatabaseEntry * const p,
-                DepAtom::ConstPointer aa) :
+                std::tr1::shared_ptr<const DepAtom> aa) :
             env(e),
             pkg(p),
             a(aa),
@@ -65,7 +64,7 @@ namespace paludis
 DepAtomFlattener::DepAtomFlattener(
         const Environment * const env,
         const PackageDatabaseEntry * const pkg,
-        DepAtom::ConstPointer a) :
+        std::tr1::shared_ptr<const DepAtom> a) :
     PrivateImplementationPattern<DepAtomFlattener>(new Implementation<DepAtomFlattener>(
                 env, pkg, a))
 {

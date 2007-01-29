@@ -133,16 +133,6 @@ namespace paludis
             {
                 _items.sort(t);
             }
-
-            //\}
-
-            ///\name Pointer types
-            ///\{
-
-            typedef CountedPtr<Concrete, count_policy::InternalCountTag> ConstPointer;
-            typedef CountedPtr<Concrete, count_policy::InternalCountTag> Pointer;
-
-            ///\}
     };
 
     /**
@@ -221,7 +211,7 @@ namespace paludis
                 return 0 != _items.erase(v);
             }
 
-            virtual bool merge(typename SortedCollection<T_, C_>::ConstPointer o)
+            virtual bool merge(typename std::tr1::shared_ptr<const SortedCollection<T_, C_> > o)
             {
                 bool result(true);
                 Iterator o_begin(o->begin()), o_end(o->end());

@@ -37,9 +37,9 @@ namespace
      *
      */
     class MyClass :
-        public InstantiationPolicy<MyClass, instantiation_method::SingletonAsNeededTag>
+        public InstantiationPolicy<MyClass, instantiation_method::SingletonTag>
     {
-        friend class InstantiationPolicy<MyClass, instantiation_method::SingletonAsNeededTag>;
+        friend class InstantiationPolicy<MyClass, instantiation_method::SingletonTag>;
 
         private:
             MyClass()
@@ -56,9 +56,9 @@ namespace
     int MyClass::instances = 0;
 
     class MyClassTwo :
-        public InstantiationPolicy<MyClassTwo, instantiation_method::SingletonAsNeededTag>
+        public InstantiationPolicy<MyClassTwo, instantiation_method::SingletonTag>
     {
-        friend class InstantiationPolicy<MyClassTwo, instantiation_method::SingletonAsNeededTag>;
+        friend class InstantiationPolicy<MyClassTwo, instantiation_method::SingletonTag>;
 
         private:
             MyClassTwo()
@@ -79,29 +79,10 @@ namespace
 
     int MyClassTwo::instances = 0;
 
-    struct MyLoadAtStartupClass :
-        public InstantiationPolicy<MyLoadAtStartupClass, instantiation_method::SingletonAtStartupTag>
-    {
-        friend class InstantiationPolicy<MyLoadAtStartupClass, instantiation_method::SingletonAtStartupTag>;
-
-        private:
-            MyLoadAtStartupClass()
-            {
-                ++instances;
-            }
-
-        public:
-            std::string s;
-
-            static int instances;
-    };
-
-    int MyLoadAtStartupClass::instances = 0;
-
     class MyRecursiveClass :
-        public InstantiationPolicy<MyRecursiveClass, instantiation_method::SingletonAsNeededTag>
+        public InstantiationPolicy<MyRecursiveClass, instantiation_method::SingletonTag>
     {
-        friend class InstantiationPolicy<MyRecursiveClass, instantiation_method::SingletonAsNeededTag>;
+        friend class InstantiationPolicy<MyRecursiveClass, instantiation_method::SingletonTag>;
 
         public:
             std::string s;
@@ -180,32 +161,5 @@ namespace test_cases
             TEST_CHECK_THROWS(MyRecursiveClass::get_instance(), InternalError);
         }
     } test_singleton_pattern_recurse;
-
-    /**
-     * \test Test singleton create at startup behaviour.
-     *
-     */
-    struct SingletonPatternCreateAtStartupTest : TestCase
-    {
-        SingletonPatternCreateAtStartupTest() : TestCase("singleton create at startup test") { }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-
-        void run()
-        {
-            TEST_CHECK_EQUAL(MyLoadAtStartupClass::instances, 1);
-            TEST_CHECK(0 != MyLoadAtStartupClass::get_instance());
-            TEST_CHECK_EQUAL(MyLoadAtStartupClass::instances, 1);
-            TEST_CHECK(MyLoadAtStartupClass::get_instance() == MyLoadAtStartupClass::get_instance());
-            TEST_CHECK(MyLoadAtStartupClass::get_instance()->s.empty());
-            MyLoadAtStartupClass::get_instance()->s = "foo";
-            TEST_CHECK_EQUAL(MyLoadAtStartupClass::get_instance()->s, "foo");
-        }
-    } test_singleton_pattern_create_at_startup;
 }
-
-
 

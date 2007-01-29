@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,8 +36,7 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<RepositoriesPage> :
-        InternalCounted<Implementation<RepositoriesPage> >
+    struct Implementation<RepositoriesPage>
     {
         Gtk::ScrolledWindow repositories_list_scroll;
         RepositoriesList repositories_list;
@@ -152,7 +151,7 @@ RepositoriesPage::_sync_button_clicked()
     if (current_repository.data() == "no-repository")
         return;
 
-    PaludisThread::get_instance()->launch(Sync::Pointer(new Sync(current_repository)));
+    PaludisThread::get_instance()->launch(std::tr1::shared_ptr<Sync>(new Sync(current_repository)));
 }
 
 void
@@ -164,6 +163,6 @@ RepositoriesPage::_sync_all_button_clicked()
 void
 RepositoriesPage::sync_all()
 {
-    PaludisThread::get_instance()->launch(Sync::Pointer(new Sync));
+    PaludisThread::get_instance()->launch(std::tr1::shared_ptr<Sync>(new Sync));
 }
 

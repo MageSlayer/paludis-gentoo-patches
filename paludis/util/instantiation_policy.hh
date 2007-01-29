@@ -58,20 +58,11 @@ namespace paludis
         };
 
         /**
-         * Single instance created at startup.
+         * Single instance.
          *
          * \ingroup grpinstance
          */
-        struct SingletonAtStartupTag
-        {
-        };
-
-        /**
-         * Single instance created when needed.
-         *
-         * \ingroup grpinstance
-         */
-        struct SingletonAsNeededTag
+        struct SingletonTag
         {
         };
     }
@@ -141,58 +132,6 @@ namespace paludis
 
             ///\}
     };
-}
-
-#include <paludis/util/counted_ptr.hh>
-
-namespace paludis
-{
-    /**
-     * InstantiationPolicy: specialisation for singleton classes that are
-     * created at startup.
-     *
-     * \ingroup grpinstance
-     * \nosubgrouping
-     */
-    template<typename OurType_>
-    class PALUDIS_VISIBLE InstantiationPolicy<OurType_, instantiation_method::SingletonAtStartupTag>
-    {
-        private:
-            InstantiationPolicy(const InstantiationPolicy &);
-
-            const InstantiationPolicy & operator= (const InstantiationPolicy &);
-
-            static CountedPtr<OurType_, count_policy::ExternalCountTag> _instance;
-
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            InstantiationPolicy()
-            {
-            }
-
-            ///\}
-
-        public:
-            ///\name Singleton operations
-            ///\{
-
-            /**
-             * Fetch our instance.
-             */
-            static OurType_ * get_instance()
-            {
-                return _instance.raw_pointer();
-            }
-
-            ///\}
-    };
-
-    template <typename OurType_>
-    CountedPtr<OurType_, count_policy::ExternalCountTag>
-    InstantiationPolicy<OurType_, instantiation_method::SingletonAtStartupTag>::_instance(
-            new OurType_);
 
     /**
      * InstantiationPolicy: specialisation for singleton classes that are
@@ -202,7 +141,7 @@ namespace paludis
      * \nosubgrouping
      */
     template<typename OurType_>
-    class PALUDIS_VISIBLE InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>
+    class PALUDIS_VISIBLE InstantiationPolicy<OurType_, instantiation_method::SingletonTag>
     {
         private:
             InstantiationPolicy(const InstantiationPolicy &);
@@ -232,7 +171,7 @@ namespace paludis
 
                     ~DeleteOnDestruction()
                     {
-                        InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>::_delete(* _ptr);
+                        InstantiationPolicy<OurType_, instantiation_method::SingletonTag>::_delete(* _ptr);
                         * _ptr = 0;
                     }
             };
@@ -266,7 +205,7 @@ namespace paludis
 
     template<typename OurType_>
     OurType_ * *
-    InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>::_get_instance_ptr()
+    InstantiationPolicy<OurType_, instantiation_method::SingletonTag>::_get_instance_ptr()
     {
         static OurType_ * instance(0);
         static DeleteOnDestruction delete_instance(&instance);
@@ -276,7 +215,7 @@ namespace paludis
 
     template<typename OurType_>
     OurType_ *
-    InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>::get_instance()
+    InstantiationPolicy<OurType_, instantiation_method::SingletonTag>::get_instance()
     {
         static bool recursive(false);
         OurType_ * * i(_get_instance_ptr());
@@ -295,7 +234,7 @@ namespace paludis
 
     template<typename OurType_>
     void
-    InstantiationPolicy<OurType_, instantiation_method::SingletonAsNeededTag>::destroy_instance()
+    InstantiationPolicy<OurType_, instantiation_method::SingletonTag>::destroy_instance()
     {
         OurType_ * * i(_get_instance_ptr());
         delete *i;

@@ -39,9 +39,9 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DefaultEnvironment :
         public Environment,
-        public InstantiationPolicy<DefaultEnvironment, instantiation_method::SingletonAsNeededTag>
+        public InstantiationPolicy<DefaultEnvironment, instantiation_method::SingletonTag>
     {
-        friend class InstantiationPolicy<DefaultEnvironment, instantiation_method::SingletonAsNeededTag>;
+        friend class InstantiationPolicy<DefaultEnvironment, instantiation_method::SingletonTag>;
 
         private:
             DefaultEnvironment();
@@ -49,10 +49,10 @@ namespace paludis
             ~DefaultEnvironment();
 
         protected:
-            CompositeDepAtom::Pointer local_package_set(const SetName &) const;
+            std::tr1::shared_ptr<CompositeDepAtom> local_package_set(const SetName &) const;
 
         public:
-            virtual SetsCollection::ConstPointer sets_list() const;
+            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 
             virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
 
@@ -75,7 +75,7 @@ namespace paludis
 
             virtual std::string paludis_command() const;
 
-            virtual UseFlagNameCollection::ConstPointer known_use_expand_names(const UseFlagName &,
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(const UseFlagName &,
                     const PackageDatabaseEntry *) const;
 
             virtual void perform_hook(const Hook & hook) const;

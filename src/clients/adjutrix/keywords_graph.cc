@@ -60,13 +60,13 @@ namespace
         cout << "Keywords for " << package << ":" << endl;
         cout << endl;
 
-        VersionSpecCollection::ConstPointer versions(repo.version_specs(package));
+        std::tr1::shared_ptr<const VersionSpecCollection> versions(repo.version_specs(package));
         FindUnusedPackagesTask task(&e, &repo);
-        PackageDatabaseEntryCollection::ConstPointer packages(e.package_database()->query(
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(e.package_database()->query(
                 PackageDepAtom(stringify(package) + "::" + stringify(repo.name())),
                 is_installable_only,
                 qo_group_by_slot));
-        PackageDatabaseEntryCollection::ConstPointer unused(task.execute(package));
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> unused(task.execute(package));
 
         if (packages->empty())
             return;
@@ -74,7 +74,7 @@ namespace
         if (! repo.use_interface)
             throw InternalError(PALUDIS_HERE, "Repository has no use_interface");
 
-        UseFlagNameCollection::ConstPointer arch_flags(repo.use_interface->arch_flags());
+        std::tr1::shared_ptr<const UseFlagNameCollection> arch_flags(repo.use_interface->arch_flags());
         if (arch_flags->empty())
             return;
 
@@ -124,7 +124,7 @@ namespace
         for (PackageDatabaseEntryCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
                 p != p_end ; ++p)
         {
-            VersionMetadata::ConstPointer metadata(repo.version_metadata(package, p->version));
+            std::tr1::shared_ptr<const VersionMetadata> metadata(repo.version_metadata(package, p->version));
             if (! metadata->ebuild_interface)
                 continue;
 
@@ -181,7 +181,7 @@ void do_keywords_graph(const Environment & env)
         if (r->name() == RepositoryName("virtuals"))
             continue;
 
-        CategoryNamePartCollection::ConstPointer cat_names(r->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -192,7 +192,7 @@ void do_keywords_graph(const Environment & env)
                             stringify(*c)))
                     continue;
 
-            QualifiedPackageNameCollection::ConstPointer pkg_names(r->package_names(*c));
+            std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

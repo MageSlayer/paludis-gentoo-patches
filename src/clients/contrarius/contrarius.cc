@@ -88,31 +88,31 @@ int main(int argc, char *argv[])
 
         do
         {
-            builder.queue_stage(StageBase::ConstPointer(new BinutilsStage(contrarius_opts)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new BinutilsStage(contrarius_opts)));
 
             if (stage == "binutils")
                 break;
 
             if (CommandLine::get_instance()->a_headers.specified())
-                builder.queue_stage(StageBase::ConstPointer(new KernelHeadersStage(contrarius_opts)));
+                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(contrarius_opts)));
 
-            builder.queue_stage(StageBase::ConstPointer(new MinimalStage(contrarius_opts)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new MinimalStage(contrarius_opts)));
 
             if (stage == "minimal")
                 break;
 
             if (! CommandLine::get_instance()->a_headers.specified())
-                builder.queue_stage(StageBase::ConstPointer(new KernelHeadersStage(contrarius_opts)));
+                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(contrarius_opts)));
 
             if (stage == "headers")
                 break;
 
-            builder.queue_stage(StageBase::ConstPointer(new LibCStage(contrarius_opts)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new LibCStage(contrarius_opts)));
 
             if (stage == "libc")
                 break;
 
-            builder.queue_stage(StageBase::ConstPointer(new FullStage(contrarius_opts)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new FullStage(contrarius_opts)));
 
         } while (false);
 

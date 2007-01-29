@@ -4,6 +4,7 @@
 #include <paludis/environment/default/default_environment.hh>
 
 #include <iostream>
+#include <tr1/memory>
 #include <cstdlib>
 
 using std::cout;
@@ -14,7 +15,7 @@ int main(int, char *[])
 {
     try
     {
-        paludis::PackageDatabaseEntryCollection::ConstPointer packages(
+        std::tr1::shared_ptr<const paludis::PackageDatabaseEntryCollection> packages(
                 paludis::DefaultEnvironment::get_instance()->package_database()->query(
                     paludis::PackageDepAtom("app-editors/vim"), paludis::is_installed_only, paludis::qo_order_by_version));
 

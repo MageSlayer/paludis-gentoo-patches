@@ -5,10 +5,10 @@ make_class_ContrariusStageOptions()
 {
     key target HostTupleName
 
-    key binutils PackageDepAtom::ConstPointer
-    key gcc PackageDepAtom::ConstPointer
-    key headers PackageDepAtom::ConstPointer
-    key libc PackageDepAtom::ConstPointer
+    key binutils "std::tr1::shared_ptr<const PackageDepAtom>"
+    key gcc "std::tr1::shared_ptr<const PackageDepAtom>"
+    key headers "std::tr1::shared_ptr<const PackageDepAtom>"
+    key libc "std::tr1::shared_ptr<const PackageDepAtom>"
 
     extra_constructors <<END
         ContrariusStageOptions(const HostTupleName & target,

@@ -25,10 +25,10 @@
 
 using namespace paludis;
 
-CountedPtr<PortageRepository>
+std::tr1::shared_ptr<PortageRepository>
 paludis::make_ebuild_repository(
         Environment * const env,
-        AssociativeCollection<std::string, std::string>::ConstPointer m)
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
 {
     std::string repo_file(m->end() == m->find("repo_file") ? std::string("?") :
             m->find("repo_file")->second);
@@ -39,7 +39,7 @@ paludis::make_ebuild_repository(
     if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
         throw PortageRepositoryConfigurationError("Key 'location' not specified or empty");
 
-    FSEntryCollection::Pointer profiles(new FSEntryCollection::Concrete);
+    std::tr1::shared_ptr<FSEntryCollection> profiles(new FSEntryCollection::Concrete);
     if (m->end() != m->find("profiles"))
         WhitespaceTokeniser::get_instance()->tokenise(m->find("profiles")->second,
                 create_inserter<FSEntry>(std::back_inserter(*profiles)));
@@ -56,7 +56,7 @@ paludis::make_ebuild_repository(
     if (profiles->empty())
         throw PortageRepositoryConfigurationError("No profiles have been specified");
 
-    FSEntryCollection::Pointer eclassdirs(new FSEntryCollection::Concrete);
+    std::tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
     if (m->end() != m->find("eclassdirs"))
         WhitespaceTokeniser::get_instance()->tokenise(m->find("eclassdirs")->second,
                 create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
@@ -135,7 +135,7 @@ paludis::make_ebuild_repository(
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
-    return CountedPtr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
+    return std::tr1::shared_ptr<PortageRepository>(new PortageRepository(PortageRepositoryParams::create()
                 .entry_format("ebuild")
                 .environment(env)
                 .location(location)
@@ -155,10 +155,10 @@ paludis::make_ebuild_repository(
                 .buildroot(buildroot)));
 }
 
-CountedPtr<Repository>
+std::tr1::shared_ptr<Repository>
 paludis::make_ebuild_repository_wrapped(
         Environment * const env,
-        AssociativeCollection<std::string, std::string>::ConstPointer m)
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
 {
     return make_ebuild_repository(env, m);
 }

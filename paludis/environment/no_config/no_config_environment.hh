@@ -78,8 +78,8 @@ namespace paludis
              */
             void set_accept_unstable(const bool value);
 
-            CountedPtr<PortageRepository> portage_repository();
-            CountedPtr<const PortageRepository> portage_repository() const;
+            std::tr1::shared_ptr<PortageRepository> portage_repository();
+            std::tr1::shared_ptr<const PortageRepository> portage_repository() const;
     };
 }
 

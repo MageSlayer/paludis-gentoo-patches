@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -44,11 +44,11 @@ namespace
 {
     typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
     typedef MakeHashedMap<std::string, std::string>::Type EnvironmentVariablesMap;
-    typedef MakeHashedMap<QualifiedPackageName, PackageDepAtom::ConstPointer>::Type VirtualsMap;
-    typedef MakeHashedMap<QualifiedPackageName, std::list<PackageDepAtom::ConstPointer> >::Type PackageMaskMap;
+    typedef MakeHashedMap<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> >::Type VirtualsMap;
+    typedef MakeHashedMap<QualifiedPackageName, std::list<std::tr1::shared_ptr<const PackageDepAtom> > >::Type PackageMaskMap;
 
     typedef MakeHashedMap<UseFlagName, bool>::Type FlagStatusMap;
-    typedef std::list<std::pair<PackageDepAtom::ConstPointer, FlagStatusMap> > PackageFlagStatusMapList;
+    typedef std::list<std::pair<std::tr1::shared_ptr<const PackageDepAtom>, FlagStatusMap> > PackageFlagStatusMapList;
 
     struct StackedValues
     {
@@ -78,8 +78,7 @@ namespace paludis
      * \see PortageRepositoryProfile
      */
     template<>
-    class Implementation<PortageRepositoryProfile> :
-        public InternalCounted<PortageRepositoryProfile>
+    class Implementation<PortageRepositoryProfile>
     {
         private:
             void load_profile_directory_recursively(const FSEntry & dir);
@@ -119,8 +118,8 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            AllDepAtom::Pointer system_packages;
-            GeneralSetDepTag::Pointer system_tag;
+            std::tr1::shared_ptr<AllDepAtom> system_packages;
+            std::tr1::shared_ptr<GeneralSetDepTag> system_tag;
 
             ///\}
 
@@ -360,7 +359,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
                 continue;
 
             Context context_atom("When parsing '" + *i + "':");
-            PackageDepAtom::Pointer atom(new PackageDepAtom(i->substr(1)));
+            std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(i->substr(1)));
             atom->set_tag(system_tag);
             system_packages->add_child(atom);
         }
@@ -383,7 +382,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 
             QualifiedPackageName v(tokens[0]);
             virtuals.erase(v);
-            virtuals.insert(std::make_pair(v, PackageDepAtom::Pointer(new PackageDepAtom(tokens[1]))));
+            virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(tokens[1]))));
         }
     }
     catch (const NameError & e)
@@ -400,7 +399,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 
         try
         {
-            PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
+            std::tr1::shared_ptr<const PackageDepAtom> a(new PackageDepAtom(*line));
             package_mask[a->package()].push_back(a);
         }
         catch (const NameError & e)
@@ -466,7 +465,7 @@ Implementation<PortageRepositoryProfile>::load_atom_use_file(const FSEntry & fil
 
         try
         {
-            PackageDepAtom::ConstPointer atom(new PackageDepAtom(*tokens.begin()));
+            std::tr1::shared_ptr<const PackageDepAtom> atom(new PackageDepAtom(*tokens.begin()));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(atom, FlagStatusMap())));
 
             for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
@@ -569,7 +568,7 @@ PortageRepositoryProfile::use_masked(const UseFlagName & u,
             for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
                     g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
             {
-                if (! match_package(_imp->env, g->first, e))
+                if (! match_package(*_imp->env, *g->first, *e))
                     continue;
 
                 FlagStatusMap::const_iterator h(g->second.find(u));
@@ -597,7 +596,7 @@ PortageRepositoryProfile::use_forced(const UseFlagName & u,
             for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
                     g_end(i->package_use_force.end()) ; g != g_end ; ++g)
             {
-                if (! match_package(_imp->env, g->first, e))
+                if (! match_package(*_imp->env, *g->first, *e))
                     continue;
 
                 FlagStatusMap::const_iterator h(g->second.find(u));
@@ -624,7 +623,7 @@ PortageRepositoryProfile::use_state_ignoring_masks(const UseFlagName & u,
             for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
                     g_end(i->package_use.end()) ; g != g_end ; ++g)
             {
-                if (! match_package(_imp->env, g->first, e))
+                if (! match_package(*_imp->env, *g->first, *e))
                     continue;
 
                 FlagStatusMap::const_iterator h(g->second.find(u));
@@ -653,7 +652,7 @@ PortageRepositoryProfile::environment_variable(const std::string & s) const
     }
 }
 
-AllDepAtom::Pointer
+std::tr1::shared_ptr<AllDepAtom>
 PortageRepositoryProfile::system_packages() const
 {
     return _imp->system_packages;
@@ -705,9 +704,9 @@ PortageRepositoryProfile::profile_masked(const QualifiedPackageName & n,
     else
     {
         PackageDatabaseEntry dbe(n, v, r);
-        for (std::list<PackageDepAtom::ConstPointer>::const_iterator k(rr->second.begin()),
+        for (std::list<std::tr1::shared_ptr<const PackageDepAtom> >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
-            if (match_package(_imp->env, **k, dbe))
+            if (match_package(*_imp->env, **k, dbe))
                 return true;
     }
 

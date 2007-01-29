@@ -79,7 +79,7 @@ namespace paludis
     typedef MakeHashedMap<std::string, std::list<std::string> >::Type MirrorMap;
 
     /// Map for metadata.
-    typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, VersionMetadata::Pointer>::Type MetadataMap;
+    typedef MakeHashedMap<std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<VersionMetadata> >::Type MetadataMap;
 
     /**
      * Implementation data for a CRANRepository.
@@ -87,8 +87,7 @@ namespace paludis
      * \ingroup grpportagerepository
      */
     template <>
-    struct Implementation<CRANRepository> :
-        InternalCounted<Implementation<CRANRepository> >
+    struct Implementation<CRANRepository>
     {
         CRANRepositoryParams params;
 
@@ -187,7 +186,7 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             "cran"),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p))
 {
-    RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
+    std::tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
 
     config_info->add_kv("location", stringify(_imp->location));
     config_info->add_kv("distdir", stringify(_imp->distdir));
@@ -227,18 +226,18 @@ CRANRepository::do_has_package_named(const QualifiedPackageName & q) const
     return _imp->package_names.end() != _imp->package_names.find(q);
 }
 
-CategoryNamePartCollection::ConstPointer
+std::tr1::shared_ptr<const CategoryNamePartCollection>
 CRANRepository::do_category_names() const
 {
     Context context("When fetching category names in " + stringify(name()) + ":");
 
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
+    std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     result->insert(CategoryNamePart("cran"));
 
     return result;
 }
 
-QualifiedPackageNameCollection::ConstPointer
+std::tr1::shared_ptr<const QualifiedPackageNameCollection>
 CRANRepository::do_package_names(const CategoryNamePart & c) const
 {
     Context context("When fetching package names in category '" + stringify(c)
@@ -246,7 +245,7 @@ CRANRepository::do_package_names(const CategoryNamePart & c) const
 
     need_packages();
 
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
+    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
     if (! do_has_category_named(c))
         return result;
 
@@ -257,7 +256,7 @@ CRANRepository::do_package_names(const CategoryNamePart & c) const
     return result;
 }
 
-VersionSpecCollection::ConstPointer
+std::tr1::shared_ptr<const VersionSpecCollection>
 CRANRepository::do_version_specs(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
@@ -265,7 +264,7 @@ CRANRepository::do_version_specs(const QualifiedPackageName & n) const
 
     need_packages();
 
-    VersionSpecCollection::Pointer result(new VersionSpecCollection::Concrete);
+    std::tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
     if (_imp->version_specs.end() != _imp->version_specs.find(n))
         result->insert(_imp->version_specs.find(n)->second);
 
@@ -384,7 +383,7 @@ CRANRepository::fetch_repo_name(const std::string & location)
     return RepositoryName("cran-" + modified_location);
 }
 
-VersionMetadata::ConstPointer
+std::tr1::shared_ptr<const VersionMetadata>
 CRANRepository::do_version_metadata(
         const QualifiedPackageName & q, const VersionSpec & v) const
 {
@@ -398,7 +397,7 @@ CRANRepository::do_version_metadata(
     if (! has_version(q, v))
         throw NoSuchPackageError(stringify(PackageDatabaseEntry(q, v, name())));
 
-    VersionMetadata::Pointer result(new CRANVersionMetadata(false));
+    std::tr1::shared_ptr<VersionMetadata> result(new CRANVersionMetadata(false));
 
     FSEntry d(_imp->location);
     PackageNamePart p(q.package);
@@ -416,7 +415,7 @@ CRANRepository::do_version_metadata(
         Log::get_instance()->message(ll_warning, lc_no_context, "has_version failed for request for '" +
                 stringify(q) + "-" + stringify(v) + "' in repository '" +
                 stringify(name()) + "': File '" + n + ".DESCRIPTION' not present.");
-        result.assign(new CRANVersionMetadata(false));
+        result.reset(new CRANVersionMetadata(false));
         result->eapi = "UNKNOWN";
     }
 
@@ -424,10 +423,10 @@ CRANRepository::do_version_metadata(
     return result;
 }
 
-CountedPtr<Repository>
+std::tr1::shared_ptr<Repository>
 CRANRepository::make_cran_repository(
         Environment * const env,
-        AssociativeCollection<std::string, std::string>::ConstPointer m)
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
 {
     Context context("When making CRAN repository from repo_file '" +
             (m->end() == m->find("repo_file") ? std::string("?") : m->find("repo_file")->second) + "':");
@@ -460,7 +459,7 @@ CRANRepository::make_cran_repository(
     if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
         root = "/";
 
-    return CountedPtr<Repository>(new CRANRepository(CRANRepositoryParams::create()
+    return std::tr1::shared_ptr<Repository>(new CRANRepository(CRANRepositoryParams::create()
                 .environment(env)
                 .location(location)
                 .distdir(distdir)
@@ -489,7 +488,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
 {
     PackageNamePart pn(q.package);
     CategoryNamePart c("cran");
-    VersionMetadata::ConstPointer vm(do_version_metadata(q, vn));
+    std::tr1::shared_ptr<const VersionMetadata> vm(do_version_metadata(q, vn));
 
     if (vm->cran_interface->is_bundle_member)
     {
@@ -564,7 +563,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     return;
 }
 
-DepAtom::Pointer
+std::tr1::shared_ptr<DepAtom>
 CRANRepository::do_package_set(const SetName & s) const
 {
     if ("base" == s.data())
@@ -573,18 +572,18 @@ CRANRepository::do_package_set(const SetName & s) const
          * \todo Implement system as all package which are installed
          * by dev-lang/R by default.
          */
-        return AllDepAtom::Pointer(new AllDepAtom);
+        return std::tr1::shared_ptr<AllDepAtom>(new AllDepAtom);
     }
     else
-        return DepAtom::Pointer(0);
+        return std::tr1::shared_ptr<DepAtom>();
 }
 
-SetsCollection::ConstPointer
+std::tr1::shared_ptr<const SetsCollection>
 CRANRepository::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    SetsCollection::Pointer result(new SetsCollection::Concrete);
+    std::tr1::shared_ptr<SetsCollection> result(new SetsCollection::Concrete);
     result->insert(SetName("base"));
     return result;
 }
@@ -613,6 +612,6 @@ CRANRepository::do_sync() const
 void
 CRANRepository::invalidate()
 {
-    _imp.assign(new Implementation<CRANRepository>(_imp->params));
+    _imp.reset(new Implementation<CRANRepository>(_imp->params));
 }
 

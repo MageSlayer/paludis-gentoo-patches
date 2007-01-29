@@ -6,13 +6,13 @@ make_class_PortageRepositoryParams()
     key entry_format std::string
     key environment "Environment *"
     key location FSEntry
-    key profiles FSEntryCollection::ConstPointer
+    key profiles "std::tr1::shared_ptr<const FSEntryCollection>"
     key cache FSEntry
     key write_cache FSEntry
     key names_cache FSEntry
     key distdir FSEntry
     key pkgdir FSEntry
-    key eclassdirs FSEntryCollection::ConstPointer
+    key eclassdirs "std::tr1::shared_ptr<const FSEntryCollection>"
     key setsdir FSEntry
     key securitydir FSEntry
     key newsdir FSEntry

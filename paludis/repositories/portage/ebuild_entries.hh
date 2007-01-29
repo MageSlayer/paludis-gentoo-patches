@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,7 +45,7 @@ namespace paludis
         private PrivateImplementationPattern<EbuildEntries>
     {
         public:
-            static EbuildEntries::Pointer
+            static std::tr1::shared_ptr<PortageRepositoryEntries>
                 make_ebuild_entries(const Environment * const,
                         PortageRepository * const, const PortageRepositoryParams &);
 
@@ -55,15 +55,15 @@ namespace paludis
 
             virtual ~EbuildEntries();
 
-            virtual VersionMetadata::Pointer generate_version_metadata(const QualifiedPackageName &,
+            virtual std::tr1::shared_ptr<VersionMetadata> generate_version_metadata(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
             virtual std::string get_environment_variable(const QualifiedPackageName &,
                     const VersionSpec &, const std::string & var,
-                    PortageRepositoryProfile::ConstPointer) const;
+                    std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
 
             virtual void install(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &, PortageRepositoryProfile::ConstPointer) const;
+                    const InstallOptions &, std::tr1::shared_ptr<const PortageRepositoryProfile>) const;
     };
 }
 

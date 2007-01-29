@@ -88,17 +88,16 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
         {
             PackageDatabaseEntry ee(e.name, e.version,
                     e.environment->package_database()->favourite_repository());
-            VersionMetadata::ConstPointer metadata(
+            std::tr1::shared_ptr<const VersionMetadata> metadata(
                     e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
 
             std::string license(metadata->license_interface->license_string);
 
-            DepAtom::ConstPointer license_parts(0);
+            std::tr1::shared_ptr<const DepAtom> license_parts;
             try
             {
-                license_parts = PortageDepParser::parse(license,
-                        PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance());
+                license_parts = metadata->license_interface->license();
 
                 Checker checker(result, e.environment);
                 license_parts->accept(&checker);

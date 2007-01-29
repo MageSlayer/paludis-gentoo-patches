@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SEQUENTIAL_COLLECTION_HH
 #define PALUDIS_GUARD_PALUDIS_SEQUENTIAL_COLLECTION_HH 1
 
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <libwrapiter/libwrapiter.hh>
 #include <iterator>
 #include <functional>
+#include <tr1/memory>
 
 /** \file
  * Various wrappers around collections of items, for convenience and
@@ -48,7 +48,6 @@ namespace paludis
     template <typename T_>
     class PALUDIS_VISIBLE SequentialCollection :
         private InstantiationPolicy<SequentialCollection<T_>, instantiation_method::NonCopyableTag>,
-        public InternalCounted<SequentialCollection<T_> >,
         public std::iterator<typename std::iterator_traits<
             typename libwrapiter::ForwardIterator<SequentialCollection<T_>, const T_> >::iterator_category, T_>
     {
@@ -158,7 +157,6 @@ namespace paludis
     template <typename T_, typename C_ = std::less<T_> >
     class PALUDIS_VISIBLE SortedCollection :
         private InstantiationPolicy<SortedCollection<T_, C_>, instantiation_method::NonCopyableTag>,
-        public InternalCounted<SortedCollection<T_, C_> >,
         public std::iterator<typename std::iterator_traits<
             typename libwrapiter::ForwardIterator<SortedCollection<T_, C_>, const T_> >::iterator_category, T_>
     {
@@ -241,7 +239,7 @@ namespace paludis
             /**
              * Insert all items from another container.
              */
-            virtual bool merge(typename SortedCollection<T_, C_>::ConstPointer o) = 0;
+            virtual bool merge(typename std::tr1::shared_ptr<const SortedCollection<T_, C_> > o) = 0;
 
             /**
              * Our insert iterator type.
@@ -283,7 +281,6 @@ namespace paludis
     template <typename K_, typename V_>
     class PALUDIS_VISIBLE AssociativeCollection :
         private InstantiationPolicy<AssociativeCollection<K_, V_>, instantiation_method::NonCopyableTag>,
-        public InternalCounted<AssociativeCollection<K_, V_> >,
         public std::iterator<typename std::iterator_traits<
             typename libwrapiter::ForwardIterator<AssociativeCollection<K_, V_>,
             const std::pair<const K_, V_> > >::iterator_category, const std::pair<const K_, V_> >

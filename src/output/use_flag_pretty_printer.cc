@@ -44,7 +44,7 @@ UseFlagPrettyPrinter::~UseFlagPrettyPrinter()
 
 std::string::size_type
 UseFlagPrettyPrinter::use_expand_delim_pos(const UseFlagName & u,
-        const UseFlagNameCollection::ConstPointer c) const
+        const std::tr1::shared_ptr<const UseFlagNameCollection> c) const
 {
     for (UseFlagNameCollection::Iterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
         if (0 == u.data().compare(0, i->data().length(), i->data(), 0, i->data().length()))
@@ -58,7 +58,7 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
 {
     std::set<UseFlagName> iuse, old_iuse;
 
-    VersionMetadata::ConstPointer metadata(environment()->package_database()->
+    std::tr1::shared_ptr<const VersionMetadata> metadata(environment()->package_database()->
             fetch_repository(pkg.repository)->version_metadata(pkg.name, pkg.version));
 
     if (! metadata->ebuild_interface)
@@ -69,7 +69,7 @@ UseFlagPrettyPrinter::print_package_flags(const PackageDatabaseEntry & pkg,
 
     if (old_pkg)
     {
-        VersionMetadata::ConstPointer old_metadata(environment()->package_database()->
+        std::tr1::shared_ptr<const VersionMetadata> old_metadata(environment()->package_database()->
                 fetch_repository(old_pkg->repository)->version_metadata(old_pkg->name, old_pkg->version));
         if (old_metadata->ebuild_interface)
             WhitespaceTokeniser::get_instance()->tokenise(old_metadata->ebuild_interface->iuse,
@@ -264,25 +264,25 @@ UseFlagPrettyPrinter::environment() const
     return _env;
 }
 
-UseFlagNameCollection::ConstPointer
+std::tr1::shared_ptr<const UseFlagNameCollection>
 UseFlagPrettyPrinter::new_flags() const
 {
     return _new_flags;
 }
 
-UseFlagNameCollection::ConstPointer
+std::tr1::shared_ptr<const UseFlagNameCollection>
 UseFlagPrettyPrinter::changed_flags() const
 {
     return _changed_flags;
 }
 
-UseFlagNameCollection::ConstPointer
+std::tr1::shared_ptr<const UseFlagNameCollection>
 UseFlagPrettyPrinter::unchanged_flags() const
 {
     return _unchanged_flags;
 }
 
-UseFlagNameCollection::ConstPointer
+std::tr1::shared_ptr<const UseFlagNameCollection>
 UseFlagPrettyPrinter::expand_prefixes() const
 {
     return _expand_prefixes;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,8 +34,7 @@ namespace paludis
     typedef MakeHashedMap<PackageNamePart, std::list<CategoryNamePart> >::Type NameCacheMap;
 
     template<>
-    struct Implementation<RepositoryNameCache> :
-        InternalCounted<Implementation<RepositoryNameCache> >
+    struct Implementation<RepositoryNameCache>
     {
         const FSEntry location;
         const Repository * const repo;
@@ -65,13 +64,13 @@ RepositoryNameCache::~RepositoryNameCache()
 {
 }
 
-CategoryNamePartCollection::ConstPointer
+std::tr1::shared_ptr<const CategoryNamePartCollection>
 RepositoryNameCache::category_names_containing_package(const PackageNamePart & p) const
 {
     if (! usable())
-        return CategoryNamePartCollection::ConstPointer(0);
+        return std::tr1::shared_ptr<const CategoryNamePartCollection>();
 
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
+    std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     NameCacheMap::iterator r(_imp->name_cache_map.find(p));
 
     if (_imp->name_cache_map.end() == r)
@@ -92,7 +91,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                             + "' has version string '" + line + "', which is not supported. Was it generated using "
                             "a different Paludis version?");
                     _usable = false;
-                    return CategoryNamePartCollection::ConstPointer(0);
+                    return std::tr1::shared_ptr<const CategoryNamePartCollection>();
                 }
                 std::getline(vvf, line);
                 if (line != stringify(_imp->repo->name()))
@@ -101,7 +100,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                             + "' was generated for repository '" + line + "', so it cannot be used. You must not "
                             "have multiple name caches at the same location.");
                     _usable = false;
-                    return CategoryNamePartCollection::ConstPointer(0);
+                    return std::tr1::shared_ptr<const CategoryNamePartCollection>();
                 }
                 _imp->checked_name_cache_map = true;
             }
@@ -111,7 +110,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
                         + "' has no version information, so cannot be used. Either it was generated using "
                         "an older Paludis version or it has not yet been generated.");
                 _usable = false;
-                return CategoryNamePartCollection::ConstPointer(0);
+                return std::tr1::shared_ptr<const CategoryNamePartCollection>();
             }
         }
 
@@ -150,11 +149,11 @@ RepositoryNameCache::regenerate_cache() const
 
     MakeHashedMap<std::string, std::string>::Type m;
 
-    CategoryNamePartCollection::ConstPointer cats(_imp->repo->category_names());
+    std::tr1::shared_ptr<const CategoryNamePartCollection> cats(_imp->repo->category_names());
     for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
-        QualifiedPackageNameCollection::ConstPointer pkgs(_imp->repo->package_names(*c));
+        std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs(_imp->repo->package_names(*c));
         for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
             m[stringify(p->package)].append(stringify(*c) + "\n");

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +39,7 @@ DescriptionCheck::operator() (const EbuildCheckData & e) const
     {
         PackageDatabaseEntry ee(e.name, e.version,
                 e.environment->package_database()->favourite_repository());
-        VersionMetadata::ConstPointer metadata(
+        std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         const std::string::size_type length(metadata->description.length());

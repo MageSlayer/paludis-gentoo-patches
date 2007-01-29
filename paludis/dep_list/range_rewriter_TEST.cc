@@ -37,7 +37,7 @@ namespace test_cases
 
         void run()
         {
-            AllDepAtom::ConstPointer p(PortageDepParser::parse_depend("=a/b-1 =a/b-2"));
+            std::tr1::shared_ptr<const CompositeDepAtom> p(PortageDepParser::parse_depend("=a/b-1 =a/b-2"));
 
             RangeRewriter r;
             TEST_CHECK(! r.atom());

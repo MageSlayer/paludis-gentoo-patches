@@ -25,7 +25,7 @@
 #include <iostream>
 #include <algorithm>
 
-namespace p = paludis;
+using namespace paludis;
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -33,34 +33,34 @@ using std::endl;
 namespace
 {
     struct ContentsDisplayer :
-        p::ContentsVisitorTypes::ConstVisitor
+        ContentsVisitorTypes::ConstVisitor
     {
-        void visit(const p::ContentsFileEntry * const e)
+        void visit(const ContentsFileEntry * const e)
         {
             cout << "    " << colour(cl_file, e->name()) << endl;
         }
 
-        void visit(const p::ContentsDirEntry * const e)
+        void visit(const ContentsDirEntry * const e)
         {
             cout << "    " << colour(cl_dir, e->name()) << endl;
         }
 
-        void visit(const p::ContentsSymEntry * const e)
+        void visit(const ContentsSymEntry * const e)
         {
             cout << "    " << colour(cl_sym, e->name()) << " -> " << e->target() << endl;
         }
 
-        void visit(const p::ContentsMiscEntry * const e)
+        void visit(const ContentsMiscEntry * const e)
         {
             cout << "    " << colour(cl_misc, e->name()) << endl;
         }
 
-        void visit(const p::ContentsFifoEntry * const e)
+        void visit(const ContentsFifoEntry * const e)
         {
             cout << "    " << colour(cl_fifo, e->name()) << endl;
         }
 
-        void visit(const p::ContentsDevEntry * const e)
+        void visit(const ContentsDevEntry * const e)
         {
             cout << "    " << colour(cl_dev, e->name()) << endl;
         }
@@ -69,17 +69,17 @@ namespace
 
 void
 do_one_contents_entry(
-        const p::Environment * const env,
-        const p::PackageDatabaseEntry & e)
+        const Environment * const env,
+        const PackageDatabaseEntry & e)
 {
     cout << "* " << colour(cl_package_name, e) << endl;
 
-    const p::RepositoryContentsInterface * const contents_interface(
+    const RepositoryContentsInterface * const contents_interface(
             env->package_database()->fetch_repository(e.repository)->
             contents_interface);
     if (contents_interface)
     {
-        p::Contents::ConstPointer contents(contents_interface->contents(
+        std::tr1::shared_ptr<const Contents> contents(contents_interface->contents(
                     e.name, e.version));
         ContentsDisplayer d;
         std::for_each(contents->begin(), contents->end(), accept_visitor(&d));
@@ -92,25 +92,25 @@ do_one_contents_entry(
 
 void
 do_one_contents(
-        const p::Environment * const env,
+        const Environment * const env,
         const std::string & q)
 {
-    p::Context local_context("When handling query '" + q + "':");
+    Context local_context("When handling query '" + q + "':");
 
     /* we might have a dep atom, but we might just have a simple package name
      * without a category. either should work. */
-    p::PackageDepAtom::Pointer atom(std::string::npos == q.find('/') ?
-            new p::PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
-                    p::PackageNamePart(q))) :
-            new p::PackageDepAtom(q));
+    std::tr1::shared_ptr<PackageDepAtom> atom(std::string::npos == q.find('/') ?
+            new PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
+                    PackageNamePart(q))) :
+            new PackageDepAtom(q));
 
-    p::PackageDatabaseEntryCollection::ConstPointer
-        entries(env->package_database()->query(*atom, p::is_installed_only, p::qo_order_by_version));
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
+        entries(env->package_database()->query(*atom, is_installed_only, qo_order_by_version));
 
     if (entries->empty())
-        throw p::NoSuchPackageError(q);
+        throw NoSuchPackageError(q);
 
-    for (p::PackageDatabaseEntryCollection::Iterator i(entries->begin()),
+    for (PackageDatabaseEntryCollection::Iterator i(entries->begin()),
             i_end(entries->end()) ; i != i_end ; ++i)
         do_one_contents_entry(env, *i);
 }
@@ -120,8 +120,8 @@ do_contents()
 {
     int return_code(0);
 
-    p::Context context("When performing contents action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
+    Context context("When performing contents action from command line:");
+    Environment * const env(DefaultEnvironment::get_instance());
 
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());
@@ -131,18 +131,18 @@ do_contents()
         {
             do_one_contents(env, *q);
         }
-        catch (const p::AmbiguousPackageNameError & e)
+        catch (const AmbiguousPackageNameError & e)
         {
             cout << endl;
             cerr << "Query error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << "Ambiguous package name '" << e.name() << "'. Did you mean:" << endl;
-            for (p::AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
+            for (AmbiguousPackageNameError::OptionsIterator o(e.begin_options()),
                     o_end(e.end_options()) ; o != o_end ; ++o)
                 cerr << "    * " << colour(cl_package_name, *o) << endl;
             cerr << endl;
         }
-        catch (const p::NameError & e)
+        catch (const NameError & e)
         {
             return_code |= 1;
             cout << endl;
@@ -150,7 +150,7 @@ do_contents()
             cerr << "  * " << e.backtrace("\n  * ") << e.message() << endl;
             cerr << endl;
         }
-        catch (const p::PackageDatabaseLookupError & e)
+        catch (const PackageDatabaseLookupError & e)
         {
             return_code |= 1;
             cout << endl;

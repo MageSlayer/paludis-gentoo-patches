@@ -52,17 +52,17 @@ namespace paludis
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const;
 
-            virtual CategoryNamePartCollection::ConstPointer do_category_names() const;
+            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
 
-            virtual QualifiedPackageNameCollection::ConstPointer do_package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
                     const CategoryNamePart &) const;
 
-            virtual VersionSpecCollection::ConstPointer do_version_specs(
+            virtual std::tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
                     const QualifiedPackageName &) const;
 
             virtual bool do_has_version(const QualifiedPackageName &, const VersionSpec &) const;
 
-            virtual VersionMetadata::ConstPointer do_version_metadata(
+            virtual std::tr1::shared_ptr<const VersionMetadata> do_version_metadata(
                     const QualifiedPackageName &,
                     const VersionSpec &) const PALUDIS_ATTRIBUTE((noreturn));
 
@@ -79,9 +79,9 @@ namespace paludis
             /**
              * Virtual constructor.
              */
-            static CountedPtr<Repository> make_nothing_repository(
+            static std::tr1::shared_ptr<Repository> make_nothing_repository(
                     Environment * const env,
-                    AssociativeCollection<std::string, std::string>::ConstPointer);
+                    std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
 
             /**
              * Destructor.
@@ -89,9 +89,6 @@ namespace paludis
             ~NothingRepository();
 
             virtual void invalidate();
-
-            typedef CountedPtr<NothingRepository, count_policy::InternalCountTag> Pointer;
-            typedef CountedPtr<const NothingRepository, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**

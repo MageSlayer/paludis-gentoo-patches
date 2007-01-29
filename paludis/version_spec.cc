@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -72,8 +72,7 @@ namespace paludis
      * Implementation data for a VersionSpec.
      */
     template<>
-    struct Implementation<VersionSpec> :
-        InternalCounted<Implementation<VersionSpec> >
+    struct Implementation<VersionSpec>
     {
         /// Our raw string representation.
         std::string text;
@@ -427,8 +426,7 @@ VersionSpec::remove_revision() const
 std::string
 VersionSpec::revision_only() const
 {
-    std::vector<Part>::const_iterator r(std::find_if(_imp->parts.begin(),
-                _imp->parts.end(), IsPart<revision>()));
+    std::vector<Part>::const_iterator r(std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<revision>()));
     if (r != _imp->parts.end())
     {
         std::string result;

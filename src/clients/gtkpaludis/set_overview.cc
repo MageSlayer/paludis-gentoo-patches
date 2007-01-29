@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -143,8 +143,7 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<SetOverview> :
-        InternalCounted<Implementation<SetOverview> >
+    struct Implementation<SetOverview>
     {
         SetOverview * const info;
         Columns columns;
@@ -204,7 +203,7 @@ namespace
 
         StatusBarMessage m1(this, "Querying set information...");
 
-        DepAtom::ConstPointer set_atom(DefaultEnvironment::get_instance()->package_set(_set));
+        std::tr1::shared_ptr<const DepAtom> set_atom(DefaultEnvironment::get_instance()->package_set(_set));
         Gtk::TreeModel::Row top_row = *model->append();
         top_row[_imp->columns.col_atom] = stringify(_set);
         TreeFromDepAtom v(model, &_imp->columns, &top_row);
@@ -220,7 +219,7 @@ SetOverview::populate(const std::string & name)
     if (name.empty())
         _imp->set_model(Gtk::TreeStore::create(_imp->columns));
     else
-        PaludisThread::get_instance()->launch(Populate::Pointer(new Populate(_imp.raw_pointer(), name)));
+        PaludisThread::get_instance()->launch(std::tr1::shared_ptr<Populate>(new Populate(_imp.operator-> (), name)));
 }
 
 

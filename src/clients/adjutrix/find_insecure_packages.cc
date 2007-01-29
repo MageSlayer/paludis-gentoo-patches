@@ -82,7 +82,7 @@ namespace
 
             void visit(const PackageDepAtom * const a)
             {
-                PackageDatabaseEntryCollection::ConstPointer insecure(
+                std::tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
                         _env.package_database()->query(*a, is_any, qo_order_by_version));
                 for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
@@ -145,7 +145,7 @@ void do_find_insecure_packages(const Environment & env)
 
         write_repository_header(r->name());
 
-        DepAtom::ConstPointer all_insecure(r->sets_interface->package_set(SetName("insecurity")));
+        std::tr1::shared_ptr<const DepAtom> all_insecure(r->sets_interface->package_set(SetName("insecurity")));
         if (! all_insecure)
             continue;
         ListInsecureVisitor v(env);

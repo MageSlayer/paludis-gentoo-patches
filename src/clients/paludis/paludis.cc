@@ -116,7 +116,7 @@ namespace
         {
             cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
 
-            RepositoryInfo::ConstPointer ii(r->info(true));
+            std::tr1::shared_ptr<const RepositoryInfo> ii(r->info(true));
             for (RepositoryInfo::SectionIterator i(ii->begin_sections()),
                     i_end(ii->end_sections()) ; i != i_end ; ++i)
             {

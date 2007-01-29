@@ -234,7 +234,7 @@ namespace
     {
         try
         {
-            return (check_check <PackageDirCheck::Pointer, FSEntry> (self, FSEntry(StringValuePtr(f))));
+            return (check_check <std::tr1::shared_ptr<PackageDirCheck>, FSEntry> (self, FSEntry(StringValuePtr(f))));
         }
         catch (const std::exception & e)
         {
@@ -253,7 +253,7 @@ namespace
     {
         try
         {
-            return (check_check <FileCheck::Pointer, FSEntry> (self, FSEntry(StringValuePtr(f))));
+            return (check_check <std::tr1::shared_ptr<FileCheck>, FSEntry> (self, FSEntry(StringValuePtr(f))));
         }
         catch (const std::exception & e)
         {
@@ -272,7 +272,7 @@ namespace
     {
         try
         {
-            return (check_check <EbuildCheck::Pointer, EbuildCheckData> (self, value_to_ebuild_check_data(f)));
+            return (check_check <std::tr1::shared_ptr<EbuildCheck>, EbuildCheckData> (self, value_to_ebuild_check_data(f)));
         }
         catch (const std::exception & e)
         {
@@ -291,7 +291,7 @@ namespace
     {
         try
         {
-            return (check_check <PerProfileEbuildCheck::Pointer, PerProfileEbuildCheckData> (self, value_to_per_profile_ebuild_check_data(f)));
+            return (check_check <std::tr1::shared_ptr<PerProfileEbuildCheck>, PerProfileEbuildCheckData> (self, value_to_per_profile_ebuild_check_data(f)));
         }
         catch (const std::exception & e)
         {
@@ -310,7 +310,7 @@ namespace
     {
         try
         {
-            return (check_check <ProfilesCheck::Pointer, FSEntry> (self, FSEntry(StringValuePtr(f))));
+            return (check_check <std::tr1::shared_ptr<ProfilesCheck>, FSEntry> (self, FSEntry(StringValuePtr(f))));
         }
         catch (const std::exception & e)
         {
@@ -329,7 +329,7 @@ namespace
     {
         try
         {
-            return (check_check <ProfileCheck::Pointer, ProfileCheckData> (self, value_to_profile_check_data(f)));
+            return (check_check <std::tr1::shared_ptr<ProfileCheck>, ProfileCheckData> (self, value_to_profile_check_data(f)));
         }
         catch (const std::exception & e)
         {
@@ -379,7 +379,7 @@ namespace
     {
         try
         {
-            PackageDirCheck::Pointer p = (PackageDirCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
+            std::tr1::shared_ptr<PackageDirCheck> p = (PackageDirCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
             return package_dir_check_to_value(p);
         }
         catch (const std::exception & e)
@@ -398,7 +398,7 @@ namespace
     {
         try
         {
-            FileCheck::Pointer p = (FileCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
+            std::tr1::shared_ptr<FileCheck> p = (FileCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
             return file_check_to_value(p);
         }
         catch (const std::exception & e)
@@ -417,7 +417,7 @@ namespace
     {
         try
         {
-            EbuildCheck::Pointer p = (EbuildCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
+            std::tr1::shared_ptr<EbuildCheck> p = (EbuildCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
             return ebuild_check_to_value(p);
         }
         catch (const std::exception & e)
@@ -436,7 +436,7 @@ namespace
     {
         try
         {
-            PerProfileEbuildCheck::Pointer p = (PerProfileEbuildCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
+            std::tr1::shared_ptr<PerProfileEbuildCheck> p = (PerProfileEbuildCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
             return per_profile_ebuild_check_to_value(p);
         }
         catch (const std::exception & e)
@@ -455,7 +455,7 @@ namespace
     {
         try
         {
-            ProfilesCheck::Pointer p = (ProfilesCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
+            std::tr1::shared_ptr<ProfilesCheck> p = (ProfilesCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
             return profiles_check_to_value(p);
         }
         catch (const std::exception & e)
@@ -474,7 +474,7 @@ namespace
     {
         try
         {
-            ProfileCheck::Pointer p = (ProfileCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
+            std::tr1::shared_ptr<ProfileCheck> p = (ProfileCheckMaker::get_instance()->find_maker(StringValuePtr(maker)))();
             return profile_check_to_value(p);
         }
         catch (const std::exception & e)
@@ -522,8 +522,8 @@ namespace
         c_package_dir_check = rb_define_class_under(paludis_qa_module(), "PackageDirCheck", rb_cObject);
         rb_funcall(c_package_dir_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_package_dir_check, "check", RUBY_FUNC_CAST(&package_dir_check_check),1);
-        rb_define_method(c_package_dir_check, "describe", RUBY_FUNC_CAST(&CheckStruct<PackageDirCheck::Pointer>::describe),0);
-        rb_define_method(c_package_dir_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<PackageDirCheck::Pointer>::is_important),0);
+        rb_define_method(c_package_dir_check, "describe", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<PackageDirCheck> >::describe),0);
+        rb_define_method(c_package_dir_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<PackageDirCheck> >::is_important),0);
 
         /*
          * Document-class: Paludis::QA::FileCheck
@@ -533,8 +533,8 @@ namespace
         c_file_check = rb_define_class_under(paludis_qa_module(), "FileCheck", rb_cObject);
         rb_funcall(c_file_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_file_check, "check", RUBY_FUNC_CAST(&file_check_check),1);
-        rb_define_method(c_file_check, "describe", RUBY_FUNC_CAST(&CheckStruct<FileCheck::Pointer>::describe),0);
-        rb_define_method(c_file_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<FileCheck::Pointer>::is_important),0);
+        rb_define_method(c_file_check, "describe", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<FileCheck> >::describe),0);
+        rb_define_method(c_file_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<FileCheck> >::is_important),0);
 
         /*
          * Document-class: Paludis::QA::EbuildCheck
@@ -544,8 +544,8 @@ namespace
         c_ebuild_check = rb_define_class_under(paludis_qa_module(), "EbuildCheck", rb_cObject);
         rb_funcall(c_ebuild_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_ebuild_check, "check", RUBY_FUNC_CAST(&ebuild_check_check),1);
-        rb_define_method(c_ebuild_check, "describe", RUBY_FUNC_CAST(&CheckStruct<EbuildCheck::Pointer>::describe),0);
-        rb_define_method(c_ebuild_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<EbuildCheck::Pointer>::is_important),0);
+        rb_define_method(c_ebuild_check, "describe", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<EbuildCheck> >::describe),0);
+        rb_define_method(c_ebuild_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<EbuildCheck> >::is_important),0);
 
         /*
          * Document-class: Paludis::QA::PerProfileEbuildCheck
@@ -555,8 +555,8 @@ namespace
         c_per_profile_ebuild_check = rb_define_class_under(paludis_qa_module(), "PerProfileEbuildCheck", rb_cObject);
         rb_funcall(c_per_profile_ebuild_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_per_profile_ebuild_check, "check", RUBY_FUNC_CAST(&per_profile_ebuild_check_check),1);
-        rb_define_method(c_per_profile_ebuild_check, "describe", RUBY_FUNC_CAST(&CheckStruct<PerProfileEbuildCheck::Pointer>::describe),0);
-        rb_define_method(c_per_profile_ebuild_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<PerProfileEbuildCheck::Pointer>::is_important),0);
+        rb_define_method(c_per_profile_ebuild_check, "describe", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<PerProfileEbuildCheck> >::describe),0);
+        rb_define_method(c_per_profile_ebuild_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<PerProfileEbuildCheck> >::is_important),0);
 
         /*
          * Document-class: Paludis::QA::ProfilesCheck
@@ -566,8 +566,8 @@ namespace
         c_profiles_check = rb_define_class_under(paludis_qa_module(), "ProfilesCheck", rb_cObject);
         rb_funcall(c_profiles_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_profiles_check, "check", RUBY_FUNC_CAST(&profiles_check_check),1);
-        rb_define_method(c_profiles_check, "describe", RUBY_FUNC_CAST(&CheckStruct<ProfilesCheck::Pointer>::describe),0);
-        rb_define_method(c_profiles_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<ProfilesCheck::Pointer>::is_important),0);
+        rb_define_method(c_profiles_check, "describe", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<ProfilesCheck> >::describe),0);
+        rb_define_method(c_profiles_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<ProfilesCheck> >::is_important),0);
 
         /*
          * Document-class: Paludis::QA::ProfileCheck
@@ -577,8 +577,8 @@ namespace
         c_profile_check = rb_define_class_under(paludis_qa_module(), "ProfileCheck", rb_cObject);
         rb_funcall(c_profile_check, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_profile_check, "check", RUBY_FUNC_CAST(&profile_check_check),1);
-        rb_define_method(c_profile_check, "describe", RUBY_FUNC_CAST(&CheckStruct<ProfileCheck::Pointer>::describe),0);
-        rb_define_method(c_profile_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<ProfileCheck::Pointer>::is_important),0);
+        rb_define_method(c_profile_check, "describe", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<ProfileCheck> >::describe),0);
+        rb_define_method(c_profile_check, "is_important?", RUBY_FUNC_CAST(&CheckStruct<std::tr1::shared_ptr<ProfileCheck> >::is_important),0);
 
         /*
          * Document-class: Paludis::QA::PackageDirCheckMaker
@@ -667,13 +667,13 @@ namespace
 }
 
 VALUE
-paludis::ruby::file_check_to_value(FileCheck::Pointer m)
+paludis::ruby::file_check_to_value(std::tr1::shared_ptr<FileCheck> m)
 {
-    FileCheck::Pointer * m_ptr(0);
+    std::tr1::shared_ptr<FileCheck> * m_ptr(0);
     try
     {
-        m_ptr = new FileCheck::Pointer(m);
-        return Data_Wrap_Struct(c_file_check, 0, &Common<FileCheck::Pointer>::free, m_ptr);
+        m_ptr = new std::tr1::shared_ptr<FileCheck>(m);
+        return Data_Wrap_Struct(c_file_check, 0, &Common<std::tr1::shared_ptr<FileCheck> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -683,13 +683,13 @@ paludis::ruby::file_check_to_value(FileCheck::Pointer m)
 }
 
 VALUE
-paludis::ruby::package_dir_check_to_value(PackageDirCheck::Pointer m)
+paludis::ruby::package_dir_check_to_value(std::tr1::shared_ptr<PackageDirCheck> m)
 {
-    PackageDirCheck::Pointer * m_ptr(0);
+    std::tr1::shared_ptr<PackageDirCheck> * m_ptr(0);
     try
     {
-        m_ptr = new PackageDirCheck::Pointer(m);
-        return Data_Wrap_Struct(c_package_dir_check, 0, &Common<PackageDirCheck::Pointer>::free, m_ptr);
+        m_ptr = new std::tr1::shared_ptr<PackageDirCheck>(m);
+        return Data_Wrap_Struct(c_package_dir_check, 0, &Common<std::tr1::shared_ptr<PackageDirCheck> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -699,13 +699,13 @@ paludis::ruby::package_dir_check_to_value(PackageDirCheck::Pointer m)
 }
 
 VALUE
-paludis::ruby::ebuild_check_to_value(EbuildCheck::Pointer m)
+paludis::ruby::ebuild_check_to_value(std::tr1::shared_ptr<EbuildCheck> m)
 {
-    EbuildCheck::Pointer * m_ptr(0);
+    std::tr1::shared_ptr<EbuildCheck> * m_ptr(0);
     try
     {
-        m_ptr = new EbuildCheck::Pointer(m);
-        return Data_Wrap_Struct(c_ebuild_check, 0, &Common<EbuildCheck::Pointer>::free, m_ptr);
+        m_ptr = new std::tr1::shared_ptr<EbuildCheck>(m);
+        return Data_Wrap_Struct(c_ebuild_check, 0, &Common<std::tr1::shared_ptr<EbuildCheck> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -715,13 +715,13 @@ paludis::ruby::ebuild_check_to_value(EbuildCheck::Pointer m)
 }
 
 VALUE
-paludis::ruby::profiles_check_to_value(ProfilesCheck::Pointer m)
+paludis::ruby::profiles_check_to_value(std::tr1::shared_ptr<ProfilesCheck> m)
 {
-    ProfilesCheck::Pointer * m_ptr(0);
+    std::tr1::shared_ptr<ProfilesCheck> * m_ptr(0);
     try
     {
-        m_ptr = new ProfilesCheck::Pointer(m);
-        return Data_Wrap_Struct(c_profiles_check, 0, &Common<ProfilesCheck::Pointer>::free, m_ptr);
+        m_ptr = new std::tr1::shared_ptr<ProfilesCheck>(m);
+        return Data_Wrap_Struct(c_profiles_check, 0, &Common<std::tr1::shared_ptr<ProfilesCheck> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -731,13 +731,13 @@ paludis::ruby::profiles_check_to_value(ProfilesCheck::Pointer m)
 }
 
 VALUE
-paludis::ruby::profile_check_to_value(ProfileCheck::Pointer m)
+paludis::ruby::profile_check_to_value(std::tr1::shared_ptr<ProfileCheck> m)
 {
-    ProfileCheck::Pointer * m_ptr(0);
+    std::tr1::shared_ptr<ProfileCheck> * m_ptr(0);
     try
     {
-        m_ptr = new ProfileCheck::Pointer(m);
-        return Data_Wrap_Struct(c_profile_check, 0, &Common<ProfileCheck::Pointer>::free, m_ptr);
+        m_ptr = new std::tr1::shared_ptr<ProfileCheck>(m);
+        return Data_Wrap_Struct(c_profile_check, 0, &Common<std::tr1::shared_ptr<ProfileCheck> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -747,13 +747,13 @@ paludis::ruby::profile_check_to_value(ProfileCheck::Pointer m)
 }
 
 VALUE
-paludis::ruby::per_profile_ebuild_check_to_value(PerProfileEbuildCheck::Pointer m)
+paludis::ruby::per_profile_ebuild_check_to_value(std::tr1::shared_ptr<PerProfileEbuildCheck> m)
 {
-    PerProfileEbuildCheck::Pointer * m_ptr(0);
+    std::tr1::shared_ptr<PerProfileEbuildCheck> * m_ptr(0);
     try
     {
-        m_ptr = new PerProfileEbuildCheck::Pointer(m);
-        return Data_Wrap_Struct(c_per_profile_ebuild_check, 0, &Common<PerProfileEbuildCheck::Pointer>::free, m_ptr);
+        m_ptr = new std::tr1::shared_ptr<PerProfileEbuildCheck>(m);
+        return Data_Wrap_Struct(c_per_profile_ebuild_check, 0, &Common<std::tr1::shared_ptr<PerProfileEbuildCheck> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {

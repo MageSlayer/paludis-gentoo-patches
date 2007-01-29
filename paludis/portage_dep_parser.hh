@@ -22,7 +22,6 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/portage_dep_lexer.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <string>
@@ -80,7 +79,7 @@ namespace paludis
         /**
          * Create a new text atom from the provided string.
          */
-        virtual CountedPtr<DepAtom> new_text_atom(const std::string &) const = 0;
+        virtual std::tr1::shared_ptr<DepAtom> new_text_atom(const std::string &) const = 0;
 
         /**
          * Are || ( ) deps permitted?
@@ -106,10 +105,10 @@ namespace paludis
     class PortageDepParserPolicy :
         public PortageDepParserPolicyInterface,
         public InstantiationPolicy<PortageDepParserPolicy<TextAtom_, permit_any_>,
-            instantiation_method::SingletonAsNeededTag>
+            instantiation_method::SingletonTag>
     {
         friend class InstantiationPolicy<PortageDepParserPolicy<TextAtom_, permit_any_>,
-            instantiation_method::SingletonAsNeededTag>;
+            instantiation_method::SingletonTag>;
 
         private:
             PortageDepParserPolicy()
@@ -117,9 +116,9 @@ namespace paludis
             }
 
         public:
-            virtual CountedPtr<DepAtom> new_text_atom(const std::string & s) const
+            virtual std::tr1::shared_ptr<DepAtom> new_text_atom(const std::string & s) const
             {
-                return CountedPtr<DepAtom>(new TextAtom_(s));
+                return std::tr1::shared_ptr<DepAtom>(new TextAtom_(s));
             }
 
             virtual bool permit_any_deps() const
@@ -140,10 +139,10 @@ namespace paludis
     class PortageDepParserPolicy<PackageDepAtom, permit_any_> :
         public PortageDepParserPolicyInterface,
         public InstantiationPolicy<PortageDepParserPolicy<PackageDepAtom, permit_any_>,
-            instantiation_method::SingletonAsNeededTag>
+            instantiation_method::SingletonTag>
     {
         friend class InstantiationPolicy<PortageDepParserPolicy<PackageDepAtom, permit_any_>,
-            instantiation_method::SingletonAsNeededTag>;
+            instantiation_method::SingletonTag>;
 
         private:
             PortageDepParserPolicy()
@@ -151,13 +150,13 @@ namespace paludis
             }
 
         public:
-            virtual CountedPtr<DepAtom> new_text_atom(const std::string & s) const
+            virtual std::tr1::shared_ptr<DepAtom> new_text_atom(const std::string & s) const
             {
                 if ((! s.empty()) && ('!' == s.at(0)))
-                    return CountedPtr<DepAtom>(new BlockDepAtom(
-                                CountedPtr<PackageDepAtom>(new PackageDepAtom(s.substr(1)))));
+                    return std::tr1::shared_ptr<DepAtom>(new BlockDepAtom(
+                                std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(s.substr(1)))));
                 else
-                    return CountedPtr<DepAtom>(new PackageDepAtom(s));
+                    return std::tr1::shared_ptr<DepAtom>(new PackageDepAtom(s));
             }
 
             virtual bool permit_any_deps() const
@@ -184,18 +183,18 @@ namespace paludis
              * Parse a given dependency string, and return an appropriate
              * DepAtom tree.
              */
-            static CompositeDepAtom::Pointer parse(const std::string & s,
+            static std::tr1::shared_ptr<CompositeDepAtom> parse(const std::string & s,
                     const PortageDepParserPolicyInterface * const policy = DefaultPolicy::get_instance());
 
             /**
              * Convenience wrapper for parse for depend strings, for VersionMetadata.
              */
-            static DepAtom::ConstPointer parse_depend(const std::string & s);
+            static std::tr1::shared_ptr<const CompositeDepAtom> parse_depend(const std::string & s);
 
             /**
              * Convenience wrapper for parse for license strings, for VersionMetadata.
              */
-            static DepAtom::ConstPointer parse_license(const std::string & s);
+            static std::tr1::shared_ptr<const CompositeDepAtom> parse_license(const std::string & s);
     };
 }
 

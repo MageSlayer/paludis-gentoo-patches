@@ -54,9 +54,9 @@ namespace test_cases
     {
         protected:
             TestEnvironment env;
-            FakeInstalledRepository::Pointer installed_repo;
-            VirtualsRepository::Pointer virtuals_repo;
-            PackageDatabaseEntryCollection::Pointer targets;
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo;
+            std::tr1::shared_ptr<VirtualsRepository> virtuals_repo;
+            std::tr1::shared_ptr<PackageDatabaseEntryCollection> targets;
             std::list<std::string> expected;
             bool done_populate;
 

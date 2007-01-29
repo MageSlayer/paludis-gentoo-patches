@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,9 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_STRINGIFY_HH
 #define PALUDIS_GUARD_PALUDIS_STRINGIFY_HH 1
 
+#include <paludis/util/attributes.hh>
 #include <sstream>
 #include <string>
-#include <paludis/util/attributes.hh>
+#include <tr1/memory>
 
 /** \file
  * Stringify functions.
@@ -32,9 +33,6 @@
 
 namespace paludis
 {
-    template <typename T_, typename U_>
-    class CountedPtr;
-
     /**
      * For use by stringify.
      *
@@ -71,8 +69,8 @@ namespace paludis
          *
          * \ingroup grpstringify
          */
-        template <typename T_, typename U_>
-        struct CheckType<CountedPtr<T_, U_> >
+        template <typename T_>
+        struct CheckType<std::tr1::shared_ptr<T_> >
         {
         };
 

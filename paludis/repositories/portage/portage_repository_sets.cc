@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006 Danny van Dyk <kugelfang@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -48,8 +48,7 @@ namespace paludis
      * \ingroup grpportagerepository
      */
     template<>
-    struct Implementation<PortageRepositorySets> :
-        InternalCounted<Implementation<PortageRepositorySets> >
+    struct Implementation<PortageRepositorySets>
     {
         const Environment * const environment;
         const PortageRepository * const portage_repository;
@@ -76,7 +75,7 @@ PortageRepositorySets::~PortageRepositorySets()
 }
 
 
-DepAtom::Pointer
+std::tr1::shared_ptr<DepAtom>
 PortageRepositorySets::package_set(const SetName & s) const
 {
     if ("system" == s.data())
@@ -87,12 +86,12 @@ PortageRepositorySets::package_set(const SetName & s) const
         return security_set(true);
     else if ((_imp->params.setsdir / (stringify(s) + ".conf")).exists())
     {
-        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s, stringify(_imp->portage_repository->name())));
+        std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(_imp->portage_repository->name())));
 
         FSEntry ff(_imp->params.setsdir / (stringify(s) + ".conf"));
         Context context("When loading package set '" + stringify(s) + "' from '" + stringify(ff) + "':");
 
-        AllDepAtom::Pointer result(new AllDepAtom);
+        std::tr1::shared_ptr<AllDepAtom> result(new AllDepAtom);
         LineConfigFile f(ff);
         for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
@@ -107,19 +106,19 @@ PortageRepositorySets::package_set(const SetName & s) const
                 Log::get_instance()->message(ll_warning, lc_context,
                         "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(0)));
+                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(tokens.at(0)));
                 atom->set_tag(tag);
                 result->add_child(atom);
             }
             else if ("*" == tokens.at(0))
             {
-                PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(1)));
+                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(tokens.at(1)));
                 atom->set_tag(tag);
                 result->add_child(atom);
             }
             else if ("?" == tokens.at(0))
             {
-                PackageDepAtom::Pointer p(new PackageDepAtom(tokens.at(1)));
+                std::tr1::shared_ptr<PackageDepAtom> p(new PackageDepAtom(tokens.at(1)));
                 p->set_tag(tag);
                 if (! _imp->environment->package_database()->query(PackageDepAtom(p->package()),
                             is_installed_only, qo_whatever)->empty())
@@ -139,15 +138,15 @@ PortageRepositorySets::package_set(const SetName & s) const
         return result;
     }
     else
-        return DepAtom::Pointer(0);
+        return std::tr1::shared_ptr<DepAtom>();
 }
 
-SetsCollection::ConstPointer
+std::tr1::shared_ptr<const SetsCollection>
 PortageRepositorySets::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    SetsCollection::Pointer result(new SetsCollection::Concrete);
+    std::tr1::shared_ptr<SetsCollection> result(new SetsCollection::Concrete);
     result->insert(SetName("insecurity"));
     result->insert(SetName("security"));
     result->insert(SetName("system"));
@@ -267,16 +266,16 @@ namespace
     }
 }
 
-DepAtom::Pointer
+std::tr1::shared_ptr<DepAtom>
 PortageRepositorySets::security_set(bool insecurity) const
 {
     Context context("When building security or insecurity package set:");
-    AllDepAtom::Pointer security_packages(new AllDepAtom);
+    std::tr1::shared_ptr<AllDepAtom> security_packages(new AllDepAtom);
 
     if (!_imp->params.securitydir.is_directory())
         return security_packages;
 
-    std::map<std::string, GLSADepTag::Pointer> glsa_tags;
+    std::map<std::string, std::tr1::shared_ptr<GLSADepTag> > glsa_tags;
 
     for (DirIterator f(_imp->params.securitydir), f_end ; f != f_end; ++f)
     {
@@ -287,14 +286,14 @@ PortageRepositorySets::security_set(bool insecurity) const
 
         try
         {
-            GLSA::ConstPointer glsa(GLSA::create_from_xml_file(stringify(*f)));
+            std::tr1::shared_ptr<const GLSA> glsa(GLSA::create_from_xml_file(stringify(*f)));
             Context local_local_context("When handling GLSA '" + glsa->id() + "' from '" +
                     stringify(*f) + "':");
 
             for (GLSA::PackagesIterator glsa_pkg(glsa->begin_packages()),
                     glsa_pkg_end(glsa->end_packages()) ; glsa_pkg != glsa_pkg_end ; ++glsa_pkg)
             {
-                PackageDatabaseEntryCollection::ConstPointer candidates(_imp->environment->package_database()->query(
+                std::tr1::shared_ptr<const PackageDatabaseEntryCollection> candidates(_imp->environment->package_database()->query(
                             PackageDepAtom(glsa_pkg->name()), insecurity ? is_any : is_installed_only,
                             qo_order_by_version));
                 for (PackageDatabaseEntryCollection::Iterator c(candidates->begin()), c_end(candidates->end()) ;
@@ -304,12 +303,12 @@ PortageRepositorySets::security_set(bool insecurity) const
                         continue;
 
                     if (glsa_tags.end() == glsa_tags.find(glsa->id()))
-                        glsa_tags.insert(std::make_pair(glsa->id(), GLSADepTag::Pointer(
+                        glsa_tags.insert(std::make_pair(glsa->id(), std::tr1::shared_ptr<GLSADepTag>(
                                         new GLSADepTag(glsa->id(), glsa->title()))));
 
                     if (insecurity)
                     {
-                        PackageDepAtom::Pointer atom(new PackageDepAtom(
+                        std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(
                                     "=" + stringify(c->name) + "-" + stringify(c->version) +
                                     "::" + stringify(c->repository)));
                         atom->set_tag(glsa_tags.find(glsa->id())->second);
@@ -323,7 +322,7 @@ PortageRepositorySets::security_set(bool insecurity) const
                         SlotName wanted_slot(_imp->environment->package_database()->fetch_repository(
                                     c->repository)->version_metadata(c->name, c->version)->slot);
 
-                        PackageDatabaseEntryCollection::ConstPointer available(
+                        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> available(
                                 _imp->environment->package_database()->query(PackageDepAtom(glsa_pkg->name()), is_installable_only,
                                     qo_order_by_version));
                         for (PackageDatabaseEntryCollection::ReverseIterator r(available->rbegin()),
@@ -337,7 +336,7 @@ PortageRepositorySets::security_set(bool insecurity) const
                             if (is_vulnerable(*glsa_pkg, *r))
                                 continue;
 
-                            PackageDepAtom::Pointer atom(new PackageDepAtom(
+                            std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(
                                         "=" + stringify(r->name) + "-" + stringify(r->version) +
                                         "::" + stringify(r->repository)));
                             atom->set_tag(glsa_tags.find(glsa->id())->second);

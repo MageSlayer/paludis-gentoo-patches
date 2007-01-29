@@ -49,8 +49,8 @@ int do_has_version()
     Environment * const env(DefaultEnvironment::get_instance());
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    PackageDepAtom::Pointer atom(new PackageDepAtom(query));
-    PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
+    std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(query));
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
                 *atom, is_installed_only, qo_whatever));
 
     if (entries->empty())
@@ -67,14 +67,14 @@ int do_best_version()
     Environment * const env(DefaultEnvironment::get_instance());
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    PackageDepAtom::Pointer atom(new PackageDepAtom(query));
-    PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
+    std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(query));
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
                 *atom, is_installed_only, qo_order_by_version));
 
     /* make built_with_use work for virtuals... icky... */
     while (! entries->empty())
     {
-        VersionMetadata::ConstPointer metadata(env->package_database()->fetch_repository(
+        std::tr1::shared_ptr<const VersionMetadata> metadata(env->package_database()->fetch_repository(
                     entries->last()->repository)->version_metadata(entries->last()->name,
                     entries->last()->version));
         if (! metadata->virtual_interface)
@@ -84,7 +84,7 @@ int do_best_version()
                 "' resolves to '" + stringify(*entries->last()) + "', which is a virtual for '"
                 + stringify(metadata->virtual_interface->virtual_for) + "'. This will break with "
                 "new style virtuals.");
-        PackageDatabaseEntryCollection::Pointer new_entries(
+        std::tr1::shared_ptr<PackageDatabaseEntryCollection> new_entries(
                 new PackageDatabaseEntryCollection::Concrete);
         new_entries->push_back(metadata->virtual_interface->virtual_for);
         entries = new_entries;
@@ -113,9 +113,9 @@ int do_environment_variable()
 
     std::string atom_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
-    PackageDepAtom::Pointer atom(new PackageDepAtom(atom_str));
+    std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(atom_str));
 
-    PackageDatabaseEntryCollection::ConstPointer entries(env->package_database()->query(
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
                 *atom, is_installed_only, qo_order_by_version));
 
     if (entries->empty())
@@ -124,7 +124,7 @@ int do_environment_variable()
     if (entries->empty())
         throw NoSuchPackageError(atom_str);
 
-    Repository::ConstPointer repo(env->package_database()->fetch_repository(
+    std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(
                 entries->begin()->repository));
     RepositoryEnvironmentVariableInterface * env_if(
             repo->environment_variable_interface);
@@ -151,7 +151,7 @@ int do_configuration_variable()
     std::string repo_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
 
-    RepositoryInfo::ConstPointer info(env->package_database()->fetch_repository(
+    std::tr1::shared_ptr<const RepositoryInfo> info(env->package_database()->fetch_repository(
                 RepositoryName(repo_str))->info(false));
 
     return_code = 1;

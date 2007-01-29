@@ -26,8 +26,6 @@ using namespace paludis::ruby;
 
 #define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
 
-typedef CountedPtr<DepListOptions, count_policy::ExternalCountTag> DepListOptionsPointer;
-
 namespace
 {
     static VALUE c_dep_list_target_type;
@@ -50,13 +48,13 @@ namespace
     static VALUE c_dep_list_entry;
     static VALUE c_dep_list_override_masks;
 
-    DepListOptionsPointer
+    std::tr1::shared_ptr<DepListOptions>
     value_to_dep_list_options(VALUE v)
     {
         if (rb_obj_is_kind_of(v, c_dep_list_options))
         {
-            DepListOptionsPointer * v_ptr;
-            Data_Get_Struct(v, DepListOptionsPointer, v_ptr);
+            std::tr1::shared_ptr<DepListOptions> * v_ptr;
+            Data_Get_Struct(v, std::tr1::shared_ptr<DepListOptions>, v_ptr);
             return *v_ptr;
         }
         else
@@ -66,13 +64,13 @@ namespace
     }
 
     VALUE
-    dep_list_options_to_value(DepListOptionsPointer m)
+    dep_list_options_to_value(std::tr1::shared_ptr<DepListOptions> m)
     {
-        DepListOptionsPointer * m_ptr(0);
+        std::tr1::shared_ptr<DepListOptions> * m_ptr(0);
         try
         {
-            m_ptr = new DepListOptionsPointer(m);
-            return  Data_Wrap_Struct(c_dep_list_options, 0, &Common<DepListOptionsPointer>::free, m_ptr);
+            m_ptr = new std::tr1::shared_ptr<DepListOptions>(m);
+            return  Data_Wrap_Struct(c_dep_list_options, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, m_ptr);
             }
             catch (const std::exception & e)
             {
@@ -151,13 +149,13 @@ namespace
     VALUE
     dep_list_options_new(int argc, VALUE *argv, VALUE self)
     {
-        DepListOptionsPointer * ptr(0);
+        std::tr1::shared_ptr<DepListOptions> * ptr(0);
         if (0 == argc)
         {
             try
             {
-                ptr = new DepListOptionsPointer(new DepListOptions);
-                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<DepListOptionsPointer>::free, ptr));
+                ptr = new std::tr1::shared_ptr<DepListOptions>(new DepListOptions);
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, ptr));
                 rb_obj_call_init(tdata, argc, argv);
                 return tdata;
             }
@@ -341,7 +339,7 @@ namespace
                 if (value_for_circular < 0 ||  value_for_blocks >= last_dl_blocks)
                     rb_raise(rb_eArgError, "blocks out of range");
 
-                ptr = new DepListOptionsPointer(
+                ptr = new std::tr1::shared_ptr<DepListOptions>(
                          new DepListOptions(
                             static_cast<DepListReinstallOption>(value_for_reinstall),
                             static_cast<DepListReinstallScmOption>(value_for_reinstall_scm),
@@ -366,7 +364,7 @@ namespace
                             )
                         );
 
-                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<DepListOptionsPointer>::free, ptr));
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, ptr));
                 rb_obj_call_init(tdata, argc, argv);
                 return tdata;
             }
@@ -680,16 +678,16 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            DepListOptionsPointer * p;
-            Data_Get_Struct(self, DepListOptionsPointer, p);
+            std::tr1::shared_ptr<DepListOptions> * p;
+            Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
             return INT2FIX((**p).*m_);
         }
 
         static VALUE
         set (VALUE self, VALUE val)
         {
-            DepListOptionsPointer * p;
-            Data_Get_Struct(self, DepListOptionsPointer, p);
+            std::tr1::shared_ptr<DepListOptions> * p;
+            Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
             try
             {
                 ((**p).*m_) = static_cast<T_>(NUM2INT(val));
@@ -711,8 +709,8 @@ namespace
     VALUE
     dep_list_options_override_masks(VALUE self)
     {
-        DepListOptionsPointer * p;
-        Data_Get_Struct(self, DepListOptionsPointer, p);
+        std::tr1::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
         return dep_list_override_masks_to_value((*p)->override_masks);
     }
 
@@ -725,8 +723,8 @@ namespace
     VALUE
     dep_list_options_override_masks_set(VALUE self, VALUE mr)
     {
-        DepListOptionsPointer * p;
-        Data_Get_Struct(self, DepListOptionsPointer, p);
+        std::tr1::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
         try
         {
             (*p)->override_masks = value_to_dep_list_override_masks(mr);
@@ -747,8 +745,8 @@ namespace
     VALUE
     dep_list_options_dependency_tags(VALUE self)
     {
-        DepListOptionsPointer * p;
-        Data_Get_Struct(self, DepListOptionsPointer, p);
+        std::tr1::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
         return (*p)->dependency_tags ? Qtrue : Qfalse;
     }
 
@@ -761,8 +759,8 @@ namespace
     VALUE
     dep_list_options_dependency_tags_set(VALUE self, VALUE tags)
     {
-        DepListOptionsPointer * p;
-        Data_Get_Struct(self, DepListOptionsPointer, p);
+        std::tr1::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
         try
         {
             if (Qtrue == tags)

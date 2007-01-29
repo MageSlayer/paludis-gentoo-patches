@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,16 +40,14 @@ namespace paludis
      * \ingroup grpfilesystem
      */
     template<>
-    struct Implementation<DirIterator> :
-        InternalCounted<Implementation<DirIterator> >
+    struct Implementation<DirIterator>
     {
         FSEntry base;
         bool ignore_dotfiles;
-        CountedPtr<std::set<FSEntry>, count_policy::ExternalCountTag> items;
+        std::tr1::shared_ptr<std::set<FSEntry> > items;
         std::set<FSEntry>::iterator iter;
 
-        Implementation(const FSEntry & b, bool i, CountedPtr<std::set<FSEntry>,
-                count_policy::ExternalCountTag> ii) :
+        Implementation(const FSEntry & b, bool i, std::tr1::shared_ptr<std::set<FSEntry> > ii) :
             base(b),
             ignore_dotfiles(i),
             items(ii)
@@ -65,8 +63,7 @@ DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) thro
 
 DirIterator::DirIterator(const FSEntry & base, bool ignore_dotfiles) :
     PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(
-                base, ignore_dotfiles, CountedPtr<std::set<FSEntry>,
-                count_policy::ExternalCountTag>(new std::set<FSEntry>)))
+                base, ignore_dotfiles, std::tr1::shared_ptr<std::set<FSEntry> >(new std::set<FSEntry>)))
 {
     DIR * d(opendir(stringify(_imp->base).c_str()));
     if (0 == d)
@@ -97,8 +94,7 @@ DirIterator::DirIterator(const DirIterator & other) :
 
 DirIterator::DirIterator() :
     PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(
-                FSEntry(""), true, CountedPtr<std::set<FSEntry>,
-                count_policy::ExternalCountTag>(new std::set<FSEntry>)))
+                FSEntry(""), true, std::tr1::shared_ptr<std::set<FSEntry> >(new std::set<FSEntry>)))
 {
     _imp->iter = _imp->items->end();
 }

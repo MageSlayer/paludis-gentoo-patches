@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,12 +41,12 @@ namespace test_cases
 
         void run()
         {
-            PackageDepAtom::Pointer x(new PackageDepAtom("foo/bar"));
+            std::tr1::shared_ptr<PackageDepAtom> x(new PackageDepAtom("foo/bar"));
             TEST_CHECK(0 == x->as_use_dep_atom());
 
-            UseDepAtom::Pointer y(new UseDepAtom(UseFlagName("foo"), x));
+            std::tr1::shared_ptr<UseDepAtom> y(new UseDepAtom(UseFlagName("foo"), x));
             TEST_CHECK(0 != y->as_use_dep_atom());
-            TEST_CHECK(y.raw_pointer() == y->as_use_dep_atom());
+            TEST_CHECK(y.get() == y->as_use_dep_atom());
         }
     } test_dep_atom_as;
 
@@ -60,14 +60,14 @@ namespace test_cases
 
         void run()
         {
-            AllDepAtom::Pointer x(new AllDepAtom);
+            std::tr1::shared_ptr<AllDepAtom> x(new AllDepAtom);
             TEST_CHECK(x->begin() == x->end());
 
-            x->add_child(PackageDepAtom::Pointer(new PackageDepAtom("x/y")));
+            x->add_child(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom("x/y")));
             TEST_CHECK(x->begin() != x->end());
             TEST_CHECK_EQUAL(1, std::distance(x->begin(), x->end()));
 
-            x->add_child(PackageDepAtom::Pointer(new PackageDepAtom("x/y")));
+            x->add_child(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom("x/y")));
             TEST_CHECK(x->begin() != x->end());
             TEST_CHECK_EQUAL(2, std::distance(x->begin(), x->end()));
         }

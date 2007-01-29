@@ -31,7 +31,7 @@
 using namespace paludis;
 
 TestEnvironment::TestEnvironment() :
-    Environment(PackageDatabase::Pointer(new PackageDatabase(this)))
+    Environment(std::tr1::shared_ptr<PackageDatabase>(new PackageDatabase(this)))
 {
 }
 

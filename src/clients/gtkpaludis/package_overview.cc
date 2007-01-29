@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,8 +48,7 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<PackageOverview> :
-        InternalCounted<Implementation<PackageOverview> >
+    struct Implementation<PackageOverview>
     {
         PackageOverview * const overview;
         Columns columns;
@@ -165,8 +164,8 @@ namespace
         versions_row[_imp->columns.col_left] = "Versions";
         versions_row[_imp->columns.col_right] = "";
 
-        PackageDepAtom::Pointer atom(new PackageDepAtom(stringify(_pkg)));
-        PackageDatabaseEntryCollection::ConstPointer
+        std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(stringify(_pkg)));
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
             entries(DefaultEnvironment::get_instance()->package_database()->query(
                         *atom, is_any, qo_order_by_version)),
             preferred_entries(DefaultEnvironment::get_instance()->package_database()->query(
@@ -204,7 +203,7 @@ namespace
         if (! (preferred_entries->empty()))
         {
             StatusBarMessage m2(this, "Querying package metadata...");
-            VersionMetadata::ConstPointer metadata(DefaultEnvironment::get_instance()->package_database()->fetch_repository(
+            std::tr1::shared_ptr<const VersionMetadata> metadata(DefaultEnvironment::get_instance()->package_database()->fetch_repository(
                         preferred_entries->last()->repository)->version_metadata(
                         preferred_entries->last()->name, preferred_entries->last()->version));
             homepage_row[_imp->columns.col_right] = metadata->homepage;
@@ -221,6 +220,6 @@ PackageOverview::populate(const QualifiedPackageName & name)
     if (name == QualifiedPackageName("no-category/no-package"))
         _imp->set_model(Gtk::TreeStore::create(_imp->columns));
     else
-        PaludisThread::get_instance()->launch(Populate::Pointer(new Populate(_imp.raw_pointer(), name)));
+        PaludisThread::get_instance()->launch(std::tr1::shared_ptr<Populate>(new Populate(_imp.operator-> (), name)));
 }
 

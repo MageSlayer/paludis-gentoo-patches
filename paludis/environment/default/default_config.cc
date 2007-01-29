@@ -60,9 +60,7 @@ namespace paludis
      * \ingroup grpdefaultconfig
      */
     template<>
-    struct Implementation<DefaultConfig> :
-        InternalCounted<DefaultConfig>,
-        InstantiationPolicy<DefaultConfig, instantiation_method::NonCopyableTag>
+    struct Implementation<DefaultConfig>
     {
         static std::string config_suffix;
         static bool config_suffix_can_be_set;
@@ -76,28 +74,28 @@ namespace paludis
         std::list<RepositoryConfigEntry> repos;
 
         std::map<QualifiedPackageName, std::vector<
-            std::pair<PackageDepAtom::ConstPointer, KeywordName> > > keywords;
+            std::pair<std::tr1::shared_ptr<const PackageDepAtom>, KeywordName> > > keywords;
 
-        const std::vector<std::pair<PackageDepAtom::ConstPointer, KeywordName> > empty_keywords;
+        const std::vector<std::pair<std::tr1::shared_ptr<const PackageDepAtom>, KeywordName> > empty_keywords;
 
         std::vector<KeywordName> default_keywords;
 
         mutable std::vector<SetKeywordConfigEntry> set_keywords;
 
         std::map<QualifiedPackageName, std::vector<
-            std::pair<PackageDepAtom::ConstPointer, std::string> > > licenses;
+            std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > > licenses;
 
-        const std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > empty_licenses;
+        const std::vector<std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > empty_licenses;
 
         std::vector<std::string> default_licenses;
 
         mutable std::vector<SetLicenseConfigEntry> set_licenses;
 
-        std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > user_masks;
+        std::map<QualifiedPackageName, std::vector<std::tr1::shared_ptr<const PackageDepAtom> > > user_masks;
 
-        std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> > user_unmasks;
+        std::map<QualifiedPackageName, std::vector<std::tr1::shared_ptr<const PackageDepAtom> > > user_unmasks;
 
-        std::vector<PackageDepAtom::ConstPointer> empty_masks;
+        std::vector<std::tr1::shared_ptr<const PackageDepAtom> > empty_masks;
 
         mutable std::vector<SetMaskConfigEntry> set_masks;
         mutable std::vector<SetMaskConfigEntry> set_unmasks;
@@ -108,9 +106,9 @@ namespace paludis
 
         mutable std::vector<SetUseConfigMinusStarEntry> set_use_prefixes_that_have_minus_star;
 
-        std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > empty_use_prefixes;
+        std::vector<std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > empty_use_prefixes;
 
-        std::map<QualifiedPackageName, std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > >
+        std::map<QualifiedPackageName, std::vector<std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > >
             use_prefixes_that_have_minus_star;
 
         std::vector<UseConfigEntry> empty_use;
@@ -153,7 +151,7 @@ namespace paludis
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
                                 stringify(s->set_name) + "' doesn't exist");
-                        s->dep_atom.assign(new AllDepAtom);
+                        s->dep_atom.reset(new AllDepAtom);
                     }
                 }
 
@@ -166,7 +164,7 @@ namespace paludis
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
                                 stringify(s->set_name) + "' doesn't exist");
-                        s->dep_atom.assign(new AllDepAtom);
+                        s->dep_atom.reset(new AllDepAtom);
                     }
                 }
         }
@@ -183,7 +181,7 @@ namespace paludis
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
                                 stringify(s->set_name) + "' doesn't exist");
-                        s->dep_atom.assign(new AllDepAtom);
+                        s->dep_atom.reset(new AllDepAtom);
                     }
                 }
         }
@@ -200,7 +198,7 @@ namespace paludis
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
                                 stringify(s->set_name) + "' doesn't exist");
-                        s->dep_atom.assign(new AllDepAtom);
+                        s->dep_atom.reset(new AllDepAtom);
                     }
                 }
         }
@@ -217,7 +215,7 @@ namespace paludis
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
                                 stringify(s->set_name) + "' doesn't exist");
-                        s->dep_atom.assign(new AllDepAtom);
+                        s->dep_atom.reset(new AllDepAtom);
                     }
                 }
         }
@@ -234,7 +232,7 @@ namespace paludis
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
                                 stringify(s->set_name) + "' doesn't exist");
-                        s->dep_atom.assign(new AllDepAtom);
+                        s->dep_atom.reset(new AllDepAtom);
                     }
                 }
         }
@@ -297,7 +295,7 @@ DefaultConfig::DefaultConfig() :
     _imp->root = root_prefix;
     _imp->config_dir = stringify(local_config_dir);
 
-    AssociativeCollection<std::string, std::string>::Pointer conf_vars(
+    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > conf_vars(
             new AssociativeCollection<std::string, std::string>::Concrete);
     conf_vars->insert("ROOT", root_prefix);
 
@@ -343,7 +341,7 @@ DefaultConfig::DefaultConfig() :
             if (! k.get("importance").empty())
                 importance = destringify<int>(k.get("importance"));
 
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete(k.begin(), k.end()));
 
             keys->erase("repo_file");
@@ -360,9 +358,9 @@ DefaultConfig::DefaultConfig() :
 
         /* add virtuals repositories */
         _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1,
-                    AssociativeCollection<std::string, std::string>::Pointer(0)));
+                    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
         _imp->repos.push_back(RepositoryConfigEntry("virtuals", -2,
-                    AssociativeCollection<std::string, std::string>::Pointer(0)));
+                    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
 
         _imp->repos.sort();
     }
@@ -396,11 +394,11 @@ DefaultConfig::DefaultConfig() :
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                         _imp->set_keywords.push_back(SetKeywordConfigEntry(
-                                    SetName(tokens.at(0)), DepAtom::Pointer(0), KeywordName(*t)));
+                                    SetName(tokens.at(0)), std::tr1::shared_ptr<DepAtom>(), KeywordName(*t)));
                 }
                 else
                 {
-                    PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
+                    std::tr1::shared_ptr<const PackageDepAtom> a(new PackageDepAtom(tokens.at(0)));
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                         _imp->keywords[a->package()].push_back(std::make_pair(a, *t));
@@ -438,7 +436,7 @@ DefaultConfig::DefaultConfig() :
                     std::copy(next(tokens.begin()), tokens.end(), std::back_inserter(_imp->default_licenses));
                 else
                 {
-                    PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
+                    std::tr1::shared_ptr<const PackageDepAtom> a(new PackageDepAtom(tokens.at(0)));
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                         _imp->licenses[a->package()].push_back(std::make_pair(a, *t));
@@ -474,10 +472,10 @@ DefaultConfig::DefaultConfig() :
 
                 if (std::string::npos == line->find('/'))
                     _imp->set_masks.push_back(SetMaskConfigEntry(SetName(*line),
-                                DepAtom::ConstPointer(0)));
+                                std::tr1::shared_ptr<const DepAtom>()));
                 else
                 {
-                    PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
+                    std::tr1::shared_ptr<const PackageDepAtom> a(new PackageDepAtom(*line));
                     _imp->user_masks[a->package()].push_back(a);
                 }
             }
@@ -506,10 +504,10 @@ DefaultConfig::DefaultConfig() :
 
                 if (std::string::npos == line->find('/'))
                     _imp->set_unmasks.push_back(SetMaskConfigEntry(SetName(*line),
-                                DepAtom::ConstPointer(0)));
+                                std::tr1::shared_ptr<const DepAtom>()));
                 else
                 {
-                    PackageDepAtom::ConstPointer a(new PackageDepAtom(*line));
+                    std::tr1::shared_ptr<const PackageDepAtom> a(new PackageDepAtom(*line));
                     _imp->user_unmasks[a->package()].push_back(a);
                 }
             }
@@ -578,10 +576,10 @@ DefaultConfig::DefaultConfig() :
                         {
                             if ("-*" == *t)
                                 _imp->set_use_prefixes_that_have_minus_star.push_back(SetUseConfigMinusStarEntry(
-                                            SetName(tokens.at(0)), DepAtom::ConstPointer(0), prefix));
+                                            SetName(tokens.at(0)), std::tr1::shared_ptr<const DepAtom>(), prefix));
                             else
                                 _imp->set_use.push_back(SetUseConfigEntry(SetName(tokens.at(0)),
-                                            DepAtom::ConstPointer(0), UseFlagName(prefix + t->substr(1)), use_disabled));
+                                            std::tr1::shared_ptr<const DepAtom>(), UseFlagName(prefix + t->substr(1)), use_disabled));
                         }
                         else if (':' == t->at(t->length() - 1))
                         {
@@ -592,12 +590,12 @@ DefaultConfig::DefaultConfig() :
                         }
                         else
                             _imp->set_use.push_back(SetUseConfigEntry(SetName(tokens.at(0)),
-                                        DepAtom::ConstPointer(0), UseFlagName(prefix + *t), use_enabled));
+                                        std::tr1::shared_ptr<const DepAtom>(), UseFlagName(prefix + *t), use_enabled));
                     }
                 }
                 else
                 {
-                    PackageDepAtom::ConstPointer a(new PackageDepAtom(tokens.at(0)));
+                    std::tr1::shared_ptr<const PackageDepAtom> a(new PackageDepAtom(tokens.at(0)));
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                     {
@@ -742,7 +740,7 @@ DefaultConfig::PackageKeywordsIterator
 DefaultConfig::begin_package_keywords(const QualifiedPackageName & d) const
 {
     std::map<QualifiedPackageName, std::vector<
-        std::pair<PackageDepAtom::ConstPointer, KeywordName> > >::const_iterator r;
+        std::pair<std::tr1::shared_ptr<const PackageDepAtom>, KeywordName> > >::const_iterator r;
     if (_imp->keywords.end() != ((r = _imp->keywords.find(d))))
         return PackageKeywordsIterator(r->second.begin());
     else
@@ -753,7 +751,7 @@ DefaultConfig::PackageKeywordsIterator
 DefaultConfig::end_package_keywords(const QualifiedPackageName & d) const
 {
     std::map<QualifiedPackageName, std::vector<
-        std::pair<PackageDepAtom::ConstPointer, KeywordName> > >::const_iterator r;
+        std::pair<std::tr1::shared_ptr<const PackageDepAtom>, KeywordName> > >::const_iterator r;
     if (_imp->keywords.end() != ((r = _imp->keywords.find(d))))
         return PackageKeywordsIterator(r->second.end());
     else
@@ -776,7 +774,7 @@ DefaultConfig::PackageLicensesIterator
 DefaultConfig::begin_package_licenses(const QualifiedPackageName & d) const
 {
     std::map<QualifiedPackageName, std::vector<
-        std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
+        std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > >::const_iterator r;
     if (_imp->licenses.end() != ((r = _imp->licenses.find(d))))
         return PackageLicensesIterator(r->second.begin());
     else
@@ -787,7 +785,7 @@ DefaultConfig::PackageLicensesIterator
 DefaultConfig::end_package_licenses(const QualifiedPackageName & d) const
 {
     std::map<QualifiedPackageName, std::vector<
-        std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
+        std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > >::const_iterator r;
     if (_imp->licenses.end() != ((r = _imp->licenses.find(d))))
         return PackageLicensesIterator(r->second.end());
     else
@@ -809,7 +807,7 @@ DefaultConfig::end_default_licenses() const
 DefaultConfig::UserMasksIterator
 DefaultConfig::begin_user_masks(const QualifiedPackageName & d) const
 {
-    std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
+    std::map<QualifiedPackageName, std::vector<std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator r;
     if (_imp->user_masks.end() != ((r = _imp->user_masks.find(d))))
         return UserMasksIterator(indirect_iterator<const PackageDepAtom>(r->second.begin()));
     else
@@ -819,7 +817,7 @@ DefaultConfig::begin_user_masks(const QualifiedPackageName & d) const
 DefaultConfig::UserMasksIterator
 DefaultConfig::end_user_masks(const QualifiedPackageName & d) const
 {
-    std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
+    std::map<QualifiedPackageName, std::vector<std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator r;
     if (_imp->user_masks.end() != ((r = _imp->user_masks.find(d))))
         return UserMasksIterator(indirect_iterator<const PackageDepAtom>(r->second.end()));
     else
@@ -829,7 +827,7 @@ DefaultConfig::end_user_masks(const QualifiedPackageName & d) const
 DefaultConfig::UserUnmasksIterator
 DefaultConfig::begin_user_unmasks(const QualifiedPackageName & d) const
 {
-    std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
+    std::map<QualifiedPackageName, std::vector<std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator r;
     if (_imp->user_unmasks.end() != ((r = _imp->user_unmasks.find(d))))
         return UserUnmasksIterator(indirect_iterator<const PackageDepAtom>(r->second.begin()));
     else
@@ -839,7 +837,7 @@ DefaultConfig::begin_user_unmasks(const QualifiedPackageName & d) const
 DefaultConfig::UserUnmasksIterator
 DefaultConfig::end_user_unmasks(const QualifiedPackageName & d) const
 {
-    std::map<QualifiedPackageName, std::vector<PackageDepAtom::ConstPointer> >::const_iterator r;
+    std::map<QualifiedPackageName, std::vector<std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator r;
     if (_imp->user_unmasks.end() != ((r = _imp->user_unmasks.find(d))))
         return UserUnmasksIterator(indirect_iterator<const PackageDepAtom>(r->second.end()));
     else
@@ -929,7 +927,7 @@ DefaultConfig::end_use_prefixes_with_minus_star() const
 DefaultConfig::PackageUseMinusStarIterator
 DefaultConfig::begin_package_use_prefixes_with_minus_star(const QualifiedPackageName & d) const
 {
-    std::map<QualifiedPackageName, std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
+    std::map<QualifiedPackageName, std::vector<std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > >::const_iterator r;
     if (_imp->use_prefixes_that_have_minus_star.end() != ((r = _imp->use_prefixes_that_have_minus_star.find(d))))
         return PackageUseMinusStarIterator(r->second.begin());
     else
@@ -939,7 +937,7 @@ DefaultConfig::begin_package_use_prefixes_with_minus_star(const QualifiedPackage
 DefaultConfig::PackageUseMinusStarIterator
 DefaultConfig::end_package_use_prefixes_with_minus_star(const QualifiedPackageName & d) const
 {
-    std::map<QualifiedPackageName, std::vector<std::pair<PackageDepAtom::ConstPointer, std::string> > >::const_iterator r;
+    std::map<QualifiedPackageName, std::vector<std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > >::const_iterator r;
     if (_imp->use_prefixes_that_have_minus_star.end() != ((r = _imp->use_prefixes_that_have_minus_star.find(d))))
         return PackageUseMinusStarIterator(r->second.end());
     else

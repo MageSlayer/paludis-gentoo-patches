@@ -75,10 +75,10 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DefaultConfig :
-        public InstantiationPolicy<DefaultConfig, instantiation_method::SingletonAsNeededTag>,
+        public InstantiationPolicy<DefaultConfig, instantiation_method::SingletonTag>,
         private PrivateImplementationPattern<DefaultConfig>
     {
-        friend class InstantiationPolicy<DefaultConfig, instantiation_method::SingletonAsNeededTag>;
+        friend class InstantiationPolicy<DefaultConfig, instantiation_method::SingletonTag>;
 
         private:
             DefaultConfig();
@@ -112,7 +112,7 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig,
-                    const std::pair<PackageDepAtom::ConstPointer, KeywordName> > PackageKeywordsIterator;
+                    const std::pair<std::tr1::shared_ptr<const PackageDepAtom>, KeywordName> > PackageKeywordsIterator;
 
             PackageKeywordsIterator begin_package_keywords(const QualifiedPackageName & d) const;
 
@@ -135,7 +135,7 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig,
-                    const std::pair<PackageDepAtom::ConstPointer, std::string> > PackageLicensesIterator;
+                    const std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > PackageLicensesIterator;
 
             PackageLicensesIterator begin_package_licenses(const QualifiedPackageName & d) const;
 
@@ -200,7 +200,7 @@ namespace paludis
             UseMinusStarIterator end_use_prefixes_with_minus_star() const;
 
             typedef libwrapiter::ForwardIterator<DefaultConfig,
-                    const std::pair<PackageDepAtom::ConstPointer, std::string> > PackageUseMinusStarIterator;
+                    const std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > PackageUseMinusStarIterator;
 
             PackageUseMinusStarIterator begin_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;
             PackageUseMinusStarIterator end_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;

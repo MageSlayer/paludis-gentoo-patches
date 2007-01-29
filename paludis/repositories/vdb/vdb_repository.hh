@@ -68,21 +68,21 @@ namespace paludis
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const;
 
-            virtual CategoryNamePartCollection::ConstPointer do_category_names() const;
+            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
 
-            virtual QualifiedPackageNameCollection::ConstPointer do_package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
                     const CategoryNamePart &) const;
 
-            virtual VersionSpecCollection::ConstPointer do_version_specs(
+            virtual std::tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
                     const QualifiedPackageName &) const;
 
             virtual bool do_has_version(const QualifiedPackageName &, const VersionSpec &) const;
 
-            virtual VersionMetadata::ConstPointer do_version_metadata(
+            virtual std::tr1::shared_ptr<const VersionMetadata> do_version_metadata(
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual Contents::ConstPointer do_contents(
+            virtual std::tr1::shared_ptr<const Contents> do_contents(
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
@@ -95,23 +95,23 @@ namespace paludis
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &, 
                     const InstallOptions &) const;
 
-            virtual DepAtom::Pointer do_package_set(const SetName &) const;
+            virtual std::tr1::shared_ptr<DepAtom> do_package_set(const SetName &) const;
 
             /* RepositoryUseInterface */
 
             virtual UseFlagState do_query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
             virtual bool do_query_use_mask(const UseFlagName &, const PackageDatabaseEntry *) const;
             virtual bool do_query_use_force(const UseFlagName &, const PackageDatabaseEntry *) const;
-            virtual UseFlagNameCollection::ConstPointer do_arch_flags() const;
-            virtual UseFlagNameCollection::ConstPointer do_use_expand_flags() const;
-            virtual UseFlagNameCollection::ConstPointer do_use_expand_hidden_prefixes() const;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_arch_flags() const;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_flags() const;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_hidden_prefixes() const;
             virtual UseFlagName do_use_expand_name(const UseFlagName & u) const;
             virtual UseFlagName do_use_expand_value(const UseFlagName & u) const;
-            virtual UseFlagNameCollection::ConstPointer do_use_expand_prefixes() const;
+            virtual std::tr1::shared_ptr<const UseFlagNameCollection> do_use_expand_prefixes() const;
 
             /* end of RepositoryUseInterface */
 
-            virtual CategoryNamePartCollection::ConstPointer do_category_names_containing_package(
+            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
                     const PackageNamePart &) const;
 
         public:
@@ -123,9 +123,9 @@ namespace paludis
             /**
              * Virtual constructor.
              */
-            static CountedPtr<Repository> make_vdb_repository(
+            static std::tr1::shared_ptr<Repository> make_vdb_repository(
                     Environment * const env,
-                    AssociativeCollection<std::string, std::string>::ConstPointer m);
+                    std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m);
 
             /**
              * Destructor.
@@ -144,20 +144,17 @@ namespace paludis
                     const PackageDatabaseEntry & for_package,
                     const std::string & var) const;
 
-            virtual ProvidesCollection::ConstPointer provided_packages() const;
+            virtual std::tr1::shared_ptr<const ProvidesCollection> provided_packages() const;
 
-            virtual VersionMetadata::ConstPointer provided_package_version_metadata(
+            virtual std::tr1::shared_ptr<const VersionMetadata> provided_package_version_metadata(
                     const RepositoryProvidesEntry &) const;
 
-            virtual SetsCollection::ConstPointer sets_list() const;
+            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 
             virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
 
             virtual std::string do_describe_use_flag(const UseFlagName &,
                     const PackageDatabaseEntry * const) const;
-
-            typedef CountedPtr<VDBRepository, count_policy::InternalCountTag> Pointer;
-            typedef CountedPtr<const VDBRepository, count_policy::InternalCountTag> ConstPointer;
     };
 
     /**

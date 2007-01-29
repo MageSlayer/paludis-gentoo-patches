@@ -147,8 +147,7 @@ EbuildCommand::do_run_command(const std::string & cmd)
 }
 
 EbuildMetadataCommand::EbuildMetadataCommand(const EbuildCommandParams & p) :
-    EbuildCommand(p),
-    _metadata(0)
+    EbuildCommand(p)
 {
 }
 
@@ -175,7 +174,7 @@ EbuildMetadataCommand::do_run_command(const std::string & cmd)
 {
     PStream prog(cmd);
     KeyValueConfigFile f(&prog);
-    _metadata.assign(new EbuildVersionMetadata);
+    _metadata.reset(new EbuildVersionMetadata);
 
     bool ok(false);
     try

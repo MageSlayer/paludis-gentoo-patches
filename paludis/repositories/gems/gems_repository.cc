@@ -41,8 +41,7 @@ namespace paludis
     typedef MakeHashedMap<PackageNamePart, Versions>::Type Packages;
 
     template<>
-    struct Implementation<GemsRepository> :
-        InternalCounted<Implementation<GemsRepository> >
+    struct Implementation<GemsRepository>
     {
         const GemsRepositoryParams params;
 
@@ -70,7 +69,7 @@ namespace paludis
         for (GemsCache::Iterator g(cache.begin()), g_end(cache.end()) ;
                 g != g_end ; ++g)
         {
-            VersionMetadata::Pointer m(new GemsVersionMetadata(g->version));
+            std::tr1::shared_ptr<VersionMetadata> m(new GemsVersionMetadata(g->version));
             m->homepage = g->homepage;
             if (g->description.empty())
                 m->description = g->summary;
@@ -103,25 +102,25 @@ GemsRepository::do_has_package_named(const QualifiedPackageName & c) const
     return false;
 }
 
-CategoryNamePartCollection::ConstPointer
+std::tr1::shared_ptr<const CategoryNamePartCollection>
 GemsRepository::do_category_names() const
 {
-    static CategoryNamePartCollection::Pointer names(new CategoryNamePartCollection::Concrete);
+    static std::tr1::shared_ptr<CategoryNamePartCollection> names(new CategoryNamePartCollection::Concrete);
     if (names->empty())
         names->insert(CategoryNamePart("gems"));
 
     return names;
 }
 
-QualifiedPackageNameCollection::ConstPointer
+std::tr1::shared_ptr<const QualifiedPackageNameCollection>
 GemsRepository::do_package_names(const CategoryNamePart & c) const
 {
     if (! has_category_named(c))
-        return QualifiedPackageNameCollection::ConstPointer(new QualifiedPackageNameCollection::Concrete);
+        return std::tr1::shared_ptr<const QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
 
     _imp->need_entries();
 
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
+    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
     for (Packages::const_iterator i(_imp->packages.begin()), i_end(_imp->packages.end()) ;
             i != i_end ; ++i)
         result->insert(c + i->first);
@@ -129,15 +128,15 @@ GemsRepository::do_package_names(const CategoryNamePart & c) const
     return result;
 }
 
-VersionSpecCollection::ConstPointer
+std::tr1::shared_ptr<const VersionSpecCollection>
 GemsRepository::do_version_specs(const QualifiedPackageName & p) const
 {
     if (! has_category_named(p.category))
-        return VersionSpecCollection::ConstPointer(new VersionSpecCollection::Concrete);
+        return std::tr1::shared_ptr<const VersionSpecCollection>(new VersionSpecCollection::Concrete);
 
     _imp->need_entries();
 
-    VersionSpecCollection::Pointer result(new VersionSpecCollection::Concrete);
+    std::tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
     Packages::const_iterator i(_imp->packages.find(p.package));
     if (i != _imp->packages.end())
         std::copy(i->second.begin(), i->second.end(), transform_inserter(
@@ -157,7 +156,7 @@ GemsRepository::do_has_version(const QualifiedPackageName & q, const VersionSpec
     return false;
 }
 
-VersionMetadata::ConstPointer
+std::tr1::shared_ptr<const VersionMetadata>
 GemsRepository::do_version_metadata(const QualifiedPackageName & q, const VersionSpec & v) const
 {
     if (! has_category_named(q.category))
@@ -187,16 +186,16 @@ GemsRepository::do_install(const QualifiedPackageName &, const VersionSpec &, co
 {
 }
 
-DepAtom::Pointer
+std::tr1::shared_ptr<DepAtom>
 GemsRepository::do_package_set(const SetName &) const
 {
-    return DepAtom::Pointer(0);
+    return std::tr1::shared_ptr<DepAtom>();
 }
 
-SetsCollection::ConstPointer
+std::tr1::shared_ptr<const SetsCollection>
 GemsRepository::sets_list() const
 {
-    return SetsCollection::Pointer(new SetsCollection::Concrete);
+    return std::tr1::shared_ptr<SetsCollection>(new SetsCollection::Concrete);
 }
 
 bool
@@ -274,7 +273,7 @@ GemsRepository::~GemsRepository()
 void
 GemsRepository::invalidate()
 {
-    _imp.assign(new Implementation<GemsRepository>(_imp->params));
+    _imp.reset(new Implementation<GemsRepository>(_imp->params));
 }
 
 void
@@ -282,9 +281,9 @@ GemsRepository::regenerate_cache() const
 {
 }
 
-RepositoryInfo::ConstPointer
+std::tr1::shared_ptr<const RepositoryInfo>
 GemsRepository::info(bool) const
 {
-    return RepositoryInfo::Pointer(new RepositoryInfo);
+    return std::tr1::shared_ptr<RepositoryInfo>(new RepositoryInfo);
 }
 

@@ -113,8 +113,7 @@ namespace paludis
      * \ingroup grplibpaludisargs
      */
     template<>
-    struct Implementation<StringSetArg> :
-        InternalCounted<Implementation<StringSetArg> >
+    struct Implementation<StringSetArg>
     {
         std::set<std::string> args;
         std::vector<std::pair<std::string, std::string> > allowed_args;
@@ -126,8 +125,7 @@ namespace paludis
      * \ingroup grplibpaludisargs
      */
     template<>
-    struct Implementation<StringSetArg::StringSetArgOptions> :
-        InternalCounted<Implementation<StringSetArg::StringSetArgOptions> >
+    struct Implementation<StringSetArg::StringSetArgOptions>
     {
         std::vector<std::pair<std::string, std::string> > options;
     };
@@ -197,8 +195,7 @@ namespace paludis
      * \ingroup grplibpaludisargs
      */
     template<>
-    struct Implementation<EnumArg> :
-        InternalCounted<Implementation<EnumArg> >
+    struct Implementation<EnumArg>
     {
         std::vector<std::pair<std::string, std::string> > allowed_args;
     };
@@ -209,8 +206,7 @@ namespace paludis
      * \ingroup grplibpaludisargs
      */
     template<>
-    struct Implementation<EnumArg::EnumArgOptions> :
-        InternalCounted<Implementation<EnumArg::EnumArgOptions> >
+    struct Implementation<EnumArg::EnumArgOptions>
     {
         std::vector<std::pair<std::string, std::string> > options;
     };

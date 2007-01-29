@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -135,13 +135,12 @@ namespace paludis
      * \ingroup grppackagedatabase
      */
     template<>
-    struct Implementation<PackageDatabase> :
-        InternalCounted<Implementation<PackageDatabase> >
+    struct Implementation<PackageDatabase>
     {
         /**
          * Our Repository instances.
          */
-        std::list<Repository::Pointer> repositories;
+        std::list<std::tr1::shared_ptr<Repository> > repositories;
 
         /// Our environment.
         const Environment * environment;
@@ -159,11 +158,11 @@ PackageDatabase::~PackageDatabase()
 }
 
 void
-PackageDatabase::add_repository(const Repository::Pointer r)
+PackageDatabase::add_repository(const std::tr1::shared_ptr<Repository> r)
 {
     Context c("When adding a repository named '" + stringify(r->name()) + "':");
 
-    IndirectIterator<std::list<Repository::Pointer>::const_iterator, const Repository>
+    IndirectIterator<std::list<std::tr1::shared_ptr<Repository> >::const_iterator, const Repository>
         r_c(_imp->repositories.begin()),
         r_end(_imp->repositories.end());
     for ( ; r_c != r_end ; ++r_c)
@@ -179,16 +178,16 @@ PackageDatabase::fetch_unique_qualified_package_name(
 {
     Context context("When disambiguating package name '" + stringify(p) + "':");
 
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
+    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
 
-    IndirectIterator<std::list<Repository::Pointer>::const_iterator, const Repository>
+    IndirectIterator<std::list<std::tr1::shared_ptr<Repository> >::const_iterator, const Repository>
         r(_imp->repositories.begin()),
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
     {
         Context local_context("When looking in repository '" + stringify(r->name()) + "':");
 
-        CategoryNamePartCollection::ConstPointer cats(r->category_names_containing_package(p));
+        std::tr1::shared_ptr<const CategoryNamePartCollection> cats(r->category_names_containing_package(p));
         for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
                 c != c_end ; ++c)
             result->insert(*c + p);
@@ -202,19 +201,19 @@ PackageDatabase::fetch_unique_qualified_package_name(
     return *(result->begin());
 }
 
-PackageDatabaseEntryCollection::Pointer
+std::tr1::shared_ptr<PackageDatabaseEntryCollection>
 PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_state) const
 {
     return query(a, installed_state, qo_order_by_version);
 }
 
-PackageDatabaseEntryCollection::Pointer
+std::tr1::shared_ptr<PackageDatabaseEntryCollection>
 PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_state,
         const QueryOrder query_order) const
 {
-    PackageDatabaseEntryCollection::Concrete::Pointer result(new PackageDatabaseEntryCollection::Concrete);
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection::Concrete> result(new PackageDatabaseEntryCollection::Concrete);
 
-    IndirectIterator<std::list<Repository::Pointer>::const_iterator, const Repository>
+    IndirectIterator<std::list<std::tr1::shared_ptr<Repository> >::const_iterator, const Repository>
         r(_imp->repositories.begin()),
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
@@ -225,12 +224,12 @@ PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_st
         if ((installed_state == is_installable_only) && ! r->installable_interface)
             continue;
 
-        VersionSpecCollection::ConstPointer versions(r->version_specs(a.package()));
+        std::tr1::shared_ptr<const VersionSpecCollection> versions(r->version_specs(a.package()));
         VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end());
         for ( ; v != v_end ; ++v)
         {
             PackageDatabaseEntry e(a.package(), *v, r->name());
-            if (! match_package(_imp->environment, a, e))
+            if (! match_package(*_imp->environment, a, e))
                 continue;
 
             result->push_back(e);
@@ -264,10 +263,10 @@ PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_st
     return result;
 }
 
-Repository::ConstPointer
+std::tr1::shared_ptr<const Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n) const
 {
-    std::list<Repository::Pointer>::const_iterator
+    std::list<std::tr1::shared_ptr<Repository> >::const_iterator
         r(_imp->repositories.begin()),
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)
@@ -277,10 +276,10 @@ PackageDatabase::fetch_repository(const RepositoryName & n) const
     throw NoSuchRepositoryError(stringify(n));
 }
 
-Repository::Pointer
+std::tr1::shared_ptr<Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n)
 {
-    std::list<Repository::Pointer>::const_iterator
+    std::list<std::tr1::shared_ptr<Repository> >::const_iterator
         r(_imp->repositories.begin()),
         r_end(_imp->repositories.end());
     for ( ; r != r_end ; ++r)

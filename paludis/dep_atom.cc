@@ -60,10 +60,9 @@ namespace paludis
      * \ingroup grpdepatoms
      */
     template<>
-    struct Implementation<CompositeDepAtom> :
-        InternalCounted<Implementation<CompositeDepAtom> >
+    struct Implementation<CompositeDepAtom>
     {
-        std::list<DepAtom::ConstPointer> children;
+        std::list<std::tr1::shared_ptr<const DepAtom> > children;
     };
 }
 
@@ -77,7 +76,7 @@ CompositeDepAtom::~CompositeDepAtom()
 }
 
 void
-CompositeDepAtom::add_child(DepAtom::ConstPointer c)
+CompositeDepAtom::add_child(std::tr1::shared_ptr<const DepAtom> c)
 {
     _imp->children.push_back(c);
 }
@@ -120,7 +119,7 @@ PackageDepAtom::as_package_dep_atom() const
     return this;
 }
 
-BlockDepAtom::BlockDepAtom(PackageDepAtom::ConstPointer a) :
+BlockDepAtom::BlockDepAtom(std::tr1::shared_ptr<const PackageDepAtom> a) :
     StringDepAtom("!" + a->text()),
     _atom(a)
 {
@@ -129,12 +128,7 @@ BlockDepAtom::BlockDepAtom(PackageDepAtom::ConstPointer a) :
 PackageDepAtom::PackageDepAtom(const QualifiedPackageName & our_package) :
     StringDepAtom(stringify(our_package)),
     _package(our_package),
-    _version_requirements(0),
-    _version_requirements_mode(vr_and),
-    _slot(0),
-    _repository(0),
-    _use_requirements(0),
-    _tag(0)
+    _version_requirements_mode(vr_and)
 {
 }
 
@@ -157,12 +151,7 @@ PackageDepAtom::PackageDepAtom(const PackageDepAtom & other) :
 PackageDepAtom::PackageDepAtom(const std::string & ss) :
     StringDepAtom(ss),
     _package(CategoryNamePart("later"), PackageNamePart("later")),
-    _version_requirements(0),
-    _version_requirements_mode(vr_and),
-    _slot(0),
-    _repository(0),
-    _use_requirements(0),
-    _tag(0)
+    _version_requirements_mode(vr_and)
 {
     Context context("When parsing package dep atom '" + ss + "':");
 
@@ -193,7 +182,7 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
             }
             UseFlagName name(flag);
             if (0 == _use_requirements)
-                _use_requirements.assign(new UseRequirements);
+                _use_requirements.reset(new UseRequirements);
             if (! _use_requirements->insert(name, state))
                 throw PackageDepAtomError("Conflicting [] contents");
 
@@ -203,14 +192,14 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
         std::string::size_type repo_p;
         if (std::string::npos != ((repo_p = s.rfind("::"))))
         {
-            _repository.assign(new RepositoryName(s.substr(repo_p + 2)));
+            _repository.reset(new RepositoryName(s.substr(repo_p + 2)));
             s.erase(repo_p);
         }
 
         std::string::size_type slot_p;
         if (std::string::npos != ((slot_p = s.rfind(':'))))
         {
-            _slot.assign(new SlotName(s.substr(slot_p + 1)));
+            _slot.reset(new SlotName(s.substr(slot_p + 1)));
             s.erase(slot_p);
         }
 
@@ -248,7 +237,7 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
 
             _package = QualifiedPackageName(s.substr(p, q - p - 1));
 
-            _version_requirements.assign(new VersionRequirements::Concrete);
+            _version_requirements.reset(new VersionRequirements::Concrete);
 
             if ('*' == s.at(s.length() - 1))
             {
@@ -393,8 +382,7 @@ namespace paludis
      * \ingroup grpdepatoms
      */
     template<>
-    struct Implementation<UseRequirements> :
-        InternalCounted<Implementation<UseRequirements> >
+    struct Implementation<UseRequirements>
     {
         std::map<UseFlagName, UseFlagState> reqs;
     };
@@ -442,12 +430,12 @@ UseRequirements::state(const UseFlagName & u) const
     return i->second;
 }
 
-PackageDepAtom::Pointer
+std::tr1::shared_ptr<PackageDepAtom>
 PackageDepAtom::without_use_requirements() const
 {
     std::string s(text());
     if (std::string::npos != s.find('['))
         s.erase(s.find('['));
-    return Pointer(new PackageDepAtom(s));
+    return std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(s));
 }
 

@@ -24,7 +24,7 @@
 #include <paludis/environment/default/default_environment.hh>
 #include <iostream>
 
-namespace p = paludis;
+using namespace paludis;
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -32,7 +32,7 @@ using std::endl;
 namespace
 {
     struct ContentsFinder :
-        p::ContentsVisitorTypes::ConstVisitor
+        ContentsVisitorTypes::ConstVisitor
     {
         bool found;
         const std::string query;
@@ -53,32 +53,32 @@ namespace
                 found |= (std::string::npos != e.find(query));
         }
 
-        void visit(const p::ContentsFileEntry * const e)
+        void visit(const ContentsFileEntry * const e)
         {
             handle(e->name());
         }
 
-        void visit(const p::ContentsDirEntry * const e)
+        void visit(const ContentsDirEntry * const e)
         {
             handle(e->name());
         }
 
-        void visit(const p::ContentsSymEntry * const e)
+        void visit(const ContentsSymEntry * const e)
         {
             handle(e->name());
         }
 
-        void visit(const p::ContentsMiscEntry * const e)
+        void visit(const ContentsMiscEntry * const e)
         {
             handle(e->name());
         }
 
-        void visit(const p::ContentsFifoEntry * const e)
+        void visit(const ContentsFifoEntry * const e)
         {
             handle(e->name());
         }
 
-        void visit(const p::ContentsDevEntry * const e)
+        void visit(const ContentsDevEntry * const e)
         {
             handle(e->name());
         }
@@ -87,13 +87,13 @@ namespace
 
 int
 do_one_owner(
-        const p::Environment * const env,
+        const Environment * const env,
         const std::string & query)
 {
     bool found_owner=false;
     cout << "* " << colour(cl_package_name, query) << endl;
 
-    for (p::PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
+    for (PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
         if (! (*r)->installed_interface)
@@ -101,20 +101,20 @@ do_one_owner(
         if (! (*r)->contents_interface)
             continue;
 
-        p::CategoryNamePartCollection::ConstPointer cats((*r)->category_names());
-        for (p::CategoryNamePartCollection::Iterator c(cats->begin()),
+        std::tr1::shared_ptr<const CategoryNamePartCollection> cats((*r)->category_names());
+        for (CategoryNamePartCollection::Iterator c(cats->begin()),
                 c_end(cats->end()) ; c != c_end ; ++c)
         {
-            p::QualifiedPackageNameCollection::ConstPointer pkgs((*r)->package_names(*c));
-            for (p::QualifiedPackageNameCollection::Iterator p(pkgs->begin()),
+            std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs((*r)->package_names(*c));
+            for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()),
                     p_end(pkgs->end()) ; p != p_end ; ++p)
             {
-                p::VersionSpecCollection::ConstPointer vers((*r)->version_specs(*p));
-                for (p::VersionSpecCollection::Iterator v(vers->begin()),
+                std::tr1::shared_ptr<const VersionSpecCollection> vers((*r)->version_specs(*p));
+                for (VersionSpecCollection::Iterator v(vers->begin()),
                         v_end(vers->end()) ; v != v_end ; ++v)
                 {
-                    p::PackageDatabaseEntry e(*p, *v, (*r)->name());
-                    p::Contents::ConstPointer contents((*r)->contents_interface->contents(*p, *v));
+                    PackageDatabaseEntry e(*p, *v, (*r)->name());
+                    std::tr1::shared_ptr<const Contents> contents((*r)->contents_interface->contents(*p, *v));
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
                     std::for_each(contents->begin(), contents->end(), accept_visitor(&d));
                     if (d.found)
@@ -136,8 +136,8 @@ int
 do_owner()
 {
     int return_code(0);
-    p::Context context("When performing owner action from command line:");
-    p::Environment * const env(p::DefaultEnvironment::get_instance());
+    Context context("When performing owner action from command line:");
+    Environment * const env(DefaultEnvironment::get_instance());
 
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());

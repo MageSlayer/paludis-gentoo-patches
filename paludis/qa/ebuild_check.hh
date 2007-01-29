@@ -23,7 +23,6 @@
 #include <paludis/name.hh>
 #include <paludis/qa/check.hh>
 #include <paludis/qa/check_result.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/version_spec.hh>
 
@@ -42,8 +41,7 @@ namespace paludis
          * \ingroup grpqa
          */
         class PALUDIS_VISIBLE EbuildCheck :
-            public Check,
-            public InternalCounted<EbuildCheck>
+            public Check
         {
             protected:
                 EbuildCheck();
@@ -74,10 +72,10 @@ namespace paludis
         template <typename T_>
         struct MakeEbuildCheck
         {
-            static EbuildCheck::Pointer
+            static std::tr1::shared_ptr<EbuildCheck>
             make_ebuild_check()
             {
-                return EbuildCheck::Pointer(new T_);
+                return std::tr1::shared_ptr<EbuildCheck>(new T_);
             }
         };
 
@@ -87,11 +85,11 @@ namespace paludis
          * \ingroup grpqa
          */
         class EbuildCheckMaker :
-            public VirtualConstructor<std::string, EbuildCheck::Pointer (*) (),
+            public VirtualConstructor<std::string, std::tr1::shared_ptr<EbuildCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchEbuildCheckTypeError> >,
-            public InstantiationPolicy<EbuildCheckMaker, instantiation_method::SingletonAsNeededTag>
+            public InstantiationPolicy<EbuildCheckMaker, instantiation_method::SingletonTag>
         {
-            friend class InstantiationPolicy<EbuildCheckMaker, instantiation_method::SingletonAsNeededTag>;
+            friend class InstantiationPolicy<EbuildCheckMaker, instantiation_method::SingletonTag>;
 
             private:
                 EbuildCheckMaker();

@@ -58,22 +58,22 @@ namespace paludis
 
             virtual bool do_has_package_named(const QualifiedPackageName &) const;
 
-            virtual CategoryNamePartCollection::ConstPointer do_category_names() const;
+            virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names() const;
 
-            virtual QualifiedPackageNameCollection::ConstPointer do_package_names(
+            virtual std::tr1::shared_ptr<const QualifiedPackageNameCollection> do_package_names(
                     const CategoryNamePart &) const;
 
-            virtual VersionSpecCollection::ConstPointer do_version_specs(
+            virtual std::tr1::shared_ptr<const VersionSpecCollection> do_version_specs(
                     const QualifiedPackageName &) const;
 
             virtual bool do_has_version(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual VersionMetadata::ConstPointer do_version_metadata(
+            virtual std::tr1::shared_ptr<const VersionMetadata> do_version_metadata(
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual Contents::ConstPointer do_contents(
+            virtual std::tr1::shared_ptr<const Contents> do_contents(
                     const QualifiedPackageName &,
                     const VersionSpec &) const;
 
@@ -86,9 +86,9 @@ namespace paludis
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
-            virtual DepAtom::Pointer do_package_set(const SetName &) const;
+            virtual std::tr1::shared_ptr<DepAtom> do_package_set(const SetName &) const;
 
-            virtual SetsCollection::ConstPointer sets_list() const;
+            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 
         public:
             /**
@@ -99,9 +99,9 @@ namespace paludis
             /**
              * Virtual constructor.
              */
-            static CountedPtr<Repository> make_cran_installed_repository(
+            static std::tr1::shared_ptr<Repository> make_cran_installed_repository(
                     Environment * const env,
-                    AssociativeCollection<std::string, std::string>::ConstPointer m);
+                    std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m);
 
             /**
              * Destructor.

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,8 +48,7 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<RepositoryOverview> :
-        InternalCounted<Implementation<RepositoryOverview> >
+    struct Implementation<RepositoryOverview>
     {
         RepositoryOverview * const info;
         Columns columns;
@@ -114,7 +113,7 @@ namespace
 
         StatusBarMessage m1(this, "Querying repository information...");
 
-        RepositoryInfo::ConstPointer info(DefaultEnvironment::get_instance()->package_database()->fetch_repository(
+        std::tr1::shared_ptr<const RepositoryInfo> info(DefaultEnvironment::get_instance()->package_database()->fetch_repository(
                     _repo)->info(true));
         for (RepositoryInfo::SectionIterator s(info->begin_sections()), s_end(info->end_sections()) ;
                 s != s_end ; ++s)
@@ -141,7 +140,7 @@ RepositoryOverview::populate(const RepositoryName & name)
     if (name.data() == "no-repository")
         _imp->set_model(Gtk::TreeStore::create(_imp->columns));
     else
-        PaludisThread::get_instance()->launch(Populate::Pointer(new Populate(_imp.raw_pointer(), name)));
+        PaludisThread::get_instance()->launch(std::tr1::shared_ptr<Populate>(new Populate(_imp.operator-> (), name)));
 }
 
 

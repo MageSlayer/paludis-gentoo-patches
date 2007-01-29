@@ -30,10 +30,10 @@ namespace Vte
 {
     class Reaper :
         public Glib::Object,
-        public paludis::InstantiationPolicy<Reaper, paludis::instantiation_method::SingletonAsNeededTag>
+        public paludis::InstantiationPolicy<Reaper, paludis::instantiation_method::SingletonTag>
 
     {
-        friend class paludis::InstantiationPolicy<Reaper, paludis::instantiation_method::SingletonAsNeededTag>;
+        friend class paludis::InstantiationPolicy<Reaper, paludis::instantiation_method::SingletonTag>;
 
         sigc::signal<void, int, int> _signal_child_exited;
         

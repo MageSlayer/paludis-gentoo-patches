@@ -34,9 +34,6 @@ namespace paludis
         public:
             PortageVirtualVersionMetadata(const SlotName &, const PackageDatabaseEntry &);
             virtual ~PortageVirtualVersionMetadata();
-
-            typedef CountedPtr<const PortageVirtualVersionMetadata, count_policy::InternalCountTag> ConstPointer;
-            typedef CountedPtr<PortageVirtualVersionMetadata, count_policy::InternalCountTag> Pointer;
     };
 }
 

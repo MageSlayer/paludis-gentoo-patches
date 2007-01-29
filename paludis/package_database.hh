@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,6 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/name.hh>
 #include <paludis/repository.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/instantiation_policy.hh>
@@ -229,8 +228,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PackageDatabase :
         private PrivateImplementationPattern<PackageDatabase>,
-        private InstantiationPolicy<PackageDatabase, instantiation_method::NonCopyableTag>,
-        public InternalCounted<PackageDatabase>
+        private InstantiationPolicy<PackageDatabase, instantiation_method::NonCopyableTag>
     {
         private:
            void _sort_package_database_entry_collection(
@@ -256,17 +254,17 @@ namespace paludis
              * same name as the new Repository already exists in our
              * collection.
              */
-            void add_repository(Repository::Pointer);
+            void add_repository(std::tr1::shared_ptr<Repository>);
 
             /**
              * Fetch a named repository.
              */
-            Repository::ConstPointer fetch_repository(const RepositoryName &) const;
+            std::tr1::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const;
 
             /**
              * Fetch a named repository.
              */
-            Repository::Pointer fetch_repository(const RepositoryName &);
+            std::tr1::shared_ptr<Repository> fetch_repository(const RepositoryName &);
 
             /**
              * Fetch the name of our 'favourite' repository (if a repository's
@@ -289,14 +287,14 @@ namespace paludis
              *
              * \deprecated Use the three argument form.
              */
-            PackageDatabaseEntryCollection::Pointer query(
+            std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
                     const PackageDepAtom & a,
                     const InstallState) const PALUDIS_ATTRIBUTE((deprecated));
 
             /**
              * Query the repository.
              */
-            PackageDatabaseEntryCollection::Pointer query(
+            std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
                     const PackageDepAtom & a,
                     const InstallState,
                     const QueryOrder) const;
@@ -309,7 +307,7 @@ namespace paludis
             ///\name Iterate over our repositories
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PackageDatabase, const Repository::Pointer> RepositoryIterator;
+            typedef libwrapiter::ForwardIterator<PackageDatabase, const std::tr1::shared_ptr<Repository> > RepositoryIterator;
 
             RepositoryIterator begin_repositories() const;
 

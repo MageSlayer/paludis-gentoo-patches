@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 
 #include <paludis/qa/check.hh>
 #include <paludis/qa/check_result.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/virtual_constructor.hh>
@@ -43,8 +42,7 @@ namespace paludis
          * \ingroup grpqa
          */
         class PALUDIS_VISIBLE ProfilesCheck :
-            public Check,
-            public InternalCounted<ProfilesCheck>
+            public Check
         {
             protected:
                 ProfilesCheck();
@@ -75,7 +73,7 @@ namespace paludis
         template <typename T_>
         struct MakeProfilesCheck
         {
-            static ProfilesCheck::Pointer make_profiles_check();
+            static std::tr1::shared_ptr<ProfilesCheck> make_profiles_check();
         };
 
         /**
@@ -84,11 +82,11 @@ namespace paludis
          * \ingroup grpqa
          */
         class ProfilesCheckMaker :
-            public VirtualConstructor<std::string, ProfilesCheck::Pointer (*) (),
+            public VirtualConstructor<std::string, std::tr1::shared_ptr<ProfilesCheck> (*) (),
                 virtual_constructor_not_found::ThrowException<NoSuchProfilesCheckTypeError> >,
-            public InstantiationPolicy<ProfilesCheckMaker, instantiation_method::SingletonAsNeededTag>
+            public InstantiationPolicy<ProfilesCheckMaker, instantiation_method::SingletonTag>
         {
-            friend class InstantiationPolicy<ProfilesCheckMaker, instantiation_method::SingletonAsNeededTag>;
+            friend class InstantiationPolicy<ProfilesCheckMaker, instantiation_method::SingletonTag>;
 
             private:
                 ProfilesCheckMaker();
@@ -98,10 +96,10 @@ namespace paludis
 }
 
 template <typename T_>
-paludis::qa::ProfilesCheck::Pointer
+std::tr1::shared_ptr<paludis::qa::ProfilesCheck>
 paludis::qa::MakeProfilesCheck<T_>::make_profiles_check()
 {
-    return paludis::qa::ProfilesCheck::Pointer(new T_);
+    return std::tr1::shared_ptr<paludis::qa::ProfilesCheck>(new T_);
 }
 
 #endif

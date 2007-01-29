@@ -38,7 +38,7 @@
 using namespace paludis;
 
 DefaultEnvironment::DefaultEnvironment() :
-    Environment(PackageDatabase::Pointer(new PackageDatabase(this)))
+    Environment(std::tr1::shared_ptr<PackageDatabase>(new PackageDatabase(this)))
 {
     Context context("When loading default environment:");
 
@@ -59,11 +59,11 @@ namespace
         std::unary_function<PackageDatabaseEntry, bool>
     {
         const Environment * const env;
-        DepAtom::ConstPointer set;
+        std::tr1::shared_ptr<const DepAtom> set;
         const PackageDatabaseEntry * dbe;
         bool matched;
 
-        IsInSet(const Environment * const e, DepAtom::ConstPointer s) :
+        IsInSet(const Environment * const e, std::tr1::shared_ptr<const DepAtom> s) :
             env(e),
             set(s),
             matched(false)
@@ -91,7 +91,7 @@ namespace
             if (matched)
                 return;
 
-            if (match_package(env, a, *dbe))
+            if (match_package(*env, *a, *dbe))
                 matched = true;
         }
 
@@ -126,9 +126,7 @@ bool
 DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
     /* first check package database use masks... */
-    const Repository * const repo((e ?
-                package_database()->fetch_repository(e->repository).raw_pointer() :
-                0));
+    const Repository * const repo((e ? package_database()->fetch_repository(e->repository).get() : 0));
 
     if (repo && repo->use_interface)
     {
@@ -147,7 +145,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         if (u->flag_name != f)
             continue;
 
-        if (! match_package(this, *u->dep_atom, *e))
+        if (! match_package(*this, *u->dep_atom, *e))
             continue;
 
         Log::get_instance()->message(ll_debug, lc_no_context, "Forced use flag: "
@@ -170,7 +168,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
             if (f != u->flag_name)
                 continue;
 
-            if (! match_package(this, *u->dep_atom, *e))
+            if (! match_package(*this, *u->dep_atom, *e))
                 continue;
 
             switch (u->flag_state)
@@ -212,7 +210,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
                 i_end(DefaultConfig::get_instance()->end_package_use_prefixes_with_minus_star(e->name)) ;
                 i != i_end ; ++i)
         {
-            if (! match_package(this, *i->first, *e))
+            if (! match_package(*this, *i->first, *e))
                 continue;
 
             if (0 == i->second.compare(0, i->second.length(), stringify(f), 0, i->second.length()))
@@ -317,7 +315,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
     bool consider_minus_star(true);
     if (e && repo && repo->use_interface)
     {
-        UseFlagNameCollection::ConstPointer prefixes(repo->use_interface->use_expand_prefixes());
+        std::tr1::shared_ptr<const UseFlagNameCollection> prefixes(repo->use_interface->use_expand_prefixes());
         for (UseFlagNameCollection::Iterator i(prefixes->begin()), i_end(prefixes->end()) ;
                 i != i_end ; ++i)
             if (0 == i->data().compare(0, i->data().length(), stringify(f), 0, i->data().length()))
@@ -412,7 +410,7 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
                 k_end(DefaultConfig::get_instance()->end_package_keywords(d->name)) ;
                 k != k_end ; ++k)
         {
-            if (! match_package(this, k->first, d))
+            if (! match_package(*this, *k->first, *d))
                 continue;
 
             if (k->second == minus_star_keyword)
@@ -480,7 +478,7 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
                 k_end(DefaultConfig::get_instance()->end_package_licenses(d->name)) ;
                 k != k_end ; ++k)
         {
-            if (! match_package(this, k->first, d))
+            if (! match_package(*this, *k->first, *d))
                 continue;
 
             if (k->second == "-*")
@@ -504,7 +502,7 @@ DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_masks(d.name)) ;
             k != k_end ; ++k)
     {
-        if (! match_package(this, *k, d))
+        if (! match_package(*this, *k, d))
             continue;
 
         return true;
@@ -533,7 +531,7 @@ DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_unmasks(d.name)) ;
             k != k_end ; ++k)
     {
-        if (! match_package(this, *k, d))
+        if (! match_package(*this, *k, d))
             continue;
 
         return true;
@@ -698,7 +696,7 @@ DefaultEnvironment::syncers_dirs() const
     return dirs;
 }
 
-CompositeDepAtom::Pointer
+std::tr1::shared_ptr<CompositeDepAtom>
 DefaultEnvironment::local_package_set(const SetName & s) const
 {
     Context context("When looking for package set '" + stringify(s) + "' in default environment:");
@@ -707,8 +705,8 @@ DefaultEnvironment::local_package_set(const SetName & s) const
     if (ff.exists())
     {
         LineConfigFile f(ff);
-        AllDepAtom::Pointer result(new AllDepAtom);
-        GeneralSetDepTag::Pointer tag(new GeneralSetDepTag(s, stringify(s) + ".conf"));
+        std::tr1::shared_ptr<AllDepAtom> result(new AllDepAtom);
+        std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(s) + ".conf"));
 
         for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
@@ -722,19 +720,19 @@ DefaultEnvironment::local_package_set(const SetName & s) const
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(0)));
+                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(tokens.at(0)));
                 atom->set_tag(tag);
                 result->add_child(atom);
             }
             else if ("*" == tokens.at(0))
             {
-                PackageDepAtom::Pointer atom(new PackageDepAtom(tokens.at(1)));
+                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(tokens.at(1)));
                 atom->set_tag(tag);
                 result->add_child(atom);
             }
             else if ("?" == tokens.at(0))
             {
-                PackageDepAtom::Pointer p(new PackageDepAtom(tokens.at(1)));
+                std::tr1::shared_ptr<PackageDepAtom> p(new PackageDepAtom(tokens.at(1)));
                 p->set_tag(tag);
                 if (! package_database()->query(PackageDepAtom(p->package()), is_installed_only, qo_whatever)->empty())
                     result->add_child(p);
@@ -751,13 +749,13 @@ DefaultEnvironment::local_package_set(const SetName & s) const
         return result;
     }
 
-    return DepAtom::Pointer(0);
+    return std::tr1::shared_ptr<AllDepAtom>();
 }
 
-SetsCollection::ConstPointer
+std::tr1::shared_ptr<const SetsCollection>
 DefaultEnvironment::sets_list() const
 {
-    SetsCollection::Pointer result(new SetsCollection::Concrete);
+    std::tr1::shared_ptr<SetsCollection> result(new SetsCollection::Concrete);
 
     if ((FSEntry(DefaultConfig::get_instance()->config_dir()) / "sets").exists())
         for (DirIterator d(FSEntry(DefaultConfig::get_instance()->config_dir()) / "sets"), d_end ;
@@ -784,10 +782,10 @@ DefaultEnvironment::end_mirrors(const std::string & mirror) const
     return DefaultConfig::get_instance()->end_mirrors(mirror);
 }
 
-UseFlagNameCollection::ConstPointer
+std::tr1::shared_ptr<const UseFlagNameCollection>
 DefaultEnvironment::known_use_expand_names(const UseFlagName & prefix, const PackageDatabaseEntry * pde) const
 {
-    UseFlagNameCollection::Pointer result(new UseFlagNameCollection::Concrete);
+    std::tr1::shared_ptr<UseFlagNameCollection> result(new UseFlagNameCollection::Concrete);
 
     std::string prefix_lower;
     std::transform(prefix.data().begin(), prefix.data().end(), std::back_inserter(prefix_lower), &::tolower);
@@ -805,7 +803,7 @@ DefaultEnvironment::known_use_expand_names(const UseFlagName & prefix, const Pac
             if (! i->dep_atom)
                 continue;
 
-            if (! match_package(this, *i->dep_atom, *pde))
+            if (! match_package(*this, *i->dep_atom, *pde))
                 continue;
 
             if (i->flag_name.data().length() > prefix_lower.length() &&

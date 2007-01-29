@@ -15,6 +15,6 @@ make_class_GemsRepositoryParams()
 
 make_class_GemsRepositoryEntry()
 {
-    key metadata VersionMetadata::Pointer
+    key metadata "std::tr1::shared_ptr<VersionMetadata>"
 }
 

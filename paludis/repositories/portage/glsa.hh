@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_GLSA_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -61,8 +60,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE GLSAPackage :
-        private PrivateImplementationPattern<GLSAPackage>,
-        public InternalCounted<GLSAPackage>
+        private PrivateImplementationPattern<GLSAPackage>
     {
         public:
             GLSAPackage(const QualifiedPackageName & name);
@@ -91,19 +89,18 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE GLSA :
-        private PrivateImplementationPattern<GLSA>,
-        public InternalCounted<GLSA>
+        private PrivateImplementationPattern<GLSA>
     {
         public:
             GLSA();
             ~GLSA();
 
-            static GLSA::Pointer create_from_xml_file(const std::string & filename);
+            static std::tr1::shared_ptr<GLSA> create_from_xml_file(const std::string & filename);
 
             typedef libwrapiter::ForwardIterator<GLSA, const GLSAPackage> PackagesIterator;
             PackagesIterator begin_packages() const;
             PackagesIterator end_packages() const;
-            void add_package(GLSAPackage::ConstPointer);
+            void add_package(std::tr1::shared_ptr<const GLSAPackage>);
 
             void set_id(const std::string &);
             std::string id() const;

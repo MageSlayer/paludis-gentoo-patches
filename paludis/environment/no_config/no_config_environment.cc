@@ -34,15 +34,14 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<NoConfigEnvironment> :
-        InternalCounted<Implementation<NoConfigEnvironment> >
+    struct Implementation<NoConfigEnvironment>
     {
         const FSEntry top_level_dir;
         const FSEntry write_cache;
         bool accept_unstable;
         bool is_vdb;
 
-        PortageRepository::Pointer portage_repo;
+        std::tr1::shared_ptr<PortageRepository> portage_repo;
 
         Implementation(Environment * const env, const NoConfigEnvironmentParams & params);
     };
@@ -111,14 +110,13 @@ Implementation<NoConfigEnvironment>::Implementation(
     top_level_dir(params.repository_dir),
     write_cache(params.write_cache),
     accept_unstable(params.accept_unstable),
-    is_vdb(is_vdb_repository(params.repository_dir, params.repository_type)),
-    portage_repo(0)
+    is_vdb(is_vdb_repository(params.repository_dir, params.repository_type))
 {
     Context context("When initialising NoConfigEnvironment at '" + stringify(params.repository_dir) + "':");
 
     if (! is_vdb)
     {
-        AssociativeCollection<std::string, std::string>::Pointer keys(
+        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
 
         keys->insert("format", "ebuild");
@@ -128,15 +126,16 @@ Implementation<NoConfigEnvironment>::Implementation(
         keys->insert("names_cache", "/var/empty");
 
         env->package_database()->add_repository(((portage_repo =
-                        RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
+                        std::tr1::static_pointer_cast<PortageRepository>(
+                            RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys)))));
         env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("virtuals")(env,
-                    AssociativeCollection<std::string, std::string>::Pointer(0)));
+                    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
     }
     else
     {
         Log::get_instance()->message(ll_debug, lc_context, "VDB, using vdb_db");
 
-        AssociativeCollection<std::string, std::string>::Pointer keys(
+        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
 
         keys->insert("format", "vdb");
@@ -146,12 +145,12 @@ Implementation<NoConfigEnvironment>::Implementation(
 
         env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
         env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
-                    AssociativeCollection<std::string, std::string>::Pointer(0)));
+                    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
     }
 }
 
 NoConfigEnvironment::NoConfigEnvironment(const NoConfigEnvironmentParams & params) :
-    Environment(PackageDatabase::Pointer(new PackageDatabase(this))),
+    Environment(std::tr1::shared_ptr<PackageDatabase>(new PackageDatabase(this))),
     PrivateImplementationPattern<NoConfigEnvironment>(
             new Implementation<NoConfigEnvironment>(this, params))
 {
@@ -238,13 +237,13 @@ NoConfigEnvironment::set_accept_unstable(const bool value)
     _imp->accept_unstable = value;
 }
 
-PortageRepository::Pointer
+std::tr1::shared_ptr<PortageRepository>
 NoConfigEnvironment::portage_repository()
 {
     return _imp->portage_repo;
 }
 
-PortageRepository::ConstPointer
+std::tr1::shared_ptr<const PortageRepository>
 NoConfigEnvironment::portage_repository() const
 {
     return _imp->portage_repo;

@@ -82,7 +82,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
-            VersionMetadata::Pointer two_m(repo->add_version("cat", "two", "1"));
+            std::tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "1"));
             two_m->deps_interface->build_depend_string = "!virtual/two";
             two_m->ebuild_interface->provide_string = "virtual/two";
         }
@@ -103,7 +103,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
-            VersionMetadata::Pointer two_m(repo->add_version("cat", "two", "1"));
+            std::tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "1"));
             two_m->deps_interface->build_depend_string = "!virtual/two";
             two_m->ebuild_interface->provide_string = "virtual/two";
             installed_repo->add_version("other", "two", "1")->ebuild_interface->provide_string = "virtual/two";
@@ -208,11 +208,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            VersionMetadata::Pointer one_m(repo->add_version("cat", "one", "1"));
+            std::tr1::shared_ptr<VersionMetadata> one_m(repo->add_version("cat", "one", "1"));
             one_m->ebuild_interface->provide_string = "virtual/one";
             one_m->deps_interface->build_depend_string = "!virtual/one";
             one_m->deps_interface->run_depend_string = "!virtual/one";
-            VersionMetadata::Pointer i_one_m(installed_repo->add_version("cat", "one", "1"));
+            std::tr1::shared_ptr<VersionMetadata> i_one_m(installed_repo->add_version("cat", "one", "1"));
             i_one_m->ebuild_interface->provide_string = "virtual/one";
             i_one_m->deps_interface->run_depend_string = "!virtual/one";
         }
@@ -231,11 +231,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            VersionMetadata::Pointer one_m(repo->add_version("cat", "one", "1"));
+            std::tr1::shared_ptr<VersionMetadata> one_m(repo->add_version("cat", "one", "1"));
             one_m->ebuild_interface->provide_string = "virtual/one";
             one_m->deps_interface->build_depend_string = "!virtual/one";
             one_m->deps_interface->run_depend_string = "!virtual/one";
-            VersionMetadata::Pointer i_one_m(installed_repo->add_version("cat", "one", "1"));
+            std::tr1::shared_ptr<VersionMetadata> i_one_m(installed_repo->add_version("cat", "one", "1"));
             i_one_m->ebuild_interface->provide_string = "virtual/one";
             i_one_m->deps_interface->run_depend_string = "!virtual/one";
         }
@@ -260,7 +260,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
-            VersionMetadata::Pointer two_m(repo->add_version("cat", "two", "2"));
+            std::tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "2"));
             two_m->ebuild_interface->provide_string = "virtual/two";
             two_m->deps_interface->build_depend_string = "!virtual/two";
             installed_repo->add_version("cat", "two", "1")->ebuild_interface->provide_string = "virtual/two";
@@ -308,7 +308,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
-            VersionMetadata::Pointer two_m(repo->add_version("cat", "two", "2"));
+            std::tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "2"));
             two_m->deps_interface->build_depend_string = "!<virtual/two-2";
             two_m->ebuild_interface->provide_string = "virtual/two";
             installed_repo->add_version("cat", "two", "1")->ebuild_interface->provide_string = "virtual/two";
@@ -336,7 +336,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
-            VersionMetadata::Pointer two_m(repo->add_version("cat", "two", "2"));
+            std::tr1::shared_ptr<VersionMetadata> two_m(repo->add_version("cat", "two", "2"));
             two_m->deps_interface->build_depend_string = "!<virtual/two-2";
             two_m->ebuild_interface->provide_string = "virtual/two";
             installed_repo->add_version("other", "two", "1")->ebuild_interface->provide_string = "virtual/two";

@@ -28,17 +28,17 @@ namespace paludis
         public DepAtomVisitorTypes::ConstVisitor
     {
         private:
-            PackageDepAtom::Pointer _atom;
+            std::tr1::shared_ptr<PackageDepAtom> _atom;
             bool _invalid;
 
         public:
             RangeRewriter();
             virtual ~RangeRewriter();
 
-            PackageDepAtom::ConstPointer atom() const
+            std::tr1::shared_ptr<const PackageDepAtom> atom() const
             {
                 if (_invalid)
-                    return PackageDepAtom::ConstPointer(0);
+                    return std::tr1::shared_ptr<const PackageDepAtom>();
 
                 return _atom;
             }

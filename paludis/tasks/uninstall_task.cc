@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,14 +28,13 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<UninstallTask> :
-        InternalCounted<Implementation<UninstallTask> >
+    struct Implementation<UninstallTask>
     {
         Environment * const env;
         InstallOptions install_options;
 
         std::list<std::string> raw_targets;
-        std::list<PackageDepAtom::Pointer> targets;
+        std::list<std::tr1::shared_ptr<PackageDepAtom> > targets;
 
         bool pretend;
         bool preserve_world;
@@ -93,9 +92,9 @@ UninstallTask::add_target(const std::string & target)
     /* we might have a dep atom, but we might just have a simple package name
      * without a category. either should work. */
     if (std::string::npos != target.find('/'))
-        _imp->targets.push_back(PackageDepAtom::Pointer(new PackageDepAtom(target)));
+        _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(target)));
     else
-        _imp->targets.push_back(PackageDepAtom::Pointer(new PackageDepAtom(
+        _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
                         _imp->env->package_database()->fetch_unique_qualified_package_name(
                             PackageNamePart(target)))));
 
@@ -148,12 +147,12 @@ UninstallTask::execute()
     if (_imp->unused)
         list.add_unused();
     else
-        for (std::list<PackageDepAtom::Pointer>::const_iterator t(_imp->targets.begin()),
+        for (std::list<std::tr1::shared_ptr<PackageDepAtom> >::const_iterator t(_imp->targets.begin()),
                 t_end(_imp->targets.end()) ; t != t_end ; ++t)
         {
             Context local_context("When looking for target '" + stringify(**t) + "':");
 
-            PackageDatabaseEntryCollection::ConstPointer r(_imp->env->package_database()->query(
+            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> r(_imp->env->package_database()->query(
                         **t, is_installed_only, qo_order_by_version));
             if (r->empty())
                 throw NoSuchPackageError(stringify(**t));
@@ -196,8 +195,8 @@ UninstallTask::execute()
     {
         on_update_world_pre();
 
-        AllDepAtom::Pointer all(new AllDepAtom);
-        for (std::list<PackageDepAtom::Pointer>::const_iterator t(_imp->targets.begin()),
+        std::tr1::shared_ptr<AllDepAtom> all(new AllDepAtom);
+        for (std::list<std::tr1::shared_ptr<PackageDepAtom> >::const_iterator t(_imp->targets.begin()),
                 t_end(_imp->targets.end()) ; t != t_end ; ++t)
             all->add_child(*t);
 

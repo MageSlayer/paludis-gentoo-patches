@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,8 +42,7 @@ namespace paludis
      * \ingroup grpportagerepository
      */
     template<>
-    struct Implementation<PortageRepositoryNews> :
-        InternalCounted<Implementation<PortageRepositoryNews> >
+    struct Implementation<PortageRepositoryNews>
     {
         const Environment * const environment;
         const PortageRepository * const portage_repository;
@@ -137,7 +136,7 @@ PortageRepositoryNews::update_news() const
             if (news.begin_display_if_profile() != news.end_display_if_profile())
             {
                 bool local_show(false);
-                FSEntryCollection::ConstPointer c(_imp->params.profiles);
+                std::tr1::shared_ptr<const FSEntryCollection> c(_imp->params.profiles);
                 for (FSEntryCollection::Iterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(
@@ -197,8 +196,7 @@ namespace paludis
      * \ingroup grpnewsconfigfile
      */
     template<>
-    struct Implementation<NewsFile> :
-        InternalCounted<Implementation<NewsFile> >
+    struct Implementation<NewsFile>
     {
         mutable bool in_header;
         mutable std::list<std::string> display_if_installed;

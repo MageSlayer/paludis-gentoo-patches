@@ -73,7 +73,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
     for (CommandLine::ParametersIterator p(next(CommandLine::get_instance()->begin_parameters())),
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
-        d.add(PackageDepAtom::Pointer(new PackageDepAtom(*p)));
+        d.add(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(*p)));
 
     for (DepList::Iterator p(d.begin()), p_end(d.end()) ; p != p_end ; ++p)
         if (dlk_masked == p->kind)
@@ -83,7 +83,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             std::string current;
 
-            VersionMetadata::ConstPointer m(env.package_database()->fetch_repository(
+            std::tr1::shared_ptr<const VersionMetadata> m(env.package_database()->fetch_repository(
                         p->package.repository)->version_metadata(p->package.name,
                             p->package.version));
             if (m->ebuild_interface)

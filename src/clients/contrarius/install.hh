@@ -29,6 +29,6 @@
  */
 
 /// Handle --install.
-int do_install(paludis::PackageDepAtom::ConstPointer atom);
+int do_install(std::tr1::shared_ptr<const paludis::PackageDepAtom> atom);
 
 #endif

@@ -44,8 +44,8 @@ namespace
         public DepAtomVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepAtom>
     {
         private:
-            PackageDatabase::ConstPointer _db;
-            PackageDatabaseEntryCollection::ConstPointer _entries;
+            std::tr1::shared_ptr<const PackageDatabase> _db;
+            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> _entries;
             std::string _depname;
             std::string _p;
 
@@ -58,7 +58,7 @@ namespace
         public:
             using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepAtom>::visit;
 
-            ReverseDepChecker(PackageDatabase::ConstPointer db, PackageDatabaseEntryCollection::ConstPointer entries,
+            ReverseDepChecker(std::tr1::shared_ptr<const PackageDatabase> db, std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries,
                     const std::string & p) :
                 _db(db),
                 _entries(entries),
@@ -70,7 +70,7 @@ namespace
             {
             }
 
-            void check(DepAtom::ConstPointer atom, const std::string & depname)
+            void check(std::tr1::shared_ptr<const DepAtom> atom, const std::string & depname)
             {
                 _depname = depname;
                 atom->accept(this);
@@ -116,8 +116,8 @@ namespace
     void
     ReverseDepChecker::visit(const PackageDepAtom * const a)
     {
-        PackageDatabaseEntryCollection::ConstPointer dep_entries(_db->query(*a, is_any, qo_order_by_version));
-        PackageDatabaseEntryCollection::Pointer matches(new PackageDatabaseEntryCollection::Concrete);
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> dep_entries(_db->query(*a, is_any, qo_order_by_version));
+        std::tr1::shared_ptr<PackageDatabaseEntryCollection> matches(new PackageDatabaseEntryCollection::Concrete);
 
         bool header_written = false;
 
@@ -175,7 +175,7 @@ namespace
     {
         Context context("When checking package '" + stringify(p) + "':");
 
-        PackageDatabaseEntryCollection::Pointer p_entries(env.package_database()->query(
+        std::tr1::shared_ptr<PackageDatabaseEntryCollection> p_entries(env.package_database()->query(
                 PackageDepAtom(p), is_any, qo_order_by_version));
 
         bool found_matches(false);
@@ -185,8 +185,8 @@ namespace
         {
             try
             {
-                VersionMetadata::ConstPointer metadata(r.version_metadata(e->name, e->version));
-                ReverseDepChecker checker(env.package_database(), PackageDatabaseEntryCollection::ConstPointer(&entries),
+                std::tr1::shared_ptr<const VersionMetadata> metadata(r.version_metadata(e->name, e->version));
+                ReverseDepChecker checker(env.package_database(), std::tr1::shared_ptr<const PackageDatabaseEntryCollection>(&entries),
                         stringify(p) + "-" + stringify(e->version));
 
                 if (metadata->deps_interface)
@@ -216,16 +216,16 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
 {
     Context context("When performing find-reverse-deps action:");
 
-    PackageDepAtom::Pointer atom(0);
+    std::tr1::shared_ptr<PackageDepAtom> atom;
     try
     {
         if (std::string::npos == CommandLine::get_instance()->begin_parameters()->find('/'))
         {
-            atom.assign(new PackageDepAtom(env.package_database()->fetch_unique_qualified_package_name(
+            atom.reset(new PackageDepAtom(env.package_database()->fetch_unique_qualified_package_name(
                             PackageNamePart(*CommandLine::get_instance()->begin_parameters()))));
         }
         else
-            atom.assign(new PackageDepAtom(*CommandLine::get_instance()->begin_parameters()));
+            atom.reset(new PackageDepAtom(*CommandLine::get_instance()->begin_parameters()));
     }
     catch (const AmbiguousPackageNameError & e)
     {
@@ -240,7 +240,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 4;
     }
 
-    PackageDatabaseEntryCollection::Pointer entries(env.package_database()->query(*atom, is_any, qo_order_by_version));
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection> entries(env.package_database()->query(*atom, is_any, qo_order_by_version));
     int ret(0);
 
     if (entries->empty())
@@ -259,7 +259,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
 
         write_repository_header(stringify(*atom), stringify(r->name()));
 
-        CategoryNamePartCollection::ConstPointer cat_names(r->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -272,7 +272,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
                             stringify(*c)))
                     continue;
 
-            QualifiedPackageNameCollection::ConstPointer pkg_names(r->package_names(*c));
+            std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

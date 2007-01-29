@@ -22,10 +22,10 @@
 #define PALUDIS_GUARD_PALUDIS_FS_ENTRY_HH 1
 
 #include <paludis/util/comparison_policy.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/exception.hh>
 #include <string>
 #include <iosfwd>
+#include <tr1/memory>
 
 /** \file
  * Declarations for paludis::Filesystem.
@@ -96,7 +96,7 @@ namespace paludis
         private:
             std::string _path;
 
-            mutable CountedPtr<struct ::stat, count_policy::ExternalCountTag> _stat_info;
+            mutable std::tr1::shared_ptr<struct ::stat> _stat_info;
 
             mutable bool _exists;
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PRIVATE_IMPLEMENTATION_PATTERN_HH
 #define PALUDIS_GUARD_PALUDIS_PRIVATE_IMPLEMENTATION_PATTERN_HH 1
 
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/instantiation_policy.hh>
 
 /** \file
@@ -51,10 +50,45 @@ namespace paludis
         private InstantiationPolicy<PrivateImplementationPattern<C_>, instantiation_method::NonCopyableTag>
     {
         protected:
+            class ImpPtr
+            {
+                private:
+                    ImpPtr(const ImpPtr &);
+                    void operator= (const ImpPtr &);
+                    Implementation<C_> * _ptr;
+
+                public:
+                    ImpPtr(Implementation<C_> * p) :
+                        _ptr(p)
+                    {
+                    }
+
+                    ~ImpPtr()
+                    {
+                        delete _ptr;
+                    }
+
+                    Implementation<C_> * operator-> ()
+                    {
+                        return _ptr;
+                    }
+
+                    const Implementation<C_> * operator-> () const
+                    {
+                        return _ptr;
+                    }
+
+                    void reset(Implementation<C_> * p)
+                    {
+                        std::swap(_ptr, p);
+                        delete p;
+                    }
+            };
+
             /**
              * Pointer to our implementation data.
              */
-            CountedPtr<Implementation<C_>, count_policy::InternalCountTag> _imp;
+            ImpPtr _imp;
 
         public:
             /**
@@ -62,6 +96,10 @@ namespace paludis
              */
             explicit PrivateImplementationPattern(Implementation<C_> * i) :
                 _imp(i)
+            {
+            }
+
+            ~PrivateImplementationPattern()
             {
             }
     };

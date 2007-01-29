@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,8 +38,7 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<GLSAPackage> :
-        InternalCounted<Implementation<GLSAPackage> >
+    struct Implementation<GLSAPackage>
     {
         QualifiedPackageName name;
         std::list<UseFlagName> archs;
@@ -53,12 +52,11 @@ namespace paludis
     };
 
     template<>
-    struct Implementation<GLSA> :
-        InternalCounted<Implementation<GLSA> >
+    struct Implementation<GLSA>
     {
         std::string id;
         std::string title;
-        std::list<GLSAPackage::ConstPointer> packages;
+        std::list<std::tr1::shared_ptr<const GLSAPackage> > packages;
     };
 }
 
@@ -153,7 +151,7 @@ GLSA::end_packages() const
 }
 
 void
-GLSA::add_package(GLSAPackage::ConstPointer p)
+GLSA::add_package(std::tr1::shared_ptr<const GLSAPackage> p)
 {
     _imp->packages.push_back(p);
 }
@@ -189,7 +187,7 @@ namespace
     struct LibXMLHandle
     {
         void * handle;
-        GLSA::Pointer (* create_glsa_from_xml_file_handle)(const std::string &);
+        std::tr1::shared_ptr<GLSA> (* create_glsa_from_xml_file_handle)(const std::string &);
 
         LibXMLHandle() :
             handle(0),
@@ -208,7 +206,7 @@ namespace
 
 #endif
 
-GLSA::Pointer
+std::tr1::shared_ptr<GLSA>
 GLSA::create_from_xml_file(const std::string & filename)
 {
 #if ENABLE_GLSA
@@ -223,7 +221,7 @@ GLSA::create_from_xml_file(const std::string & filename)
                 + stringify(dlerror()) + "' when dlopen(libpaludisportagerepositoryxmlthings.so)");
 
     if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
-        libxmlhandle.create_glsa_from_xml_file_handle = STUPID_CAST(GLSA::Pointer (*)(const std::string &),
+        libxmlhandle.create_glsa_from_xml_file_handle = STUPID_CAST(std::tr1::shared_ptr<GLSA> (*)(const std::string &),
                 dlsym(libxmlhandle.handle, "create_glsa_from_xml_file"));
     if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
         throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"

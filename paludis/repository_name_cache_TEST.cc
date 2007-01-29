@@ -37,10 +37,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
-            RepositoryNameCache cache(FSEntry("/var/empty"), repo.raw_pointer());
+            RepositoryNameCache cache(FSEntry("/var/empty"), repo.get());
             TEST_CHECK(! cache.usable());
         }
     } test_names_cache_empty;
@@ -52,10 +52,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_generated"), repo.raw_pointer());
+            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_generated"), repo.get());
             TEST_CHECK(cache.usable());
             TEST_CHECK(! cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(! cache.usable());
@@ -69,10 +69,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_existing"), repo.raw_pointer());
+            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_existing"), repo.get());
             TEST_CHECK(cache.usable());
             TEST_CHECK(! cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(! cache.usable());
@@ -86,10 +86,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/old_format"), repo.raw_pointer());
+            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/old_format"), repo.get());
             TEST_CHECK(cache.usable());
             TEST_CHECK(! cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(! cache.usable());
@@ -103,10 +103,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/bad_repo"), repo.raw_pointer());
+            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/bad_repo"), repo.get());
             TEST_CHECK(cache.usable());
             TEST_CHECK(! cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(! cache.usable());
@@ -120,18 +120,18 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/good_repo"), repo.raw_pointer());
+            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/good_repo"), repo.get());
             TEST_CHECK(cache.usable());
 
-            CategoryNamePartCollection::ConstPointer foo(cache.category_names_containing_package(PackageNamePart("foo")));
+            std::tr1::shared_ptr<const CategoryNamePartCollection> foo(cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(foo);
             TEST_CHECK_EQUAL(join(foo->begin(), foo->end(), " "), "bar baz");
 
-            CategoryNamePartCollection::ConstPointer moo(cache.category_names_containing_package(PackageNamePart("moo")));
+            std::tr1::shared_ptr<const CategoryNamePartCollection> moo(cache.category_names_containing_package(PackageNamePart("moo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(moo);
             TEST_CHECK(moo->empty());
@@ -145,10 +145,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            FakeRepository::Pointer repo(new FakeRepository(&env, RepositoryName("repo")));
+            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
             env.package_database()->add_repository(repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/generated"), repo.raw_pointer());
+            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/generated"), repo.get());
             repo->add_package(QualifiedPackageName("bar/foo"));
             repo->add_package(QualifiedPackageName("baz/foo"));
 
@@ -156,12 +156,12 @@ namespace test_cases
             cache.regenerate_cache();
             TEST_CHECK(cache.usable());
 
-            CategoryNamePartCollection::ConstPointer foo(cache.category_names_containing_package(PackageNamePart("foo")));
+            std::tr1::shared_ptr<const CategoryNamePartCollection> foo(cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(foo);
             TEST_CHECK_EQUAL(join(foo->begin(), foo->end(), " "), "bar baz");
 
-            CategoryNamePartCollection::ConstPointer moo(cache.category_names_containing_package(PackageNamePart("moo")));
+            std::tr1::shared_ptr<const CategoryNamePartCollection> moo(cache.category_names_containing_package(PackageNamePart("moo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(moo);
             TEST_CHECK(moo->empty());

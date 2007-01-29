@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,15 +26,16 @@
  * \ingroup grpdeptag
  */
 
-#include <string>
 #include <paludis/package_database_entry.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/visitor.hh>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/collection.hh>
 #include <paludis/util/sr.hh>
+
+#include <string>
+#include <tr1/memory>
 
 namespace paludis
 {
@@ -51,8 +52,7 @@ namespace paludis
      * \nosubgrouping
      */
     class DepTagCategory :
-        InstantiationPolicy<DepTagCategory, instantiation_method::NonCopyableTag>,
-        public InternalCounted<DepTagCategory>
+        private InstantiationPolicy<DepTagCategory, instantiation_method::NonCopyableTag>
     {
         private:
             bool _visible;
@@ -141,11 +141,11 @@ namespace paludis
      * \ingroup grpdeptag
      */
     class DepTagCategoryMaker :
-        public VirtualConstructor<std::string, DepTagCategory::ConstPointer (*) (),
+        public VirtualConstructor<std::string, std::tr1::shared_ptr<const DepTagCategory> (*) (),
             virtual_constructor_not_found::ThrowException<NoSuchDepTagCategory> >,
-        public InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonAsNeededTag>
+        public InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>
     {
-        friend class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonAsNeededTag>;
+        friend class InstantiationPolicy<DepTagCategoryMaker, instantiation_method::SingletonTag>;
 
         private:
             DepTagCategoryMaker();
@@ -176,7 +176,6 @@ namespace paludis
      */
     class DepTag :
         InstantiationPolicy<DepTag, instantiation_method::NonCopyableTag>,
-        public InternalCounted<DepTag>,
         public virtual VisitableInterface<DepTagVisitorTypes>,
         public ComparisonPolicy<DepTag,
             comparison_mode::FullComparisonTag,

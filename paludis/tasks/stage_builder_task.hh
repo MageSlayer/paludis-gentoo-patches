@@ -26,6 +26,8 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
 
+#include <tr1/memory>
+
 namespace paludis
 {
     /**
@@ -56,8 +58,7 @@ namespace paludis
      * \ingroup grpstagebuildertask
      * \nosubgrouping
      */
-    class StageBase :
-        public InternalCounted<StageBase>
+    class StageBase
     {
         public:
             virtual ~StageBase();
@@ -105,14 +106,14 @@ namespace paludis
             ///\name Queue stage in build list
             ///\{
 
-            void queue_stage(StageBase::ConstPointer);
+            void queue_stage(std::tr1::shared_ptr<const StageBase>);
 
             ///\}
 
             ///\name Iterate over our stages
             ///\{
 
-            typedef libwrapiter::ForwardIterator<StageBuilderTask, const StageBase::ConstPointer> StageIterator;
+            typedef libwrapiter::ForwardIterator<StageBuilderTask, const std::tr1::shared_ptr<const StageBase> > StageIterator;
             StageIterator begin_stages() const;
             StageIterator end_stages() const;
 
@@ -122,11 +123,11 @@ namespace paludis
             ///\{
 
             virtual void on_build_all_pre() = 0;
-            virtual void on_build_pre(StageBase::ConstPointer) = 0;
-            virtual void on_build_post(StageBase::ConstPointer) = 0;
-            virtual void on_build_fail(StageBase::ConstPointer, const StageBuildError &) = 0;
-            virtual void on_build_skipped(StageBase::ConstPointer) = 0;
-            virtual void on_build_succeed(StageBase::ConstPointer) = 0;
+            virtual void on_build_pre(std::tr1::shared_ptr<const StageBase>) = 0;
+            virtual void on_build_post(std::tr1::shared_ptr<const StageBase>) = 0;
+            virtual void on_build_fail(std::tr1::shared_ptr<const StageBase>, const StageBuildError &) = 0;
+            virtual void on_build_skipped(std::tr1::shared_ptr<const StageBase>) = 0;
+            virtual void on_build_succeed(std::tr1::shared_ptr<const StageBase>) = 0;
             virtual void on_build_all_post() = 0;
 
             ///\}

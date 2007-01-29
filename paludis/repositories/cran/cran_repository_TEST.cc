@@ -51,13 +51,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format", "cran");
             keys->insert("library", "cran_repository_TEST_dir/library");
             keys->insert("location", "cran_repository_TEST_dir/repo1");
             keys->insert("buildroot", "cran_repository_TEST_dir/tmp");
-            CRANRepository::Pointer repo(CRANRepository::make_cran_repository(
+            std::tr1::shared_ptr<Repository> repo(CRANRepository::make_cran_repository(
                         &env, keys));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cran")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testpackage1")));
@@ -77,13 +77,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            AssociativeCollection<std::string, std::string>::Pointer keys(
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
             keys->insert("format",   "cran");
             keys->insert("library", "cran_repository_TEST_dir/library");
             keys->insert("location", "cran_repository_TEST_dir/repo2");
             keys->insert("buildroot", "cran_repository_TEST_dir/tmp");
-            CRANRepository::Pointer repo(CRANRepository::make_cran_repository(
+            std::tr1::shared_ptr<Repository> repo(CRANRepository::make_cran_repository(
                         &env, keys));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testbundle")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/bundlepkg1")));

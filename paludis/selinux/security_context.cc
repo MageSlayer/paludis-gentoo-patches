@@ -162,9 +162,9 @@ SecurityContext::~SecurityContext()
 {
 }
 
-SecurityContext::ConstPointer SecurityContext::current_context()
+std::tr1::shared_ptr<const SecurityContext> SecurityContext::current_context()
 {
-    SecurityContext::Pointer p(new SecurityContext);
+    std::tr1::shared_ptr<SecurityContext> p(new SecurityContext);
     security_context_t con;
     if (0 != libselinux.getcon(&con))
         throw SELinuxException("Couldn't get current security context.");
@@ -172,9 +172,9 @@ SecurityContext::ConstPointer SecurityContext::current_context()
     return p;
 }
 
-SecurityContext::ConstPointer SecurityContext::fs_create_context()
+std::tr1::shared_ptr<const SecurityContext> SecurityContext::fs_create_context()
 {
-    SecurityContext::Pointer p(new SecurityContext);
+    std::tr1::shared_ptr<SecurityContext> p(new SecurityContext);
     security_context_t con;
     if (0 != libselinux.getfscreatecon(&con))
         throw SELinuxException("Couldn't get current filesystem creation context.");
@@ -188,7 +188,7 @@ std::ostream & paludis::operator<<(std::ostream & os, const SecurityContext & co
     return os;
 }
 
-FSCreateCon::FSCreateCon(SecurityContext::ConstPointer newfscreatecon)
+FSCreateCon::FSCreateCon(std::tr1::shared_ptr<const SecurityContext> newfscreatecon)
     : _context(newfscreatecon), _prev_context(SecurityContext::fs_create_context())
 {
     if (0 != libselinux.setfscreatecon(_context->_imp->_context))
@@ -221,9 +221,9 @@ bool MatchPathCon::good() const
     return _good;
 }
 
-SecurityContext::ConstPointer MatchPathCon::match(const std::string & path, mode_t mode) const
+std::tr1::shared_ptr<const SecurityContext> MatchPathCon::match(const std::string & path, mode_t mode) const
 {
-    SecurityContext::Pointer p(new SecurityContext);
+    std::tr1::shared_ptr<SecurityContext> p(new SecurityContext);
     security_context_t context;
     if (0 != libselinux.matchpathcon(path.c_str(), mode, &context))
     {

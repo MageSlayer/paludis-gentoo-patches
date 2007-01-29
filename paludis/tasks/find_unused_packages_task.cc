@@ -33,11 +33,11 @@ FindUnusedPackagesTask::~FindUnusedPackagesTask()
 {
 }
 
-PackageDatabaseEntryCollection::ConstPointer
+std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
 FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
-    PackageDatabaseEntryCollection::Pointer result(new PackageDatabaseEntryCollection::Concrete);
-    PackageDatabaseEntryCollection::ConstPointer packages(_env->package_database()->query(
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection> result(new PackageDatabaseEntryCollection::Concrete);
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(_env->package_database()->query(
             PackageDepAtom(stringify(package) + "::" + stringify(_repo->name())),
             is_installable_only,
             qo_group_by_slot));
@@ -47,7 +47,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
     for (PackageDatabaseEntryCollection::ReverseIterator p(packages->rbegin()), p_end(packages->rend()) ;
             p != p_end ; ++p)
     {
-        VersionMetadata::ConstPointer metadata(_repo->version_metadata(package, p->version));
+        std::tr1::shared_ptr<const VersionMetadata> metadata(_repo->version_metadata(package, p->version));
         if (! metadata->ebuild_interface)
             continue;
 

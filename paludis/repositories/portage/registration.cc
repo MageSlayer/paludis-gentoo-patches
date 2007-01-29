@@ -33,10 +33,10 @@ extern "C"
 
 namespace
 {
-    CountedPtr<Repository>
+    std::tr1::shared_ptr<Repository>
     make_portage_repository(
             Environment * const env,
-            AssociativeCollection<std::string, std::string>::ConstPointer m)
+            std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m)
     {
         std::string repo_file = "?";
         if (m->end() != m->find("repo_file"))

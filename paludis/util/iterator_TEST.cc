@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,12 +19,12 @@
 
 #include <algorithm>
 #include <list>
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/util/iterator.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
 #include <set>
+#include <tr1/memory>
 
 using namespace test;
 using namespace paludis;
@@ -60,20 +60,19 @@ namespace
 namespace test_cases
 {
     /**
-     * \test Test IndirectIterator over a vector of CountedPtr of int.
+     * \test Test IndirectIterator over a vector of shared_ptr of int.
      *
      */
     struct IndirectIteratorVecCPIntTest : TestCase
     {
-        IndirectIteratorVecCPIntTest() : TestCase("vector<CountedPtr<int> >") { }
+        IndirectIteratorVecCPIntTest() : TestCase("vector<std::tr1::shared_ptr<int> >") { }
 
         void run()
         {
-            std::vector<CountedPtr<int, count_policy::ExternalCountTag> > v;
-            v.push_back(CountedPtr<int, count_policy::ExternalCountTag>(new int(5)));
-            v.push_back(CountedPtr<int, count_policy::ExternalCountTag>(new int(10)));
-            IndirectIterator<std::vector<CountedPtr<int,
-                count_policy::ExternalCountTag> >::iterator, int> vi(v.begin()), vi_end(v.end());
+            std::vector<std::tr1::shared_ptr<int> > v;
+            v.push_back(std::tr1::shared_ptr<int>(new int(5)));
+            v.push_back(std::tr1::shared_ptr<int>(new int(10)));
+            IndirectIterator<std::vector<std::tr1::shared_ptr<int> >::iterator, int> vi(v.begin()), vi_end(v.end());
             TEST_CHECK(vi != vi_end);
             TEST_CHECK(vi < vi_end);
             TEST_CHECK(! (vi > vi_end));
@@ -87,20 +86,19 @@ namespace test_cases
     } test_indirect_iterator_vec_cp_int;
 
     /**
-     * \test Test IndirectIterator over a list of CountedPtr of int.
+     * \test Test IndirectIterator over a list of shared_ptr of int.
      *
      */
     struct IndirectIteratorListCPIntTest : TestCase
     {
-        IndirectIteratorListCPIntTest() : TestCase("list<CountedPtr<int> >") { }
+        IndirectIteratorListCPIntTest() : TestCase("list<std::tr1::shared_ptr<int> >") { }
 
         void run()
         {
-            std::list<CountedPtr<int, count_policy::ExternalCountTag> > v;
-            v.push_back(CountedPtr<int, count_policy::ExternalCountTag>(new int(5)));
-            v.push_back(CountedPtr<int, count_policy::ExternalCountTag>(new int(10)));
-            IndirectIterator<std::list<CountedPtr<int,
-                count_policy::ExternalCountTag> >::iterator, int> vi(v.begin()), vi_end(v.end());
+            std::list<std::tr1::shared_ptr<int> > v;
+            v.push_back(std::tr1::shared_ptr<int>(new int(5)));
+            v.push_back(std::tr1::shared_ptr<int>(new int(10)));
+            IndirectIterator<std::list<std::tr1::shared_ptr<int> >::iterator, int> vi(v.begin()), vi_end(v.end());
             TEST_CHECK(vi != vi_end);
             TEST_CHECK_EQUAL(*vi, 5);
             TEST_CHECK(++vi != vi_end);
@@ -143,7 +141,7 @@ namespace test_cases
      */
     struct IndirectIteratorListPIntTest : TestCase
     {
-        IndirectIteratorListPIntTest() : TestCase("list<CountedPtr<int *>") { }
+        IndirectIteratorListPIntTest() : TestCase("list<int *>") { }
 
         void run()
         {

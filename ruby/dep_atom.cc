@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -49,12 +49,12 @@ namespace
     VALUE
     block_dep_atom_new(VALUE self, VALUE atom)
     {
-        BlockDepAtom::ConstPointer * ptr(0);
+        std::tr1::shared_ptr<const BlockDepAtom> * ptr(0);
         try
         {
-            PackageDepAtom::ConstPointer pkg(value_to_package_dep_atom(atom));
-            ptr = new BlockDepAtom::ConstPointer(new BlockDepAtom(pkg));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<BlockDepAtom::ConstPointer>::free, ptr));
+            std::tr1::shared_ptr<const PackageDepAtom> pkg(value_to_package_dep_atom(atom));
+            ptr = new std::tr1::shared_ptr<const BlockDepAtom>(new BlockDepAtom(pkg));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const BlockDepAtom> >::free, ptr));
             rb_obj_call_init(tdata, 1, &atom);
             return tdata;
         }
@@ -74,8 +74,8 @@ namespace
     VALUE
     block_dep_atom_blocked_atom(VALUE self)
     {
-        BlockDepAtom::ConstPointer * p;
-        Data_Get_Struct(self, BlockDepAtom::ConstPointer, p);
+        std::tr1::shared_ptr<const BlockDepAtom> * p;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const BlockDepAtom>, p);
         return dep_atom_to_value((*p)->blocked_atom());
     }
 
@@ -85,11 +85,11 @@ namespace
         static VALUE
         dep_atom_new_1(VALUE self, VALUE s)
         {
-            typename A_::ConstPointer * ptr(0);
+            std::tr1::shared_ptr<const A_> * ptr(0);
             try
             {
-                ptr = new typename A_::ConstPointer(new A_(StringValuePtr(s)));
-                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<typename A_::ConstPointer>::free, ptr));
+                ptr = new std::tr1::shared_ptr<const A_>(new A_(StringValuePtr(s)));
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const A_> >::free, ptr));
                 rb_obj_call_init(tdata, 1, &s);
                 return tdata;
             }
@@ -110,8 +110,8 @@ namespace
     VALUE
     use_dep_atom_flag(VALUE self)
     {
-        UseDepAtom::ConstPointer * p;
-        Data_Get_Struct(self, UseDepAtom::ConstPointer, p);
+        std::tr1::shared_ptr<const UseDepAtom> * p;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const UseDepAtom>, p);
         return rb_str_new2(stringify((*p)->flag()).c_str());
     }
 
@@ -124,8 +124,8 @@ namespace
     VALUE
     use_dep_atom_inverse(VALUE self)
     {
-        UseDepAtom::ConstPointer * p;
-        Data_Get_Struct(self, UseDepAtom::ConstPointer, p);
+        std::tr1::shared_ptr<const UseDepAtom> * p;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const UseDepAtom>, p);
         return (*p)->inverse() ? Qtrue : Qfalse;
     }
 
@@ -137,8 +137,8 @@ namespace
     VALUE
     composite_dep_atom_each(VALUE self)
     {
-        CompositeDepAtom::Pointer * m_ptr;
-        Data_Get_Struct(self, CompositeDepAtom::Pointer, m_ptr);
+        std::tr1::shared_ptr<CompositeDepAtom> * m_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<CompositeDepAtom>, m_ptr);
         for (CompositeDepAtom::Iterator i((*m_ptr)->begin()), i_end((*m_ptr)->end()) ; i != i_end ; ++i)
             rb_yield(dep_atom_to_value(*i));
         return self;
@@ -153,8 +153,8 @@ namespace
     VALUE
     package_dep_atom_package(VALUE self)
     {
-        PackageDepAtom::ConstPointer * ptr;
-        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        std::tr1::shared_ptr<const PackageDepAtom> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageDepAtom>, ptr);
         return rb_str_new2(stringify((*ptr)->package()).c_str());
     }
 
@@ -167,8 +167,8 @@ namespace
     VALUE
     package_dep_atom_text(VALUE self)
     {
-        PackageDepAtom::ConstPointer * ptr;
-        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        std::tr1::shared_ptr<const PackageDepAtom> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageDepAtom>, ptr);
         return rb_str_new2(stringify((*ptr)->text()).c_str());
     }
 
@@ -181,8 +181,8 @@ namespace
     VALUE
     package_dep_atom_slot_ptr(VALUE self)
     {
-        PackageDepAtom::ConstPointer * ptr;
-        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        std::tr1::shared_ptr<const PackageDepAtom> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageDepAtom>, ptr);
         if (0 == (*ptr)->slot_ptr())
             return Qnil;
         return rb_str_new2(stringify((*(*ptr)->slot_ptr())).c_str());
@@ -197,8 +197,8 @@ namespace
     VALUE
     package_dep_atom_repository_ptr(VALUE self)
     {
-        PackageDepAtom::ConstPointer * ptr;
-        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        std::tr1::shared_ptr<const PackageDepAtom> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageDepAtom>, ptr);
         if (0 == (*ptr)->repository_ptr())
             return Qnil;
         return rb_str_new2(stringify((*(*ptr)->repository_ptr())).c_str());
@@ -213,8 +213,8 @@ namespace
     VALUE
     package_dep_atom_version_requirements_ptr(VALUE self)
     {
-        PackageDepAtom::ConstPointer * ptr;
-        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        std::tr1::shared_ptr<const PackageDepAtom> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageDepAtom>, ptr);
         VALUE result(rb_ary_new());
         VALUE result_hash;
         if ((*ptr)->version_requirements_ptr())
@@ -234,8 +234,8 @@ namespace
     VALUE
     package_dep_atom_version_requirements_mode(VALUE self)
     {
-        PackageDepAtom::ConstPointer * ptr;
-        Data_Get_Struct(self, PackageDepAtom::ConstPointer, ptr);
+        std::tr1::shared_ptr<const PackageDepAtom> * ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const PackageDepAtom>, ptr);
         return INT2FIX((*ptr)->version_requirements_mode());
     }
 
@@ -304,7 +304,7 @@ namespace
         c_package_dep_atom = rb_define_class_under(paludis_module(), "PackageDepAtom", c_string_dep_atom);
         rb_define_singleton_method(c_package_dep_atom, "new", RUBY_FUNC_CAST(&DepAtomThings<PackageDepAtom>::dep_atom_new_1), 1);
         rb_define_method(c_package_dep_atom, "initialize", RUBY_FUNC_CAST(&dep_atom_init_1), 1);
-        rb_define_method(c_package_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<PackageDepAtom::ConstPointer>::to_s_via_ptr), 0);
+        rb_define_method(c_package_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<std::tr1::shared_ptr<const PackageDepAtom> >::to_s_via_ptr), 0);
         rb_define_method(c_package_dep_atom, "package", RUBY_FUNC_CAST(&package_dep_atom_package), 0);
         rb_define_method(c_package_dep_atom, "text", RUBY_FUNC_CAST(&package_dep_atom_text), 0);
         rb_define_method(c_package_dep_atom, "slot", RUBY_FUNC_CAST(&package_dep_atom_slot_ptr), 0);
@@ -320,7 +320,7 @@ namespace
         c_plain_text_dep_atom = rb_define_class_under(paludis_module(), "PlainTextDepAtom", c_string_dep_atom);
         rb_define_singleton_method(c_plain_text_dep_atom, "new", RUBY_FUNC_CAST(&DepAtomThings<PlainTextDepAtom>::dep_atom_new_1), 1);
         rb_define_method(c_plain_text_dep_atom, "initialize", RUBY_FUNC_CAST(&dep_atom_init_1), 1);
-        rb_define_method(c_plain_text_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<PlainTextDepAtom::ConstPointer>::to_s_via_ptr), 0);
+        rb_define_method(c_plain_text_dep_atom, "to_s", RUBY_FUNC_CAST(&Common<std::tr1::shared_ptr<const PlainTextDepAtom> >::to_s_via_ptr), 0);
 
         /*
          * Document-class: Paludis::BlockDepAtom
@@ -348,15 +348,15 @@ namespace
     }
 }
 
-PackageDepAtom::ConstPointer
+std::tr1::shared_ptr<const PackageDepAtom>
 paludis::ruby::value_to_package_dep_atom(VALUE v)
 {
     if (T_STRING == TYPE(v))
-        return PackageDepAtom::ConstPointer(new PackageDepAtom(StringValuePtr(v)));
+        return std::tr1::shared_ptr<const PackageDepAtom>(new PackageDepAtom(StringValuePtr(v)));
     else if (rb_obj_is_kind_of(v, c_package_dep_atom))
     {
-        PackageDepAtom::ConstPointer * v_ptr;
-        Data_Get_Struct(v, PackageDepAtom::ConstPointer, v_ptr);
+        std::tr1::shared_ptr<const PackageDepAtom> * v_ptr;
+        Data_Get_Struct(v, std::tr1::shared_ptr<const PackageDepAtom>, v_ptr);
         return *v_ptr;
     }
     else
@@ -365,13 +365,13 @@ paludis::ruby::value_to_package_dep_atom(VALUE v)
     }
 }
 
-DepAtom::ConstPointer
+std::tr1::shared_ptr<const DepAtom>
 paludis::ruby::value_to_dep_atom(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_dep_atom))
     {
-        DepAtom::ConstPointer * v_ptr;
-        Data_Get_Struct(v, DepAtom::ConstPointer, v_ptr);
+        std::tr1::shared_ptr<const DepAtom> * v_ptr;
+        Data_Get_Struct(v, std::tr1::shared_ptr<const DepAtom>, v_ptr);
         return *v_ptr;
     }
     else
@@ -381,60 +381,60 @@ paludis::ruby::value_to_dep_atom(VALUE v)
 }
 
 VALUE
-paludis::ruby::dep_atom_to_value(DepAtom::ConstPointer m)
+paludis::ruby::dep_atom_to_value(std::tr1::shared_ptr<const DepAtom> m)
 {
     struct V :
         DepAtomVisitorTypes::ConstVisitor
     {
         VALUE value;
-        DepAtom::ConstPointer mm;
+        std::tr1::shared_ptr<const DepAtom> mm;
 
-        V(DepAtom::ConstPointer _m) :
+        V(std::tr1::shared_ptr<const DepAtom> _m) :
             mm(_m)
         {
         }
 
         void visit(const AllDepAtom *)
         {
-            value = Data_Wrap_Struct(c_all_dep_atom, 0, &Common<AllDepAtom::ConstPointer>::free,
-                    new AllDepAtom::ConstPointer(mm));
+            value = Data_Wrap_Struct(c_all_dep_atom, 0, &Common<std::tr1::shared_ptr<const AllDepAtom> >::free,
+                    new std::tr1::shared_ptr<const AllDepAtom>(std::tr1::static_pointer_cast<const AllDepAtom>(mm)));
         }
 
         void visit(const AnyDepAtom *)
         {
-            value = Data_Wrap_Struct(c_any_dep_atom, 0, &Common<AnyDepAtom::ConstPointer>::free,
-                    new AnyDepAtom::ConstPointer(mm));
+            value = Data_Wrap_Struct(c_any_dep_atom, 0, &Common<std::tr1::shared_ptr<const AnyDepAtom> >::free,
+                    new std::tr1::shared_ptr<const AnyDepAtom>(std::tr1::static_pointer_cast<const AnyDepAtom>(mm)));
         }
 
         void visit(const UseDepAtom *)
         {
-            value = Data_Wrap_Struct(c_use_dep_atom, 0, &Common<UseDepAtom::ConstPointer>::free,
-                    new UseDepAtom::ConstPointer(mm));
+            value = Data_Wrap_Struct(c_use_dep_atom, 0, &Common<std::tr1::shared_ptr<const UseDepAtom> >::free,
+                    new std::tr1::shared_ptr<const UseDepAtom>(std::tr1::static_pointer_cast<const UseDepAtom>(mm)));
         }
 
         void visit(const PlainTextDepAtom *)
         {
-            value = Data_Wrap_Struct(c_plain_text_dep_atom, 0, &Common<PlainTextDepAtom::ConstPointer>::free,
-                    new PlainTextDepAtom::ConstPointer(mm));
+            value = Data_Wrap_Struct(c_plain_text_dep_atom, 0, &Common<std::tr1::shared_ptr<const PlainTextDepAtom> >::free,
+                    new std::tr1::shared_ptr<const PlainTextDepAtom>(std::tr1::static_pointer_cast<const PlainTextDepAtom>(mm)));
         }
 
         void visit(const PackageDepAtom *)
         {
-            value = Data_Wrap_Struct(c_package_dep_atom, 0, &Common<PackageDepAtom::ConstPointer>::free,
-                    new PackageDepAtom::ConstPointer(mm));
+            value = Data_Wrap_Struct(c_package_dep_atom, 0, &Common<std::tr1::shared_ptr<const PackageDepAtom> >::free,
+                    new std::tr1::shared_ptr<const PackageDepAtom>(std::tr1::static_pointer_cast<const PackageDepAtom>(mm)));
         }
 
         void visit(const BlockDepAtom *)
         {
-            value = Data_Wrap_Struct(c_block_dep_atom, 0, &Common<BlockDepAtom::ConstPointer>::free,
-                    new BlockDepAtom::ConstPointer(mm));
+            value = Data_Wrap_Struct(c_block_dep_atom, 0, &Common<std::tr1::shared_ptr<const BlockDepAtom> >::free,
+                    new std::tr1::shared_ptr<const BlockDepAtom>(std::tr1::static_pointer_cast<const BlockDepAtom>(mm)));
         }
     };
 
     if (0 == m)
         return Qnil;
 
-    DepAtom::ConstPointer * m_ptr(0);
+    std::tr1::shared_ptr<const DepAtom> * m_ptr(0);
     try
     {
         V v(m);

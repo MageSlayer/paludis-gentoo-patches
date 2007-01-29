@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_SRC_USE_FLAG_PRETTY_PRINTER_HH
 #define PALUDIS_GUARD_SRC_USE_FLAG_PRETTY_PRINTER_HH 1
 
-#include <paludis/util/counted_ptr.hh>
 #include <paludis/name.hh>
 #include <iosfwd>
 
@@ -29,21 +28,20 @@ namespace paludis
     class Environment;
     class PackageDatabaseEntry;
 
-    class UseFlagPrettyPrinter :
-        public InternalCounted<UseFlagPrettyPrinter>
+    class UseFlagPrettyPrinter
     {
         private:
             const Environment * const _env;
             bool _need_space;
 
-            UseFlagNameCollection::Pointer _new_flags;
-            UseFlagNameCollection::Pointer _changed_flags;
-            UseFlagNameCollection::Pointer _unchanged_flags;
-            UseFlagNameCollection::Pointer _expand_prefixes;
+            std::tr1::shared_ptr<UseFlagNameCollection> _new_flags;
+            std::tr1::shared_ptr<UseFlagNameCollection> _changed_flags;
+            std::tr1::shared_ptr<UseFlagNameCollection> _unchanged_flags;
+            std::tr1::shared_ptr<UseFlagNameCollection> _expand_prefixes;
 
         protected:
             std::string::size_type use_expand_delim_pos(const UseFlagName & u,
-                    const UseFlagNameCollection::ConstPointer c) const;
+                    const std::tr1::shared_ptr<const UseFlagNameCollection> c) const;
 
         public:
             UseFlagPrettyPrinter(const Environment * const);
@@ -67,10 +65,10 @@ namespace paludis
             const Environment * environment() const;
             bool need_space() const;
 
-            UseFlagNameCollection::ConstPointer new_flags() const;
-            UseFlagNameCollection::ConstPointer changed_flags() const;
-            UseFlagNameCollection::ConstPointer unchanged_flags() const;
-            UseFlagNameCollection::ConstPointer expand_prefixes() const;
+            std::tr1::shared_ptr<const UseFlagNameCollection> new_flags() const;
+            std::tr1::shared_ptr<const UseFlagNameCollection> changed_flags() const;
+            std::tr1::shared_ptr<const UseFlagNameCollection> unchanged_flags() const;
+            std::tr1::shared_ptr<const UseFlagNameCollection> expand_prefixes() const;
     };
 }
 

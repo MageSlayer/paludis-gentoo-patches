@@ -48,7 +48,7 @@ namespace paludis
      *
      * \ingroup grpversions
      */
-    typedef DepAtom::ConstPointer (* ParserFunction) (const std::string &);
+    typedef std::tr1::shared_ptr<const CompositeDepAtom> (* ParserFunction) (const std::string &);
 
 #include <paludis/version_metadata-sr.hh>
 
@@ -60,7 +60,6 @@ namespace paludis
     class VersionMetadata :
         private InstantiationPolicy<VersionMetadata, instantiation_method::NonCopyableTag>,
         public VersionMetadataBase,
-        public InternalCounted<VersionMetadata>,
         public VersionMetadataCapabilities
     {
         public:

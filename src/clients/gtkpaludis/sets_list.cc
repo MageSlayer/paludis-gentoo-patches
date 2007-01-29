@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,8 +48,7 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<SetsList> :
-        InternalCounted<Implementation<SetsList> >
+    struct Implementation<SetsList>
     {
         Columns columns;
         Glib::RefPtr<Gtk::ListStore> model;
@@ -101,13 +100,13 @@ namespace
             if (! (*r)->sets_interface)
                 continue;
 
-            SetsCollection::ConstPointer sets((*r)->sets_interface->sets_list());
+            std::tr1::shared_ptr<const SetsCollection> sets((*r)->sets_interface->sets_list());
             std::copy(sets->begin(), sets->end(), std::inserter(names, names.end()));
         }
 
         names.erase(SetName("insecurity"));
 
-        SetsCollection::ConstPointer sets(DefaultEnvironment::get_instance()->sets_list());
+        std::tr1::shared_ptr<const SetsCollection> sets(DefaultEnvironment::get_instance()->sets_list());
         std::copy(sets->begin(), sets->end(), std::inserter(names, names.end()));
 
         dispatch(sigc::bind<1>(sigc::mem_fun(_imp, &Implementation<SetsList>::add_sets), names));
@@ -133,7 +132,7 @@ void
 SetsList::populate()
 {
     _imp->model->clear();
-    PaludisThread::get_instance()->launch(Populate::Pointer(new Populate(_imp.raw_pointer())));
+    PaludisThread::get_instance()->launch(std::tr1::shared_ptr<Populate>(new Populate(_imp.operator-> ())));
 }
 
 std::string

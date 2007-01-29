@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,14 +40,14 @@ namespace paludis
     {
         private:
             const std::string _t;
-            const PackageDatabaseEntryCollection::ConstPointer _p;
+            const std::tr1::shared_ptr<const PackageDatabaseEntryCollection> _p;
 
         public:
             ///\name Basic operations
             ///\{
 
             AmbiguousUnmergeTargetError(const std::string & our_target,
-                    const PackageDatabaseEntryCollection::ConstPointer matches) throw () :
+                    const std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches) throw () :
                 Exception("Ambiguous unmerge target '" + our_target + "'"),
                 _t(our_target),
                 _p(matches)

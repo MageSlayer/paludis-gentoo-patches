@@ -203,10 +203,10 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
         throw InternalError(PALUDIS_HERE, "Bad d.kind");
     } while (false);
 
-    PackageDatabaseEntryCollection::Pointer existing(environment()->package_database()->
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing(environment()->package_database()->
             query(PackageDepAtom(d.package.name), is_installed_only, qo_order_by_version));
 
-    PackageDatabaseEntryCollection::Pointer existing_slot(environment()->package_database()->
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_slot(environment()->package_database()->
             query(PackageDepAtom(stringify(d.package.name) + ":" + stringify(d.metadata->slot)),
                 is_installed_only, qo_order_by_version));
 
@@ -417,7 +417,7 @@ ConsoleInstallTask::display_merge_list_post_tags()
     for (std::set<std::string>::iterator cat(tag_categories.begin()),
             cat_end(tag_categories.end()) ; cat != cat_end ; ++cat)
     {
-        DepTagCategory::ConstPointer c(DepTagCategoryMaker::get_instance()->
+        std::tr1::shared_ptr<const DepTagCategory> c(DepTagCategoryMaker::get_instance()->
                 find_maker(*cat)());
 
         if (! c->visible())
@@ -449,7 +449,7 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
     bool started(false);
     UseFlagName old_flag("OFTEN_NOT_BEEN_ON_BOATS");
 
-    SortedCollection<UseDescription, UseDescriptionComparator>::Pointer group(
+    std::tr1::shared_ptr<SortedCollection<UseDescription, UseDescriptionComparator> > group(
             new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete);
     for (SortedCollection<UseDescription, UseDescriptionComparator>::Iterator i(all_use_descriptions()->begin()),
             i_end(all_use_descriptions()->end()) ; i != i_end ; ++i)
@@ -500,7 +500,7 @@ ConsoleInstallTask::display_merge_list_post_use_descriptions(const std::string &
             if (! group->empty())
                 display_use_summary_flag(prefix, group->begin(), group->end());
             old_flag = i->flag;
-            group.assign(new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete);
+            group.reset(new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete);
         }
 
         group->insert(*i);
@@ -590,10 +590,10 @@ ConsoleInstallTask::display_tag_summary_tag_pre_text(const DepTagCategory & c)
 }
 
 void
-ConsoleInstallTask::display_tag_summary_tag(DepTag::ConstPointer t)
+ConsoleInstallTask::display_tag_summary_tag(std::tr1::shared_ptr<const DepTag> t)
 {
-    DepTagSummaryDisplayer::Pointer displayer(make_dep_tag_summary_displayer());
-    t->accept(displayer.raw_pointer());
+    std::tr1::shared_ptr<DepTagSummaryDisplayer> displayer(make_dep_tag_summary_displayer());
+    t->accept(displayer.get());
 }
 
 void
@@ -723,8 +723,8 @@ ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const 
 
 void
 ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepListEntry & d,
-        PackageDatabaseEntryCollection::ConstPointer existing,
-        PackageDatabaseEntryCollection::ConstPointer existing_slot,
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing,
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot,
         const DisplayMode m)
 {
     switch (m)
@@ -807,7 +807,7 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 }
 
 void
-ConsoleInstallTask::_add_descriptions(UseFlagNameCollection::ConstPointer c,
+ConsoleInstallTask::_add_descriptions(std::tr1::shared_ptr<const UseFlagNameCollection> c,
         const PackageDatabaseEntry & p, UseDescriptionState s)
 {
     for (UseFlagNameCollection::Iterator f(c->begin()), f_end(c->end()) ;
@@ -830,15 +830,15 @@ ConsoleInstallTask::_add_descriptions(UseFlagNameCollection::ConstPointer c,
 
 void
 ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
-        PackageDatabaseEntryCollection::ConstPointer,
-        PackageDatabaseEntryCollection::ConstPointer existing_slot,
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection>,
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot,
         const DisplayMode m)
 {
     if (normal_entry != m && suggested_entry != m)
         return;
 
     output_no_endl(" ");
-    UseFlagPrettyPrinter::Pointer printer(make_use_flag_pretty_printer());
+    std::tr1::shared_ptr<UseFlagPrettyPrinter> printer(make_use_flag_pretty_printer());
     printer->print_package_flags(d.package, existing_slot->empty() ? 0 : &*existing_slot->last());
 
     _add_descriptions(printer->new_flags(), d.package, uds_new);
@@ -866,8 +866,8 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
 
         all_tags()->insert(*tag);
 
-        EntryDepTagDisplayer::Pointer displayer(make_entry_dep_tag_displayer());
-        tag->tag->accept(displayer.raw_pointer());
+        std::tr1::shared_ptr<EntryDepTagDisplayer> displayer(make_entry_dep_tag_displayer());
+        tag->tag->accept(displayer.get());
         tag_titles.append(displayer->text());
         tag_titles.append(", ");
     }
@@ -1059,22 +1059,22 @@ ConsoleInstallTask::render_plural(int c, const std::string & s, const std::strin
     return 1 == c ? s : p;
 }
 
-DepTagSummaryDisplayer::Pointer
+std::tr1::shared_ptr<DepTagSummaryDisplayer>
 ConsoleInstallTask::make_dep_tag_summary_displayer()
 {
-    return DepTagSummaryDisplayer::Pointer(new DepTagSummaryDisplayer(this));
+    return std::tr1::shared_ptr<DepTagSummaryDisplayer>(new DepTagSummaryDisplayer(this));
 }
 
-EntryDepTagDisplayer::Pointer
+std::tr1::shared_ptr<EntryDepTagDisplayer>
 ConsoleInstallTask::make_entry_dep_tag_displayer()
 {
-    return EntryDepTagDisplayer::Pointer(new EntryDepTagDisplayer());
+    return std::tr1::shared_ptr<EntryDepTagDisplayer>(new EntryDepTagDisplayer());
 }
 
-UseFlagPrettyPrinter::Pointer
+std::tr1::shared_ptr<UseFlagPrettyPrinter>
 ConsoleInstallTask::make_use_flag_pretty_printer()
 {
-    return UseFlagPrettyPrinter::Pointer(new UseFlagPrettyPrinter(environment()));
+    return std::tr1::shared_ptr<UseFlagPrettyPrinter>(new UseFlagPrettyPrinter(environment()));
 }
 
 EntryDepTagDisplayer::EntryDepTagDisplayer()
@@ -1129,7 +1129,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
             }
             else if (mr_license == mm)
             {
-                VersionMetadata::ConstPointer metadata(environment()->package_database()->fetch_repository(
+                std::tr1::shared_ptr<const VersionMetadata> metadata(environment()->package_database()->fetch_repository(
                             e.package.repository)->version_metadata(e.package.name, e.package.version));
 
                 if (metadata->license_interface)
@@ -1142,7 +1142,7 @@ ConsoleInstallTask::display_merge_list_entry_mask_reasons(const DepListEntry & e
             }
             else if (mr_keyword == mm)
             {
-                VersionMetadata::ConstPointer meta(environment()->package_database()->fetch_repository(
+                std::tr1::shared_ptr<const VersionMetadata> meta(environment()->package_database()->fetch_repository(
                             e.package.repository)->version_metadata(e.package.name, e.package.version));
                 if (meta->ebuild_interface)
                 {

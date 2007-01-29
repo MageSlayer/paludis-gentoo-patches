@@ -30,15 +30,15 @@ namespace paludis
      * \see PortageRepository
      * \ingroup grpportagerepository
      */
-    CountedPtr<PortageRepository>
+    std::tr1::shared_ptr<PortageRepository>
     make_ebuild_repository(
             Environment * const,
-            AssociativeCollection<std::string, std::string>::ConstPointer) PALUDIS_VISIBLE;
+            std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >) PALUDIS_VISIBLE;
 
-    CountedPtr<Repository>
+    std::tr1::shared_ptr<Repository>
     make_ebuild_repository_wrapped(
             Environment * const env,
-            AssociativeCollection<std::string, std::string>::ConstPointer m);
+            std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m);
 }
 
 #endif

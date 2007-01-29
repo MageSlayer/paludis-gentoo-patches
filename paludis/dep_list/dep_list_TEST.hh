@@ -83,10 +83,10 @@ namespace test_cases
     {
         protected:
             TestEnvironment env;
-            FakeRepository::Pointer repo;
-            FakeInstalledRepository::Pointer installed_repo;
-            VirtualsRepository::Pointer virtuals_repo;
-            InstalledVirtualsRepository::Pointer installed_virtuals_repo;
+            std::tr1::shared_ptr<FakeRepository> repo;
+            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo;
+            std::tr1::shared_ptr<VirtualsRepository> virtuals_repo;
+            std::tr1::shared_ptr<InstalledVirtualsRepository> installed_virtuals_repo;
             std::list<std::string> expected;
             std::string merge_target;
             bool done_populate;

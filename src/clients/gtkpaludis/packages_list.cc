@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,8 +62,7 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<PackagesList> :
-        InternalCounted<Implementation<PackagesList> >
+    struct Implementation<PackagesList>
     {
         Columns columns;
         Glib::RefPtr<Gtk::ListStore> model;
@@ -144,7 +143,7 @@ namespace
             {
                 StatusBarMessage m2(this, "Loading package names from '" + stringify((*r)->name()) + "'...");
 
-                QualifiedPackageNameCollection::ConstPointer pkgs((*r)->package_names(_cat));
+                std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkgs((*r)->package_names(_cat));
                 for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
                         p != p_end ; ++p)
                     names.insert(std::make_pair(*p, PackagesListEntry::create().description("").is_installed(false)));
@@ -159,7 +158,7 @@ namespace
             {
                 bool is_installed(true);
 
-                PackageDatabaseEntryCollection::ConstPointer results(DefaultEnvironment::get_instance()->package_database()->query(
+                std::tr1::shared_ptr<const PackageDatabaseEntryCollection> results(DefaultEnvironment::get_instance()->package_database()->query(
                             PackageDepAtom(i->first), is_installed_only, qo_order_by_version));
                 if (results->empty())
                 {
@@ -193,7 +192,7 @@ PackagesList::populate(const CategoryNamePart & cat)
 {
     clear_packages();
     if (cat.data() != "no-category")
-        PaludisThread::get_instance()->launch(Populate::Pointer(new Populate(_imp.raw_pointer(), cat)));
+        PaludisThread::get_instance()->launch(std::tr1::shared_ptr<Populate>(new Populate(_imp.operator-> (), cat)));
 }
 
 QualifiedPackageName

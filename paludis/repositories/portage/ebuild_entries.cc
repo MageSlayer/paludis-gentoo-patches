@@ -46,14 +46,13 @@ namespace paludis
      * \ingroup grpportagerepository
      */
     template<>
-    struct Implementation<EbuildEntries> :
-        InternalCounted<Implementation<EbuildEntries> >
+    struct Implementation<EbuildEntries>
     {
         const Environment * const environment;
         PortageRepository * const portage_repository;
         const PortageRepositoryParams params;
 
-        EclassMtimes::Pointer eclass_mtimes;
+        std::tr1::shared_ptr<EclassMtimes> eclass_mtimes;
         time_t master_mtime;
 
         Implementation(const Environment * const e, PortageRepository * const p,
@@ -83,13 +82,13 @@ EbuildEntries::~EbuildEntries()
 {
 }
 
-VersionMetadata::Pointer
+std::tr1::shared_ptr<VersionMetadata>
 EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
         const VersionSpec & v) const
 {
     Context context("When generating version metadata for '" + stringify(q) + "-" + stringify(v) + "':");
 
-    EbuildVersionMetadata::Pointer result(new EbuildVersionMetadata);
+    std::tr1::shared_ptr<EbuildVersionMetadata> result(new EbuildVersionMetadata);
 
     FSEntry ebuild_file(_imp->params.location / stringify(q.category) /
             stringify(q.package) / (stringify(q.package) + "-" + stringify(v) + ".ebuild"));
@@ -205,7 +204,7 @@ namespace
             }
 
         public:
-            AAFinder(const DepAtom::ConstPointer a)
+            AAFinder(const std::tr1::shared_ptr<const DepAtom> a)
             {
                 a->accept(static_cast<DepAtomVisitorTypes::ConstVisitor *>(this));
             }
@@ -227,7 +226,7 @@ namespace
 
 void
 EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
-        const InstallOptions & o, PortageRepositoryProfile::ConstPointer p) const
+        const InstallOptions & o, std::tr1::shared_ptr<const PortageRepositoryProfile> p) const
 {
     if (! _imp->portage_repository->has_version(q, v))
     {
@@ -235,7 +234,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                 + stringify(v) + "' since has_version failed");
     }
 
-    VersionMetadata::ConstPointer metadata(_imp->portage_repository->version_metadata(q, v));
+    std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->portage_repository->version_metadata(q, v));
 
     PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
 
@@ -255,7 +254,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_archives;
 
         /* make A and FLAT_SRC_URI */
-        DepAtom::ConstPointer f_atom(PortageDepParser::parse(metadata->ebuild_interface->src_uri,
+        std::tr1::shared_ptr<const DepAtom> f_atom(PortageDepParser::parse(metadata->ebuild_interface->src_uri,
                     PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
         DepAtomFlattener f(_imp->params.environment, &e, f_atom);
 
@@ -338,7 +337,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
 
         /* make AA */
-        DepAtom::ConstPointer g_atom(PortageDepParser::parse(
+        std::tr1::shared_ptr<const DepAtom> g_atom(PortageDepParser::parse(
                     metadata->ebuild_interface->src_uri,
                     PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
         AAFinder g(g_atom);
@@ -390,7 +389,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     /* add expand to use (iuse isn't reliable for use_expand things), and make the expand
      * environment variables */
-    AssociativeCollection<std::string, std::string>::Pointer expand_vars(
+    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > expand_vars(
             new AssociativeCollection<std::string, std::string>::Concrete);
     for (PortageRepositoryProfile::UseExpandIterator x(p->begin_use_expand()),
             x_end(p->end_use_expand()) ; x != x_end ; ++x)
@@ -406,7 +405,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                 create_inserter<UseFlagName>(std::inserter(possible_values, possible_values.end())));
 
         /* possible values from environment */
-        UseFlagNameCollection::ConstPointer possible_values_from_env(_imp->params.environment->
+        std::tr1::shared_ptr<const UseFlagNameCollection> possible_values_from_env(_imp->params.environment->
                 known_use_expand_names(*x, &e));
         for (UseFlagNameCollection::Iterator i(possible_values_from_env->begin()),
                 i_end(possible_values_from_env->end()) ; i != i_end ; ++i)
@@ -493,7 +492,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 std::string
 EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
         const VersionSpec & v, const std::string & var,
-        PortageRepositoryProfile::ConstPointer) const
+        std::tr1::shared_ptr<const PortageRepositoryProfile>) const
 {
     PackageDatabaseEntry for_package(q, v, _imp->portage_repository->name());
 
@@ -518,10 +517,10 @@ EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
     return cmd.result();
 }
 
-EbuildEntries::Pointer
+std::tr1::shared_ptr<PortageRepositoryEntries>
 EbuildEntries::make_ebuild_entries(
         const Environment * const e, PortageRepository * const r, const PortageRepositoryParams & p)
 {
-    return Pointer(new EbuildEntries(e, r, p));
+    return std::tr1::shared_ptr<PortageRepositoryEntries>(new EbuildEntries(e, r, p));
 }
 

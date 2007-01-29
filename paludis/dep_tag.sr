@@ -1,6 +1,6 @@
 make_class_DepTagEntry()
 {
-    key tag DepTag::ConstPointer
+    key tag "std::tr1::shared_ptr<const DepTag>"
     key generation long
 
     allow_named_args

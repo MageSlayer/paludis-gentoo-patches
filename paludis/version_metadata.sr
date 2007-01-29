@@ -40,22 +40,22 @@ END
             /**
              * Our build depends.
              */
-            DepAtom::ConstPointer build_depend() const;
+            std::tr1::shared_ptr<const DepAtom> build_depend() const;
 
             /**
              * Our runtime depends.
              */
-            DepAtom::ConstPointer run_depend() const;
+            std::tr1::shared_ptr<const DepAtom> run_depend() const;
 
             /**
              * Our post depends.
              */
-            DepAtom::ConstPointer post_depend() const;
+            std::tr1::shared_ptr<const DepAtom> post_depend() const;
 
             /**
              * Our suggested depends.
              */
-            DepAtom::ConstPointer suggested_depend() const;
+            std::tr1::shared_ptr<const DepAtom> suggested_depend() const;
 END
 
     doxygen_comment << "END"
@@ -82,7 +82,7 @@ END
             /**
              * Our licences.
              */
-            DepAtom::ConstPointer license() const;
+            std::tr1::shared_ptr<const DepAtom> license() const;
 END
 
     doxygen_comment << "END"
@@ -97,8 +97,8 @@ END
 
 make_class_VersionMetadataOriginsInterface()
 {
-    key "source" "CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>"
-    key "binary" "CountedPtr<PackageDatabaseEntry, count_policy::ExternalCountTag>"
+    key "source" "std::tr1::shared_ptr<PackageDatabaseEntry>"
+    key "binary" "std::tr1::shared_ptr<PackageDatabaseEntry>"
 
     extra_constructors <<END
             VersionMetadataOriginsInterface();
@@ -151,7 +151,7 @@ END
             /**
              * PROVIDE, as a dep atom.
              */
-            DepAtom::ConstPointer provide() const;
+            std::tr1::shared_ptr<const DepAtom> provide() const;
 END
 
     allow_named_args

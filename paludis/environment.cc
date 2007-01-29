@@ -36,7 +36,7 @@
 
 using namespace paludis;
 
-Environment::Environment(PackageDatabase::Pointer d) :
+Environment::Environment(std::tr1::shared_ptr<PackageDatabase> d) :
     _package_database(d),
     _has_provide_map(false)
 {
@@ -129,7 +129,7 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
     Context context("When checking mask reasons for '" + stringify(e) + "'");
 
     MaskReasons result;
-    VersionMetadata::ConstPointer metadata(package_database()->fetch_repository(
+    std::tr1::shared_ptr<const VersionMetadata> metadata(package_database()->fetch_repository(
                 e.repository)->version_metadata(e.name, e.version));
 
     if (! accept_eapi(metadata->eapi))
@@ -190,8 +190,7 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
             if (query_user_masks(e))
                 result.set(mr_user_mask);
 
-            const Repository * const repo(package_database()->fetch_repository(
-                        e.repository).raw_pointer());
+            const Repository * const repo(package_database()->fetch_repository(e.repository).get());
 
             if (repo->mask_interface)
             {
@@ -209,17 +208,17 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
     return result;
 }
 
-DepAtom::Pointer
+std::tr1::shared_ptr<DepAtom>
 Environment::package_set(const SetName & s) const
 {
     /* favour local sets first */
-    CompositeDepAtom::Pointer result(local_package_set(s));
+    std::tr1::shared_ptr<CompositeDepAtom> result(local_package_set(s));
     if (0 != result)
         return result;
 
     /* these sets always exist, even if empty */
     if (s.data() == "everything" || s.data() == "system" || s.data() == "world" || s.data() == "security")
-        result.assign(new AllDepAtom);
+        result.reset(new AllDepAtom);
 
     for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
@@ -228,11 +227,11 @@ Environment::package_set(const SetName & s) const
         if (! (*r)->sets_interface)
             continue;
 
-        DepAtom::Pointer add((*r)->sets_interface->package_set(s));
+        std::tr1::shared_ptr<DepAtom> add((*r)->sets_interface->package_set(s));
         if (0 != add)
         {
             if (! result)
-                result.assign(new AllDepAtom);
+                result.reset(new AllDepAtom);
             result->add_child(add);
         }
 
@@ -336,7 +335,7 @@ namespace
 }
 
 void
-Environment::add_appropriate_to_world(DepAtom::ConstPointer a,
+Environment::add_appropriate_to_world(std::tr1::shared_ptr<const DepAtom> a,
         Environment::WorldCallbacks * const ww) const
 {
     WorldTargetFinder w(ww);
@@ -353,7 +352,7 @@ Environment::add_appropriate_to_world(DepAtom::ConstPointer a,
 }
 
 void
-Environment::remove_appropriate_from_world(DepAtom::ConstPointer a,
+Environment::remove_appropriate_from_world(std::tr1::shared_ptr<const DepAtom> a,
         Environment::WorldCallbacks * const ww) const
 {
     WorldTargetFinder w(ww);
@@ -388,9 +387,7 @@ bool
 Environment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
     /* first check package database use masks... */
-    const Repository * const repo((e ?
-                package_database()->fetch_repository(e->repository).raw_pointer() :
-                0));
+    const Repository * const repo((e ? package_database()->fetch_repository(e->repository).get() : 0));
 
     if (repo && repo->use_interface)
     {
@@ -502,16 +499,16 @@ Environment::perform_hook(const Hook &) const
 {
 }
 
-UseFlagNameCollection::ConstPointer
+std::tr1::shared_ptr<const UseFlagNameCollection>
 Environment::known_use_expand_names(const UseFlagName &, const PackageDatabaseEntry *) const
 {
-    return UseFlagNameCollection::ConstPointer(new UseFlagNameCollection::Concrete);
+    return std::tr1::shared_ptr<const UseFlagNameCollection>(new UseFlagNameCollection::Concrete);
 }
 
-SetsCollection::ConstPointer
+std::tr1::shared_ptr<const SetsCollection>
 Environment::sets_list() const
 {
-    return SetsCollection::ConstPointer(new SetsCollection::Concrete);
+    return std::tr1::shared_ptr<const SetsCollection>(new SetsCollection::Concrete);
 }
 
 bool

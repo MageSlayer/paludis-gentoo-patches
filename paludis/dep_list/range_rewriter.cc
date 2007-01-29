@@ -22,7 +22,6 @@
 using namespace paludis;
 
 RangeRewriter::RangeRewriter() :
-    _atom(0),
     _invalid(false)
 {
 }
@@ -90,7 +89,7 @@ RangeRewriter::visit(const PackageDepAtom * a)
     }
     else
     {
-        _atom.assign(new PackageDepAtom(*a));
+        _atom.reset(new PackageDepAtom(*a));
         _atom->set_version_requirements_mode(vr_or);
     }
 }

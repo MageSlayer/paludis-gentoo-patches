@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,20 +25,20 @@
 #include <glibmm/dispatcher.h>
 #include <sigc++/trackable.h>
 #include <sigc++/slot.h>
+#include <tr1/memory>
 
 namespace gtkpaludis
 {
     class PaludisThread :
-        public paludis::InstantiationPolicy<PaludisThread, paludis::instantiation_method::SingletonAsNeededTag>,
+        public paludis::InstantiationPolicy<PaludisThread, paludis::instantiation_method::SingletonTag>,
         private paludis::PrivateImplementationPattern<PaludisThread>,
         public sigc::trackable
     {
-        friend class paludis::InstantiationPolicy<PaludisThread, paludis::instantiation_method::SingletonAsNeededTag>;
+        friend class paludis::InstantiationPolicy<PaludisThread, paludis::instantiation_method::SingletonTag>;
 
         public:
             class Launchable :
-                private paludis::InstantiationPolicy<Launchable, paludis::instantiation_method::NonCopyableTag>,
-                public paludis::InternalCounted<Launchable>
+                private paludis::InstantiationPolicy<Launchable, paludis::instantiation_method::NonCopyableTag>
             {
                 friend class PaludisThread;
 
@@ -70,10 +70,10 @@ namespace gtkpaludis
 
             void _queue_add(const sigc::slot<void> &);
             void _queue_run();
-            void _thread_func(Launchable::Pointer);
+            void _thread_func(std::tr1::shared_ptr<Launchable>);
 
         public:
-            void launch(Launchable::Pointer);
+            void launch(std::tr1::shared_ptr<Launchable>);
             bool try_lock_unlock();
     };
 }

@@ -31,12 +31,11 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<VirtualsRepository> :
-        InternalCounted<Implementation<VirtualsRepository> >
+    struct Implementation<VirtualsRepository>
     {
         const Environment * const env;
 
-        mutable std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> > names;
+        mutable std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > > names;
         mutable bool has_names;
 
         mutable std::vector<VREntry> entries;
@@ -56,8 +55,8 @@ namespace
     struct NamesCategoryComparator
     {
         bool
-        operator() (const std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> & a,
-                const std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> & b) const
+        operator() (const std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > & a,
+                const std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > & b) const
         {
             return a.first.category < b.first.category;
         }
@@ -66,8 +65,8 @@ namespace
     struct NamesNameComparator
     {
         bool
-        operator() (const std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> & a,
-                const std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> & b) const
+        operator() (const std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > & a,
+                const std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > & b) const
         {
             return a.first < b.first;
         }
@@ -95,7 +94,7 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
     PrivateImplementationPattern<VirtualsRepository>(
             new Implementation<VirtualsRepository>(env))
 {
-    RepositoryInfoSection::Pointer config_info(new RepositoryInfoSection("Configuration information"));
+    std::tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
     config_info->add_kv("format", "virtuals");
     _info->add_section(config_info);
 }
@@ -121,17 +120,17 @@ VirtualsRepository::need_names() const
         if (! (*r)->provides_interface)
             continue;
 
-        RepositoryProvidesInterface::ProvidesCollection::ConstPointer provides(
+        std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesCollection> provides(
                 (*r)->provides_interface->provided_packages());
         for (RepositoryProvidesInterface::ProvidesCollection::Iterator p(provides->begin()),
                 p_end(provides->end()) ; p != p_end ; ++p)
-            _imp->names.push_back(std::make_pair(p->virtual_name, PackageDepAtom::ConstPointer(
+            _imp->names.push_back(std::make_pair(p->virtual_name, std::tr1::shared_ptr<const PackageDepAtom>(
                             new PackageDepAtom(stringify(p->provided_by_name)))));
     }
 
     std::sort(_imp->names.begin(), _imp->names.end(), NamesNameComparator());
 
-    std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> > new_names;
+    std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > > new_names;
 
     for (PackageDatabase::RepositoryIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
@@ -139,16 +138,16 @@ VirtualsRepository::need_names() const
         if (! (*r)->virtuals_interface)
             continue;
 
-        RepositoryVirtualsInterface::VirtualsCollection::ConstPointer virtuals(
+        std::tr1::shared_ptr<const RepositoryVirtualsInterface::VirtualsCollection> virtuals(
                 (*r)->virtuals_interface->virtual_packages());
         for (RepositoryVirtualsInterface::VirtualsCollection::Iterator v(virtuals->begin()),
                 v_end(virtuals->end()) ; v != v_end ; ++v)
         {
             std::pair<
-                std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator,
-                std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator> p(
+                std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator,
+                std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator> p(
                         std::equal_range(_imp->names.begin(), _imp->names.end(),
-                            std::make_pair(v->virtual_name, PackageDepAtom::ConstPointer(0)),
+                            std::make_pair(v->virtual_name, std::tr1::shared_ptr<const PackageDepAtom>()),
                             NamesNameComparator()));
 
             if (p.first == p.second)
@@ -174,10 +173,10 @@ VirtualsRepository::need_entries() const
     Log::get_instance()->message(ll_debug, lc_context, "VirtualsRepository need_entries");
 
     /* Populate our _imp->entries. */
-    for (std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator
+    for (std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator
             v(_imp->names.begin()), v_end(_imp->names.end()) ; v != v_end ; ++v)
     {
-        PackageDatabaseEntryCollection::ConstPointer matches(_imp->env->package_database()->query(
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(_imp->env->package_database()->query(
                     *v->second, is_installable_only, qo_order_by_version));
 
         if (matches->empty())
@@ -201,12 +200,12 @@ VirtualsRepository::need_entries() const
     _imp->has_entries = true;
 }
 
-CountedPtr<Repository>
+std::tr1::shared_ptr<Repository>
 VirtualsRepository::make_virtuals_repository(
         Environment * const env,
-        AssociativeCollection<std::string, std::string>::ConstPointer)
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >)
 {
-    return CountedPtr<Repository>(new VirtualsRepository(env));
+    return std::tr1::shared_ptr<Repository>(new VirtualsRepository(env));
 }
 
 bool
@@ -223,7 +222,7 @@ VirtualsRepository::do_query_profile_masks(const QualifiedPackageName &,
     return false;
 }
 
-VersionMetadata::ConstPointer
+std::tr1::shared_ptr<const VersionMetadata>
 VirtualsRepository::do_version_metadata(
         const QualifiedPackageName & q,
         const VersionSpec & v) const
@@ -252,7 +251,7 @@ VirtualsRepository::do_version_metadata(
     return vif->virtual_package_version_metadata(
                 RepositoryVirtualsEntry::create()
                 .virtual_name(p.first->virtual_name)
-                .provided_by_atom(PackageDepAtom::Pointer(new PackageDepAtom(p.first->provided_by_name))), v);
+                .provided_by_atom(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(p.first->provided_by_name))), v);
 }
 
 bool
@@ -271,11 +270,11 @@ VirtualsRepository::do_has_version(const QualifiedPackageName & q,
     return p.first != p.second;
 }
 
-VersionSpecCollection::ConstPointer
+std::tr1::shared_ptr<const VersionSpecCollection>
 VirtualsRepository::do_version_specs(const QualifiedPackageName & q) const
 {
     if (q.category.data() != "virtual")
-        return VersionSpecCollection::Pointer(new VersionSpecCollection::Concrete);
+        return std::tr1::shared_ptr<VersionSpecCollection>(new VersionSpecCollection::Concrete);
 
     need_entries();
 
@@ -284,39 +283,39 @@ VirtualsRepository::do_version_specs(const QualifiedPackageName & q) const
                 VREntry(q, VersionSpec("0"), QualifiedPackageName("dummy/package"),
                     RepositoryName("dummy_repository")), EntriesNameComparator()));
 
-    VersionSpecCollection::Pointer result(new VersionSpecCollection::Concrete);
+    std::tr1::shared_ptr<VersionSpecCollection> result(new VersionSpecCollection::Concrete);
     for ( ; p.first != p.second ; ++p.first)
         result->insert(p.first->version);
 
     return result;
 }
 
-QualifiedPackageNameCollection::ConstPointer
+std::tr1::shared_ptr<const QualifiedPackageNameCollection>
 VirtualsRepository::do_package_names(const CategoryNamePart & c) const
 {
     if (c.data() != "virtual")
-        return QualifiedPackageNameCollection::Pointer(new QualifiedPackageNameCollection::Concrete);
+        return std::tr1::shared_ptr<QualifiedPackageNameCollection>(new QualifiedPackageNameCollection::Concrete);
 
     need_names();
 
     std::pair<
-        std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator,
-        std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator> p(
+        std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator,
+        std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator> p(
             std::equal_range(_imp->names.begin(), _imp->names.end(),
-                std::make_pair(c + PackageNamePart("dummy"), PackageDepAtom::ConstPointer(0)),
+                std::make_pair(c + PackageNamePart("dummy"), std::tr1::shared_ptr<const PackageDepAtom>()),
                 NamesCategoryComparator()));
 
-    QualifiedPackageNameCollection::Pointer result(new QualifiedPackageNameCollection::Concrete);
+    std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
     std::copy(p.first, p.second, transform_inserter(result->inserter(),
-                SelectFirst<QualifiedPackageName, PackageDepAtom::ConstPointer>()));
+                SelectFirst<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> >()));
 
     return result;
 }
 
-CategoryNamePartCollection::ConstPointer
+std::tr1::shared_ptr<const CategoryNamePartCollection>
 VirtualsRepository::do_category_names() const
 {
-    CategoryNamePartCollection::Pointer result(new CategoryNamePartCollection::Concrete);
+    std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     result->insert(CategoryNamePart("virtual"));
 #if 0
     need_entries();
@@ -338,10 +337,10 @@ VirtualsRepository::do_has_package_named(const QualifiedPackageName & q) const
     need_names();
 
     std::pair<
-        std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator,
-        std::vector<std::pair<QualifiedPackageName, PackageDepAtom::ConstPointer> >::const_iterator> p(
+        std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator,
+        std::vector<std::pair<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > >::const_iterator> p(
             std::equal_range(_imp->names.begin(), _imp->names.end(),
-                std::make_pair(q, PackageDepAtom::ConstPointer(0)),
+                std::make_pair(q, std::tr1::shared_ptr<const PackageDepAtom>()),
                 NamesNameComparator()));
 
     return p.first != p.second;
@@ -372,7 +371,7 @@ VirtualsRepository::do_is_licence(const std::string &) const
 void
 VirtualsRepository::invalidate()
 {
-    _imp.assign(new Implementation<VirtualsRepository>(_imp->env));
+    _imp.reset(new Implementation<VirtualsRepository>(_imp->env));
 }
 
 void

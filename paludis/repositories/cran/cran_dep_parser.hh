@@ -17,7 +17,7 @@ namespace paludis
         /**
          * Parse function.
          */
-        static DepAtom::ConstPointer parse(const std::string & s);
+        static std::tr1::shared_ptr<const CompositeDepAtom> parse(const std::string & s);
     };
 }
 

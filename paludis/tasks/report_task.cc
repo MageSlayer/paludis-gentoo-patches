@@ -34,12 +34,12 @@ namespace
         public DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepAtom>
     {
         private:
-            std::multimap<PackageDatabaseEntry, DepTag::ConstPointer,
+            std::multimap<PackageDatabaseEntry, std::tr1::shared_ptr<const DepTag>,
                 ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> _found;
             const Environment & _env;
 
         public:
-            typedef std::multimap<PackageDatabaseEntry, DepTag::ConstPointer>::const_iterator ConstIterator;
+            typedef std::multimap<PackageDatabaseEntry, std::tr1::shared_ptr<const DepTag> >::const_iterator ConstIterator;
 
             using DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AllDepAtom>::visit;
             using DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepAtom>::visit;
@@ -79,7 +79,7 @@ namespace
     void
     VulnerableChecker::visit(const PackageDepAtom * const a)
     {
-        PackageDatabaseEntryCollection::ConstPointer insecure(
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
                 _env.package_database()->query(*a, is_any, qo_order_by_version));
         for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
@@ -93,8 +93,7 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<ReportTask> :
-        InternalCounted<Implementation<ReportTask> >
+    struct Implementation<ReportTask>
     {
         Environment * const env;
 
@@ -128,13 +127,13 @@ ReportTask::execute()
     for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        Repository::ConstPointer rr(e->package_database()->fetch_repository((*r)->name()));
+        std::tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
         if (! rr->sets_interface)
             continue;
 
         try
         {
-            DepAtom::ConstPointer insecure(rr->sets_interface->package_set(SetName("insecurity")));
+            std::tr1::shared_ptr<const DepAtom> insecure(rr->sets_interface->package_set(SetName("insecurity")));
             if (! insecure)
                 continue;
             insecure->accept(&vuln);
@@ -161,21 +160,21 @@ ReportTask::execute()
     for (PackageDatabase::RepositoryIterator r(e->package_database()->begin_repositories()),
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        Repository::ConstPointer rr(e->package_database()->fetch_repository((*r)->name()));
+        std::tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
         if (! rr->installed_interface)
             continue;
 
-        CategoryNamePartCollection::ConstPointer cat_names(rr->category_names());
+        std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(rr->category_names());
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;
                     c != c_end ; ++c)
         {
-            QualifiedPackageNameCollection::ConstPointer packages(rr->package_names(*c));
+            std::tr1::shared_ptr<const QualifiedPackageNameCollection> packages(rr->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(packages->begin()), p_end(packages->end()) ;
                     p != p_end ; ++p)
             {
                 on_report_check_package_pre(*p);
 
-                VersionSpecCollection::ConstPointer vers(rr->version_specs(*p));
+                std::tr1::shared_ptr<const VersionSpecCollection> vers(rr->version_specs(*p));
                 for (VersionSpecCollection::Iterator v(vers->begin()), v_end(vers->end()) ;
                         v != v_end ; ++v)
                 {
@@ -188,7 +187,7 @@ ReportTask::execute()
                     MaskReasons mr;
                     try
                     {
-                        VersionMetadata::ConstPointer m(rr->version_metadata(pde.name, pde.version));
+                        std::tr1::shared_ptr<const VersionMetadata> m(rr->version_metadata(pde.name, pde.version));
 
                         if (m->origins_interface && m->origins_interface->source)
                         {
