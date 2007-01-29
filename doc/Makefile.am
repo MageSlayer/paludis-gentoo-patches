@@ -64,7 +64,8 @@ if HAVE_DOXYGEN
 
 doxygen : doxygen.conf $(top_srcdir)/paludis/*.cc $(top_srcdir)/paludis/*.hh \
 		$(docfiles) $(tagfiles) www all-built-sources
-	mkdir -p www/doxygen/
+	mkdir -p www/doxygen/html
+	cp paludis_270.png www/doxygen/html
 	doxygen doxygen.conf
 
 else
