@@ -971,10 +971,11 @@ PortageRepository::virtual_package_version_metadata(const RepositoryVirtualsEntr
 
     if (m->license_interface)
         result->license_string = m->license_interface->license_string;
-
+    if (m->ebuild_interface)
+        result->keywords = m->ebuild_interface->keywords;
     result->eapi = m->eapi;
-    result->deps_interface->build_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
-    result->deps_interface->run_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
+    result->build_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
+    result->run_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
 
     return result;
 
