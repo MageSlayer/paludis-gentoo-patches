@@ -244,8 +244,25 @@ configuration files.</p>
   <code>paludis --list-sync-protocols</code> to see supported protocols.  This
   can be a space-separated list, in which case each will be tried in order
   until one succeeds.</li>
-  <li><code>sync_options</code> (default: empty), which specifies additional
-  options to pass to the syncing script.</li>
+  <li><code>sync_options</code> (default: empty), which specifies
+  additional options to pass to the syncing script.  The valid options
+  for each protocol are listed by <code>paludis
+  --list-sync-protocols</code>.  Note that options are not
+  automatically passed through to the underlying sync program
+  (<code>rsync</code>, <code>svn</code> etc.), you must use
+  <code>--<em>program</em>-option=OPTION</code> or
+  <code>--<em>program</em>-<em>action</em>-option=OPTION</code> for
+  each option.  If a pass-through option takes an argument, you must
+  specify <code>--<em>program</em>-option=</code> for both the option
+  itself and the argument.  For example:
+<pre>
+# For an rsync repository, to exclude files matching patterns listed in
+# /etc/sync.exclude, and to log the transfer to the file /var/log/sync.log
+sync_options = --exclude-from=/etc/sync.exclude --rsync-option=--log-file --rsync-option=/var/log/sync.log
+# For a CVS repository, to use maximum compression for the network
+# traffic, and to disable keyword expansion
+sync_options = --cvs-option=-z9 --cvs-checkout-option=-ko
+</pre></li>
   <li><code>sync_exclude</code> (default: empty), which can point to a file that
   contains a list of directories to exclude when syncing via
   <code>rsync://</code>.  This key is deprecated, use
