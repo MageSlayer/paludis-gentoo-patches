@@ -801,7 +801,8 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
     {
         try
         {
-            Save<bool> save_t(&d->_imp->throw_on_blocker, true);
+            Save<bool> save_t(&d->_imp->throw_on_blocker,
+                    dl_blocks_discard_completely != d->_imp->opts->blocks);
             Save<DepListOverrideMasks> save_o(&d->_imp->opts->override_masks, DepListOverrideMasks());
             d->add(*c);
             return;
@@ -817,7 +818,8 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
     {
         try
         {
-            Save<bool> save_t(&d->_imp->throw_on_blocker, true);
+            Save<bool> save_t(&d->_imp->throw_on_blocker,
+                    dl_blocks_discard_completely != d->_imp->opts->blocks);
             Save<DepListOverrideMasks> save_o(&d->_imp->opts->override_masks, DepListOverrideMasks());
             d->add(*c);
             return;
@@ -835,11 +837,12 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
     }
 }
 
-#include <iostream>
-
 void
 DepList::AddVisitor::visit(const BlockDepAtom * const a)
 {
+    if (dl_blocks_discard_completely == d->_imp->opts->blocks)
+        return;
+
     Context context("When checking BlockDepAtom '!" + stringify(*a->blocked_atom()) + "':");
 
     PackageDepAtom just_package(a->blocked_atom()->package());
@@ -916,6 +919,9 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
             case dl_blocks_discard:
                 Log::get_instance()->message(ll_warning, lc_context, "Discarding block '!"
                         + stringify(*a->blocked_atom()) + "'");
+                break;
+
+            case dl_blocks_discard_completely:
                 break;
 
             case dl_blocks_accumulate:

@@ -163,9 +163,10 @@ namespace paludis
      */
     enum DepListBlocksOption
     {
-        dl_blocks_accumulate, ///< Accumulate them and show all errors together
-        dl_blocks_error,      ///< Error on the first one
-        dl_blocks_discard,    ///< Discard (dangerous)
+        dl_blocks_accumulate,         ///< Accumulate them and show all errors together
+        dl_blocks_error,              ///< Error on the first one
+        dl_blocks_discard,            ///< Discard (dangerous)
+        dl_blocks_discard_completely, ///< Discard completely (not for user visible use)
         last_dl_blocks
     };
 

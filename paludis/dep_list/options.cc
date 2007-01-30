@@ -332,6 +332,10 @@ paludis::operator<< (std::ostream & o, const DepListBlocksOption & s)
                 o << "discard";
                 continue;
 
+            case dl_blocks_discard_completely:
+                o << "discard_completely";
+                continue;
+
             case last_dl_blocks:
                 ;
         }

@@ -54,7 +54,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     DepListOptions d_options;
     d_options.circular = dl_circular_discard_silently;
     d_options.use = dl_use_deps_take_all;
-    d_options.blocks = dl_blocks_discard;
+    d_options.blocks = dl_blocks_discard_completely;
     d_options.override_masks.set(dl_override_tilde_keywords);
     d_options.override_masks.set(dl_override_unkeyworded);
     d_options.override_masks.set(dl_override_repository_masks);
