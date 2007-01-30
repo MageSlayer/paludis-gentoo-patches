@@ -85,7 +85,7 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/no_config/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/dep_list/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/.libs\`: \
-			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/qa/.libs\`: \
+			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/qa/.libs\`" \
 			| tr -d ' '` \
 	bash $(top_srcdir)/test/run_test.sh "$(RUBY) -I ./.libs/"
 
