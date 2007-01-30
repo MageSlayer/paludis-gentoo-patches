@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +31,11 @@
 #include <unistd.h>
 #include <sys/types.h>
 
+#include "config.h"
+#ifdef HAVE_CXA_DEMANGLE
+#  include <cxxabi.h>
+#endif
+
 /** \file
  * Implementation of the default test runner.
  *
@@ -50,7 +55,26 @@ namespace
 
         std::cerr << "Stack dump:" << std::endl;
         for (unsigned n(0) ; n < sz ; ++n)
-            std::cerr << "  * " << symbols[n] << std::endl;
+        {
+            std::string sym(symbols[n]);
+
+#ifdef HAVE_CXA_DEMANGLE
+            std::string::size_type p, q;
+            if (std::string::npos != ((p = sym.find("(_Z"))) && std::string::npos != ((q = sym.find("+0x", p))))
+            {
+                ++p;
+                int status(0);
+                char * const name(abi::__cxa_demangle(sym.substr(p, q - p).c_str(), 0, 0, &status));
+                if (0 == status)
+                {
+                    sym = sym.substr(0, p) + name + sym.substr(q);
+                    std::free(name);
+                }
+            }
+#endif
+
+            std::cerr << "  * " << sym << std::endl;
+        }
 
         std::free(symbols);
 #endif
