@@ -14,10 +14,15 @@ if NEED_POINTER_WRAPPERS
 
 paludis_compat_tr1_HEADERS = memory tr1_memory.hh
 
-endif
-
 memory : tr1_memory.hh
 	cp $(srcdir)/tr1_memory.hh $@
+
+else
+
+memory :
+	rm -f $@
+
+endif
 
 EXTRA_DIST = tr1_memory.hh
 BUILT_SOURCES = memory
