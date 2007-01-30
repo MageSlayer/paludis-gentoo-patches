@@ -104,7 +104,6 @@ if MONOLITHIC
 
 portage_repository_TEST_LDADD = \
 	libpaludisportagerepository.la \
-	$(top_builddir)/paludis/libxml/libpaludislibxml.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/paludis/libpaludis.la \
@@ -186,15 +185,13 @@ libpaludisportagerepositoryxmlthings_la_CXXFLAGS = $(AM_CXXFLAGS) @LIBXML2DEPS_C
 if MONOLITHIC
 
 libpaludisportagerepositoryxmlthings_la_LIBADD = @LIBXML2DEPS_LIBS@ \
-	$(top_builddir)/paludis/libxml/libpaludislibxml.la \
 	$(DYNAMIC_LD_LIBS)
 
 else
 
 libpaludisportagerepositoryxmlthings_la_LIBADD = @LIBXML2DEPS_LIBS@ \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/libxml/libpaludislibxml.la
+	$(top_builddir)/paludis/libpaludis.la
 
 endif
 
@@ -215,7 +212,6 @@ xml_things_TEST_LDADD = \
 	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepositoryxmlthings.la \
-	$(top_builddir)/paludis/libxml/libpaludislibxml.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
 

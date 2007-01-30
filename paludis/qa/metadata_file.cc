@@ -18,7 +18,6 @@
  */
 
 #include "metadata_file.hh"
-#include <paludis/libxml/libxml.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
@@ -31,6 +30,21 @@
 
 using namespace paludis;
 using namespace paludis::qa;
+
+namespace
+{
+    std::string retarded_libxml_string_to_string(const xmlChar * const s)
+    {
+        return s ? stringify(reinterpret_cast<const char *>(s)) : "";
+    }
+
+    std::string normalise(const std::string & s)
+    {
+        std::list<std::string> words;
+        WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(words));
+        return join(words.begin(), words.end(), " ");
+    }
+}
 
 namespace paludis
 {
@@ -80,7 +94,7 @@ namespace paludis
 MetadataFile::MetadataFile(const FSEntry & f) :
     PrivateImplementationPattern<MetadataFile>(new Implementation<MetadataFile>)
 {
-    LibXmlPtrHolder<xmlDocPtr> xml_doc(xmlReadFile(stringify(f).c_str(), 0, 0), &xmlFreeDoc);
+    std::tr1::shared_ptr<xmlDoc> xml_doc(xmlReadFile(stringify(f).c_str(), 0, 0), &xmlFreeDoc);
     if (! xml_doc)
     {
         Log::get_instance()->message(ll_warning, lc_no_context, "Couldn't parse xml file '" +
@@ -88,13 +102,13 @@ MetadataFile::MetadataFile(const FSEntry & f) :
         return;
     }
 
-    _imp->handle_node(xml_doc, xmlDocGetRootElement(xml_doc));
+    _imp->handle_node(xml_doc.get(), xmlDocGetRootElement(xml_doc.get()));
 }
 
 MetadataFile::MetadataFile(const std::string & text) :
     PrivateImplementationPattern<MetadataFile>(new Implementation<MetadataFile>)
 {
-    LibXmlPtrHolder<xmlDocPtr> xml_doc(xmlReadDoc(reinterpret_cast<const xmlChar *>(text.c_str()),
+    std::tr1::shared_ptr<xmlDoc> xml_doc(xmlReadDoc(reinterpret_cast<const xmlChar *>(text.c_str()),
                 "file:///var/empty/", 0, 0), &xmlFreeDoc);
     if (! xml_doc)
     {
@@ -102,7 +116,7 @@ MetadataFile::MetadataFile(const std::string & text) :
         return;
     }
 
-    _imp->handle_node(xml_doc, xmlDocGetRootElement(xml_doc));
+    _imp->handle_node(xml_doc.get(), xmlDocGetRootElement(xml_doc.get()));
 }
 
 MetadataFile::MetadataFile(const MetadataFile & other) :

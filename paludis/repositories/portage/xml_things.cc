@@ -21,9 +21,10 @@
 #include <libxml/parser.h>
 #include <paludis/repositories/portage/glsa.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/join.hh>
 #include <paludis/config_file.hh>
-#include <paludis/libxml/libxml.hh>
 #include <set>
+#include <list>
 
 using namespace paludis;
 
@@ -34,6 +35,18 @@ extern "C"
 
 namespace
 {
+    std::string retarded_libxml_string_to_string(const xmlChar * const s)
+    {
+        return s ? stringify(reinterpret_cast<const char *>(s)) : "";
+    }
+
+    std::string normalise(const std::string & s)
+    {
+        std::list<std::string> words;
+        WhitespaceTokeniser::get_instance()->tokenise(s, std::back_inserter(words));
+        return join(words.begin(), words.end(), " ");
+    }
+
     class Handler
     {
         private:
@@ -177,12 +190,12 @@ namespace
 std::tr1::shared_ptr<GLSA>
 create_glsa_from_xml_file(const std::string & filename)
 {
-    LibXmlPtrHolder<xmlDocPtr> xml_doc(xmlReadFile(filename.c_str(), 0, 0), &xmlFreeDoc);
+    std::tr1::shared_ptr<xmlDoc> xml_doc(xmlReadFile(filename.c_str(), 0, 0), &xmlFreeDoc);
     if (! xml_doc)
         throw GLSAError("Could not parse GLSA", filename);
 
     Handler h;
-    h.handle_node(xml_doc, xmlDocGetRootElement(xml_doc));
+    h.handle_node(xml_doc.get(), xmlDocGetRootElement(xml_doc.get()));
     return h.glsa();
 }
 

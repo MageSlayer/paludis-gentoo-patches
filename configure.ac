@@ -878,7 +878,6 @@ AC_OUTPUT(
 	paludis/environment/no_config/Makefile
 	paludis/environment/test/Makefile
 	paludis/hashed_containers.hh
-	paludis/libxml/Makefile
 	paludis/qa/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/cran/Makefile

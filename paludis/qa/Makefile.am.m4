@@ -20,7 +20,6 @@ $1_TEST_LDADD = \
 	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libxml/libpaludislibxml.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(DYNAMIC_LD_LIBS) \
 	$(PCREPLUSPLUS_LIBS) \
@@ -67,7 +66,6 @@ if ! MONOLITHIC
 libpaludisqa_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libxml/libpaludislibxml.la \
 	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
