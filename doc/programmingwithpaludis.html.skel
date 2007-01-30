@@ -39,7 +39,8 @@ and library code is in paludis/ .</p>
 </pre>
 
 <p>Compile this using <code>g++ -Wall -lpaludis
-    -lpaludisdefaultenvironment</code>.</p>
+    -lpaludisdefaultenvironment</code>. If your compiler lacks tr1 support, you
+may also need <code>-I/usr/include/paludis/compat</code>.</p>
 
 <p>The same application written in Ruby will look something like:</p>
 

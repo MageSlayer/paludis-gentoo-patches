@@ -198,6 +198,7 @@ AC_SUBST([HAVE_STD_HASHES])
 dnl }}}
 
 dnl {{{ tr1 shared pointers
+need_pointer_wrappers=no
 AC_MSG_CHECKING([for std::tr1::shared_ptr<>])
 AC_COMPILE_IFELSE([
 #include <tr1/memory>
@@ -209,7 +210,20 @@ int main(int, char *[])
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support std::tr1])])
+	 AC_MSG_CHECKING([for boost::shared_ptr<>])
+	 AC_COMPILE_IFELSE([
+#include <boost/shared_ptr.hpp>
+int main(int, char *[])
+{
+	boost::shared_ptr<int> x(new int(10));
+	return *x;
+}
+],
+	[AC_MSG_RESULT([yes])
+	 need_pointer_wrappers=yes],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
+AM_CONDITIONAL([NEED_POINTER_WRAPPERS], test x$need_pointer_wrappers = "xyes")
 dnl }}}
 
 need_xml_check=
@@ -907,6 +921,7 @@ AC_OUTPUT(
 	src/clients/qualudis/Makefile
 	src/clients/adjutrix/Makefile
 	test/Makefile
+	tr1/Makefile
 	zsh-completion/Makefile
 	)
 dnl }}}
