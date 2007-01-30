@@ -39,9 +39,6 @@ namespace paludis
     class VDBVirtualVersionMetadata :
         public VersionMetadata,
         public VersionMetadataDepsInterface,
-        public VersionMetadataOriginsInterface,
-        public VersionMetadataEbuildInterface,
-        public VersionMetadataLicenseInterface,
         public VersionMetadataVirtualInterface
     {
         public:

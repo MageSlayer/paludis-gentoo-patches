@@ -65,9 +65,6 @@ FakeRepository::virtual_package_version_metadata(
     std::tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
                 m->slot, PackageDatabaseEntry(p.provided_by_atom->package(), v, name())));
 
-    if (m->license_interface)
-        result->license_interface->license_string = m->license_interface->license_string;
-
     result->eapi = m->eapi;
     result->deps_interface->build_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
     result->deps_interface->run_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);

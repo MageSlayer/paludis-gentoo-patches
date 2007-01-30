@@ -969,9 +969,6 @@ PortageRepository::virtual_package_version_metadata(const RepositoryVirtualsEntr
     std::tr1::shared_ptr<PortageVirtualVersionMetadata> result(new PortageVirtualVersionMetadata(
                 m->slot, PackageDatabaseEntry(p.provided_by_atom->package(), v, name())));
 
-    if (m->license_interface)
-        result->license_string = m->license_interface->license_string;
-    result->keywords = "*";
     result->eapi = m->eapi;
     result->build_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
     result->run_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);

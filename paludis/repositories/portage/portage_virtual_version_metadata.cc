@@ -28,15 +28,14 @@ PortageVirtualVersionMetadata::PortageVirtualVersionMetadata(const SlotName & s,
             VersionMetadataBase(s, "", "", "paludis-1"),
             VersionMetadataCapabilities::create()
             .virtual_interface(this)
-            .ebuild_interface(this)
+            .ebuild_interface(0)
             .deps_interface(this)
-            .license_interface(this)
+            .license_interface(0)
             .cran_interface(0)
             .origins_interface(0)
             ),
     VersionMetadataVirtualInterface(e),
-    VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
-    VersionMetadataLicenseInterface(&PortageDepParser::parse_license)
+    VersionMetadataDepsInterface(&PortageDepParser::parse_depend)
 {
 }
 

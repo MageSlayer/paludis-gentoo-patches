@@ -328,19 +328,16 @@ FakeVirtualVersionMetadata::FakeVirtualVersionMetadata(const SlotName & s, const
     VersionMetadata(
             VersionMetadataBase(s, "", "", "paludis-1"),
             VersionMetadataCapabilities::create()
-            .ebuild_interface(this)
+            .ebuild_interface(0)
             .deps_interface(this)
-            .license_interface(this)
+            .license_interface(0)
             .cran_interface(0)
             .virtual_interface(this)
             .origins_interface(0)
             ),
-    VersionMetadataEbuildInterface(),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
-    VersionMetadataLicenseInterface(&PortageDepParser::parse_license),
     VersionMetadataVirtualInterface(p)
 {
-    keywords = "test";
 }
 
 FakeVirtualVersionMetadata::~FakeVirtualVersionMetadata()

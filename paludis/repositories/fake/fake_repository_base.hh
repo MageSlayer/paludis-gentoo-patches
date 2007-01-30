@@ -59,9 +59,7 @@ namespace paludis
      */
     class FakeVirtualVersionMetadata :
         public VersionMetadata,
-        public VersionMetadataEbuildInterface,
         public VersionMetadataDepsInterface,
-        public VersionMetadataLicenseInterface,
         public VersionMetadataVirtualInterface
     {
         public:

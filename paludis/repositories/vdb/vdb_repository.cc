@@ -1184,8 +1184,6 @@ VDBRepository::provided_package_version_metadata(const RepositoryProvidesEntry &
     std::tr1::shared_ptr<VDBVirtualVersionMetadata> result(new VDBVirtualVersionMetadata(
                 m->slot, PackageDatabaseEntry(p.provided_by_name, p.version, name())));
 
-    if (m->license_interface)
-        result->license_string = m->license_interface->license_string;
     result->eapi = m->eapi;
     result->build_depend_string = stringify(p.provided_by_name);
     result->run_depend_string = stringify(p.provided_by_name);

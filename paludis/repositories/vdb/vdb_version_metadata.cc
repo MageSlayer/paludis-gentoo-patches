@@ -48,14 +48,13 @@ VDBVirtualVersionMetadata::VDBVirtualVersionMetadata(const SlotName & s,
         VersionMetadataBase(s, "", "", "UNKNOWN"),
         VersionMetadataCapabilities::create()
         .deps_interface(this)
-        .origins_interface(this)
-        .ebuild_interface(this)
-        .license_interface(this)
+        .origins_interface(0)
+        .ebuild_interface(0)
+        .license_interface(0)
         .virtual_interface(this)
         .cran_interface(0)
         ),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
-    VersionMetadataLicenseInterface(&PortageDepParser::parse_license),
     VersionMetadataVirtualInterface(e)
 {
 }
