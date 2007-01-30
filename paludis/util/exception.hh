@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_EXCEPTION_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/stringify.hh>
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 #include <string>
 #include <exception>
@@ -77,6 +78,7 @@ namespace paludis
     {
         private:
             const std::string _message;
+            mutable std::string _what_str;
             struct ContextData;
             ContextData * const _context_data;
 
@@ -114,6 +116,11 @@ namespace paludis
              * Is our backtrace empty?
              */
             bool empty() const;
+
+            /**
+             * A better what, if possible.
+             */
+            const char * what() const throw ();
     };
 
     /**

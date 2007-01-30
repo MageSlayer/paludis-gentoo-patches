@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,12 +19,11 @@
 
 #include <paludis/util/exception.hh>
 #include <libebt/libebt.hh>
+#include "config.h"
 
-/** \file
- * Exception class implementations.
- *
- * \ingroup grpexceptions
- */
+#ifdef HAVE_CXA_DEMANGLE
+#  include <cxxabi.h>
+#endif
 
 using namespace paludis;
 
@@ -123,5 +122,29 @@ NameError::NameError(const std::string & name, const std::string & role) throw (
 ConfigurationError::ConfigurationError(const std::string & msg) throw () :
     Exception(msg)
 {
+}
+
+const char *
+Exception::what() const throw ()
+{
+#ifdef HAVE_CXA_DEMANGLE
+    if (_what_str.empty())
+    {
+        int status(0);
+        char * const name(abi::__cxa_demangle(
+                    ("_Z" + stringify(std::exception::what())).c_str(), 0, 0, &status));
+
+        if (0 == status)
+        {
+            _what_str = name;
+            std::free(name);
+        }
+    }
+#endif
+
+    if (_what_str.empty())
+        _what_str = stringify(std::exception::what());
+
+    return _what_str.c_str();
 }
 

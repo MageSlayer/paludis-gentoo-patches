@@ -261,6 +261,25 @@ AC_COMPILE_IFELSE([
 	 AC_MSG_ERROR([libwrapiter version must be at least 1.0])])
 dnl }}}
 
+dnl {{{ we can use abi::__cxa_demangle
+AC_MSG_CHECKING([for abi::__cxa_demangle])
+AC_COMPILE_IFELSE([
+#include <cxxabi.h>
+int main(int, char *[])
+{
+    int status(0);
+    char * const name(abi::__cxa_demangle(
+                "_ZN7paludis21CategoryNamePartErrorE", 0, 0, &status));
+}
+],
+	[have_cxa_demangle=yes],
+	[have_cxa_demangle=no])
+AC_MSG_RESULT([$have_cxa_demangle])
+if test "x$have_cxa_demangle" = "xyes"; then
+   AC_DEFINE([HAVE_CXA_DEMANGLE], [1], [Include abi::__cxa_demangle support])
+fi
+dnl}}}
+
 dnl {{{ check for various misc functions.
 dnl It's probably possible to make many of these optional rather than
 dnl hard requirements. If any of these fail for you, send patches.
