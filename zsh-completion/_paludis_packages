@@ -3,7 +3,7 @@
 # vim: set et sw=4 sts=4 ts=4 ft=zsh :
 # ZSH completion utility functions for paludis
 # Written by Baptiste Daroussin <baptux at free.fr>
-# Usage: _paludis_packages installed|available|repositories|categories|sets
+# Usage: _paludis_packages installed|available|repositories|categories|sets|repository-formats
 
 local flags prepo packages categories
 _paludis_packages_update_available() {
@@ -18,9 +18,13 @@ _paludis_packages_update_available() {
     fi
 }
 
+_paludis_packages_update_repository-formats() {
+    packages=(${${(M)${(f)"$(paludis --list-repository-formats)"}:#\* *}##\* })
+    compadd ${(@)packages}
+}
+
 _paludis_packages_update_installed() {
     packages=(${${(M)${(f)"$(paludis --repository installed --list-packages)"}:#\* *}##\* })
-
     compadd ${(@)packages}
 }
 _paludis_packages_update_categories() {
@@ -41,11 +45,11 @@ _paludis_packages() {
     if [[ -z "$update_policy" ]]; then
         zstyle ":completion:*:*:$service:*" cache-policy _paludis_cache_policy
     fi
-    [[ "$command" == (installed|available|categories|repositories|sets) ]] || {
+    [[ "$command" == (installed|available|categories|repositories|sets|repository-formats) ]] || {
         _message "unknown command: $command"
         return
     }
-    [[ "$pkgset" ==  (installed|available|categories|repositories|sets) ]] || {
+    [[ "$pkgset" ==  (installed|available|categories|repositories|sets|repository-formats) ]] || {
         pkgset="$command"
     }
     expl=("${(@)argv[1,-2]}")

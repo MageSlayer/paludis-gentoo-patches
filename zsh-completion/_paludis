@@ -26,6 +26,7 @@ _paludis() {
         "--safe-resume[Allow interrupted downloads to be resumed safely]"
     )
     list_args=(
+        "--repository-format[Matches with this repository format only]:format:_paludis_packages repository-formats"
         "--repository[Matches with this repository name only]:repository:_paludis_packages repositories"
         "--category[Matches with this category name only]:category:_paludis_packages categories"
         "--package[Matches with this package name only]:package:_paludis_packages available"
@@ -76,6 +77,10 @@ _paludis() {
         "--full-match[Match whole filename]"
     )
     deplist_args=(
+        "--dl-blocks[How to handle blocks]:How:(accumulate error discard)"
+        "--dl-override-masks[Zero or more mask kinds that can be overridden as necessary]:What:(tilde-keyword unkeyworded profile repository license)"
+        "--dl-suggested[How to handle suggested dependencies]:How:(show install discard)"
+        "--dl-downgrade[When to downgrade packages]:When:(as-needed warning error)"
         "--dl-reinstall[When to reinstall packages]:When:(never always if-use-changed)"
         "--dl-reinstall-scm[When to reinstall scm packages]:When:(never always daily weekly)"
         "--dl-upgrade[When to upgrade packages]:When:(always as-needed)"
@@ -112,7 +117,7 @@ _paludis() {
             "*:available packages:_paludis_packages available" && return 0
     else
         _arguments -s \
-            $general_args[@] $deplist_args[@] $list_args[@] $lists[@] $install_uninstall_args[@] $uninstall_args[@] $owner_args[@] $query_args[@] "$action_args[@]" && return 0
+            $general_args[@] $deplist_args[@] $list_args[@] $lists[@] $install_uninstall_args[@] $uninstall_args[@] $owner_args[@] $query_args[@] "$action_args[@]" "*:available packages:_paludis_packages available" && return 0
     fi
 }
 
