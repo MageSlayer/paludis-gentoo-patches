@@ -140,7 +140,7 @@ cat &lt;&lt;"END" &gt; /etc/paludis/repositories/gentoo.conf
 location = /var/paludis/repositories/gentoo/
 sync = rsync://rsync.europe.gentoo.org/gentoo-portage/
 profiles = /var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
-format = portage
+format = ebuild
 END
 
 cat &lt;&lt;"END" &gt; /etc/paludis/repositories/installed.conf
@@ -155,7 +155,7 @@ profiles = /var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
 eclassdirs = /var/paludis/repositories/gentoo/eclass
 distdir = /var/paludis/repositories/gentoo/distfiles
 cache = /var/empty
-format = portage
+format = ebuild
 importance = 10
 END
 </pre>
