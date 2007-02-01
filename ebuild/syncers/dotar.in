@@ -119,13 +119,15 @@ TARFILE="${URL##*/}"
 
 "${FETCHER}" "${FETCHER_OPTIONS[@]}" "${URL}" "${TEMP}/${TARFILE}" || exit $?
 
-( cd "${TEMP}" && "${PALUDIS_EBUILD_DIR}/utils/dounpack" "${DOUNPACK_OPTIONS[@]}" "${TEMP}/${TARFILE}" ) || exit $?
+UNPACKDIR="${TEMP}/repository"
+mkdir "${UNPACKDIR}"
+( cd "${UNPACKDIR}" && "${PALUDIS_EBUILD_DIR}/utils/dounpack" "${DOUNPACK_OPTIONS[@]}" "${TEMP}/${TARFILE}" ) || exit $?
 
 rm "${TEMP}/${TARFILE}"
 
-if [[ -z "$( ls -A "${TEMP}" )" ]]; then
+if [[ -z "$( ls -A "${UNPACKDIR}" )" ]]; then
     eerror "No files were extracted (not an archive?)"
-    rmdir "${TEMP}"
+    rm -rf "${TEMP}"
     exit 1
 fi
 
@@ -133,7 +135,7 @@ fi
 rsync --recursive --links --safe-links --perms --times --compress --force \
     --whole-file --delete --delete-after --stats --timeout=180 \
     --exclude=/distfiles --exclude=/packages --exclude=/local \
-    --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${TEMP}/" "${LOCAL}/" || exit $?
+    --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${UNPACKDIR}/" "${LOCAL}/" || exit $?
 
 rm -rf "${TEMP}"
 
