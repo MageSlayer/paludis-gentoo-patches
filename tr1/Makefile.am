@@ -20,7 +20,7 @@ memory : tr1_memory.hh
 else
 
 memory :
-	rm -f $@
+	rm -f $@ || true
 
 endif
 
