@@ -150,7 +150,7 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
         if (0 == ((result = cmd.metadata())))
             throw InternalError(PALUDIS_HERE, "cmd.metadata() is zero pointer???");
 
-        if (_imp->params.write_cache.basename() != "empty")
+        if (_imp->params.write_cache.basename() != "empty" && result->eapi != "UNKNOWN")
         {
             EbuildFlatMetadataCache metadata_cache(write_cache_file, ebuild_file, _imp->master_mtime,
                     _imp->eclass_mtimes, false);
