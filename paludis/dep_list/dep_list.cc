@@ -1524,85 +1524,13 @@ DepList::end() const
     return Iterator(_imp->merge_list.end());
 }
 
-namespace
-{
-    struct IsTopLevelTarget :
-        DepAtomVisitorTypes::ConstVisitor,
-        std::unary_function<PackageDatabaseEntry, bool>
-    {
-        const Environment * const env;
-        std::tr1::shared_ptr<const DepAtom> target;
-        const PackageDatabaseEntry * dbe;
-        bool matched;
-
-        IsTopLevelTarget(const Environment * const e, std::tr1::shared_ptr<const DepAtom> t) :
-            env(e),
-            target(t),
-            matched(false)
-        {
-        }
-
-        bool operator() (const PackageDatabaseEntry & e)
-        {
-            dbe = &e;
-            matched = false;
-            target->accept(this);
-            return matched;
-        }
-
-        void visit(const AllDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const PackageDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            if (match_package(*env, *a, *dbe))
-                matched = true;
-        }
-
-        void visit(const UseDepAtom * const u)
-        {
-            if (matched)
-                return;
-
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
-        }
-
-        void visit(const AnyDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const BlockDepAtom * const)
-        {
-        }
-
-        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
-        }
-    };
-
-}
-
 bool
 DepList::is_top_level_target(const PackageDatabaseEntry & e) const
 {
     if (! _imp->current_top_level_target)
         throw InternalError(PALUDIS_HERE, "current_top_level_target not set?");
 
-    IsTopLevelTarget t(_imp->env, _imp->current_top_level_target);
-    return t(e);
+    return match_package_in_heirarchy(*_imp->env, *_imp->current_top_level_target, e);
 }
 
 namespace

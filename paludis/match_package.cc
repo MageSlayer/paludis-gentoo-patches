@@ -108,3 +108,83 @@ paludis::match_package(
     return true;
 }
 
+namespace
+{
+    struct IsInHeirarchy :
+        DepAtomVisitorTypes::ConstVisitor,
+        std::unary_function<PackageDatabaseEntry, bool>
+    {
+        const Environment & env;
+        const DepAtom & target;
+        const PackageDatabaseEntry * dbe;
+        bool matched;
+
+        IsInHeirarchy(const Environment & e, const DepAtom & t) :
+            env(e),
+            target(t),
+            matched(false)
+        {
+        }
+
+        bool operator() (const PackageDatabaseEntry & e)
+        {
+            dbe = &e;
+            matched = false;
+            target.accept(this);
+            return matched;
+        }
+
+        void visit(const AllDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const PackageDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            if (match_package(env, *a, *dbe))
+                matched = true;
+        }
+
+        void visit(const UseDepAtom * const u)
+        {
+            if (matched)
+                return;
+
+            std::for_each(u->begin(), u->end(), accept_visitor(this));
+        }
+
+        void visit(const AnyDepAtom * const a)
+        {
+            if (matched)
+                return;
+
+            std::for_each(a->begin(), a->end(), accept_visitor(this));
+        }
+
+        void visit(const BlockDepAtom * const)
+        {
+        }
+
+        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+        }
+    };
+}
+
+bool
+paludis::match_package_in_heirarchy(
+        const Environment & env,
+        const DepAtom & atom,
+        const PackageDatabaseEntry & entry)
+{
+    IsInHeirarchy h(env, atom);
+    return h(entry);
+}
+

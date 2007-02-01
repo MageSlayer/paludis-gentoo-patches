@@ -28,6 +28,16 @@ namespace paludis
             const Environment & env,
             const PackageDepAtom & atom,
             const PackageDatabaseEntry & target);
+
+    /**
+     * Return whether the specified atom matches the specified target, for heirarchies.
+     *
+     * \ingroup grpmatchpackage
+     */
+    bool match_package_in_heirarchy(
+            const Environment & env,
+            const DepAtom & atom,
+            const PackageDatabaseEntry & target);
 }
 
 #endif

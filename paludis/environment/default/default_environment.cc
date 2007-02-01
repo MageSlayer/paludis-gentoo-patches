@@ -52,76 +52,6 @@ DefaultEnvironment::~DefaultEnvironment()
 {
 }
 
-namespace
-{
-    struct IsInSet :
-        DepAtomVisitorTypes::ConstVisitor,
-        std::unary_function<PackageDatabaseEntry, bool>
-    {
-        const Environment * const env;
-        std::tr1::shared_ptr<const DepAtom> set;
-        const PackageDatabaseEntry * dbe;
-        bool matched;
-
-        IsInSet(const Environment * const e, std::tr1::shared_ptr<const DepAtom> s) :
-            env(e),
-            set(s),
-            matched(false)
-        {
-        }
-
-        bool operator() (const PackageDatabaseEntry & e)
-        {
-            dbe = &e;
-            matched = false;
-            set->accept(this);
-            return matched;
-        }
-
-        void visit(const AllDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const PackageDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            if (match_package(*env, *a, *dbe))
-                matched = true;
-        }
-
-        void visit(const UseDepAtom * const u)
-        {
-            if (matched)
-                return;
-
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
-        }
-
-        void visit(const AnyDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const BlockDepAtom * const)
-        {
-        }
-
-        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
-        }
-    };
-}
-
 bool
 DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry * e) const
 {
@@ -231,8 +161,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
             if (f != u->flag_name)
                 continue;
 
-            IsInSet q(this, u->dep_atom);
-            if (! q(*e))
+            if (! match_package_in_heirarchy(*this, *u->dep_atom, *e))
                 continue;
 
             switch (u->flag_state)
@@ -274,8 +203,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
                 i_end(DefaultConfig::get_instance()->end_set_use_prefixes_with_minus_star()) ;
                 i != i_end ; ++i)
         {
-            IsInSet q(this, i->dep_atom);
-            if (! q(*e))
+            if (! match_package_in_heirarchy(*this, *i->dep_atom, *e))
                 continue;
 
             if (0 == i->prefix.compare(0, i->prefix.length(), stringify(f), 0, i->prefix.length()))
@@ -392,8 +320,7 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
                 k_end(DefaultConfig::get_instance()->end_set_keywords()) ;
                 k != k_end ; ++k)
         {
-            IsInSet q(this, k->dep_atom);
-            if (! q(*d))
+            if (! match_package_in_heirarchy(*this, *k->dep_atom, *d))
                 continue;
 
             if (k->keyword == minus_star_keyword)
@@ -460,8 +387,7 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
                 k_end(DefaultConfig::get_instance()->end_set_licenses()) ;
                 k != k_end ; ++k)
         {
-            IsInSet q(this, k->dep_atom);
-            if (! q(*d))
+            if (! match_package_in_heirarchy(*this, *k->dep_atom, *d))
                 continue;
 
             if (k->license == "-*")
@@ -513,8 +439,7 @@ DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_masks_sets()) ;
             k != k_end ; ++k)
     {
-        IsInSet q(this, k->dep_atom);
-        if (! q(d))
+        if (! match_package_in_heirarchy(*this, *k->dep_atom, d))
             continue;
 
         return true;
@@ -542,8 +467,7 @@ DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_unmasks_sets()) ;
             k != k_end ; ++k)
     {
-        IsInSet q(this, k->dep_atom);
-        if (! q(d))
+        if (! match_package_in_heirarchy(*this, *k->dep_atom, d))
             continue;
 
         return true;

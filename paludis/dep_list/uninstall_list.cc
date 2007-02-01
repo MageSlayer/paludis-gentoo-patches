@@ -87,73 +87,6 @@ namespace
             return f.package == e;
         }
     };
-
-    struct IsWorld :
-        DepAtomVisitorTypes::ConstVisitor,
-        std::unary_function<PackageDatabaseEntry, bool>
-    {
-        const Environment * const env;
-        std::tr1::shared_ptr<const DepAtom> world;
-        const PackageDatabaseEntry * dbe;
-        bool matched;
-
-        IsWorld(const Environment * const e) :
-            env(e),
-            world(e->package_set(SetName("world"))),
-            matched(false)
-        {
-        }
-
-        bool operator() (const PackageDatabaseEntry & e)
-        {
-            dbe = &e;
-            matched = false;
-            world->accept(this);
-            return matched;
-        }
-
-        void visit(const AllDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const PackageDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            if (match_package(*env, *a, *dbe))
-                matched = true;
-        }
-
-        void visit(const UseDepAtom * const u)
-        {
-            if (matched)
-                return;
-
-            std::for_each(u->begin(), u->end(), accept_visitor(this));
-        }
-
-        void visit(const AnyDepAtom * const a)
-        {
-            if (matched)
-                return;
-
-            std::for_each(a->begin(), a->end(), accept_visitor(this));
-        }
-
-        void visit(const BlockDepAtom * const)
-        {
-        }
-
-        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
-        }
-    };
 }
 
 UninstallList::UninstallList(const Environment * const env, const UninstallListOptions & o) :
@@ -428,11 +361,11 @@ UninstallList::add_unused_dependencies()
                 ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator());
 
         /* if any of them aren't already on the list, and aren't in world, add them and recurse */
-        IsWorld w(_imp->env);
+        std::tr1::shared_ptr<DepAtom> world(_imp->env->package_set(SetName("world")));
         for (PackageDatabaseEntryCollection::Iterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
-            if (w(*i))
+            if (match_package_in_heirarchy(*_imp->env, *world, *i))
                 continue;
 
             if (_imp->uninstall_list.end() != std::find_if(_imp->uninstall_list.begin(),
@@ -495,10 +428,10 @@ UninstallList::collect_world() const
             new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
     std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> everything(collect_all_installed());
 
-    IsWorld w(_imp->env);
+    std::tr1::shared_ptr<DepAtom> world(_imp->env->package_set(SetName("world")));
     for (PackageDatabaseEntryCollection::Iterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
-        if (w(*i))
+        if (match_package_in_heirarchy(*_imp->env, *world, *i))
             result->insert(*i);
 
     return result;
