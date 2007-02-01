@@ -2,6 +2,10 @@
 
 source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
 
+for f in ${PALUDIS_BASHRC_FILES}; do
+    [[ -f "${f}" ]] && source "${f}"
+done
+
 LOCAL=
 REMOTE=
 
@@ -55,7 +59,7 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             ;;
-                
+
     esac
     shift
 done
@@ -77,8 +81,10 @@ if [[ -d "${LOCAL}" && ! -d "${LOCAL}/_darcs" ]]; then
 fi
 
 if [[ -d "${LOCAL}/_darcs" ]]; then
-    cd "${LOCAL}" && darcs pull --all --set-scripts-executable "${DARCS_PULL_OPTIONS[@]}" "${REMOTE}"
+    cd "${LOCAL}" && ${DARCS_WRAPPER} darcs pull --all \
+        --set-scripts-executable "${DARCS_PULL_OPTIONS[@]}" "${REMOTE}"
 else
-    darcs get --partial --set-scripts-executable "${DARCS_GET_OPTIONS[@]}" --repo-name="${LOCAL}" "${REMOTE}"
+    ${DARCS_WRAPPER} darcs get --partial --set-scripts-executable \
+        "${DARCS_GET_OPTIONS[@]}" --repo-name="${LOCAL}" "${REMOTE}"
 fi
 

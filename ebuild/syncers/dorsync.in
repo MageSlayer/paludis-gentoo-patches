@@ -1,7 +1,10 @@
 #!/bin/bash
 
-
 source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
+
+for f in ${PALUDIS_BASHRC_FILES}; do
+    [[ -f "${f}" ]] && source "${f}"
+done
 
 LOCAL=
 REMOTE=
@@ -64,8 +67,8 @@ fi
 
 REMOTE="${REMOTE#file://}"
 
-rsync --recursive --links --safe-links --perms --times --compress --force \
-    --whole-file --delete --delete-after --stats --timeout=180 \
-    --exclude=/distfiles --exclude=/packages --exclude=/local \
+${RSYNC_WRAPPER} rsync --recursive --links --safe-links --perms --times \
+    --compress --force --whole-file --delete --delete-after --stats \
+    --timeout=180 --exclude=/distfiles --exclude=/packages --exclude=/local \
     --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${REMOTE}" "${LOCAL}/"
 

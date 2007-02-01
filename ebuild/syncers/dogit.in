@@ -2,6 +2,10 @@
 
 source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
 
+for f in ${PALUDIS_BASHRC_FILES}; do
+    [[ -f "${f}" ]] && source "${f}"
+done
+
 LOCAL=
 REMOTE=
 
@@ -51,7 +55,7 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             ;;
-                
+
     esac
     shift
 done
@@ -72,8 +76,8 @@ if [[ -d "${LOCAL}" && ! -d "${LOCAL}/.git" ]]; then
 fi
 
 if [[ -d "${LOCAL}/.git" ]]; then
-    cd "${LOCAL}" && git pull "${GIT_PULL_OPTIONS[@]}"
+    cd "${LOCAL}" && ${GIT_WRAPPER} git pull "${GIT_PULL_OPTIONS[@]}" "${REMOTE}"
 else
-    git clone "${GIT_CLONE_OPTIONS[@]}" "${REMOTE}" "${LOCAL}"
+    ${GIT_WRAPPER} git clone "${GIT_CLONE_OPTIONS[@]}" "${REMOTE}" "${LOCAL}"
 fi
 

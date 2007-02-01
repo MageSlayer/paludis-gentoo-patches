@@ -94,7 +94,10 @@ DefaultSyncer::sync(const SyncOptions & opts) const
 {
 
     MakeEnvCommand cmd(make_env_command(stringify(_syncer) + " " + opts.options + " '" + _local + "' '" + _remote + "'")
+                ("PALUDIS_ACTION", "sync")
+                ("PALUDIS_BASHRC_FILES", _environment->bashrc_files())
                 ("PALUDIS_FETCHERS_DIRS", _environment->fetchers_dirs())
+                ("PALUDIS_SYNCERS_DIRS", _environment->syncers_dirs())
                 ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
 
     if (run_command(cmd))

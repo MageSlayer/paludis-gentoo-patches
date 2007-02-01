@@ -2,6 +2,10 @@
 
 source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
 
+for f in ${PALUDIS_BASHRC_FILES}; do
+    [[ -f "${f}" ]] && source "${f}"
+done
+
 LOCAL=
 REMOTE=
 
@@ -47,7 +51,7 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             ;;
-                
+
     esac
     shift
 done
@@ -79,6 +83,8 @@ CVSROOT="${SERVER%:*}"
 LOCAL=${LOCAL%/}
 WORKING="${LOCAL%/*}"
 [[ ! -d "${WORKING}" ]] && mkdir -p "${WORKING}"
-cd "${WORKING}" && ( ! ${PSERVER} || cvs "${CVS_OPTIONS[@]}" -d "${CVSROOT}" login ) &&
-    cvs -d "${CVSROOT}" "${CVS_OPTIONS[@]}" checkout -P -d "${LOCAL##*/}" "${CVS_CHECKOUT_OPTIONS[@]}" "${MODULE}"
+cd "${WORKING}" &&
+    ( ! ${PSERVER} || ${CVS_WRAPPER} cvs "${CVS_OPTIONS[@]}" -d "${CVSROOT}" login ) &&
+    ${CVS_WRAPPER} cvs -d "${CVSROOT}" "${CVS_OPTIONS[@]}" checkout \
+        -P -d "${LOCAL##*/}" "${CVS_CHECKOUT_OPTIONS[@]}" "${MODULE}"
 
