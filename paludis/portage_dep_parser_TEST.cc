@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,90 +30,6 @@ using namespace paludis;
  *
  */
 
-#ifndef DOXYGEN
-namespace
-{
-    class DepAtomDumper :
-        public DepAtomVisitorTypes::ConstVisitor,
-        private InstantiationPolicy<DepAtomDumper, instantiation_method::NonCopyableTag>
-    {
-        private:
-            std::ostream * const _o;
-
-        public:
-            DepAtomDumper(std::ostream * const o);
-
-            void visit(const AllDepAtom * const);
-
-            void visit(const AnyDepAtom * const);
-
-            void visit(const UseDepAtom * const);
-
-            void visit(const PackageDepAtom * const);
-
-            void visit(const PlainTextDepAtom * const);
-
-            void visit(const BlockDepAtom * const);
-    };
-
-    DepAtomDumper::DepAtomDumper(std::ostream * const o) :
-        _o(o)
-    {
-    }
-
-    void
-    DepAtomDumper::visit(const AllDepAtom * const a)
-    {
-        *_o << "<all>";
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-        *_o << "</all>";
-    }
-
-    void
-    DepAtomDumper::visit(const AnyDepAtom * const a)
-    {
-        *_o << "<any>";
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-        *_o << "</any>";
-    }
-
-    void
-    DepAtomDumper::visit(const UseDepAtom * const a)
-    {
-        *_o << "<use flag=\"" << a->flag() << "\" inverse=\""
-            << (a->inverse() ? "true" : "false") << "\">";
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-        *_o << "</use>";
-    }
-
-    void
-    DepAtomDumper::visit(const PackageDepAtom * const p)
-    {
-        *_o << "<package";
-        if (p->slot_ptr())
-            *_o << " slot=\"" << *p->slot_ptr() << "\"";
-        if (p->version_requirements_ptr())
-            *_o << " version=\"" << p->version_requirements_ptr()->begin()->version_operator <<
-                p->version_requirements_ptr()->begin()->version_spec << "\"";
-        *_o << ">" << p->package() << "</package>";
-    }
-
-    void
-    DepAtomDumper::visit(const PlainTextDepAtom * const t)
-    {
-        *_o << "<text>" << t->text() << "</text>";
-    }
-
-    void
-    DepAtomDumper::visit(const BlockDepAtom * const b)
-    {
-        *_o << "<block>";
-        b->blocked_atom()->accept(this);
-        *_o << "</block>";
-    }
-}
-#endif
-
 namespace test_cases
 {
     /**
@@ -126,10 +42,9 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
+            DepAtomPrettyPrinter d(0, false);
             PortageDepParser::parse("")->accept(&d);
-            TEST_CHECK_EQUAL(s.str(), "<all></all>");
+            TEST_CHECK_EQUAL(stringify(d), "( ) ");
         }
     } test_dep_atom_parser_empty;
 
@@ -143,10 +58,9 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
+            DepAtomPrettyPrinter d(0, false);
             PortageDepParser::parse("   \n   \t")->accept(&d);
-            TEST_CHECK_EQUAL(s.str(), "<all></all>");
+            TEST_CHECK_EQUAL(stringify(d), "( ) ");
         }
     } test_dep_atom_parser_blank;
 
@@ -160,10 +74,9 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
+            DepAtomPrettyPrinter d(0, false);
             PortageDepParser::parse("app-editors/vim")->accept(&d);
-            TEST_CHECK_EQUAL(s.str(), "<all><package>app-editors/vim</package></all>");
+            TEST_CHECK_EQUAL(stringify(d), "( app-editors/vim ) ");
         }
     } test_dep_atom_parser_package;
 
@@ -177,23 +90,17 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s1;
-            DepAtomDumper d1(&s1);
+            DepAtomPrettyPrinter d1(0, false);
             PortageDepParser::parse(">=app-editors/vim-6.4_alpha")->accept(&d1);
-            TEST_CHECK_EQUAL(s1.str(), "<all><package version=\">=6.4_alpha\">"
-                    "app-editors/vim</package></all>");
+            TEST_CHECK_EQUAL(stringify(d1), "( >=app-editors/vim-6.4_alpha ) ");
 
-            std::stringstream s2;
-            DepAtomDumper d2(&s2);
+            DepAtomPrettyPrinter d2(0, false);
             PortageDepParser::parse("=app-editors/vim-6.4_alpha-r1")->accept(&d2);
-            TEST_CHECK_EQUAL(s2.str(), "<all><package version=\"=6.4_alpha-r1\">"
-                    "app-editors/vim</package></all>");
+            TEST_CHECK_EQUAL(stringify(d2), "( =app-editors/vim-6.4_alpha-r1 ) ");
 
-            std::stringstream s3;
-            DepAtomDumper d3(&s3);
+            DepAtomPrettyPrinter d3(0, false);
             PortageDepParser::parse(">=app-editors/vim-6.4_alpha:one")->accept(&d3);
-            TEST_CHECK_EQUAL(s3.str(), "<all><package slot=\"one\" version=\">=6.4_alpha\">"
-                    "app-editors/vim</package></all>");
+            TEST_CHECK_EQUAL(stringify(d3), "( >=app-editors/vim-6.4_alpha:one ) ");
         }
     } test_dep_atom_parser_decorated_package;
 
@@ -207,11 +114,9 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
+            DepAtomPrettyPrinter d(0, false);
             PortageDepParser::parse("app-editors/vim app-misc/hilite   \nsys-apps/findutils")->accept(&d);
-            TEST_CHECK_EQUAL(s.str(), "<all><package>app-editors/vim</package>"
-                    "<package>app-misc/hilite</package><package>sys-apps/findutils</package></all>");
+            TEST_CHECK_EQUAL(stringify(d), "( app-editors/vim app-misc/hilite sys-apps/findutils ) ");
         }
     } test_dep_atom_parser_packages;
 
@@ -225,11 +130,9 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
+            DepAtomPrettyPrinter d(0, false);
             PortageDepParser::parse("|| ( one/one two/two )")->accept(&d);
-            TEST_CHECK_EQUAL(s.str(), "<all><any><package>one/one</package>"
-                    "<package>two/two</package></any></all>");
+            TEST_CHECK_EQUAL(stringify(d), "( || ( one/one two/two ) ) ");
         }
     } test_dep_atom_parser_any;
 
@@ -243,11 +146,9 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
+            DepAtomPrettyPrinter d(0, false);
             PortageDepParser::parse(" ( one/one two/two )    ")->accept(&d);
-            TEST_CHECK_EQUAL(s.str(), "<all><all><package>one/one</package>"
-                    "<package>two/two</package></all></all>");
+            TEST_CHECK_EQUAL(stringify(d), "( ( one/one two/two ) ) ");
         }
     } test_dep_atom_parser_all;
 
@@ -261,11 +162,9 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
+            DepAtomPrettyPrinter d(0, false);
             PortageDepParser::parse("foo? ( one/one )")->accept(&d);
-            TEST_CHECK_EQUAL(s.str(), "<all><use flag=\"foo\" inverse=\"false\"><package>one/one</package>"
-                    "</use></all>");
+            TEST_CHECK_EQUAL(stringify(d), "( foo? ( one/one ) ) ");
         }
     } test_dep_atom_parser_use;
 
@@ -279,11 +178,9 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
+            DepAtomPrettyPrinter d(0, false);
             PortageDepParser::parse("!foo? ( one/one )")->accept(&d);
-            TEST_CHECK_EQUAL(s.str(), "<all><use flag=\"foo\" inverse=\"true\"><package>one/one</package>"
-                    "</use></all>");
+            TEST_CHECK_EQUAL(stringify(d), "( !foo? ( one/one ) ) ");
         }
     } test_dep_atom_parser_inv_use;
 
@@ -297,8 +194,7 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
+            DepAtomPrettyPrinter d(0, false);
             TEST_CHECK_THROWS(PortageDepParser::parse("!foo? ( one/one")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse("!foo? ( one/one ) )")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse("( ( ( ) )")->accept(&d), DepStringError);
@@ -317,8 +213,7 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s;
-            DepAtomDumper d(&s);
+            DepAtomPrettyPrinter d(0, false);
             TEST_CHECK_THROWS(PortageDepParser::parse("!foo? ||")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse("(((")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse(")")->accept(&d), DepStringError);

@@ -19,6 +19,7 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_atom_pretty_printer.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/environment/test/test_environment.hh>
 #include <paludis/util/system.hh>
@@ -27,90 +28,6 @@
 
 using namespace test;
 using namespace paludis;
-
-#ifndef DOXYGEN
-namespace
-{
-    class DepAtomDumper :
-        public DepAtomVisitorTypes::ConstVisitor,
-        private InstantiationPolicy<DepAtomDumper, instantiation_method::NonCopyableTag>
-    {
-        private:
-            std::ostream * const _o;
-
-        public:
-            DepAtomDumper(std::ostream * const o);
-
-            void visit(const AllDepAtom * const);
-
-            void visit(const AnyDepAtom * const);
-
-            void visit(const UseDepAtom * const);
-
-            void visit(const PackageDepAtom * const);
-
-            void visit(const PlainTextDepAtom * const);
-
-            void visit(const BlockDepAtom * const);
-    };
-
-    DepAtomDumper::DepAtomDumper(std::ostream * const o) :
-        _o(o)
-    {
-    }
-
-    void
-    DepAtomDumper::visit(const AllDepAtom * const a)
-    {
-        *_o << "<all>";
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-        *_o << "</all>";
-    }
-
-    void
-    DepAtomDumper::visit(const AnyDepAtom * const a)
-    {
-        *_o << "<any>";
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-        *_o << "</any>";
-    }
-
-    void
-    DepAtomDumper::visit(const UseDepAtom * const a)
-    {
-        *_o << "<use flag=\"" << a->flag() << "\" inverse=\""
-            << (a->inverse() ? "true" : "false") << "\">";
-        std::for_each(a->begin(), a->end(), accept_visitor(this));
-        *_o << "</use>";
-    }
-
-    void
-    DepAtomDumper::visit(const PackageDepAtom * const p)
-    {
-        *_o << "<package";
-        if (p->slot_ptr())
-            *_o << " slot=\"" << *p->slot_ptr() << "\"";
-        if (p->version_requirements_ptr())
-            *_o << " version=\"" << p->version_requirements_ptr()->begin()->version_operator <<
-                p->version_requirements_ptr()->begin()->version_spec << "\"";
-        *_o << ">" << p->package() << "</package>";
-    }
-
-    void
-    DepAtomDumper::visit(const PlainTextDepAtom * const t)
-    {
-        *_o << "<text>" << t->text() << "</text>";
-    }
-
-    void
-    DepAtomDumper::visit(const BlockDepAtom * const b)
-    {
-        *_o << "<block>";
-        b->blocked_atom()->accept(this);
-        *_o << "</block>";
-    }
-}
-#endif
 
 /** \file
  * Test cases for CRANRepository.
@@ -129,20 +46,20 @@ namespace test_cases
 
         void run()
         {
-            std::stringstream s1, s2, s3;
-            DepAtomDumper d1(&s1), d2(&s2), d3(&s3);
+            DepAtomPrettyPrinter d1(0, false), d2(0, false), d3(0, false);
             // test R dependency
             std::string dep1("R (>= 2.0.0)");
             CRANDepParser::parse(dep1)->accept(&d1);
-            TEST_CHECK_EQUAL(s1.str(), "<all><package version=\">=2.0.0\">dev-lang/R</package></all>");
+            TEST_CHECK_EQUAL(stringify(d1), "( >=dev-lang/R-2.0.0 ) ");
             // test varying whitespaces
             std::string dep2("testpackage1   \t(<1.9)");
             CRANDepParser::parse(dep2)->accept(&d2);
-            TEST_CHECK_EQUAL(s2.str(), "<all><package version=\"<1.9\">cran/testpackage1</package></all>");
+            TEST_CHECK_EQUAL(stringify(d2), "( <cran/testpackage1-1.9 ) ");
             // test for package-name and version normalisation
             std::string dep3("R.matlab (>= 2.3-1)");
             CRANDepParser::parse(dep3)->accept(&d3);
-            TEST_CHECK_EQUAL(s3.str(), "<all><package version=\">=2.3.1\">cran/R-matlab</package></all>");
+            TEST_CHECK_EQUAL(stringify(d3), "( >=cran/R-matlab-2.3.1 ) ");
         }
     } test_cran_dep_parser;
 }
+
