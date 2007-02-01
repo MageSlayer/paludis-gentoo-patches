@@ -16,11 +16,11 @@ while [[ $# -gt 0 ]]; do
     case "${1}" in
 
         --cvs-option=*)
-            CVS_OPTIONS+=( "${1#*=}" )
+            CVS_OPTIONS[${#CVS_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --cvs-checkout-option=*)
-            CVS_CHECKOUT_OPTIONS+=( "${1#*=}" )
+            CVS_CHECKOUT_OPTIONS[${#CVS_CHECKOUT_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --help)

@@ -16,11 +16,11 @@ while [[ $# -gt 0 ]]; do
     case "${1}" in
 
         --darcs-get-option=*)
-            DARCS_GET_OPTIONS+=( "${1#*=}" )
+            DARCS_GET_OPTIONS[${#DARCS_GET_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --darcs-pull-option=*)
-            DARCS_PULL_OPTIONS+=( "${1#*=}" )
+            DARCS_PULL_OPTIONS[${#DARCS_PULL_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --help)

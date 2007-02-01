@@ -15,11 +15,12 @@ while [[ $# -gt 0 ]]; do
     case "${1}" in
 
         --exclude-from=*)
-            RSYNC_OPTIONS+=( --exclude-from "${1#*=}" )
+            RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]=--exclude-from
+            RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --rsync-option=*)
-            RSYNC_OPTIONS+=( "${1#*=}" )
+            RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --help)

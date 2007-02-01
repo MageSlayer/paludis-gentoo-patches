@@ -16,11 +16,11 @@ while [[ $# -gt 0 ]]; do
     case "${1}" in
 
         --git-clone-option=*)
-            GIT_CLONE_OPTIONS+=( "${1#*=}" )
+            GIT_CLONE_OPTIONS[${#GIT_CLONE_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --git-pull-option=*)
-            GIT_PULL_OPTIONS+=( "${1#*=}" )
+            GIT_PULL_OPTIONS[${#GIT_PULL_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --help)

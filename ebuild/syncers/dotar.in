@@ -17,23 +17,24 @@ while [[ $# -gt 0 ]]; do
     case "${1}" in
 
         --strip-components=*)
-            DOUNPACK_OPTIONS+=( --tar-option="${1}" )
+            DOUNPACK_OPTIONS[${#DOUNPACK_OPTIONS[@]}]=--tar-option="${1}"
             ;;
 
         --exclude-from=*)
-            RSYNC_OPTIONS+=( --exclude-from "${1#*=}" )
+            RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]=--exclude-from
+            RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --fetcher-option=*)
-            FETCHER_OPTIONS+=( "${1#*=}" )
+            FETCHER_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --tar-option=*)
-            DOUNPACK_OPTIONS+=( "${1}" )
+            DOUNPACK_OPTIONS[${#DOUNPACK_OPTIONS[@]}]="${1}"
             ;;
 
         --rsync-option=*)
-            RSYNC_OPTIONS+=( "${1#*=}" )
+            RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
             ;;
 
         --help)
