@@ -196,9 +196,27 @@ UninstallTask::execute()
         on_update_world_pre();
 
         std::tr1::shared_ptr<AllDepAtom> all(new AllDepAtom);
-        for (std::list<std::tr1::shared_ptr<PackageDepAtom> >::const_iterator t(_imp->targets.begin()),
-                t_end(_imp->targets.end()) ; t != t_end ; ++t)
-            all->add_child(*t);
+
+        std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
+        for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
+            if (! i->skip_uninstall)
+                being_removed[i->package.name].insert(i->package.version);
+
+        for (std::map<QualifiedPackageName, std::set<VersionSpec> >::const_iterator
+                i(being_removed.begin()), i_end(being_removed.end()) ; i != i_end ; ++i)
+        {
+            bool remove(true);
+            std::tr1::shared_ptr<PackageDatabaseEntryCollection> installed(
+                    _imp->env->package_database()->query(PackageDepAtom(i->first),
+                        is_installed_only, qo_whatever));
+            for (PackageDatabaseEntryCollection::Iterator r(installed->begin()), r_end(installed->end()) ;
+                    r != r_end && remove ; ++r)
+                if (i->second.end() == i->second.find(r->version))
+                    remove = false;
+
+            if (remove)
+                all->add_child(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(i->first)));
+        }
 
         WorldCallbacks w(this);
         _imp->env->remove_appropriate_from_world(all, &w);
