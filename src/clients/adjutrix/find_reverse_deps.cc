@@ -45,7 +45,7 @@ namespace
     {
         private:
             std::tr1::shared_ptr<const PackageDatabase> _db;
-            std::tr1::shared_ptr<const PackageDatabaseEntryCollection> _entries;
+            const PackageDatabaseEntryCollection & _entries;
             std::string _depname;
             std::string _p;
 
@@ -58,7 +58,8 @@ namespace
         public:
             using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepAtom>::visit;
 
-            ReverseDepChecker(std::tr1::shared_ptr<const PackageDatabase> db, std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries,
+            ReverseDepChecker(std::tr1::shared_ptr<const PackageDatabase> db,
+                    const PackageDatabaseEntryCollection & entries,
                     const std::string & p) :
                 _db(db),
                 _entries(entries),
@@ -124,7 +125,7 @@ namespace
         for (PackageDatabaseEntryCollection::Iterator e(dep_entries->begin()), e_end(dep_entries->end()) ;
                 e != e_end ; ++e)
         {
-            if (_entries->find(*e) != _entries->end())
+            if (_entries.find(*e) != _entries.end())
             {
                 _found_matches |= true;
 
@@ -186,7 +187,7 @@ namespace
             try
             {
                 std::tr1::shared_ptr<const VersionMetadata> metadata(r.version_metadata(e->name, e->version));
-                ReverseDepChecker checker(env.package_database(), std::tr1::shared_ptr<const PackageDatabaseEntryCollection>(&entries),
+                ReverseDepChecker checker(env.package_database(), entries,
                         stringify(p) + "-" + stringify(e->version));
 
                 if (metadata->deps_interface)
