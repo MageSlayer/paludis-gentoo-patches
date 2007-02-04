@@ -10,9 +10,11 @@ DEFS= \
 
 paludis_compat_tr1dir = $(libdir)/paludis/compat/tr1
 
+paludis_compat_tr1_HEADERS = tr1_memory.hh
+
 if NEED_POINTER_WRAPPERS
 
-paludis_compat_tr1_HEADERS = memory tr1_memory.hh
+nodist_paludis_compat_tr1_HEADERS = memory
 
 memory : tr1_memory.hh
 	cp $(srcdir)/tr1_memory.hh $@
