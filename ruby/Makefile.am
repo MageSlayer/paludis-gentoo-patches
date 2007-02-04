@@ -88,6 +88,7 @@ TESTS_ENVIRONMENT = env \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/no_config/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/dep_list/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/.libs\`: \
+			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/portage/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/qa/.libs\`: \
 			\`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/ruby/.libs\`" \
 			| tr -d ' '` \
@@ -110,6 +111,8 @@ libpaludisruby_la_SOURCES = $(IF_RUBY_SOURCES) $(IF_RUBY_QA_SOURCES)
 libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
 	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
@@ -123,9 +126,12 @@ libpaludisruby_la_SOURCES = $(IF_RUBY_SOURCES)
 libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
 	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la
+
 TESTS = $(IF_RUBY_TESTS)
 
 endif
