@@ -1,5 +1,8 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
-DISTCLEANFILES = dep_list-sr.hh dep_list-sr.cc uninstall_list-sr.hh uninstall_list-sr.cc
+DISTCLEANFILES = \
+	dep_list-sr.hh dep_list-sr.cc \
+	uninstall_list-sr.hh uninstall_list-sr.cc \
+	options-se.hh options-se.cc
 BUILT_SOURCES = $(DISTCLEANFILES)
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -18,7 +21,8 @@ paludis_dep_list_include_HEADERS = \
 	options.hh \
 	dep_list-sr.hh \
 	uninstall_list-sr.hh \
-	range_rewriter.hh
+	range_rewriter.hh \
+	options-se.hh
 
 libpaludisdeplist_la_SOURCES = \
 	options.cc        options.hh \
@@ -54,7 +58,8 @@ EXTRA_DIST = \
 	uninstall_list_TEST.cc \
 	range_rewriter_TEST.cc \
 	dep_list.sr dep_list-sr.hh dep_list-sr.cc \
-	uninstall_list.sr uninstall_list-sr.hh uninstall_list-sr.cc
+	uninstall_list.sr uninstall_list-sr.hh uninstall_list-sr.cc \
+	options.se options-se.hh options-se.cc
 
 TESTS = \
 	dep_list_TEST \
@@ -116,14 +121,20 @@ built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
 
 dep_list-sr.hh : dep_list.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/dep_list.sr > $@
+	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/dep_list.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
 dep_list-sr.cc : dep_list.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/dep_list.sr > $@
+	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/dep_list.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
 uninstall_list-sr.hh : uninstall_list.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/uninstall_list.sr > $@
+	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/uninstall_list.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
 uninstall_list-sr.cc : uninstall_list.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/uninstall_list.sr > $@
+	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/uninstall_list.sr > $@ ; then rm -f $@ ; exit 1 ; fi
+
+options-se.hh : options.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/options.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+options-se.cc : options.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/options.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
