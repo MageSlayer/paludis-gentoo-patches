@@ -209,6 +209,7 @@ namespace paludis
             virtual void display_merge_list_entry_version(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_repository(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_slot(const DepListEntry &, const DisplayMode);
+            virtual void display_merge_list_entry_for(const PackageDatabaseEntry &, const DisplayMode);
             virtual void display_merge_list_entry_status_and_update_counts(const DepListEntry &,
                     std::tr1::shared_ptr<const PackageDatabaseEntryCollection>,
                     std::tr1::shared_ptr<const PackageDatabaseEntryCollection>, const DisplayMode);

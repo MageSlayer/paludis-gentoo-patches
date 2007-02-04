@@ -649,8 +649,15 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         }
     }
 
-    SlotName slot(d->_imp->env->package_database()->fetch_repository(best_visible_candidate->repository)->
-            version_metadata(best_visible_candidate->name, best_visible_candidate->version)->slot);
+    std::tr1::shared_ptr<const VersionMetadata> best_visible_candidate_metadata(
+            d->_imp->env->package_database()->fetch_repository(best_visible_candidate->repository)->
+            version_metadata(best_visible_candidate->name, best_visible_candidate->version));
+    SlotName slot(best_visible_candidate_metadata->slot);
+    std::string best_visible_candidate_as_string(stringify(*best_visible_candidate));
+    if (best_visible_candidate_metadata->virtual_interface)
+        best_visible_candidate_as_string.append(" (for " + stringify(
+                        best_visible_candidate_metadata->virtual_interface->virtual_for) + ")");
+
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> already_installed_in_same_slot(
             new PackageDatabaseEntryCollection::Concrete);
     for (PackageDatabaseEntryCollection::Iterator aa(already_installed->begin()),
@@ -667,13 +674,15 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         if (d->prefer_installed_over_uninstalled(*already_installed_in_same_slot->last(), *best_visible_candidate))
         {
             Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
-                    + stringify(*already_installed_in_same_slot->last()) + "' over '" + stringify(*best_visible_candidate) + "'");
+                    + stringify(*already_installed_in_same_slot->last()) + "' over '" +
+                    best_visible_candidate_as_string + "'");
             d->add_already_installed_package(*already_installed_in_same_slot->last(), a->tag());
             return;
         }
         else
             Log::get_instance()->message(ll_debug, lc_context, "Not taking installed package '"
-                    + stringify(*already_installed_in_same_slot->last()) + "' over '" + stringify(*best_visible_candidate) + "'");
+                    + stringify(*already_installed_in_same_slot->last()) + "' over '" +
+                    best_visible_candidate_as_string + "'");
     }
     else if ((! already_installed->empty()) && (dl_new_slots_as_needed == d->_imp->opts->new_slots))
     {
@@ -682,19 +691,19 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         if (d->prefer_installed_over_uninstalled(*already_installed->last(), *best_visible_candidate))
         {
             Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
-                    + stringify(*already_installed->last()) + "' over '" + stringify(*best_visible_candidate)
+                    + stringify(*already_installed->last()) + "' over '" + best_visible_candidate_as_string
                     + "' (in different slot)");
             d->add_already_installed_package(*already_installed->last(), a->tag());
             return;
         }
         else
             Log::get_instance()->message(ll_debug, lc_context, "Not taking installed package '"
-                    + stringify(*already_installed->last()) + "' over '" + stringify(*best_visible_candidate)
-                    + "' (in different slot)");
+                    + stringify(*already_installed->last()) + "' over '" +
+                    best_visible_candidate_as_string + "' (in different slot)");
     }
     else
         Log::get_instance()->message(ll_debug, lc_context, "No installed packages in SLOT '"
-                + stringify(slot) + "', taking uninstalled package '" + stringify(*best_visible_candidate) + "'");
+                + stringify(slot) + "', taking uninstalled package '" + best_visible_candidate_as_string + "'");
 
     /* if this is a downgrade, make sure that that's ok */
     switch (d->_imp->opts->downgrade)
@@ -716,12 +725,22 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
                 if (are_we_downgrading->last()->version <= best_visible_candidate->version)
                     break;
 
-                if (d->_imp->opts->downgrade == dl_downgrade_error)
-                    throw DowngradeNotAllowedError(stringify(*best_visible_candidate),
-                            stringify(*are_we_downgrading->last()));
+                std::tr1::shared_ptr<const VersionMetadata> are_we_downgrading_last_metadata(
+                        d->_imp->env->package_database()->fetch_repository(
+                            are_we_downgrading->last()->repository)->version_metadata(
+                            are_we_downgrading->last()->name, are_we_downgrading->last()->version));
+                std::string are_we_downgrading_last_as_string(stringify(*are_we_downgrading->last()));
+                if (are_we_downgrading_last_metadata->virtual_interface)
+                    are_we_downgrading_last_as_string.append(" (for " + stringify(
+                                    are_we_downgrading_last_metadata->virtual_interface->virtual_for) + ")");
 
-                Log::get_instance()->message(ll_warning, lc_context, "Downgrade to '" + stringify(*best_visible_candidate)
-                        + "' from '" + stringify(*are_we_downgrading->last()) + "' forced");
+                if (d->_imp->opts->downgrade == dl_downgrade_error)
+                    throw DowngradeNotAllowedError(best_visible_candidate_as_string,
+                            are_we_downgrading_last_as_string);
+
+                Log::get_instance()->message(ll_warning, lc_context, "Downgrade to '" +
+                        best_visible_candidate_as_string
+                        + "' from '" + are_we_downgrading_last_as_string + "' forced");
             }
             break;
 

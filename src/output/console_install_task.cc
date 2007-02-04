@@ -214,7 +214,12 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     display_merge_list_entry_package_name(d, m);
     display_merge_list_entry_version(d, m);
     display_merge_list_entry_repository(d, m);
+
+    if (d.metadata->virtual_interface)
+        display_merge_list_entry_for(d.metadata->virtual_interface->virtual_for, m);
+
     display_merge_list_entry_slot(d, m);
+
     display_merge_list_entry_status_and_update_counts(d, existing, existing_slot, m);
     display_merge_list_entry_use(d, existing, existing_slot, m);
     display_merge_list_entry_tags(d, m);
@@ -682,6 +687,30 @@ ConsoleInstallTask::display_merge_list_entry_package_name(const DepListEntry & d
 
         case error_entry:
             output_no_endl(render_as_error(stringify(d.package.name)));
+            break;
+    }
+}
+
+void
+ConsoleInstallTask::display_merge_list_entry_for(const PackageDatabaseEntry & d, const DisplayMode m)
+{
+    switch (m)
+    {
+        case normal_entry:
+        case suggested_entry:
+            break;
+
+        case unimportant_entry:
+            output_no_endl(" (for ");
+            output_no_endl(render_as_unimportant(stringify(d)));
+            output_no_endl(")");
+            break;
+
+        case error_entry:
+            output_no_endl(" (for ");
+            output_no_endl(render_as_package_name(stringify(d.name)));
+            output_no_endl("-" + stringify(d.version) + "::" + stringify(d.repository));
+            output_no_endl(")");
             break;
     }
 }
