@@ -29,7 +29,8 @@ IF_RUBY_TESTS = \
 	portage_dep_parser_TEST.rb \
 	qualified_package_name_TEST.rb \
 	contents_TEST.rb \
-	dep_list_TEST.rb
+	dep_list_TEST.rb \
+	dep_tag_TEST.rb
 
 IF_RUBY_QA_TESTS = \
 	message_TEST.rb \
@@ -52,7 +53,8 @@ IF_RUBY_SOURCES = \
 	portage_dep_parser.cc \
 	qualified_package_name.cc \
 	contents.cc \
-	dep_list.cc
+	dep_list.cc \
+	dep_tag.cc
 
 IF_RUBY_QA_SOURCES = \
 	message.cc \

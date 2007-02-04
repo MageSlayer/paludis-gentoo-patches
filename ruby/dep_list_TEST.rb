@@ -241,9 +241,10 @@ module Paludis
 
         def test_methods
             dep_list_entry = dle
-            {:package => PackageDatabaseEntry, :metadata => VersionMetadata,
-                :destinations => Array, :state=> Integer}.each_pair do |method, returns|
-
+            {
+                :package => PackageDatabaseEntry, :metadata => VersionMetadata,
+                :destinations => Array, :state=> Integer, :tags => Array
+            }.each_pair do |method, returns|
                 assert_respond_to dep_list_entry, method
                 assert_kind_of returns, dep_list_entry.send(method)
             end

@@ -994,6 +994,33 @@ namespace
 
     /*
      * call-seq:
+     *     tags -> Array
+     *
+     * Our DepTags
+     */
+    VALUE
+    dep_list_entry_tags(VALUE self)
+    {
+        try
+        {
+            DepListEntry * p;
+            Data_Get_Struct(self, DepListEntry, p);
+
+            VALUE result(rb_ary_new());
+            for (DepListEntryTags::Iterator r(p->tags->begin()),
+                    r_end(p->tags->end()) ; r != r_end ; ++r)
+                rb_ary_push(result, dep_tag_to_value((*r).tag));
+
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
      *     entry_state -> DepListEntryState
      *
      * Our DepListEntryState.
@@ -1462,6 +1489,7 @@ namespace
         rb_define_method(c_dep_list_entry, "metadata", RUBY_FUNC_CAST(&dep_list_entry_metadata),0);
         rb_define_method(c_dep_list_entry, "destinations", RUBY_FUNC_CAST(&dep_list_entry_destinations),0);
         rb_define_method(c_dep_list_entry, "state", RUBY_FUNC_CAST(&dep_list_entry_state),0);
+        rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags),0);
 
         /*
          * Document-class: DepListOverrideMasks

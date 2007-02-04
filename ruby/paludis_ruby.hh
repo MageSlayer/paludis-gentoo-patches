@@ -89,6 +89,7 @@ namespace paludis
         VALUE contents_to_value(std::tr1::shared_ptr<const Contents>);
         VALUE contents_entry_to_value(std::tr1::shared_ptr<const ContentsEntry>);
         VALUE portage_repository_profiles_desc_line_to_value(const PortageRepositoryProfilesDescLine &);
+        VALUE dep_tag_to_value(std::tr1::shared_ptr<const DepTag>);
 
         VersionSpec value_to_version_spec(VALUE v);
         std::tr1::shared_ptr<const VersionMetadata> value_to_version_metadata(VALUE);
