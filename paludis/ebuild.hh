@@ -299,6 +299,31 @@ namespace paludis
              */
             EbuildUninstallCommand(const EbuildCommandParams &, const EbuildUninstallCommandParams &);
     };
+
+    /**
+     * An EbuildConfigCommand is used to configure a package in a VDBRepository.
+     *
+     * \ingroup grpebuildinterface
+     */
+    class EbuildConfigCommand :
+        public EbuildCommand
+    {
+        protected:
+            /// Parameters for config.
+            const EbuildConfigCommandParams config_params;
+
+            virtual std::string commands() const;
+
+            virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+
+            virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
+
+        public:
+            /**
+             * Constructor.
+             */
+            EbuildConfigCommand(const EbuildCommandParams &, const EbuildConfigCommandParams &);
+    };
 }
 
 #endif

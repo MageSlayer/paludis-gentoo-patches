@@ -86,6 +86,9 @@ class CommandLine :
         /// --owner
         paludis::args::SwitchArg a_owner;
 
+        /// --config
+        paludis::args::SwitchArg a_config;
+
         /// --version
         paludis::args::SwitchArg a_version;
 

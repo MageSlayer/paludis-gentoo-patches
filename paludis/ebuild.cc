@@ -427,3 +427,37 @@ EbuildVersionMetadata::~EbuildVersionMetadata()
 {
 }
 
+std::string
+EbuildConfigCommand::commands() const
+{
+    return "config";
+}
+
+bool
+EbuildConfigCommand::failure()
+{
+    throw PackageConfigActionError("Configure failed for '" + stringify(
+                *params.db_entry) + "'");
+}
+
+MakeEnvCommand
+EbuildConfigCommand::extend_command(const MakeEnvCommand & cmd)
+{
+    MakeEnvCommand result(cmd
+            ("ROOT", config_params.root));
+
+    if (config_params.load_environment)
+        result = result
+            ("PALUDIS_LOAD_ENVIRONMENT", stringify(*config_params.load_environment))
+            ("PALUDIS_SKIP_INHERIT", "yes");
+
+    return result;
+}
+
+EbuildConfigCommand::EbuildConfigCommand(const EbuildCommandParams & p,
+        const EbuildConfigCommandParams & f) :
+    EbuildCommand(p),
+    config_params(f)
+{
+}
+

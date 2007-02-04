@@ -62,6 +62,7 @@ namespace paludis
     class RepositoryVirtualsInterface;
     class RepositoryDestinationInterface;
     class RepositoryContentsInterface;
+    class RepositoryConfigInterface;
 
     /**
      * What debug build option to use when installing a package.
@@ -1043,6 +1044,47 @@ namespace paludis
     };
 
     /**
+     * Interface for handling actions for repositories supporting package configuration.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
+    class RepositoryConfigInterface
+    {
+        protected:
+            ///\name Implementation details
+            ///\{
+
+            /**
+             * Override in descendents: do the configuration.
+             */
+            virtual void do_config(
+                    const QualifiedPackageName &,
+                    const VersionSpec &) const = 0;
+
+            ///\}
+
+        public:
+            ///\name Installed content queries
+            ///\{
+
+            /**
+             * Fetch contents.
+             */
+            void config(
+                    const QualifiedPackageName & q,
+                    const VersionSpec & v) const
+            {
+                return do_config(q, v);
+            }
+
+            ///\}
+
+            virtual ~RepositoryConfigInterface();
+    };
+
+    /**
      * Thrown if a repository of the specified type does not exist.
      *
      * \ingroup grpexceptions
@@ -1120,6 +1162,22 @@ namespace paludis
              * Constructor.
              */
             PackageUninstallActionError(const std::string & msg) throw ();
+    };
+
+    /**
+     * Thrown if a configure fails.
+     *
+     * \ingroup grprepository
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
+    class PackageConfigActionError : public PackageActionError
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            PackageConfigActionError(const std::string & msg) throw ();
     };
 
     /**

@@ -85,6 +85,11 @@ PackageUninstallActionError::PackageUninstallActionError(const std::string & msg
 {
 }
 
+PackageConfigActionError::PackageConfigActionError(const std::string & msg) throw () :
+    PackageActionError("Configuration error: " + msg)
+{
+}
+
 namespace paludis
 {
     /**
@@ -263,6 +268,10 @@ RepositoryDestinationInterface::~RepositoryDestinationInterface()
 }
 
 RepositoryContentsInterface::~RepositoryContentsInterface()
+{
+}
+
+RepositoryConfigInterface::~RepositoryConfigInterface()
 {
 }
 

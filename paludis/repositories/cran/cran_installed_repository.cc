@@ -184,6 +184,7 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .mirrors_interface(0)
             .virtuals_interface(0)
             .provides_interface(0)
+            .config_interface(0)
             .destination_interface(this),
             "cran_installed"),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p))

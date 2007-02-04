@@ -106,6 +106,7 @@ NothingRepository::NothingRepository(const NothingRepositoryParams & p) try :
             .mirrors_interface(0)
             .virtuals_interface(0)
             .provides_interface(0)
+            .config_interface(0)
             .destination_interface(0),
             "nothing"),
     PrivateImplementationPattern<NothingRepository>(new Implementation<NothingRepository>(p))

@@ -97,3 +97,21 @@ END
     allow_named_args
 }
 
+make_class_EbuildConfigCommandParams()
+{
+    key root std::string
+    key load_environment "const FSEntry *"
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for an EbuildConfigCommand.
+         *
+         * \see EbuildConfigCommand
+         * \ingroup grpebuildinterface
+         * \nosubgrouping
+         */
+END
+
+    allow_named_args
+}
+

@@ -35,6 +35,7 @@ make_class_RepositoryCapabilities()
     key virtuals_interface "RepositoryVirtualsInterface *"
     key destination_interface "RepositoryDestinationInterface *"
     key contents_interface "RepositoryContentsInterface *"
+    key config_interface "RepositoryConfigInterface *"
 
     doxygen_comment << "END"
         /**

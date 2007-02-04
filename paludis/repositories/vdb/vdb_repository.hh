@@ -55,6 +55,7 @@ namespace paludis
         public RepositoryProvidesInterface,
         public RepositoryDestinationInterface,
         public RepositoryContentsInterface,
+        public RepositoryConfigInterface,
         public PrivateImplementationPattern<VDBRepository>
     {
         private:
@@ -117,6 +118,8 @@ namespace paludis
             virtual void add_string_to_world(const std::string &) const;
 
             virtual void remove_string_from_world(const std::string &) const;
+
+            virtual void do_config(const QualifiedPackageName &, const VersionSpec &) const;
 
         public:
             /**

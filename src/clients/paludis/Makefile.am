@@ -40,6 +40,7 @@ paludis_SOURCES = \
 	query.hh             query.cc             \
 	sync.hh              sync.cc              \
 	do_contents.hh       do_contents.cc       \
+	do_config.hh         do_config.cc         \
 	owner.hh             owner.cc             \
 	news.hh              news.cc              \
 	report.hh            report.cc            \

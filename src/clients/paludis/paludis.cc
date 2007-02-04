@@ -21,6 +21,7 @@
 #include "command_line.hh"
 #include "config.h"
 #include "do_contents.hh"
+#include "do_config.hh"
 #include "install.hh"
 #include "list.hh"
 #include "news.hh"
@@ -212,6 +213,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_list_dep_tag_categories.specified() +
                     CommandLine::get_instance()->a_contents.specified() +
                     CommandLine::get_instance()->a_owner.specified() +
+                    CommandLine::get_instance()->a_config.specified() +
                     CommandLine::get_instance()->a_has_version.specified() +
                     CommandLine::get_instance()->a_update_news.specified() +
                     CommandLine::get_instance()->a_regenerate_installed_cache.specified() +
@@ -362,6 +364,14 @@ main(int argc, char *argv[])
                 throw args::DoHelp("uninstall action requires at least one parameter");
 
             return do_uninstall();
+        }
+
+        if (CommandLine::get_instance()->a_config.specified())
+        {
+            if (CommandLine::get_instance()->empty())
+                throw args::DoHelp("config action requires at least one parameter");
+
+            return do_config();
         }
 
         if (CommandLine::get_instance()->a_uninstall_unused.specified())

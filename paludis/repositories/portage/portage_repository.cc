@@ -269,6 +269,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .virtuals_interface(this)
             .provides_interface(0)
             .contents_interface(0)
+            .config_interface(0)
             .destination_interface(0),
             p.entry_format),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))

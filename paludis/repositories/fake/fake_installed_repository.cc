@@ -40,6 +40,7 @@ FakeInstalledRepository::FakeInstalledRepository(const Environment * const e, co
             .environment_variable_interface(0)
             .provides_interface(this)
             .virtuals_interface(0)
+            .config_interface(0)
             .destination_interface(this),
             "fake_installed")
 {

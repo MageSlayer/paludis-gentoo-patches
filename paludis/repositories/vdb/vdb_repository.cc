@@ -501,6 +501,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .provides_interface(this)
             .virtuals_interface(0)
             .destination_interface(this)
+            .config_interface(this)
             .contents_interface(this),
             "vdb"),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p))
@@ -941,6 +942,53 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
             .load_environment(load_env.get()));
 
     uninstall_cmd();
+}
+
+void
+VDBRepository::do_config(const QualifiedPackageName & q, const VersionSpec & v) const
+{
+    Context context("When configuring '" + stringify(q) + "-" + stringify(v) +
+            "' from '" + stringify(name()) + "':");
+
+    if (! _imp->root.is_directory())
+        throw PackageInstallActionError("Couldn't configure '" + stringify(q) + "-" +
+                stringify(v) + "' because root ('" + stringify(_imp->root) + "') is not a directory");
+
+    std::tr1::shared_ptr<const VersionMetadata> metadata;
+    if (! has_version(q, v))
+        throw PackageInstallActionError("Couldn't configure '" + stringify(q) + "-" +
+                stringify(v) + "' because has_version failed");
+    else
+        metadata = version_metadata(q, v);
+
+    PackageDatabaseEntry e(q, v, name());
+
+    std::tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
+    eclassdirs->append(FSEntry(_imp->location / stringify(q.category) /
+                (stringify(q.package) + "-" + stringify(v))));
+
+    FSEntry pkg_dir(_imp->location / stringify(q.category) /
+            (stringify(q.package) + "-" + stringify(v)));
+
+    std::tr1::shared_ptr<FSEntry> load_env;
+    if (is_full_env(pkg_dir))
+        load_env.reset(new FSEntry(pkg_dir / "environment.bz2"));
+
+    EbuildConfigCommand config_cmd(EbuildCommandParams::create()
+            .environment(_imp->env)
+            .db_entry(&e)
+            .ebuild_dir(pkg_dir)
+            .files_dir(pkg_dir)
+            .eclassdirs(eclassdirs)
+            .portdir(_imp->location)
+            .distdir(pkg_dir)
+            .buildroot(_imp->buildroot),
+
+            EbuildConfigCommandParams::create()
+            .root(stringify(_imp->root) + "/")
+            .load_environment(load_env.get()));
+
+    config_cmd();
 }
 
 std::tr1::shared_ptr<DepAtom>
