@@ -28,6 +28,8 @@ while read repo ; do
     wcloc=$(${PALUDIS_COMMAND} --configuration-variable ${repo} write_cache )
 
     [[ $(readlink -f ${wcloc} ) == "/var/empty" ]] && continue
+    wcloc="${wcloc}/${repo}"
+
     [[ $(echo "${wcloc}"/* ) != "${wcloc}/*" ]] || continue
     echo rm -fr "${wcloc}/*" 1>&2
     rm -fr "${wcloc}"/* || eerror "Couldn't clear cache for ${repo} at ${wcloc}"
