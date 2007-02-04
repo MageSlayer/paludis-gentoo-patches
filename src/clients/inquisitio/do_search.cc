@@ -119,7 +119,7 @@ do_search(const Environment & env)
         if (! match)
             continue;
 
-        std::cout << display_entry << std::endl;
+        std::cout << display_entry.name << std::endl;
 
     }
 
