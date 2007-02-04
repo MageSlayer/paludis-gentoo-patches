@@ -93,6 +93,19 @@ export CC="/usr/lib/ccache/bin/gcc"
 export CXX="/usr/lib/ccache/bin/g++"
 </pre>
 
+<h3 id="distcc">Use <code>distcc</code></h3>
+
+<p>To enable <code>distcc</code>, simply set the relevant variables in your
+configuration <code>bashrc</code>:</p>
+
+<pre>
+export DISTCC_DIR="/var/tmp/paludis/.distcc"
+export PATH="/usr/lib/distcc/bin:${PATH}"
+export CC="/usr/lib/distcc/bin/gcc"
+export CXX="/usr/lib/distcc/bin/g++"
+export DISTCC_HOSTS="localhost another_host"
+</pre>
+
 <h3 id="defaultoptions">Specify default options</h3>
 
 <p>Often users want to specify certain options by default. Common choices include:</p>
@@ -399,8 +412,7 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
     shipping one as a demo hook at some point.</dd>
 
     <dt>distcc</dt>
-    <dd>See <a href="#ccache">Use <code>ccache</code></a>, and adapt it for
-    <code>distcc</code>. Additions to this FAQ entry are welcome.</dd>
+    <dd>See <a href="#distcc">Use <code>distcc</code></a>.</dd>
 
     <dt>keepwork, keeptemp, noclean</dt>
     <dd>The <code>builtin_tidyup</code> phase does cleaning up. You can turn
