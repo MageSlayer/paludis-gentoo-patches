@@ -81,16 +81,11 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     cout << std::string(29, '=') << " " << std::string(19, '=') << " "
         << std::string(17, '=') << " " << std::string(9, '=') << endl;
 
-    if (d.begin() == d.end())
-    {
-        cerr << "The specified package is already at the target keyword level. Perhaps" << endl;
-        cerr << "you need to specify a versioned target ('>=cat/pkg-1.23')." << endl;
-        return 4;
-    }
-
+    bool none(true);
     for (DepList::Iterator p(d.begin()), p_end(d.end()) ; p != p_end ; ++p)
         if (dlk_masked == p->kind)
         {
+            none = false;
             cout << std::setw(30) << std::left << stringify(p->package.name);
             cout << std::setw(20) << std::left << stringify(p->package.version);
 
@@ -126,6 +121,14 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             cout << endl;
         }
+
+    if (none)
+    {
+        cerr << "The specified package is already at the target keyword level. Perhaps" << endl;
+        cerr << "you need to specify a versioned target ('>=cat/pkg-1.23')." << endl;
+        return 4;
+    }
+
 
     return return_code;
 }
