@@ -24,6 +24,7 @@
 
 #include <paludis/environment.hh>
 #include <list>
+#include <set>
 #include <iostream>
 
 using namespace paludis;
@@ -48,6 +49,8 @@ do_search(const Environment & env)
         extractors.push_back(ExtractorMaker::get_instance()->find_maker("description")(env));
 
     MatcherOptions opts(false);
+
+    std::set<QualifiedPackageName> pkgs;
 
     for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
             r(env.package_database()->begin_repositories()), r_end(env.package_database()->end_repositories()) ;
@@ -80,39 +83,44 @@ do_search(const Environment & env)
             std::tr1::shared_ptr<const QualifiedPackageNameCollection> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameCollection::Iterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
-            {
-                std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
-                    entries(env.package_database()->query(PackageDepAtom(*p), is_any, qo_order_by_version)),
-                    preferred_entries(env.package_database()->query(PackageDepAtom(*p), is_installed_only, qo_order_by_version));
-
-                if (entries->empty())
-                    continue;
-                if (preferred_entries->empty())
-                    preferred_entries = entries;
-
-                PackageDatabaseEntry display_entry(*preferred_entries->last());
-                for (PackageDatabaseEntryCollection::Iterator i(preferred_entries->begin()),
-                        i_end(preferred_entries->end()) ; i != i_end ; ++i)
-                    if (! env.mask_reasons(*i).any())
-                        display_entry = *i;
-
-                bool match(false);
-                for (std::list<std::tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
-                        x_end(extractors.end()) ; x != x_end && ! match ; ++x)
-                {
-                    std::string xx((**x)(display_entry));
-                    for (std::list<std::tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()),
-                            m_end(matchers.end()) ; m != m_end && ! match ; ++m)
-                        if ((**m)(xx, opts))
-                            match = true;
-                }
-
-                if (! match)
-                    continue;
-
-                std::cout << display_entry << std::endl;
-            }
+                pkgs.insert(*p);
         }
+    }
+
+    for (std::set<QualifiedPackageName>::const_iterator p(pkgs.begin()), p_end(pkgs.end()) ;
+            p != p_end ; ++p)
+    {
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
+            entries(env.package_database()->query(PackageDepAtom(*p), is_any, qo_order_by_version)),
+            preferred_entries(env.package_database()->query(PackageDepAtom(*p), is_installed_only, qo_order_by_version));
+
+        if (entries->empty())
+            continue;
+        if (preferred_entries->empty())
+            preferred_entries = entries;
+
+        PackageDatabaseEntry display_entry(*preferred_entries->last());
+        for (PackageDatabaseEntryCollection::Iterator i(preferred_entries->begin()),
+                i_end(preferred_entries->end()) ; i != i_end ; ++i)
+            if (! env.mask_reasons(*i).any())
+                display_entry = *i;
+
+        bool match(false);
+        for (std::list<std::tr1::shared_ptr<Extractor> >::const_iterator x(extractors.begin()),
+                x_end(extractors.end()) ; x != x_end && ! match ; ++x)
+        {
+            std::string xx((**x)(display_entry));
+            for (std::list<std::tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()),
+                    m_end(matchers.end()) ; m != m_end && ! match ; ++m)
+                if ((**m)(xx, opts))
+                    match = true;
+        }
+
+        if (! match)
+            continue;
+
+        std::cout << display_entry << std::endl;
+
     }
 
     return 0;
