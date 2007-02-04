@@ -271,83 +271,80 @@ has_query_property_error_query(VALUE self)
     return rb_attr_get(self, rb_intern("query"));
 }
 
-extern "C"
+void paludis::ruby::init()
 {
-    void Init_Paludis()
-    {
-        /*
-         * Document-module: Paludis
-         *
-         * <b>Paludis</b> is the other package mangler, this is the doc to the ruby binding. The C++ library
-         * documentation[http://paludis.pioto.org/doxygen/html/] may also help.
-         *
-         */
-        c_paludis_module = rb_define_module("Paludis");
-        c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
-        c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
-        c_name_error = rb_define_class_under(c_paludis_module, "NameError", rb_eRuntimeError);
-        c_set_name_error = rb_define_class_under(c_paludis_module, "SetNameError", c_name_error);
-        c_category_name_part_error = rb_define_class_under(c_paludis_module, "CategoryNamePartError", c_name_error);
-        c_package_name_part_error = rb_define_class_under(c_paludis_module, "PackageNamePartError", c_name_error);
-        c_bad_version_spec_error = rb_define_class_under(c_paludis_module, "BadVersionSpecError", c_name_error);
-        c_package_dep_atom_error = rb_define_class_under(c_paludis_module, "PackageDepAtomError", rb_eRuntimeError);
-        c_package_database_error = rb_define_class_under(c_paludis_module, "PackageDatabaseError", rb_eRuntimeError);
-        c_package_database_lookup_error = rb_define_class_under(c_paludis_module, "PackageDatabaseLookupError", c_package_database_error);
-        c_ambiguous_package_name_error = rb_define_class_under(c_paludis_module, "AmbiguousPackageNameError", c_package_database_lookup_error);
-        c_no_such_package_error = rb_define_class_under(c_paludis_module, "NoSuchPackageError", c_package_database_lookup_error);
-        c_no_such_repository_error = rb_define_class_under(c_paludis_module, "NoSuchRepositoryError", c_package_database_lookup_error);
-        c_dep_string_error = rb_define_class_under(c_paludis_module, "DepStringError", rb_eRuntimeError);
-        c_dep_string_parse_error = rb_define_class_under(c_paludis_module, "DepStringParseError", c_dep_string_error);
-        c_dep_string_nesting_error = rb_define_class_under(c_paludis_module, "DepStringNestingError", c_dep_string_parse_error);
-        c_configuration_error = rb_define_class_under(c_paludis_module, "ConfigurationError", rb_eRuntimeError);
-        c_config_file_error = rb_define_class_under(c_paludis_module, "ConfigFileError", c_configuration_error);
-        c_dep_list_error = rb_define_class_under(c_paludis_module, "DepListError", rb_eRuntimeError);
+    /*
+     * Document-module: Paludis
+     *
+     * <b>Paludis</b> is the other package mangler, this is the doc to the ruby binding. The C++ library
+     * documentation[http://paludis.pioto.org/doxygen/html/] may also help.
+     *
+     */
+    c_paludis_module = rb_define_module("Paludis");
+    c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
+    c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
+    c_name_error = rb_define_class_under(c_paludis_module, "NameError", rb_eRuntimeError);
+    c_set_name_error = rb_define_class_under(c_paludis_module, "SetNameError", c_name_error);
+    c_category_name_part_error = rb_define_class_under(c_paludis_module, "CategoryNamePartError", c_name_error);
+    c_package_name_part_error = rb_define_class_under(c_paludis_module, "PackageNamePartError", c_name_error);
+    c_bad_version_spec_error = rb_define_class_under(c_paludis_module, "BadVersionSpecError", c_name_error);
+    c_package_dep_atom_error = rb_define_class_under(c_paludis_module, "PackageDepAtomError", rb_eRuntimeError);
+    c_package_database_error = rb_define_class_under(c_paludis_module, "PackageDatabaseError", rb_eRuntimeError);
+    c_package_database_lookup_error = rb_define_class_under(c_paludis_module, "PackageDatabaseLookupError", c_package_database_error);
+    c_ambiguous_package_name_error = rb_define_class_under(c_paludis_module, "AmbiguousPackageNameError", c_package_database_lookup_error);
+    c_no_such_package_error = rb_define_class_under(c_paludis_module, "NoSuchPackageError", c_package_database_lookup_error);
+    c_no_such_repository_error = rb_define_class_under(c_paludis_module, "NoSuchRepositoryError", c_package_database_lookup_error);
+    c_dep_string_error = rb_define_class_under(c_paludis_module, "DepStringError", rb_eRuntimeError);
+    c_dep_string_parse_error = rb_define_class_under(c_paludis_module, "DepStringParseError", c_dep_string_error);
+    c_dep_string_nesting_error = rb_define_class_under(c_paludis_module, "DepStringNestingError", c_dep_string_parse_error);
+    c_configuration_error = rb_define_class_under(c_paludis_module, "ConfigurationError", rb_eRuntimeError);
+    c_config_file_error = rb_define_class_under(c_paludis_module, "ConfigFileError", c_configuration_error);
+    c_dep_list_error = rb_define_class_under(c_paludis_module, "DepListError", rb_eRuntimeError);
 
-        /*
-         * Document-class: Paludis::AllMaskedError
-         *
-         * Thrown if all versions of a particular atom are masked.
-         */
-        c_all_masked_error = rb_define_class_under(c_paludis_module, "AllMaskedError", c_dep_list_error);
-        rb_define_method(c_all_masked_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
-        rb_define_method(c_all_masked_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
+    /*
+     * Document-class: Paludis::AllMaskedError
+     *
+     * Thrown if all versions of a particular atom are masked.
+     */
+    c_all_masked_error = rb_define_class_under(c_paludis_module, "AllMaskedError", c_dep_list_error);
+    rb_define_method(c_all_masked_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
+    rb_define_method(c_all_masked_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
 
-        /*
-         * Document-class: Paludis::BlockError
-         *
-         * Thrown if a block is encountered.
-         */
-        c_block_error = rb_define_class_under(c_paludis_module, "BlockError", c_dep_list_error);
+    /*
+     * Document-class: Paludis::BlockError
+     *
+     * Thrown if a block is encountered.
+     */
+    c_block_error = rb_define_class_under(c_paludis_module, "BlockError", c_dep_list_error);
 
-        /*
-         * Document-class: Paludis::AllMaskedError
-         *
-         * Thrown if a circular dependency is encountered.
-         */
-        c_circular_dependency_error = rb_define_class_under(c_paludis_module, "CircularDependencyError", c_dep_list_error);
+    /*
+     * Document-class: Paludis::AllMaskedError
+     *
+     * Thrown if a circular dependency is encountered.
+     */
+    c_circular_dependency_error = rb_define_class_under(c_paludis_module, "CircularDependencyError", c_dep_list_error);
 
-        /*
-         * Document-class: Paludis::AllMaskedError
-         *
-         * Thrown if all versions of a particular atom are masked, but would not be if use requirements were not in effect.
-         */
-        c_use_requirements_not_met_error = rb_define_class_under(c_paludis_module, "UseRequirementsNotMetError", c_dep_list_error);
-        rb_define_method(c_use_requirements_not_met_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
-        rb_define_method(c_use_requirements_not_met_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
-        c_downgrade_not_allowed_error = rb_define_class_under(c_paludis_module, "DowngradeNotAllowedError", c_dep_list_error);
+    /*
+     * Document-class: Paludis::AllMaskedError
+     *
+     * Thrown if all versions of a particular atom are masked, but would not be if use requirements were not in effect.
+     */
+    c_use_requirements_not_met_error = rb_define_class_under(c_paludis_module, "UseRequirementsNotMetError", c_dep_list_error);
+    rb_define_method(c_use_requirements_not_met_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
+    rb_define_method(c_use_requirements_not_met_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
+    c_downgrade_not_allowed_error = rb_define_class_under(c_paludis_module, "DowngradeNotAllowedError", c_dep_list_error);
 
-        rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
+    rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
 
-        rb_define_const(c_paludis_module, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
-                        + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));
+    rb_define_const(c_paludis_module, "Version", rb_str_new2((stringify(PALUDIS_VERSION_MAJOR) + "."
+                    + stringify(PALUDIS_VERSION_MINOR) + "." + stringify(PALUDIS_VERSION_MICRO)).c_str()));
 #ifdef ENABLE_RUBY_QA
-        c_paludis_qa_module = rb_define_module_under(c_paludis_module,"QA");
-        c_profiles_desc_error = rb_define_class_under(c_paludis_qa_module, "ProfilesDescError", c_configuration_error);
-        c_no_such_file_check_type_error = rb_define_class_under(c_paludis_qa_module, "NoSuchFileCheckTypeError", rb_eTypeError);
-        c_no_such_package_dir_check_type_error = rb_define_class_under(c_paludis_qa_module, "NoSuchPackageDirCheckTypeError", rb_eTypeError);
-        c_no_such_ebuild_check_type_error = rb_define_class_under(c_paludis_qa_module, "NoSuchEbuildCheckTypeError", rb_eTypeError);
+    c_paludis_qa_module = rb_define_module_under(c_paludis_module,"QA");
+    c_profiles_desc_error = rb_define_class_under(c_paludis_qa_module, "ProfilesDescError", c_configuration_error);
+    c_no_such_file_check_type_error = rb_define_class_under(c_paludis_qa_module, "NoSuchFileCheckTypeError", rb_eTypeError);
+    c_no_such_package_dir_check_type_error = rb_define_class_under(c_paludis_qa_module, "NoSuchPackageDirCheckTypeError", rb_eTypeError);
+    c_no_such_ebuild_check_type_error = rb_define_class_under(c_paludis_qa_module, "NoSuchEbuildCheckTypeError", rb_eTypeError);
 #endif
-        RegisterRubyClass::get_instance()->execute();
-    }
+    RegisterRubyClass::get_instance()->execute();
 }
 

@@ -188,6 +188,8 @@ namespace paludis
                 return rb_str_new2(stringify(**self_ptr).c_str());
             }
         };
+
+        void init();
     }
 }
 
