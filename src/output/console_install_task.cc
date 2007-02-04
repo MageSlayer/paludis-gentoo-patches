@@ -292,9 +292,22 @@ ConsoleInstallTask::on_update_world(const PackageDepAtom & a)
 }
 
 void
+ConsoleInstallTask::on_update_world(const SetName & a)
+{
+    output_starred_item("adding " + render_as_set_name(stringify(a)));
+}
+
+void
 ConsoleInstallTask::on_update_world_skip(const PackageDepAtom & a, const std::string & s)
 {
     output_starred_item("skipping " + render_as_package_name(stringify(a)) + " ("
+            + s + ")");
+}
+
+void
+ConsoleInstallTask::on_update_world_skip(const SetName & a, const std::string & s)
+{
+    output_starred_item("skipping " + render_as_set_name(stringify(a)) + " ("
             + s + ")");
 }
 
@@ -1043,6 +1056,12 @@ ConsoleInstallTask::output_xterm_stream() const
 
 std::string
 ConsoleInstallTask::render_as_package_name(const std::string & s) const
+{
+    return colour(cl_package_name, s);
+}
+
+std::string
+ConsoleInstallTask::render_as_set_name(const std::string & s) const
 {
     return colour(cl_package_name, s);
 }

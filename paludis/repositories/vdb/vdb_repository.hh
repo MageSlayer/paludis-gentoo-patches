@@ -114,6 +114,10 @@ namespace paludis
             virtual std::tr1::shared_ptr<const CategoryNamePartCollection> do_category_names_containing_package(
                     const PackageNamePart &) const;
 
+            virtual void add_string_to_world(const std::string &) const;
+
+            virtual void remove_string_from_world(const std::string &) const;
+
         public:
             /**
              * Constructor.
@@ -139,6 +143,10 @@ namespace paludis
             virtual void add_to_world(const QualifiedPackageName &) const;
 
             virtual void remove_from_world(const QualifiedPackageName &) const;
+
+            virtual void add_to_world(const SetName &) const;
+
+            virtual void remove_from_world(const SetName &) const;
 
             virtual std::string get_environment_variable(
                     const PackageDatabaseEntry & for_package,

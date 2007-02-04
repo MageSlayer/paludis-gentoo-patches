@@ -143,7 +143,9 @@ namespace paludis
 
             virtual void on_update_world_pre() = 0;
             virtual void on_update_world(const PackageDepAtom &) = 0;
+            virtual void on_update_world(const SetName &) = 0;
             virtual void on_update_world_skip(const PackageDepAtom &, const std::string &) = 0;
+            virtual void on_update_world_skip(const SetName &, const std::string &) = 0;
             virtual void on_update_world_post() = 0;
             virtual void on_preserve_world() = 0;
 

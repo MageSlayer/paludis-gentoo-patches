@@ -152,15 +152,26 @@ namespace
         {
         }
 
-        virtual void add_callback(const PackageDepAtom * a)
+        virtual void add_callback(const PackageDepAtom & a)
         {
-            t->on_update_world(*a);
+            t->on_update_world(a);
         }
 
-        virtual void skip_callback(const PackageDepAtom * a,
+        virtual void add_callback(const SetName & a)
+        {
+            t->on_update_world(a);
+        }
+
+        virtual void skip_callback(const PackageDepAtom & a,
                 const std::string & s)
         {
-            t->on_update_world_skip(*a, s);
+            t->on_update_world_skip(a, s);
+        }
+
+        virtual void skip_callback(const SetName & a,
+                const std::string & s)
+        {
+            t->on_update_world_skip(a, s);
         }
     };
 }

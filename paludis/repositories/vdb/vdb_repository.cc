@@ -979,9 +979,31 @@ VDBRepository::do_package_set(const SetName & s) const
             for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
                     line != line_end ; ++line)
             {
-                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(QualifiedPackageName(*line)));
-                atom->set_tag(tag);
-                result->add_child(atom);
+                try
+                {
+                    if (std::string::npos == line->find('/'))
+                    {
+                        std::tr1::shared_ptr<DepAtom> atom(_imp->env->package_set(SetName(*line)));
+                        if (atom)
+                            result->add_child(atom);
+                        else
+                            Log::get_instance()->message(ll_warning, lc_no_context, "World file '"
+                                    + stringify(_imp->world_file) + "' entry '" + *line +
+                                    " is not a known package set");
+                    }
+                    else
+                    {
+                        std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(QualifiedPackageName(*line)));
+                        atom->set_tag(tag);
+                        result->add_child(atom);
+                    }
+                }
+                catch (const NameError & n)
+                {
+                    Log::get_instance()->message(ll_warning, lc_no_context, "World file '"
+                            + stringify(_imp->world_file) + "' entry '" + *line + " is broken: '"
+                            + n.message() + "' (" + n.what() + ")");
+                }
             }
         }
         else
@@ -1013,9 +1035,9 @@ VDBRepository::invalidate()
 }
 
 void
-VDBRepository::add_to_world(const QualifiedPackageName & n) const
+VDBRepository::add_string_to_world(const std::string & n) const
 {
-    Context context("When adding '" + stringify(n) + "' to world file '" +
+    Context context("When adding '" + n + "' to world file '" +
             stringify(_imp->world_file) + "':");
 
     bool found(false);
@@ -1026,7 +1048,7 @@ VDBRepository::add_to_world(const QualifiedPackageName & n) const
 
         for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
                 line != line_end ; ++line)
-            if (QualifiedPackageName(*line) == n)
+            if (*line == n)
             {
                 found = true;
                 break;
@@ -1070,7 +1092,7 @@ VDBRepository::add_to_world(const QualifiedPackageName & n) const
 }
 
 void
-VDBRepository::remove_from_world(const QualifiedPackageName & n) const
+VDBRepository::remove_string_from_world(const std::string & n) const
 {
     std::list<std::string> world_lines;
 
@@ -1107,6 +1129,30 @@ VDBRepository::remove_from_world(const QualifiedPackageName & n) const
 
     std::copy(world_lines.begin(), world_lines.end(),
             std::ostream_iterator<std::string>(world_file, "\n"));
+}
+
+void
+VDBRepository::add_to_world(const QualifiedPackageName & n) const
+{
+    add_string_to_world(stringify(n));
+}
+
+void
+VDBRepository::add_to_world(const SetName & n) const
+{
+    add_string_to_world(stringify(n));
+}
+
+void
+VDBRepository::remove_from_world(const QualifiedPackageName & n) const
+{
+    remove_string_from_world(stringify(n));
+}
+
+void
+VDBRepository::remove_from_world(const SetName & n) const
+{
+    remove_string_from_world(stringify(n));
 }
 
 std::string

@@ -155,7 +155,9 @@ namespace paludis
 
             virtual void on_update_world_pre();
             virtual void on_update_world(const PackageDepAtom &);
+            virtual void on_update_world(const SetName &);
             virtual void on_update_world_skip(const PackageDepAtom &, const std::string &);
+            virtual void on_update_world_skip(const SetName &, const std::string &);
             virtual void on_update_world_post();
             virtual void on_preserve_world();
 
@@ -181,6 +183,7 @@ namespace paludis
             ///\{
 
             virtual std::string render_as_package_name(const std::string &) const;
+            virtual std::string render_as_set_name(const std::string &) const;
             virtual std::string render_as_tag(const std::string &) const;
             virtual std::string render_as_unimportant(const std::string &) const;
             virtual std::string render_as_error(const std::string &) const;

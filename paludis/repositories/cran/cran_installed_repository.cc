@@ -570,8 +570,30 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
             for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
                     line != line_end ; ++line)
             {
-                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(QualifiedPackageName(*line)));
-                result->add_child(atom);
+                try
+                {
+                    if (std::string::npos == line->find('/'))
+                    {
+                        std::tr1::shared_ptr<DepAtom> atom(_imp->env->package_set(SetName(*line)));
+                        if (atom)
+                            result->add_child(atom);
+                        else
+                            Log::get_instance()->message(ll_warning, lc_no_context,
+                                    "Entry '" + stringify(*line) + "' in world file '" + stringify(_imp->world_file)
+                                    + "' is not a known set");
+                    }
+                    else
+                    {
+                        std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(QualifiedPackageName(*line)));
+                        result->add_child(atom);
+                    }
+                }
+                catch (const NameError & e)
+                {
+                    Log::get_instance()->message(ll_warning, lc_no_context,
+                            "Entry '" + stringify(*line) + "' in world file '" + stringify(_imp->world_file)
+                            + "' gave error '" + e.message() + "' (" + e.what() + ")");
+                }
             }
         }
         else
@@ -602,7 +624,7 @@ CRANInstalledRepository::invalidate()
 }
 
 void
-CRANInstalledRepository::add_to_world(const QualifiedPackageName & n) const
+CRANInstalledRepository::add_string_to_world(const std::string & n) const
 {
     bool found(false);
 
@@ -612,7 +634,7 @@ CRANInstalledRepository::add_to_world(const QualifiedPackageName & n) const
 
         for (LineConfigFile::Iterator line(world.begin()), line_end(world.end()) ;
                 line != line_end ; ++line)
-            if (QualifiedPackageName(*line) == n)
+            if (*line == n)
             {
                 found = true;
                 break;
@@ -631,7 +653,7 @@ CRANInstalledRepository::add_to_world(const QualifiedPackageName & n) const
 }
 
 void
-CRANInstalledRepository::remove_from_world(const QualifiedPackageName & n) const
+CRANInstalledRepository::remove_string_from_world(const std::string & n) const
 {
     std::list<std::string> world_lines;
 
@@ -649,7 +671,7 @@ CRANInstalledRepository::remove_from_world(const QualifiedPackageName & n) const
         std::string line;
         while (std::getline(world_file, line))
         {
-            if (strip_leading(strip_trailing(line, " \t"), "\t") != stringify(n))
+            if (strip_leading(strip_trailing(line, " \t"), "\t") != n)
                 world_lines.push_back(line);
             else
                 Log::get_instance()->message(ll_debug, lc_context, "Removing line '"
@@ -676,4 +698,27 @@ CRANInstalledRepository::is_suitable_destination_for(const PackageDatabaseEntry 
     return _imp->env->package_database()->fetch_repository(e.repository)->format() == "cran";
 }
 
+void
+CRANInstalledRepository::add_to_world(const QualifiedPackageName & n) const
+{
+    add_string_to_world(stringify(n));
+}
+
+void
+CRANInstalledRepository::remove_from_world(const QualifiedPackageName & n) const
+{
+    remove_string_from_world(stringify(n));
+}
+
+void
+CRANInstalledRepository::add_to_world(const SetName & n) const
+{
+    add_string_to_world(stringify(n));
+}
+
+void
+CRANInstalledRepository::remove_from_world(const SetName & n) const
+{
+    remove_string_from_world(stringify(n));
+}
 

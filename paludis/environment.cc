@@ -301,28 +301,28 @@ namespace
             if (inside_any)
             {
                 if (w)
-                    w->skip_callback(a, "inside || ( ) block");
+                    w->skip_callback(*a, "inside || ( ) block");
             }
             else if (inside_use)
             {
                 if (w)
-                    w->skip_callback(a, "inside use? ( ) block");
+                    w->skip_callback(*a, "inside use? ( ) block");
             }
             else if (a->slot_ptr())
             {
                 if (w)
-                    w->skip_callback(a, ":slot restrictions");
+                    w->skip_callback(*a, ":slot restrictions");
             }
             else if (a->version_requirements_ptr() && ! a->version_requirements_ptr()->empty())
             {
                 if (w)
-                    w->skip_callback(a, "version restrictions");
+                    w->skip_callback(*a, "version restrictions");
             }
             else
             {
                 items.push_back(a);
                 if (w)
-                    w->add_callback(a);
+                    w->add_callback(*a);
             }
         }
 
@@ -352,6 +352,25 @@ Environment::add_appropriate_to_world(std::tr1::shared_ptr<const DepAtom> a,
 }
 
 void
+Environment::add_set_to_world(const SetName & s, Environment::WorldCallbacks * ww) const
+{
+    if (s == SetName("world") || s == SetName("system") || s == SetName("security")
+            || s == SetName("everything") || s == SetName("insecurity"))
+    {
+        if (ww)
+            ww->skip_callback(s, "special sets cannot be added to world");
+        return;
+    }
+
+    for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+            r_end(package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+        if ((*r)->world_interface && (*r)->sets_interface)
+            if ((*r)->sets_interface->package_set(s))
+                (*r)->world_interface->add_to_world(s);
+}
+
+void
 Environment::remove_appropriate_from_world(std::tr1::shared_ptr<const DepAtom> a,
         Environment::WorldCallbacks * const ww) const
 {
@@ -366,8 +385,22 @@ Environment::remove_appropriate_from_world(std::tr1::shared_ptr<const DepAtom> a
             if ((*r)->world_interface)
                 (*r)->world_interface->remove_from_world((*i)->package());
 
-        ww->remove_callback(*i);
+        ww->remove_callback(**i);
     }
+}
+
+void
+Environment::remove_set_from_world(const SetName & s,
+        Environment::WorldCallbacks * const ww) const
+{
+    for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+            r_end(package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+        if ((*r)->world_interface)
+            (*r)->world_interface->remove_from_world(s);
+
+    if (ww)
+        ww->remove_callback(s);
 }
 
 Hook::Hook(const std::string & n) :
@@ -515,5 +548,43 @@ bool
 Environment::accept_eapi(const std::string & e) const
 {
     return e == "0" || e == "" || e == "paludis-1" || e == "CRAN-1";
+}
+
+Environment::WorldCallbacks::WorldCallbacks()
+{
+}
+
+Environment::WorldCallbacks::~WorldCallbacks()
+{
+}
+
+void
+Environment::WorldCallbacks::add_callback(const PackageDepAtom &)
+{
+}
+
+void
+Environment::WorldCallbacks::skip_callback(const PackageDepAtom &, const std::string &)
+{
+}
+
+void
+Environment::WorldCallbacks::remove_callback(const PackageDepAtom &)
+{
+}
+
+void
+Environment::WorldCallbacks::add_callback(const SetName &)
+{
+}
+
+void
+Environment::WorldCallbacks::skip_callback(const SetName &, const std::string &)
+{
+}
+
+void
+Environment::WorldCallbacks::remove_callback(const SetName &)
+{
 }
 

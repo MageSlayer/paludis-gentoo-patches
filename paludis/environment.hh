@@ -286,9 +286,7 @@ namespace paludis
                     ///\name Basic operations
                     ///\{
 
-                    WorldCallbacks()
-                    {
-                    }
+                    WorldCallbacks();
 
                     ///\}
 
@@ -296,46 +294,61 @@ namespace paludis
                     ///\name Basic operations
                     ///\{
 
-                    virtual ~WorldCallbacks()
-                    {
-                    }
+                    virtual ~WorldCallbacks();
 
                     ///\}
 
                     /**
                      * Called when adding an entry to world.
                      */
-                    virtual void add_callback(const PackageDepAtom *)
-                    {
-                    }
+                    virtual void add_callback(const PackageDepAtom &);
 
                     /**
                      * Called when skipping adding an entry to world.
                      */
-                    virtual void skip_callback(const PackageDepAtom *,
-                            const std::string &)
-                    {
-                    }
+                    virtual void skip_callback(const PackageDepAtom &, const std::string &);
 
                     /**
                      * Called when removing an entry to world.
                      */
-                    virtual void remove_callback(const PackageDepAtom *)
-                    {
-                    }
+                    virtual void remove_callback(const PackageDepAtom &);
+
+                    /**
+                     * Called when adding an entry to world.
+                     */
+                    virtual void add_callback(const SetName &);
+
+                    /**
+                     * Called when skipping adding an entry to world.
+                     */
+                    virtual void skip_callback(const SetName &, const std::string &);
+
+                    /**
+                     * Called when removing an entry from world.
+                     */
+                    virtual void remove_callback(const SetName &);
             };
 
             /**
              * Add packages to world, if they are not there already, and if they are
              * not a restricted atom.
              */
-            void
-            add_appropriate_to_world(std::tr1::shared_ptr<const DepAtom> a, WorldCallbacks * const) const;
+            void add_appropriate_to_world(std::tr1::shared_ptr<const DepAtom> a, WorldCallbacks *) const;
 
             /**
              * Remove packages from world, if they are there.
              */
-            void remove_appropriate_from_world(std::tr1::shared_ptr<const DepAtom>, WorldCallbacks * const) const;
+            void remove_appropriate_from_world(std::tr1::shared_ptr<const DepAtom>, WorldCallbacks *) const;
+
+            /**
+             * Add a set to world, if it's not inappropriate.
+             */
+            void add_set_to_world(const SetName &, WorldCallbacks *) const;
+
+            /**
+             * Remove a set from world.
+             */
+            void remove_set_from_world(const SetName &, WorldCallbacks *) const;
 
             /**
              * Perform a hook.

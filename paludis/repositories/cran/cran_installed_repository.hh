@@ -90,6 +90,9 @@ namespace paludis
 
             virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 
+            virtual void add_string_to_world(const std::string &) const;
+            virtual void remove_string_from_world(const std::string &) const;
+
         public:
             /**
              * Constructor.
@@ -113,6 +116,10 @@ namespace paludis
             virtual void add_to_world(const QualifiedPackageName &) const;
 
             virtual void remove_from_world(const QualifiedPackageName &) const;
+
+            virtual void add_to_world(const SetName &) const;
+
+            virtual void remove_from_world(const SetName &) const;
 
             virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
     };
