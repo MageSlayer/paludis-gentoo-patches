@@ -830,7 +830,7 @@ ConsoleInstallTask::_add_descriptions(std::tr1::shared_ptr<const UseFlagNameColl
 
 void
 ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection>,
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing,
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot,
         const DisplayMode m)
 {
@@ -839,7 +839,8 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
 
     output_no_endl(" ");
     std::tr1::shared_ptr<UseFlagPrettyPrinter> printer(make_use_flag_pretty_printer());
-    printer->print_package_flags(d.package, existing_slot->empty() ? 0 : &*existing_slot->last());
+    printer->print_package_flags(d.package, ! existing_slot->empty() ? &*existing_slot->last() :
+                                 ! existing->empty() ? &*existing->last() : 0);
 
     _add_descriptions(printer->new_flags(), d.package, uds_new);
     _add_descriptions(printer->changed_flags(), d.package, uds_changed);
