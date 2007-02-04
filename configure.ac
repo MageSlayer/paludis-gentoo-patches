@@ -227,6 +227,7 @@ AM_CONDITIONAL([NEED_POINTER_WRAPPERS], test x$need_pointer_wrappers = "xyes")
 dnl }}}
 
 need_xml_check=
+need_pcrepp_check=
 
 dnl {{{ we need libebt.
 dnl don't use AC_CHECK_HEADER, it does silly things
@@ -471,15 +472,7 @@ AC_ARG_ENABLE([qa],
 			  [ENABLE_QA=no
 			   AC_MSG_RESULT([no])])
 if test x"$ENABLE_QA" = "xyes" ; then
-   AC_CHECK_PROG(HAVE_PRCEPLUSPLUS, [pcre++-config], [yes], [no])
-   if test x"$HAVE_PRCEPLUSPLUS" = "xyes" ; then
-		PCREPLUSPLUS_CFLAGS=`pcre++-config --cflags`
-		AC_SUBST(PCREPLUSPLUS_CFLAGS)
-		PCREPLUSPLUS_LIBS=`pcre++-config --libs`
-		AC_SUBST(PCREPLUSPLUS_LIBS)
-	else
-		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa is used])
-	fi
+	need_pcrepp_check=yes
 	need_xml_check=yes
 	AC_DEFINE([ENABLE_RUBY_QA], [1], [Enable QA support in ruby])
 fi
@@ -501,18 +494,6 @@ if test x"$ENABLE_GLSA" = "xyes" ; then
 fi
 AC_SUBST([ENABLE_GLSA])
 AM_CONDITIONAL([ENABLE_GLSA], test "x$ENABLE_GLSA" = "xyes")
-dnl }}}
-
-dnl {{{ libxml2 check
-NEED_XML=$need_xml_check
-if test "x$need_xml_check" = "xyes" ; then
-	PKG_CHECK_MODULES(LIBXML2DEPS, [libxml-2.0 >= 2.6], [],
-		[AC_MSG_ERROR([libxml2 (http://xmlsoft.org/) is required if --enable-qa or --enable-glsa is used])])
-	AC_SUBST(LIBXML2DEPS_CFLAGS)
-	AC_SUBST(LIBXML2DEPS_LIBS)
-fi
-AC_SUBST([NEED_XML])
-AM_CONDITIONAL([NEED_XML], test "x$NEED_XML" = "xyes")
 dnl }}}
 
 dnl {{{ colourschemes
@@ -756,7 +737,7 @@ fi
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="adjutrix contrarius gtkpaludis paludis qualudis"
+ALL_CLIENTS="adjutrix contrarius gtkpaludis inquisitio paludis qualudis"
 DEFAULT_CLIENTS="adjutrix paludis"
 if test x"$ENABLE_QA" = "xyes" ; then
 	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
@@ -775,6 +756,7 @@ AC_ARG_WITH([clients],
 			  adjutrix        A tool for tree querying
 			  contrarius      The cross toolchain creator
 			  gtkpaludis      The Gtk+ client (UNUSABLE)
+			  inquisitio      A search client
 			  paludis         The Paludis console client
 			  qualudis        The QA console client],
 			[clients="`echo $with_clients | tr ',' ' '`"],
@@ -784,10 +766,39 @@ AC_MSG_RESULT([$clients])
 BUILD_CLIENTS="$clients"
 AC_SUBST([ALL_CLIENTS])
 AC_SUBST([BUILD_CLIENTS])
+
+if echo $clients | tr ' ' '\n' | grep '^inquisitio$' >/dev/null ; then
+	need_pcrepp_check=yes
+fi
+dnl }}}
+
+dnl {{{ libxml2 check
+NEED_XML=$need_xml_check
+if test "x$need_xml_check" = "xyes" ; then
+	PKG_CHECK_MODULES(LIBXML2DEPS, [libxml-2.0 >= 2.6], [],
+		[AC_MSG_ERROR([libxml2 (http://xmlsoft.org/) is required if --enable-qa or --enable-glsa is used])])
+	AC_SUBST(LIBXML2DEPS_CFLAGS)
+	AC_SUBST(LIBXML2DEPS_LIBS)
+fi
+AC_SUBST([NEED_XML])
+AM_CONDITIONAL([NEED_XML], test "x$NEED_XML" = "xyes")
+dnl }}}
+
+dnl {{{ pcrepp check
+if test "x$need_pcrepp_check" = "xyes" ; then
+	AC_CHECK_PROG(HAVE_PRCEPLUSPLUS, [pcre++-config], [yes], [no])
+	if test x"$HAVE_PRCEPLUSPLUS" = "xyes" ; then
+		PCREPLUSPLUS_CFLAGS=`pcre++-config --cflags`
+		AC_SUBST(PCREPLUSPLUS_CFLAGS)
+		PCREPLUSPLUS_LIBS=`pcre++-config --libs`
+		AC_SUBST(PCREPLUSPLUS_LIBS)
+	else
+		AC_MSG_ERROR([pcre++ (http://www.daemon.de/PCRE) is required if --enable-qa or --with-clients=inquisitio is used])
+	fi
+fi
 dnl }}}
 
 dnl {{{ is sed gnu sed
-
 AC_MSG_CHECKING([if we need a sed wrapper])
 AC_SUBST([NEED_SED_WRAPPER])
 AC_CACHE_VAL(paludis_need_sed_wrapper,[sed --version &>/dev/null || paludis_need_sed_wrapper=yes])
@@ -912,6 +923,7 @@ AC_OUTPUT(
 	src/common_args/Makefile
 	src/clients/Makefile
 	src/clients/contrarius/Makefile
+	src/clients/inquisitio/Makefile
 	src/clients/paludis/Makefile
 	src/clients/gtkpaludis/Makefile
 	src/clients/gtkpaludis/cellrendererbutton/Makefile

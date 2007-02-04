@@ -221,13 +221,13 @@ while read a ; do
                 echo "                ///\\name Basic operations"
                 echo "                ///\{"
                 echo
-                echo "                Param_${n}(const Empty &, $(make_const_ref "${t}" ) value_for_${n}) :"
+                echo "                Param_${n}(const paludis::Empty &, $(make_const_ref "${t}" ) value_for_${n}) :"
                 echo "                    ${n}(value_for_${n})"
                 echo "                {"
                 echo "                }"
                 echo
                 echo "                /// Constructor"
-                echo "                Param_${n}(const Empty &, const Param_${n} & other) :"
+                echo "                Param_${n}(const paludis::Empty &, const Param_${n} & other) :"
                 echo "                    ${n}(other.${n})"
                 echo "                {"
                 echo "                }"
@@ -267,7 +267,7 @@ while read a ; do
                 echo "                        );"
                 echo "                }"
                 echo
-                echo "                ParamNeeded_${n}(const Before_ & before, const Empty &) :"
+                echo "                ParamNeeded_${n}(const Before_ & before, const paludis::Empty &) :"
                 echo "                    _before(before)"
                 echo "                {"
                 echo "                }"
@@ -292,7 +292,7 @@ while read a ; do
             echo "            >"
             echo "        class Params :"
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo "            public Select<has_${want_keys[${k}]}_,"
+                echo "            public paludis::Select<has_${want_keys[${k}]}_,"
                 echo "                    Param_${want_keys[${k}]},"
                 echo "                    ParamNeeded_${want_keys[${k}]}<"
                 echo -n "                            Params<"
@@ -323,7 +323,7 @@ while read a ; do
                 done
                 echo "                >::Type,"
             done
-            echo "            public Empty"
+            echo "            public paludis::Empty"
             echo "        {"
             echo "            private:"
             echo "                Params();"
@@ -336,7 +336,7 @@ while read a ; do
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
                 n=${want_keys[${k}]}
                 echo -n "                        "
-                echo -n "const typename Select<has_${n}_, Param_${n}, Empty>::Type & value_for_${n}"
+                echo -n "const typename paludis::Select<has_${n}_, Param_${n}, paludis::Empty>::Type & value_for_${n}"
                 if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                     echo ","
                 else
@@ -345,7 +345,7 @@ while read a ; do
             done
             echo "                    ) :"
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo "                    Select<has_${want_keys[${k}]}_,"
+                echo "                    paludis::Select<has_${want_keys[${k}]}_,"
                 echo "                            Param_${want_keys[${k}]},"
                 echo "                            ParamNeeded_${want_keys[${k}]}<"
                 echo -n "                                    Params<"
@@ -377,7 +377,7 @@ while read a ; do
                 echo "                        >::Type(*this, value_for_${want_keys[${k}]}),"
             done
 
-            echo "                    Empty()"
+            echo "                    paludis::Empty()"
             echo "                {"
             echo "                }"
             echo

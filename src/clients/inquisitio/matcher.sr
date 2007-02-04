@@ -1,0 +1,11 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_MatcherOptions()
+{
+    key full_match bool
+
+    allow_named_args
+}
+
+

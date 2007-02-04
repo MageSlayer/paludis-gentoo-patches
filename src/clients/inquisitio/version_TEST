@@ -1,0 +1,4 @@
+#!/bin/bash
+
+PALUDIS_SKIP_CONFIG=yes ./inquisitio --version
+
