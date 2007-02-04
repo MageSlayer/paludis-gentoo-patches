@@ -514,6 +514,6 @@ Environment::sets_list() const
 bool
 Environment::accept_eapi(const std::string & e) const
 {
-    return e == "0" || e == "" || e == "paludis-1" || e == "CRAN-0";
+    return e == "0" || e == "" || e == "paludis-1" || e == "CRAN-1";
 }
 
