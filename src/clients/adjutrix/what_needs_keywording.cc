@@ -62,6 +62,16 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
     DepList d(&env, d_options);
 
+    for (CommandLine::ParametersIterator p(next(CommandLine::get_instance()->begin_parameters())),
+            p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
+    {
+        if (std::string::npos == p->find('/'))
+            d.add(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
+                            env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p)))));
+        else
+            d.add(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(*p)));
+    }
+
     cout << std::setw(30) << std::left << "Package";
     cout << std::setw(20) << std::left << "Version";
     cout << std::setw(18) << std::left << "Current Keywords";
@@ -71,14 +81,11 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     cout << std::string(29, '=') << " " << std::string(19, '=') << " "
         << std::string(17, '=') << " " << std::string(9, '=') << endl;
 
-    for (CommandLine::ParametersIterator p(next(CommandLine::get_instance()->begin_parameters())),
-            p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
+    if (d.begin() == d.end())
     {
-        if (std::string::npos == p->find('/'))
-            d.add(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
-                            env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p)))));
-        else
-            d.add(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(*p)));
+        cerr << "The specified package is already at the target keyword level. Perhaps" << endl;
+        cerr << "you need to specify a versioned target ('>=cat/pkg-1.23')." << endl;
+        return 4;
     }
 
     for (DepList::Iterator p(d.begin()), p_end(d.end()) ; p != p_end ; ++p)
