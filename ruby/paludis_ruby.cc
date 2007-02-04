@@ -318,14 +318,14 @@ void paludis::ruby::init()
     c_block_error = rb_define_class_under(c_paludis_module, "BlockError", c_dep_list_error);
 
     /*
-     * Document-class: Paludis::AllMaskedError
+     * Document-class: Paludis::CircularDependencyError
      *
      * Thrown if a circular dependency is encountered.
      */
     c_circular_dependency_error = rb_define_class_under(c_paludis_module, "CircularDependencyError", c_dep_list_error);
 
     /*
-     * Document-class: Paludis::AllMaskedError
+     * Document-class: Paludis::UseRequirementsNotMetError
      *
      * Thrown if all versions of a particular atom are masked, but would not be if use requirements were not in effect.
      */
