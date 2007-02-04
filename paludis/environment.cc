@@ -365,9 +365,11 @@ Environment::add_set_to_world(const SetName & s, Environment::WorldCallbacks * w
     for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
             r != r_end ; ++r)
-        if ((*r)->world_interface && (*r)->sets_interface)
-            if ((*r)->sets_interface->package_set(s))
-                (*r)->world_interface->add_to_world(s);
+        if ((*r)->world_interface)
+            (*r)->world_interface->add_to_world(s);
+
+    if (ww)
+        ww->add_callback(s);
 }
 
 void

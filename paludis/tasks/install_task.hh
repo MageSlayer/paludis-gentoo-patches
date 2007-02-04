@@ -30,30 +30,6 @@ namespace paludis
     class Environment;
 
     /**
-     * Thrown if multiple set targets are specified.
-     *
-     * \ingroup grpexceptions
-     */
-    class PALUDIS_VISIBLE MultipleSetTargetsSpecified :
-        public Exception
-    {
-        public:
-            MultipleSetTargetsSpecified() throw ();
-    };
-
-    /**
-     * Thrown if both sets and packages are specified as targets.
-     *
-     * \ingroup grpexceptions
-     */
-    class PALUDIS_VISIBLE HadBothPackageAndSetTargets :
-        public Exception
-    {
-        public:
-            HadBothPackageAndSetTargets() throw ();
-    };
-
-    /**
      * Task used to install one or more targets.
      *
      * \ingroup grptasks

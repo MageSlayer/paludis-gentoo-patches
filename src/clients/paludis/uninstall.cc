@@ -22,6 +22,7 @@
 
 #include <paludis/environment/default/default_environment.hh>
 #include <paludis/tasks/uninstall_task.hh>
+#include <paludis/tasks/exceptions.hh>
 #include <paludis/dep_list/uninstall_list.hh>
 
 #include <iostream>
@@ -156,6 +157,11 @@ namespace
                 cout << "* removing " << colour(cl_package_name, a.package()) << endl;
             }
 
+            virtual void on_update_world(const SetName & a)
+            {
+                cout << "* removing " << colour(cl_package_name, a) << endl;
+            }
+
             virtual void on_update_world_post()
             {
                 cout << endl;
@@ -209,6 +215,8 @@ namespace
                     o_end(e.end()) ; o != o_end ; ++o)
                 cerr << "    * =" << colour(cl_package_name, *o) << endl;
             cerr << endl;
+            cerr << "Consider using --all-versions if appropriate." << endl;
+            cerr << endl;
             return 1;
         }
         catch (const PackageUninstallActionError & e)
@@ -217,6 +225,26 @@ namespace
             cerr << "Uninstall error:" << endl;
             cerr << "  * " << e.backtrace("\n  * ");
             cerr << e.message() << endl;
+
+            return_code |= 1;
+        }
+        catch (const HadBothPackageAndSetTargets &)
+        {
+            cout << endl;
+            cerr << "Error: both package sets and packages were specified." << endl;
+            cerr << endl;
+            cerr << "Package sets (like 'system' and 'world') cannot be uninstalled at the same time" << endl;
+            cerr << "as ordinary packages." << endl;
+
+            return_code |= 1;
+        }
+        catch (const MultipleSetTargetsSpecified &)
+        {
+            cout << endl;
+            cerr << "Error: multiple package sets were specified." << endl;
+            cerr << endl;
+            cerr << "Package sets (like 'system' and 'world') must be uninstalled individually," << endl;
+            cerr << "without any other sets or packages." << endl;
 
             return_code |= 1;
         }

@@ -20,7 +20,9 @@
 #include "uninstall_task.hh"
 #include <paludis/environment.hh>
 #include <paludis/dep_list/uninstall_list.hh>
+#include <paludis/dep_atom_flattener.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/tasks/exceptions.hh>
 #include <list>
 
 using namespace paludis;
@@ -43,6 +45,9 @@ namespace paludis
         bool with_dependencies;
         bool unused;
 
+        bool had_set_targets;
+        bool had_package_targets;
+
         Implementation<UninstallTask>(Environment * const e) :
             env(e),
             install_options(false, false, ido_none, false),
@@ -51,7 +56,9 @@ namespace paludis
             all_versions(false),
             with_unused_dependencies(false),
             with_dependencies(false),
-            unused(false)
+            unused(false),
+            had_set_targets(false),
+            had_package_targets(false)
         {
         }
     };
@@ -92,11 +99,52 @@ UninstallTask::add_target(const std::string & target)
     /* we might have a dep atom, but we might just have a simple package name
      * without a category. either should work. */
     if (std::string::npos != target.find('/'))
+    {
+        if (_imp->had_set_targets)
+            throw HadBothPackageAndSetTargets();
+
+        _imp->had_package_targets = true;
         _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(target)));
+    }
     else
-        _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
-                        _imp->env->package_database()->fetch_unique_qualified_package_name(
-                            PackageNamePart(target)))));
+        try
+        {
+            std::tr1::shared_ptr<DepAtom> atom(_imp->env->package_set(SetName(target)));
+            if (atom)
+            {
+                if (_imp->had_package_targets)
+                    throw HadBothPackageAndSetTargets();
+
+                if (_imp->had_set_targets)
+                    throw MultipleSetTargetsSpecified();
+
+                _imp->had_set_targets = true;
+                DepAtomFlattener f(_imp->env, 0, atom);
+                for (DepAtomFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+                    _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
+                                    stringify((*i)->text()))));
+            }
+            else
+            {
+                if (_imp->had_set_targets)
+                    throw HadBothPackageAndSetTargets();
+
+                _imp->had_package_targets = false;
+                _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
+                                _imp->env->package_database()->fetch_unique_qualified_package_name(
+                                    PackageNamePart(target)))));
+            }
+        }
+        catch (const SetNameError &)
+        {
+            if (_imp->had_set_targets)
+                throw HadBothPackageAndSetTargets();
+
+            _imp->had_package_targets = false;
+            _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
+                            _imp->env->package_database()->fetch_unique_qualified_package_name(
+                                PackageNamePart(target)))));
+        }
 
     _imp->raw_targets.push_back(target);
 
@@ -126,9 +174,14 @@ namespace
         {
         }
 
-        virtual void remove_callback(const PackageDepAtom * a)
+        virtual void remove_callback(const PackageDepAtom & a)
         {
-            t->on_update_world(*a);
+            t->on_update_world(a);
+        }
+
+        virtual void remove_callback(const SetName & a)
+        {
+            t->on_update_world(a);
         }
     };
 }
@@ -155,7 +208,10 @@ UninstallTask::execute()
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> r(_imp->env->package_database()->query(
                         **t, is_installed_only, qo_order_by_version));
             if (r->empty())
-                throw NoSuchPackageError(stringify(**t));
+            {
+                if (! _imp->had_set_targets)
+                    throw NoSuchPackageError(stringify(**t));
+            }
             else if (next(r->begin()) != r->end())
             {
                 if (_imp->all_versions)
@@ -220,6 +276,11 @@ UninstallTask::execute()
 
         WorldCallbacks w(this);
         _imp->env->remove_appropriate_from_world(all, &w);
+
+        if (_imp->had_set_targets)
+            for (std::list<std::string>::const_iterator t(_imp->raw_targets.begin()),
+                    t_end(_imp->raw_targets.end()) ; t != t_end ; ++t)
+                _imp->env->remove_set_from_world(SetName(*t), &w);
 
         on_update_world_post();
     }

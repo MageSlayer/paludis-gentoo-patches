@@ -28,7 +28,8 @@ paludis_tasks_include_HEADERS = \
 	sync_task.hh \
 	stage_builder_task.hh \
 	stage_options-sr.hh \
-	report_task.hh
+	report_task.hh \
+	exceptions.hh
 
 libpaludistasks_a_SOURCES = $(paludis_tasks_include_HEADERS) \
 	find_unused_packages_task.cc \
@@ -36,7 +37,8 @@ libpaludistasks_a_SOURCES = $(paludis_tasks_include_HEADERS) \
 	uninstall_task.cc \
 	sync_task.cc \
 	stage_builder_task.cc \
-	report_task.cc
+	report_task.cc \
+	exceptions.cc
 
 if ! MONOLITHIC
 

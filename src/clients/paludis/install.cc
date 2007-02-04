@@ -37,6 +37,7 @@
 #include <errno.h>
 
 #include <paludis/tasks/install_task.hh>
+#include <paludis/tasks/exceptions.hh>
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>

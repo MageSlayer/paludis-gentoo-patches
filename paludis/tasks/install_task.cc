@@ -21,6 +21,8 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/tasks/exceptions.hh>
 #include <list>
 
 using namespace paludis;
@@ -37,7 +39,7 @@ namespace paludis
 
         std::list<std::string> raw_targets;
         std::tr1::shared_ptr<AllDepAtom> targets;
-        std::tr1::shared_ptr<const DepAtom> add_to_world_atom;
+        std::tr1::shared_ptr<std::string> add_to_world_atom;
 
         bool pretend;
         bool preserve_world;
@@ -58,16 +60,6 @@ namespace paludis
         {
         }
     };
-}
-
-MultipleSetTargetsSpecified::MultipleSetTargetsSpecified() throw () :
-    Exception("More than one set target was specified")
-{
-}
-
-HadBothPackageAndSetTargets::HadBothPackageAndSetTargets() throw () :
-    Exception("Both package and set targets were specified")
-{
 }
 
 InstallTask::InstallTask(Environment * const env, const DepListOptions & options) :
@@ -388,16 +380,29 @@ InstallTask::execute()
     }
 
     /* update world */
-    if ((! _imp->had_set_targets) && (! _imp->install_options.fetch_only))
+    if (! _imp->install_options.fetch_only)
     {
         if (! _imp->preserve_world)
         {
             on_update_world_pre();
             WorldCallbacks w(this);
-            if (_imp->add_to_world_atom)
-                _imp->env->add_appropriate_to_world(_imp->add_to_world_atom, &w);
-            else
-                _imp->env->add_appropriate_to_world(_imp->targets, &w);
+
+            if (_imp->had_package_targets)
+            {
+                if (_imp->add_to_world_atom)
+                    _imp->env->add_appropriate_to_world(PortageDepParser::parse_depend(
+                                *_imp->add_to_world_atom), &w);
+                else
+                    _imp->env->add_appropriate_to_world(_imp->targets, &w);
+            }
+            else if (_imp->had_set_targets)
+            {
+                if (_imp->add_to_world_atom)
+                    _imp->env->add_set_to_world(SetName(*_imp->add_to_world_atom), &w);
+                else if (! _imp->raw_targets.empty())
+                    _imp->env->add_set_to_world(SetName(*_imp->raw_targets.begin()), &w);
+            }
+
             on_update_world_post();
         }
         else
@@ -464,8 +469,7 @@ InstallTask::set_debug_mode(const InstallDebugOption value)
 void
 InstallTask::set_add_to_world_atom(const std::string & value)
 {
-    Context context("When setting world atom to '" + value + "':");
-    _imp->add_to_world_atom = PortageDepParser::parse_depend(value);
+    _imp->add_to_world_atom.reset(new std::string(value));
 }
 
 InstallTask::TargetsIterator
