@@ -7,7 +7,9 @@ BUILT_SOURCES = console_install_task-sr.hh console_install_task-sr.cc
 noinst_LIBRARIES = liboutput.a
 liboutput_a_SOURCES = \
 	colour.cc colour.hh \
+	console_task.cc console_task.hh \
 	console_install_task.cc console_install_task.hh \
+	console_query_task.cc console_query_task.hh \
 	use_flag_pretty_printer.cc use_flag_pretty_printer.hh \
 	licence.cc licence.hh
 

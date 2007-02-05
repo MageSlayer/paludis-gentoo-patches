@@ -40,6 +40,7 @@ inquisitio_SOURCES = \
 	description_extractor.hh     description_extractor.cc \
 	name_extractor.hh            name_extractor.cc \
 	do_search.hh                 do_search.cc \
+	query_task.hh                query_task.cc \
 	inquisitio.cc
 
 inquisitio_LDADD = \

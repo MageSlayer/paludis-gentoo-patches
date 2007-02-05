@@ -21,6 +21,7 @@
 #include "command_line.hh"
 #include "matcher.hh"
 #include "extractor.hh"
+#include "query_task.hh"
 
 #include <paludis/environment.hh>
 #include <list>
@@ -46,7 +47,7 @@ do_search(const Environment & env)
         extractors.push_back(ExtractorMaker::get_instance()->find_maker(*p)(env));
 
     if (extractors.empty())
-        extractors.push_back(ExtractorMaker::get_instance()->find_maker("description")(env));
+        extractors.push_back(ExtractorMaker::get_instance()->find_maker("text")(env));
 
     MatcherOptions opts(false);
 
@@ -119,8 +120,8 @@ do_search(const Environment & env)
         if (! match)
             continue;
 
-        std::cout << display_entry.name << std::endl;
-
+        InquisitioQueryTask query(&env);
+        query.show(PackageDepAtom(display_entry.name), &display_entry);
     }
 
     return 0;

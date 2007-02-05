@@ -23,6 +23,7 @@
 #include <paludis/tasks/install_task.hh>
 #include <paludis/package_database_entry.hh>
 #include <src/output/use_flag_pretty_printer.hh>
+#include <src/output/console_task.hh>
 #include <iosfwd>
 
 namespace paludis
@@ -84,7 +85,8 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE ConsoleInstallTask :
-        public InstallTask
+        public InstallTask,
+        public ConsoleTask
     {
         public:
             enum Count
@@ -160,39 +162,6 @@ namespace paludis
             virtual void on_update_world_skip(const SetName &, const std::string &);
             virtual void on_update_world_post();
             virtual void on_preserve_world();
-
-            ///\name Output routines
-            ///\{
-
-            virtual std::ostream & output_stream() const;
-            virtual std::ostream & output_xterm_stream() const;
-
-            virtual void output_activity_start_message(const std::string &) const;
-            virtual void output_activity_end_message() const;
-            virtual void output_heading(const std::string &) const;
-            virtual void output_xterm_title(const std::string &) const;
-            virtual void output_starred_item(const std::string &, const unsigned indent = 0) const;
-            virtual void output_starred_item_no_endl(const std::string &) const;
-            virtual void output_unstarred_item(const std::string &) const;
-            virtual void output_no_endl(const std::string &) const;
-            virtual void output_endl() const;
-
-            ///\}
-
-            ///\name Render routines
-            ///\{
-
-            virtual std::string render_as_package_name(const std::string &) const;
-            virtual std::string render_as_set_name(const std::string &) const;
-            virtual std::string render_as_tag(const std::string &) const;
-            virtual std::string render_as_unimportant(const std::string &) const;
-            virtual std::string render_as_error(const std::string &) const;
-            virtual std::string render_as_masked(const std::string &) const;
-            virtual std::string render_as_slot_name(const std::string &) const;
-            virtual std::string render_as_update_mode(const std::string &) const;
-            virtual std::string render_plural(int count, const std::string &, const std::string &) const;
-
-            ///\}
 
             ///\name More granular display routines
             ///\{

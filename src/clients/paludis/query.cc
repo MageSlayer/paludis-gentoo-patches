@@ -21,6 +21,7 @@
 #include "query.hh"
 #include <src/output/licence.hh>
 #include <src/output/use_flag_pretty_printer.hh>
+#include <src/output/console_query_task.hh>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -38,295 +39,37 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+namespace
+{
+    class QueryTask :
+        public ConsoleQueryTask
+    {
+        public:
+            QueryTask(const Environment * const e) :
+                ConsoleQueryTask(e)
+            {
+            }
+
+            bool want_deps() const
+            {
+                return CommandLine::get_instance()->a_show_deps.specified() || want_raw();
+            }
+
+            bool want_raw() const
+            {
+                return CommandLine::get_instance()->a_show_metadata.specified();
+            }
+    };
+}
+
 void do_one_package_query(
         const Environment * const env,
-        const std::string & q,
         MaskReasons & mask_reasons_to_explain,
         std::tr1::shared_ptr<PackageDepAtom> atom)
 {
-    /* prefer the best installed version, then the best visible version, then
-     * the best version */
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
-        entries(env->package_database()->query(*atom, is_any, qo_order_by_version)),
-        preferred_entries(env->package_database()->query(*atom, is_installed_only, qo_order_by_version));
-    if (entries->empty())
-        throw NoSuchPackageError(q);
-    if (preferred_entries->empty())
-        preferred_entries = entries;
-
-    PackageDatabaseEntry display_entry(*preferred_entries->last());
-    for (PackageDatabaseEntryCollection::Iterator i(preferred_entries->begin()),
-            i_end(preferred_entries->end()) ; i != i_end ; ++i)
-        if (! env->mask_reasons(*i).any())
-            display_entry = *i;
-
-    /* match! display it. */
-    cout << "* " << colour(cl_package_name, entries->begin()->name);
-    if (atom->version_requirements_ptr())
-        for (VersionRequirements::Iterator r(atom->version_requirements_ptr()->begin()),
-                r_end(atom->version_requirements_ptr()->end()) ; r != r_end ; ++r)
-            cout << " (" << r->version_operator << r->version_spec << ")";
-    if (atom->slot_ptr())
-        cout << " (:" << *atom->slot_ptr() << ")";
-    if (atom->repository_ptr())
-        cout << " (::" << *atom->repository_ptr() << ")";
-    cout << endl;
-
-    /* find all repository names. */
-    RepositoryNameCollection::Concrete repo_names;
-    PackageDatabaseEntryCollection::Iterator e(entries->begin()), e_end(entries->end());
-    for ( ; e != e_end ; ++e)
-        repo_names.append(e->repository);
-
-    /* display versions, by repository. */
-    RepositoryNameCollection::Iterator r(repo_names.begin()), r_end(repo_names.end());
-    for ( ; r != r_end ; ++r)
-    {
-        cout << "    " << std::setw(22) << std::left <<
-            (stringify(*r) + ":") << std::setw(0) << " ";
-
-        std::string old_slot;
-        for (e = entries->begin() ; e != e_end ; ++e)
-        {
-            Context context("When displaying entry '" + stringify(*e) + "':'");
-
-            if (e->repository == *r)
-            {
-                std::tr1::shared_ptr<const VersionMetadata> metadata(env->package_database()->fetch_repository(
-                            e->repository)->version_metadata(e->name,
-                            e->version));
-
-                /* show the slot, if we're about to move onto a new slot */
-                std::string slot_name(stringify(metadata->slot));
-                if (old_slot.empty())
-                    old_slot = slot_name;
-                else if (old_slot != slot_name)
-                    cout << colour(cl_slot, "{:" + old_slot + "} ");
-                old_slot = slot_name;
-
-                const MaskReasons masks(env->mask_reasons(*e));
-
-                if (masks.none())
-                    cout << colour(cl_visible, e->version);
-                else
-                {
-                    std::string reasons;
-                    for (MaskReason m(MaskReason(0)) ; m < last_mr ;
-                            m = MaskReason(static_cast<int>(m) + 1))
-                    {
-                        if (! masks.test(m))
-                            continue;
-
-                        switch (m)
-                        {
-                            case mr_keyword:
-                                reasons.append("K");
-                                break;
-                            case mr_user_mask:
-                                reasons.append("U");
-                                break;
-                            case mr_profile_mask:
-                                reasons.append("P");
-                                break;
-                            case mr_repository_mask:
-                                reasons.append("R");
-                                break;
-                            case mr_eapi:
-                                reasons.append("E");
-                                break;
-                            case mr_license:
-                                reasons.append("L");
-                                break;
-                            case mr_by_association:
-                                reasons.append("A");
-                                break;
-                            case last_mr:
-                                break;
-                        }
-                    }
-                    mask_reasons_to_explain |= masks;
-                    cout << colour(cl_masked, "(" + stringify(e->version) + ")" + reasons);
-                }
-
-                if (*e == display_entry)
-                    cout << "*";
-                cout << " ";
-            }
-        }
-
-        /* still need to show the slot for the last item */
-        cout << colour(cl_slot, "{:" + old_slot + "} ");
-
-        cout << endl;
-    }
-
-    /* display metadata */
-    std::tr1::shared_ptr<const VersionMetadata> metadata(env->package_database()->fetch_repository(
-                display_entry.repository)->version_metadata(
-                display_entry.name, display_entry.version));
-
-    if (CommandLine::get_instance()->a_show_metadata.specified())
-    {
-        cout << "    " << std::setw(22) << std::left << "DESCRIPTION:" << std::setw(0) <<
-            " " << metadata->description << endl;
-        cout << "    " << std::setw(22) << std::left << "HOMEPAGE:" << std::setw(0) <<
-            " " << metadata->homepage << endl;
-
-        if (metadata->license_interface)
-            cout << "    " << std::setw(22) << std::left << "LICENSE:" << std::setw(0) <<
-                " " << metadata->license_interface->license_string << endl;
-
-        if (metadata->deps_interface)
-        {
-            cout << "    " << std::setw(22) << std::left << "DEPEND:" << std::setw(0) <<
-                " " << metadata->deps_interface->build_depend_string << endl;
-            cout << "    " << std::setw(22) << std::left << "RDEPEND:" << std::setw(0) <<
-                " " << metadata->deps_interface->run_depend_string << endl;
-            cout << "    " << std::setw(22) << std::left << "PDEPEND:" << std::setw(0) <<
-                " " << metadata->deps_interface->post_depend_string << endl;
-            cout << "    " << std::setw(22) << std::left << "SDEPEND:" << std::setw(0) <<
-                " " << metadata->deps_interface->suggested_depend_string << endl;
-        }
-
-        if (metadata->cran_interface)
-        {
-            cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
-                " " << metadata->cran_interface->keywords << endl;
-            cout << "    " << std::setw(22) << std::left << "PACKAGE:" << std::setw(0) <<
-                " " << metadata->cran_interface->package << endl;
-            cout << "    " << std::setw(22) << std::left << "VERSION:" << std::setw(0) <<
-                " " << metadata->cran_interface->version << endl;
-            cout << "    " << std::setw(22) << std::left << "IS_BUNDLE:" << std::setw(0) <<
-                " " << std::boolalpha << metadata->cran_interface->is_bundle << endl;
-            cout << "    " << std::setw(22) << std::left << "IS_BUNDLE_MEMBER:" << std::setw(0) <<
-                " " << std::boolalpha << metadata->cran_interface->is_bundle_member << endl;
-        }
-
-        if (metadata->ebuild_interface)
-        {
-            cout << "    " << std::setw(22) << std::left << "IUSE:" << std::setw(0) <<
-                " " << metadata->ebuild_interface->iuse << endl;
-            cout << "    " << std::setw(22) << std::left << "KEYWORDS:" << std::setw(0) <<
-                " " << metadata->ebuild_interface->keywords << endl;
-            cout << "    " << std::setw(22) << std::left << "PROVIDE:" << std::setw(0) <<
-                " " << metadata->ebuild_interface->provide_string << endl;
-            cout << "    " << std::setw(22) << std::left << "RESTRICT:" << std::setw(0) <<
-                " " << metadata->ebuild_interface->restrict_string << endl;
-            cout << "    " << std::setw(22) << std::left << "SRC_URI:" << std::setw(0) <<
-                " " << metadata->ebuild_interface->src_uri << endl;
-        }
-
-        if (metadata->origins_interface && metadata->origins_interface->source)
-            cout << "    " << std::setw(22) << std::left << "SOURCE_ORIGIN:" << std::setw(0)
-                << " " << *metadata->origins_interface->source << endl;
-        if (metadata->origins_interface && metadata->origins_interface->binary)
-            cout << "    " << std::setw(22) << std::left << "BINARY_ORIGIN::" << std::setw(0)
-                << " " << *metadata->origins_interface->binary << endl;
-
-        if (0 != env->package_database()->fetch_repository(display_entry.repository)->installed_interface)
-        {
-            time_t t(env->package_database()->fetch_repository(display_entry.repository
-                        )->installed_interface->installed_time(display_entry.name, display_entry.version));
-            if (0 != t)
-                cout << "    " << std::setw(22) << std::left << "INSTALLED_TIME:" << std::setw(0)
-                    << " " << t << endl;
-        }
-    }
-    else
-    {
-        if (! metadata->homepage.empty())
-            cout << "    " << std::setw(22) << std::left << "Homepage:" << std::setw(0) <<
-                " " << metadata->homepage << endl;
-
-        if (! metadata->description.empty())
-            cout << "    " << std::setw(22) << std::left << "Description:" << std::setw(0) <<
-                " " << metadata->description << endl;
-
-        if (metadata->license_interface && ! metadata->license_interface->license_string.empty())
-        {
-            cout << "    " << std::setw(22) << std::left << "License:" << std::setw(0) << " ";
-            LicenceDisplayer d(cout, env, &display_entry);
-            metadata->license_interface->license()->accept(&d);
-            cout << endl;
-        }
-
-        if (CommandLine::get_instance()->a_show_deps.specified() && metadata->deps_interface)
-        {
-            if (! metadata->deps_interface->build_depend_string.empty())
-            {
-                DepAtomPrettyPrinter p_depend(12);
-                metadata->deps_interface->build_depend()->accept(&p_depend);
-                cout << "    " << std::setw(22) << std::left << "Build dependencies:" << std::setw(0)
-                    << endl << p_depend;
-            }
-
-            if (! metadata->deps_interface->run_depend_string.empty())
-            {
-                DepAtomPrettyPrinter p_depend(12);
-                metadata->deps_interface->run_depend()->accept(&p_depend);
-                cout << "    " << std::setw(22) << std::left << "Runtime dependencies:" << std::setw(0)
-                    << endl << p_depend;
-            }
-
-            if (! metadata->deps_interface->post_depend_string.empty())
-            {
-                DepAtomPrettyPrinter p_depend(12);
-                metadata->deps_interface->post_depend()->accept(&p_depend);
-                cout << "    " << std::setw(22) << std::left << "Post dependencies:" << std::setw(0)
-                    << endl << p_depend;
-            }
-
-            if (! metadata->deps_interface->suggested_depend_string.empty())
-            {
-                DepAtomPrettyPrinter s_depend(12);
-                metadata->deps_interface->suggested_depend()->accept(&s_depend);
-                cout << "    " << std::setw(22) << std::left << "Suggested dependencies:" << std::setw(0)
-                    << endl << s_depend;
-            }
-        }
-
-        if (metadata->origins_interface && metadata->origins_interface->source)
-            cout << "    " << std::setw(22) << std::left << "Source origin:" << std::setw(0)
-                << " " << colour(cl_package_name, *metadata->origins_interface->source) << endl;
-        if (metadata->origins_interface && metadata->origins_interface->binary)
-            cout << "    " << std::setw(22) << std::left << "Binary origin:" << std::setw(0)
-                << " " << colour(cl_package_name, *metadata->origins_interface->binary) << endl;
-
-        if (0 != env->package_database()->fetch_repository(display_entry.repository)->installed_interface)
-        {
-            time_t t(env->package_database()->fetch_repository(display_entry.repository
-                        )->installed_interface->installed_time(display_entry.name, display_entry.version));
-            if (0 != t)
-            {
-                char buf[255];
-                if (strftime(buf, 254, "%c", localtime(&t)))
-                    cout << "    " << std::setw(22) << std::left << "Installed time:" << std::setw(0)
-                        << " " << buf << endl;
-            }
-        }
-
-        if (metadata->ebuild_interface)
-        {
-            if (! metadata->ebuild_interface->provide_string.empty())
-                cout << "    " << std::setw(22) << std::left << "Provides:" << std::setw(0) <<
-                    " " << metadata->ebuild_interface->provide_string << endl;
-
-            if (! metadata->ebuild_interface->iuse.empty())
-            {
-                cout << "    " << std::setw(22) << std::left << "Use flags:" << std::setw(0) << " ";
-                UseFlagPrettyPrinter printer(DefaultEnvironment::get_instance());
-                printer.print_package_flags(display_entry);
-                cout << endl;
-            }
-        }
-
-        if (metadata->virtual_interface)
-            cout << "    " << std::setw(22) << std::left << "Virtual for:" << std::setw(0) <<
-                " " << metadata->virtual_interface->virtual_for << endl;
-    }
-
-
-    /* blank line */
+    QueryTask query(env);
+    query.show(*atom);
+    mask_reasons_to_explain |= query.mask_reasons_to_explain();
     cout << endl;
 }
 
@@ -371,7 +114,7 @@ void do_one_query(
         atom.reset(new PackageDepAtom(q));
 
     if (atom)
-        do_one_package_query(env, q, mask_reasons_to_explain, atom);
+        do_one_package_query(env, mask_reasons_to_explain, atom);
     else
         do_one_set_query(env, q, mask_reasons_to_explain, set);
 }
