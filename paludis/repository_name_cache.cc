@@ -36,14 +36,14 @@ namespace paludis
     template<>
     struct Implementation<RepositoryNameCache>
     {
-        const FSEntry location;
+        mutable FSEntry location;
         const Repository * const repo;
 
         mutable NameCacheMap name_cache_map;
         mutable bool checked_name_cache_map;
 
         Implementation(const FSEntry & l, const Repository * const r) :
-            location(l / stringify(r->name())),
+            location(l == FSEntry("/var/empty") ? l : l / stringify(r->name())),
             repo(r),
             checked_name_cache_map(false)
         {
@@ -74,6 +74,8 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
 
     std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
     NameCacheMap::iterator r(_imp->name_cache_map.find(p));
+
+    _imp->location = FSEntry(stringify(_imp->location));
 
     if (_imp->name_cache_map.end() == r)
     {
