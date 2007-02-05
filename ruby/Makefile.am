@@ -101,9 +101,9 @@ lib_LTLIBRARIES = libpaludisruby.la
 libpaludisruby_la_CXXFLAGS = $(AM_CXXFLAGS) -I. -I@RUBY_SITEARCHDIR@ -I@RUBY_ARCHDIR@
 
 paludis_ruby_so.o : paludis_ruby_so.cc
-	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
+	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
 	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) -I$(RUBY_SITEARCHDIR) -I$(RUBY_ARCHDIR) -c \
-	    -o $@ $(srcdir)/paludis_ruby_so.cc
+	    -o $@ $(srcdir)/paludis_ruby_so.cc ; then ln -s .libs/paludis_ruby_so.o $@ ; else rm -f $@ ; exit 1 ; fi
 
 if ENABLE_QA
 
