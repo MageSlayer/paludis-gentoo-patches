@@ -4,6 +4,21 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.18.0:
+    * Huge code cleanup. If your compiler does not implement tr1, you will now
+    need boost installed.
+
+    * Much faster adjutrix --what-needs-keywording when the system set includes
+    blocks.
+
+    * New client, inquisitio, for searching.
+
+    * Sets can now appear in world, and can be uninstalled.
+
+    * Support post-install configuration via paludis --config.
+
+    * Write cache is now cleared after a sync.
+
 0.16.2:
     * Defaults for repository conf files can now be specified via
     repository_defaults.conf.
