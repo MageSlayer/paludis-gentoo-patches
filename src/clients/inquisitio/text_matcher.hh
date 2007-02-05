@@ -33,7 +33,7 @@ namespace inquisitio
             TextMatcher(const std::string &);
             virtual ~TextMatcher();
 
-            bool operator() (const std::string &, const MatcherOptions &) const;
+            bool operator() (const std::string &) const;
     };
 }
 

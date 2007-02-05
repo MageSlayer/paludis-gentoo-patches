@@ -27,9 +27,6 @@
 
 namespace inquisitio
 {
-
-#include <src/clients/inquisitio/matcher-sr.hh>
-
     class Matcher :
         private paludis::InstantiationPolicy<Matcher, paludis::instantiation_method::NonCopyableTag>
     {
@@ -39,7 +36,7 @@ namespace inquisitio
         public:
             virtual ~Matcher();
 
-            virtual bool operator() (const std::string &, const MatcherOptions &) const = 0;
+            virtual bool operator() (const std::string &) const = 0;
     };
 
     class NoSuchMatcherError :

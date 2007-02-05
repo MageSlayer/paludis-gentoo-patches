@@ -31,7 +31,7 @@ namespace paludis
         mutable pcrepp::Pcre::Pcre pattern;
 
         Implementation(const std::string & s) :
-            pattern(s)
+            pattern(s, "i")
         {
         }
     };
@@ -43,7 +43,7 @@ PCREMatcher::PCREMatcher(const std::string & s) :
 }
 
 bool
-PCREMatcher::operator() (const std::string & s, const MatcherOptions &) const
+PCREMatcher::operator() (const std::string & s) const
 {
     return _imp->pattern.search(s);
 }

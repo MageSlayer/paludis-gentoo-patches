@@ -18,6 +18,7 @@
  */
 
 #include "text_matcher.hh"
+#include <string.h>
 
 using namespace paludis;
 using namespace inquisitio;
@@ -42,9 +43,9 @@ TextMatcher::TextMatcher(const std::string & s) :
 }
 
 bool
-TextMatcher::operator() (const std::string & s, const MatcherOptions &) const
+TextMatcher::operator() (const std::string & s) const
 {
-    return std::string::npos != s.find(_imp->pattern);
+    return 0 != strcasestr(s.c_str(), _imp->pattern.c_str());
 }
 
 TextMatcher::~TextMatcher()

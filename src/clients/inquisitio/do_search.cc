@@ -47,9 +47,7 @@ do_search(const Environment & env)
         extractors.push_back(ExtractorMaker::get_instance()->find_maker(*p)(env));
 
     if (extractors.empty())
-        extractors.push_back(ExtractorMaker::get_instance()->find_maker("text")(env));
-
-    MatcherOptions opts(false);
+        extractors.push_back(ExtractorMaker::get_instance()->find_maker("name")(env));
 
     std::set<QualifiedPackageName> pkgs;
 
@@ -113,7 +111,7 @@ do_search(const Environment & env)
             std::string xx((**x)(display_entry));
             for (std::list<std::tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()),
                     m_end(matchers.end()) ; m != m_end && ! match ; ++m)
-                if ((**m)(xx, opts))
+                if ((**m)(xx))
                     match = true;
         }
 

@@ -33,7 +33,7 @@ namespace inquisitio
             PCREMatcher(const std::string &);
             virtual ~PCREMatcher();
 
-            bool operator() (const std::string &, const MatcherOptions &) const;
+            bool operator() (const std::string &) const;
     };
 }
 

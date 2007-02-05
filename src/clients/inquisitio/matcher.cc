@@ -24,8 +24,6 @@
 using namespace inquisitio;
 using namespace paludis;
 
-#include <src/clients/inquisitio/matcher-sr.cc>
-
 Matcher::Matcher()
 {
 }

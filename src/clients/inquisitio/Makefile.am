@@ -70,21 +70,12 @@ TESTS = version_TEST help_TEST
 
 EXTRA_DIST = \
 	$(man_MANS) \
-	$(TESTS) \
-	matcher-sr.hh matcher-sr.cc matcher.sr
+	$(TESTS)
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
-DISTCLEANFILES = $(man_MANS) $(noinst_DATA) matcher-sr.hh matcher-sr.cc
+DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
 MAINTAINERCLEANFILES = Makefile.in
-BUILT_SOURCES = matcher-sr.hh matcher-sr.cc
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
-
-matcher-sr.hh : matcher.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/matcher.sr > $@ ; then rm -f $@ ; exit 1 ; fi
-
-matcher-sr.cc : matcher.sr $(top_srcdir)/misc/make_sr.bash
-	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/matcher.sr > $@ ; then rm -f $@ ; exit 1 ; fi
-
 
