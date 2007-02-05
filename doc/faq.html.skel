@@ -440,6 +440,14 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
 
 <p>The option <code>--dl-reinstall</code> handles both these cases.</p>
 
+<h3 id="elog">ELOG Equivalent</h3>
+
+<p>Paludis ships with a demo hook showing how to get a summary of messages after
+all packages have been installed. It can be found in
+<code>SHAREDIR/paludis/hooks/demos/elog.bash</code>. See <a
+    href="hooks.html">the hooks documentation</a> for more information about
+hooks.</p>
+
 <h2 id="repos">Repository Questions</h2>
 
 <h3 id="profiles">Profiles vs Profiles</h3>
