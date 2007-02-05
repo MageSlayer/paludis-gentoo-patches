@@ -77,7 +77,7 @@ main(int argc, char *argv[])
         Log::get_instance()->set_program_name(argv[0]);
 
         /* need an action */
-        if (1 != (CommandLine::get_instance()->a_search.specified() +
+        if (1 < (CommandLine::get_instance()->a_search.specified() +
                     CommandLine::get_instance()->a_version.specified()))
             throw args::DoHelp("you should specify exactly one action");
 
@@ -97,15 +97,10 @@ main(int argc, char *argv[])
 
         DefaultConfig::get_instance()->set_paludis_command(paludis_command);
 
-        if (CommandLine::get_instance()->a_search.specified())
-        {
-            if (CommandLine::get_instance()->begin_parameters() == CommandLine::get_instance()->end_parameters())
-                throw args::DoHelp("search action takes at least one parameter");
+        if (CommandLine::get_instance()->begin_parameters() == CommandLine::get_instance()->end_parameters())
+            throw args::DoHelp("search action takes at least one parameter");
 
-            return do_search(*DefaultEnvironment::get_instance());
-        }
-
-        throw InternalError(__PRETTY_FUNCTION__, "no action?");
+        return do_search(*DefaultEnvironment::get_instance());
     }
     catch (const DoVersion &)
     {
