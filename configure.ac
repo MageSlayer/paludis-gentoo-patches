@@ -54,6 +54,10 @@ AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
 dnl }}}
 
+dnl {{{ make pkg-config work... dumb macro...
+PKG_PROG_PKG_CONFIG([0.9.0])
+dnl }}}
+
 dnl {{{ check for partial specialisation of template classes
 AC_MSG_CHECKING([for compiler support for partial specialisation of template classes])
 AC_COMPILE_IFELSE([
