@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,7 +33,7 @@ builtin_merge()
     install -d "${dbdir}" || die "couldn't make pkg db directory (\"${dbdir}\")"
     install -d "${v}/".cache || die "couldn't make pkg db cache"
 
-    local v VDB_FORMAT="paludis-2" COUNTER="0"
+    local v VDB_FORMAT="paludis-2" COUNTER="$(date +%s )"
     for v in CATEGORY CBUILD CHOST COUNTER DEPEND DESCRIPTION EAPI \
         FEATURES HOMEPAGE INHERITED IUSE KEYWORDS LICENSE PDEPEND PF \
         PROVIDE RDEPEND SLOT SRC_URI USE CONFIG_PROTECT CONFIG_PROTECT_MASK \
