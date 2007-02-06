@@ -122,7 +122,7 @@ instead of a manual loop (\ref EffSTL item 43).
 
 Try to avoid returning raw pointer types from raw interfaces, especially if the
 programmer is expected to deallocate them manually. Make liberal use of
-<code>paludis::CountedPtr</code> instead -- it's low overhead and a lot less
+<code>std::tr1::shared_ptr</code> instead -- it's low overhead and a lot less
 prone to subtle screwups. See \ref EffCpp item 18.
 
 Pass object parameters by const reference rather than pointer to const unless
@@ -155,10 +155,6 @@ swap methods. Use these over <code>std::copy</code>. See \ref EffSTL item
 
 Don't use <code>vector&lt;bool&gt;</code>. It's just not worth it. See
 \ref EffSTL item 18.
-
-Although some compilers will let you get away with <code>std::make_pair("foo",
-"bar")</code>, some won't. Strictly speaking this violates the standard.
-Use <code>std::make_pair(std::string("foo"), std::string("bar"))</code> instead.
 
 \section CodingStandardsCasts Casts
 
