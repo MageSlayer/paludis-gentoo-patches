@@ -12,8 +12,7 @@ opts = GetoptLong.new(
     [ '--version',       '-V',  GetoptLong::NO_ARGUMENT ],
     [ '--log-level',            GetoptLong::REQUIRED_ARGUMENT ],
     [ '--config-suffix', '-c',  GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--pretend',       '-p',  GetoptLong::NO_ARGUMENT ],
-    [ '--directory',     '-d',  GetoptLong::REQUIRED_ARGUMENT ] )
+    [ '--pretend',       '-p',  GetoptLong::NO_ARGUMENT ] )
 
 config_suffix = ""
 override_directory = []
@@ -31,8 +30,6 @@ opts.each do | opt, arg |
         puts
         puts "  --log-level level       Set log level (debug, qa, warning, silent)"
         puts "  --config-suffix suffix  Set configuration suffix"
-        puts
-        puts "  --directory             Check the specified directory only"
         exit 0
 
     when '--version'
@@ -87,38 +84,13 @@ def status x
     $stderr << "\n" << x << "\n"
 end
 
-def get_dirs override_directory
-    override_directory.empty? or return override_directory
-
-    result = %w{/bin /sbin /usr/bin /usr/sbin /lib* /usr/lib*}
-
-    File.open "/etc/ld.so.conf" do | f |
-        f.find_all do | line |
-            line =~ /^\//
-        end.each do | line |
-            result << line.chomp
-        end
+def executable x
+    begin
+        s = File.lstat x
+        s.executable?
+    rescue
+        false
     end
-
-    result
-end
-
-def get_files dir
-    %w{/lib/modules}.include? dir and return []
-
-    result = []
-    Dir.glob(dir + "/*").each do | entry |
-        begin
-            stat = File.stat(entry)
-            stat.directory? and result.push(*(get_files entry))
-
-            if stat.executable? or entry =~ /\.(so|so\..*|la)$/
-                result << entry
-            end
-        rescue Errno::ENOENT
-        end
-    end
-    result
 end
 
 def check_file file
@@ -132,27 +104,9 @@ end
 Paludis::DefaultConfig::config_suffix = config_suffix
 env = Paludis::DefaultEnvironment.instance
 
-status "Finding candidate search directories"
-dirs = get_dirs(override_directory).map { | c | Dir.glob c }.flatten.map { | x | x.squeeze('/') }.sort.uniq
+status "Checking linkage for package-manager installed files"
 
-status "Finding libraries and executables"
-files = dirs.map { | dir | get_files dir }.flatten.sort.uniq
-
-status "Checking dynamic links"
-broken = files.find_all { | file | check_file file }
-
-if broken.empty?
-    status "Nothing broken found"
-    exit 0
-else
-    broken.each do | b |
-        puts "  * broken: " + b
-    end
-end
-
-status "Finding owners for broken files"
-
-all_owners = Hash.new
+broken = [ ]
 env.package_database.repositories.each do | repo |
     (repo.installed_interface and repo.contents_interface) or next
 
@@ -160,24 +114,31 @@ env.package_database.repositories.each do | repo |
         repo.package_names(cat).each do | pkg |
             repo.version_specs(pkg).each do | ver |
                 repo.contents(pkg, ver).entries.each do | entry |
-                    all_owners[entry.name] = Paludis::PackageDatabaseEntry.new(pkg, ver, repo.name)
+                    entry.kind_of? Paludis::ContentsFileEntry or next
+                    (entry.name =~ /\.(la|so|so\..*)$/ or executable(entry.name)) or next
+                    check_file entry.name or next
+                    broken << Paludis::PackageDatabaseEntry.new(pkg, ver, repo.name)
+                    break
                 end
             end
         end
     end
 end
 
-owners = broken.map do | file |
-    all_owners[file]
-end.find_all { | owner | owner }.sort { | x, y | x.to_s <=> y.to_s }.uniq_using { | x | x.to_s }
+broken = broken.find_all { | x | x }.sort { | x, y | x.to_s <=> y.to_s }.uniq_using { | x | x.to_s }
 
-owners.each do | owner |
-    puts "  * " + owner.to_s
+if broken.empty?
+    status "No broken packages found"
+    exit 0
+end
+
+broken.each do | x |
+    puts "  * " + x.to_s
 end
 
 status "Finding merge targets"
 
-atoms = owners.map do | owner |
+atoms = broken.map do | owner |
     slot = env.package_database.fetch_repository(owner.repository).version_metadata(owner.name, owner.version).slot
     Paludis::PackageDepAtom.new("=" + owner.name + "-" + owner.version.to_s + ":" + slot)
 end
