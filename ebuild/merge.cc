@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -117,18 +117,28 @@ namespace
             dst_dir_str.clear();
 
         cout << ">>> " << std::setw(5) << std::left << "[dir]" << " " <<
-            dst_dir_str.substr(root_str.length()) << "/" << dst_dir.basename() << endl;
+            dst_dir_str.substr(root_str.length()) << "/" << dst_dir.basename();
 
         if (dst_dir.is_directory())
-            /* nothing */;
+        {
+            cout << " <dir>" << endl;
+        }
         else if (dst_dir.is_symbolic_link() && dst_dir.realpath().is_directory())
+        {
             Log::get_instance()->message(ll_qa, lc_no_context, "Expected '" + stringify(dst_dir) +
                     "' to be a directory or non-existent, but found a symlink to a directory");
+            cout << " <sym -> dir>" << endl;
+        }
         else if (dst_dir.exists())
+        {
+            cout << " <obj>" << endl;
             throw Failure("Expected '" + stringify(dst_dir) +
                     "' to be a directory or non-existent, but found a file");
+        }
         else
         {
+            cout << " <new>" << endl;
+
             mode_t mode(src_dir.permissions());
 
 #ifdef HAVE_SELINUX
@@ -182,7 +192,10 @@ namespace
             dst_dir_str.substr(root_str.length()) << "/" << dst.basename();
 
         if (dst.is_directory())
+        {
+            cout << " <dir>" << endl;
             throw Failure("Cannot overwrite directory '" + stringify(dst) + "' with a file");
+        }
         else
         {
             FSEntry real_dst(dst);
@@ -205,6 +218,8 @@ namespace
                 {
                     if (dst.is_regular_file())
                     {
+                        cout << " <obj>" << endl;
+
                         mode_t mode(dst.permissions());
                         if ((mode & S_ISUID) || (mode & S_ISGID))
                         {
@@ -213,11 +228,20 @@ namespace
                         }
                         FSEntry(dst).unlink();
                     }
-                    cout << endl;
+                    else if (dst.is_symbolic_link())
+                    {
+                        cout << " <sym>" << endl;
+                        FSEntry(dst).unlink();
+                    }
+                    else
+                    {
+                        cout << " <?""?""?>" << endl;
+                        FSEntry(dst).unlink();
+                    }
                 }
             }
             else
-                cout << endl;
+                cout << " <new>" << endl;
 
             /* FDHolder must be destroyed before we do the md5 thing, or the
              * disk write may not have synced. */
@@ -274,15 +298,21 @@ namespace
             dst_dir_str.clear();
 
         cout << ">>> " << std::setw(5) << std::left << "[sym]" << " " <<
-            dst_dir_str.substr(root_str.length()) << "/" << dst.basename() << endl;
+            dst_dir_str.substr(root_str.length()) << "/" << dst.basename();
 
         if (dst.exists())
         {
             if (dst.is_directory())
                 throw Failure("Can't overwrite directory '" + stringify(dst) +
                         "' with symlink to '" + src.readlink() + "'");
+            else if (dst.is_symbolic_link())
+            {
+                cout << " <sym>" << endl;
+                FSEntry(dst).unlink();
+            }
             else
             {
+                cout << " <obj>" << endl;
                 mode_t mode(dst.permissions());
                 if ((mode & S_ISUID) || (mode & S_ISGID))
                 {
@@ -292,6 +322,8 @@ namespace
                 FSEntry(dst).unlink();
             }
         }
+        else
+            cout << " <new>" << endl;
 
 #ifdef HAVE_SELINUX
         // permissions() on a symlink does weird things, but matchpathcon only cares about the file type,
