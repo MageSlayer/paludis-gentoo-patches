@@ -49,7 +49,7 @@
         <code>irc.freenode.net</code> or the <a
             href="https://developer.berlios.de/mail/?group_id=6360">mailing
             lists</a>.  There is a <a
-            href="http://trac.pioto.org:8000/paludis/">bug tracker</a> that can
+            href="http://paludis.pioto.org/trac/">bug tracker</a> that can
         be used for bug reports and feature requests.</li>
 
         <li>Manual pages:
@@ -68,7 +68,7 @@
     <ul>
         <li><strong>Subversion access</strong> is available via
         <code>svn co svn://svn.pioto.org/paludis/trunk paludis</code>. There
-        is also <a href="http://trac.pioto.org:8000/paludis/browser">Trac's
+        is also <a href="http://paludis.pioto.org/trac/browser">Trac's
             code browser</a> for viewing via the web.</li>
 
         <li>An <a href="programmingwithpaludis.html">overview of
@@ -85,7 +85,7 @@
         <li><strong>Development questions</strong> should be asked in <code>#paludis</code> on
         <code>irc.freenode.net</code> or on the <a
             href="https://developer.berlios.de/mail/?group_id=6360">mailing lists</a>.
-        Patches go to the <a href="http://trac.pioto.org:8000/paludis/">bug tracker</a>.</li>
+        Patches go to the <a href="http://paludis.pioto.org/trac/">bug tracker</a>.</li>
 
     </ul>
 

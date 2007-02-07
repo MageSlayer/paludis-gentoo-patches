@@ -32,7 +32,7 @@ you should ask it in one of these places:</p>
     <li>The <code>#paludis</code> channel on <code>irc.freenode.net</code></li>
     <li>The <a href="https://developer.berlios.de/mail/?group_id=6360">paludis-user
         mailing list</a></li>
-    <li>The <a href="http://trac.pioto.org:8000/paludis/">bug tracker</a> will probably also be useful</li>
+    <li>The <a href="http://paludis.pioto.org/trac/">bug tracker</a> will probably also be useful</li>
 </ul>
 
 <p>You are encouraged to submit an entry for this document once your question
@@ -57,7 +57,7 @@ the code now does.</p>
 
 <ul>
     <li>Patches can be submitted via <a
-        href="http://trac.pioto.org:8000/paludis/">trac</a>. It's best to
+        href="http://paludis.pioto.org/trac/">trac</a>. It's best to
     discuss ideas before spending too much time on the code, because we don't
     have any qualms about rejecting things we think are a bad idea.</li>
 
