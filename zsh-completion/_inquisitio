@@ -1,0 +1,36 @@
+#compdef inquisitio
+
+# vim: set et sw=4 sts=4 ts=4 ft=zsh :
+# ZSH completion for inquisitio
+# Written by Baptiste Daroussin <baptux at free.fr>
+
+_inquisitio() {
+    local actions general_options search_options action_options
+    actions=(
+        --search -s
+        --version -V
+        --help -h
+    )
+    action_options=(
+        "($actions)"{--search,-s}"[Search for a package]"
+        "(: -)"{--version,-V}"[Display program version]"
+        "(: -)"{--help,-h}"[Display program help]"
+    )
+    general_options=(
+        "--log-level[Specify the log level]:log level:((debug\:Show\ debug\ output qa\:Show\ QA\ messages\ and\ warnings\ only warning\:Show\ warnings\ only silent\:Suppress\ all\ log\ messages))" 
+        "(--no-colour --no-color)"{--no-colour,--no-color}"[Do not use colour]"
+        "(--repository-dir -D)"{--repository-dir,-D}"[Where to find the repository]:repository:_files -/"
+    )
+    search_options=(
+        "(--matcher -m)"{--matcher,-m}"[Which match algorithm to use]:which:((text\:Simple\ text\ match pcre\:Regular\ expression\ match\ using\ pcre))"
+        "(--extractors -e)"{--extractors,-e}"[Which extractors to use]:which:((description\:Match\ against\ description name\:Match\ against\ package\ name homepage\:Match\ against\ homepage))"
+        "--repository[Matches with this repository name only]:repository:_paludis_packages repositories"
+        "--repository-format[Matches with this repository format only]:format:_paludis_packages repository-formats"
+        "--category[Matches with this category name only]:category:_paludis_packages categories"
+        "--package[Matches with this package name only]:package:_paludis_packages available"
+    )
+    _arguments -s \
+        $general_options[@] $search_options[@] $action_options[@] && return 0
+}
+
+_inquisitio "$@"

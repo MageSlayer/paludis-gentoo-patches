@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-noinst_DATA = _paludis _adjutrix _paludis_packages
+noinst_DATA = _paludis _adjutrix _paludis_packages _inquisitio
 EXTRA_DIST = $(noinst_DATA)
 
 built-sources : $(BUILT_SOURCES)

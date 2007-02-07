@@ -6,8 +6,10 @@
 
 _paludis() {
     local actions action_args query_args general_args deplist_args install_uninstall_args list_args lists owner_args
-    actions=( --query --install -i --uninstall -u --sync -s --report --contents -k --owner -o --version -V --info -I --help -h \
-    --has-version  --best-version --environnement-variable --list-repositories --list-categories --list-packages --list-sets --list-sync-protocols --list-repository-formats --list-dep-tag-categories --regenerate-installed-cache  --update-news --regenerate-installable-cache)
+    actions=( --query --install -i --uninstall -u --sync -s --report --contents -k --owner -o --version -V --info -I --help -h 
+    --has-version  --best-version --environnement-variable --list-repositories --list-categories --list-packages --list-sets 
+    --list-sync-protocols --list-repository-formats --list-dep-tag-categories --regenerate-installed-cache  --update-news 
+    --regenerate-installable-cache --config)
 
     query_args=(
         "(--show-deps -D)"{--show-deps,-D}"[Show dependencies]"
@@ -72,6 +74,7 @@ _paludis() {
         "(: -)--update-news[Regenerate news.unread files]"
         "(: -)--regenerate-installed-cache[Regenerate (non-metadata) cache for installed repositories]"
         "(: -)--regenerate-installable-cache[Regenerate (non-metadata) cache for installable repositories]"
+        "(: -)--config[Run post-install configuration for a package]"
     )
     owner_args=(
         "--full-match[Match whole filename]"
@@ -96,7 +99,7 @@ _paludis() {
         "--dl-new-slots[When to pull in new slots (works with --dl-upgrade)]:When:(always as-needed)"
     )
     #dispatch
-    if (( $words[(I)(--uninstall|-[[:alpha:]]#u[[:alpha:]]#)] )) ; then
+    if (( $words[(I)(--(uninstall|config)|-[[:alpha:]]#u[[:alpha:]]#)] )) ; then
         _arguments -s \
                 $general_args[@] $deplist_args[@] $install_uninstall_args[@] $uninstall_args[@] \
             "*:installed package:_paludis_packages installed" && return 0
