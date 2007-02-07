@@ -39,6 +39,7 @@ _paludis() {
         --report -r \
         --contents -k \
         --owner -o \
+        --config \
         --version -V \
         --info -I \
         --help -h \
@@ -148,6 +149,10 @@ _paludis() {
                 ;;
             -o|--owner)
                 action="owner"
+                break
+                ;;
+            --config)
+                action="config"
                 break
                 ;;
             -V|--version|-I|--info|-h|--help)
@@ -306,7 +311,7 @@ _paludis() {
                             return 0
                             
                             ;;
-                        query|install|uninstall|contents|version_query|env_variable_query)
+                        query|install|uninstall|contents|version_query|env_variable_query|config)
                             if [[ "${action}" == "env_variable_query" \
                                 && "${prev}" != -* ]]
                             then
