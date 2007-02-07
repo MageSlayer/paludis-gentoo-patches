@@ -22,6 +22,8 @@ of every change, see the ChangeLog.
     * The repository name is now appended to the names_cache path. When
     upgrading, you will be told to manually remove any old names_cache files.
 
+    * A bug with overwriting stale symlinks with objects has been fixed.
+
 0.16.2:
     * Defaults for repository conf files can now be specified via
     repository_defaults.conf.
