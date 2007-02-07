@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006 Mark Loeser <halcy0n@gentoo.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -141,6 +141,12 @@ namespace test_cases
 
             d = FSEntry("fs_entry_TEST_dir/symlink_to_dir_a");
             TEST_CHECK(d.is_symbolic_link());
+            TEST_CHECK(! d.is_directory());
+            TEST_CHECK(! d.is_regular_file());
+
+            e = FSEntry("fs_entry_TEST_dir/doesnotexist_symlink");
+            TEST_CHECK(d.is_symbolic_link());
+            TEST_CHECK(d.exists());
             TEST_CHECK(! d.is_directory());
             TEST_CHECK(! d.is_regular_file());
 
