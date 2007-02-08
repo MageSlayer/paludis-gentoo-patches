@@ -87,6 +87,11 @@ IuseCheck::operator() (const EbuildCheckData & e) const
             if (! bad_iuse.empty())
                 result << Message(qal_minor, "Deprecated IUSEs '" + join(bad_iuse.begin(),
                             bad_iuse.end(), "', '") + "'");
+
+            for (std::set<UseFlagName>::iterator i(iuse.begin()), i_end(iuse.end()) ; i != i_end ; ++i)
+                if ("" == e.environment->package_database()->fetch_repository(ee.repository)->use_interface->
+                        describe_use_flag(*i, &ee))
+                    result << Message(qal_minor, "Use flag '" + stringify(*i) + "' has no description");
         }
         catch (const NameError & err)
         {
