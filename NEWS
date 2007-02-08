@@ -4,6 +4,18 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.18.1:
+    * use.conf etc now automatically includes use.conf.d/*.conf.
+
+    * New configuration key for ebuild repositories, master_repository. If set,
+    the specified repository will be used as a 'master' for profiles/, eclasses,
+    PORTDIR etc.
+
+    * qualudis now supports --master-repository-dir for checking of
+    non-standalone repositories.
+
+    * Compile fixes for g++-3.4, g++-4.2, selinux.
+
 0.18.0:
     * Huge code cleanup. If your compiler does not implement tr1, you will now
     need boost installed.
