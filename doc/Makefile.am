@@ -32,7 +32,8 @@ htmlfiles = \
 	man-paludis.html \
 	man-qualudis.html \
 	man-contrarius.html \
-	man-adjutrix.html
+	man-adjutrix.html \
+	man-inquisitio.html
 
 EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 	$(docfiles) $(tagfiles) $(images) htaccess \
@@ -43,7 +44,7 @@ EXTRA_DIST = doxygen.conf.in header.html footer.html paludis.css \
 
 CLEANFILES = *~ news.html index.html changelog.html licence.html authors.html faq.html \
 	migration.html cachefiles.html configuration.html portagedifferences.html programmingwithpaludis.html \
-	sets.html hooks.html man-paludis.html man-qualudis.html man-contrarius.html man-adjutrix.html \
+	sets.html hooks.html man-paludis.html man-qualudis.html man-contrarius.html man-adjutrix.html man-inquisitio.html \
 	cleannews cleanrecentnews cleanchangelog cleanauthors cleanfaqtoc cleanbasiccppapp cleanbasicrubyapp
 
 MAINTAINERCLEANFILES = Makefile.in $(tagfiles)
@@ -252,6 +253,15 @@ man-adjutrix.html : $(top_builddir)/src/clients/adjutrix/adjutrix.html man.html.
 	    -e '/@MAN@/d' \
 	    < $(srcdir)/man.html.skel > man-adjutrix.html
 
+man-inquisitio.html : $(top_builddir)/src/clients/inquisitio/inquisitio.html man.html.skel
+	sed -e '/@HEADER@/r htmlheader.html' \
+	    -e '/@HEADER@/d' \
+	    -e '/@FOOTER@/r htmlfooter.html' \
+	    -e '/@FOOTER@/d' \
+	    -e '/@MAN@/r $(top_builddir)/src/clients/inquisitio/inquisitio.html' \
+	    -e '/@MAN@/d' \
+	    < $(srcdir)/man.html.skel > man-inquisitio.html
+
 man-qualudis.html : $(top_builddir)/src/clients/qualudis/qualudis.html man.html.skel
 	sed -e '/@HEADER@/r htmlheader.html' \
 	    -e '/@HEADER@/d' \
@@ -293,7 +303,9 @@ homepage : doxygen rdoc htmlpages dothtaccess images
 images : $(images)
 	for s in $(images) ; do cp $(srcdir)/$$s www/ ; done
 
-upload-homepage : homepage
+upload-homepage : homepage upload-homepage-real
+
+upload-homepage-real :
 	cd `readlink -f $(top_srcdir)/doc/www` && tar jc ./ --exclude ./ | \
 		ssh svn.pioto.org tar vjx -C /srv/paludis.pioto.org/www/htdocs/
 
