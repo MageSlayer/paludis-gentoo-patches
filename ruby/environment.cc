@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -309,13 +309,24 @@ namespace
     {
         try
         {
-            std::string write_cache;
+            std::string write_cache, master_repository_dir;
             if (1 == argc)
+            {
                 write_cache = "/var/empty/";
+                master_repository_dir = "/var/empty/";
+            }
             else if (2 == argc)
+            {
                 write_cache = StringValuePtr(argv[1]);
+                master_repository_dir = "/var/empty/";
+            }
+            else if (3 == argc)
+            {
+                write_cache = StringValuePtr(argv[1]);
+                master_repository_dir = StringValuePtr(argv[2]);
+            }
             else
-                rb_raise(rb_eArgError, "NoConfigEnvironment.new expects one or two arguments, but got %d", argc);
+                rb_raise(rb_eArgError, "NoConfigEnvironment.new expects one to three arguments, but got %d", argc);
 
             std::string path;
             if (rb_obj_is_kind_of(argv[0], rb_cDir))
@@ -330,7 +341,8 @@ namespace
                         .repository_dir(FSEntry(path))
                         .write_cache(write_cache)
                         .accept_unstable(false)
-                        .repository_type(ncer_auto)));
+                        .repository_type(ncer_auto)
+                        .master_repository_dir(FSEntry(master_repository_dir))));
             EnvironmentData * ptr(new EnvironmentData(e, e));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<EnvironmentData>::free, ptr));
             rb_obj_call_init(tdata, argc, argv);

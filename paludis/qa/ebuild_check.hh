@@ -32,6 +32,7 @@ namespace paludis
 
     namespace qa
     {
+        class QAEnvironment;
 
 #include <paludis/qa/ebuild_check-sr.hh>
 

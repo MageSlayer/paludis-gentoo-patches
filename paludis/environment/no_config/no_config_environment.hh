@@ -80,6 +80,9 @@ namespace paludis
 
             std::tr1::shared_ptr<PortageRepository> portage_repository();
             std::tr1::shared_ptr<const PortageRepository> portage_repository() const;
+
+            std::tr1::shared_ptr<PortageRepository> master_repository();
+            std::tr1::shared_ptr<const PortageRepository> master_repository() const;
     };
 }
 

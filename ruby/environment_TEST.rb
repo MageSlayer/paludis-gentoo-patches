@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -73,7 +73,7 @@ module Paludis
             end
 
             assert_raise ArgumentError do
-                e = NoConfigEnvironment.new(1,2,3)
+                e = NoConfigEnvironment.new(1,2,3,4)
             end
         end
     end

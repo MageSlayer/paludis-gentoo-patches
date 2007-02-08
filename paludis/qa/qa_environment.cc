@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  * Copyright (c) 2006 David Morgan <david.morgan@wadham.oxford.ac.uk>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -43,7 +43,19 @@ QAEnvironment::QAEnvironment(const FSEntry & base, const FSEntry & write_cache) 
             .repository_dir(base)
             .write_cache(write_cache)
             .accept_unstable(false)
-            .repository_type(ncer_portage))
+            .repository_type(ncer_portage)
+            .master_repository_dir(FSEntry("/var/empty")))
+{
+}
+
+QAEnvironment::QAEnvironment(const FSEntry & base, const FSEntry & write_cache,
+        const FSEntry & master_repository_dir) :
+    NoConfigEnvironment(NoConfigEnvironmentParams::create()
+            .repository_dir(base)
+            .write_cache(write_cache)
+            .accept_unstable(false)
+            .repository_type(ncer_portage)
+            .master_repository_dir(master_repository_dir))
 {
 }
 

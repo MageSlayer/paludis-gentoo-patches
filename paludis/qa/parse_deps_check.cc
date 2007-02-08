@@ -21,6 +21,8 @@
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/qa/parse_deps_check.hh>
+#include <paludis/qa/qa_environment.hh>
+#include <paludis/repositories/portage/portage_repository.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -38,7 +40,7 @@ ParseDepsCheck::operator() (const EbuildCheckData & e) const
     try
     {
         PackageDatabaseEntry ee(e.name, e.version,
-                e.environment->package_database()->favourite_repository());
+                e.environment->portage_repository()->name());
         std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 

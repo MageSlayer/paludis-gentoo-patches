@@ -23,6 +23,8 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/qa/dep_flags_check.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/qa/qa_environment.hh>
+#include <paludis/repositories/portage/portage_repository.hh>
 #include <set>
 
 using namespace paludis;
@@ -129,7 +131,7 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
     try
     {
         PackageDatabaseEntry ee(e.name, e.version,
-                e.environment->package_database()->favourite_repository());
+                e.environment->portage_repository()->name());
         std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 

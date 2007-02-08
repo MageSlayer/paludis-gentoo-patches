@@ -71,8 +71,7 @@ namespace
                 ptr = new EbuildCheckData(
                     value_to_qualified_package_name(argv[0]),
                     value_to_version_spec(argv[1]),
-                    value_to_environment_data(argv[2])->env_ptr
-                );
+                    value_to_qa_environment(argv[2]));
             }
             else
             {

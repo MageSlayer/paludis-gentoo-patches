@@ -23,6 +23,8 @@
 #include <paludis/environment.hh>
 #include <paludis/qa/license_check.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/qa/qa_environment.hh>
+#include <paludis/repositories/portage/portage_repository.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -40,9 +42,9 @@ namespace
         using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepAtom>::visit;
 
         CheckResult & result;
-        const Environment * const env;
+        const QAEnvironment * const env;
 
-        Checker(CheckResult & rr, const Environment * const e) :
+        Checker(CheckResult & rr, const QAEnvironment * const e) :
             result(rr),
             env(e)
         {
@@ -51,7 +53,7 @@ namespace
         void visit(const PlainTextDepAtom * const a)
         {
             if (! env->package_database()->fetch_repository(
-                        env->package_database()->favourite_repository())->is_license(a->text()))
+                        env->portage_repository()->name())->is_license(a->text()))
                 result << Message(qal_major, "Item '" + a->text() + "' is not a licence");
         }
 
@@ -87,7 +89,7 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
         do
         {
             PackageDatabaseEntry ee(e.name, e.version,
-                    e.environment->package_database()->favourite_repository());
+                    e.environment->portage_repository()->name());
             std::tr1::shared_ptr<const VersionMetadata> metadata(
                     e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 

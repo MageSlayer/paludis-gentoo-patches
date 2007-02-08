@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,7 +53,9 @@ QualudisCommandLine::QualudisCommandLine() :
     configuration_options(this, "Configuration options",
             "Options that control general configuration."),
     a_write_cache_dir(&configuration_options, "write-cache-dir", '\0',
-            "Use a subdirectory named for the repository name under the specified directory for repository write cache")
+            "Use a subdirectory named for the repository name under the specified directory for repository write cache"),
+    a_master_repository_dir(&configuration_options, "master-repository-dir", '\0',
+            "Use the specified location for the master repository")
 {
     add_usage_line("[ options ] [ directories ... ]");
     add_environment_variable("QUALUDIS_OPTIONS", "Default command-line options.");

@@ -37,7 +37,7 @@ module Paludis
                 end
 
                 assert_raise ArgumentError do
-                    env = QAEnvironment.new("1","2","3")
+                    env = QAEnvironment.new("1","2","3","4")
                 end
             end
 

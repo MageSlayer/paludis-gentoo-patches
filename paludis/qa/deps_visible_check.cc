@@ -189,9 +189,12 @@ DepsVisibleCheck::operator() (const PerProfileEbuildCheckData & e) const
     {
         e.environment->portage_repository()->set_profile(
                 e.environment->portage_repository()->find_profile(e.profile));
+        if (e.environment->master_repository())
+            e.environment->master_repository()->set_profile(
+                    e.environment->master_repository()->find_profile(e.profile));
 
         PackageDatabaseEntry ee(e.name, e.version,
-                e.environment->package_database()->favourite_repository());
+                e.environment->portage_repository()->name());
         std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 

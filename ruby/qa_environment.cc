@@ -48,22 +48,30 @@ namespace
     VALUE
     qa_environment_new(int argc, VALUE* argv, VALUE self)
     {
-        std::string write_cache;
+        std::string write_cache, master_repository_dir;
         try
         {
             if (1 == argc)
             {
                 write_cache = "/var/empty";
+                master_repository_dir = "/var/empty";
             }
             else if (2 == argc)
             {
                 write_cache = StringValuePtr(argv[1]);
+                master_repository_dir = "/var/empty";
+            }
+            else if (3 == argc)
+            {
+                write_cache = StringValuePtr(argv[1]);
+                master_repository_dir = StringValuePtr(argv[2]);
             }
             else
             {
-                rb_raise(rb_eArgError, "QAEnvironment expects one or two arguments, but got %d",argc);
+                rb_raise(rb_eArgError, "QAEnvironment expects one to three arguments, but got %d",argc);
             }
-            QAEnvironment * e = new QAEnvironment(FSEntry(StringValuePtr(argv[0])), FSEntry(write_cache));
+            QAEnvironment * e = new QAEnvironment(FSEntry(StringValuePtr(argv[0])), FSEntry(write_cache),
+                    FSEntry(master_repository_dir));
             EnvironmentData * ptr(new EnvironmentData(e,e));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<EnvironmentData>::free, ptr));
             rb_obj_call_init(tdata, argc, argv);

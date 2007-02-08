@@ -88,6 +88,7 @@ class QualudisCommandLine :
         paludis::args::ArgsGroup configuration_options;
 
         paludis::args::StringArg a_write_cache_dir;
+        paludis::args::StringArg a_master_repository_dir;
 
         ///\}
 };

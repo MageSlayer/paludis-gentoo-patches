@@ -150,7 +150,8 @@ main(int argc, char *argv[])
                 .accept_unstable(CommandLine::get_instance()->a_unstable.specified())
                 .repository_type(
                     (CommandLine::get_instance()->a_reverse_deps.specified()) ? ncer_auto : ncer_portage
-                    ));
+                    )
+                .master_repository_dir(FSEntry("/var/empty")));
 
         if (CommandLine::get_instance()->a_find_stable_candidates.specified())
         {

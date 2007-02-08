@@ -42,6 +42,7 @@ namespace paludis
         bool is_vdb;
 
         std::tr1::shared_ptr<PortageRepository> portage_repo;
+        std::tr1::shared_ptr<PortageRepository> master_repo;
 
         Implementation(Environment * const env, const NoConfigEnvironmentParams & params);
     };
@@ -116,6 +117,22 @@ Implementation<NoConfigEnvironment>::Implementation(
 
     if (! is_vdb)
     {
+        if (FSEntry("/var/empty") != params.master_repository_dir)
+        {
+            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+                    new AssociativeCollection<std::string, std::string>::Concrete);
+
+            keys->insert("format", "ebuild");
+            keys->insert("location", stringify(params.master_repository_dir));
+            keys->insert("profiles", "/var/empty");
+            keys->insert("write_cache", stringify(params.write_cache));
+            keys->insert("names_cache", "/var/empty");
+
+            env->package_database()->add_repository(((master_repo =
+                            std::tr1::static_pointer_cast<PortageRepository>(
+                                RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys)))));
+        }
+
         std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
 
@@ -124,6 +141,8 @@ Implementation<NoConfigEnvironment>::Implementation(
         keys->insert("profiles", "/var/empty");
         keys->insert("write_cache", stringify(params.write_cache));
         keys->insert("names_cache", "/var/empty");
+        if (FSEntry("/var/empty") != params.master_repository_dir)
+            keys->insert("master_repository", stringify(master_repo->name()));
 
         env->package_database()->add_repository(((portage_repo =
                         std::tr1::static_pointer_cast<PortageRepository>(
@@ -157,6 +176,10 @@ NoConfigEnvironment::NoConfigEnvironment(const NoConfigEnvironmentParams & param
     if (_imp->portage_repo)
         if (_imp->portage_repo->end_profiles() != _imp->portage_repo->begin_profiles())
             _imp->portage_repo->set_profile(_imp->portage_repo->begin_profiles());
+
+    if (_imp->master_repo)
+        if (_imp->master_repo->end_profiles() != _imp->master_repo->begin_profiles())
+            _imp->master_repo->set_profile(_imp->master_repo->begin_profiles());
 }
 
 NoConfigEnvironment::~NoConfigEnvironment()
@@ -248,4 +271,17 @@ NoConfigEnvironment::portage_repository() const
 {
     return _imp->portage_repo;
 }
+
+std::tr1::shared_ptr<PortageRepository>
+NoConfigEnvironment::master_repository()
+{
+    return _imp->master_repo;
+}
+
+std::tr1::shared_ptr<const PortageRepository>
+NoConfigEnvironment::master_repository() const
+{
+    return _imp->master_repo;
+}
+
 

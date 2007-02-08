@@ -5,6 +5,6 @@ make_class_EbuildCheckData()
 {
     key name QualifiedPackageName
     key version VersionSpec
-    key environment "const Environment *"
+    key environment "const QAEnvironment *"
 }
 
