@@ -42,8 +42,10 @@ namespace
      * call-seq:
      *     QAEnvironment.new(dir) -> QAEnvironment
      *     QAEnvironment.new(dir, write_cache_dir) -> QAEnvironment
+     *     QAEnvironment.new(dir, write_cache_dir, master_repository_dir) -> QAEnvironment
      *
-     * Creates a new QAEnvironment
+     * Creates a new QAEnvironment from the specified directory. A write cache and master repository
+     * may also be specified.
      */
     VALUE
     qa_environment_new(int argc, VALUE* argv, VALUE self)
@@ -88,7 +90,7 @@ namespace
         /*
          * Document-class: Paludis::QA::QAEnvironment
          *
-         * The QAEnvironment is an environment fo running QA checks in .
+         * The QAEnvironment is an environment fo running QA checks in.
          */
         c_qa_environment = rb_define_class_under(paludis_qa_module(), "QAEnvironment",
                 no_config_environment_class());

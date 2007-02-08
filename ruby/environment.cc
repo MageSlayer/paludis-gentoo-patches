@@ -301,8 +301,10 @@ namespace
      * call-seq:
      *     NoConfigEnvironment.new(environment_dir) -> NoConfigEnvironment
      *     NoConfigEnvironment.new(environment_dir, write_cache_dir) -> NoConfigEnvironment
+     *     NoConfigEnvironment.new(environment_dir, write_cache_dir, master_repository_dir) -> NoConfigEnvironment
      *
-     * Create a new NoConfigEnvironment from the specified directory. A write_cache may also be specified.
+     * Create a new NoConfigEnvironment from the specified directory. A write cache and master repository 
+     * may also be specified.
      */
     VALUE
     no_config_environment_new(int argc, VALUE* argv, VALUE self)
