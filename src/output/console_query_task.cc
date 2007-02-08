@@ -304,7 +304,7 @@ namespace
         }
     };
 
-    bool is_empty(std::tr1::shared_ptr<const DepAtom> d)
+    bool is_atom_empty(std::tr1::shared_ptr<const DepAtom> d)
     {
         IsEmpty e;
         d->accept(&e);
@@ -316,7 +316,7 @@ void
 ConsoleQueryTask::display_metadata_dep(const std::string & k, const std::string & kk,
         std::tr1::shared_ptr<const DepAtom> d, const bool one_line) const
 {
-    if (is_empty(d))
+    if (is_atom_empty(d))
         return;
 
     output_left_column((want_raw() ? kk : k) + ":");

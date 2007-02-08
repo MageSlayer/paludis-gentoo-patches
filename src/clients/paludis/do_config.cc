@@ -41,6 +41,10 @@ namespace
             matches(m)
         {
         }
+
+        ~AmbiguousConfigTarget() throw ()
+        {
+        }
     };
 
     int
