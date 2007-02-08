@@ -142,7 +142,7 @@ namespace
             mode_t mode(src_dir.permissions());
 
 #ifdef HAVE_SELINUX
-            CountedPtr<FSCreateCon, count_policy::ExternalCountTag> createcon(0);
+            std::tr1::shared_ptr<FSCreateCon> createcon;
             if (MatchPathCon::get_instance()->good())
             {
                 FSCreateCon *p = new FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()),
