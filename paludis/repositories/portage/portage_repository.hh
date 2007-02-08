@@ -166,6 +166,8 @@ namespace paludis
             typedef libwrapiter::ForwardIterator<PortageRepository, std::pair<
                 const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > > OurVirtualsIterator;
 
+            const PortageRepositoryParams & params() const;
+
             ///\}
 
             ///\name Profile setting and querying functions

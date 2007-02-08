@@ -138,7 +138,8 @@ EbuildEntries::generate_version_metadata(const QualifiedPackageName & q,
                 .files_dir(_imp->params.location / stringify(q.category) /
                             stringify(q.package) / "files")
                 .eclassdirs(_imp->params.eclassdirs)
-                .portdir(_imp->params.location)
+                .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
+                    _imp->params.location)
                 .distdir(_imp->params.distdir)
                 .buildroot(_imp->params.buildroot));
 
@@ -441,7 +442,8 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .files_dir(_imp->params.location / stringify(q.category) /
                         stringify(q.package) / "files")
             .eclassdirs(_imp->params.eclassdirs)
-            .portdir(_imp->params.location)
+            .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
+                _imp->params.location)
             .distdir(_imp->params.distdir)
             .buildroot(_imp->params.buildroot),
 
@@ -470,7 +472,8 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .files_dir(_imp->params.location / stringify(q.category) /
                         stringify(q.package) / "files")
             .eclassdirs(_imp->params.eclassdirs)
-            .portdir(_imp->params.location)
+            .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
+                _imp->params.location)
             .distdir(_imp->params.distdir)
             .buildroot(_imp->params.buildroot),
 
@@ -504,7 +507,8 @@ EbuildEntries::get_environment_variable(const QualifiedPackageName & q,
             .files_dir(_imp->params.location / stringify(q.category) /
                         stringify(q.package) / "files")
             .eclassdirs(_imp->params.eclassdirs)
-            .portdir(_imp->params.location)
+            .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
+                _imp->params.location)
             .distdir(_imp->params.distdir)
             .buildroot(_imp->params.buildroot),
 

@@ -163,6 +163,8 @@ namespace paludis
         /// Our profile handler.
         mutable std::tr1::shared_ptr<PortageRepositoryProfile> profile_ptr;
 
+        std::list<FSEntry> profiles_dir_locations;
+
         /// Our news handler.
         mutable std::tr1::shared_ptr<PortageRepositoryNews> news_ptr;
 
@@ -184,7 +186,7 @@ namespace paludis
 
         std::tr1::shared_ptr<RepositoryNameCache> names_cache;
 
-        mutable std::tr1::shared_ptr<UseDesc> use_desc;
+        mutable std::list<std::tr1::shared_ptr<UseDesc> > use_desc;
 
         PortageRepository * const repo;
     };
@@ -205,6 +207,11 @@ namespace paludis
         names_cache(new RepositoryNameCache(p.names_cache, r)),
         repo(r)
     {
+        if (params.master_repository)
+            profiles_dir_locations.push_back(params.master_repository->params().location / "profiles");
+
+        if ((params.location / "profiles").exists())
+            profiles_dir_locations.push_back(params.location / "profiles");
     }
 
     Implementation<PortageRepository>::~Implementation()
@@ -229,24 +236,37 @@ namespace paludis
 
         Context context("When loading profiles.desc:");
 
-        LineConfigFile p(params.location / "profiles" / "profiles.desc");
-        for (LineConfigFile::Iterator line(p.begin()), line_end(p.end()) ; line != line_end ; ++line)
+        bool found_one(false);
+        for (std::list<FSEntry>::const_iterator p(profiles_dir_locations.begin()),
+                p_end(profiles_dir_locations.end()) ; p != p_end ; ++p)
         {
-            std::vector<std::string> tokens;
-            WhitespaceTokeniser::get_instance()->tokenise(*line,
-                    std::back_inserter(tokens));
-            if (tokens.size() < 3)
+            if (! (*p / "profiles.desc").exists())
                 continue;
 
-            FSEntryCollection::Concrete profiles;
-            profiles.push_back(params.location / "profiles" / tokens.at(1));
-            profiles_desc.push_back(PortageRepositoryProfilesDescLine::create()
-                    .arch(tokens.at(0))
-                    .path(*profiles.begin())
-                    .status(tokens.at(2))
-                    .profile(std::tr1::shared_ptr<PortageRepositoryProfile>(new PortageRepositoryProfile(
-                                params.environment, repo->name(), profiles))));
+            found_one = true;
+
+            LineConfigFile f(*p / "profiles.desc");
+            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ; line != line_end ; ++line)
+            {
+                std::vector<std::string> tokens;
+                WhitespaceTokeniser::get_instance()->tokenise(*line,
+                        std::back_inserter(tokens));
+                if (tokens.size() < 3)
+                    continue;
+
+                FSEntryCollection::Concrete profiles;
+                profiles.push_back(*p / tokens.at(1));
+                profiles_desc.push_back(PortageRepositoryProfilesDescLine::create()
+                        .arch(tokens.at(0))
+                        .path(*profiles.begin())
+                        .status(tokens.at(2))
+                        .profile(std::tr1::shared_ptr<PortageRepositoryProfile>(new PortageRepositoryProfile(
+                                    params.environment, repo->name(), profiles))));
+            }
         }
+
+        if (! found_one)
+            throw PortageRepositoryConfigurationError("No profiles.desc found");
 
         has_profiles_desc = true;
     }
@@ -296,6 +316,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
     config_info->add_kv("sync", _imp->params.sync);
     config_info->add_kv("sync_options", _imp->params.sync_options);
+    if (_imp->params.master_repository)
+        config_info->add_kv("master_repository", stringify(_imp->params.master_repository->name()));
 
     _info->add_section(config_info);
 }
@@ -478,7 +500,35 @@ PortageRepository::need_category_names() const
 
     Log::get_instance()->message(ll_debug, lc_context, "need_category_names");
 
-    if (! (_imp->params.location / "profiles" / "categories").exists())
+    bool found_one(false);
+
+    for (std::list<FSEntry>::const_iterator p(_imp->profiles_dir_locations.begin()),
+            p_end(_imp->profiles_dir_locations.end()) ; p != p_end ; ++p)
+    {
+        if (! (*p / "categories").exists())
+            continue;
+
+        LineConfigFile cats(*p / "categories");
+
+        for (LineConfigFile::Iterator line(cats.begin()), line_end(cats.end()) ;
+                line != line_end ; ++line)
+        {
+            try
+            {
+                _imp->category_names.insert(std::make_pair(CategoryNamePart(*line), false));
+            }
+            catch (const NameError & e)
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Skipping line '"
+                        + *line + "' in '" + stringify(*p / "categories") + "' due to exception '"
+                        + stringify(e.message()) + "' ('" + e.what() + ")");
+            }
+        }
+
+        found_one = true;
+    }
+
+    if (! found_one)
     {
         Log::get_instance()->message(ll_qa, lc_context, "No categories file for repository at '"
                 + stringify(_imp->params.location) + "', faking it");
@@ -500,14 +550,6 @@ PortageRepository::need_category_names() const
             {
             }
         }
-    }
-    else
-    {
-        LineConfigFile cats(_imp->params.location / "profiles" / "categories");
-
-        for (LineConfigFile::Iterator line(cats.begin()), line_end(cats.end()) ;
-                line != line_end ; ++line)
-            _imp->category_names.insert(std::make_pair(CategoryNamePart(*line), false));
     }
 
     _imp->has_category_names = true;
@@ -613,15 +655,19 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
         Context context("When querying repository mask for '" + stringify(q) + "-"
                 + stringify(v) + "':");
 
-        FSEntry fff(_imp->params.location / "profiles" / "package.mask");
-        if (fff.exists())
+        for (std::list<FSEntry>::const_iterator p(_imp->profiles_dir_locations.begin()),
+                p_end(_imp->profiles_dir_locations.end()) ; p != p_end ; ++p)
         {
-            LineConfigFile ff(fff);
-            for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
-                    line != line_end ; ++line)
+            FSEntry fff(*p / "package.mask");
+            if (fff.exists())
             {
-                std::tr1::shared_ptr<const PackageDepAtom> a(new PackageDepAtom(*line));
-                _imp->repo_mask[a->package()].push_back(a);
+                LineConfigFile ff(fff);
+                for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
+                        line != line_end ; ++line)
+                {
+                    std::tr1::shared_ptr<const PackageDepAtom> a(new PackageDepAtom(*line));
+                    _imp->repo_mask[a->package()].push_back(a);
+                }
             }
         }
 
@@ -678,16 +724,23 @@ PortageRepository::do_arch_flags() const
         Context context("When loading arch list:");
         _imp->arch_flags.reset(new UseFlagNameCollection::Concrete);
 
-        FSEntry a(_imp->params.location / "profiles" / "arch.list");
-        if (a.exists())
+        bool found_one(false);
+        for (std::list<FSEntry>::const_iterator p(_imp->profiles_dir_locations.begin()),
+                p_end(_imp->profiles_dir_locations.end()) ; p != p_end ; ++p)
         {
+            FSEntry a(*p / "arch.list");
+            if (! a.exists())
+                continue;
+
             LineConfigFile archs(a);
             std::copy(archs.begin(), archs.end(), create_inserter<UseFlagName>(_imp->arch_flags->inserter()));
+            found_one = true;
         }
-        else
+
+        if (! found_one)
         {
-            Log::get_instance()->message(ll_qa, lc_no_context, "Couldn't open arch.list file in '"
-                    + stringify(a) + "', arch flags may incorrectly show up as unmasked");
+            Log::get_instance()->message(ll_qa, lc_no_context, "Couldn't find arch.list file for repository '"
+                    + stringify(name()) + "', arch flags may incorrectly show up as unmasked");
         }
     }
 
@@ -712,27 +765,35 @@ PortageRepository::need_mirrors() const
 {
     if (! _imp->has_mirrors)
     {
-        if ((_imp->params.location / "profiles" / "thirdpartymirrors").exists())
+        bool found_one(false);
+        for (std::list<FSEntry>::const_iterator p(_imp->profiles_dir_locations.begin()),
+                p_end(_imp->profiles_dir_locations.end()) ; p != p_end ; ++p)
         {
-            LineConfigFile mirrors(_imp->params.location / "profiles" / "thirdpartymirrors");
-            for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
+            if ((*p / "thirdpartymirrors").exists())
             {
-                std::vector<std::string> entries;
-                WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(entries));
-                if (! entries.empty())
+                LineConfigFile mirrors(*p / "thirdpartymirrors");
+                for (LineConfigFile::Iterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
                 {
-                    /* pick up to five random mirrors only */
-                    static Random r;
-                    std::random_shuffle(next(entries.begin()), entries.end(), r);
-                    if (entries.size() > 6)
-                        entries.resize(6);
-                    for (std::vector<std::string>::const_iterator e(next(entries.begin())),
-                            e_end(entries.end()) ; e != e_end ; ++e)
-                        _imp->mirrors.insert(std::make_pair(entries.at(0), *e));
+                    std::vector<std::string> entries;
+                    WhitespaceTokeniser::get_instance()->tokenise(*line, std::back_inserter(entries));
+                    if (! entries.empty())
+                    {
+                        /* pick up to five random mirrors only */
+                        static Random r;
+                        std::random_shuffle(next(entries.begin()), entries.end(), r);
+                        if (entries.size() > 6)
+                            entries.resize(6);
+                        for (std::vector<std::string>::const_iterator e(next(entries.begin())),
+                                e_end(entries.end()) ; e != e_end ; ++e)
+                            _imp->mirrors.insert(std::make_pair(entries.at(0), *e));
+                    }
                 }
             }
+
+            found_one = true;
         }
-        else
+
+        if (! found_one)
             Log::get_instance()->message(ll_warning, lc_no_context,
                     "No thirdpartymirrors file found in '"
                     + stringify(_imp->params.location / "profiles") + "', so mirror:// SRC_URI "
@@ -852,10 +913,14 @@ PortageRepository::info(bool verbose) const
         result->add_section(*s);
 
     std::set<std::string> info_pkgs;
-    if ((_imp->params.location / "profiles" / "info_pkgs").exists())
+    for (std::list<FSEntry>::const_iterator p(_imp->profiles_dir_locations.begin()),
+            p_end(_imp->profiles_dir_locations.end()) ; p != p_end ; ++p)
     {
-        LineConfigFile vars(_imp->params.location / "profiles" / "info_pkgs");
-        info_pkgs.insert(vars.begin(), vars.end());
+        if ((*p / "info_pkgs").exists())
+        {
+            LineConfigFile vars(*p / "info_pkgs");
+            info_pkgs.insert(vars.begin(), vars.end());
+        }
     }
 
     if (! info_pkgs.empty())
@@ -887,10 +952,14 @@ PortageRepository::info(bool verbose) const
     }
 
     std::set<std::string> info_vars;
-    if ((_imp->params.location / "profiles" / "info_vars").exists())
+    for (std::list<FSEntry>::const_iterator p(_imp->profiles_dir_locations.begin()),
+            p_end(_imp->profiles_dir_locations.end()) ; p != p_end ; ++p)
     {
-        LineConfigFile vars(_imp->params.location / "profiles" / "info_vars");
-        info_vars.insert(vars.begin(), vars.end());
+        if ((*p / "info_vars").exists())
+        {
+            LineConfigFile vars(*p / "info_vars");
+            info_vars.insert(vars.begin(), vars.end());
+        }
     }
 
     if (! info_vars.empty() && ! info_pkgs.empty() &&
@@ -1152,9 +1221,25 @@ std::string
 PortageRepository::do_describe_use_flag(const UseFlagName & f,
         const PackageDatabaseEntry * const e) const
 {
-    if (! _imp->use_desc)
-        _imp->use_desc.reset(new UseDesc(_imp->params.location / "profiles"));
+    if (_imp->use_desc.empty())
+        for (std::list<FSEntry>::const_iterator p(_imp->profiles_dir_locations.begin()),
+                p_end(_imp->profiles_dir_locations.end()) ; p != p_end ; ++p)
+            _imp->use_desc.push_back(std::tr1::shared_ptr<UseDesc>(new UseDesc(*p)));
 
-    return _imp->use_desc->describe(f, e);
+    std::string result;
+    for (std::list<std::tr1::shared_ptr<UseDesc> >::const_iterator i(_imp->use_desc.begin()),
+            i_end(_imp->use_desc.end()) ; i != i_end ; ++i)
+    {
+        std::string new_result((*i)->describe(f, e));
+        if (! new_result.empty())
+            result = new_result;
+    }
+    return result;
+}
+
+const PortageRepositoryParams &
+PortageRepository::params() const
+{
+    return _imp->params;
 }
 

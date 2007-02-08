@@ -326,6 +326,7 @@ DefaultConfig::DefaultConfig() :
                     filter_inserter(std::back_inserter(repo_files), IsFileWithExtension(".conf")));
         }
 
+        std::list<std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > > later_keys;
         for (std::list<FSEntry>::const_iterator repo_file(repo_files.begin()), repo_file_end(repo_files.end()) ;
                 repo_file != repo_file_end ; ++repo_file)
         {
@@ -337,12 +338,15 @@ DefaultConfig::DefaultConfig() :
             if (format.empty())
                 throw DefaultConfigError("Key 'format' not specified or empty");
 
-            int importance(0);
+            int importance(k.get("master_repository").empty() ? 0 : 10);
             if (! k.get("importance").empty())
                 importance = destringify<int>(k.get("importance"));
 
             std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
                     new AssociativeCollection<std::string, std::string>::Concrete(k.begin(), k.end()));
+
+            keys->erase("importance");
+            keys->insert("importance", stringify(importance));
 
             keys->erase("repo_file");
             keys->insert("repo_file", stringify(*repo_file));
@@ -350,8 +354,16 @@ DefaultConfig::DefaultConfig() :
             keys->erase("root");
             keys->insert("root", root_prefix);
 
-            _imp->repos.push_back(RepositoryConfigEntry(format, importance, keys));
+            if (! k.get("master_repository").empty())
+                later_keys.push_back(keys);
+            else
+                _imp->repos.push_back(RepositoryConfigEntry(format, importance, keys));
         }
+
+        for (std::list<std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > >::const_iterator
+                k(later_keys.begin()), k_end(later_keys.end()) ; k != k_end ; ++k)
+            _imp->repos.push_back(RepositoryConfigEntry((*k)->find("format")->second,
+                        destringify<int>((*k)->find("importance")->second), *k));
 
         if (_imp->repos.empty())
             throw DefaultConfigError("No repositories specified");
@@ -369,6 +381,9 @@ DefaultConfig::DefaultConfig() :
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "keywords.conf");
+        if ((local_config_dir / "keywords.conf.d").exists())
+            std::copy(DirIterator(local_config_dir / "keywords.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -415,6 +430,9 @@ DefaultConfig::DefaultConfig() :
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "licenses.conf");
+        if ((local_config_dir / "licenses.conf.d").exists())
+            std::copy(DirIterator(local_config_dir / "licenses.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -454,6 +472,9 @@ DefaultConfig::DefaultConfig() :
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "package_mask.conf");
+        if ((local_config_dir / "package_mask.conf.d").exists())
+            std::copy(DirIterator(local_config_dir / "package_mask.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -486,6 +507,9 @@ DefaultConfig::DefaultConfig() :
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "package_unmask.conf");
+        if ((local_config_dir / "package_unmask.conf.d").exists())
+            std::copy(DirIterator(local_config_dir / "package_unmask.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -518,6 +542,9 @@ DefaultConfig::DefaultConfig() :
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "use.conf");
+        if ((local_config_dir / "use.conf.d").exists())
+            std::copy(DirIterator(local_config_dir / "use.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)
@@ -632,6 +659,9 @@ DefaultConfig::DefaultConfig() :
     {
         std::list<FSEntry> files;
         files.push_back(local_config_dir / "mirrors.conf");
+        if ((local_config_dir / "mirrors.conf.d").exists())
+            std::copy(DirIterator(local_config_dir / "mirrors.conf.d"), DirIterator(),
+                    filter_inserter(std::back_inserter(files), IsFileWithExtension(".conf")));
 
         for (std::list<FSEntry>::const_iterator file(files.begin()), file_end(files.end()) ;
                 file != file_end ; ++file)

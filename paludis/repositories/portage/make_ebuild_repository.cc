@@ -22,6 +22,7 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/repositories/portage/portage_repository_exceptions.hh>
+#include <paludis/environment.hh>
 
 using namespace paludis;
 
@@ -39,43 +40,67 @@ paludis::make_ebuild_repository(
     if (m->end() == m->find("location") || ((location = m->find("location")->second)).empty())
         throw PortageRepositoryConfigurationError("Key 'location' not specified or empty");
 
+    std::tr1::shared_ptr<const RepositoryName> master_repository_name;
+    std::tr1::shared_ptr<const PortageRepository> master_repository;
+    if (m->end() != m->find("master_repository") && ! m->find("master_repository")->second.empty())
+    {
+        Context context_local("When finding configuration information for master_repository '"
+                + stringify(m->find("master_repository")->second) + "':");
+
+        master_repository_name.reset(new RepositoryName(m->find("master_repository")->second));
+
+        std::tr1::shared_ptr<const Repository> master_repository_uncasted(
+                env->package_database()->fetch_repository(*master_repository_name));
+
+        if (master_repository_uncasted->format() != "ebuild")
+            throw PortageRepositoryConfigurationError("Master repository format is '" +
+                    stringify(master_repository_uncasted->format()) + "', not 'ebuild'");
+
+        master_repository = std::tr1::static_pointer_cast<const PortageRepository>(master_repository_uncasted);
+
+        if (master_repository->params().master_repository)
+            throw PortageRepositoryConfigurationError("Requested master repository has a master_repository of '" +
+                    stringify(master_repository->params().master_repository->name()) + "', so it cannot "
+                    "be used as a master repository");
+    }
+
     std::tr1::shared_ptr<FSEntryCollection> profiles(new FSEntryCollection::Concrete);
     if (m->end() != m->find("profiles"))
         WhitespaceTokeniser::get_instance()->tokenise(m->find("profiles")->second,
                 create_inserter<FSEntry>(std::back_inserter(*profiles)));
-    if (m->end() != m->find("profile") && ! m->find("profile")->second.empty())
-    {
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Key 'profile' in '" + repo_file + "' is deprecated, "
-                "use 'profiles = " + m->find("profile")->second + "' instead");
-        if (profiles->empty())
-            profiles->append(m->find("profile")->second);
-        else
-            throw PortageRepositoryConfigurationError("Both 'profile' and 'profiles' keys are present");
-    }
+
     if (profiles->empty())
-        throw PortageRepositoryConfigurationError("No profiles have been specified");
+    {
+        if (master_repository)
+            std::copy(master_repository->params().profiles->begin(),
+                    master_repository->params().profiles->end(), profiles->inserter());
+        else
+            throw PortageRepositoryConfigurationError("No profiles have been specified");
+    }
 
     std::tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
+
     if (m->end() != m->find("eclassdirs"))
         WhitespaceTokeniser::get_instance()->tokenise(m->find("eclassdirs")->second,
                 create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
-    if (m->end() != m->find("eclassdir") && ! m->find("eclassdir")->second.empty())
-    {
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Key 'eclassdir' in '" + repo_file + "' is deprecated, "
-                "use 'eclassdirs = " + m->find("eclassdir")->second + "' instead");
-        if (eclassdirs->empty())
-            eclassdirs->append(m->find("eclassdir")->second);
-        else
-            throw PortageRepositoryConfigurationError("Both 'eclassdir' and 'eclassdirs' keys are present");
-    }
+
     if (eclassdirs->empty())
+    {
+        if (master_repository)
+            std::copy(master_repository->params().eclassdirs->begin(),
+                    master_repository->params().eclassdirs->end(), eclassdirs->inserter());
+
         eclassdirs->append(location + "/eclass");
+    }
 
     std::string distdir;
     if (m->end() == m->find("distdir") || ((distdir = m->find("distdir")->second)).empty())
-        distdir = location + "/distfiles";
+    {
+        if (master_repository)
+            distdir = stringify(master_repository->params().distdir);
+        else
+            distdir = location + "/distfiles";
+    }
 
     std::string setsdir;
     if (m->end() == m->find("setsdir") || ((setsdir = m->find("setsdir")->second)).empty())
@@ -112,7 +137,7 @@ paludis::make_ebuild_repository(
 
     std::string sync;
     if (m->end() != m->find("sync"))
-            sync = m->find("sync")->second;
+        sync = m->find("sync")->second;
 
     std::string sync_options;
     if (m->end() != m->find("sync_options"))
@@ -152,6 +177,7 @@ paludis::make_ebuild_repository(
                 .sync(sync)
                 .sync_options(sync_options)
                 .root(root)
+                .master_repository(master_repository)
                 .buildroot(buildroot)));
 }
 
