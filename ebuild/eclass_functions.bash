@@ -27,7 +27,7 @@ EXPORT_FUNCTIONS()
     local e
     for e in "$@" ; do
         case "$e" in
-            pkg_setup|pkg_prerm|pkg_postrm|pkg_preinst|pkg_postinst)
+            pkg_nofetch|pkg_setup|pkg_prerm|pkg_postrm|pkg_preinst|pkg_postinst|pkg_config)
                 eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
                 ;;
 
