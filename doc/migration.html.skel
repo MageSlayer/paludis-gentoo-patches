@@ -151,12 +151,9 @@ END
 cat &lt;&lt;"END" &gt; /etc/paludis/repositories/paludis-overlay.conf
 location = /var/paludis/repositories/paludis-overlay/
 sync = svn://svn.pioto.org/paludis/overlay
-profiles = /var/paludis/repositories/gentoo/profiles/default-linux/x86/2006.0
-eclassdirs = /var/paludis/repositories/gentoo/eclass
-distdir = /var/paludis/repositories/gentoo/distfiles
 cache = /var/empty
 format = ebuild
-importance = 10
+master_repository = gentoo
 END
 </pre>
 

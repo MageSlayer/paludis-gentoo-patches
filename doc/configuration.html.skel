@@ -96,6 +96,9 @@ x11-libs/gtk+:2 tiff
 <p>Note that if a package matches multiple lines, <em>all</em> of these lines will
 be considered, not just the best or last match.</p>
 
+<p>If a <code>use.conf.d</code> directory exists, any file named <code>*.conf</code>
+in this directory is treated as if it were appended to the main file.</p>
+
 <h3>The keywords.conf File</h3>
 
 <p>Which <code>ARCH KEYWORDS</code> to accept is controlled by the
@@ -127,6 +130,9 @@ package being masked, as the package is stabilised.</p>
 keywords from a less specific match. The <code>*</code> special keyword can be
 used to accept anything.</p>
 
+<p>If a <code>keywords.conf.d</code> directory exists, any file named <code>*.conf</code>
+in this directory is treated as if it were appended to the main file.</p>
+
 <h3>The package_mask.conf File</h3>
 
 <p>Packages can be masked through the use of the <code>package_mask.conf</code>
@@ -142,6 +148,9 @@ per line. For example:</p>
 app-editors/gvim
 </pre>
 
+<p>If a <code>package_unmask.conf.d</code> directory exists, any file named <code>*.conf</code>
+in this directory is treated as if it were appended to the main file.</p>
+
 <h3>The package_unmask.conf File</h3>
 
 <p>Packages can be unmasked through the use of the
@@ -152,6 +161,9 @@ app-editors/gvim
 # I need banshee 0.11.0
 =media-sound/banshee-0.11.0
 </pre>
+
+<p>If a <code>package_mask.conf.d</code> directory exists, any file named <code>*.conf</code>
+in this directory is treated as if it were appended to the main file.</p>
 
 <h3>The licenses.conf File</h3>
 
@@ -169,6 +181,9 @@ filtering is desired, use:</p>
 app-editors/vim-core vim
 </pre>
 
+<p>If a <code>licenses.conf.d</code> directory exists, any file named <code>*.conf</code>
+in this directory is treated as if it were appended to the main file.</p>
+
 <h3>The mirrors.conf File</h3>
 
 <p>Mirrors and downloading can be controlled via <code>mirrors.conf</code>. Each
@@ -180,6 +195,9 @@ any other location for all files. For example:</p>
 * file:///mnt/nfs/distfiles
 gentoo http://gentoo.blueyonder.co.uk/distfiles
 </pre>
+
+<p>If a <code>mirrors.conf.d</code> directory exists, any file named <code>*.conf</code>
+in this directory is treated as if it were appended to the main file.</p>
 
 <h3>The bashrc File</h3>
 
@@ -214,8 +232,17 @@ configuration files.</p>
 <ul>
     <li><code>location</code> (mandatory), which points to the location of the
     tree.</li>
+
+    <li><code>master_repository</code> (default: not used), which specifies the
+    name of another ebuild format repository that is used as a 'master' for
+    this repository. The master repository's location is used for the <code>PORTDIR</code>
+    variable, its <code>profiles/</code> directory (not to be confused with its
+    profiles) is used in addition to the repository's own and the default values
+    for some of the keys below are affected.</li>
+
     <li><code>profiles</code> (mandatory), which should be a space separated list of
-    directories used for profile data. Later directories have priority.</li>
+    directories used for profile data. Later directories have priority. Inherited from
+    <code>master_repository</code> if unset.</li>
     <li><code>buildroot</code> (default: <code>/var/tmp/paludis</code>), which controls
     the temporary directory used by Paludis for compiling software.</li>
     <li><code>cache</code> (default: <code>${location}/metadata/cache</code>), which
@@ -227,8 +254,10 @@ configuration files.</p>
   <code>${location}/.cache/names</code>. See <a href="cachefiles.html">the cache
       documentation</a>.</li>
   <li><code>distdir</code> (default: <code>${location}/distfiles</code>), which
-  controls where downloaded files are saved.</li>
-  <li><code>eclassdirs</code> (default: <code>${location}/eclass</code>), which
+  controls where downloaded files are saved. Inherited from
+  <code>master_repository</code> if unset.</li>
+  <li><code>eclassdirs</code> (default: any <code>master_repository</code> values,
+  plus <code>${location}/eclass</code>), which
   is a space separated list of locations of eclasses. The value of ECLASSDIR
   is taken from the <em>first</em> entry, but eclasses from later entries are
   favoured.</li>
