@@ -147,7 +147,7 @@ namespace
             {
                 FSCreateCon *p = new FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()),
                             mode));
-                createcon.assign(p);
+                createcon.reset(p);
             }
 #endif
 
@@ -247,9 +247,9 @@ namespace
              * disk write may not have synced. */
             {
 #ifdef HAVE_SELINUX
-                CountedPtr<FSCreateCon, count_policy::ExternalCountTag> createcon(0);
+                std::tr1::shared_ptr<FSCreateCon> createcon;
                 if (MatchPathCon::get_instance()->good())
-                    createcon.assign(new 
+                    createcon.reset(new 
                             FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()) + "/"
                                     + dst.basename(), src.permissions())));
 #endif
@@ -328,9 +328,9 @@ namespace
 #ifdef HAVE_SELINUX
         // permissions() on a symlink does weird things, but matchpathcon only cares about the file type,
         // so just pass S_IFLNK.
-        CountedPtr<FSCreateCon, count_policy::ExternalCountTag> createcon(0);
+        std::tr1::shared_ptr<FSCreateCon> createcon;
         if (MatchPathCon::get_instance()->good())
-            createcon.assign(new 
+            createcon.reset(new
                     FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()) + "/"
                             + dst.basename(), S_IFLNK)));
 #endif
