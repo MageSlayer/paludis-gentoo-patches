@@ -129,7 +129,7 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<SecurityContext> : InternalCounted<Implementation<SecurityContext> >
+    struct Implementation<SecurityContext>
     {
         security_context_t _context;
 
