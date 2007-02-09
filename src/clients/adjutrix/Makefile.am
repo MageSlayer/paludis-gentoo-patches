@@ -43,6 +43,7 @@ adjutrix_SOURCES = \
 	display_profiles_use.hh               display_profiles_use.cc \
 	display_default_system_resolution.hh  display_default_system_resolution.cc \
 	what_needs_keywording.hh              what_needs_keywording.cc \
+	downgrade_check.hh                    downgrade_check.cc \
 	adjutrix.cc
 
 adjutrix_LDADD = \
@@ -75,6 +76,7 @@ EXTRA_DIST = \
 	$(TESTS) \
 	find_stable_candidates-sr.hh find_stable_candidates-sr.cc find_stable_candidates.sr \
 	find_dropped_keywords-sr.hh find_dropped_keywords-sr.cc find_dropped_keywords.sr \
+	downgrade_check-sr.hh downgrade_check-sr.cc downgrade_check.sr \
 	find_stable_candidates_TEST_setup.sh find_stable_candidates_TEST_cleanup.sh
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
@@ -83,7 +85,8 @@ DISTCLEANFILES = $(man_MANS) $(noinst_DATA) \
 MAINTAINERCLEANFILES = Makefile.in
 BUILT_SOURCES = \
 	find_stable_candidates-sr.hh find_stable_candidates-sr.cc \
-	find_dropped_keywords-sr.hh find_dropped_keywords-sr.cc
+	find_dropped_keywords-sr.hh find_dropped_keywords-sr.cc \
+	downgrade_check-sr.hh downgrade_check-sr.cc
 
 find_stable_candidates-sr.hh : find_stable_candidates.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/find_stable_candidates.sr > $@
@@ -96,6 +99,12 @@ find_dropped_keywords-sr.hh : find_dropped_keywords.sr $(top_srcdir)/misc/make_s
 
 find_dropped_keywords-sr.cc : find_dropped_keywords.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/find_dropped_keywords.sr > $@
+
+downgrade_check-sr.hh : downgrade_check.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/downgrade_check.sr > $@
+
+downgrade_check-sr.cc : downgrade_check.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/downgrade_check.sr > $@
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

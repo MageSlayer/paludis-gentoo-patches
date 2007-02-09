@@ -72,6 +72,10 @@ class CommandLine :
         paludis::args::SwitchArg a_display_profiles_use;
         paludis::args::SwitchArg a_display_default_system_resolution;
 
+        paludis::args::ArgsGroup downgrade_check_args;
+        paludis::args::SwitchArg a_build_downgrade_check_list;
+        paludis::args::SwitchArg a_downgrade_check;
+
         paludis::args::ArgsGroup general_action_args;
         paludis::args::SwitchArg a_version;
         paludis::args::SwitchArg a_help;

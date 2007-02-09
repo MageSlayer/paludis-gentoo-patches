@@ -22,6 +22,7 @@
 
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/compare.hh>
+#include <paludis/query.hh>
 
 #include <set>
 #include <map>
@@ -83,7 +84,7 @@ namespace
             void visit(const PackageDepAtom * const a)
             {
                 std::tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
-                        _env.package_database()->query(*a, is_any, qo_order_by_version));
+                        _env.package_database()->query(query::Matches(*a), qo_order_by_version));
                 for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
                     if (a->tag())

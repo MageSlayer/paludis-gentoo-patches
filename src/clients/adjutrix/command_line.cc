@@ -52,6 +52,15 @@ CommandLine::CommandLine() :
             "display-default-system-resolution", 'S', "Display package names and versions that are included in "
             "the default resolution of the system set"),
 
+    downgrade_check_args(this, "Downgrade Check Actions",
+            "Selects which downgrade check related action to perform. Exactly one action should "
+            "be specified."),
+
+    a_build_downgrade_check_list(&downgrade_check_args,
+            "build-downgrade-check-list", '\0', "Build the downgrade check lists"),
+    a_downgrade_check(&downgrade_check_args,
+            "downgrade-check", '\0', "Perform the dowgrade check"),
+
     general_action_args(this, "General Actions",
             "Selects which basic general action to perform. Exactly one action should "
             "be specified."),

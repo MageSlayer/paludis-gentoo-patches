@@ -25,6 +25,7 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/log.hh>
+#include <paludis/query.hh>
 
 #include <set>
 #include <map>
@@ -117,7 +118,8 @@ namespace
     void
     ReverseDepChecker::visit(const PackageDepAtom * const a)
     {
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> dep_entries(_db->query(*a, is_any, qo_order_by_version));
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> dep_entries(_db->query(
+                    query::Matches(*a), qo_order_by_version));
         std::tr1::shared_ptr<PackageDatabaseEntryCollection> matches(new PackageDatabaseEntryCollection::Concrete);
 
         bool header_written = false;
@@ -177,7 +179,7 @@ namespace
         Context context("When checking package '" + stringify(p) + "':");
 
         std::tr1::shared_ptr<PackageDatabaseEntryCollection> p_entries(env.package_database()->query(
-                PackageDepAtom(p), is_any, qo_order_by_version));
+                query::Package(p), qo_order_by_version));
 
         bool found_matches(false);
 
@@ -241,7 +243,8 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 4;
     }
 
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection> entries(env.package_database()->query(*atom, is_any, qo_order_by_version));
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection> entries(env.package_database()->query(
+                query::Matches(*atom), qo_order_by_version));
     int ret(0);
 
     if (entries->empty())

@@ -28,6 +28,7 @@
 #include "display_profiles_use.hh"
 #include "display_default_system_resolution.hh"
 #include "what_needs_keywording.hh"
+#include "downgrade_check.hh"
 
 #include <paludis/about.hh>
 #include <paludis/util/join.hh>
@@ -137,6 +138,8 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_reverse_deps.specified() +
                     CommandLine::get_instance()->a_display_profiles_use.specified() +
                     CommandLine::get_instance()->a_display_default_system_resolution.specified() +
+                    CommandLine::get_instance()->a_build_downgrade_check_list.specified() +
+                    CommandLine::get_instance()->a_downgrade_check.specified() +
                     CommandLine::get_instance()->a_what_needs_keywording.specified()
                     ))
             throw DoHelp("you should specify exactly one action");
@@ -240,6 +243,25 @@ main(int argc, char *argv[])
                         "(the target keyword and the target package)");
 
             return do_what_needs_keywording(env);
+        }
+
+        if (CommandLine::get_instance()->a_build_downgrade_check_list.specified())
+        {
+            if (1 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters()))
+                throw DoHelp("build-downgrade-check-list takes exactly one parameter (the output directory)");
+
+            return do_build_downgrade_check_list(env);
+        }
+
+        if (CommandLine::get_instance()->a_downgrade_check.specified())
+        {
+            if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
+                        CommandLine::get_instance()->end_parameters()))
+                throw DoHelp("build-downgrade-check-list takes exactly two parameters "
+                        "(the before and after directories)");
+
+            return do_downgrade_check(env);
         }
 
         throw InternalError(__PRETTY_FUNCTION__, "no action?");
