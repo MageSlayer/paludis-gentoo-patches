@@ -47,6 +47,7 @@
 namespace paludis
 {
     class PackageDepAtom;
+    class Query;
     class Environment;
 
     /**
@@ -285,11 +286,11 @@ namespace paludis
             /**
              * Query the repository.
              *
-             * \deprecated Use the three argument form.
+             * \deprecated use the Query form
              */
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
                     const PackageDepAtom & a,
-                    const InstallState) const PALUDIS_ATTRIBUTE((deprecated));
+                    const InstallState) const;
 
             /**
              * Query the repository.
@@ -298,6 +299,12 @@ namespace paludis
                     const PackageDepAtom & a,
                     const InstallState,
                     const QueryOrder) const;
+
+            /**
+             * Query the repository.
+             */
+            std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
+                    const Query &, const QueryOrder) const;
 
             /**
              * Return true if the first repository is more important than the second.

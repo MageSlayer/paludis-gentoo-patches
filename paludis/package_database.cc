@@ -24,6 +24,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/compare.hh>
+#include <paludis/query.hh>
 
 #include <list>
 #include <map>
@@ -211,29 +212,90 @@ std::tr1::shared_ptr<PackageDatabaseEntryCollection>
 PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_state,
         const QueryOrder query_order) const
 {
+    switch (installed_state)
+    {
+        case is_installed_only:
+            return query(query::Matches(a) & query::RepositoryHasInstalledInterface(), query_order);
+
+        case is_installable_only:
+            return query(query::Matches(a) & query::RepositoryHasInstallableInterface(), query_order);
+
+        case is_any:
+            return query(query::Matches(a), query_order);
+
+        case last_is:
+            ;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Bad InstallState");
+}
+
+std::tr1::shared_ptr<PackageDatabaseEntryCollection>
+PackageDatabase::query(const Query & q, const QueryOrder query_order) const
+{
     std::tr1::shared_ptr<PackageDatabaseEntryCollection::Concrete> result(new PackageDatabaseEntryCollection::Concrete);
 
-    IndirectIterator<std::list<std::tr1::shared_ptr<Repository> >::const_iterator, const Repository>
-        r(_imp->repositories.begin()),
-        r_end(_imp->repositories.end());
-    for ( ; r != r_end ; ++r)
+    std::tr1::shared_ptr<RepositoryNameCollection> repos(q.repositories(*_imp->environment));
+    if (! repos)
     {
-        if ((installed_state == is_installed_only) && ! r->installed_interface)
-            continue;
+        repos.reset(new RepositoryNameCollection::Concrete);
+        for (RepositoryIterator r(_imp->repositories.begin()), r_end(_imp->repositories.end()) ;
+                r != r_end ; ++r)
+            repos->push_back((*r)->name());
+    }
+    if (repos->empty())
+        return result;
 
-        if ((installed_state == is_installable_only) && ! r->installable_interface)
-            continue;
-
-        std::tr1::shared_ptr<const VersionSpecCollection> versions(r->version_specs(a.package()));
-        VersionSpecCollection::Iterator v(versions->begin()), v_end(versions->end());
-        for ( ; v != v_end ; ++v)
+    std::tr1::shared_ptr<CategoryNamePartCollection> cats(q.categories(*_imp->environment, repos));
+    if (! cats)
+    {
+        cats.reset(new CategoryNamePartCollection::Concrete);
+        for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+                r != r_end ; ++r)
         {
-            PackageDatabaseEntry e(a.package(), *v, r->name());
-            if (! match_package(*_imp->environment, a, e))
-                continue;
-
-            result->push_back(e);
+            std::tr1::shared_ptr<const CategoryNamePartCollection> local_cats(fetch_repository(*r)->category_names());
+            std::copy(local_cats->begin(), local_cats->end(), cats->inserter());
         }
+    }
+    if (cats->empty())
+        return result;
+
+    std::tr1::shared_ptr<QualifiedPackageNameCollection> pkgs(q.packages(*_imp->environment, repos, cats));
+    if (! pkgs)
+    {
+        pkgs.reset(new QualifiedPackageNameCollection::Concrete);
+        for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+                r != r_end ; ++r)
+            for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+                    c != c_end ; ++c)
+            {
+                std::tr1::shared_ptr<const QualifiedPackageNameCollection> local_pkgs(fetch_repository(*r)->package_names(*c));
+                std::copy(local_pkgs->begin(), local_pkgs->end(), pkgs->inserter());
+            }
+    }
+    if (pkgs->empty())
+        return result;
+
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection> pdes(q.versions(*_imp->environment, repos, pkgs));
+    if (! pdes)
+    {
+        for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+                r != r_end ; ++r)
+            for (QualifiedPackageNameCollection::Iterator p(pkgs->begin()), p_end(pkgs->end()) ;
+                    p != p_end ; ++p)
+            {
+                std::tr1::shared_ptr<const VersionSpecCollection> local_vers(fetch_repository(*r)->version_specs(*p));
+                for (VersionSpecCollection::Iterator v(local_vers->begin()), v_end(local_vers->end()) ;
+                        v != v_end ; ++v)
+                    result->push_back(PackageDatabaseEntry(*p, *v, *r));
+            }
+    }
+    else
+    {
+        if (pdes->empty())
+            return result;
+
+        std::copy(pdes->begin(), pdes->end(), result->inserter());
     }
 
     do
@@ -261,7 +323,9 @@ PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_st
     while (false);
 
     return result;
+
 }
+
 
 std::tr1::shared_ptr<const Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n) const
@@ -400,6 +464,9 @@ PackageDatabase::_group_package_database_entry_collection(PackageDatabaseEntryCo
         for (std::list<PackageDatabaseEntry>::reverse_iterator rr(next(r)) ;
                 rr != p.list.rend() ; ++rr)
         {
+            if (r->name != rr->name)
+                break;
+
             SlotName rr_slot(fetch_repository(rr->repository)->version_metadata(rr->name, rr->version)->slot);
             if (rr_slot != r_slot)
                 continue;
@@ -480,3 +547,4 @@ paludis::operator<< (std::ostream & o, const QueryOrder & s)
 
     return o;
 }
+

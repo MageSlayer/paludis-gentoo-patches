@@ -26,6 +26,7 @@
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_pretty_printer.hh>
 #include <paludis/util/save.hh>
+#include <paludis/query.hh>
 
 #include <list>
 
@@ -102,7 +103,7 @@ namespace
             bool found(false);
             std::string candidates;
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> matches(env->package_database()->query(
-                        *p, is_any, qo_order_by_version));
+                        query::Matches(*p), qo_order_by_version));
             for (PackageDatabaseEntryCollection::ReverseIterator m(matches->rbegin()),
                     m_end(matches->rend()) ; m != m_end ; ++m)
             {

@@ -137,15 +137,18 @@ PackageDepAtom::PackageDepAtom(const PackageDepAtom & other) :
     StringDepAtom(stringify(other)),
     Visitable<PackageDepAtom, DepAtomVisitorTypes>(other),
     _package(other._package),
-    _version_requirements(new VersionRequirements::Concrete),
     _version_requirements_mode(other._version_requirements_mode),
     _slot(other._slot),
     _repository(other._repository),
     _use_requirements(other._use_requirements),
     _tag(other._tag)
 {
-    std::copy(other._version_requirements->begin(), other._version_requirements->end(),
-            _version_requirements->inserter());
+    if (other._version_requirements)
+    {
+        _version_requirements.reset(new VersionRequirements::Concrete);
+        std::copy(other._version_requirements->begin(), other._version_requirements->end(),
+                _version_requirements->inserter());
+    }
 }
 
 PackageDepAtom::PackageDepAtom(const std::string & ss) :
