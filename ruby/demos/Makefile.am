@@ -19,7 +19,8 @@ IF_RUBY_DEMOS = \
 	find_unused_distfiles.rb \
 	latest_stable.rb \
 	qualudis.rb \
-	find_unmanaged_files.rb
+	find_unmanaged_files.rb \
+	check_linkage.rb
 
 EXTRA_DIST = $(IF_RUBY_DEMOS)
 
