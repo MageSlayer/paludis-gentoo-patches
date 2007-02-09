@@ -912,15 +912,12 @@ PortageRepository::info(bool verbose) const
             s_end(result_non_verbose->end_sections()) ; s != s_end ; ++s)
         result->add_section(*s);
 
+    // don't inherit from master_repository, just causes clutter
     std::set<std::string> info_pkgs;
-    for (std::list<FSEntry>::const_iterator p(_imp->profiles_dir_locations.begin()),
-            p_end(_imp->profiles_dir_locations.end()) ; p != p_end ; ++p)
+    if ((_imp->params.location / "profiles" / "info_pkgs").exists())
     {
-        if ((*p / "info_pkgs").exists())
-        {
-            LineConfigFile vars(*p / "info_pkgs");
-            info_pkgs.insert(vars.begin(), vars.end());
-        }
+        LineConfigFile vars(_imp->params.location / "profiles" / "info_pkgs");
+        info_pkgs.insert(vars.begin(), vars.end());
     }
 
     if (! info_pkgs.empty())
@@ -951,15 +948,12 @@ PortageRepository::info(bool verbose) const
         result->add_section(package_info);
     }
 
+    // don't inherit from master_repository, just causes clutter
     std::set<std::string> info_vars;
-    for (std::list<FSEntry>::const_iterator p(_imp->profiles_dir_locations.begin()),
-            p_end(_imp->profiles_dir_locations.end()) ; p != p_end ; ++p)
+    if ((_imp->params.location / "profiles" / "info_vars").exists())
     {
-        if ((*p / "info_vars").exists())
-        {
-            LineConfigFile vars(*p / "info_vars");
-            info_vars.insert(vars.begin(), vars.end());
-        }
+        LineConfigFile vars(_imp->params.location / "profiles" / "info_vars");
+        info_vars.insert(vars.begin(), vars.end());
     }
 
     if (! info_vars.empty() && ! info_pkgs.empty() &&
