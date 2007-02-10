@@ -19,6 +19,7 @@
 
 #include "fake_installed_repository.hh"
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_atom_flattener.hh>
 
@@ -102,5 +103,17 @@ FakeInstalledRepository::provided_package_version_metadata(const RepositoryProvi
     result->deps_interface->run_depend_string = stringify(p.provided_by_name);
 
     return result;
+}
+
+FSEntry
+FakeInstalledRepository::root() const
+{
+    return FSEntry("/");
+}
+
+bool
+FakeInstalledRepository::is_default_destination() const
+{
+    return environment()->root() == root();
 }
 

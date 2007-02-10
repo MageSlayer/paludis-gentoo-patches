@@ -43,10 +43,6 @@ paludis::make_gems_repository(Environment * const env,
     if (m->end() != m->find("yaml_uri"))
         yaml_uri = m->find("yaml_uri")->second;
 
-    std::string root;
-    if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
-        root = "/";
-
     std::string buildroot;
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
@@ -56,7 +52,6 @@ paludis::make_gems_repository(Environment * const env,
                 .location(location)
                 .distdir(distdir)
                 .yaml_uri(yaml_uri)
-                .root(root)
                 .buildroot(buildroot)));
 
 }

@@ -164,8 +164,12 @@ namespace paludis
 
             virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
 
+            virtual bool is_default_destination() const;
+
             virtual std::string do_describe_use_flag(const UseFlagName &,
                     const PackageDatabaseEntry * const) const;
+
+            virtual FSEntry root() const;
     };
 
     /**

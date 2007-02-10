@@ -152,10 +152,6 @@ paludis::make_ebuild_repository(
         sync_options += "--exclude-from='" + m->find("sync_exclude")->second + "'";
     }
 
-    std::string root;
-    if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
-        root = "/";
-
     std::string buildroot;
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
@@ -176,7 +172,6 @@ paludis::make_ebuild_repository(
                 .newsdir(newsdir)
                 .sync(sync)
                 .sync_options(sync_options)
-                .root(root)
                 .master_repository(master_repository)
                 .buildroot(buildroot)));
 }

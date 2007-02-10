@@ -308,10 +308,12 @@ struct DepList::QueryVisitor :
 {
     bool result;
     const DepList * const d;
+    std::tr1::shared_ptr<const DestinationsCollection> destinations;
 
-    QueryVisitor(const DepList * const dd) :
+    QueryVisitor(const DepList * const dd, std::tr1::shared_ptr<const DestinationsCollection> ddd) :
         result(true),
-        d(dd)
+        d(dd),
+        destinations(ddd)
     {
     }
 
@@ -453,9 +455,11 @@ struct DepList::AddVisitor :
     DepAtomVisitorTypes::ConstVisitor::VisitChildren<AddVisitor, AllDepAtom>
 {
     DepList * const d;
+    std::tr1::shared_ptr<const DestinationsCollection> destinations;
 
-    AddVisitor(DepList * const dd) :
-        d(dd)
+    AddVisitor(DepList * const dd, std::tr1::shared_ptr<const DestinationsCollection> ddd) :
+        d(dd),
+        destinations(ddd)
     {
     }
 
@@ -644,7 +648,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
             Log::get_instance()->message(ll_warning, lc_context, "No visible packages matching '"
                     + stringify(*a) + "', falling back to installed package '"
                     + stringify(*already_installed->last()) + "'");
-            d->add_already_installed_package(*already_installed->last(), a->tag());
+            d->add_already_installed_package(*already_installed->last(), a->tag(), destinations);
             return;
         }
     }
@@ -676,7 +680,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
             Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
                     + stringify(*already_installed_in_same_slot->last()) + "' over '" +
                     best_visible_candidate_as_string + "'");
-            d->add_already_installed_package(*already_installed_in_same_slot->last(), a->tag());
+            d->add_already_installed_package(*already_installed_in_same_slot->last(), a->tag(), destinations);
             return;
         }
         else
@@ -693,7 +697,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
             Log::get_instance()->message(ll_debug, lc_context, "Taking installed package '"
                     + stringify(*already_installed->last()) + "' over '" + best_visible_candidate_as_string
                     + "' (in different slot)");
-            d->add_already_installed_package(*already_installed->last(), a->tag());
+            d->add_already_installed_package(*already_installed->last(), a->tag(), destinations);
             return;
         }
         else
@@ -748,7 +752,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
             ;
     }
 
-    d->add_package(*best_visible_candidate, a->tag());
+    d->add_package(*best_visible_candidate, a->tag(), destinations);
 }
 
 void
@@ -802,9 +806,9 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
     for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
     {
-        if (d->already_installed(**c))
+        if (d->already_installed(**c, destinations))
         {
-            d->add(*c);
+            d->add(*c, destinations);
             return;
         }
     }
@@ -823,7 +827,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
             Save<bool> save_t(&d->_imp->throw_on_blocker,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
             Save<DepListOverrideMasks> save_o(&d->_imp->opts->override_masks, DepListOverrideMasks());
-            d->add(*c);
+            d->add(*c, destinations);
             return;
         }
         catch (const DepListError &)
@@ -840,7 +844,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
             Save<bool> save_t(&d->_imp->throw_on_blocker,
                     dl_blocks_discard_completely != d->_imp->opts->blocks);
             Save<DepListOverrideMasks> save_o(&d->_imp->opts->override_masks, DepListOverrideMasks());
-            d->add(*c);
+            d->add(*c, destinations);
             return;
         }
         catch (const DepListError &)
@@ -852,7 +856,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
             "first item for error message");
     {
         Context block_context("Inside || ( ) block with other options:");
-        d->add(*viable_children.begin());
+        d->add(*viable_children.begin(), destinations);
     }
 }
 
@@ -982,9 +986,11 @@ struct DepList::ShowSuggestVisitor :
     DepAtomVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AnyDepAtom>
 {
     DepList * const d;
+    std::tr1::shared_ptr<const DestinationsCollection> destinations;
 
-    ShowSuggestVisitor(DepList * const dd) :
-        d(dd)
+    ShowSuggestVisitor(DepList * const dd, std::tr1::shared_ptr<const DestinationsCollection> ddd) :
+        d(dd),
+        destinations(ddd)
     {
     }
 
@@ -1033,7 +1039,7 @@ DepList::ShowSuggestVisitor::visit(const PackageDepAtom * const a)
         if (d->_imp->env->mask_reasons(*m).any())
             continue;
 
-        d->add_suggested_package(*m);
+        d->add_suggested_package(*m, destinations);
         return;
     }
 
@@ -1063,27 +1069,29 @@ DepList::clear()
 }
 
 void
-DepList::add_in_role(std::tr1::shared_ptr<const DepAtom> atom, const std::string & role)
+DepList::add_in_role(std::tr1::shared_ptr<const DepAtom> atom, const std::string & role,
+        std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     Context context("When adding " + role + ":");
-    add(atom);
+    add(atom, destinations);
 }
 
 void
-DepList::add(std::tr1::shared_ptr<const DepAtom> atom)
+DepList::add(std::tr1::shared_ptr<const DepAtom> atom, std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     DepListTransaction transaction(_imp->merge_list, _imp->merge_list_index, _imp->merge_list_generation);
 
     Save<std::tr1::shared_ptr<const DepAtom> > save_current_top_level_target(&_imp->current_top_level_target,
             _imp->current_top_level_target ? _imp->current_top_level_target : atom);
 
-    AddVisitor visitor(this);
+    AddVisitor visitor(this, destinations);
     atom->accept(&visitor);
     transaction.commit();
 }
 
 void
-DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const DepTag> tag)
+DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const DepTag> tag,
+        std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     Context context("When adding package '" + stringify(p) + "':");
 
@@ -1102,7 +1110,8 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
                 .generation(_imp->merge_list_generation)
                 .state(dle_no_deps)
                 .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destinations(std::tr1::shared_ptr<RepositoryNameCollection>(new RepositoryNameCollection::Concrete))
+                .destination(metadata->virtual_interface ?
+                    std::tr1::shared_ptr<Repository>() : find_destination(p, destinations))
                 .associated_entry(0)
                 .kind(metadata->virtual_interface ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
@@ -1160,7 +1169,7 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
                         .generation(_imp->merge_list_generation)
                         .state(dle_has_all_deps)
                         .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                        .destinations(std::tr1::shared_ptr<RepositoryNameCollection>(new RepositoryNameCollection::Concrete))
+                        .destination(std::tr1::shared_ptr<Repository>())
                         .associated_entry(&*_imp->current_merge_list_entry)
                         .kind(dlk_provided)));
             _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
@@ -1175,16 +1184,16 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
             Context c("When showing suggestions:");
             Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
                     next(our_merge_entry_position));
-            ShowSuggestVisitor visitor(this);
+            ShowSuggestVisitor visitor(this, destinations);
             metadata->deps_interface->suggested_depend()->accept(&visitor);
         }
 
         /* add pre dependencies */
-        add_predeps(metadata->deps_interface->build_depend(), _imp->opts->uninstalled_deps_pre, "build");
-        add_predeps(metadata->deps_interface->run_depend(), _imp->opts->uninstalled_deps_runtime, "run");
-        add_predeps(metadata->deps_interface->post_depend(), _imp->opts->uninstalled_deps_post, "post");
+        add_predeps(metadata->deps_interface->build_depend(), _imp->opts->uninstalled_deps_pre, "build", destinations);
+        add_predeps(metadata->deps_interface->run_depend(), _imp->opts->uninstalled_deps_runtime, "run", destinations);
+        add_predeps(metadata->deps_interface->post_depend(), _imp->opts->uninstalled_deps_post, "post", destinations);
         if (_imp->opts->suggested == dl_suggested_install)
-            add_predeps(metadata->deps_interface->suggested_depend(), _imp->opts->uninstalled_deps_suggested, "suggest");
+            add_predeps(metadata->deps_interface->suggested_depend(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations);
     }
 
     our_merge_entry_position->state = dle_has_pre_deps;
@@ -1193,12 +1202,12 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
     if (metadata->deps_interface)
     {
         /* add post dependencies */
-        add_postdeps(metadata->deps_interface->build_depend(), _imp->opts->uninstalled_deps_pre, "build");
-        add_postdeps(metadata->deps_interface->run_depend(), _imp->opts->uninstalled_deps_runtime, "run");
-        add_postdeps(metadata->deps_interface->post_depend(), _imp->opts->uninstalled_deps_post, "post");
+        add_postdeps(metadata->deps_interface->build_depend(), _imp->opts->uninstalled_deps_pre, "build", destinations);
+        add_postdeps(metadata->deps_interface->run_depend(), _imp->opts->uninstalled_deps_runtime, "run", destinations);
+        add_postdeps(metadata->deps_interface->post_depend(), _imp->opts->uninstalled_deps_post, "post", destinations);
 
         if (_imp->opts->suggested == dl_suggested_install)
-            add_postdeps(metadata->deps_interface->suggested_depend(), _imp->opts->uninstalled_deps_suggested, "suggest");
+            add_postdeps(metadata->deps_interface->suggested_depend(), _imp->opts->uninstalled_deps_suggested, "suggest", destinations);
     }
 
     our_merge_entry_position->state = dle_has_all_deps;
@@ -1231,7 +1240,7 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
                 .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destinations(std::tr1::shared_ptr<RepositoryNameCollection>(new RepositoryNameCollection::Concrete))
+                .destination(std::tr1::shared_ptr<Repository>())
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(kind)));
 
@@ -1244,7 +1253,8 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
 }
 
 void
-DepList::add_suggested_package(const PackageDatabaseEntry & p)
+DepList::add_suggested_package(const PackageDatabaseEntry & p,
+        const std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     std::pair<MergeListIndex::iterator, MergeListIndex::const_iterator> pp(
             _imp->merge_list_index.equal_range(p.name));
@@ -1266,7 +1276,7 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p)
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
                 .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destinations(std::tr1::shared_ptr<RepositoryNameCollection>(new RepositoryNameCollection::Concrete))
+                .destination(find_destination(p, destinations))
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(dlk_suggested)));
 
@@ -1279,13 +1289,14 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p)
 }
 
 void
-DepList::add_predeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOption opt, const std::string & s)
+DepList::add_predeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOption opt, const std::string & s,
+        std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     if (dl_deps_pre == opt || dl_deps_pre_or_post == opt)
     {
         try
         {
-            add_in_role(d, s + " dependencies as pre dependencies");
+            add_in_role(d, s + " dependencies as pre dependencies", destinations);
         }
         catch (const DepListError & e)
         {
@@ -1299,7 +1310,8 @@ DepList::add_predeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOpt
 }
 
 void
-DepList::add_postdeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOption opt, const std::string & s)
+DepList::add_postdeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOption opt, const std::string & s,
+        std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     if (dl_deps_pre_or_post == opt || dl_deps_post == opt || dl_deps_try_post == opt)
     {
@@ -1307,7 +1319,7 @@ DepList::add_postdeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOp
         {
             try
             {
-                add_in_role(d, s + " dependencies as post dependencies");
+                add_in_role(d, s + " dependencies as post dependencies", destinations);
             }
             catch (const CircularDependencyError &)
             {
@@ -1316,7 +1328,7 @@ DepList::add_postdeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOp
                         dl_circular_discard_silently : dl_circular_discard);
                 Save<MergeList::iterator> save_merge_list_insert_position(&_imp->merge_list_insert_position,
                         _imp->merge_list.end());
-                add_in_role(d, s + " dependencies as post dependencies with cycle breaking");
+                add_in_role(d, s + " dependencies as post dependencies with cycle breaking", destinations);
             }
         }
         catch (const DepListError & e)
@@ -1331,7 +1343,8 @@ DepList::add_postdeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOp
 }
 
 void
-DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const DepTag> tag)
+DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const DepTag> tag,
+        const std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     Context context("When adding installed package '" + stringify(p) + "':");
 
@@ -1346,7 +1359,7 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1:
                 .generation(_imp->merge_list_generation)
                 .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
-                .destinations(std::tr1::shared_ptr<RepositoryNameCollection>(new RepositoryNameCollection::Concrete))
+                .destination(std::tr1::shared_ptr<Repository>())
                 .associated_entry(0)
                 .kind(dlk_already_installed)));
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry));
@@ -1366,9 +1379,9 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1:
 
     if (metadata->deps_interface)
     {
-        add_predeps(metadata->deps_interface->build_depend(), _imp->opts->installed_deps_pre, "build");
-        add_predeps(metadata->deps_interface->run_depend(), _imp->opts->installed_deps_runtime, "run");
-        add_predeps(metadata->deps_interface->post_depend(), _imp->opts->installed_deps_post, "post");
+        add_predeps(metadata->deps_interface->build_depend(), _imp->opts->installed_deps_pre, "build", destinations);
+        add_predeps(metadata->deps_interface->run_depend(), _imp->opts->installed_deps_runtime, "run", destinations);
+        add_predeps(metadata->deps_interface->post_depend(), _imp->opts->installed_deps_post, "post", destinations);
     }
 
     our_merge_entry->state = dle_has_pre_deps;
@@ -1376,9 +1389,9 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1:
 
     if (metadata->deps_interface)
     {
-        add_postdeps(metadata->deps_interface->build_depend(), _imp->opts->installed_deps_pre, "build");
-        add_postdeps(metadata->deps_interface->run_depend(), _imp->opts->installed_deps_runtime, "run");
-        add_postdeps(metadata->deps_interface->post_depend(), _imp->opts->installed_deps_post, "post");
+        add_postdeps(metadata->deps_interface->build_depend(), _imp->opts->installed_deps_pre, "build", destinations);
+        add_postdeps(metadata->deps_interface->run_depend(), _imp->opts->installed_deps_runtime, "run", destinations);
+        add_postdeps(metadata->deps_interface->post_depend(), _imp->opts->installed_deps_post, "post", destinations);
     }
 }
 
@@ -1512,21 +1525,9 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
 }
 
 bool
-DepList::already_installed(std::tr1::shared_ptr<const DepAtom> atom, const bool) const
+DepList::already_installed(const DepAtom & atom, std::tr1::shared_ptr<const DestinationsCollection> destinations) const
 {
-    return already_installed(*atom.get());
-}
-
-bool
-DepList::already_installed(const DepAtom * const atom, const bool) const
-{
-    return already_installed(*atom);
-}
-
-bool
-DepList::already_installed(const DepAtom & atom) const
-{
-    QueryVisitor visitor(this);
+    QueryVisitor visitor(this, destinations);
     atom.accept(&visitor);
     return visitor.result;
 }
@@ -1585,5 +1586,18 @@ bool
 DepList::has_errors() const
 {
     return end() != std::find_if(begin(), end(), IsError());
+}
+
+std::tr1::shared_ptr<Repository>
+DepList::find_destination(const PackageDatabaseEntry & p,
+        std::tr1::shared_ptr<const DestinationsCollection> dd)
+{
+    for (DestinationsCollection::Iterator d(dd->begin()), d_end(dd->end()) ;
+             d != d_end ; ++d)
+        if ((*d)->destination_interface)
+            if ((*d)->destination_interface->is_suitable_destination_for(p))
+                return *d;
+
+    throw NoDestinationError(p, dd);
 }
 

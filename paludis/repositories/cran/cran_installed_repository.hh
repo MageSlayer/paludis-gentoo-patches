@@ -122,6 +122,10 @@ namespace paludis
             virtual void remove_from_world(const SetName &) const;
 
             virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
+
+            virtual bool is_default_destination() const;
+
+            virtual FSEntry root() const;
     };
 
     /**

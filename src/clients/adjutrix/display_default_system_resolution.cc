@@ -22,6 +22,7 @@
 #include <output/colour.hh>
 #include <paludis/config_file.hh>
 #include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -75,7 +76,7 @@ namespace
 
         try
         {
-            d.add(env.package_set(SetName("system")));
+            d.add(env.package_set(SetName("system")), env.default_destinations());
 
             for (DepList::Iterator e(d.begin()), e_end(d.end()) ; e != e_end ; ++e)
                 cout << "    " << e->package << ":" << e->metadata->slot << endl;
@@ -111,6 +112,13 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
     int return_code(0);
 
     Context context("When performing display-default-system-resolution action:");
+
+    if (env.default_destinations()->empty())
+    {
+        std::tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(&env,
+                    RepositoryName("fake_destination")));
+        env.package_database()->add_repository(fake_destination);
+    }
 
     if (CommandLine::get_instance()->a_profile.begin_args() ==
             CommandLine::get_instance()->a_profile.end_args())

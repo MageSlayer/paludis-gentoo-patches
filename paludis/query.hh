@@ -28,6 +28,7 @@ namespace paludis
 {
     class Environment;
     class PackageDepAtom;
+    class FSEntry;
 
     class QueryDelegate
     {
@@ -132,6 +133,13 @@ namespace paludis
         {
             public:
                 RepositoryHasUninstallableInterface();
+        };
+
+        class InstalledAtRoot :
+            public Query
+        {
+            public:
+                InstalledAtRoot(const FSEntry &);
         };
     }
 

@@ -25,6 +25,7 @@
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/environment.hh>
 #include <paludis/config_file.hh>
+#include <paludis/query.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -120,8 +121,9 @@ PortageRepositorySets::package_set(const SetName & s) const
             {
                 std::tr1::shared_ptr<PackageDepAtom> p(new PackageDepAtom(tokens.at(1)));
                 p->set_tag(tag);
-                if (! _imp->environment->package_database()->query(PackageDepAtom(p->package()),
-                            is_installed_only, qo_whatever)->empty())
+                if (! _imp->environment->package_database()->query(
+                            query::Package(p->package()) & query::InstalledAtRoot(
+                                _imp->params.environment->root()), qo_whatever)->empty())
                     result->add_child(p);
             }
             else
@@ -293,9 +295,13 @@ PortageRepositorySets::security_set(bool insecurity) const
             for (GLSA::PackagesIterator glsa_pkg(glsa->begin_packages()),
                     glsa_pkg_end(glsa->end_packages()) ; glsa_pkg != glsa_pkg_end ; ++glsa_pkg)
             {
-                std::tr1::shared_ptr<const PackageDatabaseEntryCollection> candidates(_imp->environment->package_database()->query(
-                            PackageDepAtom(glsa_pkg->name()), insecurity ? is_any : is_installed_only,
-                            qo_order_by_version));
+                std::tr1::shared_ptr<const PackageDatabaseEntryCollection> candidates;
+                if (insecurity)
+                    candidates = _imp->environment->package_database()->query(query::Package(glsa_pkg->name()), qo_order_by_version);
+                else
+                    candidates = _imp->environment->package_database()->query(
+                            query::Package(glsa_pkg->name()) & query::RepositoryHasInstalledInterface(), qo_order_by_version);
+
                 for (PackageDatabaseEntryCollection::Iterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
                 {

@@ -24,6 +24,7 @@
 #include <paludis/util/compare.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/dep_list/dep_list.hh>
 
@@ -43,6 +44,13 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     int return_code(0);
 
     Context context("When performing what-needs-keywording action:");
+
+    if (env.default_destinations()->empty())
+    {
+        std::tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(&env,
+                    RepositoryName("fake_destination")));
+        env.package_database()->add_repository(fake_destination);
+    }
 
     KeywordName target_keyword(*CommandLine::get_instance()->begin_parameters());
     UseFlagName target_arch(strip_leading_string(
@@ -67,9 +75,11 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     {
         if (std::string::npos == p->find('/'))
             d.add(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
-                            env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p)))));
+                            env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p)))),
+                    env.default_destinations());
         else
-            d.add(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(*p)));
+            d.add(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(*p)),
+                    env.default_destinations());
     }
 
     cout << std::setw(30) << std::left << "Package";

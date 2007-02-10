@@ -58,17 +58,26 @@ namespace paludis
             friend class QueryVisitor;
             friend class ShowSuggestVisitor;
 
-            void add_in_role(std::tr1::shared_ptr<const DepAtom>, const std::string & role);
+            std::tr1::shared_ptr<Repository> find_destination(const PackageDatabaseEntry &,
+                    std::tr1::shared_ptr<const DestinationsCollection>);
+
+            void add_in_role(std::tr1::shared_ptr<const DepAtom>, const std::string & role,
+                    std::tr1::shared_ptr<const DestinationsCollection>);
             bool prefer_installed_over_uninstalled(const PackageDatabaseEntry &,
                     const PackageDatabaseEntry &);
 
-            void add_package(const PackageDatabaseEntry &, std::tr1::shared_ptr<const DepTag>);
-            void add_already_installed_package(const PackageDatabaseEntry &, std::tr1::shared_ptr<const DepTag>);
+            void add_package(const PackageDatabaseEntry &, std::tr1::shared_ptr<const DepTag>,
+                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
+            void add_already_installed_package(const PackageDatabaseEntry &, std::tr1::shared_ptr<const DepTag>,
+                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
             void add_error_package(const PackageDatabaseEntry &, const DepListEntryKind);
-            void add_suggested_package(const PackageDatabaseEntry &);
+            void add_suggested_package(const PackageDatabaseEntry &,
+                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
 
-            void add_predeps(std::tr1::shared_ptr<const DepAtom>, const DepListDepsOption, const std::string &);
-            void add_postdeps(std::tr1::shared_ptr<const DepAtom>, const DepListDepsOption, const std::string &);
+            void add_predeps(std::tr1::shared_ptr<const DepAtom>, const DepListDepsOption, const std::string &,
+                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
+            void add_postdeps(std::tr1::shared_ptr<const DepAtom>, const DepListDepsOption, const std::string &,
+                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
 
             bool is_top_level_target(const PackageDatabaseEntry &) const;
 
@@ -91,7 +100,8 @@ namespace paludis
              * Add the packages required to resolve an additional dependency
              * atom.
              */
-            void add(std::tr1::shared_ptr<const DepAtom>);
+            void add(std::tr1::shared_ptr<const DepAtom>,
+                    std::tr1::shared_ptr<const DestinationsCollection> target_destinations);
 
             /**
              * Clear the list.
@@ -100,24 +110,9 @@ namespace paludis
 
             /**
              * Return whether an atom structure already installed.
-             *
-             * \deprecated Use the one arg form.
              */
-            bool already_installed(std::tr1::shared_ptr<const DepAtom>, const bool dummy) const
-                PALUDIS_ATTRIBUTE((deprecated));
-
-            /**
-             * Return whether an atom structure already installed (overloaded for raw pointer).
-             *
-             * \deprecated Use the one arg form.
-             */
-            bool already_installed(const DepAtom * const, const bool dummy) const
-                PALUDIS_ATTRIBUTE((deprecated));
-
-            /**
-             * Return whether an atom structure already installed.
-             */
-            bool already_installed(const DepAtom &) const;
+            bool already_installed(const DepAtom &,
+                    std::tr1::shared_ptr<const DestinationsCollection> target_destinations) const;
 
             /**
              * Whether we have any errors.

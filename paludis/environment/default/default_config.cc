@@ -352,7 +352,7 @@ DefaultConfig::DefaultConfig() :
             keys->insert("repo_file", stringify(*repo_file));
 
             keys->erase("root");
-            keys->insert("root", root_prefix);
+            keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
 
             if (! k.get("master_repository").empty())
                 later_keys.push_back(keys);
@@ -369,8 +369,12 @@ DefaultConfig::DefaultConfig() :
             throw DefaultConfigError("No repositories specified");
 
         /* add virtuals repositories */
-        _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1,
-                    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
+
+        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
+                new AssociativeCollection<std::string, std::string>::Concrete);
+        iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
+        _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1, iv_keys));
+
         _imp->repos.push_back(RepositoryConfigEntry("virtuals", -2,
                     std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
 

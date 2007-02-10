@@ -9,7 +9,6 @@ make_class_CRANRepositoryParams()
     key mirror std::string
     key sync std::string
     key buildroot FSEntry
-    key root FSEntry
     key library FSEntry
 
     doxygen_comment << "END"

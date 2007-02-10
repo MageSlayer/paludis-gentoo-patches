@@ -50,7 +50,7 @@ namespace paludis
 
         Implementation<UninstallTask>(Environment * const e) :
             env(e),
-            install_options(false, false, ido_none, false),
+            install_options(false, false, ido_none, false, std::tr1::shared_ptr<Repository>()),
             pretend(false),
             preserve_world(false),
             all_versions(false),
@@ -314,6 +314,7 @@ UninstallTask::execute()
 
         try
         {
+            _imp->install_options.destination = _imp->env->package_database()->fetch_repository(i->package.repository);
             uninstall_interface->uninstall(i->package.name, i->package.version, _imp->install_options);
         }
         catch (const PackageUninstallActionError & e)

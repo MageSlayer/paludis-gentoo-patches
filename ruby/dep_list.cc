@@ -17,6 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifdef CIARANM_DISABLED_THIS
+
 #include <paludis_ruby.hh>
 #include <paludis/dep_list/dep_list.hh>
 #include <ruby.h>
@@ -967,33 +969,6 @@ namespace
 
     /*
      * call-seq:
-     *     destinations -> Array
-     *
-     * Our destinations repostiories.
-     */
-    VALUE
-    dep_list_entry_destinations(VALUE self)
-    {
-        try
-        {
-            DepListEntry * p;
-            Data_Get_Struct(self, DepListEntry, p);
-
-            VALUE result(rb_ary_new());
-            for (RepositoryNameCollection::Iterator r(p->destinations->begin()),
-                    r_end(p->destinations->end()) ; r != r_end ; ++r)
-                rb_ary_push(result, rb_str_new2(stringify(*r).c_str()));
-
-            return result;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
      *     tags -> Array
      *
      * Our DepTags
@@ -1487,7 +1462,6 @@ namespace
         rb_define_method(c_dep_list_entry, "kind", RUBY_FUNC_CAST(&dep_list_entry_kind),0);
         rb_define_method(c_dep_list_entry, "package", RUBY_FUNC_CAST(&dep_list_entry_package),0);
         rb_define_method(c_dep_list_entry, "metadata", RUBY_FUNC_CAST(&dep_list_entry_metadata),0);
-        rb_define_method(c_dep_list_entry, "destinations", RUBY_FUNC_CAST(&dep_list_entry_destinations),0);
         rb_define_method(c_dep_list_entry, "state", RUBY_FUNC_CAST(&dep_list_entry_state),0);
         rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags),0);
 
@@ -1511,4 +1485,6 @@ namespace
 
 RegisterRubyClass::Register paludis_ruby_register_dep_list PALUDIS_ATTRIBUTE((used))
     (&do_register_dep_list);
+
+#endif
 

@@ -23,6 +23,7 @@
 #include <paludis/environment/default/default_environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
+#include <paludis/query.hh>
 #include <paludis/repository.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/util/collection_concrete.hh>
@@ -658,7 +659,9 @@ DefaultEnvironment::local_package_set(const SetName & s) const
             {
                 std::tr1::shared_ptr<PackageDepAtom> p(new PackageDepAtom(tokens.at(1)));
                 p->set_tag(tag);
-                if (! package_database()->query(PackageDepAtom(p->package()), is_installed_only, qo_whatever)->empty())
+                if (! package_database()->query(
+                            query::Package(p->package()) & query::InstalledAtRoot(root()),
+                            qo_whatever)->empty())
                     result->add_child(p);
             }
             else
@@ -746,5 +749,11 @@ DefaultEnvironment::known_use_expand_names(const UseFlagName & prefix, const Pac
             + stringify(prefix) + ", " + (pde ? stringify(*pde) : stringify("0")) + ") -> ("
             + join(result->begin(), result->end(), ", ") + ")");
     return result;
+}
+
+FSEntry
+DefaultEnvironment::root() const
+{
+    return DefaultConfig::get_instance()->root();
 }
 

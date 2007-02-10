@@ -44,11 +44,11 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target), env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
 
             d.options()->blocks = dl_blocks_accumulate;
-            d.add(PortageDepParser::parse(merge_target));
+            d.add(PortageDepParser::parse(merge_target), env.default_destinations());
             TEST_CHECK_EQUAL(std::distance(d.begin(), d.end()), 2);
             TEST_CHECK_EQUAL(d.begin()->kind, dlk_block);
             TEST_CHECK_STRINGIFY_EQUAL(d.begin()->package, "cat/two-1::installed");
@@ -119,11 +119,11 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target), env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
 
             d.options()->blocks = dl_blocks_accumulate;
-            d.add(PortageDepParser::parse(merge_target));
+            d.add(PortageDepParser::parse(merge_target), env.default_destinations());
             TEST_CHECK_EQUAL(std::distance(d.begin(), d.end()), 4);
             TEST_CHECK_EQUAL(d.begin()->kind, dlk_block);
             TEST_CHECK_STRINGIFY_EQUAL(d.begin()->package, "virtual/two-1::installed_virtuals");
@@ -157,7 +157,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target), env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_block_on_list;
@@ -296,7 +296,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target), env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_restricted_older_self;
@@ -324,7 +324,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target), env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_restricted_older_self_provide;
@@ -352,7 +352,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             d.options()->blocks = dl_blocks_error;
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target)), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target), env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_restricted_older_other_provide;

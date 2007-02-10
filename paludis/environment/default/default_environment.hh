@@ -83,6 +83,8 @@ namespace paludis
             virtual MirrorIterator begin_mirrors(const std::string & mirror) const;
 
             virtual MirrorIterator end_mirrors(const std::string & mirror) const;
+
+            virtual FSEntry root() const;
     };
 }
 #endif

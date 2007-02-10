@@ -109,9 +109,6 @@ namespace paludis
         /// Build root location
         FSEntry buildroot;
 
-        /// Root location
-        FSEntry root;
-
         /// Library location
         FSEntry library;
 
@@ -153,7 +150,6 @@ Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p) :
     mirror(p.mirror),
     sync(p.sync),
     buildroot(p.buildroot),
-    root(p.root),
     library(p.library),
     has_packages(false),
     has_mirrors(false)
@@ -193,7 +189,6 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
     config_info->add_kv("distdir", stringify(_imp->distdir));
     config_info->add_kv("format", "cran");
     config_info->add_kv("buildroot", stringify(_imp->buildroot));
-    config_info->add_kv("root", stringify(_imp->root));
     config_info->add_kv("library", stringify(_imp->library));
     config_info->add_kv("sync", _imp->sync);
 
@@ -456,17 +451,12 @@ CRANRepository::make_cran_repository(
     if (m->end() == m->find("buildroot") || ((buildroot = m->find("buildroot")->second)).empty())
         buildroot = "/var/tmp/paludis";
 
-    std::string root;
-    if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
-        root = "/";
-
     return std::tr1::shared_ptr<Repository>(new CRANRepository(CRANRepositoryParams::create()
                 .environment(env)
                 .location(location)
                 .distdir(distdir)
                 .sync(sync)
                 .buildroot(buildroot)
-                .root(root)
                 .library(library)
                 .mirror(mirror)));
 }
@@ -537,7 +527,8 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));
     cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()));
     cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
-    cmd = cmd("ROOT", stringify(_imp->root));
+    cmd = cmd("ROOT", o.destination->installed_interface ?
+                stringify(o.destination->installed_interface->root()) : "/");
     cmd = cmd("WORKDIR", workdir);
 
 
@@ -553,13 +544,14 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));
     cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()));
     cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
-    cmd = cmd("ROOT", stringify(_imp->root));
+    cmd = cmd("ROOT", o.destination->installed_interface ?
+                stringify(o.destination->installed_interface->root()) : "/");
     cmd = cmd("WORKDIR", workdir);
     cmd = cmd("REPOSITORY", stringify(name()));
 
     if (0 != run_command(cmd))
         throw PackageInstallActionError("Couldn't merge '" + stringify(q) + "-" + stringify(vn) + "' to '" +
-                stringify(_imp->root) + "'");
+                stringify(o.destination->name()) + "'");
 
     return;
 }

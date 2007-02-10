@@ -38,6 +38,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/query.hh>
 #include <paludis/repository_name_cache.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/collection_concrete.hh>
@@ -198,7 +199,6 @@ namespace paludis
         has_repo_mask(false),
         has_virtuals(false),
         has_mirrors(false),
-        news_ptr(new PortageRepositoryNews(params.environment, r, p)),
         sets_ptr(new PortageRepositorySets(params.environment, r, p)),
         entries_ptr(PortageRepositoryEntriesMaker::get_instance()->find_maker(
                     params.entry_format)(params.environment, r, p)),
@@ -312,7 +312,6 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
     config_info->add_kv("setsdir", stringify(_imp->params.setsdir));
     config_info->add_kv("newsdir", stringify(_imp->params.newsdir));
     config_info->add_kv("format", _imp->params.entry_format);
-    config_info->add_kv("root", stringify(_imp->params.root));
     config_info->add_kv("buildroot", stringify(_imp->params.buildroot));
     config_info->add_kv("sync", _imp->params.sync);
     config_info->add_kv("sync_options", _imp->params.sync_options);
@@ -809,9 +808,10 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
 {
     _imp->need_profiles();
 
-    if (! _imp->params.root.is_directory())
+    if (o.destination->installed_interface && ! o.destination->installed_interface->root().is_directory())
         throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' since root ('" + stringify(_imp->params.root) + "') isn't a directory");
+                + stringify(v) + "' since root ('" + stringify(
+                        o.destination->installed_interface->root()) + "') isn't a directory");
 
     _imp->entries_ptr->install(q, v, o, _imp->profile_ptr);
 }
@@ -882,6 +882,9 @@ PortageRepository::invalidate()
 void
 PortageRepository::update_news() const
 {
+    if (! _imp->news_ptr)
+        _imp->news_ptr.reset(new PortageRepositoryNews(_imp->params.environment, this, _imp->params));
+
     _imp->news_ptr->update_news();
 }
 
@@ -927,7 +930,8 @@ PortageRepository::info(bool verbose) const
                 i_end(info_pkgs.end()) ; i != i_end ; ++i)
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> q(
-                    _imp->params.environment->package_database()->query(PackageDepAtom(*i), is_installed_only,
+                    _imp->params.environment->package_database()->query(
+                        query::Matches(PackageDepAtom(*i)) & query::InstalledAtRoot(_imp->params.environment->root()),
                         qo_order_by_version));
             if (q->empty())
                 package_info->add_kv(*i, "(none)");

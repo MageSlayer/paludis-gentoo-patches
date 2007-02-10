@@ -45,6 +45,14 @@ namespace paludis
             const std::pair<const std::string, std::string> > EnvironmentMirrorIterator;
 
     /**
+     * A set of destinations.
+     *
+     * \ingroup grpdepresolver
+     * \ingroup grpenvironment
+     */
+    typedef SortedCollection<std::tr1::shared_ptr<Repository> > DestinationsCollection;
+
+    /**
      * Represents the data for an Environment hook call.
      *
      * \ingroup grpenvironment
@@ -356,6 +364,21 @@ namespace paludis
              * Default behaviour: nothing happens.
              */
             virtual void perform_hook(const Hook & hook) const;
+
+            /**
+             * Default root location.
+             *
+             * Default: /.
+             */
+            virtual FSEntry root() const;
+
+            /**
+             * Default destinations.
+             *
+             * Default: all repositories that provide RepositoryDestinationInterface and mark themselves
+             * as a default destination.
+             */
+            virtual std::tr1::shared_ptr<const DestinationsCollection> default_destinations() const;
     };
 }
 

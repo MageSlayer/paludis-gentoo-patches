@@ -57,3 +57,30 @@ DowngradeNotAllowedError::~DowngradeNotAllowedError() throw ()
 {
 }
 
+namespace
+{
+    std::string
+    destinations_to_string(std::tr1::shared_ptr<const DestinationsCollection> dd)
+    {
+        std::string result;
+        bool need_comma(false);
+        for (DestinationsCollection::Iterator d(dd->begin()), d_end(dd->end()) ;
+                d != d_end ; ++d)
+        {
+            if (need_comma)
+                result.append(", ");
+            need_comma = true;
+
+            result.append(stringify((*d)->name()));
+        }
+        return result;
+    }
+}
+
+NoDestinationError::NoDestinationError(const PackageDatabaseEntry & p,
+        std::tr1::shared_ptr<const DestinationsCollection> d) throw () :
+    DepListError("No suitable destination for '" + stringify(p) + "' in (" +
+            destinations_to_string(d) + ")")
+{
+}
+

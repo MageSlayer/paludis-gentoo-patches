@@ -1521,10 +1521,22 @@ VDBRepository::is_suitable_destination_for(const PackageDatabaseEntry & e) const
     return _imp->env->package_database()->fetch_repository(e.repository)->format() == "ebuild";
 }
 
+bool
+VDBRepository::is_default_destination() const
+{
+    return _imp->env->root() == root();
+}
+
 std::string
 VDBRepository::do_describe_use_flag(const UseFlagName &,
         const PackageDatabaseEntry * const) const
 {
     return "";
+}
+
+FSEntry
+VDBRepository::root() const
+{
+    return _imp->root;
 }
 

@@ -27,6 +27,7 @@
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/environment/test/test_environment.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -100,7 +101,7 @@ namespace test_cases
                 repo(new FakeRepository(&env, RepositoryName("repo"))),
                 installed_repo(new FakeInstalledRepository(&env, RepositoryName("installed"))),
                 virtuals_repo(new VirtualsRepository(&env)),
-                installed_virtuals_repo(new InstalledVirtualsRepository(&env)),
+                installed_virtuals_repo(new InstalledVirtualsRepository(&env, FSEntry("/"))),
                 done_populate(false)
             {
                 env.package_database()->add_repository(repo);
@@ -130,7 +131,7 @@ namespace test_cases
             {
                 DepList d(&env, DepListOptions());
                 set_options(*d.options());
-                d.add(PortageDepParser::parse(merge_target));
+                d.add(PortageDepParser::parse(merge_target), env.default_destinations());
                 TEST_CHECK(true);
 
                 TestMessageSuffix s("d={ " + join(d.begin(), d.end(), ", ") + " }", false);

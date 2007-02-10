@@ -51,7 +51,7 @@ namespace paludis
             env(e),
             dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
-            install_options(false, false, ido_none, false),
+            install_options(false, false, ido_none, false, std::tr1::shared_ptr<Repository>()),
             targets(new AllDepAtom),
             pretend(false),
             preserve_world(false),
@@ -175,7 +175,7 @@ InstallTask::execute()
 
     /* build up our dep list */
     on_build_deplist_pre();
-    _imp->dep_list.add(_imp->targets);
+    _imp->dep_list.add(_imp->targets, _imp->env->default_destinations());
     on_build_deplist_post();
 
     /* we're about to display our task list */
@@ -267,6 +267,7 @@ InstallTask::execute()
 
         try
         {
+            _imp->install_options.destination = dep->destination;
             installable_interface->install(dep->package.name, dep->package.version, _imp->install_options);
         }
         catch (const PackageInstallActionError & e)

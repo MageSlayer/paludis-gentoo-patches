@@ -19,6 +19,7 @@
 
 #include "query.hh"
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
@@ -238,6 +239,40 @@ query::RepositoryHasInstallableInterface::RepositoryHasInstallableInterface() :
 query::RepositoryHasUninstallableInterface::RepositoryHasUninstallableInterface() :
     Query(std::tr1::shared_ptr<QueryDelegate>(
                 new RepositoryHasDelegate<RepositoryUninstallableInterface, &RepositoryCapabilities::uninstallable_interface>))
+{
+}
+
+namespace
+{
+    struct InstalledAtRootDelegate :
+        QueryDelegate
+    {
+        const FSEntry root;
+
+        InstalledAtRootDelegate(const FSEntry & r) :
+            root(r)
+        {
+        }
+
+        std::tr1::shared_ptr<RepositoryNameCollection>
+        repositories(const Environment & e) const
+        {
+            std::tr1::shared_ptr<RepositoryNameCollection> result(new RepositoryNameCollection::Concrete);
+
+            for (PackageDatabase::RepositoryIterator i(e.package_database()->begin_repositories()),
+                    i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
+                if ((*i)->installed_interface)
+                    if (root == (*i)->installed_interface->root())
+                        result->push_back((*i)->name());
+
+            return result;
+        }
+    };
+}
+
+query::InstalledAtRoot::InstalledAtRoot(const FSEntry & r) :
+    Query(std::tr1::shared_ptr<QueryDelegate>(
+                new InstalledAtRootDelegate(r)))
 {
 }
 

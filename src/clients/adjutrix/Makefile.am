@@ -49,6 +49,7 @@ adjutrix_SOURCES = \
 adjutrix_LDADD = \
 	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/repositories/portage/libpaludisportagerepository.la \
+	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/tasks/libpaludistasks.a \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \

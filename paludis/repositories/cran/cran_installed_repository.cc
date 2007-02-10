@@ -490,7 +490,7 @@ CRANInstalledRepository::make_cran_installed_repository(
 
     std::string root;
     if (m->end() == m->find("root") || ((root = m->find("root")->second)).empty())
-        root = "/";
+        root = stringify(env->root());
 
     std::string world;
     if (m->end() == m->find("world") || ((world = m->find("world")->second)).empty())
@@ -721,5 +721,17 @@ void
 CRANInstalledRepository::remove_from_world(const SetName & n) const
 {
     remove_string_from_world(stringify(n));
+}
+
+FSEntry
+CRANInstalledRepository::root() const
+{
+    return _imp->root;
+}
+
+bool
+CRANInstalledRepository::is_default_destination() const
+{
+    return _imp->env->root() == root();
 }
 

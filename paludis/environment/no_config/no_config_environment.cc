@@ -163,8 +163,12 @@ Implementation<NoConfigEnvironment>::Implementation(
         keys->insert("location", stringify(top_level_dir));
 
         env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
+
+        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
+                new AssociativeCollection<std::string, std::string>::Concrete);
+        iv_keys->insert("root", "/");
         env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
-                    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
+                    iv_keys));
     }
 }
 

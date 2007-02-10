@@ -454,7 +454,8 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
             .expand_vars(expand_vars)
             .flat_src_uri(flat_src_uri)
-            .root(stringify(_imp->params.root) + "/")
+            .root(o.destination->installed_interface ?
+                stringify(o.destination->installed_interface->root()) : "/")
             .profiles(_imp->params.profiles)
             .no_fetch(fetch_restrict)
             .safe_resume(o.safe_resume));
@@ -483,7 +484,8 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     .aa(all_archives)
                     .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
                     .expand_vars(expand_vars)
-                    .root(stringify(_imp->params.root) + "/")
+                    .root(o.destination->installed_interface ?
+                        stringify(o.destination->installed_interface->root()) : "/")
                     .profiles(_imp->params.profiles)
                     .disable_cfgpro(o.no_config_protect)
                     .debug_build(o.debug_build)

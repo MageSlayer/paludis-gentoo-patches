@@ -18,7 +18,6 @@ make_class_PortageRepositoryParams()
     key newsdir FSEntry
     key sync std::string
     key sync_options std::string
-    key root FSEntry
     key buildroot FSEntry
     key master_repository "std::tr1::shared_ptr<const PortageRepository>"
 

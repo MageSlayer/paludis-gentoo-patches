@@ -57,9 +57,9 @@ namespace paludis
             environment(e),
             portage_repository(p),
             params(k),
-            skip_file(params.root / "var" / "lib" / "paludis" / "news" /
+            skip_file(e->root() / "var" / "lib" / "paludis" / "news" /
                     ("news-" + stringify(portage_repository->name()) + ".skip")),
-            unread_file(params.root / "var" / "lib" / "paludis" / "news" /
+            unread_file(e->root() / "var" / "lib" / "paludis" / "news" /
                     ("news-" + stringify(portage_repository->name()) + ".unread"))
         {
         }

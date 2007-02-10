@@ -7,7 +7,6 @@ make_class_GemsRepositoryParams()
     key location FSEntry
     key distdir FSEntry
     key yaml_uri std::string
-    key root FSEntry
     key buildroot FSEntry
 
     allow_named_args

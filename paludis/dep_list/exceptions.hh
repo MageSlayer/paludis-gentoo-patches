@@ -21,6 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_EXCEPTIONS_HH 1
 
 #include <paludis/util/exception.hh>
+#include <paludis/package_database.hh>
+#include <paludis/environment.hh>
 
 namespace paludis
 {
@@ -165,7 +167,24 @@ namespace paludis
             ///\}
     };
 
+    /**
+     * Thrown if no destination can be found.
+     *
+     * \ingroup grpdepresolver
+     * \ingroup grpexceptions
+     * \nosubgrouping
+     */
+    class NoDestinationError : public DepListError
+    {
+        public:
+            ///\name Basic operations
+            ///\{
 
+            NoDestinationError(const PackageDatabaseEntry &,
+                    std::tr1::shared_ptr<const DestinationsCollection>) throw ();
+
+            ///\}
+    };
 }
 
 #endif

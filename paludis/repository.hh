@@ -46,7 +46,9 @@ namespace paludis
 {
     class Environment;
     class RepositoryNameCache;
+    class FSEntry;
 
+    class Repository;
     class RepositoryInstallableInterface;
     class RepositoryInstalledInterface;
     class RepositoryMaskInterface;
@@ -623,6 +625,11 @@ namespace paludis
                 return do_installed_time(q, v);
             }
 
+            /**
+             * What is our filesystem root?
+             */
+            virtual FSEntry root() const = 0;
+
             ///\}
 
             virtual ~RepositoryInstalledInterface();
@@ -996,6 +1003,7 @@ namespace paludis
             ///\{
 
             virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const = 0;
+            virtual bool is_default_destination() const = 0;
 
             ///\}
 

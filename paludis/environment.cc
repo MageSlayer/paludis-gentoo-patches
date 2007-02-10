@@ -24,6 +24,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/fs_entry.hh>
 
 #include <set>
 #include <list>
@@ -552,6 +553,27 @@ Environment::accept_eapi(const std::string & e) const
     return e == "0" || e == "" || e == "paludis-1" || e == "CRAN-1";
 }
 
+FSEntry
+Environment::root() const
+{
+    return FSEntry("/");
+}
+
+std::tr1::shared_ptr<const DestinationsCollection>
+Environment::default_destinations() const
+{
+    std::tr1::shared_ptr<DestinationsCollection> result(new DestinationsCollection::Concrete);
+
+    for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
+            r_end(package_database()->end_repositories()) ;
+            r != r_end ; ++r)
+        if ((*r)->destination_interface)
+            if ((*r)->destination_interface->is_default_destination())
+                result->insert(*r);
+
+    return result;
+}
+
 Environment::WorldCallbacks::WorldCallbacks()
 {
 }
@@ -589,4 +611,5 @@ void
 Environment::WorldCallbacks::remove_callback(const SetName &)
 {
 }
+
 

@@ -74,7 +74,8 @@ namespace paludis
             ///\name Basic operations
             //\{
 
-            InstalledVirtualsRepository(const Environment * const env);
+            InstalledVirtualsRepository(const Environment * const env,
+                    const FSEntry & root);
 
             virtual ~InstalledVirtualsRepository();
 
@@ -93,6 +94,8 @@ namespace paludis
             {
                 return false;
             }
+
+            virtual FSEntry root() const;
     };
 }
 

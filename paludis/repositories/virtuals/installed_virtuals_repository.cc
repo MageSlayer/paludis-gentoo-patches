@@ -20,11 +20,13 @@
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/repositories/virtuals/vr_entry.hh>
 #include <paludis/util/fast_unique_copy.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <vector>
+#include <algorithm>
 
 using namespace paludis;
 
@@ -34,21 +36,55 @@ namespace paludis
     struct Implementation<InstalledVirtualsRepository>
     {
         const Environment * const env;
+        const FSEntry root;
 
         mutable std::vector<VREntry> entries;
         mutable bool has_entries;
 
-        Implementation(const Environment * const e) :
+        Implementation(const Environment * const e, const FSEntry & r) :
             env(e),
+            root(r),
             has_entries(false)
         {
         }
     };
-
 }
 
-InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env) :
-    Repository(RepositoryName("installed_virtuals"), RepositoryCapabilities::create()
+namespace
+{
+    struct MakeSafe
+    {
+        char operator() (const char & c) const
+        {
+            static const std::string allow(
+                    "abcdefghijklmnopqrstuvwxyz"
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    "0123456789_-");
+
+            if (std::string::npos == allow.find(c))
+                return '-';
+            else
+                return c;
+        }
+    };
+
+    RepositoryName
+    make_name(const FSEntry & r)
+    {
+        if (FSEntry("/") == r)
+            return RepositoryName("installed_virtuals");
+        else
+        {
+            std::string n("installed_virtuals-" + stringify(r)), result;
+            std::transform(n.begin(), n.end(), std::back_inserter(result), MakeSafe());
+            return RepositoryName(result);
+        }
+    }
+}
+
+InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env,
+        const FSEntry & r) :
+    Repository(RepositoryName(make_name(r)), RepositoryCapabilities::create()
             .installable_interface(0)
             .mask_interface(this)
             .installed_interface(this)
@@ -67,7 +103,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .destination_interface(0),
             "installed_virtuals"),
     PrivateImplementationPattern<InstalledVirtualsRepository>(
-            new Implementation<InstalledVirtualsRepository>(env))
+            new Implementation<InstalledVirtualsRepository>(env, r))
 {
     std::tr1::shared_ptr<RepositoryInfoSection> config_info(new RepositoryInfoSection("Configuration information"));
     config_info->add_kv("format", "installed_virtuals");
@@ -123,9 +159,17 @@ InstalledVirtualsRepository::need_entries() const
 std::tr1::shared_ptr<Repository>
 InstalledVirtualsRepository::make_installed_virtuals_repository(
         Environment * const env,
-        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >)
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > k)
 {
-    return std::tr1::shared_ptr<Repository>(new InstalledVirtualsRepository(env));
+    std::string root_str;
+
+    if (k && (k->end() != k->find("root")))
+        root_str = k->find("root")->second;
+
+    if (root_str.empty())
+        throw ConfigurationError("No root specified for InstalledVirtualsRepository");
+
+    return std::tr1::shared_ptr<Repository>(new InstalledVirtualsRepository(env, FSEntry(root_str)));
 }
 
 bool
@@ -286,12 +330,18 @@ InstalledVirtualsRepository::do_is_licence(const std::string &) const
 void
 InstalledVirtualsRepository::invalidate()
 {
-    _imp.reset(new Implementation<InstalledVirtualsRepository>(_imp->env));
+    _imp.reset(new Implementation<InstalledVirtualsRepository>(_imp->env, _imp->root));
 }
 
 void
 InstalledVirtualsRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &,
         const InstallOptions &) const
 {
+}
+
+FSEntry
+InstalledVirtualsRepository::root() const
+{
+    return _imp->root;
 }
 
