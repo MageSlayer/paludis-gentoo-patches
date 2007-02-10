@@ -695,18 +695,17 @@ AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
 dnl }}}
 
 dnl {{{ repositories
-ALL_REPOSITORIES="cran fake nothing gentoo gems virtuals"
-DEFAULT_REPOSITORIES="fake nothing gentoo virtuals"
+ALL_REPOSITORIES="cran fake gentoo gems virtuals"
+DEFAULT_REPOSITORIES="fake gentoo virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...
 			  Build the specified repositories:
-			  default         Equivalent to fake,nothing,gentoo,virtuals
+			  default         Equivalent to fake,gentoo,virtuals
 
 			  cran            The Comprehensive R Archive Network
 			  fake            A fake repository for test cases and adjutrix
 			  gems            Ruby Gems (requires libyaml) (UNUSABLE)
-			  nothing         A repository with no content
 			  gentoo          Gentoo packages (ebuilds, vdb)
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
@@ -905,7 +904,6 @@ AC_OUTPUT(
 	paludis/repositories/cran/Makefile
 	paludis/repositories/fake/Makefile
 	paludis/repositories/gems/Makefile
-	paludis/repositories/nothing/Makefile
 	paludis/repositories/gentoo/Makefile
 	paludis/repositories/gentoo/ebuild/Makefile
 	paludis/repositories/gentoo/ebuild/digests/Makefile
