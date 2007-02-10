@@ -36,7 +36,7 @@ namespace paludis
     class PackageDatabase;
     class PortageRepository;
 
-#include <paludis/repositories/portage/portage_repository_params-sr.hh>
+#include <paludis/repositories/gentoo/portage_repository_params-sr.hh>
 
 }
 

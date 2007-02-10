@@ -26,8 +26,8 @@
 #include <paludis/version_metadata.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/virtual_constructor.hh>
-#include <paludis/repositories/portage/portage_repository_profile.hh>
-#include <paludis/repositories/portage/portage_repository_params.hh>
+#include <paludis/repositories/gentoo/portage_repository_profile.hh>
+#include <paludis/repositories/gentoo/portage_repository_params.hh>
 #include <string>
 
 /** \file

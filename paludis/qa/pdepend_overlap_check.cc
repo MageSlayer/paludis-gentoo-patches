@@ -24,7 +24,7 @@
 #include <paludis/qa/pdepend_overlap_check.hh>
 #include <paludis/util/join.hh>
 #include <paludis/qa/qa_environment.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <set>
 
 using namespace paludis;

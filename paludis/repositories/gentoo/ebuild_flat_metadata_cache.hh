@@ -23,7 +23,7 @@
 #include <paludis/ebuild.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/version_metadata.hh>
-#include <paludis/repositories/portage/eclass_mtimes.hh>
+#include <paludis/repositories/gentoo/eclass_mtimes.hh>
 
 namespace paludis
 {

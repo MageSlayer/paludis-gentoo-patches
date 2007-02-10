@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~
-SUBDIRS = . digests fetchers syncers utils
+SUBDIRS = . digests utils
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
@@ -40,11 +40,11 @@ libexecprog_SCRIPTS = \
 	work_around_broken_utilities.bash
 
 TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="$(top_srcdir)/ebuild/" \
+	PALUDIS_EBUILD_DIR="$(top_srcdir)/paludis/repositories/gentoo/ebuild/" \
 	PALUDIS_EBUILD_LOG_LEVEL="warning" \
-	TOP_BUILD_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/`" \
+	TOP_BUILD_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/`" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
-	bash $(top_srcdir)/test/run_test.sh $(top_srcdir)/ebuild/run_test.bash
+	bash $(top_srcdir)/test/run_test.sh $(top_srcdir)/paludis/repositories/gentoo/ebuild/run_test.bash
 
 TESTS = echo_functions_TEST.bash list_functions_TEST.bash kernel_functions_TEST.bash \
 	merge_TEST.bash unmerge_TEST.bash

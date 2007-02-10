@@ -24,7 +24,7 @@
 #include <paludis/qa/extract_check.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/qa/qa_environment.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

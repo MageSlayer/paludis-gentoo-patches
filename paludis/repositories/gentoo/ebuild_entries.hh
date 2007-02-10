@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_EBUILD_METADATA_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_EBUILD_METADATA_HH 1
 
-#include <paludis/repositories/portage/portage_repository_entries.hh>
-#include <paludis/repositories/portage/portage_repository_params.hh>
+#include <paludis/repositories/gentoo/portage_repository_entries.hh>
+#include <paludis/repositories/gentoo/portage_repository_params.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 
 /** \file

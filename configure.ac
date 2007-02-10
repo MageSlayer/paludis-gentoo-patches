@@ -695,21 +695,20 @@ AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
 dnl }}}
 
 dnl {{{ repositories
-ALL_REPOSITORIES="cran fake nothing portage vdb gems virtuals"
-DEFAULT_REPOSITORIES="fake nothing portage vdb virtuals"
+ALL_REPOSITORIES="cran fake nothing gentoo gems virtuals"
+DEFAULT_REPOSITORIES="fake nothing gentoo virtuals"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...
 			  Build the specified repositories:
-			  default         Equivalent to fake,nothing,portage,vdb,virtuals
+			  default         Equivalent to fake,nothing,gentoo,vdb,virtuals
 
 			  cran            The Comprehensive R Archive Network
-			  fake            A fake repository for test cases
+			  fake            A fake repository for test cases and adjutrix
 			  gems            Ruby Gems (requires libyaml) (UNUSABLE)
 			  nothing         A repository with no content
-			  portage         Gentoo Portage
-			  vdb             Gentoo installed packages
-			  virtuals        Old style Portage virtuals],
+			  gentoo          Gentoo packages (ebuilds, vdb)
+			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
 			[repositories="$DEFAULT_REPOSITORIES"])
 repositories=`echo $repositories | tr ' ' '\n' | sed -e "s,^default\$,$DEFAULT_REPOSITORIES," | tr ' ' '\n' | sort | uniq | tr '\n' ' '`
@@ -885,13 +884,6 @@ AC_OUTPUT(
 	doc/Makefile
 	doc/doxygen.conf
 	doc/examples/Makefile
-	ebuild/Makefile
-	ebuild/digests/Makefile
-	ebuild/fetchers/Makefile
-	ebuild/syncers/Makefile
-	ebuild/utils/Makefile
-	ebuild/echo_functions.bash
-	ebuild/work_around_broken_utilities.bash
 	eselect/Makefile
 	hooks/Makefile
 	hooks/demos/Makefile
@@ -906,6 +898,7 @@ AC_OUTPUT(
 	paludis/environment/default/Makefile
 	paludis/environment/no_config/Makefile
 	paludis/environment/test/Makefile
+	paludis/fetchers/Makefile
 	paludis/hashed_containers.hh
 	paludis/qa/Makefile
 	paludis/repositories/Makefile
@@ -913,10 +906,15 @@ AC_OUTPUT(
 	paludis/repositories/fake/Makefile
 	paludis/repositories/gems/Makefile
 	paludis/repositories/nothing/Makefile
-	paludis/repositories/portage/Makefile
-	paludis/repositories/vdb/Makefile
+	paludis/repositories/gentoo/Makefile
+	paludis/repositories/gentoo/ebuild/Makefile
+	paludis/repositories/gentoo/ebuild/digests/Makefile
+	paludis/repositories/gentoo/ebuild/utils/Makefile
+	paludis/repositories/gentoo/ebuild/echo_functions.bash
+	paludis/repositories/gentoo/ebuild/work_around_broken_utilities.bash
 	paludis/repositories/virtuals/Makefile
 	paludis/selinux/Makefile
+	paludis/syncers/Makefile
 	paludis/tasks/Makefile
 	paludis/util/Makefile
 	paludis/util/attributes.hh

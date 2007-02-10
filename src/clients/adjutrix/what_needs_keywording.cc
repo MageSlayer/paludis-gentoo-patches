@@ -23,7 +23,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/dep_list/dep_list.hh>

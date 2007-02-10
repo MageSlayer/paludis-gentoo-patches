@@ -18,12 +18,12 @@
 
 unmerge_empty_TEST()
 {
-    ${TOP_BUILD_DIR}/ebuild/merge "unmerge_TEST_dir/empty_src" \
+    ${TOP_BUILD_DIR}/paludis/repositories/gentoo/ebuild/merge "unmerge_TEST_dir/empty_src" \
         "unmerge_TEST_dir/empty_dst" \
         "unmerge_TEST_dir/empty_contents" 1>/dev/null
     test_return_code
 
-    ${TOP_BUILD_DIR}/ebuild/unmerge "unmerge_TEST_dir/empty_dst" \
+    ${TOP_BUILD_DIR}/paludis/repositories/gentoo/ebuild/unmerge "unmerge_TEST_dir/empty_dst" \
         "unmerge_TEST_dir/empty_contents" 1>/dev/null
     test_return_code
 
@@ -38,7 +38,7 @@ unmerge_empty_TEST()
 
 unmerge_files_TEST()
 {
-    ${TOP_BUILD_DIR}/ebuild/merge "unmerge_TEST_dir/files_src" \
+    ${TOP_BUILD_DIR}/paludis/repositories/gentoo/ebuild/merge "unmerge_TEST_dir/files_src" \
         "unmerge_TEST_dir/files_dst" \
         "unmerge_TEST_dir/files_contents" 1>/dev/null
     test_return_code
@@ -51,7 +51,7 @@ unmerge_files_TEST()
     done
     test_equality "$ok" "yes"
 
-    ${TOP_BUILD_DIR}/ebuild/unmerge "unmerge_TEST_dir/files_dst" \
+    ${TOP_BUILD_DIR}/paludis/repositories/gentoo/ebuild/unmerge "unmerge_TEST_dir/files_dst" \
         "unmerge_TEST_dir/files_contents" 1>/dev/null
     test_return_code
 
@@ -66,7 +66,7 @@ unmerge_files_TEST()
 
 unmerge_spaces_TEST()
 {
-    ${TOP_BUILD_DIR}/ebuild/merge "unmerge_TEST_dir/spaces_src" \
+    ${TOP_BUILD_DIR}/paludis/repositories/gentoo/ebuild/merge "unmerge_TEST_dir/spaces_src" \
         "unmerge_TEST_dir/spaces_dst" \
         "unmerge_TEST_dir/spaces_contents"
     test_return_code
@@ -79,7 +79,7 @@ unmerge_spaces_TEST()
     done
     test_equality "$ok" "yes"
 
-    ${TOP_BUILD_DIR}/ebuild/unmerge "unmerge_TEST_dir/spaces_dst" \
+    ${TOP_BUILD_DIR}/paludis/repositories/gentoo/ebuild/unmerge "unmerge_TEST_dir/spaces_dst" \
         "unmerge_TEST_dir/spaces_contents"
     test_return_code
 

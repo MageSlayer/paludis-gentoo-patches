@@ -26,7 +26,7 @@
 #include <paludis/util/iterator.hh>
 #include <paludis/util/save.hh>
 #include <paludis/qa/qa_environment.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

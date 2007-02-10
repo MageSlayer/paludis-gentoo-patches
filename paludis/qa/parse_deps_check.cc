@@ -22,7 +22,7 @@
 #include <paludis/environment.hh>
 #include <paludis/qa/parse_deps_check.hh>
 #include <paludis/qa/qa_environment.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

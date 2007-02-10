@@ -19,7 +19,7 @@
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
-#include <paludis/repositories/portage/glsa.hh>
+#include <paludis/repositories/gentoo/glsa.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
 #include <paludis/config_file.hh>

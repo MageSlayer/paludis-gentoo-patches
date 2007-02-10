@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_MAKE_EBUILD_REPOSITORY_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_MAKE_EBUILD_REPOSITORY_HH 1
 
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 
 namespace paludis
 {

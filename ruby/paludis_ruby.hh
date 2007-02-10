@@ -33,7 +33,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/environment/no_config/no_config_environment.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/query.hh>
 
 #ifdef ENABLE_RUBY_QA

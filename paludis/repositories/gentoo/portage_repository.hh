@@ -24,8 +24,8 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/repositories/portage/portage_repository_params.hh>
-#include <paludis/repositories/portage/portage_repository_profile.hh>
+#include <paludis/repositories/gentoo/portage_repository_params.hh>
+#include <paludis/repositories/gentoo/portage_repository_profile.hh>
 #include <string>
 
 /** \file
@@ -39,7 +39,7 @@ namespace paludis
     class PortageRepositoryProfile;
     class PortageRepositoryNews;
 
-#include <paludis/repositories/portage/portage_repository-sr.hh>
+#include <paludis/repositories/gentoo/portage_repository-sr.hh>
 
     /**
      * A PortageRepository is a Repository that handles the layout used by

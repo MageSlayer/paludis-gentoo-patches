@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/portage/glsa.hh>
+#include <paludis/repositories/gentoo/glsa.hh>
 #include <paludis/util/join.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

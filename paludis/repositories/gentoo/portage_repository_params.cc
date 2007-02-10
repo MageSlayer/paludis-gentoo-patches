@@ -4,5 +4,5 @@
 
 using namespace paludis;
 
-#include <paludis/repositories/portage/portage_repository_params-sr.cc>
+#include <paludis/repositories/gentoo/portage_repository_params-sr.cc>
 

@@ -21,7 +21,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/repositories/portage/portage_repository_exceptions.hh>
+#include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
 #include <paludis/environment.hh>
 
 using namespace paludis;

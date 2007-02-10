@@ -22,7 +22,7 @@
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/qa/qa_environment.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <set>
 
 using namespace paludis;

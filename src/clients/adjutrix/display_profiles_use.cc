@@ -21,7 +21,7 @@
 #include "command_line.hh"
 #include <output/colour.hh>
 #include <paludis/config_file.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/dir_iterator.hh>

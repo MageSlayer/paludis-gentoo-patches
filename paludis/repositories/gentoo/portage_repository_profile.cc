@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/portage/portage_repository_profile.hh>
-#include <paludis/repositories/portage/portage_repository_profile_file.hh>
-#include <paludis/repositories/portage/portage_repository_exceptions.hh>
+#include <paludis/repositories/gentoo/portage_repository_profile.hh>
+#include <paludis/repositories/gentoo/portage_repository_profile_file.hh>
+#include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>

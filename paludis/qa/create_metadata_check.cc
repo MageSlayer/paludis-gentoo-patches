@@ -21,7 +21,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/qa/qa_environment.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 
 using namespace paludis;
 using namespace paludis::qa;

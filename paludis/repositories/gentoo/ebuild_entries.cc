@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/portage/ebuild_entries.hh>
-#include <paludis/repositories/portage/ebuild_flat_metadata_cache.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/ebuild_entries.hh>
+#include <paludis/repositories/gentoo/ebuild_flat_metadata_cache.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/ebuild.hh>

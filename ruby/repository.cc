@@ -20,7 +20,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/repository.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/util/stringify.hh>
 #include <ruby.h>
 

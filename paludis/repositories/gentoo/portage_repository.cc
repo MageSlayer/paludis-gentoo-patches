@@ -20,14 +20,14 @@
 
 #include "config.h"
 
-#include <paludis/repositories/portage/portage_repository.hh>
-#include <paludis/repositories/portage/portage_repository_profile.hh>
-#include <paludis/repositories/portage/portage_repository_news.hh>
-#include <paludis/repositories/portage/portage_repository_sets.hh>
-#include <paludis/repositories/portage/portage_repository_exceptions.hh>
-#include <paludis/repositories/portage/portage_repository_entries.hh>
-#include <paludis/repositories/portage/portage_virtual_version_metadata.hh>
-#include <paludis/repositories/portage/use_desc.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository_profile.hh>
+#include <paludis/repositories/gentoo/portage_repository_news.hh>
+#include <paludis/repositories/gentoo/portage_repository_sets.hh>
+#include <paludis/repositories/gentoo/portage_repository_exceptions.hh>
+#include <paludis/repositories/gentoo/portage_repository_entries.hh>
+#include <paludis/repositories/gentoo/portage_virtual_version_metadata.hh>
+#include <paludis/repositories/gentoo/use_desc.hh>
 
 #include <paludis/config_file.hh>
 #include <paludis/dep_atom.hh>
@@ -73,7 +73,7 @@
 
 using namespace paludis;
 
-#include <paludis/repositories/portage/portage_repository-sr.cc>
+#include <paludis/repositories/gentoo/portage_repository-sr.cc>
 
 namespace paludis
 {

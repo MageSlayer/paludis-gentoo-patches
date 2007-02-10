@@ -20,7 +20,7 @@
 #include <paludis/args/args.hh>
 #include <paludis/paludis.hh>
 #include <paludis/qa/qa.hh>
-#include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/log.hh>

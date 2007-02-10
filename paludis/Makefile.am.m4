@@ -64,7 +64,7 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	hashed_containers.hh.in testscriptlist srlist srcleanlist
-SUBDIRS = digests util . dep_list repositories environment args qa selinux tasks
+SUBDIRS = digests fetchers syncers util selinux . dep_list repositories environment args qa tasks
 BUILT_SOURCES = srcleanlist
 
 libpaludis_la_SOURCES = filelist

@@ -31,7 +31,7 @@
 namespace paludis
 {
 
-#include <paludis/repositories/portage/glsa-sr.hh>
+#include <paludis/repositories/gentoo/glsa-sr.hh>
 
     /**
      * Thrown if a bad GLSA is found.

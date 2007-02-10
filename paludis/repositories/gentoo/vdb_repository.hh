@@ -34,7 +34,7 @@
 namespace paludis
 {
 
-#include <paludis/repositories/vdb/vdb_repository-sr.hh>
+#include <paludis/repositories/gentoo/vdb_repository-sr.hh>
 
     /**
      * A VDBRepository represents the /var/db/pkg database used for

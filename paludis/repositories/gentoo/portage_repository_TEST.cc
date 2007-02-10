@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/portage/portage_repository.hh>
-#include <paludis/repositories/portage/make_ebuild_repository.hh>
+#include <paludis/repositories/gentoo/portage_repository.hh>
+#include <paludis/repositories/gentoo/make_ebuild_repository.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/environment/test/test_environment.hh>
 #include <paludis/util/system.hh>

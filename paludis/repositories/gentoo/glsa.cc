@@ -214,18 +214,18 @@ GLSA::create_from_xml_file(const std::string & filename)
 
 #  else
     if (0 == libxmlhandle.handle)
-        libxmlhandle.handle = dlopen("libpaludisportagerepositoryxmlthings.so",
+        libxmlhandle.handle = dlopen("libpaludisgentoorepositoryxmlthings.so",
                 RTLD_NOW | RTLD_GLOBAL);
     if (0 == libxmlhandle.handle)
         throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
-                + stringify(dlerror()) + "' when dlopen(libpaludisportagerepositoryxmlthings.so)");
+                + stringify(dlerror()) + "' when dlopen(libpaludisgentoorepositoryxmlthings.so)");
 
     if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
         libxmlhandle.create_glsa_from_xml_file_handle = STUPID_CAST(std::tr1::shared_ptr<GLSA> (*)(const std::string &),
                 dlsym(libxmlhandle.handle, "create_glsa_from_xml_file"));
     if (0 == libxmlhandle.create_glsa_from_xml_file_handle)
         throw NotAvailableError("Cannot create GLSA from XML file '" + filename + "' due to error '"
-                + stringify(dlerror()) + "' when dlsym(libpaludisportagerepositoryxmlthings.so, create_glsa_from_xml_file)");
+                + stringify(dlerror()) + "' when dlsym(libpaludisgentoorepositoryxmlthings.so, create_glsa_from_xml_file)");
 
 #  endif
 #else

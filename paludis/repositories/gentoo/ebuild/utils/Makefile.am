@@ -54,11 +54,12 @@ libexecprog_SCRIPTS = \
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 TESTS_ENVIRONMENT = env \
-	PALUDIS_EBUILD_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_srcdir)/ebuild/`" \
-	TOP_BUILD_DIR="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/`" \
+	PALUDIS_EBUILD_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise \
+			   $(top_srcdir)/paludis/repositories/gentoo/ebuild/`" \
+	TOP_BUILD_DIR="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/`" \
 	PALUDIS_EBUILD_LOG_LEVEL="silent" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
-	bash $(top_srcdir)/ebuild/utils/run_test.bash
+	bash $(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/run_test.bash
 
 TESTS = dobin_TEST.bash getfsize_TEST.bash
 

@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/vdb/vdb_repository.hh>
-#include <paludis/repositories/vdb/vdb_version_metadata.hh>
+#include <paludis/repositories/gentoo/vdb_repository.hh>
+#include <paludis/repositories/gentoo/vdb_version_metadata.hh>
 
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
@@ -57,7 +57,7 @@
 
 using namespace paludis;
 
-#include <paludis/repositories/vdb/vdb_repository-sr.cc>
+#include <paludis/repositories/gentoo/vdb_repository-sr.cc>
 
 namespace
 {
