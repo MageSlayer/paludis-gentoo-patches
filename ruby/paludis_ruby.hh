@@ -84,7 +84,7 @@ namespace paludis
         VALUE mask_reasons_to_value(const MaskReasons &);
         VALUE package_database_to_value(std::tr1::shared_ptr<PackageDatabase>);
         VALUE package_database_entry_to_value(const PackageDatabaseEntry &);
-        VALUE repository_to_value(std::tr1::shared_ptr<const Repository>);
+        VALUE repository_to_value(std::tr1::shared_ptr<Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
         VALUE version_metadata_to_value(std::tr1::shared_ptr<const VersionMetadata>);
         VALUE dep_atom_to_value(std::tr1::shared_ptr<const DepAtom>);
@@ -105,6 +105,7 @@ namespace paludis
         PortageRepositoryProfilesDescLine value_to_portage_repository_profiles_desc_line(VALUE v);
         MaskReasons value_to_mask_reasons(VALUE v);
         Query value_to_query(VALUE v);
+        std::tr1::shared_ptr<Repository> value_to_repository(VALUE);
 
 #ifdef ENABLE_RUBY_QA
         VALUE paludis_qa_module();

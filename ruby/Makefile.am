@@ -23,7 +23,6 @@ IF_RUBY_TESTS = \
 	version_spec_TEST.rb \
 	mask_reasons_TEST.rb \
 	dep_atom_TEST.rb \
-	package_database_TEST.rb \
 	repository_TEST.rb \
 	version_metadata_TEST.rb \
 	portage_dep_parser_TEST.rb \
@@ -31,7 +30,8 @@ IF_RUBY_TESTS = \
 	contents_TEST.rb \
 	dep_list_TEST.rb \
 	dep_tag_TEST.rb \
-	query_TEST.rb
+	query_TEST.rb \
+	package_database_TEST.rb
 
 IF_RUBY_QA_TESTS = \
 	message_TEST.rb \
@@ -120,7 +120,7 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
 	$(top_builddir)/paludis/qa/libpaludisqa.la
 
-TESTS = $(IF_RUBY_TESTS) $(IF_RUBY_QA_TESTS)
+TESTS = $(IF_RUBY_QA_TESTS) $(IF_RUBY_TESTS)
 
 else
 

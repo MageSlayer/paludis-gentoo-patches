@@ -385,5 +385,37 @@ module Paludis
                 cd.gsub(Dir.getwd,'')
         end
     end
+
+    class TestCase_DefaultEnvironmentRoot < Test::Unit::TestCase
+        def test_root
+            assert_kind_of String, DefaultEnvironment.instance.root
+        end
+    end
+
+    class TestCase_DefaultEnvironmentDefaultDestinations < Test::Unit::TestCase
+        def test_default_destinations
+            assert_kind_of Array, DefaultEnvironment.instance.default_destinations
+        end
+    end
+
+    class TestCase_DefaultEnvironmentRoot < Test::Unit::TestCase
+        def env
+            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
+        end
+
+        def test_root
+            assert_kind_of String, env.root
+        end
+    end
+
+    class TestCase_DefaultEnvironmentDefaultDestinations < Test::Unit::TestCase
+        def env
+            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
+        end
+
+        def test_default_destinations
+            assert_kind_of Array, env.default_destinations
+        end
+    end
 end
 

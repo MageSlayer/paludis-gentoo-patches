@@ -14,6 +14,13 @@ cache = /var/empty
 profiles = \${location}/profiles/testprofile
 END
 
+cat <<END > home/.paludis/repositories/installed.conf
+location = `pwd`/installed
+format = vdb
+names_cache = /var/empty
+provides_cache = /var/empty
+END
+
 cat <<END > home/.paludis/keywords.conf
 * test
 ~foo/bar-1.0 ~test
@@ -68,4 +75,21 @@ KEYWORDS="~test"
 END
 cd ..
 
+mkdir -p installed/cat-one/pkg-one-1 || exit 1
+
+for i in SLOT EAPI; do
+    echo "0" >installed/cat-one/pkg-one-1/${i}
+done
+
+for i in DEPEND RDEPEND LICENSE INHERITED IUSE PDEPEND PROVIDE; do
+    touch installed/cat-one/pkg-one-1/${i}
+done
+
+echo "flag1 flag2" >>installed/cat-one/pkg-one-1/USE
+
+cat <<END >installed/cat-one/pkg-one-1/CONTENTS
+dir //test
+obj /test/test_file de54c26b0678df67aca147575523b3c2 1165250496
+sym /test/test_link -> /test/test_file 1165250496
+END
 

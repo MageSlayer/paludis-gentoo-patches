@@ -17,10 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifdef CIARANM_DISABLED_THIS
-
 #include <paludis_ruby.hh>
 #include <paludis/dep_list/dep_list.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -825,18 +824,25 @@ namespace
 
     /*
      * call-seq:
-     *     add(dep_atom)
+     *     add(dep_atom, destinations)
      *
      * Add the packages required to resolve an additional dependency atom.
      */
     VALUE
-    dep_list_add(VALUE self, VALUE da)
+    dep_list_add(VALUE self, VALUE da, VALUE d)
     {
         try
         {
             DepList * p;
             Data_Get_Struct(self, DepList, p);
-            p->add(value_to_dep_atom(da));
+            if (!rb_obj_is_kind_of(d, rb_cArray))
+                rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
+            std::tr1::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
+
+            for (long i = 0 ; i < RARRAY(d)->len ; ++i)
+                destinations->insert(value_to_repository(rb_ary_entry(d, i)));
+
+            p->add(value_to_dep_atom(da), destinations);
             return self;
         }
         catch (const std::exception & e)
@@ -876,16 +882,30 @@ namespace
 
     /*
      * call-seq:
-     *     already_installed?(dep_atom)
+     *     already_installed?(dep_atom, destinations)
      *
      * Is an atom structure already installed?
      */
     VALUE
-    dep_list_already_installed(VALUE self, VALUE da)
+    dep_list_already_installed(VALUE self, VALUE da, VALUE d)
     {
-        DepList * p;
-        Data_Get_Struct(self, DepList, p);
-        return p->already_installed(*value_to_dep_atom(da)) ? Qtrue : Qfalse;
+        try
+        {
+            DepList * p;
+            Data_Get_Struct(self, DepList, p);
+            if (!rb_obj_is_kind_of(d, rb_cArray))
+                rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
+            std::tr1::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
+
+            for (long i = 0 ; i < RARRAY(d)->len ; ++i)
+                destinations->insert(value_to_repository(rb_ary_entry(d, i)));
+
+            return p->already_installed(*value_to_dep_atom(da), destinations) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
     }
 
     /*
@@ -1013,6 +1033,14 @@ namespace
         {
             exception_to_ruby_exception(e);
         }
+    }
+
+    VALUE
+    dep_list_entry_destination(VALUE self)
+    {
+        DepListEntry * p;
+        Data_Get_Struct(self, DepListEntry, p);
+        return(repository_to_value(p->destination));
     }
 
     VALUE
@@ -1445,9 +1473,9 @@ namespace
         c_dep_list= rb_define_class_under(paludis_module(), "DepList", rb_cObject);
         rb_define_singleton_method(c_dep_list, "new", RUBY_FUNC_CAST(&dep_list_new), -1);
         rb_define_method(c_dep_list, "initialize", RUBY_FUNC_CAST(&dep_list_init), -1);
-        rb_define_method(c_dep_list, "add", RUBY_FUNC_CAST(&dep_list_add), 1);
+        rb_define_method(c_dep_list, "add", RUBY_FUNC_CAST(&dep_list_add), 2);
         rb_define_method(c_dep_list, "clear", RUBY_FUNC_CAST(&dep_list_clear), 0);
-        rb_define_method(c_dep_list, "already_installed?", RUBY_FUNC_CAST(&dep_list_already_installed), 1);
+        rb_define_method(c_dep_list, "already_installed?", RUBY_FUNC_CAST(&dep_list_already_installed), 2);
         rb_define_method(c_dep_list, "each", RUBY_FUNC_CAST(&dep_list_each), 0);
         rb_include_module(c_dep_list, rb_mEnumerable);
         rb_define_method(c_dep_list, "options", RUBY_FUNC_CAST(&dep_list_options), 0);
@@ -1459,11 +1487,12 @@ namespace
          */
         c_dep_list_entry = rb_define_class_under(paludis_module(), "DepListEntry", rb_cObject);
         rb_funcall(c_dep_list_entry, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_dep_list_entry, "kind", RUBY_FUNC_CAST(&dep_list_entry_kind),0);
-        rb_define_method(c_dep_list_entry, "package", RUBY_FUNC_CAST(&dep_list_entry_package),0);
-        rb_define_method(c_dep_list_entry, "metadata", RUBY_FUNC_CAST(&dep_list_entry_metadata),0);
-        rb_define_method(c_dep_list_entry, "state", RUBY_FUNC_CAST(&dep_list_entry_state),0);
-        rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags),0);
+        rb_define_method(c_dep_list_entry, "kind", RUBY_FUNC_CAST(&dep_list_entry_kind), 0);
+        rb_define_method(c_dep_list_entry, "package", RUBY_FUNC_CAST(&dep_list_entry_package), 0);
+        rb_define_method(c_dep_list_entry, "metadata", RUBY_FUNC_CAST(&dep_list_entry_metadata), 0);
+        rb_define_method(c_dep_list_entry, "state", RUBY_FUNC_CAST(&dep_list_entry_state), 0);
+        rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags), 0);
+        rb_define_method(c_dep_list_entry, "destination", RUBY_FUNC_CAST(&dep_list_entry_destination), 0);
 
         /*
          * Document-class: DepListOverrideMasks
@@ -1486,5 +1515,4 @@ namespace
 RegisterRubyClass::Register paludis_ruby_register_dep_list PALUDIS_ATTRIBUTE((used))
     (&do_register_dep_list);
 
-#endif
 

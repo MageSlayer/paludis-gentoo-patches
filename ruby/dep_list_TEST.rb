@@ -17,9 +17,6 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-# CIARANM_DISABLED_THIS
-exit 0
-
 ENV['PALUDIS_HOME'] = Dir.getwd() + '/dep_list_TEST_dir/home'
 
 require 'test/unit'
@@ -123,6 +120,10 @@ module Paludis
         def pda
             PackageDepAtom.new('foo/bar')
         end
+
+        def dd
+            env.default_destinations
+        end
     end
 
     class TestCase_DepListOptions < Test::Unit::TestCase
@@ -181,7 +182,7 @@ module Paludis
 
         def test_add
             assert_nothing_raised do
-                dl.add(pda)
+                dl.add(pda, dd)
             end
         end
 
@@ -194,21 +195,22 @@ module Paludis
         def test_already_installed?
             dep_atom = pda
             dep_list = dl
-            assert !dep_list.already_installed?(dep_atom)
-            dep_list.add(dep_atom)
-            assert dep_list.already_installed?(dep_atom)
+            assert !dep_list.already_installed?(dep_atom, dd)
+            dep_list.add(dep_atom, dd)
+            assert dep_list.already_installed?(dep_atom, dd)
         end
 
         def test_each
-            assert_kind_of DepListEntry, dl.add(pda).entries.first
+            assert_kind_of DepListEntry, dl.add(pda, dd).entries.first
         end
 
         def test_errors
             assert_raise AllMaskedError do
-                dl.add(PackageDepAtom.new('foo/ba'))
+                dl.add(PackageDepAtom.new('foo/ba'), dd)
             end
+
             begin
-                dl.add(PackageDepAtom.new('foo/ba'))
+                dl.add(PackageDepAtom.new('foo/ba'), dd)
             rescue AllMaskedError => error
                 assert_equal 'foo/ba', error.query
             end
@@ -233,7 +235,7 @@ module Paludis
         include Shared
 
         def dle
-            dl.add(pda).entries.first
+            dl.add(pda, dd).entries.first
         end
 
         def test_create
@@ -246,7 +248,7 @@ module Paludis
             dep_list_entry = dle
             {
                 :package => PackageDatabaseEntry, :metadata => VersionMetadata,
-                :state=> Integer, :tags => Array
+                :state=> Integer, :tags => Array, :destination => Repository
             }.each_pair do |method, returns|
                 assert_respond_to dep_list_entry, method
                 assert_kind_of returns, dep_list_entry.send(method)

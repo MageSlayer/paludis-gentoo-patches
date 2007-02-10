@@ -231,6 +231,41 @@ namespace
     }
 
     /*
+     * call-seq:
+     *     root -> String
+     *
+     * Default root location, default is /.
+     */
+    VALUE
+    environment_root(VALUE self)
+    {
+        EnvironmentData * env_data;
+        Data_Get_Struct(self, EnvironmentData, env_data);
+        return rb_str_new2(stringify(env_data->env_ptr->root()).c_str());
+    }
+
+    /*
+     * call-seq:
+     *     default_destinations -> Array
+     *
+     * Default: All repositories that provide RepositoryDestinationInterface and mark themselves
+     * as a default destination.
+     */
+    VALUE
+    environment_default_destinations(VALUE self)
+    {
+        EnvironmentData * env_data;
+        Data_Get_Struct(self, EnvironmentData, env_data);
+        std::tr1::shared_ptr<const DestinationsCollection> dc = env_data->env_ptr->default_destinations();
+        VALUE result(rb_ary_new());
+        for (DestinationsCollection::Iterator i(dc->begin()), i_end(dc->end()) ; i != i_end ; ++i)
+            rb_ary_push(result, repository_to_value(*i));
+
+        return result;
+
+    }
+
+    /*
      * Gets the config suffix.
      */
     VALUE
@@ -410,6 +445,8 @@ namespace
                 RUBY_FUNC_CAST((&EnvBoolStruct<&Environment::query_user_unmasks>::fetch)), 1);
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
         rb_define_method(c_environment, "package_set", RUBY_FUNC_CAST(&environment_package_set), 1);
+        rb_define_method(c_environment, "root", RUBY_FUNC_CAST(&environment_root), 0);
+        rb_define_method(c_environment, "default_destinations", RUBY_FUNC_CAST(&environment_default_destinations), 0);
 
         /*
          * Document-class: Paludis::DefaultEnvironment

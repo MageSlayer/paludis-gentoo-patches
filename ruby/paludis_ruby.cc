@@ -69,6 +69,7 @@ namespace
     static VALUE c_circular_dependency_error;
     static VALUE c_use_requirements_not_met_error;
     static VALUE c_downgrade_not_allowed_error;
+    static VALUE c_no_destination_error;
 
     static VALUE c_environment;
     static VALUE c_no_config_environment;
@@ -176,6 +177,8 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_use_requirements_not_met_error, dynamic_cast<const paludis::UseRequirementsNotMetError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::DowngradeNotAllowedError *>(&ee))
         rb_raise(c_downgrade_not_allowed_error, dynamic_cast<const paludis::DowngradeNotAllowedError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::NoDestinationError *>(&ee))
+        rb_raise(c_no_destination_error, dynamic_cast<const paludis::NoDestinationError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::DepListError *>(&ee))
         rb_raise(c_dep_list_error, dynamic_cast<const paludis::DepListError *>(&ee)->message().c_str());
 #ifdef ENABLE_RUBY_QA
@@ -333,6 +336,7 @@ void paludis::ruby::init()
     rb_define_method(c_use_requirements_not_met_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
     rb_define_method(c_use_requirements_not_met_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
     c_downgrade_not_allowed_error = rb_define_class_under(c_paludis_module, "DowngradeNotAllowedError", c_dep_list_error);
+    c_no_destination_error = rb_define_class_under(c_paludis_module, "NoDestinationError", c_dep_list_error);
 
     rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 3);
 

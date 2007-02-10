@@ -37,6 +37,7 @@ namespace
     static VALUE c_repository_has_installed_interface;
     static VALUE c_repository_has_installable_interface;
     static VALUE c_repository_has_uninstallable_interface;
+    static VALUE c_installed_at_root;
 
     VALUE
     query_to_value(const Query & v)
@@ -137,6 +138,32 @@ namespace
         }
     };
 
+    /*
+     * call-seq:
+     *     InstalledAtRoot.new(root)
+     *
+     *
+     */
+    VALUE
+    installed_at_root_new(VALUE self, VALUE root)
+    {
+        query::InstalledAtRoot * ptr(0);
+        try
+        {
+            ptr = new query::InstalledAtRoot(FSEntry(StringValuePtr(root)));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::InstalledAtRoot>::free, ptr));
+            rb_obj_call_init(tdata, 1, &root);
+            return tdata;
+
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+
     void do_register_query()
     {
         /*
@@ -178,18 +205,22 @@ namespace
 
         c_repository_has_installed_interface = rb_define_class_under(c_query_module,
                 "RepositoryHasInstalledInterface", c_query);
-        rb_define_singleton_method(c_repository_has_installed_interface, "new", 
+        rb_define_singleton_method(c_repository_has_installed_interface, "new",
                 RUBY_FUNC_CAST(&QueryNew<query::RepositoryHasInstalledInterface>::query_new), 0);
 
         c_repository_has_installable_interface = rb_define_class_under(c_query_module,
                 "RepositoryHasInstallableInterface", c_query);
-        rb_define_singleton_method(c_repository_has_installable_interface, "new", 
+        rb_define_singleton_method(c_repository_has_installable_interface, "new",
                 RUBY_FUNC_CAST(&QueryNew<query::RepositoryHasInstallableInterface>::query_new), 0);
 
         c_repository_has_uninstallable_interface = rb_define_class_under(c_query_module,
                 "RepositoryHasUninstallableInterface", c_query);
-        rb_define_singleton_method(c_repository_has_uninstallable_interface, "new", 
+        rb_define_singleton_method(c_repository_has_uninstallable_interface, "new",
                 RUBY_FUNC_CAST(&QueryNew<query::RepositoryHasUninstallableInterface>::query_new), 0);
+
+        c_installed_at_root = rb_define_class_under(c_query_module,
+                "InstalledAtRoot", c_query);
+        rb_define_singleton_method(c_installed_at_root, "new", RUBY_FUNC_CAST(&installed_at_root_new), 1);
     }
 }
 
