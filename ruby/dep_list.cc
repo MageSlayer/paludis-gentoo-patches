@@ -73,51 +73,51 @@ namespace
         {
             m_ptr = new std::tr1::shared_ptr<DepListOptions>(m);
             return  Data_Wrap_Struct(c_dep_list_options, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, m_ptr);
-            }
-            catch (const std::exception & e)
-            {
-                delete m_ptr;
-                exception_to_ruby_exception(e);
-            }
         }
-
-        VALUE
-        dep_list_entry_to_value(const DepListEntry & v)
+        catch (const std::exception & e)
         {
-            DepListEntry * vv(new DepListEntry(v));
-            return Data_Wrap_Struct(c_dep_list_entry, 0, &Common<DepListEntry>::free, vv);
+            delete m_ptr;
+            exception_to_ruby_exception(e);
         }
+    }
 
-        VALUE
-        dep_list_override_masks_to_value(const DepListOverrideMasks & m)
+    VALUE
+    dep_list_entry_to_value(const DepListEntry & v)
+    {
+        DepListEntry * vv(new DepListEntry(v));
+        return Data_Wrap_Struct(c_dep_list_entry, 0, &Common<DepListEntry>::free, vv);
+    }
+
+    VALUE
+    dep_list_override_masks_to_value(const DepListOverrideMasks & m)
+    {
+        return Data_Wrap_Struct(c_dep_list_override_masks, 0, &Common<DepListOverrideMasks>::free, new DepListOverrideMasks(m));
+    }
+
+    DepListOverrideMasks
+    value_to_dep_list_override_masks(VALUE v)
+    {
+        if (rb_obj_is_kind_of(v, c_dep_list_override_masks))
         {
-            return Data_Wrap_Struct(c_dep_list_override_masks, 0, &Common<DepListOverrideMasks>::free, new DepListOverrideMasks(m));
+            DepListOverrideMasks * v_ptr;
+            Data_Get_Struct(v, DepListOverrideMasks, v_ptr);
+            return *v_ptr;
         }
-
-        DepListOverrideMasks
-        value_to_dep_list_override_masks(VALUE v)
+        else
         {
-            if (rb_obj_is_kind_of(v, c_dep_list_override_masks))
-            {
-                DepListOverrideMasks * v_ptr;
-                Data_Get_Struct(v, DepListOverrideMasks, v_ptr);
-                return *v_ptr;
-            }
-            else
-            {
-                rb_raise(rb_eTypeError, "Can't convert %s into DepListOverrideMasks", rb_obj_classname(v));
-            }
+            rb_raise(rb_eTypeError, "Can't convert %s into DepListOverrideMasks", rb_obj_classname(v));
         }
+    }
 
-        VALUE
-        dep_list_options_init(int, VALUE *, VALUE self)
-        {
-            return self;
-        }
+    VALUE
+    dep_list_options_init(int, VALUE *, VALUE self)
+    {
+        return self;
+    }
 
-        /*
-         * call-seq:
-         *     DepListOptions.new(reinstall, reinstall_scm, target_type, upgrade, new_slots, fall_back, installed_deps_prem installed_deps_runtime, installed_deps_post, uninstalled_deps_pre, uninstalled_deps_runtime, uninstalled_deps_post, uninstalled_deps_suggested, suggested, circular, blocks, dependency_tags) -> DepListOptions
+    /*
+     * call-seq:
+     *     DepListOptions.new(reinstall, reinstall_scm, target_type, upgrade, new_slots, fall_back, installed_deps_prem installed_deps_runtime, installed_deps_post, uninstalled_deps_pre, uninstalled_deps_runtime, uninstalled_deps_post, uninstalled_deps_suggested, suggested, circular, blocks, dependency_tags) -> DepListOptions
      *     DepListOptions.new(Hash) -> DepListOptions
      *     DepListOptions.new -> DepListOptions
      *
