@@ -22,7 +22,7 @@
 
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
-#include <paludis/ebuild.hh>
+#include <paludis/repositories/gentoo/ebuild.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/config_file.hh>

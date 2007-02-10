@@ -4,7 +4,9 @@ DISTCLEANFILES = \
 	portage_repository-sr.hh portage_repository-sr.cc \
 	glsa-sr.hh glsa-sr.cc \
 	portage_repository_params-sr.hh portage_repository_params-sr.cc \
-	vdb_repository-sr.hh vdb_repository-sr.cc
+	vdb_repository-sr.hh vdb_repository-sr.cc \
+	ebuild-sr.hh ebuild-sr.cc
+
 MAINTAINERCLEANFILES = Makefile.in
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
@@ -47,6 +49,8 @@ paludis_repositories_gentoo_includedir = $(includedir)/paludis/repositories/gent
 libpaludisgentoorepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_repositories_gentoo_include_HEADERS = \
+	ebuild.hh \
+	ebuild-sr.hh \
 	glsa.hh \
 	glsa-sr.hh \
 	portage_repository-sr.hh \
@@ -70,6 +74,7 @@ paludis_repositories_gentoo_include_HEADERS = \
 	vdb_repository-sr.hh
 
 libpaludisgentoorepository_la_SOURCES = \
+	ebuild.cc \
 	glsa.cc \
 	portage_repository.cc \
 	portage_repository_profile_file.cc \
@@ -134,7 +139,12 @@ endif
 portage_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)
 
 EXTRA_DIST = \
+	ebuild.sr \
+	ebuild-sr.hh \
+	ebuild-sr.cc \
 	glsa.sr \
+	glsa-sr.hh \
+	glsa-sr.cc \
 	portage_repository_TEST.cc \
 	portage_repository_TEST_setup.sh \
 	portage_repository_TEST_cleanup.sh \
@@ -162,7 +172,9 @@ BUILT_SOURCES = \
 	glsa-sr.hh \
 	glsa-sr.cc \
 	vdb_repository-sr.hh \
-	vdb_repository-sr.cc
+	vdb_repository-sr.cc \
+	ebuild-sr.hh \
+	ebuild-sr.cc
 
 check_SCRIPTS = \
 	portage_repository_TEST_setup.sh portage_repository_TEST_cleanup.sh \
@@ -189,6 +201,12 @@ portage_repository_params-sr.hh : portage_repository_params.sr $(top_srcdir)/mis
 
 portage_repository_params-sr.cc : portage_repository_params.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/portage_repository_params.sr > $@
+
+ebuild-sr.hh : ebuild.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/ebuild.sr > $@
+
+ebuild-sr.cc : ebuild.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/ebuild.sr > $@
 
 glsa-sr.hh : glsa.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/glsa.sr > $@

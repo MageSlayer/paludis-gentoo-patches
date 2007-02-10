@@ -20,9 +20,9 @@
 #include <paludis/repositories/gentoo/ebuild_entries.hh>
 #include <paludis/repositories/gentoo/ebuild_flat_metadata_cache.hh>
 #include <paludis/repositories/gentoo/portage_repository.hh>
+#include <paludis/repositories/gentoo/ebuild.hh>
 
 #include <paludis/dep_atom_flattener.hh>
-#include <paludis/ebuild.hh>
 #include <paludis/environment.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/version_metadata.hh>

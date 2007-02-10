@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_EBUILD_FLAT_METADATA_CACHE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_EBUILD_FLAT_METADATA_CACHE_HH 1
 
-#include <paludis/ebuild.hh>
+#include <paludis/repositories/gentoo/ebuild.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/repositories/gentoo/eclass_mtimes.hh>

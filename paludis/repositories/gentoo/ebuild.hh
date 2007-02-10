@@ -58,7 +58,7 @@ namespace paludis
     class Environment;
     class MakeEnvCommand;
 
-#include <paludis/ebuild-sr.hh>
+#include <paludis/repositories/gentoo/ebuild-sr.hh>
 
     class EbuildVersionMetadata :
         public VersionMetadata,

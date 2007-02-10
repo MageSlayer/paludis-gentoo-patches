@@ -18,7 +18,7 @@
  */
 
 #include <paludis/about.hh>
-#include <paludis/ebuild.hh>
+#include <paludis/repositories/gentoo/ebuild.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/pstream.hh>
@@ -38,7 +38,7 @@
 
 using namespace paludis;
 
-#include <paludis/ebuild-sr.cc>
+#include <paludis/repositories/gentoo/ebuild-sr.cc>
 
 EbuildCommand::EbuildCommand(const EbuildCommandParams & p) :
     params(p)
