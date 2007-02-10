@@ -701,7 +701,7 @@ AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...
 			  Build the specified repositories:
-			  default         Equivalent to fake,nothing,gentoo,vdb,virtuals
+			  default         Equivalent to fake,nothing,gentoo,virtuals
 
 			  cran            The Comprehensive R Archive Network
 			  fake            A fake repository for test cases and adjutrix
