@@ -60,8 +60,7 @@ CommandLine::CommandLine() :
     a_package(&search_args,    "package",    '\0', "Matches with this package name only",
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate)
 {
-    add_usage_line("--search [search options] pattern ...");
-    add_usage_line("--info");
+    add_usage_line("[ --search ] [search options] pattern ...");
     add_usage_line("--help");
 
     add_environment_variable("INQUISITIO_OPTIONS", "Default command-line options.");
