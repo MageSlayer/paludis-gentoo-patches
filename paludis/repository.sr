@@ -19,6 +19,20 @@ make_class_InstallOptions()
 END
 }
 
+make_class_UninstallOptions()
+{
+    key no_config_protect bool
+
+    doxygen_comment << "END"
+        /**
+         * Options for the Repository::uninstall method.
+         *
+         * \see Repository
+         * \ingroup grprepository
+         */
+END
+}
+
 make_class_RepositoryCapabilities()
 {
     key installable_interface "RepositoryInstallableInterface *"

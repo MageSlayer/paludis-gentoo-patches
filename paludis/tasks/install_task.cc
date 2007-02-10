@@ -36,6 +36,7 @@ namespace paludis
         DepList dep_list;
         DepList::Iterator current_dep_list_entry;
         InstallOptions install_options;
+        UninstallOptions uninstall_options;
 
         std::list<std::string> raw_targets;
         std::tr1::shared_ptr<AllDepAtom> targets;
@@ -52,6 +53,7 @@ namespace paludis
             dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
             install_options(false, false, ido_none, false, std::tr1::shared_ptr<Repository>()),
+            uninstall_options(false),
             targets(new AllDepAtom),
             pretend(false),
             preserve_world(false),
@@ -344,7 +346,7 @@ InstallTask::execute()
 
                 try
                 {
-                    uninstall_interface->uninstall(c->name, c->version, _imp->install_options);
+                    uninstall_interface->uninstall(c->name, c->version, _imp->uninstall_options);
                 }
                 catch (const PackageUninstallActionError & e)
                 {
@@ -441,6 +443,7 @@ void
 InstallTask::set_no_config_protect(const bool value)
 {
     _imp->install_options.no_config_protect = value;
+    _imp->uninstall_options.no_config_protect = value;
 }
 
 void

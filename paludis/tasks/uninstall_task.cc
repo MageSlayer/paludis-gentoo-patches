@@ -33,7 +33,7 @@ namespace paludis
     struct Implementation<UninstallTask>
     {
         Environment * const env;
-        InstallOptions install_options;
+        UninstallOptions uninstall_options;
 
         std::list<std::string> raw_targets;
         std::list<std::tr1::shared_ptr<PackageDepAtom> > targets;
@@ -50,7 +50,7 @@ namespace paludis
 
         Implementation<UninstallTask>(Environment * const e) :
             env(e),
-            install_options(false, false, ido_none, false, std::tr1::shared_ptr<Repository>()),
+            uninstall_options(false),
             pretend(false),
             preserve_world(false),
             all_versions(false),
@@ -82,7 +82,7 @@ UninstallTask::set_pretend(const bool v)
 void
 UninstallTask::set_no_config_protect(const bool v)
 {
-    _imp->install_options.no_config_protect = v;
+    _imp->uninstall_options.no_config_protect = v;
 }
 
 void
@@ -314,8 +314,7 @@ UninstallTask::execute()
 
         try
         {
-            _imp->install_options.destination = _imp->env->package_database()->fetch_repository(i->package.repository);
-            uninstall_interface->uninstall(i->package.name, i->package.version, _imp->install_options);
+            uninstall_interface->uninstall(i->package.name, i->package.version, _imp->uninstall_options);
         }
         catch (const PackageUninstallActionError & e)
         {

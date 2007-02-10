@@ -517,7 +517,7 @@ CRANInstalledRepository::do_is_licence(const std::string &) const
 
 void
 CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v,
-        const InstallOptions &) const
+        const UninstallOptions &) const
 {
     Context context("When uninstalling '" + stringify(q) + "-" + stringify(v) +
             "' from '" + stringify(name()) + "':");

@@ -94,7 +94,7 @@ namespace paludis
             virtual bool do_is_licence(const std::string &) const;
 
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &, 
-                    const InstallOptions &) const;
+                    const UninstallOptions &) const;
 
             virtual std::tr1::shared_ptr<DepAtom> do_package_set(const SetName &) const;
 

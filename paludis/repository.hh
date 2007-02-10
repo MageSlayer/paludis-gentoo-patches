@@ -690,7 +690,7 @@ namespace paludis
              * Override in descendents: uninstall.
              */
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &,
-                    const InstallOptions &) const = 0;
+                    const UninstallOptions &) const = 0;
 
             ///\}
 
@@ -701,7 +701,7 @@ namespace paludis
             /**
              * Uninstall a package.
              */
-            void uninstall(const QualifiedPackageName & q, const VersionSpec & v, const InstallOptions & i) const
+            void uninstall(const QualifiedPackageName & q, const VersionSpec & v, const UninstallOptions & i) const
             {
                 do_uninstall(q, v, i);
             }

@@ -896,7 +896,7 @@ VDBRepository::do_is_licence(const std::string &) const
 }
 
 void
-VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v, const InstallOptions & o) const
+VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v, const UninstallOptions & o) const
 {
     Context context("When uninstalling '" + stringify(q) + "-" + stringify(v) +
             "' from '" + stringify(name()) + "':");

@@ -32,7 +32,6 @@ namespace paludis
     class PALUDIS_VISIBLE InstalledVirtualsRepository :
         public Repository,
         public RepositoryInstalledInterface,
-        public RepositoryUninstallableInterface,
         public RepositoryMaskInterface,
         private PrivateImplementationPattern<InstalledVirtualsRepository>
     {
@@ -66,9 +65,6 @@ namespace paludis
             virtual bool do_has_category_named(const CategoryNamePart &) const;
 
             virtual bool do_is_licence(const std::string &) const;
-
-            virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &, 
-                    const InstallOptions &) const;
 
         public:
             ///\name Basic operations

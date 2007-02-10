@@ -92,7 +92,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .news_interface(0)
             .sets_interface(0)
             .syncable_interface(0)
-            .uninstallable_interface(this)
+            .uninstallable_interface(0)
             .mirrors_interface(0)
             .environment_variable_interface(0)
             .world_interface(0)
@@ -331,12 +331,6 @@ void
 InstalledVirtualsRepository::invalidate()
 {
     _imp.reset(new Implementation<InstalledVirtualsRepository>(_imp->env, _imp->root));
-}
-
-void
-InstalledVirtualsRepository::do_uninstall(const QualifiedPackageName &, const VersionSpec &,
-        const InstallOptions &) const
-{
 }
 
 FSEntry
