@@ -34,6 +34,7 @@
 #include <paludis/environment.hh>
 #include <paludis/environment/no_config/no_config_environment.hh>
 #include <paludis/repositories/portage/portage_repository.hh>
+#include <paludis/query.hh>
 
 #ifdef ENABLE_RUBY_QA
 #include <paludis/qa/qa.hh>
@@ -76,6 +77,8 @@ namespace paludis
         VALUE environment_class();
         VALUE no_config_environment_class();
 
+        bool is_kind_of_query(VALUE query);
+
         /* constructors */
 
         VALUE mask_reasons_to_value(const MaskReasons &);
@@ -101,6 +104,7 @@ namespace paludis
         NoConfigEnvironment* value_to_no_config_environment(VALUE v);
         PortageRepositoryProfilesDescLine value_to_portage_repository_profiles_desc_line(VALUE v);
         MaskReasons value_to_mask_reasons(VALUE v);
+        Query value_to_query(VALUE v);
 
 #ifdef ENABLE_RUBY_QA
         VALUE paludis_qa_module();

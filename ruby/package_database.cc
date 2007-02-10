@@ -78,16 +78,29 @@ namespace
 
     /*
      * call-seq:
+     *     query(query, query_order) -> Array
      *     query(atom, install_state, query_order) -> Array
      *
-     *  Query the repositoty. Returns an array of PackageDatabaseEntry
+     *  Query the repository, the first argument is either a PackageDepAtom or a Query.
+     *  Returns an array of PackageDatabaseEntry.
      */
     VALUE
     package_database_query(int argc, VALUE *argv, VALUE self)
     {
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> items;
         try
         {
-            if (2 == argc || 3 == argc)
+            if (2 == argc && is_kind_of_query(argv[0]))
+            {
+                Query q = value_to_query(argv[0]);
+                QueryOrder qo = static_cast<QueryOrder>(NUM2INT(argv[1]));
+
+                std::tr1::shared_ptr<PackageDatabase> * self_ptr;
+                Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+
+                items = ((*self_ptr)->query(q, qo));
+            }
+            else if (2 == argc || 3 == argc)
             {
                 QueryOrder qo;
                 std::tr1::shared_ptr<const PackageDepAtom> pda(value_to_package_dep_atom(argv[0]));
@@ -95,7 +108,7 @@ namespace
                 if (2 ==argc)
                 {
                     qo = qo_order_by_version;
-                    rb_warn("Calling query with two arguments has been deprecated");
+                    rb_warn("Calling query with (PackageDepAtom, InstallState) has been deprecated");
                 }
                 else
                     qo = static_cast<QueryOrder>(NUM2INT(argv[2]));
@@ -103,25 +116,23 @@ namespace
                 std::tr1::shared_ptr<PackageDatabase> * self_ptr;
                 Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
 
-                std::tr1::shared_ptr<const PackageDatabaseEntryCollection> items((*self_ptr)->query(
-                            *pda, is, qo
-                            ));
+                items = ((*self_ptr)->query(*pda, is, qo));
 
-                VALUE result(rb_ary_new());
-                for (PackageDatabaseEntryCollection::Iterator i(items->begin()),
-                        i_end(items->end()) ; i != i_end ; ++i)
-                    rb_ary_push(result, package_database_entry_to_value(*i));
-                return result;
             }
             else
             {
-                rb_raise(rb_eArgError, "query expects three arguments, but got %d",argc);
+                rb_raise(rb_eArgError, "query expects two or three arguments, but got %d",argc);
             }
         }
         catch (const std::exception & e)
         {
             exception_to_ruby_exception(e);
         }
+        VALUE result(rb_ary_new());
+        for (PackageDatabaseEntryCollection::Iterator i(items->begin()),
+                i_end(items->end()) ; i != i_end ; ++i)
+            rb_ary_push(result, package_database_entry_to_value(*i));
+        return result;
     }
 
     /*

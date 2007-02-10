@@ -78,6 +78,10 @@ module Paludis
                 db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Any, QueryOrder::Whatever)
             end
 
+            assert_nothing_raised do
+                db.query(Query::Matches.new(PackageDepAtom.new('=foo/bar-1.0')), QueryOrder::Whatever)
+            end
+
             assert_raise ArgumentError do
                 db.query(1,2,3,4);
             end
@@ -87,13 +91,24 @@ module Paludis
             a = db.query("=foo/bar-1.0", InstallState::InstallableOnly, QueryOrder::Whatever)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
+            a = db.query(Query::Matches.new('=foo/bar-1.0') & Query::RepositoryHasInstallableInterface.new,
+                         QueryOrder::Whatever)
+            assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
+
             a = db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Any, QueryOrder::Whatever)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
             a = db.query("foo/bar", InstallState::InstallableOnly, QueryOrder::OrderByVersion)
             assert_equal a, [
                 PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo"),
-                PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo") ]
+                PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo")
+            ]
+
+            a = db.query(Query::Package.new('foo/bar'), QueryOrder::OrderByVersion)
+            assert_equal a, [
+                PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo"),
+                PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo")
+            ]
 
             a = db.query(">=foo/bar-27", InstallState::InstallableOnly, QueryOrder::Whatever)
             assert a.empty?
