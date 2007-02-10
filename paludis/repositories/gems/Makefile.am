@@ -124,7 +124,7 @@ TESTS_ENVIRONMENT = env \
 	PALUDIS_SKIP_CONFIG="yes" \
 	TEST_SCRIPT_DIR="$(srcdir)/" \
 	PALUDIS_REPOSITORY_SO_DIR="$(top_builddir)/paludis/repositories" \
-	LD_LIBRARY_PATH="`$(top_srcdir)/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gems/`" \
+	LD_LIBRARY_PATH="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gems/`" \
 	bash $(top_srcdir)/test/run_test.sh
 
 TESTS = yaml_TEST gems_repository_TEST cache_TEST
