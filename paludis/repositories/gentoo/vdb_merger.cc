@@ -1,0 +1,207 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include "vdb_merger.hh"
+#include <paludis/util/log.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/digests/md5.hh>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+#include <list>
+
+using namespace paludis;
+
+#include <paludis/repositories/gentoo/vdb_merger-sr.cc>
+
+namespace paludis
+{
+    template<>
+    struct Implementation<VDBMerger>
+    {
+        VDBMergerOptions options;
+        std::tr1::shared_ptr<std::ofstream> contents_file;
+
+        std::list<std::string> config_protect;
+        std::list<std::string> config_protect_mask;
+
+        Implementation(const VDBMergerOptions & o) :
+            options(o)
+        {
+            WhitespaceTokeniser::get_instance()->tokenise(o.config_protect,
+                    std::back_inserter(config_protect));
+            WhitespaceTokeniser::get_instance()->tokenise(o.config_protect_mask,
+                    std::back_inserter(config_protect_mask));
+        }
+    };
+}
+
+VDBMerger::VDBMerger(const VDBMergerOptions & o) :
+    Merger(MergerOptions::create()
+            .environment(o.environment)
+            .image(o.image)
+            .root(o.root)),
+    PrivateImplementationPattern<VDBMerger>(new Implementation<VDBMerger>(o))
+{
+}
+
+VDBMerger::~VDBMerger()
+{
+}
+
+void
+VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
+{
+    std::string tidy(make_tidy(dst_dir / dst_name)), tidy_real(make_tidy(dst_dir / src.basename()));
+    time_t timestamp((dst_dir / dst_name).mtime());
+
+    std::ifstream infile(stringify(FSEntry(dst_dir / dst_name)).c_str());
+    if (! infile)
+        throw MergerError("Cannot read '" + stringify(FSEntry(dst_dir / dst_name)) + "'");
+
+    MD5 md5(infile);
+
+    std::cout << ">>> [obj] " << tidy_real;
+    if (tidy_real != tidy)
+        std::cout << " (" << FSEntry(tidy).basename() << ")";
+    std::cout << std::endl;
+
+    *_imp->contents_file << "obj " << tidy_real << " " << md5.hexsum() << " " << timestamp << std::endl;
+}
+
+void
+VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir)
+{
+    std::string tidy(make_tidy(dst_dir / src.basename()));
+
+    std::cout << ">>> [dir] " << tidy << std::endl;
+
+    *_imp->contents_file << "dir " << tidy << std::endl;
+}
+
+void
+VDBMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir)
+{
+    std::string tidy(make_tidy(dst_dir / src.basename()));
+    std::string target((dst_dir / src.basename()).readlink());
+    time_t timestamp((dst_dir / src.basename()).mtime());
+
+    std::cout << ">>> [sym] " << tidy << std::endl;
+
+    *_imp->contents_file << "sym " << tidy << " -> " << target << " " << timestamp << std::endl;
+}
+
+void
+VDBMerger::on_error(bool is_check, const std::string & s)
+{
+    make_check_fail();
+
+    if (is_check)
+        std::cout << "!!! " << s << std::endl;
+    else
+        throw MergerError(s);
+}
+
+void
+VDBMerger::on_warn(bool is_check, const std::string & s)
+{
+    if (is_check)
+        Log::get_instance()->message(ll_warning, lc_context, s);
+}
+
+bool
+VDBMerger::config_protected(const FSEntry & src, const FSEntry & dst_dir)
+{
+    std::string tidy(make_tidy(dst_dir / src.basename()));
+
+    bool result(false);
+    for (std::list<std::string>::const_iterator c(_imp->config_protect.begin()),
+            c_end(_imp->config_protect.end()) ; c != c_end && ! result ; ++c)
+        if (0 == tidy.compare(0, c->length(), *c))
+            result = true;
+    if (result)
+        for (std::list<std::string>::const_iterator c(_imp->config_protect_mask.begin()),
+                c_end(_imp->config_protect_mask.end()) ; c != c_end && result ; ++c)
+            if (0 == tidy.compare(0, c->length(), *c))
+                result = false;
+
+    return result;
+}
+
+std::string
+VDBMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
+{
+    std::string result_name(src.basename());
+    int n(0);
+
+    std::ifstream our_md5_file(stringify(src).c_str());
+    if (! our_md5_file)
+        throw MergerError("Could not get md5 for '" + stringify(dst / src.basename()) + "'");
+    MD5 our_md5(our_md5_file);
+
+    while (true)
+    {
+        if (! (_imp->options.root / dst / result_name).exists())
+            break;
+
+        if ((_imp->options.root / dst / result_name).is_regular_file())
+        {
+            std::ifstream other_md5_file(stringify(_imp->options.root / dst / result_name).c_str());
+            if (other_md5_file)
+            {
+                MD5 other_md5(other_md5_file);
+                if (our_md5.hexsum() == other_md5.hexsum())
+                    break;
+            }
+        }
+
+        std::stringstream s;
+        s << std::setw(4) << std::setfill('0') << std::right << n++;
+        result_name = "._cfg" + s.str() + "_" + src.basename();
+    }
+
+    return result_name;
+}
+
+void
+VDBMerger::merge()
+{
+    std::cout << ">>> Merging to " << _imp->options.root << std::endl;
+    _imp->contents_file.reset(new std::ofstream(stringify(_imp->options.contents_file).c_str()));
+    Merger::merge();
+}
+
+bool
+VDBMerger::check()
+{
+    std::cout << ">>> Checking whether we can merge to " << _imp->options.root << std::endl;
+    return Merger::check();
+}
+
+std::string
+VDBMerger::make_tidy(const FSEntry & f) const
+{
+    std::string root_str(stringify(_imp->options.root)), f_str(stringify(f));
+    if (root_str == "/")
+        root_str.clear();
+    if (0 != f_str.compare(0, root_str.length(), root_str))
+        throw MergerError("Can't work out tidy name for '" + f_str + "' with root '" + root_str + "'");
+    return f_str.substr(root_str.length());
+}
+
