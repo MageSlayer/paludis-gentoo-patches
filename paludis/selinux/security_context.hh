@@ -106,8 +106,9 @@ namespace paludis
      * Create an FSCreateCon object to set the security context of newly created file objects.
      * When destroyed, it will revert to the previous creation context.
      *
-     * Note that this operation is not thread-safe. Any multi-threaded code calling it must use a
-     * critical section to ensure the desired behaviour.
+     * Note that with older versions of libselinux this operation is not thread-safe. Any
+     * multi-threaded code calling it must use a critical section to ensure the desired
+     * behaviour on all systems.
      *
      * \ingroup grplibpaludisselinux
      */

@@ -26,7 +26,8 @@ libpaludismerger_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_R
 
 libpaludismerger_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/libpaludis.la
+	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/selinux/libpaludisselinux.la
 
 lib_LTLIBRARIES = libpaludismerger.la
 

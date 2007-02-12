@@ -23,16 +23,17 @@
 
 #include "config.h"
 
-#ifdef HAVE_SELINUX
 
 #include <dlfcn.h>
-#include <selinux/selinux.h>
 
 // I think the name explains it. C++ is picky about casting to function pointers.
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
 
 namespace
 {
+    // Declared here to remove dep on <selinux/selinux.h>
+    typedef char *security_context_t;
+
     class LibSELinux
     {
         private:
@@ -237,5 +238,3 @@ std::tr1::shared_ptr<const SecurityContext> MatchPathCon::match(const std::strin
     }
     return p;
 }
-
-#endif

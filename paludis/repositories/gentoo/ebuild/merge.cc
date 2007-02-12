@@ -141,7 +141,7 @@ namespace
 
             mode_t mode(src_dir.permissions());
 
-#ifdef HAVE_SELINUX
+//#ifdef HAVE_SELINUX
             std::tr1::shared_ptr<FSCreateCon> createcon;
             if (MatchPathCon::get_instance()->good())
             {
@@ -149,7 +149,7 @@ namespace
                             mode));
                 createcon.reset(p);
             }
-#endif
+//#endif
 
             FSEntry dst_dir_copy(dst_dir);
             dst_dir_copy.mkdir(mode);
@@ -246,13 +246,13 @@ namespace
             /* FDHolder must be destroyed before we do the md5 thing, or the
              * disk write may not have synced. */
             {
-#ifdef HAVE_SELINUX
+//#ifdef HAVE_SELINUX
                 std::tr1::shared_ptr<FSCreateCon> createcon;
                 if (MatchPathCon::get_instance()->good())
                     createcon.reset(new 
                             FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()) + "/"
                                     + dst.basename(), src.permissions())));
-#endif
+//#endif
                 FDHolder fd(::open(stringify(real_dst).c_str(), O_WRONLY | O_CREAT, src.permissions()));
                 if (-1 == fd)
                     throw Failure("Cannot open '" + stringify(real_dst) + "' for write");
@@ -325,7 +325,7 @@ namespace
         else
             cout << " <new>" << endl;
 
-#ifdef HAVE_SELINUX
+//#ifdef HAVE_SELINUX
         // permissions() on a symlink does weird things, but matchpathcon only cares about the file type,
         // so just pass S_IFLNK.
         std::tr1::shared_ptr<FSCreateCon> createcon;
@@ -333,7 +333,7 @@ namespace
             createcon.reset(new
                     FSCreateCon(MatchPathCon::get_instance()->match(dst_dir_str.substr(root_str.length()) + "/"
                             + dst.basename(), S_IFLNK)));
-#endif
+//#endif
 
         if (0 != ::symlink(src.readlink().c_str(), stringify(dst).c_str()))
         {
@@ -383,12 +383,12 @@ main(int argc, char * argv[])
 {
     Context context("In main program:");
 
-#ifdef HAVE_SELINUX
+//#ifdef HAVE_SELINUX
     // If the MatchPathCon initialisation fails, don't attempt to match contexts when merging.
     if (! MatchPathCon::get_instance()->good())
         Log::get_instance()->message(ll_warning, lc_no_context,
                 "matchpathcon_init failed; not setting security contexts");
-#endif
+//#endif
 
     exit_status = 0;
     try

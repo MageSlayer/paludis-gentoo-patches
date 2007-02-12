@@ -41,6 +41,7 @@ qualudis_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
+	$(top_builddir)/paludis/selinux/libpaludisselinux.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(PCREPLUSPLUS_LIBS) \

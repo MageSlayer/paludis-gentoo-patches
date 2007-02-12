@@ -547,29 +547,6 @@ AC_SUBST(DYNAMIC_LD_LIBS)
 
 dnl }}}
 
-dnl {{{ selinux support
-AC_MSG_CHECKING([whether to enable selinux support])
-AC_ARG_ENABLE([selinux],
-   AS_HELP_STRING([--enable-selinux], [Enable selinux support (default: check)]),
-   enable_selinux=$enableval,
-   enable_selinux=autodetect)
-AC_MSG_RESULT($enable_selinux)
-
-if test "x$enable_selinux" != "xno"; then
-   AC_CHECK_LIB([selinux],
-				[is_selinux_enabled],
-				found_selinux=yes,
-				found_selinux=no)
-   if test "x$enable_selinux" = "xyes" && test "x$found_selinux" != "xyes"; then
-      AC_MSG_ERROR([SElinux support requested but not found])
-   fi
-fi
-
-if test "x$found_selinux" = "xyes"; then
-   AC_DEFINE([HAVE_SELINUX], [1], [Build selinux support])
-fi
-dnl }}}
-
 dnl {{{ gtk support
 AC_MSG_CHECKING([whether to build the gtk+ client])
 AC_ARG_ENABLE([gtk],

@@ -21,6 +21,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fd_holder.hh>
+#include <paludis/selinux/security_context.hh>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -442,6 +443,7 @@ Merger::on_sym_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst
 void
 Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
 {
+    FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir/dst_name), src.permissions()));
     FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
     if (-1 == input_fd)
         throw MergerError("Cannot read '" + stringify(src) + "'");
@@ -469,6 +471,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
 {
     mode_t mode(src.permissions());
     FSEntry dst(dst_dir / src.basename());
+    FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), mode));
     dst.mkdir(mode);
     dst.chown(src.owner(), src.group());
     /* pick up set*id bits */
@@ -478,6 +481,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
 void
 Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 {
+    FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
     if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst_dir / src.basename()).c_str()))
         throw MergerError("Couldn't create symlink at '" + stringify(dst_dir / src.basename()) + "'");
 }
