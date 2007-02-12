@@ -19,6 +19,8 @@
 
 #include <paludis/repositories/gentoo/vdb_repository.hh>
 #include <paludis/repositories/gentoo/vdb_version_metadata.hh>
+#include <paludis/repositories/gentoo/vdb_merger.hh>
+#include <paludis/repositories/gentoo/vdb_unmerger.hh>
 
 #include <paludis/dep_atom.hh>
 #include <paludis/dep_atom_flattener.hh>
@@ -300,7 +302,7 @@ namespace paludis
         VDBRepositoryParams params;
 
         /// Our owning env.
-        const Environment * const env;
+        Environment * const env;
 
         /// Our base location.
         FSEntry location;
@@ -419,9 +421,24 @@ namespace paludis
 
             for (DirIterator pkg_i(dir), pkg_iend ; pkg_i != pkg_iend ; ++pkg_i)
             {
-                PackageDepAtom atom("=" + stringify(cat) + "/" + pkg_i->basename());
-                entries.push_back(VDBEntry(atom.package(),
-                            atom.version_requirements_ptr()->begin()->version_spec));
+                if (! pkg_i->is_directory())
+                    continue;
+
+                if ('-' == pkg_i->basename().at(0))
+                    continue;
+
+                try
+                {
+                    PackageDepAtom atom("=" + stringify(cat) + "/" + pkg_i->basename());
+                    entries.push_back(VDBEntry(atom.package(),
+                                atom.version_requirements_ptr()->begin()->version_spec));
+                }
+                catch (const Exception & e)
+                {
+                    Log::get_instance()->message(ll_warning, lc_context, "Ignoring VDB entry '"
+                            + stringify(*pkg_i) + "' due to exception '" + stringify(e.message()) + "' ("
+                            + e.what() + ")");
+                }
             }
 
             std::sort(entries.begin(), entries.end());
@@ -898,34 +915,39 @@ VDBRepository::do_is_licence(const std::string &) const
 void
 VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & v, const UninstallOptions & o) const
 {
+    _uninstall(q, v, o, false);
+}
+
+void
+VDBRepository::_uninstall(const QualifiedPackageName & q, const VersionSpec & v, const UninstallOptions & o,
+        bool reinstalling) const
+{
     Context context("When uninstalling '" + stringify(q) + "-" + stringify(v) +
-            "' from '" + stringify(name()) + "':");
+            "' from '" + stringify(name()) + (reinstalling ? "' for a reinstall:" : "':"));
 
     if (! _imp->root.is_directory())
         throw PackageInstallActionError("Couldn't uninstall '" + stringify(q) + "-" +
                 stringify(v) + "' because root ('" + stringify(_imp->root) + "') is not a directory");
 
-    std::tr1::shared_ptr<const VersionMetadata> metadata;
-    if (! has_version(q, v))
+    if ((! reinstalling) && (! has_version(q, v)))
         throw PackageInstallActionError("Couldn't uninstall '" + stringify(q) + "-" +
                 stringify(v) + "' because has_version failed");
-    else
-        metadata = version_metadata(q, v);
+
+    std::string reinstalling_str(reinstalling ? "-reinstalling-" : "");
 
     PackageDatabaseEntry e(q, v, name());
 
     std::tr1::shared_ptr<FSEntryCollection> eclassdirs(new FSEntryCollection::Concrete);
     eclassdirs->append(FSEntry(_imp->location / stringify(q.category) /
-                (stringify(q.package) + "-" + stringify(v))));
+                (reinstalling_str + stringify(q.package) + "-" + stringify(v))));
 
-    FSEntry pkg_dir(_imp->location / stringify(q.category) /
-            (stringify(q.package) + "-" + stringify(v)));
+    FSEntry pkg_dir(_imp->location / stringify(q.category) / (reinstalling_str + stringify(q.package) + "-" + stringify(v)));
 
     std::tr1::shared_ptr<FSEntry> load_env;
     if (is_full_env(pkg_dir))
         load_env.reset(new FSEntry(pkg_dir / "environment.bz2"));
 
-    EbuildUninstallCommand uninstall_cmd(EbuildCommandParams::create()
+    EbuildCommandParams params(EbuildCommandParams::create()
             .environment(_imp->env)
             .db_entry(&e)
             .ebuild_dir(pkg_dir)
@@ -933,15 +955,50 @@ VDBRepository::do_uninstall(const QualifiedPackageName & q, const VersionSpec & 
             .eclassdirs(eclassdirs)
             .portdir(_imp->location)
             .distdir(pkg_dir)
-            .buildroot(_imp->buildroot),
+            .buildroot(_imp->buildroot));
 
-            EbuildUninstallCommandParams::create()
+    EbuildUninstallCommandParams uninstall_params(EbuildUninstallCommandParams::create()
+            .phase(up_preremove)
             .root(stringify(_imp->root) + "/")
             .disable_cfgpro(o.no_config_protect)
             .unmerge_only(is_ebuilded(pkg_dir))
+            .loadsaveenv_dir(pkg_dir)
             .load_environment(load_env.get()));
 
-    uninstall_cmd();
+    EbuildUninstallCommand uninstall_cmd_pre(params, uninstall_params);
+    uninstall_cmd_pre();
+
+    /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */
+    std::string config_protect, config_protect_mask;
+    {
+        std::ifstream c(stringify(pkg_dir / "CONFIG_PROTECT").c_str());
+        config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>()) +
+            " " + getenv_with_default("CONFIG_PROTECT", "");
+
+        std::ifstream c_m(stringify(pkg_dir / "CONFIG_PROTECT_MASK").c_str());
+        config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>()) +
+            " " + getenv_with_default("CONFIG_PROTECT_MASK", "");
+    }
+
+    /* unmerge */
+    VDBUnmerger unmerger(
+            VDBUnmergerOptions::create()
+            .environment(_imp->params.environment)
+            .root(root())
+            .contents_file(pkg_dir / "CONTENTS")
+            .config_protect(config_protect)
+            .config_protect_mask(config_protect_mask));
+
+    unmerger.unmerge();
+
+    uninstall_params.phase = up_postremove;
+    EbuildUninstallCommand uninstall_cmd_post(params, uninstall_params);
+    uninstall_cmd_post();
+
+    /* remove vdb entry */
+    for (DirIterator d(pkg_dir, false), d_end ; d != d_end ; ++d)
+        FSEntry(*d).unlink();
+    pkg_dir.rmdir();
 }
 
 void
@@ -1538,5 +1595,77 @@ FSEntry
 VDBRepository::root() const
 {
     return _imp->root;
+}
+
+bool
+VDBRepository::want_pre_post_phases() const
+{
+    return true;
+}
+
+void
+VDBRepository::merge(const MergeOptions & m)
+{
+    Context context("When merging '" + stringify(m.package) + "' at '" + stringify(m.image_dir)
+            + "' to VDB repository '" + stringify(name()) + "':");
+
+    if (! is_suitable_destination_for(m.package))
+        throw PackageInstallActionError("Not a suitable destination for '" + stringify(m.package) + "'");
+
+    bool is_replace(has_version(m.package.name, m.package.version));
+
+    FSEntry vdb_dir(_imp->params.location);
+    vdb_dir.mkdir();
+    vdb_dir /= stringify(m.package.name.category);
+    vdb_dir.mkdir();
+    vdb_dir /= (stringify(m.package.name.package) + "-" + stringify(m.package.version));
+    if (is_replace)
+        vdb_dir.rename(vdb_dir.dirname() / ("-reinstalling-" + vdb_dir.basename()));
+    vdb_dir.mkdir();
+
+    WriteVDBEntryCommand write_vdb_entry_command(
+            WriteVDBEntryParams::create()
+            .environment(_imp->params.environment)
+            .db_entry(m.package)
+            .output_directory(vdb_dir)
+            .environment_file(m.environment_file));
+
+    write_vdb_entry_command();
+
+    /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb */
+    std::string config_protect, config_protect_mask;
+    {
+        std::ifstream c(stringify(vdb_dir / "CONFIG_PROTECT").c_str());
+        config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>());
+
+        std::ifstream c_m(stringify(vdb_dir / "CONFIG_PROTECT_MASK").c_str());
+        config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>());
+    }
+
+    VDBMerger merger(
+            VDBMergerOptions::create()
+            .environment(_imp->params.environment)
+            .image(m.image_dir)
+            .root(root())
+            .contents_file(vdb_dir / "CONTENTS")
+            .config_protect(config_protect)
+            .config_protect_mask(config_protect_mask));
+
+    if (! merger.check())
+        throw PackageInstallActionError("Not proceeding with install due to merge sanity check failing");
+
+    merger.merge();
+
+    if (is_replace)
+    {
+        UninstallOptions uninstall_options(false);
+        _uninstall(m.package.name, m.package.version, uninstall_options, true);
+    }
+
+    VDBPostMergeCommand post_merge_command(
+            VDBPostMergeCommandParams::create()
+            .root(root()));
+
+    post_merge_command();
 }
 

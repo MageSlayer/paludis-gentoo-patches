@@ -10,12 +10,15 @@ libexecprog_SCRIPTS = \
 	build_functions.bash \
 	builtin_fetch.bash \
 	builtin_init.bash \
+	builtin_loadenv.bash \
 	builtin_merge.bash \
 	builtin_metadata.bash \
+	builtin_saveenv.bash \
 	builtin_strip.bash \
 	builtin_tidyup.bash \
 	builtin_unmerge.bash \
 	builtin_variable.bash \
+	die_functions.bash \
 	ebuild.bash \
 	echo_functions.bash \
 	kernel_functions.bash \
@@ -37,6 +40,7 @@ libexecprog_SCRIPTS = \
 	src_test.bash \
 	src_unpack.bash \
 	usage_error.bash \
+	write_vdb_entry.bash \
 	work_around_broken_utilities.bash
 
 TESTS_ENVIRONMENT = env \

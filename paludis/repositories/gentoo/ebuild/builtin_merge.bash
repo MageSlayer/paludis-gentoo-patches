@@ -16,6 +16,10 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+# !!! This is used for compatibility with older Paludis versions only. When
+# !!! upgrading from versions below 0.20.0, this code will be used until the
+# !!! 'restart paludis' exec kicks in.
+
 builtin_merge()
 {
     ebuild_section "Merging to '${ROOT:-/}'..."

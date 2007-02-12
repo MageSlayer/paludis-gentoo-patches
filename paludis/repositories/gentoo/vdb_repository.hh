@@ -64,6 +64,9 @@ namespace paludis
 
             void regenerate_provides_cache() const;
 
+            void _uninstall(const QualifiedPackageName &, const VersionSpec &,
+                    const UninstallOptions &, bool reinstalling) const;
+
         protected:
             virtual bool do_has_category_named(const CategoryNamePart &) const;
 
@@ -165,6 +168,10 @@ namespace paludis
             virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
 
             virtual bool is_default_destination() const;
+
+            virtual bool want_pre_post_phases() const;
+
+            void merge(const MergeOptions &);
 
             virtual std::string do_describe_use_flag(const UseFlagName &,
                     const PackageDatabaseEntry * const) const;

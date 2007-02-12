@@ -38,6 +38,7 @@
 
 using namespace paludis;
 
+#include <paludis/repositories/gentoo/ebuild-se.cc>
 #include <paludis/repositories/gentoo/ebuild-sr.cc>
 
 EbuildCommand::EbuildCommand(const EbuildCommandParams & p) :
@@ -302,8 +303,25 @@ EbuildFetchCommand::EbuildFetchCommand(const EbuildCommandParams & p,
 std::string
 EbuildInstallCommand::commands() const
 {
-    return "init setup unpack compile test install strip preinst "
-        "merge postinst tidyup";
+    switch (install_params.phase)
+    {
+        case ip_build:
+            return "init setup unpack compile test install saveenv";
+
+        case ip_preinstall:
+            return "loadenv strip preinst saveenv";
+
+        case ip_postinstall:
+            return "loadenv postinst saveenv";
+
+        case ip_tidyup:
+            return "tidyup";
+
+        case last_ip:
+            ;
+    };
+
+    throw InternalError(PALUDIS_HERE, "Bad phase");
 }
 
 bool
@@ -344,6 +362,9 @@ EbuildInstallCommand::extend_command(const MakeEnvCommand & cmd)
             ("USE", install_params.use)
             ("USE_EXPAND", install_params.use_expand)
             ("ROOT", install_params.root)
+            ("PALUDIS_LOADSAVEENV_DIR", stringify(install_params.loadsaveenv_dir))
+            ("PALUDIS_CONFIG_PROTECT", install_params.config_protect)
+            ("PALUDIS_CONFIG_PROTECT_MASK", install_params.config_protect_mask)
             ("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK",
                 install_params.disable_cfgpro ? "/" : "")
             ("PALUDIS_DEBUG_BUILD", debug_build)
@@ -370,10 +391,19 @@ EbuildInstallCommand::EbuildInstallCommand(const EbuildCommandParams & p,
 std::string
 EbuildUninstallCommand::commands() const
 {
-    if (uninstall_params.unmerge_only)
-        return "unmerge";
-    else
-        return "prerm unmerge postrm";
+    switch (uninstall_params.phase)
+    {
+        case up_preremove:
+            return "prerm saveenv";
+
+        case up_postremove:
+            return "loadenv postrm";
+
+        case last_up:
+            ;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Bad phase value");
 }
 
 bool
@@ -388,6 +418,7 @@ EbuildUninstallCommand::extend_command(const MakeEnvCommand & cmd)
 {
     MakeEnvCommand result(cmd
             ("ROOT", uninstall_params.root)
+            ("PALUDIS_LOADSAVEENV_DIR", stringify(uninstall_params.loadsaveenv_dir))
             ("PALUDIS_EBUILD_OVERRIDE_CONFIG_PROTECT_MASK",
                 uninstall_params.disable_cfgpro ? "/" : ""));
 
@@ -459,5 +490,51 @@ EbuildConfigCommand::EbuildConfigCommand(const EbuildCommandParams & p,
     EbuildCommand(p),
     config_params(f)
 {
+}
+
+WriteVDBEntryCommand::WriteVDBEntryCommand(const WriteVDBEntryParams & p) :
+    params(p)
+{
+}
+
+void
+WriteVDBEntryCommand::operator() ()
+{
+    std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+            "/write_vdb_entry.bash '" +
+            stringify(params.output_directory) + "' '" +
+            stringify(params.environment_file) + "'");
+
+    MakeEnvCommand cmd(make_env_command(ebuild_cmd)
+            ("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
+             stringify(PALUDIS_VERSION_MINOR) + "." +
+             stringify(PALUDIS_VERSION_MICRO) +
+             (std::string(PALUDIS_SUBVERSION_REVISION).empty() ?
+              std::string("") : "-r" + std::string(PALUDIS_SUBVERSION_REVISION)))
+            ("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
+            ("PALUDIS_BASHRC_FILES", params.environment->bashrc_files())
+            ("PALUDIS_HOOK_DIRS", params.environment->hook_dirs())
+            ("PALUDIS_FETCHERS_DIRS", params.environment->fetchers_dirs())
+            ("PALUDIS_SYNCERS_DIRS", params.environment->syncers_dirs())
+            ("PALUDIS_COMMAND", params.environment->paludis_command())
+            ("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+            ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
+
+    if (0 != (run_command(cmd)))
+        throw PackageInstallActionError("Write VDB Entry command failed");
+}
+
+VDBPostMergeCommand::VDBPostMergeCommand(const VDBPostMergeCommandParams & p) :
+    params(p)
+{
+}
+
+void
+VDBPostMergeCommand::operator() ()
+{
+    std::string ebuild_cmd("ldconfig -r '" + stringify(params.root) + "'");
+
+    if (0 != (run_command(ebuild_cmd)))
+        throw PackageInstallActionError("VDB Entry post merge commands failed");
 }
 

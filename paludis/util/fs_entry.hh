@@ -320,6 +320,13 @@ namespace paludis
              */
             void chmod(const mode_t mode);
 
+            /**
+             * Rename ourself (will not work across mount points).
+             *
+             * \exception FSError If the rename failed.
+             */
+            void rename(const FSEntry & new_name);
+
             ///\}
     };
 

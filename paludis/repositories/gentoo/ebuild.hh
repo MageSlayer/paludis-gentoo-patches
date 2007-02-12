@@ -58,6 +58,7 @@ namespace paludis
     class Environment;
     class MakeEnvCommand;
 
+#include <paludis/repositories/gentoo/ebuild-se.hh>
 #include <paludis/repositories/gentoo/ebuild-sr.hh>
 
     class EbuildVersionMetadata :
@@ -323,6 +324,50 @@ namespace paludis
              * Constructor.
              */
             EbuildConfigCommand(const EbuildCommandParams &, const EbuildConfigCommandParams &);
+    };
+
+    /**
+     * Command for generating VDB entries (not a regular EbuildCommand).
+     *
+     * \ingroup grpebuildinterface
+     */
+    class WriteVDBEntryCommand :
+        private InstantiationPolicy<WriteVDBEntryCommand, instantiation_method::NonCopyableTag>
+    {
+        protected:
+            /**
+             * Our parameters.
+             */
+            const WriteVDBEntryParams params;
+
+        public:
+            /**
+             * Constructor.
+             */
+            WriteVDBEntryCommand(const WriteVDBEntryParams &);
+
+            /**
+             * Run the command.
+             */
+            void operator() ();
+    };
+
+    class VDBPostMergeCommand :
+        private InstantiationPolicy<VDBPostMergeCommand, instantiation_method::NonCopyableTag>
+    {
+        private:
+            const VDBPostMergeCommandParams params;
+
+        public:
+            /**
+             * Constructor.
+             */
+            VDBPostMergeCommand(const VDBPostMergeCommandParams &);
+
+            /**
+             * Run the command.
+             */
+            void operator() ();
     };
 }
 

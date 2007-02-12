@@ -125,7 +125,11 @@ namespace paludis
 
             virtual bool is_default_destination() const;
 
+            virtual bool want_pre_post_phases() const;
+
             virtual FSEntry root() const;
+
+            virtual void merge(const MergeOptions &);
     };
 
     /**

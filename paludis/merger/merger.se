@@ -1,0 +1,23 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_MergerEntryType()
+{
+    prefix met
+
+    key met_nothing          "Does not exist"
+    key met_file             "A regular file"
+    key met_dir              "A directory"
+    key met_sym              "A symlink"
+    key met_misc             "Something else"
+
+    doxygen_comment << "END"
+        /**
+        * The type of file being merged.
+         *
+         * \see Merger
+         * \ingroup grpdepresolver
+         */
+END
+}
+

@@ -46,6 +46,8 @@ namespace paludis
 
             bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
             bool is_default_destination() const;
+            bool want_pre_post_phases() const;
+            void merge(const MergeOptions &);
 
             virtual FSEntry root() const;
     };

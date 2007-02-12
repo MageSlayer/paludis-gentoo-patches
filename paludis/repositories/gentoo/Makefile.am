@@ -5,7 +5,9 @@ DISTCLEANFILES = \
 	glsa-sr.hh glsa-sr.cc \
 	portage_repository_params-sr.hh portage_repository_params-sr.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
-	ebuild-sr.hh ebuild-sr.cc
+	ebuild-sr.hh ebuild-sr.cc ebuild-se.hh ebuild-se.cc \
+	vdb_merger-sr.hh vdb_merger-sr.cc \
+	vdb_unmerger-sr.hh vdb_unmerger-sr.cc
 
 MAINTAINERCLEANFILES = Makefile.in
 
@@ -51,6 +53,7 @@ libpaludisgentoorepository_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VER
 paludis_repositories_gentoo_include_HEADERS = \
 	ebuild.hh \
 	ebuild-sr.hh \
+	ebuild-se.hh \
 	glsa.hh \
 	glsa-sr.hh \
 	portage_repository-sr.hh \
@@ -71,7 +74,11 @@ paludis_repositories_gentoo_include_HEADERS = \
 	portage_virtual_version_metadata.hh \
 	vdb_repository.hh \
 	vdb_version_metadata.hh \
-	vdb_repository-sr.hh
+	vdb_repository-sr.hh \
+	vdb_merger-sr.hh \
+	vdb_merger.hh \
+	vdb_unmerger-sr.hh \
+	vdb_unmerger.hh
 
 libpaludisgentoorepository_la_SOURCES = \
 	ebuild.cc \
@@ -92,18 +99,24 @@ libpaludisgentoorepository_la_SOURCES = \
 	portage_virtual_version_metadata.cc \
 	registration.cc \
 	vdb_repository.cc \
-	vdb_version_metadata.cc
+	vdb_version_metadata.cc \
+	vdb_merger.cc \
+	vdb_unmerger.cc \
 	$(paludis_repositories_gentoo_include_HEADERS)
 
 if MONOLITHIC
 
 libpaludisgentoorepository_la_LIBADD = \
+	$(top_builddir)/paludis/merger/libpaludismerger.la \
+	$(top_builddir)/paludis/digests/libpaludisdigests.la \
 	libpaludisgentoorepositoryxmlthings.la \
 	$(DYNAMIC_LD_LIBS)
 
 else
 
 libpaludisgentoorepository_la_LIBADD = \
+	$(top_builddir)/paludis/merger/libpaludismerger.la \
+	$(top_builddir)/paludis/digests/libpaludisdigests.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(DYNAMIC_LD_LIBS)
@@ -142,6 +155,9 @@ EXTRA_DIST = \
 	ebuild.sr \
 	ebuild-sr.hh \
 	ebuild-sr.cc \
+	ebuild.se \
+	ebuild-se.hh \
+	ebuild-se.cc \
 	glsa.sr \
 	glsa-sr.hh \
 	glsa-sr.cc \
@@ -162,7 +178,13 @@ EXTRA_DIST = \
 	vdb_repository_TEST_cleanup.sh \
 	vdb_repository-sr.hh \
 	vdb_repository-sr.cc \
-	vdb_repository.sr
+	vdb_repository.sr \
+	vdb_merger.sr \
+	vdb_merger-sr.hh \
+	vdb_merger-sr.cc \
+	vdb_unmerger.sr \
+	vdb_unmerger-sr.hh \
+	vdb_unmerger-sr.cc
 
 BUILT_SOURCES = \
 	portage_repository_params-sr.hh \
@@ -174,7 +196,13 @@ BUILT_SOURCES = \
 	vdb_repository-sr.hh \
 	vdb_repository-sr.cc \
 	ebuild-sr.hh \
-	ebuild-sr.cc
+	ebuild-sr.cc \
+	ebuild-se.hh \
+	ebuild-se.cc \
+	vdb_merger-sr.hh \
+	vdb_merger-sr.cc \
+	vdb_unmerger-sr.hh \
+	vdb_unmerger-sr.cc
 
 check_SCRIPTS = \
 	portage_repository_TEST_setup.sh portage_repository_TEST_cleanup.sh \
@@ -202,6 +230,18 @@ portage_repository_params-sr.hh : portage_repository_params.sr $(top_srcdir)/mis
 portage_repository_params-sr.cc : portage_repository_params.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/portage_repository_params.sr > $@
 
+vdb_merger-sr.hh : vdb_merger.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/vdb_merger.sr > $@
+
+vdb_merger-sr.cc : vdb_merger.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vdb_merger.sr > $@
+
+vdb_unmerger-sr.hh : vdb_unmerger.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/vdb_unmerger.sr > $@
+
+vdb_unmerger-sr.cc : vdb_unmerger.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vdb_unmerger.sr > $@
+
 ebuild-sr.hh : ebuild.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/ebuild.sr > $@
 
@@ -219,6 +259,12 @@ vdb_repository-sr.hh : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
 
 vdb_repository-sr.cc : vdb_repository.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/vdb_repository.sr > $@
+
+ebuild-se.hh : ebuild.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/ebuild.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+ebuild-se.cc : ebuild.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/ebuild.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 
 libpaludisgentoorepositoryxmlthings_la_SOURCES = xml_things.cc xml_things.hh

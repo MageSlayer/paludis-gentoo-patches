@@ -41,54 +41,29 @@ export REAL_CHOST="${CHOST}"
 shopt -s expand_aliases
 shopt -s extglob
 
-EBUILD_KILL_PID=$$
-alias die='diefunc "$FUNCNAME" "$LINENO"'
-alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "$FUNCNAME" "$LINENO" "$_pipestatus"'
-trap 'echo "die trap: exiting with error." 1>&2 ; exit 250' 15
-
 export EBUILD_PROGRAM_NAME="$0"
-
-diefunc()
-{
-    local func="$1" line="$2"
-    shift 2
-    echo 1>&2
-    echo "!!! ERROR in ${CATEGORY:-?}/${PF:-?}:" 1>&2
-    echo "!!! In ${func:-?} at line ${line:-?}" 1>&2
-    echo "!!! ${*:-(no message provided)}" 1>&2
-    echo 1>&2
-
-    echo "!!! Call stack:" 1>&2
-    for (( n = 1 ; n < ${#FUNCNAME[@]} ; ++n )) ; do
-        funcname=${FUNCNAME[${n}]}
-        sourcefile=${BASH_SOURCE[${n}]}
-        lineno=${BASH_LINENO[$(( n - 1 ))]}
-        echo "!!!    * ${funcname} (${sourcefile}:${lineno})" 1>&2
-    done
-    echo 1>&2
-
-    if [[ -n "${PALUDIS_EXTRA_DIE_MESSAGE}" ]] ; then
-        echo "${PALUDIS_EXTRA_DIE_MESSAGE}" 1>&2
-        echo 1>&2
-    fi
-
-    kill ${EBUILD_KILL_PID}
-    exit 249
-}
 
 if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
     export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
 fi
 export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
 EBUILD_MODULES_DIR=$(canonicalise $(dirname $0 ) )
-[[ -d ${EBUILD_MODULES_DIR} ]] || die "${EBUILD_MODULES_DIR} is not a directory"
+if ! [[ -d ${EBUILD_MODULES_DIR} ]] ; then
+    echo "${EBUILD_MODULES_DIR} is not a directory" 1>&2
+    exit 123
+fi
 export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
 
 ebuild_load_module()
 {
-    source "${EBUILD_MODULES_DIR}/${1}.bash" || die "Error loading module ${1}"
+    if ! source "${EBUILD_MODULES_DIR}/${1}.bash" ; then
+        type die && die "Error loading module ${1}"
+        echo "Error loading module ${1}" 1>&2
+        exit 123
+    fi
 }
 
+ebuild_load_module die_functions
 ebuild_load_module echo_functions
 ebuild_load_module kernel_functions
 ebuild_load_module sandbox
@@ -122,8 +97,9 @@ ebuild_source_profile()
     fi
 }
 
-save_vars="USE USE_EXPAND USE_EXPAND_HIDDEN ${USE_EXPAND}"
-default_save_vars="CONFIG_PROTECT CONFIG_PROTECT_MASK"
+export CONFIG_PROTECT="${PALUDIS_CONFIG_PROTECT}"
+export CONFIG_PROTECT_MASK="${PALUDIS_CONFIG_PROTECT_MASK}"
+save_vars="USE USE_EXPAND USE_EXPAND_HIDDEN ${USE_EXPAND} CONFIG_PROTECT CONFIG_PROTECT_MASK"
 
 for var in ${save_vars} ${default_save_vars} ; do
     ebuild_notice "debug" "Saving ${var}=${!var}"
@@ -159,14 +135,6 @@ for var in ${save_vars} ; do
     eval "export ${var}=\${save_var_${var}}"
 done
 
-for var in ${default_save_vars} ; do
-    if [[ -z ${!var} ]] ; then
-        eval "export ${var}=\${save_var_${var}}"
-    else
-        ebuild_notice "debug" "Not restoring ${var}"
-    fi
-done
-
 [[ -z "${CBUILD}" ]] && export CBUILD="${CHOST}"
 
 ebuild_scrub_environment()
@@ -183,11 +151,12 @@ ebuild_scrub_environment()
     (
         source "${1}" || exit 1
 
-        unset -f diefunc perform_hook inherit
+        unset -f diefunc perform_hook inherit builtin_loadenv builtin_saveenv
 
         unset -v PATH ROOTPATH T PALUDIS_TMPDIR PALUDIS_EBUILD_LOG_LEVEL
         unset -v PORTDIR FILESDIR ECLASSDIR DISTDIR PALUDIS_EBUILD_DIR
         unset -v PALUDIS_EXTRA_DIE_MESSAGE PALUDIS_COMMAND PALUDIS_CLIENT
+        unset -v PALUDIS_LOADSAVEENV_DIR
 
         unset -v ${!PALUDIS_CMDLINE_*} PALUDIS_OPTIONS
         unset -v ${!CONTRARIUS_CMDLINE_*} CONTRARIUS_OPTIONS
@@ -309,9 +278,15 @@ ebuild_main()
     local action ebuild="$1"
     shift
 
+    if [[ ${#@} -ge 2 ]] ; then
+        ebuild_section "Running ebuild phases $@..."
+    else
+        ebuild_section "Running ebuild phase $@..."
+    fi
+
     for action in $@ ; do
         case ${action} in
-            metadata|variable|init|fetch|merge|unmerge|tidyup|strip)
+            metadata|variable|init|fetch|merge|unmerge|tidyup|strip|loadenv|saveenv)
                 ebuild_load_module builtin_${action}
             ;;
 
@@ -359,6 +334,12 @@ ebuild_main()
             fi
             perform_hook ebuild_${action}_post
         done
+    fi
+
+    if [[ ${#@} -ge 2 ]] ; then
+        ebuild_section "Completed ebuild phases $@"
+    else
+        ebuild_section "Completed ebuild phase $@"
     fi
 }
 

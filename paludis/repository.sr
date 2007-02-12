@@ -84,3 +84,22 @@ make_class_RepositoryVirtualsEntry()
     comparison_operators all virtual_name
 }
 
+make_class_MergeOptions()
+{
+    key package PackageDatabaseEntry
+    key image_dir FSEntry
+    key environment_file FSEntry
+
+    allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Parameters for RepositoryDestinationInterface::merge.
+         *
+         * \see RepositoryDestinationInterface
+         * \ingroup grprepository
+         * \nosubgrouping
+         */
+END
+}
+

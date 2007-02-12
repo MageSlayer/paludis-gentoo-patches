@@ -117,3 +117,14 @@ FakeInstalledRepository::is_default_destination() const
     return environment()->root() == root();
 }
 
+bool
+FakeInstalledRepository::want_pre_post_phases() const
+{
+    return false;
+}
+
+void
+FakeInstalledRepository::merge(const MergeOptions &)
+{
+}
+

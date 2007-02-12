@@ -63,6 +63,10 @@ make_class_EbuildInstallCommandParams()
     key disable_cfgpro bool
     key debug_build InstallDebugOption
     key slot SlotName
+    key phase EbuildInstallCommandPhase
+    key config_protect std::string
+    key config_protect_mask std::string
+    key loadsaveenv_dir FSEntry
 
     doxygen_comment << "END"
         /**
@@ -83,6 +87,8 @@ make_class_EbuildUninstallCommandParams()
     key disable_cfgpro bool
     key unmerge_only bool
     key load_environment "const FSEntry *"
+    key phase EbuildUninstallCommandPhase
+    key loadsaveenv_dir FSEntry
 
     doxygen_comment << "END"
         /**
@@ -111,6 +117,23 @@ make_class_EbuildConfigCommandParams()
          * \nosubgrouping
          */
 END
+
+    allow_named_args
+}
+
+make_class_WriteVDBEntryParams()
+{
+    key environment "const Environment *"
+    key db_entry "PackageDatabaseEntry"
+    key output_directory "FSEntry"
+    key environment_file "FSEntry"
+
+    allow_named_args
+}
+
+make_class_VDBPostMergeCommandParams()
+{
+    key root "FSEntry"
 
     allow_named_args
 }

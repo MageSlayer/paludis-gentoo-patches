@@ -1,0 +1,39 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_EbuildInstallCommandPhase()
+{
+    prefix ip
+
+    key ip_build         "Build the package."
+    key ip_preinstall    "Preinstall to a live system."
+    key ip_postinstall   "Postinstall to a live system."
+    key ip_tidyup        "Tidy up work."
+
+    doxygen_comment << "END"
+        /**
+         * Which phase of an EbuildInstallCommand to run.
+         *
+         * \see EbuildInstallCommand
+         * \ingroup grpportagerepository
+         */
+END
+}
+
+make_enum_EbuildUninstallCommandPhase()
+{
+    prefix up
+
+    key up_preremove         "Preremove from a live system."
+    key up_postremove        "Postremove from a live system."
+
+    doxygen_comment << "END"
+        /**
+         * Which phase of an EbuildUninstallCommand to run.
+         *
+         * \see EbuildUninstallCommand
+         * \ingroup grpportagerepository
+         */
+END
+}
+

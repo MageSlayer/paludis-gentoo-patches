@@ -1,0 +1,28 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_VDBMergerOptions()
+{
+    key environment "Environment *"
+    key image "FSEntry"
+    key root "FSEntry"
+    key contents_file "FSEntry"
+    key config_protect std::string
+    key config_protect_mask std::string
+
+    allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Options for a VDBMerger.
+         *
+         * \see VDBMerger
+         * \ingroup grpmerger
+         * \ingroup grpvdbrepository
+         * \nosubgrouping
+         */
+END
+}
+
+
+

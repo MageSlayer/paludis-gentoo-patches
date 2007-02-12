@@ -478,3 +478,10 @@ FSEntry::group() const
     return _stat_info->st_gid;
 }
 
+void
+FSEntry::rename(const FSEntry & new_name)
+{
+    if (0 != ::rename(_path.c_str(), new_name._path.c_str()))
+        throw FSError("rename('" + stringify(_path) + "', '" + stringify(new_name._path) + "') failed");
+}
+

@@ -434,7 +434,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
     }
 
-    EbuildFetchCommand fetch_cmd(EbuildCommandParams::create()
+    EbuildCommandParams command_params(EbuildCommandParams::create()
             .environment(_imp->params.environment)
             .db_entry(&e)
             .ebuild_dir(_imp->params.location / stringify(q.category) /
@@ -445,8 +445,9 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
                 _imp->params.location)
             .distdir(_imp->params.distdir)
-            .buildroot(_imp->params.buildroot),
+            .buildroot(_imp->params.buildroot));
 
+    EbuildFetchCommand fetch_cmd(command_params,
             EbuildFetchCommandParams::create()
             .a(archives)
             .aa(all_archives)
@@ -454,7 +455,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
             .expand_vars(expand_vars)
             .flat_src_uri(flat_src_uri)
-            .root(o.destination->installed_interface ?
+            .root(o.destination && o.destination->installed_interface ?
                 stringify(o.destination->installed_interface->root()) : "/")
             .profiles(_imp->params.profiles)
             .no_fetch(fetch_restrict)
@@ -465,33 +466,62 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     if (o.fetch_only)
         return;
 
-    EbuildInstallCommand install_cmd(EbuildCommandParams::create()
-            .environment(_imp->params.environment)
-            .db_entry(&e)
-            .ebuild_dir(_imp->params.location / stringify(q.category) /
-                        stringify(q.package))
-            .files_dir(_imp->params.location / stringify(q.category) /
-                        stringify(q.package) / "files")
-            .eclassdirs(_imp->params.eclassdirs)
-            .portdir(_imp->params.master_repository ? _imp->params.master_repository->params().location :
-                _imp->params.location)
-            .distdir(_imp->params.distdir)
-            .buildroot(_imp->params.buildroot),
+    if (! o.destination)
+        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                + stringify(v) + "' because no destination was provided");
 
+    if (! o.destination->destination_interface)
+        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                + stringify(v) + "' to destination '" + stringify(o.destination->name())
+                + "' because destination does not provide destination_interface");
+
+    EbuildInstallCommandParams install_params(
             EbuildInstallCommandParams::create()
+                    .phase(ip_build)
                     .use(use)
                     .a(archives)
                     .aa(all_archives)
                     .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
                     .expand_vars(expand_vars)
-                    .root(o.destination->installed_interface ?
-                        stringify(o.destination->installed_interface->root()) : "/")
+                    .root(stringify(o.destination->installed_interface->root()))
                     .profiles(_imp->params.profiles)
                     .disable_cfgpro(o.no_config_protect)
                     .debug_build(o.debug_build)
+                    .config_protect(_imp->portage_repository->profile_variable("CONFIG_PROTECT"))
+                    .config_protect_mask(_imp->portage_repository->profile_variable("CONFIG_PROTECT_MASK"))
+                    .loadsaveenv_dir(_imp->params.buildroot / stringify(q.category) / (
+                            stringify(q.package) + "-" + stringify(v)) / "temp")
                     .slot(SlotName(metadata->slot)));
 
-    install_cmd();
+    EbuildInstallCommand build_cmd(command_params, install_params);
+    build_cmd();
+
+    if (o.destination->destination_interface->want_pre_post_phases())
+    {
+        install_params.phase = ip_preinstall;
+        EbuildInstallCommand preinst_cmd(command_params, install_params);
+        preinst_cmd();
+    }
+
+    o.destination->destination_interface->merge(
+            MergeOptions::create()
+            .package(PackageDatabaseEntry(q, v, _imp->portage_repository->name()))
+            .image_dir(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
+                    + stringify(v)) / "image")
+            .environment_file(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
+                    + stringify(v)) / "temp" / "loadsaveenv")
+            );
+
+    if (o.destination->destination_interface->want_pre_post_phases())
+    {
+        install_params.phase = ip_postinstall;
+        EbuildInstallCommand postinst_cmd(command_params, install_params);
+        postinst_cmd();
+    }
+
+    install_params.phase = ip_tidyup;
+    EbuildInstallCommand tidyup_cmd(command_params, install_params);
+    tidyup_cmd();
 }
 
 std::string

@@ -899,6 +899,7 @@ AC_OUTPUT(
 	paludis/environment/test/Makefile
 	paludis/fetchers/Makefile
 	paludis/hashed_containers.hh
+	paludis/merger/Makefile
 	paludis/qa/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/cran/Makefile

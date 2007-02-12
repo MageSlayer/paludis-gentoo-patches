@@ -25,6 +25,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/sr.hh>
+#include <paludis/util/fs_entry.hh>
 #include <paludis/util/virtual_constructor.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/version_spec.hh>
@@ -46,7 +47,6 @@ namespace paludis
 {
     class Environment;
     class RepositoryNameCache;
-    class FSEntry;
 
     class Repository;
     class RepositoryInstallableInterface;
@@ -1002,8 +1002,30 @@ namespace paludis
             ///\name Destination functions
             ///\{
 
+            /**
+             * Are we a suitable destination for the specified package?
+             */
             virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const = 0;
+
+            /**
+             * Are we to be included in the Environment::default_destinations list?
+             */
             virtual bool is_default_destination() const = 0;
+
+            /**
+             * If true, pre and post install phases will be used when writing to this
+             * destination.
+             *
+             * This should return true for 'real' filesystem destinations (whether or
+             * not root is /, if root merges are supported), and false for intermediate
+             * destinations such as binary repositories.
+             */
+            virtual bool want_pre_post_phases() const = 0;
+
+            /**
+             * Merge a package.
+             */
+            virtual void merge(const MergeOptions &) = 0;
 
             ///\}
 

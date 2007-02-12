@@ -735,3 +735,15 @@ CRANInstalledRepository::is_default_destination() const
     return _imp->env->root() == root();
 }
 
+bool
+CRANInstalledRepository::want_pre_post_phases() const
+{
+    return true;
+}
+
+void
+CRANInstalledRepository::merge(const MergeOptions &)
+{
+    throw InternalError(PALUDIS_HERE, "CRANInstalledRepository isn't converted over to do destinations");
+}
+

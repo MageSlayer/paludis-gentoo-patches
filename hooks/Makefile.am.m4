@@ -12,7 +12,6 @@ installvarlibpaludisnewsdir = $(localstatedir)/paludis/news
 installhookcommonprogdir = $(libexecdir)/paludis/hooks/common
 installhookinstallallpostdir = $(libexecdir)/paludis/hooks/install_all_post
 installhookinstallpostdir = $(libexecdir)/paludis/hooks/install_post
-installhookebuildmergepredir = $(libexecdir)/paludis/hooks/ebuild_merge_pre
 
 installhookcommonprog_SCRIPTS = \
 	gnu_info_index.bash \
@@ -29,9 +28,6 @@ installhookinstallallpost_SCRIPTS = \
 installhookinstallpost_SCRIPTS = \
 	update_config_protect_list.bash
 
-installhookebuildmergepre_SCRIPTS = \
-	rewrite_broken_symlinks.bash
-
 installvarlibpaludisnews_DATA = \
 	.keep
 
@@ -46,7 +42,6 @@ EXTRA_DIST = \
 	$(installhookcommonprog_SCRIPTS) \
 	$(installhookinstallallpost_SCRIPTS) \
 	$(installhookinstallpost_SCRIPTS) \
-	$(installhookebuildmergepre_SCRIPTS) \
 	$(TESTS)
 
 check_SCRIPTS = $(TESTS)
@@ -90,12 +85,6 @@ userhook(`ebuild_init_post')
 userhook(`ebuild_fetch_pre')
 userhook(`ebuild_fetch_fail')
 userhook(`ebuild_fetch_post')
-userhook(`ebuild_merge_pre')
-userhook(`ebuild_merge_fail')
-userhook(`ebuild_merge_post')
-userhook(`ebuild_unmerge_pre')
-userhook(`ebuild_unmerge_fail')
-userhook(`ebuild_unmerge_post')
 userhook(`ebuild_tidyup_pre')
 userhook(`ebuild_tidyup_fail')
 userhook(`ebuild_tidyup_post')

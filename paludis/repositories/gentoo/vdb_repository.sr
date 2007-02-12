@@ -3,7 +3,7 @@
 
 make_class_VDBRepositoryParams()
 {
-    key environment "const Environment *"
+    key environment "Environment *"
     key location FSEntry
     key root FSEntry
     key world FSEntry

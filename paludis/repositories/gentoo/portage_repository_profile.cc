@@ -25,6 +25,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/save.hh>
+#include <paludis/util/system.hh>
 
 #include <paludis/config_file.hh>
 #include <paludis/environment.hh>
@@ -81,6 +82,7 @@ namespace paludis
     class Implementation<PortageRepositoryProfile>
     {
         private:
+            void load_environment();
             void load_profile_directory_recursively(const FSEntry & dir);
             void load_profile_parent(const FSEntry & dir);
             void load_profile_make_defaults(const FSEntry & dir);
@@ -156,6 +158,8 @@ namespace paludis
                 system_packages(new AllDepAtom),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
             {
+                load_environment();
+
                 for (FSEntryCollection::Iterator d(dirs.begin()), d_end(dirs.end()) ;
                         d != d_end ; ++d)
                     load_profile_directory_recursively(*d);
@@ -172,6 +176,13 @@ namespace paludis
 
             ///\}
     };
+}
+
+void
+Implementation<PortageRepositoryProfile>::load_environment()
+{
+    environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
+    environment_variables["CONFIG_PROTECT_MASK"] = getenv_with_default("CONFIG_PROTECT_MASK", "");
 }
 
 void
