@@ -532,6 +532,9 @@ VDBPostMergeCommand::VDBPostMergeCommand(const VDBPostMergeCommandParams & p) :
 void
 VDBPostMergeCommand::operator() ()
 {
+    if (! getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
+        return;
+
     std::string ebuild_cmd("ldconfig -r '" + stringify(params.root) + "'");
 
     if (0 != (run_command(ebuild_cmd)))
