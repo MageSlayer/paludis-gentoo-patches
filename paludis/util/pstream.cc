@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,14 +62,19 @@ PStreamInBuf::underflow()
     return *gptr();
 }
 
-PStreamInBuf::PStreamInBuf(const std::string & cmd) :
+PStreamInBuf::PStreamInBuf(const Command & cmd) :
     _command(cmd),
     child(fork())
 {
     if (0 == child)
     {
-        Log::get_instance()->message(ll_debug, lc_no_context, "dup2 " +
-                stringify(stdout_pipe.write_fd()) + " 1");
+        if (! cmd.chdir().empty())
+            if (-1 == chdir(cmd.chdir().c_str()))
+                throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
+
+        for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+            setenv(s->first.c_str(), s->second.c_str(), 1);
+
         if (-1 == dup2(stdout_pipe.write_fd(), 1))
             throw PStreamError("dup2 failed");
         close(stdout_pipe.read_fd());
@@ -86,9 +91,9 @@ PStreamInBuf::PStreamInBuf(const std::string & cmd) :
                     close(PStream::stderr_close_fd);
         }
 
-        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd);
-        execl("/bin/sh", "sh", "-c", cmd.c_str(), static_cast<char *>(0));
-        throw PStreamError("execl /bin/sh -c '" + cmd + "' failed:"
+        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd.command());
+        execl("/bin/sh", "sh", "-c", cmd.command().c_str(), static_cast<char *>(0));
+        throw PStreamError("execl /bin/sh -c '" + cmd.command() + "' failed:"
                 + stringify(strerror(errno)));
     }
     else if (-1 == child)

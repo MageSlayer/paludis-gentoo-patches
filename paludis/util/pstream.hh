@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/pipe.hh>
+#include <paludis/util/system.hh>
 #include <streambuf>
 #include <string>
 
@@ -76,7 +77,7 @@ namespace paludis
         private:
             Pipe stdout_pipe;
 
-            const std::string _command;
+            Command _command;
 
             int _exit_status;
 
@@ -117,7 +118,7 @@ namespace paludis
              *
              * \param command The command to run. See PStream for discussion.
              */
-            PStreamInBuf(const std::string & command);
+            PStreamInBuf(const Command & command);
 
             ~PStreamInBuf();
 
@@ -126,7 +127,7 @@ namespace paludis
             /**
              * What was our command?
              */
-            const std::string & command() const
+            const Command & command() const
             {
                 return _command;
             }
@@ -160,7 +161,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            PStreamInBufBase(const std::string & command) :
+            PStreamInBufBase(const Command & command) :
                 buf(command)
             {
             }
@@ -194,7 +195,7 @@ namespace paludis
              * usually no need to specify a full path. Arguments can be passed
              * as part of the command.
              */
-            PStream(const std::string & command) :
+            PStream(const Command & command) :
                 PStreamInBufBase(command),
                 std::istream(&buf)
             {

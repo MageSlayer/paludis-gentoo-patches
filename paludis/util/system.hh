@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_SYSTEM_HH 1
 
 #include <paludis/util/exception.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <string>
 
 /** \file
@@ -91,21 +92,39 @@ namespace paludis
     std::string kernel_version() PALUDIS_VISIBLE;
 
     /**
+     * A command to be run.
+     */
+    class Command :
+        private PrivateImplementationPattern<Command>
+    {
+        public:
+            Command(const std::string &);
+            Command(const char * const);
+            Command(const Command &);
+            const Command & operator= (const Command &);
+            ~Command();
+
+            Command & with_chdir(const FSEntry &);
+            Command & with_setenv(const std::string &, const std::string &);
+            Command & with_sandbox();
+
+            std::string command() const;
+            std::string chdir() const;
+
+            typedef libwrapiter::ForwardIterator<Command, const std::pair<const std::string, std::string> > Iterator;
+            Iterator begin_setenvs() const;
+            Iterator end_setenvs() const;
+    };
+
+
+    /**
      * Run a command, wait for it to terminate and return its exit status.
      *
      * Use PStream instead if you need to capture stdout.
      *
      * \ingroup grpsystem
      */
-    int run_command(const std::string & cmd) PALUDIS_VISIBLE;
-
-    /**
-     * Run a command in a directory, wait for it to terminate and return
-     * its exit status.
-     *
-     * \ingroup grpsystem
-     */
-    int run_command_in_directory(const std::string & cmd, const FSEntry & fsentry) PALUDIS_VISIBLE;
+    int run_command(const Command & cmd) PALUDIS_VISIBLE;
 
     /**
      * Set the stderr and close for stdout fds used by run_command and
@@ -122,48 +141,6 @@ namespace paludis
      * \ingroup grpsystem
      */
     void set_run_command_stderr_fds(const int, const int) PALUDIS_VISIBLE;
-
-    /**
-     * Make a command that's run in a particular environment.
-     */
-    class PALUDIS_VISIBLE MakeEnvCommand
-    {
-        private:
-            std::string cmd;
-            std::string args;
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            explicit MakeEnvCommand(const std::string &, const std::string &);
-
-            ///\}
-
-            /**
-             * Add some environment.
-             */
-            MakeEnvCommand operator() (const std::string &, const std::string &) const;
-
-            /**
-             * Turn ourself into a command string.
-             */
-            operator std::string() const;
-    };
-
-    /**
-     * Make a command, with environment.
-     *
-     * \ingroup grpsystem
-     */
-    const MakeEnvCommand make_env_command(const std::string & cmd) PALUDIS_VISIBLE;
-
-    /**
-     * Make a command that is run inside the sandbox, if sandbox is enabled.
-     *
-     * \ingroup grpsystem
-     */
-    const std::string make_sandbox_command(const std::string & cmd) PALUDIS_VISIBLE;
 }
 
 #endif

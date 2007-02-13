@@ -56,7 +56,7 @@ namespace paludis
     };
 
     class Environment;
-    class MakeEnvCommand;
+    class Command;
 
 #include <paludis/repositories/gentoo/ebuild-se.hh>
 #include <paludis/repositories/gentoo/ebuild-sr.hh>
@@ -126,17 +126,17 @@ namespace paludis
              *
              * \return Whether the command succeeded.
              */
-            virtual bool do_run_command(const std::string &);
+            virtual bool do_run_command(const Command &);
 
             /**
              * Add Portage emulation vars.
              */
-            virtual MakeEnvCommand add_portage_vars(const MakeEnvCommand &) const;
+            virtual Command add_portage_vars(const Command &) const;
 
             /**
              * Extend the command to be run.
              */
-            virtual MakeEnvCommand extend_command(const MakeEnvCommand &) = 0;
+            virtual Command extend_command(const Command &) = 0;
 
         public:
             /**
@@ -167,9 +167,9 @@ namespace paludis
 
             virtual bool failure();
 
-            virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
+            virtual Command extend_command(const Command &);
 
-            virtual bool do_run_command(const std::string &);
+            virtual bool do_run_command(const Command &);
 
         public:
             /**
@@ -203,9 +203,9 @@ namespace paludis
         protected:
             virtual std::string commands() const;
 
-            virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
+            virtual Command extend_command(const Command &);
 
-            virtual bool do_run_command(const std::string &);
+            virtual bool do_run_command(const Command &);
 
             virtual bool failure();
 
@@ -241,7 +241,7 @@ namespace paludis
 
             virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-            virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
+            virtual Command extend_command(const Command &);
 
         public:
             /**
@@ -267,7 +267,7 @@ namespace paludis
 
             virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-            virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
+            virtual Command extend_command(const Command &);
 
         public:
             /**
@@ -292,7 +292,7 @@ namespace paludis
 
             virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-            virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
+            virtual Command extend_command(const Command &);
 
         public:
             /**
@@ -317,7 +317,7 @@ namespace paludis
 
             virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-            virtual MakeEnvCommand extend_command(const MakeEnvCommand &);
+            virtual Command extend_command(const Command &);
 
         public:
             /**

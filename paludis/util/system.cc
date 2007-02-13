@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,6 +28,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+#include <map>
 #include "config.h"
 
 /** \file
@@ -64,64 +65,6 @@ namespace
 
 
     static pid_t paludis_pid(get_paludis_pid());
-
-    /**
-     * Runs a command in a directory if needed, wait for it to terminate
-     * and return its exit status.
-     *
-     * \ingroup grpsystem
-     */
-    int
-    real_run_command(const std::string & cmd, const FSEntry * const fsentry)
-    {
-        pid_t child(fork());
-        if (0 == child)
-        {
-            if (fsentry)
-                if (-1 == chdir(stringify(*fsentry).c_str()))
-                    throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
-
-            if (-1 != stdout_write_fd)
-            {
-                Log::get_instance()->message(ll_debug, lc_no_context, "dup2 " +
-                        stringify(stdout_write_fd) + " 2");
-
-                if (-1 == dup2(stdout_write_fd, 1))
-                    throw RunCommandError("dup2 failed");
-
-                if (-1 != stdout_close_fd)
-                        close(stdout_close_fd);
-            }
-
-            if (-1 != stderr_write_fd)
-            {
-                Log::get_instance()->message(ll_debug, lc_no_context, "dup2 " +
-                        stringify(stderr_write_fd) + " 2");
-
-                if (-1 == dup2(stderr_write_fd, 2))
-                    throw RunCommandError("dup2 failed");
-
-                if (-1 != stderr_close_fd)
-                        close(stderr_close_fd);
-            }
-
-            Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd);
-            execl("/bin/sh", "sh", "-c", cmd.c_str(), static_cast<char *>(0));
-            throw RunCommandError("execl /bin/sh -c '" + cmd + "' failed:"
-                    + stringify(strerror(errno)));
-        }
-        else if (-1 == child)
-            throw RunCommandError("fork failed: " + stringify(strerror(errno)));
-        else
-        {
-            int status(-1);
-            if (-1 == wait(&status))
-                throw RunCommandError("wait failed: " + stringify(strerror(errno)));
-            return ((status & 0xff00) >> 8);
-        }
-
-        throw InternalError(PALUDIS_HERE, "should never be reached");
-    }
 }
 
 void
@@ -187,70 +130,157 @@ paludis::kernel_version()
     return result;
 }
 
-int
-paludis::run_command(const std::string & cmd)
+namespace paludis
 {
-    return real_run_command(cmd, 0);
+    template<>
+    struct Implementation<Command>
+    {
+        std::string command;
+        std::map<std::string, std::string> setenv_values;
+        std::string chdir;
+
+        Implementation(const std::string & c,
+                const std::map<std::string, std::string> & s = (std::map<std::string, std::string>()),
+                const std::string & d = "") :
+            command(c),
+            setenv_values(s),
+            chdir(d)
+        {
+        }
+    };
 }
 
-int
-paludis::run_command_in_directory(const std::string & cmd, const FSEntry & fsentry)
-{
-    return real_run_command(cmd, &fsentry);
-}
-
-MakeEnvCommand::MakeEnvCommand(const std::string & c,
-        const std::string & a) :
-    cmd(c),
-    args(a)
+Command::Command(const std::string & s) :
+    PrivateImplementationPattern<Command>(new Implementation<Command>(s))
 {
 }
 
-MakeEnvCommand
-MakeEnvCommand::operator() (const std::string & k,
-        const std::string & v) const
+Command::Command(const char * const s) :
+    PrivateImplementationPattern<Command>(new Implementation<Command>(s))
 {
-    std::string vv;
-    for (std::string::size_type p(0) ; p < v.length() ; ++p)
-        if ('\'' == v[p])
-            vv.append("'\"'\"'");
-        else
-            vv.append(v.substr(p, 1));
-
-    return MakeEnvCommand(cmd, args + k + "='" + vv + "' ");
 }
 
-MakeEnvCommand::operator std::string() const
+Command::Command(const Command & other) :
+    PrivateImplementationPattern<Command>(new Implementation<Command>(other._imp->command,
+                other._imp->setenv_values, other._imp->chdir))
 {
-    return "/usr/bin/env " + args + cmd;
 }
 
-const MakeEnvCommand
-paludis::make_env_command(const std::string & cmd)
+const Command &
+Command::operator= (const Command & other)
 {
-    return MakeEnvCommand(cmd, "");
+    if (this != &other)
+        _imp.reset(new Implementation<Command>(other._imp->command, other._imp->setenv_values,
+                    other._imp->chdir));
+
+    return *this;
 }
 
-const std::string
-paludis::make_sandbox_command(const std::string & cmd)
+Command::~Command()
+{
+}
+
+Command &
+Command::with_chdir(const FSEntry & c)
+{
+    _imp->chdir = stringify(c);
+    return *this;
+}
+
+Command &
+Command::with_setenv(const std::string & k, const std::string & v)
+{
+    _imp->setenv_values.insert(std::make_pair(k, v));
+    return *this;
+}
+
+Command &
+Command::with_sandbox()
 {
 #if HAVE_SANDBOX
     if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
-    {
         Log::get_instance()->message(ll_debug, lc_no_context,
                 "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sandbox");
-        return cmd;
-    }
     else if (! getenv_with_default("SANDBOX_ACTIVE", "").empty())
-    {
         Log::get_instance()->message(ll_warning, lc_no_context,
                 "Already inside sandbox, not spawning another sandbox instance");
-        return cmd;
-    }
     else
-        return "sandbox " + cmd;
-#else
-    return cmd;
+        _imp->command = "sandbox " + _imp->command;
 #endif
+
+    return *this;
+}
+
+int
+paludis::run_command(const Command & cmd)
+{
+    pid_t child(fork());
+    if (0 == child)
+    {
+        if (! cmd.chdir().empty())
+            if (-1 == chdir(stringify(cmd.chdir()).c_str()))
+                throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
+
+        for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+            setenv(s->first.c_str(), s->second.c_str(), 1);
+
+        if (-1 != stdout_write_fd)
+        {
+            if (-1 == dup2(stdout_write_fd, 1))
+                throw RunCommandError("dup2 failed");
+
+            if (-1 != stdout_close_fd)
+                close(stdout_close_fd);
+        }
+
+        if (-1 != stderr_write_fd)
+        {
+            if (-1 == dup2(stderr_write_fd, 2))
+                throw RunCommandError("dup2 failed");
+
+            if (-1 != stderr_close_fd)
+                close(stderr_close_fd);
+        }
+
+        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd.command());
+        execl("/bin/sh", "sh", "-c", cmd.command().c_str(), static_cast<char *>(0));
+        throw RunCommandError("execl /bin/sh -c '" + cmd.command() + "' failed:"
+                + stringify(strerror(errno)));
+    }
+    else if (-1 == child)
+        throw RunCommandError("fork failed: " + stringify(strerror(errno)));
+    else
+    {
+        int status(-1);
+        if (-1 == wait(&status))
+            throw RunCommandError("wait failed: " + stringify(strerror(errno)));
+        return WEXITSTATUS(status);
+    }
+
+    throw InternalError(PALUDIS_HERE, "should never be reached");
+}
+
+std::string
+Command::command() const
+{
+    return _imp->command;
+}
+
+std::string
+Command::chdir() const
+{
+    return _imp->chdir;
+}
+
+Command::Iterator
+Command::begin_setenvs() const
+{
+    return Iterator(_imp->setenv_values.begin());
+}
+
+Command::Iterator
+Command::end_setenvs() const
+{
+    return Iterator(_imp->setenv_values.end());
 }
 

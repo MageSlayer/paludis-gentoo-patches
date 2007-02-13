@@ -482,27 +482,21 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     std::tr1::shared_ptr<const VersionMetadata> vm(do_version_metadata(q, vn));
 
     if (vm->cran_interface->is_bundle_member)
-    {
-        MakeEnvCommand cmd(LIBEXECDIR "/paludis/cran.bash skip", "");
-        cmd = cmd("CATEGORY", "cran");
-        cmd = cmd("PN", stringify(pn));
-        cmd = cmd("PV", stringify(vn));
         return;
-    }
 
     std::string p(vm->cran_interface->package);
     std::string v(vm->cran_interface->version);
 
-    MakeEnvCommand cmd(LIBEXECDIR "/paludis/cran.bash fetch", "");
-    cmd = cmd("CATEGORY", "cran");
-    cmd = cmd("DISTDIR", stringify(_imp->distdir));
-    cmd = cmd("DISTFILE", std::string(p + "_" + v + ".tar.gz"));
-    cmd = cmd("PN", stringify(pn));
-    cmd = cmd("PV", stringify(vn));
-    cmd = cmd("PALUDIS_CRAN_MIRRORS", _imp->mirror);
-    cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));
-    cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()));
-    cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
+    Command cmd(Command(LIBEXECDIR "/paludis/cran.bash fetch")
+            .with_setenv("CATEGORY", "cran")
+            .with_setenv("DISTDIR", stringify(_imp->distdir))
+            .with_setenv("DISTFILE", std::string(p + "_" + v + ".tar.gz"))
+            .with_setenv("PN", stringify(pn))
+            .with_setenv("PV", stringify(vn))
+            .with_setenv("PALUDIS_CRAN_MIRRORS", _imp->mirror)
+            .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
+            .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+            .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files()));
 
 
     if (0 != run_command(cmd))
@@ -514,40 +508,41 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     std::string image(stringify(_imp->buildroot / stringify(q) / "image"));
     std::string workdir(stringify(_imp->buildroot / stringify(q) / "work"));
 
-    cmd = MakeEnvCommand(make_sandbox_command(LIBEXECDIR "/paludis/cran.bash clean install"), "");
-    cmd = cmd("CATEGORY", "cran");
-    cmd = cmd("DISTDIR", stringify(_imp->distdir));
-    cmd = cmd("DISTFILE", std::string(p + "_" + v + ".tar.gz"));
-    cmd = cmd("IMAGE", image);
-    cmd = cmd("IS_BUNDLE", (vm->cran_interface->is_bundle ? "yes" : ""));
-    cmd = cmd("LOCATION", stringify(_imp->location));
-    cmd = cmd("PN", stringify(pn));
-    cmd = cmd("PV", stringify(vn));
-    cmd = cmd("PALUDIS_CRAN_LIBRARY", stringify(_imp->library));
-    cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));
-    cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()));
-    cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
-    cmd = cmd("ROOT", o.destination->installed_interface ?
-                stringify(o.destination->installed_interface->root()) : "/");
-    cmd = cmd("WORKDIR", workdir);
+    cmd = Command(LIBEXECDIR "/paludis/cran.bash clean install")
+        .with_sandbox()
+        .with_setenv("CATEGORY", "cran")
+        .with_setenv("DISTDIR", stringify(_imp->distdir))
+        .with_setenv("DISTFILE", std::string(p + "_" + v + ".tar.gz"))
+        .with_setenv("IMAGE", image)
+        .with_setenv("IS_BUNDLE", (vm->cran_interface->is_bundle ? "yes" : ""))
+        .with_setenv("LOCATION", stringify(_imp->location))
+        .with_setenv("PN", stringify(pn))
+        .with_setenv("PV", stringify(vn))
+        .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->library))
+        .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
+        .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
+        .with_setenv("ROOT", o.destination->installed_interface ?
+                stringify(o.destination->installed_interface->root()) : "/")
+        .with_setenv("WORKDIR", workdir);
 
 
     if (0 != run_command(cmd))
         throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
                 image + "'");
 
-    cmd = MakeEnvCommand(LIBEXECDIR "/paludis/cran.bash merge clean", "");
-    cmd = cmd("IMAGE", image);
-    cmd = cmd("PN", p);
-    cmd = cmd("PV", stringify(vn));
-    cmd = cmd("PALUDIS_CRAN_LIBRARY", stringify(_imp->library));
-    cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));
-    cmd = cmd("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()));
-    cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
-    cmd = cmd("ROOT", o.destination->installed_interface ?
-                stringify(o.destination->installed_interface->root()) : "/");
-    cmd = cmd("WORKDIR", workdir);
-    cmd = cmd("REPOSITORY", stringify(name()));
+    cmd = Command(LIBEXECDIR "/paludis/cran.bash merge clean")
+        .with_setenv("IMAGE", image)
+        .with_setenv("PN", p)
+        .with_setenv("PV", stringify(vn))
+        .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->library))
+        .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
+        .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
+        .with_setenv("ROOT", o.destination->installed_interface ?
+                stringify(o.destination->installed_interface->root()) : "/")
+        .with_setenv("WORKDIR", workdir)
+        .with_setenv("REPOSITORY", stringify(name()));
 
     if (0 != run_command(cmd))
         throw PackageInstallActionError("Couldn't merge '" + stringify(q) + "-" + stringify(vn) + "' to '" +
@@ -589,17 +584,17 @@ CRANRepository::do_sync() const
     std::string cmd("rsync --delete --recursive --progress --exclude \"*.html\" --exclude \"*.INDEX\" '" +
                     _imp->sync + "/src/contrib/Descriptions/' ./");
 
-    if (0 != run_command_in_directory(cmd, _imp->location))
+    if (0 != run_command(Command(cmd).with_chdir(_imp->location)))
         return false;
 
     cmd = "rsync --progress '" + _imp->sync + "/src/contrib/PACKAGES' ./";
 
-    if (0 != run_command_in_directory(cmd, _imp->location))
+    if (0 != run_command(Command(cmd).with_chdir(_imp->location)))
         return false;
 
     cmd = "rsync --progress '" + _imp->sync + "/CRAN_mirrors.csv' ./";
 
-    return 0 == run_command_in_directory(cmd, _imp->location);
+    return 0 == run_command(Command(cmd).with_chdir(_imp->location));
 }
 
 void

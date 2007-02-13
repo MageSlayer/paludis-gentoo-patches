@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -117,9 +117,9 @@ namespace test_cases
             FSEntry dir("system_TEST_dir");
             TEST_CHECK(dir.is_directory());
 
-            run_command_in_directory("touch in_directory", dir);
+            run_command(Command("touch in_directory").with_chdir(dir));
             TEST_CHECK(FSEntry(dir / "in_directory").exists());
-            run_command_in_directory("rm in_directory", dir);
+            run_command(Command("rm in_directory").with_chdir(dir));
             TEST_CHECK(! FSEntry(dir / "in_directory").exists());
         }
     } test_run_command_in_directory;
@@ -134,24 +134,24 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK(0 != run_command(make_env_command("printenv PALUDUS_TEST_ENV_VAR")));
-            TEST_CHECK(0 == run_command(make_env_command("bash -c '[[ -z $PALUDUS_TEST_ENV_VAR ]]'")));
-            TEST_CHECK(0 == run_command(make_env_command("bash -c '[[ -z $PALUDUS_TEST_ENV_VAR ]]'")(
-                            "PALUDUS_TEST_ENV_VAR", "")));
-            TEST_CHECK(0 == run_command(make_env_command("bash -c '[[ -n $PALUDUS_TEST_ENV_VAR ]]'")(
-                            "PALUDUS_TEST_ENV_VAR", "foo")));
-            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ -z $PALUDUS_TEST_ENV_VAR ]]'")(
-                            "PALUDUS_TEST_ENV_VAR", "foo")));
-            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ -n $PALUDUS_TEST_ENV_VAR ]]'")));
-            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ -n $PALUDUS_TEST_ENV_VAR ]]'")(
-                            "PALUDUS_TEST_ENV_VAR", "")));
-            TEST_CHECK(0 == run_command(make_env_command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")(
-                            "PALUDUS_TEST_ENV_VAR", "foo")));
-            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")));
-            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")(
-                            "PALUDUS_TEST_ENV_VAR", "")));
-            TEST_CHECK(0 != run_command(make_env_command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")(
-                            "PALUDUS_TEST_ENV_VAR", "bar")));
+            TEST_CHECK(0 != run_command(("printenv PALUDUS_TEST_ENV_VAR")));
+            TEST_CHECK(0 == run_command(("bash -c '[[ -z $PALUDUS_TEST_ENV_VAR ]]'")));
+            TEST_CHECK(0 == run_command(Command("bash -c '[[ -z $PALUDUS_TEST_ENV_VAR ]]'")
+                        .with_setenv("PALUDUS_TEST_ENV_VAR", "")));
+            TEST_CHECK(0 == run_command(Command("bash -c '[[ -n $PALUDUS_TEST_ENV_VAR ]]'")
+                        .with_setenv("PALUDUS_TEST_ENV_VAR", "foo")));
+            TEST_CHECK(0 != run_command(Command("bash -c '[[ -z $PALUDUS_TEST_ENV_VAR ]]'")
+                        .with_setenv("PALUDUS_TEST_ENV_VAR", "foo")));
+            TEST_CHECK(0 != run_command(("bash -c '[[ -n $PALUDUS_TEST_ENV_VAR ]]'")));
+            TEST_CHECK(0 != run_command(Command("bash -c '[[ -n $PALUDUS_TEST_ENV_VAR ]]'")
+                        .with_setenv("PALUDUS_TEST_ENV_VAR", "")));
+            TEST_CHECK(0 == run_command(Command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")
+                        .with_setenv("PALUDUS_TEST_ENV_VAR", "foo")));
+            TEST_CHECK(0 != run_command(("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")));
+            TEST_CHECK(0 != run_command(Command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")
+                        .with_setenv("PALUDUS_TEST_ENV_VAR", "")));
+            TEST_CHECK(0 != run_command(Command("bash -c '[[ $PALUDUS_TEST_ENV_VAR == foo ]]'")
+                        .with_setenv("PALUDUS_TEST_ENV_VAR", "bar")));
         }
     } test_make_env_command;
 
@@ -165,12 +165,13 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK(0 == run_command(make_env_command(
+            TEST_CHECK(0 == run_command(Command(
                             "bash -c '[[ x$PALUDUS_TEST_ENV_VAR == \"x....\" ]]'")
-                        ("PALUDUS_TEST_ENV_VAR", "....")));
-            TEST_CHECK(0 == run_command(make_env_command(
+                        .with_setenv("PALUDUS_TEST_ENV_VAR", "....")));
+            TEST_CHECK(0 == run_command(Command(
                             "bash -c '[[ x$PALUDUS_TEST_ENV_VAR == \"x..'\"'\"'..\" ]]'")
-                        ("PALUDUS_TEST_ENV_VAR", "..'..")));
+                        .with_setenv("PALUDUS_TEST_ENV_VAR", "..'..")));
         }
     } test_make_env_command_quotes;
 }
+

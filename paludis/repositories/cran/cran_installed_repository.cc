@@ -528,12 +528,12 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
 
     std::tr1::shared_ptr<const VersionMetadata> vm(do_version_metadata(q, v));
 
-    MakeEnvCommand cmd(LIBEXECDIR "/paludis/cran.bash unmerge", "");
-    cmd = cmd("PN", vm->cran_interface->package);
-    cmd = cmd("PV", stringify(v));
-    cmd = cmd("PALUDIS_CRAN_LIBRARY", stringify(_imp->location));
-    cmd = cmd("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"));
-    cmd = cmd("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files());
+    Command cmd(Command(LIBEXECDIR "/paludis/cran.bash unmerge")
+            .with_setenv("PN", vm->cran_interface->package)
+            .with_setenv("PV", stringify(v))
+            .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->location))
+            .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
+            .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files()));
 
     if (0 != run_command(cmd))
         throw PackageUninstallActionError("Couldn't unmerge '" + stringify(q) + "-" + stringify(v) + "'");

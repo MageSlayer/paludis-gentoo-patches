@@ -566,16 +566,16 @@ namespace
         Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook script '" +
                 stringify(f) + "' for '" + hook.name() + "'");
 
-        MakeEnvCommand cmd(make_env_command("bash '" + stringify(f) + "'")
-                ("ROOT", DefaultConfig::get_instance()->root())
-                ("HOOK", hook.name())
-                ("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                ("HOOK_CONFIG_SUFFIX", DefaultConfig::config_suffix())
-                ("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                ("PALUDIS_COMMAND", paludis_command));
+        Command cmd(Command("bash '" + stringify(f) + "'")
+                .with_setenv("ROOT", DefaultConfig::get_instance()->root())
+                .with_setenv("HOOK", hook.name())
+                .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                .with_setenv("HOOK_CONFIG_SUFFIX", DefaultConfig::config_suffix())
+                .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                .with_setenv("PALUDIS_COMMAND", paludis_command));
 
         for (Hook::Iterator h(hook.begin()), h_end(hook.end()) ; h != h_end ; ++h)
-            cmd = cmd(h->first, h->second);
+            cmd.with_setenv(h->first, h->second);
 
         int exit_status(run_command(cmd));
         if (0 == exit_status)
