@@ -19,6 +19,7 @@
 
 #include <list>
 #include <paludis/config_file.hh>
+#include <paludis/hashed_containers.hh>
 #include <paludis/environment/default/default_config.hh>
 #include <paludis/environment/default/default_environment.hh>
 #include <paludis/match_package.hh>
@@ -38,8 +39,20 @@
 
 using namespace paludis;
 
+typedef MakeHashedMap<std::string, bool>::Type HookPresentCache;
+
+namespace paludis
+{
+    template<>
+    struct Implementation<DefaultEnvironment>
+    {
+        mutable HookPresentCache hook_cache;
+    };
+}
+
 DefaultEnvironment::DefaultEnvironment() :
-    Environment(std::tr1::shared_ptr<PackageDatabase>(new PackageDatabase(this)))
+    Environment(std::tr1::shared_ptr<PackageDatabase>(new PackageDatabase(this))),
+    PrivateImplementationPattern<DefaultEnvironment>(new Implementation<DefaultEnvironment>)
 {
     Context context("When loading default environment:");
 
@@ -577,11 +590,17 @@ namespace
 void
 DefaultEnvironment::perform_hook(const Hook & hook) const
 {
+    HookPresentCache::iterator cache_entry(_imp->hook_cache.end());
+    if (_imp->hook_cache.end() != ((cache_entry = _imp->hook_cache.find(hook.name()))))
+        if (! cache_entry->second)
+            return;
+
     Context context("When triggering hook '" + hook.name() + "'");
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook '" + hook.name() + "'");
 
     const std::list<FSEntry> & hook_dirs_ref(get_hook_dirs());
 
+    bool had_hook(false);
     for (std::list<FSEntry>::const_iterator h(hook_dirs_ref.begin()),
             h_end(hook_dirs_ref.end()) ; h != h_end ; ++h)
     {
@@ -592,8 +611,15 @@ DefaultEnvironment::perform_hook(const Hook & hook) const
         std::list<FSEntry> hooks;
         std::copy(DirIterator(hh), DirIterator(),
                 filter_inserter(std::back_inserter(hooks), IsFileWithExtension(".bash")));
+
+        if (! hooks.empty())
+            had_hook = true;
+
         std::for_each(hooks.begin(), hooks.end(), Hooker(hook, paludis_command()));
     }
+
+    if (_imp->hook_cache.end() == cache_entry)
+        _imp->hook_cache.insert(std::make_pair(hook.name(), had_hook));
 }
 
 std::string

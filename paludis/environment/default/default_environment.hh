@@ -39,7 +39,8 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DefaultEnvironment :
         public Environment,
-        public InstantiationPolicy<DefaultEnvironment, instantiation_method::SingletonTag>
+        public InstantiationPolicy<DefaultEnvironment, instantiation_method::SingletonTag>,
+        private PrivateImplementationPattern<DefaultEnvironment>
     {
         friend class InstantiationPolicy<DefaultEnvironment, instantiation_method::SingletonTag>;
 
