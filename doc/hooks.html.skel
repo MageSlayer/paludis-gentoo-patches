@@ -17,7 +17,7 @@
 <p>This document describes the Paludis hooks interface. A hook is a piece of code
 that is executed when a particular well defined action occurs.</p>
 
-<p>There are currently three categories of hook:</p>
+<p>There are currently four categories of hook:</p>
 
 <ul>
     <li>General hooks. These have access to a limited environment.</li>
@@ -28,6 +28,9 @@ that is executed when a particular well defined action occurs.</p>
 
     <li>Ebuild message hooks. These are special hooks that are called for
     <code>einfo</code>, <code>ewarn</code> etc.</li>
+
+    <li>Merger / Unmerger hooks. These are used when installing and uninstalling
+    content to the live filesystem.</li>
 </ul>
 
 <h3>Available Hooks</h3>
@@ -145,6 +148,70 @@ variable will contain the name of the hook being called. The
 being called, and the <code>MESSAGE</code> environment variable will contain
 the message being passed to the function.  The <code>PALUDIS_CMDLINE</code>
 variables described below are also available.</p>
+
+<h4>Merger / Unmerger Hooks</h4>
+
+<p>The merger runs in two stages, for safety. First it checks that it can
+probably install safely, then it does the actual install. Note that calculating
+the md5, timestamp etc for VDB CONTENTS is done <em>after</em> the install_post
+hooks are called.</p>
+
+<p>The following merger check hooks are available:</p>
+
+<ul>
+    <li>merger_check_file_pre</li>
+    <li>merger_check_file_post</li>
+    <li>merger_check_sym_pre</li>
+    <li>merger_check_sym_post</li>
+    <li>merger_check_dir_pre</li>
+    <li>merger_check_dir_post</li>
+</ul>
+
+<p>The <code>INSTALL_SOURCE</code> and <code>INSTALL_DESTINATION</code>
+environment variables contain the target source and destination. The
+<code>ROOT</code> variable contains the filesystem root. The <code>IMAGE</code>
+variable contains the image root.</p>
+
+<p>The following merger hooks are available:</p>
+
+<ul>
+    <li>merger_install_file_pre</li>
+    <li>merger_install_file_post</li>
+    <li>merger_install_sym_pre</li>
+    <li>merger_install_sym_post</li>
+    <li>merger_install_dir_pre</li>
+    <li>merger_install_dir_post</li>
+    <li>merger_unlink_file_pre</li>
+    <li>merger_unlink_file_post</li>
+    <li>merger_unlink_dir_pre</li>
+    <li>merger_unlink_dir_post</li>
+    <li>merger_unlink_sym_pre</li>
+    <li>merger_unlink_sym_post</li>
+    <li>merger_unlink_misc_pre</li>
+    <li>merger_unlink_misc_post</li>
+</ul>
+
+<p>Again, <code>ROOT</code> and <code>IMAGE</code> are available. For
+install hooks, <code>INSTALL_SOURCE</code>, <code>INSTALL_DESTINATION</code> are
+set, and for uninstall hooks, <code>UNLINK_TARGET</code>.</p>
+
+<p>The unmerger hooks are used for uninstalling a package, but not when existing
+things have to be removed for an install (the merger does that). The following
+unmerger hooks are available:</p>
+
+<ul>
+    <li>unmerger_unlink_file_pre</li>
+    <li>unmerger_unlink_file_post</li>
+    <li>unmerger_unlink_dir_pre</li>
+    <li>unmerger_unlink_dir_post</li>
+    <li>unmerger_unlink_sym_pre</li>
+    <li>unmerger_unlink_sym_post</li>
+    <li>unmerger_unlink_misc_pre</li>
+    <li>unmerger_unlink_misc_post</li>
+</ul>
+
+<p>The <code>UNLINK_TARGET</code> environment variable specifies the file about
+to be unlinked, and <code>ROOT</code> is the filesystem root.</p>
 
 <h3>User Defined Hooks</h3>
 
