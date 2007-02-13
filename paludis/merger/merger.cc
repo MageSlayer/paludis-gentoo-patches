@@ -22,6 +22,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fd_holder.hh>
 #include <paludis/selinux/security_context.hh>
+#include <paludis/environment.hh>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -157,33 +158,48 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     MergerEntryType m(entry_type(dst / src.basename()));
 
-    switch (m)
+    if (is_check)
+        _options.environment->perform_hook(extend_hook(
+                    Hook("merger_check_file_pre")
+                    ("INSTALL_SOURCE", stringify(src))
+                    ("INSTALL_DESTINATION", stringify(dst / src.basename()))));
+
+    do
     {
-        case met_nothing:
-            on_file_over_nothing(is_check, src, dst);
-            return;
+        switch (m)
+        {
+            case met_nothing:
+                on_file_over_nothing(is_check, src, dst);
+                continue;
 
-        case met_sym:
-            on_file_over_sym(is_check, src, dst);
-            return;
+            case met_sym:
+                on_file_over_sym(is_check, src, dst);
+                continue;
 
-        case met_dir:
-            on_file_over_dir(is_check, src, dst);
-            return;
+            case met_dir:
+                on_file_over_dir(is_check, src, dst);
+                continue;
 
-        case met_misc:
-            on_file_over_misc(is_check, src, dst);
-            return;
+            case met_misc:
+                on_file_over_misc(is_check, src, dst);
+                continue;
 
-        case met_file:
-            on_file_over_file(is_check, src, dst);
-            return;
+            case met_file:
+                on_file_over_file(is_check, src, dst);
+                continue;
 
-        case last_met:
-            ;
-    }
+            case last_met:
+                ;
+        }
 
-    throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+    } while (false);
+
+    if (is_check)
+        _options.environment->perform_hook(extend_hook(
+                    Hook("merger_check_file_post")
+                    ("INSTALL_SOURCE", stringify(src))
+                    ("INSTALL_DESTINATION", stringify(dst / src.basename()))));
 }
 
 void
@@ -191,33 +207,49 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     MergerEntryType m(entry_type(dst / src.basename()));
 
-    switch (m)
+    if (is_check)
+        _options.environment->perform_hook(extend_hook(
+                    Hook("merger_check_dir_pre")
+                    ("INSTALL_SOURCE", stringify(src))
+                    ("INSTALL_DESTINATION", stringify(dst / src.basename()))));
+
+    do
     {
-        case met_nothing:
-            on_dir_over_nothing(is_check, src, dst);
-            return;
+        switch (m)
+        {
+            case met_nothing:
+                on_dir_over_nothing(is_check, src, dst);
+                continue;
 
-        case met_sym:
-            on_dir_over_sym(is_check, src, dst);
-            return;
+            case met_sym:
+                on_dir_over_sym(is_check, src, dst);
+                continue;
 
-        case met_dir:
-            on_dir_over_dir(is_check, src, dst);
-            return;
+            case met_dir:
+                on_dir_over_dir(is_check, src, dst);
+                continue;
 
-        case met_misc:
-            on_dir_over_misc(is_check, src, dst);
-            return;
+            case met_misc:
+                on_dir_over_misc(is_check, src, dst);
+                continue;
 
-        case met_file:
-            on_dir_over_file(is_check, src, dst);
-            return;
+            case met_file:
+                on_dir_over_file(is_check, src, dst);
+                continue;
 
-        case last_met:
-            ;
-    }
+            case last_met:
+                ;
+        }
 
-    throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+
+    } while (false);
+
+    if (is_check)
+        _options.environment->perform_hook(extend_hook(
+                    Hook("merger_check_dir_post")
+                    ("INSTALL_SOURCE", stringify(src))
+                    ("INSTALL_DESTINATION", stringify(dst / src.basename()))));
 }
 
 void
@@ -225,33 +257,48 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     MergerEntryType m(entry_type(dst / src.basename()));
 
-    switch (m)
+    if (is_check)
+        _options.environment->perform_hook(extend_hook(
+                    Hook("merger_check_sym_post")
+                    ("INSTALL_SOURCE", stringify(src))
+                    ("INSTALL_DESTINATION", stringify(dst / src.basename()))));
+
+    do
     {
-        case met_nothing:
-            on_sym_over_nothing(is_check, src, dst);
-            return;
+        switch (m)
+        {
+            case met_nothing:
+                on_sym_over_nothing(is_check, src, dst);
+                continue;
 
-        case met_sym:
-            on_sym_over_sym(is_check, src, dst);
-            return;
+            case met_sym:
+                on_sym_over_sym(is_check, src, dst);
+                continue;
 
-        case met_dir:
-            on_sym_over_dir(is_check, src, dst);
-            return;
+            case met_dir:
+                on_sym_over_dir(is_check, src, dst);
+                continue;
 
-        case met_misc:
-            on_sym_over_misc(is_check, src, dst);
-            return;
+            case met_misc:
+                on_sym_over_misc(is_check, src, dst);
+                continue;
 
-        case met_file:
-            on_sym_over_file(is_check, src, dst);
-            return;
+            case met_file:
+                on_sym_over_file(is_check, src, dst);
+                continue;
 
-        case last_met:
-            ;
-    }
+            case last_met:
+                ;
+        }
 
-    throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+    } while (false);
+
+    if (is_check)
+        _options.environment->perform_hook(extend_hook(
+                    Hook("merger_check_sym_post")
+                    ("INSTALL_SOURCE", stringify(src))
+                    ("INSTALL_DESTINATION", stringify(dst / src.basename()))));
 }
 
 void
@@ -443,6 +490,11 @@ Merger::on_sym_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst
 void
 Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
 {
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_install_file_pre")
+                ("INSTALL_SOURCE", stringify(src))
+                ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))));
+
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir/dst_name), src.permissions()));
     FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
     if (-1 == input_fd)
@@ -464,11 +516,21 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     ssize_t count;
     while ((count = read(input_fd, buf, 4096)) > 0)
         write(output_fd, buf, count);
+
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_install_file_post")
+                ("INSTALL_SOURCE", stringify(src))
+                ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))));
 }
 
 void
 Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
 {
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_install_dir_pre")
+                ("INSTALL_SOURCE", stringify(src))
+                ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))));
+
     mode_t mode(src.permissions());
     FSEntry dst(dst_dir / src.basename());
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), mode));
@@ -476,19 +538,38 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     dst.chown(src.owner(), src.group());
     /* pick up set*id bits */
     dst.chmod(src.permissions());
+
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_install_dir_post")
+                ("INSTALL_SOURCE", stringify(src))
+                ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))));
 }
 
 void
 Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 {
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_install_sym_pre")
+                ("INSTALL_SOURCE", stringify(src))
+                ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))));
+
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
     if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst_dir / src.basename()).c_str()))
         throw MergerError("Couldn't create symlink at '" + stringify(dst_dir / src.basename()) + "'");
+
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_install_sym_post")
+                ("INSTALL_SOURCE", stringify(src))
+                ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))));
 }
 
 void
 Merger::unlink_file(FSEntry d)
 {
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_unlink_file_pre")
+                ("UNLINK_TARGET", stringify(d))));
+
     if (d.is_regular_file())
     {
         mode_t mode(d.permissions());
@@ -500,24 +581,59 @@ Merger::unlink_file(FSEntry d)
     }
 
     d.unlink();
+
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_unlink_file_post")
+                ("UNLINK_TARGET", stringify(d))));
 }
 
 void
 Merger::unlink_sym(FSEntry d)
 {
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_unlink_sym_pre")
+                ("UNLINK_TARGET", stringify(d))));
+
     d.unlink();
+
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_unlink_sym_post")
+                ("UNLINK_TARGET", stringify(d))));
 }
 
 void
 Merger::unlink_dir(FSEntry d)
 {
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_unlink_dir_pre")
+                ("UNLINK_TARGET", stringify(d))));
+
     d.rmdir();
+
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_unlink_dir_post")
+                ("UNLINK_TARGET", stringify(d))));
 }
 
 void
 Merger::unlink_misc(FSEntry d)
 {
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_unlink_misc_pre")
+                ("UNLINK_TARGET", stringify(d))));
+
     d.unlink();
+
+    _options.environment->perform_hook(extend_hook(
+                Hook("merger_unlink_misc_post")
+                ("UNLINK_TARGET", stringify(d))));
 }
 
+Hook
+Merger::extend_hook(const Hook & h)
+{
+    return h
+        ("ROOT", stringify(_options.root))
+        ("IMAGE", stringify(_options.image));
+}
 

@@ -17,48 +17,45 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_UNMERGER_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_UNMERGER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_MERGER_UNMERGER_HH
+#define PALUDIS_GUARD_PALUDIS_MERGER_UNMERGER_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/sr.hh>
+#include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/merger/unmerger.hh>
+#include <paludis/util/sr.hh>
 
 namespace paludis
 {
+    class Hook;
     class Environment;
 
-#include <paludis/repositories/gentoo/vdb_unmerger-sr.hh>
+#include <paludis/merger/unmerger-sr.hh>
 
-    class VDBUnmergerError :
-        public UnmergerError
+    class UnmergerError :
+        public Exception
     {
         public:
-            VDBUnmergerError(const std::string &) throw ();
+            UnmergerError(const std::string & msg) throw ();
     };
 
-    class VDBUnmerger :
-        private PrivateImplementationPattern<VDBUnmerger>,
-        public Unmerger
+    class Unmerger
     {
+        private:
+            UnmergerOptions _options;
+
         protected:
-            bool config_protected(const FSEntry &);
-            std::string make_tidy(const FSEntry &) const;
+            Unmerger(const UnmergerOptions &);
 
-            template <typename I_>
-            void unmerge_non_directories(I_ begin, const I_ end);
+            virtual Hook extend_hook(const Hook &);
 
-            template <typename I_>
-            void unmerge_directories(I_ begin, const I_ end);
+            virtual void unlink_file(FSEntry);
+            virtual void unlink_dir(FSEntry);
+            virtual void unlink_sym(FSEntry);
+            virtual void unlink_misc(FSEntry);
 
         public:
-            VDBUnmerger(const VDBUnmergerOptions &);
-            ~VDBUnmerger();
-
-            void unmerge();
+            virtual ~Unmerger();
     };
-
 }
 
 #endif

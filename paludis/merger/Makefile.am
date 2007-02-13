@@ -1,7 +1,8 @@
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 
 DISTCLEANFILES = \
-	merger-sr.hh merger-sr.cc merger-se.hh merger-se.cc
+	merger-sr.hh merger-sr.cc merger-se.hh merger-se.cc \
+	unmerger-sr.hh unmerger-sr.cc
 
 BUILT_SOURCES = $(DISTCLEANFILES)
 MAINTAINERCLEANFILES = Makefile.in
@@ -17,10 +18,13 @@ paludis_merger_includedir = $(includedir)/paludis/merger
 paludis_merger_include_HEADERS = \
 	merger.hh \
 	merger-sr.hh \
-	merger-se.cc
+	merger-se.hh \
+	unmerger.hh \
+	unmerger-sr.hh
 
 libpaludismerger_la_SOURCES = \
-	merger.cc merger.hh
+	merger.cc merger.hh \
+	unmerger.cc unmerger.hh
 
 libpaludismerger_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
@@ -34,7 +38,8 @@ lib_LTLIBRARIES = libpaludismerger.la
 EXTRA_DIST = \
 	merger_TEST.cc merger_TEST_setup.sh merger_TEST_cleanup.sh \
 	merger-sr.hh merger-sr.cc merger.sr \
-	merger-se.hh merger-se.cc merger.se
+	merger-se.hh merger-se.cc merger.se \
+	unmerger-sr.hh unmerger-sr.cc unmerger.sr
 
 TESTS = \
 	merger_TEST
@@ -66,6 +71,12 @@ merger-sr.hh : merger.sr $(top_srcdir)/misc/make_sr.bash
 
 merger-sr.cc : merger.sr $(top_srcdir)/misc/make_sr.bash
 	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/merger.sr > $@ ; then rm -f $@ ; exit 1 ; fi
+
+unmerger-sr.hh : unmerger.sr $(top_srcdir)/misc/make_sr.bash
+	if ! $(top_srcdir)/misc/make_sr.bash --header $(srcdir)/unmerger.sr > $@ ; then rm -f $@ ; exit 1 ; fi
+
+unmerger-sr.cc : unmerger.sr $(top_srcdir)/misc/make_sr.bash
+	if ! $(top_srcdir)/misc/make_sr.bash --source $(srcdir)/unmerger.sr > $@ ; then rm -f $@ ; exit 1 ; fi
 
 merger-se.hh : merger.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/merger.se > $@ ; then rm -f $@ ; exit 1 ; fi

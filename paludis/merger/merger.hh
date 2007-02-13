@@ -28,6 +28,7 @@
 namespace paludis
 {
     class Environment;
+    class Hook;
 
 #include <paludis/merger/merger-se.hh>
 #include <paludis/merger/merger-sr.hh>
@@ -49,6 +50,8 @@ namespace paludis
             Merger(const MergerOptions &);
 
             void make_check_fail();
+
+            virtual Hook extend_hook(const Hook &);
 
             virtual MergerEntryType entry_type(const FSEntry &);
 

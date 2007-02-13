@@ -56,7 +56,10 @@ namespace paludis
 }
 
 VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
-    PrivateImplementationPattern<VDBUnmerger>(new Implementation<VDBUnmerger>(o))
+    PrivateImplementationPattern<VDBUnmerger>(new Implementation<VDBUnmerger>(o)),
+    Unmerger(UnmergerOptions::create()
+            .environment(o.environment)
+            .root(o.root))
 {
 }
 
@@ -156,13 +159,7 @@ VDBUnmerger::unmerge_non_directories(I_ cur, const I_ end)
                 else
                 {
                     std::cout << "<<<         " << tokens.at(1) << std::endl;
-                    mode_t mode((_imp->options.root / tokens.at(1)).permissions());
-                    if ((mode & S_ISUID) || (mode & S_ISGID))
-                    {
-                        mode &= 0400;
-                        (_imp->options.root / tokens.at(1)).chmod(mode);
-                    }
-                    (_imp->options.root / tokens.at(1)).unlink();
+                    unlink_file(_imp->options.root / tokens.at(1));
                 }
             }
         }
@@ -207,7 +204,7 @@ VDBUnmerger::unmerge_non_directories(I_ cur, const I_ end)
             else
             {
                 std::cout << "<<<         " << tokens.at(1) << std::endl;
-                (_imp->options.root / tokens.at(1)).unlink();
+                unlink_sym(_imp->options.root / tokens.at(1));
             }
         }
         else if ("misc" == tokens.at(0))
@@ -235,7 +232,7 @@ VDBUnmerger::unmerge_non_directories(I_ cur, const I_ end)
             else
             {
                 std::cout << "<<<         " << tokens.at(1) << std::endl;
-                (_imp->options.root / tokens.at(1)).unlink();
+                unlink_misc(_imp->options.root / tokens.at(1));
             }
         }
         else if ("dir" == tokens.at(0))
@@ -279,13 +276,13 @@ VDBUnmerger::unmerge_directories(I_ cur, const I_ end)
         else
         {
             std::cout << "<<<         " << tokens.at(1) << std::endl;
-            (_imp->options.root / tokens.at(1)).rmdir();
+            unlink_dir(_imp->options.root / tokens.at(1));
         }
     }
 }
 
 VDBUnmergerError::VDBUnmergerError(const std::string & s) throw () :
-    Exception(s)
+    UnmergerError(s)
 {
 }
 

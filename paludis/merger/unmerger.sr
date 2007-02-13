@@ -1,0 +1,21 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et :
+
+make_class_UnmergerOptions()
+{
+    key environment "Environment *"
+    key root "FSEntry"
+
+    allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Options for a basic Unmerger.
+         *
+         * \see Unmerger
+         * \ingroup grpmerger
+         * \nosubgrouping
+         */
+END
+}
+
