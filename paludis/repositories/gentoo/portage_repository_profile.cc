@@ -651,16 +651,9 @@ PortageRepositoryProfile::environment_variable(const std::string & s) const
 {
     EnvironmentVariablesMap::const_iterator i(_imp->environment_variables.find(s));
     if (_imp->environment_variables.end() == i)
-    {
-        Log::get_instance()->message(ll_debug, lc_no_context, "Environment variable '" + s + "' is unset");
         return "";
-    }
     else
-    {
-        Log::get_instance()->message(ll_debug, lc_no_context, "Environment variable '" + s +
-                "' is '" + i->second + "'");
         return i->second;
-    }
 }
 
 std::tr1::shared_ptr<AllDepAtom>

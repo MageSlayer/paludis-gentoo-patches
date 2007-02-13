@@ -209,24 +209,15 @@ NoConfigEnvironment::accept_keyword(const KeywordName & k, const PackageDatabase
     if (_imp->is_vdb)
         return true;
 
-    Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword " + stringify(k) + ":");
     std::string accept_keywords(_imp->portage_repo->profile_variable("ACCEPT_KEYWORDS"));
     if (accept_keywords.empty())
     {
         std::string arch(_imp->portage_repo->profile_variable("ARCH"));
         if (stringify(k) == arch)
-        {
-            Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword match on arch");
             return true;
-        }
 
         if ((_imp->accept_unstable || override_tilde_keywords) && ("~" + stringify(k) == arch))
-        {
-            Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword match on ~arch");
             return true;
-        }
-
-        Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword no match on arch");
     }
     else
     {
@@ -235,24 +226,14 @@ NoConfigEnvironment::accept_keyword(const KeywordName & k, const PackageDatabase
                 create_inserter<KeywordName>(std::back_inserter(accepted)));
 
         if (accepted.end() != std::find(accepted.begin(), accepted.end(), k))
-        {
-            Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword match on accepted");
             return true;
-        }
 
         if ((_imp->accept_unstable || override_tilde_keywords) && '~' == stringify(k).at(0))
         {
             if (accepted.end() != std::find(accepted.begin(), accepted.end(),
                         KeywordName(stringify(k).substr(1))))
-            {
-                Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword match on ~accepted");
                 return true;
-            }
-
-            Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword no match on ~accepted");
         }
-        else
-            Log::get_instance()->message(ll_debug, lc_no_context, "accept_keyword no match on accepted");
     }
 
     return false;

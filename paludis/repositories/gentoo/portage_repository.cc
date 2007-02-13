@@ -563,8 +563,6 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
     Context context("When loading versions for '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
-    Log::get_instance()->message(ll_debug, lc_context, "need_version_names '" + stringify(n) + "'");
-
     std::tr1::shared_ptr<VersionSpecCollection> v(new VersionSpecCollection::Concrete);
 
     FSEntry path(_imp->params.location / stringify(n.category) /
