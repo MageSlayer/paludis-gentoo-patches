@@ -121,7 +121,8 @@ namespace paludis
                     const PackageDatabaseEntry &, UseDescriptionState);
 
         protected:
-            ConsoleInstallTask(Environment * const env, const DepListOptions & options);
+            ConsoleInstallTask(Environment * const env, const DepListOptions & options,
+                    std::tr1::shared_ptr<const DestinationsCollection>);
 
         public:
             virtual void on_build_deplist_pre();
@@ -189,6 +190,7 @@ namespace paludis
                     std::tr1::shared_ptr<const PackageDatabaseEntryCollection>,
                     std::tr1::shared_ptr<const PackageDatabaseEntryCollection>, const DisplayMode);
             virtual void display_merge_list_entry_tags(const DepListEntry &, const DisplayMode);
+            virtual void display_merge_list_entry_destination(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_end(const DepListEntry &, const DisplayMode);
 
             virtual void display_merge_list_entry_mask_reasons(const DepListEntry &);

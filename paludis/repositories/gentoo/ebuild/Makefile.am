@@ -9,7 +9,9 @@ libexecprogdir = $(libexecdir)/paludis/
 libexecprog_SCRIPTS = \
 	build_functions.bash \
 	builtin_fetch.bash \
+	builtin_fetchbin.bash \
 	builtin_init.bash \
+	builtin_initbin.bash \
 	builtin_loadenv.bash \
 	builtin_merge.bash \
 	builtin_metadata.bash \
@@ -17,6 +19,7 @@ libexecprog_SCRIPTS = \
 	builtin_strip.bash \
 	builtin_tidyup.bash \
 	builtin_unmerge.bash \
+	builtin_unpackbin.bash \
 	builtin_variable.bash \
 	die_functions.bash \
 	ebuild.bash \

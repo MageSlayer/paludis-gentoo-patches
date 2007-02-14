@@ -191,6 +191,9 @@ class CommandLine :
         /// --pretend
         paludis::args::SwitchArg a_pretend;
 
+        /// --destinations
+        paludis::args::StringSetArg a_destinations;
+
         /// --preserve-world
         paludis::args::SwitchArg a_preserve_world;
 

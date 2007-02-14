@@ -39,6 +39,7 @@
 #include <paludis/tasks/install_task.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/util/fd_output_stream.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/system.hh>
@@ -143,8 +144,9 @@ namespace
         public ConsoleInstallTask
     {
         public:
-            OurInstallTask(const DepListOptions & options) :
-                ConsoleInstallTask(DefaultEnvironment::get_instance(), options)
+            OurInstallTask(const DepListOptions & options,
+                    std::tr1::shared_ptr<const DestinationsCollection> destinations) :
+                ConsoleInstallTask(DefaultEnvironment::get_instance(), options, destinations)
             {
             }
 
@@ -460,7 +462,30 @@ do_install()
             (CommandLine::get_instance()->a_show_reasons.argument() == "full"))
         options.dependency_tags = true;
 
-    OurInstallTask task(options);
+    std::tr1::shared_ptr<const DestinationsCollection> destinations;
+    if (CommandLine::get_instance()->a_destinations.specified())
+    {
+        Context local_context("When building destinations collection:");
+
+        std::tr1::shared_ptr<DestinationsCollection> d(new DestinationsCollection::Concrete);
+        for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_destinations.begin_args()),
+                i_end(CommandLine::get_instance()->a_destinations.end_args()) ;
+                i != i_end ; ++i)
+        {
+            std::tr1::shared_ptr<Repository> repo(DefaultEnvironment::get_instance()->package_database()->fetch_repository(
+                        RepositoryName(*i)));
+            if (repo->destination_interface)
+                d->insert(repo);
+            else
+                throw args::DoHelp("--destinations argument '" + *i + "' does not provide a destinations interface");
+        }
+
+        destinations = d;
+    }
+    else
+        destinations = DefaultEnvironment::get_instance()->default_destinations();
+
+    OurInstallTask task(options, destinations);
     task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());
     task.set_fetch_only(CommandLine::get_instance()->a_fetch.specified());
     task.set_pretend(CommandLine::get_instance()->a_pretend.specified());

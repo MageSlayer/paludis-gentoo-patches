@@ -43,7 +43,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            InstallTask(Environment * const env, const DepListOptions & options);
+            InstallTask(Environment * const env, const DepListOptions & options,
+                    std::tr1::shared_ptr<const DestinationsCollection> destinations);
 
             ///\}
 

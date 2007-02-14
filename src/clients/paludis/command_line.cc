@@ -78,6 +78,7 @@ CommandLine::CommandLine() :
     install_args(this, "Install, Uninstall options",
             "Options which are relevant for --install, --uninstall or --uninstall-unused."),
     a_pretend(&install_args, "pretend", 'p', "Pretend only"),
+    a_destinations(&install_args, "destinations", 'd', "Use specified destinations instead of defaults"),
     a_preserve_world(&install_args, "preserve-world", '1', "Don't modify the world file"),
     a_add_to_world_atom(&install_args, "add-to-world-atom", '\0',
             "Use this atom, rather than all targets, for updating world (for resume commands)"),

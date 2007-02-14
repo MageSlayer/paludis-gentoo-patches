@@ -57,7 +57,7 @@ export PALUDIS_EBUILD_MODULES_DIR="${EBUILD_MODULES_DIR}"
 ebuild_load_module()
 {
     if ! source "${EBUILD_MODULES_DIR}/${1}.bash" ; then
-        type die && die "Error loading module ${1}"
+        type die &>/dev/null && die "Error loading module ${1}"
         echo "Error loading module ${1}" 1>&2
         exit 123
     fi
@@ -167,6 +167,8 @@ ebuild_scrub_environment()
         unset -v PALUDIS_HOME PALUDIS_PID EBUILD_KILL_PID ROOT
         unset -v CATEGORY PN PV P PVR PF ${!LD_*}
 
+        unset -v EBUILD E_DEPEND E_RDEPEND E_IUSE E_PDEPEND E_KEYWORDS
+
         for v in ${!SANDBOX*}; do
             [[ "${v}" == SANDBOX_ACTIVE ]] || unset "${v}"
         done
@@ -185,7 +187,7 @@ ebuild_scrub_environment()
     sed -i -e 's:^declare -rx:declare -x:' "${filters[@]}" "${1}"
 }
 
-ebuild_load_ebuild()
+ebuild_load_environment()
 {
     if [[ -n "${PALUDIS_LOAD_ENVIRONMENT}" ]] ; then
         [[ -d ${PALUDIS_TMPDIR} ]] \
@@ -203,8 +205,13 @@ ebuild_load_ebuild()
 !!! problem lies.
 "
 
-        bunzip2 < "${PALUDIS_LOAD_ENVIRONMENT}" > ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF} \
-            || die "Can't extract ${PALUDIS_LOAD_ENVIRONMENT}"
+        if [[ "${PALUDIS_LOAD_ENVIRONMENT%.bz2}" != "${PALUDIS_LOAD_ENVIRONMENT}" ]] ; then
+            bunzip2 < "${PALUDIS_LOAD_ENVIRONMENT}" > ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF} \
+                || die "Can't extract ${PALUDIS_LOAD_ENVIRONMENT}"
+        else
+            cp "${PALUDIS_LOAD_ENVIRONMENT}" "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" \
+                || die "Can't copy ${PALUDIS_LOAD_ENVIRONMENT}"
+        fi
 
         ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" \
             || die "Can't load saved environment for cleaning"
@@ -217,20 +224,16 @@ ebuild_load_ebuild()
 
         rm "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}"
     fi
+}
 
+ebuild_load_ebuild()
+{
     export EBUILD="${1}"
     unset IUSE DEPEND RDEPEND PDEPEND KEYWORDS
 
-    if [[ "${CATEGORY}" == "virtual" ]] ; then
-        if [[ -f "${1}" ]] ; then
-            source ${1} || die "Error sourcing ebuild '${1}'"
-        elif [[ -e "${1}" ]] ; then
-            die "'${1}' exists but is not a regular file"
-        fi
-    else
-        [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
-        source ${1} || die "Error sourcing ebuild '${1}'"
-    fi
+    [[ -f "${1}" ]] || die "Ebuild '${1}' is not a file"
+    source ${1} || die "Error sourcing ebuild '${1}'"
+
     [[ ${RDEPEND-unset} == "unset" ]] && RDEPEND="${DEPEND}"
 
     IUSE="${IUSE} ${E_IUSE}"
@@ -286,7 +289,7 @@ ebuild_main()
 
     for action in $@ ; do
         case ${action} in
-            metadata|variable|init|fetch|merge|unmerge|tidyup|strip|loadenv|saveenv)
+            metadata|variable|init|fetch|merge|unmerge|tidyup|strip|loadenv|saveenv|fetchbin|initbin|unpackbin)
                 ebuild_load_module builtin_${action}
             ;;
 
@@ -321,7 +324,10 @@ ebuild_main()
         fi
         perform_hook ebuild_${action}_post
     else
-        ebuild_load_ebuild "${ebuild}"
+        ebuild_load_environment
+        if [[ "${ebuild}" != "-" ]] ; then
+            ebuild_load_ebuild "${ebuild}"
+        fi
         for action in $@ ; do
             export EBUILD_PHASE="${action}"
             perform_hook ebuild_${action}_pre
@@ -343,5 +349,5 @@ ebuild_main()
     fi
 }
 
-ebuild_main $@
+ebuild_main "$@"
 

@@ -91,6 +91,7 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
                     close(PStream::stderr_close_fd);
         }
 
+        cmd.echo_to_stderr();
         Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd.command());
         execl("/bin/sh", "sh", "-c", cmd.command().c_str(), static_cast<char *>(0));
         throw PStreamError("execl /bin/sh -c '" + cmd.command() + "' failed:"

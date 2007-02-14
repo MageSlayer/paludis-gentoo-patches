@@ -123,6 +123,7 @@ namespace
                         .ebuild_interface(0)
                         .deps_interface(0)
                         .origins_interface(0)
+                        .ebin_interface(0)
                         .license_interface(0)),
                 VersionMetadataVirtualInterface(e)
             {

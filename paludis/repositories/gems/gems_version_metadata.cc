@@ -32,6 +32,7 @@ GemsVersionMetadata::GemsVersionMetadata(const VersionSpec & v) :
             .virtual_interface(0)
             .origins_interface(0)
             .license_interface(0)
+            .ebin_interface(0)
             ),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend)
 {

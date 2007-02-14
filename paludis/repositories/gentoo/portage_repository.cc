@@ -290,7 +290,7 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .provides_interface(0)
             .contents_interface(0)
             .config_interface(0)
-            .destination_interface(0)
+            .destination_interface(p.enable_destinations ? this : 0)
             .licenses_interface(this),
             p.entry_format),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
@@ -1245,5 +1245,30 @@ const PortageRepositoryParams &
 PortageRepository::params() const
 {
     return _imp->params;
+}
+
+bool
+PortageRepository::is_suitable_destination_for(const PackageDatabaseEntry & e) const
+{
+    std::string f(_imp->params.environment->package_database()->fetch_repository(e.repository)->format());
+    return f == "ebuild";
+}
+
+bool
+PortageRepository::is_default_destination() const
+{
+    return false;
+}
+
+bool
+PortageRepository::want_pre_post_phases() const
+{
+    return false;
+}
+
+void
+PortageRepository::merge(const MergeOptions & o)
+{
+    _imp->entries_ptr->merge(o);
 }
 

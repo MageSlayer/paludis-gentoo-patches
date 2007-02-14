@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <map>
+#include <iostream>
 #include "config.h"
 
 /** \file
@@ -138,13 +139,15 @@ namespace paludis
         std::string command;
         std::map<std::string, std::string> setenv_values;
         std::string chdir;
+        bool echo_to_stderr;
 
         Implementation(const std::string & c,
                 const std::map<std::string, std::string> & s = (std::map<std::string, std::string>()),
-                const std::string & d = "") :
+                const std::string & d = "", bool e = false) :
             command(c),
             setenv_values(s),
-            chdir(d)
+            chdir(d),
+            echo_to_stderr(e)
         {
         }
     };
@@ -162,7 +165,7 @@ Command::Command(const char * const s) :
 
 Command::Command(const Command & other) :
     PrivateImplementationPattern<Command>(new Implementation<Command>(other._imp->command,
-                other._imp->setenv_values, other._imp->chdir))
+                other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr))
 {
 }
 
@@ -171,7 +174,7 @@ Command::operator= (const Command & other)
 {
     if (this != &other)
         _imp.reset(new Implementation<Command>(other._imp->command, other._imp->setenv_values,
-                    other._imp->chdir));
+                    other._imp->chdir, other._imp->echo_to_stderr));
 
     return *this;
 }
@@ -242,6 +245,7 @@ paludis::run_command(const Command & cmd)
                 close(stderr_close_fd);
         }
 
+        cmd.echo_to_stderr();
         Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd.command());
         execl("/bin/sh", "sh", "-c", cmd.command().c_str(), static_cast<char *>(0));
         throw RunCommandError("execl /bin/sh -c '" + cmd.command() + "' failed:"
@@ -282,5 +286,21 @@ Command::Iterator
 Command::end_setenvs() const
 {
     return Iterator(_imp->setenv_values.end());
+}
+
+void
+Command::echo_to_stderr() const
+{
+    if (! _imp->echo_to_stderr)
+        return;
+
+    std::cerr << "/bin/sh -c " << command().c_str() << std::endl;
+}
+
+Command &
+Command::with_echo_to_stderr()
+{
+    _imp->echo_to_stderr = true;
+    return *this;
 }
 

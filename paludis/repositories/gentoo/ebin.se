@@ -1,0 +1,22 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_EbinInstallCommandPhase()
+{
+    prefix ebin_ip
+
+    key ebin_ip_unpack        "Initialise and unpack."
+    key ebin_ip_preinstall    "Preinstall to a live system."
+    key ebin_ip_postinstall   "Postinstall to a live system."
+    key ebin_ip_tidyup        "Tidy up work."
+
+    doxygen_comment << "END"
+        /**
+         * Which phase of an EbinInstallCommand to run.
+         *
+         * \see EbinInstallCommand
+         * \ingroup grpportagerepository
+         */
+END
+}
+

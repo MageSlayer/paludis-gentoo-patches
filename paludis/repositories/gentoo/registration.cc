@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/repositories/gentoo/make_ebuild_repository.hh>
+#include <paludis/repositories/gentoo/make_ebin_repository.hh>
 #include <paludis/repositories/gentoo/vdb_repository.hh>
 #include <paludis/util/log.hh>
 #include "config.h"
@@ -55,6 +56,7 @@ namespace
 void register_repositories(RepositoryMaker * maker)
 {
     maker->register_maker("ebuild", &make_ebuild_repository_wrapped);
+    maker->register_maker("ebin", &make_ebin_repository_wrapped);
     maker->register_maker("portage", &make_portage_repository);
     maker->register_maker("vdb", &VDBRepository::make_vdb_repository);
 }

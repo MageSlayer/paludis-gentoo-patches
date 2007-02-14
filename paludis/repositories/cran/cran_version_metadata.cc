@@ -32,6 +32,7 @@ CRANVersionMetadata::CRANVersionMetadata(bool want_origins) :
             .virtual_interface(0)
             .origins_interface(want_origins ? _origins : 0)
             .deps_interface(this)
+            .ebin_interface(0)
             ),
     VersionMetadataCRANInterface("", "", "", false, false),
     VersionMetadataDepsInterface(CRANDepParser::parse),

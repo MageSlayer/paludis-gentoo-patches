@@ -107,9 +107,11 @@ namespace paludis
             Command & with_chdir(const FSEntry &);
             Command & with_setenv(const std::string &, const std::string &);
             Command & with_sandbox();
+            Command & with_echo_to_stderr();
 
             std::string command() const;
             std::string chdir() const;
+            void echo_to_stderr() const;
 
             typedef libwrapiter::ForwardIterator<Command, const std::pair<const std::string, std::string> > Iterator;
             Iterator begin_setenvs() const;

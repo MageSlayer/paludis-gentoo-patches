@@ -34,7 +34,7 @@ namespace paludis
 }
 
 OurInstallTask::OurInstallTask() :
-    InstallTask(DefaultEnvironment::get_instance(), DepListOptions()),
+    InstallTask(DefaultEnvironment::get_instance(), DepListOptions(), DefaultEnvironment::get_instance()->default_destinations()),
     PrivateImplementationPattern<OurInstallTask>(new Implementation<OurInstallTask>)
 {
 }

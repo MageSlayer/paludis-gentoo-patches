@@ -477,13 +477,14 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     EbuildInstallCommandParams install_params(
             EbuildInstallCommandParams::create()
-                    .phase(ip_build)
+                    .phase(ebuild_ip_build)
                     .use(use)
                     .a(archives)
                     .aa(all_archives)
                     .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
                     .expand_vars(expand_vars)
-                    .root(stringify(o.destination->installed_interface->root()))
+                    .root(o.destination && o.destination->installed_interface ?
+                        stringify(o.destination->installed_interface->root()) : "/")
                     .profiles(_imp->params.profiles)
                     .disable_cfgpro(o.no_config_protect)
                     .debug_build(o.debug_build)
@@ -498,7 +499,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     if (o.destination->destination_interface->want_pre_post_phases())
     {
-        install_params.phase = ip_preinstall;
+        install_params.phase = ebuild_ip_preinstall;
         EbuildInstallCommand preinst_cmd(command_params, install_params);
         preinst_cmd();
     }
@@ -514,12 +515,12 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     if (o.destination->destination_interface->want_pre_post_phases())
     {
-        install_params.phase = ip_postinstall;
+        install_params.phase = ebuild_ip_postinstall;
         EbuildInstallCommand postinst_cmd(command_params, install_params);
         postinst_cmd();
     }
 
-    install_params.phase = ip_tidyup;
+    install_params.phase = ebuild_ip_tidyup;
     EbuildInstallCommand tidyup_cmd(command_params, install_params);
     tidyup_cmd();
 }
@@ -558,5 +559,11 @@ EbuildEntries::make_ebuild_entries(
         const Environment * const e, PortageRepository * const r, const PortageRepositoryParams & p)
 {
     return std::tr1::shared_ptr<PortageRepositoryEntries>(new EbuildEntries(e, r, p));
+}
+
+void
+EbuildEntries::merge(const MergeOptions &)
+{
+    throw InternalError(PALUDIS_HERE, "Cannot merge to PortageRepository with ebuild entries");
 }
 

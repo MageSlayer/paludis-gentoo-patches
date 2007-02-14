@@ -41,6 +41,7 @@ namespace paludis
         std::list<std::string> raw_targets;
         std::tr1::shared_ptr<AllDepAtom> targets;
         std::tr1::shared_ptr<std::string> add_to_world_atom;
+        std::tr1::shared_ptr<const DestinationsCollection> destinations;
 
         bool pretend;
         bool preserve_world;
@@ -48,13 +49,15 @@ namespace paludis
         bool had_set_targets;
         bool had_package_targets;
 
-        Implementation<InstallTask>(Environment * const e, const DepListOptions & o) :
+        Implementation<InstallTask>(Environment * const e, const DepListOptions & o,
+                std::tr1::shared_ptr<const DestinationsCollection> d) :
             env(e),
             dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
             install_options(false, false, ido_none, false, std::tr1::shared_ptr<Repository>()),
             uninstall_options(false),
             targets(new AllDepAtom),
+            destinations(d),
             pretend(false),
             preserve_world(false),
             had_set_targets(false),
@@ -64,8 +67,9 @@ namespace paludis
     };
 }
 
-InstallTask::InstallTask(Environment * const env, const DepListOptions & options) :
-    PrivateImplementationPattern<InstallTask>(new Implementation<InstallTask>(env, options))
+InstallTask::InstallTask(Environment * const env, const DepListOptions & options,
+        const std::tr1::shared_ptr<const DestinationsCollection> d) :
+    PrivateImplementationPattern<InstallTask>(new Implementation<InstallTask>(env, options, d))
 {
 }
 
@@ -177,7 +181,7 @@ InstallTask::execute()
 
     /* build up our dep list */
     on_build_deplist_pre();
-    _imp->dep_list.add(_imp->targets, _imp->env->default_destinations());
+    _imp->dep_list.add(_imp->targets, _imp->destinations);
     on_build_deplist_post();
 
     /* we're about to display our task list */

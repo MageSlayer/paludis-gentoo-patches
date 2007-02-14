@@ -37,6 +37,7 @@
 namespace paludis
 {
     class VersionMetadataEbuildInterface;
+    class VersionMetadataEbinInterface;
     class VersionMetadataCRANInterface;
     class VersionMetadataDepsInterface;
     class VersionMetadataOriginsInterface;

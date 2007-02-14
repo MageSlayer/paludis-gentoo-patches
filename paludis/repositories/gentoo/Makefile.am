@@ -6,6 +6,7 @@ DISTCLEANFILES = \
 	portage_repository_params-sr.hh portage_repository_params-sr.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
 	ebuild-sr.hh ebuild-sr.cc ebuild-se.hh ebuild-se.cc \
+	ebin-sr.hh ebin-sr.cc ebin-se.hh ebin-se.cc \
 	vdb_merger-sr.hh vdb_merger-sr.cc \
 	vdb_unmerger-sr.hh vdb_unmerger-sr.cc
 
@@ -54,6 +55,9 @@ paludis_repositories_gentoo_include_HEADERS = \
 	ebuild.hh \
 	ebuild-sr.hh \
 	ebuild-se.hh \
+	ebin.hh \
+	ebin-se.hh \
+	ebin-sr.hh \
 	glsa.hh \
 	glsa-sr.hh \
 	portage_repository-sr.hh \
@@ -67,9 +71,11 @@ paludis_repositories_gentoo_include_HEADERS = \
 	portage_repository_sets.hh \
 	portage_repository_entries.hh \
 	ebuild_entries.hh \
+	ebin_entries.hh \
 	ebuild_flat_metadata_cache.hh \
 	eclass_mtimes.hh \
 	make_ebuild_repository.hh \
+	make_ebin_repository.hh \
 	use_desc.hh \
 	portage_virtual_version_metadata.hh \
 	vdb_repository.hh \
@@ -82,6 +88,7 @@ paludis_repositories_gentoo_include_HEADERS = \
 
 libpaludisgentoorepository_la_SOURCES = \
 	ebuild.cc \
+	ebin.cc \
 	glsa.cc \
 	portage_repository.cc \
 	portage_repository_profile_file.cc \
@@ -91,10 +98,12 @@ libpaludisgentoorepository_la_SOURCES = \
 	portage_repository_sets.cc \
 	portage_repository_entries.cc \
 	ebuild_entries.cc \
+	ebin_entries.cc \
 	ebuild_flat_metadata_cache.cc \
 	eclass_mtimes.cc \
 	portage_repository_params.cc \
 	make_ebuild_repository.cc \
+	make_ebin_repository.cc \
 	use_desc.cc \
 	portage_virtual_version_metadata.cc \
 	registration.cc \
@@ -158,6 +167,12 @@ EXTRA_DIST = \
 	ebuild.se \
 	ebuild-se.hh \
 	ebuild-se.cc \
+	ebin.sr \
+	ebin-sr.hh \
+	ebin-sr.cc \
+	ebin.se \
+	ebin-se.hh \
+	ebin-se.cc \
 	glsa.sr \
 	glsa-sr.hh \
 	glsa-sr.cc \
@@ -199,6 +214,10 @@ BUILT_SOURCES = \
 	ebuild-sr.cc \
 	ebuild-se.hh \
 	ebuild-se.cc \
+	ebin-sr.hh \
+	ebin-sr.cc \
+	ebin-se.hh \
+	ebin-se.cc \
 	vdb_merger-sr.hh \
 	vdb_merger-sr.cc \
 	vdb_unmerger-sr.hh \
@@ -248,6 +267,12 @@ ebuild-sr.hh : ebuild.sr $(top_srcdir)/misc/make_sr.bash
 ebuild-sr.cc : ebuild.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/ebuild.sr > $@
 
+ebin-sr.hh : ebin.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/ebin.sr > $@
+
+ebin-sr.cc : ebin.sr $(top_srcdir)/misc/make_sr.bash
+	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/ebin.sr > $@
+
 glsa-sr.hh : glsa.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/glsa.sr > $@
 
@@ -265,6 +290,12 @@ ebuild-se.hh : ebuild.se $(top_srcdir)/misc/make_se.bash
 
 ebuild-se.cc : ebuild.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/ebuild.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+ebin-se.hh : ebin.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/ebin.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+ebin-se.cc : ebin.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/ebin.se > $@ ; then rm -f $@ ; exit 1 ; fi
 
 
 libpaludisgentoorepositoryxmlthings_la_SOURCES = xml_things.cc xml_things.hh

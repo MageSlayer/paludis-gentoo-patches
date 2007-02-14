@@ -1570,7 +1570,8 @@ VDBRepository::do_category_names_containing_package(const PackageNamePart & p) c
 bool
 VDBRepository::is_suitable_destination_for(const PackageDatabaseEntry & e) const
 {
-    return _imp->env->package_database()->fetch_repository(e.repository)->format() == "ebuild";
+    std::string f(_imp->env->package_database()->fetch_repository(e.repository)->format());
+    return f == "ebuild" || f == "ebin";
 }
 
 bool

@@ -305,19 +305,19 @@ EbuildInstallCommand::commands() const
 {
     switch (install_params.phase)
     {
-        case ip_build:
+        case ebuild_ip_build:
             return "init setup unpack compile test install saveenv";
 
-        case ip_preinstall:
+        case ebuild_ip_preinstall:
             return "loadenv strip preinst saveenv";
 
-        case ip_postinstall:
+        case ebuild_ip_postinstall:
             return "loadenv postinst saveenv";
 
-        case ip_tidyup:
+        case ebuild_ip_tidyup:
             return "tidyup";
 
-        case last_ip:
+        case last_ebuild_ip:
             ;
     };
 
@@ -447,6 +447,7 @@ EbuildVersionMetadata::EbuildVersionMetadata() :
             .license_interface(this)
             .virtual_interface(0)
             .origins_interface(0)
+            .ebin_interface(0)
             ),
     VersionMetadataEbuildInterface(),
     VersionMetadataDepsInterface(PortageDepParser::parse_depend),

@@ -17,30 +17,29 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "portage_virtual_version_metadata.hh"
-#include <paludis/portage_dep_parser.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_MAKE_EBIN_REPOSITORY_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_MAKE_EBIN_REPOSITORY_HH 1
 
-using namespace paludis;
+#include <paludis/repositories/gentoo/portage_repository.hh>
 
-PortageVirtualVersionMetadata::PortageVirtualVersionMetadata(const SlotName & s,
-        const PackageDatabaseEntry & e) :
-    VersionMetadata(
-            VersionMetadataBase(s, "", "", "paludis-1"),
-            VersionMetadataCapabilities::create()
-            .virtual_interface(this)
-            .ebuild_interface(0)
-            .deps_interface(this)
-            .license_interface(0)
-            .cran_interface(0)
-            .origins_interface(0)
-            .ebin_interface(0)
-            ),
-    VersionMetadataVirtualInterface(e),
-    VersionMetadataDepsInterface(&PortageDepParser::parse_depend)
+namespace paludis
 {
+    /**
+     * Create an ebin format repository.
+     *
+     * \see PortageRepository
+     * \ingroup grpportagerepository
+     */
+    std::tr1::shared_ptr<PortageRepository>
+    make_ebin_repository(
+            Environment * const,
+            std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >) PALUDIS_VISIBLE;
+
+    std::tr1::shared_ptr<Repository>
+    make_ebin_repository_wrapped(
+            Environment * const env,
+            std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m);
 }
 
-PortageVirtualVersionMetadata::~PortageVirtualVersionMetadata()
-{
-}
 
+#endif

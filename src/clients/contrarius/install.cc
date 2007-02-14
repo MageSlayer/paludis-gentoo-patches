@@ -54,7 +54,8 @@ namespace
     {
         public:
             OurInstallTask(const DepListOptions & options) :
-                ConsoleInstallTask(DefaultEnvironment::get_instance(), options)
+                ConsoleInstallTask(DefaultEnvironment::get_instance(), options,
+                        DefaultEnvironment::get_instance()->default_destinations())
             {
             }
 

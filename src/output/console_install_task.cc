@@ -66,8 +66,9 @@ UseDescriptionComparator::operator() (const UseDescription & lhs, const UseDescr
 }
 
 ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
-        const DepListOptions & options) :
-    InstallTask(env, options),
+        const DepListOptions & options,
+        std::tr1::shared_ptr<const DestinationsCollection> d) :
+    InstallTask(env, options, d),
     _all_tags(new SortedCollection<DepTagEntry>::Concrete),
     _all_use_descriptions(new SortedCollection<UseDescription, UseDescriptionComparator>::Concrete),
     _all_expand_prefixes(new UseFlagNameCollection::Concrete)
@@ -220,6 +221,7 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     display_merge_list_entry_slot(d, m);
 
+    display_merge_list_entry_destination(d, m);
     display_merge_list_entry_status_and_update_counts(d, existing, existing_slot, m);
     display_merge_list_entry_use(d, existing, existing_slot, m);
     display_merge_list_entry_tags(d, m);
@@ -976,6 +978,28 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
                     output_no_endl(" " + render_as_unimportant("<" + deps + ">"));
                     break;
             }
+    }
+}
+
+void
+ConsoleInstallTask::display_merge_list_entry_destination(const DepListEntry & d, const DisplayMode m)
+{
+    if (! d.destination)
+        return;
+
+    output_no_endl(" -> ");
+
+    switch (m)
+    {
+        case normal_entry:
+        case suggested_entry:
+        case error_entry:
+            output_no_endl(render_as_repository_name(stringify(d.destination->name())));
+            break;
+
+        case unimportant_entry:
+            output_no_endl(render_as_unimportant(stringify(d.destination->name())));
+            break;
     }
 }
 

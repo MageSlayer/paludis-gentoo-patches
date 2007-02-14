@@ -312,6 +312,7 @@ FakeVersionMetadata::FakeVersionMetadata() :
             .cran_interface(0)
             .virtual_interface(0)
             .origins_interface(0)
+            .ebin_interface(0)
             ),
     VersionMetadataEbuildInterface(),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
@@ -334,6 +335,7 @@ FakeVirtualVersionMetadata::FakeVirtualVersionMetadata(const SlotName & s, const
             .cran_interface(0)
             .virtual_interface(this)
             .origins_interface(0)
+            .ebin_interface(0)
             ),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
     VersionMetadataVirtualInterface(p)

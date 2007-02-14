@@ -4,6 +4,7 @@
 make_class_VersionMetadataCapabilities()
 {
     key ebuild_interface "VersionMetadataEbuildInterface *"
+    key ebin_interface "VersionMetadataEbinInterface *"
     key cran_interface "VersionMetadataCRANInterface *"
     key deps_interface "VersionMetadataDepsInterface *"
     key origins_interface "VersionMetadataOriginsInterface *"
@@ -159,6 +160,26 @@ END
     doxygen_comment << "END"
         /**
          * Version metadata for ebuilds.
+         *
+         * \see VersionMetadata
+         * \ingroup grpversions
+         */
+END
+}
+
+make_class_VersionMetadataEbinInterface()
+{
+    key bin_uri std::string
+
+    extra_constructors <<END
+            VersionMetadataEbinInterface();
+END
+
+    allow_named_args
+
+    doxygen_comment << "END"
+        /**
+         * Version metadata for ebins.
          *
          * \see VersionMetadata
          * \ingroup grpversions

@@ -59,6 +59,7 @@ namespace paludis
         public RepositoryEnvironmentVariableInterface,
         public RepositoryMirrorsInterface,
         public RepositoryVirtualsInterface,
+        public RepositoryDestinationInterface,
         public RepositoryLicensesInterface,
         private PrivateImplementationPattern<PortageRepository>
     {
@@ -134,6 +135,15 @@ namespace paludis
                     const PackageDatabaseEntry * const) const;
 
             /* end of RepositoryUseInterface */
+
+            /* RepositoryDestinationInterface */
+
+            virtual bool is_suitable_destination_for(const PackageDatabaseEntry &) const;
+            virtual bool is_default_destination() const;
+            virtual bool want_pre_post_phases() const;
+            virtual void merge(const MergeOptions &);
+
+            /* end of RepositoryDestinationInterface */
 
         public:
             virtual std::tr1::shared_ptr<const RepositoryInfo> info(bool verbose) const;

@@ -98,3 +98,7 @@ VersionMetadataEbuildInterface::VersionMetadataEbuildInterface()
 {
 }
 
+VersionMetadataEbinInterface::VersionMetadataEbinInterface()
+{
+}
+

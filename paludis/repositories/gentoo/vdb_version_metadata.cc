@@ -32,6 +32,7 @@ VDBVersionMetadata::VDBVersionMetadata() :
         .license_interface(this)
         .virtual_interface(0)
         .cran_interface(0)
+        .ebin_interface(0)
         ),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
     VersionMetadataLicenseInterface(&PortageDepParser::parse_license)
@@ -53,6 +54,7 @@ VDBVirtualVersionMetadata::VDBVirtualVersionMetadata(const SlotName & s,
         .license_interface(0)
         .virtual_interface(this)
         .cran_interface(0)
+        .ebin_interface(0)
         ),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
     VersionMetadataVirtualInterface(e)
