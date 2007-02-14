@@ -280,7 +280,7 @@ ebuild_main()
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Running ebuild phases $@..."
-    else
+    elif [[ ${1} != variable ]] ; then
         ebuild_section "Running ebuild phase $@..."
     fi
 
@@ -338,7 +338,7 @@ ebuild_main()
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Completed ebuild phases $@"
-    else
+    elif [[ ${1} != variable ]] ; then
         ebuild_section "Completed ebuild phase $@"
     fi
 }
