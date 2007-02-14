@@ -519,7 +519,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .virtuals_interface(0)
             .destination_interface(this)
             .config_interface(this)
-            .contents_interface(this),
+            .contents_interface(this)
+            .licenses_interface(0),
             "vdb"),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p))
 {
@@ -904,12 +905,6 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
         const std::string & msg) throw () :
     ConfigurationError("VDB repository key read error: " + msg)
 {
-}
-
-bool
-VDBRepository::do_is_licence(const std::string &) const
-{
-    return false;
 }
 
 void

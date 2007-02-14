@@ -59,6 +59,7 @@ namespace paludis
         public RepositoryEnvironmentVariableInterface,
         public RepositoryMirrorsInterface,
         public RepositoryVirtualsInterface,
+        public RepositoryLicensesInterface,
         private PrivateImplementationPattern<PortageRepository>
     {
         private:
@@ -101,7 +102,8 @@ namespace paludis
             virtual bool do_query_profile_masks(const QualifiedPackageName &,
                     const VersionSpec &) const;
 
-            virtual bool do_is_licence(const std::string &) const;
+            virtual std::tr1::shared_ptr<FSEntry> do_license_exists(
+                    const std::string & license) const;
 
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;

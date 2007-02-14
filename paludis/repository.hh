@@ -65,6 +65,7 @@ namespace paludis
     class RepositoryDestinationInterface;
     class RepositoryContentsInterface;
     class RepositoryConfigInterface;
+    class RepositoryLicensesInterface;
 
     /**
      * What debug build option to use when installing a package.
@@ -248,20 +249,6 @@ namespace paludis
 
             ///\}
 
-            /**
-             * \name Implementations: misc files
-             *
-             * Various utility functions related to misc files.
-             */
-            ///\{
-
-            /**
-             * Override in descendents: is this a licence?
-             */
-            virtual bool do_is_licence(const std::string &) const = 0;
-
-            ///\}
-
         public:
             ///\name Basic operations
             ///\{
@@ -368,14 +355,6 @@ namespace paludis
                     const VersionSpec & v) const
             {
                 return do_version_metadata(q, v);
-            }
-
-            /**
-             * Query whether the specified item is a licence.
-             */
-            bool is_license(const std::string & u) const
-            {
-                return do_is_licence(u);
             }
 
             ///\}
@@ -1112,6 +1091,45 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryConfigInterface();
+    };
+
+    /**
+     * Interface for handling actions relating to licenses.
+     *
+     * \see Repository
+     * \ingroup grprepository
+     * \nosubgrouping
+     */
+    class RepositoryLicensesInterface
+    {
+        protected:
+            ///\name Implementation details
+            ///\{
+
+            /**
+             * Override in descendents: do the actual check,
+             */
+            virtual std::tr1::shared_ptr<FSEntry>
+            do_license_exists(const std::string & license) const = 0;
+
+            ///\}
+
+        public:
+            ///\name License related queries
+            ///\{
+
+            /**
+             * Check if a license exists
+             */
+            std::tr1::shared_ptr<FSEntry>
+            license_exists(const std::string & license) const
+            {
+                return do_license_exists(license);
+            }
+
+            ///\}
+
+            virtual ~RepositoryLicensesInterface();
     };
 
     /**

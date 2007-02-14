@@ -40,7 +40,8 @@ FakeRepository::FakeRepository(const Environment * const e, const RepositoryName
             .provides_interface(0)
             .virtuals_interface(this)
             .config_interface(0)
-            .destination_interface(0),
+            .destination_interface(0)
+            .licenses_interface(0),
             "fake"),
     _virtual_packages(new VirtualsCollection::Concrete)
 {

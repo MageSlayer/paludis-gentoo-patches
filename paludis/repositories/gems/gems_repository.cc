@@ -175,12 +175,6 @@ GemsRepository::do_version_metadata(const QualifiedPackageName & q, const Versio
     return j->second.metadata;
 }
 
-bool
-GemsRepository::do_is_licence(const std::string &) const
-{
-    return false;
-}
-
 void
 GemsRepository::do_install(const QualifiedPackageName &, const VersionSpec &, const InstallOptions &) const
 {
@@ -261,7 +255,8 @@ GemsRepository::GemsRepository(const GemsRepositoryParams & p) :
             .virtuals_interface(0)
             .provides_interface(0)
             .config_interface(0)
-            .destination_interface(0),
+            .destination_interface(0)
+            .licenses_interface(0),
             "gems"),
     PrivateImplementationPattern<GemsRepository>(new Implementation<GemsRepository>(p))
 {

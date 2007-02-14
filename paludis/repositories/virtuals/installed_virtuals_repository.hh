@@ -64,8 +64,6 @@ namespace paludis
 
             virtual bool do_has_category_named(const CategoryNamePart &) const;
 
-            virtual bool do_is_licence(const std::string &) const;
-
         public:
             ///\name Basic operations
             //\{

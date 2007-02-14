@@ -52,8 +52,10 @@ namespace
 
         void visit(const PlainTextDepAtom * const a)
         {
-            if (! env->package_database()->fetch_repository(
-                        env->portage_repository()->name())->is_license(a->text()))
+            RepositoryLicensesInterface *li(env->package_database()->fetch_repository(
+                        env->portage_repository()->name())->licenses_interface);
+
+            if (li && ! li->license_exists(a->text()))
                 result << Message(qal_major, "Item '" + a->text() + "' is not a licence");
         }
 

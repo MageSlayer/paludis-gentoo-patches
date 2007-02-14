@@ -179,7 +179,8 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             .destination_interface(0)
             .virtuals_interface(0)
             .config_interface(0)
-            .contents_interface(0),
+            .contents_interface(0)
+            .licenses_interface(0),
             "cran"),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p))
 {
@@ -465,12 +466,6 @@ CRANRepositoryConfigurationError::CRANRepositoryConfigurationError(
         const std::string & msg) throw () :
     ConfigurationError("CRAN repository configuration error: " + msg)
 {
-}
-
-bool
-CRANRepository::do_is_licence(const std::string &) const
-{
-    return false;
 }
 
 void

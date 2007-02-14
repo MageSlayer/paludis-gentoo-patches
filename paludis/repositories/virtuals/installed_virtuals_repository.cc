@@ -100,7 +100,8 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .virtuals_interface(0)
             .contents_interface(0)
             .config_interface(0)
-            .destination_interface(0),
+            .destination_interface(0)
+            .licenses_interface(0),
             "installed_virtuals"),
     PrivateImplementationPattern<InstalledVirtualsRepository>(
             new Implementation<InstalledVirtualsRepository>(env, r))
@@ -319,12 +320,6 @@ InstalledVirtualsRepository::do_has_category_named(const CategoryNamePart & c) c
                     RepositoryName("dummy_repository")), EntriesCategoryComparator()));
 
     return p.first != p.second;
-}
-
-bool
-InstalledVirtualsRepository::do_is_licence(const std::string &) const
-{
-    return false;
 }
 
 void

@@ -275,3 +275,6 @@ RepositoryConfigInterface::~RepositoryConfigInterface()
 {
 }
 
+RepositoryLicensesInterface::~RepositoryLicensesInterface()
+{
+}

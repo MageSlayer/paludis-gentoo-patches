@@ -290,7 +290,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .provides_interface(0)
             .contents_interface(0)
             .config_interface(0)
-            .destination_interface(0),
+            .destination_interface(0)
+            .licenses_interface(this),
             p.entry_format),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
 {
@@ -744,17 +745,24 @@ PortageRepository::do_arch_flags() const
     return _imp->arch_flags;
 }
 
-bool
-PortageRepository::do_is_licence(const std::string & s) const
+std::tr1::shared_ptr<FSEntry>
+PortageRepository::do_license_exists(const std::string & license) const
 {
-    FSEntry l(_imp->params.location);
-    l /= "licenses";
+    std::tr1::shared_ptr<FSEntry> p;
 
-    if (! l.is_directory())
-        return false;
+    if (_imp->params.master_repository)
+    {
+        FSEntry l(_imp->params.master_repository->params().location /
+                "licenses" / license);
+        if (l.exists() && l.is_regular_file())
+            p.reset(new FSEntry(l));
+    }
 
-    l /= s;
-    return l.exists() && l.is_regular_file();
+    FSEntry l(_imp->params.location / "licenses" / license);
+    if (l.exists() && l.is_regular_file())
+        p.reset(new FSEntry(l));
+
+    return p;
 }
 
 void
