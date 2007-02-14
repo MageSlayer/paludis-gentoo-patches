@@ -224,8 +224,17 @@ InstallTask::execute()
     }
     else
     {
-        _imp->env->perform_hook(Hook("install_all_pre")("TARGETS", join(
-                        _imp->raw_targets.begin(), _imp->raw_targets.end(), " ")));
+        bool any_live_destination(false);
+        for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
+                dep != dep_end && ! any_live_destination ; ++dep)
+            if (dlk_package == dep->kind)
+                if (dep->destination && dep->destination->destination_interface &&
+                        dep->destination->destination_interface->want_pre_post_phases())
+                    any_live_destination = true;
+
+        _imp->env->perform_hook(Hook("install_all_pre")
+                ("TARGETS", join(_imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
+                ("PALUDIS_NO_LIVE_DESTINATION", any_live_destination ? "" : "yes"));
         on_install_all_pre();
     }
 
@@ -241,6 +250,11 @@ InstallTask::execute()
     {
         if (dlk_package != dep->kind)
             continue;
+
+        bool live_destination(false);
+        if (dep->destination && dep->destination->destination_interface &&
+                dep->destination->destination_interface->want_pre_post_phases())
+            live_destination = true;
 
         ++x;
         _imp->current_dep_list_entry = dep;
@@ -259,8 +273,10 @@ InstallTask::execute()
         }
         else
         {
-            _imp->env->perform_hook(Hook("install_pre")("TARGET", cpvr)
-                    ("X_OF_Y", stringify(x) + " of " + stringify(y)));
+            _imp->env->perform_hook(Hook("install_pre")
+                    ("TARGET", cpvr)
+                    ("X_OF_Y", stringify(x) + " of " + stringify(y))
+                    ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes"));
             on_install_pre(*dep);
         }
 
@@ -286,17 +302,20 @@ InstallTask::execute()
         if (_imp->install_options.fetch_only)
         {
             on_fetch_post(*dep);
-            _imp->env->perform_hook(Hook("fetch_post")("TARGET", cpvr)
+            _imp->env->perform_hook(Hook("fetch_post")
+                    ("TARGET", cpvr)
                     ("X_OF_Y", stringify(x) + " of " + stringify(y)));
         }
         else
         {
             on_install_post(*dep);
-            _imp->env->perform_hook(Hook("install_post")("TARGET", cpvr)
-                    ("X_OF_Y", stringify(x) + " of " + stringify(y)));
+            _imp->env->perform_hook(Hook("install_post")
+                    ("TARGET", cpvr)
+                    ("X_OF_Y", stringify(x) + " of " + stringify(y))
+                    ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes"));
         }
 
-        if (_imp->install_options.fetch_only)
+        if (_imp->install_options.fetch_only || ! live_destination)
             continue;
 
         /* figure out whether we need to unmerge (clean) anything */

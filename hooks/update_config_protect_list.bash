@@ -19,6 +19,11 @@
 
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
+if [[ -n "${PALUDIS_NO_LIVE_DESTINATION}" ]] ; then
+    einfo_unhooked "No need to update CONFIG_PROTECT lists"
+    exit 0
+fi
+
 vdb_loc="$(${PALUDIS_COMMAND} --log-level silent --configuration-variable installed location )"
 cfg_protect_list="${vdb_loc}/.cache/all_CONFIG_PROTECT"
 cfg_protect_mask_list="${vdb_loc}/.cache/all_CONFIG_PROTECT_MASK"

@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set et sw=4 sts=4 :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,8 +19,15 @@
 export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
 source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
 
+if [[ -n "${PALUDIS_NO_LIVE_DESTINATION}" ]] ; then
+    einfo_unhooked "No need to regenerate environment"
+    exit 0
+fi
+
 echo
 einfo_unhooked "Regenerating environment..."
 eselect env update || exit 1
 einfo_unhooked "Done regenerating environment"
+
+true
 
