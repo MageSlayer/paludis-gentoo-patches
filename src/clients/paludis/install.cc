@@ -243,6 +243,10 @@ namespace
     void
     InstallKilledCatcher::_signal_handler(int sig)
     {
+        // ignore further signals to avoid a race if
+        // a sigal arrives while this handler hasn't finished
+        signal(sig, SIG_IGN);
+
         static bool recursing(false);
 
         if (recursing)
