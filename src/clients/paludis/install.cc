@@ -87,6 +87,13 @@ namespace
             resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
                 + " '( " + join(task.begin_targets(), task.end_targets(), " ") + " )'";
 
+        if (CommandLine::get_instance()->a_destinations.specified())
+            for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_destinations.begin_args()),
+                    i_end(CommandLine::get_instance()->a_destinations.end_args()) ;
+                    i != i_end ; ++i)
+                resume_command = resume_command + " --" + CommandLine::get_instance()->a_destinations.long_name()
+                    + " '" + *i + "'";
+
         return resume_command;
     }
 
