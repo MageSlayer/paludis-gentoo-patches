@@ -420,7 +420,8 @@ Merger::on_dir_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
     {
         on_warn(is_check, "Expected '" + stringify(dst / src.basename()) +
                 "' to be a directory but found a symlink to a directory");
-        record_install_dir(src, dst);
+        if (! is_check)
+            record_install_dir(src, dst);
     }
     else
         on_error(is_check, "Expected '" + stringify(dst) + "' to be a directory but found a symlink to a non-directory");
