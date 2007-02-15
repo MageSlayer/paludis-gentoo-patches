@@ -190,7 +190,6 @@ namespace paludis
                     std::tr1::shared_ptr<const PackageDatabaseEntryCollection>,
                     std::tr1::shared_ptr<const PackageDatabaseEntryCollection>, const DisplayMode);
             virtual void display_merge_list_entry_tags(const DepListEntry &, const DisplayMode);
-            virtual void display_merge_list_entry_destination(const DepListEntry &, const DisplayMode);
             virtual void display_merge_list_entry_end(const DepListEntry &, const DisplayMode);
 
             virtual void display_merge_list_entry_mask_reasons(const DepListEntry &);

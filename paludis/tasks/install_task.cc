@@ -328,17 +328,22 @@ InstallTask::execute()
             if ((*r)->installed_interface)
                 ((*r).get())->invalidate();
 
-        // look for packages with the same name in the same slot
-        std::tr1::shared_ptr<PackageDatabaseEntryCollection> collision_list(_imp->env->package_database()->query(
-                    PackageDepAtom(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)),
-                    is_installed_only, qo_order_by_version));
+        // look for packages with the same name in the same slot in the destination repo
+        std::tr1::shared_ptr<PackageDatabaseEntryCollection> collision_list;
+
+        if (dep->destination && dep->destination->uninstallable_interface)
+            collision_list = _imp->env->package_database()->query(
+                    PackageDepAtom(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)
+                        + "::" + stringify(dep->destination->name())),
+                        is_installed_only, qo_order_by_version);
 
         // don't clean the thing we just installed
         PackageDatabaseEntryCollection::Concrete clean_list;
-        for (PackageDatabaseEntryCollection::Iterator c(collision_list->begin()),
-                c_end(collision_list->end()) ; c != c_end ; ++c)
-            if (dep->package.version != c->version)
-                clean_list.push_back(*c);
+        if (collision_list)
+            for (PackageDatabaseEntryCollection::Iterator c(collision_list->begin()),
+                    c_end(collision_list->end()) ; c != c_end ; ++c)
+                if (dep->package.version != c->version)
+                    clean_list.push_back(*c);
         /* no need to sort clean_list here, although if the above is
          * changed then check that this still holds... */
 

@@ -30,6 +30,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/iterator.hh>
+#include <paludis/query.hh>
 
 #include <algorithm>
 #include <set>
@@ -204,12 +205,16 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
         throw InternalError(PALUDIS_HERE, "Bad d.kind");
     } while (false);
 
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing(environment()->package_database()->
-            query(PackageDepAtom(d.package.name), is_installed_only, qo_order_by_version));
+    std::string repo;
+    if (d.destination)
+        repo = "::" + stringify(d.destination->name());
 
-    std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_slot(environment()->package_database()->
-            query(PackageDepAtom(stringify(d.package.name) + ":" + stringify(d.metadata->slot)),
-                is_installed_only, qo_order_by_version));
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_repo(environment()->package_database()->
+            query(query::Matches(PackageDepAtom(stringify(d.package.name) + repo)), qo_order_by_version));
+
+    std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_slot_repo(environment()->package_database()->
+            query(query::Matches(PackageDepAtom(stringify(d.package.name) + ":" + stringify(d.metadata->slot) + repo)),
+                qo_order_by_version));
 
     display_merge_list_entry_start(d, m);
     display_merge_list_entry_package_name(d, m);
@@ -221,9 +226,8 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     display_merge_list_entry_slot(d, m);
 
-    display_merge_list_entry_destination(d, m);
-    display_merge_list_entry_status_and_update_counts(d, existing, existing_slot, m);
-    display_merge_list_entry_use(d, existing, existing_slot, m);
+    display_merge_list_entry_status_and_update_counts(d, existing_repo, existing_slot_repo, m);
+    display_merge_list_entry_use(d, existing_repo, existing_slot_repo, m);
     display_merge_list_entry_tags(d, m);
     display_merge_list_entry_end(d, m);
 
@@ -767,10 +771,18 @@ ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const 
 
 void
 ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepListEntry & d,
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing,
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot,
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_repo,
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot_repo,
         const DisplayMode m)
 {
+    std::string destination_str;
+    if (d.destination)
+    {
+        std::tr1::shared_ptr<const DestinationsCollection> default_destinations(environment()->default_destinations());
+        if (default_destinations->end() == default_destinations->find(d.destination))
+            destination_str = " ::" + stringify(d.destination->name());
+    }
+
     switch (m)
     {
         case unimportant_entry:
@@ -786,35 +798,35 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
             break;
 
         case normal_entry:
-            if (existing->empty())
+            if (existing_repo->empty())
             {
-                output_no_endl(render_as_update_mode(" [N]"));
+                output_no_endl(render_as_update_mode(" [N" + destination_str + "]"));
                 set_count<new_count>(count<new_count>() + 1);
                 set_count<max_count>(count<max_count>() + 1);
             }
-            else if (existing_slot->empty())
+            else if (existing_slot_repo->empty())
             {
-                output_no_endl(render_as_update_mode(" [S]"));
+                output_no_endl(render_as_update_mode(" [S" + destination_str + "]"));
                 set_count<new_slot_count>(count<new_slot_count>() + 1);
                 set_count<max_count>(count<max_count>() + 1);
             }
-            else if (existing_slot->last()->version < d.package.version)
+            else if (existing_slot_repo->last()->version < d.package.version)
             {
                 output_no_endl(render_as_update_mode(" [U " +
-                            stringify(existing_slot->last()->version) + "]"));
+                            stringify(existing_slot_repo->last()->version) + "" + destination_str + "]"));
                 set_count<upgrade_count>(count<upgrade_count>() + 1);
                 set_count<max_count>(count<max_count>() + 1);
             }
-            else if (existing_slot->last()->version > d.package.version)
+            else if (existing_slot_repo->last()->version > d.package.version)
             {
                 output_no_endl(render_as_update_mode(" [D " +
-                            stringify(existing_slot->last()->version) + "]"));
+                            stringify(existing_slot_repo->last()->version) + "" + destination_str + "]"));
                 set_count<downgrade_count>(count<downgrade_count>() + 1);
                 set_count<max_count>(count<max_count>() + 1);
             }
             else
             {
-                output_no_endl(render_as_update_mode(" [R]"));
+                output_no_endl(render_as_update_mode(" [R" + destination_str + "]"));
                 set_count<rebuild_count>(count<rebuild_count>() + 1);
                 set_count<max_count>(count<max_count>() + 1);
             }
@@ -874,8 +886,8 @@ ConsoleInstallTask::_add_descriptions(std::tr1::shared_ptr<const UseFlagNameColl
 
 void
 ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing,
-        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot,
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_repo,
+        std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot_repo,
         const DisplayMode m)
 {
     if (normal_entry != m && suggested_entry != m)
@@ -883,8 +895,8 @@ ConsoleInstallTask::display_merge_list_entry_use(const DepListEntry & d,
 
     output_no_endl(" ");
     std::tr1::shared_ptr<UseFlagPrettyPrinter> printer(make_use_flag_pretty_printer());
-    printer->print_package_flags(d.package, ! existing_slot->empty() ? &*existing_slot->last() :
-                                 ! existing->empty() ? &*existing->last() : 0);
+    printer->print_package_flags(d.package, ! existing_slot_repo->empty() ? &*existing_slot_repo->last() :
+                                 ! existing_repo->empty() ? &*existing_repo->last() : 0);
 
     _add_descriptions(printer->new_flags(), d.package, uds_new);
     _add_descriptions(printer->changed_flags(), d.package, uds_changed);
@@ -978,28 +990,6 @@ ConsoleInstallTask::display_merge_list_entry_tags(const DepListEntry & d, const 
                     output_no_endl(" " + render_as_unimportant("<" + deps + ">"));
                     break;
             }
-    }
-}
-
-void
-ConsoleInstallTask::display_merge_list_entry_destination(const DepListEntry & d, const DisplayMode m)
-{
-    if (! d.destination)
-        return;
-
-    output_no_endl(" -> ");
-
-    switch (m)
-    {
-        case normal_entry:
-        case suggested_entry:
-        case error_entry:
-            output_no_endl(render_as_repository_name(stringify(d.destination->name())));
-            break;
-
-        case unimportant_entry:
-            output_no_endl(render_as_unimportant(stringify(d.destination->name())));
-            break;
     }
 }
 
