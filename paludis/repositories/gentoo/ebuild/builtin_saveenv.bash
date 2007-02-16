@@ -25,6 +25,7 @@ builtin_saveenv()
         -e '/^\(declare -[rx]\+ \)\?.\?[UP]ID/d' \
         -e '/^\(declare -[rx]\+ \)\?BASH_VERSINFO/d' \
         -e '/^\(declare -[rx]\+ \)\?PALUDIS_LOADSAVEENV_DIR/d' \
+        -e '/^\(declare -[rx]\+ \)\?PALUDIS_DO_NOTHING_SANDBOXY/d' \
         -e '/^\(declare -[rx]\+ \)\?SHELLOPTS/d' \
         -e '/^\(declare -[rx]\+ \)\?EBUILD_KILL_PID/d' \
         -e 's:^declare -rx:declare -x:' \
