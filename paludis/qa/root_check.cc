@@ -60,7 +60,7 @@ RootCheck::operator() (const FSEntry & f) const
         else
         {
             State state(st_default);
-            std::string line;
+            std::string line, func;
             unsigned line_number(0);
 
             while (std::getline(ff, line))
@@ -72,7 +72,12 @@ RootCheck::operator() (const FSEntry & f) const
                     case st_default:
                         {
                             if (r_start.search(line))
+                            {
                                 state = st_in_src;
+                                func = line;
+                                if (std::string::npos != func.find('('))
+                                    func = func.substr(0, func.find('('));
+                            }
                         }
                         continue;
 
@@ -81,7 +86,7 @@ RootCheck::operator() (const FSEntry & f) const
                             if (r_end.search(line))
                                 state = st_default;
                             else if (r_root.search(line))
-                                result << Message(qal_maybe, "Apparent ROOT abuse on line "
+                                result << Message(qal_maybe, "ROOT abuse in " + func + " on line "
                                         + stringify(line_number) + ": " + strip_leading(line, " \t"));
                         }
                         continue;
