@@ -180,7 +180,7 @@ namespace
     };
 
     template <typename VC_, typename P_>
-    void do_check_kind(bool & ok, bool & fatal, const P_ & value)
+    void do_check_kind(bool & ok, bool & fatal, bool & show_metadata, const P_ & value)
     {
         std::list<std::string> checks;
         VC_::get_instance()->copy_keys(std::back_inserter(checks));
@@ -224,15 +224,20 @@ namespace
                     {
                         case qa::qal_info:
                         case qa::qal_skip:
+                            continue;
+
                         case qa::qal_maybe:
+                            show_metadata = true;
                             continue;
 
                         case qa::qal_minor:
                         case qa::qal_major:
+                            show_metadata = true;
                             ok = false;
                             continue;
 
                         case qa::qal_fatal:
+                            show_metadata = true;
                             ok = false;
                             fatal = true;
                             return;
@@ -271,12 +276,12 @@ namespace
         cerr << xterm_title("Checking " + dir.dirname().basename() + "/" +
                 dir.basename() + " - qualudis") << std::flush;
 
-        bool ok(true), fatal(false);
+        bool ok(true), fatal(false), show_metadata(false);
 
         set_entry_heading("QA checks for package directory " + stringify(dir) + ":");
 
         if (! fatal)
-            do_check_kind<qa::PackageDirCheckMaker>(ok, fatal, dir);
+            do_check_kind<qa::PackageDirCheckMaker>(ok, fatal, show_metadata, dir);
 
         if (! fatal)
         {
@@ -288,7 +293,7 @@ namespace
                 if (fatal)
                     break;
 
-                do_check_kind<qa::FileCheckMaker>(ok, fatal, *f);
+                do_check_kind<qa::FileCheckMaker>(ok, fatal, show_metadata, *f);
             }
         }
 
@@ -306,7 +311,7 @@ namespace
                         VersionSpec(strip_leading_string(strip_trailing_string(f->basename(), ".ebuild"),
                                     stringify(dir.basename()) + "-")),
                         &env);
-                do_check_kind<qa::EbuildCheckMaker>(ok, fatal, d);
+                do_check_kind<qa::EbuildCheckMaker>(ok, fatal, show_metadata, d);
 
                 if (fatal)
                     break;
@@ -348,7 +353,7 @@ namespace
                                     stringify(dir.basename()) + "-")),
                             &env,
                             i->path);
-                    do_check_kind<qa::PerProfileEbuildCheckMaker>(ok, fatal, pd);
+                    do_check_kind<qa::PerProfileEbuildCheckMaker>(ok, fatal, show_metadata, pd);
 
                     if (fatal)
                         break;
@@ -359,7 +364,7 @@ namespace
             }
         }
 
-        if (! ok && (dir / "metadata.xml").is_regular_file())
+        if (show_metadata && (dir / "metadata.xml").is_regular_file())
         {
             cout << "metadata.xml:" << endl;
             qa::MetadataFile metadata(dir / "metadata.xml");
@@ -395,7 +400,7 @@ namespace
 
         set_entry_heading("QA checks for category directory " + stringify(dir) + ":");
 
-        bool ok(true);
+        bool ok(true), dummy(false);
 
         for (DirIterator d(dir) ; d != DirIterator() ; ++d)
         {
@@ -411,7 +416,7 @@ namespace
 
                 set_entry_heading("QA checks for category file " + stringify(*d) + ":");
 
-                do_check_kind<qa::FileCheckMaker>(ok, fatal, *d);
+                do_check_kind<qa::FileCheckMaker>(ok, fatal, dummy, *d);
 
                 if (fatal)
                     break;
@@ -430,7 +435,7 @@ namespace
 
         set_entry_heading("QA checks for eclass directory " + stringify(dir) + ":");
 
-        bool ok(true);
+        bool ok(true), dummy(false);
 
         for (DirIterator d(dir) ; d != DirIterator() ; ++d)
         {
@@ -444,7 +449,7 @@ namespace
 
                 set_entry_heading("QA checks for eclass file " + stringify(*d) + ":");
 
-                do_check_kind<qa::FileCheckMaker>(ok, fatal, *d);
+                do_check_kind<qa::FileCheckMaker>(ok, fatal, dummy, *d);
 
                 if (fatal)
                     break;
@@ -463,8 +468,8 @@ namespace
 
         set_entry_heading("QA checks for profiles directory " + stringify(dir) + ":");
 
-        bool ok(true), fatal(false);
-        do_check_kind<qa::ProfilesCheckMaker>(ok, fatal, dir);
+        bool ok(true), fatal(false), dummy(false);
+        do_check_kind<qa::ProfilesCheckMaker>(ok, fatal, dummy, dir);
 
         for (PortageRepository::ProfilesIterator p(env.portage_repository()->begin_profiles()),
                 p_end(env.portage_repository()->end_profiles()) ; p != p_end ; ++p)
@@ -476,7 +481,7 @@ namespace
                     stringify(p->path) + " " + stringify(p->status) + ":");
 
             qa::ProfileCheckData data(dir, *p);
-            do_check_kind<qa::ProfileCheckMaker>(ok, fatal, data);
+            do_check_kind<qa::ProfileCheckMaker>(ok, fatal, dummy, data);
         }
 
         return ok;
