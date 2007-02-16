@@ -89,8 +89,6 @@ configuration <code>bashrc</code>:</p>
 <pre>
 export PATH="/usr/lib/ccache/bin/:${PATH}"
 export CCACHE_DIR="/var/tmp/ccache"
-export CC="/usr/lib/ccache/bin/gcc"
-export CXX="/usr/lib/ccache/bin/g++"
 </pre>
 
 <h3 id="distcc">Use <code>distcc</code></h3>
@@ -100,10 +98,8 @@ configuration <code>bashrc</code>:</p>
 
 <pre>
 export DISTCC_DIR="/var/tmp/paludis/.distcc"
-export PATH="/usr/lib/distcc/bin:${PATH}"
-export CC="/usr/lib/distcc/bin/gcc"
-export CXX="/usr/lib/distcc/bin/g++"
 export DISTCC_HOSTS="localhost another_host"
+export PATH="/usr/lib/distcc/bin:${PATH}"
 </pre>
 
 <h3 id="defaultoptions">Specify default options</h3>
