@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/qa/header_check.hh>
 #include <paludis/qa/metadata_check.hh>
 #include <paludis/qa/subshell_die_check.hh>
+#include <paludis/qa/root_check.hh>
 #include <paludis/qa/variable_assigns_check.hh>
 #include <paludis/qa/whitespace_check.hh>
 
@@ -52,6 +53,7 @@ FileCheckMaker::FileCheckMaker()
     register_maker(Glep31Check::identifier(), &MakeFileCheck<Glep31Check>::make_file_check);
     register_maker(HeaderCheck::identifier(), &MakeFileCheck<HeaderCheck>::make_file_check);
     register_maker(MetadataCheck::identifier(), &MakeFileCheck<MetadataCheck>::make_file_check);
+    register_maker(RootCheck::identifier(), &MakeFileCheck<RootCheck>::make_file_check);
     register_maker(SubshellDieCheck::identifier(), &MakeFileCheck<SubshellDieCheck>::make_file_check);
     register_maker(VariableAssignsCheck::identifier(), &MakeFileCheck<VariableAssignsCheck>::make_file_check);
     register_maker(WhitespaceCheck::identifier(), &MakeFileCheck<WhitespaceCheck>::make_file_check);
