@@ -96,7 +96,7 @@ fi
 
 TAR_OPTIONS=( )
 while [[ "${1}" == --tar-option=* ]] ; do
-    TAR_OPTIONS+=( "${1#*=}" )
+    TAR_OPTIONS[${#TAR_OPTIONS[@]}]="${1#*=}"
     shift
 done
 
