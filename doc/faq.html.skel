@@ -444,6 +444,17 @@ all packages have been installed. It can be found in
     href="hooks.html">the hooks documentation</a> for more information about
 hooks.</p>
 
+<h3 id="mkdir">No Automatic Directory Creation</h3>
+
+<p>Portage usually automatically creates directories for things. Paludis will
+usually refuse to create directories, except as a subdirectory of an existing
+Paludis-owned directory. This is for security reasons -- Paludis does not know
+what permissions are correct for you for the directory, and unlike Portage it
+does not grant back-door root access to all users in a particular group.</p>
+
+<p>Incidentally, if you want to let multiple users do Paludis cache writes and
+the like, you should look into what <code>chmod +s</code> does to directories.</p>
+
 <h2 id="repos">Repository Questions</h2>
 
 <h3 id="profiles">Profiles vs Profiles</h3>
