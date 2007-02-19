@@ -1103,6 +1103,12 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
 
     /* create our merge list entry. insert pre deps before ourself in the list. insert
      * post deps after ourself, and after any provides. */
+
+    std::tr1::shared_ptr<DestinationsCollection> our_merge_entry_destinations(
+            new DestinationsCollection::Concrete);
+    if (! metadata->virtual_interface)
+        our_merge_entry_destinations->insert(find_destination(p, destinations));
+
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list_insert_position,
                 DepListEntry::create()
@@ -1111,8 +1117,7 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
                 .generation(_imp->merge_list_generation)
                 .state(dle_no_deps)
                 .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destination(metadata->virtual_interface ?
-                    std::tr1::shared_ptr<Repository>() : find_destination(p, destinations))
+                .destinations(our_merge_entry_destinations)
                 .associated_entry(0)
                 .kind(metadata->virtual_interface ? dlk_virtual : dlk_package))),
         our_merge_entry_post_position(our_merge_entry_position);
@@ -1170,7 +1175,8 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
                         .generation(_imp->merge_list_generation)
                         .state(dle_has_all_deps)
                         .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                        .destination(std::tr1::shared_ptr<Repository>())
+                        .destinations(std::tr1::shared_ptr<DestinationsCollection>(
+                                new DestinationsCollection::Concrete))
                         .associated_entry(&*_imp->current_merge_list_entry)
                         .kind(dlk_provided)));
             _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
@@ -1241,7 +1247,8 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
                 .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destination(std::tr1::shared_ptr<Repository>())
+                .destinations(std::tr1::shared_ptr<DestinationsCollection>(
+                    new DestinationsCollection::Concrete))
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(kind)));
 
@@ -1268,6 +1275,10 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p,
             return;
     }
 
+    std::tr1::shared_ptr<DestinationsCollection> our_merge_entry_destinations(
+            new DestinationsCollection::Concrete);
+    our_merge_entry_destinations->insert(find_destination(p, destinations));
+
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list_insert_position,
                 DepListEntry::create()
@@ -1277,7 +1288,7 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p,
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
                 .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destination(find_destination(p, destinations))
+                .destinations(our_merge_entry_destinations)
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(dlk_suggested)));
 
@@ -1360,7 +1371,8 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1:
                 .generation(_imp->merge_list_generation)
                 .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
-                .destination(std::tr1::shared_ptr<Repository>())
+                .destinations(std::tr1::shared_ptr<DestinationsCollection>(
+                        new DestinationsCollection::Concrete))
                 .associated_entry(0)
                 .kind(dlk_already_installed)));
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry));

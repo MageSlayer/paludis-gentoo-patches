@@ -225,6 +225,21 @@ namespace
 
 }
 
+namespace
+{
+    FSEntry
+    get_root(std::tr1::shared_ptr<const DestinationsCollection> destinations)
+    {
+        if (destinations)
+            for (DestinationsCollection::Iterator d(destinations->begin()), d_end(destinations->end()) ;
+                    d != d_end ; ++d)
+                if ((*d)->installed_interface)
+                    return (*d)->installed_interface->root();
+
+        return FSEntry("/");
+    }
+}
+
 void
 EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         const InstallOptions & o, std::tr1::shared_ptr<const PortageRepositoryProfile> p) const
@@ -455,8 +470,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
             .expand_vars(expand_vars)
             .flat_src_uri(flat_src_uri)
-            .root(o.destination && o.destination->installed_interface ?
-                stringify(o.destination->installed_interface->root()) : "/")
+            .root(stringify(get_root(o.destinations)))
             .profiles(_imp->params.profiles)
             .no_fetch(fetch_restrict)
             .safe_resume(o.safe_resume));
@@ -466,14 +480,9 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     if (o.fetch_only)
         return;
 
-    if (! o.destination)
+    if (! o.destinations)
         throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' because no destination was provided");
-
-    if (! o.destination->destination_interface)
-        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' to destination '" + stringify(o.destination->name())
-                + "' because destination does not provide destination_interface");
+                + stringify(v) + "' because no destinations were provided");
 
     EbuildInstallCommandParams install_params(
             EbuildInstallCommandParams::create()
@@ -483,8 +492,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     .aa(all_archives)
                     .use_expand(join(p->begin_use_expand(), p->end_use_expand(), " "))
                     .expand_vars(expand_vars)
-                    .root(o.destination && o.destination->installed_interface ?
-                        stringify(o.destination->installed_interface->root()) : "/")
+                    .root(stringify(get_root(o.destinations)))
                     .profiles(_imp->params.profiles)
                     .disable_cfgpro(o.no_config_protect)
                     .debug_build(o.debug_build)
@@ -497,30 +505,43 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     EbuildInstallCommand build_cmd(command_params, install_params);
     build_cmd();
 
-    if (o.destination->destination_interface->want_pre_post_phases())
+    for (DestinationsCollection::Iterator d(o.destinations->begin()),
+            d_end(o.destinations->end()) ; d != d_end ; ++d)
     {
-        install_params.phase = ebuild_ip_preinstall;
-        EbuildInstallCommand preinst_cmd(command_params, install_params);
-        preinst_cmd();
-    }
+        if (! (*d)->destination_interface)
+            throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
+                    + stringify(v) + "' to destination '" + stringify((*d)->name())
+                    + "' because destination does not provide destination_interface");
 
-    o.destination->destination_interface->merge(
-            MergeOptions::create()
-            .package(PackageDatabaseEntry(q, v, _imp->portage_repository->name()))
-            .image_dir(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
-                    + stringify(v)) / "image")
-            .environment_file(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
-                    + stringify(v)) / "temp" / "loadsaveenv")
-            );
+        install_params.root = (*d)->installed_interface ?
+            stringify((*d)->installed_interface->root()) : "/";
 
-    if (o.destination->destination_interface->want_pre_post_phases())
-    {
-        install_params.phase = ebuild_ip_postinstall;
-        EbuildInstallCommand postinst_cmd(command_params, install_params);
-        postinst_cmd();
+        if ((*d)->destination_interface->want_pre_post_phases())
+        {
+            install_params.phase = ebuild_ip_preinstall;
+            EbuildInstallCommand preinst_cmd(command_params, install_params);
+            preinst_cmd();
+        }
+
+        (*d)->destination_interface->merge(
+                MergeOptions::create()
+                .package(PackageDatabaseEntry(q, v, _imp->portage_repository->name()))
+                .image_dir(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
+                        + stringify(v)) / "image")
+                .environment_file(command_params.buildroot / stringify(q.category) / (stringify(q.package) + "-"
+                        + stringify(v)) / "temp" / "loadsaveenv")
+                );
+
+        if ((*d)->destination_interface->want_pre_post_phases())
+        {
+            install_params.phase = ebuild_ip_postinstall;
+            EbuildInstallCommand postinst_cmd(command_params, install_params);
+            postinst_cmd();
+        }
     }
 
     install_params.phase = ebuild_ip_tidyup;
+    install_params.root = stringify(get_root(o.destinations));
     EbuildInstallCommand tidyup_cmd(command_params, install_params);
     tidyup_cmd();
 }

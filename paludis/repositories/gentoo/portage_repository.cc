@@ -813,12 +813,6 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
         const InstallOptions & o) const
 {
     _imp->need_profiles();
-
-    if (o.destination->installed_interface && ! o.destination->installed_interface->root().is_directory())
-        throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
-                + stringify(v) + "' since root ('" + stringify(
-                        o.destination->installed_interface->root()) + "') isn't a directory");
-
     _imp->entries_ptr->install(q, v, o, _imp->profile_ptr);
 }
 

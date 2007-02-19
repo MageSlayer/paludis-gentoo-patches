@@ -68,6 +68,15 @@ namespace paludis
     class RepositoryLicensesInterface;
 
     /**
+     * A set of destinations.
+     *
+     * \ingroup grpdepresolver
+     * \ingroup grpenvironment
+     * \ingroup grprepository
+     */
+    typedef SortedCollection<std::tr1::shared_ptr<Repository> > DestinationsCollection;
+
+    /**
      * What debug build option to use when installing a package.
      *
      * \ingroup grprepository

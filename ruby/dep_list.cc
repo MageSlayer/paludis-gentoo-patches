@@ -1036,14 +1036,6 @@ namespace
     }
 
     VALUE
-    dep_list_entry_destination(VALUE self)
-    {
-        DepListEntry * p;
-        Data_Get_Struct(self, DepListEntry, p);
-        return(repository_to_value(p->destination));
-    }
-
-    VALUE
     dep_list_override_masks_init(VALUE self)
     {
         return self;
@@ -1492,7 +1484,6 @@ namespace
         rb_define_method(c_dep_list_entry, "metadata", RUBY_FUNC_CAST(&dep_list_entry_metadata), 0);
         rb_define_method(c_dep_list_entry, "state", RUBY_FUNC_CAST(&dep_list_entry_state), 0);
         rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags), 0);
-        rb_define_method(c_dep_list_entry, "destination", RUBY_FUNC_CAST(&dep_list_entry_destination), 0);
 
         /*
          * Document-class: DepListOverrideMasks

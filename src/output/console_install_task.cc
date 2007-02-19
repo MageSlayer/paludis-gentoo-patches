@@ -206,8 +206,8 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     } while (false);
 
     std::string repo;
-    if (d.destination)
-        repo = "::" + stringify(d.destination->name());
+    if (d.destinations && ! d.destinations->empty())
+        repo = "::" + stringify((*d.destinations->begin())->name());
 
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_repo(environment()->package_database()->
             query(query::Matches(PackageDepAtom(stringify(d.package.name) + repo)), qo_order_by_version));
@@ -351,11 +351,6 @@ ConsoleInstallTask::display_clean_all_pre_list_end(const DepListEntry &,
 void
 ConsoleInstallTask::display_merge_list_post_counts()
 {
-    if (count<max_count>() != count<new_count>() + count<upgrade_count>()
-            + count<downgrade_count>() + count<new_slot_count>() + count<rebuild_count>())
-        Log::get_instance()->message(ll_warning, lc_no_context,
-                "Max count doesn't add up. This is a bug!");
-
     std::ostringstream s;
     s << "Total: " << count<max_count>() << render_plural(count<max_count>(), " package",
             " packages");
@@ -775,14 +770,7 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> existing_slot_repo,
         const DisplayMode m)
 {
-    std::string destination_str;
-    if (d.destination)
-    {
-        std::tr1::shared_ptr<const DestinationsCollection> default_destinations(environment()->default_destinations());
-        if (default_destinations->end() == default_destinations->find(d.destination))
-            destination_str = " ::" + stringify(d.destination->name());
-    }
-
+    bool need_comma(false);
     switch (m)
     {
         case unimportant_entry:
@@ -798,38 +786,55 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
             break;
 
         case normal_entry:
-            if (existing_repo->empty())
+            output_no_endl(render_as_update_mode(" ["));
+
+            for (DestinationsCollection::Iterator dest(d.destinations->begin()), dest_end(d.destinations->end()) ;
+                    dest != dest_end ; ++dest)
             {
-                output_no_endl(render_as_update_mode(" [N" + destination_str + "]"));
-                set_count<new_count>(count<new_count>() + 1);
-                set_count<max_count>(count<max_count>() + 1);
+                if (need_comma)
+                    output_no_endl(render_as_update_mode(", "));
+
+                std::string destination_str;
+                std::tr1::shared_ptr<const DestinationsCollection> default_destinations(environment()->default_destinations());
+                if (default_destinations->end() == default_destinations->find(*dest))
+                    destination_str = " ::" + stringify((*dest)->name());
+
+                if (existing_repo->empty())
+                {
+                    output_no_endl(render_as_update_mode("N" + destination_str));
+                    set_count<new_count>(count<new_count>() + 1);
+                    set_count<max_count>(count<max_count>() + 1);
+                }
+                else if (existing_slot_repo->empty())
+                {
+                    output_no_endl(render_as_update_mode("S" + destination_str));
+                    set_count<new_slot_count>(count<new_slot_count>() + 1);
+                    set_count<max_count>(count<max_count>() + 1);
+                }
+                else if (existing_slot_repo->last()->version < d.package.version)
+                {
+                    output_no_endl(render_as_update_mode("U " +
+                                stringify(existing_slot_repo->last()->version) + "" + destination_str));
+                    set_count<upgrade_count>(count<upgrade_count>() + 1);
+                    set_count<max_count>(count<max_count>() + 1);
+                }
+                else if (existing_slot_repo->last()->version > d.package.version)
+                {
+                    output_no_endl(render_as_update_mode("D " +
+                                stringify(existing_slot_repo->last()->version) + "" + destination_str));
+                    set_count<downgrade_count>(count<downgrade_count>() + 1);
+                    set_count<max_count>(count<max_count>() + 1);
+                }
+                else
+                {
+                    output_no_endl(render_as_update_mode("R" + destination_str));
+                    set_count<rebuild_count>(count<rebuild_count>() + 1);
+                    set_count<max_count>(count<max_count>() + 1);
+                }
+
+                need_comma = true;
             }
-            else if (existing_slot_repo->empty())
-            {
-                output_no_endl(render_as_update_mode(" [S" + destination_str + "]"));
-                set_count<new_slot_count>(count<new_slot_count>() + 1);
-                set_count<max_count>(count<max_count>() + 1);
-            }
-            else if (existing_slot_repo->last()->version < d.package.version)
-            {
-                output_no_endl(render_as_update_mode(" [U " +
-                            stringify(existing_slot_repo->last()->version) + "" + destination_str + "]"));
-                set_count<upgrade_count>(count<upgrade_count>() + 1);
-                set_count<max_count>(count<max_count>() + 1);
-            }
-            else if (existing_slot_repo->last()->version > d.package.version)
-            {
-                output_no_endl(render_as_update_mode(" [D " +
-                            stringify(existing_slot_repo->last()->version) + "" + destination_str + "]"));
-                set_count<downgrade_count>(count<downgrade_count>() + 1);
-                set_count<max_count>(count<max_count>() + 1);
-            }
-            else
-            {
-                output_no_endl(render_as_update_mode(" [R" + destination_str + "]"));
-                set_count<rebuild_count>(count<rebuild_count>() + 1);
-                set_count<max_count>(count<max_count>() + 1);
-            }
+            output_no_endl(render_as_update_mode("]"));
             break;
 
         case error_entry:

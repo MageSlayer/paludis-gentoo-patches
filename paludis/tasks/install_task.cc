@@ -54,7 +54,7 @@ namespace paludis
             env(e),
             dep_list(e, o),
             current_dep_list_entry(dep_list.begin()),
-            install_options(false, false, ido_none, false, std::tr1::shared_ptr<Repository>()),
+            install_options(false, false, ido_none, false, std::tr1::shared_ptr<const DestinationsCollection>()),
             uninstall_options(false),
             targets(new AllDepAtom),
             destinations(d),
@@ -227,10 +227,11 @@ InstallTask::execute()
         bool any_live_destination(false);
         for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
                 dep != dep_end && ! any_live_destination ; ++dep)
-            if (dlk_package == dep->kind)
-                if (dep->destination && dep->destination->destination_interface &&
-                        dep->destination->destination_interface->want_pre_post_phases())
-                    any_live_destination = true;
+            if (dlk_package == dep->kind && dep->destinations)
+                for (DestinationsCollection::Iterator d(dep->destinations->begin()),
+                        d_end(dep->destinations->end()) ; d != d_end ; ++d)
+                    if ((*d)->destination_interface && (*d)->destination_interface->want_pre_post_phases())
+                        any_live_destination = true;
 
         _imp->env->perform_hook(Hook("install_all_pre")
                 ("TARGETS", join(_imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
@@ -252,9 +253,11 @@ InstallTask::execute()
             continue;
 
         bool live_destination(false);
-        if (dep->destination && dep->destination->destination_interface &&
-                dep->destination->destination_interface->want_pre_post_phases())
-            live_destination = true;
+        if (dep->destinations)
+            for (DestinationsCollection::Iterator d(dep->destinations->begin()),
+                    d_end(dep->destinations->end()) ; d != d_end ; ++d)
+                if ((*d)->destination_interface && (*d)->destination_interface->want_pre_post_phases())
+                    live_destination = true;
 
         ++x;
         _imp->current_dep_list_entry = dep;
@@ -289,7 +292,7 @@ InstallTask::execute()
 
         try
         {
-            _imp->install_options.destination = dep->destination;
+            _imp->install_options.destinations = dep->destinations;
             installable_interface->install(dep->package.name, dep->package.version, _imp->install_options);
         }
         catch (const PackageInstallActionError & e)
@@ -328,14 +331,17 @@ InstallTask::execute()
             if ((*r)->installed_interface)
                 ((*r).get())->invalidate();
 
-        // look for packages with the same name in the same slot in the destination repo
+        // look for packages with the same name in the same slot in the destination repos
         std::tr1::shared_ptr<PackageDatabaseEntryCollection> collision_list;
 
-        if (dep->destination && dep->destination->uninstallable_interface)
-            collision_list = _imp->env->package_database()->query(
-                    PackageDepAtom(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)
-                        + "::" + stringify(dep->destination->name())),
-                        is_installed_only, qo_order_by_version);
+        if (dep->destinations)
+            for (DestinationsCollection::Iterator d(dep->destinations->begin()),
+                    d_end(dep->destinations->end()) ; d != d_end ; ++d)
+                if ((*d)->uninstallable_interface)
+                    collision_list = _imp->env->package_database()->query(
+                            PackageDepAtom(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)
+                                + "::" + stringify((*d)->name())),
+                            is_installed_only, qo_order_by_version);
 
         // don't clean the thing we just installed
         PackageDatabaseEntryCollection::Concrete clean_list;

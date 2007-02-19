@@ -45,14 +45,6 @@ namespace paludis
             const std::pair<const std::string, std::string> > EnvironmentMirrorIterator;
 
     /**
-     * A set of destinations.
-     *
-     * \ingroup grpdepresolver
-     * \ingroup grpenvironment
-     */
-    typedef SortedCollection<std::tr1::shared_ptr<Repository> > DestinationsCollection;
-
-    /**
      * Represents the data for an Environment hook call.
      *
      * \ingroup grpenvironment

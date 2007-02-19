@@ -468,6 +468,21 @@ CRANRepositoryConfigurationError::CRANRepositoryConfigurationError(
 {
 }
 
+namespace
+{
+    FSEntry
+    get_root(std::tr1::shared_ptr<const DestinationsCollection> destinations)
+    {
+        if (destinations)
+            for (DestinationsCollection::Iterator d(destinations->begin()), d_end(destinations->end()) ;
+                    d != d_end ; ++d)
+                if ((*d)->installed_interface)
+                    return (*d)->installed_interface->root();
+
+        return FSEntry("/");
+    }
+}
+
 void
 CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         const InstallOptions &o) const
@@ -517,8 +532,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
         .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
-        .with_setenv("ROOT", o.destination->installed_interface ?
-                stringify(o.destination->installed_interface->root()) : "/")
+        .with_setenv("ROOT", stringify(get_root(o.destinations)))
         .with_setenv("WORKDIR", workdir);
 
 
@@ -526,7 +540,36 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
                 image + "'");
 
-    cmd = Command(LIBEXECDIR "/paludis/cran.bash merge clean")
+    if (! o.destinations)
+        throw PackageInstallActionError("Can't merge '" + stringify(q) + "-" + stringify(vn) +
+                "' because no destinations were provided.");
+
+    for (DestinationsCollection::Iterator d(o.destinations->begin()),
+            d_end(o.destinations->end()) ; d != d_end ; ++d)
+    {
+        if (! (*d)->destination_interface)
+            throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
+                    stringify((*d)->name()) + "' because it does not provide destination_interface");
+
+        cmd = Command(LIBEXECDIR "/paludis/cran.bash merge")
+            .with_setenv("IMAGE", image)
+            .with_setenv("PN", p)
+            .with_setenv("PV", stringify(vn))
+            .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->library))
+            .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
+            .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+            .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
+            .with_setenv("ROOT", (*d)->installed_interface ?
+                    stringify((*d)->installed_interface->root()) : "/")
+            .with_setenv("WORKDIR", workdir)
+            .with_setenv("REPOSITORY", stringify(name()));
+
+        if (0 != run_command(cmd))
+            throw PackageInstallActionError("Couldn't merge '" + stringify(q) + "-" + stringify(vn) + "' to '" +
+                    stringify((*d)->name()) + "'");
+    }
+
+    cmd = Command(LIBEXECDIR "/paludis/cran.bash clean")
         .with_setenv("IMAGE", image)
         .with_setenv("PN", p)
         .with_setenv("PV", stringify(vn))
@@ -534,14 +577,12 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
         .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
-        .with_setenv("ROOT", o.destination->installed_interface ?
-                stringify(o.destination->installed_interface->root()) : "/")
+        .with_setenv("ROOT", stringify(get_root(o.destinations)))
         .with_setenv("WORKDIR", workdir)
         .with_setenv("REPOSITORY", stringify(name()));
 
     if (0 != run_command(cmd))
-        throw PackageInstallActionError("Couldn't merge '" + stringify(q) + "-" + stringify(vn) + "' to '" +
-                stringify(o.destination->name()) + "'");
+        throw PackageInstallActionError("Couldn't clean '" + stringify(q) + "-" + stringify(vn) + "'");
 
     return;
 }

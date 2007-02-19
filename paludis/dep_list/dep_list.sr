@@ -53,7 +53,7 @@ make_class_DepListEntry()
     key associated_entry "const DepListEntry *"
     key metadata "std::tr1::shared_ptr<const VersionMetadata>"
     key tags "std::tr1::shared_ptr<DepListEntryTags>"
-    key destination "std::tr1::shared_ptr<Repository>"
+    key destinations "std::tr1::shared_ptr<const DestinationsCollection>"
 
     key generation long
     key state DepListEntryState
