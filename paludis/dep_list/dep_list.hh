@@ -130,6 +130,14 @@ namespace paludis
 
             ///\}
     };
+
+    /**
+     * Extract the destinations from a DepListEntry destinations member.
+     *
+     * \ingroup grpdepresolver
+     */
+    std::tr1::shared_ptr<DestinationsCollection> extract_dep_list_entry_destinations(
+            std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >);
 }
 
 #endif

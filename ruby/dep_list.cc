@@ -1035,6 +1035,7 @@ namespace
         }
     }
 
+#if CIARANM_DISABLED_THIS
     /*
      * call-seq:
      *     destinations -> Array
@@ -1052,6 +1053,7 @@ namespace
             rb_ary_push(result, repository_to_value(*i));
         return result;
     }
+#endif
 
     VALUE
     dep_list_override_masks_init(VALUE self)
@@ -1502,7 +1504,9 @@ namespace
         rb_define_method(c_dep_list_entry, "metadata", RUBY_FUNC_CAST(&dep_list_entry_metadata), 0);
         rb_define_method(c_dep_list_entry, "state", RUBY_FUNC_CAST(&dep_list_entry_state), 0);
         rb_define_method(c_dep_list_entry, "tags", RUBY_FUNC_CAST(&dep_list_entry_tags), 0);
+#if CIARANM_DISABLED_THIS
         rb_define_method(c_dep_list_entry, "destinations", RUBY_FUNC_CAST(&dep_list_entry_destinations), 0);
+#endif
 
         /*
          * Document-class: DepListOverrideMasks

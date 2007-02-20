@@ -26,6 +26,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/compare.hh>
 #include <paludis/util/iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
@@ -341,6 +342,7 @@ DepList::QueryVisitor::visit(const PackageDepAtom * const a)
 
     result = false;
 
+    // TODO: check destinations
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(d->_imp->env->package_database()->query(
                 *a, is_installed_only, qo_whatever));
 
@@ -383,6 +385,7 @@ DepList::QueryVisitor::visit(const PackageDepAtom * const a)
     if (p.second != std::find_if(p.first, p.second,
                 MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, a)))
     {
+        // TODO: check destination
         result = true;
         return;
     }
@@ -484,6 +487,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
     Context context("When adding PackageDepAtom '" + stringify(*a) + "':");
 
     /* find already installed things */
+    // TODO: check destinations
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed(d->_imp->env->package_database()->query(
                 *a, is_installed_only, qo_order_by_version));
 
@@ -506,6 +510,9 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
             existing_merge_list_entry->tags->insert(DepTagEntry::create()
                     .tag(std::tr1::shared_ptr<DepTag>(new DependencyDepTag(*d->_imp->current_pde())))
                     .generation(d->_imp->merge_list_generation));
+
+        /* add an appropriate destination */
+        // TODO
 
         /* have our deps been merged already, or is this a circular dep? */
         if (dle_no_deps == existing_merge_list_entry->state)
@@ -867,6 +874,8 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
     if (dl_blocks_discard_completely == d->_imp->opts->blocks)
         return;
 
+    // TODO: check destinations
+
     Context context("When checking BlockDepAtom '!" + stringify(*a->blocked_atom()) + "':");
 
     PackageDepAtom just_package(a->blocked_atom()->package());
@@ -1104,10 +1113,11 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
     /* create our merge list entry. insert pre deps before ourself in the list. insert
      * post deps after ourself, and after any provides. */
 
-    std::tr1::shared_ptr<DestinationsCollection> our_merge_entry_destinations(
-            new DestinationsCollection::Concrete);
+    std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> > our_merge_entry_destinations(
+            new SortedCollection<DepListEntryDestination>::Concrete);
     if (! metadata->virtual_interface)
-        our_merge_entry_destinations->insert(find_destination(p, destinations));
+        our_merge_entry_destinations->insert(
+                DepListEntryDestination(find_destination(p, destinations), _imp->merge_list_generation));
 
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list_insert_position,
@@ -1175,8 +1185,8 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
                         .generation(_imp->merge_list_generation)
                         .state(dle_has_all_deps)
                         .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                        .destinations(std::tr1::shared_ptr<DestinationsCollection>(
-                                new DestinationsCollection::Concrete))
+                        .destinations(std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
+                                new SortedCollection<DepListEntryDestination>::Concrete))
                         .associated_entry(&*_imp->current_merge_list_entry)
                         .kind(dlk_provided)));
             _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
@@ -1247,8 +1257,8 @@ DepList::add_error_package(const PackageDatabaseEntry & p, const DepListEntryKin
                 .generation(_imp->merge_list_generation)
                 .state(dle_has_all_deps)
                 .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
-                .destinations(std::tr1::shared_ptr<DestinationsCollection>(
-                    new DestinationsCollection::Concrete))
+                .destinations(std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
+                        new SortedCollection<DepListEntryDestination>::Concrete))
                 .associated_entry(&*_imp->current_merge_list_entry)
                 .kind(kind)));
 
@@ -1275,9 +1285,10 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p,
             return;
     }
 
-    std::tr1::shared_ptr<DestinationsCollection> our_merge_entry_destinations(
-            new DestinationsCollection::Concrete);
-    our_merge_entry_destinations->insert(find_destination(p, destinations));
+    std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> > our_merge_entry_destinations(
+            new SortedCollection<DepListEntryDestination>::Concrete);
+    our_merge_entry_destinations->insert(DepListEntryDestination(find_destination(p, destinations),
+                _imp->merge_list_generation));
 
     MergeList::iterator our_merge_entry_position(
             _imp->merge_list.insert(_imp->merge_list_insert_position,
@@ -1371,8 +1382,8 @@ DepList::add_already_installed_package(const PackageDatabaseEntry & p, std::tr1:
                 .generation(_imp->merge_list_generation)
                 .tags(std::tr1::shared_ptr<DepListEntryTags>(new DepListEntryTags::Concrete))
                 .state(dle_has_pre_deps)
-                .destinations(std::tr1::shared_ptr<DestinationsCollection>(
-                        new DestinationsCollection::Concrete))
+                .destinations(std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >(
+                        new SortedCollection<DepListEntryDestination>::Concrete))
                 .associated_entry(0)
                 .kind(dlk_already_installed)));
     _imp->merge_list_index.insert(std::make_pair(p.name, our_merge_entry));
@@ -1612,5 +1623,15 @@ DepList::find_destination(const PackageDatabaseEntry & p,
                 return *d;
 
     throw NoDestinationError(p, dd);
+}
+
+std::tr1::shared_ptr<DestinationsCollection>
+paludis::extract_dep_list_entry_destinations(std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> > d)
+{
+    std::tr1::shared_ptr<DestinationsCollection> result(new DestinationsCollection::Concrete);
+    for (SortedCollection<DepListEntryDestination>::Iterator i(d->begin()), i_end(d->end()) ;
+            i != i_end ; ++i)
+        result->insert(i->destination);
+    return result;
 }
 

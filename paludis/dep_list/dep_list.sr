@@ -45,6 +45,15 @@ END
 END
 }
 
+make_class_DepListEntryDestination()
+{
+    key destination "std::tr1::shared_ptr<Repository>"
+    key generation long
+
+    allow_named_args
+    comparison_operators "all" "destination"
+}
+
 make_class_DepListEntry()
 {
     key kind DepListEntryKind
@@ -53,7 +62,7 @@ make_class_DepListEntry()
     key associated_entry "const DepListEntry *"
     key metadata "std::tr1::shared_ptr<const VersionMetadata>"
     key tags "std::tr1::shared_ptr<DepListEntryTags>"
-    key destinations "std::tr1::shared_ptr<const DestinationsCollection>"
+    key destinations "std::tr1::shared_ptr<SortedCollection<DepListEntryDestination> >"
 
     key generation long
     key state DepListEntryState

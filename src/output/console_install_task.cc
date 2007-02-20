@@ -207,7 +207,7 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     std::string repo;
     if (d.destinations && ! d.destinations->empty())
-        repo = "::" + stringify((*d.destinations->begin())->name());
+        repo = "::" + stringify((d.destinations->begin()->destination)->name());
 
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_repo(environment()->package_database()->
             query(query::Matches(PackageDepAtom(stringify(d.package.name) + repo)), qo_order_by_version));
@@ -788,16 +788,16 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
         case normal_entry:
             output_no_endl(render_as_update_mode(" ["));
 
-            for (DestinationsCollection::Iterator dest(d.destinations->begin()), dest_end(d.destinations->end()) ;
-                    dest != dest_end ; ++dest)
+            for (SortedCollection<DepListEntryDestination>::Iterator dest(d.destinations->begin()),
+                    dest_end(d.destinations->end()) ; dest != dest_end ; ++dest)
             {
                 if (need_comma)
                     output_no_endl(render_as_update_mode(", "));
 
                 std::string destination_str;
                 std::tr1::shared_ptr<const DestinationsCollection> default_destinations(environment()->default_destinations());
-                if (default_destinations->end() == default_destinations->find(*dest))
-                    destination_str = " ::" + stringify((*dest)->name());
+                if (default_destinations->end() == default_destinations->find(dest->destination))
+                    destination_str = " ::" + stringify(dest->destination->name());
 
                 if (existing_repo->empty())
                 {

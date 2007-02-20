@@ -229,9 +229,10 @@ InstallTask::execute()
         for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
                 dep != dep_end && ! any_live_destination ; ++dep)
             if (dlk_package == dep->kind && dep->destinations)
-                for (DestinationsCollection::Iterator d(dep->destinations->begin()),
+                for (SortedCollection<DepListEntryDestination>::Iterator d(dep->destinations->begin()),
                         d_end(dep->destinations->end()) ; d != d_end ; ++d)
-                    if ((*d)->destination_interface && (*d)->destination_interface->want_pre_post_phases())
+                    if (d->destination->destination_interface &&
+                            d->destination->destination_interface->want_pre_post_phases())
                         any_live_destination = true;
 
         _imp->env->perform_hook(Hook("install_all_pre")
@@ -255,9 +256,9 @@ InstallTask::execute()
 
         bool live_destination(false);
         if (dep->destinations)
-            for (DestinationsCollection::Iterator d(dep->destinations->begin()),
+            for (SortedCollection<DepListEntryDestination>::Iterator d(dep->destinations->begin()),
                     d_end(dep->destinations->end()) ; d != d_end ; ++d)
-                if ((*d)->destination_interface && (*d)->destination_interface->want_pre_post_phases())
+                if (d->destination->destination_interface && d->destination->destination_interface->want_pre_post_phases())
                     live_destination = true;
 
         ++x;
@@ -293,7 +294,7 @@ InstallTask::execute()
 
         try
         {
-            _imp->install_options.destinations = dep->destinations;
+            _imp->install_options.destinations = extract_dep_list_entry_destinations(dep->destinations);
             installable_interface->install(dep->package.name, dep->package.version, _imp->install_options);
         }
         catch (const PackageInstallActionError & e)
@@ -336,12 +337,13 @@ InstallTask::execute()
         std::tr1::shared_ptr<PackageDatabaseEntryCollection> collision_list;
 
         if (dep->destinations)
-            for (DestinationsCollection::Iterator d(dep->destinations->begin()),
+            for (SortedCollection<DepListEntryDestination>::Iterator d(dep->destinations->begin()),
                     d_end(dep->destinations->end()) ; d != d_end ; ++d)
-                if ((*d)->uninstallable_interface)
+                if (d->destination->uninstallable_interface)
                     collision_list = _imp->env->package_database()->query(
                             query::Matches(PackageDepAtom(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)
-                                + "::" + stringify((*d)->name()))) & query::RepositoryHasInstalledInterface(), qo_order_by_version);
+                                + "::" + stringify(d->destination->name()))) &
+                            query::RepositoryHasInstalledInterface(), qo_order_by_version);
 
         // don't clean the thing we just installed
         PackageDatabaseEntryCollection::Concrete clean_list;
