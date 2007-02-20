@@ -1645,7 +1645,8 @@ VDBRepository::merge(const MergeOptions & m)
             .root(root())
             .contents_file(vdb_dir / "CONTENTS")
             .config_protect(config_protect)
-            .config_protect_mask(config_protect_mask));
+            .config_protect_mask(config_protect_mask)
+            .package(&m.package));
 
     if (! merger.check())
         throw PackageInstallActionError("Not proceeding with install due to merge sanity check failing");

@@ -21,6 +21,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/digests/md5.hh>
+#include <paludis/environment.hh>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -63,6 +64,29 @@ VDBMerger::VDBMerger(const VDBMergerOptions & o) :
 
 VDBMerger::~VDBMerger()
 {
+}
+
+Hook
+VDBMerger::extend_hook(const Hook & h)
+{
+    const PackageDatabaseEntry *pde(_imp->options.package);
+    std::string cat(stringify(pde->name.category));
+    std::string pn(stringify(pde->name.package));
+    std::string pvr(stringify(pde->version));
+    std::string pv(stringify(pde->version.remove_revision()));
+    std::string slot(stringify(
+                _imp->options.environment->package_database()->fetch_repository(
+                    pde->repository)->version_metadata(pde->name, pde->version)->slot));
+
+    return Merger::extend_hook(h)
+        ("P", pn + "-" + pv)
+        ("PN", pn)
+        ("CATEGORY", cat)
+        ("PR", pde->version.revision_only())
+        ("PV", pv)
+        ("PVR", pvr)
+        ("PF", pn + "-" + pvr)
+        ("SLOT", slot);
 }
 
 void

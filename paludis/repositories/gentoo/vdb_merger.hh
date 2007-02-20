@@ -25,6 +25,8 @@
 
 namespace paludis
 {
+    class PackageDatabaseEntry;
+    class Hook;
 
 #include <paludis/repositories/gentoo/vdb_merger-sr.hh>
 
@@ -38,6 +40,8 @@ namespace paludis
         public:
             VDBMerger(const VDBMergerOptions &);
             ~VDBMerger();
+
+            virtual Hook extend_hook(const Hook &);
 
             virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &);
             virtual void record_install_dir(const FSEntry &, const FSEntry &);
