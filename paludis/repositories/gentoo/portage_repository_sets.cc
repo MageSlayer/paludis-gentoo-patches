@@ -329,8 +329,9 @@ PortageRepositorySets::security_set(bool insecurity) const
                                     c->repository)->version_metadata(c->name, c->version)->slot);
 
                         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> available(
-                                _imp->environment->package_database()->query(PackageDepAtom(glsa_pkg->name()), is_installable_only,
-                                    qo_order_by_version));
+                                _imp->environment->package_database()->query(
+                                    query::Matches(PackageDepAtom(glsa_pkg->name())) & query::InstalledAtRoot(
+                                        _imp->environment->root()), qo_order_by_version));
                         for (PackageDatabaseEntryCollection::ReverseIterator r(available->rbegin()),
                                 r_end(available->rend()) ; r != r_end ; ++r)
                         {

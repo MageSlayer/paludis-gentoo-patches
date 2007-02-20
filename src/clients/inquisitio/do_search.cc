@@ -24,6 +24,7 @@
 #include "query_task.hh"
 
 #include <paludis/environment.hh>
+#include <paludis/query.hh>
 #include <list>
 #include <set>
 #include <iostream>
@@ -90,8 +91,10 @@ do_search(const Environment & env)
             p != p_end ; ++p)
     {
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
-            entries(env.package_database()->query(PackageDepAtom(*p), is_any, qo_order_by_version)),
-            preferred_entries(env.package_database()->query(PackageDepAtom(*p), is_installed_only, qo_order_by_version));
+            entries(env.package_database()->query(
+                        query::Package(*p), qo_order_by_version)),
+            preferred_entries(env.package_database()->query(query::Package(*p) &
+                        query::InstalledAtRoot(env.root()), qo_order_by_version));
 
         if (entries->empty())
             continue;

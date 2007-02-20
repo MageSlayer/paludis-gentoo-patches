@@ -21,6 +21,7 @@
 
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
+#include <paludis/query.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/collection_concrete.hh>
@@ -38,8 +39,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> result(new PackageDatabaseEntryCollection::Concrete);
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(_env->package_database()->query(
-            PackageDepAtom(stringify(package) + "::" + stringify(_repo->name())),
-            is_installable_only,
+            query::Matches(PackageDepAtom(stringify(package) + "::" + stringify(_repo->name()))),
             qo_group_by_slot));
 
     SlotName old_slot("I_am_a_slot");

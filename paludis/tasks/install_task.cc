@@ -22,6 +22,7 @@
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/query.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <list>
 
@@ -339,9 +340,8 @@ InstallTask::execute()
                     d_end(dep->destinations->end()) ; d != d_end ; ++d)
                 if ((*d)->uninstallable_interface)
                     collision_list = _imp->env->package_database()->query(
-                            PackageDepAtom(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)
-                                + "::" + stringify((*d)->name())),
-                            is_installed_only, qo_order_by_version);
+                            query::Matches(PackageDepAtom(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)
+                                + "::" + stringify((*d)->name()))) & query::RepositoryHasInstalledInterface(), qo_order_by_version);
 
         // don't clean the thing we just installed
         PackageDatabaseEntryCollection::Concrete clean_list;

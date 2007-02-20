@@ -36,6 +36,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/environment/default/default_environment.hh>
 #include <paludis/dep_list/exceptions.hh>
+#include <paludis/query.hh>
 
 /** \file
  * Handle the --install action for the contrarius program.
@@ -271,7 +272,8 @@ do_install(std::tr1::shared_ptr<const PackageDepAtom> atom)
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
                     DefaultEnvironment::get_instance()->package_database()->query(
-                        PackageDepAtom(e.query()), is_installable_only, qo_order_by_version));
+                        query::Matches(PackageDepAtom(e.query())) & query::RepositoryHasUninstallableInterface(),
+                        qo_order_by_version));
 
             if (p->empty())
             {

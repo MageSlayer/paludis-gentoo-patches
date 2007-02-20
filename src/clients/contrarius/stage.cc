@@ -20,6 +20,7 @@
 #include <paludis/environment/default/default_environment.hh>
 #include <paludis/environment/default/default_config.hh>
 #include <paludis/util/log.hh>
+#include <paludis/query.hh>
 #include <string>
 
 #include "stage.hh"
@@ -72,7 +73,8 @@ bool
 BinutilsStage::is_rebuild() const
 {
     return (! DefaultEnvironment::get_instance()->package_database()->query(
-                *_options.binutils, is_installed_only, qo_whatever)->empty());
+                query::Matches(*_options.binutils) & query::InstalledAtRoot(DefaultEnvironment::get_instance()->root()),
+                qo_whatever)->empty());
 }
 
 int
@@ -93,7 +95,8 @@ bool
 KernelHeadersStage::is_rebuild() const
 {
     return (! DefaultEnvironment::get_instance()->package_database()->query(
-                *_options.headers, is_installed_only, qo_whatever)->empty());
+                query::Matches(*_options.headers) & query::InstalledAtRoot(DefaultEnvironment::get_instance()->root()),
+                qo_whatever)->empty());
 }
 
 int
@@ -129,7 +132,8 @@ bool
 MinimalStage::is_rebuild() const
 {
    return (! DefaultEnvironment::get_instance()->package_database()->query(
-               *_options.gcc, is_installed_only, qo_whatever)->empty());
+               query::Matches(*_options.gcc) & query::InstalledAtRoot(DefaultEnvironment::get_instance()->root()),
+               qo_whatever)->empty());
 }
 
 int
@@ -147,7 +151,8 @@ LibCStage::is_rebuild() const
 {
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
             DefaultEnvironment::get_instance()->package_database()->query(
-                *_options.libc, is_installed_only, qo_whatever));
+                query::Matches(*_options.libc) & query::InstalledAtRoot(DefaultEnvironment::get_instance()->root()),
+                qo_whatever));
 
     if (c->empty())
         return false;
@@ -183,7 +188,7 @@ FullStage::is_rebuild() const
 {
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
             DefaultEnvironment::get_instance()->package_database()->query(
-                *_options.gcc, is_installed_only, qo_whatever));
+                query::Matches(*_options.gcc) & query::InstalledAtRoot(DefaultEnvironment::get_instance()->root()), qo_whatever));
 
     if (c->empty())
         return false;

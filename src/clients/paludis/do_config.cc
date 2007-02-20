@@ -80,7 +80,7 @@ namespace
                 new PackageDepAtom(target));
 
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
-            entries(env->package_database()->query(*atom, is_installed_only, qo_order_by_version));
+            entries(env->package_database()->query(query::Matches(*atom) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
         if (entries->empty())
             throw NoSuchPackageError(target);

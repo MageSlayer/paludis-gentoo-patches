@@ -21,6 +21,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/dep_list/uninstall_list.hh>
 #include <paludis/environment.hh>
+#include <paludis/query.hh>
 #include <set>
 
 using namespace paludis;
@@ -80,7 +81,7 @@ namespace
     VulnerableChecker::visit(const PackageDepAtom * const a)
     {
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
-                _env.package_database()->query(*a, is_any, qo_order_by_version));
+                _env.package_database()->query(query::Matches(*a), qo_order_by_version));
         for (PackageDatabaseEntryCollection::Iterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
             if (a->tag())

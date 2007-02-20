@@ -22,6 +22,7 @@
 #include "use_flag_pretty_printer.hh"
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/query.hh>
 #include <list>
 
 using namespace paludis;
@@ -56,8 +57,9 @@ ConsoleQueryTask::show(const PackageDepAtom & a, const PackageDatabaseEntry * di
     /* prefer the best installed version, then the best visible version, then
      * the best version */
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
-        entries(_imp->env->package_database()->query(a, is_any, qo_order_by_version)),
-        preferred_entries(_imp->env->package_database()->query(a, is_installed_only, qo_order_by_version));
+        entries(_imp->env->package_database()->query(query::Matches(a), qo_order_by_version)),
+        preferred_entries(_imp->env->package_database()->query(
+                    query::Matches(a) & query::InstalledAtRoot(_imp->env->root()), qo_order_by_version));
     if (entries->empty())
         throw NoSuchPackageError(stringify(a));
     if (preferred_entries->empty())

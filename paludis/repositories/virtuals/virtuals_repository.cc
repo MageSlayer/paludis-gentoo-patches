@@ -24,6 +24,7 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fast_unique_copy.hh>
 #include <paludis/util/log.hh>
+#include <paludis/query.hh>
 #include "vr_entry.hh"
 
 using namespace paludis;
@@ -179,7 +180,7 @@ VirtualsRepository::need_entries() const
             v(_imp->names.begin()), v_end(_imp->names.end()) ; v != v_end ; ++v)
     {
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> matches(_imp->env->package_database()->query(
-                    *v->second, is_installable_only, qo_order_by_version));
+                    query::Matches(*v->second) & query::RepositoryHasInstallableInterface(), qo_order_by_version));
 
         if (matches->empty())
             Log::get_instance()->message(ll_warning, lc_context, "No packages matching '"

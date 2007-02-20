@@ -23,6 +23,7 @@
 #include <paludis/dep_atom_flattener.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/tasks/exceptions.hh>
+#include <paludis/query.hh>
 #include <list>
 
 using namespace paludis;
@@ -206,7 +207,7 @@ UninstallTask::execute()
             Context local_context("When looking for target '" + stringify(**t) + "':");
 
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> r(_imp->env->package_database()->query(
-                        **t, is_installed_only, qo_order_by_version));
+                        query::Matches(**t) & query::RepositoryHasUninstallableInterface(), qo_order_by_version));
             if (r->empty())
             {
                 if (! _imp->had_set_targets)
@@ -263,8 +264,8 @@ UninstallTask::execute()
         {
             bool remove(true);
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> installed(
-                    _imp->env->package_database()->query(PackageDepAtom(i->first),
-                        is_installed_only, qo_whatever));
+                    _imp->env->package_database()->query(query::Matches(PackageDepAtom(i->first)) &
+                        query::RepositoryHasInstalledInterface(), qo_whatever));
             for (PackageDatabaseEntryCollection::Iterator r(installed->begin()), r_end(installed->end()) ;
                     r != r_end && remove ; ++r)
                 if (i->second.end() == i->second.find(r->version))

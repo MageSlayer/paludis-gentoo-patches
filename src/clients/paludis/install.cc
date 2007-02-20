@@ -576,7 +576,8 @@ do_install()
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
                     DefaultEnvironment::get_instance()->package_database()->query(
-                        PackageDepAtom(e.query()), is_installable_only, qo_order_by_version));
+                        query::Matches(PackageDepAtom(e.query())) &  query::RepositoryHasInstalledInterface(),
+                        qo_order_by_version));
             if (p->empty())
             {
                 cout << endl;

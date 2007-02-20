@@ -51,7 +51,7 @@ int do_has_version()
     std::string query(*CommandLine::get_instance()->begin_parameters());
     std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(query));
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
-                *atom, is_installed_only, qo_whatever));
+                query::Matches(*atom) & query::InstalledAtRoot(env->root()), qo_whatever));
 
     if (entries->empty())
         return_code = 1;
@@ -69,7 +69,7 @@ int do_best_version()
     std::string query(*CommandLine::get_instance()->begin_parameters());
     std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(query));
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
-                *atom, is_installed_only, qo_order_by_version));
+                query::Matches(*atom) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
     /* make built_with_use work for virtuals... icky... */
     while (! entries->empty())
@@ -116,10 +116,10 @@ int do_environment_variable()
     std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(atom_str));
 
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
-                *atom, is_installed_only, qo_order_by_version));
+                query::Matches(*atom) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
     if (entries->empty())
-        entries = env->package_database()->query(*atom, is_any, qo_order_by_version);
+        entries = env->package_database()->query(query::Matches(*atom), qo_order_by_version);
 
     if (entries->empty())
         throw NoSuchPackageError(atom_str);

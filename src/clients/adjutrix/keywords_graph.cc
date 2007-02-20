@@ -24,6 +24,7 @@
 #include <paludis/tasks/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/compare.hh>
+#include <paludis/query.hh>
 
 #include <set>
 #include <map>
@@ -63,8 +64,7 @@ namespace
         std::tr1::shared_ptr<const VersionSpecCollection> versions(repo.version_specs(package));
         FindUnusedPackagesTask task(&e, &repo);
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(e.package_database()->query(
-                PackageDepAtom(stringify(package) + "::" + stringify(repo.name())),
-                is_installable_only,
+                query::Matches(PackageDepAtom(stringify(package) + "::" + stringify(repo.name()))),
                 qo_group_by_slot));
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> unused(task.execute(package));
 
