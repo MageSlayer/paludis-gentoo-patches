@@ -1610,20 +1610,18 @@ VDBRepository::merge(const MergeOptions & m)
 
     bool is_replace(has_version(m.package.name, m.package.version));
 
-    FSEntry vdb_dir(_imp->params.location);
-    vdb_dir.mkdir();
-    vdb_dir /= stringify(m.package.name.category);
-    vdb_dir.mkdir();
-    vdb_dir /= (stringify(m.package.name.package) + "-" + stringify(m.package.version));
-    if (is_replace)
-        vdb_dir.rename(vdb_dir.dirname() / ("-reinstalling-" + vdb_dir.basename()));
-    vdb_dir.mkdir();
+    FSEntry tmp_vdb_dir(_imp->params.location);
+    tmp_vdb_dir.mkdir();
+    tmp_vdb_dir /= stringify(m.package.name.category);
+    tmp_vdb_dir.mkdir();
+    tmp_vdb_dir /= ("-checking-" + stringify(m.package.name.package) + "-" + stringify(m.package.version));
+    tmp_vdb_dir.mkdir();
 
     WriteVDBEntryCommand write_vdb_entry_command(
             WriteVDBEntryParams::create()
             .environment(_imp->params.environment)
             .db_entry(m.package)
-            .output_directory(vdb_dir)
+            .output_directory(tmp_vdb_dir)
             .environment_file(m.environment_file));
 
     write_vdb_entry_command();
@@ -1631,12 +1629,16 @@ VDBRepository::merge(const MergeOptions & m)
     /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb */
     std::string config_protect, config_protect_mask;
     {
-        std::ifstream c(stringify(vdb_dir / "CONFIG_PROTECT").c_str());
+        std::ifstream c(stringify(tmp_vdb_dir / "CONFIG_PROTECT").c_str());
         config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>());
 
-        std::ifstream c_m(stringify(vdb_dir / "CONFIG_PROTECT_MASK").c_str());
+        std::ifstream c_m(stringify(tmp_vdb_dir / "CONFIG_PROTECT_MASK").c_str());
         config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>());
     }
+
+    FSEntry vdb_dir(_imp->params.location);
+    vdb_dir /= stringify(m.package.name.category);
+    vdb_dir /= (stringify(m.package.name.package) + "-" + stringify(m.package.version));
 
     VDBMerger merger(
             VDBMergerOptions::create()
@@ -1649,7 +1651,16 @@ VDBRepository::merge(const MergeOptions & m)
             .package(&m.package));
 
     if (! merger.check())
+    {
+        for (DirIterator d(tmp_vdb_dir, false), d_end ; d != d_end ; ++d)
+            FSEntry(*d).unlink();
+        tmp_vdb_dir.rmdir();
         throw PackageInstallActionError("Not proceeding with install due to merge sanity check failing");
+    }
+
+    if (is_replace)
+        vdb_dir.rename(vdb_dir.dirname() / ("-reinstalling-" + vdb_dir.basename()));
+    tmp_vdb_dir.rename(vdb_dir);
 
     merger.merge();
 
