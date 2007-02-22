@@ -18,6 +18,7 @@
  */
 
 #include <paludis/qa/file_check.hh>
+#include <paludis/qa/broken_global_variables_check.hh>
 #include <paludis/qa/changelog_check.hh>
 #include <paludis/qa/defaults_check.hh>
 #include <paludis/qa/deprecated_functions_check.hh>
@@ -46,6 +47,7 @@ NoSuchFileCheckTypeError::NoSuchFileCheckTypeError(const std::string & s) throw 
 
 FileCheckMaker::FileCheckMaker()
 {
+    register_maker(BrokenGlobalVariablesCheck::identifier(), &MakeFileCheck<BrokenGlobalVariablesCheck>::make_file_check);
     register_maker(ChangeLogCheck::identifier(), &MakeFileCheck<ChangeLogCheck>::make_file_check);
     register_maker(DefaultsCheck::identifier(), &MakeFileCheck<DefaultsCheck>::make_file_check);
     register_maker(DeprecatedFunctionsCheck::identifier(), &MakeFileCheck<DeprecatedFunctionsCheck>::make_file_check);
