@@ -152,7 +152,7 @@ namespace
                 cout << endl << colour(cl_heading, "Updating world file") << endl << endl;
             }
 
-            virtual void on_update_world(const PackageDepAtom & a)
+            virtual void on_update_world(const PackageDepSpec & a)
             {
                 cout << "* removing " << colour(cl_package_name, a.package()) << endl;
             }

@@ -77,14 +77,14 @@ namespace
                     + stringify(i->package.version) + "::"
                     + stringify(i->package.repository) + "'";
 
-        if (CommandLine::get_instance()->a_add_to_world_atom.specified())
-            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
-                + " '" + CommandLine::get_instance()->a_add_to_world_atom.argument() + "'";
+        if (CommandLine::get_instance()->a_add_to_world_spec.specified())
+            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_spec.long_name()
+                + " '" + CommandLine::get_instance()->a_add_to_world_spec.argument() + "'";
         else if (task.had_set_targets())
-            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
+            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_spec.long_name()
                 + " '( )'";
         else
-            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_atom.long_name()
+            resume_command = resume_command + " --" + CommandLine::get_instance()->a_add_to_world_spec.long_name()
                 + " '( " + join(task.begin_targets(), task.end_targets(), " ") + " )'";
 
         if (CommandLine::get_instance()->a_destinations.specified())
@@ -503,8 +503,8 @@ do_install()
     task.set_preserve_world(CommandLine::get_instance()->a_preserve_world.specified());
     task.set_safe_resume(CommandLine::get_instance()->a_safe_resume.specified());
 
-    if (CommandLine::get_instance()->a_add_to_world_atom.specified())
-        task.set_add_to_world_atom(CommandLine::get_instance()->a_add_to_world_atom.argument());
+    if (CommandLine::get_instance()->a_add_to_world_spec.specified())
+        task.set_add_to_world_spec(CommandLine::get_instance()->a_add_to_world_spec.argument());
 
     if (CommandLine::get_instance()->a_debug_build.specified())
         task.set_debug_mode(CommandLine::get_instance()->a_debug_build.option());
@@ -576,7 +576,7 @@ do_install()
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
                     DefaultEnvironment::get_instance()->package_database()->query(
-                        query::Matches(PackageDepAtom(e.query())) &  query::RepositoryHasInstalledInterface(),
+                        query::Matches(PackageDepSpec(e.query())) &  query::RepositoryHasInstalledInterface(),
                         qo_order_by_version));
             if (p->empty())
             {

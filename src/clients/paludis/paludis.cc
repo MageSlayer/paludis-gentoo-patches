@@ -196,6 +196,14 @@ main(int argc, char *argv[])
             CommandLine::get_instance()->a_show_reasons.set_specified(true);
         }
 
+        if (CommandLine::get_instance()->a_add_to_world_atom.specified())
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context, "--add-to-world-atom is deprecated, use --add-to-world-spec");
+            CommandLine::get_instance()->a_add_to_world_spec.set_argument(
+                    CommandLine::get_instance()->a_add_to_world_atom.argument());
+            CommandLine::get_instance()->a_add_to_world_spec.set_specified(true);
+        }
+
         /* need an action */
         if (1 != (CommandLine::get_instance()->a_query.specified() +
                     CommandLine::get_instance()->a_version.specified() +
@@ -464,7 +472,7 @@ main(int argc, char *argv[])
         {
             if (2 != std::distance(CommandLine::get_instance()->begin_parameters(),
                         CommandLine::get_instance()->end_parameters()))
-                throw args::DoHelp("environment-variable action takes exactly two parameters (depatom var)");
+                throw args::DoHelp("environment-variable action takes exactly two parameters (depspec var)");
 
             return do_environment_variable();
         }

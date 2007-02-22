@@ -41,8 +41,8 @@ using std::endl;
 namespace
 {
     class ReverseDepChecker :
-        public DepAtomVisitorTypes::ConstVisitor,
-        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepAtom>
+        public DepSpecVisitorTypes::ConstVisitor,
+        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepSpec>
     {
         private:
             std::tr1::shared_ptr<const PackageDatabase> _db;
@@ -57,7 +57,7 @@ namespace
             bool _found_matches;
 
         public:
-            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepAtom>::visit;
+            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ReverseDepChecker, AllDepSpec>::visit;
 
             ReverseDepChecker(std::tr1::shared_ptr<const PackageDatabase> db,
                     const PackageDatabaseEntryCollection & entries,
@@ -72,10 +72,10 @@ namespace
             {
             }
 
-            void check(std::tr1::shared_ptr<const DepAtom> atom, const std::string & depname)
+            void check(std::tr1::shared_ptr<const DepSpec> spec, const std::string & depname)
             {
                 _depname = depname;
-                atom->accept(this);
+                spec->accept(this);
             }
 
             bool found_matches()
@@ -83,19 +83,19 @@ namespace
                 return _found_matches;
             }
 
-            void visit(const AnyDepAtom * const);
+            void visit(const AnyDepSpec * const);
 
-            void visit(const UseDepAtom * const);
+            void visit(const UseDepSpec * const);
 
-            void visit(const PackageDepAtom * const);
+            void visit(const PackageDepSpec * const);
 
-            void visit(const PlainTextDepAtom * const); 
+            void visit(const PlainTextDepSpec * const); 
 
-            void visit(const BlockDepAtom * const);
+            void visit(const BlockDepSpec * const);
     };
 
     void
-    ReverseDepChecker::visit(const AnyDepAtom * const a)
+    ReverseDepChecker::visit(const AnyDepSpec * const a)
     {
         Save<bool> in_any_save(&_in_any, true);
 
@@ -103,7 +103,7 @@ namespace
     }
 
     void
-    ReverseDepChecker::visit(const UseDepAtom * const a)
+    ReverseDepChecker::visit(const UseDepSpec * const a)
     {
         Save<bool> in_use_save(&_in_use, true);
         Save<std::string> flag_save(&_flags);
@@ -116,7 +116,7 @@ namespace
     }
 
     void
-    ReverseDepChecker::visit(const PackageDepAtom * const a)
+    ReverseDepChecker::visit(const PackageDepSpec * const a)
     {
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> dep_entries(_db->query(
                     query::Matches(*a), qo_order_by_version));
@@ -159,18 +159,18 @@ namespace
     }
 
     void
-    ReverseDepChecker::visit(const PlainTextDepAtom * const)
+    ReverseDepChecker::visit(const PlainTextDepSpec * const)
     {
     }
 
     void
-    ReverseDepChecker::visit(const BlockDepAtom * const)
+    ReverseDepChecker::visit(const BlockDepSpec * const)
     {
     }
 
-    void write_repository_header(std::string atom, const std::string &)
+    void write_repository_header(std::string spec, const std::string &)
     {
-        cout << "Reverse dependencies for '" << atom << "':" << std::endl;
+        cout << "Reverse dependencies for '" << spec << "':" << std::endl;
     }
 
     int check_one_package(const Environment & env, const Repository & r,
@@ -219,16 +219,16 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
 {
     Context context("When performing find-reverse-deps action:");
 
-    std::tr1::shared_ptr<PackageDepAtom> atom;
+    std::tr1::shared_ptr<PackageDepSpec> spec;
     try
     {
         if (std::string::npos == CommandLine::get_instance()->begin_parameters()->find('/'))
         {
-            atom.reset(new PackageDepAtom(env.package_database()->fetch_unique_qualified_package_name(
+            spec.reset(new PackageDepSpec(env.package_database()->fetch_unique_qualified_package_name(
                             PackageNamePart(*CommandLine::get_instance()->begin_parameters()))));
         }
         else
-            atom.reset(new PackageDepAtom(*CommandLine::get_instance()->begin_parameters()));
+            spec.reset(new PackageDepSpec(*CommandLine::get_instance()->begin_parameters()));
     }
     catch (const AmbiguousPackageNameError & e)
     {
@@ -244,13 +244,13 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
     }
 
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> entries(env.package_database()->query(
-                query::Matches(*atom), qo_order_by_version));
+                query::Matches(*spec), qo_order_by_version));
     int ret(0);
 
     if (entries->empty())
     {
         Log::get_instance()->message(ll_warning, lc_context, "No matches in package database for '"
-                + stringify(*atom) + "'");
+                + stringify(*spec) + "'");
         return 1;
     }
 
@@ -261,7 +261,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         if (r->name() == RepositoryName("virtuals") || r->name() == RepositoryName("installed_virtuals"))
             continue;
 
-        write_repository_header(stringify(*atom), stringify(r->name()));
+        write_repository_header(stringify(*spec), stringify(r->name()));
 
         std::tr1::shared_ptr<const CategoryNamePartCollection> cat_names(r->category_names());
         for (CategoryNamePartCollection::Iterator c(cat_names->begin()), c_end(cat_names->end()) ;

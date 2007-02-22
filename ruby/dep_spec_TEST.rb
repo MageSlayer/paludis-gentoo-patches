@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 #
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 # Copyright (c) 2007 Richard Brown <mynamewasgone@gmail.com>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -22,26 +22,26 @@ require 'test/unit'
 require 'Paludis'
 
 module Paludis
-    class TestCase_DepAtom < Test::Unit::TestCase
+    class TestCase_DepSpec < Test::Unit::TestCase
         def test_create_error
             assert_raise NoMethodError do
-                v = DepAtom.new
+                v = DepSpec.new
             end
             assert_raise NoMethodError do
-                v = StringDepAtom.new
+                v = StringDepSpec.new
             end
             assert_raise NoMethodError do
-                v = AnyDepAtom.new
+                v = AnyDepSpec.new
             end
             assert_raise NoMethodError do
-                v = AllDepAtom.new
+                v = AllDepSpec.new
             end
         end
     end
 
-    class TestCase_PackageDepAtom < Test::Unit::TestCase
+    class TestCase_PackageDepSpec < Test::Unit::TestCase
         def pda
-            PackageDepAtom.new('>=foo/bar-1:100::testrepo')
+            PackageDepSpec.new('>=foo/bar-1:100::testrepo')
         end
 
         def test_create
@@ -50,10 +50,10 @@ module Paludis
 
         def test_create_error
             assert_raise TypeError do
-                v = PackageDepAtom.new(0)
+                v = PackageDepSpec.new(0)
             end
-            assert_raise PackageDepAtomError do
-                v = PackageDepAtom.new("=sys-apps/foo")
+            assert_raise PackageDepSpecError do
+                v = PackageDepSpec.new("=sys-apps/foo")
             end
         end
 
@@ -90,67 +90,67 @@ module Paludis
         end
     end
 
-    class TestCase_PlainTextDepAtom < Test::Unit::TestCase
+    class TestCase_PlainTextDepSpec < Test::Unit::TestCase
         def test_create
-            v = PlainTextDepAtom.new("monkey")
+            v = PlainTextDepSpec.new("monkey")
         end
 
         def test_create_error
             assert_raise TypeError do
-                v = PlainTextDepAtom.new(0)
+                v = PlainTextDepSpec.new(0)
             end
         end
 
         def test_to_s
-            assert_equal "monkey", PlainTextDepAtom.new("monkey").to_s
+            assert_equal "monkey", PlainTextDepSpec.new("monkey").to_s
         end
     end
 
-    class TestCase_BlockDepAtom < Test::Unit::TestCase
+    class TestCase_BlockDepSpec < Test::Unit::TestCase
         def test_create
-            v = BlockDepAtom.new(PackageDepAtom.new(">=foo/bar-1"))
-            w = BlockDepAtom.new("<=foo/bar-2")
+            v = BlockDepSpec.new(PackageDepSpec.new(">=foo/bar-1"))
+            w = BlockDepSpec.new("<=foo/bar-2")
         end
 
         def test_create_error
             assert_raise TypeError do
-                v = BlockDepAtom.new(0)
+                v = BlockDepSpec.new(0)
             end
-            assert_raise PackageDepAtomError do
-                v = BlockDepAtom.new("=foo/bar")
+            assert_raise PackageDepSpecError do
+                v = BlockDepSpec.new("=foo/bar")
             end
             assert_raise TypeError do 
-                v = BlockDepAtom.new(PlainTextDepAtom.new('foo-bar/baz'))
+                v = BlockDepSpec.new(PlainTextDepSpec.new('foo-bar/baz'))
             end
         end
 
-        def test_blocked_atom
-            assert_equal "foo/bar", BlockDepAtom.new("foo/bar").blocked_atom.to_s
-            assert_equal "foo/baz", BlockDepAtom.new(PackageDepAtom.new("foo/baz")).blocked_atom.to_s
+        def test_blocked_spec
+            assert_equal "foo/bar", BlockDepSpec.new("foo/bar").blocked_spec.to_s
+            assert_equal "foo/baz", BlockDepSpec.new(PackageDepSpec.new("foo/baz")).blocked_spec.to_s
         end
     end
 
     class TestCase_Composites < Test::Unit::TestCase
         def test_composites
-            atom = PortageDepParser::parse("|| ( foo/bar foo/baz ) foo/monkey")
-            assert_kind_of CompositeDepAtom, atom
-            assert_kind_of AllDepAtom, atom
+            spec = PortageDepParser::parse("|| ( foo/bar foo/baz ) foo/monkey")
+            assert_kind_of CompositeDepSpec, spec
+            assert_kind_of AllDepSpec, spec
 
-            assert_equal 2, atom.to_a.length
+            assert_equal 2, spec.to_a.length
 
-            atom.each_with_index do | a, i |
+            spec.each_with_index do | a, i |
                 case i
                 when 0
-                    assert_kind_of AnyDepAtom, a
+                    assert_kind_of AnyDepSpec, a
                     assert_equal 2, a.to_a.length
                     a.each_with_index do | b, j |
                         case j
                         when 0
-                            assert_kind_of PackageDepAtom, b
+                            assert_kind_of PackageDepSpec, b
                             assert_equal "foo/bar", b.to_s
 
                         when 1
-                            assert_kind_of PackageDepAtom, b
+                            assert_kind_of PackageDepSpec, b
                             assert_equal "foo/baz", b.to_s
 
                         else
@@ -159,7 +159,7 @@ module Paludis
                     end
 
                 when 1
-                    assert_kind_of PackageDepAtom, a
+                    assert_kind_of PackageDepSpec, a
                     assert_equal "foo/monkey", a.to_s
 
                 else

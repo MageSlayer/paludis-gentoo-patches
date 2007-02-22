@@ -31,33 +31,33 @@ RangeRewriter::~RangeRewriter()
 }
 
 void
-RangeRewriter::visit(const AllDepAtom * a)
+RangeRewriter::visit(const AllDepSpec * a)
 {
     if (a->begin() != a->end())
         _invalid = true;
 }
 
 void
-RangeRewriter::visit(const AnyDepAtom * a)
+RangeRewriter::visit(const AnyDepSpec * a)
 {
     if (a->begin() != a->end())
         _invalid = true;
 }
 
 void
-RangeRewriter::visit(const UseDepAtom *)
+RangeRewriter::visit(const UseDepSpec *)
 {
     _invalid = true;
 }
 
 void
-RangeRewriter::visit(const PlainTextDepAtom *)
+RangeRewriter::visit(const PlainTextDepSpec *)
 {
     _invalid = true;
 }
 
 void
-RangeRewriter::visit(const PackageDepAtom * a)
+RangeRewriter::visit(const PackageDepSpec * a)
 {
     if (_invalid)
         return;
@@ -75,9 +75,9 @@ RangeRewriter::visit(const PackageDepAtom * a)
         return;
     }
 
-    if (_atom)
+    if (_spec)
     {
-        if (a->package() != _atom->package())
+        if (a->package() != _spec->package())
         {
             _invalid = true;
             return;
@@ -85,17 +85,17 @@ RangeRewriter::visit(const PackageDepAtom * a)
 
         for (VersionRequirements::Iterator v(a->version_requirements_ptr()->begin()),
                 v_end(a->version_requirements_ptr()->end()) ; v != v_end ; ++v)
-            _atom->version_requirements_ptr()->push_back(*v);
+            _spec->version_requirements_ptr()->push_back(*v);
     }
     else
     {
-        _atom.reset(new PackageDepAtom(*a));
-        _atom->set_version_requirements_mode(vr_or);
+        _spec.reset(new PackageDepSpec(*a));
+        _spec->set_version_requirements_mode(vr_or);
     }
 }
 
 void
-RangeRewriter::visit(const BlockDepAtom *)
+RangeRewriter::visit(const BlockDepSpec *)
 {
     _invalid = true;
 }

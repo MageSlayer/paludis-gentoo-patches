@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/collection_concrete.hh>
 
@@ -25,29 +25,29 @@
 #include <map>
 
 /** \file
- * Implementation for dep_atom.hh things.
+ * Implementation for dep_spec.hh things.
  *
- * \ingroup grpdepatoms
+ * \ingroup grpdepspecs
  */
 
 using namespace paludis;
 
-DepAtom::DepAtom()
+DepSpec::DepSpec()
 {
 }
 
-DepAtom::~DepAtom()
+DepSpec::~DepSpec()
 {
 }
 
-const UseDepAtom *
-DepAtom::as_use_dep_atom() const
+const UseDepSpec *
+DepSpec::as_use_dep_spec() const
 {
     return 0;
 }
 
-const PackageDepAtom *
-DepAtom::as_package_dep_atom() const
+const PackageDepSpec *
+DepSpec::as_package_dep_spec() const
 {
     return 0;
 }
@@ -55,87 +55,87 @@ DepAtom::as_package_dep_atom() const
 namespace paludis
 {
     /**
-     * Implementation data for CompositeDepAtom.
+     * Implementation data for CompositeDepSpec.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      */
     template<>
-    struct Implementation<CompositeDepAtom>
+    struct Implementation<CompositeDepSpec>
     {
-        std::list<std::tr1::shared_ptr<const DepAtom> > children;
+        std::list<std::tr1::shared_ptr<const DepSpec> > children;
     };
 }
 
-CompositeDepAtom::CompositeDepAtom() :
-    PrivateImplementationPattern<CompositeDepAtom>(new Implementation<CompositeDepAtom>)
+CompositeDepSpec::CompositeDepSpec() :
+    PrivateImplementationPattern<CompositeDepSpec>(new Implementation<CompositeDepSpec>)
 {
 }
 
-CompositeDepAtom::~CompositeDepAtom()
+CompositeDepSpec::~CompositeDepSpec()
 {
 }
 
 void
-CompositeDepAtom::add_child(std::tr1::shared_ptr<const DepAtom> c)
+CompositeDepSpec::add_child(std::tr1::shared_ptr<const DepSpec> c)
 {
     _imp->children.push_back(c);
 }
 
-CompositeDepAtom::Iterator
-CompositeDepAtom::begin() const
+CompositeDepSpec::Iterator
+CompositeDepSpec::begin() const
 {
     return Iterator(_imp->children.begin());
 }
 
-CompositeDepAtom::Iterator
-CompositeDepAtom::end() const
+CompositeDepSpec::Iterator
+CompositeDepSpec::end() const
 {
     return Iterator(_imp->children.end());
 }
 
-AnyDepAtom::AnyDepAtom()
+AnyDepSpec::AnyDepSpec()
 {
 }
 
-AllDepAtom::AllDepAtom()
+AllDepSpec::AllDepSpec()
 {
 }
 
-UseDepAtom::UseDepAtom(const UseFlagName & our_flag, bool is_inverse) :
+UseDepSpec::UseDepSpec(const UseFlagName & our_flag, bool is_inverse) :
     _flag(our_flag),
     _inverse(is_inverse)
 {
 }
 
-const UseDepAtom *
-UseDepAtom::as_use_dep_atom() const
+const UseDepSpec *
+UseDepSpec::as_use_dep_spec() const
 {
     return this;
 }
 
-const PackageDepAtom *
-PackageDepAtom::as_package_dep_atom() const
+const PackageDepSpec *
+PackageDepSpec::as_package_dep_spec() const
 {
     return this;
 }
 
-BlockDepAtom::BlockDepAtom(std::tr1::shared_ptr<const PackageDepAtom> a) :
-    StringDepAtom("!" + a->text()),
-    _atom(a)
+BlockDepSpec::BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> a) :
+    StringDepSpec("!" + a->text()),
+    _spec(a)
 {
 }
 
-PackageDepAtom::PackageDepAtom(const QualifiedPackageName & our_package) :
-    StringDepAtom(stringify(our_package)),
+PackageDepSpec::PackageDepSpec(const QualifiedPackageName & our_package) :
+    StringDepSpec(stringify(our_package)),
     _package(our_package),
     _version_requirements_mode(vr_and)
 {
 }
 
-PackageDepAtom::PackageDepAtom(const PackageDepAtom & other) :
-    VisitableInterface<DepAtomVisitorTypes>(other),
-    StringDepAtom(stringify(other)),
-    Visitable<PackageDepAtom, DepAtomVisitorTypes>(other),
+PackageDepSpec::PackageDepSpec(const PackageDepSpec & other) :
+    VisitableInterface<DepSpecVisitorTypes>(other),
+    StringDepSpec(stringify(other)),
+    Visitable<PackageDepSpec, DepSpecVisitorTypes>(other),
     _package(other._package),
     _version_requirements_mode(other._version_requirements_mode),
     _slot(other._slot),
@@ -151,43 +151,43 @@ PackageDepAtom::PackageDepAtom(const PackageDepAtom & other) :
     }
 }
 
-PackageDepAtom::PackageDepAtom(const std::string & ss) :
-    StringDepAtom(ss),
+PackageDepSpec::PackageDepSpec(const std::string & ss) :
+    StringDepSpec(ss),
     _package(CategoryNamePart("later"), PackageNamePart("later")),
     _version_requirements_mode(vr_and)
 {
-    Context context("When parsing package dep atom '" + ss + "':");
+    Context context("When parsing package dep spec '" + ss + "':");
 
     try
     {
         std::string s(ss);
 
         if (s.empty())
-            throw PackageDepAtomError("Got empty dep atom");
+            throw PackageDepSpecError("Got empty dep spec");
 
         std::string::size_type use_group_p;
         while (std::string::npos != ((use_group_p = s.rfind('['))))
         {
             if (s.at(s.length() - 1) != ']')
-                throw PackageDepAtomError("Mismatched []");
+                throw PackageDepSpecError("Mismatched []");
 
             std::string flag(s.substr(use_group_p + 1));
             UseFlagState state(use_enabled);
             if (flag.length() < 2)
-                throw PackageDepAtomError("Invalid [] contents");
+                throw PackageDepSpecError("Invalid [] contents");
             flag.erase(flag.length() - 1);
             if ('-' == flag.at(0))
             {
                 state = use_disabled;
                 flag.erase(0, 1);
                 if (flag.empty())
-                    throw PackageDepAtomError("Invalid [] contents");
+                    throw PackageDepSpecError("Invalid [] contents");
             }
             UseFlagName name(flag);
             if (0 == _use_requirements)
                 _use_requirements.reset(new UseRequirements);
             if (! _use_requirements->insert(name, state))
-                throw PackageDepAtomError("Conflicting [] contents");
+                throw PackageDepSpecError("Conflicting [] contents");
 
             s.erase(use_group_p);
         }
@@ -218,10 +218,10 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
             while (true)
             {
                 if (p >= s.length())
-                    throw PackageDepAtomError("Couldn't parse dep atom '" + ss + "'");
+                    throw PackageDepSpecError("Couldn't parse dep spec '" + ss + "'");
                 q = s.find('-', q + 1);
                 if ((std::string::npos == q) || (++q >= s.length()))
-                    throw PackageDepAtomError("Couldn't parse dep atom '" + ss + "'");
+                    throw PackageDepSpecError("Couldn't parse dep spec '" + ss + "'");
                 if ((s.at(q) >= '0' && s.at(q) <= '9') || (0 == s.compare(q, 3, "scm")))
                     break;
             }
@@ -246,7 +246,7 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
             {
                 if (op != vo_equal)
                     Log::get_instance()->message(ll_qa, lc_context,
-                            "Package dep atom '" + ss + "' uses * "
+                            "Package dep spec '" + ss + "' uses * "
                             "with operator '" + stringify(op) +
                             "', pretending it uses the equals operator instead");
                 op = vo_equal_star;
@@ -269,19 +269,19 @@ PackageDepAtom::PackageDepAtom(const std::string & ss) :
     }
 }
 
-PackageDepAtom::~PackageDepAtom()
+PackageDepSpec::~PackageDepSpec()
 {
 }
 
 std::ostream &
-paludis::operator<< (std::ostream & s, const PlainTextDepAtom & a)
+paludis::operator<< (std::ostream & s, const PlainTextDepSpec & a)
 {
     s << a.text();
     return s;
 }
 
 std::ostream &
-paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
+paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
 {
     if (a.version_requirements_ptr())
     {
@@ -357,23 +357,23 @@ paludis::operator<< (std::ostream & s, const PackageDepAtom & a)
     return s;
 }
 
-PackageDepAtomError::PackageDepAtomError(const std::string & msg) throw () :
+PackageDepSpecError::PackageDepSpecError(const std::string & msg) throw () :
     Exception(msg)
 {
 }
 
-StringDepAtom::StringDepAtom(const std::string & s) :
+StringDepSpec::StringDepSpec(const std::string & s) :
     _str(s)
 {
 }
 
-StringDepAtom::~StringDepAtom()
+StringDepSpec::~StringDepSpec()
 {
 }
 
 
-PlainTextDepAtom::PlainTextDepAtom(const std::string & s) :
-    StringDepAtom(s)
+PlainTextDepSpec::PlainTextDepSpec(const std::string & s) :
+    StringDepSpec(s)
 {
 }
 
@@ -382,7 +382,7 @@ namespace paludis
     /**
      * Implementation data for UseRequirements.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      */
     template<>
     struct Implementation<UseRequirements>
@@ -433,12 +433,12 @@ UseRequirements::state(const UseFlagName & u) const
     return i->second;
 }
 
-std::tr1::shared_ptr<PackageDepAtom>
-PackageDepAtom::without_use_requirements() const
+std::tr1::shared_ptr<PackageDepSpec>
+PackageDepSpec::without_use_requirements() const
 {
     std::string s(text());
     if (std::string::npos != s.find('['))
         s.erase(s.find('['));
-    return std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(s));
+    return std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s));
 }
 

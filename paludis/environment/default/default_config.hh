@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEFAULT_CONFIG_HH
 #define PALUDIS_GUARD_PALUDIS_DEFAULT_CONFIG_HH 1
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/util/collection.hh>
 #include <paludis/util/exception.hh>
@@ -112,7 +112,7 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig,
-                    const std::pair<std::tr1::shared_ptr<const PackageDepAtom>, KeywordName> > PackageKeywordsIterator;
+                    const std::pair<std::tr1::shared_ptr<const PackageDepSpec>, KeywordName> > PackageKeywordsIterator;
 
             PackageKeywordsIterator begin_package_keywords(const QualifiedPackageName & d) const;
 
@@ -135,7 +135,7 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<DefaultConfig,
-                    const std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > PackageLicensesIterator;
+                    const std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::string> > PackageLicensesIterator;
 
             PackageLicensesIterator begin_package_licenses(const QualifiedPackageName & d) const;
 
@@ -157,13 +157,13 @@ namespace paludis
             ///\name Iterate over our masks and unmasks
             ///\{
 
-            typedef libwrapiter::ForwardIterator<DefaultConfig, const PackageDepAtom> UserMasksIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const PackageDepSpec> UserMasksIterator;
 
             UserMasksIterator begin_user_masks(const QualifiedPackageName & d) const;
 
             UserMasksIterator end_user_masks(const QualifiedPackageName & d) const;
 
-            typedef libwrapiter::ForwardIterator<DefaultConfig, const PackageDepAtom> UserUnmasksIterator;
+            typedef libwrapiter::ForwardIterator<DefaultConfig, const PackageDepSpec> UserUnmasksIterator;
 
             UserUnmasksIterator begin_user_unmasks(const QualifiedPackageName & d) const;
 
@@ -200,7 +200,7 @@ namespace paludis
             UseMinusStarIterator end_use_prefixes_with_minus_star() const;
 
             typedef libwrapiter::ForwardIterator<DefaultConfig,
-                    const std::pair<std::tr1::shared_ptr<const PackageDepAtom>, std::string> > PackageUseMinusStarIterator;
+                    const std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::string> > PackageUseMinusStarIterator;
 
             PackageUseMinusStarIterator begin_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;
             PackageUseMinusStarIterator end_package_use_prefixes_with_minus_star(const QualifiedPackageName &) const;

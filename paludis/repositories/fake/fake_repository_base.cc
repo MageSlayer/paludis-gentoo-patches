@@ -57,7 +57,7 @@ namespace paludis
         std::map<std::string, std::tr1::shared_ptr<VersionMetadata> > metadata;
 
         /// Our sets.
-        std::map<SetName, std::tr1::shared_ptr<DepAtom> > sets;
+        std::map<SetName, std::tr1::shared_ptr<DepSpec> > sets;
 
         /// (Empty) provides map.
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
@@ -265,17 +265,17 @@ FakeRepositoryBase::do_use_expand_value(const UseFlagName & u) const
 }
 
 void
-FakeRepositoryBase::add_package_set(const SetName & n, std::tr1::shared_ptr<DepAtom> s)
+FakeRepositoryBase::add_package_set(const SetName & n, std::tr1::shared_ptr<DepSpec> s)
 {
     _imp->sets.insert(std::make_pair(n, s));
 }
 
-std::tr1::shared_ptr<DepAtom>
+std::tr1::shared_ptr<DepSpec>
 FakeRepositoryBase::do_package_set(const SetName & id) const
 {
-    std::map<SetName, std::tr1::shared_ptr<DepAtom> >::const_iterator i(_imp->sets.find(id));
+    std::map<SetName, std::tr1::shared_ptr<DepSpec> >::const_iterator i(_imp->sets.find(id));
     if (_imp->sets.end() == i)
-        return std::tr1::shared_ptr<DepAtom>();
+        return std::tr1::shared_ptr<DepSpec>();
     else
         return i->second;
 }
@@ -285,7 +285,7 @@ FakeRepositoryBase::sets_list() const
 {
     std::tr1::shared_ptr<SetsCollection> result(new SetsCollection::Concrete);
     std::copy(_imp->sets.begin(), _imp->sets.end(),
-            transform_inserter(result->inserter(), SelectFirst<SetName, std::tr1::shared_ptr<DepAtom> >()));
+            transform_inserter(result->inserter(), SelectFirst<SetName, std::tr1::shared_ptr<DepSpec> >()));
     return result;
 }
 

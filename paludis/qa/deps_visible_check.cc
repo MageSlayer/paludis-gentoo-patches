@@ -23,8 +23,8 @@
 #include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_pretty_printer.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/save.hh>
 #include <paludis/query.hh>
 
@@ -35,21 +35,21 @@ using namespace paludis::qa;
 
 namespace
 {
-    struct IsViableAnyDepAtomChild
+    struct IsViableAnyDepSpecChild
     {
         const QAEnvironment * const env;
         const PackageDatabaseEntry pde;
 
-        IsViableAnyDepAtomChild(const QAEnvironment * const e, const PackageDatabaseEntry & p) :
+        IsViableAnyDepSpecChild(const QAEnvironment * const e, const PackageDatabaseEntry & p) :
             env(e),
             pde(p)
         {
         }
 
         template <typename T_>
-        bool operator() (T_ atom) const
+        bool operator() (T_ spec) const
         {
-            const UseDepAtom * const u(atom->as_use_dep_atom());
+            const UseDepSpec * const u(spec->as_use_dep_spec());
             if (0 != u)
             {
                 RepositoryUseInterface * i(env->package_database()->fetch_repository(
@@ -77,10 +77,10 @@ namespace
     };
 
     struct Checker :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
 
         CheckResult & result;
         const std::string role;
@@ -98,7 +98,7 @@ namespace
         {
         }
 
-        void visit(const PackageDepAtom * const p)
+        void visit(const PackageDepSpec * const p)
         {
             bool found(false);
             std::string candidates;
@@ -131,17 +131,17 @@ namespace
                         + candidates + ")");
         }
 
-        void visit(const AnyDepAtom * const a)
+        void visit(const AnyDepSpec * const a)
         {
-            std::list<std::tr1::shared_ptr<const DepAtom> > viable_children;
+            std::list<std::tr1::shared_ptr<const DepSpec> > viable_children;
             std::copy(a->begin(), a->end(), filter_inserter(std::back_inserter(viable_children),
-                        IsViableAnyDepAtomChild(env, pde)));
+                        IsViableAnyDepSpecChild(env, pde)));
 
             if (viable_children.empty())
                 return;
 
             bool found(false);
-            for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(viable_children.begin()),
+            for (std::list<std::tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
                     c_end(viable_children.end()) ; c != c_end && ! found ; ++c)
             {
                 Save<CheckResult> save_result(&result);
@@ -153,24 +153,24 @@ namespace
 
             if (! found)
             {
-                DepAtomPrettyPrinter printer(0, false);
+                DepSpecPrettyPrinter printer(0, false);
                 a->accept(&printer);
                 result << Message(qal_major, "No visible provider for " + role + " entry '"
                         + stringify(printer) + "'" + (unstable ? " (unstable)" : ""));
             }
         }
 
-        void visit(const UseDepAtom * const u)
+        void visit(const UseDepSpec * const u)
         {
-            if (IsViableAnyDepAtomChild(env, pde)(u))
+            if (IsViableAnyDepSpecChild(env, pde)(u))
                 std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
-        void visit(const BlockDepAtom * const)
+        void visit(const BlockDepSpec * const)
         {
         }
 
-        void visit(const PlainTextDepAtom * const)
+        void visit(const PlainTextDepSpec * const)
         {
         }
     };

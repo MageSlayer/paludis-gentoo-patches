@@ -122,7 +122,7 @@ do_search(const Environment & env)
             continue;
 
         InquisitioQueryTask query(&env);
-        query.show(PackageDepAtom(display_entry.name), &display_entry);
+        query.show(PackageDepSpec(display_entry.name), &display_entry);
     }
 
     return 0;

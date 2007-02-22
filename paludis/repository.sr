@@ -79,7 +79,7 @@ make_class_RepositoryProvidesEntry()
 make_class_RepositoryVirtualsEntry()
 {
     key virtual_name QualifiedPackageName
-    key provided_by_atom "std::tr1::shared_ptr<const PackageDepAtom>"
+    key provided_by_spec "std::tr1::shared_ptr<const PackageDepSpec>"
 
     allow_named_args
     comparison_operators all virtual_name

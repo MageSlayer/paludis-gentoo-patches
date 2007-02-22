@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,27 +18,27 @@
  */
 
 #include <algorithm>
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_pretty_printer.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/util/save.hh>
 
 /** \file
- * Implementation of dep_atom_pretty_printer.hh.
+ * Implementation of dep_spec_pretty_printer.hh.
  *
- * \ingroup grpdepatomprettyprinter
+ * \ingroup grpdepspecprettyprinter
  */
 
 using namespace paludis;
 
 std::ostream &
-paludis::operator<< (std::ostream & s, const DepAtomPrettyPrinter & p)
+paludis::operator<< (std::ostream & s, const DepSpecPrettyPrinter & p)
 {
     s << p._s.str();
     return s;
 }
 
 void
-DepAtomPrettyPrinter::visit(const AllDepAtom * const a)
+DepSpecPrettyPrinter::visit(const AllDepSpec * const a)
 {
     _s << indent() << "(" << newline();
     {
@@ -49,7 +49,7 @@ DepAtomPrettyPrinter::visit(const AllDepAtom * const a)
 }
 
 void
-DepAtomPrettyPrinter::visit(const AnyDepAtom * const a)
+DepSpecPrettyPrinter::visit(const AnyDepSpec * const a)
 {
     _s << indent() << "|| (" << newline();
     {
@@ -60,7 +60,7 @@ DepAtomPrettyPrinter::visit(const AnyDepAtom * const a)
 }
 
 void
-DepAtomPrettyPrinter::visit(const UseDepAtom * const a)
+DepSpecPrettyPrinter::visit(const UseDepSpec * const a)
 {
     _s << indent() << (a->inverse() ? "!" : "") <<
         a->flag() << "? (" << newline();
@@ -72,31 +72,31 @@ DepAtomPrettyPrinter::visit(const UseDepAtom * const a)
 }
 
 void
-DepAtomPrettyPrinter::visit(const PackageDepAtom * const p)
+DepSpecPrettyPrinter::visit(const PackageDepSpec * const p)
 {
     _s << indent() << *p << newline();
 }
 
 void
-DepAtomPrettyPrinter::visit(const PlainTextDepAtom * const p)
+DepSpecPrettyPrinter::visit(const PlainTextDepSpec * const p)
 {
     _s << indent() << p->text() << newline();
 }
 
 void
-DepAtomPrettyPrinter::visit(const BlockDepAtom * const b)
+DepSpecPrettyPrinter::visit(const BlockDepSpec * const b)
 {
-    _s << indent() << "!" << *b->blocked_atom() << newline();
+    _s << indent() << "!" << *b->blocked_spec() << newline();
 }
 
 std::string
-DepAtomPrettyPrinter::newline() const
+DepSpecPrettyPrinter::newline() const
 {
     return _use_newlines ? "\n" : " ";
 }
 
 std::string
-DepAtomPrettyPrinter::indent() const
+DepSpecPrettyPrinter::indent() const
 {
     return _use_newlines ? std::string(_indent, ' ') : "";
 }

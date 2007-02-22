@@ -126,7 +126,7 @@ namespace paludis
 
             virtual bool do_is_licence(const std::string &) const;
 
-            virtual std::tr1::shared_ptr<DepAtom> do_package_set(const SetName & id) const;
+            virtual std::tr1::shared_ptr<DepSpec> do_package_set(const SetName & id) const;
             virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 
         protected:
@@ -174,7 +174,7 @@ namespace paludis
             /**
              * Add a package set.
              */
-            void add_package_set(const SetName &, std::tr1::shared_ptr<DepAtom>);
+            void add_package_set(const SetName &, std::tr1::shared_ptr<DepSpec>);
 
             virtual void invalidate();
 

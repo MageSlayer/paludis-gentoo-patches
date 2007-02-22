@@ -157,9 +157,9 @@ namespace paludis
                     const PackageDatabaseEntryCollection &);
 
             virtual void on_update_world_pre();
-            virtual void on_update_world(const PackageDepAtom &);
+            virtual void on_update_world(const PackageDepSpec &);
             virtual void on_update_world(const SetName &);
-            virtual void on_update_world_skip(const PackageDepAtom &, const std::string &);
+            virtual void on_update_world_skip(const PackageDepSpec &, const std::string &);
             virtual void on_update_world_skip(const SetName &, const std::string &);
             virtual void on_update_world_post();
             virtual void on_preserve_world();

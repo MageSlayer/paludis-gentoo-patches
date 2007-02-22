@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_TASKS_UNINSTALL_TASK_HH
 #define PALUDIS_GUARD_PALUDIS_TASKS_UNINSTALL_TASK_HH 1
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -146,7 +146,7 @@ namespace paludis
             virtual void on_uninstall_all_post() = 0;
 
             virtual void on_update_world_pre() = 0;
-            virtual void on_update_world(const PackageDepAtom &) = 0;
+            virtual void on_update_world(const PackageDepSpec &) = 0;
             virtual void on_update_world(const SetName &) = 0;
             virtual void on_update_world_post() = 0;
             virtual void on_preserve_world() = 0;

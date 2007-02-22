@@ -22,7 +22,7 @@
 #include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/repositories/gentoo/ebuild.hh>
 
-#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/version_metadata.hh>
@@ -166,60 +166,60 @@ namespace
 {
     class AAFinder :
         private InstantiationPolicy<AAFinder, instantiation_method::NonCopyableTag>,
-        protected DepAtomVisitorTypes::ConstVisitor
+        protected DepSpecVisitorTypes::ConstVisitor
     {
         private:
-            mutable std::list<const StringDepAtom *> _atoms;
+            mutable std::list<const StringDepSpec *> _specs;
 
         protected:
-            void visit(const AllDepAtom * a)
+            void visit(const AllDepSpec * a)
             {
                 std::for_each(a->begin(), a->end(), accept_visitor(
-                            static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
+                            static_cast<DepSpecVisitorTypes::ConstVisitor *>(this)));
             }
 
-            void visit(const AnyDepAtom *) PALUDIS_ATTRIBUTE((noreturn))
+            void visit(const AnyDepSpec *) PALUDIS_ATTRIBUTE((noreturn))
             {
-                throw InternalError(PALUDIS_HERE, "Found unexpected AnyDepAtom");
+                throw InternalError(PALUDIS_HERE, "Found unexpected AnyDepSpec");
             }
 
-            void visit(const UseDepAtom * a)
+            void visit(const UseDepSpec * a)
             {
                 std::for_each(a->begin(), a->end(), accept_visitor(
-                            static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
+                            static_cast<DepSpecVisitorTypes::ConstVisitor *>(this)));
             }
 
-            void visit(const PlainTextDepAtom * a)
+            void visit(const PlainTextDepSpec * a)
             {
-                _atoms.push_back(a);
+                _specs.push_back(a);
             }
 
-            void visit(const PackageDepAtom * a)
+            void visit(const PackageDepSpec * a)
             {
-                _atoms.push_back(a);
+                _specs.push_back(a);
             }
 
-            void visit(const BlockDepAtom * a)
+            void visit(const BlockDepSpec * a)
             {
-                _atoms.push_back(a);
+                _specs.push_back(a);
             }
 
         public:
-            AAFinder(const std::tr1::shared_ptr<const DepAtom> a)
+            AAFinder(const std::tr1::shared_ptr<const DepSpec> a)
             {
-                a->accept(static_cast<DepAtomVisitorTypes::ConstVisitor *>(this));
+                a->accept(static_cast<DepSpecVisitorTypes::ConstVisitor *>(this));
             }
 
-            typedef std::list<const StringDepAtom *>::const_iterator Iterator;
+            typedef std::list<const StringDepSpec *>::const_iterator Iterator;
 
             Iterator begin()
             {
-                return _atoms.begin();
+                return _specs.begin();
             }
 
             Iterator end() const
             {
-                return _atoms.end();
+                return _specs.end();
             }
     };
 
@@ -270,11 +270,11 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_archives;
 
         /* make A and FLAT_SRC_URI */
-        std::tr1::shared_ptr<const DepAtom> f_atom(PortageDepParser::parse(metadata->ebuild_interface->src_uri,
-                    PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
-        DepAtomFlattener f(_imp->params.environment, &e, f_atom);
+        std::tr1::shared_ptr<const DepSpec> f_spec(PortageDepParser::parse(metadata->ebuild_interface->src_uri,
+                    PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance()));
+        DepSpecFlattener f(_imp->params.environment, &e, f_spec);
 
-        for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
+        for (DepSpecFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
         {
             std::string::size_type pos((*ff)->text().rfind('/'));
             if (std::string::npos == pos)
@@ -353,10 +353,10 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
 
         /* make AA */
-        std::tr1::shared_ptr<const DepAtom> g_atom(PortageDepParser::parse(
+        std::tr1::shared_ptr<const DepSpec> g_spec(PortageDepParser::parse(
                     metadata->ebuild_interface->src_uri,
-                    PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
-        AAFinder g(g_atom);
+                    PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance()));
+        AAFinder g(g_spec);
         std::set<std::string> already_in_all_archives;
 
         for (AAFinder::Iterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)

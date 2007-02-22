@@ -180,10 +180,10 @@ GemsRepository::do_install(const QualifiedPackageName &, const VersionSpec &, co
 {
 }
 
-std::tr1::shared_ptr<DepAtom>
+std::tr1::shared_ptr<DepSpec>
 GemsRepository::do_package_set(const SetName &) const
 {
-    return std::tr1::shared_ptr<DepAtom>();
+    return std::tr1::shared_ptr<DepSpec>();
 }
 
 std::tr1::shared_ptr<const SetsCollection>

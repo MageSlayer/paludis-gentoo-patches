@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,7 +27,7 @@
  * Display licences.
  */
 struct LicenceDisplayer :
-    paludis::DepAtomVisitorTypes::ConstVisitor
+    paludis::DepSpecVisitorTypes::ConstVisitor
 {
     /// Our stream.
     std::ostream & stream;
@@ -46,19 +46,19 @@ struct LicenceDisplayer :
 
     ///\name Visit methods
     ///{
-    void visit(const paludis::AllDepAtom * atom);
+    void visit(const paludis::AllDepSpec * spec);
 
-    void visit(const paludis::AnyDepAtom * atom);
+    void visit(const paludis::AnyDepSpec * spec);
 
-    void visit(const paludis::UseDepAtom * atom);
+    void visit(const paludis::UseDepSpec * spec);
 
-    void visit(const paludis::PlainTextDepAtom * atom);
+    void visit(const paludis::PlainTextDepSpec * spec);
 
-    void visit(const paludis::PackageDepAtom *)
+    void visit(const paludis::PackageDepSpec *)
     {
     }
 
-    void visit(const paludis::BlockDepAtom *)
+    void visit(const paludis::BlockDepSpec *)
     {
     }
     ///}

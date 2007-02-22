@@ -165,7 +165,7 @@ namespace paludis
     typedef VisitorTypes<GLSADepTag *, GeneralSetDepTag *, DependencyDepTag *> DepTagVisitorTypes;
 
     /**
-     * A DepTag can be associated with a PackageDepAtom, and is transferred
+     * A DepTag can be associated with a PackageDepSpec, and is transferred
      * onto any associated DepListEntry instances.
      *
      * It is used for tagging dep list entries visually, for example to

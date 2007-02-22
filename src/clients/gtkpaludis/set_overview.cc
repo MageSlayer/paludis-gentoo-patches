@@ -35,12 +35,12 @@ namespace
         public Gtk::TreeModel::ColumnRecord
     {
         public:
-            Gtk::TreeModelColumn<Glib::ustring> col_atom;
+            Gtk::TreeModelColumn<Glib::ustring> col_spec;
             Gtk::TreeModelColumn<Glib::ustring> col_tag;
 
             Columns()
             {
-                add(col_atom);
+                add(col_spec);
                 add(col_tag);
             }
     };
@@ -65,9 +65,9 @@ namespace
         }
     };
 
-    class TreeFromDepAtom :
-        private InstantiationPolicy<TreeFromDepAtom, instantiation_method::NonCopyableTag>,
-        public DepAtomVisitorTypes::ConstVisitor
+    class TreeFromDepSpec :
+        private InstantiationPolicy<TreeFromDepSpec, instantiation_method::NonCopyableTag>,
+        public DepSpecVisitorTypes::ConstVisitor
     {
         private:
             Glib::RefPtr<Gtk::TreeStore> _model;
@@ -75,7 +75,7 @@ namespace
             Gtk::TreeModel::Row * _row;
 
         public:
-            TreeFromDepAtom(Glib::RefPtr<Gtk::TreeStore> model, const Columns * const columns,
+            TreeFromDepSpec(Glib::RefPtr<Gtk::TreeStore> model, const Columns * const columns,
                     Gtk::TreeModel::Row * top_row) :
                 _model(model),
                 _columns(columns),
@@ -83,59 +83,59 @@ namespace
             {
             }
 
-            void visit(const AllDepAtom * atom)
+            void visit(const AllDepSpec * spec)
             {
-                if (atom->begin() != atom->end())
+                if (spec->begin() != spec->end())
                 {
                     Gtk::TreeModel::Row new_row(*_model->append(_row->children()));
-                    new_row[_columns->col_atom] = "all of";
+                    new_row[_columns->col_spec] = "all of";
                     Save<Gtk::TreeModel::Row *> save_row(&_row, &new_row);
-                    std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+                    std::for_each(spec->begin(), spec->end(), accept_visitor(this));
                 }
             }
 
-            void visit(const AnyDepAtom * atom)
+            void visit(const AnyDepSpec * spec)
             {
-                if (atom->begin() != atom->end())
+                if (spec->begin() != spec->end())
                 {
                     Gtk::TreeModel::Row new_row(*_model->append(_row->children()));
-                    new_row[_columns->col_atom] = "any of";
+                    new_row[_columns->col_spec] = "any of";
                     Save<Gtk::TreeModel::Row *> save_row(&_row, &new_row);
-                    std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+                    std::for_each(spec->begin(), spec->end(), accept_visitor(this));
                 }
             }
 
-            void visit(const UseDepAtom * atom)
+            void visit(const UseDepSpec * spec)
             {
                 Gtk::TreeModel::Row new_row(*_model->append(_row->children()));
-                new_row[_columns->col_atom] = "if " + stringify(atom->inverse() ? "!" : "") + stringify(atom->flag());
+                new_row[_columns->col_spec] = "if " + stringify(spec->inverse() ? "!" : "") + stringify(spec->flag());
                 Save<Gtk::TreeModel::Row *> save_row(&_row, &new_row);
-                std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+                std::for_each(spec->begin(), spec->end(), accept_visitor(this));
             }
 
-            void visit(const PlainTextDepAtom * atom)
+            void visit(const PlainTextDepSpec * spec)
             {
                 Gtk::TreeModel::Row new_row(*_model->append(_row->children()));
-                new_row[_columns->col_atom] = atom->text();
+                new_row[_columns->col_spec] = spec->text();
             }
 
-            void visit(const PackageDepAtom * atom)
+            void visit(const PackageDepSpec * spec)
             {
                 Gtk::TreeModel::Row new_row(*_model->append(_row->children()));
-                new_row[_columns->col_atom] = stringify(*atom);
+                new_row[_columns->col_spec] = stringify(*spec);
 
-                if (atom->tag())
+                if (spec->tag())
                 {
                     TagDecoder d;
-                    atom->tag()->accept(&d);
+                    spec->tag()->accept(&d);
                     new_row[_columns->col_tag] = d.text;
                 }
             }
 
-            void visit(const BlockDepAtom * atom)
+            void visit(const BlockDepSpec * spec)
             {
                 Gtk::TreeModel::Row new_row(*_model->append(_row->children()));
-                new_row[_columns->col_atom] = "!" + stringify(*atom->blocked_atom());
+                new_row[_columns->col_spec] = "!" + stringify(*spec->blocked_spec());
             }
     };
 }
@@ -169,7 +169,7 @@ SetOverview::SetOverview() :
     PrivateImplementationPattern<SetOverview>(new Implementation<SetOverview>(this))
 {
     set_model(_imp->model);
-    append_column("Atom", _imp->columns.col_atom);
+    append_column("Atom", _imp->columns.col_spec);
     append_column("Tag", _imp->columns.col_tag);
 }
 
@@ -203,11 +203,11 @@ namespace
 
         StatusBarMessage m1(this, "Querying set information...");
 
-        std::tr1::shared_ptr<const DepAtom> set_atom(DefaultEnvironment::get_instance()->package_set(_set));
+        std::tr1::shared_ptr<const DepSpec> set_spec(DefaultEnvironment::get_instance()->package_set(_set));
         Gtk::TreeModel::Row top_row = *model->append();
-        top_row[_imp->columns.col_atom] = stringify(_set);
-        TreeFromDepAtom v(model, &_imp->columns, &top_row);
-        set_atom->accept(&v);
+        top_row[_imp->columns.col_spec] = stringify(_set);
+        TreeFromDepSpec v(model, &_imp->columns, &top_row);
+        set_spec->accept(&v);
 
         dispatch(sigc::bind<1>(sigc::mem_fun(_imp, &Implementation<SetOverview>::set_model), model));
     }

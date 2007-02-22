@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/iterator.hh>
@@ -203,13 +203,13 @@ PackageDatabase::fetch_unique_qualified_package_name(
 }
 
 std::tr1::shared_ptr<PackageDatabaseEntryCollection>
-PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_state) const
+PackageDatabase::query(const PackageDepSpec & a, const InstallState installed_state) const
 {
     return query(a, installed_state, qo_order_by_version);
 }
 
 std::tr1::shared_ptr<PackageDatabaseEntryCollection>
-PackageDatabase::query(const PackageDepAtom & a, const InstallState installed_state,
+PackageDatabase::query(const PackageDepSpec & a, const InstallState installed_state,
         const QueryOrder query_order) const
 {
     switch (installed_state)

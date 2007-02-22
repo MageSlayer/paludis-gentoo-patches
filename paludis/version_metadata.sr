@@ -41,22 +41,22 @@ END
             /**
              * Our build depends.
              */
-            std::tr1::shared_ptr<const DepAtom> build_depend() const;
+            std::tr1::shared_ptr<const DepSpec> build_depend() const;
 
             /**
              * Our runtime depends.
              */
-            std::tr1::shared_ptr<const DepAtom> run_depend() const;
+            std::tr1::shared_ptr<const DepSpec> run_depend() const;
 
             /**
              * Our post depends.
              */
-            std::tr1::shared_ptr<const DepAtom> post_depend() const;
+            std::tr1::shared_ptr<const DepSpec> post_depend() const;
 
             /**
              * Our suggested depends.
              */
-            std::tr1::shared_ptr<const DepAtom> suggested_depend() const;
+            std::tr1::shared_ptr<const DepSpec> suggested_depend() const;
 END
 
     doxygen_comment << "END"
@@ -83,7 +83,7 @@ END
             /**
              * Our licences.
              */
-            std::tr1::shared_ptr<const DepAtom> license() const;
+            std::tr1::shared_ptr<const DepSpec> license() const;
 END
 
     doxygen_comment << "END"
@@ -152,7 +152,7 @@ END
             /**
              * PROVIDE, as a dep atom.
              */
-            std::tr1::shared_ptr<const DepAtom> provide() const;
+            std::tr1::shared_ptr<const DepSpec> provide() const;
 END
 
     allow_named_args

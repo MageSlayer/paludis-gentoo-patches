@@ -111,9 +111,9 @@ namespace paludis
             /**
              * Local package set, or zero.
              */
-            virtual std::tr1::shared_ptr<CompositeDepAtom> local_package_set(const SetName &) const
+            virtual std::tr1::shared_ptr<CompositeDepSpec> local_package_set(const SetName &) const
             {
-                return std::tr1::shared_ptr<AllDepAtom>();
+                return std::tr1::shared_ptr<AllDepSpec>();
             }
 
             /**
@@ -264,7 +264,7 @@ namespace paludis
             /**
              * Fetch a named package set.
              */
-            std::tr1::shared_ptr<DepAtom> package_set(const SetName &) const;
+            std::tr1::shared_ptr<DepSpec> package_set(const SetName &) const;
 
             /**
              * Fetch all named sets. Does not include sets from repositories.
@@ -301,17 +301,17 @@ namespace paludis
                     /**
                      * Called when adding an entry to world.
                      */
-                    virtual void add_callback(const PackageDepAtom &);
+                    virtual void add_callback(const PackageDepSpec &);
 
                     /**
                      * Called when skipping adding an entry to world.
                      */
-                    virtual void skip_callback(const PackageDepAtom &, const std::string &);
+                    virtual void skip_callback(const PackageDepSpec &, const std::string &);
 
                     /**
                      * Called when removing an entry to world.
                      */
-                    virtual void remove_callback(const PackageDepAtom &);
+                    virtual void remove_callback(const PackageDepSpec &);
 
                     /**
                      * Called when adding an entry to world.
@@ -331,14 +331,14 @@ namespace paludis
 
             /**
              * Add packages to world, if they are not there already, and if they are
-             * not a restricted atom.
+             * not a restricted spec.
              */
-            void add_appropriate_to_world(std::tr1::shared_ptr<const DepAtom> a, WorldCallbacks *) const;
+            void add_appropriate_to_world(std::tr1::shared_ptr<const DepSpec> a, WorldCallbacks *) const;
 
             /**
              * Remove packages from world, if they are there.
              */
-            void remove_appropriate_from_world(std::tr1::shared_ptr<const DepAtom>, WorldCallbacks *) const;
+            void remove_appropriate_from_world(std::tr1::shared_ptr<const DepSpec>, WorldCallbacks *) const;
 
             /**
              * Add a set to world, if it's not inappropriate.

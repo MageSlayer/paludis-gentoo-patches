@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
@@ -33,14 +33,14 @@ using namespace paludis::qa;
 namespace
 {
     struct Collector :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Collector, AllDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Collector, AnyDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Collector, UseDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, AllDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, AnyDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, UseDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Collector, UseDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Collector, AllDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Collector, AnyDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, UseDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, AllDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Collector, AnyDepSpec>::visit;
 
         std::set<QualifiedPackageName> result;
 
@@ -48,16 +48,16 @@ namespace
         {
         }
 
-        void visit(const PackageDepAtom * const p)
+        void visit(const PackageDepSpec * const p)
         {
             result.insert(p->package());
         }
 
-        void visit(const BlockDepAtom * const)
+        void visit(const BlockDepSpec * const)
         {
         }
 
-        void visit(const PlainTextDepAtom * const)
+        void visit(const PlainTextDepSpec * const)
         {
         }
     };

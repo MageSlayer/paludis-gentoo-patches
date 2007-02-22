@@ -20,35 +20,35 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_RANGE_REWRITER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_RANGE_REWRITER_HH 1
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 
 namespace paludis
 {
     class RangeRewriter :
-        public DepAtomVisitorTypes::ConstVisitor
+        public DepSpecVisitorTypes::ConstVisitor
     {
         private:
-            std::tr1::shared_ptr<PackageDepAtom> _atom;
+            std::tr1::shared_ptr<PackageDepSpec> _spec;
             bool _invalid;
 
         public:
             RangeRewriter();
             virtual ~RangeRewriter();
 
-            std::tr1::shared_ptr<const PackageDepAtom> atom() const
+            std::tr1::shared_ptr<const PackageDepSpec> spec() const
             {
                 if (_invalid)
-                    return std::tr1::shared_ptr<const PackageDepAtom>();
+                    return std::tr1::shared_ptr<const PackageDepSpec>();
 
-                return _atom;
+                return _spec;
             }
 
-            void visit(const AllDepAtom *);
-            void visit(const AnyDepAtom *);
-            void visit(const UseDepAtom *);
-            void visit(const PlainTextDepAtom *);
-            void visit(const PackageDepAtom *);
-            void visit(const BlockDepAtom *);
+            void visit(const AllDepSpec *);
+            void visit(const AnyDepSpec *);
+            void visit(const UseDepSpec *);
+            void visit(const PlainTextDepSpec *);
+            void visit(const PackageDepSpec *);
+            void visit(const BlockDepSpec *);
     };
 }
 

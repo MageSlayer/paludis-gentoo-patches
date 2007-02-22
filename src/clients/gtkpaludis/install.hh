@@ -62,8 +62,8 @@ namespace gtkpaludis
                     const paludis::PackageDatabaseEntryCollection &);
 
             virtual void on_update_world_pre();
-            virtual void on_update_world(const paludis::PackageDepAtom &);
-            virtual void on_update_world_skip(const paludis::PackageDepAtom &, const std::string &);
+            virtual void on_update_world(const paludis::PackageDepSpec &);
+            virtual void on_update_world_skip(const paludis::PackageDepSpec &, const std::string &);
             virtual void on_update_world(const paludis::SetName &);
             virtual void on_update_world_skip(const paludis::SetName &, const std::string &);
             virtual void on_update_world_post();

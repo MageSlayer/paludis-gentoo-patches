@@ -164,12 +164,12 @@ namespace
         versions_row[_imp->columns.col_left] = "Versions";
         versions_row[_imp->columns.col_right] = "";
 
-        std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(stringify(_pkg)));
+        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(stringify(_pkg)));
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
             entries(DefaultEnvironment::get_instance()->package_database()->query(
-                        *atom, is_any, qo_order_by_version)),
+                        *spec, is_any, qo_order_by_version)),
             preferred_entries(DefaultEnvironment::get_instance()->package_database()->query(
-                        *atom, is_installed_only, qo_order_by_version));
+                        *spec, is_installed_only, qo_order_by_version));
         if (preferred_entries->empty())
             preferred_entries = entries;
 

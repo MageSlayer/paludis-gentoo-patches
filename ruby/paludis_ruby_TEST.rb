@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,26 +38,26 @@ module Paludis
 
         def test_match
             env = DefaultEnvironment.instance
-            atom_good = PackageDepAtom.new('>=foo/bar-1')
-            atom_bad = PackageDepAtom.new('>=foo/bar-2')
+            spec_good = PackageDepSpec.new('>=foo/bar-1')
+            spec_bad = PackageDepSpec.new('>=foo/bar-2')
             pde = PackageDatabaseEntry.new('foo/bar','1','test')
 
-            assert Paludis::match_package(env, atom_good, pde)
-            assert !Paludis::match_package(env, atom_bad, pde)
+            assert Paludis::match_package(env, spec_good, pde)
+            assert !Paludis::match_package(env, spec_bad, pde)
 
         end
 
         def test_type_errors
             env = DefaultEnvironment.instance
-            atom = PackageDepAtom.new('>=foo/bar-1')
+            spec = PackageDepSpec.new('>=foo/bar-1')
             pde = PackageDatabaseEntry.new('foo/bar','1','test')
 
             assert_raise TypeError do
-                Paludis::match_package(atom,atom,pde)
+                Paludis::match_package(spec,spec,pde)
             end
 
             assert_raise TypeError do
-                Paludis::match_package(env,atom,atom)
+                Paludis::match_package(env,spec,spec)
             end
         end
     end

@@ -24,7 +24,7 @@
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/package_database_entry.hh>
 #include <string>
 
@@ -49,7 +49,7 @@ namespace paludis
      *
      * \ingroup grpversions
      */
-    typedef std::tr1::shared_ptr<const CompositeDepAtom> (* ParserFunction) (const std::string &);
+    typedef std::tr1::shared_ptr<const CompositeDepSpec> (* ParserFunction) (const std::string &);
 
 #include <paludis/version_metadata-sr.hh>
 

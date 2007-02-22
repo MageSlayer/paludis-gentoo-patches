@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,36 +22,36 @@
 #include <ostream>
 
 void
-LicenceDisplayer::visit(const paludis::AllDepAtom * atom)
+LicenceDisplayer::visit(const paludis::AllDepSpec * spec)
 {
     stream << "( ";
-    std::for_each(atom->begin(), atom->end(), paludis::accept_visitor(this));
+    std::for_each(spec->begin(), spec->end(), paludis::accept_visitor(this));
     stream << ") ";
 }
 
 void
-LicenceDisplayer::visit(const paludis::AnyDepAtom * atom)
+LicenceDisplayer::visit(const paludis::AnyDepSpec * spec)
 {
     stream << "|| ( ";
-    std::for_each(atom->begin(), atom->end(), paludis::accept_visitor(this));
+    std::for_each(spec->begin(), spec->end(), paludis::accept_visitor(this));
     stream << ") ";
 }
 
 void
-LicenceDisplayer::visit(const paludis::UseDepAtom * atom)
+LicenceDisplayer::visit(const paludis::UseDepSpec * spec)
 {
-    stream << atom->flag() << "? ( ";
-    std::for_each(atom->begin(), atom->end(), paludis::accept_visitor(this));
+    stream << spec->flag() << "? ( ";
+    std::for_each(spec->begin(), spec->end(), paludis::accept_visitor(this));
     stream << ") ";
 }
 
 void
-LicenceDisplayer::visit(const paludis::PlainTextDepAtom * atom)
+LicenceDisplayer::visit(const paludis::PlainTextDepSpec * spec)
 {
-    if (env->accept_license(atom->text(), db_entry))
-        stream << colour(cl_not_masked, atom->text());
+    if (env->accept_license(spec->text(), db_entry))
+        stream << colour(cl_not_masked, spec->text());
     else
-        stream << colour(cl_masked, "(" + atom->text() + ")!");
+        stream << colour(cl_masked, "(" + spec->text() + ")!");
     stream << " ";
 }
 

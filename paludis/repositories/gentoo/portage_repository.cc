@@ -30,8 +30,8 @@
 #include <paludis/repositories/gentoo/use_desc.hh>
 
 #include <paludis/config_file.hh>
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/match_package.hh>
@@ -81,7 +81,7 @@ namespace paludis
     typedef MakeHashedMap<QualifiedPackageName, std::tr1::shared_ptr<VersionSpecCollection> >::Type VersionsMap;
 
     /// Map for repository masks.
-    typedef MakeHashedMap<QualifiedPackageName, std::list<std::tr1::shared_ptr<const PackageDepAtom> > >::Type RepositoryMaskMap;
+    typedef MakeHashedMap<QualifiedPackageName, std::list<std::tr1::shared_ptr<const PackageDepSpec> > >::Type RepositoryMaskMap;
 
     /// Map for categories.
     typedef MakeHashedMap<CategoryNamePart, bool>::Type CategoryMap;
@@ -97,7 +97,7 @@ namespace paludis
             std::tr1::shared_ptr<VersionMetadata> >::Type MetadataMap;
 
     /// Map for virtuals.
-    typedef MakeHashedMap<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> >::Type VirtualsMap;
+    typedef MakeHashedMap<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
 
     typedef std::list<PortageRepositoryProfilesDescLine> ProfilesDesc;
 
@@ -663,7 +663,7 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
                 for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
                         line != line_end ; ++line)
                 {
-                    std::tr1::shared_ptr<const PackageDepAtom> a(new PackageDepAtom(*line));
+                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
                     _imp->repo_mask[a->package()].push_back(a);
                 }
             }
@@ -676,7 +676,7 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
     if (_imp->repo_mask.end() == r)
         return false;
     else
-        for (IndirectIterator<std::list<std::tr1::shared_ptr<const PackageDepAtom> >::const_iterator, const PackageDepAtom>
+        for (IndirectIterator<std::list<std::tr1::shared_ptr<const PackageDepSpec> >::const_iterator, const PackageDepSpec>
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
             if (match_package(*_imp->params.environment, *k, PackageDatabaseEntry(q, v, name())))
                 return true;
@@ -816,7 +816,7 @@ PortageRepository::do_install(const QualifiedPackageName & q, const VersionSpec 
     _imp->entries_ptr->install(q, v, o, _imp->profile_ptr);
 }
 
-std::tr1::shared_ptr<DepAtom>
+std::tr1::shared_ptr<DepSpec>
 PortageRepository::do_package_set(const SetName & s) const
 {
     if (s.data() == "system")
@@ -931,7 +931,7 @@ PortageRepository::info(bool verbose) const
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> q(
                     _imp->params.environment->package_database()->query(
-                        query::Matches(PackageDepAtom(*i)) & query::InstalledAtRoot(_imp->params.environment->root()),
+                        query::Matches(PackageDepSpec(*i)) & query::InstalledAtRoot(_imp->params.environment->root()),
                         qo_order_by_version));
             if (q->empty())
                 package_info->add_kv(*i, "(none)");
@@ -1020,7 +1020,7 @@ PortageRepository::virtual_packages() const
     for (PortageRepositoryProfile::VirtualsIterator i(_imp->profile_ptr->begin_virtuals()),
             i_end(_imp->profile_ptr->end_virtuals()) ; i != i_end ; ++i)
         result->insert(RepositoryVirtualsEntry::create()
-                .provided_by_atom(i->second)
+                .provided_by_spec(i->second)
                 .virtual_name(i->first));
 
     Log::get_instance()->message(ll_debug, lc_context, "Loaded " + stringify(result->size()) +
@@ -1033,13 +1033,13 @@ std::tr1::shared_ptr<const VersionMetadata>
 PortageRepository::virtual_package_version_metadata(const RepositoryVirtualsEntry & p,
         const VersionSpec & v) const
 {
-    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_atom->package(), v));
+    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_spec->package(), v));
     std::tr1::shared_ptr<PortageVirtualVersionMetadata> result(new PortageVirtualVersionMetadata(
-                m->slot, PackageDatabaseEntry(p.provided_by_atom->package(), v, name())));
+                m->slot, PackageDatabaseEntry(p.provided_by_spec->package(), v, name())));
 
     result->eapi = m->eapi;
-    result->build_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
-    result->run_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
+    result->build_depend_string = "=" + stringify(p.provided_by_spec->package()) + "-" + stringify(v);
+    result->run_depend_string = "=" + stringify(p.provided_by_spec->package()) + "-" + stringify(v);
 
     return result;
 

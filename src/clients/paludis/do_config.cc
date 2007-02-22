@@ -72,15 +72,15 @@ namespace
     {
         Context local_context("When handling query '" + target + "':");
 
-        /* we might have a dep atom, but we might just have a simple package name
+        /* we might have a dep spec, but we might just have a simple package name
          * without a category. either should work. */
-        std::tr1::shared_ptr<PackageDepAtom> atom(std::string::npos == target.find('/') ?
-                new PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
+        std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == target.find('/') ?
+                new PackageDepSpec(env->package_database()->fetch_unique_qualified_package_name(
                         PackageNamePart(target))) :
-                new PackageDepAtom(target));
+                new PackageDepSpec(target));
 
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
-            entries(env->package_database()->query(query::Matches(*atom) & query::InstalledAtRoot(env->root()), qo_order_by_version));
+            entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
         if (entries->empty())
             throw NoSuchPackageError(target);

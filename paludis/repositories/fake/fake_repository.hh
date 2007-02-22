@@ -49,7 +49,7 @@ namespace paludis
         public:
             FakeRepository(const Environment * const, const RepositoryName &);
 
-            void add_virtual_package(const QualifiedPackageName &, std::tr1::shared_ptr<const PackageDepAtom>);
+            void add_virtual_package(const QualifiedPackageName &, std::tr1::shared_ptr<const PackageDepSpec>);
     };
 }
 

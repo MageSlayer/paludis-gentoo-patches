@@ -159,12 +159,12 @@ namespace
                 bool is_installed(true);
 
                 std::tr1::shared_ptr<const PackageDatabaseEntryCollection> results(DefaultEnvironment::get_instance()->package_database()->query(
-                            PackageDepAtom(i->first), is_installed_only, qo_order_by_version));
+                            PackageDepSpec(i->first), is_installed_only, qo_order_by_version));
                 if (results->empty())
                 {
                     is_installed = false;
                     results = DefaultEnvironment::get_instance()->package_database()->query(
-                            PackageDepAtom(i->first), is_any, qo_order_by_version);
+                            PackageDepSpec(i->first), is_any, qo_order_by_version);
                 }
                 if (results->empty())
                     continue;

@@ -79,7 +79,7 @@ namespace
      * call-seq:
      *     Matches.new(pda)
      *
-     * Create a new Matches Query object from the given PackageDepAtom.
+     * Create a new Matches Query object from the given PackageDepSpec.
      */
     VALUE
     matches_new(VALUE self, VALUE pda)
@@ -87,7 +87,7 @@ namespace
         query::Matches * ptr(0);
         try
         {
-            ptr = new query::Matches(*value_to_package_dep_atom(pda));
+            ptr = new query::Matches(*value_to_package_dep_spec(pda));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<query::Matches>::free, ptr));
             rb_obj_call_init(tdata, 1, &pda);
             return tdata;
@@ -186,7 +186,7 @@ namespace
         /*
          * Document-class: Paludis::Query::Matches
          *
-         * Query for packages that match a PackageDepAtom
+         * Query for packages that match a PackageDepSpec
          */
         c_matches = rb_define_class_under(c_query_module, "Matches", c_query);
         rb_define_singleton_method(c_matches, "new", RUBY_FUNC_CAST(&matches_new), 1);

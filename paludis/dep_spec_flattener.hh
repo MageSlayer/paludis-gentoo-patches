@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_FLATTENER_HH 1
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/attributes.hh>
@@ -29,9 +29,9 @@
 #include <libwrapiter/libwrapiter_forward_iterator.hh>
 
 /** \file
- * Declarations for DepAtomFlattener.
+ * Declarations for DepSpecFlattener.
  *
- * \ingroup grpdepatomflattener
+ * \ingroup grpdepspecflattener
  */
 
 namespace paludis
@@ -43,41 +43,41 @@ namespace paludis
      * This is useful for picking out SRC_URI, PROVIDE etc components. It is
      * <b>not</b> suitable for heirarchies that can contain || ( ) blocks.
      *
-     * \ingroup grpdepatomflattener
+     * \ingroup grpdepspecflattener
      * \nosubgrouping
      */
-    class DepAtomFlattener :
-        private InstantiationPolicy<DepAtomFlattener, instantiation_method::NonCopyableTag>,
-        protected DepAtomVisitorTypes::ConstVisitor,
-        private PrivateImplementationPattern<DepAtomFlattener>
+    class DepSpecFlattener :
+        private InstantiationPolicy<DepSpecFlattener, instantiation_method::NonCopyableTag>,
+        protected DepSpecVisitorTypes::ConstVisitor,
+        private PrivateImplementationPattern<DepSpecFlattener>
     {
         protected:
             ///\name Visit methods
             ///{
-            void visit(const AllDepAtom *);
-            void visit(const AnyDepAtom *) PALUDIS_ATTRIBUTE((noreturn));
-            void visit(const UseDepAtom *);
-            void visit(const PlainTextDepAtom *);
-            void visit(const PackageDepAtom *);
-            void visit(const BlockDepAtom *);
+            void visit(const AllDepSpec *);
+            void visit(const AnyDepSpec *) PALUDIS_ATTRIBUTE((noreturn));
+            void visit(const UseDepSpec *);
+            void visit(const PlainTextDepSpec *);
+            void visit(const PackageDepSpec *);
+            void visit(const BlockDepSpec *);
             ///}
 
         public:
             ///\name Basic operations
             ///\{
 
-            DepAtomFlattener(const Environment * const,
+            DepSpecFlattener(const Environment * const,
                     const PackageDatabaseEntry * const,
-                    const std::tr1::shared_ptr<const DepAtom>);
+                    const std::tr1::shared_ptr<const DepSpec>);
 
-            ~DepAtomFlattener();
+            ~DepSpecFlattener();
 
             ///\}
 
-            ///\name Iterate over our dep atoms
+            ///\name Iterate over our dep specs
             ///{
 
-            typedef libwrapiter::ForwardIterator<DepAtomFlattener, const StringDepAtom *> Iterator;
+            typedef libwrapiter::ForwardIterator<DepSpecFlattener, const StringDepSpec *> Iterator;
 
             Iterator begin();
 

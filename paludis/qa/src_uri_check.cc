@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
@@ -33,12 +33,12 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
 
         CheckResult & result;
         bool fetch_restrict;
@@ -51,7 +51,7 @@ namespace
         {
         }
 
-        void visit(const PlainTextDepAtom * const a)
+        void visit(const PlainTextDepSpec * const a)
         {
             if (a->text().empty())
                 return;
@@ -101,26 +101,26 @@ namespace
             }
         }
 
-        void visit(const AnyDepAtom * const u)
+        void visit(const AnyDepSpec * const u)
         {
             result << Message(qal_major, "Unexpected || dep block");
             std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
-        void visit(const BlockDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
-        void visit(const PackageDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const BlockDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const PackageDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
     };
 
     void
-    Checker::visit(const BlockDepAtom * const)
+    Checker::visit(const BlockDepSpec * const)
     {
-        throw InternalError(PALUDIS_HERE, "Unexpected BlockDepAtom");
+        throw InternalError(PALUDIS_HERE, "Unexpected BlockDepSpec");
     }
 
     void
-    Checker::visit(const PackageDepAtom * const)
+    Checker::visit(const PackageDepSpec * const)
     {
-        throw InternalError(PALUDIS_HERE, "Unexpected PackageDepAtom");
+        throw InternalError(PALUDIS_HERE, "Unexpected PackageDepSpec");
     }
 }
 
@@ -145,11 +145,11 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
 
             std::string src_uri(metadata->ebuild_interface->src_uri);
 
-            std::tr1::shared_ptr<const DepAtom> src_uri_parts;
+            std::tr1::shared_ptr<const DepSpec> src_uri_parts;
             try
             {
                 src_uri_parts = PortageDepParser::parse(src_uri,
-                        PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance());
+                        PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance());
 
                 std::set<std::string> restricts;
                 Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");

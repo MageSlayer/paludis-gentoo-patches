@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,25 +21,25 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_ATOM_PRETTY_PRINTER_HH 1
 
 #include <iosfwd>
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 
 /** \file
- * Declarations for the DepAtomPrettyPrinter class.
+ * Declarations for the DepSpecPrettyPrinter class.
  *
- * \ingroup grpdepatomprettyprinter
+ * \ingroup grpdepspecprettyprinter
  */
 
 namespace paludis
 {
     /**
-     * Pretty print dependency atoms.
+     * Pretty print dependency specs.
      *
-     * \ingroup grpdepatomprettyprinter
+     * \ingroup grpdepspecprettyprinter
      */
-    class DepAtomPrettyPrinter :
-        public DepAtomVisitorTypes::ConstVisitor
+    class DepSpecPrettyPrinter :
+        public DepSpecVisitorTypes::ConstVisitor
     {
-        friend std::ostream & operator<< (std::ostream &, const DepAtomPrettyPrinter &);
+        friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
 
         private:
             std::stringstream _s;
@@ -53,7 +53,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            DepAtomPrettyPrinter(unsigned initial_indent,
+            DepSpecPrettyPrinter(unsigned initial_indent,
                     bool use_newlines = true) :
                 _indent(initial_indent),
                 _use_newlines(use_newlines)
@@ -62,26 +62,26 @@ namespace paludis
 
             /// \name Visit functions
             ///{
-            void visit(const AllDepAtom * const);
+            void visit(const AllDepSpec * const);
 
-            void visit(const AnyDepAtom * const);
+            void visit(const AnyDepSpec * const);
 
-            void visit(const UseDepAtom * const);
+            void visit(const UseDepSpec * const);
 
-            void visit(const PackageDepAtom * const);
+            void visit(const PackageDepSpec * const);
 
-            void visit(const PlainTextDepAtom * const);
+            void visit(const PlainTextDepSpec * const);
 
-            void visit(const BlockDepAtom * const);
+            void visit(const BlockDepSpec * const);
             ///}
     };
 
     /**
-     * Output a DepAtomPrettyPrinter to an ostream.
+     * Output a DepSpecPrettyPrinter to an ostream.
      *
-     * \ingroup grpdepatomprettyprinter
+     * \ingroup grpdepspecprettyprinter
      */
-    std::ostream & operator<< (std::ostream & s, const DepAtomPrettyPrinter & p);
+    std::ostream & operator<< (std::ostream & s, const DepSpecPrettyPrinter & p);
 }
 
 #endif

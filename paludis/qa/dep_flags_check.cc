@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/portage_dep_parser.hh>
@@ -33,12 +33,12 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>::visit;
 
         CheckResult & result;
         const std::string role;
@@ -54,11 +54,11 @@ namespace
         {
         }
 
-        void visit(const PackageDepAtom * const)
+        void visit(const PackageDepSpec * const)
         {
         }
 
-        void visit(const UseDepAtom * const u)
+        void visit(const UseDepSpec * const u)
         {
             std::tr1::shared_ptr<const Repository> r(env->package_database()->fetch_repository(env->package_database()->
                         favourite_repository()));
@@ -108,11 +108,11 @@ namespace
             std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
-        void visit(const PlainTextDepAtom * const)
+        void visit(const PlainTextDepSpec * const)
         {
         }
 
-        void visit(const BlockDepAtom * const)
+        void visit(const BlockDepSpec * const)
         {
         }
     };
@@ -159,17 +159,17 @@ DepFlagsCheck::operator() (const EbuildCheckData & e) const
 
             Checker provide_checker(result, "PROVIDE", e.environment, iuse);
             std::string provide(metadata->ebuild_interface->provide_string);
-            PortageDepParser::parse(provide, PortageDepParserPolicy<PackageDepAtom, false>::get_instance())->accept(&provide_checker);
+            PortageDepParser::parse(provide, PortageDepParserPolicy<PackageDepSpec, false>::get_instance())->accept(&provide_checker);
 
             Checker license_checker(result, "LICENSE", e.environment, iuse);
             std::string license(metadata->license_interface->license_string);
-            PortageDepParser::parse(license, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&license_checker);
+            PortageDepParser::parse(license, PortageDepParserPolicy<PlainTextDepSpec, true>::get_instance())->accept(&license_checker);
 
             Checker src_uri_checker(result, "SRC_URI", e.environment, iuse);
 
             std::string src_uri(metadata->ebuild_interface->src_uri);
 
-            PortageDepParser::parse(src_uri, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance())->accept(&src_uri_checker);
+            PortageDepParser::parse(src_uri, PortageDepParserPolicy<PlainTextDepSpec, true>::get_instance())->accept(&src_uri_checker);
         }
     }
     catch (const InternalError &)

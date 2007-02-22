@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_HH
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_DATABASE_HH 1
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/repository.hh>
 #include <paludis/util/exception.hh>
@@ -46,7 +46,7 @@
 
 namespace paludis
 {
-    class PackageDepAtom;
+    class PackageDepSpec;
     class Query;
     class Environment;
 
@@ -289,14 +289,14 @@ namespace paludis
              * \deprecated use the Query form
              */
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
-                    const PackageDepAtom & a,
+                    const PackageDepSpec & a,
                     const InstallState) const;
 
             /**
              * Query the repository.
              */
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
-                    const PackageDepAtom & a,
+                    const PackageDepSpec & a,
                     const InstallState,
                     const QueryOrder) const;
 

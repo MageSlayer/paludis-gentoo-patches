@@ -18,7 +18,7 @@
  */
 
 #include "install_task.hh"
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/exception.hh>
@@ -40,8 +40,8 @@ namespace paludis
         UninstallOptions uninstall_options;
 
         std::list<std::string> raw_targets;
-        std::tr1::shared_ptr<AllDepAtom> targets;
-        std::tr1::shared_ptr<std::string> add_to_world_atom;
+        std::tr1::shared_ptr<AllDepSpec> targets;
+        std::tr1::shared_ptr<std::string> add_to_world_spec;
         std::tr1::shared_ptr<const DestinationsCollection> destinations;
 
         bool pretend;
@@ -57,7 +57,7 @@ namespace paludis
             current_dep_list_entry(dep_list.begin()),
             install_options(false, false, ido_none, false, std::tr1::shared_ptr<const DestinationsCollection>()),
             uninstall_options(false),
-            targets(new AllDepAtom),
+            targets(new AllDepSpec),
             destinations(d),
             pretend(false),
             preserve_world(false),
@@ -81,7 +81,7 @@ InstallTask::~InstallTask()
 void
 InstallTask::clear()
 {
-    _imp->targets.reset(new AllDepAtom);
+    _imp->targets.reset(new AllDepSpec);
     _imp->had_set_targets = false;
     _imp->had_package_targets = false;
     _imp->dep_list.clear();
@@ -93,7 +93,7 @@ InstallTask::add_target(const std::string & target)
 {
     Context context("When adding install target '" + target + "':");
 
-    std::tr1::shared_ptr<DepAtom> s;
+    std::tr1::shared_ptr<DepSpec> s;
     std::string modified_target(target);
 
     bool done(false);
@@ -132,7 +132,7 @@ InstallTask::add_target(const std::string & target)
             QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
                         PackageNamePart(target)));
             modified_target = stringify(q);
-            _imp->targets->add_child(std::tr1::shared_ptr<DepAtom>(new PackageDepAtom(q)));
+            _imp->targets->add_child(std::tr1::shared_ptr<DepSpec>(new PackageDepSpec(q)));
         }
     }
 
@@ -151,7 +151,7 @@ namespace
         {
         }
 
-        virtual void add_callback(const PackageDepAtom & a)
+        virtual void add_callback(const PackageDepSpec & a)
         {
             t->on_update_world(a);
         }
@@ -161,7 +161,7 @@ namespace
             t->on_update_world(a);
         }
 
-        virtual void skip_callback(const PackageDepAtom & a,
+        virtual void skip_callback(const PackageDepSpec & a,
                 const std::string & s)
         {
             t->on_update_world_skip(a, s);
@@ -341,7 +341,7 @@ InstallTask::execute()
                     d_end(dep->destinations->end()) ; d != d_end ; ++d)
                 if (d->destination->uninstallable_interface)
                     collision_list = _imp->env->package_database()->query(
-                            query::Matches(PackageDepAtom(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)
+                            query::Matches(PackageDepSpec(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)
                                 + "::" + stringify(d->destination->name()))) &
                             query::RepositoryHasInstalledInterface(), qo_order_by_version);
 
@@ -428,16 +428,16 @@ InstallTask::execute()
 
             if (_imp->had_package_targets)
             {
-                if (_imp->add_to_world_atom)
+                if (_imp->add_to_world_spec)
                     _imp->env->add_appropriate_to_world(PortageDepParser::parse_depend(
-                                *_imp->add_to_world_atom), &w);
+                                *_imp->add_to_world_spec), &w);
                 else
                     _imp->env->add_appropriate_to_world(_imp->targets, &w);
             }
             else if (_imp->had_set_targets)
             {
-                if (_imp->add_to_world_atom)
-                    _imp->env->add_set_to_world(SetName(*_imp->add_to_world_atom), &w);
+                if (_imp->add_to_world_spec)
+                    _imp->env->add_set_to_world(SetName(*_imp->add_to_world_spec), &w);
                 else if (! _imp->raw_targets.empty())
                     _imp->env->add_set_to_world(SetName(*_imp->raw_targets.begin()), &w);
             }
@@ -507,9 +507,9 @@ InstallTask::set_debug_mode(const InstallDebugOption value)
 }
 
 void
-InstallTask::set_add_to_world_atom(const std::string & value)
+InstallTask::set_add_to_world_spec(const std::string & value)
 {
-    _imp->add_to_world_atom.reset(new std::string(value));
+    _imp->add_to_world_spec.reset(new std::string(value));
 }
 
 InstallTask::TargetsIterator

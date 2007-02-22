@@ -18,8 +18,8 @@
  */
 
 #include <paludis/dep_list/range_rewriter.hh>
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_pretty_printer.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/portage_dep_parser.hh>
 
 #include <test/test_runner.hh>
@@ -37,15 +37,15 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const CompositeDepAtom> p(PortageDepParser::parse_depend("=a/b-1 =a/b-2"));
+            std::tr1::shared_ptr<const CompositeDepSpec> p(PortageDepParser::parse_depend("=a/b-1 =a/b-2"));
 
             RangeRewriter r;
-            TEST_CHECK(! r.atom());
+            TEST_CHECK(! r.spec());
             std::for_each(p->begin(), p->end(), accept_visitor(&r));
-            TEST_CHECK(r.atom());
+            TEST_CHECK(r.spec());
 
-            DepAtomPrettyPrinter w(0, false);
-            r.atom()->accept(&w);
+            DepSpecPrettyPrinter w(0, false);
+            r.spec()->accept(&w);
             TEST_CHECK_STRINGIFY_EQUAL(w, "=|=a/b-1,2 ");
         }
     } test_range_rewriter;

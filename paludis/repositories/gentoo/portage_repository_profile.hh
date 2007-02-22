@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_PROFILE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_PROFILE_HH 1
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern.hh>
@@ -106,7 +106,7 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            std::tr1::shared_ptr<AllDepAtom> system_packages() const;
+            std::tr1::shared_ptr<AllDepSpec> system_packages() const;
 
             ///\}
 
@@ -114,7 +114,7 @@ namespace paludis
             ///\{
 
             typedef libwrapiter::ForwardIterator<PortageRepositoryProfile,
-                const std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > > VirtualsIterator;
+                const std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > > VirtualsIterator;
 
             VirtualsIterator begin_virtuals() const;
             VirtualsIterator end_virtuals() const;

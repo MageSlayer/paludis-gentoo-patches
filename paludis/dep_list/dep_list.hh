@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_HH 1
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/dep_list/options.hh>
 #include <paludis/name.hh>
@@ -61,7 +61,7 @@ namespace paludis
             std::tr1::shared_ptr<Repository> find_destination(const PackageDatabaseEntry &,
                     std::tr1::shared_ptr<const DestinationsCollection>);
 
-            void add_in_role(std::tr1::shared_ptr<const DepAtom>, const std::string & role,
+            void add_in_role(std::tr1::shared_ptr<const DepSpec>, const std::string & role,
                     std::tr1::shared_ptr<const DestinationsCollection>);
             bool prefer_installed_over_uninstalled(const PackageDatabaseEntry &,
                     const PackageDatabaseEntry &);
@@ -74,9 +74,9 @@ namespace paludis
             void add_suggested_package(const PackageDatabaseEntry &,
                     std::tr1::shared_ptr<const DestinationsCollection> destinations);
 
-            void add_predeps(std::tr1::shared_ptr<const DepAtom>, const DepListDepsOption, const std::string &,
+            void add_predeps(std::tr1::shared_ptr<const DepSpec>, const DepListDepsOption, const std::string &,
                     std::tr1::shared_ptr<const DestinationsCollection> destinations);
-            void add_postdeps(std::tr1::shared_ptr<const DepAtom>, const DepListDepsOption, const std::string &,
+            void add_postdeps(std::tr1::shared_ptr<const DepSpec>, const DepListDepsOption, const std::string &,
                     std::tr1::shared_ptr<const DestinationsCollection> destinations);
 
             bool is_top_level_target(const PackageDatabaseEntry &) const;
@@ -98,9 +98,9 @@ namespace paludis
 
             /**
              * Add the packages required to resolve an additional dependency
-             * atom.
+             * spec.
              */
-            void add(std::tr1::shared_ptr<const DepAtom>,
+            void add(std::tr1::shared_ptr<const DepSpec>,
                     std::tr1::shared_ptr<const DestinationsCollection> target_destinations);
 
             /**
@@ -109,9 +109,9 @@ namespace paludis
             void clear();
 
             /**
-             * Return whether an atom structure already installed.
+             * Return whether a spec structure is already installed.
              */
-            bool already_installed(const DepAtom &,
+            bool already_installed(const DepSpec &,
                     std::tr1::shared_ptr<const DestinationsCollection> target_destinations) const;
 
             /**

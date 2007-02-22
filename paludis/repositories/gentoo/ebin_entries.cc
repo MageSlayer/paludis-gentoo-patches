@@ -22,7 +22,7 @@
 #include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/config_file.hh>
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/strip.hh>
 #include <set>
@@ -128,11 +128,11 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_binaries;
 
         /* make B and FLAT_BIN_URI */
-        std::tr1::shared_ptr<const DepAtom> b_atom(PortageDepParser::parse(metadata->ebin_interface->bin_uri,
-                    PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
-        DepAtomFlattener f(_imp->params.environment, &e, b_atom);
+        std::tr1::shared_ptr<const DepSpec> b_spec(PortageDepParser::parse(metadata->ebin_interface->bin_uri,
+                    PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance()));
+        DepSpecFlattener f(_imp->params.environment, &e, b_spec);
 
-        for (DepAtomFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
+        for (DepSpecFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
         {
             std::string::size_type pos((*ff)->text().rfind('/'));
             if (std::string::npos == pos)

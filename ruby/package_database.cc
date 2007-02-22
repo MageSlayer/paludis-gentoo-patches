@@ -79,9 +79,9 @@ namespace
     /*
      * call-seq:
      *     query(query, query_order) -> Array
-     *     query(atom, install_state, query_order) -> Array
+     *     query(spec, install_state, query_order) -> Array
      *
-     *  Query the repository, the first argument is either a PackageDepAtom or a Query.
+     *  Query the repository, the first argument is either a PackageDepSpec or a Query.
      *  Returns an array of PackageDatabaseEntry.
      */
     VALUE
@@ -103,12 +103,12 @@ namespace
             else if (2 == argc || 3 == argc)
             {
                 QueryOrder qo;
-                std::tr1::shared_ptr<const PackageDepAtom> pda(value_to_package_dep_atom(argv[0]));
+                std::tr1::shared_ptr<const PackageDepSpec> pda(value_to_package_dep_spec(argv[0]));
                 InstallState is = static_cast<InstallState>(NUM2INT(argv[1]));
                 if (2 ==argc)
                 {
                     qo = qo_order_by_version;
-                    rb_warn("Calling query with (PackageDepAtom, InstallState) has been deprecated");
+                    rb_warn("Calling query with (PackageDepSpec, InstallState) has been deprecated");
                 }
                 else
                     qo = static_cast<QueryOrder>(NUM2INT(argv[2]));

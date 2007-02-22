@@ -22,7 +22,7 @@ IF_RUBY_TESTS = \
 	package_database_entry_TEST.rb \
 	version_spec_TEST.rb \
 	mask_reasons_TEST.rb \
-	dep_atom_TEST.rb \
+	dep_spec_TEST.rb \
 	repository_TEST.rb \
 	version_metadata_TEST.rb \
 	portage_dep_parser_TEST.rb \
@@ -46,7 +46,7 @@ IF_RUBY_SOURCES = \
 	package_database_entry.cc \
 	version_spec.cc \
 	mask_reasons.cc \
-	dep_atom.cc \
+	dep_spec.cc \
 	log.cc \
 	package_database.cc \
 	repository.cc \

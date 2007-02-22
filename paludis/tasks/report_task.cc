@@ -29,10 +29,10 @@ using namespace paludis;
 namespace
 {
     class VulnerableChecker :
-        public DepAtomVisitorTypes::ConstVisitor,
-        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AllDepAtom>,
-        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AnyDepAtom>,
-        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepAtom>
+        public DepSpecVisitorTypes::ConstVisitor,
+        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AllDepSpec>,
+        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AnyDepSpec>,
+        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepSpec>
     {
         private:
             std::multimap<PackageDatabaseEntry, std::tr1::shared_ptr<const DepTag>,
@@ -42,9 +42,9 @@ namespace
         public:
             typedef std::multimap<PackageDatabaseEntry, std::tr1::shared_ptr<const DepTag> >::const_iterator ConstIterator;
 
-            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AllDepAtom>::visit;
-            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepAtom>::visit;
-            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AnyDepAtom>::visit;
+            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AllDepSpec>::visit;
+            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, UseDepSpec>::visit;
+            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<VulnerableChecker, AnyDepSpec>::visit;
 
             /**
              * Constructor.
@@ -57,13 +57,13 @@ namespace
             /// \name Visit functions
             ///{
 
-            void visit(const PackageDepAtom * const);
+            void visit(const PackageDepSpec * const);
 
-            void visit(const PlainTextDepAtom * const)
+            void visit(const PlainTextDepSpec * const)
             {
             }
 
-            void visit(const BlockDepAtom * const)
+            void visit(const BlockDepSpec * const)
             {
             }
             ///}
@@ -78,7 +78,7 @@ namespace
     };
 
     void
-    VulnerableChecker::visit(const PackageDepAtom * const a)
+    VulnerableChecker::visit(const PackageDepSpec * const a)
     {
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
                 _env.package_database()->query(query::Matches(*a), qo_order_by_version));
@@ -134,7 +134,7 @@ ReportTask::execute()
 
         try
         {
-            std::tr1::shared_ptr<const DepAtom> insecure(rr->sets_interface->package_set(SetName("insecurity")));
+            std::tr1::shared_ptr<const DepSpec> insecure(rr->sets_interface->package_set(SetName("insecurity")));
             if (! insecure)
                 continue;
             insecure->accept(&vuln);

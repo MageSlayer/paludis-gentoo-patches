@@ -34,48 +34,48 @@
 #include <tr1/memory>
 
 /** \file
- * Declarations for the DepAtom classes.
+ * Declarations for the DepSpec classes.
  *
- * \ingroup grpdepatoms
+ * \ingroup grpdepspecs
  */
 
 namespace paludis
 {
-    class DepAtom;
-    class CompositeDepAtom;
-    class PackageDepAtom;
-    class PlainTextDepAtom;
-    class AllDepAtom;
-    class AnyDepAtom;
-    class UseDepAtom;
-    class BlockDepAtom;
+    class DepSpec;
+    class CompositeDepSpec;
+    class PackageDepSpec;
+    class PlainTextDepSpec;
+    class AllDepSpec;
+    class AnyDepSpec;
+    class UseDepSpec;
+    class BlockDepSpec;
 
     /**
-     * Visitor types for a visitor that can visit a DepAtom heirarchy.
+     * Visitor types for a visitor that can visit a DepSpec heirarchy.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      */
-    typedef VisitorTypes<PackageDepAtom *, PlainTextDepAtom *, AllDepAtom *, AnyDepAtom *,
-            UseDepAtom *, BlockDepAtom *> DepAtomVisitorTypes;
+    typedef VisitorTypes<PackageDepSpec *, PlainTextDepSpec *, AllDepSpec *, AnyDepSpec *,
+            UseDepSpec *, BlockDepSpec *> DepSpecVisitorTypes;
 
     /**
-     * Base class for a dependency atom.
+     * Base class for a dependency spec.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class DepAtom :
-        public virtual VisitableInterface<DepAtomVisitorTypes>,
-        private InstantiationPolicy<DepAtom, instantiation_method::NonCopyableTag>
+    class DepSpec :
+        public virtual VisitableInterface<DepSpecVisitorTypes>,
+        private InstantiationPolicy<DepSpec, instantiation_method::NonCopyableTag>
     {
         protected:
-            DepAtom();
+            DepSpec();
 
         public:
             ///\name Basic operations
             ///\{
 
-            virtual ~DepAtom();
+            virtual ~DepSpec();
 
             ///\}
 
@@ -83,36 +83,36 @@ namespace paludis
             ///\{
 
             /**
-             * Return us as a UseDepAtom, or 0 if we are not a
-             * UseDepAtom.
+             * Return us as a UseDepSpec, or 0 if we are not a
+             * UseDepSpec.
              */
-            virtual const UseDepAtom * as_use_dep_atom() const;
+            virtual const UseDepSpec * as_use_dep_spec() const;
 
             /**
-             * Return us as a PackageDepAtom, or 0 if we are not a
-             * UseDepAtom.
+             * Return us as a PackageDepSpec, or 0 if we are not a
+             * UseDepSpec.
              */
-            virtual const PackageDepAtom * as_package_dep_atom() const;
+            virtual const PackageDepSpec * as_package_dep_spec() const;
 
             ///\}
     };
 
     /**
-     * Class for dependency atoms that have a number of child dependency
-     * atoms.
+     * Class for dependency specs that have a number of child dependency
+     * specs.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class CompositeDepAtom :
-        public DepAtom,
-        private PrivateImplementationPattern<CompositeDepAtom>
+    class CompositeDepSpec :
+        public DepSpec,
+        private PrivateImplementationPattern<CompositeDepSpec>
     {
         protected:
             ///\name Basic operations
             ///\{
 
-            CompositeDepAtom();
+            CompositeDepSpec();
 
             ///\}
 
@@ -120,7 +120,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ~CompositeDepAtom();
+            ~CompositeDepSpec();
 
             ///\}
 
@@ -130,14 +130,14 @@ namespace paludis
             /**
              * Append a child to our collection.
              */
-            virtual void add_child(std::tr1::shared_ptr<const DepAtom>);
+            virtual void add_child(std::tr1::shared_ptr<const DepSpec>);
 
             ///\}
 
             ///\name Iterate over our children
             ///\{
 
-            typedef libwrapiter::ForwardIterator<CompositeDepAtom, const std::tr1::shared_ptr<const DepAtom> > Iterator;
+            typedef libwrapiter::ForwardIterator<CompositeDepSpec, const std::tr1::shared_ptr<const DepSpec> > Iterator;
 
             Iterator begin() const;
 
@@ -149,51 +149,51 @@ namespace paludis
     /**
      * Represents a "|| ( )" dependency block.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class AnyDepAtom :
-        public CompositeDepAtom,
-        public Visitable<AnyDepAtom, DepAtomVisitorTypes>
+    class AnyDepSpec :
+        public CompositeDepSpec,
+        public Visitable<AnyDepSpec, DepSpecVisitorTypes>
     {
         public:
             ///\name Basic operations
             ///\{
 
-            AnyDepAtom();
+            AnyDepSpec();
 
             ///\}
     };
 
     /**
      * Represents a ( first second third ) or top level group of dependency
-     * atoms.
+     * specs.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class AllDepAtom :
-        public CompositeDepAtom,
-        public Visitable<AllDepAtom, DepAtomVisitorTypes>
+    class AllDepSpec :
+        public CompositeDepSpec,
+        public Visitable<AllDepSpec, DepSpecVisitorTypes>
     {
         public:
             ///\name Basic operations
             ///\{
 
-            AllDepAtom();
+            AllDepSpec();
 
             ///\}
     };
 
     /**
-     * Represents a use? ( ) dependency atom.
+     * Represents a use? ( ) dependency spec.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class UseDepAtom :
-        public CompositeDepAtom,
-        public Visitable<UseDepAtom, DepAtomVisitorTypes>
+    class UseDepSpec :
+        public CompositeDepSpec,
+        public Visitable<UseDepSpec, DepSpecVisitorTypes>
     {
         private:
             const UseFlagName _flag;
@@ -203,7 +203,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            UseDepAtom(const UseFlagName &, bool);
+            UseDepSpec(const UseFlagName &, bool);
 
             ///\}
 
@@ -223,18 +223,18 @@ namespace paludis
                 return _inverse;
             }
 
-            virtual const UseDepAtom * as_use_dep_atom() const;
+            virtual const UseDepSpec * as_use_dep_spec() const;
     };
 
     /**
-     * A StringDepAtom represents a non-composite dep atom with an associated
+     * A StringDepSpec represents a non-composite dep spec with an associated
      * piece of text.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class StringDepAtom :
-        public DepAtom
+    class StringDepSpec :
+        public DepSpec
     {
         private:
             const std::string _str;
@@ -243,9 +243,9 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            StringDepAtom(const std::string &);
+            StringDepSpec(const std::string &);
 
-            ~StringDepAtom();
+            ~StringDepSpec();
 
             ///\}
 
@@ -262,7 +262,7 @@ namespace paludis
     /**
      * A selection of USE flag requirements.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
     class UseRequirements :
@@ -299,16 +299,16 @@ namespace paludis
     };
 
     /**
-     * A PackageDepAtom represents a package name (for example,
+     * A PackageDepSpec represents a package name (for example,
      * 'app-editors/vim'), possibly with associated version and SLOT
      * restrictions.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class PackageDepAtom :
-        public StringDepAtom,
-        public Visitable<PackageDepAtom, DepAtomVisitorTypes>
+    class PackageDepSpec :
+        public StringDepSpec,
+        public Visitable<PackageDepSpec, DepSpecVisitorTypes>
     {
         private:
             QualifiedPackageName _package;
@@ -319,7 +319,7 @@ namespace paludis
             std::tr1::shared_ptr<UseRequirements> _use_requirements;
             std::tr1::shared_ptr<const DepTag> _tag;
 
-            const PackageDepAtom & operator= (const PackageDepAtom &);
+            const PackageDepSpec & operator= (const PackageDepSpec &);
 
         public:
             ///\name Basic operations
@@ -328,19 +328,19 @@ namespace paludis
             /**
              * Constructor, no version or SLOT restrictions.
              */
-            PackageDepAtom(const QualifiedPackageName & package);
+            PackageDepSpec(const QualifiedPackageName & package);
 
             /**
              * Constructor, parse restrictions ourself.
              */
-            PackageDepAtom(const std::string &);
+            PackageDepSpec(const std::string &);
 
             /**
              * Copy constructor.
              */
-            PackageDepAtom(const PackageDepAtom &);
+            PackageDepSpec(const PackageDepSpec &);
 
-            ~PackageDepAtom();
+            ~PackageDepSpec();
 
             ///\}
 
@@ -427,96 +427,96 @@ namespace paludis
             /**
              * Fetch a copy of ourself without the USE requirements.
              */
-            std::tr1::shared_ptr<PackageDepAtom> without_use_requirements() const;
+            std::tr1::shared_ptr<PackageDepSpec> without_use_requirements() const;
 
-            virtual const PackageDepAtom * as_package_dep_atom() const;
+            virtual const PackageDepSpec * as_package_dep_spec() const;
     };
 
     /**
-     * A PlainTextDepAtom represents a plain text entry (for example,
+     * A PlainTextDepSpec represents a plain text entry (for example,
      * a URI in SRC_URI).
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class PlainTextDepAtom :
-        public StringDepAtom,
-        public Visitable<PlainTextDepAtom, DepAtomVisitorTypes>
+    class PlainTextDepSpec :
+        public StringDepSpec,
+        public Visitable<PlainTextDepSpec, DepSpecVisitorTypes>
     {
         public:
             ///\name Basic operations
             ///\{
 
-            PlainTextDepAtom(const std::string &);
+            PlainTextDepSpec(const std::string &);
 
             ///\}
     };
 
     /**
-     * A PlainTextDepAtom can be written to an ostream.
+     * A PlainTextDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      */
-    std::ostream & operator<< (std::ostream &, const PlainTextDepAtom &);
+    std::ostream & operator<< (std::ostream &, const PlainTextDepSpec &);
 
     /**
-     * Thrown if an invalid package dep atom specification is encountered.
+     * Thrown if an invalid package dep spec specification is encountered.
      *
      * \ingroup grpexceptions
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class PackageDepAtomError :
+    class PackageDepSpecError :
         public Exception
     {
         public:
             ///\name Basic operations
             ///\{
 
-            PackageDepAtomError(const std::string & msg) throw ();
+            PackageDepSpecError(const std::string & msg) throw ();
 
             ///\}
     };
 
     /**
-     * A PackageDepAtom can be written to an ostream.
+     * A PackageDepSpec can be written to an ostream.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      */
-    std::ostream & operator<< (std::ostream &, const PackageDepAtom &);
+    std::ostream & operator<< (std::ostream &, const PackageDepSpec &);
 
     /**
-     * A BlockDepAtom represents a block on a package name (for example,
+     * A BlockDepSpec represents a block on a package name (for example,
      * 'app-editors/vim'), possibly with associated version and SLOT
      * restrictions.
      *
-     * \ingroup grpdepatoms
+     * \ingroup grpdepspecs
      * \nosubgrouping
      */
-    class BlockDepAtom :
-        public StringDepAtom,
-        public Visitable<BlockDepAtom, DepAtomVisitorTypes>
+    class BlockDepSpec :
+        public StringDepSpec,
+        public Visitable<BlockDepSpec, DepSpecVisitorTypes>
     {
         private:
-            std::tr1::shared_ptr<const PackageDepAtom> _atom;
+            std::tr1::shared_ptr<const PackageDepSpec> _spec;
 
         public:
             ///\name Basic operations
             ///\{
 
             /**
-             * Constructor, with blocking atom.
+             * Constructor, with blocking spec.
              */
-            BlockDepAtom(std::tr1::shared_ptr<const PackageDepAtom> atom);
+            BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> spec);
 
             ///\}
 
             /**
-             * Fetch the atom we're blocking.
+             * Fetch the spec we're blocking.
              */
-            std::tr1::shared_ptr<const PackageDepAtom> blocked_atom() const
+            std::tr1::shared_ptr<const PackageDepSpec> blocked_spec() const
             {
-                return _atom;
+                return _spec;
             }
     };
 

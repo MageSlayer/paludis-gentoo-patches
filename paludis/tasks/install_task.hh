@@ -64,7 +64,7 @@ namespace paludis
             void set_pretend(const bool value);
             void set_preserve_world(const bool value);
             void set_debug_mode(const InstallDebugOption value);
-            void set_add_to_world_atom(const std::string &);
+            void set_add_to_world_spec(const std::string &);
             void set_safe_resume(const bool);
 
             ///\}
@@ -119,9 +119,9 @@ namespace paludis
                     const PackageDatabaseEntryCollection &) = 0;
 
             virtual void on_update_world_pre() = 0;
-            virtual void on_update_world(const PackageDepAtom &) = 0;
+            virtual void on_update_world(const PackageDepSpec &) = 0;
             virtual void on_update_world(const SetName &) = 0;
-            virtual void on_update_world_skip(const PackageDepAtom &, const std::string &) = 0;
+            virtual void on_update_world_skip(const PackageDepSpec &, const std::string &) = 0;
             virtual void on_update_world_skip(const SetName &, const std::string &) = 0;
             virtual void on_update_world_post() = 0;
             virtual void on_preserve_world() = 0;

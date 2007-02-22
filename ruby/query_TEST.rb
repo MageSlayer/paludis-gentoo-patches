@@ -120,7 +120,7 @@ module Paludis
 
     class TestCase_Matches < Test::Unit::TestCase
         def get_query
-            Query::Matches.new(PackageDepAtom.new('>=foo-bar/baz-1'))
+            Query::Matches.new(PackageDepSpec.new('>=foo-bar/baz-1'))
         end
 
         def test_create

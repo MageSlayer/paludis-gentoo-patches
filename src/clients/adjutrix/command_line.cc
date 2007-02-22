@@ -38,7 +38,7 @@ CommandLine::CommandLine() :
     a_keywords_graph(&tree_action_args,
             "keyword-graph",          'k',  "Display keywords graphically"),
     a_reverse_deps(&tree_action_args,
-            "reverse-deps",           'r',  "Find all package that depend on a given dep atom"),
+            "reverse-deps",           'r',  "Find all package that depend on a given dep spec"),
     a_what_needs_keywording(&tree_action_args,
             "what-needs-keywording", 'w', "Display what needs to be done to keyword a target"),
 
@@ -118,11 +118,11 @@ CommandLine::CommandLine() :
     add_usage_line("--reverse-deps [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
             "[ --package foo --package fnord ... ]"
-            "target-atom");
+            "target-spec");
     add_usage_line("--what-needs-keywording [ --repository-dir /path ] "
             "[ --category app-misc --category sys-apps ... ] "
             "[ --package foo --package fnord ... ]"
-            "target-keyword target-atom");
+            "target-keyword target-spec");
     add_usage_line("--display-profiles-use [ --profile default-linux/x86/2006.0 "
             "--profile default-linux/x86/2006.1 ... ] [ --repository-dir /path ]");
     add_usage_line("--display-default-system-resolution [ --profile default-linux/x86/2006.0 "

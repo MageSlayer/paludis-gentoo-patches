@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_DEPGRAPH_HH
 #define PALUDIS_GUARD_SRC_DEPGRAPH_HH 1
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 
 #include "command_line.hh"
 
@@ -29,6 +29,6 @@
  */
 
 /// Handle --install.
-int do_install(std::tr1::shared_ptr<const paludis::PackageDepAtom> atom);
+int do_install(std::tr1::shared_ptr<const paludis::PackageDepSpec> spec);
 
 #endif

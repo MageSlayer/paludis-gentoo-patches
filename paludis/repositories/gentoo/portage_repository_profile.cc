@@ -45,11 +45,11 @@ namespace
 {
     typedef MakeHashedSet<UseFlagName>::Type UseFlagSet;
     typedef MakeHashedMap<std::string, std::string>::Type EnvironmentVariablesMap;
-    typedef MakeHashedMap<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> >::Type VirtualsMap;
-    typedef MakeHashedMap<QualifiedPackageName, std::list<std::tr1::shared_ptr<const PackageDepAtom> > >::Type PackageMaskMap;
+    typedef MakeHashedMap<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
+    typedef MakeHashedMap<QualifiedPackageName, std::list<std::tr1::shared_ptr<const PackageDepSpec> > >::Type PackageMaskMap;
 
     typedef MakeHashedMap<UseFlagName, bool>::Type FlagStatusMap;
-    typedef std::list<std::pair<std::tr1::shared_ptr<const PackageDepAtom>, FlagStatusMap> > PackageFlagStatusMapList;
+    typedef std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, FlagStatusMap> > PackageFlagStatusMapList;
 
     struct StackedValues
     {
@@ -88,7 +88,7 @@ namespace paludis
             void load_profile_make_defaults(const FSEntry & dir);
 
             void load_basic_use_file(const FSEntry & file, FlagStatusMap & m);
-            void load_atom_use_file(const FSEntry & file, PackageFlagStatusMapList & m);
+            void load_spec_use_file(const FSEntry & file, PackageFlagStatusMapList & m);
 
             void add_use_expand_to_use();
             void make_vars_from_file_vars();
@@ -120,7 +120,7 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            std::tr1::shared_ptr<AllDepAtom> system_packages;
+            std::tr1::shared_ptr<AllDepSpec> system_packages;
             std::tr1::shared_ptr<GeneralSetDepTag> system_tag;
 
             ///\}
@@ -155,7 +155,7 @@ namespace paludis
             Implementation(const Environment * const e, const RepositoryName & name,
                     const FSEntryCollection & dirs) :
                 env(e),
-                system_packages(new AllDepAtom),
+                system_packages(new AllDepSpec),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
             {
                 load_environment();
@@ -205,9 +205,9 @@ Implementation<PortageRepositoryProfile>::load_profile_directory_recursively(con
 
     load_basic_use_file(dir / "use.mask", stacked_values_list.back().use_mask);
     load_basic_use_file(dir / "use.force", stacked_values_list.back().use_force);
-    load_atom_use_file(dir / "package.use", stacked_values_list.back().package_use);
-    load_atom_use_file(dir / "package.use.mask", stacked_values_list.back().package_use_mask);
-    load_atom_use_file(dir / "package.use.force", stacked_values_list.back().package_use_force);
+    load_spec_use_file(dir / "package.use", stacked_values_list.back().package_use);
+    load_spec_use_file(dir / "package.use.mask", stacked_values_list.back().package_use_mask);
+    load_spec_use_file(dir / "package.use.force", stacked_values_list.back().package_use_force);
 
     packages_file.add_file(dir / "packages");
     virtuals_file.add_file(dir / "virtuals");
@@ -369,10 +369,10 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
             if (0 != i->compare(0, 1, "*", 0, 1))
                 continue;
 
-            Context context_atom("When parsing '" + *i + "':");
-            std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(i->substr(1)));
-            atom->set_tag(system_tag);
-            system_packages->add_child(atom);
+            Context context_spec("When parsing '" + *i + "':");
+            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->substr(1)));
+            spec->set_tag(system_tag);
+            system_packages->add_child(spec);
         }
     }
     catch (const NameError & e)
@@ -393,7 +393,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 
             QualifiedPackageName v(tokens[0]);
             virtuals.erase(v);
-            virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(tokens[1]))));
+            virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(tokens[1]))));
         }
     }
     catch (const NameError & e)
@@ -410,12 +410,12 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 
         try
         {
-            std::tr1::shared_ptr<const PackageDepAtom> a(new PackageDepAtom(*line));
+            std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
             package_mask[a->package()].push_back(a);
         }
         catch (const NameError & e)
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask atom '"
+            Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask spec '"
                     + stringify(*line) + "' failed due to exception '" + e.message() + "' ("
                     + e.what() + ")");
         }
@@ -458,12 +458,12 @@ Implementation<PortageRepositoryProfile>::load_basic_use_file(const FSEntry & fi
 }
 
 void
-Implementation<PortageRepositoryProfile>::load_atom_use_file(const FSEntry & file, PackageFlagStatusMapList & m)
+Implementation<PortageRepositoryProfile>::load_spec_use_file(const FSEntry & file, PackageFlagStatusMapList & m)
 {
     if (! file.exists())
         return;
 
-    Context context("When loading atomised use file '" + stringify(file) + ":");
+    Context context("When loading specised use file '" + stringify(file) + ":");
     LineConfigFile f(file);
     for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
@@ -476,8 +476,8 @@ Implementation<PortageRepositoryProfile>::load_atom_use_file(const FSEntry & fil
 
         try
         {
-            std::tr1::shared_ptr<const PackageDepAtom> atom(new PackageDepAtom(*tokens.begin()));
-            PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(atom, FlagStatusMap())));
+            std::tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(*tokens.begin()));
+            PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 
             for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -498,7 +498,7 @@ Implementation<PortageRepositoryProfile>::load_atom_use_file(const FSEntry & fil
                 }
             }
         }
-        catch (const PackageDepAtomError & e)
+        catch (const PackageDepSpecError & e)
         {
             Log::get_instance()->message(ll_warning, lc_context, "Ignoring line '"
                     + *line + "' due to exception '" + e.message() + "' (" + e.what() + ")");
@@ -656,7 +656,7 @@ PortageRepositoryProfile::environment_variable(const std::string & s) const
         return i->second;
 }
 
-std::tr1::shared_ptr<AllDepAtom>
+std::tr1::shared_ptr<AllDepSpec>
 PortageRepositoryProfile::system_packages() const
 {
     return _imp->system_packages;
@@ -708,7 +708,7 @@ PortageRepositoryProfile::profile_masked(const QualifiedPackageName & n,
     else
     {
         PackageDatabaseEntry dbe(n, v, r);
-        for (std::list<std::tr1::shared_ptr<const PackageDepAtom> >::const_iterator k(rr->second.begin()),
+        for (std::list<std::tr1::shared_ptr<const PackageDepSpec> >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
             if (match_package(*_imp->env, **k, dbe))
                 return true;

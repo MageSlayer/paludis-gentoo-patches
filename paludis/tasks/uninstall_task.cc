@@ -20,7 +20,7 @@
 #include "uninstall_task.hh"
 #include <paludis/environment.hh>
 #include <paludis/dep_list/uninstall_list.hh>
-#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_spec_flattener.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/query.hh>
@@ -37,7 +37,7 @@ namespace paludis
         UninstallOptions uninstall_options;
 
         std::list<std::string> raw_targets;
-        std::list<std::tr1::shared_ptr<PackageDepAtom> > targets;
+        std::list<std::tr1::shared_ptr<PackageDepSpec> > targets;
 
         bool pretend;
         bool preserve_world;
@@ -97,7 +97,7 @@ UninstallTask::add_target(const std::string & target)
 {
     Context context("When adding uninstall target '" + target + "':");
 
-    /* we might have a dep atom, but we might just have a simple package name
+    /* we might have a dep spec, but we might just have a simple package name
      * without a category. either should work. */
     if (std::string::npos != target.find('/'))
     {
@@ -105,13 +105,13 @@ UninstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
 
         _imp->had_package_targets = true;
-        _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(target)));
+        _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(target)));
     }
     else
         try
         {
-            std::tr1::shared_ptr<DepAtom> atom(_imp->env->package_set(SetName(target)));
-            if (atom)
+            std::tr1::shared_ptr<DepSpec> spec(_imp->env->package_set(SetName(target)));
+            if (spec)
             {
                 if (_imp->had_package_targets)
                     throw HadBothPackageAndSetTargets();
@@ -120,9 +120,9 @@ UninstallTask::add_target(const std::string & target)
                     throw MultipleSetTargetsSpecified();
 
                 _imp->had_set_targets = true;
-                DepAtomFlattener f(_imp->env, 0, atom);
-                for (DepAtomFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
-                    _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
+                DepSpecFlattener f(_imp->env, 0, spec);
+                for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+                    _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                                     stringify((*i)->text()))));
             }
             else
@@ -131,7 +131,7 @@ UninstallTask::add_target(const std::string & target)
                     throw HadBothPackageAndSetTargets();
 
                 _imp->had_package_targets = false;
-                _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
+                _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                                 _imp->env->package_database()->fetch_unique_qualified_package_name(
                                     PackageNamePart(target)))));
             }
@@ -142,7 +142,7 @@ UninstallTask::add_target(const std::string & target)
                 throw HadBothPackageAndSetTargets();
 
             _imp->had_package_targets = false;
-            _imp->targets.push_back(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
+            _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                             _imp->env->package_database()->fetch_unique_qualified_package_name(
                                 PackageNamePart(target)))));
         }
@@ -175,7 +175,7 @@ namespace
         {
         }
 
-        virtual void remove_callback(const PackageDepAtom & a)
+        virtual void remove_callback(const PackageDepSpec & a)
         {
             t->on_update_world(a);
         }
@@ -201,7 +201,7 @@ UninstallTask::execute()
     if (_imp->unused)
         list.add_unused();
     else
-        for (std::list<std::tr1::shared_ptr<PackageDepAtom> >::const_iterator t(_imp->targets.begin()),
+        for (std::list<std::tr1::shared_ptr<PackageDepSpec> >::const_iterator t(_imp->targets.begin()),
                 t_end(_imp->targets.end()) ; t != t_end ; ++t)
         {
             Context local_context("When looking for target '" + stringify(**t) + "':");
@@ -252,7 +252,7 @@ UninstallTask::execute()
     {
         on_update_world_pre();
 
-        std::tr1::shared_ptr<AllDepAtom> all(new AllDepAtom);
+        std::tr1::shared_ptr<AllDepSpec> all(new AllDepSpec);
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
         for (UninstallList::Iterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
@@ -264,7 +264,7 @@ UninstallTask::execute()
         {
             bool remove(true);
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> installed(
-                    _imp->env->package_database()->query(query::Matches(PackageDepAtom(i->first)) &
+                    _imp->env->package_database()->query(query::Matches(PackageDepSpec(i->first)) &
                         query::RepositoryHasInstalledInterface(), qo_whatever));
             for (PackageDatabaseEntryCollection::Iterator r(installed->begin()), r_end(installed->end()) ;
                     r != r_end && remove ; ++r)
@@ -272,7 +272,7 @@ UninstallTask::execute()
                     remove = false;
 
             if (remove)
-                all->add_child(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(i->first)));
+                all->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(i->first)));
         }
 
         WorldCallbacks w(this);

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/portage_dep_lexer.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/exception.hh>
@@ -61,13 +61,13 @@ namespace
     };
 }
 
-std::tr1::shared_ptr<CompositeDepAtom>
+std::tr1::shared_ptr<CompositeDepSpec>
 PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInterface * const policy)
 {
     Context context("When parsing dependency string '" + s + "':");
 
-    std::stack<std::tr1::shared_ptr<CompositeDepAtom> > stack;
-    stack.push(std::tr1::shared_ptr<CompositeDepAtom>(new AllDepAtom));
+    std::stack<std::tr1::shared_ptr<CompositeDepSpec> > stack;
+    stack.push(std::tr1::shared_ptr<CompositeDepSpec>(new AllDepSpec));
 
     PortageDepParserState state(dps_initial);
     PortageDepLexer lexer(s);
@@ -93,13 +93,13 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
                                  {
                                      if (i->second.empty())
                                          throw DepStringParseError(i->second, "Empty text entry");
-                                     stack.top()->add_child(policy->new_text_atom(i->second));
+                                     stack.top()->add_child(policy->new_text_spec(i->second));
                                  }
                                  continue;
 
                             case dpl_open_paren:
                                  {
-                                     std::tr1::shared_ptr<CompositeDepAtom> a(new AllDepAtom);
+                                     std::tr1::shared_ptr<CompositeDepSpec> a(new AllDepSpec);
                                      stack.top()->add_child(a);
                                      stack.push(a);
                                      state = dps_had_paren;
@@ -118,7 +118,7 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
                             case dpl_double_bar:
                                  if (policy->permit_any_deps())
                                  {
-                                     std::tr1::shared_ptr<CompositeDepAtom> a(new AnyDepAtom);
+                                     std::tr1::shared_ptr<CompositeDepSpec> a(new AnyDepSpec);
                                      stack.top()->add_child(a);
                                      stack.push(a);
                                      state = dps_had_double_bar;
@@ -143,8 +143,8 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
                                                  "Use flag name '" + i->second + "' missing '?'");
 
                                      f.erase(f.length() - 1);
-                                     std::tr1::shared_ptr<CompositeDepAtom> a(
-                                             new UseDepAtom(UseFlagName(f), inv));
+                                     std::tr1::shared_ptr<CompositeDepSpec> a(
+                                             new UseDepSpec(UseFlagName(f), inv));
                                      stack.top()->add_child(a);
                                      stack.push(a);
                                      state = dps_had_use_flag;
@@ -272,21 +272,21 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
 
     if (stack.empty())
         throw DepStringNestingError(s);
-    std::tr1::shared_ptr<CompositeDepAtom> result(stack.top());
+    std::tr1::shared_ptr<CompositeDepSpec> result(stack.top());
     stack.pop();
     if (! stack.empty())
         throw DepStringNestingError(s);
     return result;
 }
 
-std::tr1::shared_ptr<const CompositeDepAtom>
+std::tr1::shared_ptr<const CompositeDepSpec>
 PortageDepParser::parse_depend(const std::string & s)
 {
     return PortageDepParser::parse(s);
 }
 
-std::tr1::shared_ptr<const CompositeDepAtom>
+std::tr1::shared_ptr<const CompositeDepSpec>
 PortageDepParser::parse_license(const std::string & s)
 {
-    return PortageDepParser::parse(s, PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance());
+    return PortageDepParser::parse(s, PortageDepParserPolicy<PlainTextDepSpec, true>::get_instance());
 }

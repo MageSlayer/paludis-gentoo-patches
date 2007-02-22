@@ -17,12 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
 /** \file
- * Test cases for dep_atom.hh classes.
+ * Test cases for dep_spec.hh classes.
  *
  */
 
@@ -32,63 +32,63 @@ using namespace test;
 namespace test_cases
 {
     /**
-     * \test Test DepAtom as_ functions.
+     * \test Test DepSpec as_ functions.
      *
      */
-    struct DepAtomAsTest : TestCase
+    struct DepSpecAsTest : TestCase
     {
-        DepAtomAsTest() : TestCase("dep atom as") { }
+        DepSpecAsTest() : TestCase("dep spec as") { }
 
         void run()
         {
-            std::tr1::shared_ptr<PackageDepAtom> x(new PackageDepAtom("foo/bar"));
-            TEST_CHECK(0 == x->as_use_dep_atom());
+            std::tr1::shared_ptr<PackageDepSpec> x(new PackageDepSpec("foo/bar"));
+            TEST_CHECK(0 == x->as_use_dep_spec());
 
-            std::tr1::shared_ptr<UseDepAtom> y(new UseDepAtom(UseFlagName("foo"), x));
-            TEST_CHECK(0 != y->as_use_dep_atom());
-            TEST_CHECK(y.get() == y->as_use_dep_atom());
+            std::tr1::shared_ptr<UseDepSpec> y(new UseDepSpec(UseFlagName("foo"), x));
+            TEST_CHECK(0 != y->as_use_dep_spec());
+            TEST_CHECK(y.get() == y->as_use_dep_spec());
         }
-    } test_dep_atom_as;
+    } test_dep_spec_as;
 
     /**
-     * \test Test DepAtom composite functions.
+     * \test Test DepSpec composite functions.
      *
      */
-    struct DepAtomCompositeTest : TestCase
+    struct DepSpecCompositeTest : TestCase
     {
-        DepAtomCompositeTest() : TestCase("dep atom composite") { }
+        DepSpecCompositeTest() : TestCase("dep spec composite") { }
 
         void run()
         {
-            std::tr1::shared_ptr<AllDepAtom> x(new AllDepAtom);
+            std::tr1::shared_ptr<AllDepSpec> x(new AllDepSpec);
             TEST_CHECK(x->begin() == x->end());
 
-            x->add_child(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom("x/y")));
+            x->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y")));
             TEST_CHECK(x->begin() != x->end());
             TEST_CHECK_EQUAL(1, std::distance(x->begin(), x->end()));
 
-            x->add_child(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom("x/y")));
+            x->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y")));
             TEST_CHECK(x->begin() != x->end());
             TEST_CHECK_EQUAL(2, std::distance(x->begin(), x->end()));
         }
-    } test_dep_atom_composite;
+    } test_dep_spec_composite;
 
     /**
-     * \test Test PackageDepAtom.
+     * \test Test PackageDepSpec.
      *
      */
-    struct PackageDepAtomTest : TestCase
+    struct PackageDepSpecTest : TestCase
     {
-        PackageDepAtomTest() : TestCase("package dep atom") { }
+        PackageDepSpecTest() : TestCase("package dep spec") { }
 
         void run()
         {
-            PackageDepAtom a("foo/bar");
+            PackageDepSpec a("foo/bar");
             TEST_CHECK_STRINGIFY_EQUAL(a.package(), "foo/bar");
             TEST_CHECK(! a.slot_ptr());
             TEST_CHECK(! a.version_requirements_ptr());
 
-            PackageDepAtom b(">=foo/bar-1.2.3");
+            PackageDepSpec b(">=foo/bar-1.2.3");
             TEST_CHECK_STRINGIFY_EQUAL(b.package(), "foo/bar");
             TEST_CHECK(! b.slot_ptr());
             TEST_CHECK(b.version_requirements_ptr());
@@ -97,13 +97,13 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(b.version_requirements_ptr()->begin()->version_spec, "1.2.3");
             TEST_CHECK_EQUAL(b.version_requirements_ptr()->begin()->version_operator, vo_greater_equal);
 
-            PackageDepAtom c("foo/bar:baz");
+            PackageDepSpec c("foo/bar:baz");
             TEST_CHECK_STRINGIFY_EQUAL(c.package(), "foo/bar");
             TEST_CHECK(c.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*c.slot_ptr(), "baz");
             TEST_CHECK(! c.version_requirements_ptr());
 
-            PackageDepAtom d("=foo/bar-1.2*:1.2.1");
+            PackageDepSpec d("=foo/bar-1.2*:1.2.1");
             TEST_CHECK_STRINGIFY_EQUAL(d.package(), "foo/bar");
             TEST_CHECK(d.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*d.slot_ptr(), "1.2.1");
@@ -111,30 +111,30 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(d.version_requirements_ptr()->begin()->version_spec, "1.2");
             TEST_CHECK_EQUAL(d.version_requirements_ptr()->begin()->version_operator, vo_equal_star);
 
-            PackageDepAtom e("foo/bar:1.2.1");
+            PackageDepSpec e("foo/bar:1.2.1");
             TEST_CHECK_STRINGIFY_EQUAL(e.package(), "foo/bar");
             TEST_CHECK(e.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*e.slot_ptr(), "1.2.1");
             TEST_CHECK(! e.version_requirements_ptr());
 
-            PackageDepAtom f("foo/bar:0");
+            PackageDepSpec f("foo/bar:0");
             TEST_CHECK_STRINGIFY_EQUAL(f.package(), "foo/bar");
             TEST_CHECK(f.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*f.slot_ptr(), "0");
             TEST_CHECK(! f.version_requirements_ptr());
 
-            PackageDepAtom g("foo/bar-100dpi");
+            PackageDepSpec g("foo/bar-100dpi");
             TEST_CHECK_STRINGIFY_EQUAL(g.package(), "foo/bar-100dpi");
 
-            PackageDepAtom h(">=foo/bar-100dpi-1.23");
+            PackageDepSpec h(">=foo/bar-100dpi-1.23");
             TEST_CHECK_STRINGIFY_EQUAL(h.package(), "foo/bar-100dpi");
             TEST_CHECK(h.version_requirements_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(h.version_requirements_ptr()->begin()->version_spec, "1.23");
             TEST_CHECK_EQUAL(h.version_requirements_ptr()->begin()->version_operator, vo_greater_equal);
 
-            TEST_CHECK_THROWS(PackageDepAtom(""), PackageDepAtomError);
+            TEST_CHECK_THROWS(PackageDepSpec(""), PackageDepSpecError);
 
-            PackageDepAtom i("foo/bar[one][-two]");
+            PackageDepSpec i("foo/bar[one][-two]");
             TEST_CHECK_STRINGIFY_EQUAL(i.package(), "foo/bar");
             TEST_CHECK(! i.version_requirements_ptr());
             TEST_CHECK(! i.repository_ptr());
@@ -150,18 +150,18 @@ namespace test_cases
             TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("two")) == use_disabled);
             TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("moo")) == use_unspecified);
 
-            PackageDepAtom j("=foo/bar-scm-r3");
+            PackageDepSpec j("=foo/bar-scm-r3");
             TEST_CHECK_STRINGIFY_EQUAL(j.package(), "foo/bar");
             TEST_CHECK(j.version_requirements_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(j.version_requirements_ptr()->begin()->version_spec, "scm-r3");
             TEST_CHECK_EQUAL(j.version_requirements_ptr()->begin()->version_operator, vo_equal);
 
-            PackageDepAtom k("=foo/bar-scm");
+            PackageDepSpec k("=foo/bar-scm");
             TEST_CHECK_STRINGIFY_EQUAL(k.package(), "foo/bar");
             TEST_CHECK(k.version_requirements_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(k.version_requirements_ptr()->begin()->version_spec, "scm");
             TEST_CHECK_EQUAL(k.version_requirements_ptr()->begin()->version_operator, vo_equal);
         }
-    } test_package_dep_atom;
+    } test_package_dep_spec;
 }
 

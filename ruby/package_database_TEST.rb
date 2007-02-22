@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -71,15 +71,15 @@ module Paludis
 
             #outputs a deprecation warning
             assert_nothing_raised do
-                db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Any)
+                db.query(PackageDepSpec.new("=foo/bar-1.0"), InstallState::Any)
             end
 
             assert_nothing_raised do
-                db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Any, QueryOrder::Whatever)
+                db.query(PackageDepSpec.new("=foo/bar-1.0"), InstallState::Any, QueryOrder::Whatever)
             end
 
             assert_nothing_raised do
-                db.query(Query::Matches.new(PackageDepAtom.new('=foo/bar-1.0')), QueryOrder::Whatever)
+                db.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0')), QueryOrder::Whatever)
             end
 
             assert_raise ArgumentError do
@@ -95,7 +95,7 @@ module Paludis
                          QueryOrder::Whatever)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
-            a = db.query(PackageDepAtom.new("=foo/bar-1.0"), InstallState::Any, QueryOrder::Whatever)
+            a = db.query(PackageDepSpec.new("=foo/bar-1.0"), InstallState::Any, QueryOrder::Whatever)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
             a = db.query("foo/bar", InstallState::InstallableOnly, QueryOrder::OrderByVersion)
@@ -122,7 +122,7 @@ module Paludis
                 db.query(123, InstallState::Any)
             end
             assert_raise TypeError do
-                db.query(PackageDepAtom.new("foo/bar"), "Either")
+                db.query(PackageDepSpec.new("foo/bar"), "Either")
             end
         end
     end

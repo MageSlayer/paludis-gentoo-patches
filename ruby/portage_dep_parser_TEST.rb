@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,54 +24,54 @@ require 'Paludis'
 module Paludis
     class TestCase_PortageDepParser < Test::Unit::TestCase
         def test_one_arg
-            atom = PortageDepParser::parse("foo/monkey")
-            assert_kind_of AllDepAtom, atom
-            assert_equal 1, atom.to_a.length
-            assert_equal "foo/monkey", atom.to_a[0].to_s
-            assert_kind_of PackageDepAtom, atom.to_a[0]
+            spec = PortageDepParser::parse("foo/monkey")
+            assert_kind_of AllDepSpec, spec
+            assert_equal 1, spec.to_a.length
+            assert_equal "foo/monkey", spec.to_a[0].to_s
+            assert_kind_of PackageDepSpec, spec.to_a[0]
         end
 
         def test_many_args
-            atom = PortageDepParser::parse("foo/monkey", PortageDepParser::PlainTextDepAtom, false)
-            assert_kind_of AllDepAtom, atom
-            assert_equal 1, atom.to_a.length
-            assert_equal "foo/monkey", atom.to_a[0].to_s
-            assert_kind_of PlainTextDepAtom, atom.to_a[0]
+            spec = PortageDepParser::parse("foo/monkey", PortageDepParser::PlainTextDepSpec, false)
+            assert_kind_of AllDepSpec, spec
+            assert_equal 1, spec.to_a.length
+            assert_equal "foo/monkey", spec.to_a[0].to_s
+            assert_kind_of PlainTextDepSpec, spec.to_a[0]
 
-            atom = PortageDepParser::parse("foo/monkey", PortageDepParser::PlainTextDepAtom, true)
-            assert_kind_of AllDepAtom, atom
-            assert_equal 1, atom.to_a.length
-            assert_equal "foo/monkey", atom.to_a[0].to_s
-            assert_kind_of PlainTextDepAtom, atom.to_a[0]
+            spec = PortageDepParser::parse("foo/monkey", PortageDepParser::PlainTextDepSpec, true)
+            assert_kind_of AllDepSpec, spec
+            assert_equal 1, spec.to_a.length
+            assert_equal "foo/monkey", spec.to_a[0].to_s
+            assert_kind_of PlainTextDepSpec, spec.to_a[0]
 
-            atom = PortageDepParser::parse("foo/monkey", PortageDepParser::PackageDepAtom, false)
-            assert_kind_of AllDepAtom, atom
-            assert_equal 1, atom.to_a.length
-            assert_equal "foo/monkey", atom.to_a[0].to_s
-            assert_kind_of PackageDepAtom, atom.to_a[0]
+            spec = PortageDepParser::parse("foo/monkey", PortageDepParser::PackageDepSpec, false)
+            assert_kind_of AllDepSpec, spec
+            assert_equal 1, spec.to_a.length
+            assert_equal "foo/monkey", spec.to_a[0].to_s
+            assert_kind_of PackageDepSpec, spec.to_a[0]
 
-            atom = PortageDepParser::parse("foo/monkey", PortageDepParser::PackageDepAtom, true)
-            assert_kind_of AllDepAtom, atom
-            assert_equal 1, atom.to_a.length
-            assert_equal "foo/monkey", atom.to_a[0].to_s
-            assert_kind_of PackageDepAtom, atom.to_a[0]
-
-            assert_raise DepStringParseError do
-                PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PackageDepAtom, false)
-            end
-
-            PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PackageDepAtom, true)
+            spec = PortageDepParser::parse("foo/monkey", PortageDepParser::PackageDepSpec, true)
+            assert_kind_of AllDepSpec, spec
+            assert_equal 1, spec.to_a.length
+            assert_equal "foo/monkey", spec.to_a[0].to_s
+            assert_kind_of PackageDepSpec, spec.to_a[0]
 
             assert_raise DepStringParseError do
-                PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PlainTextDepAtom, false)
+                PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PackageDepSpec, false)
             end
 
-            PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PlainTextDepAtom, true)
+            PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PackageDepSpec, true)
+
+            assert_raise DepStringParseError do
+                PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PlainTextDepSpec, false)
+            end
+
+            PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PlainTextDepSpec, true)
         end
         
         def test_dep_string_nesting_error
             assert_raise DepStringNestingError do
-                PortageDepParser::parse("|| ( foo/var ", PortageDepParser::PackageDepAtom,true)
+                PortageDepParser::parse("|| ( foo/var ", PortageDepParser::PackageDepSpec,true)
             end
         end
     end

@@ -50,7 +50,7 @@ namespace paludis
             ~DefaultEnvironment();
 
         protected:
-            std::tr1::shared_ptr<CompositeDepAtom> local_package_set(const SetName &) const;
+            std::tr1::shared_ptr<CompositeDepSpec> local_package_set(const SetName &) const;
 
         public:
             virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;

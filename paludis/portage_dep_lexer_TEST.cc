@@ -46,7 +46,7 @@ namespace test_cases
             PortageDepLexer::Iterator i(l.begin());
             TEST_CHECK(i == l.end());
         }
-    } test_dep_atom_parser_lexer_empty;
+    } test_dep_spec_parser_lexer_empty;
 
     /**
      * \test Test PortageDepLexer with a blank input.
@@ -65,7 +65,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(i->second, "   \n   \t");
             TEST_CHECK(++i == l.end());
         }
-    } test_dep_atom_parser_lexer_blank;
+    } test_dep_spec_parser_lexer_blank;
 
     /**
      * \test Test PortageDepLexer with a package.
@@ -84,7 +84,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(i->second, "app-editors/vim");
             TEST_CHECK(++i == l.end());
         }
-    } test_dep_atom_parser_lexer_package;
+    } test_dep_spec_parser_lexer_package;
 
     /**
      * \test Test DepParser with a sequence of packages.
@@ -121,7 +121,7 @@ namespace test_cases
 
             TEST_CHECK(++i == l.end());
         }
-    } test_dep_atom_parser_lexer_packages;
+    } test_dep_spec_parser_lexer_packages;
 
     /**
      * \test Test PortageDepLexer with an any group.
@@ -174,7 +174,7 @@ namespace test_cases
 
             TEST_CHECK(++i == l.end());
         }
-    } test_dep_atom_parser_lexer_any;
+    } test_dep_spec_parser_lexer_any;
 
     /**
      * \test Test PortageDepLexer with a use group.
@@ -219,7 +219,7 @@ namespace test_cases
 
             TEST_CHECK(++i == l.end());
         }
-    } test_dep_atom_parser_lexer_use;
+    } test_dep_spec_parser_lexer_use;
 
     /**
      * \test Test PortageDepLexer with bad input.
@@ -235,7 +235,7 @@ namespace test_cases
             TEST_CHECK_THROWS(PortageDepLexer("|foo"), DepStringError);
             TEST_CHECK_THROWS(PortageDepLexer("( moo )bar"), DepStringError);
         }
-    } test_dep_atom_parser_lexer_bad;
+    } test_dep_spec_parser_lexer_bad;
 
 }
 

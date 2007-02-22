@@ -824,9 +824,9 @@ namespace
 
     /*
      * call-seq:
-     *     add(dep_atom, destinations)
+     *     add(dep_spec, destinations)
      *
-     * Add the packages required to resolve an additional dependency atom.
+     * Add the packages required to resolve an additional dependency spec.
      */
     VALUE
     dep_list_add(VALUE self, VALUE da, VALUE d)
@@ -842,7 +842,7 @@ namespace
             for (long i = 0 ; i < RARRAY(d)->len ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
 
-            p->add(value_to_dep_atom(da), destinations);
+            p->add(value_to_dep_spec(da), destinations);
             return self;
         }
         catch (const std::exception & e)
@@ -882,9 +882,9 @@ namespace
 
     /*
      * call-seq:
-     *     already_installed?(dep_atom, destinations)
+     *     already_installed?(dep_spec, destinations)
      *
-     * Is an atom structure already installed?
+     * Is an spec structure already installed?
      */
     VALUE
     dep_list_already_installed(VALUE self, VALUE da, VALUE d)
@@ -900,7 +900,7 @@ namespace
             for (long i = 0 ; i < RARRAY(d)->len ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
 
-            return p->already_installed(*value_to_dep_atom(da), destinations) ? Qtrue : Qfalse;
+            return p->already_installed(*value_to_dep_spec(da), destinations) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {

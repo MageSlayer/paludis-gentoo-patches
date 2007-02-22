@@ -31,9 +31,9 @@ namespace paludis
 
     /**
      * A collection of VersionRequirement instances, usually for a
-     * PackageDepAtom.
+     * PackageDepSpec.
      *
-     * \see PackageDepAtom
+     * \see PackageDepSpec
      * \ingroup grpversions
      */
     typedef SequentialCollection<VersionRequirement> VersionRequirements;

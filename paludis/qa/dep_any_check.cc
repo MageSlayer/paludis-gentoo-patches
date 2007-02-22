@@ -20,7 +20,7 @@
 #include <paludis/qa/dep_any_check.hh>
 
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/iterator.hh>
@@ -34,7 +34,7 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepAtomVisitorTypes::ConstVisitor
+        DepSpecVisitorTypes::ConstVisitor
     {
         CheckResult & result;
         const std::string role;
@@ -47,18 +47,18 @@ namespace
         {
         }
 
-        void visit(const PackageDepAtom * const)
+        void visit(const PackageDepSpec * const)
         {
         }
 
-        void visit(const AllDepAtom * const a)
+        void visit(const AllDepSpec * const a)
         {
             /* yes, the following line is correct. */
             Save<bool> in_any_save(&in_any, false);
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
-        void visit(const AnyDepAtom * const a)
+        void visit(const AnyDepSpec * const a)
         {
             Save<bool> in_any_save(&in_any, true);
             if (a->begin() == a->end())
@@ -72,7 +72,7 @@ namespace
             }
         }
 
-        void visit(const UseDepAtom * const u)
+        void visit(const UseDepSpec * const u)
         {
             if (in_any)
                 result << Message(qal_maybe, "Conditional on '" + stringify(u->flag()) + 
@@ -80,16 +80,16 @@ namespace
             std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
-        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const PlainTextDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
 
-        void visit(const BlockDepAtom * const)
+        void visit(const BlockDepSpec * const)
         {
         }
     };
 
-    void Checker::visit(const PlainTextDepAtom * const t)
+    void Checker::visit(const PlainTextDepSpec * const t)
     {
-        throw InternalError(PALUDIS_HERE, "Found unexpected PlainTextDepAtom '"
+        throw InternalError(PALUDIS_HERE, "Found unexpected PlainTextDepSpec '"
                 + t->text() + "'");
     }
 }

@@ -30,18 +30,18 @@ using namespace paludis;
 bool
 paludis::match_package(
         const Environment & env,
-        const PackageDepAtom & atom,
+        const PackageDepSpec & spec,
         const PackageDatabaseEntry & entry)
 {
-    if (atom.package() != entry.name)
+    if (spec.package() != entry.name)
         return false;
 
-    if (atom.version_requirements_ptr())
-        switch (atom.version_requirements_mode())
+    if (spec.version_requirements_ptr())
+        switch (spec.version_requirements_mode())
         {
             case vr_and:
-                for (VersionRequirements::Iterator r(atom.version_requirements_ptr()->begin()),
-                        r_end(atom.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                for (VersionRequirements::Iterator r(spec.version_requirements_ptr()->begin()),
+                        r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
                     if (! (((entry.version).*(r->version_operator.as_version_spec_operator()))(r->version_spec)))
                         return false;
                 break;
@@ -49,8 +49,8 @@ paludis::match_package(
             case vr_or:
                 {
                     bool matched(false);
-                    for (VersionRequirements::Iterator r(atom.version_requirements_ptr()->begin()),
-                            r_end(atom.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                    for (VersionRequirements::Iterator r(spec.version_requirements_ptr()->begin()),
+                            r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
                         if ((((entry.version).*(r->version_operator.as_version_spec_operator()))(r->version_spec)))
                         {
                             matched = true;
@@ -66,24 +66,24 @@ paludis::match_package(
                 ;
         }
 
-    if (atom.repository_ptr())
-        if (*atom.repository_ptr() != entry.repository)
+    if (spec.repository_ptr())
+        if (*spec.repository_ptr() != entry.repository)
             return false;
 
-    if (atom.slot_ptr() || atom.use_requirements_ptr())
+    if (spec.slot_ptr() || spec.use_requirements_ptr())
     {
         std::tr1::shared_ptr<const VersionMetadata> metadata(env.package_database()->fetch_repository(
                     entry.repository)->version_metadata(
                     entry.name, entry.version));
 
-        if (atom.slot_ptr())
-            if (*atom.slot_ptr() != SlotName(metadata->slot))
+        if (spec.slot_ptr())
+            if (*spec.slot_ptr() != SlotName(metadata->slot))
                 return false;
 
-        if (atom.use_requirements_ptr())
+        if (spec.use_requirements_ptr())
         {
-            for (UseRequirements::Iterator u(atom.use_requirements_ptr()->begin()),
-                    u_end(atom.use_requirements_ptr()->end()) ; u != u_end ; ++u)
+            for (UseRequirements::Iterator u(spec.use_requirements_ptr()->begin()),
+                    u_end(spec.use_requirements_ptr()->end()) ; u != u_end ; ++u)
             {
                 switch (u->second)
                 {
@@ -111,15 +111,15 @@ paludis::match_package(
 namespace
 {
     struct IsInHeirarchy :
-        DepAtomVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor,
         std::unary_function<PackageDatabaseEntry, bool>
     {
         const Environment & env;
-        const DepAtom & target;
+        const DepSpec & target;
         const PackageDatabaseEntry * dbe;
         bool matched;
 
-        IsInHeirarchy(const Environment & e, const DepAtom & t) :
+        IsInHeirarchy(const Environment & e, const DepSpec & t) :
             env(e),
             target(t),
             matched(false)
@@ -134,7 +134,7 @@ namespace
             return matched;
         }
 
-        void visit(const AllDepAtom * const a)
+        void visit(const AllDepSpec * const a)
         {
             if (matched)
                 return;
@@ -142,7 +142,7 @@ namespace
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
-        void visit(const PackageDepAtom * const a)
+        void visit(const PackageDepSpec * const a)
         {
             if (matched)
                 return;
@@ -151,7 +151,7 @@ namespace
                 matched = true;
         }
 
-        void visit(const UseDepAtom * const u)
+        void visit(const UseDepSpec * const u)
         {
             if (matched)
                 return;
@@ -159,7 +159,7 @@ namespace
             std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
-        void visit(const AnyDepAtom * const a)
+        void visit(const AnyDepSpec * const a)
         {
             if (matched)
                 return;
@@ -167,13 +167,13 @@ namespace
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
-        void visit(const BlockDepAtom * const)
+        void visit(const BlockDepSpec * const)
         {
         }
 
-        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
+        void visit(const PlainTextDepSpec * const) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+            throw InternalError(PALUDIS_HERE, "Got PlainTextDepSpec?");
         }
     };
 }
@@ -181,10 +181,10 @@ namespace
 bool
 paludis::match_package_in_heirarchy(
         const Environment & env,
-        const DepAtom & atom,
+        const DepSpec & spec,
         const PackageDatabaseEntry & entry)
 {
-    IsInHeirarchy h(env, atom);
+    IsInHeirarchy h(env, spec);
     return h(entry);
 }
 

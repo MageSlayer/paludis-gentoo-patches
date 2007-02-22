@@ -111,7 +111,7 @@ namespace
      * call-seq:
      *     license
      *
-     * Fetch our license, as a DepAtom structure, or Nil if we don't support
+     * Fetch our license, as a DepSpec structure, or Nil if we don't support
      * license_interface.
      */
     VALUE
@@ -120,7 +120,7 @@ namespace
         std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
         if ((*self_ptr)->license_interface)
-            return dep_atom_to_value((*self_ptr)->license_interface->license());
+            return dep_spec_to_value((*self_ptr)->license_interface->license());
         else
             return Qnil;
     }
@@ -284,39 +284,39 @@ namespace
      * Document-method: build_depend
      *
      * call-seq:
-     *     build_depend -> DepAtom
+     *     build_depend -> DepSpec
      *
-     * Fetches build_depend information as a DepAtom, or Nil if we have no deps
+     * Fetches build_depend information as a DepSpec, or Nil if we have no deps
      * interface.
      */
     /*
      * Document-method: run_depend
      *
      * call-seq:
-     *     run_depend -> DepAtom
+     *     run_depend -> DepSpec
      *
-     * Fetches run_depend information as a DepAtom, or Nil if we have no deps
+     * Fetches run_depend information as a DepSpec, or Nil if we have no deps
      * interface.
      */
     /*
      * Document-method: suggested_depend
      *
      * call-seq:
-     *     suggested_depend -> DepAtom
+     *     suggested_depend -> DepSpec
      *
-     * Fetches sugest_depend information as a DepAtom, or Nil if we have no deps
+     * Fetches sugest_depend information as a DepSpec, or Nil if we have no deps
      * interface.
      */
     /*
      * Document-method: post_depend
      *
      * call-seq:
-     *     post_depend -> DepAtom
+     *     post_depend -> DepSpec
      *
-     * Fetches post_depend information as a DepAtom, or Nil if we have no deps
+     * Fetches post_depend information as a DepSpec, or Nil if we have no deps
      * interface.
      */
-    template <std::tr1::shared_ptr<const DepAtom> (VersionMetadataDepsInterface::* m_) () const>
+    template <std::tr1::shared_ptr<const DepSpec> (VersionMetadataDepsInterface::* m_) () const>
     struct DependValue
     {
         static VALUE
@@ -325,7 +325,7 @@ namespace
             std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
             Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
             if ((*self_ptr)->deps_interface)
-                return dep_atom_to_value(((*self_ptr)->deps_interface->*m_)());
+                return dep_spec_to_value(((*self_ptr)->deps_interface->*m_)());
             else
                 return Qnil;
         }

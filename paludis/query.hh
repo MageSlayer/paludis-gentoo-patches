@@ -27,7 +27,7 @@
 namespace paludis
 {
     class Environment;
-    class PackageDepAtom;
+    class PackageDepSpec;
     class FSEntry;
 
     class QueryDelegate
@@ -97,7 +97,7 @@ namespace paludis
             public Query
         {
             public:
-                Matches(const PackageDepAtom &);
+                Matches(const PackageDepSpec &);
         };
 
         class Package :

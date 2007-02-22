@@ -17,14 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_flattener.hh>
 #include <list>
 
 /** \file
- * Implementation of dep_atom_flattener.hh.
+ * Implementation of dep_spec_flattener.hh.
  *
- * \ingroup grpdepatomflattener
+ * \ingroup grpdepspecflattener
  */
 
 using namespace paludis;
@@ -32,26 +32,26 @@ using namespace paludis;
 namespace paludis
 {
     /**
-     * Implementation data for DepAtomFlattener.
+     * Implementation data for DepSpecFlattener.
      *
-     * \ingroup grpdepatomflattener
+     * \ingroup grpdepspecflattener
      */
     template<>
-    struct Implementation<DepAtomFlattener>
+    struct Implementation<DepSpecFlattener>
     {
         const Environment * const env;
 
         const PackageDatabaseEntry * const pkg;
 
-        std::tr1::shared_ptr<const DepAtom> a;
+        std::tr1::shared_ptr<const DepSpec> a;
 
-        mutable std::list<const StringDepAtom *> atoms;
+        mutable std::list<const StringDepSpec *> specs;
 
         mutable bool done;
 
         Implementation(const Environment * const e,
                 const PackageDatabaseEntry * const p,
-                std::tr1::shared_ptr<const DepAtom> aa) :
+                std::tr1::shared_ptr<const DepSpec> aa) :
             env(e),
             pkg(p),
             a(aa),
@@ -61,67 +61,67 @@ namespace paludis
     };
 }
 
-DepAtomFlattener::DepAtomFlattener(
+DepSpecFlattener::DepSpecFlattener(
         const Environment * const env,
         const PackageDatabaseEntry * const pkg,
-        std::tr1::shared_ptr<const DepAtom> a) :
-    PrivateImplementationPattern<DepAtomFlattener>(new Implementation<DepAtomFlattener>(
+        std::tr1::shared_ptr<const DepSpec> a) :
+    PrivateImplementationPattern<DepSpecFlattener>(new Implementation<DepSpecFlattener>(
                 env, pkg, a))
 {
 }
 
-DepAtomFlattener::~DepAtomFlattener()
+DepSpecFlattener::~DepSpecFlattener()
 {
 }
 
-DepAtomFlattener::Iterator
-DepAtomFlattener::begin()
+DepSpecFlattener::Iterator
+DepSpecFlattener::begin()
 {
     if (! _imp->done)
     {
-        _imp->a->accept(static_cast<DepAtomVisitorTypes::ConstVisitor *>(this));
+        _imp->a->accept(static_cast<DepSpecVisitorTypes::ConstVisitor *>(this));
         _imp->done = true;
     }
 
-    return Iterator(_imp->atoms.begin());
+    return Iterator(_imp->specs.begin());
 }
 
-DepAtomFlattener::Iterator
-DepAtomFlattener::end() const
+DepSpecFlattener::Iterator
+DepSpecFlattener::end() const
 {
-    return Iterator(_imp->atoms.end());
+    return Iterator(_imp->specs.end());
 }
 
-void DepAtomFlattener::visit(const AllDepAtom * a)
+void DepSpecFlattener::visit(const AllDepSpec * a)
 {
     std::for_each(a->begin(), a->end(), accept_visitor(
-                static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
+                static_cast<DepSpecVisitorTypes::ConstVisitor *>(this)));
 }
 
-void DepAtomFlattener::visit(const AnyDepAtom *)
+void DepSpecFlattener::visit(const AnyDepSpec *)
 {
-    throw InternalError(PALUDIS_HERE, "Found unexpected AnyDepAtom");
+    throw InternalError(PALUDIS_HERE, "Found unexpected AnyDepSpec");
 }
 
-void DepAtomFlattener::visit(const UseDepAtom * u)
+void DepSpecFlattener::visit(const UseDepSpec * u)
 {
     if (_imp->env->query_use(u->flag(), _imp->pkg) ^ u->inverse())
         std::for_each(u->begin(), u->end(), accept_visitor(
-                    static_cast<DepAtomVisitorTypes::ConstVisitor *>(this)));
+                    static_cast<DepSpecVisitorTypes::ConstVisitor *>(this)));
 }
 
-void DepAtomFlattener::visit(const PlainTextDepAtom * p)
+void DepSpecFlattener::visit(const PlainTextDepSpec * p)
 {
-    _imp->atoms.push_back(p);
+    _imp->specs.push_back(p);
 }
 
-void DepAtomFlattener::visit(const PackageDepAtom * p)
+void DepSpecFlattener::visit(const PackageDepSpec * p)
 {
-    _imp->atoms.push_back(p);
+    _imp->specs.push_back(p);
 }
 
-void DepAtomFlattener::visit(const BlockDepAtom * p)
+void DepSpecFlattener::visit(const BlockDepSpec * p)
 {
-    _imp->atoms.push_back(p);
+    _imp->specs.push_back(p);
 }
 

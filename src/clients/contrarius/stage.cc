@@ -30,12 +30,12 @@ using namespace paludis;
 
 namespace
 {
-    const PackageDepAtom * make_atom(const HostTupleName & target,
+    const PackageDepSpec * make_spec(const HostTupleName & target,
         const std::string & name,
         const std::string & default_name,
         const std::string & version)
     {
-        return new PackageDepAtom(std::string(version.empty() ? "" : "=") + "cross-" + stringify(target) + "/"
+        return new PackageDepSpec(std::string(version.empty() ? "" : "=") + "cross-" + stringify(target) + "/"
                 + (name.empty() ? default_name : name) + (version.empty() ? "" : "-" + version));
     }
 }
@@ -52,10 +52,10 @@ ContrariusStageOptions::ContrariusStageOptions(const HostTupleName & _target,
         const std::string & libc_name,
         const std::string & libc_version) :
     target(_target),
-    binutils(::make_atom(target, binutils_name, "binutils", binutils_version)),
-    gcc(::make_atom(target, gcc_name, "gcc", gcc_version)),
-    headers(::make_atom(target, headers_name, "linux-headers", headers_version)),
-    libc(::make_atom(target, libc_name, "glibc", libc_version))
+    binutils(::make_spec(target, binutils_name, "binutils", binutils_version)),
+    gcc(::make_spec(target, gcc_name, "gcc", gcc_version)),
+    headers(::make_spec(target, headers_name, "linux-headers", headers_version)),
+    libc(::make_spec(target, libc_name, "glibc", libc_version))
 {
 }
 

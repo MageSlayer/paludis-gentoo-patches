@@ -74,11 +74,11 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
     {
         if (std::string::npos == p->find('/'))
-            d.add(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(
+            d.add(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
                             env.package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p)))),
                     env.default_destinations());
         else
-            d.add(std::tr1::shared_ptr<PackageDepAtom>(new PackageDepAtom(*p)),
+            d.add(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(*p)),
                     env.default_destinations());
     }
 

@@ -19,8 +19,8 @@
 
 #include "config.h"
 
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_flattener.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/config_file.hh>
 #include <paludis/match_package.hh>
@@ -587,7 +587,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     return;
 }
 
-std::tr1::shared_ptr<DepAtom>
+std::tr1::shared_ptr<DepSpec>
 CRANRepository::do_package_set(const SetName & s) const
 {
     if ("base" == s.data())
@@ -596,10 +596,10 @@ CRANRepository::do_package_set(const SetName & s) const
          * \todo Implement system as all package which are installed
          * by dev-lang/R by default.
          */
-        return std::tr1::shared_ptr<AllDepAtom>(new AllDepAtom);
+        return std::tr1::shared_ptr<AllDepSpec>(new AllDepSpec);
     }
     else
-        return std::tr1::shared_ptr<DepAtom>();
+        return std::tr1::shared_ptr<DepSpec>();
 }
 
 std::tr1::shared_ptr<const SetsCollection>

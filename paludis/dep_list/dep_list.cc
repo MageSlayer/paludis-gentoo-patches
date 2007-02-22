@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_flattener.hh>
-#include <paludis/dep_atom_pretty_printer.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_flattener.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/dep_list/dep_list.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/dep_list/range_rewriter.hh>
@@ -85,7 +85,7 @@ namespace paludis
 
         MergeListIndex merge_list_index;
 
-        std::tr1::shared_ptr<const DepAtom> current_top_level_target;
+        std::tr1::shared_ptr<const DepSpec> current_top_level_target;
 
         bool throw_on_blocker;
 
@@ -225,13 +225,13 @@ namespace
             }
     };
 
-    struct MatchDepListEntryAgainstPackageDepAtom
+    struct MatchDepListEntryAgainstPackageDepSpec
     {
         const Environment * const env;
-        const PackageDepAtom * const a;
+        const PackageDepSpec * const a;
 
-        MatchDepListEntryAgainstPackageDepAtom(const Environment * const ee,
-                const PackageDepAtom * const aa) :
+        MatchDepListEntryAgainstPackageDepSpec(const Environment * const ee,
+                const PackageDepSpec * const aa) :
             env(ee),
             a(aa)
         {
@@ -261,20 +261,20 @@ namespace
         }
     };
 
-    struct IsViableAnyDepAtomChild
+    struct IsViableAnyDepSpecChild
     {
         const Environment * const env;
         const PackageDatabaseEntry * const pde;
 
-        IsViableAnyDepAtomChild(const Environment * const e, const PackageDatabaseEntry * const p) :
+        IsViableAnyDepSpecChild(const Environment * const e, const PackageDatabaseEntry * const p) :
             env(e),
             pde(p)
         {
         }
 
-        bool operator() (std::tr1::shared_ptr<const DepAtom> atom)
+        bool operator() (std::tr1::shared_ptr<const DepSpec> spec)
         {
-            const UseDepAtom * const u(atom->as_use_dep_atom());
+            const UseDepSpec * const u(spec->as_use_dep_spec());
             if (0 != u)
                 return env->query_use(u->flag(), pde) ^ u->inverse();
             else
@@ -282,21 +282,21 @@ namespace
         }
     };
 
-    struct IsInterestingPDADepAtomChild
+    struct IsInterestingPDADepSpecChild
     {
         const Environment * const env;
 
-        IsInterestingPDADepAtomChild(const Environment * const e) :
+        IsInterestingPDADepSpecChild(const Environment * const e) :
             env(e)
         {
         }
 
-        bool operator() (std::tr1::shared_ptr<const DepAtom> atom)
+        bool operator() (std::tr1::shared_ptr<const DepSpec> spec)
         {
-            const PackageDepAtom * const u(atom->as_package_dep_atom());
+            const PackageDepSpec * const u(spec->as_package_dep_spec());
             if (0 != u)
             {
-                return ! env->package_database()->query(PackageDepAtom(u->package()),
+                return ! env->package_database()->query(PackageDepSpec(u->package()),
                         is_installed_only, qo_whatever)->empty();
             }
             else
@@ -306,7 +306,7 @@ namespace
 }
 
 struct DepList::QueryVisitor :
-    DepAtomVisitorTypes::ConstVisitor
+    DepSpecVisitorTypes::ConstVisitor
 {
     bool result;
     const DepList * const d;
@@ -319,22 +319,22 @@ struct DepList::QueryVisitor :
     {
     }
 
-    void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
-    void visit(const PackageDepAtom * const);
-    void visit(const UseDepAtom * const);
-    void visit(const AnyDepAtom * const);
-    void visit(const BlockDepAtom * const);
-    void visit(const AllDepAtom * const);
+    void visit(const PlainTextDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
+    void visit(const PackageDepSpec * const);
+    void visit(const UseDepSpec * const);
+    void visit(const AnyDepSpec * const);
+    void visit(const BlockDepSpec * const);
+    void visit(const AllDepSpec * const);
 };
 
 void
-DepList::QueryVisitor::visit(const PlainTextDepAtom * const)
+DepList::QueryVisitor::visit(const PlainTextDepSpec * const)
 {
-    throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+    throw InternalError(PALUDIS_HERE, "Got PlainTextDepSpec?");
 }
 
 void
-DepList::QueryVisitor::visit(const PackageDepAtom * const a)
+DepList::QueryVisitor::visit(const PackageDepSpec * const a)
 {
     /* a pda matches if we'll be installed by the time we reach the current point. This
      * means that merely being installed is not enough, if we'll have our version changed
@@ -358,9 +358,9 @@ DepList::QueryVisitor::visit(const PackageDepAtom * const a)
                 d->_imp->merge_list_index.equal_range(a->package()));
 
         bool replaced(false);
-        PackageDepAtom atom(a->package());
+        PackageDepSpec spec(a->package());
         while (p.second != ((p.first = std::find_if(p.first, p.second,
-                            MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, &atom)))))
+                            MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, &spec)))))
         {
             if (p.first->second->metadata->slot != slot)
                 p.first = next(p.first);
@@ -383,7 +383,7 @@ DepList::QueryVisitor::visit(const PackageDepAtom * const a)
             d->_imp->merge_list_index.equal_range(a->package()));
 
     if (p.second != std::find_if(p.first, p.second,
-                MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, a)))
+                MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, a)))
     {
         // TODO: check destination
         result = true;
@@ -392,14 +392,14 @@ DepList::QueryVisitor::visit(const PackageDepAtom * const a)
 }
 
 void
-DepList::QueryVisitor::visit(const UseDepAtom * const a)
+DepList::QueryVisitor::visit(const UseDepSpec * const a)
 {
-    /* for use? ( ) dep atoms, return true if we're not enabled, so that
+    /* for use? ( ) dep specs, return true if we're not enabled, so that
      * weird || ( ) cases work. */
     if (d->_imp->env->query_use(a->flag(), d->_imp->current_pde()) ^ a->inverse())
     {
         result = true;
-        for (CompositeDepAtom::Iterator c(a->begin()), c_end(a->end()) ; c != c_end ; ++c)
+        for (CompositeDepSpec::Iterator c(a->begin()), c_end(a->end()) ; c != c_end ; ++c)
         {
             (*c)->accept(this);
             if (! result)
@@ -411,23 +411,23 @@ DepList::QueryVisitor::visit(const UseDepAtom * const a)
 }
 
 void
-DepList::QueryVisitor::visit(const AnyDepAtom * const a)
+DepList::QueryVisitor::visit(const AnyDepSpec * const a)
 {
     /* empty || ( ) must resolve to true */
-    std::list<std::tr1::shared_ptr<const DepAtom> > viable_children;
+    std::list<std::tr1::shared_ptr<const DepSpec> > viable_children;
     std::copy(a->begin(), a->end(), filter_inserter(std::back_inserter(viable_children),
-                IsViableAnyDepAtomChild(d->_imp->env, d->_imp->current_pde())));
+                IsViableAnyDepSpecChild(d->_imp->env, d->_imp->current_pde())));
 
     RangeRewriter r;
     std::for_each(viable_children.begin(), viable_children.end(), accept_visitor(&r));
-    if (r.atom())
+    if (r.spec())
     {
         viable_children.clear();
-        viable_children.push_back(r.atom());
+        viable_children.push_back(r.spec());
     }
 
     result = true;
-    for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(viable_children.begin()),
+    for (std::list<std::tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
     {
         (*c)->accept(this);
@@ -437,16 +437,16 @@ DepList::QueryVisitor::visit(const AnyDepAtom * const a)
 }
 
 void
-DepList::QueryVisitor::visit(const BlockDepAtom * const a)
+DepList::QueryVisitor::visit(const BlockDepSpec * const a)
 {
-    a->blocked_atom()->accept(this);
+    a->blocked_spec()->accept(this);
     result = !result;
 }
 
 void
-DepList::QueryVisitor::visit(const AllDepAtom * const a)
+DepList::QueryVisitor::visit(const AllDepSpec * const a)
 {
-    for (CompositeDepAtom::Iterator c(a->begin()), c_end(a->end()) ; c != c_end ; ++c)
+    for (CompositeDepSpec::Iterator c(a->begin()), c_end(a->end()) ; c != c_end ; ++c)
     {
         (*c)->accept(this);
         if (! result)
@@ -455,8 +455,8 @@ DepList::QueryVisitor::visit(const AllDepAtom * const a)
 }
 
 struct DepList::AddVisitor :
-    DepAtomVisitorTypes::ConstVisitor,
-    DepAtomVisitorTypes::ConstVisitor::VisitChildren<AddVisitor, AllDepAtom>
+    DepSpecVisitorTypes::ConstVisitor,
+    DepSpecVisitorTypes::ConstVisitor::VisitChildren<AddVisitor, AllDepSpec>
 {
     DepList * const d;
     std::tr1::shared_ptr<const DestinationsCollection> destinations;
@@ -467,24 +467,24 @@ struct DepList::AddVisitor :
     {
     }
 
-    void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
-    void visit(const PackageDepAtom * const);
-    void visit(const UseDepAtom * const);
-    void visit(const AnyDepAtom * const);
-    void visit(const BlockDepAtom * const);
-    using DepAtomVisitorTypes::ConstVisitor::VisitChildren<AddVisitor, AllDepAtom>::visit;
+    void visit(const PlainTextDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
+    void visit(const PackageDepSpec * const);
+    void visit(const UseDepSpec * const);
+    void visit(const AnyDepSpec * const);
+    void visit(const BlockDepSpec * const);
+    using DepSpecVisitorTypes::ConstVisitor::VisitChildren<AddVisitor, AllDepSpec>::visit;
 };
 
 void
-DepList::AddVisitor::visit(const PlainTextDepAtom * const)
+DepList::AddVisitor::visit(const PlainTextDepSpec * const)
 {
-    throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+    throw InternalError(PALUDIS_HERE, "Got PlainTextDepSpec?");
 }
 
 void
-DepList::AddVisitor::visit(const PackageDepAtom * const a)
+DepList::AddVisitor::visit(const PackageDepSpec * const a)
 {
-    Context context("When adding PackageDepAtom '" + stringify(*a) + "':");
+    Context context("When adding PackageDepSpec '" + stringify(*a) + "':");
 
     /* find already installed things */
     // TODO: check destinations
@@ -495,7 +495,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
     std::pair<MergeListIndex::iterator, MergeListIndex::iterator> q(
             d->_imp->merge_list_index.equal_range(a->package()));
     MergeListIndex::iterator qq(std::find_if(q.first, q.second,
-                MatchDepListEntryAgainstPackageDepAtom(d->_imp->env, a)));
+                MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, a)));
 
     MergeList::iterator existing_merge_list_entry(qq == q.second ? d->_imp->merge_list.end() : qq->second);
     if (existing_merge_list_entry != d->_imp->merge_list.end())
@@ -727,7 +727,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
         case dl_downgrade_warning:
             {
                 std::tr1::shared_ptr<PackageDatabaseEntryCollection> are_we_downgrading(
-                        d->_imp->env->package_database()->query(PackageDepAtom(
+                        d->_imp->env->package_database()->query(PackageDepSpec(
                                 stringify(a->package()) + ":" + stringify(slot)),
                             is_installed_only, qo_order_by_version));
 
@@ -764,7 +764,7 @@ DepList::AddVisitor::visit(const PackageDepAtom * const a)
 }
 
 void
-DepList::AddVisitor::visit(const UseDepAtom * const a)
+DepList::AddVisitor::visit(const UseDepSpec * const a)
 {
     if (d->_imp->opts->use == dl_use_deps_standard)
     {
@@ -791,27 +791,27 @@ DepList::AddVisitor::visit(const UseDepAtom * const a)
 }
 
 void
-DepList::AddVisitor::visit(const AnyDepAtom * const a)
+DepList::AddVisitor::visit(const AnyDepSpec * const a)
 {
     /* annoying requirement: || ( foo? ( ... ) ) resolves to empty if !foo. */
-    std::list<std::tr1::shared_ptr<const DepAtom> > viable_children;
+    std::list<std::tr1::shared_ptr<const DepSpec> > viable_children;
     std::copy(a->begin(), a->end(), filter_inserter(std::back_inserter(viable_children),
-                IsViableAnyDepAtomChild(d->_imp->env, d->_imp->current_pde())));
+                IsViableAnyDepSpecChild(d->_imp->env, d->_imp->current_pde())));
 
     if (viable_children.empty())
         return;
 
     RangeRewriter r;
     std::for_each(viable_children.begin(), viable_children.end(), accept_visitor(&r));
-    if (r.atom())
+    if (r.spec())
     {
         viable_children.clear();
-        viable_children.push_back(r.atom());
+        viable_children.push_back(r.spec());
     }
 
     /* see if any of our children is already installed. if any is, add it so that
      * any upgrades kick in */
-    for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(viable_children.begin()),
+    for (std::list<std::tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
     {
         if (d->already_installed(**c, destinations))
@@ -823,11 +823,11 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
 
     /* if we have something like || ( a >=b-2 ) and b-1 is installed, try to go for
      * the b-2 bit first */
-    std::list<std::tr1::shared_ptr<const DepAtom> > pda_children;
+    std::list<std::tr1::shared_ptr<const DepSpec> > pda_children;
     std::copy(viable_children.begin(), viable_children.end(),
-            filter_inserter(std::back_inserter(pda_children), IsInterestingPDADepAtomChild(d->_imp->env)));
+            filter_inserter(std::back_inserter(pda_children), IsInterestingPDADepSpecChild(d->_imp->env)));
 
-    for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(pda_children.begin()),
+    for (std::list<std::tr1::shared_ptr<const DepSpec> >::const_iterator c(pda_children.begin()),
             c_end(pda_children.end()) ; c != c_end ; ++c)
     {
         try
@@ -844,7 +844,7 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
     }
 
     /* install first available viable option */
-    for (std::list<std::tr1::shared_ptr<const DepAtom> >::const_iterator c(viable_children.begin()),
+    for (std::list<std::tr1::shared_ptr<const DepSpec> >::const_iterator c(viable_children.begin()),
             c_end(viable_children.end()) ; c != c_end ; ++c)
     {
         try
@@ -869,23 +869,23 @@ DepList::AddVisitor::visit(const AnyDepAtom * const a)
 }
 
 void
-DepList::AddVisitor::visit(const BlockDepAtom * const a)
+DepList::AddVisitor::visit(const BlockDepSpec * const a)
 {
     if (dl_blocks_discard_completely == d->_imp->opts->blocks)
         return;
 
     // TODO: check destinations
 
-    Context context("When checking BlockDepAtom '!" + stringify(*a->blocked_atom()) + "':");
+    Context context("When checking BlockDepSpec '!" + stringify(*a->blocked_spec()) + "':");
 
-    PackageDepAtom just_package(a->blocked_atom()->package());
+    PackageDepSpec just_package(a->blocked_spec()->package());
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed(d->_imp->env->package_database()->query(
                 just_package, is_installed_only, qo_whatever));
 
     std::list<MergeList::const_iterator> will_be_installed;
-    MatchDepListEntryAgainstPackageDepAtom m(d->_imp->env, &just_package);
+    MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, &just_package);
     for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
-                d->_imp->merge_list_index.equal_range(a->blocked_atom()->package())) ;
+                d->_imp->merge_list_index.equal_range(a->blocked_spec()->package())) ;
             p.first != p.second ; ++p.first)
     {
         if (d->_imp->current_merge_list_entry != d->_imp->merge_list.end())
@@ -907,7 +907,7 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
     for (PackageDatabaseEntryCollection::Iterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
     {
-        if (! match_package(*d->_imp->env, *a->blocked_atom(), *aa))
+        if (! match_package(*d->_imp->env, *a->blocked_spec(), *aa))
             continue;
 
         std::tr1::shared_ptr<const VersionMetadata> metadata(d->_imp->env->package_database()->fetch_repository(
@@ -932,8 +932,8 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
-        if (! (a->blocked_atom()->version_requirements_ptr() || a->blocked_atom()->slot_ptr()
-                    || a->blocked_atom()->use_requirements_ptr() || a->blocked_atom()->repository_ptr())
+        if (! (a->blocked_spec()->version_requirements_ptr() || a->blocked_spec()->slot_ptr()
+                    || a->blocked_spec()->use_requirements_ptr() || a->blocked_spec()->repository_ptr())
                 && d->_imp->current_pde())
         {
             if (aa->name == d->_imp->current_pde()->name)
@@ -947,11 +947,11 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
         switch (d->_imp->throw_on_blocker ? dl_blocks_error : d->_imp->opts->blocks)
         {
             case dl_blocks_error:
-                throw BlockError(stringify(*a->blocked_atom()));
+                throw BlockError(stringify(*a->blocked_spec()));
 
             case dl_blocks_discard:
                 Log::get_instance()->message(ll_warning, lc_context, "Discarding block '!"
-                        + stringify(*a->blocked_atom()) + "'");
+                        + stringify(*a->blocked_spec()) + "'");
                 break;
 
             case dl_blocks_discard_completely:
@@ -969,13 +969,13 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
     for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
             r_end(will_be_installed.end()) ; r != r_end ; ++r)
     {
-        if (! match_package(*d->_imp->env, *a->blocked_atom(), (*r)->package))
+        if (! match_package(*d->_imp->env, *a->blocked_spec(), (*r)->package))
             continue;
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
          * ourself */
-        if (! (a->blocked_atom()->version_requirements_ptr() || a->blocked_atom()->slot_ptr()
-                    || a->blocked_atom()->use_requirements_ptr() || a->blocked_atom()->repository_ptr())
+        if (! (a->blocked_spec()->version_requirements_ptr() || a->blocked_spec()->slot_ptr()
+                    || a->blocked_spec()->use_requirements_ptr() || a->blocked_spec()->repository_ptr())
                 && d->_imp->current_pde())
         {
             if ((*r)->package.name == d->_imp->current_pde()->name)
@@ -986,14 +986,14 @@ DepList::AddVisitor::visit(const BlockDepAtom * const a)
                 continue;
         }
 
-        throw BlockError(stringify(*a->blocked_atom()));
+        throw BlockError(stringify(*a->blocked_spec()));
     }
 }
 
 struct DepList::ShowSuggestVisitor :
-    DepAtomVisitorTypes::ConstVisitor,
-    DepAtomVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AllDepAtom>,
-    DepAtomVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AnyDepAtom>
+    DepSpecVisitorTypes::ConstVisitor,
+    DepSpecVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AllDepSpec>,
+    DepSpecVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AnyDepSpec>
 {
     DepList * const d;
     std::tr1::shared_ptr<const DestinationsCollection> destinations;
@@ -1004,34 +1004,34 @@ struct DepList::ShowSuggestVisitor :
     {
     }
 
-    void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
-    void visit(const PackageDepAtom * const);
-    void visit(const UseDepAtom * const);
-    void visit(const BlockDepAtom * const);
-    using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AllDepAtom>::visit;
-    using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AnyDepAtom>::visit;
+    void visit(const PlainTextDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
+    void visit(const PackageDepSpec * const);
+    void visit(const UseDepSpec * const);
+    void visit(const BlockDepSpec * const);
+    using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AllDepSpec>::visit;
+    using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ShowSuggestVisitor, AnyDepSpec>::visit;
 };
 
 void
-DepList::ShowSuggestVisitor::visit(const PlainTextDepAtom * const)
+DepList::ShowSuggestVisitor::visit(const PlainTextDepSpec * const)
 {
-    throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+    throw InternalError(PALUDIS_HERE, "Got PlainTextDepSpec?");
 }
 
 void
-DepList::ShowSuggestVisitor::visit(const UseDepAtom * const a)
+DepList::ShowSuggestVisitor::visit(const UseDepSpec * const a)
 {
     if (d->_imp->env->query_use(a->flag(), d->_imp->current_pde()) ^ a->inverse())
         std::for_each(a->begin(), a->end(), accept_visitor(this));
 }
 
 void
-DepList::ShowSuggestVisitor::visit(const BlockDepAtom * const)
+DepList::ShowSuggestVisitor::visit(const BlockDepSpec * const)
 {
 }
 
 void
-DepList::ShowSuggestVisitor::visit(const PackageDepAtom * const a)
+DepList::ShowSuggestVisitor::visit(const PackageDepSpec * const a)
 {
     Context context("When adding suggested dep '" + stringify(*a) + "':");
 
@@ -1079,23 +1079,23 @@ DepList::clear()
 }
 
 void
-DepList::add_in_role(std::tr1::shared_ptr<const DepAtom> atom, const std::string & role,
+DepList::add_in_role(std::tr1::shared_ptr<const DepSpec> spec, const std::string & role,
         std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     Context context("When adding " + role + ":");
-    add(atom, destinations);
+    add(spec, destinations);
 }
 
 void
-DepList::add(std::tr1::shared_ptr<const DepAtom> atom, std::tr1::shared_ptr<const DestinationsCollection> destinations)
+DepList::add(std::tr1::shared_ptr<const DepSpec> spec, std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     DepListTransaction transaction(_imp->merge_list, _imp->merge_list_index, _imp->merge_list_generation);
 
-    Save<std::tr1::shared_ptr<const DepAtom> > save_current_top_level_target(&_imp->current_top_level_target,
-            _imp->current_top_level_target ? _imp->current_top_level_target : atom);
+    Save<std::tr1::shared_ptr<const DepSpec> > save_current_top_level_target(&_imp->current_top_level_target,
+            _imp->current_top_level_target ? _imp->current_top_level_target : spec);
 
     AddVisitor visitor(this, destinations);
-    atom->accept(&visitor);
+    spec->accept(&visitor);
     transaction.commit();
 }
 
@@ -1152,15 +1152,15 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
     /* add provides */
     if (metadata->ebuild_interface)
     {
-        DepAtomFlattener f(_imp->env, _imp->current_pde(), metadata->ebuild_interface->provide());
-        for (DepAtomFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+        DepSpecFlattener f(_imp->env, _imp->current_pde(), metadata->ebuild_interface->provide());
+        for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            std::tr1::shared_ptr<PackageDepAtom> pp(new PackageDepAtom("=" + (*i)->text() + "-" + stringify(p.version)));
+            std::tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec("=" + (*i)->text() + "-" + stringify(p.version)));
 
             std::pair<MergeListIndex::iterator, MergeListIndex::iterator> z(
                     _imp->merge_list_index.equal_range(pp->package()));
             MergeListIndex::iterator zz(std::find_if(z.first, z.second,
-                MatchDepListEntryAgainstPackageDepAtom(_imp->env, pp.get())));
+                MatchDepListEntryAgainstPackageDepSpec(_imp->env, pp.get())));
 
             if (z.first != z.second)
                 continue;
@@ -1312,7 +1312,7 @@ DepList::add_suggested_package(const PackageDatabaseEntry & p,
 }
 
 void
-DepList::add_predeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOption opt, const std::string & s,
+DepList::add_predeps(std::tr1::shared_ptr<const DepSpec> d, const DepListDepsOption opt, const std::string & s,
         std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     if (dl_deps_pre == opt || dl_deps_pre_or_post == opt)
@@ -1333,7 +1333,7 @@ DepList::add_predeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOpt
 }
 
 void
-DepList::add_postdeps(std::tr1::shared_ptr<const DepAtom> d, const DepListDepsOption opt, const std::string & s,
+DepList::add_postdeps(std::tr1::shared_ptr<const DepSpec> d, const DepListDepsOption opt, const std::string & s,
         std::tr1::shared_ptr<const DestinationsCollection> destinations)
 {
     if (dl_deps_pre_or_post == opt || dl_deps_post == opt || dl_deps_try_post == opt)
@@ -1549,10 +1549,10 @@ DepList::prefer_installed_over_uninstalled(const PackageDatabaseEntry & installe
 }
 
 bool
-DepList::already_installed(const DepAtom & atom, std::tr1::shared_ptr<const DestinationsCollection> destinations) const
+DepList::already_installed(const DepSpec & spec, std::tr1::shared_ptr<const DestinationsCollection> destinations) const
 {
     QueryVisitor visitor(this, destinations);
-    atom.accept(&visitor);
+    spec.accept(&visitor);
     return visitor.result;
 }
 

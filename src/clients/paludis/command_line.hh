@@ -197,8 +197,8 @@ class CommandLine :
         /// --preserve-world
         paludis::args::SwitchArg a_preserve_world;
 
-        /// --add-to-world-atom
-        paludis::args::StringArg a_add_to_world_atom;
+        /// --add-to-world-spec
+        paludis::args::StringArg a_add_to_world_spec;
 
         /// --no-config-protection
         paludis::args::SwitchArg a_no_config_protection;
@@ -311,6 +311,7 @@ class CommandLine :
         paludis::args::SwitchArg a_dl_drop_all;
         paludis::args::SwitchArg a_dl_ignore_installed;
         paludis::args::StringArg a_show_install_reasons;
+        paludis::args::StringArg a_add_to_world_atom;
 
         ///\}
 };

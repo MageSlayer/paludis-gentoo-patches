@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_HH 1
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
@@ -722,7 +722,7 @@ namespace paludis
             /**
              * Override in descendents: package list.
              */
-            virtual std::tr1::shared_ptr<DepAtom> do_package_set(const SetName & id) const = 0;
+            virtual std::tr1::shared_ptr<DepSpec> do_package_set(const SetName & id) const = 0;
 
             ///\}
 
@@ -733,7 +733,7 @@ namespace paludis
             /**
              * Fetch a package set.
              */
-            std::tr1::shared_ptr<DepAtom> package_set(const SetName & s) const
+            std::tr1::shared_ptr<DepSpec> package_set(const SetName & s) const
             {
                 return do_package_set(s);
             }

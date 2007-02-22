@@ -210,10 +210,10 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
         repo = "::" + stringify((d.destinations->begin()->destination)->name());
 
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_repo(environment()->package_database()->
-            query(query::Matches(PackageDepAtom(stringify(d.package.name) + repo)), qo_order_by_version));
+            query(query::Matches(PackageDepSpec(stringify(d.package.name) + repo)), qo_order_by_version));
 
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_slot_repo(environment()->package_database()->
-            query(query::Matches(PackageDepAtom(stringify(d.package.name) + ":" + stringify(d.metadata->slot) + repo)),
+            query(query::Matches(PackageDepSpec(stringify(d.package.name) + ":" + stringify(d.metadata->slot) + repo)),
                 qo_order_by_version));
 
     display_merge_list_entry_start(d, m);
@@ -292,7 +292,7 @@ ConsoleInstallTask::on_update_world_pre()
 }
 
 void
-ConsoleInstallTask::on_update_world(const PackageDepAtom & a)
+ConsoleInstallTask::on_update_world(const PackageDepSpec & a)
 {
     output_starred_item("adding " + render_as_package_name(stringify(a)));
 }
@@ -304,7 +304,7 @@ ConsoleInstallTask::on_update_world(const SetName & a)
 }
 
 void
-ConsoleInstallTask::on_update_world_skip(const PackageDepAtom & a, const std::string & s)
+ConsoleInstallTask::on_update_world_skip(const PackageDepSpec & a, const std::string & s)
 {
     output_starred_item("skipping " + render_as_package_name(stringify(a)) + " ("
             + s + ")");

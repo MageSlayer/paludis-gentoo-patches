@@ -118,7 +118,7 @@ module Paludis
         end
 
         def pda
-            PackageDepAtom.new('foo/bar')
+            PackageDepSpec.new('foo/bar')
         end
 
         def dd
@@ -193,11 +193,11 @@ module Paludis
         end
 
         def test_already_installed?
-            dep_atom = pda
+            dep_spec = pda
             dep_list = dl
-            assert !dep_list.already_installed?(dep_atom, dd)
-            dep_list.add(dep_atom, dd)
-            assert dep_list.already_installed?(dep_atom, dd)
+            assert !dep_list.already_installed?(dep_spec, dd)
+            dep_list.add(dep_spec, dd)
+            assert dep_list.already_installed?(dep_spec, dd)
         end
 
         def test_each
@@ -206,11 +206,11 @@ module Paludis
 
         def test_errors
             assert_raise AllMaskedError do
-                dl.add(PackageDepAtom.new('foo/ba'), dd)
+                dl.add(PackageDepSpec.new('foo/ba'), dd)
             end
 
             begin
-                dl.add(PackageDepAtom.new('foo/ba'), dd)
+                dl.add(PackageDepSpec.new('foo/ba'), dd)
             rescue AllMaskedError => error
                 assert_equal 'foo/ba', error.query
             end

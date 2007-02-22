@@ -109,7 +109,7 @@ namespace paludis
             virtual void do_install(const QualifiedPackageName &, const VersionSpec &,
                     const InstallOptions &) const;
 
-            virtual std::tr1::shared_ptr<DepAtom> do_package_set(const SetName &) const;
+            virtual std::tr1::shared_ptr<DepSpec> do_package_set(const SetName &) const;
 
             virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 
@@ -176,7 +176,7 @@ namespace paludis
             std::string profile_variable(const std::string &) const;
 
             typedef libwrapiter::ForwardIterator<PortageRepository, std::pair<
-                const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepAtom> > > OurVirtualsIterator;
+                const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > > OurVirtualsIterator;
 
             const PortageRepositoryParams & params() const;
 

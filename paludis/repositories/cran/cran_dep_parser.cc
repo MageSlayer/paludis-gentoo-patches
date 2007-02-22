@@ -1,4 +1,4 @@
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/util/strip.hh>
@@ -9,17 +9,17 @@
 
 using namespace paludis;
 
-std::tr1::shared_ptr<const CompositeDepAtom>
+std::tr1::shared_ptr<const CompositeDepSpec>
 CRANDepParser::parse(const std::string & s)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
 
-    std::tr1::shared_ptr<CompositeDepAtom> result(new AllDepAtom);
-    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> atom_tokeniser(",");
+    std::tr1::shared_ptr<CompositeDepSpec> result(new AllDepSpec);
+    Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> spec_tokeniser(",");
 
-    std::list<std::string> atoms;
-    atom_tokeniser.tokenise(s, std::back_inserter(atoms));
-    std::list<std::string>::const_iterator a(atoms.begin()), a_end(atoms.end());
+    std::list<std::string> specs;
+    spec_tokeniser.tokenise(s, std::back_inserter(specs));
+    std::list<std::string>::const_iterator a(specs.begin()), a_end(specs.end());
     for ( ; a != a_end ; ++a)
     {
         Context local_context("When processing token '" + *a + "':");
@@ -48,13 +48,13 @@ CRANDepParser::parse(const std::string & s)
         else
             name = "cran/" + name;
 
-        std::string atom_string;
+        std::string spec_string;
         if (version.empty() || range.empty())
-            atom_string = name;
+            spec_string = name;
         else
-            atom_string = range + name + "-" + version;
-        std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(atom_string));
-        result->add_child(atom);
+            spec_string = range + name + "-" + version;
+        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_string));
+        result->add_child(spec);
     }
 
     return result;

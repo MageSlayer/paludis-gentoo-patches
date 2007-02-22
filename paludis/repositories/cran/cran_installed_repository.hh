@@ -86,7 +86,7 @@ namespace paludis
             virtual void do_uninstall(const QualifiedPackageName &, const VersionSpec &,
                     const UninstallOptions &) const;
 
-            virtual std::tr1::shared_ptr<DepAtom> do_package_set(const SetName &) const;
+            virtual std::tr1::shared_ptr<DepSpec> do_package_set(const SetName &) const;
 
             virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
 

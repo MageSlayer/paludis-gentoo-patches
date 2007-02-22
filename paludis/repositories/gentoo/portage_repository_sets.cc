@@ -76,7 +76,7 @@ PortageRepositorySets::~PortageRepositorySets()
 }
 
 
-std::tr1::shared_ptr<DepAtom>
+std::tr1::shared_ptr<DepSpec>
 PortageRepositorySets::package_set(const SetName & s) const
 {
     if ("system" == s.data())
@@ -92,7 +92,7 @@ PortageRepositorySets::package_set(const SetName & s) const
         FSEntry ff(_imp->params.setsdir / (stringify(s) + ".conf"));
         Context context("When loading package set '" + stringify(s) + "' from '" + stringify(ff) + "':");
 
-        std::tr1::shared_ptr<AllDepAtom> result(new AllDepAtom);
+        std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
         LineConfigFile f(ff);
         for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
@@ -107,19 +107,19 @@ PortageRepositorySets::package_set(const SetName & s) const
                 Log::get_instance()->message(ll_warning, lc_context,
                         "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(tokens.at(0)));
-                atom->set_tag(tag);
-                result->add_child(atom);
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0)));
+                spec->set_tag(tag);
+                result->add_child(spec);
             }
             else if ("*" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(tokens.at(1)));
-                atom->set_tag(tag);
-                result->add_child(atom);
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1)));
+                spec->set_tag(tag);
+                result->add_child(spec);
             }
             else if ("?" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepAtom> p(new PackageDepAtom(tokens.at(1)));
+                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(1)));
                 p->set_tag(tag);
                 if (! _imp->environment->package_database()->query(
                             query::Package(p->package()) & query::InstalledAtRoot(
@@ -140,7 +140,7 @@ PortageRepositorySets::package_set(const SetName & s) const
         return result;
     }
     else
-        return std::tr1::shared_ptr<DepAtom>();
+        return std::tr1::shared_ptr<DepSpec>();
 }
 
 std::tr1::shared_ptr<const SetsCollection>
@@ -268,11 +268,11 @@ namespace
     }
 }
 
-std::tr1::shared_ptr<DepAtom>
+std::tr1::shared_ptr<DepSpec>
 PortageRepositorySets::security_set(bool insecurity) const
 {
     Context context("When building security or insecurity package set:");
-    std::tr1::shared_ptr<AllDepAtom> security_packages(new AllDepAtom);
+    std::tr1::shared_ptr<AllDepSpec> security_packages(new AllDepSpec);
 
     if (!_imp->params.securitydir.is_directory())
         return security_packages;
@@ -314,11 +314,11 @@ PortageRepositorySets::security_set(bool insecurity) const
 
                     if (insecurity)
                     {
-                        std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(
+                        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                                     "=" + stringify(c->name) + "-" + stringify(c->version) +
                                     "::" + stringify(c->repository)));
-                        atom->set_tag(glsa_tags.find(glsa->id())->second);
-                        security_packages->add_child(atom);
+                        spec->set_tag(glsa_tags.find(glsa->id())->second);
+                        security_packages->add_child(spec);
                     }
                     else
                     {
@@ -330,7 +330,7 @@ PortageRepositorySets::security_set(bool insecurity) const
 
                         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> available(
                                 _imp->environment->package_database()->query(
-                                    query::Matches(PackageDepAtom(glsa_pkg->name())) & query::InstalledAtRoot(
+                                    query::Matches(PackageDepSpec(glsa_pkg->name())) & query::InstalledAtRoot(
                                         _imp->environment->root()), qo_order_by_version));
                         for (PackageDatabaseEntryCollection::ReverseIterator r(available->rbegin()),
                                 r_end(available->rend()) ; r != r_end ; ++r)
@@ -343,11 +343,11 @@ PortageRepositorySets::security_set(bool insecurity) const
                             if (is_vulnerable(*glsa_pkg, *r))
                                 continue;
 
-                            std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(
+                            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                                         "=" + stringify(r->name) + "-" + stringify(r->version) +
                                         "::" + stringify(r->repository)));
-                            atom->set_tag(glsa_tags.find(glsa->id())->second);
-                            security_packages->add_child(atom);
+                            spec->set_tag(glsa_tags.find(glsa->id())->second);
+                            security_packages->add_child(spec);
                             ok = true;
                             break;
                         }

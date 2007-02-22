@@ -42,8 +42,8 @@ CommandLine::CommandLine() :
 
     action_args_internal(this, "More actions",
             "Additional actions, mostly for script and internal use."),
-    a_has_version(&action_args_internal, "has-version", '\0', "Check whether the specified atom is installed"),
-    a_best_version(&action_args_internal, "best-version", '\0', "Display the best version of the specified atom"),
+    a_has_version(&action_args_internal, "has-version", '\0', "Check whether the specified spec is installed"),
+    a_best_version(&action_args_internal, "best-version", '\0', "Display the best version of the specified spec"),
     a_environment_variable(&action_args_internal, "environment-variable", '\0', "Display the value of an environment "
             "variable for a particular package"),
     a_configuration_variable(&action_args_internal, "configuration-variable", '\0', "Display the value of a "
@@ -80,8 +80,8 @@ CommandLine::CommandLine() :
     a_pretend(&install_args, "pretend", 'p', "Pretend only"),
     a_destinations(&install_args, "destinations", 'd', "Use specified destinations instead of defaults"),
     a_preserve_world(&install_args, "preserve-world", '1', "Don't modify the world file"),
-    a_add_to_world_atom(&install_args, "add-to-world-atom", '\0',
-            "Use this atom, rather than all targets, for updating world (for resume commands)"),
+    a_add_to_world_spec(&install_args, "add-to-world-spec", '\0',
+            "Use this spec, rather than all targets, for updating world (for resume commands)"),
     a_no_config_protection(&install_args, "no-config-protection", '\0', "Disable config file protection (dangerous)"),
     a_debug_build(&install_args, "debug-build", '\0'),
     a_fetch(&install_args, "fetch", 'f', "Only fetch sources; don't install anything"),
@@ -226,7 +226,9 @@ CommandLine::CommandLine() :
     a_dl_ignore_installed(&deprecated_args, "dl-ignore-installed", 'e',
             "Replaced by --dl-reinstall always"),
     a_show_install_reasons(&deprecated_args, "show-install-reasons",
-            '\0', "Replaced by --show-reasons")
+            '\0', "Replaced by --show-reasons"),
+    a_add_to_world_atom(&deprecated_args, "add-to-world-atom", '\0',
+            "Repoaced by --add-to-world-spec")
 {
     add_usage_line("--query [query options] target ...");
     add_usage_line("--install [install options] target ...");
@@ -238,9 +240,9 @@ CommandLine::CommandLine() :
     add_usage_line("--info");
     add_usage_line("--help");
 
-    add_usage_line("--has-version atom");
-    add_usage_line("--best-version atom");
-    add_usage_line("--environment-variable atom variable");
+    add_usage_line("--has-version spec");
+    add_usage_line("--best-version spec");
+    add_usage_line("--environment-variable spec variable");
     add_usage_line("--configuration-variable repository variable");
     add_usage_line("--list-repositories [--repository repo1 --repository repo2 ...]");
     add_usage_line("--list-categories [--repository repo1 ... --category cat1 --category cat2 ...]");

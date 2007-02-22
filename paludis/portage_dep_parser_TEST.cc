@@ -42,11 +42,11 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d(0, false);
+            DepSpecPrettyPrinter d(0, false);
             PortageDepParser::parse("")->accept(&d);
             TEST_CHECK_EQUAL(stringify(d), "( ) ");
         }
-    } test_dep_atom_parser_empty;
+    } test_dep_spec_parser_empty;
 
     /**
      * \test Test PortageDepParser with a blank input.
@@ -58,11 +58,11 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d(0, false);
+            DepSpecPrettyPrinter d(0, false);
             PortageDepParser::parse("   \n   \t")->accept(&d);
             TEST_CHECK_EQUAL(stringify(d), "( ) ");
         }
-    } test_dep_atom_parser_blank;
+    } test_dep_spec_parser_blank;
 
     /**
      * \test Test PortageDepParser with a package.
@@ -74,11 +74,11 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d(0, false);
+            DepSpecPrettyPrinter d(0, false);
             PortageDepParser::parse("app-editors/vim")->accept(&d);
             TEST_CHECK_EQUAL(stringify(d), "( app-editors/vim ) ");
         }
-    } test_dep_atom_parser_package;
+    } test_dep_spec_parser_package;
 
     /**
      * \test Test PortageDepParser with a decorated package.
@@ -90,19 +90,19 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d1(0, false);
+            DepSpecPrettyPrinter d1(0, false);
             PortageDepParser::parse(">=app-editors/vim-6.4_alpha")->accept(&d1);
             TEST_CHECK_EQUAL(stringify(d1), "( >=app-editors/vim-6.4_alpha ) ");
 
-            DepAtomPrettyPrinter d2(0, false);
+            DepSpecPrettyPrinter d2(0, false);
             PortageDepParser::parse("=app-editors/vim-6.4_alpha-r1")->accept(&d2);
             TEST_CHECK_EQUAL(stringify(d2), "( =app-editors/vim-6.4_alpha-r1 ) ");
 
-            DepAtomPrettyPrinter d3(0, false);
+            DepSpecPrettyPrinter d3(0, false);
             PortageDepParser::parse(">=app-editors/vim-6.4_alpha:one")->accept(&d3);
             TEST_CHECK_EQUAL(stringify(d3), "( >=app-editors/vim-6.4_alpha:one ) ");
         }
-    } test_dep_atom_parser_decorated_package;
+    } test_dep_spec_parser_decorated_package;
 
     /**
      * \test Test PortageDepParser with a sequence of packages.
@@ -114,11 +114,11 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d(0, false);
+            DepSpecPrettyPrinter d(0, false);
             PortageDepParser::parse("app-editors/vim app-misc/hilite   \nsys-apps/findutils")->accept(&d);
             TEST_CHECK_EQUAL(stringify(d), "( app-editors/vim app-misc/hilite sys-apps/findutils ) ");
         }
-    } test_dep_atom_parser_packages;
+    } test_dep_spec_parser_packages;
 
     /**
      * \test Test PortageDepParser with an any group.
@@ -130,11 +130,11 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d(0, false);
+            DepSpecPrettyPrinter d(0, false);
             PortageDepParser::parse("|| ( one/one two/two )")->accept(&d);
             TEST_CHECK_EQUAL(stringify(d), "( || ( one/one two/two ) ) ");
         }
-    } test_dep_atom_parser_any;
+    } test_dep_spec_parser_any;
 
     /**
      * \test Test PortageDepParser with an all group.
@@ -146,11 +146,11 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d(0, false);
+            DepSpecPrettyPrinter d(0, false);
             PortageDepParser::parse(" ( one/one two/two )    ")->accept(&d);
             TEST_CHECK_EQUAL(stringify(d), "( ( one/one two/two ) ) ");
         }
-    } test_dep_atom_parser_all;
+    } test_dep_spec_parser_all;
 
     /**
      * \test Test PortageDepParser with a use group.
@@ -162,11 +162,11 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d(0, false);
+            DepSpecPrettyPrinter d(0, false);
             PortageDepParser::parse("foo? ( one/one )")->accept(&d);
             TEST_CHECK_EQUAL(stringify(d), "( foo? ( one/one ) ) ");
         }
-    } test_dep_atom_parser_use;
+    } test_dep_spec_parser_use;
 
     /**
      * \test Test PortageDepParser with an inverse use group.
@@ -178,11 +178,11 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d(0, false);
+            DepSpecPrettyPrinter d(0, false);
             PortageDepParser::parse("!foo? ( one/one )")->accept(&d);
             TEST_CHECK_EQUAL(stringify(d), "( !foo? ( one/one ) ) ");
         }
-    } test_dep_atom_parser_inv_use;
+    } test_dep_spec_parser_inv_use;
 
     /**
      * \test Test PortageDepParser nesting errors.
@@ -194,14 +194,14 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d(0, false);
+            DepSpecPrettyPrinter d(0, false);
             TEST_CHECK_THROWS(PortageDepParser::parse("!foo? ( one/one")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse("!foo? ( one/one ) )")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse("( ( ( ) )")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse("( ( ( ) ) ) )")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse(")")->accept(&d), DepStringError);
         }
-    } test_dep_atom_parser_bad_nesting;
+    } test_dep_spec_parser_bad_nesting;
 
     /**
      * \test Test PortageDepParser weird errors.
@@ -213,12 +213,12 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d(0, false);
+            DepSpecPrettyPrinter d(0, false);
             TEST_CHECK_THROWS(PortageDepParser::parse("!foo? ||")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse("(((")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse(")")->accept(&d), DepStringError);
             TEST_CHECK_THROWS(PortageDepParser::parse("(foo/bar)")->accept(&d), DepStringError);
         }
-    } test_dep_atom_parser_bad_values;
+    } test_dep_spec_parser_bad_values;
 }
 

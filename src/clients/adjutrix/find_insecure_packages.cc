@@ -61,10 +61,10 @@ namespace
     }
 
     class ListInsecureVisitor :
-        public DepAtomVisitorTypes::ConstVisitor,
-        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AllDepAtom>,
-        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AnyDepAtom>,
-        public DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, UseDepAtom>
+        public DepSpecVisitorTypes::ConstVisitor,
+        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AllDepSpec>,
+        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AnyDepSpec>,
+        public DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, UseDepSpec>
     {
         private:
             const Environment & _env;
@@ -72,16 +72,16 @@ namespace
                 ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator> _found;
 
         public:
-            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AllDepAtom>::visit;
-            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AnyDepAtom>::visit;
-            using DepAtomVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, UseDepAtom>::visit;
+            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AllDepSpec>::visit;
+            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, AnyDepSpec>::visit;
+            using DepSpecVisitorTypes::ConstVisitor::VisitChildren<ListInsecureVisitor, UseDepSpec>::visit;
 
             ListInsecureVisitor(const Environment & e) :
                 _env(e)
             {
             }
 
-            void visit(const PackageDepAtom * const a)
+            void visit(const PackageDepSpec * const a)
             {
                 std::tr1::shared_ptr<const PackageDatabaseEntryCollection> insecure(
                         _env.package_database()->query(query::Matches(*a), qo_order_by_version));
@@ -93,11 +93,11 @@ namespace
                         throw InternalError(PALUDIS_HERE, "didn't get a tag");
             }
 
-            void visit(const PlainTextDepAtom * const)
+            void visit(const PlainTextDepSpec * const)
             {
             }
 
-            void visit(const BlockDepAtom * const)
+            void visit(const BlockDepSpec * const)
             {
             }
 
@@ -146,7 +146,7 @@ void do_find_insecure_packages(const Environment & env)
 
         write_repository_header(r->name());
 
-        std::tr1::shared_ptr<const DepAtom> all_insecure(r->sets_interface->package_set(SetName("insecurity")));
+        std::tr1::shared_ptr<const DepSpec> all_insecure(r->sets_interface->package_set(SetName("insecurity")));
         if (! all_insecure)
             continue;
         ListInsecureVisitor v(env);

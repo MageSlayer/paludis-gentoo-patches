@@ -337,7 +337,7 @@ QueueList::Populate::display_entry(const paludis::DepListEntry & e)
     row[_q->_imp->columns.col_left] = left;
 
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing(DefaultEnvironment::get_instance()->package_database()->
-            query(PackageDepAtom(e.package.name), is_installed_only, qo_order_by_version));
+            query(PackageDepSpec(e.package.name), is_installed_only, qo_order_by_version));
 
     std::string right = stringify(e.package.version);
 
@@ -345,7 +345,7 @@ QueueList::Populate::display_entry(const paludis::DepListEntry & e)
         right.append(" [N]");
     else
     {
-        existing = DefaultEnvironment::get_instance()->package_database()->query(PackageDepAtom(
+        existing = DefaultEnvironment::get_instance()->package_database()->query(PackageDepSpec(
                     stringify(e.package.name) + ":" + stringify(e.metadata->slot)),
                 is_installed_only, qo_order_by_version);
         if (existing->empty())

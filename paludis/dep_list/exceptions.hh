@@ -45,7 +45,7 @@ namespace paludis
     };
 
     /**
-     * Thrown if all versions of a particular atom are masked.
+     * Thrown if all versions of a particular spec are masked.
      *
      * \ingroup grpdepresolver
      * \ingroup grpexceptions
@@ -78,7 +78,7 @@ namespace paludis
     };
 
     /**
-     * Thrown if all versions of a particular atom are masked,
+     * Thrown if all versions of a particular spec are masked,
      * but would not be if use requirements were not in effect.
      *
      * \ingroup grpdepresolver

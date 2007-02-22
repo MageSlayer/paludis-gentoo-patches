@@ -321,7 +321,7 @@ module Paludis
 
     class TestCase_DefaultEnvironmentPackageSet < Test::Unit::TestCase
         def test_package_set
-            assert_kind_of DepAtom, DefaultEnvironment.instance.package_set('everything')
+            assert_kind_of DepSpec, DefaultEnvironment.instance.package_set('everything')
         end
 
         def test_package_set_error
@@ -337,7 +337,7 @@ module Paludis
         end
 
         def test_package_set
-            assert_kind_of DepAtom, DefaultEnvironment.instance.package_set('everything')
+            assert_kind_of DepSpec, DefaultEnvironment.instance.package_set('everything')
         end
 
         def test_package_set_error

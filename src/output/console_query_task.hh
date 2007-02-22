@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_OUTPUT_CONSOLE_QUERY_TASK_HH 1
 
 #include <paludis/environment.hh>
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <src/output/console_task.hh>
 
 namespace paludis
@@ -36,19 +36,19 @@ namespace paludis
         public:
             virtual ~ConsoleQueryTask();
 
-            virtual void show(const PackageDepAtom &, const PackageDatabaseEntry * = 0) const;
+            virtual void show(const PackageDepSpec &, const PackageDatabaseEntry * = 0) const;
 
-            virtual void display_header(const PackageDepAtom &, const PackageDatabaseEntry &) const;
-            virtual void display_versions_by_repository(const PackageDepAtom &,
+            virtual void display_header(const PackageDepSpec &, const PackageDatabaseEntry &) const;
+            virtual void display_versions_by_repository(const PackageDepSpec &,
                     std::tr1::shared_ptr<const PackageDatabaseEntryCollection>, const PackageDatabaseEntry &) const;
-            virtual void display_metadata(const PackageDepAtom &, const PackageDatabaseEntry &) const;
+            virtual void display_metadata(const PackageDepSpec &, const PackageDatabaseEntry &) const;
 
             virtual void display_metadata_key(const std::string &, const std::string &,
                     const std::string &) const;
             virtual void display_metadata_license(const std::string &, const std::string &,
-                    std::tr1::shared_ptr<const DepAtom>, const PackageDatabaseEntry &) const;
+                    std::tr1::shared_ptr<const DepSpec>, const PackageDatabaseEntry &) const;
             virtual void display_metadata_dep(const std::string &, const std::string &,
-                    std::tr1::shared_ptr<const DepAtom>, const bool one_line) const;
+                    std::tr1::shared_ptr<const DepSpec>, const bool one_line) const;
             virtual void display_metadata_pde(const std::string &, const std::string &, const PackageDatabaseEntry &) const;
             virtual void display_metadata_time(const std::string &, const std::string &, time_t) const;
             virtual void display_metadata_iuse(const std::string &, const std::string &, const std::string &,

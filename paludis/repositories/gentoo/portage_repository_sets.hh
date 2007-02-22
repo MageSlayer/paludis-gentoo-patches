@@ -21,7 +21,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_SETS_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_PORTAGE_PORTAGE_REPOSITORY_SETS_HH 1
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/repository.hh>
 
 /** \file
@@ -62,12 +62,12 @@ namespace paludis
             /**
              * Fetch a package set other than system.
              */
-            std::tr1::shared_ptr<DepAtom> package_set(const SetName & s) const;
+            std::tr1::shared_ptr<DepSpec> package_set(const SetName & s) const;
 
             /**
              * Fetch the security or insecurity set.
              */
-            std::tr1::shared_ptr<DepAtom> security_set(bool insecure) const;
+            std::tr1::shared_ptr<DepSpec> security_set(bool insecure) const;
 
             /**
              * Give a list of all the sets in this repo.

@@ -236,12 +236,12 @@ UninstallList::collect_all_installed() const
 namespace
 {
     struct DepCollector :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AllDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AnyDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AllDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AnyDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AllDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AnyDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AllDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<DepCollector, AnyDepSpec>::visit;
 
         const Environment * const env;
         const PackageDatabaseEntry pkg;
@@ -254,26 +254,26 @@ namespace
         {
         }
 
-        void visit(const PackageDepAtom * const a)
+        void visit(const PackageDepSpec * const a)
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> m(env->package_database()->query(
                         *a, is_installed_only, qo_order_by_version));
             matches->insert(m->begin(), m->end());
         }
 
-        void visit(const UseDepAtom * const u)
+        void visit(const UseDepSpec * const u)
         {
             if (env->query_use(UseFlagName(u->flag()), &pkg) ^ u->inverse())
                 std::for_each(u->begin(), u->end(), accept_visitor(this));
         }
 
-        void visit(const BlockDepAtom * const)
+        void visit(const BlockDepSpec * const)
         {
         }
 
-        void visit(const PlainTextDepAtom * const) PALUDIS_ATTRIBUTE((noreturn))
+        void visit(const PlainTextDepSpec * const) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw InternalError(PALUDIS_HERE, "Got PlainTextDepAtom?");
+            throw InternalError(PALUDIS_HERE, "Got PlainTextDepSpec?");
         }
     };
 }
@@ -361,7 +361,7 @@ UninstallList::add_unused_dependencies()
                 ArbitrarilyOrderedPackageDatabaseEntryCollectionComparator());
 
         /* if any of them aren't already on the list, and aren't in world, add them and recurse */
-        std::tr1::shared_ptr<DepAtom> world(_imp->env->package_set(SetName("world")));
+        std::tr1::shared_ptr<DepSpec> world(_imp->env->package_set(SetName("world")));
         for (PackageDatabaseEntryCollection::Iterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
@@ -428,7 +428,7 @@ UninstallList::collect_world() const
             new ArbitrarilyOrderedPackageDatabaseEntryCollection::Concrete);
     std::tr1::shared_ptr<const ArbitrarilyOrderedPackageDatabaseEntryCollection> everything(collect_all_installed());
 
-    std::tr1::shared_ptr<DepAtom> world(_imp->env->package_set(SetName("world")));
+    std::tr1::shared_ptr<DepSpec> world(_imp->env->package_set(SetName("world")));
     for (PackageDatabaseEntryCollection::Iterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
         if (match_package_in_heirarchy(*_imp->env, *world, *i))

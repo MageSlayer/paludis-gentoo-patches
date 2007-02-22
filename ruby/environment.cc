@@ -212,7 +212,7 @@ namespace
      * call-seq:
      *     package_set(set_name)
      *
-     * Fetch a named package set as a DepAtom.
+     * Fetch a named package set as a DepSpec.
      */
     VALUE
     environment_package_set(VALUE self, VALUE set_name)
@@ -222,7 +222,7 @@ namespace
 
         try
         {
-            return dep_atom_to_value(env_data->env_ptr->package_set(SetName(StringValuePtr(set_name))));
+            return dep_spec_to_value(env_data->env_ptr->package_set(SetName(StringValuePtr(set_name))));
         }
         catch (const std::exception & e)
         {

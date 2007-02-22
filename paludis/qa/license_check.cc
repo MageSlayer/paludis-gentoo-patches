@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
@@ -32,14 +32,14 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>::visit;
 
         CheckResult & result;
         const QAEnvironment * const env;
@@ -50,7 +50,7 @@ namespace
         {
         }
 
-        void visit(const PlainTextDepAtom * const a)
+        void visit(const PlainTextDepSpec * const a)
         {
             RepositoryLicensesInterface *li(env->package_database()->fetch_repository(
                         env->portage_repository()->name())->licenses_interface);
@@ -59,20 +59,20 @@ namespace
                 result << Message(qal_major, "Item '" + a->text() + "' is not a licence");
         }
 
-        void visit(const BlockDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
-        void visit(const PackageDepAtom * const) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const BlockDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
+        void visit(const PackageDepSpec * const) PALUDIS_ATTRIBUTE((noreturn));
     };
 
     void
-    Checker::visit(const BlockDepAtom * const)
+    Checker::visit(const BlockDepSpec * const)
     {
-        throw InternalError(PALUDIS_HERE, "Unexpected BlockDepAtom");
+        throw InternalError(PALUDIS_HERE, "Unexpected BlockDepSpec");
     }
 
     void
-    Checker::visit(const PackageDepAtom * const)
+    Checker::visit(const PackageDepSpec * const)
     {
-        throw InternalError(PALUDIS_HERE, "Unexpected PackageDepAtom");
+        throw InternalError(PALUDIS_HERE, "Unexpected PackageDepSpec");
     }
 }
 
@@ -98,7 +98,7 @@ LicenseCheck::operator() (const EbuildCheckData & e) const
 
             std::string license(metadata->license_interface->license_string);
 
-            std::tr1::shared_ptr<const DepAtom> license_parts;
+            std::tr1::shared_ptr<const DepSpec> license_parts;
             try
             {
                 license_parts = metadata->license_interface->license();

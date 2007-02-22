@@ -76,23 +76,23 @@ namespace
     struct MatchesDelegate :
         QueryDelegate
     {
-        const PackageDepAtom atom;
+        const PackageDepSpec spec;
 
-        MatchesDelegate(const PackageDepAtom & a) :
-            atom(a)
+        MatchesDelegate(const PackageDepSpec & a) :
+            spec(a)
         {
         }
 
         std::tr1::shared_ptr<RepositoryNameCollection>
         repositories(const Environment & e) const
         {
-            if (atom.repository_ptr())
+            if (spec.repository_ptr())
             {
                 std::tr1::shared_ptr<RepositoryNameCollection> result(new RepositoryNameCollection::Concrete);
 
                 for (PackageDatabase::RepositoryIterator i(e.package_database()->begin_repositories()),
                         i_end(e.package_database()->end_repositories()) ; i != i_end ; ++i)
-                    if ((*i)->name() == *atom.repository_ptr())
+                    if ((*i)->name() == *spec.repository_ptr())
                     {
                         result->push_back((*i)->name());
                         break;
@@ -109,7 +109,7 @@ namespace
                 std::tr1::shared_ptr<const RepositoryNameCollection>) const
         {
             std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
-            result->insert(atom.package().category);
+            result->insert(spec.package().category);
             return result;
         }
 
@@ -119,7 +119,7 @@ namespace
             std::tr1::shared_ptr<const CategoryNamePartCollection>) const
         {
             std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
-            result->insert(atom.package());
+            result->insert(spec.package());
             return result;
         }
 
@@ -142,7 +142,7 @@ namespace
                             v != v_end ; ++v)
                     {
                         PackageDatabaseEntry dbe(*p, *v, *r);
-                        if (match_package(e, atom, dbe))
+                        if (match_package(e, spec, dbe))
                             result->push_back(dbe);
                     }
                 }
@@ -153,13 +153,13 @@ namespace
     };
 }
 
-query::Matches::Matches(const PackageDepAtom & a) :
+query::Matches::Matches(const PackageDepSpec & a) :
     Query(std::tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(a)))
 {
 }
 
 query::Package::Package(const QualifiedPackageName & a) :
-    Query(std::tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(PackageDepAtom(a))))
+    Query(std::tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(PackageDepSpec(a))))
 {
 }
 

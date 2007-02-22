@@ -180,7 +180,7 @@ namespace
 }
 
 int
-do_install(std::tr1::shared_ptr<const PackageDepAtom> atom)
+do_install(std::tr1::shared_ptr<const PackageDepSpec> spec)
 {
     int return_code(0);
 
@@ -217,7 +217,7 @@ do_install(std::tr1::shared_ptr<const PackageDepAtom> atom)
 
     try
     {
-        task.add_target(stringify(*atom));
+        task.add_target(stringify(*spec));
 
         task.execute();
 
@@ -272,7 +272,7 @@ do_install(std::tr1::shared_ptr<const PackageDepAtom> atom)
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
                     DefaultEnvironment::get_instance()->package_database()->query(
-                        query::Matches(PackageDepAtom(e.query())) & query::RepositoryHasUninstallableInterface(),
+                        query::Matches(PackageDepSpec(e.query())) & query::RepositoryHasUninstallableInterface(),
                         qo_order_by_version));
 
             if (p->empty())

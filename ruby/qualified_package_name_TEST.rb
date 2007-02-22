@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -95,7 +95,7 @@ module Paludis
 
         def test_to_value_type_error
             assert_raise TypeError do
-                QualifiedPackageName.new('foo-bar/baz') <=> PackageDepAtom.new('foo-bar/baz')
+                QualifiedPackageName.new('foo-bar/baz') <=> PackageDepSpec.new('foo-bar/baz')
             end
         end
     end

@@ -64,7 +64,7 @@ namespace
         std::tr1::shared_ptr<const VersionSpecCollection> versions(repo.version_specs(package));
         FindUnusedPackagesTask task(&e, &repo);
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(e.package_database()->query(
-                query::Matches(PackageDepAtom(stringify(package) + "::" + stringify(repo.name()))),
+                query::Matches(PackageDepSpec(stringify(package) + "::" + stringify(repo.name()))),
                 qo_group_by_slot));
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> unused(task.execute(package));
 

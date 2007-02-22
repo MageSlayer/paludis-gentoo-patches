@@ -52,7 +52,7 @@ ConsoleQueryTask::~ConsoleQueryTask()
 }
 
 void
-ConsoleQueryTask::show(const PackageDepAtom & a, const PackageDatabaseEntry * display_entry) const
+ConsoleQueryTask::show(const PackageDepSpec & a, const PackageDatabaseEntry * display_entry) const
 {
     /* prefer the best installed version, then the best visible version, then
      * the best version */
@@ -81,7 +81,7 @@ ConsoleQueryTask::show(const PackageDepAtom & a, const PackageDatabaseEntry * di
 }
 
 void
-ConsoleQueryTask::display_header(const PackageDepAtom & a, const PackageDatabaseEntry & e) const
+ConsoleQueryTask::display_header(const PackageDepSpec & a, const PackageDatabaseEntry & e) const
 {
     if (a.version_requirements_ptr() || a.slot_ptr() || a.use_requirements_ptr() ||
             a.repository_ptr())
@@ -91,7 +91,7 @@ ConsoleQueryTask::display_header(const PackageDepAtom & a, const PackageDatabase
 }
 
 void
-ConsoleQueryTask::display_versions_by_repository(const PackageDepAtom &,
+ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries,
         const PackageDatabaseEntry & display_entry) const
 {
@@ -184,7 +184,7 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepAtom &,
 }
 
 void
-ConsoleQueryTask::display_metadata(const PackageDepAtom &, const PackageDatabaseEntry & e) const
+ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabaseEntry & e) const
 {
     std::tr1::shared_ptr<const VersionMetadata> metadata(_imp->env->package_database()->fetch_repository(e.repository)->
             version_metadata(e.name, e.version));
@@ -252,14 +252,14 @@ ConsoleQueryTask::display_metadata_key(const std::string & k, const std::string 
 }
 
 void
-ConsoleQueryTask::display_metadata_license(const std::string & k, const std::string & kk, std::tr1::shared_ptr<const DepAtom> l,
+ConsoleQueryTask::display_metadata_license(const std::string & k, const std::string & kk, std::tr1::shared_ptr<const DepSpec> l,
         const PackageDatabaseEntry & display_entry) const
 {
     output_left_column((want_raw() ? kk : k) + ":");
 
     if (want_raw())
     {
-        DepAtomPrettyPrinter p(0, false);
+        DepSpecPrettyPrinter p(0, false);
         l->accept(&p);
         output_right_column(stringify(p));
     }
@@ -274,14 +274,14 @@ ConsoleQueryTask::display_metadata_license(const std::string & k, const std::str
 namespace
 {
     struct IsEmpty :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AllDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AnyDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, UseDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AllDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AnyDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, UseDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AnyDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AllDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, UseDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AnyDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, AllDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<IsEmpty, UseDepSpec>::visit;
 
         bool empty;
 
@@ -290,23 +290,23 @@ namespace
         {
         }
 
-        void visit(const PackageDepAtom *)
+        void visit(const PackageDepSpec *)
         {
             empty = false;
         }
 
-        void visit(const BlockDepAtom *)
+        void visit(const BlockDepSpec *)
         {
             empty = false;
         }
 
-        void visit(const PlainTextDepAtom *)
+        void visit(const PlainTextDepSpec *)
         {
             empty = false;
         }
     };
 
-    bool is_atom_empty(std::tr1::shared_ptr<const DepAtom> d)
+    bool is_spec_empty(std::tr1::shared_ptr<const DepSpec> d)
     {
         IsEmpty e;
         d->accept(&e);
@@ -316,23 +316,23 @@ namespace
 
 void
 ConsoleQueryTask::display_metadata_dep(const std::string & k, const std::string & kk,
-        std::tr1::shared_ptr<const DepAtom> d, const bool one_line) const
+        std::tr1::shared_ptr<const DepSpec> d, const bool one_line) const
 {
-    if (is_atom_empty(d))
+    if (is_spec_empty(d))
         return;
 
     output_left_column((want_raw() ? kk : k) + ":");
 
     if (one_line)
     {
-        DepAtomPrettyPrinter p(0, false);
+        DepSpecPrettyPrinter p(0, false);
         d->accept(&p);
         output_stream() << p << std::endl;
     }
     else
     {
         output_right_column("");
-        DepAtomPrettyPrinter p(left_column_width() + 5);
+        DepSpecPrettyPrinter p(left_column_width() + 5);
         d->accept(&p);
         output_stream() << p;
     }

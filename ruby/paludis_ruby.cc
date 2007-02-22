@@ -52,7 +52,7 @@ namespace
     static VALUE c_category_name_part_error;
     static VALUE c_package_name_part_error;
     static VALUE c_bad_version_spec_error;
-    static VALUE c_package_dep_atom_error;
+    static VALUE c_package_dep_spec_error;
     static VALUE c_package_database_error;
     static VALUE c_package_database_lookup_error;
     static VALUE c_ambiguous_package_name_error;
@@ -85,9 +85,9 @@ namespace
     /* Document-method: match_package
      *
      * call-seq:
-     *     match_package (env, atom, target)
+     *     match_package (env, spec, target)
      *
-     * Return whether the specified atom matches the specified target.
+     * Return whether the specified spec matches the specified target.
      *
      */
     VALUE paludis_match_package(VALUE, VALUE en, VALUE a, VALUE t)
@@ -95,9 +95,9 @@ namespace
         try
         {
             Environment * env = value_to_environment_data(en)->env_ptr;
-            std::tr1::shared_ptr<const PackageDepAtom> atom = value_to_package_dep_atom(a);
+            std::tr1::shared_ptr<const PackageDepSpec> spec = value_to_package_dep_spec(a);
             PackageDatabaseEntry target = value_to_package_database_entry(t);
-            return match_package(*env, *atom, target) ? Qtrue : Qfalse;
+            return match_package(*env, *spec, target) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -144,8 +144,8 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_category_name_part_error, dynamic_cast<const paludis::CategoryNamePartError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::NameError *>(&ee))
         rb_raise(c_name_error, dynamic_cast<const paludis::NameError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::PackageDepAtomError *>(&ee))
-        rb_raise(c_package_dep_atom_error, dynamic_cast<const paludis::PackageDepAtomError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::PackageDepSpecError *>(&ee))
+        rb_raise(c_package_dep_spec_error, dynamic_cast<const paludis::PackageDepSpecError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee))
         rb_raise(c_no_such_repository_error, dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::AmbiguousPackageNameError *>(&ee))
@@ -291,7 +291,7 @@ void paludis::ruby::init()
     c_category_name_part_error = rb_define_class_under(c_paludis_module, "CategoryNamePartError", c_name_error);
     c_package_name_part_error = rb_define_class_under(c_paludis_module, "PackageNamePartError", c_name_error);
     c_bad_version_spec_error = rb_define_class_under(c_paludis_module, "BadVersionSpecError", c_name_error);
-    c_package_dep_atom_error = rb_define_class_under(c_paludis_module, "PackageDepAtomError", rb_eRuntimeError);
+    c_package_dep_spec_error = rb_define_class_under(c_paludis_module, "PackageDepSpecError", rb_eRuntimeError);
     c_package_database_error = rb_define_class_under(c_paludis_module, "PackageDatabaseError", rb_eRuntimeError);
     c_package_database_lookup_error = rb_define_class_under(c_paludis_module, "PackageDatabaseLookupError", c_package_database_error);
     c_ambiguous_package_name_error = rb_define_class_under(c_paludis_module, "AmbiguousPackageNameError", c_package_database_lookup_error);
@@ -307,7 +307,7 @@ void paludis::ruby::init()
     /*
      * Document-class: Paludis::AllMaskedError
      *
-     * Thrown if all versions of a particular atom are masked.
+     * Thrown if all versions of a particular spec are masked.
      */
     c_all_masked_error = rb_define_class_under(c_paludis_module, "AllMaskedError", c_dep_list_error);
     rb_define_method(c_all_masked_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
@@ -330,7 +330,7 @@ void paludis::ruby::init()
     /*
      * Document-class: Paludis::UseRequirementsNotMetError
      *
-     * Thrown if all versions of a particular atom are masked, but would not be if use requirements were not in effect.
+     * Thrown if all versions of a particular spec are masked, but would not be if use requirements were not in effect.
      */
     c_use_requirements_not_met_error = rb_define_class_under(c_paludis_module, "UseRequirementsNotMetError", c_dep_list_error);
     rb_define_method(c_use_requirements_not_met_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);

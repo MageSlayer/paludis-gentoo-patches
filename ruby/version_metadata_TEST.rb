@@ -54,7 +54,7 @@ module Paludis
         end
 
         def test_license
-            assert_kind_of DepAtom, vmd("1.0").license
+            assert_kind_of DepSpec, vmd("1.0").license
         end
 
         def test_interfaces
@@ -80,10 +80,10 @@ module Paludis
         end
 
         def test_deps
-            assert_kind_of AllDepAtom, vmd("1.0").build_depend
-            assert_kind_of AllDepAtom, vmd("1.0").run_depend
-            assert_kind_of AllDepAtom, vmd("1.0").suggested_depend
-            assert_kind_of AllDepAtom, vmd("1.0").post_depend
+            assert_kind_of AllDepSpec, vmd("1.0").build_depend
+            assert_kind_of AllDepSpec, vmd("1.0").run_depend
+            assert_kind_of AllDepSpec, vmd("1.0").suggested_depend
+            assert_kind_of AllDepSpec, vmd("1.0").post_depend
 
             assert_equal 1, vmd("1.0").build_depend.to_a.length
             assert vmd("1.0").run_depend.to_a.empty?

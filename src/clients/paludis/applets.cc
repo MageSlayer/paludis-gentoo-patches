@@ -49,9 +49,9 @@ int do_has_version()
     Environment * const env(DefaultEnvironment::get_instance());
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(query));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query));
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
-                query::Matches(*atom) & query::InstalledAtRoot(env->root()), qo_whatever));
+                query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_whatever));
 
     if (entries->empty())
         return_code = 1;
@@ -67,9 +67,9 @@ int do_best_version()
     Environment * const env(DefaultEnvironment::get_instance());
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(query));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query));
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
-                query::Matches(*atom) & query::InstalledAtRoot(env->root()), qo_order_by_version));
+                query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
     /* make built_with_use work for virtuals... icky... */
     while (! entries->empty())
@@ -111,18 +111,18 @@ int do_environment_variable()
     Context context("When performing environment-variable action from command line:");
     Environment * const env(DefaultEnvironment::get_instance());
 
-    std::string atom_str(*CommandLine::get_instance()->begin_parameters());
+    std::string spec_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
-    std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(atom_str));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_str));
 
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
-                query::Matches(*atom) & query::InstalledAtRoot(env->root()), qo_order_by_version));
+                query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
     if (entries->empty())
-        entries = env->package_database()->query(query::Matches(*atom), qo_order_by_version);
+        entries = env->package_database()->query(query::Matches(*spec), qo_order_by_version);
 
     if (entries->empty())
-        throw NoSuchPackageError(atom_str);
+        throw NoSuchPackageError(spec_str);
 
     std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(
                 entries->begin()->repository));

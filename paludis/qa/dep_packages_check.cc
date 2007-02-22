@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/portage_dep_parser.hh>
@@ -35,14 +35,14 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AnyDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
 
         CheckResult & result;
         const std::string role;
@@ -55,18 +55,18 @@ namespace
         {
         }
 
-        void visit(const PackageDepAtom * const p)
+        void visit(const PackageDepSpec * const p)
         {
             if (suspicious.end() != suspicious.find(p->package()))
                 result << Message(qal_maybe, "Suspicious " + role + " entry '"
                         + stringify(p->package()) + "'");
         }
 
-        void visit(const PlainTextDepAtom * const)
+        void visit(const PlainTextDepSpec * const)
         {
         }
 
-        void visit(const BlockDepAtom * const)
+        void visit(const BlockDepSpec * const)
         {
         }
     };

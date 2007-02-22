@@ -89,7 +89,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
         if (u->flag_name != f)
             continue;
 
-        if (! match_package(*this, *u->dep_atom, *e))
+        if (! match_package(*this, *u->dep_spec, *e))
             continue;
 
         Log::get_instance()->message(ll_debug, lc_no_context, "Forced use flag: "
@@ -112,7 +112,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
             if (f != u->flag_name)
                 continue;
 
-            if (! match_package(*this, *u->dep_atom, *e))
+            if (! match_package(*this, *u->dep_spec, *e))
                 continue;
 
             switch (u->flag_state)
@@ -175,7 +175,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
             if (f != u->flag_name)
                 continue;
 
-            if (! match_package_in_heirarchy(*this, *u->dep_atom, *e))
+            if (! match_package_in_heirarchy(*this, *u->dep_spec, *e))
                 continue;
 
             switch (u->flag_state)
@@ -217,7 +217,7 @@ DefaultEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
                 i_end(DefaultConfig::get_instance()->end_set_use_prefixes_with_minus_star()) ;
                 i != i_end ; ++i)
         {
-            if (! match_package_in_heirarchy(*this, *i->dep_atom, *e))
+            if (! match_package_in_heirarchy(*this, *i->dep_spec, *e))
                 continue;
 
             if (0 == i->prefix.compare(0, i->prefix.length(), stringify(f), 0, i->prefix.length()))
@@ -334,7 +334,7 @@ DefaultEnvironment::accept_keyword(const KeywordName & keyword, const PackageDat
                 k_end(DefaultConfig::get_instance()->end_set_keywords()) ;
                 k != k_end ; ++k)
         {
-            if (! match_package_in_heirarchy(*this, *k->dep_atom, *d))
+            if (! match_package_in_heirarchy(*this, *k->dep_spec, *d))
                 continue;
 
             if (k->keyword == minus_star_keyword)
@@ -401,7 +401,7 @@ DefaultEnvironment::accept_license(const std::string & license, const PackageDat
                 k_end(DefaultConfig::get_instance()->end_set_licenses()) ;
                 k != k_end ; ++k)
         {
-            if (! match_package_in_heirarchy(*this, *k->dep_atom, *d))
+            if (! match_package_in_heirarchy(*this, *k->dep_spec, *d))
                 continue;
 
             if (k->license == "-*")
@@ -453,7 +453,7 @@ DefaultEnvironment::query_user_masks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_masks_sets()) ;
             k != k_end ; ++k)
     {
-        if (! match_package_in_heirarchy(*this, *k->dep_atom, d))
+        if (! match_package_in_heirarchy(*this, *k->dep_spec, d))
             continue;
 
         return true;
@@ -481,7 +481,7 @@ DefaultEnvironment::query_user_unmasks(const PackageDatabaseEntry & d) const
             k_end(DefaultConfig::get_instance()->end_user_unmasks_sets()) ;
             k != k_end ; ++k)
     {
-        if (! match_package_in_heirarchy(*this, *k->dep_atom, d))
+        if (! match_package_in_heirarchy(*this, *k->dep_spec, d))
             continue;
 
         return true;
@@ -647,7 +647,7 @@ DefaultEnvironment::syncers_dirs() const
     return dirs;
 }
 
-std::tr1::shared_ptr<CompositeDepAtom>
+std::tr1::shared_ptr<CompositeDepSpec>
 DefaultEnvironment::local_package_set(const SetName & s) const
 {
     Context context("When looking for package set '" + stringify(s) + "' in default environment:");
@@ -656,7 +656,7 @@ DefaultEnvironment::local_package_set(const SetName & s) const
     if (ff.exists())
     {
         LineConfigFile f(ff);
-        std::tr1::shared_ptr<AllDepAtom> result(new AllDepAtom);
+        std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
         std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(s, stringify(s) + ".conf"));
 
         for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
@@ -671,19 +671,19 @@ DefaultEnvironment::local_package_set(const SetName & s) const
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(tokens.at(0)));
-                atom->set_tag(tag);
-                result->add_child(atom);
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0)));
+                spec->set_tag(tag);
+                result->add_child(spec);
             }
             else if ("*" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(tokens.at(1)));
-                atom->set_tag(tag);
-                result->add_child(atom);
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1)));
+                spec->set_tag(tag);
+                result->add_child(spec);
             }
             else if ("?" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepAtom> p(new PackageDepAtom(tokens.at(1)));
+                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(1)));
                 p->set_tag(tag);
                 if (! package_database()->query(
                             query::Package(p->package()) & query::InstalledAtRoot(root()),
@@ -702,7 +702,7 @@ DefaultEnvironment::local_package_set(const SetName & s) const
         return result;
     }
 
-    return std::tr1::shared_ptr<AllDepAtom>();
+    return std::tr1::shared_ptr<AllDepSpec>();
 }
 
 std::tr1::shared_ptr<const SetsCollection>
@@ -753,10 +753,10 @@ DefaultEnvironment::known_use_expand_names(const UseFlagName & prefix, const Pac
         for (DefaultConfig::UseConfigIterator i(DefaultConfig::get_instance()->begin_forced_use_config()),
                 i_end(DefaultConfig::get_instance()->end_forced_use_config()) ; i != i_end ; ++i)
         {
-            if (! i->dep_atom)
+            if (! i->dep_spec)
                 continue;
 
-            if (! match_package(*this, *i->dep_atom, *pde))
+            if (! match_package(*this, *i->dep_spec, *pde))
                 continue;
 
             if (i->flag_name.data().length() > prefix_lower.length() &&

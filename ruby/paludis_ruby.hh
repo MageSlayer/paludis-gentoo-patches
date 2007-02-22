@@ -87,7 +87,7 @@ namespace paludis
         VALUE repository_to_value(std::tr1::shared_ptr<Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
         VALUE version_metadata_to_value(std::tr1::shared_ptr<const VersionMetadata>);
-        VALUE dep_atom_to_value(std::tr1::shared_ptr<const DepAtom>);
+        VALUE dep_spec_to_value(std::tr1::shared_ptr<const DepSpec>);
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
         VALUE contents_to_value(std::tr1::shared_ptr<const Contents>);
         VALUE contents_entry_to_value(std::tr1::shared_ptr<const ContentsEntry>);
@@ -96,8 +96,8 @@ namespace paludis
 
         VersionSpec value_to_version_spec(VALUE v);
         std::tr1::shared_ptr<const VersionMetadata> value_to_version_metadata(VALUE);
-        std::tr1::shared_ptr<const PackageDepAtom> value_to_package_dep_atom(VALUE v);
-        std::tr1::shared_ptr<const DepAtom> value_to_dep_atom(VALUE v);
+        std::tr1::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
+        std::tr1::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
         PackageDatabaseEntry value_to_package_database_entry(VALUE v);
         EnvironmentData* value_to_environment_data(VALUE v);

@@ -164,7 +164,7 @@ OurInstallTask::on_update_world_pre()
 }
 
 void
-OurInstallTask::on_update_world(const PackageDepAtom &)
+OurInstallTask::on_update_world(const PackageDepSpec &)
 {
 }
 
@@ -174,7 +174,7 @@ OurInstallTask::on_update_world(const SetName &)
 }
 
 void
-OurInstallTask::on_update_world_skip(const PackageDepAtom &, const std::string &)
+OurInstallTask::on_update_world_skip(const PackageDepSpec &, const std::string &)
 {
 }
 

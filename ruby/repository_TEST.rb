@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 # Copyright (c) 2006, 2007 Richard Brown <mynamewasgone@gmail.com>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -127,7 +127,7 @@ module Paludis
 
         def test_has_version_error
             assert_raise TypeError do
-                repo.has_version?('foo/bar', PackageDepAtom.new('foo-bar/baz'))
+                repo.has_version?('foo/bar', PackageDepSpec.new('foo-bar/baz'))
             end
         end
     end

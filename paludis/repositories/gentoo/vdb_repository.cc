@@ -22,8 +22,8 @@
 #include <paludis/repositories/gentoo/vdb_merger.hh>
 #include <paludis/repositories/gentoo/vdb_unmerger.hh>
 
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_flattener.hh>
 #include <paludis/repositories/gentoo/ebuild.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/hashed_containers.hh>
@@ -429,9 +429,9 @@ namespace paludis
 
                 try
                 {
-                    PackageDepAtom atom("=" + stringify(cat) + "/" + pkg_i->basename());
-                    entries.push_back(VDBEntry(atom.package(),
-                                atom.version_requirements_ptr()->begin()->version_spec));
+                    PackageDepSpec spec("=" + stringify(cat) + "/" + pkg_i->basename());
+                    entries.push_back(VDBEntry(spec.package(),
+                                spec.version_requirements_ptr()->begin()->version_spec));
                 }
                 catch (const Exception & e)
                 {
@@ -1043,7 +1043,7 @@ VDBRepository::do_config(const QualifiedPackageName & q, const VersionSpec & v) 
     config_cmd();
 }
 
-std::tr1::shared_ptr<DepAtom>
+std::tr1::shared_ptr<DepSpec>
 VDBRepository::do_package_set(const SetName & s) const
 {
     Context context("When fetching package set '" + stringify(s) + "' from '" +
@@ -1051,7 +1051,7 @@ VDBRepository::do_package_set(const SetName & s) const
 
     if ("everything" == s.data())
     {
-        std::tr1::shared_ptr<AllDepAtom> result(new AllDepAtom);
+        std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
         std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("everything"), stringify(name())));
 
         if (! _imp->entries_valid)
@@ -1060,16 +1060,16 @@ VDBRepository::do_package_set(const SetName & s) const
         for (std::vector<VDBEntry>::const_iterator p(_imp->entries.begin()),
                 p_end(_imp->entries.end()) ; p != p_end ; ++p)
         {
-            std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(p->name));
-            atom->set_tag(tag);
-            result->add_child(atom);
+            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(p->name));
+            spec->set_tag(tag);
+            result->add_child(spec);
         }
 
         return result;
     }
     else if ("world" == s.data())
     {
-        std::tr1::shared_ptr<AllDepAtom> result(new AllDepAtom);
+        std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
         std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), stringify(name())));
 
         if (_imp->world_file.exists())
@@ -1083,9 +1083,9 @@ VDBRepository::do_package_set(const SetName & s) const
                 {
                     if (std::string::npos == line->find('/'))
                     {
-                        std::tr1::shared_ptr<DepAtom> atom(_imp->env->package_set(SetName(*line)));
-                        if (atom)
-                            result->add_child(atom);
+                        std::tr1::shared_ptr<DepSpec> spec(_imp->env->package_set(SetName(*line)));
+                        if (spec)
+                            result->add_child(spec);
                         else
                             Log::get_instance()->message(ll_warning, lc_no_context, "World file '"
                                     + stringify(_imp->world_file) + "' entry '" + *line +
@@ -1093,9 +1093,9 @@ VDBRepository::do_package_set(const SetName & s) const
                     }
                     else
                     {
-                        std::tr1::shared_ptr<PackageDepAtom> atom(new PackageDepAtom(QualifiedPackageName(*line)));
-                        atom->set_tag(tag);
-                        result->add_child(atom);
+                        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(QualifiedPackageName(*line)));
+                        spec->set_tag(tag);
+                        result->add_child(spec);
                     }
                 }
                 catch (const NameError & n)
@@ -1114,7 +1114,7 @@ VDBRepository::do_package_set(const SetName & s) const
         return result;
     }
     else
-        return std::tr1::shared_ptr<DepAtom>();
+        return std::tr1::shared_ptr<DepSpec>();
 }
 
 std::tr1::shared_ptr<const SetsCollection>
@@ -1421,11 +1421,11 @@ VDBRepository::load_provided_using_cache() const
             continue;
 
         PackageDatabaseEntry dbe(QualifiedPackageName(tokens.at(0)), VersionSpec(tokens.at(1)), name());
-        DepAtomFlattener f(_imp->env, &dbe, PortageDepParser::parse(
+        DepSpecFlattener f(_imp->env, &dbe, PortageDepParser::parse(
                     join(next(next(tokens.begin())), tokens.end(), " "),
-                    PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
+                    PortageDepParserPolicy<PackageDepSpec, false>::get_instance()));
 
-        for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+        for (DepSpecFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
             result->insert(RepositoryProvidesEntry::create()
                     .virtual_name((*p)->text())
                     .version(dbe.version)
@@ -1467,12 +1467,12 @@ VDBRepository::load_provided_the_slow_way() const
             if (provide_str.empty())
                 continue;
 
-            std::tr1::shared_ptr<const DepAtom> provide(PortageDepParser::parse(provide_str,
-                        PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
+            std::tr1::shared_ptr<const DepSpec> provide(PortageDepParser::parse(provide_str,
+                        PortageDepParserPolicy<PackageDepSpec, false>::get_instance()));
             PackageDatabaseEntry dbe(e->name, e->version, name());
-            DepAtomFlattener f(_imp->env, &dbe, provide);
+            DepSpecFlattener f(_imp->env, &dbe, provide);
 
-            for (DepAtomFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
+            for (DepSpecFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
             {
                 QualifiedPackageName pp((*p)->text());
 

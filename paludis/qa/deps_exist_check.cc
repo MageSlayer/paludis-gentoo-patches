@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/package_database_entry.hh>
 #include <paludis/environment.hh>
 #include <paludis/portage_dep_parser.hh>
@@ -33,12 +33,12 @@ using namespace paludis::qa;
 namespace
 {
     struct Checker :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepAtom>::visit;
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, AllDepSpec>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<Checker, UseDepSpec>::visit;
 
         CheckResult & result;
         const std::string role;
@@ -53,7 +53,7 @@ namespace
         {
         }
 
-        void visit(const PackageDepAtom * const p)
+        void visit(const PackageDepSpec * const p)
         {
             if (env->package_database()->query(query::Package(p->package()), qo_whatever)->empty())
             {
@@ -66,22 +66,22 @@ namespace
             }
         }
 
-        void visit(const AnyDepAtom * const a)
+        void visit(const AnyDepSpec * const a)
         {
             /// \todo VV make this smarter
             Save<bool> save_in_any(&in_any, true);
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
-        void visit(const BlockDepAtom * const b)
+        void visit(const BlockDepSpec * const b)
         {
-            if (env->package_database()->query(query::Package(b->blocked_atom()->package()),
+            if (env->package_database()->query(query::Package(b->blocked_spec()->package()),
                         qo_whatever)->empty())
                 result << Message(qal_maybe, "No match for " + role + " block '!"
-                        + stringify(b->blocked_atom()->package()) + "'");
+                        + stringify(b->blocked_spec()->package()) + "'");
         }
 
-        void visit(const PlainTextDepAtom * const)
+        void visit(const PlainTextDepSpec * const)
         {
         }
     };

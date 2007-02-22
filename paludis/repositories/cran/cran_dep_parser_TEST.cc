@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_flattener.hh>
-#include <paludis/dep_atom_pretty_printer.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_flattener.hh>
+#include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/environment/test/test_environment.hh>
 #include <paludis/util/system.hh>
@@ -46,7 +46,7 @@ namespace test_cases
 
         void run()
         {
-            DepAtomPrettyPrinter d1(0, false), d2(0, false), d3(0, false);
+            DepSpecPrettyPrinter d1(0, false), d2(0, false), d3(0, false);
             // test R dependency
             std::string dep1("R (>= 2.0.0)");
             CRANDepParser::parse(dep1)->accept(&d1);

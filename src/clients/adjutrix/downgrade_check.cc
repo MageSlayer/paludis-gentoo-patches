@@ -135,7 +135,7 @@ namespace
             std::map<QPNS, VersionSpec>::const_iterator a(after.find(b->first));
             if (after.end() == a)
             {
-                if (! env.package_database()->query(query::Matches(PackageDepAtom(
+                if (! env.package_database()->query(query::Matches(PackageDepSpec(
                                     stringify(b->first.name) + ":" + stringify(b->first.slot))),
                             qo_whatever)->empty())
                 {

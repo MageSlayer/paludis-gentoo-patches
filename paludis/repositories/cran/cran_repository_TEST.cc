@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_atom.hh>
-#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_flattener.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_description.hh>
 #include <paludis/repositories/cran/cran_repository.hh>

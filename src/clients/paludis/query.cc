@@ -65,10 +65,10 @@ namespace
 void do_one_package_query(
         const Environment * const env,
         MaskReasons & mask_reasons_to_explain,
-        std::tr1::shared_ptr<PackageDepAtom> atom)
+        std::tr1::shared_ptr<PackageDepSpec> spec)
 {
     QueryTask query(env);
-    query.show(*atom);
+    query.show(*spec);
     mask_reasons_to_explain |= query.mask_reasons_to_explain();
     cout << endl;
 }
@@ -77,10 +77,10 @@ void do_one_set_query(
         const Environment * const,
         const std::string & q,
         MaskReasons &,
-        std::tr1::shared_ptr<DepAtom> set)
+        std::tr1::shared_ptr<DepSpec> set)
 {
     cout << "* " << colour(cl_package_name, q) << endl;
-    DepAtomPrettyPrinter packages(12);
+    DepSpecPrettyPrinter packages(12);
     set->accept(&packages);
     cout << "    " << std::setw(22) << std::left << "Packages:" << std::setw(0)
         << endl << packages << endl;
@@ -93,10 +93,10 @@ void do_one_query(
 {
     Context local_context("When handling query '" + q + "':");
 
-    /* we might have a dep atom, but we might just have a simple package name
+    /* we might have a dep spec, but we might just have a simple package name
      * without a category. or it might be a set... all should work. */
-    std::tr1::shared_ptr<PackageDepAtom> atom;
-    std::tr1::shared_ptr<DepAtom> set;
+    std::tr1::shared_ptr<PackageDepSpec> spec;
+    std::tr1::shared_ptr<DepSpec> set;
     if (std::string::npos == q.find('/'))
     {
         try
@@ -107,14 +107,14 @@ void do_one_query(
         {
         }
         if (0 == set)
-            atom.reset(new PackageDepAtom(env->package_database()->fetch_unique_qualified_package_name(
+            spec.reset(new PackageDepSpec(env->package_database()->fetch_unique_qualified_package_name(
                             PackageNamePart(q))));
     }
     else
-        atom.reset(new PackageDepAtom(q));
+        spec.reset(new PackageDepSpec(q));
 
-    if (atom)
-        do_one_package_query(env, mask_reasons_to_explain, atom);
+    if (spec)
+        do_one_package_query(env, mask_reasons_to_explain, spec);
     else
         do_one_set_query(env, q, mask_reasons_to_explain, set);
 }

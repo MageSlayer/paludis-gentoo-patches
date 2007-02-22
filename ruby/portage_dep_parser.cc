@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,10 +32,10 @@ namespace
 
     /*
      * call-seq:
-     *     PortageDepParser.parse(dep_string) -> CompositeDepAtom
-     *     PortageDepParser.parse(dep_string, atom_type, permit_any_deps) -> CompositeDepAtom
+     *     PortageDepParser.parse(dep_string) -> CompositeDepSpec
+     *     PortageDepParser.parse(dep_string, spec_type, permit_any_deps) -> CompositeDepSpec
      *
-     * Parse a given dependency string, and return an appropriate DepAtom tree.
+     * Parse a given dependency string, and return an appropriate DepSpec tree.
      */
     VALUE
     portage_dep_parser_parse(int argc, VALUE * args, VALUE)
@@ -43,7 +43,7 @@ namespace
         try
         {
             if (1 == argc)
-                return dep_atom_to_value(PortageDepParser::parse(StringValuePtr(args[0])));
+                return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(args[0])));
             else if (3 == argc)
             {
                 bool b(! (args[2] == Qnil || args[2] == Qfalse));
@@ -52,18 +52,18 @@ namespace
                 {
                     case 17:
                         if (b)
-                            return dep_atom_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
-                                        PortageDepParserPolicy<PackageDepAtom, true>::get_instance()));
+                            return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
+                                        PortageDepParserPolicy<PackageDepSpec, true>::get_instance()));
                         else
-                            return dep_atom_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
-                                        PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
+                            return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
+                                        PortageDepParserPolicy<PackageDepSpec, false>::get_instance()));
                     case 23:
                         if (b)
-                            return dep_atom_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
-                                        PortageDepParserPolicy<PlainTextDepAtom, true>::get_instance()));
+                            return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
+                                        PortageDepParserPolicy<PlainTextDepSpec, true>::get_instance()));
                         else
-                            return dep_atom_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
-                                        PortageDepParserPolicy<PlainTextDepAtom, false>::get_instance()));
+                            return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
+                                        PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance()));
                 }
 
                 rb_raise(rb_eArgError, "Bad value '%d' for PortageDepParser::parse parameter 2", NUM2INT(args[1]));
@@ -84,15 +84,15 @@ namespace
         /*
          * Document-class: Paludis::PortageDepParser
          *
-         * The PortageDepParser converts string representations of a dependency specification into a DepAtom instance.
+         * The PortageDepParser converts string representations of a dependency specification into a DepSpec instance.
          */
         c_portage_dep_parser = rb_define_class_under(paludis_module(), "PortageDepParser", rb_cObject);
         rb_funcall(c_portage_dep_parser, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_singleton_method(c_portage_dep_parser, "parse",
                 RUBY_FUNC_CAST(&portage_dep_parser_parse), -1);
 
-        rb_define_const(c_portage_dep_parser, "PackageDepAtom", INT2FIX(17));
-        rb_define_const(c_portage_dep_parser, "PlainTextDepAtom", INT2FIX(23));
+        rb_define_const(c_portage_dep_parser, "PackageDepSpec", INT2FIX(17));
+        rb_define_const(c_portage_dep_parser, "PlainTextDepSpec", INT2FIX(23));
     }
 }
 

@@ -63,19 +63,19 @@ std::tr1::shared_ptr<const VersionMetadata>
 FakeRepository::virtual_package_version_metadata(
         const RepositoryVirtualsEntry & p, const VersionSpec & v) const
 {
-    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_atom->package(), v));
+    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_spec->package(), v));
     std::tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
-                m->slot, PackageDatabaseEntry(p.provided_by_atom->package(), v, name())));
+                m->slot, PackageDatabaseEntry(p.provided_by_spec->package(), v, name())));
 
     result->eapi = m->eapi;
-    result->deps_interface->build_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
-    result->deps_interface->run_depend_string = "=" + stringify(p.provided_by_atom->package()) + "-" + stringify(v);
+    result->deps_interface->build_depend_string = "=" + stringify(p.provided_by_spec->package()) + "-" + stringify(v);
+    result->deps_interface->run_depend_string = "=" + stringify(p.provided_by_spec->package()) + "-" + stringify(v);
 
     return result;
 }
 
 void
-FakeRepository::add_virtual_package(const QualifiedPackageName & q, std::tr1::shared_ptr<const PackageDepAtom> p)
+FakeRepository::add_virtual_package(const QualifiedPackageName & q, std::tr1::shared_ptr<const PackageDepSpec> p)
 {
     _virtual_packages->insert(RepositoryVirtualsEntry(q, p));
 }

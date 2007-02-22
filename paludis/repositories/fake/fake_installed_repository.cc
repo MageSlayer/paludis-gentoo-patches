@@ -21,7 +21,7 @@
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/portage_dep_parser.hh>
-#include <paludis/dep_atom_flattener.hh>
+#include <paludis/dep_spec_flattener.hh>
 
 using namespace paludis;
 
@@ -75,12 +75,12 @@ FakeInstalledRepository::provided_packages() const
                 if (! m->ebuild_interface)
                     continue;
 
-                std::tr1::shared_ptr<const DepAtom> provide(PortageDepParser::parse(m->ebuild_interface->provide_string,
-                            PortageDepParserPolicy<PackageDepAtom, false>::get_instance()));
+                std::tr1::shared_ptr<const DepSpec> provide(PortageDepParser::parse(m->ebuild_interface->provide_string,
+                            PortageDepParserPolicy<PackageDepSpec, false>::get_instance()));
                 PackageDatabaseEntry dbe(*p, *v, name());
-                DepAtomFlattener f(environment(), &dbe, provide);
+                DepSpecFlattener f(environment(), &dbe, provide);
 
-                for (DepAtomFlattener::Iterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
+                for (DepSpecFlattener::Iterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
                     result->insert(RepositoryProvidesEntry::create()
                             .virtual_name(QualifiedPackageName((*q)->text()))
                             .version(*v)

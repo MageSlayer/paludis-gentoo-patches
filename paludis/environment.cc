@@ -18,7 +18,7 @@
  */
 
 #include <paludis/package_database.hh>
-#include <paludis/dep_atom.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
@@ -53,10 +53,10 @@ namespace
      * Check whether licences for a package are accepted.
      */
     struct LicenceChecker :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<LicenceChecker, AllDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<LicenceChecker, AllDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<LicenceChecker, AllDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<LicenceChecker, AllDepSpec>::visit;
 
         /// Are all necessary licences ok?
         bool ok;
@@ -78,15 +78,15 @@ namespace
         ///\name Visit methods
         ///{
 
-        void visit(const AnyDepAtom * atom)
+        void visit(const AnyDepSpec * spec)
         {
             bool local_ok(false);
 
-            if (atom->begin() == atom->end())
+            if (spec->begin() == spec->end())
                 local_ok = true;
             else
             {
-                for (CompositeDepAtom::Iterator i(atom->begin()), i_end(atom->end()) ;
+                for (CompositeDepSpec::Iterator i(spec->begin()), i_end(spec->end()) ;
                         i != i_end ; ++i)
                 {
                     Save<bool> save_ok(&ok, true);
@@ -98,26 +98,26 @@ namespace
             ok &= local_ok;
         }
 
-        void visit(const UseDepAtom * atom)
+        void visit(const UseDepSpec * spec)
         {
-            if (env->query_use(atom->flag(), db_entry))
-                std::for_each(atom->begin(), atom->end(), accept_visitor(this));
+            if (env->query_use(spec->flag(), db_entry))
+                std::for_each(spec->begin(), spec->end(), accept_visitor(this));
         }
 
-        void visit(const PlainTextDepAtom * atom)
+        void visit(const PlainTextDepSpec * spec)
         {
-            if (! env->accept_license(atom->text(), db_entry))
+            if (! env->accept_license(spec->text(), db_entry))
                 ok = false;
         }
 
-        void visit(const PackageDepAtom *) PALUDIS_ATTRIBUTE((noreturn))
+        void visit(const PackageDepSpec *) PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw InternalError(PALUDIS_HERE, "Encountered PackageDepAtom in licence?");
+            throw InternalError(PALUDIS_HERE, "Encountered PackageDepSpec in licence?");
         }
 
-        void visit(const BlockDepAtom *)  PALUDIS_ATTRIBUTE((noreturn))
+        void visit(const BlockDepSpec *)  PALUDIS_ATTRIBUTE((noreturn))
         {
-            throw InternalError(PALUDIS_HERE, "Encountered BlockDepAtom in licence?");
+            throw InternalError(PALUDIS_HERE, "Encountered BlockDepSpec in licence?");
         }
         ///}
     };
@@ -209,17 +209,17 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
     return result;
 }
 
-std::tr1::shared_ptr<DepAtom>
+std::tr1::shared_ptr<DepSpec>
 Environment::package_set(const SetName & s) const
 {
     /* favour local sets first */
-    std::tr1::shared_ptr<CompositeDepAtom> result(local_package_set(s));
+    std::tr1::shared_ptr<CompositeDepSpec> result(local_package_set(s));
     if (0 != result)
         return result;
 
     /* these sets always exist, even if empty */
     if (s.data() == "everything" || s.data() == "system" || s.data() == "world" || s.data() == "security")
-        result.reset(new AllDepAtom);
+        result.reset(new AllDepSpec);
 
     for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
@@ -228,11 +228,11 @@ Environment::package_set(const SetName & s) const
         if (! (*r)->sets_interface)
             continue;
 
-        std::tr1::shared_ptr<DepAtom> add((*r)->sets_interface->package_set(s));
+        std::tr1::shared_ptr<DepSpec> add((*r)->sets_interface->package_set(s));
         if (0 != add)
         {
             if (! result)
-                result.reset(new AllDepAtom);
+                result.reset(new AllDepSpec);
             result->add_child(add);
         }
 
@@ -254,13 +254,13 @@ namespace
      * from the world file.
      */
     struct WorldTargetFinder :
-        DepAtomVisitorTypes::ConstVisitor,
-        DepAtomVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepAtom>
+        DepSpecVisitorTypes::ConstVisitor,
+        DepSpecVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepSpec>
     {
-        using DepAtomVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepAtom>::visit;
+        using DepSpecVisitorTypes::ConstVisitor::VisitChildren<WorldTargetFinder, AllDepSpec>::visit;
 
         /// Matches
-        std::list<const PackageDepAtom *> items;
+        std::list<const PackageDepSpec *> items;
 
         /// Callback object pointer, may be 0.
         Environment::WorldCallbacks * const w;
@@ -281,23 +281,23 @@ namespace
 
         ///\name Visit methods
         ///{
-        void visit(const AnyDepAtom * a)
+        void visit(const AnyDepSpec * a)
         {
             Save<bool> save_inside_any(&inside_any, true);
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
-        void visit(const UseDepAtom * a)
+        void visit(const UseDepSpec * a)
         {
             Save<bool> save_inside_use(&inside_use, true);
             std::for_each(a->begin(), a->end(), accept_visitor(this));
         }
 
-        void visit(const PlainTextDepAtom *)
+        void visit(const PlainTextDepSpec *)
         {
         }
 
-        void visit(const PackageDepAtom * a)
+        void visit(const PackageDepSpec * a)
         {
             if (inside_any)
             {
@@ -327,7 +327,7 @@ namespace
             }
         }
 
-        void visit(const BlockDepAtom *)
+        void visit(const BlockDepSpec *)
         {
         }
         ///}
@@ -336,12 +336,12 @@ namespace
 }
 
 void
-Environment::add_appropriate_to_world(std::tr1::shared_ptr<const DepAtom> a,
+Environment::add_appropriate_to_world(std::tr1::shared_ptr<const DepSpec> a,
         Environment::WorldCallbacks * const ww) const
 {
     WorldTargetFinder w(ww);
     a->accept(&w);
-    for (std::list<const PackageDepAtom *>::const_iterator i(w.items.begin()),
+    for (std::list<const PackageDepSpec *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
     {
         for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
@@ -374,12 +374,12 @@ Environment::add_set_to_world(const SetName & s, Environment::WorldCallbacks * w
 }
 
 void
-Environment::remove_appropriate_from_world(std::tr1::shared_ptr<const DepAtom> a,
+Environment::remove_appropriate_from_world(std::tr1::shared_ptr<const DepSpec> a,
         Environment::WorldCallbacks * const ww) const
 {
     WorldTargetFinder w(ww);
     a->accept(&w);
-    for (std::list<const PackageDepAtom *>::const_iterator i(w.items.begin()),
+    for (std::list<const PackageDepSpec *>::const_iterator i(w.items.begin()),
             i_end(w.items.end()) ; i != i_end ; ++i)
     {
         for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
@@ -583,17 +583,17 @@ Environment::WorldCallbacks::~WorldCallbacks()
 }
 
 void
-Environment::WorldCallbacks::add_callback(const PackageDepAtom &)
+Environment::WorldCallbacks::add_callback(const PackageDepSpec &)
 {
 }
 
 void
-Environment::WorldCallbacks::skip_callback(const PackageDepAtom &, const std::string &)
+Environment::WorldCallbacks::skip_callback(const PackageDepSpec &, const std::string &)
 {
 }
 
 void
-Environment::WorldCallbacks::remove_callback(const PackageDepAtom &)
+Environment::WorldCallbacks::remove_callback(const PackageDepSpec &)
 {
 }
 
