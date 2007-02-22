@@ -129,14 +129,14 @@ namespace
 
             virtual void on_uninstall_pre(const UninstallListEntry & d)
             {
-                cout << endl << colour(cl_heading, "Uninstalling " +
-                        stringify(d.package.name) + "-" + stringify(d.package.version) +
-                        "::" + stringify(d.package.repository)) << endl << endl;
-
-                cerr << xterm_title("(" + stringify(++_current_count) + " of " +
+                std::string msg("(" + stringify(++_current_count) + " of " +
                         stringify(_count) + ") Uninstalling " +
                         stringify(d.package.name) + "-" + stringify(d.package.version) +
                         "::" + stringify(d.package.repository));
+
+                cout << endl << colour(cl_heading, msg) << endl << endl;
+
+                cerr << xterm_title(msg);
             }
 
             virtual void on_uninstall_post(const UninstallListEntry &)

@@ -124,9 +124,10 @@ void
 ConsoleInstallTask::on_clean_pre(const DepListEntry &,
         const PackageDatabaseEntry & c)
 {
-    output_heading("Cleaning " + stringify(c));
-    output_xterm_title("(" + stringify(count<current_count>()) + " of "
+    std::string m("(" + stringify(count<current_count>()) + " of "
             + stringify(count<max_count>()) + ") Cleaning " + stringify(c));
+    output_heading(m);
+    output_xterm_title(m);
 }
 
 void
@@ -245,9 +246,11 @@ ConsoleInstallTask::on_fetch_pre(const DepListEntry & d)
 {
     set_count<current_count>(count<current_count>() + 1);
 
-    output_heading("Fetching " + stringify(d.package));
-    output_xterm_title("(" + stringify(count<current_count>()) + " of "
+    std::string m("(" + stringify(count<current_count>()) + " of "
             + stringify(count<max_count>()) + ") Fetching " + stringify(d.package));
+
+    output_heading(m);
+    output_xterm_title(m);
 }
 
 void
@@ -270,9 +273,11 @@ ConsoleInstallTask::on_install_pre(const DepListEntry & d)
 {
     set_count<current_count>(count<current_count>() + 1);
 
-    output_heading("Installing " + stringify(d.package));
-    output_xterm_title("(" + stringify(count<current_count>()) + " of "
+    std::string m("(" + stringify(count<current_count>()) + " of "
             + stringify(count<max_count>()) + ") Installing " + stringify(d.package));
+
+    output_heading(m);
+    output_xterm_title(m);
 }
 
 void
