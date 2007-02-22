@@ -20,8 +20,12 @@
 #include <paludis/repository.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/collection_concrete.hh>
+#include <paludis/util/iterator.hh>
+#include <paludis/util/log.hh>
+#include <paludis/config_file.hh>
 #include <map>
 #include <list>
+#include <algorithm>
 #include <ctype.h>
 
 /** \file
@@ -34,6 +38,30 @@ using namespace paludis;
 
 #include <paludis/repository-sr.cc>
 
+namespace
+{
+    struct RepositoryBlacklist :
+        InstantiationPolicy<RepositoryBlacklist, instantiation_method::SingletonTag>
+    {
+        std::map<std::string, std::string> items;
+
+        RepositoryBlacklist()
+        {
+            if (! (FSEntry(DATADIR) / "paludis" / "repository_blacklist.txt").exists())
+                return;
+
+            LineConfigFile f(FSEntry(DATADIR) / "paludis" / "repository_blacklist.txt");
+            for (LineConfigFile::Iterator line(f.begin()), line_end(f.end()) ;
+                    line != line_end ; ++line)
+            {
+                std::string::size_type p(line->find(" - "));
+                if (std::string::npos != p)
+                    items.insert(std::make_pair(line->substr(0, p), line->substr(p + 3)));
+            }
+        }
+    };
+}
+
 Repository::Repository(
         const RepositoryName & our_name,
         const RepositoryCapabilities & caps,
@@ -43,6 +71,11 @@ Repository::Repository(
     _format(f),
     _info(new RepositoryInfo)
 {
+    std::map<std::string, std::string>::const_iterator i(
+            RepositoryBlacklist::get_instance()->items.find(stringify(_name)));
+    if (RepositoryBlacklist::get_instance()->items.end() != i)
+        Log::get_instance()->message(ll_warning, lc_no_context, "Repository '" + stringify(_name) +
+                "' is blacklisted with reason '" + i->second + "'. Consult the FAQ for more details.");
 }
 
 Repository::~Repository()

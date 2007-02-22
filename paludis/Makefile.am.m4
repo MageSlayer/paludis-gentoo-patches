@@ -63,7 +63,8 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
-	hashed_containers.hh.in testscriptlist srlist srcleanlist
+	hashed_containers.hh.in testscriptlist srlist srcleanlist \
+	repository_blacklist.txt
 SUBDIRS = digests fetchers syncers util selinux . dep_list merger repositories environment args qa tasks
 BUILT_SOURCES = srcleanlist
 
@@ -93,6 +94,9 @@ TESTS_ENVIRONMENT = env \
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
+
+paludis_datadir = $(datadir)/paludis
+paludis_data_DATA = repository_blacklist.txt
 
 if MONOLITHIC
 

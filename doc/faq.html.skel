@@ -308,6 +308,22 @@ honour <code>ROOT</code>. To temporarily disable sandbox for these packages,
 <code>export SANDBOX_PREDICT=/</code> or <code>export SANDBOX_WRITE=/</code> as
 appropriate.</p>
 
+<h3 id="blacklist">Repository Blacklists</h3>
+
+<p>Paludis will sometimes blacklist certain repositories. When using a
+blacklisted repository, you will receive a warning when Paludis starts up. This
+is not a fatal error, but you should realise that use of the repository in
+question will likely lead to breakages.</p>
+
+<p>Repositories are only blacklisted under extreme circumstances, such as:</p>
+
+<ul>
+    <li>When they are known to be very broken.</li>
+    <li>When they are known to rely heavily upon quirks in Portage's behaviour
+    that Paludis will not emulate.</li>
+    <li>When they are known to be a security threat.</li>
+</ul>
+
 <h2 id="misfunctionality">Undesirable Misfunctionality</h2>
 
 <h3 id="wgetresume">wget Resume Support</h3>
