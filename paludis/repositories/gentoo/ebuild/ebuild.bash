@@ -167,7 +167,7 @@ ebuild_scrub_environment()
         unset -v PALUDIS_HOME PALUDIS_PID EBUILD_KILL_PID ROOT
         unset -v CATEGORY PN PV P PVR PF ${!LD_*}
 
-        unset -v EBUILD E_DEPEND E_RDEPEND E_IUSE E_PDEPEND E_KEYWORDS
+        unset -v ebuild EBUILD E_DEPEND E_RDEPEND E_IUSE E_PDEPEND E_KEYWORDS
 
         for v in ${!SANDBOX*}; do
             [[ "${v}" == SANDBOX_ACTIVE ]] || unset "${v}"
@@ -206,23 +206,27 @@ ebuild_load_environment()
 "
 
         if [[ "${PALUDIS_LOAD_ENVIRONMENT%.bz2}" != "${PALUDIS_LOAD_ENVIRONMENT}" ]] ; then
-            bunzip2 < "${PALUDIS_LOAD_ENVIRONMENT}" > ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF} \
+            echo bunzip2 \< "${PALUDIS_LOAD_ENVIRONMENT}" \> ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$ 1>&2
+            bunzip2 < "${PALUDIS_LOAD_ENVIRONMENT}" > ${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$ \
                 || die "Can't extract ${PALUDIS_LOAD_ENVIRONMENT}"
         else
-            cp "${PALUDIS_LOAD_ENVIRONMENT}" "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" \
+            echo cp "${PALUDIS_LOAD_ENVIRONMENT}" "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
+            cp "${PALUDIS_LOAD_ENVIRONMENT}" "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" \
                 || die "Can't copy ${PALUDIS_LOAD_ENVIRONMENT}"
         fi
 
-        ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" \
+        echo ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
+        ebuild_scrub_environment "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" \
             || die "Can't load saved environment for cleaning"
 
-        echo source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" 1>&2
-        source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}" \
+        echo source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
+        source "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" \
             || die "Can't load saved environment"
 
         export PALUDIS_EXTRA_DIE_MESSAGE="${save_PALUDIS_EXTRA_DIE_MESSAGE}"
 
-        rm "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}"
+        echo rm "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$" 1>&2
+        rm "${PALUDIS_TMPDIR}/environment-${CATEGORY}-${PF}-$$"
     fi
 }
 
