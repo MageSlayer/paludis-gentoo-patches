@@ -36,6 +36,7 @@ BrokenGlobalVariablesCheck::operator() (const FSEntry & f) const
     CheckResult result(f, identifier());
 
     static pcrepp::Pcre::Pcre r_global("^[a-zA-Z0-9\\_]+=.*\\$[{}]?KV");
+    static pcrepp::Pcre::Pcre r_detect_version("^detect_version$");
 
     if (! f.is_regular_file())
         result << Message(qal_skip, "Not a regular file");
@@ -54,6 +55,9 @@ BrokenGlobalVariablesCheck::operator() (const FSEntry & f) const
             while (std::getline(ff, line))
             {
                 ++line_number;
+
+                if (r_detect_version.search(line))
+                    break;
 
                 if (r_global.search(line))
                     result << Message(qal_maybe, "Suspect global variable on line "
