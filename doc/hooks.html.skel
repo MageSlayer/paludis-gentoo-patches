@@ -20,7 +20,8 @@ that is executed when a particular well defined action occurs.</p>
 <p>There are currently four categories of hook:</p>
 
 <ul>
-    <li>General hooks. These have access to a limited environment.</li>
+    <li>General hooks. These have access to a limited environment. If
+    a hook returns a non-zero exit code, the action will be aborted.</li>
 
     <li>Ebuild phase hooks. These have <code>ebuild</code> in the hook name, and
     have full access to the ebuild environment (including the ability to call
@@ -30,7 +31,8 @@ that is executed when a particular well defined action occurs.</p>
     <code>einfo</code>, <code>ewarn</code> etc.</li>
 
     <li>Merger / Unmerger hooks. These are used when installing and uninstalling
-    content to the live filesystem.</li>
+    content to the live filesystem. If a hook returns a non-zero exit
+    code, the action will be aborted.</li>
 </ul>
 
 <h3>Available Hooks</h3>
