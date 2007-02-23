@@ -30,6 +30,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
+#include <set>
 
 #include <libebt/libebt.hh>
 #include <libwrapiter/libwrapiter.hh>
@@ -591,6 +592,23 @@ int main(int argc, char *argv[])
 
         if (QualudisCommandLine::get_instance()->a_version.specified())
             throw DoVersion();
+
+        if (QualudisCommandLine::get_instance()->a_qa_checks.specified())
+        {
+            std::set<std::string> all_keys;
+            qa::EbuildCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
+            qa::FileCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
+            qa::PackageDirCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
+            qa::PerProfileEbuildCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
+            qa::ProfileCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
+            qa::ProfilesCheckMaker::get_instance()->copy_keys(std::inserter(all_keys, all_keys.begin()));
+
+            for (args::StringSetArg::Iterator q(QualudisCommandLine::get_instance()->a_qa_checks.begin_args()),
+                    q_end(QualudisCommandLine::get_instance()->a_qa_checks.end_args()) ; q != q_end ; ++q)
+                if (all_keys.end() == all_keys.find(*q))
+                    throw DoHelp("bad value '" + *q + "' for --" +
+                            QualudisCommandLine::get_instance()->a_qa_checks.long_name());
+        }
 
         if (QualudisCommandLine::get_instance()->a_describe.specified())
         {
