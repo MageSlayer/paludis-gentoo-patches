@@ -88,7 +88,8 @@ VDBMerger::extend_hook(const Hook & h)
         ("PF", pn + "-" + pvr)
         ("SLOT", slot)
         ("CONFIG_PROTECT", _imp->options.config_protect)
-        ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask);
+        ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask)
+        ("PALUDIS_BASHRC_FILES", _imp->options.environment->bashrc_files());
 }
 
 void
