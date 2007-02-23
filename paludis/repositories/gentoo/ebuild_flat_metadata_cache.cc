@@ -115,8 +115,15 @@ EbuildFlatMetadataCache::save(std::tr1::shared_ptr<const EbuildVersionMetadata> 
 {
     Context context("When saving version metadata to '" + stringify(_filename) + "':");
 
-    _filename.dirname().dirname().mkdir();
-    _filename.dirname().mkdir();
+    try
+    {
+        _filename.dirname().dirname().mkdir();
+        _filename.dirname().mkdir();
+    }
+    catch (const FSError &e)
+    {
+        // let the 'if (cache)' handle the error
+    }
     std::ofstream cache(stringify(_filename).c_str());
 
     if (cache)
