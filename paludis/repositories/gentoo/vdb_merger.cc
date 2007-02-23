@@ -86,7 +86,9 @@ VDBMerger::extend_hook(const Hook & h)
         ("PV", pv)
         ("PVR", pvr)
         ("PF", pn + "-" + pvr)
-        ("SLOT", slot);
+        ("SLOT", slot)
+        ("CONFIG_PROTECT", _imp->options.config_protect)
+        ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask);
 }
 
 void
