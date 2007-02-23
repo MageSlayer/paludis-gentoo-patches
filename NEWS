@@ -4,6 +4,18 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.20.0:
+    * Merging is now handled by the destination repository. The new merger
+    code does a two pass merge to catch most errors before the filesystem
+    is modified. New merger hooks allow for much more flexibility.
+
+    * Hooks returning non-zero will now usually cause an abort rather than
+    a warning.
+
+    * Various new QA checks.
+
+    * Lots of internal code cleanups.
+
 0.18.1:
     * use.conf etc now automatically includes use.conf.d/*.conf.
 
