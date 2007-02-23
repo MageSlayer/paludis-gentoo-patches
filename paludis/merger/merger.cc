@@ -144,7 +144,7 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
 
     on_enter_dir(is_check, src);
 
-    for (DirIterator d(src), d_end ; d != d_end ; ++d)
+    for (DirIterator d(src, false), d_end ; d != d_end ; ++d)
     {
         MergerEntryType m(entry_type(*d));
         switch (m)
