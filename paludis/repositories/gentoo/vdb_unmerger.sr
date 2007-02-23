@@ -8,6 +8,9 @@ make_class_VDBUnmergerOptions()
     key contents_file "FSEntry"
     key config_protect std::string
     key config_protect_mask std::string
+    key package_name "QualifiedPackageName"
+    key version "VersionSpec"
+    key repository "const Repository *"
 
     allow_named_args
 

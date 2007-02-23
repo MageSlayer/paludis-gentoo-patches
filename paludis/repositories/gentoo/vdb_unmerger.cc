@@ -68,6 +68,28 @@ VDBUnmerger::~VDBUnmerger()
 {
 }
 
+Hook
+VDBUnmerger::extend_hook(const Hook & h)
+{
+    std::string cat(stringify(_imp->options.package_name.category));
+    std::string pn(stringify(_imp->options.package_name.package));
+    std::string pvr(stringify(_imp->options.version));
+    std::string pv(stringify(_imp->options.version.remove_revision()));
+    std::string slot(stringify(_imp->options.repository->version_metadata(_imp->options.package_name, _imp->options.version)->slot));
+
+    return Unmerger::extend_hook(h)
+        ("P", pn + "-" + pv)
+        ("PN", pn)
+        ("CATEGORY", cat)
+        ("PR", _imp->options.version.revision_only())
+        ("PV", pv)
+        ("PVR", pvr)
+        ("PF", pn + "-" + pvr)
+        ("SLOT", slot)
+        ("CONFIG_PROTECT", _imp->options.config_protect)
+        ("CONFIG_PROTECT_MASK", _imp->options.config_protect_mask);
+}
+
 void
 VDBUnmerger::unmerge()
 {

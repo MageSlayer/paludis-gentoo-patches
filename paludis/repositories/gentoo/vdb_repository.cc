@@ -982,7 +982,10 @@ VDBRepository::_uninstall(const QualifiedPackageName & q, const VersionSpec & v,
             .root(root())
             .contents_file(pkg_dir / "CONTENTS")
             .config_protect(config_protect)
-            .config_protect_mask(config_protect_mask));
+            .config_protect_mask(config_protect_mask)
+            .package_name(q)
+            .version(v)
+            .repository(this));
 
     unmerger.unmerge();
 

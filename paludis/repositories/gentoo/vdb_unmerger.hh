@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_UNMERGER_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_UNMERGER_HH 1
 
+#include <paludis/repository.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/fs_entry.hh>
@@ -55,6 +56,8 @@ namespace paludis
         public:
             VDBUnmerger(const VDBUnmergerOptions &);
             ~VDBUnmerger();
+
+            virtual Hook extend_hook(const Hook &);
 
             void unmerge();
     };
