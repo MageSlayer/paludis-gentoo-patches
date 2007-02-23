@@ -286,8 +286,10 @@ UninstallTask::execute()
         on_update_world_post();
     }
 
-    _imp->env->perform_hook(Hook("uninstall_all_pre")("TARGETS", join(_imp->raw_targets.begin(),
-                    _imp->raw_targets.end(), " ")));
+    if (0 !=
+        _imp->env->perform_hook(Hook("uninstall_all_pre")("TARGETS", join(_imp->raw_targets.begin(),
+                         _imp->raw_targets.end(), " "))))
+        throw PackageUninstallActionError("Uninstall aborted by hook");
     on_uninstall_all_pre();
 
     int x(0), y(0);
@@ -303,8 +305,10 @@ UninstallTask::execute()
 
         std::string cpvr(stringify(i->package));
 
-        _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr)
-                ("X_OF_Y", stringify(x) + " of " + stringify(y)));
+        if (0 !=
+            _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr)
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y))))
+            throw PackageUninstallActionError("Uninstall of '" + cpvr + "' aborted by hook");
         on_uninstall_pre(*i);
 
         const RepositoryUninstallableInterface * const uninstall_interface(
@@ -319,18 +323,22 @@ UninstallTask::execute()
         }
         catch (const PackageUninstallActionError & e)
         {
-            _imp->env->perform_hook(Hook("uninstall_fail")("TARGET", cpvr)("MESSAGE", e.message()));
+            int PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("uninstall_fail")("TARGET", cpvr)("MESSAGE", e.message())));
             throw;
         }
 
         on_uninstall_post(*i);
-        _imp->env->perform_hook(Hook("uninstall_post")("TARGET", cpvr)
-                ("X_OF_Y", stringify(x) + " of " + stringify(y)));
+        if (0 !=
+            _imp->env->perform_hook(Hook("uninstall_post")("TARGET", cpvr)
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y))))
+            throw PackageUninstallActionError("Uninstall of '" + cpvr + "' aborted by hook");
     }
 
     on_uninstall_all_post();
-    _imp->env->perform_hook(Hook("uninstall_all_post")("TARGETS", join(_imp->raw_targets.begin(),
-                    _imp->raw_targets.end(), " ")));
+    if (0 !=
+        _imp->env->perform_hook(Hook("uninstall_all_post")("TARGETS", join(_imp->raw_targets.begin(),
+                         _imp->raw_targets.end(), " "))))
+        throw PackageUninstallActionError("Uninstall aborted by hook");
 }
 
 AmbiguousUnmergeTargetError::~AmbiguousUnmergeTargetError() throw ()

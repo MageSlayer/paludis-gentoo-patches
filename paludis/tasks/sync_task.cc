@@ -65,8 +65,10 @@ SyncTask::execute()
                 r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
             _imp->targets.push_back((*r)->name());
 
-    _imp->env->perform_hook(Hook("sync_all_pre")("TARGETS", join(_imp->targets.begin(),
-                    _imp->targets.end(), " ")));
+    if (0 !=
+        _imp->env->perform_hook(Hook("sync_all_pre")("TARGETS", join(_imp->targets.begin(),
+                         _imp->targets.end(), " "))))
+        throw SyncFailedError("Sync aborted by hook");
     on_sync_all_pre();
 
     int x(0), y(std::distance(_imp->targets.begin(), _imp->targets.end()));
@@ -76,33 +78,39 @@ SyncTask::execute()
         Context context_local("When syncing repository '" + stringify(*r) + "':");
         ++x;
 
-        _imp->env->perform_hook(Hook("sync_pre")("TARGET", stringify(*r))
-                ("X_OF_Y", stringify(x) + " of " + stringify(y)));
-        on_sync_pre(*r);
-
         try
         {
+            if (0 !=
+                _imp->env->perform_hook(Hook("sync_pre")("TARGET", stringify(*r))
+                         ("X_OF_Y", stringify(x) + " of " + stringify(y))))
+                throw SyncFailedError("Sync of '" + stringify(*r) + "' aborted by hook");
+            on_sync_pre(*r);
+
             std::tr1::shared_ptr<const Repository> rr(_imp->env->package_database()->fetch_repository(*r));
 
             if (rr->syncable_interface && rr->syncable_interface->sync())
                 on_sync_succeed(*r);
             else
                 on_sync_skip(*r);
+
+            on_sync_post(*r);
+            if (0 !=
+                _imp->env->perform_hook(Hook("sync_post")("TARGET", stringify(*r))
+                             ("X_OF_Y", stringify(x) + " of " + stringify(y))))
+                throw SyncFailedError("Sync of '" + stringify(*r) + "' aborted by hook");
         }
         catch (const SyncFailedError & e)
         {
-            _imp->env->perform_hook(Hook("sync_fail")("TARGET", stringify(*r))
-                    ("X_OF_Y", stringify(x) + " of " + stringify(y)));
+            int PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("sync_fail")("TARGET", stringify(*r))
+                    ("X_OF_Y", stringify(x) + " of " + stringify(y))));
             on_sync_fail(*r, e);
         }
-
-        on_sync_post(*r);
-        _imp->env->perform_hook(Hook("sync_post")("TARGET", stringify(*r))
-                    ("X_OF_Y", stringify(x) + " of " + stringify(y)));
     }
 
     on_sync_all_post();
-    _imp->env->perform_hook(Hook("sync_all_post")("TARGETS", join(_imp->targets.begin(),
-                    _imp->targets.end(), " ")));
+    if (0 !=
+        _imp->env->perform_hook(Hook("sync_all_post")("TARGETS", join(_imp->targets.begin(),
+                         _imp->targets.end(), " "))))
+        throw SyncFailedError("Sync aborted by hook");
 }
 

@@ -101,3 +101,4 @@ X_OF_Y="${X_OF_Y+ (${X_OF_Y})}"
     esac
 ) >> ${ROOT}/var/log/paludis.log
 
+true

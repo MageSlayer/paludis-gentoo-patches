@@ -79,7 +79,7 @@ namespace paludis
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(const UseFlagName &,
                     const PackageDatabaseEntry *) const;
 
-            virtual void perform_hook(const Hook & hook) const;
+            virtual int perform_hook(const Hook & hook) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual MirrorIterator begin_mirrors(const std::string & mirror) const;
 

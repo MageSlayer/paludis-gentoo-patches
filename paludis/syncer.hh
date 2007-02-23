@@ -107,13 +107,12 @@ namespace paludis
     class SyncFailedError :
         public PackageActionError
     {
-        protected:
+        public:
             /**
              * Constructor.
              */
             SyncFailedError(const std::string & msg) throw ();
 
-        public:
             /**
              * Constructor.
              */

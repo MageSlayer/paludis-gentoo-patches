@@ -555,10 +555,10 @@ namespace
         {
         }
 
-        void operator() (const FSEntry & f) const;
+        int operator() (const FSEntry & f) const;
     };
 
-    void
+    int
     Hooker::operator() (const FSEntry & f) const
     {
         Context context("When running hook script '" + stringify(f) +
@@ -584,16 +584,17 @@ namespace
         else
             Log::get_instance()->message(ll_warning, lc_no_context, "Hook '" + stringify(f)
                     + "' returned failure '" + stringify(exit_status) + "'");
+        return exit_status;
     }
 }
 
-void
+int
 DefaultEnvironment::perform_hook(const Hook & hook) const
 {
     HookPresentCache::iterator cache_entry(_imp->hook_cache.end());
     if (_imp->hook_cache.end() != ((cache_entry = _imp->hook_cache.find(hook.name()))))
         if (! cache_entry->second)
-            return;
+            return 0;
 
     Context context("When triggering hook '" + hook.name() + "'");
     Log::get_instance()->message(ll_debug, lc_no_context, "Starting hook '" + hook.name() + "'");
@@ -601,6 +602,7 @@ DefaultEnvironment::perform_hook(const Hook & hook) const
     const std::list<FSEntry> & hook_dirs_ref(get_hook_dirs());
 
     bool had_hook(false);
+    int max_exit_status(0);
     for (std::list<FSEntry>::const_iterator h(hook_dirs_ref.begin()),
             h_end(hook_dirs_ref.end()) ; h != h_end ; ++h)
     {
@@ -615,11 +617,15 @@ DefaultEnvironment::perform_hook(const Hook & hook) const
         if (! hooks.empty())
             had_hook = true;
 
-        std::for_each(hooks.begin(), hooks.end(), Hooker(hook, paludis_command()));
+        for (std::list<FSEntry>::const_iterator hk(hooks.begin()),
+                hk_end(hooks.end()) ; hk != hk_end ; ++hk)
+             max_exit_status = std::max(max_exit_status, Hooker(hook, paludis_command())(*hk));
     }
 
     if (_imp->hook_cache.end() == cache_entry)
         _imp->hook_cache.insert(std::make_pair(hook.name(), had_hook));
+
+    return max_exit_status;
 }
 
 std::string

@@ -72,8 +72,9 @@ namespace paludis
                 return "false";
             }
 
-            virtual void perform_hook(const Hook &) const
+            virtual int perform_hook(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
+                return 0;
             }
 
             virtual MirrorIterator begin_mirrors(const std::string &) const;

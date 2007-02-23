@@ -351,11 +351,13 @@ namespace paludis
             void remove_set_from_world(const SetName &, WorldCallbacks *) const;
 
             /**
-             * Perform a hook.
+             * Perform a hook.  Returns the highest exit status of all
+             * hooks called (usually, only zero or non-zero is
+             * meaningful).
              *
              * Default behaviour: nothing happens.
              */
-            virtual void perform_hook(const Hook & hook) const;
+            virtual int perform_hook(const Hook & hook) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Default root location.

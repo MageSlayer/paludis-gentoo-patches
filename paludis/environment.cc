@@ -530,9 +530,10 @@ Environment::end_mirrors(const std::string &) const
     return MirrorIterator(environment_mirrors.end());
 }
 
-void
+int
 Environment::perform_hook(const Hook &) const
 {
+    return 0;
 }
 
 std::tr1::shared_ptr<const UseFlagNameCollection>

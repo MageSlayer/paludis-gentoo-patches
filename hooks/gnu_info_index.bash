@@ -80,9 +80,8 @@ touch "${vdb_loc}/.cache/info_time_cache"
 
 if [[ ${bad_count} -gt 0 ]] ; then
     ewarn "Processed $(( good_count + bad_count )) info files, with ${bad_count} errors"
-    exit 1
 else
     einfo_unhooked "Processed ${good_count} info files"
-    exit 0
 fi
 
+exit 0
