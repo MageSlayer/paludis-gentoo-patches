@@ -54,7 +54,20 @@ Merger::check()
     Context context("When checking merge from '" + stringify(_options.image) + "' to '"
             + stringify(_options.root) + "':");
 
+    if (0 != _options.environment->perform_hook(extend_hook(
+                         Hook("merger_check_pre")
+                         ("INSTALL_SOURCE", stringify(_options.image))
+                         ("INSTALL_DESTINATION", stringify(_options.root)))))
+        make_check_fail();
+
     do_dir_recursive(true, _options.image, _options.root);
+
+    if (0 != _options.environment->perform_hook(extend_hook(
+                         Hook("merger_check_post")
+                         ("INSTALL_SOURCE", stringify(_options.image))
+                         ("INSTALL_DESTINATION", stringify(_options.root)))))
+        make_check_fail();
+
     return _result;
 }
 
@@ -85,7 +98,19 @@ Merger::merge()
         }
     } old_umask(::umask(0000));
 
+    if (0 != _options.environment->perform_hook(extend_hook(
+                         Hook("merger_install_pre")
+                         ("INSTALL_SOURCE", stringify(_options.image))
+                         ("INSTALL_DESTINATION", stringify(_options.root)))))
+        throw MergerError("Merge of '" + stringify(_options.image) + "' to '" + stringify(_options.root) + "' aborted by hook");
+
     do_dir_recursive(false, _options.image, _options.root);
+
+    if (0 != _options.environment->perform_hook(extend_hook(
+                         Hook("merger_install_post")
+                         ("INSTALL_SOURCE", stringify(_options.image))
+                         ("INSTALL_DESTINATION", stringify(_options.root)))))
+        throw MergerError("Merge of '" + stringify(_options.image) + "' to '" + stringify(_options.root) + "' aborted by hook");
 }
 
 MergerEntryType

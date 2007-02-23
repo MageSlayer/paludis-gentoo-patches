@@ -21,6 +21,7 @@
 
 using namespace paludis;
 
+#include <paludis/environment.hh>
 #include <paludis/repositories/gentoo/vdb_unmerger-sr.cc>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
@@ -79,8 +80,18 @@ VDBUnmerger::unmerge()
     while (std::getline(c, line))
         lines.push_back(line);
 
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
+                              Hook("unmerger_unlink_pre")
+                              ("UNLINK_TARGET", stringify(_imp->options.root)))))
+        throw UnmergerError("Unmerge of '" + stringify(_imp->options.root) + "' aborted by hook");
+
     unmerge_non_directories(lines.begin(), lines.end());
     unmerge_directories(lines.rbegin(), lines.rend());
+
+    if (0 != _imp->options.environment->perform_hook(extend_hook(
+                              Hook("unmerger_unlink_post")
+                              ("UNLINK_TARGET", stringify(_imp->options.root)))))
+        throw UnmergerError("Unmerge of '" + stringify(_imp->options.root) + "' aborted by hook");
 }
 
 bool
