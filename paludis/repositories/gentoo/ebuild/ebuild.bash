@@ -99,9 +99,10 @@ ebuild_source_profile()
 
 export CONFIG_PROTECT="${PALUDIS_CONFIG_PROTECT}"
 export CONFIG_PROTECT_MASK="${PALUDIS_CONFIG_PROTECT_MASK}"
-save_vars="USE USE_EXPAND USE_EXPAND_HIDDEN ${USE_EXPAND} CONFIG_PROTECT CONFIG_PROTECT_MASK"
+save_vars="USE USE_EXPAND USE_EXPAND_HIDDEN ${USE_EXPAND}"
+save_base_vars="CONFIG_PROTECT CONFIG_PROTECT_MASK"
 
-for var in ${save_vars} ${default_save_vars} ; do
+for var in ${save_vars} ${default_save_vars} ${save_base_vars} ; do
     ebuild_notice "debug" "Saving ${var}=${!var}"
     eval "export save_var_${var}='${!var}'"
 done
@@ -114,7 +115,7 @@ elif [[ -n "${PALUDIS_PROFILE_DIR}" ]] ; then
     ebuild_source_profile $(canonicalise "${PALUDIS_PROFILE_DIR}")
 fi
 
-unset ${save_vars}
+unset ${save_vars} ${save_base_vars}
 
 for f in ${PALUDIS_BASHRC_FILES} ; do
     if [[ -f ${f} ]] ; then
@@ -133,6 +134,10 @@ done
 
 for var in ${save_vars} ; do
     eval "export ${var}=\${save_var_${var}}"
+done
+
+for var in ${save_base_vars} ; do
+    eval "export ${var}=\"\${save_var_${var}} \$$(echo ${var})\""
 done
 
 [[ -z "${CBUILD}" ]] && export CBUILD="${CHOST}"
