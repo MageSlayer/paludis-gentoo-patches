@@ -82,12 +82,6 @@ target. The <code>PALUDIS_CMDLINE</code> variables described below are also avai
     <li><code>ebuild_fetch_pre</code></li>
     <li><code>ebuild_fetch_fail</code></li>
     <li><code>ebuild_fetch_post</code></li>
-    <li><code>ebuild_merge_pre</code></li>
-    <li><code>ebuild_merge_fail</code></li>
-    <li><code>ebuild_merge_post</code></li>
-    <li><code>ebuild_unmerge_pre</code></li>
-    <li><code>ebuild_unmerge_fail</code></li>
-    <li><code>ebuild_unmerge_post</code></li>
     <li><code>ebuild_tidyup_pre</code></li>
     <li><code>ebuild_tidyup_fail</code></li>
     <li><code>ebuild_tidyup_post</code></li>
@@ -156,15 +150,21 @@ probably install safely, then it does the actual install. Note that calculating
 the md5, timestamp etc for VDB CONTENTS is done <em>after</em> the install_post
 hooks are called.</p>
 
+<p>In each of the following subcategories, the hooks that do not name
+a specific type of object are called before or after the entire
+process; those that do are called once for each relevant item.</p>
+
 <p>The following merger check hooks are available:</p>
 
 <ul>
-    <li>merger_check_file_pre</li>
-    <li>merger_check_file_post</li>
-    <li>merger_check_sym_pre</li>
-    <li>merger_check_sym_post</li>
-    <li>merger_check_dir_pre</li>
-    <li>merger_check_dir_post</li>
+    <li><code>merger_check_pre</code></li>
+    <li><code>merger_check_post</code></li>
+    <li><code>merger_check_file_pre</code></li>
+    <li><code>merger_check_file_post</code></li>
+    <li><code>merger_check_sym_pre</code></li>
+    <li><code>merger_check_sym_post</code></li>
+    <li><code>merger_check_dir_pre</code></li>
+    <li><code>merger_check_dir_post</code></li>
 </ul>
 
 <p>The <code>INSTALL_SOURCE</code> and <code>INSTALL_DESTINATION</code>
@@ -175,20 +175,22 @@ variable contains the image root.</p>
 <p>The following merger hooks are available:</p>
 
 <ul>
-    <li>merger_install_file_pre</li>
-    <li>merger_install_file_post</li>
-    <li>merger_install_sym_pre</li>
-    <li>merger_install_sym_post</li>
-    <li>merger_install_dir_pre</li>
-    <li>merger_install_dir_post</li>
-    <li>merger_unlink_file_pre</li>
-    <li>merger_unlink_file_post</li>
-    <li>merger_unlink_dir_pre</li>
-    <li>merger_unlink_dir_post</li>
-    <li>merger_unlink_sym_pre</li>
-    <li>merger_unlink_sym_post</li>
-    <li>merger_unlink_misc_pre</li>
-    <li>merger_unlink_misc_post</li>
+    <li><code>merger_install_pre</code></li>
+    <li><code>merger_install_post</code></li>
+    <li><code>merger_install_file_pre</code></li>
+    <li><code>merger_install_file_post</code></li>
+    <li><code>merger_install_sym_pre</code></li>
+    <li><code>merger_install_sym_post</code></li>
+    <li><code>merger_install_dir_pre</code></li>
+    <li><code>merger_install_dir_post</code></li>
+    <li><code>merger_unlink_file_pre</code></li>
+    <li><code>merger_unlink_file_post</code></li>
+    <li><code>merger_unlink_dir_pre</code></li>
+    <li><code>merger_unlink_dir_post</code></li>
+    <li><code>merger_unlink_sym_pre</code></li>
+    <li><code>merger_unlink_sym_post</code></li>
+    <li><code>merger_unlink_misc_pre</code></li>
+    <li><code>merger_unlink_misc_post</code></li>
 </ul>
 
 <p>Again, <code>ROOT</code> and <code>IMAGE</code> are available. For
@@ -200,14 +202,16 @@ things have to be removed for an install (the merger does that). The following
 unmerger hooks are available:</p>
 
 <ul>
-    <li>unmerger_unlink_file_pre</li>
-    <li>unmerger_unlink_file_post</li>
-    <li>unmerger_unlink_dir_pre</li>
-    <li>unmerger_unlink_dir_post</li>
-    <li>unmerger_unlink_sym_pre</li>
-    <li>unmerger_unlink_sym_post</li>
-    <li>unmerger_unlink_misc_pre</li>
-    <li>unmerger_unlink_misc_post</li>
+    <li><code>unmerger_unlink_pre</code></li>
+    <li><code>unmerger_unlink_post</code></li>
+    <li><code>unmerger_unlink_file_pre</code></li>
+    <li><code>unmerger_unlink_file_post</code></li>
+    <li><code>unmerger_unlink_dir_pre</code></li>
+    <li><code>unmerger_unlink_dir_post</code></li>
+    <li><code>unmerger_unlink_sym_pre</code></li>
+    <li><code>unmerger_unlink_sym_post</code></li>
+    <li><code>unmerger_unlink_misc_pre</code></li>
+    <li><code>unmerger_unlink_misc_post</code></li>
 </ul>
 
 <p>The <code>UNLINK_TARGET</code> environment variable specifies the file about
