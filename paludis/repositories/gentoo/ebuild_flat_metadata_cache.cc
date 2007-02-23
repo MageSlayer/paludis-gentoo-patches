@@ -120,7 +120,7 @@ EbuildFlatMetadataCache::save(std::tr1::shared_ptr<const EbuildVersionMetadata> 
         _filename.dirname().dirname().mkdir();
         _filename.dirname().mkdir();
     }
-    catch (const FSError &e)
+    catch (const FSError &)
     {
         // let the 'if (cache)' handle the error
     }
