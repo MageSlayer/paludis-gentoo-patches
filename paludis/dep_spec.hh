@@ -86,13 +86,15 @@ namespace paludis
              * Return us as a UseDepSpec, or 0 if we are not a
              * UseDepSpec.
              */
-            virtual const UseDepSpec * as_use_dep_spec() const;
+            virtual const UseDepSpec * as_use_dep_spec() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return us as a PackageDepSpec, or 0 if we are not a
              * UseDepSpec.
              */
-            virtual const PackageDepSpec * as_package_dep_spec() const;
+            virtual const PackageDepSpec * as_package_dep_spec() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };
@@ -139,9 +141,11 @@ namespace paludis
 
             typedef libwrapiter::ForwardIterator<CompositeDepSpec, const std::tr1::shared_ptr<const DepSpec> > Iterator;
 
-            Iterator begin() const;
+            Iterator begin() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            Iterator end() const;
+            Iterator end() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };
@@ -289,13 +293,16 @@ namespace paludis
             ///\}
 
             /// Find the requirement for a particular USE flag.
-            Iterator find(const UseFlagName & u) const;
+            Iterator find(const UseFlagName & u) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// Insert a new requirement.
-            bool insert(const UseFlagName & u, UseFlagState s);
+            bool insert(const UseFlagName & u, UseFlagState s)
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// What state is desired for a particular use flag?
-            UseFlagState state(const UseFlagName &) const;
+            UseFlagState state(const UseFlagName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

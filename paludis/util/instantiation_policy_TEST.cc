@@ -158,7 +158,7 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(MyRecursiveClass::get_instance(), InternalError);
+            TEST_CHECK_THROWS(MyRecursiveClass * x = MyRecursiveClass::get_instance(), InternalError);
         }
     } test_singleton_pattern_recurse;
 }

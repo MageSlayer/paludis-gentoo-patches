@@ -116,7 +116,7 @@ namespace paludis
             /**
              * The name of the package.
              */
-            const std::string & name() const;
+            const std::string & name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\name Iterate over possible matches
             ///\{
@@ -124,8 +124,8 @@ namespace paludis
             typedef libwrapiter::ForwardIterator<AmbiguousPackageNameError,
                     const std::string> OptionsIterator;
 
-            OptionsIterator begin_options() const;
-            OptionsIterator end_options() const;
+            OptionsIterator begin_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            OptionsIterator end_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };
@@ -260,12 +260,14 @@ namespace paludis
             /**
              * Fetch a named repository.
              */
-            std::tr1::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const;
+            std::tr1::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch a named repository.
              */
-            std::tr1::shared_ptr<Repository> fetch_repository(const RepositoryName &);
+            std::tr1::shared_ptr<Repository> fetch_repository(const RepositoryName &)
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch the name of our 'favourite' repository (if a repository's
@@ -275,13 +277,15 @@ namespace paludis
              * Note that this is the repository with the <i>lowest</i> importance
              * that is not a virtuals or installed_virtuals repository.
              */
-            RepositoryName favourite_repository() const;
+            RepositoryName favourite_repository() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Disambiguate a package name.
              */
             QualifiedPackageName fetch_unique_qualified_package_name(
-                    const PackageNamePart &) const;
+                    const PackageNamePart &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Query the repository.
@@ -290,35 +294,43 @@ namespace paludis
              */
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
                     const PackageDepSpec & a,
-                    const InstallState) const;
+                    const InstallState) const
+                PALUDIS_ATTRIBUTE((deprecated)) PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Query the repository.
+             *
+             * \deprecated use the Query form
              */
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
                     const PackageDepSpec & a,
                     const InstallState,
-                    const QueryOrder) const;
+                    const QueryOrder) const
+                PALUDIS_ATTRIBUTE((deprecated)) PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Query the repository.
              */
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
-                    const Query &, const QueryOrder) const;
+                    const Query &, const QueryOrder) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return true if the first repository is more important than the second.
              */
-            bool more_important_than(const RepositoryName &, const RepositoryName &) const;
+            bool more_important_than(const RepositoryName &, const RepositoryName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\name Iterate over our repositories
             ///\{
 
             typedef libwrapiter::ForwardIterator<PackageDatabase, const std::tr1::shared_ptr<Repository> > RepositoryIterator;
 
-            RepositoryIterator begin_repositories() const;
+            RepositoryIterator begin_repositories() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            RepositoryIterator end_repositories() const;
+            RepositoryIterator end_repositories() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };

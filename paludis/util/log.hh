@@ -94,7 +94,8 @@ namespace paludis
             /**
              * Fetch the current log level.
              */
-            LogLevel log_level() const;
+            LogLevel log_level() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Log a message at the specified level.

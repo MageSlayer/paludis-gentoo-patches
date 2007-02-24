@@ -49,40 +49,37 @@ namespace paludis
      *
      * \ingroup grpenvironment
      */
-    class Hook
+    class Hook :
+        private PrivateImplementationPattern<Hook>
     {
-        private:
-            std::map<std::string, std::string> _extra_env;
-
-            std::string _name;
-
         public:
             /// Constructor.
             Hook(const std::string & name);
 
-            /// Perform the hook.
-            Hook operator() (const std::string & key, const std::string & value) const;
+            /// Copy constructor.
+            Hook(const Hook &);
+
+            /// Destructor.
+            ~Hook();
+
+            /// Add data to the hook.
+            Hook operator() (const std::string & key, const std::string & value) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// Iterate over extra environment data.
-            typedef std::map<std::string, std::string>::const_iterator Iterator;
+            typedef libwrapiter::ForwardIterator<Hook, const std::pair<const std::string, std::string> > Iterator;
 
             /// Start of extra environment data.
             Iterator begin() const
-            {
-                return _extra_env.begin();
-            }
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// End of extra environment data.
             Iterator end() const
-            {
-                return _extra_env.end();
-            }
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// Our name.
             std::string name() const
-            {
-                return _name;
-            }
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -97,10 +94,6 @@ namespace paludis
     {
         private:
             std::tr1::shared_ptr<PackageDatabase> _package_database;
-
-            mutable bool _has_provide_map;
-
-            mutable std::map<QualifiedPackageName, QualifiedPackageName> _provide_map;
 
         protected:
             /**
@@ -132,7 +125,8 @@ namespace paludis
              * Default behaviour: all USE flags turned off, unless overridden by
              * the repository for the pde.
              */
-            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
+            virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch any known use expand names (excluding prefix) that start with a
@@ -141,7 +135,8 @@ namespace paludis
              * Default behaviour: no names known.
              */
             virtual std::tr1::shared_ptr<const UseFlagNameCollection> known_use_expand_names(const UseFlagName &,
-                    const PackageDatabaseEntry *) const;
+                    const PackageDatabaseEntry *) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Is the specified KEYWORD accepted?
@@ -149,42 +144,48 @@ namespace paludis
              * Default behaviour: only "*" accepted.
              */
             virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const,
-                    const bool override_tilde_keywords = false) const;
+                    const bool override_tilde_keywords = false) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Is the specified EAPI accepted?
              *
              * Default behaviour: known EAPIs accepted.
              */
-            virtual bool accept_eapi(const std::string &) const;
+            virtual bool accept_eapi(const std::string &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Is the specified LICENSE accepted?
              *
              * Default behaviour: yes.
              */
-            virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const;
+            virtual bool accept_license(const std::string &, const PackageDatabaseEntry * const) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch the masks for a particular package.
              */
             MaskReasons mask_reasons(const PackageDatabaseEntry &,
                     const bool override_tilde_keywords = false,
-                    const bool override_unkeyworded = false) const;
+                    const bool override_unkeyworded = false) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Are there any user masks on a package?
              *
              * Default behaviour: no.
              */
-            virtual bool query_user_masks(const PackageDatabaseEntry &) const;
+            virtual bool query_user_masks(const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Are there any user unmasks on a package?
              *
              * Default behaviour: no.
              */
-            virtual bool query_user_unmasks(const PackageDatabaseEntry &) const;
+            virtual bool query_user_unmasks(const PackageDatabaseEntry &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch our package database.
@@ -207,33 +208,38 @@ namespace paludis
              *
              * Default behaviour: none.
              */
-            virtual std::string bashrc_files() const;
+            virtual std::string bashrc_files() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Our hook directories.
              *
              * Default behaviour: none.
              */
-            virtual std::string hook_dirs() const;
+            virtual std::string hook_dirs() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Our fetchers directories.
              *
              * Default behaviour: user then paludis fetcher dirs.
              */
-            virtual std::string fetchers_dirs() const;
+            virtual std::string fetchers_dirs() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Our syncers directories.
              *
              * Default behaviour: user then paludis syncer dirs.
              */
-            virtual std::string syncers_dirs() const;
+            virtual std::string syncers_dirs() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * How to run paludis.
              */
-            virtual std::string paludis_command() const = 0;
+            virtual std::string paludis_command() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Destructor.
@@ -251,7 +257,8 @@ namespace paludis
              * Default behaviour: no mirrors. If specialising, also do
              * Environment::end_mirrors.
              */
-            virtual MirrorIterator begin_mirrors(const std::string & mirror) const;
+            virtual MirrorIterator begin_mirrors(const std::string & mirror) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Iterator to past the end of our mirrors.
@@ -259,19 +266,22 @@ namespace paludis
              * Default behaviour: no mirrors. If specialising, also do
              * Environment::begin_mirrors.
              */
-            virtual MirrorIterator end_mirrors(const std::string & mirror) const;
+            virtual MirrorIterator end_mirrors(const std::string & mirror) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch a named package set.
              */
-            std::tr1::shared_ptr<DepSpec> package_set(const SetName &) const;
+            std::tr1::shared_ptr<DepSpec> package_set(const SetName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch all named sets. Does not include sets from repositories.
              *
              * Default behaviour: no sets.
              */
-            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const;
+            virtual std::tr1::shared_ptr<const SetsCollection> sets_list() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Subclass for callbacks used by add_appropriate_to_world and
@@ -364,7 +374,8 @@ namespace paludis
              *
              * Default: /.
              */
-            virtual FSEntry root() const;
+            virtual FSEntry root() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Default destinations.
@@ -372,7 +383,8 @@ namespace paludis
              * Default: all repositories that provide RepositoryDestinationInterface and mark themselves
              * as a default destination.
              */
-            virtual std::tr1::shared_ptr<const DestinationsCollection> default_destinations() const;
+            virtual std::tr1::shared_ptr<const DestinationsCollection> default_destinations() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

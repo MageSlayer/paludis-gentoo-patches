@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -192,6 +192,24 @@ namespace test
      * Fetch the function used to get a string description of an exception.
      */
     std::string (* get_exception_to_debug_string()) (const std::exception &);
+
+    /**
+     * Utility class used by TEST_CHECK_EQUAL.
+     */
+    struct TwoVarHolder
+    {
+        bool result;
+        std::string s_a;
+        std::string s_b;
+
+        template <typename T1_, typename T2_>
+        TwoVarHolder(T1_ a, T2_ b) :
+            result(a == b),
+            s_a(paludis::stringify(a)),
+            s_b(paludis::stringify(b))
+        {
+        }
+    };
 }
 
 /**
@@ -200,9 +218,10 @@ namespace test
 #define TEST_CHECK_EQUAL(a, b) \
     do { \
         try { \
-            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, a == b, \
-                    "Expected '" #a "' to equal '" + paludis::stringify(b) + \
-                    "' but got '" + paludis::stringify(a) + "'"); \
+            test::TwoVarHolder test_h(a, b); \
+            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, test_h.result, \
+                    "Expected '" #a "' to equal '" + test_h.s_b + \
+                    "' but got '" + test_h.s_a + "'"); \
         } catch (const TestFailedException &) { \
             throw; \
         } catch (const std::exception & e) { \
@@ -221,9 +240,11 @@ namespace test
 #define TEST_CHECK_STRINGIFY_EQUAL(a, b) \
     do { \
         try { \
-            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, paludis::stringify(a) == paludis::stringify(b), \
-                    "Expected '" #a "' to equal '" + paludis::stringify(b) + \
-                    "' but got '" + paludis::stringify(a) + "'"); \
+            std::string s_a(paludis::stringify(a)); \
+            std::string s_b(paludis::stringify(b)); \
+            check(__PRETTY_FUNCTION__, __FILE__, __LINE__, s_a == s_b, \
+                    "Expected '" #a "' to equal '" + s_b + \
+                    "' but got '" + s_a + "'"); \
         } catch (const TestFailedException &) { \
             throw; \
         } catch (const std::exception & e) { \

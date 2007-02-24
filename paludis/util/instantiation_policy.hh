@@ -193,7 +193,8 @@ namespace paludis
             /**
              * Fetch our instance.
              */
-            static OurType_ * get_instance();
+            static OurType_ * get_instance()
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Destroy our instance.

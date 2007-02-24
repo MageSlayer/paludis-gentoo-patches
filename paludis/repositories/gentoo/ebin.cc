@@ -278,7 +278,8 @@ EbinMergeCommand::operator() ()
     Command clean_env(Command("rm -f '.paludis-binpkg-environment'")
             .with_chdir(merge_params.image)
             .with_echo_to_stderr());
-    run_command(clean_env);
+    if (0 != run_command(clean_env))
+        Log::get_instance()->message(ll_warning, lc_context, "Cleaning environment failed");
 
     Command compress_tarball(Command("bzip2 '" + tar + "'")
             .with_chdir(merge_params.image)

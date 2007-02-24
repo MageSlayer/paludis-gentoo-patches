@@ -241,9 +241,11 @@ namespace paludis
 
             typedef libwrapiter::ForwardIterator<Contents, const std::tr1::shared_ptr<const ContentsEntry> > Iterator;
 
-            Iterator begin() const;
+            Iterator begin() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            Iterator end() const;
+            Iterator end() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };

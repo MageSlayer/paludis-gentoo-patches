@@ -91,9 +91,11 @@ namespace paludis
             ///\name Dereference operators
             ///\{
 
-            const FSEntry & operator* () const;
+            const FSEntry & operator* () const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            const FSEntry * operator-> () const;
+            const FSEntry * operator-> () const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 
@@ -108,8 +110,10 @@ namespace paludis
             ///\name Comparison operators
             ///\{
 
-            bool operator== (const DirIterator & other) const;
-            bool operator!= (const DirIterator & other) const;
+            bool operator== (const DirIterator & other) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool operator!= (const DirIterator & other) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };

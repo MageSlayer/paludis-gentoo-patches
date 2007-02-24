@@ -71,8 +71,8 @@ namespace test_cases
             TEST_CHECK(b.mtime() < b.ctime());
             TEST_CHECK(d.mtime() == d.ctime());
 
-            TEST_CHECK_THROWS(c.ctime(), FSError);
-            TEST_CHECK_THROWS(c.mtime(), FSError);
+            TEST_CHECK_THROWS(time_t x = c.ctime(), FSError);
+            TEST_CHECK_THROWS(time_t x = c.mtime(), FSError);
         }
     } test_fs_entry_time;
 
@@ -211,7 +211,7 @@ namespace test_cases
             TEST_CHECK(!b.has_permission(fs_ug_others, fs_perm_write));
             TEST_CHECK(!b.has_permission(fs_ug_others, fs_perm_execute));
 
-            TEST_CHECK_THROWS(c.has_permission(fs_ug_owner, fs_perm_read), FSError);
+            TEST_CHECK_THROWS(bool x = c.has_permission(fs_ug_owner, fs_perm_read), FSError);
         }
     } test_fs_entry_permission;
 
@@ -231,8 +231,8 @@ namespace test_cases
             FSEntry e("fs_entry_TEST_dir/no_such_file");
 
             TEST_CHECK_EQUAL(f.file_size(), 10);
-            TEST_CHECK_THROWS(d.file_size(), FSError);
-            TEST_CHECK_THROWS(e.file_size(), FSError);
+            TEST_CHECK_THROWS(size_t x = d.file_size(), FSError);
+            TEST_CHECK_THROWS(size_t x = e.file_size(), FSError);
         }
     } test_fs_entry_size;
 
@@ -300,11 +300,11 @@ namespace test_cases
 
             FSEntry d("fs_entry_TEST_dir/i_dont_exist");
 
-            TEST_CHECK_THROWS(d.permissions(), FSError);
+            TEST_CHECK_THROWS(mode_t x = d.permissions(), FSError);
             TEST_CHECK_THROWS(d.chmod(all_perms), FSError);
             TEST_CHECK_THROWS(d.chown(static_cast<uid_t>(-1)), FSError);
-            TEST_CHECK_THROWS(d.owner(), FSError);
-            TEST_CHECK_THROWS(d.group(), FSError);
+            TEST_CHECK_THROWS(uid_t x = d.owner(), FSError);
+            TEST_CHECK_THROWS(gid_t x = d.group(), FSError);
 
             if (0 == my_uid)
             {

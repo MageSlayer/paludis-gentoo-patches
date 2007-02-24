@@ -27,7 +27,8 @@ namespace paludis
     bool match_package(
             const Environment & env,
             const PackageDepSpec & spec,
-            const PackageDatabaseEntry & target);
+            const PackageDatabaseEntry & target)
+        PALUDIS_ATTRIBUTE((warn_unused_result));
 
     /**
      * Return whether the specified spec matches the specified target, for heirarchies.
@@ -37,7 +38,8 @@ namespace paludis
     bool match_package_in_heirarchy(
             const Environment & env,
             const DepSpec & spec,
-            const PackageDatabaseEntry & target);
+            const PackageDatabaseEntry & target)
+        PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 
 #endif

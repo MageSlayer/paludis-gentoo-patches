@@ -126,7 +126,8 @@ namespace paludis
      *
      * \ingroup grpsystem
      */
-    int run_command(const Command & cmd) PALUDIS_VISIBLE;
+    int run_command(const Command & cmd) PALUDIS_VISIBLE
+        PALUDIS_ATTRIBUTE((warn_unused_result));
 
     /**
      * Set the stderr and close for stdout fds used by run_command and

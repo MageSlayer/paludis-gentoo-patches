@@ -134,7 +134,8 @@ namespace paludis
             /**
              * Join with another FSEntry.
              */
-            FSEntry operator/ (const FSEntry & rhs) const;
+            FSEntry operator/ (const FSEntry & rhs) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Append another FSEntry.
@@ -144,7 +145,8 @@ namespace paludis
             /**
              * Join with another path.
              */
-            FSEntry operator/ (const std::string & rhs) const;
+            FSEntry operator/ (const std::string & rhs) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Append another path.
@@ -157,12 +159,14 @@ namespace paludis
             /**
              * Return the last part of our path (eg '/foo/bar' => 'bar').
              */
-            std::string basename() const;
+            std::string basename() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return the first part of our path (eg '/foo/bar' => '/foo').
              */
-            FSEntry dirname() const;
+            FSEntry dirname() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
 
             ///\}
@@ -173,54 +177,63 @@ namespace paludis
             /**
              * Does a filesystem entry exist at our location?
              */
-            bool exists() const;
+            bool exists() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Does a filesystem entry exist at our location, and if it does,
              * is it a directory?
              */
-            bool is_directory() const;
+            bool is_directory() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Does a filesystem entry exist at our location, and if it does,
              * is it a regular file?
              */
-            bool is_regular_file() const;
+            bool is_regular_file() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Does a filesystem entry exist at our location, and if it does,
              * is it a symbolic link?
              */
-            bool is_symbolic_link() const;
+            bool is_symbolic_link() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Whether we exist and are a device file.
              */
-            bool is_device() const;
+            bool is_device() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Whether we exist and are a fifo.
              */
-            bool is_fifo() const;
+            bool is_fifo() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Check if filesystem entry has `perm` for `user_group`.
              *
              * \exception FSError if there was a problem accessing the filesystem entry
              */
-            bool has_permission(const FSUserGroup & user_group, const FSPermission & fs_perm) const;
+            bool has_permission(const FSUserGroup & user_group, const FSPermission & fs_perm) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return the permissions for our item.
              *
              * \exception FSError if there was a problem accessing the filesystem entry
              */
-            mode_t permissions() const;
+            mode_t permissions() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return the canonicalised version of our path.
              */
-            FSEntry realpath() const;
+            FSEntry realpath() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return our destination, if we are a symlink.
@@ -228,45 +241,52 @@ namespace paludis
              * \exception FSError if we are not a symlink, or if the system call
              * fails.
              */
-            std::string readlink() const;
+            std::string readlink() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return the time the filesystem entry was created
              * \exception FSError if there was a problem accessing the filesystem entry
              */
-            time_t ctime() const;
+            time_t ctime() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return the time the filesystem entry was last modified
              * \exception FSError if there was a problem accessing the filesystem entry
              */
-            time_t mtime() const;
+            time_t mtime() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return the size of our file, in bytes.
              *
              * \exception FSError if we don't have a size.
              */
-            off_t file_size() const;
+            off_t file_size() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch our owner.
              *
              * \exception FSError If we don't exist or the stat call fails.
              */
-            uid_t owner() const;
+            uid_t owner() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch our group.
              *
              * \exception FSError If we don't exist or the stat call fails.
              */
-            gid_t group() const;
+            gid_t group() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Return the current working directory
              */
-            static FSEntry cwd();
+            static FSEntry cwd()
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 

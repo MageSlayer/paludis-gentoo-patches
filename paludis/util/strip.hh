@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,7 +38,8 @@ namespace paludis
      *
      * \ingroup grpstrippers
      */
-    std::string strip_leading_string(const std::string & s, const std::string & prefix) PALUDIS_VISIBLE;
+    std::string strip_leading_string(const std::string & s, const std::string & prefix) PALUDIS_VISIBLE
+        PALUDIS_ATTRIBUTE((warn_unused_result));
 
     /**
      * Return a string equal to s, minus the string remove if remove occurs at
@@ -46,7 +47,8 @@ namespace paludis
      *
      * \ingroup grpstrippers
      */
-    std::string strip_leading(const std::string & s, const std::string & remove) PALUDIS_VISIBLE;
+    std::string strip_leading(const std::string & s, const std::string & remove) PALUDIS_VISIBLE
+        PALUDIS_ATTRIBUTE((warn_unused_result));
 
     /**
      * Return a string equal to s minus any trailing characters that are
@@ -54,7 +56,8 @@ namespace paludis
      *
      * \ingroup grpstrippers
      */
-    std::string strip_trailing_string(const std::string & s, const std::string & suffix) PALUDIS_VISIBLE;
+    std::string strip_trailing_string(const std::string & s, const std::string & suffix) PALUDIS_VISIBLE
+        PALUDIS_ATTRIBUTE((warn_unused_result));
 
     /**
      * Return a string equal to s, minus the string remove if remove occurs at
@@ -62,7 +65,8 @@ namespace paludis
      *
      * \ingroup grpstrippers
      */
-    std::string strip_trailing(const std::string & s, const std::string & remove) PALUDIS_VISIBLE;
+    std::string strip_trailing(const std::string & s, const std::string & remove) PALUDIS_VISIBLE
+        PALUDIS_ATTRIBUTE((warn_unused_result));
 
     /**
      * Adapt one of the strip_ functions for use as a std::unary_function by

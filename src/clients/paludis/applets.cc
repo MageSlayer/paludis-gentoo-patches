@@ -225,9 +225,11 @@ int do_list_sync_protocols()
                 s != s_end ; ++s)
         {
             std::cout << "* " << colour(cl_key_name, s->first) << std::endl;
-            run_command(Command(s->second + " --help")
-                    .with_setenv("PALUDIS_FETCHERS_DIRS", env->fetchers_dirs())
-                    .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis")));
+            if (0 != run_command(Command(s->second + " --help")
+                        .with_setenv("PALUDIS_FETCHERS_DIRS", env->fetchers_dirs())
+                        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))))
+                Log::get_instance()->message(ll_warning, lc_context, "Syncer help command '" +
+                        s->second + " --help' failed");
         }
     }
 

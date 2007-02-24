@@ -117,9 +117,9 @@ namespace test_cases
             FSEntry dir("system_TEST_dir");
             TEST_CHECK(dir.is_directory());
 
-            run_command(Command("touch in_directory").with_chdir(dir));
+            TEST_CHECK_EQUAL(run_command(Command("touch in_directory").with_chdir(dir)), 0);
             TEST_CHECK(FSEntry(dir / "in_directory").exists());
-            run_command(Command("rm in_directory").with_chdir(dir));
+            TEST_CHECK_EQUAL(run_command(Command("rm in_directory").with_chdir(dir)), 0);
             TEST_CHECK(! FSEntry(dir / "in_directory").exists());
         }
     } test_run_command_in_directory;

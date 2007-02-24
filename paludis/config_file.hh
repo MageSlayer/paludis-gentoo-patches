@@ -191,9 +191,11 @@ namespace paludis
 
             typedef libwrapiter::ForwardIterator<LineConfigFile, const std::string> Iterator;
 
-            Iterator begin() const;
+            Iterator begin() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            Iterator end() const;
+            Iterator end() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
     };
@@ -294,16 +296,19 @@ namespace paludis
             typedef libwrapiter::ForwardIterator<KeyValueConfigFile,
                     std::pair<const std::string, std::string> > Iterator;
 
-            Iterator begin() const;
+            Iterator begin() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            Iterator end() const;
+            Iterator end() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 
             /**
              * Fetch the specified key, or a blank string.
              */
-            std::string get(const std::string & key) const;
+            std::string get(const std::string & key) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

@@ -38,8 +38,7 @@
 using namespace paludis;
 
 Environment::Environment(std::tr1::shared_ptr<PackageDatabase> d) :
-    _package_database(d),
-    _has_provide_map(false)
+    _package_database(d)
 {
 }
 
@@ -406,8 +405,33 @@ Environment::remove_set_from_world(const SetName & s,
         ww->remove_callback(s);
 }
 
+namespace paludis
+{
+    template<>
+    struct Implementation<Hook>
+    {
+        std::string name;
+        std::map<std::string, std::string> extra_env;
+
+        Implementation(const std::string & n, const std::map<std::string, std::string> & e) :
+            name(n),
+            extra_env(e)
+        {
+        }
+    };
+}
+
 Hook::Hook(const std::string & n) :
-    _name(n)
+    PrivateImplementationPattern<Hook>(new Implementation<Hook>(n, std::map<std::string, std::string>()))
+{
+}
+
+Hook::Hook(const Hook & h) :
+    PrivateImplementationPattern<Hook>(new Implementation<Hook>(h._imp->name, h._imp->extra_env))
+{
+}
+
+Hook::~Hook()
 {
 }
 
@@ -415,8 +439,26 @@ Hook
 Hook::operator() (const std::string & k, const std::string & v) const
 {
     Hook result(*this);
-    result._extra_env.insert(std::make_pair(k, v));
+    result._imp->extra_env.insert(std::make_pair(k, v));
     return result;
+}
+
+Hook::Iterator
+Hook::begin() const
+{
+    return Iterator(_imp->extra_env.begin());
+}
+
+Hook::Iterator
+Hook::end() const
+{
+    return Iterator(_imp->extra_env.end());
+}
+
+std::string
+Hook::name() const
+{
+    return _imp->name;
 }
 
 bool
