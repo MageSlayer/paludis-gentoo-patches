@@ -254,6 +254,15 @@ namespace paludis
              */
             std::string root() const;
 
+            ///\name Userpriv
+            ///\{
+
+            uid_t reduced_uid() const;
+            gid_t reduced_gid() const;
+            std::string reduced_username() const;
+
+            ///\}
+
             /**
              * The config directory.
              */

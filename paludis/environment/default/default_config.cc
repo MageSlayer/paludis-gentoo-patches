@@ -40,6 +40,8 @@
 #include <map>
 
 #include <ctype.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 /** \file
  * Implementation of default_config.hh classes.
@@ -120,6 +122,9 @@ namespace paludis
         std::multimap<std::string, std::string> mirrors;
 
         std::vector<UseConfigEntry> forced_use_config;
+
+        mutable std::tr1::shared_ptr<uid_t> reduced_uid;
+        mutable std::tr1::shared_ptr<gid_t> reduced_gid;
 
         Implementation();
 
@@ -1060,5 +1065,49 @@ DefaultConfig::end_user_unmasks_sets() const
 {
     _imp->need_sets_expanded();
     return UserMasksSetsIterator(_imp->set_unmasks.end());
+}
+
+uid_t
+DefaultConfig::reduced_uid() const
+{
+    if (! _imp->reduced_uid)
+    {
+        struct passwd * p(getpwnam(reduced_username().c_str()));
+        if (! p)
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "Couldn't determine uid for user '" + reduced_username() + "'");
+            _imp->reduced_uid.reset(new uid_t(getuid()));
+        }
+        else
+            _imp->reduced_uid.reset(new uid_t(p->pw_uid));
+    }
+
+    return *_imp->reduced_uid;
+}
+
+gid_t
+DefaultConfig::reduced_gid() const
+{
+    if (! _imp->reduced_gid)
+    {
+        struct passwd * p(getpwnam(reduced_username().c_str()));
+        if (! p)
+        {
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "Couldn't determine gid for user '" + reduced_username() + "'");
+            _imp->reduced_gid.reset(new gid_t(getgid()));
+        }
+        else
+            _imp->reduced_gid.reset(new gid_t(p->pw_gid));
+    }
+
+    return *_imp->reduced_gid;
+}
+
+std::string
+DefaultConfig::reduced_username() const
+{
+    return "paludisbuild";
 }
 

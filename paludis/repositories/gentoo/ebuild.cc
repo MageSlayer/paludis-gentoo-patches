@@ -167,7 +167,8 @@ EbuildMetadataCommand::failure()
 Command
 EbuildMetadataCommand::extend_command(const Command & cmd)
 {
-    return cmd;
+    return Command(cmd)
+        .with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
 }
 
 bool
@@ -240,7 +241,9 @@ EbuildVariableCommand::failure()
 Command
 EbuildVariableCommand::extend_command(const Command & cmd)
 {
-    return Command(cmd).with_setenv("PALUDIS_VARIABLE", _var);
+    return Command(cmd)
+        .with_setenv("PALUDIS_VARIABLE", _var)
+        .with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
 }
 
 bool
@@ -283,7 +286,8 @@ EbuildFetchCommand::extend_command(const Command & cmd)
             .with_setenv("PALUDIS_USE_SAFE_RESUME", fetch_params.safe_resume ? "oohyesplease" : "")
             .with_setenv("PALUDIS_PROFILE_DIR", stringify(*fetch_params.profiles->begin()))
             .with_setenv("PALUDIS_PROFILE_DIRS", join(fetch_params.profiles->begin(),
-                    fetch_params.profiles->end(), " ")));
+                    fetch_params.profiles->end(), " "))
+            .with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid()));
 
     for (AssociativeCollection<std::string, std::string>::Iterator
             i(fetch_params.expand_vars->begin()),

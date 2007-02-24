@@ -385,6 +385,24 @@ namespace paludis
              */
             virtual std::tr1::shared_ptr<const DestinationsCollection> default_destinations() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * uid to use for operations that don't reqiure root privs.
+             *
+             * Should return the current uid unless we are root. Default: always return
+             * the current uid.
+             */
+            virtual uid_t reduced_uid() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * gid to use for operations that don't reqiure root privs.
+             *
+             * Should return the current gid unless we are root. Default: always return
+             * the current gid.
+             */
+            virtual gid_t reduced_gid() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

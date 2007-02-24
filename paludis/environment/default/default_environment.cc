@@ -789,3 +789,23 @@ DefaultEnvironment::root() const
     return DefaultConfig::get_instance()->root();
 }
 
+uid_t
+DefaultEnvironment::reduced_uid() const
+{
+    uid_t u(getuid());
+    if (0 == u)
+        return DefaultConfig::get_instance()->reduced_uid();
+    else
+        return u;
+}
+
+gid_t
+DefaultEnvironment::reduced_gid() const
+{
+    gid_t g(getgid());
+    if (0 == g)
+        return DefaultConfig::get_instance()->reduced_gid();
+    else
+        return g;
+}
+

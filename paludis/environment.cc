@@ -617,6 +617,18 @@ Environment::default_destinations() const
     return result;
 }
 
+uid_t
+Environment::reduced_uid() const
+{
+    return getuid();
+}
+
+gid_t
+Environment::reduced_gid() const
+{
+    return getgid();
+}
+
 Environment::WorldCallbacks::WorldCallbacks()
 {
 }

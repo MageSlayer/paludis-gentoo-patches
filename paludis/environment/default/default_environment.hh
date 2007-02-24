@@ -86,6 +86,9 @@ namespace paludis
             virtual MirrorIterator end_mirrors(const std::string & mirror) const;
 
             virtual FSEntry root() const;
+
+            virtual uid_t reduced_uid() const;
+            virtual gid_t reduced_gid() const;
     };
 }
 #endif

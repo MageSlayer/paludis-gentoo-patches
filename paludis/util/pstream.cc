@@ -102,7 +102,7 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
                     close(PStream::stderr_close_fd);
         }
 
-        if (cmd.gid())
+        if (cmd.gid() && *cmd.gid() != getgid())
         {
             gid_t g(*cmd.gid());
 
@@ -116,7 +116,7 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
             extras.append(" [setgid " + stringify(*cmd.gid()) + "]");
         }
 
-        if (cmd.uid())
+        if (cmd.uid() && *cmd.uid() != getuid())
         {
             if (0 != ::setuid(*cmd.uid()))
                 Log::get_instance()->message(ll_warning, lc_context, "setuid("
