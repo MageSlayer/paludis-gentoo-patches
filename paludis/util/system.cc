@@ -28,6 +28,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+#include <grp.h>
 #include <map>
 #include <iostream>
 #include "config.h"
@@ -140,14 +141,19 @@ namespace paludis
         std::map<std::string, std::string> setenv_values;
         std::string chdir;
         bool echo_to_stderr;
+        std::tr1::shared_ptr<uid_t> uid;
+        std::tr1::shared_ptr<gid_t> gid;
 
         Implementation(const std::string & c,
                 const std::map<std::string, std::string> & s = (std::map<std::string, std::string>()),
-                const std::string & d = "", bool e = false) :
+                const std::string & d = "", bool e = false, std::tr1::shared_ptr<uid_t> u = std::tr1::shared_ptr<uid_t>(),
+                std::tr1::shared_ptr<gid_t> g = std::tr1::shared_ptr<gid_t>()) :
             command(c),
             setenv_values(s),
             chdir(d),
-            echo_to_stderr(e)
+            echo_to_stderr(e),
+            uid(u),
+            gid(g)
         {
         }
     };
@@ -165,7 +171,8 @@ Command::Command(const char * const s) :
 
 Command::Command(const Command & other) :
     PrivateImplementationPattern<Command>(new Implementation<Command>(other._imp->command,
-                other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr))
+                other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr,
+                other._imp->uid, other._imp->gid))
 {
 }
 
@@ -173,8 +180,12 @@ const Command &
 Command::operator= (const Command & other)
 {
     if (this != &other)
+    {
         _imp.reset(new Implementation<Command>(other._imp->command, other._imp->setenv_values,
                     other._imp->chdir, other._imp->echo_to_stderr));
+        if (other.uid() && other.gid())
+            with_uid_gid(*other.uid(), *other.gid());
+    }
 
     return *this;
 }
@@ -198,6 +209,14 @@ Command::with_setenv(const std::string & k, const std::string & v)
 }
 
 Command &
+Command::with_uid_gid(const uid_t u, const gid_t g)
+{
+    _imp->uid.reset(new uid_t(u));
+    _imp->gid.reset(new gid_t(g));
+    return *this;
+}
+
+Command &
 Command::with_sandbox()
 {
 #if HAVE_SANDBOX
@@ -214,18 +233,40 @@ Command::with_sandbox()
     return *this;
 }
 
+std::tr1::shared_ptr<const uid_t>
+Command::uid() const
+{
+    return _imp->uid;
+}
+
+std::tr1::shared_ptr<const gid_t>
+Command::gid() const
+{
+    return _imp->gid;
+}
+
 int
 paludis::run_command(const Command & cmd)
 {
+    Context context("When running command '" + stringify(cmd.command()) + "':");
+
     pid_t child(fork());
     if (0 == child)
     {
+        std::string extras;
+
         if (! cmd.chdir().empty())
+        {
             if (-1 == chdir(stringify(cmd.chdir()).c_str()))
                 throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
+            extras.append(" [chdir " + cmd.chdir() + "]");
+        }
 
         for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+        {
             setenv(s->first.c_str(), s->second.c_str(), 1);
+            extras.append(" [setenv " + s->first + "=" + s->second + "]");
+        }
 
         if (-1 != stdout_write_fd)
         {
@@ -245,8 +286,31 @@ paludis::run_command(const Command & cmd)
                 close(stderr_close_fd);
         }
 
+        if (cmd.gid())
+        {
+            gid_t g(*cmd.gid());
+
+            if (0 != ::setgid(*cmd.gid()))
+                Log::get_instance()->message(ll_warning, lc_context, "setgid("
+                        + stringify(*cmd.gid()) + ") failed: " + stringify(strerror(errno)));
+            else if (0 != ::setgroups(1, &g))
+                Log::get_instance()->message(ll_warning, lc_context, "setgroups failed: "
+                        + stringify(strerror(errno)));
+
+            extras.append(" [setgid " + stringify(*cmd.gid()) + "]");
+        }
+
+        if (cmd.uid())
+        {
+            if (0 != ::setuid(*cmd.uid()))
+                Log::get_instance()->message(ll_warning, lc_context, "setuid("
+                        + stringify(*cmd.uid()) + ") failed: " + stringify(strerror(errno)));
+            extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
+        }
+
         cmd.echo_to_stderr();
-        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd.command());
+        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd.command()
+                + " " + extras);
         execl("/bin/sh", "sh", "-c", cmd.command().c_str(), static_cast<char *>(0));
         throw RunCommandError("execl /bin/sh -c '" + cmd.command() + "' failed:"
                 + stringify(strerror(errno)));
@@ -294,7 +358,7 @@ Command::echo_to_stderr() const
     if (! _imp->echo_to_stderr)
         return;
 
-    std::cerr << "/bin/sh -c " << command().c_str() << std::endl;
+    std::cerr << command().c_str() << std::endl;
 }
 
 Command &

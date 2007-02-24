@@ -23,6 +23,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <string>
+#include <sys/types.h>
 
 /** \file
  * Various system utilities.
@@ -108,10 +109,13 @@ namespace paludis
             Command & with_setenv(const std::string &, const std::string &);
             Command & with_sandbox();
             Command & with_echo_to_stderr();
+            Command & with_uid_gid(const uid_t, const gid_t);
 
             std::string command() const;
             std::string chdir() const;
             void echo_to_stderr() const;
+            std::tr1::shared_ptr<const uid_t> uid() const;
+            std::tr1::shared_ptr<const gid_t> gid() const;
 
             typedef libwrapiter::ForwardIterator<Command, const std::pair<const std::string, std::string> > Iterator;
             Iterator begin_setenvs() const;

@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <grp.h>
 
 /** \file
  * Implementation for PStream.
@@ -66,14 +67,24 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
     _command(cmd),
     child(fork())
 {
+    Context context("When running command '" + stringify(cmd.command()) + "' asynchronously:");
+
     if (0 == child)
     {
+        std::string extras;
+
         if (! cmd.chdir().empty())
+        {
             if (-1 == chdir(cmd.chdir().c_str()))
                 throw RunCommandError("chdir failed: " + stringify(strerror(errno)));
+            extras.append(" [chdir " + cmd.chdir() + "]");
+        }
 
         for (Command::Iterator s(cmd.begin_setenvs()), s_end(cmd.end_setenvs()) ; s != s_end ; ++s)
+        {
             setenv(s->first.c_str(), s->second.c_str(), 1);
+            extras.append(" [setenv " + s->first + "=" + s->second + "]");
+        }
 
         if (-1 == dup2(stdout_pipe.write_fd(), 1))
             throw PStreamError("dup2 failed");
@@ -91,8 +102,31 @@ PStreamInBuf::PStreamInBuf(const Command & cmd) :
                     close(PStream::stderr_close_fd);
         }
 
+        if (cmd.gid())
+        {
+            gid_t g(*cmd.gid());
+
+            if (0 != ::setgid(*cmd.gid()))
+                Log::get_instance()->message(ll_warning, lc_context, "setgid("
+                        + stringify(*cmd.gid()) + ") failed: " + stringify(strerror(errno)));
+            else if (0 != ::setgroups(1, &g))
+                Log::get_instance()->message(ll_warning, lc_context, "setgroups failed: "
+                        + stringify(strerror(errno)));
+
+            extras.append(" [setgid " + stringify(*cmd.gid()) + "]");
+        }
+
+        if (cmd.uid())
+        {
+            if (0 != ::setuid(*cmd.uid()))
+                Log::get_instance()->message(ll_warning, lc_context, "setuid("
+                        + stringify(*cmd.uid()) + ") failed: " + stringify(strerror(errno)));
+            extras.append(" [setuid " + stringify(*cmd.uid()) + "]");
+        }
+
         cmd.echo_to_stderr();
-        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd.command());
+        Log::get_instance()->message(ll_debug, lc_no_context, "execl /bin/sh -c " + cmd.command()
+                + " " + extras);
         execl("/bin/sh", "sh", "-c", cmd.command().c_str(), static_cast<char *>(0));
         throw PStreamError("execl /bin/sh -c '" + cmd.command() + "' failed:"
                 + stringify(strerror(errno)));
