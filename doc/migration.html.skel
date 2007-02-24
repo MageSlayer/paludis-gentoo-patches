@@ -24,7 +24,7 @@ manually.</p>
 
 <p>No matter which method you plan to use, start by installing Paludis. There
 are ebuilds in the tree, or you can get SVN ebuilds (which Portage can't use)
-from <a href="http://svn.pioto.org/viewvc/paludis/overlay/">the Paludis
+from <a href="http://paludis.pioto.org/trac/browser/overlay/">the Paludis
     overlay</a>.  If you don't like the <code>libxml2</code> and
 <code>pcre++</code> dependencies, turn off the <code>qa</code> USE flag.
 <strong>Make sure you are using at least version 0.14</strong> when following
@@ -34,7 +34,7 @@ this guide.</p>
     method)</h3>
 
 The easiest way to migrate your configuration from Portage to Paludis is by
-using the <a href="http://svn.pioto.org/viewvc/paludis/scratch/scripts/portage2paludis.bash">portage2paludis.bash</a> script, available via subversion. It is invoked as follows:
+using the <a href="http://paludis.pioto.org/trac/browser/scratch/scripts/portage2paludis.bash?format=raw">portage2paludis.bash</a> script, available via subversion. It is invoked as follows:
 
 <pre>
 $ sudo ./portage2paludis.bash

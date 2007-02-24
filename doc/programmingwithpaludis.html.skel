@@ -10,7 +10,7 @@
 
 <h1>Programming with Paludis, the Other Package Mangler</h1>
 
-<p>You can get a <a href="http://svn.pioto.org/viewvc/paludis/">Subversion
+<p>You can get a <a href="http://paludis.pioto.org/trac/browser/">Subversion
     checkout</a> of <code>trunk/</code> rather than working off a tarball. If you're
 planning to submit patches, you'll have to do this.</p>
 
