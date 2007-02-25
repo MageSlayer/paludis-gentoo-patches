@@ -211,46 +211,6 @@ namespace
     };
 
     /**
-     * Figure out the format of environment.bz2. If VDB_FORMAT is "paludis-1",
-     * or if there's no VDB_FORMAT and there're no lines with () and no =, it's
-     * an env dump. Otherwise it's a source file.
-     *
-     * \ingroup grpvdbrepository
-     */
-    bool is_full_env(const FSEntry & vdb_dir)
-    {
-        bool result(false);
-
-        if ((vdb_dir / "VDB_FORMAT").is_regular_file())
-        {
-            std::ifstream f(stringify(vdb_dir / "VDB_FORMAT").c_str());
-            if (! f)
-                throw EnvironmentVariableActionError("Could not read '" +
-                        stringify(vdb_dir / "VDB_FORMAT") + "'");
-            result = ("paludis-1" != strip_trailing_string(std::string(
-                            (std::istreambuf_iterator<char>(f)),
-                            std::istreambuf_iterator<char>()), "\n"));
-        }
-        else if (0 == run_command("bunzip2 < " + stringify(vdb_dir / "environment.bz2") +
-                    " | grep -q '^[^=]\\+()'"))
-            result = true;
-
-        return result;
-    }
-
-    /**
-     * Figure out whether there's an ebuild present (won't be the case for
-     * virtual things installed using early paludis versions).
-     *
-     * \ingroup grpvdbrepository
-     */
-    bool is_ebuilded(const FSEntry & vdb_dir)
-    {
-        return ! std::count_if(DirIterator(vdb_dir), DirIterator(),
-                IsFileWithExtension(".ebuild"));
-    }
-
-    /**
      * Fetch the contents of a VDB file.
      *
      * \ingroup grpvdbrepository
@@ -464,40 +424,85 @@ namespace paludis
         Context context("When loading VDBRepository entry for '" + stringify(p->name)
                 + "-" + stringify(p->version) + "' from '" + stringify(location) + "':");
 
+
         p->metadata = std::tr1::shared_ptr<VDBVersionMetadata>(new VDBVersionMetadata);
-        p->metadata->build_depend_string = file_contents(location, p->name, p->version, "DEPEND");
-        p->metadata->run_depend_string = file_contents(location, p->name, p->version, "RDEPEND");
-        p->metadata->license_string = file_contents(location, p->name, p->version, "LICENSE");
-        p->metadata->keywords = "*";
-        p->metadata->inherited = file_contents(location, p->name, p->version, "INHERITED");
-        p->metadata->iuse = file_contents(location, p->name, p->version, "IUSE");
-        p->metadata->post_depend_string = file_contents(location, p->name, p->version, "PDEPEND");
-        p->metadata->provide_string = file_contents(location, p->name, p->version, "PROVIDE");
-        p->metadata->src_uri = file_contents(location, p->name, p->version, "SRC_URI");
-        p->metadata->eapi = file_contents(location, p->name, p->version, "EAPI");
-        p->metadata->homepage = file_contents(location, p->name, p->version, "HOMEPAGE");
-        p->metadata->description = file_contents(location, p->name, p->version, "DESCRIPTION");
 
-        std::string slot(file_contents(location, p->name, p->version, "SLOT"));
-        if (slot.empty())
         {
-            Log::get_instance()->message(ll_warning, lc_no_context, "VDBRepository entry '" +
-                    stringify(p->name) + "-" + stringify(p->version) + "' in '" +
-                    stringify(location) + "' has empty SLOT, setting to \"0\"");
-            slot = "0";
+            Context local_context("When loading key 'DEPEND':");
+            p->metadata->build_depend_string = file_contents(location, p->name, p->version, "DEPEND");
         }
-        p->metadata->slot = SlotName(slot);
+        {
+            Context local_context("When loading key 'RDEPEND':");
+            p->metadata->run_depend_string = file_contents(location, p->name, p->version, "RDEPEND");
+        }
+        {
+            Context local_context("When loading key 'LICENSE':");
+            p->metadata->license_string = file_contents(location, p->name, p->version, "LICENSE");
+        }
+        p->metadata->keywords = "*";
+        {
+            Context local_context("When loading key 'INHERITED':");
+            p->metadata->inherited = file_contents(location, p->name, p->version, "INHERITED");
+        }
+        {
+            Context local_context("When loading key 'IUSE':");
+            p->metadata->iuse = file_contents(location, p->name, p->version, "IUSE");
+        }
+        {
+            Context local_context("When loading key 'PDEPEND':");
+            p->metadata->post_depend_string = file_contents(location, p->name, p->version, "PDEPEND");
+        }
+        {
+            Context local_context("When loading key 'PROVIDE':");
+            p->metadata->provide_string = file_contents(location, p->name, p->version, "PROVIDE");
+        }
+        {
+            Context local_context("When loading key 'SRC_URI':");
+            p->metadata->src_uri = file_contents(location, p->name, p->version, "SRC_URI");
+        }
+        {
+            Context local_context("When loading key 'EAPI':");
+            p->metadata->eapi = file_contents(location, p->name, p->version, "EAPI");
+        }
+        {
+            Context local_context("When loading key 'HOMEPAGE':");
+            p->metadata->homepage = file_contents(location, p->name, p->version, "HOMEPAGE");
+        }
+        {
+            Context local_context("When loading key 'DESCRIPTION':");
+            p->metadata->description = file_contents(location, p->name, p->version, "DESCRIPTION");
+        }
 
-        std::string repo(file_contents(location, p->name, p->version, "REPOSITORY"));
-        if (! repo.empty())
-            p->metadata->source.reset(new PackageDatabaseEntry(p->name, p->version,
-                        RepositoryName(repo)));
+        {
+            Context local_context("When loading key 'SLOT':");
+            std::string slot(file_contents(location, p->name, p->version, "SLOT"));
 
-        std::string raw_use(file_contents(location, p->name, p->version, "USE"));
-        p->use.clear();
-        WhitespaceTokeniser::get_instance()->tokenise(raw_use,
-                filter_inserter(create_inserter<UseFlagName>(
-                        std::inserter(p->use, p->use.begin())), IsPositiveFlag()));
+            if (slot.empty())
+            {
+                Log::get_instance()->message(ll_warning, lc_no_context, "VDBRepository entry '" +
+                        stringify(p->name) + "-" + stringify(p->version) + "' in '" +
+                        stringify(location) + "' has empty SLOT, setting to \"0\"");
+                slot = "0";
+            }
+            p->metadata->slot = SlotName(slot);
+        }
+
+        {
+            Context local_context("When loading key 'REPOSITORY':");
+            std::string repo(file_contents(location, p->name, p->version, "REPOSITORY"));
+            if (! repo.empty())
+                p->metadata->source.reset(new PackageDatabaseEntry(p->name, p->version,
+                            RepositoryName(repo)));
+        }
+
+        {
+            Context local_context("When loading key 'USE':");
+            std::string raw_use(file_contents(location, p->name, p->version, "USE"));
+            p->use.clear();
+            WhitespaceTokeniser::get_instance()->tokenise(raw_use,
+                    filter_inserter(create_inserter<UseFlagName>(
+                            std::inserter(p->use, p->use.begin())), IsPositiveFlag()));
+        }
     }
 }
 
@@ -938,9 +943,7 @@ VDBRepository::_uninstall(const QualifiedPackageName & q, const VersionSpec & v,
 
     FSEntry pkg_dir(_imp->location / stringify(q.category) / (reinstalling_str + stringify(q.package) + "-" + stringify(v)));
 
-    std::tr1::shared_ptr<FSEntry> load_env;
-    if (is_full_env(pkg_dir))
-        load_env.reset(new FSEntry(pkg_dir / "environment.bz2"));
+    std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
 
     EbuildCommandParams params(EbuildCommandParams::create()
             .environment(_imp->env)
@@ -956,7 +959,7 @@ VDBRepository::_uninstall(const QualifiedPackageName & q, const VersionSpec & v,
             .phase(up_preremove)
             .root(stringify(_imp->root) + "/")
             .disable_cfgpro(o.no_config_protect)
-            .unmerge_only(is_ebuilded(pkg_dir))
+            .unmerge_only(false)
             .loadsaveenv_dir(pkg_dir)
             .load_environment(load_env.get()));
 
@@ -1025,9 +1028,7 @@ VDBRepository::do_config(const QualifiedPackageName & q, const VersionSpec & v) 
     FSEntry pkg_dir(_imp->location / stringify(q.category) /
             (stringify(q.package) + "-" + stringify(v)));
 
-    std::tr1::shared_ptr<FSEntry> load_env;
-    if (is_full_env(pkg_dir))
-        load_env.reset(new FSEntry(pkg_dir / "environment.bz2"));
+    std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
 
     EbuildConfigCommand config_cmd(EbuildCommandParams::create()
             .environment(_imp->env)
@@ -1286,28 +1287,14 @@ VDBRepository::get_environment_variable(
     }
     else if ((vdb_dir / "environment.bz2").is_regular_file())
     {
-        if (is_full_env(vdb_dir))
-        {
-            PStream p("bash -c '( bunzip2 < " + stringify(vdb_dir / "environment.bz2" ) +
-                    " ; echo echo \\$" + var + " ) | bash 2>/dev/null'");
-            std::string result(strip_trailing_string(std::string(
-                            (std::istreambuf_iterator<char>(p)),
-                            std::istreambuf_iterator<char>()), "\n"));
-            if (0 != p.exit_status())
-                throw EnvironmentVariableActionError("Could not load environment.bz2");
-            return result;
-        }
-        else
-        {
-            PStream p("bunzip2 < " + stringify(vdb_dir / "environment.bz2" ));
-            KeyValueConfigFile k(&p);
-
-            if (0 != p.exit_status())
-                throw EnvironmentVariableActionError("Could not get variable '" + var +
-                        "' from environment.bz2 for '" + stringify(for_package) + "'");
-
-            return k.get(var);
-        }
+        PStream p("bash -c '( bunzip2 < " + stringify(vdb_dir / "environment.bz2" ) +
+                " ; echo echo \\$" + var + " ) | bash 2>/dev/null'");
+        std::string result(strip_trailing_string(std::string(
+                        (std::istreambuf_iterator<char>(p)),
+                        std::istreambuf_iterator<char>()), "\n"));
+        if (0 != p.exit_status())
+            throw EnvironmentVariableActionError("Could not load environment.bz2");
+        return result;
     }
     else
         throw EnvironmentVariableActionError("Could not get variable '" + var + "' for '"
