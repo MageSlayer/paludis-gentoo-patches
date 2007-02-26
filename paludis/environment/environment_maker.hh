@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,54 +17,54 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORY_MAKER_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORY_MAKER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENT_ENVIRONMENT_HH
+#define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_ENVIRONMENT_HH 1
 
 #include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/virtual_constructor.hh>
-#include <paludis/repository.hh>
+#include <paludis/environment.hh>
 
 namespace paludis
 {
     class FSEntry;
 
     /**
-     * Thrown if a repository of the specified type does not exist.
+     * Thrown if an environment of the specified type does not exist.
      *
      * \ingroup grpexceptions
-     * \ingroup grprepository
+     * \ingroup grpenvironment
      * \nosubgrouping
      */
-    class NoSuchRepositoryTypeError : public ConfigurationError
+    class NoSuchEnvironmentTypeError : public ConfigurationError
     {
         public:
             /**
              * Constructor.
              */
-            NoSuchRepositoryTypeError(const std::string & format) throw ();
+            NoSuchEnvironmentTypeError(const std::string & format) throw ();
     };
 
     /**
-     * Thrown if PALUDIS_REPOSITORY_SO_DIR is not a directory.
+     * Thrown if PALUDIS_ENVIRONMENT_SO_DIR is not a directory.
      *
      * \ingroup grpexceptions
      * \ingroup grprepository
      */
-    class PALUDIS_VISIBLE PaludisRepositorySoDirNotADirectoryError :
+    class PALUDIS_VISIBLE PaludisEnvironmentSoDirNotADirectoryError :
         public Exception
     {
         public:
-            PaludisRepositorySoDirNotADirectoryError() throw ();
+            PaludisEnvironmentSoDirNotADirectoryError() throw ();
     };
 
     /**
-     * Thrown if a repository .so cannot be used.
+     * Thrown if an environment .so cannot be used.
      *
      * \ingroup grpexceptions
      * \ingroup grprepository
      */
-    class PaludisRepositorySoDirCannotDlopenError :
+    class PaludisEnvironmentSoDirCannotDlopenError :
         public Exception
     {
         private:
@@ -72,36 +72,35 @@ namespace paludis
             mutable std::string _what;
 
         public:
-            PaludisRepositorySoDirCannotDlopenError(const std::string & file,
+            PaludisEnvironmentSoDirCannotDlopenError(const std::string & file,
                     const std::string & e) throw ();
 
-            ~PaludisRepositorySoDirCannotDlopenError() throw ();
+            ~PaludisEnvironmentSoDirCannotDlopenError() throw ();
 
             const char * what() const throw ();
     };
 
     /**
-     * Virtual constructor for repositories.
+     * Virtual constructor for environments.
      *
      * \ingroup grprepository
      */
-    class PALUDIS_VISIBLE RepositoryMaker :
+    class PALUDIS_VISIBLE EnvironmentMaker :
         public VirtualConstructor<std::string,
-            std::tr1::shared_ptr<Repository> (*) (Environment * const,
-                    std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >),
-            virtual_constructor_not_found::ThrowException<NoSuchRepositoryTypeError> >,
-        public InstantiationPolicy<RepositoryMaker, instantiation_method::SingletonTag>,
-        private PrivateImplementationPattern<RepositoryMaker>
+            std::tr1::shared_ptr<Environment> (*) (const std::string &),
+            virtual_constructor_not_found::ThrowException<NoSuchEnvironmentTypeError> >,
+        public InstantiationPolicy<EnvironmentMaker, instantiation_method::SingletonTag>,
+        private PrivateImplementationPattern<EnvironmentMaker>
     {
-        friend class InstantiationPolicy<RepositoryMaker, instantiation_method::SingletonTag>;
+        friend class InstantiationPolicy<EnvironmentMaker, instantiation_method::SingletonTag>;
 
         private:
-            RepositoryMaker();
+            EnvironmentMaker();
 
             void load_dir(const FSEntry &);
 
         public:
-            ~RepositoryMaker();
+            ~EnvironmentMaker();
     };
 }
 

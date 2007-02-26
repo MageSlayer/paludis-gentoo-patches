@@ -1183,22 +1183,6 @@ namespace paludis
     };
 
     /**
-     * Thrown if a repository of the specified type does not exist.
-     *
-     * \ingroup grpexceptions
-     * \ingroup grprepository
-     * \nosubgrouping
-     */
-    class NoSuchRepositoryTypeError : public ConfigurationError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            NoSuchRepositoryTypeError(const std::string & format) throw ();
-    };
-
-    /**
      * Parent class for install, uninstall errors.
      *
      * \ingroup grpexceptions

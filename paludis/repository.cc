@@ -88,11 +88,6 @@ Repository::name() const
     return _name;
 }
 
-NoSuchRepositoryTypeError::NoSuchRepositoryTypeError(const std::string & format) throw ():
-    ConfigurationError("No available maker for repository type '" + format + "'")
-{
-}
-
 PackageActionError::PackageActionError(const std::string & msg) throw () :
     Exception(msg)
 {

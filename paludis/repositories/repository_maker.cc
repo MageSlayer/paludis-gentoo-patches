@@ -38,6 +38,11 @@
 
 using namespace paludis;
 
+NoSuchRepositoryTypeError::NoSuchRepositoryTypeError(const std::string & format) throw ():
+    ConfigurationError("No available maker for repository type '" + format + "'")
+{
+}
+
 PaludisRepositorySoDirNotADirectoryError::PaludisRepositorySoDirNotADirectoryError() throw () :
     Exception("PALUDIS_REPOSITORY_SO_DIR not a directory")
 {
