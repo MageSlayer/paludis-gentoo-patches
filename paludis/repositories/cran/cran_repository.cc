@@ -515,15 +515,15 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
     if (o.fetch_only)
         return;
 
-    std::string image(stringify(_imp->buildroot / stringify(q) / "image"));
-    std::string workdir(stringify(_imp->buildroot / stringify(q) / "work"));
+    FSEntry image(_imp->buildroot / stringify(q) / "image");
+    FSEntry workdir(_imp->buildroot / stringify(q) / "work");
 
     cmd = Command(LIBEXECDIR "/paludis/cran.bash clean install")
         .with_sandbox()
         .with_setenv("CATEGORY", "cran")
         .with_setenv("DISTDIR", stringify(_imp->distdir))
         .with_setenv("DISTFILE", std::string(p + "_" + v + ".tar.gz"))
-        .with_setenv("IMAGE", image)
+        .with_setenv("IMAGE", stringify(image))
         .with_setenv("IS_BUNDLE", (vm->cran_interface->is_bundle ? "yes" : ""))
         .with_setenv("LOCATION", stringify(_imp->location))
         .with_setenv("PN", stringify(pn))
@@ -533,16 +533,20 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
         .with_setenv("ROOT", stringify(get_root(o.destinations)))
-        .with_setenv("WORKDIR", workdir);
+        .with_setenv("WORKDIR", stringify(workdir));
 
 
     if (0 != run_command(cmd))
         throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
-                image + "'");
+                stringify(image) + "'");
 
     if (! o.destinations)
         throw PackageInstallActionError("Can't merge '" + stringify(q) + "-" + stringify(vn) +
                 "' because no destinations were provided.");
+
+    MergeOptions m(PackageDatabaseEntry(q, vn, name()),
+            image,
+            FSEntry("/dev/null"));
 
     for (DestinationsCollection::Iterator d(o.destinations->begin()),
             d_end(o.destinations->end()) ; d != d_end ; ++d)
@@ -551,26 +555,11 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
             throw PackageInstallActionError("Couldn't install '" + stringify(q) + "-" + stringify(vn) + "' to '" +
                     stringify((*d)->name()) + "' because it does not provide destination_interface");
 
-        cmd = Command(LIBEXECDIR "/paludis/cran.bash merge")
-            .with_setenv("IMAGE", image)
-            .with_setenv("PN", p)
-            .with_setenv("PV", stringify(vn))
-            .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->library))
-            .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
-            .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-            .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
-            .with_setenv("ROOT", (*d)->installed_interface ?
-                    stringify((*d)->installed_interface->root()) : "/")
-            .with_setenv("WORKDIR", workdir)
-            .with_setenv("REPOSITORY", stringify(name()));
-
-        if (0 != run_command(cmd))
-            throw PackageInstallActionError("Couldn't merge '" + stringify(q) + "-" + stringify(vn) + "' to '" +
-                    stringify((*d)->name()) + "'");
+        (*d)->destination_interface->merge(m);
     }
 
     cmd = Command(LIBEXECDIR "/paludis/cran.bash clean")
-        .with_setenv("IMAGE", image)
+        .with_setenv("IMAGE", stringify(image))
         .with_setenv("PN", p)
         .with_setenv("PV", stringify(vn))
         .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->library))
@@ -578,7 +567,7 @@ CRANRepository::do_install(const QualifiedPackageName &q, const VersionSpec &vn,
         .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
         .with_setenv("ROOT", stringify(get_root(o.destinations)))
-        .with_setenv("WORKDIR", workdir)
+        .with_setenv("WORKDIR", stringify(workdir))
         .with_setenv("REPOSITORY", stringify(name()));
 
     if (0 != run_command(cmd))

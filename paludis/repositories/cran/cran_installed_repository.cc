@@ -743,8 +743,22 @@ CRANInstalledRepository::want_pre_post_phases() const
 }
 
 void
-CRANInstalledRepository::merge(const MergeOptions &)
+CRANInstalledRepository::merge(const MergeOptions & m)
 {
-    throw InternalError(PALUDIS_HERE, "CRANInstalledRepository isn't converted over to do destinations");
+    Command cmd = Command(LIBEXECDIR "/paludis/cran.bash merge")
+        .with_setenv("IMAGE", stringify(m.image_dir))
+        .with_setenv("PN", stringify(m.package.name.package))
+        .with_setenv("PV", stringify(m.package.version))
+        .with_setenv("PALUDIS_CRAN_LIBRARY", stringify(_imp->location))
+        .with_setenv("PALUDIS_EBUILD_DIR", std::string(LIBEXECDIR "/paludis/"))
+        .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .with_setenv("PALUDIS_BASHRC_FILES", _imp->env->bashrc_files())
+        .with_setenv("ROOT", stringify(root()))
+        .with_setenv("REPOSITORY", stringify(m.package.repository));
+
+    if (0 != run_command(cmd))
+        throw PackageInstallActionError("Couldn't merge '" + stringify(m.package) + "' to '" +
+                stringify(name()) + "'");
+
 }
 
