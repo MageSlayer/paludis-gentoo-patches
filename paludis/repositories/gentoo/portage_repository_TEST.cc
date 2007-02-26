@@ -20,7 +20,7 @@
 #include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/repositories/gentoo/make_ebuild_repository.hh>
 #include <paludis/util/collection_concrete.hh>
-#include <paludis/environment/test/test_environment.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

@@ -28,7 +28,7 @@
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/environment/test/test_environment.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <string>

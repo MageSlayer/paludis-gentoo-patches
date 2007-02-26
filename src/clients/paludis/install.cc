@@ -43,8 +43,8 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/system.hh>
-#include <paludis/environment/default/default_environment.hh>
-#include <paludis/environment/default/default_config.hh>
+#include <paludis/environments/default/default_environment.hh>
+#include <paludis/environments/default/default_config.hh>
 #include <paludis/dep_list/exceptions.hh>
 
 /** \file

@@ -18,8 +18,8 @@
  */
 
 #include <paludis/paludis.hh>
-#include <paludis/environment/default/default_environment.hh>
-#include <paludis/environment/default/default_config.hh>
+#include <paludis/environments/default/default_environment.hh>
+#include <paludis/environments/default/default_config.hh>
 #include <paludis/util/log.hh>
 
 #include <libebt/libebt_version.hh>

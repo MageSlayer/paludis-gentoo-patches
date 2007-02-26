@@ -56,7 +56,7 @@ check_SCRIPTS = merger_TEST_setup.sh merger_TEST_cleanup.sh
 
 merger_TEST_SOURCES = merger_TEST.cc
 merger_TEST_LDADD = \
-	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	libpaludismerger.la \

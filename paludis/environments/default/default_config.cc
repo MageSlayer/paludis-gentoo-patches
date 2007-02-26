@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/environment/default/default_config.hh>
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_config.hh>
+#include <paludis/environments/default/default_environment.hh>
 #include <paludis/config_file.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/compare.hh>
@@ -51,8 +51,8 @@
 
 using namespace paludis;
 
-#include <paludis/environment/default/use_config_entry-sr.cc>
-#include <paludis/environment/default/repository_config_entry-sr.cc>
+#include <paludis/environments/default/use_config_entry-sr.cc>
+#include <paludis/environments/default/repository_config_entry-sr.cc>
 
 namespace paludis
 {

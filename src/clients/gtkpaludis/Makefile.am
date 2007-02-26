@@ -64,7 +64,7 @@ gtkpaludis_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
+	$(top_builddir)/paludis/environments/default/libpaludisdefaultenvironment.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(GTKDEPS_LIBS) \
 	$(GTKTESTDEPS_LIBS) \

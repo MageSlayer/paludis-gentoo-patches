@@ -26,8 +26,8 @@
 
 #include <paludis/about.hh>
 #include <paludis/util/join.hh>
-#include <paludis/environment/default/default_environment.hh>
-#include <paludis/environment/default/default_config.hh>
+#include <paludis/environments/default/default_environment.hh>
+#include <paludis/environments/default/default_config.hh>
 
 #include <src/output/colour.hh>
 #include <src/common_args/do_help.hh>

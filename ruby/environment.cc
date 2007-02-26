@@ -18,9 +18,9 @@
  */
 
 #include <paludis_ruby.hh>
-#include <paludis/environment/default/default_environment.hh>
-#include <paludis/environment/default/default_config.hh>
-#include <paludis/environment/no_config/no_config_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
+#include <paludis/environments/default/default_config.hh>
+#include <paludis/environments/no_config/no_config_environment.hh>
 #include <ruby.h>
 
 using namespace paludis;

@@ -20,7 +20,7 @@
 #include "packages_list.hh"
 #include "paludis_thread.hh"
 #include "main_window.hh"
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/compare.hh>
 

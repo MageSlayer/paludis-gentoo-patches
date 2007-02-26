@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_CLIENTS_ADJUTRIX_WHAT_NEEDS_KEYWORDING_HH
 #define PALUDIS_GUARD_SRC_CLIENTS_ADJUTRIX_WHAT_NEEDS_KEYWORDING_HH 1
 
-#include <paludis/environment/no_config/no_config_environment.hh>
+#include <paludis/environments/no_config/no_config_environment.hh>
 
 int do_what_needs_keywording(paludis::NoConfigEnvironment & env);
 

@@ -34,7 +34,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/environment/no_config/no_config_environment.hh>
+#include <paludis/environments/no_config/no_config_environment.hh>
 #include <iostream>
 
 using namespace paludis;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 #include <paludis/paludis.hh>
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 
 #include <iostream>
 #include <tr1/memory>

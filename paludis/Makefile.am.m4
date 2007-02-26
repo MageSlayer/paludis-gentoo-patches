@@ -16,7 +16,7 @@ $1_TEST_LDADD = \
 	ihateautomake.o \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
-	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/repositories/virtuals/libpaludisvirtualsrepository.la \
 	libpaludis.la \
@@ -65,7 +65,7 @@ DEFS= \
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
 	hashed_containers.hh.in testscriptlist srlist srcleanlist \
 	repository_blacklist.txt
-SUBDIRS = digests fetchers syncers util selinux . dep_list merger repositories environment args qa tasks
+SUBDIRS = digests fetchers syncers util selinux . dep_list merger repositories environments args qa tasks
 BUILT_SOURCES = srcleanlist
 
 libpaludis_la_SOURCES = filelist

@@ -20,7 +20,7 @@
 #include <src/output/colour.hh>
 #include "uninstall.hh"
 
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 #include <paludis/tasks/uninstall_task.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/dep_list/uninstall_list.hh>

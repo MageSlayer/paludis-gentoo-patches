@@ -86,8 +86,8 @@ TESTS_ENVIRONMENT = env \
 	SYSCONFDIR="$(sysconfdir)" \
 	LD_LIBRARY_PATH=`echo "\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs\`: \
-			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/default/.libs\`: \
-			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/environment/no_config/.libs\`: \
+			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/default/.libs\`: \
+			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/environments/no_config/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/dep_list/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/.libs\`: \
 			\`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gentoo/.libs\`: \
@@ -116,8 +116,8 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
-	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
-	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la \
+	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/environments/default/libpaludisdefaultenvironment.la \
 	$(top_builddir)/paludis/qa/libpaludisqa.la
 
 TESTS = $(IF_RUBY_QA_TESTS) $(IF_RUBY_TESTS)
@@ -131,8 +131,8 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
-	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
-	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la
+	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/environments/default/libpaludisdefaultenvironment.la
 
 TESTS = $(IF_RUBY_TESTS)
 

@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_CLIENTS_ADJUTRIX_DOWNGRADE_CHECK_HH
 #define PALUDIS_GUARD_SRC_CLIENTS_ADJUTRIX_DOWNGRADE_CHECK_HH 1
 
-#include <paludis/environment/no_config/no_config_environment.hh>
+#include <paludis/environments/no_config/no_config_environment.hh>
 
 int do_build_downgrade_check_list(paludis::NoConfigEnvironment & env);
 int do_downgrade_check(paludis::NoConfigEnvironment & env);

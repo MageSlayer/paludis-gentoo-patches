@@ -24,7 +24,7 @@ EXTRA_DIST = $(noinst_SCRIPTS)
 pwp_basic_cplusplus_app_SOURCES = pwp_basic_cplusplus_app.cc
 pwp_basic_cplusplus_app_LDFLAGS = \
 	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environment/default/libpaludisdefaultenvironment.la
+	$(top_builddir)/paludis/environments/default/libpaludisdefaultenvironment.la
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

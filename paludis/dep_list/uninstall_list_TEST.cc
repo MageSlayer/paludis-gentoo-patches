@@ -21,7 +21,7 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
-#include <paludis/environment/test/test_environment.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <test/test_framework.hh>

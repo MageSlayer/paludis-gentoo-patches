@@ -68,7 +68,7 @@ cran_repository_TEST_LDADD = \
 	libpaludiscranrepository.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/environment/test/libpaludistestenvironment.la \
+	$(top_builddir)/paludis/environments/test/libpaludistestenvironment.la \
 	$(DYNAMIC_LD_LIBS)
 
 cran_repository_TEST_CXXFLAGS = -I$(top_srcdir)

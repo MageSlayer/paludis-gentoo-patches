@@ -18,7 +18,7 @@
  */
 
 #include "install.hh"
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 #include <paludis/util/save.hh>
 
 using namespace paludis;

@@ -19,7 +19,7 @@
 
 #include "sync.hh"
 #include "main_window.hh"
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 
 using namespace paludis;
 using namespace gtkpaludis;

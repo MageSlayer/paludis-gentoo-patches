@@ -24,7 +24,7 @@
 #include "main_window.hh"
 #include "sync.hh"
 
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 #include <gtkmm/button.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/box.h>

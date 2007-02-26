@@ -29,7 +29,7 @@
 
 using namespace paludis;
 
-#include <paludis/environment/no_config/no_config_environment-sr.cc>
+#include <paludis/environments/no_config/no_config_environment-sr.cc>
 
 namespace paludis
 {

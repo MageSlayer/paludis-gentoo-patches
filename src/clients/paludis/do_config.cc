@@ -21,7 +21,7 @@
 #include "command_line.hh"
 #include <src/output/colour.hh>
 #include <paludis/paludis.hh>
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 #include <iostream>
 
 using namespace paludis;

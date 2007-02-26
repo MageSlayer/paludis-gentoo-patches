@@ -17,7 +17,7 @@ $1_TEST_LDADD = \
 	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	libpaludisqa.la \
-	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
@@ -66,7 +66,7 @@ if ! MONOLITHIC
 libpaludisqa_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	@LIBXML2DEPS_LIBS@ \

@@ -21,7 +21,7 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
-#include <paludis/environment/test/test_environment.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>

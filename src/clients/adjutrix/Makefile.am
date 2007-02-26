@@ -47,7 +47,7 @@ adjutrix_SOURCES = \
 	adjutrix.cc
 
 adjutrix_LDADD = \
-	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
 	$(top_builddir)/paludis/tasks/libpaludistasks.a \

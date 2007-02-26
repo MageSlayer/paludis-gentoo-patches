@@ -33,7 +33,7 @@ lib_LTLIBRARIES = libpaludisnoconfigenvironment.la
 
 endif
 
-paludis_environment_no_config_includedir = $(includedir)/paludis/environment/no_config
+paludis_environment_no_config_includedir = $(includedir)/paludis/environments/no_config
 paludis_environment_no_config_include_HEADERS = \
 	no_config_environment.hh \
 	no_config_environment-sr.hh

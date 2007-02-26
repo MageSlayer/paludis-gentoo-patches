@@ -42,7 +42,7 @@ namespace paludis
         ncer_auto
     };
 
-#include <paludis/environment/no_config/no_config_environment-sr.hh>
+#include <paludis/environments/no_config/no_config_environment-sr.hh>
 
     /**
      * An environment that uses a single repository, with no user configuration.

@@ -20,7 +20,7 @@
 #include "categories_list.hh"
 #include "paludis_thread.hh"
 #include "main_window.hh"
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 
 #include <gtkmm/treeview.h>
 #include <gtkmm/liststore.h>

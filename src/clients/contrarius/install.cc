@@ -34,7 +34,7 @@
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/query.hh>
 

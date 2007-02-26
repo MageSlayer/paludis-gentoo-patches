@@ -870,10 +870,10 @@ AC_OUTPUT(
 	paludis/args/Makefile
 	paludis/dep_list/Makefile
 	paludis/digests/Makefile
-	paludis/environment/Makefile
-	paludis/environment/default/Makefile
-	paludis/environment/no_config/Makefile
-	paludis/environment/test/Makefile
+	paludis/environments/Makefile
+	paludis/environments/default/Makefile
+	paludis/environments/no_config/Makefile
+	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
 	paludis/hashed_containers.hh
 	paludis/merger/Makefile

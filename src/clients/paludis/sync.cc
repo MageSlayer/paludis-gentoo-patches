@@ -20,7 +20,7 @@
 #include <src/output/colour.hh>
 #include "sync.hh"
 #include <paludis/tasks/sync_task.hh>
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 #include <paludis/syncer.hh>
 #include <iomanip>
 #include <iostream>

@@ -20,8 +20,8 @@
 #include <list>
 #include <paludis/config_file.hh>
 #include <paludis/hashed_containers.hh>
-#include <paludis/environment/default/default_config.hh>
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_config.hh>
+#include <paludis/environments/default/default_environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_database.hh>
 #include <paludis/query.hh>

@@ -38,8 +38,8 @@
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/util.hh>
 #include <paludis/util/log.hh>
-#include <paludis/environment/default/default_environment.hh>
-#include <paludis/environment/default/default_config.hh>
+#include <paludis/environments/default/default_environment.hh>
+#include <paludis/environments/default/default_config.hh>
 
 #include <libebt/libebt.hh>
 #include <libwrapiter/libwrapiter.hh>

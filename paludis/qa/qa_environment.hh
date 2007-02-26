@@ -22,7 +22,7 @@
 #define PALUDIS_GUARD_PALUDIS_QA_ENVIRONMENT_HH 1
 
 #include <paludis/environment.hh>
-#include <paludis/environment/no_config/no_config_environment.hh>
+#include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>

@@ -22,7 +22,7 @@ if MONOLITHIC
 
 qualudis_LDADD = \
 	$(top_builddir)/paludis/qa/libpaludisqa.la \
-	$(top_builddir)/paludis/environment/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \

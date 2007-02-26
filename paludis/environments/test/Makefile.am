@@ -30,7 +30,7 @@ lib_LTLIBRARIES = libpaludistestenvironment.la
 
 endif
 
-paludis_environment_test_includedir = $(includedir)/paludis/environment/test
+paludis_environment_test_includedir = $(includedir)/paludis/environments/test
 paludis_environment_test_include_HEADERS = test_environment.hh
 
 built-sources : $(BUILT_SOURCES)

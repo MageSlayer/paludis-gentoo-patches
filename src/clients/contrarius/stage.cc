@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/environment/default/default_environment.hh>
-#include <paludis/environment/default/default_config.hh>
+#include <paludis/environments/default/default_environment.hh>
+#include <paludis/environments/default/default_config.hh>
 #include <paludis/util/log.hh>
 #include <paludis/query.hh>
 #include <string>

@@ -18,7 +18,7 @@
  */
 
 #include "repository_name_cache.hh"
-#include <paludis/environment/test/test_environment.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>

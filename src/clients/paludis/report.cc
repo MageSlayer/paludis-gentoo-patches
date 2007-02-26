@@ -20,7 +20,7 @@
 #include "report.hh"
 #include <src/output/colour.hh>
 #include <paludis/tasks/report_task.hh>
-#include <paludis/environment/default/default_environment.hh>
+#include <paludis/environments/default/default_environment.hh>
 #include <iostream>
 
 /** \file
