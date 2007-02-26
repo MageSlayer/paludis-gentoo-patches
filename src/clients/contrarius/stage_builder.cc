@@ -69,6 +69,7 @@ OurStageBuilderTask::on_build_fail(std::tr1::shared_ptr<const StageBase> s, cons
 {
     cout << "Build of stage '" << s->short_name() << "' failed:" << endl;
     cout << "Error: " << e.message() << endl << endl;
+    throw;
 }
 
 void
