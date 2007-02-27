@@ -35,8 +35,7 @@ builtin_saveenv()
 ebuild_f_saveenv()
 {
     local old_sandbox_write="${SANDBOX_WRITE}"
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && \
-        SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${PALUDIS_LOADSAVEENV_DIR%/}/"
+    SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${PALUDIS_LOADSAVEENV_DIR%/}/"
 
     if hasq "saveenv" ${RESTRICT} ; then
         ebuild_section "Skipping builtin_saveenv (RESTRICT)"
@@ -48,9 +47,7 @@ ebuild_f_saveenv()
         ebuild_section "Done builtin_saveenv"
     fi
 
-    [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${old_sandbox_write}"
+    SANDBOX_WRITE="${old_sandbox_write}"
     true
 }
-
-
 
