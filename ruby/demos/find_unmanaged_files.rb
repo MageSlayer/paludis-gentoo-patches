@@ -92,8 +92,8 @@ end
 in_fs = []
 Find.find(*files) {|file| in_fs << file}
 
-Paludis::DefaultConfig::config_suffix = config_suffix
-db = DefaultEnvironment.instance.package_database
+env = Paludis::EnvironmentMaker.instance.make_from_spec config_suffix
+db = env.package_database
 
 db.repositories do |repo|
     next unless repo.format == 'vdb'

@@ -10,12 +10,14 @@ Log.instance.log_level = Paludis::LogLevel::Warning
 Log.instance.program_name = $0
 
 opts = GetoptLong.new(
-    [ '--help',          '-h',  GetoptLong::NO_ARGUMENT ],
-    [ '--version',       '-V',  GetoptLong::NO_ARGUMENT ],
+    [ '--help',           '-h', GetoptLong::NO_ARGUMENT ],
+    [ '--version',        '-V', GetoptLong::NO_ARGUMENT ],
     [ '--log-level',            GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--repository-dir','-r',  GetoptLong::REQUIRED_ARGUMENT ])
+    [ '--repository-dir', '-D', GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--write-cache-dir',      GetoptLong::REQUIRED_ARGUMENT ])
 
 repository_dir = Dir.pwd
+write_cache_dir = '/var/empty'
 
 opts.each do | opt, arg |
     case opt
@@ -28,6 +30,7 @@ opts.each do | opt, arg |
         puts
         puts "  --log-level level       Set log level (debug, qa, warning, silent)"
         puts "  --repository-dir dir    Repository directory to use (defaults to .)"
+        puts "  --write-cache-dir dir   Use a subdirectory named for the repository name under the specified directory for repository write cache"
         exit 0
 
     when '--version'
@@ -52,6 +55,9 @@ opts.each do | opt, arg |
     when '--repository-dir'
         repository_dir = arg
 
+    when '--write-cache-dir'
+        write_cache_dir = arg
+
     end
 end
 
@@ -61,7 +67,7 @@ if ARGV.empty?
 end
 keywords = ARGV;
 
-env = NoConfigEnvironment.new(repository_dir)
+env = NoConfigEnvironment.new(repository_dir, write_cache_dir)
 
 def check_one_package(env, search_keywords, repo, pkg)
     results = {}

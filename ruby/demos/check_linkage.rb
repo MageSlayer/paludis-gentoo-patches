@@ -101,8 +101,7 @@ def check_file file
     end
 end
 
-Paludis::DefaultConfig::config_suffix = config_suffix
-env = Paludis::DefaultEnvironment.instance
+env = Paludis::EnvironmentMaker.instance.make_from_spec config_suffix
 
 status "Checking linkage for package-manager installed files"
 
