@@ -37,7 +37,7 @@ CommandLine::CommandLine() :
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
-    a_config_suffix(&general_args, "config-suffix", 'c', "Config directory suffix"),
+    a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
 
     search_args(this, "Search options",
             "Options that are relevant for the search action."),
@@ -58,7 +58,11 @@ CommandLine::CommandLine() :
     a_category(&search_args,   "category",   '\0', "Matches with this category name only",
             paludis::args::StringSetArg::StringSetArgOptions(), &paludis::CategoryNamePartValidator::validate),
     a_package(&search_args,    "package",    '\0', "Matches with this package name only",
-            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate)
+            paludis::args::StringSetArg::StringSetArgOptions(), &paludis::PackageNamePartValidator::validate),
+
+    deprecated_args(this, "Deprecated options", "Deprecated options."),
+    a_config_suffix(&deprecated_args, "config-suffix", 'c',
+            "Replaced by --environment")
 {
     add_usage_line("[ --search ] [search options] pattern ...");
     add_usage_line("--help");

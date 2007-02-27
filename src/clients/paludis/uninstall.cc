@@ -20,7 +20,6 @@
 #include <src/output/colour.hh>
 #include "uninstall.hh"
 
-#include <paludis/environments/default/default_environment.hh>
 #include <paludis/tasks/uninstall_task.hh>
 #include <paludis/tasks/exceptions.hh>
 #include <paludis/dep_list/uninstall_list.hh>
@@ -47,8 +46,8 @@ namespace
             int _count, _current_count;
 
         public:
-            OurUninstallTask() :
-                UninstallTask(DefaultEnvironment::get_instance()),
+            OurUninstallTask(std::tr1::shared_ptr<Environment> e) :
+                UninstallTask(e.get()),
                 _count(0),
                 _current_count(0)
             {
@@ -175,7 +174,7 @@ namespace
             }
     };
 
-    int real_uninstall(bool unused)
+    int real_uninstall(std::tr1::shared_ptr<Environment> env, bool unused)
     {
         int return_code(0);
 
@@ -183,7 +182,7 @@ namespace
                 "When performing uninstall-unused action from command line:" :
                 "When performing uninstall action from command line:");
 
-        OurUninstallTask task;
+        OurUninstallTask task(env);
 
         task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
         task.set_no_config_protect(CommandLine::get_instance()->a_no_config_protection.specified());
@@ -262,14 +261,14 @@ namespace
 }
 
 int
-do_uninstall()
+do_uninstall(std::tr1::shared_ptr<Environment> env)
 {
-    return real_uninstall(false);
+    return real_uninstall(env, false);
 }
 
 int
-do_uninstall_unused()
+do_uninstall_unused(std::tr1::shared_ptr<Environment> env)
 {
-    return real_uninstall(true);
+    return real_uninstall(env, true);
 }
 

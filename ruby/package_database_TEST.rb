@@ -35,14 +35,22 @@ module Paludis
     end
 
     class TestCase_PackageDatabaseFavouriteRepository < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def test_package_database_favourite_repository
-            assert_equal "testrepo", DefaultEnvironment.instance.package_database.favourite_repository
+            assert_equal "testrepo", env.package_database.favourite_repository
         end
     end
 
     class TestCase_PackageDatabaseFetchUniqueQualifiedPackageName < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def db
-            return DefaultEnvironment.instance.package_database
+            return env.package_database
         end
 
         def test_package_database_fetch_unique_qualified_package_name
@@ -60,8 +68,12 @@ module Paludis
     end
 
     class TestCase_PackageDatabaseQuery < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def db
-            return DefaultEnvironment.instance.package_database
+            return env.package_database
         end
 
         def test_arg_count
@@ -128,8 +140,12 @@ module Paludis
     end
 
     class TestCase_PackageDatabaseRepositories < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def db
-            return DefaultEnvironment.instance.package_database
+            return env.package_database
         end
 
         def test_repositories

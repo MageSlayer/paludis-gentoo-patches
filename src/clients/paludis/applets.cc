@@ -28,7 +28,6 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/environments/default/default_environment.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <string>
 #include <set>
@@ -41,12 +40,11 @@
 
 using namespace paludis;
 
-int do_has_version()
+int do_has_version(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
     Context context("When performing has-version action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
     std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query));
@@ -59,12 +57,11 @@ int do_has_version()
     return return_code;
 }
 
-int do_best_version()
+int do_best_version(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
     Context context("When performing best-version action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
     std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query));
@@ -104,12 +101,11 @@ int do_best_version()
     return return_code;
 }
 
-int do_environment_variable()
+int do_environment_variable(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
     Context context("When performing environment-variable action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     std::string spec_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
@@ -141,12 +137,11 @@ int do_environment_variable()
     return return_code;
 }
 
-int do_configuration_variable()
+int do_configuration_variable(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
     Context context("When performing configuration-variable action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     std::string repo_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
@@ -187,10 +182,9 @@ int do_list_repository_formats()
     return return_code;
 }
 
-int do_list_sync_protocols()
+int do_list_sync_protocols(std::tr1::shared_ptr<Environment> env)
 {
     std::map<std::string, std::string> syncers;
-    Environment * const env(DefaultEnvironment::get_instance());
 
     std::list<std::string> syncers_dirs;
     WhitespaceTokeniser::get_instance()->tokenise(env->syncers_dirs(),
@@ -254,10 +248,9 @@ int do_list_dep_tag_categories()
     return return_code;
 }
 
-int do_regenerate_cache(bool installed)
+int do_regenerate_cache(std::tr1::shared_ptr<Environment> env, bool installed)
 {
     Context context("When performing cache regeneration action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     for (PackageDatabase::RepositoryIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)

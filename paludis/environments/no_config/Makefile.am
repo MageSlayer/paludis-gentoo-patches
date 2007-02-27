@@ -9,7 +9,8 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 
 libpaludisnoconfigenvironment_la_SOURCES = \
-	no_config_environment.cc no_config_environment.hh
+	no_config_environment.cc no_config_environment.hh \
+	registration.cc
 
 libpaludisnoconfigenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 

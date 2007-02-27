@@ -67,7 +67,7 @@ CommandLine::CommandLine() :
     a_log_level(&general_args, "log-level",  '\0'),
     a_no_colour(&general_args, "no-colour", '\0', "Do not use colour"),
     a_no_color(&a_no_colour, "no-color"),
-    a_config_suffix(&general_args, "config-suffix", 'c', "Config directory suffix"),
+    a_environment(&general_args, "environment", 'E', "Environment specification (class:suffix, both parts optional)"),
     a_resume_command_template(&general_args, "resume-command-template", '\0', "Save the resume command to a file made using mkstemp(3)"),
 
     query_args(this, "Query options",
@@ -228,7 +228,9 @@ CommandLine::CommandLine() :
     a_show_install_reasons(&deprecated_args, "show-install-reasons",
             '\0', "Replaced by --show-reasons"),
     a_add_to_world_atom(&deprecated_args, "add-to-world-atom", '\0',
-            "Repoaced by --add-to-world-spec")
+            "Replaced by --add-to-world-spec"),
+    a_config_suffix(&deprecated_args, "config-suffix", 'c',
+            "Replaced by --environment")
 {
     add_usage_line("--query [query options] target ...");
     add_usage_line("--install [install options] target ...");

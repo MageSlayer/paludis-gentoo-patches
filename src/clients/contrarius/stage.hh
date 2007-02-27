@@ -29,6 +29,8 @@
 
 namespace paludis
 {
+    class Environment;
+
 #include <src/clients/contrarius/contrarius_stage_options-sr.hh>
 
     class ContrariusStage :

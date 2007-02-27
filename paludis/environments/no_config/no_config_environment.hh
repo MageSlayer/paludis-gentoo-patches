@@ -52,7 +52,8 @@ namespace paludis
      */
     class PALUDIS_VISIBLE NoConfigEnvironment :
         public Environment,
-        private PrivateImplementationPattern<NoConfigEnvironment>
+        private PrivateImplementationPattern<NoConfigEnvironment>,
+        private InstantiationPolicy<NoConfigEnvironment, instantiation_method::NonCopyableTag>
     {
         public:
             ///\name Basic operations
@@ -65,6 +66,7 @@ namespace paludis
             ///\}
 
             virtual std::string paludis_command() const;
+            virtual void set_paludis_command(const std::string &);
 
             /**
              * What is our top level directory for our main repository?
@@ -83,6 +85,11 @@ namespace paludis
 
             std::tr1::shared_ptr<PortageRepository> master_repository();
             std::tr1::shared_ptr<const PortageRepository> master_repository() const;
+
+            virtual void force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,
+                    const UseFlagState) PALUDIS_ATTRIBUTE((noreturn));
+
+            virtual void clear_forced_use();
     };
 }
 

@@ -43,6 +43,9 @@ namespace paludis
         class QAEnvironment :
             public NoConfigEnvironment
         {
+            private:
+                std::string _paludis_command;
+
             public:
                 /**
                  * Constructor.
@@ -59,6 +62,12 @@ namespace paludis
                 ~QAEnvironment();
 
                 virtual std::string paludis_command() const;
+                virtual void set_paludis_command(const std::string &);
+
+                virtual void force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,
+                        const UseFlagState) PALUDIS_ATTRIBUTE((noreturn));
+
+                virtual void clear_forced_use();
         };
     }
 }

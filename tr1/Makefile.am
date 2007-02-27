@@ -8,7 +8,7 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 
-paludis_compat_tr1dir = $(libdir)/paludis/compat/tr1
+paludis_compat_tr1dir = $(includedir)/paludis/compat/tr1
 
 paludis_compat_tr1_HEADERS = tr1_memory.hh
 

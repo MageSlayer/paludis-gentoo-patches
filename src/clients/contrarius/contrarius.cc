@@ -19,6 +19,7 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/paludis.hh>
+#include <paludis/environments/environment_maker.hh>
 #include <paludis/util/util.hh>
 
 #include <cstdlib>
@@ -70,15 +71,17 @@ int main(int argc, char *argv[])
         else
             stage = "cxx";
 
-        ContrariusStageOptions contrarius_opts(HostTupleName(CommandLine::get_instance()->a_target.argument()),
-            CommandLine::get_instance()->a_binutils_name.argument(),
-            CommandLine::get_instance()->a_binutils_version.argument(),
-            CommandLine::get_instance()->a_gcc_name.argument(),
-            CommandLine::get_instance()->a_gcc_version.argument(),
-            CommandLine::get_instance()->a_headers_name.argument(),
-            CommandLine::get_instance()->a_headers_version.argument(),
-            CommandLine::get_instance()->a_libc_name.argument(),
-            CommandLine::get_instance()->a_libc_version.argument());
+        ContrariusStageOptions contrarius_opts(
+                EnvironmentMaker::get_instance()->make_from_spec(""),
+                HostTupleName(CommandLine::get_instance()->a_target.argument()),
+                CommandLine::get_instance()->a_binutils_name.argument(),
+                CommandLine::get_instance()->a_binutils_version.argument(),
+                CommandLine::get_instance()->a_gcc_name.argument(),
+                CommandLine::get_instance()->a_gcc_version.argument(),
+                CommandLine::get_instance()->a_headers_name.argument(),
+                CommandLine::get_instance()->a_headers_version.argument(),
+                CommandLine::get_instance()->a_libc_name.argument(),
+                CommandLine::get_instance()->a_libc_version.argument());
 
         StageOptions stage_opts(CommandLine::get_instance()->a_pretend.specified(),
             CommandLine::get_instance()->a_fetch.specified(),

@@ -122,6 +122,28 @@ EnvironmentMaker::~EnvironmentMaker()
 {
 }
 
+std::tr1::shared_ptr<Environment>
+EnvironmentMaker::make_from_spec(const std::string & s) const
+{
+    Context context("When making environment from specification '" + s + "':");
+
+    std::string key, suffix;
+    std::string::size_type p(s.find(':'));
+
+    if (std::string::npos == p)
+        key = s;
+    else
+    {
+        key = s.substr(0, p);
+        suffix = s.substr(p + 1);
+    }
+
+    if (key.empty())
+        key = "paludis";
+
+    return (*find_maker(key))(suffix);
+}
+
 extern "C"
 {
     void register_environments(EnvironmentMaker * maker);

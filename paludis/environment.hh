@@ -129,6 +129,17 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
+             * Force a use flag.
+             */
+            virtual void force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,
+                    const UseFlagState) = 0;
+
+            /**
+             * Clear forced use flags.
+             */
+            virtual void clear_forced_use() = 0;
+
+            /**
              * Fetch any known use expand names (excluding prefix) that start with a
              * given prefix.
              *
@@ -240,6 +251,11 @@ namespace paludis
              */
             virtual std::string paludis_command() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Change how to run paludis.
+             */
+            virtual void set_paludis_command(const std::string &) = 0;
 
             /**
              * Destructor.

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #include <src/output/colour.hh>
 #include "sync.hh"
 #include <paludis/tasks/sync_task.hh>
-#include <paludis/environments/default/default_environment.hh>
 #include <paludis/syncer.hh>
 #include <iomanip>
 #include <iostream>
@@ -44,8 +43,8 @@ namespace
             int _return_code;
 
         public:
-            OurSyncTask() :
-                SyncTask(DefaultEnvironment::get_instance()),
+            OurSyncTask(std::tr1::shared_ptr<Environment> env) :
+                SyncTask(env.get()),
                 _return_code(0)
             {
             }
@@ -111,11 +110,11 @@ namespace
     }
 }
 
-int do_sync()
+int do_sync(std::tr1::shared_ptr<Environment> env)
 {
     Context context("When performing sync action from command line:");
 
-    OurSyncTask task;
+    OurSyncTask task(env);
 
     for (CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
             q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)

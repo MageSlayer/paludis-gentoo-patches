@@ -21,7 +21,6 @@
 #include <src/output/colour.hh>
 #include "command_line.hh"
 #include <paludis/paludis.hh>
-#include <paludis/environments/default/default_environment.hh>
 #include <iostream>
 #include <algorithm>
 
@@ -69,7 +68,7 @@ namespace
 
 void
 do_one_contents_entry(
-        const Environment * const env,
+        const std::tr1::shared_ptr<Environment> env,
         const PackageDatabaseEntry & e)
 {
     cout << "* " << colour(cl_package_name, e) << endl;
@@ -92,7 +91,7 @@ do_one_contents_entry(
 
 void
 do_one_contents(
-        const Environment * const env,
+        const std::tr1::shared_ptr<Environment> env,
         const std::string & q)
 {
     Context local_context("When handling query '" + q + "':");
@@ -117,12 +116,11 @@ do_one_contents(
 }
 
 int
-do_contents()
+do_contents(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
     Context context("When performing contents action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());

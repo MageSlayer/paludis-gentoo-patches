@@ -20,12 +20,19 @@
 #ifndef PALUDIS_GUARD_SRC_CONFIG_HH
 #define PALUDIS_GUARD_SRC_CONFIG_HH 1
 
+#include <tr1/memory>
+
 /** \file
  * Declaration for the do_config function.
  */
 
+namespace paludis
+{
+    class Environment;
+}
+
 /// Handle --config.
-int do_config();
+int do_config(std::tr1::shared_ptr<paludis::Environment>);
 
 #endif
 

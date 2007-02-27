@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,25 +17,18 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_UNINSTALL_HH
-#define PALUDIS_GUARD_SRC_UNINSTALL_HH 1
+#include <paludis/environments/environment_maker.hh>
+#include <paludis/environments/no_config/no_config_environment.hh>
 
-#include "command_line.hh"
+using namespace paludis;
 
-/** \file
- * Declaration for the do_uninstall function.
- */
-
-namespace paludis
+extern "C"
 {
-    class Environment;
+    void register_environments(EnvironmentMaker * maker);
 }
 
-/// Handle --uninstall.
-int do_uninstall(std::tr1::shared_ptr<paludis::Environment>);
+void register_environments(EnvironmentMaker *)
+{
+}
 
-/// Handle --uninstall-unused.
-int do_uninstall_unused(std::tr1::shared_ptr<paludis::Environment>);
-
-#endif
 

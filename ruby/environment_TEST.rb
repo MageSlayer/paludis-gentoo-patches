@@ -26,16 +26,10 @@ require 'Paludis'
 Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 
 module Paludis
-    class TestCase_DefaultEnvironment < Test::Unit::TestCase
-        def test_instance
-            assert_equal DefaultEnvironment.instance.__id__, DefaultEnvironment.instance.__id__
-            assert_kind_of Environment, DefaultEnvironment.instance
-            assert_kind_of DefaultEnvironment, DefaultEnvironment.instance
-        end
-
+    class TestCase_Environment < Test::Unit::TestCase
         def test_no_create
             assert_raise NoMethodError do
-                x = DefaultEnvironment.new()
+                x = Environment.new()
             end
         end
     end
@@ -78,25 +72,29 @@ module Paludis
         end
     end
 
-    class TestCase_DefaultEnvironmentUse < Test::Unit::TestCase
+    class TestCase_EnvironmentUse < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def test_query_use
-            assert DefaultEnvironment.instance.query_use("enabled")
-            assert ! DefaultEnvironment.instance.query_use("not_enabled")
-            assert ! DefaultEnvironment.instance.query_use("sometimes_enabled")
+            assert env.query_use("enabled")
+            assert ! env.query_use("not_enabled")
+            assert ! env.query_use("sometimes_enabled")
 
             pde = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
 
-            assert DefaultEnvironment.instance.query_use("enabled", pde)
-            assert ! DefaultEnvironment.instance.query_use("not_enabled", pde)
-            assert DefaultEnvironment.instance.query_use("sometimes_enabled", pde)
+            assert env.query_use("enabled", pde)
+            assert ! env.query_use("not_enabled", pde)
+            assert env.query_use("sometimes_enabled", pde)
         end
 
         def test_query_use_bad
             assert_raise ArgumentError do
-                DefaultEnvironment.instance.query_use(1, 2, 3)
+                env.query_use(1, 2, 3)
             end
             assert_raise TypeError do
-                DefaultEnvironment.instance.query_use(123)
+                env.query_use(123)
             end
         end
     end
@@ -122,25 +120,29 @@ module Paludis
         end
     end
 
-    class TestCase_DefaultEnvironmentAcceptKeyword < Test::Unit::TestCase
+    class TestCase_EnvironmentAcceptKeyword < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def test_accept_keyword
-            assert DefaultEnvironment.instance.accept_keyword("test")
-            assert ! DefaultEnvironment.instance.accept_keyword("bad")
-            assert ! DefaultEnvironment.instance.accept_keyword("~test")
+            assert env.accept_keyword("test")
+            assert ! env.accept_keyword("bad")
+            assert ! env.accept_keyword("~test")
 
             pde = PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo")
 
-            assert DefaultEnvironment.instance.accept_keyword("test", pde)
-            assert ! DefaultEnvironment.instance.accept_keyword("bad", pde)
-            assert DefaultEnvironment.instance.accept_keyword("~test", pde)
+            assert env.accept_keyword("test", pde)
+            assert ! env.accept_keyword("bad", pde)
+            assert env.accept_keyword("~test", pde)
         end
 
         def test_accept_keyword_bad
             assert_raise ArgumentError do
-                DefaultEnvironment.instance.accept_keyword(1, 2, 3)
+                env.accept_keyword(1, 2, 3)
             end
             assert_raise TypeError do
-                DefaultEnvironment.instance.accept_keyword(123)
+                env.accept_keyword(123)
             end
         end
     end
@@ -172,21 +174,25 @@ module Paludis
         end
     end
 
-    class TestCase_DefaultEnvironmentAcceptLicense < Test::Unit::TestCase
+    class TestCase_EnvironmentAcceptLicense < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def test_accept_license
-            assert DefaultEnvironment.instance.accept_license("test")
+            assert env.accept_license("test")
 
             pde = PackageDatabaseEntry.new("foo/bar", VersionSpec.new("1.0"), "testrepo")
 
-            assert DefaultEnvironment.instance.accept_license("test", pde)
+            assert env.accept_license("test", pde)
         end
 
         def test_accept_license_bad
             assert_raise ArgumentError do
-                DefaultEnvironment.instance.accept_license(1, 2, 3)
+                env.accept_license(1, 2, 3)
             end
             assert_raise TypeError do
-                DefaultEnvironment.instance.accept_license(123)
+                env.accept_license(123)
             end
         end
     end
@@ -251,9 +257,9 @@ module Paludis
         end
     end
 
-    class TestCase_DefaultEnvironmentQueryUserMasks < Test::Unit::TestCase
+    class TestCase_EnvironmentQueryUserMasks < Test::Unit::TestCase
         def env
-            DefaultEnvironment.instance
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
         end
 
         def test_query_user_masks
@@ -293,9 +299,13 @@ module Paludis
         end
     end
 
-    class TestCase_DefaultEnvironmentPackageDatabase < Test::Unit::TestCase
+    class TestCase_EnvironmentPackageDatabase < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def db
-            DefaultEnvironment.instance.package_database
+            env.package_database
         end
 
         def test_package_database
@@ -319,14 +329,18 @@ module Paludis
         end
     end
 
-    class TestCase_DefaultEnvironmentPackageSet < Test::Unit::TestCase
+    class TestCase_EnvironmentPackageSet < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def test_package_set
-            assert_kind_of DepSpec, DefaultEnvironment.instance.package_set('everything')
+            assert_kind_of DepSpec, env.package_set('everything')
         end
 
         def test_package_set_error
             assert_raise SetNameError do
-                DefaultEnvironment.instance.package_set('broken*')
+                env.package_set('broken*')
             end
         end
     end
@@ -337,7 +351,7 @@ module Paludis
         end
 
         def test_package_set
-            assert_kind_of DepSpec, DefaultEnvironment.instance.package_set('everything')
+            assert_kind_of DepSpec, env.package_set('everything')
         end
 
         def test_package_set_error
@@ -357,48 +371,19 @@ module Paludis
         end
     end
 
-    class TestCase_DefaultConfig < Test::Unit::TestCase
-        def test_respond_to
-            assert_respond_to DefaultConfig, :config_suffix
-            assert_respond_to DefaultConfig, :config_suffix=
-            assert_respond_to DefaultConfig.instance, :config_dir
-            assert_respond_to DefaultConfig.instance, :root
-            assert_respond_to DefaultConfig.instance, :bashrc_files
-        end
-
+    class TestCase_EnvironmentRoot < Test::Unit::TestCase
         def test_root
-            assert_kind_of String, DefaultConfig.instance.root
-            assert_equal '', DefaultConfig.instance.root
-        end
-
-        def test_config_dir
-            assert_kind_of String, DefaultConfig.instance.config_dir
-            cd = DefaultConfig.instance.config_dir
-            assert_equal '/environment_TEST_dir/home/.paludis',
-                cd.gsub(Dir.getwd,'')
-        end
-
-        def test_bashrc_files
-            assert_kind_of String, DefaultConfig.instance.bashrc_files
-            cd = DefaultConfig.instance.bashrc_files
-            assert_equal '/environment_TEST_dir/home/.paludis/bashrc',
-                cd.gsub(Dir.getwd,'')
+            assert_kind_of String, env.root
         end
     end
 
-    class TestCase_DefaultEnvironmentRoot < Test::Unit::TestCase
-        def test_root
-            assert_kind_of String, DefaultEnvironment.instance.root
-        end
-    end
-
-    class TestCase_DefaultEnvironmentDefaultDestinations < Test::Unit::TestCase
+    class TestCase_EnvironmentDefaultDestinations < Test::Unit::TestCase
         def test_default_destinations
-            assert_kind_of Array, DefaultEnvironment.instance.default_destinations
+            assert_kind_of Array, env.default_destinations
         end
     end
 
-    class TestCase_DefaultEnvironmentRoot < Test::Unit::TestCase
+    class TestCase_EnvironmentRoot < Test::Unit::TestCase
         def env
             NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
         end
@@ -408,7 +393,7 @@ module Paludis
         end
     end
 
-    class TestCase_DefaultEnvironmentDefaultDestinations < Test::Unit::TestCase
+    class TestCase_EnvironmentDefaultDestinations < Test::Unit::TestCase
         def env
             NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
         end

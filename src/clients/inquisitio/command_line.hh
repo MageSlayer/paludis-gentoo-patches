@@ -72,7 +72,7 @@ class CommandLine :
         paludis::args::LogLevelArg a_log_level;
         paludis::args::SwitchArg a_no_colour;
         paludis::args::AliasArg a_no_color;
-        paludis::args::StringArg a_config_suffix;
+        paludis::args::StringArg a_environment;
 
         ///}
 
@@ -87,6 +87,14 @@ class CommandLine :
         paludis::args::StringSetArg a_repository_format;
         paludis::args::StringSetArg a_category;
         paludis::args::StringSetArg a_package;
+
+        ///\}
+
+        ///\name Deprecated arguments
+        ///\{
+
+        paludis::args::ArgsGroup deprecated_args;
+        paludis::args::StringArg a_config_suffix;
 
         ///\}
 };

@@ -52,12 +52,15 @@ namespace paludis
         {
             private:
                 Environment * _e;
+                const std::tr1::shared_ptr<Environment> _ee;
 
             public:
                 Environment * const env_ptr;
 
-                EnvironmentData(Environment * const ee, Environment * const free_e = 0) :
+                EnvironmentData(Environment * const ee, Environment * const free_e = 0,
+                        const std::tr1::shared_ptr<Environment> & free_sp_e = std::tr1::shared_ptr<Environment>()) :
                     _e(free_e),
+                    _ee(free_sp_e),
                     env_ptr(ee)
                 {
                 }

@@ -20,7 +20,6 @@
 #include "report.hh"
 #include <src/output/colour.hh>
 #include <paludis/tasks/report_task.hh>
-#include <paludis/environments/default/default_environment.hh>
 #include <iostream>
 
 /** \file
@@ -41,8 +40,8 @@ namespace
             int _n_errors;
 
         public:
-            OurReportTask() :
-                ReportTask(DefaultEnvironment::get_instance()),
+            OurReportTask(std::tr1::shared_ptr<Environment> env) :
+                ReportTask(env.get()),
                 _n_packages(0),
                 _n_errors(0)
             {
@@ -160,11 +159,11 @@ namespace
     }
 }
 
-int do_report()
+int do_report(std::tr1::shared_ptr<Environment> env)
 {
     Context context("When performing report action from command line:");
 
-    OurReportTask task;
+    OurReportTask task(env);
     task.execute();
 
     return task.return_code();

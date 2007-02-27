@@ -26,8 +26,13 @@
  * Declaration for the do_report function.
  */
 
+namespace paludis
+{
+    class Environment;
+}
+
 /// Handle --report.
-int do_report();
+int do_report(std::tr1::shared_ptr<paludis::Environment>);
 
 #endif
 

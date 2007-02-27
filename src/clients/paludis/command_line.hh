@@ -160,8 +160,8 @@ class CommandLine :
         /// --no-color
         paludis::args::AliasArg a_no_color;
 
-        /// --config-suffix
-        paludis::args::StringArg a_config_suffix;
+        /// --environment
+        paludis::args::StringArg a_environment;
 
         /// --resume-command-template
         paludis::args::StringArg a_resume_command_template;
@@ -312,6 +312,8 @@ class CommandLine :
         paludis::args::SwitchArg a_dl_ignore_installed;
         paludis::args::StringArg a_show_install_reasons;
         paludis::args::StringArg a_add_to_world_atom;
+        paludis::args::StringArg a_config_suffix;
+
 
         ///\}
 };

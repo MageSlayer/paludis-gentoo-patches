@@ -25,19 +25,17 @@
 #include <list>
 #include <map>
 #include <paludis/paludis.hh>
-#include <paludis/environments/default/default_environment.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor.hh>
 
 using namespace paludis;
 
 int
-do_list_repositories()
+do_list_repositories(std::tr1::shared_ptr<Environment> env)
 {
     int ret_code(1);
 
     Context context("When performing list-repositories action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
             r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
@@ -77,12 +75,11 @@ do_list_repositories()
 }
 
 int
-do_list_categories()
+do_list_categories(std::tr1::shared_ptr<Environment> env)
 {
     int ret_code(1);
 
     Context context("When performing list-categories action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     std::map<CategoryNamePart, std::list<RepositoryName> > cats;
 
@@ -131,12 +128,11 @@ do_list_categories()
 }
 
 int
-do_list_packages()
+do_list_packages(std::tr1::shared_ptr<Environment> env)
 {
     int ret_code(1);
 
     Context context("When performing list-packages action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     std::map<QualifiedPackageName, std::list<RepositoryName> > pkgs;
 
@@ -197,12 +193,11 @@ do_list_packages()
 }
 
 int
-do_list_sets()
+do_list_sets(std::tr1::shared_ptr<Environment> env)
 {
     int ret_code(1);
 
     Context context("While performing list-sets action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     std::map<SetName, std::list<std::string> > sets;
 

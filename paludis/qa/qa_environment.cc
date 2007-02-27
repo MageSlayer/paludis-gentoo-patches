@@ -44,7 +44,9 @@ QAEnvironment::QAEnvironment(const FSEntry & base, const FSEntry & write_cache) 
             .write_cache(write_cache)
             .accept_unstable(false)
             .repository_type(ncer_portage)
-            .master_repository_dir(FSEntry("/var/empty")))
+            .master_repository_dir(FSEntry("/var/empty"))),
+    _paludis_command("diefunc 'qa_environment.cc' 'QAEnvironment::paludis_command()' "
+            "'paludis_command called from within QAEnvironment'")
 {
 }
 
@@ -55,7 +57,9 @@ QAEnvironment::QAEnvironment(const FSEntry & base, const FSEntry & write_cache,
             .write_cache(write_cache)
             .accept_unstable(false)
             .repository_type(ncer_portage)
-            .master_repository_dir(master_repository_dir))
+            .master_repository_dir(master_repository_dir)),
+    _paludis_command("diefunc 'qa_environment.cc' 'QAEnvironment::paludis_command()' "
+            "'paludis_command called from within QAEnvironment'")
 {
 }
 
@@ -66,7 +70,24 @@ QAEnvironment::~QAEnvironment()
 std::string
 QAEnvironment::paludis_command() const
 {
-    return "diefunc 'qa_environment.cc' 'QAEnvironment::paludis_command()' "
-        "'paludis_command called from within QAEnvironment'";
+    return _paludis_command;
+}
+
+void
+QAEnvironment::set_paludis_command(const std::string & s)
+{
+    _paludis_command = s;
+}
+
+void
+QAEnvironment::clear_forced_use()
+{
+}
+
+void
+QAEnvironment::force_use(std::tr1::shared_ptr<const PackageDepSpec>,
+        const UseFlagName &, const UseFlagState)
+{
+    throw InternalError(PALUDIS_HERE, "force_use not currently available for QAEnvironment");
 }
 

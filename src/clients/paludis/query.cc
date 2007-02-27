@@ -27,7 +27,6 @@
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <paludis/util/collection_concrete.hh>
-#include <paludis/environments/default/default_environment.hh>
 #include <string>
 
 /** \file
@@ -45,8 +44,8 @@ namespace
         public ConsoleQueryTask
     {
         public:
-            QueryTask(const Environment * const e) :
-                ConsoleQueryTask(e)
+            QueryTask(const std::tr1::shared_ptr<Environment> e) :
+                ConsoleQueryTask(e.get())
             {
             }
 
@@ -63,7 +62,7 @@ namespace
 }
 
 void do_one_package_query(
-        const Environment * const env,
+        const std::tr1::shared_ptr<Environment> env,
         MaskReasons & mask_reasons_to_explain,
         std::tr1::shared_ptr<PackageDepSpec> spec)
 {
@@ -74,7 +73,7 @@ void do_one_package_query(
 }
 
 void do_one_set_query(
-        const Environment * const,
+        const std::tr1::shared_ptr<Environment>,
         const std::string & q,
         MaskReasons &,
         std::tr1::shared_ptr<DepSpec> set)
@@ -87,7 +86,7 @@ void do_one_set_query(
 }
 
 void do_one_query(
-        const Environment * const env,
+        const std::tr1::shared_ptr<Environment> env,
         const std::string & q,
         MaskReasons & mask_reasons_to_explain)
 {
@@ -119,12 +118,11 @@ void do_one_query(
         do_one_set_query(env, q, mask_reasons_to_explain, set);
 }
 
-int do_query()
+int do_query(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
 
     Context context("When performing query action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     MaskReasons mask_reasons_to_explain;
 

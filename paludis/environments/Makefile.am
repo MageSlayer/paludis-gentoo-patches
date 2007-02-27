@@ -1,4 +1,4 @@
-SUBDIRS = default no_config test
+SUBDIRS = paludis no_config test
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in
@@ -20,6 +20,7 @@ libpaludisenvironments_la_SOURCES = \
 libpaludisenvironments_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 libpaludisenvironments_la_LIBADD = \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	@DYNAMIC_LD_LIBS@

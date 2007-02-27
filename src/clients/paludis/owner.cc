@@ -21,7 +21,6 @@
 #include <src/output/colour.hh>
 #include "command_line.hh"
 #include <paludis/paludis.hh>
-#include <paludis/environments/default/default_environment.hh>
 #include <iostream>
 
 using namespace paludis;
@@ -87,7 +86,7 @@ namespace
 
 int
 do_one_owner(
-        const Environment * const env,
+        const std::tr1::shared_ptr<Environment> env,
         const std::string & query)
 {
     bool found_owner=false;
@@ -133,11 +132,10 @@ do_one_owner(
 
 
 int
-do_owner()
+do_owner(std::tr1::shared_ptr<Environment> env)
 {
     int return_code(0);
     Context context("When performing owner action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());

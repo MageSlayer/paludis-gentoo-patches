@@ -18,9 +18,8 @@
  */
 
 #include <paludis_ruby.hh>
-#include <paludis/environments/default/default_environment.hh>
-#include <paludis/environments/default/default_config.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
+#include <paludis/environments/environment_maker.hh>
 #include <ruby.h>
 
 using namespace paludis;
@@ -31,9 +30,8 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_environment;
-    static VALUE c_default_environment;
-    static VALUE c_default_config;
     static VALUE c_no_config_environment;
+    static VALUE c_environment_maker;
 
     /*
      * call-seq:
@@ -265,67 +263,6 @@ namespace
 
     }
 
-    /*
-     * Gets the config suffix.
-     */
-    VALUE
-    default_config_config_suffix(VALUE)
-    {
-        try
-        {
-            return rb_str_new2(DefaultConfig::config_suffix().c_str());
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * Document-method: root
-     *
-     * The ROOT.
-     */
-    /*
-     * Document-method: bashrc_files
-     *
-     * Our bashrc files.
-     */
-    /*
-     * Document-method: config_dir
-     *
-     * The config directory.
-     */
-    template <std::string (DefaultConfig::* m_) () const>
-    struct ConfigStruct
-    {
-        static VALUE
-        fetch(VALUE)
-        {
-            return rb_str_new2((((DefaultConfig::get_instance())->*m_)()).c_str());
-        }
-    };
-
-    /*
-     * call-seq:
-     *     config_suffix=
-     *
-     * Set config suffig.
-     */
-    VALUE
-    default_config_config_suffix_set(VALUE klass, VALUE str)
-    {
-        try
-        {
-            DefaultConfig::set_config_suffix(stringify(StringValuePtr(str)));
-            return klass;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
     VALUE
     no_config_environment_init(int, VALUE*, VALUE self)
     {
@@ -391,20 +328,6 @@ namespace
         }
     }
 
-    VALUE
-    default_environment_new(VALUE self)
-    {
-        try
-        {
-            EnvironmentData * ptr(new EnvironmentData(DefaultEnvironment::get_instance()));
-            return Data_Wrap_Struct(self, 0, &Common<EnvironmentData>::free, ptr);
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
     /*
      * call-seq:
      *     portage_repository -> PortageRepository
@@ -424,9 +347,28 @@ namespace
         }
     }
 
+    VALUE
+    environment_maker_make_from_spec(VALUE, VALUE spec)
+    {
+        try
+        {
+            std::tr1::shared_ptr<Environment> e(EnvironmentMaker::get_instance()->make_from_spec(
+                        StringValuePtr(spec)));
+
+            EnvironmentData * ptr(new EnvironmentData(e.get(), 0, e));
+            VALUE tdata(Data_Wrap_Struct(c_environment, 0, &Common<EnvironmentData>::free, ptr));
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     void do_register_environment()
     {
         rb_require("singleton");
+
         /*
          * Document-class: Paludis::Environment
          *
@@ -449,33 +391,6 @@ namespace
         rb_define_method(c_environment, "default_destinations", RUBY_FUNC_CAST(&environment_default_destinations), 0);
 
         /*
-         * Document-class: Paludis::DefaultEnvironment
-         *
-         * The DefaultEnvironment is an Environment that correspons to the normal operating environment
-         *
-         */
-        c_default_environment = rb_define_class_under(paludis_module(), "DefaultEnvironment", c_environment);
-        rb_define_singleton_method(c_default_environment, "new", RUBY_FUNC_CAST(&default_environment_new), 0);
-        rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_default_environment);
-
-
-        /*
-         * Document-class: Paludis::DefaultConfig
-         *
-         * DefaultConfig is used by DefaultEnvironment to access the user's configuration settings from on-disk configuration files.
-         */
-        c_default_config = rb_define_class_under(paludis_module(), "DefaultConfig", rb_cObject);
-        rb_funcall(c_default_config, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_default_config);
-        rb_define_singleton_method(c_default_config, "config_suffix",
-                RUBY_FUNC_CAST(&default_config_config_suffix), 0);
-        rb_define_singleton_method(c_default_config, "config_suffix=",
-                RUBY_FUNC_CAST(&default_config_config_suffix_set), 1);
-        rb_define_method(c_default_config, "config_dir", RUBY_FUNC_CAST((&ConfigStruct<&DefaultConfig::config_dir>::fetch)), 0);
-        rb_define_method(c_default_config, "root", RUBY_FUNC_CAST((&ConfigStruct<&DefaultConfig::root>::fetch)), 0);
-        rb_define_method(c_default_config, "bashrc_files", RUBY_FUNC_CAST((&ConfigStruct<&DefaultConfig::bashrc_files>::fetch)), 0);
-
-        /*
          * Document-class: Paludis::NoConfigEnvironment
          *
          * An environment that uses a single repository, with no user configuration.
@@ -484,6 +399,10 @@ namespace
         rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), -1);
         rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), -1);
         rb_define_method(c_no_config_environment, "portage_repository", RUBY_FUNC_CAST(&no_config_environment_portage_repository), 0);
+
+        c_environment_maker = rb_define_class_under(paludis_module(), "EnvironmentMaker", rb_cObject);
+        rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_environment_maker);
+        rb_define_method(c_environment_maker, "make_from_spec", RUBY_FUNC_CAST(&environment_maker_make_from_spec), 1);
     }
 }
 

@@ -26,7 +26,7 @@ contrarius_SOURCES = \
 
 contrarius_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
-	$(top_builddir)/paludis/environments/default/libpaludisdefaultenvironment.la \
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
 	$(top_builddir)/paludis/tasks/libpaludistasks.a \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \

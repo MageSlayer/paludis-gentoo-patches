@@ -26,6 +26,8 @@
 
 namespace paludis
 {
+    class Environment;
+
     class OurStageBuilderTask :
         public StageBuilderTask
     {
@@ -38,7 +40,8 @@ namespace paludis
             virtual void on_build_all_pre();
             virtual void on_build_pre(std::tr1::shared_ptr<const StageBase>);
             virtual void on_build_post(std::tr1::shared_ptr<const StageBase>);
-            virtual void on_build_fail(std::tr1::shared_ptr<const StageBase>, const StageBuildError &);
+            virtual void on_build_fail(std::tr1::shared_ptr<const StageBase>, const StageBuildError &)
+                PALUDIS_ATTRIBUTE((noreturn));
             virtual void on_build_succeed(std::tr1::shared_ptr<const StageBase>);
             virtual void on_build_skipped(std::tr1::shared_ptr<const StageBase>);
             virtual void on_build_all_post();

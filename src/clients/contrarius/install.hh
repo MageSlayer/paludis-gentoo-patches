@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_DEPGRAPH_HH 1
 
 #include <paludis/dep_spec.hh>
-
+#include <paludis/environment.hh>
 #include "command_line.hh"
 
 /** \file
@@ -29,6 +29,7 @@
  */
 
 /// Handle --install.
-int do_install(std::tr1::shared_ptr<const paludis::PackageDepSpec> spec);
+int do_install(std::tr1::shared_ptr<paludis::Environment>,
+        std::tr1::shared_ptr<const paludis::PackageDepSpec> spec);
 
 #endif

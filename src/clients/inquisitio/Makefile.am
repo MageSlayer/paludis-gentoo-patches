@@ -47,7 +47,7 @@ inquisitio_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/environments/default/libpaludisdefaultenvironment.la \
+	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(top_builddir)/src/common_args/libcommonargs.a \
 	$(DYNAMIC_LD_LIBS) \

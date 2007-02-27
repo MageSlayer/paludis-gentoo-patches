@@ -101,6 +101,8 @@ namespace paludis
 
         public:
             ~EnvironmentMaker();
+
+            std::tr1::shared_ptr<Environment> make_from_spec(const std::string &) const;
     };
 }
 

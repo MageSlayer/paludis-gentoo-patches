@@ -44,6 +44,8 @@ namespace paludis
         std::tr1::shared_ptr<PortageRepository> portage_repo;
         std::tr1::shared_ptr<PortageRepository> master_repo;
 
+        std::string paludis_command;
+
         Implementation(Environment * const env, const NoConfigEnvironmentParams & params);
     };
 
@@ -111,7 +113,8 @@ Implementation<NoConfigEnvironment>::Implementation(
     top_level_dir(params.repository_dir),
     write_cache(params.write_cache),
     accept_unstable(params.accept_unstable),
-    is_vdb(is_vdb_repository(params.repository_dir, params.repository_type))
+    is_vdb(is_vdb_repository(params.repository_dir, params.repository_type)),
+    paludis_command("false")
 {
     Context context("When initialising NoConfigEnvironment at '" + stringify(params.repository_dir) + "':");
 
@@ -193,7 +196,13 @@ NoConfigEnvironment::~NoConfigEnvironment()
 std::string
 NoConfigEnvironment::paludis_command() const
 {
-    return "false";
+    return _imp->paludis_command;
+}
+
+void
+NoConfigEnvironment::set_paludis_command(const std::string & s)
+{
+    _imp->paludis_command = s;
 }
 
 FSEntry
@@ -269,4 +278,15 @@ NoConfigEnvironment::master_repository() const
     return _imp->master_repo;
 }
 
+void
+NoConfigEnvironment::force_use(std::tr1::shared_ptr<const PackageDepSpec>,
+        const UseFlagName &, const UseFlagState)
+{
+    throw InternalError(PALUDIS_HERE, "force_use not currently available for NoConfigEnvironment");
+}
+
+void
+NoConfigEnvironment::clear_forced_use()
+{
+}
 

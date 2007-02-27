@@ -26,8 +26,7 @@
 
 #include <paludis/about.hh>
 #include <paludis/util/join.hh>
-#include <paludis/environments/default/default_environment.hh>
-#include <paludis/environments/default/default_config.hh>
+#include <paludis/environments/environment_maker.hh>
 
 #include <src/output/colour.hh>
 #include <src/common_args/do_help.hh>
@@ -81,12 +80,21 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_version.specified()))
             throw args::DoHelp("you should specify exactly one action");
 
-        std::string paludis_command(argv[0]);
+        std::string paludis_command(argv[0]), env_spec;
         if (CommandLine::get_instance()->a_config_suffix.specified())
         {
-            DefaultConfig::set_config_suffix(CommandLine::get_instance()->a_config_suffix.argument());
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "--config-suffix is deprecated, use --environment ':" +
+                    CommandLine::get_instance()->a_config_suffix.argument() + "'");
+            env_spec = ":" + CommandLine::get_instance()->a_config_suffix.argument();
             paludis_command.append(" --" + CommandLine::get_instance()->a_config_suffix.long_name() + " " +
                     CommandLine::get_instance()->a_config_suffix.argument());
+        }
+        else if (CommandLine::get_instance()->a_environment.specified())
+        {
+            paludis_command.append(" --" + CommandLine::get_instance()->a_environment.long_name() + " " +
+                    CommandLine::get_instance()->a_config_suffix.argument());
+            env_spec = CommandLine::get_instance()->a_environment.argument();
         }
 
         paludis_command.append(" --" + CommandLine::get_instance()->a_log_level.long_name() + " " +
@@ -95,12 +103,13 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_no_color.specified())
             paludis_command.append(" --" + CommandLine::get_instance()->a_no_color.long_name());
 
-        DefaultConfig::get_instance()->set_paludis_command(paludis_command);
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
+        env->set_paludis_command(paludis_command);
 
         if (CommandLine::get_instance()->begin_parameters() == CommandLine::get_instance()->end_parameters())
             throw args::DoHelp("search action takes at least one parameter");
 
-        return do_search(*DefaultEnvironment::get_instance());
+        return do_search(*env);
     }
     catch (const DoVersion &)
     {

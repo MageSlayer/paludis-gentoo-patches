@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,29 +26,34 @@
  * Declaration for small do_* functions.
  */
 
+namespace paludis
+{
+    class Environment;
+}
+
 /// Handle --has-version.
-int do_has_version();
+int do_has_version(std::tr1::shared_ptr<paludis::Environment>);
 
 /// Handle --best-version.
-int do_best_version();
+int do_best_version(std::tr1::shared_ptr<paludis::Environment>);
 
 /// Handle --environment-variable.
-int do_environment_variable();
+int do_environment_variable(std::tr1::shared_ptr<paludis::Environment>);
 
 /// Handle --configuration-variable.
-int do_configuration_variable();
+int do_configuration_variable(std::tr1::shared_ptr<paludis::Environment>);
 
 /// Handle --list-repository-formats
 int do_list_repository_formats();
 
 /// Handle --list-sync-protocols
-int do_list_sync_protocols();
+int do_list_sync_protocols(std::tr1::shared_ptr<paludis::Environment>);
 
 /// Handle --list-dep-tag-categories
 int do_list_dep_tag_categories();
 
 /// Handle cache regeneration
-int do_regenerate_cache(bool installed);
+int do_regenerate_cache(std::tr1::shared_ptr<paludis::Environment>, bool installed);
 
 #endif
 

@@ -21,7 +21,6 @@
 #include "command_line.hh"
 #include <src/output/colour.hh>
 #include <paludis/paludis.hh>
-#include <paludis/environments/default/default_environment.hh>
 #include <iostream>
 
 using namespace paludis;
@@ -48,7 +47,7 @@ namespace
     };
 
     int
-    do_one_config_entry(Environment * const env, const PackageDatabaseEntry & p)
+    do_one_config_entry(std::tr1::shared_ptr<Environment> env, const PackageDatabaseEntry & p)
     {
         int return_code(0);
 
@@ -68,7 +67,7 @@ namespace
     }
 
     int
-    do_one_config(Environment * const env, const std::string & target)
+    do_one_config(std::tr1::shared_ptr<Environment> env, const std::string & target)
     {
         Context local_context("When handling query '" + target + "':");
 
@@ -93,12 +92,11 @@ namespace
 }
 
 int
-do_config()
+do_config(std::tr1::shared_ptr<Environment> env)
 {
     int ret_code(0);
 
     Context context("When performing config action from command line:");
-    Environment * const env(DefaultEnvironment::get_instance());
 
     CommandLine::ParametersIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());

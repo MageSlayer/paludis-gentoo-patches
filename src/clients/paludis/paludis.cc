@@ -35,11 +35,10 @@
 #include <src/output/colour.hh>
 
 #include <paludis/paludis.hh>
+#include <paludis/environments/environment_maker.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/util.hh>
 #include <paludis/util/log.hh>
-#include <paludis/environments/default/default_environment.hh>
-#include <paludis/environments/default/default_config.hh>
 
 #include <libebt/libebt.hh>
 #include <libwrapiter/libwrapiter.hh>
@@ -107,10 +106,8 @@ namespace
 #endif
     }
 
-    void display_info()
+    void display_info(std::tr1::shared_ptr<Environment> env)
     {
-        Environment * const env(DefaultEnvironment::get_instance());
-
         for (IndirectIterator<PackageDatabase::RepositoryIterator, const Repository>
                 r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories()) ;
                 r != r_end ; ++r)
@@ -261,7 +258,7 @@ main(int argc, char *argv[])
                 throw args::DoHelp("you should specify exactly one action");
         }
 
-        /* these actions don't need DefaultConfig or paludis_command. */
+        /* these actions don't need Environment or paludis_command. */
 
         if (CommandLine::get_instance()->a_list_repository_formats.specified())
         {
@@ -279,51 +276,49 @@ main(int argc, char *argv[])
             return do_list_dep_tag_categories();
         }
 
-        /* these actions do need DefaultConfig or paludis_command */
+        /* these actions do need Environment or paludis_command */
 
-        try
+        std::string paludis_command(argv[0]), env_spec;
+
+        if (CommandLine::get_instance()->a_config_suffix.specified())
         {
-            std::string paludis_command(argv[0]);
-            if (CommandLine::get_instance()->a_config_suffix.specified())
-            {
-                DefaultConfig::set_config_suffix(CommandLine::get_instance()->a_config_suffix.argument());
-                paludis_command.append(" --" + CommandLine::get_instance()->a_config_suffix.long_name() + " " +
-                        CommandLine::get_instance()->a_config_suffix.argument());
-            }
+            Log::get_instance()->message(ll_warning, lc_no_context,
+                    "--config-suffix is deprecated, use --environment ':" +
+                    CommandLine::get_instance()->a_config_suffix.argument() + "'");
 
-            paludis_command.append(" --" + CommandLine::get_instance()->a_log_level.long_name() + " " +
-                    CommandLine::get_instance()->a_log_level.argument());
-
-            if (CommandLine::get_instance()->a_resume_command_template.specified())
-                paludis_command.append(" --" + CommandLine::get_instance()->a_resume_command_template.long_name() + " "
-                        + CommandLine::get_instance()->a_resume_command_template.argument());
-
-            if (CommandLine::get_instance()->a_no_color.specified())
-                paludis_command.append(" --" + CommandLine::get_instance()->a_no_color.long_name());
-
-            if (CommandLine::get_instance()->a_no_config_protection.specified())
-                paludis_command.append(" --" + CommandLine::get_instance()->a_no_config_protection.long_name());
-
-            if (CommandLine::get_instance()->a_preserve_world.specified())
-                paludis_command.append(" --" + CommandLine::get_instance()->a_preserve_world.long_name());
-
-            if (CommandLine::get_instance()->a_debug_build.specified())
-                paludis_command.append(" --" + CommandLine::get_instance()->a_debug_build.long_name() + " "
-                        + CommandLine::get_instance()->a_debug_build.argument());
-
-            DefaultConfig::get_instance()->set_paludis_command(paludis_command);
-
+            env_spec = ":" + CommandLine::get_instance()->a_config_suffix.argument();
+            paludis_command.append(" --" + CommandLine::get_instance()->a_config_suffix.long_name() + " " +
+                    CommandLine::get_instance()->a_config_suffix.argument());
         }
-        catch (const DefaultConfigError &)
+        else if (CommandLine::get_instance()->a_environment.specified())
         {
-            if (CommandLine::get_instance()->a_info.specified())
-            {
-                display_version();
-                cout << endl;
-                cout << "Cannot complete --info output due to configuration exception" << endl;
-            }
-            throw;
+            env_spec = CommandLine::get_instance()->a_environment.argument();
+            paludis_command.append(" --" + CommandLine::get_instance()->a_environment.long_name() + " " +
+                    CommandLine::get_instance()->a_environment.argument());
         }
+
+        paludis_command.append(" --" + CommandLine::get_instance()->a_log_level.long_name() + " " +
+                CommandLine::get_instance()->a_log_level.argument());
+
+        if (CommandLine::get_instance()->a_resume_command_template.specified())
+            paludis_command.append(" --" + CommandLine::get_instance()->a_resume_command_template.long_name() + " "
+                    + CommandLine::get_instance()->a_resume_command_template.argument());
+
+        if (CommandLine::get_instance()->a_no_color.specified())
+            paludis_command.append(" --" + CommandLine::get_instance()->a_no_color.long_name());
+
+        if (CommandLine::get_instance()->a_no_config_protection.specified())
+            paludis_command.append(" --" + CommandLine::get_instance()->a_no_config_protection.long_name());
+
+        if (CommandLine::get_instance()->a_preserve_world.specified())
+            paludis_command.append(" --" + CommandLine::get_instance()->a_preserve_world.long_name());
+
+        if (CommandLine::get_instance()->a_debug_build.specified())
+            paludis_command.append(" --" + CommandLine::get_instance()->a_debug_build.long_name() + " "
+                    + CommandLine::get_instance()->a_debug_build.argument());
+
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(env_spec));
+        env->set_paludis_command(paludis_command);
 
         if (CommandLine::get_instance()->a_resume_command_template.specified())
         {
@@ -338,14 +333,14 @@ main(int argc, char *argv[])
             if (! CommandLine::get_instance()->empty())
                 throw args::DoHelp("list-sync-protocols action takes no parameters");
 
-            return do_list_sync_protocols();
+            return do_list_sync_protocols(env);
         }
 
         if (CommandLine::get_instance()->a_info.specified())
         {
             display_version();
             cout << endl;
-            display_info();
+            display_info(env);
             cout << endl;
             return EXIT_SUCCESS;
         }
@@ -355,7 +350,7 @@ main(int argc, char *argv[])
             if (CommandLine::get_instance()->empty())
                 throw args::DoHelp("query action requires at least one parameter");
 
-            return do_query();
+            return do_query(env);
         }
 
         if (CommandLine::get_instance()->a_install.specified())
@@ -363,7 +358,7 @@ main(int argc, char *argv[])
             if (CommandLine::get_instance()->empty())
                 throw args::DoHelp("install action requires at least one parameter");
 
-            return do_install();
+            return do_install(env);
         }
 
         if (CommandLine::get_instance()->a_uninstall.specified())
@@ -371,7 +366,7 @@ main(int argc, char *argv[])
             if (CommandLine::get_instance()->empty())
                 throw args::DoHelp("uninstall action requires at least one parameter");
 
-            return do_uninstall();
+            return do_uninstall(env);
         }
 
         if (CommandLine::get_instance()->a_config.specified())
@@ -379,7 +374,7 @@ main(int argc, char *argv[])
             if (CommandLine::get_instance()->empty())
                 throw args::DoHelp("config action requires at least one parameter");
 
-            return do_config();
+            return do_config(env);
         }
 
         if (CommandLine::get_instance()->a_uninstall_unused.specified())
@@ -387,19 +382,19 @@ main(int argc, char *argv[])
             if (! CommandLine::get_instance()->empty())
                 throw args::DoHelp("uninstall-unused action takes no parameters");
 
-            return do_uninstall_unused();
+            return do_uninstall_unused(env);
         }
 
         if (CommandLine::get_instance()->a_sync.specified())
         {
-            return do_sync();
+            return do_sync(env);
         }
 
         if (CommandLine::get_instance()->a_report.specified())
         {
             if (! CommandLine::get_instance()->empty())
                 throw args::DoHelp("report action takes no parameters");
-            return do_report();
+            return do_report(env);
         }
 
         if (CommandLine::get_instance()->a_list_repositories.specified())
@@ -407,7 +402,7 @@ main(int argc, char *argv[])
             if (! CommandLine::get_instance()->empty())
                 throw args::DoHelp("list-repositories action takes no parameters");
 
-            return do_list_repositories();
+            return do_list_repositories(env);
         }
 
         if (CommandLine::get_instance()->a_list_categories.specified())
@@ -415,7 +410,7 @@ main(int argc, char *argv[])
             if (! CommandLine::get_instance()->empty())
                 throw args::DoHelp("list-categories action takes no parameters");
 
-            return do_list_categories();
+            return do_list_categories(env);
         }
 
         if (CommandLine::get_instance()->a_list_packages.specified())
@@ -423,7 +418,7 @@ main(int argc, char *argv[])
             if (! CommandLine::get_instance()->empty())
                 throw args::DoHelp("list-packages action takes no parameters");
 
-            return do_list_packages();
+            return do_list_packages(env);
         }
 
         if (CommandLine::get_instance()->a_list_sets.specified())
@@ -431,7 +426,7 @@ main(int argc, char *argv[])
             if (! CommandLine::get_instance()->empty())
                 throw args::DoHelp("list-sets action takes no parameters");
 
-            return do_list_sets();
+            return do_list_sets(env);
         }
 
         if (CommandLine::get_instance()->a_contents.specified())
@@ -439,7 +434,7 @@ main(int argc, char *argv[])
             if (CommandLine::get_instance()->empty())
                 throw args::DoHelp("contents action requires at least one parameter");
 
-            return do_contents();
+            return do_contents(env);
         }
 
         if (CommandLine::get_instance()->a_owner.specified())
@@ -447,7 +442,7 @@ main(int argc, char *argv[])
             if (CommandLine::get_instance()->empty())
                 throw args::DoHelp("owner action requires at least one parameter");
 
-            return do_owner();
+            return do_owner(env);
         }
 
         if (CommandLine::get_instance()->a_has_version.specified())
@@ -456,7 +451,7 @@ main(int argc, char *argv[])
                         CommandLine::get_instance()->end_parameters()))
                 throw args::DoHelp("has-version action takes exactly one parameter");
 
-            return do_has_version();
+            return do_has_version(env);
         }
 
         if (CommandLine::get_instance()->a_best_version.specified())
@@ -465,7 +460,7 @@ main(int argc, char *argv[])
                         CommandLine::get_instance()->end_parameters()))
                 throw args::DoHelp("best-version action takes exactly one parameter");
 
-            return do_best_version();
+            return do_best_version(env);
         }
 
         if (CommandLine::get_instance()->a_environment_variable.specified())
@@ -474,7 +469,7 @@ main(int argc, char *argv[])
                         CommandLine::get_instance()->end_parameters()))
                 throw args::DoHelp("environment-variable action takes exactly two parameters (depspec var)");
 
-            return do_environment_variable();
+            return do_environment_variable(env);
         }
 
         if (CommandLine::get_instance()->a_configuration_variable.specified())
@@ -483,7 +478,7 @@ main(int argc, char *argv[])
                         CommandLine::get_instance()->end_parameters()))
                 throw args::DoHelp("configuration-variable action takes exactly two parameters (repository var)");
 
-            return do_configuration_variable();
+            return do_configuration_variable(env);
         }
 
         if (CommandLine::get_instance()->a_update_news.specified())
@@ -491,7 +486,7 @@ main(int argc, char *argv[])
             if (! CommandLine::get_instance()->empty())
                 throw args::DoHelp("update-news action takes no parameters");
 
-            return do_update_news();
+            return do_update_news(env);
         }
 
         if (CommandLine::get_instance()->a_regenerate_installed_cache.specified() ||
@@ -500,7 +495,7 @@ main(int argc, char *argv[])
             if (! CommandLine::get_instance()->empty())
                 throw args::DoHelp("regenerate cache actions takes no parameters");
 
-            return do_regenerate_cache(CommandLine::get_instance()->a_regenerate_installed_cache.specified());
+            return do_regenerate_cache(env, CommandLine::get_instance()->a_regenerate_installed_cache.specified());
         }
 
         throw InternalError(__PRETTY_FUNCTION__, "no action?");

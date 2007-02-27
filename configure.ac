@@ -547,76 +547,6 @@ AC_SUBST(DYNAMIC_LD_LIBS)
 
 dnl }}}
 
-dnl {{{ gtk support
-AC_MSG_CHECKING([whether to build the gtk+ client])
-AC_ARG_ENABLE([gtk],
-   AS_HELP_STRING([--enable-gtk], [Enable gtk+ client (default: disable) (UNUSABLE)]),
-   enable_gtk=$enableval,
-   enable_gtk=no)
-AC_MSG_RESULT($enable_gtk)
-
-if test "x$enable_gtk" = "xyes"; then
-	AC_CHECK_FUNCS([posix_openpt], [], [AC_MSG_ERROR([I need posix_openpt])])
-	GLIBMM_LIBDIR=`pkg-config --variable=libdir glibmm-2.4`
-	GMMPROC_DIR=$GLIBMM_LIBDIR/glibmm-2.4/proc
-	AC_SUBST(GMMPROC_DIR)
-	GMMPROC=$GMMPROC_DIR/gmmproc
-	AC_SUBST(GMMPROC)
-	PKG_CHECK_MODULES(GTKDEPS, [gtkmm-2.4 >= 2.6.0 glibmm-2.4 >= 2.6.0 pangomm-1.4 gdkmm-2.4 gthread-2.0 >= 2.6.0 vte >= 0.12.1],
-		[], [AC_MSG_ERROR([gtkmm-2.4 and vte-0.12.1 or later are required if --enable-gtk is used])])
-	AC_SUBST(GTKDEPS_CFLAGS)
-	AC_SUBST(GTKDEPS_LIBS)
-
-	# for vte
-	PKG_CHECK_MODULES(PYGTKDEPS, [pygtk-2.0 >= 2.6.0],
-		[], [AC_MSG_ERROR([pygtk-2.6 is required if --enable-gtk is used])])
-
-	AC_MSG_CHECKING([whether Gtk::TreeView::set_grid_lines is available])
-	old_CXXFLAGS=$CXXFLAGS
-	CXXFLAGS="$CXXFLAGS $GTKDEPS_CFLAGS"
-	AC_COMPILE_IFELSE([
-#include <gtkmm/treeview.h>
-int main(int, char *[])
-{
-	Gtk::TreeViewGridLines g;
-	g = Gtk::TREE_VIEW_GRID_LINES_VERTICAL;
-}
-],
-		[have_tree_view_grid_lines=yes],
-		[have_tree_view_grid_lines=no])
-	CXXFLAGS="$old_CXXFLAGS"
-	AC_MSG_RESULT([$have_tree_view_grid_lines])
-	if test "x$have_tree_view_grid_lines" = "xyes" ; then
-		AC_MSG_CHECKING([whether Gtk::TreeView::set_grid_lines works])
-		PKG_CHECK_MODULES(GTKTREEVIEWDEPS, [gtk+-2.0 >= 2.11],
-						  [have_tree_view_grid_lines=yes],
-						  [have_tree_view_grid_lines=no])
-		AC_MSG_RESULT([$have_tree_view_grid_lines])
-	fi
-	HAVE_TREE_VIEW_GRID_LINES=$have_tree_view_grid_lines
-	if test "x$have_tree_view_grid_lines" = "xyes" ; then
-		AC_DEFINE_UNQUOTED([HAVE_TREE_VIEW_GRID_LINES], 1, [Do we have Gtk::TreeView::set_grid_lines?])
-	fi
-	AC_SUBST([HAVE_TREE_VIEW_GRID_LINES])
-fi
-AM_CONDITIONAL([ENABLE_GTK], test "x$enable_gtk" = "xyes")
-
-enable_gtk_tests=monkey
-AC_MSG_CHECKING([whether to build tests for the gtk+ client])
-AC_ARG_ENABLE([gtktests],
-   AS_HELP_STRING([--enable-gtktests], [Enable tests for the gtk+ client (default: disable)]),
-   enable_gtk_tests=$enableval,
-   enable_gtk_tests=no)
-AC_MSG_RESULT($enable_gtk_tests)
-AM_CONDITIONAL([ENABLE_GTK_TESTS], test "x$enable_gtk_tests" = "xyes")
-if test "x$enable_gtk_tests" = "xyes"; then
-	PKG_CHECK_MODULES(GTKTESTDEPS, [atkmm-1.6 >= 2.6.0 gtkmm-2.4 >= 2.10.0],
-		[], [AC_MSG_ERROR([atkmm-2.6 or later and gtkmm-2.10 or later is required if --enable-gtk-tests is used])])
-	AC_SUBST(GTKTESTDEPS_CFLAGS)
-	AC_SUBST(GTKTESTDEPS_LIBS)
-fi
-dnl }}}
-
 dnl {{{ ruby interface
 AC_ARG_VAR(RUBY,path to ruby interpreter)
 AC_MSG_CHECKING([whether to build the ruby interface])
@@ -716,13 +646,10 @@ fi
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="adjutrix contrarius gtkpaludis inquisitio paludis qualudis"
+ALL_CLIENTS="adjutrix contrarius inquisitio paludis qualudis"
 DEFAULT_CLIENTS="adjutrix paludis"
 if test x"$ENABLE_QA" = "xyes" ; then
 	DEFAULT_CLIENTS="$DEFAULT_CLIENTS qualudis"
-fi
-if test "x$enable_gtk" = "xyes"; then
-	DEFAULT_CLIENTS="$DEFAULT_CLIENTS gtkpaludis"
 fi
 AC_MSG_CHECKING([which clients to build...])
 AC_ARG_WITH([clients],
@@ -730,11 +657,9 @@ AC_ARG_WITH([clients],
 			  Build the specified repositories:
 			  default         Equivalent to adjutrix,paludis
 			                  Also includes qualudis if --enable-qa
-			                  Also includes gtkpaludis if --enable-gtk
 
 			  adjutrix        A tool for tree querying
 			  contrarius      The cross toolchain creator
-			  gtkpaludis      The Gtk+ client (UNUSABLE)
 			  inquisitio      A search client
 			  paludis         The Paludis console client
 			  qualudis        The QA console client],
@@ -871,7 +796,7 @@ AC_OUTPUT(
 	paludis/dep_list/Makefile
 	paludis/digests/Makefile
 	paludis/environments/Makefile
-	paludis/environments/default/Makefile
+	paludis/environments/paludis/Makefile
 	paludis/environments/no_config/Makefile
 	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
@@ -903,11 +828,6 @@ AC_OUTPUT(
 	src/clients/contrarius/Makefile
 	src/clients/inquisitio/Makefile
 	src/clients/paludis/Makefile
-	src/clients/gtkpaludis/Makefile
-	src/clients/gtkpaludis/cellrendererbutton/Makefile
-	src/clients/gtkpaludis/vtemm/Makefile
-	src/clients/gtkpaludis/vtemm/converts/Makefile
-	src/clients/gtkpaludis/vtemm/defs/Makefile
 	src/clients/qualudis/Makefile
 	src/clients/adjutrix/Makefile
 	test/Makefile

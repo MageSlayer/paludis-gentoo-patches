@@ -17,8 +17,6 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/environments/default/default_environment.hh>
-#include <paludis/environments/default/default_config.hh>
 #include <paludis/util/log.hh>
 #include <paludis/query.hh>
 #include <string>
@@ -42,7 +40,9 @@ namespace
 
 #include <src/clients/contrarius/contrarius_stage_options-sr.cc>
 
-ContrariusStageOptions::ContrariusStageOptions(const HostTupleName & _target,
+ContrariusStageOptions::ContrariusStageOptions(
+        std::tr1::shared_ptr<Environment> env,
+        const HostTupleName & _target,
         const std::string & binutils_name,
         const std::string & binutils_version,
         const std::string & gcc_name,
@@ -51,6 +51,7 @@ ContrariusStageOptions::ContrariusStageOptions(const HostTupleName & _target,
         const std::string & headers_version,
         const std::string & libc_name,
         const std::string & libc_version) :
+    environment(env),
     target(_target),
     binutils(::make_spec(target, binutils_name, "binutils", binutils_version)),
     gcc(::make_spec(target, gcc_name, "gcc", gcc_version)),
@@ -64,16 +65,16 @@ BinutilsStage::build(const StageOptions &) const
 {
     Context context("When building BinutilsStage:");
 
-    DefaultConfig::get_instance()->clear_forced_use_config();
+    _options.environment->clear_forced_use();
 
-    return 0 == do_install(_options.binutils);
+    return 0 == do_install(_options.environment, _options.binutils);
 }
 
 bool
 BinutilsStage::is_rebuild() const
 {
-    return (! DefaultEnvironment::get_instance()->package_database()->query(
-                query::Matches(*_options.binutils) & query::InstalledAtRoot(DefaultEnvironment::get_instance()->root()),
+    return (! _options.environment->package_database()->query(
+                query::Matches(*_options.binutils) & query::InstalledAtRoot(_options.environment->root()),
                 qo_whatever)->empty());
 }
 
@@ -82,20 +83,20 @@ KernelHeadersStage::build(const StageOptions &) const
 {
     Context context("When building KernelHeadersStage:");
 
-    DefaultConfig::get_instance()->clear_forced_use_config();
+    _options.environment->clear_forced_use();
 
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
+    _options.environment->force_use(
             _options.headers, UseFlagName("crosscompile_opts_headers-only"),
-            use_disabled));
+            use_disabled);
 
-    return 0 == do_install(_options.headers);
+    return 0 == do_install(_options.environment, _options.headers);
 }
 
 bool
 KernelHeadersStage::is_rebuild() const
 {
-    return (! DefaultEnvironment::get_instance()->package_database()->query(
-                query::Matches(*_options.headers) & query::InstalledAtRoot(DefaultEnvironment::get_instance()->root()),
+    return (! _options.environment->package_database()->query(
+                query::Matches(*_options.headers) & query::InstalledAtRoot(_options.environment->root()),
                 qo_whatever)->empty());
 }
 
@@ -104,35 +105,26 @@ MinimalStage::build(const StageOptions &) const
 {
     Context context("When executing MinimalStage:");
 
-    DefaultConfig::get_instance()->clear_forced_use_config();
+    _options.environment->clear_forced_use();
 
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("boundschecking"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("fortran"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("gtk"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("gcj"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("mudflap"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("objc"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("objc-gc"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("nocxx"), use_enabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("crosscompile_opts_bootstrap"), use_enabled));
+    _options.environment->force_use(_options.gcc, UseFlagName("boundschecking"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("fortran"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("gtk"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("gcj"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("mudflap"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("objc"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("objc-gc"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("nocxx"), use_enabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("crosscompile_opts_bootstrap"), use_enabled);
 
-    return 0 == do_install(_options.gcc);
+    return 0 == do_install(_options.environment, _options.gcc);
 }
 
 bool
 MinimalStage::is_rebuild() const
 {
-   return (! DefaultEnvironment::get_instance()->package_database()->query(
-               query::Matches(*_options.gcc) & query::InstalledAtRoot(DefaultEnvironment::get_instance()->root()),
+   return (! _options.environment->package_database()->query(
+               query::Matches(*_options.gcc) & query::InstalledAtRoot(_options.environment->root()),
                qo_whatever)->empty());
 }
 
@@ -141,23 +133,23 @@ LibCStage::build(const StageOptions &) const
 {
     Context context("When building LibCStage:");
 
-    DefaultConfig::get_instance()->clear_forced_use_config();
+    _options.environment->clear_forced_use();
 
-    return 0 == do_install(_options.libc);
+    return 0 == do_install(_options.environment, _options.libc);
 }
 
 bool
 LibCStage::is_rebuild() const
 {
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
-            DefaultEnvironment::get_instance()->package_database()->query(
-                query::Matches(*_options.libc) & query::InstalledAtRoot(DefaultEnvironment::get_instance()->root()),
+            _options.environment->package_database()->query(
+                query::Matches(*_options.libc) & query::InstalledAtRoot(_options.environment->root()),
                 qo_whatever));
 
     if (c->empty())
         return false;
 
-    return (! DefaultEnvironment::get_instance()->query_use(UseFlagName("crosscompile_opts_headers-only"), &(*c->last())));
+    return (! _options.environment->query_use(UseFlagName("crosscompile_opts_headers-only"), &(*c->last())));
 }
 
 int
@@ -165,33 +157,28 @@ FullStage::build(const StageOptions &) const
 {
     Context context("When building FullStage:");
 
-    DefaultConfig::get_instance()->clear_forced_use_config();
+    _options.environment->clear_forced_use();
 
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("boundschecking"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("gtk"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("gcj"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("mudflap"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("objc"), use_disabled));
-    DefaultConfig::get_instance()->add_forced_use_config(UseConfigEntry(
-            _options.gcc, UseFlagName("objc-gc"), use_disabled));
+    _options.environment->force_use(_options.gcc, UseFlagName("boundschecking"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("gtk"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("gcj"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("mudflap"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("objc"), use_disabled);
+    _options.environment->force_use(_options.gcc, UseFlagName("objc-gc"), use_disabled);
 
-    return 0 == do_install(_options.gcc);
+    return 0 == do_install(_options.environment, _options.gcc);
 }
 
 bool
 FullStage::is_rebuild() const
 {
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> c(
-            DefaultEnvironment::get_instance()->package_database()->query(
-                query::Matches(*_options.gcc) & query::InstalledAtRoot(DefaultEnvironment::get_instance()->root()), qo_whatever));
+            _options.environment->package_database()->query(
+                query::Matches(*_options.gcc) & query::InstalledAtRoot(_options.environment->root()), qo_whatever));
 
     if (c->empty())
         return false;
 
-    return (! DefaultEnvironment::get_instance()->query_use(UseFlagName("nocxx"), &(*c->last())));
+    return (! _options.environment->query_use(UseFlagName("nocxx"), &(*c->last())));
 }
+

@@ -40,6 +40,9 @@ namespace paludis
      */
     class PALUDIS_VISIBLE TestEnvironment : public Environment
     {
+        private:
+            std::string _paludis_command;
+
         public:
             /**
              * Constructor.
@@ -47,6 +50,11 @@ namespace paludis
             TestEnvironment();
 
             virtual bool query_use(const UseFlagName &, const PackageDatabaseEntry *) const;
+
+            virtual void force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,
+                    const UseFlagState) PALUDIS_ATTRIBUTE((noreturn));
+
+            virtual void clear_forced_use();
 
             virtual bool accept_keyword(const KeywordName &, const PackageDatabaseEntry * const,
                     const bool) const;
@@ -69,7 +77,12 @@ namespace paludis
 
             virtual std::string paludis_command() const
             {
-                return "false";
+                return _paludis_command;
+            }
+
+            virtual void set_paludis_command(const std::string & c)
+            {
+                _paludis_command = c;
             }
 
             virtual int perform_hook(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result))

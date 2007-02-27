@@ -34,7 +34,7 @@
 #include <paludis/util/fd_output_stream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/environments/default/default_environment.hh>
+#include <paludis/environment.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/query.hh>
 
@@ -54,9 +54,8 @@ namespace
         public ConsoleInstallTask
     {
         public:
-            OurInstallTask(const DepListOptions & options) :
-                ConsoleInstallTask(DefaultEnvironment::get_instance(), options,
-                        DefaultEnvironment::get_instance()->default_destinations())
+            OurInstallTask(std::tr1::shared_ptr<Environment> env, const DepListOptions & options) :
+                ConsoleInstallTask(env.get(), options, env->default_destinations())
             {
             }
 
@@ -97,7 +96,7 @@ namespace
             }
     };
 
-    void show_resume_command(const InstallTask & task)
+    void show_resume_command(std::tr1::shared_ptr<Environment> env, const InstallTask & task)
     {
         if (CommandLine::get_instance()->a_fetch.specified() ||
                 CommandLine::get_instance()->a_pretend.specified())
@@ -105,7 +104,7 @@ namespace
 
         if (task.current_dep_list_entry() != task.dep_list().end())
         {
-            std::string resume_command = DefaultEnvironment::get_instance()->paludis_command() + " "
+            std::string resume_command = env->paludis_command() + " "
                 "--dl-installed-deps-pre discard "
                 "--dl-installed-deps-runtime discard "
                 "--dl-installed-deps-post discard "
@@ -142,15 +141,18 @@ namespace
         private:
             static const InstallTask * _task;
 
+            static std::tr1::shared_ptr<Environment> _env;
+
             static void _signal_handler(int sig) PALUDIS_ATTRIBUTE((noreturn));
 
             sig_t _old;
 
         public:
-            InstallKilledCatcher(const InstallTask & task) :
+            InstallKilledCatcher(std::tr1::shared_ptr<Environment> env, const InstallTask & task) :
                 _old(signal(SIGINT, &InstallKilledCatcher::_signal_handler))
             {
                 _task = &task;
+                _env = env;
             }
 
             ~InstallKilledCatcher()
@@ -161,26 +163,47 @@ namespace
     };
 
     const InstallTask * InstallKilledCatcher::_task(0);
+    std::tr1::shared_ptr<Environment> InstallKilledCatcher::_env;
 
     void
     InstallKilledCatcher::_signal_handler(int sig)
     {
-        cout << endl;
-        cerr << "Caught signal " << sig << endl;
-        cerr << "Waiting for children..." << endl;
-        while (-1 != wait(0))
-            ;
-        cerr << endl;
-        if (_task)
-            show_resume_command(*_task);
-        cerr << endl;
-        cerr << "Exiting with failure" << endl;
-        exit(EXIT_FAILURE);
+        // ignore further signals to avoid a race if
+        // a sigal arrives while this handler hasn't finished
+        signal(sig, SIG_IGN);
+
+        static bool recursing(false);
+
+        if (recursing)
+        {
+            cout << endl;
+            cerr << "Caught signal " << sig << " inside signal" << endl;
+            cerr << "NOT waiting for children any more..." << endl;
+            cerr << endl;
+            cerr << "Exiting with failure" << endl;
+            exit(EXIT_FAILURE);
+        }
+        else
+        {
+            recursing = true;
+
+            cout << endl;
+            cerr << "Caught signal " << sig << endl;
+            cerr << "Waiting for children..." << endl;
+            while (-1 != wait(0))
+                ;
+            cerr << endl;
+            if (_task)
+                show_resume_command(_env, *_task);
+            cerr << endl;
+            cerr << "Exiting with failure" << endl;
+            exit(EXIT_FAILURE);
+        }
     }
 }
 
 int
-do_install(std::tr1::shared_ptr<const PackageDepSpec> spec)
+do_install(std::tr1::shared_ptr<Environment> env, std::tr1::shared_ptr<const PackageDepSpec> spec)
 {
     int return_code(0);
 
@@ -199,7 +222,7 @@ do_install(std::tr1::shared_ptr<const PackageDepSpec> spec)
     options.reinstall = dl_reinstall_never;
     options.target_type = dl_target_set;
 
-    OurInstallTask task(options);
+    OurInstallTask task(env, options);
     task.set_fetch_only(CommandLine::get_instance()->a_fetch.specified());
     task.set_pretend(CommandLine::get_instance()->a_pretend.specified());
 
@@ -271,7 +294,7 @@ do_install(std::tr1::shared_ptr<const PackageDepSpec> spec)
         try
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
-                    DefaultEnvironment::get_instance()->package_database()->query(
+                    env->package_database()->query(
                         query::Matches(PackageDepSpec(e.query())) & query::RepositoryHasUninstallableInterface(),
                         qo_order_by_version));
 
@@ -294,7 +317,7 @@ do_install(std::tr1::shared_ptr<const PackageDepSpec> spec)
                     cerr << "    * " << colour(cl_package_name, *pp) << ": Masked by ";
 
                     bool need_comma(false);
-                    MaskReasons m(DefaultEnvironment::get_instance()->mask_reasons(*pp));
+                    MaskReasons m(env->mask_reasons(*pp));
                     for (unsigned mm = 0 ; mm < m.size() ; ++mm)
                         if (m[mm])
                         {
@@ -304,7 +327,7 @@ do_install(std::tr1::shared_ptr<const PackageDepSpec> spec)
 
                             if (mr_eapi == mm)
                             {
-                                std::string eapi_str(DefaultEnvironment::get_instance()->
+                                std::string eapi_str(env->
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                             pp->name, pp->version)->eapi);
@@ -313,7 +336,7 @@ do_install(std::tr1::shared_ptr<const PackageDepSpec> spec)
                             }
                             else if (mr_license == mm)
                             {
-                                std::tr1::shared_ptr<const VersionMetadata> meta(DefaultEnvironment::get_instance()->
+                                std::tr1::shared_ptr<const VersionMetadata> meta(env->
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                                 pp->name, pp->version));
@@ -322,13 +345,13 @@ do_install(std::tr1::shared_ptr<const PackageDepSpec> spec)
                                 {
                                     cerr << " ";
 
-                                    LicenceDisplayer ld(cerr, DefaultEnvironment::get_instance(), &*pp);
+                                    LicenceDisplayer ld(cerr, env.get(), &*pp);
                                     meta->license_interface->license()->accept(&ld);
                                 }
                             }
                             else if (mr_keyword == mm)
                             {
-                                std::tr1::shared_ptr<const VersionMetadata> meta(DefaultEnvironment::get_instance()->
+                                std::tr1::shared_ptr<const VersionMetadata> meta(env->
                                         package_database()->fetch_repository(
                                             pp->repository)->version_metadata(
                                             pp->name, pp->version));

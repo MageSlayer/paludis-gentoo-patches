@@ -8,7 +8,8 @@ DEFS= \
 	-DLIBDIR=\"$(libdir)\"
 
 libpaludistestenvironment_la_SOURCES = \
-	test_environment.cc test_environment.hh
+	test_environment.cc test_environment.hh \
+	registration.cc
 
 libpaludistestenvironment_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 

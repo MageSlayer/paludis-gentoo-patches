@@ -110,7 +110,7 @@ module Paludis
         end
 
         def env
-            DefaultEnvironment.instance
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
         end
 
         def dl

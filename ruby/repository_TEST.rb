@@ -85,8 +85,12 @@ module Paludis
             db.fetch_repository "testrepo"
         end
 
+        def env
+            @env or @env = EnvironmentMaker.instance.make_from_spec("")
+        end
+
         def db
-            DefaultEnvironment.instance.package_database
+            env.package_database
         end
 
         def no_config_testrepo

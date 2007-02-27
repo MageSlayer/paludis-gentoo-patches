@@ -37,7 +37,7 @@ module Paludis
     class TestCase_Match < Test::Unit::TestCase
 
         def test_match
-            env = DefaultEnvironment.instance
+            env = EnvironmentMaker.instance.make_from_spec("")
             spec_good = PackageDepSpec.new('>=foo/bar-1')
             spec_bad = PackageDepSpec.new('>=foo/bar-2')
             pde = PackageDatabaseEntry.new('foo/bar','1','test')
@@ -48,7 +48,7 @@ module Paludis
         end
 
         def test_type_errors
-            env = DefaultEnvironment.instance
+            env = EnvironmentMaker.instance.make_from_spec("")
             spec = PackageDepSpec.new('>=foo/bar-1')
             pde = PackageDatabaseEntry.new('foo/bar','1','test')
 
