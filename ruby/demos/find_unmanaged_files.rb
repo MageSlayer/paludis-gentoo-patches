@@ -33,9 +33,9 @@ opts = GetoptLong.new(
     [ '--help',          '-h',  GetoptLong::NO_ARGUMENT ],
     [ '--version',       '-V',  GetoptLong::NO_ARGUMENT ],
     [ '--log-level',            GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--config-suffix', '-c',  GetoptLong::REQUIRED_ARGUMENT ])
+    [ '--environment',   '-E',  GetoptLong::REQUIRED_ARGUMENT ])
 
-config_suffix = ""
+env_spec = ""
 opts.each do | opt, arg |
     case opt
     when '--help'
@@ -46,7 +46,7 @@ opts.each do | opt, arg |
         puts "  --version               Display program version"
         puts
         puts "  --log-level level       Set log level (debug, qa, warning, silent)"
-        puts "  --config-suffix suffix  Set configuration suffix)"
+        puts "  --environment env       Environment specification (class:suffix, both parts optional)"
         exit 0
 
     when '--version'
@@ -68,8 +68,8 @@ opts.each do | opt, arg |
             exit 1
         end
 
-    when '--config-suffix'
-        config_suffix = arg
+    when '--environment'
+        env_spec = arg
 
     end
 end
@@ -92,7 +92,7 @@ end
 in_fs = []
 Find.find(*files) {|file| in_fs << file}
 
-env = Paludis::EnvironmentMaker.instance.make_from_spec config_suffix
+env = Paludis::EnvironmentMaker.instance.make_from_spec env_spec
 db = env.package_database
 
 db.repositories do |repo|

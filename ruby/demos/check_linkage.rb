@@ -11,10 +11,10 @@ opts = GetoptLong.new(
     [ '--help',          '-h',  GetoptLong::NO_ARGUMENT ],
     [ '--version',       '-V',  GetoptLong::NO_ARGUMENT ],
     [ '--log-level',            GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--config-suffix', '-c',  GetoptLong::REQUIRED_ARGUMENT ],
+    [ '--environment',   '-E',  GetoptLong::REQUIRED_ARGUMENT ],
     [ '--pretend',       '-p',  GetoptLong::NO_ARGUMENT ] )
 
-config_suffix = ""
+env_spec = ""
 override_directory = []
 pretend = false
 opts.each do | opt, arg |
@@ -29,7 +29,7 @@ opts.each do | opt, arg |
         puts "  --pretend               Stop before reinstalling"
         puts
         puts "  --log-level level       Set log level (debug, qa, warning, silent)"
-        puts "  --config-suffix suffix  Set configuration suffix"
+        puts "  --environment env       Environment specification (class:suffix, both parts optional)"
         exit 0
 
     when '--version'
@@ -51,8 +51,8 @@ opts.each do | opt, arg |
             exit 1
         end
 
-    when '--config-suffix'
-        config_suffix = arg
+    when '--environment'
+        env_spec = arg
 
     when '--directory'
         override_directory << arg
@@ -101,7 +101,7 @@ def check_file file
     end
 end
 
-env = Paludis::EnvironmentMaker.instance.make_from_spec config_suffix
+env = Paludis::EnvironmentMaker.instance.make_from_spec env_spec
 
 status "Checking linkage for package-manager installed files"
 

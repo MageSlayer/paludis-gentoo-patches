@@ -11,9 +11,9 @@ opts = GetoptLong.new(
     [ '--help',          '-h',  GetoptLong::NO_ARGUMENT ],
     [ '--version',       '-V',  GetoptLong::NO_ARGUMENT ],
     [ '--log-level',            GetoptLong::REQUIRED_ARGUMENT ],
-    [ '--config-suffix', '-c',  GetoptLong::REQUIRED_ARGUMENT ])
+    [ '--environment',   '-E',  GetoptLong::REQUIRED_ARGUMENT ])
 
-config_suffix = ""
+env_spec = ""
 opts.each do | opt, arg |
     case opt
     when '--help'
@@ -24,7 +24,7 @@ opts.each do | opt, arg |
         puts "  --version               Display program version"
         puts
         puts "  --log-level level       Set log level (debug, qa, warning, silent)"
-        puts "  --config-suffix suffix  Set configuration suffix)"
+        puts "  --environment env       Environment specification (class:suffix, both parts optional)"
         exit 0
 
     when '--version'
@@ -46,14 +46,13 @@ opts.each do | opt, arg |
             exit 1
         end
 
-    when '--config-suffix'
-        config_suffix = arg
+    when '--environment'
+        env_spec = arg
 
     end
 end
 
-Paludis::DefaultConfig::config_suffix = config_suffix
-env = Paludis::DefaultEnvironment.instance
+env = Paludis::EnvironmentMaker.instance.make_from_spec env_spec
 
 # build up a list of all src_uri things that're used by installed packages
 parts = Hash.new
