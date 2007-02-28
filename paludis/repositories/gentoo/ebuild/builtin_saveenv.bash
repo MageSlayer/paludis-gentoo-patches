@@ -29,6 +29,7 @@ builtin_saveenv()
         -e '/^\(declare -[rx]\+ \)\?SHELLOPTS/d' \
         -e '/^\(declare -[rx]\+ \)\?EBUILD_KILL_PID/d' \
         -e 's:^declare -rx:declare -x:' \
+        -e 's:^declare -x :export :' \
         > ${PALUDIS_LOADSAVEENV_DIR}/loadsaveenv
 }
 

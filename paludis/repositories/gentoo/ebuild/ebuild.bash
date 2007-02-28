@@ -189,7 +189,10 @@ ebuild_scrub_environment()
         export -p >>"${1}"
     ) || return $?
 
-    sed -i -e 's:^declare -rx:declare -x:' "${filters[@]}" "${1}"
+    sed -i \
+        -e 's:^declare -rx:declare -x:' \
+        -e 's:^declare -x :export :' \
+        "${filters[@]}" "${1}"
 }
 
 ebuild_load_environment()
