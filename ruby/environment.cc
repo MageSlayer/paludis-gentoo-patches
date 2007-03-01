@@ -18,6 +18,7 @@
  */
 
 #include <paludis_ruby.hh>
+#include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/environments/environment_maker.hh>
 #include <ruby.h>
@@ -30,6 +31,7 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_environment;
+    static VALUE c_paludis_environment;
     static VALUE c_no_config_environment;
     static VALUE c_environment_maker;
 
@@ -263,6 +265,67 @@ namespace
 
     }
 
+    PaludisEnvironment *
+    value_to_paludis_environment(VALUE v)
+    {
+        if (rb_obj_is_kind_of(v, c_paludis_environment))
+        {
+            return static_cast<PaludisEnvironment *>(value_to_environment_data(v)->env_ptr);
+        }
+        else
+        {
+            rb_raise(rb_eTypeError, "Can't convert %s into PaludisEnvironment", rb_obj_classname(v));
+        }
+    }
+
+    VALUE
+    paludis_environment_init(int, VALUE*, VALUE self)
+    {
+        return self;
+    }
+
+    /*
+     * call-seq:
+     *     PaludisEnvironment.new -> PaludisEnvironment
+     *     PaludisEnvironment.new(config_suffix) -> PaludisEnvironment
+     *
+     * Create a new PaludisEnvironment, with the specified config suffix if any, otherwise the empty suffix.
+     */
+    VALUE
+    paludis_environment_new(int argc, VALUE* argv, VALUE self)
+    {
+        try
+        {
+            std::string config_suffix;
+            if (1 == argc)
+                config_suffix = StringValuePtr(argv[0]);
+            else if (0 != argc)
+                rb_raise(rb_eArgError, "PaludisEnvironment.new expects one or zero arguments, but got %d", argc);
+
+            PaludisEnvironment * e(new PaludisEnvironment(config_suffix));
+            EnvironmentData * ptr(new EnvironmentData(e, e));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<EnvironmentData>::free, ptr));
+            rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     config_dir -> String
+     *
+     * Configuration directory used by this PaludisEnvironment.
+     */
+    VALUE
+    paludis_environment_config_dir(VALUE self)
+    {
+        return rb_str_new2(value_to_paludis_environment(self)->config_dir().c_str());
+    }
+
     VALUE
     no_config_environment_init(int, VALUE*, VALUE self)
     {
@@ -389,6 +452,16 @@ namespace
         rb_define_method(c_environment, "package_set", RUBY_FUNC_CAST(&environment_package_set), 1);
         rb_define_method(c_environment, "root", RUBY_FUNC_CAST(&environment_root), 0);
         rb_define_method(c_environment, "default_destinations", RUBY_FUNC_CAST(&environment_default_destinations), 0);
+
+        /*
+         * Document-class: Paludis::PaludisEnvironment
+         *
+         * An Environment that corresponds to the normal operating evironment.
+         */
+        c_paludis_environment = rb_define_class_under(paludis_module(), "PaludisEnvironment", c_environment);
+        rb_define_singleton_method(c_paludis_environment, "new", RUBY_FUNC_CAST(&paludis_environment_new), -1);
+        rb_define_method(c_paludis_environment, "initialize", RUBY_FUNC_CAST(&paludis_environment_init), -1);
+        rb_define_method(c_paludis_environment, "config_dir", RUBY_FUNC_CAST(&paludis_environment_config_dir), 0);
 
         /*
          * Document-class: Paludis::NoConfigEnvironment

@@ -838,3 +838,9 @@ PaludisEnvironment::clear_forced_use()
     _imp->forced_use.clear();
 }
 
+std::string
+PaludisEnvironment::config_dir() const
+{
+    return _imp->config->config_dir();
+}
+

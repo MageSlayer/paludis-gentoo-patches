@@ -95,6 +95,11 @@ namespace paludis
                     const UseFlagState);
 
             virtual void clear_forced_use();
+
+            /**
+             * The config directory.
+             */
+            std::string config_dir() const;
     };
 }
 #endif
