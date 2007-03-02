@@ -72,13 +72,16 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
         std::string keys;
         if (Log::get_instance()->log_level() <= ll_debug)
         {
-            for (AssociativeCollection<std::string, std::string>::Iterator
-                    i(r->keys->begin()), i_end(r->keys->end()) ; i != i_end ; ++i)
-            {
-                if (! keys.empty())
-                    keys.append(", ");
-                keys.append("'" + i->first + "'='" + i->second + "'");
-            }
+            if (r->keys)
+                for (AssociativeCollection<std::string, std::string>::Iterator
+                        i(r->keys->begin()), i_end(r->keys->end()) ; i != i_end ; ++i)
+                {
+                    if (! keys.empty())
+                        keys.append(", ");
+                    keys.append("'" + i->first + "'='" + i->second + "'");
+                }
+            else
+                keys = "empty";
 
             Log::get_instance()->message(ll_debug, lc_context,
                     "Creating repository with format='" + r->format + "', importance='"
