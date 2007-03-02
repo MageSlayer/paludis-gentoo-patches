@@ -148,7 +148,7 @@ ebuild_scrub_environment()
         -e '/^\(EU\|PP\|U\)ID=/d'
         -e '/^BASH_\(ARGC\|ARGV\|LINENO\|SOURCE\|VERSINFO\)=/d'
         -e '/^\(FUNCNAME\|GROUPS\|SHELLOPTS\)=/d'
-        -e '/^\(declare -x \)\?SANDBOX_ACTIVE=/d'
+        -e '/^\(declare -x \|export \)\?SANDBOX_ACTIVE=/d'
     )
 
     sed -i "${filters[@]}" "${1}"
