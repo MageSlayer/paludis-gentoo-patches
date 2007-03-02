@@ -300,6 +300,18 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     /* repositories */
     {
+        /* add virtuals repositories */
+
+        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
+                new AssociativeCollection<std::string, std::string>::Concrete);
+        iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
+        _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1, iv_keys));
+
+        _imp->repos.push_back(RepositoryConfigEntry("virtuals", -2,
+                    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
+
+        /* add normal repositories */
+
         if ((local_config_dir / "repository_defaults.conf").exists())
         {
             KeyValueConfigFile defaults_file(local_config_dir / "repository_defaults.conf");
@@ -369,18 +381,6 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
         if (_imp->repos.empty())
             throw PaludisConfigError("No repositories specified");
-
-        /* add virtuals repositories */
-
-        std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
-                new AssociativeCollection<std::string, std::string>::Concrete);
-        iv_keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
-        _imp->repos.push_back(RepositoryConfigEntry("installed_virtuals", -1, iv_keys));
-
-        _imp->repos.push_back(RepositoryConfigEntry("virtuals", -2,
-                    std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
-
-        _imp->repos.sort();
     }
 
     /* keywords */
