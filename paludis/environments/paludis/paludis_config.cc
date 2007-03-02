@@ -351,13 +351,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
             if (! k.get("master_repository").empty())
             {
-                Log::get_instance()->message(ll_debug, lc_context, "Delaying '" + *repo_file +
+                Log::get_instance()->message(ll_debug, lc_context, "Delaying '" + stringify(*repo_file) +
                         "' because it uses master_repository");
                 later_keys.push_back(keys);
             }
             else
             {
-                Log::get_instance()->message(ll_debug, lc_context, "Not delaying '" + *repo_file + "'")
+                Log::get_instance()->message(ll_debug, lc_context, "Not delaying '" + stringify(*repo_file) + "'")
                 _imp->repos.push_back(RepositoryConfigEntry(format, importance, keys));
             }
         }
