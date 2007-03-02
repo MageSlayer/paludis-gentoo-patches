@@ -350,9 +350,16 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             keys->insert("root", root_prefix.empty() ? "/" : root_prefix);
 
             if (! k.get("master_repository").empty())
+            {
+                Log::get_instance()->message(ll_debug, lc_context, "Delaying '" + *repo_file +
+                        "' because it uses master_repository");
                 later_keys.push_back(keys);
+            }
             else
+            {
+                Log::get_instance()->message(ll_debug, lc_context, "Not delaying '" + *repo_file + "'")
                 _imp->repos.push_back(RepositoryConfigEntry(format, importance, keys));
+            }
         }
 
         for (std::list<std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > >::const_iterator
