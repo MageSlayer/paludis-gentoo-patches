@@ -357,7 +357,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             }
             else
             {
-                Log::get_instance()->message(ll_debug, lc_context, "Not delaying '" + stringify(*repo_file) + "'")
+                Log::get_instance()->message(ll_debug, lc_context, "Not delaying '" + stringify(*repo_file) + "'");
                 _imp->repos.push_back(RepositoryConfigEntry(format, importance, keys));
             }
         }
