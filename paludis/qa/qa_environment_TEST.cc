@@ -45,7 +45,7 @@ namespace test_cases
                             CreateMetadataCheck::identifier()))())(EbuildCheckData(
                         QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"), &env)));
             {
-                TestMessageSuffix suffix("r1=" + join(r1.begin(), r1.end(), "; "), false);
+                TestMessageSuffix l_suffix("r1=" + join(r1.begin(), r1.end(), "; "), false);
                 TEST_CHECK(r1.empty());
             }
 
@@ -53,7 +53,7 @@ namespace test_cases
                             CreateMetadataCheck::identifier()))())(EbuildCheckData(
                         QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"), &env)));
             {
-                TestMessageSuffix suffix("r2=" + join(r2.begin(), r2.end(), "; "), false);
+                TestMessageSuffix l_suffix("r2=" + join(r2.begin(), r2.end(), "; "), false);
                 TEST_CHECK(! r2.empty());
             }
         }

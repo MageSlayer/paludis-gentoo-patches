@@ -18,13 +18,14 @@ $1_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	libpaludisqa.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
+	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
-	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(DYNAMIC_LD_LIBS) \
 	$(PCREPLUSPLUS_LIBS) \
 	$(LIBXML2DEPS_LIBS)
-$1_TEST_CXXFLAGS = -I$(top_srcdir)
+$1_TEST_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
 define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', headerlist `$1.hh')')dnl
@@ -66,6 +67,7 @@ if ! MONOLITHIC
 libpaludisqa_la_LIBADD = \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
+	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
