@@ -126,8 +126,8 @@ else
 libpaludisgentoorepository_la_LIBADD = \
 	$(top_builddir)/paludis/merger/libpaludismerger.la \
 	$(top_builddir)/paludis/digests/libpaludisdigests.la \
-	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/libpaludis.la \
+	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(DYNAMIC_LD_LIBS)
 
 endif
