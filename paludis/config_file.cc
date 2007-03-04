@@ -272,13 +272,9 @@ std::string
 KeyValueConfigFile::Defaults::get(const std::string & k) const
 {
     if (_imp->kv)
-    {
-        Log::get_instance()->message(ll_debug, lc_context, "KV defaults get '" + k + "' using kv");
         return _imp->kv->get(k);
-    }
     else if (_imp->a)
     {
-        Log::get_instance()->message(ll_debug, lc_context, "KV defaults get '" + k + "' using a");
         AssociativeCollection<std::string, std::string>::Iterator x(_imp->a->find(k));
         if (x == _imp->a->end())
             return "";
@@ -286,15 +282,9 @@ KeyValueConfigFile::Defaults::get(const std::string & k) const
             return x->second;
     }
     else if (_imp->f)
-    {
-        Log::get_instance()->message(ll_debug, lc_context, "KV defaults get '" + k + "' using f");
         return (_imp->f)(k, "");
-    }
     else
-    {
-        Log::get_instance()->message(ll_debug, lc_context, "KV defaults get '" + k + "' using default empty value");
         return "";
-    }
 }
 
 namespace
@@ -586,7 +576,6 @@ KeyValueConfigFile::KeyValueConfigFile(const Source & s, const Defaults & d) :
 
             std::string value(grab_value(c, c_end, *this, s.filename()));
 
-            Log::get_instance()->message(ll_debug, lc_context, "keys '" + key + "' is now '" + value + "'");
             _imp->keys.erase(key);
             _imp->keys.insert(std::make_pair(key, value));
         }
@@ -614,14 +603,8 @@ KeyValueConfigFile::get(const std::string & s) const
 {
     std::map<std::string, std::string>::const_iterator i(_imp->keys.find(s));
     if (_imp->keys.end() == i)
-    {
-        Log::get_instance()->message(ll_debug, lc_context, "KV get '" + s + "' not found in keys");
         return _imp->defaults.get(s);
-    }
     else
-    {
-        Log::get_instance()->message(ll_debug, lc_context, "KV get '" + s + "' found in keys: '" + i->second + "'");
         return i->second;
-    }
 }
 
