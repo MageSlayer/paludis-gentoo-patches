@@ -36,55 +36,6 @@ using namespace paludis;
  * \ingroup grpconfigfile
  */
 
-namespace
-{
-    /**
-     * A ConfigFile descendent for use in tests.
-     *
-     */
-    class TestFile : protected ConfigFile
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            TestFile(std::istream * const stream) :
-                ConfigFile(stream)
-            {
-                need_lines();
-            }
-
-            /**
-             * Constructor.
-             */
-            TestFile(const std::string & filename) :
-                ConfigFile(filename)
-            {
-                need_lines();
-            }
-
-            /**
-             * Constructor.
-             */
-            TestFile(const FSEntry & filename) :
-                ConfigFile(filename)
-            {
-                need_lines();
-            }
-
-            /**
-             * Our lines.
-             */
-            mutable std::vector<std::string> lines;
-
-        protected:
-            void accept_line(const std::string & s) const
-            {
-                lines.push_back(s);
-            }
-    };
-}
-
 namespace test_cases
 {
     /**
@@ -108,12 +59,14 @@ namespace test_cases
             s << "#" << std::endl;
             s << "  #  \t  " << std::endl;
             s << "four  four" << std::endl;
-            TestFile f(&s);
-            TEST_CHECK_EQUAL(f.lines.size(), 4);
-            TEST_CHECK_EQUAL(f.lines.at(0), "one");
-            TEST_CHECK_EQUAL(f.lines.at(1), "two");
-            TEST_CHECK_EQUAL(f.lines.at(2), "three");
-            TEST_CHECK_EQUAL(f.lines.at(3), "four  four");
+            LineConfigFile f(s);
+            TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 4);
+            std::vector<std::string> lines;
+            std::copy(f.begin(), f.end(), std::back_inserter(lines));
+            TEST_CHECK_EQUAL(lines.at(0), "one");
+            TEST_CHECK_EQUAL(lines.at(1), "two");
+            TEST_CHECK_EQUAL(lines.at(2), "three");
+            TEST_CHECK_EQUAL(lines.at(3), "four  four");
         }
     } test_config_file;
 
@@ -129,21 +82,21 @@ namespace test_cases
         {
             FSEntry ff("config_file_TEST_dir/config_file");
             TEST_CHECK(ff.is_regular_file());
-            TestFile f(ff);
-            TEST_CHECK_EQUAL(f.lines.size(), 1);
-            TEST_CHECK_EQUAL(f.lines.at(0), "I am a fish.");
+            LineConfigFile f(ff);
+            TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 1);
+            TEST_CHECK_EQUAL(*f.begin(), "I am a fish.");
 
             FSEntry ff2("config_file_TEST_dir/not_a_config_file");
             TEST_CHECK(! ff2.exists());
-            TestFile * f2(0);
-            TEST_CHECK_THROWS(f2 = new TestFile(ff2), ConfigFileError);
+            LineConfigFile * f2(0);
+            TEST_CHECK_THROWS(f2 = new LineConfigFile(ff2), ConfigFileError);
 
             if (0 != geteuid())
             {
                 FSEntry ff3("config_file_TEST_dir/unreadable_file");
                 TEST_CHECK(ff3.is_regular_file());
-                TestFile * f3(0);
-                TEST_CHECK_THROWS(f3 = new TestFile(ff3), ConfigFileError);
+                LineConfigFile * f3(0);
+                TEST_CHECK_THROWS(f3 = new LineConfigFile(ff3), ConfigFileError);
             }
         }
     } test_config_file_open_file;
@@ -169,7 +122,7 @@ namespace test_cases
             s << "#" << std::endl;
             s << "  #  \t  " << std::endl;
             s << "four  four" << std::endl;
-            LineConfigFile ff(&s);
+            LineConfigFile ff(s);
             std::vector<std::string> f(ff.begin(), ff.end());
 
             TEST_CHECK_EQUAL(f.size(), 4);
@@ -193,15 +146,15 @@ namespace test_cases
             std::stringstream s;
             s << "one=first" << std::endl;
             s << "two = second" << std::endl;
-            s << "three" << std::endl;
+            s << "three=" << std::endl;
             s << "four = \"fourth\" " << std::endl;
             s << "five = ''" << std::endl;
-            KeyValueConfigFile ff(&s);
+            KeyValueConfigFile ff(s);
 
             TEST_CHECK_EQUAL(ff.get("one"), "first");
             TEST_CHECK_EQUAL(ff.get("two"), "second");
             TEST_CHECK_EQUAL(ff.get("three"), "");
-            TEST_CHECK_EQUAL(ff.get("four"), "fourth");
+            TEST_CHECK_EQUAL(ff.get("four"), "fourth ");
             TEST_CHECK_EQUAL(ff.get("five"), "");
             TEST_CHECK_EQUAL(ff.get("six"), "");
         }
@@ -221,9 +174,9 @@ namespace test_cases
             s << "one='first" << std::endl;
             s << " first " << std::endl;
             s << "first'" << std::endl;
-            KeyValueConfigFile ff(&s);
+            KeyValueConfigFile ff(s);
 
-            TEST_CHECK_EQUAL(ff.get("one"), "first first first");
+            TEST_CHECK_EQUAL(ff.get("one"), "first\n first \nfirst");
         }
     } test_key_value_config_file_continuations;
 
@@ -241,7 +194,7 @@ namespace test_cases
             s << "x=foo" << std::endl;
             s << "y = \"${x}\\\\${y}\\$${z}\"" << std::endl;
             s << "z = $x$y$z" << std::endl;
-            KeyValueConfigFile ff(&s);
+            KeyValueConfigFile ff(s);
 
             TEST_CHECK_EQUAL(ff.get("x"), "foo");
             TEST_CHECK_EQUAL(ff.get("y"), "foo\\$");
@@ -260,7 +213,7 @@ namespace test_cases
             t << "f = " << std::endl;
             t << "g = foo \\" << std::endl;
             t << "    bar" << std::endl;
-            KeyValueConfigFile fg(&t, t_defs);
+            KeyValueConfigFile fg(t, KeyValueConfigFile::Defaults(t_defs));
 
             TEST_CHECK_EQUAL(fg.get("a"), "foo");
             TEST_CHECK_EQUAL(fg.get("b"), "foo");
@@ -268,7 +221,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(fg.get("d"), "bar");
             TEST_CHECK_EQUAL(fg.get("e"), "baz");
             TEST_CHECK_EQUAL(fg.get("f"), "");
-            TEST_CHECK_EQUAL(fg.get("g"), "foo bar");
+            TEST_CHECK_EQUAL(fg.get("g"), "foo     bar");
         }
     } test_key_value_config_file_vars;
 
@@ -284,39 +237,39 @@ namespace test_cases
         {
             std::stringstream s1;
             s1 << "x='" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s1), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s1), ConfigurationError);
 
             std::stringstream s2;
             s2 << "x='moo\"" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s2), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s2), ConfigurationError);
 
             std::stringstream s3;
             s3 << "x=${foo" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s3), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s3), ConfigurationError);
 
             std::stringstream s4;
             s4 << "x=$~" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s4), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s4), ConfigurationError);
 
             std::stringstream s5;
             s5 << "x=abc\\" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s5), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s5), ConfigurationError);
 
             std::stringstream s6;
             s6 << "x=$" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s6), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s6), ConfigurationError);
 
             std::stringstream s7;
             s7 << "x=blah \\" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s7), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s7), ConfigurationError);
 
             std::stringstream s8;
             s8 << "x=blah \\" << std::endl << "# foo" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s8), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s8), ConfigurationError);
 
             std::stringstream s9;
             s9 << "x='blah" << std::endl << "blah" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(&s9), ConfigurationError);
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s9), ConfigurationError);
         }
     } test_key_value_config_file_errors;
 }

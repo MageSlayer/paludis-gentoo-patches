@@ -339,7 +339,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             Context local_context("When reading repository file '" + stringify(*repo_file) + "':");
 
-            KeyValueConfigFile k(*repo_file, conf_vars);
+            KeyValueConfigFile k(*repo_file, KeyValueConfigFile::Defaults(conf_vars));
 
             std::string format(k.get("format"));
             if (format.empty())

@@ -295,7 +295,7 @@ ebuild_main()
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Running ebuild phases $@..."
-    elif [[ ${1} != variable ]] ; then
+    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] ; then
         ebuild_section "Running ebuild phase $@..."
     fi
 
@@ -356,7 +356,7 @@ ebuild_main()
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Completed ebuild phases $@"
-    elif [[ ${1} != variable ]] ; then
+    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] ; then
         ebuild_section "Completed ebuild phase $@"
     fi
 }

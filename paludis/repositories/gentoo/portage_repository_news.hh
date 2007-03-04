@@ -66,12 +66,8 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NewsFile :
-        protected ConfigFile,
         private PrivateImplementationPattern<NewsFile>
     {
-        protected:
-            void accept_line(const std::string &) const;
-
         public:
             ///\name Basic operations
             ///\{

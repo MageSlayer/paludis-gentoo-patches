@@ -39,165 +39,141 @@
 
 using namespace paludis;
 
-ConfigFileError::ConfigFileError(const std::string & our_message) throw () :
-    ConfigurationError("Config file error: " + our_message)
+ConfigFileError::ConfigFileError(const std::string & f, const std::string & m) throw () :
+    ConfigurationError("Configuration file error: " + (f.empty() ? m : f + ": " + m))
 {
 }
 
-ConfigFile::ConfigFile(std::istream * const stream) :
-    _stream(stream),
-    _has_lines(false),
-    _destroy_stream(false)
+ConfigFileError::ConfigFileError(const std::string & m) throw () :
+    ConfigurationError("Configuration file error: " + m)
 {
 }
 
-ConfigFile::ConfigFile(const std::string & our_filename) try :
-    _stream(_make_stream(our_filename)),
-    _has_lines(false),
-    _filename(our_filename),
-    _destroy_stream(true)
+ConfigFile::ConfigFile(const Source &)
 {
-}
-catch (...)
-{
-    _destroy_stream = false;
-    throw;
-}
-
-ConfigFile::ConfigFile(const FSEntry & our_filename) try :
-    _stream(_make_stream(stringify(our_filename))),
-    _has_lines(false),
-    _filename(stringify(our_filename)),
-    _destroy_stream(true)
-{
-}
-catch (...)
-{
-    _destroy_stream = false;
-    throw;
 }
 
 ConfigFile::~ConfigFile()
 {
-    if (_stream && _destroy_stream)
-        delete _stream;
-}
-
-std::istream *
-ConfigFile::_make_stream(const std::string & filename)
-{
-    Context context("When creating the filestream for a ConfigFile from file '" + filename + "':");
-
-    std::ifstream * result(new std::ifstream(filename.c_str()));
-    if (! *result)
-    {
-        delete result;
-        throw ConfigFileError("Could not open '" + filename + "'");
-    }
-
-    return result;
-}
-
-void
-ConfigFile::need_lines() const
-{
-    if (_has_lines)
-        return;
-
-    std::string line, accum;
-    unsigned line_number(0);
-    while (std::getline(*_stream, line))
-    {
-        Context c("When handling line " + stringify(++line_number) +
-                (_filename.empty() ? std::string(":") : " in file '" + _filename + "':"));
-        normalise_line(line);
-
-        if (line.empty() || skip_line(line))
-        {
-            if (!accum.empty())
-                throw ConfigFileError("Line-continuation followed by a blank line or comment is invalid.");
-
-            continue;
-        }
-        if ('\\' == line.at(line.length() - 1))
-        {
-            line.erase(line.length() - 1);
-            accum += line;
-            continue;
-        }
-
-        accept_line(accum + line);
-        accum.clear();
-    }
-    if (! _stream->eof())
-        throw ConfigFileError("Error reading from file");
-    if (! accum.empty())
-        throw ConfigFileError("Line-continuation needs a continuation.");
-
-    _has_lines = true;
-    done_reading_lines();
-}
-
-void
-ConfigFile::done_reading_lines() const
-{
-}
-
-void
-ConfigFile::normalise_line(std::string & s) const
-{
-    s = strip_leading(strip_trailing(s, " \t\n"), " \t\n");
-}
-
-bool
-ConfigFile::skip_line(const std::string & s) const
-{
-    return (s.empty() || '#' == s.at(0));
 }
 
 namespace paludis
 {
-    /**
-     * Implementation data for LineConfigFile.
-     *
-     * \ingroup grplineconfigfile
-     */
     template<>
-    struct Implementation<LineConfigFile>
+    struct Implementation<ConfigFile::Source>
     {
-        mutable std::list<std::string> lines;
+        std::tr1::shared_ptr<std::istream> stream_to_delete;
+        std::istream & stream;
+        std::string filename;
+
+        Implementation(std::istream & s) :
+            stream(s)
+        {
+        }
+
+        Implementation(const FSEntry & f) :
+            stream_to_delete(new std::ifstream(stringify(f).c_str())),
+            stream(*stream_to_delete),
+            filename(stringify(f))
+        {
+        }
+
+        Implementation(const std::string & s) :
+            stream_to_delete(new std::ifstream(s.c_str())),
+            stream(*stream_to_delete),
+            filename(s)
+        {
+        }
+
+        Implementation(std::tr1::shared_ptr<std::istream> s, std::istream & t, const std::string & f) :
+            stream_to_delete(s),
+            stream(t),
+            filename(f)
+        {
+        }
     };
 }
 
-LineConfigFile::LineConfigFile(std::istream * const s) :
+ConfigFile::Source::Source(const FSEntry & f) :
+    PrivateImplementationPattern<ConfigFile::Source>(new Implementation<ConfigFile::Source>(f))
+{
+}
+
+ConfigFile::Source::Source(const std::string & s) :
+    PrivateImplementationPattern<ConfigFile::Source>(new Implementation<ConfigFile::Source>(s))
+{
+}
+
+ConfigFile::Source::Source(std::istream & s) :
+    PrivateImplementationPattern<ConfigFile::Source>(new Implementation<ConfigFile::Source>(s))
+{
+}
+
+ConfigFile::Source::Source(const Source & s) :
+    PrivateImplementationPattern<ConfigFile::Source>(new Implementation<ConfigFile::Source>(
+                s._imp->stream_to_delete, s._imp->stream, s._imp->filename))
+{
+}
+
+const ConfigFile::Source &
+ConfigFile::Source::operator= (const Source & s)
+{
+    if (&s != this)
+        _imp.reset(new Implementation<ConfigFile::Source>(s._imp->stream_to_delete, s._imp->stream, s._imp->filename));
+    return *this;
+}
+
+ConfigFile::Source::~Source()
+{
+}
+
+std::istream &
+ConfigFile::Source::stream() const
+{
+    return _imp->stream;
+}
+
+std::string
+ConfigFile::Source::filename() const
+{
+    return _imp->filename;
+}
+
+namespace paludis
+{
+    template<>
+    struct Implementation<LineConfigFile>
+    {
+        std::list<std::string> lines;
+    };
+}
+
+LineConfigFile::LineConfigFile(const Source & s) :
     ConfigFile(s),
     PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>)
 {
-    need_lines();
-}
+    Context context("When parsing line configuration file" + (s.filename().empty() ? ":" :
+                "'" + s.filename() + "':"));
 
-LineConfigFile::LineConfigFile(const std::string & our_filename) :
-    ConfigFile(our_filename),
-    PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>)
-{
-    need_lines();
-}
+    if (! s.stream())
+        throw ConfigFileError(s.filename(), "Cannot read input");
 
-LineConfigFile::LineConfigFile(const FSEntry & our_filename) :
-    ConfigFile(our_filename),
-    PrivateImplementationPattern<LineConfigFile>(new Implementation<LineConfigFile>)
-{
-    need_lines();
+    std::string line;
+    while (std::getline(s.stream(), line))
+    {
+        line = strip_leading(strip_trailing(line, " \t\r\n"), " \t\r\n");
+        if (line.empty())
+            continue;
+
+        if ('#' == line.at(0))
+            continue;
+
+        _imp->lines.push_back(line);
+    }
 }
 
 LineConfigFile::~LineConfigFile()
 {
-}
-
-void
-LineConfigFile::accept_line(const std::string & s) const
-{
-    _imp->lines.push_back(s);
 }
 
 LineConfigFile::Iterator
@@ -212,240 +188,440 @@ LineConfigFile::end() const
     return Iterator(_imp->lines.end());
 }
 
-KeyValueConfigFileError::KeyValueConfigFileError(const std::string & msg,
-        const std::string & filename) throw () :
-    ConfigurationError("Key/Value config file error" +
-            (filename.empty() ? ": " : " in file '" + filename + "': ") + msg)
+namespace paludis
 {
+    template<>
+    struct Implementation<KeyValueConfigFile::Defaults>
+    {
+        std::tr1::shared_ptr<const KeyValueConfigFile> kv;
+        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > a;
+        std::string (* f)(const std::string &, const std::string &);
+
+        Implementation(std::tr1::shared_ptr<const KeyValueConfigFile> kvv,
+                std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > av,
+                std::string (* fv)(const std::string &, const std::string &)) :
+            kv(kvv),
+            a(av),
+            f(fv)
+        {
+        }
+    };
+}
+
+template<>
+KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const KeyValueConfigFile> v) :
+    PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(v,
+                std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >(), 0))
+{
+}
+
+template<>
+KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > a) :
+    PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
+                std::tr1::shared_ptr<const KeyValueConfigFile>(), a, 0))
+{
+}
+
+template<>
+KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<KeyValueConfigFile> v) :
+    PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(v,
+                std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >(), 0))
+{
+}
+
+template<>
+KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > a) :
+    PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
+                std::tr1::shared_ptr<const KeyValueConfigFile>(), a, 0))
+{
+}
+
+KeyValueConfigFile::Defaults::Defaults(std::string (* f) (const std::string &, const std::string &)) :
+    PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
+                std::tr1::shared_ptr<const KeyValueConfigFile>(),
+                std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >(), f))
+{
+}
+
+KeyValueConfigFile::Defaults::Defaults() :
+    PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
+                std::tr1::shared_ptr<const KeyValueConfigFile>(),
+                std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >(), 0))
+{
+}
+
+KeyValueConfigFile::Defaults::Defaults(const Defaults & v) :
+    PrivateImplementationPattern<KeyValueConfigFile::Defaults>(new Implementation<KeyValueConfigFile::Defaults>(
+                v._imp->kv, v._imp->a, v._imp->f))
+{
+}
+
+const KeyValueConfigFile::Defaults &
+KeyValueConfigFile::Defaults::operator= (const Defaults & v)
+{
+    if (this != &v)
+        _imp.reset(new Implementation<KeyValueConfigFile::Defaults>(v._imp->kv, v._imp->a, v._imp->f));
+    return *this;
+}
+
+KeyValueConfigFile::Defaults::~Defaults()
+{
+}
+
+std::string
+KeyValueConfigFile::Defaults::get(const std::string & k) const
+{
+    if (_imp->kv)
+    {
+        Log::get_instance()->message(ll_debug, lc_context, "KV defaults get '" + k + "' using kv");
+        return _imp->kv->get(k);
+    }
+    else if (_imp->a)
+    {
+        Log::get_instance()->message(ll_debug, lc_context, "KV defaults get '" + k + "' using a");
+        AssociativeCollection<std::string, std::string>::Iterator x(_imp->a->find(k));
+        if (x == _imp->a->end())
+            return "";
+        else
+            return x->second;
+    }
+    else if (_imp->f)
+    {
+        Log::get_instance()->message(ll_debug, lc_context, "KV defaults get '" + k + "' using f");
+        return (_imp->f)(k, "");
+    }
+    else
+    {
+        Log::get_instance()->message(ll_debug, lc_context, "KV defaults get '" + k + "' using default empty value");
+        return "";
+    }
+}
+
+namespace
+{
+    static std::map<std::string, std::string> empty_map;
+}
+
+KeyValueConfigFile::Defaults::Iterator
+KeyValueConfigFile::Defaults::begin() const
+{
+    if (_imp->kv)
+        return Iterator(_imp->kv->begin());
+    else if (_imp->a)
+        return Iterator(_imp->a->begin());
+    else
+        return Iterator(empty_map.begin());
+}
+
+KeyValueConfigFile::Defaults::Iterator
+KeyValueConfigFile::Defaults::end() const
+{
+    if (_imp->kv)
+        return Iterator(_imp->kv->end());
+    else if (_imp->a)
+        return Iterator(_imp->a->end());
+    else
+        return Iterator(empty_map.end());
 }
 
 namespace paludis
 {
-    /**
-     * Implementation data for KeyValueConfigFile.
-     *
-     * \ingroup grpkvconfigfile
-     */
-    template <>
+    template<>
     struct Implementation<KeyValueConfigFile>
     {
-        mutable std::map<std::string, std::string> entries;
-        mutable std::string accum;
-        mutable std::string accum_key;
+        KeyValueConfigFile::Defaults defaults;
+        std::map<std::string, std::string> keys;
+        std::string filename;
+
+        Implementation(const KeyValueConfigFile::Defaults & d) :
+            defaults(d)
+        {
+        }
     };
 }
 
-KeyValueConfigFile::KeyValueConfigFile(std::istream * const s) :
+namespace
+{
+    void next_line(std::istreambuf_iterator<char> & c, const std::istreambuf_iterator<char> & c_end)
+    {
+        for ( ; c != c_end ; ++c)
+            if (*c == '\n')
+                break;
+    }
+
+    std::string grab_key(std::istreambuf_iterator<char> & c, const std::istreambuf_iterator<char> & c_end)
+    {
+        std::string result;
+
+        while (c != c_end)
+        {
+            if (*c == '\n' || *c == '\r' || *c == ' ' || *c == '\t' || *c == '=' || *c == '$' || *c == '\\'
+                    || *c == '"' || *c == '\'')
+                break;
+            else
+                result.append(stringify(*c++));
+        }
+
+        return result;
+    }
+
+    std::string grab_dollar(std::istreambuf_iterator<char> & c, const std::istreambuf_iterator<char> & c_end,
+            const KeyValueConfigFile & d, const std::string & f)
+    {
+        std::string result;
+
+        if (*c == '{')
+        {
+            ++c;
+            while (c != c_end)
+            {
+                if (*c == '}')
+                {
+                    ++c;
+                    if (result.empty())
+                        throw ConfigFileError(f, "Bad empty variable name");
+                    return d.get(result);
+                }
+                else if (*c == '\\')
+                {
+                    ++c;
+                    if (c == c_end)
+                        break;
+                    if (*c == '\n')
+                        ++c;
+                    else
+                        throw ConfigFileError(f, "Bad \\escape inside ${variable}");
+                }
+                else
+                    result.append(stringify(*c++));
+            }
+
+            throw ConfigFileError(f, "Unterminated ${variable}");
+        }
+        else
+        {
+            while ((*c >= 'a' && *c <= 'z') || (*c >= 'A' && *c <= 'Z')
+                    || (*c >= '0' && *c <= '9') || (*c == '_'))
+            {
+                result.append(stringify(*c++));
+                if (c == c_end)
+                    break;
+            }
+
+            if (result.empty())
+                throw ConfigFileError(f, "Bad empty variable name");
+            return d.get(result);
+        }
+    }
+
+    std::string grab_squoted(std::istreambuf_iterator<char> & c, const std::istreambuf_iterator<char> & c_end,
+            const KeyValueConfigFile &, const std::string & f)
+    {
+        std::string result;
+
+        while (c != c_end)
+        {
+            if (*c == '\\')
+            {
+                if (++c == c_end)
+                    throw ConfigFileError(f, "Unterminated 'quoted string ending in a backslash");
+
+                if (*c == '\n')
+                {
+                    result.append("\\ ");
+                    c++;
+                }
+                else
+                    result.append("\\" + stringify(*c++));
+            }
+            else if (*c == '\'')
+            {
+                ++c;
+                return result;
+            }
+            else
+                result.append(stringify(*c++));
+        }
+
+        throw ConfigFileError(f, "Unterminated 'quoted string");
+    }
+
+    std::string grab_dquoted(std::istreambuf_iterator<char> & c, const std::istreambuf_iterator<char> & c_end,
+            const KeyValueConfigFile & d, const std::string & f)
+    {
+        std::string result;
+
+        while (c != c_end)
+        {
+            if (*c == '\\')
+            {
+                if (++c == c_end)
+                    throw ConfigFileError(f, "Unterminated \"quoted string ending in a backslash");
+
+                if (*c == '\n')
+                    ++c;
+                else if (*c == 't')
+                {
+                    result.append("\t");
+                    ++c;
+                }
+                else if (*c == 'n')
+                {
+                    result.append("\n");
+                    ++c;
+                }
+                else
+                    result.append(stringify(*c++));
+            }
+            else if (*c == '$')
+                result.append(grab_dollar(++c, c_end, d, f));
+            else if (*c == '"')
+            {
+                ++c;
+                return result;
+            }
+            else
+                result.append(stringify(*c++));
+        }
+
+        throw ConfigFileError(f, "Unterminated \"quoted string");
+    }
+
+    std::string grab_value(std::istreambuf_iterator<char> & c, const std::istreambuf_iterator<char> & c_end,
+            const KeyValueConfigFile & d, const std::string & f)
+    {
+        std::string result;
+
+        while (c != c_end)
+        {
+            if (*c == '"')
+                result.append(grab_dquoted(++c, c_end, d, f));
+            else if (*c == '\'')
+                result.append(grab_squoted(++c, c_end, d, f));
+            else if (*c == '\\')
+            {
+                if (++c == c_end)
+                    throw ConfigFileError(f, "Backslash at end of input");
+
+                if (*c == '\n')
+                {
+                    if (++c == c_end)
+                        throw ConfigFileError(f, "Backslash at end of input");
+                    else if (*c == '#')
+                        throw ConfigFileError(f, "Line continuation followed by comment");
+                }
+                else
+                    result.append(stringify(*c++));
+            }
+            else if (*c == '$')
+                result.append(grab_dollar(++c, c_end, d, f));
+            else if (*c == '\n')
+            {
+                ++c;
+                break;
+            }
+            else if (*c == '#')
+            {
+                ++c;
+                break;
+            }
+            else
+                result.append(stringify(*c++));
+        }
+
+        return result;
+    }
+}
+
+KeyValueConfigFile::KeyValueConfigFile(const Source & s, const Defaults & d) :
     ConfigFile(s),
-    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
+    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>(d))
 {
-    need_lines();
-}
+    Context context("When parsing key/value configuration file" + (s.filename().empty() ? ":" :
+                "'" + s.filename() + "':"));
 
-KeyValueConfigFile::KeyValueConfigFile(const std::string & our_filename) :
-    ConfigFile(our_filename),
-    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
-{
-    need_lines();
-}
+    std::copy(d.begin(), d.end(), std::inserter(_imp->keys, _imp->keys.begin()));
 
-KeyValueConfigFile::KeyValueConfigFile(const FSEntry & our_filename) :
-    ConfigFile(our_filename),
-    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
-{
-    need_lines();
-}
+    if (! s.stream())
+        throw ConfigFileError(s.filename(), "Cannot read input");
 
-KeyValueConfigFile::KeyValueConfigFile(std::istream * const s,
-        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m) :
-    ConfigFile(s),
-    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
-{
-    _imp->entries.insert(m->begin(), m->end());
-    need_lines();
-}
+    std::istreambuf_iterator<char> c(s.stream()), c_end;
 
-KeyValueConfigFile::KeyValueConfigFile(const std::string & our_filename,
-        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m) :
-    ConfigFile(our_filename),
-    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
-{
-    _imp->entries.insert(m->begin(), m->end());
-    need_lines();
-}
+    while (c != c_end)
+    {
+        if (*c == '#')
+            next_line(c, c_end);
+        else if (*c == '\t' || *c == '\n' || *c == '\r' || *c == ' ')
+            ++c;
+        else
+        {
+            std::string key(grab_key(c, c_end));
+            if (key.empty())
+                throw ConfigFileError(s.filename(), "Syntax error: invalid identifier");
 
-KeyValueConfigFile::KeyValueConfigFile(const FSEntry & our_filename,
-        std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> > m):
-    ConfigFile(our_filename),
-    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>)
-{
-    _imp->entries.insert(m->begin(), m->end());
-    need_lines();
+            if (c == c_end)
+                throw ConfigFileError(s.filename(), "Syntax error: trailing token '" + key + "' at end of input");
+
+            if (*c != '=')
+            {
+                while (*c == '\t' || *c == ' ')
+                    if (++c == c_end)
+                        throw ConfigFileError(s.filename(), "Unknown command or broken variable '" + key + "' at end of input");
+
+                if (*c != '=')
+                {
+                    if (key == "source")
+                        throw ConfigFileError(s.filename(), "'source' not yet supported");
+                    else
+                        throw ConfigFileError(s.filename(), "Unknown command or broken variable '" + key + "', trailing text '"
+                                + std::string(c, c_end) + "'");
+                }
+            }
+            if (++c == c_end)
+                throw ConfigFileError(s.filename(), "= at end of input");
+
+            while (*c == '\t' || *c == ' ')
+                if (++c == c_end)
+                    throw ConfigFileError(s.filename(), "= at end of input");
+
+            std::string value(grab_value(c, c_end, *this, s.filename()));
+
+            Log::get_instance()->message(ll_debug, lc_context, "keys '" + key + "' is now '" + value + "'");
+            _imp->keys.erase(key);
+            _imp->keys.insert(std::make_pair(key, value));
+        }
+    }
 }
 
 KeyValueConfigFile::~KeyValueConfigFile()
 {
 }
 
-void
-KeyValueConfigFile::accept_line(const std::string & line) const
-{
-    if (! _imp->accum.empty())
-    {
-        std::string value(line);
-        normalise_line(value);
-
-        if (value.empty())
-            return;
-
-        _imp->accum += " ";
-        _imp->accum += value;
-
-        if (value.at(value.length() - 1) == _imp->accum.at(0))
-        {
-            _imp->entries[_imp->accum_key] = replace_variables(strip_quotes(_imp->accum));
-            _imp->accum.clear();
-            _imp->accum_key.clear();
-        }
-    }
-    else
-    {
-        std::string::size_type p(line.find('='));
-        if (std::string::npos == p)
-            _imp->entries[line] = "";
-        else
-        {
-            std::string key(line.substr(0, p)), value(line.substr(p + 1));
-            normalise_line(key);
-            normalise_line(value);
-            if (quotes_are_balanced(value))
-                _imp->entries[key] = replace_variables(strip_quotes(value));
-            else
-            {
-                Log::get_instance()->message(ll_warning, lc_context, "Line continuations should "
-                        "be indicated with a backslash");
-                _imp->accum = value;
-                _imp->accum_key = key;
-            }
-        }
-    }
-}
-
-void
-KeyValueConfigFile::done_reading_lines() const
-{
-    if (! _imp->accum.empty())
-        throw KeyValueConfigFileError("Unterminated multiline quoted string");
-}
-
-std::string
-KeyValueConfigFile::replace_variables(const std::string & s) const
-{
-    std::string r;
-    std::string::size_type p(0), old_p(0);
-
-    while (p < s.length())
-    {
-        old_p = p;
-
-        if ('\\' == s[p])
-        {
-            if (++p >= s.length())
-                throw KeyValueConfigFileError("Backslash not followed by a character", filename());
-            r += s[p++];
-        }
-        else if ('$' != s[p])
-            r += s[p++];
-        else
-        {
-            std::string name;
-            if (++p >= s.length())
-                throw KeyValueConfigFileError("Dollar not followed by a character", filename());
-
-            if ('{' == s[p])
-            {
-                std::string::size_type q;
-                if (std::string::npos == ((q = s.find("}", p))))
-                    throw KeyValueConfigFileError("Closing } not found", filename());
-
-                name = s.substr(p + 1, q - p - 1);
-                p = q + 1;
-            }
-            else
-            {
-                std::string::size_type q;
-                if (std::string::npos == ((q = s.find_first_not_of(
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                    "abcdefghijklmnopqrstuvwxyz"
-                                    "_0123456789", p))))
-                    q = s.length();
-
-                name = s.substr(p, q - p);
-                p = q;
-            }
-
-            if (name.empty())
-                throw KeyValueConfigFileError("Empty variable name", filename());
-            r += get(name);
-        }
-
-        if (p <= old_p)
-            throw InternalError(PALUDIS_HERE, "Infinite loop");
-    }
-
-    return r;
-}
-
-std::string
-KeyValueConfigFile::strip_quotes(const std::string & s) const
-{
-    if (s.empty())
-        return s;
-    if (std::string::npos != std::string("'\"").find(s[0]))
-    {
-        if (s.length() < 2)
-            throw KeyValueConfigFileError("Unterminated quote", filename());
-        if (s[s.length() - 1] != s[0])
-            throw KeyValueConfigFileError("Mismatched quote", filename());
-        return s.substr(1, s.length() - 2);
-    }
-    else
-        return s;
-}
-
-bool
-KeyValueConfigFile::quotes_are_balanced(const std::string & s) const
-{
-    if (s.empty())
-        return true;
-
-    if (std::string::npos != std::string("'\"").find(s[0]))
-    {
-        if (s.length() < 2)
-            return false;
-        if (s[s.length() - 1] != s[0])
-            return false;
-        return true;
-    }
-    else
-        return true;
-}
-
 KeyValueConfigFile::Iterator
 KeyValueConfigFile::begin() const
 {
-    return Iterator(_imp->entries.begin());
+    return Iterator(_imp->keys.begin());
 }
 
 KeyValueConfigFile::Iterator
 KeyValueConfigFile::end() const
 {
-    return Iterator(_imp->entries.end());
+    return Iterator(_imp->keys.end());
 }
 
 std::string
-KeyValueConfigFile::get(const std::string & key) const
+KeyValueConfigFile::get(const std::string & s) const
 {
-    return _imp->entries[key];
+    std::map<std::string, std::string>::const_iterator i(_imp->keys.find(s));
+    if (_imp->keys.end() == i)
+    {
+        Log::get_instance()->message(ll_debug, lc_context, "KV get '" + s + "' not found in keys");
+        return _imp->defaults.get(s);
+    }
+    else
+    {
+        Log::get_instance()->message(ll_debug, lc_context, "KV get '" + s + "' found in keys: '" + i->second + "'");
+        return i->second;
+    }
 }
 

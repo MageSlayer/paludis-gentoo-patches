@@ -175,7 +175,7 @@ bool
 EbuildMetadataCommand::do_run_command(const Command & cmd)
 {
     PStream prog(cmd);
-    KeyValueConfigFile f(&prog);
+    KeyValueConfigFile f(prog);
     _metadata.reset(new EbuildVersionMetadata);
 
     bool ok(false);

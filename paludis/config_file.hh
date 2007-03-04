@@ -41,275 +41,107 @@ namespace paludis
 {
     class FSEntry;
 
-    /**
-     * Thrown if an error occurs when reading a ConfigFile.
-     *
-     * \ingroup grpexceptions
-     * \ingroup grpconfigfile
-     * \nosubgrouping
-     */
-    class ConfigFileError : public ConfigurationError
+    class ConfigFileError :
+        public ConfigurationError
     {
         public:
-            ///\name Basic operations
-            ///\{
-
+            ConfigFileError(const std::string & filename, const std::string & message) throw ();
             ConfigFileError(const std::string & message) throw ();
-
-            ///\}
     };
 
-    /**
-     * A ConfigFile is a file containing one entry per line, with lines
-     * starting with a # being ignored and leading and trailing whitespace
-     * being discarded.
-     *
-     * \ingroup grpconfigfile
-     * \nosubgrouping
-     */
     class ConfigFile :
-        paludis::InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>
+        private InstantiationPolicy<ConfigFile, instantiation_method::NonCopyableTag>
     {
-        private:
-            std::istream * const _stream;
-
-            mutable bool _has_lines;
-
-            std::string _filename;
-
-            bool _destroy_stream;
-
-            static std::istream * _make_stream(const std::string & filename);
-
-        protected:
-            /**
-             * In-place normalise a line. By default, trims leading and
-             * trailing whitespace. Child classes may override.
-             */
-            virtual void normalise_line(std::string &) const;
-
-            /**
-             * Return whether to skip a line. By default, skips on blank
-             * lines and lines starting with a #. Child classes may
-             * override. This is called on a normalised line, not a raw
-             * string.
-             */
-            virtual bool skip_line(const std::string &) const;
-
-            /**
-             * Accept a normalised line that is not to be skipped.
-             */
-            virtual void accept_line(const std::string &) const = 0;
-
-            /**
-             * Called when we've read in all our lines. By default, does
-             * nothing. Can be used for further validation.
-             */
-            virtual void done_reading_lines() const;
-
-            /**
-             * If we have not done so already, read in our lines.
-             */
-            void need_lines() const;
-
-            ///\name Basic operations
-            ///\{
-
-            /**
-             * Constructor.
-             */
-            ConfigFile(std::istream * const stream);
-
-            /**
-             * Constructor, from a file.
-             */
-            ConfigFile(const std::string & filename);
-
-            /**
-             * Constructor, from a file.
-             */
-            ConfigFile(const FSEntry & filename);
-
-            ///\}
-
-            /**
-             * Our filename, or blank if unknown.
-             */
-            std::string filename() const
-            {
-                return _filename;
-            }
-
         public:
-            ///\name Basic operations
-            ///\{
+            class Source :
+                private PrivateImplementationPattern<Source>
+            {
+                public:
+                    Source(const FSEntry &);
+                    Source(const std::string &);
+                    Source(std::istream &);
+
+                    Source(const Source &);
+                    const Source & operator= (const Source &);
+
+                    ~Source();
+
+                    std::istream & stream() const;
+                    std::string filename() const;
+            };
 
             virtual ~ConfigFile();
 
-            ///\}
+        protected:
+            ConfigFile(const Source &);
     };
 
-    /**
-     * A LineConfigFile is a ConfigFile that provides access to the
-     * normalised lines. Do not subclass.
-     *
-     * \ingroup grplineconfigfile
-     * \nosubgrouping
-     */
     class LineConfigFile :
-        protected ConfigFile,
+        public ConfigFile,
         private PrivateImplementationPattern<LineConfigFile>
     {
-        protected:
-            void accept_line(const std::string &) const;
-
         public:
-            ///\name Basic operations
-            ///\{
-
-            /**
-             * Constructor, from a stream.
-             */
-            LineConfigFile(std::istream * const);
-
-            /**
-             * Constructor, from a filename.
-             */
-            LineConfigFile(const std::string & filename);
-
-            /**
-             * Constructor, from a filename.
-             */
-            LineConfigFile(const FSEntry & filename);
-
+            LineConfigFile(const Source &);
             ~LineConfigFile();
-
-            ///\}
-
-            ///\name Iterate over our lines
-            ///\{
 
             typedef libwrapiter::ForwardIterator<LineConfigFile, const std::string> Iterator;
 
-            Iterator begin() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            Iterator end() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            ///\}
+            Iterator begin() const;
+            Iterator end() const;
     };
 
-    /**
-     * A KeyValueConfigFileError is thrown if bad data is encountered in
-     * a ConfigFile.
-     *
-     * \ingroup grpkvconfigfile
-     * \ingroup grpexceptions
-     * \nosubgrouping
-     */
-    class KeyValueConfigFileError : public ConfigurationError
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            KeyValueConfigFileError(const std::string & message,
-                    const std::string & filename = "") throw ();
-
-            ///\}
-    };
-
-    /**
-     * A KeyValueConfigFile is a ConfigFile that provides access to the
-     * normalised lines. Do not subclass.
-     *
-     * \ingroup grpkvconfigfile
-     * \nosubgrouping
-     */
     class KeyValueConfigFile :
-        protected ConfigFile,
+        public ConfigFile,
         private PrivateImplementationPattern<KeyValueConfigFile>
     {
-        private:
-            bool quotes_are_balanced(const std::string &) const;
-
-        protected:
-            void accept_line(const std::string &) const;
-
-            /**
-             * Handle variable replacement.
-             */
-            std::string replace_variables(const std::string &) const;
-
-            /**
-             * Handle quote removal.
-             */
-            std::string strip_quotes(const std::string &) const;
-
-            virtual void done_reading_lines() const;
-
         public:
-            ///\name Basic operations
-            ///\{
+            class Defaults :
+                private PrivateImplementationPattern<Defaults>
+            {
+                public:
+                    template <typename T_>
+                    Defaults(T_)
+                    {
+                        T_::WrongTypeForDefaults;
+                    }
 
-            /**
-             * Constructor, from a stream.
-             */
-            KeyValueConfigFile(std::istream * const);
+                    Defaults(std::string (*)(const std::string &, const std::string &));
 
-            /**
-             * Constructor, from a filename.
-             */
-            KeyValueConfigFile(const std::string & filename);
+                    Defaults();
 
-            /**
-             * Constructor, from a filename.
-             */
-            KeyValueConfigFile(const FSEntry & filename);
+                    Defaults(const Defaults &);
+                    const Defaults & operator= (const Defaults &);
 
-            /**
-             * Constructor, from a stream, with defaults.
-             */
-            KeyValueConfigFile(std::istream * const,
-                    std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
+                    ~Defaults();
 
-            /**
-             * Constructor, from a filename, with defaults.
-             */
-            KeyValueConfigFile(const std::string & filename,
-                    std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
+                    std::string get(const std::string &) const;
 
-            /**
-             * Constructor, from a filename, with defaults.
-             */
-            KeyValueConfigFile(const FSEntry & filename,
-                    std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
+                    typedef libwrapiter::ForwardIterator<Defaults, const std::pair<const std::string, std::string> > Iterator;
+                    Iterator begin() const;
+                    Iterator end() const;
+            };
 
+            KeyValueConfigFile(const Source &, const Defaults & = Defaults());
             ~KeyValueConfigFile();
 
-            ///\}
+            typedef libwrapiter::ForwardIterator<KeyValueConfigFile, const std::pair<const std::string, std::string> > Iterator;
+            Iterator begin() const;
+            Iterator end() const;
 
-            ///\name Iterate over our key/values
-            ///\{
-
-            typedef libwrapiter::ForwardIterator<KeyValueConfigFile,
-                    std::pair<const std::string, std::string> > Iterator;
-
-            Iterator begin() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            Iterator end() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            ///\}
-
-            /**
-             * Fetch the specified key, or a blank string.
-             */
-            std::string get(const std::string & key) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::string get(const std::string &) const;
     };
+
+    template<>
+    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const KeyValueConfigFile>);
+
+    template<>
+    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >);
+
+    template<>
+    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<KeyValueConfigFile>);
+
+    template<>
+    KeyValueConfigFile::Defaults::Defaults(std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >);
 }
 
 #endif

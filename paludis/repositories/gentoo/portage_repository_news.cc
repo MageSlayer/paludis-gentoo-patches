@@ -179,7 +179,7 @@ PortageRepositoryNews::update_news() const
                 }
             }
         }
-        catch (const ConfigFileError & e)
+        catch (const Exception & e)
         {
             Log::get_instance()->message(ll_warning, lc_no_context,
                     "Skipping news item '"
@@ -200,41 +200,28 @@ namespace paludis
     template<>
     struct Implementation<NewsFile>
     {
-        mutable bool in_header;
         mutable std::list<std::string> display_if_installed;
         mutable std::list<std::string> display_if_keyword;
         mutable std::list<std::string> display_if_profile;
-
-        Implementation() :
-            in_header(true)
-        {
-        }
     };
 }
 
 NewsFile::NewsFile(const FSEntry & our_filename) :
-    ConfigFile(our_filename),
     PrivateImplementationPattern<NewsFile>(new Implementation<NewsFile>)
 {
-    need_lines();
-}
+    Context context("When parsing GLEP 42 news file '" + stringify(our_filename) + "':");
 
-NewsFile::~NewsFile()
-{
-}
-
-void
-NewsFile::accept_line(const std::string & line) const
-{
-    if (_imp->in_header)
+    LineConfigFile line_file(our_filename);
+    for (LineConfigFile::Iterator line(line_file.begin()), line_end(line_file.end()) ;
+            line != line_end ; ++line)
     {
-        std::string::size_type p(line.find(':'));
+        std::string::size_type p(line->find(':'));
         if (std::string::npos == p)
-            _imp->in_header = false;
+            break;
         else
         {
-            std::string k(strip_leading(strip_trailing(line.substr(0, p), " \t\n"), " \t\n"));
-            std::string v(strip_leading(strip_trailing(line.substr(p + 1), " \t\n"), " \t\n"));
+            std::string k(strip_leading(strip_trailing(line->substr(0, p), " \t\n"), " \t\n"));
+            std::string v(strip_leading(strip_trailing(line->substr(p + 1), " \t\n"), " \t\n"));
             if (k == "Display-If-Installed")
                 _imp->display_if_installed.push_back(v);
             else if (k == "Display-If-Keyword")
@@ -243,6 +230,10 @@ NewsFile::accept_line(const std::string & line) const
                 _imp->display_if_profile.push_back(v);
         }
     }
+}
+
+NewsFile::~NewsFile()
+{
 }
 
 NewsFile::DisplayIfInstalledIterator
