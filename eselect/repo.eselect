@@ -23,16 +23,18 @@ cat_file() {
 		svn cat "${filename}"
 	elif [[ ${filename} != */* ]]; then
 		templateroot="$(get_var template_root)"
-		cat_file "${templateroot}/${filename}.templ"
+		templatesuffix="$(get_var template_suffix)"
+		cat_file "${templateroot}/${filename}.templ${template_suffix}"
 	else
 		die -q "Couldn't load ${filename}"
 	fi
 }
 
 get_var() {
-	default_template_root="http://svn.pioto.org/viewvc/paludis/repo-templates"
+	default_template_root="http://paludis.pioto.org/trac/browser/repo-templates"
 	default_repo_root="${ROOT}/var/paludis/repositories"
 	default_config_root="${ROOT}/etc/paludis"
+	default_template_suffix="?format=raw"
 	if [[ -L /etc/make.profile ]]; then
 		default_profiles="$(canonicalise /etc/make.profile)"
 	fi
@@ -56,8 +58,9 @@ describe_list() {
 
 do_list() {
 	templateroot=$(get_var template_root)
+	templatesuffix=$(get_var template_suffix)
 
-	local -a list=( $(cat_file ${templateroot}/list) )
+	local -a list=( $(cat_file ${templateroot}/list${templatesuffix}) )
 	write_list_start "Available repository templates: (* == installed)"
 	local count=0
 	for i in "${list[@]}"; do
@@ -198,7 +201,7 @@ do_show()
 	if [[ -n $1 ]]; then
 		vars=$1
 	else
-		vars=( template_root repo_root profiles distdir config_root )
+		vars=( template_root template_suffix repo_root profiles distdir config_root )
 		write_list_start "Current configuration variables:"
 		for i in ${vars[@]}; do
 			value=$(load_config ${REPO_CONFIG_FILE} $i)
