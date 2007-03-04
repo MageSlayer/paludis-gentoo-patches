@@ -121,7 +121,8 @@ namespace paludis
                     Iterator end() const;
             };
 
-            KeyValueConfigFile(const Source &, const Defaults & = Defaults());
+            KeyValueConfigFile(const Source &, const Defaults & = Defaults(),
+                    bool (* is_incremental) (const std::string &, const KeyValueConfigFile &) = 0);
             ~KeyValueConfigFile();
 
             typedef libwrapiter::ForwardIterator<KeyValueConfigFile, const std::pair<const std::string, std::string> > Iterator;

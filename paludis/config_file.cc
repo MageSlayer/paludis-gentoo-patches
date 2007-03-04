@@ -25,10 +25,12 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/join.hh>
 
 #include <fstream>
 #include <istream>
 #include <list>
+#include <set>
 #include <map>
 
 /** \file
@@ -322,9 +324,11 @@ namespace paludis
         KeyValueConfigFile::Defaults defaults;
         std::map<std::string, std::string> keys;
         std::string filename;
+        bool (* is_incremental) (const std::string &, const KeyValueConfigFile &);
 
-        Implementation(const KeyValueConfigFile::Defaults & d) :
-            defaults(d)
+        Implementation(const KeyValueConfigFile::Defaults & d, bool (* i) (const std::string &, const KeyValueConfigFile &)) :
+            defaults(d),
+            is_incremental(i)
         {
         }
     };
@@ -523,9 +527,10 @@ namespace
     }
 }
 
-KeyValueConfigFile::KeyValueConfigFile(const Source & s, const Defaults & d) :
+KeyValueConfigFile::KeyValueConfigFile(const Source & s, const Defaults & d,
+        bool (* i) (const std::string &, const KeyValueConfigFile &)) :
     ConfigFile(s),
-    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>(d))
+    PrivateImplementationPattern<KeyValueConfigFile>(new Implementation<KeyValueConfigFile>(d, i))
 {
     Context context("When parsing key/value configuration file" + (s.filename().empty() ? ":" :
                 "'" + s.filename() + "':"));
@@ -576,8 +581,31 @@ KeyValueConfigFile::KeyValueConfigFile(const Source & s, const Defaults & d) :
 
             std::string value(grab_value(c, c_end, *this, s.filename()));
 
-            _imp->keys.erase(key);
-            _imp->keys.insert(std::make_pair(key, value));
+            if (_imp->is_incremental && (*_imp->is_incremental)(key, *this))
+            {
+                std::list<std::string> values;
+                std::set<std::string> new_values;
+                WhitespaceTokeniser::get_instance()->tokenise(get(key), std::back_inserter(values));
+                WhitespaceTokeniser::get_instance()->tokenise(value, std::back_inserter(values));
+                for (std::list<std::string>::const_iterator v(values.begin()), v_end(values.end()) ;
+                        v != v_end ; ++v)
+                    if (v->empty())
+                        continue;
+                    else if ("-*" == *v)
+                        new_values.clear();
+                    else if ('-' == v->at(0))
+                        new_values.erase(v->substr(1));
+                    else
+                        new_values.insert(*v);
+
+                _imp->keys.erase(key);
+                _imp->keys.insert(std::make_pair(key, join(new_values.begin(), new_values.end(), " ")));
+            }
+            else
+            {
+                _imp->keys.erase(key);
+                _imp->keys.insert(std::make_pair(key, value));
+            }
         }
     }
 }

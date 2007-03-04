@@ -20,6 +20,7 @@
 #include <paludis/config_file.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/system.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <sstream>
 #include <test/test_framework.hh>
@@ -224,6 +225,28 @@ namespace test_cases
             TEST_CHECK_EQUAL(fg.get("g"), "foo     bar");
         }
     } test_key_value_config_file_vars;
+
+    struct KeyValueConfigFileDefaultsTest : TestCase
+    {
+        KeyValueConfigFileDefaultsTest() : TestCase("key value config file with defaults") { }
+
+        void run()
+        {
+            setenv("moo", "cow", 1);
+
+            std::stringstream d_s;
+            d_s << "foo=oink" << std::endl;
+            std::tr1::shared_ptr<KeyValueConfigFile> d_ff(new KeyValueConfigFile(d_s, &getenv_with_default));
+
+            std::stringstream s;
+            s << "x=${foo}" << std::endl;
+            s << "y=${moo}" << std::endl;
+            KeyValueConfigFile ff(s, d_ff);
+
+            TEST_CHECK_EQUAL(ff.get("x"), "oink");
+            TEST_CHECK_EQUAL(ff.get("y"), "cow");
+        }
+    } test_key_value_config_file_defaults;
 
     /**
      * \test Test KeyValueConfigFile errors.
