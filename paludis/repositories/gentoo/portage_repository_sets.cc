@@ -327,21 +327,22 @@ PortageRepositorySets::security_set(bool insecurity) const
                         bool ok(false);
                         SlotName wanted_slot(_imp->environment->package_database()->fetch_repository(
                                     c->repository)->version_metadata(c->name, c->version)->slot);
-
                         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> available(
                                 _imp->environment->package_database()->query(
-                                    query::Matches(PackageDepSpec(glsa_pkg->name())) & query::InstalledAtRoot(
-                                        _imp->environment->root()), qo_order_by_version));
+                                    query::Matches(PackageDepSpec(stringify(glsa_pkg->name()) + ":" + stringify(wanted_slot))) &
+                                    query::RepositoryHasInstallableInterface() &
+                                    query::NotMasked(),
+                                    qo_order_by_version));
+
                         for (PackageDatabaseEntryCollection::ReverseIterator r(available->rbegin()),
                                 r_end(available->rend()) ; r != r_end ; ++r)
                         {
-                            if (_imp->environment->mask_reasons(*r).any())
-                                continue;
-                            if (_imp->environment->package_database()->fetch_repository(r->repository)->version_metadata(
-                                        r->name, r->version)->slot != wanted_slot)
-                                continue;
                             if (is_vulnerable(*glsa_pkg, *r))
+                            {
+                                Log::get_instance()->message(ll_debug, lc_context, "Skipping '" + stringify(*r)
+                                        + "' due to is_vulnerable match");
                                 continue;
+                            }
 
                             std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                                         "=" + stringify(r->name) + "-" + stringify(r->version) +
