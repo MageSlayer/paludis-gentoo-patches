@@ -224,9 +224,9 @@ namespace test
                     "' but got '" + test_h.s_a + "'"); \
         } catch (const TestFailedException &) { \
             throw; \
-        } catch (const std::exception & e) { \
+        } catch (const std::exception & test_e) { \
             throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
-                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(e) + \
+                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(test_e) + \
                     " inside a TEST_CHECK_EQUAL block"); \
         } catch (...) { \
             throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
@@ -247,9 +247,9 @@ namespace test
                     "' but got '" + s_a + "'"); \
         } catch (const TestFailedException &) { \
             throw; \
-        } catch (const std::exception & e) { \
+        } catch (const std::exception & test_e) { \
             throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
-                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(e) + \
+                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(test_e) + \
                     " inside a TEST_CHECK_STRINGIFY_EQUAL block"); \
         } catch (...) { \
             throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
@@ -267,9 +267,9 @@ namespace test
                     "Check '" #a "' failed"); \
         } catch (const TestFailedException &) { \
             throw; \
-        } catch (const std::exception & e) { \
+        } catch (const std::exception & test_e) { \
             throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
-                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(e) + \
+                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(test_e) + \
                     " inside a TEST_CHECK block"); \
         } catch (...) { \
             throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
@@ -292,9 +292,9 @@ namespace test
             } \
         } catch (const TestFailedException &) { \
             throw; \
-        } catch (const std::exception & e) { \
+        } catch (const std::exception & test_e) { \
             throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
-                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(e) + \
+                    "Test threw unexpected exception " + test::get_exception_to_debug_string()(test_e) + \
                     " inside a TEST_CHECK_THROWS block"); \
         } catch (...) { \
             throw TestFailedException(__PRETTY_FUNCTION__, __FILE__, __LINE__, \
