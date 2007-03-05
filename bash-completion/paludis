@@ -12,7 +12,9 @@ _paludis_packagenames() {
         for d in * ; do
             [[ -d "${d}" ]] || continue
             pushd "${d}" 1>/dev/null
-            echo "${1}"*
+            for x in "${1}"* ; do
+                [[ -f "${x}" ]] && echo $x
+            done
             popd 1>/dev/null
         done
         popd 1>/dev/null
