@@ -32,7 +32,7 @@ _contrarius() {
         --verbose -v \
         --log-level -L \
         --no-colour -C \
-        --nocolor \
+        --no-color \
         --resume-command-template"
 
     case "${cur}" in
