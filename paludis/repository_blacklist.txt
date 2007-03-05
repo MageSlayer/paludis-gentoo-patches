@@ -1,2 +1,0 @@
-xeffects - Upstream hates Paludis and doesn't support us
-xeffects-experimental - Upstream hates Paludis and doesn't support us
