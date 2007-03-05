@@ -37,7 +37,8 @@ _qualudis() {
         --quiet -q \
         --log-level -L \
         --message-level -M \
-        --write-cache-dir"
+        --write-cache-dir \
+        --master-repository-dir"
 
     case "${cur}" in
         -*)

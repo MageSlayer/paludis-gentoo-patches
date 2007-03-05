@@ -41,6 +41,8 @@ _adjutrix() {
         --what-needs-keywording -w \
         --display-profiles-use -u \
         --display-default-system-resolution -S \
+        --build-downgrade-check-list \
+        --downgrade-check \
         --version -V \
         --help -h \
         --log-level \
@@ -66,12 +68,12 @@ _adjutrix() {
                     return 0
                     ;;
 
-                --category)
+                --category|-C)
                     [[ -z "${repodir}" ]] && return 0
                     COMPREPLY=($(compgen -W "$(< ${repodir}/profiles/categories)" -- "${cur}"))
                     return 0
                     ;;
-                --package)
+                --package|-P)
                     [[ -z "${repodir}" ]] && return 0
                     # borrowed from the gentoo bashcomp script
                     local p
@@ -100,7 +102,7 @@ _adjutrix() {
                     return 0
                     ;;
 
-                --profile|-p)
+                --profile)
                     COMPREPLY=($(compgen -W "$(sed -n 's,^[^#][^[:space:]]*[[:space:]]*\([^[:space:]]*\).*,\1,p' "${repodir}/profiles/profiles.desc")" -- "${cur}"))
                     return 0
                     ;;

@@ -9,7 +9,12 @@ _paludis_packagenames() {
     for names_cache in $(paludis --list-repositories --log-level silent |sed -n 's,^[[:space:]]*names_cache:[[:space:]]*\(.*\)$,\1,p')
     do
         pushd "${names_cache}" 1>/dev/null
-        echo *
+        for d in * ; do
+            [[ -d "${d}" ]] || continue
+            pushd "${d}" 1>/dev/null
+            echo "${1}"*
+            popd 1>/dev/null
+        done
         popd 1>/dev/null
     done
 }
@@ -60,7 +65,7 @@ _paludis() {
     general_opts="--log-level \
         --no-colour \
         --no-color \
-        --config-suffix -c \
+        --environment -E \
         --resume-command-template"
 
     deplist_opts="--dl-reinstall \
@@ -85,8 +90,9 @@ _paludis() {
     query_opts="--show-deps -D \
         --show-metadata -M"
     install_opts="--pretend -p \
+        --destinations -d \
         --preserve-world -1 \
-        --add-to-world-atom \
+        --add-to-world-spec \
         --no-config-protection \
         --debug-build \
         --fetch -f \
@@ -95,6 +101,7 @@ _paludis() {
         --show-use-descriptions \
         ${deplist_opts}"
     uninstall_opts="--pretend -p \
+        --destinations -d \
         --preserve-world -1 \
         --no-config-protection \
         --show-reasons \
@@ -272,7 +279,7 @@ _paludis() {
                     return 0
                     ;;
                 --package)
-                    COMPREPLY=($(compgen -W "$(_paludis_packagenames)" -- "${cur}"))
+                    COMPREPLY=($(compgen -W "$(_paludis_packagenames "${cur}")" -- "${cur}"))
                     return 0
                     ;;
                 --set)
@@ -330,7 +337,7 @@ _paludis() {
                                     COMPREPLY=(
                                     $(compgen -W "$(_paludis_dolist sets)" -- "${cur}")
                                     $(compgen -W "$(_paludis_dolist categories)" -- "${cur}")
-                                    $(compgen -W "$(_paludis_packagenames)" -- "${cur}")
+                                    $(compgen -W "$(_paludis_packagenames "${cur}")" -- "${cur}")
                                     )
                                     _filedir
                                     return 0
