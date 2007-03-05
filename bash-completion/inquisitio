@@ -1,0 +1,67 @@
+# Bash completion function for inquisitio
+# Written by Mike Kelly
+# vim: set et sw=4 sts=4 ts=4 ft=sh :
+
+# NOTE: This is still a work in progress, don't expect it to work well or
+# properly right now.
+
+_inquisitio() {
+    local cur prev opts
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+
+    opts="--search -s \
+        --version -V \
+        --help -h \
+        --log-level -L \
+        --no-colour -C \
+        --no-color \
+        --config-suffix -c \
+        --matcher -m \
+        --extractors -e \
+        --repository \
+        --repository-format \
+        --category \
+        --package"
+
+    case "${cur}" in
+        -*)
+            COMPREPLY=($(compgen -W "${opts}" -- "${cur}"))
+            return 0
+            ;;
+        *)
+            case "${prev}" in
+                ## Enum operators
+                --log-level|-L)
+                    COMPREPLY=($(compgen -W "debug qa warning silent" -- "${cur}"))
+                    return 0
+                    ;;
+
+                --matcher|-m)
+                    COMPREPLY=($(compgen -W "text pcre" -- "${cur}"))
+                    return 0
+                    ;;
+                --extractors|-e)
+                    COMPREPLY=($(compgen -W "description name homepage" -- "${cur}"))
+                    return 0
+                    ;;
+
+                --repository)
+                    COMPREPLY=($(compgen -W "$(paludis --log-level silent --list-repositories |sed -n 's,^\* \(.*\),\1,p')" -- "${cur}"))
+                    return 0
+                    ;;
+                --repository-format)
+                    COMPREPLY=($(compgen -W "$(paludis --log-level silent --list-repository-formats |sed -n 's,^\* \(.*\),\1,p')" -- "${cur}"))
+                    return 0
+                    ;;
+                --category)
+                    COMPREPLY=($(compgen -W "$(paludis --log-level silent --list-categories |sed -n 's,^\* \(.*\),\1,p')" -- "${cur}"))
+                    return 0
+                    ;;
+
+            esac
+            ;;
+    esac
+}
+complete -F _inquisitio inquisitio
