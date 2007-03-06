@@ -137,23 +137,23 @@ end
 
 status "Finding merge targets"
 
-atoms = broken.map do | owner |
+specs = broken.map do | owner |
     slot = env.package_database.fetch_repository(owner.repository).version_metadata(owner.name, owner.version).slot
-    Paludis::PackageDepAtom.new("=" + owner.name + "-" + owner.version.to_s + ":" + slot)
+    Paludis::PackageDepSpec.new("=" + owner.name + "-" + owner.version.to_s + ":" + slot)
 end
 
-if atoms.empty?
+if specs.empty?
     status "Couldn't find any owners"
     exit 0
 end
 
 status "Building dependency list"
 
-system("paludis --pretend --install #{atoms.join ' '} --dl-upgrade as-needed --preserve-world") or exit 1
+system("paludis --pretend --install #{specs.join ' '} --dl-upgrade as-needed --preserve-world") or exit 1
 
 exit 0 if pretend
 
 status "Rebuilding broken packages"
 
-system("paludis --install #{atoms.join ' '} --dl-upgrade as-needed --preserve-world")
+system("paludis --install #{specs.join ' '} --dl-upgrade as-needed --preserve-world")
 
