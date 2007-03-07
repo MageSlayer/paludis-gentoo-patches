@@ -31,7 +31,8 @@ IF_RUBY_TESTS = \
 	dep_list_TEST.rb \
 	dep_tag_TEST.rb \
 	query_TEST.rb \
-	package_database_TEST.rb
+	package_database_TEST.rb \
+	find_unused_packages_task_TEST.rb
 
 IF_RUBY_QA_TESTS = \
 	message_TEST.rb \
@@ -56,7 +57,8 @@ IF_RUBY_SOURCES = \
 	contents.cc \
 	dep_list.cc \
 	dep_tag.cc \
-	query.cc
+	query.cc \
+	find_unused_packages_task.cc
 
 IF_RUBY_QA_SOURCES = \
 	message.cc \
@@ -75,7 +77,8 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
 	qa_environment_TEST_setup.sh qa_environment_TEST_cleanup.sh \
 	check_TEST_setup.sh check_TEST_cleanup.sh \
-	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh
+	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
+	find_unused_packages_task_TEST_setup.sh find_unused_packages_task_TEST_cleanup.sh
 
 TESTS_ENVIRONMENT = env \
 	PALUDIS_NO_GLOBAL_HOOKS="yes" \
@@ -116,6 +119,7 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
+	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
@@ -132,6 +136,7 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
+	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \

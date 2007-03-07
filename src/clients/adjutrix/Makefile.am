@@ -50,7 +50,7 @@ adjutrix_LDADD = \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
 	$(top_builddir)/paludis/repositories/fake/libpaludisfakerepository.la \
-	$(top_builddir)/paludis/tasks/libpaludistasks.a \
+	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \

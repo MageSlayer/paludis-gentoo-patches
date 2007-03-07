@@ -49,7 +49,7 @@ paludis_SOURCES = \
 if MONOLITHIC
 
 paludis_LDADD = \
-	$(top_builddir)/paludis/tasks/libpaludistasks.a \
+	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -63,7 +63,7 @@ paludis_LDADD = \
 else
 
 paludis_LDADD = \
-	$(top_builddir)/paludis/tasks/libpaludistasks.a \
+	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/args/libpaludisargs.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \

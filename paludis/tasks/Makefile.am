@@ -19,7 +19,7 @@ TESTS_ENVIRONMENT = env \
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS =
 
-noinst_LIBRARIES = libpaludistasks.a
+lib_LTLIBRARIES = libpaludistasks.la
 paludis_tasks_includedir = $(includedir)/paludis/tasks
 paludis_tasks_include_HEADERS = \
 	find_unused_packages_task.hh \
@@ -31,7 +31,7 @@ paludis_tasks_include_HEADERS = \
 	report_task.hh \
 	exceptions.hh
 
-libpaludistasks_a_SOURCES = $(paludis_tasks_include_HEADERS) \
+libpaludistasks_la_SOURCES = $(paludis_tasks_include_HEADERS) \
 	find_unused_packages_task.cc \
 	install_task.cc \
 	uninstall_task.cc \
@@ -42,7 +42,7 @@ libpaludistasks_a_SOURCES = $(paludis_tasks_include_HEADERS) \
 
 if ! MONOLITHIC
 
-libpaludistasks_a_LIBADD = \
+libpaludistasks_la_LIBADD = \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la
