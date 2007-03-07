@@ -371,6 +371,23 @@ module Paludis
         end
     end
 
+    class TestCase_NoConfigEnvirontmentMasterRepository < Test::Unit::TestCase
+        def env
+            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
+        end
+
+        def env_master
+            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo",
+                                   "/var/empty", 
+                                   Dir.getwd().to_s + "/environment_TEST_dir/slaverepo")
+        end
+
+        def test_master_repository
+            assert_nil env.master_repository
+            assert_kind_of PortageRepository, env_master.master_repository
+        end
+    end
+
     class TestCase_EnvironmentRoot < Test::Unit::TestCase
         def test_root
             assert_kind_of String, env.root

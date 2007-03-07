@@ -48,7 +48,7 @@ module Paludis
 
         def test_responds
             repo = no_config_testrepo.portage_repository
-            [:profile_variable, :profiles, :find_profile].each do |sym|
+            [:profile_variable, :profiles, :find_profile, :set_profile].each do |sym|
                 assert_respond_to repo, sym
             end
         end
@@ -65,6 +65,14 @@ module Paludis
                 assert_kind_of PortageRepositoryProfilesDescLine, profile
                 profile = repo.find_profile('broken')
                 assert profile.nil?
+            end
+        end
+
+        def test_set_profile
+            repo = no_config_testrepo.portage_repository
+            assert_nothing_raised do
+                profile = repo.profiles.first
+                repo.set_profile(profile)
             end
         end
 

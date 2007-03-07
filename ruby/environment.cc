@@ -410,6 +410,25 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     master_repository -> PortageRepository
+     *
+     * Return the master repository in this environment
+     */
+    VALUE
+    no_config_environment_master_repository(VALUE self)
+    {
+        try
+        {
+            return repository_to_value(value_to_no_config_environment(self)->master_repository());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
     VALUE
     environment_maker_make_from_spec(VALUE, VALUE spec)
     {
@@ -472,6 +491,7 @@ namespace
         rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), -1);
         rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), -1);
         rb_define_method(c_no_config_environment, "portage_repository", RUBY_FUNC_CAST(&no_config_environment_portage_repository), 0);
+        rb_define_method(c_no_config_environment, "master_repository", RUBY_FUNC_CAST(&no_config_environment_master_repository), 0);
 
         c_environment_maker = rb_define_class_under(paludis_module(), "EnvironmentMaker", rb_cObject);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_environment_maker);

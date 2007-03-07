@@ -579,8 +579,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<const PortageRepository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<const PortageRepository>, self_ptr);
+            std::tr1::shared_ptr<PortageRepository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<PortageRepository>, self_ptr);
 
             VALUE result(rb_ary_new());
             for (PortageRepository::ProfilesIterator i((*self_ptr)->begin_profiles()),
@@ -607,8 +607,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<const PortageRepository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<const PortageRepository>, self_ptr);
+            std::tr1::shared_ptr<PortageRepository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<PortageRepository>, self_ptr);
 
             PortageRepository::ProfilesIterator p((*self_ptr)->find_profile(FSEntry(StringValuePtr(profile))));
 
@@ -616,6 +616,28 @@ namespace
                 return Qnil;
 
             return portage_repository_profiles_desc_line_to_value(*p);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     set_profile(portage_repository_profile_desc_line) -> Nil
+     *
+     * Sets the repository profile to the given profile.
+     */
+    VALUE
+    portage_repository_set_profile(VALUE self, VALUE profile)
+    {
+        try
+        {
+            std::tr1::shared_ptr<PortageRepository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<PortageRepository>, self_ptr);
+            (*self_ptr)->set_profile((*self_ptr)->find_profile(value_to_portage_repository_profiles_desc_line(profile).path));
+            return Qnil;
         }
         catch (const std::exception & e)
         {
@@ -634,8 +656,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<const PortageRepository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<const PortageRepository>, self_ptr);
+            std::tr1::shared_ptr<PortageRepository> * self_ptr;
+            Data_Get_Struct(self, std::tr1::shared_ptr<PortageRepository>, self_ptr);
             return rb_str_new2(((*self_ptr)->profile_variable(StringValuePtr(var))).c_str());
         }
         catch (const std::exception & e)
@@ -964,6 +986,7 @@ namespace
         c_portage_repository = rb_define_class_under(paludis_module(), "PortageRepository", c_repository);
         rb_define_method(c_portage_repository, "profiles", RUBY_FUNC_CAST(&portage_repository_profiles), 0);
         rb_define_method(c_portage_repository, "find_profile", RUBY_FUNC_CAST(&portage_repository_find_profile), 1);
+        rb_define_method(c_portage_repository, "set_profile", RUBY_FUNC_CAST(&portage_repository_set_profile), 1);
         rb_define_method(c_portage_repository, "profile_variable", RUBY_FUNC_CAST(&portage_repository_profile_variable), 1);
 
         /*
@@ -1001,9 +1024,11 @@ VALUE repo_to_value(T_ m, VALUE * klass)
 VALUE
 paludis::ruby::repository_to_value(std::tr1::shared_ptr<Repository> m)
 {
-    if (0 != dynamic_cast<const PortageRepository *>(m.get()))
-        return repo_to_value<std::tr1::shared_ptr<const PortageRepository> >(
-                std::tr1::static_pointer_cast<const PortageRepository>(m), &c_portage_repository);
+    if (0 == m)
+        return Qnil;
+    else if (0 != dynamic_cast<PortageRepository *>(m.get()))
+        return repo_to_value<std::tr1::shared_ptr<PortageRepository> >(
+                std::tr1::static_pointer_cast<PortageRepository>(m), &c_portage_repository);
     else
         return repo_to_value<std::tr1::shared_ptr<Repository> >(m, &c_repository);
 }
