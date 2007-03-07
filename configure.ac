@@ -797,6 +797,7 @@ AC_OUTPUT(
 	paludis/digests/Makefile
 	paludis/environments/Makefile
 	paludis/environments/paludis/Makefile
+	paludis/environments/portage/Makefile
 	paludis/environments/no_config/Makefile
 	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
