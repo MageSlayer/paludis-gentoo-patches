@@ -24,6 +24,7 @@
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/dep_list/range_rewriter.hh>
 #include <paludis/match_package.hh>
+#include <paludis/query.hh>
 #include <paludis/hashed_containers.hh>
 #include <paludis/util/collection_concrete.hh>
 #include <paludis/util/compare.hh>
@@ -294,9 +295,9 @@ namespace
         bool operator() (std::tr1::shared_ptr<const DepSpec> spec)
         {
             const PackageDepSpec * const u(spec->as_package_dep_spec());
-            if (0 != u)
+            if (0 != u && u->package_ptr())
             {
-                return ! env->package_database()->query(PackageDepSpec(u->package()),
+                return ! env->package_database()->query(PackageDepSpec(*u->package_ptr()),
                         is_installed_only, qo_whatever)->empty();
             }
             else
@@ -355,10 +356,10 @@ DepList::QueryVisitor::visit(const PackageDepSpec * const a)
         SlotName slot(vm->slot);
 
         std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
-                d->_imp->merge_list_index.equal_range(a->package()));
+                d->_imp->merge_list_index.equal_range(m->name));
 
         bool replaced(false);
-        PackageDepSpec spec(a->package());
+        PackageDepSpec spec(m->name);
         while (p.second != ((p.first = std::find_if(p.first, p.second,
                             MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, &spec)))))
         {
@@ -379,8 +380,11 @@ DepList::QueryVisitor::visit(const PackageDepSpec * const a)
     }
 
     /* check the merge list for any new packages that match */
-    std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
-            d->_imp->merge_list_index.equal_range(a->package()));
+    std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p;
+    if (a->package_ptr())
+        p = d->_imp->merge_list_index.equal_range(*a->package_ptr());
+    else
+        p = std::make_pair(d->_imp->merge_list_index.begin(), d->_imp->merge_list_index.end());
 
     if (p.second != std::find_if(p.first, p.second,
                 MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, a)))
@@ -492,8 +496,12 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
                 *a, is_installed_only, qo_order_by_version));
 
     /* are we already on the merge list? */
-    std::pair<MergeListIndex::iterator, MergeListIndex::iterator> q(
-            d->_imp->merge_list_index.equal_range(a->package()));
+    std::pair<MergeListIndex::iterator, MergeListIndex::iterator> q;
+    if (a->package_ptr())
+        q = d->_imp->merge_list_index.equal_range(*a->package_ptr());
+    else
+        q = std::make_pair(d->_imp->merge_list_index.begin(), d->_imp->merge_list_index.end());
+
     MergeListIndex::iterator qq(std::find_if(q.first, q.second,
                 MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, a)));
 
@@ -728,7 +736,7 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
             {
                 std::tr1::shared_ptr<PackageDatabaseEntryCollection> are_we_downgrading(
                         d->_imp->env->package_database()->query(PackageDepSpec(
-                                stringify(a->package()) + ":" + stringify(slot)),
+                                stringify(best_visible_candidate->name) + ":" + stringify(slot)),
                             is_installed_only, qo_order_by_version));
 
                 if (are_we_downgrading->empty())
@@ -878,30 +886,43 @@ DepList::AddVisitor::visit(const BlockDepSpec * const a)
 
     Context context("When checking BlockDepSpec '!" + stringify(*a->blocked_spec()) + "':");
 
-    PackageDepSpec just_package(a->blocked_spec()->package());
-    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed(d->_imp->env->package_database()->query(
-                just_package, is_installed_only, qo_whatever));
-
+    bool check_whole_list(false);
     std::list<MergeList::const_iterator> will_be_installed;
-    MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, &just_package);
-    for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
-                d->_imp->merge_list_index.equal_range(a->blocked_spec()->package())) ;
-            p.first != p.second ; ++p.first)
+    std::tr1::shared_ptr<const PackageDatabaseEntryCollection> already_installed;
+
+    if (a->blocked_spec()->package_ptr())
     {
-        if (d->_imp->current_merge_list_entry != d->_imp->merge_list.end())
+        PackageDepSpec just_package(*a->blocked_spec()->package_ptr());
+        already_installed = d->_imp->env->package_database()->query(
+                just_package, is_installed_only, qo_whatever);
+
+        MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, &just_package);
+        for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
+                    d->_imp->merge_list_index.equal_range(*a->blocked_spec()->package_ptr())) ;
+                p.first != p.second ; ++p.first)
         {
-            if (d->_imp->current_merge_list_entry == p.first->second)
-                continue;
+            if (d->_imp->current_merge_list_entry != d->_imp->merge_list.end())
+            {
+                if (d->_imp->current_merge_list_entry == p.first->second)
+                    continue;
 
-            if (d->_imp->current_merge_list_entry->associated_entry == &*p.first->second)
-                continue;
+                if (d->_imp->current_merge_list_entry->associated_entry == &*p.first->second)
+                    continue;
+            }
+
+            if (m(*p.first))
+                will_be_installed.push_back(p.first->second);
         }
-
-        if (m(*p.first))
-            will_be_installed.push_back(p.first->second);
+    }
+    else
+    {
+        check_whole_list = true;
+        /* TODO: InstalledAtRoot? */
+        already_installed = d->_imp->env->package_database()->query(
+                query::RepositoryHasInstalledInterface(), qo_whatever);
     }
 
-    if (already_installed->empty() && will_be_installed.empty())
+    if (already_installed->empty() && will_be_installed.empty() && ! check_whole_list)
         return;
 
     for (PackageDatabaseEntryCollection::Iterator aa(already_installed->begin()),
@@ -987,6 +1008,32 @@ DepList::AddVisitor::visit(const BlockDepSpec * const a)
         }
 
         throw BlockError(stringify(*a->blocked_spec()));
+    }
+
+    if (check_whole_list)
+    {
+        for (MergeList::const_iterator r(d->_imp->merge_list.begin()),
+                r_end(d->_imp->merge_list.end()) ; r != r_end ; ++r)
+        {
+            if (! match_package(*d->_imp->env, *a->blocked_spec(), r->package))
+                continue;
+
+            /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
+             * ourself */
+            if (! (a->blocked_spec()->version_requirements_ptr() || a->blocked_spec()->slot_ptr()
+                        || a->blocked_spec()->use_requirements_ptr() || a->blocked_spec()->repository_ptr())
+                    && d->_imp->current_pde())
+            {
+                if (r->package.name == d->_imp->current_pde()->name)
+                    continue;
+
+                if (r->metadata->virtual_interface &&
+                        r->metadata->virtual_interface->virtual_for.name == d->_imp->current_pde()->name)
+                    continue;
+            }
+
+            throw BlockError(stringify(*a->blocked_spec()));
+        }
     }
 }
 
@@ -1157,8 +1204,12 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
         {
             std::tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec("=" + (*i)->text() + "-" + stringify(p.version)));
 
-            std::pair<MergeListIndex::iterator, MergeListIndex::iterator> z(
-                    _imp->merge_list_index.equal_range(pp->package()));
+            std::pair<MergeListIndex::iterator, MergeListIndex::iterator> z;
+            if (pp->package_ptr())
+                z = _imp->merge_list_index.equal_range(*pp->package_ptr());
+            else
+                z = std::make_pair(_imp->merge_list_index.begin(), _imp->merge_list_index.end());
+
             MergeListIndex::iterator zz(std::find_if(z.first, z.second,
                 MatchDepListEntryAgainstPackageDepSpec(_imp->env, pp.get())));
 

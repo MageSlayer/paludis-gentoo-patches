@@ -390,7 +390,7 @@ namespace paludis
                 try
                 {
                     PackageDepSpec spec("=" + stringify(cat) + "/" + pkg_i->basename());
-                    entries.push_back(VDBEntry(spec.package(),
+                    entries.push_back(VDBEntry(*spec.package_ptr(),
                                 spec.version_requirements_ptr()->begin()->version_spec));
                 }
                 catch (const Exception & e)

@@ -63,7 +63,7 @@ namespace
 
         void visit(const PackageDepSpec * const p)
         {
-            if (p->package() == QualifiedPackageName("app-arch/unzip"))
+            if (p->package_ptr() && *p->package_ptr() == QualifiedPackageName("app-arch/unzip"))
                 have_zip = true;
         }
     };

@@ -105,21 +105,27 @@ namespace
         }
 
         std::tr1::shared_ptr<CategoryNamePartCollection>
-        categories(const Environment &,
-                std::tr1::shared_ptr<const RepositoryNameCollection>) const
+        categories(const Environment & e,
+                std::tr1::shared_ptr<const RepositoryNameCollection> r) const
         {
+            if (! spec.package_ptr())
+                return QueryDelegate::categories(e, r);
+
             std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
-            result->insert(spec.package().category);
+            result->insert(spec.package_ptr()->category);
             return result;
         }
 
         std::tr1::shared_ptr<QualifiedPackageNameCollection>
-        packages(const Environment &,
-            std::tr1::shared_ptr<const RepositoryNameCollection>,
-            std::tr1::shared_ptr<const CategoryNamePartCollection>) const
+        packages(const Environment & e,
+            std::tr1::shared_ptr<const RepositoryNameCollection> r,
+            std::tr1::shared_ptr<const CategoryNamePartCollection> c) const
         {
+            if (! spec.package_ptr())
+                return QueryDelegate::packages(e, r, c);
+
             std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
-            result->insert(spec.package());
+            result->insert(*spec.package_ptr());
             return result;
         }
 

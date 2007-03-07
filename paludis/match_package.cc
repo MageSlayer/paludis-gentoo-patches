@@ -33,7 +33,7 @@ paludis::match_package(
         const PackageDepSpec & spec,
         const PackageDatabaseEntry & entry)
 {
-    if (spec.package() != entry.name)
+    if (spec.package_ptr() && *spec.package_ptr() != entry.name)
         return false;
 
     if (spec.version_requirements_ptr())

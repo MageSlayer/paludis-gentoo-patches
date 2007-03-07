@@ -57,9 +57,10 @@ namespace
 
         void visit(const PackageDepSpec * const p)
         {
-            if (suspicious.end() != suspicious.find(p->package()))
-                result << Message(qal_maybe, "Suspicious " + role + " entry '"
-                        + stringify(p->package()) + "'");
+            if (p->package_ptr())
+                if (suspicious.end() != suspicious.find(*p->package_ptr()))
+                    result << Message(qal_maybe, "Suspicious " + role + " entry '"
+                            + stringify(*p->package_ptr()) + "'");
         }
 
         void visit(const PlainTextDepSpec * const)

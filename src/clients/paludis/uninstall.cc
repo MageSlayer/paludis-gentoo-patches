@@ -153,7 +153,8 @@ namespace
 
             virtual void on_update_world(const PackageDepSpec & a)
             {
-                cout << "* removing " << colour(cl_package_name, a.package()) << endl;
+                if (a.package_ptr())
+                    cout << "* removing " << colour(cl_package_name, *a.package_ptr()) << endl;
             }
 
             virtual void on_update_world(const SetName & a)

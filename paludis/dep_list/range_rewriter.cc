@@ -77,7 +77,7 @@ RangeRewriter::visit(const PackageDepSpec * a)
 
     if (_spec)
     {
-        if (a->package() != _spec->package())
+        if ((! a->package_ptr()) || (! _spec->package_ptr()) || (*a->package_ptr() != *_spec->package_ptr()))
         {
             _invalid = true;
             return;

@@ -127,7 +127,7 @@ BlockDepSpec::BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> a) :
 
 PackageDepSpec::PackageDepSpec(const QualifiedPackageName & our_package) :
     StringDepSpec(stringify(our_package)),
-    _package(our_package),
+    _package_ptr(new QualifiedPackageName(our_package)),
     _version_requirements_mode(vr_and)
 {
 }
@@ -136,7 +136,7 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & other) :
     VisitableInterface<DepSpecVisitorTypes>(other),
     StringDepSpec(stringify(other)),
     Visitable<PackageDepSpec, DepSpecVisitorTypes>(other),
-    _package(other._package),
+    _package_ptr(other._package_ptr),
     _version_requirements_mode(other._version_requirements_mode),
     _slot(other._slot),
     _repository(other._repository),
@@ -153,7 +153,6 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & other) :
 
 PackageDepSpec::PackageDepSpec(const std::string & ss) :
     StringDepSpec(ss),
-    _package(CategoryNamePart("later"), PackageNamePart("later")),
     _version_requirements_mode(vr_and)
 {
     Context context("When parsing package dep spec '" + ss + "':");
@@ -238,7 +237,7 @@ PackageDepSpec::PackageDepSpec(const std::string & ss) :
                     q = new_q;
             }
 
-            _package = QualifiedPackageName(s.substr(p, q - p - 1));
+            _package_ptr.reset(new QualifiedPackageName(s.substr(p, q - p - 1)));
 
             _version_requirements.reset(new VersionRequirements::Concrete);
 
@@ -256,7 +255,7 @@ PackageDepSpec::PackageDepSpec(const std::string & ss) :
                 _version_requirements->push_back(VersionRequirement(op, VersionSpec(s.substr(q))));
         }
         else
-            _package = QualifiedPackageName(s);
+            _package_ptr.reset(new QualifiedPackageName(s));
     }
     catch (Exception &)
     {
@@ -315,7 +314,8 @@ paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
         }
     }
 
-    s << a.package();
+    if (a.package_ptr())
+        s << *a.package_ptr();
 
     if (a.version_requirements_ptr())
     {

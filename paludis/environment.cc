@@ -346,8 +346,8 @@ Environment::add_appropriate_to_world(std::tr1::shared_ptr<const DepSpec> a,
         for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
                 r_end(package_database()->end_repositories()) ;
                 r != r_end ; ++r)
-            if ((*r)->world_interface)
-                (*r)->world_interface->add_to_world((*i)->package());
+            if ((*r)->world_interface && (*i)->package_ptr())
+                (*r)->world_interface->add_to_world(*(*i)->package_ptr());
     }
 }
 
@@ -384,8 +384,8 @@ Environment::remove_appropriate_from_world(std::tr1::shared_ptr<const DepSpec> a
         for (PackageDatabase::RepositoryIterator r(package_database()->begin_repositories()),
                 r_end(package_database()->end_repositories()) ;
                 r != r_end ; ++r)
-            if ((*r)->world_interface)
-                (*r)->world_interface->remove_from_world((*i)->package());
+            if ((*r)->world_interface && (*i)->package_ptr())
+                (*r)->world_interface->remove_from_world(*(*i)->package_ptr());
 
         ww->remove_callback(**i);
     }

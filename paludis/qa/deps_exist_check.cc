@@ -55,7 +55,8 @@ namespace
 
         void visit(const PackageDepSpec * const p)
         {
-            if (env->package_database()->query(query::Package(p->package()), qo_whatever)->empty())
+            if (p->package_ptr() &&
+                    env->package_database()->query(query::Package(*p->package_ptr()), qo_whatever)->empty())
             {
                 if (in_any)
                     result << Message(qal_maybe, "No match for " + role + " entry '"
@@ -75,10 +76,11 @@ namespace
 
         void visit(const BlockDepSpec * const b)
         {
-            if (env->package_database()->query(query::Package(b->blocked_spec()->package()),
+            if (b->blocked_spec()->package_ptr() &&
+                    env->package_database()->query(query::Package(*b->blocked_spec()->package_ptr()),
                         qo_whatever)->empty())
                 result << Message(qal_maybe, "No match for " + role + " block '!"
-                        + stringify(b->blocked_spec()->package()) + "'");
+                        + stringify(*b->blocked_spec()->package_ptr()) + "'");
         }
 
         void visit(const PlainTextDepSpec * const)

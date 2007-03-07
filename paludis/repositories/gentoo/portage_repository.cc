@@ -657,14 +657,30 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
                 p_end(_imp->profiles_dir_locations.end()) ; p != p_end ; ++p)
         {
             FSEntry fff(*p / "package.mask");
+            Context context_local("When reading '" + stringify(fff) + "':");
+
             if (fff.exists())
             {
                 LineConfigFile ff(fff);
                 for (LineConfigFile::Iterator line(ff.begin()), line_end(ff.end()) ;
                         line != line_end ; ++line)
                 {
-                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
-                    _imp->repo_mask[a->package()].push_back(a);
+                    try
+                    {
+                        std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
+                        if (a->package_ptr())
+                            _imp->repo_mask[*a->package_ptr()].push_back(a);
+                        else
+                            Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask spec '"
+                                    + stringify(*line) + "' failed because specification does not restrict to a "
+                                    "unique package");
+                    }
+                    catch (const NameError & e)
+                    {
+                        Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask spec '"
+                                + stringify(*line) + "' failed due to exception '" + e.message() + "' ("
+                                + e.what() + ")");
+                    }
                 }
             }
         }
@@ -1033,13 +1049,19 @@ std::tr1::shared_ptr<const VersionMetadata>
 PortageRepository::virtual_package_version_metadata(const RepositoryVirtualsEntry & p,
         const VersionSpec & v) const
 {
-    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_spec->package(), v));
+    Context context("When fetching virtual package version metadata for '" + stringify(*p.provided_by_spec)
+            + "' version '" + stringify(v) + "':");
+
+    if (! p.provided_by_spec->package_ptr())
+        throw ConfigurationError("Virtual provider atom does not specify an unambiguous package");
+
+    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(*p.provided_by_spec->package_ptr(), v));
     std::tr1::shared_ptr<PortageVirtualVersionMetadata> result(new PortageVirtualVersionMetadata(
-                m->slot, PackageDatabaseEntry(p.provided_by_spec->package(), v, name())));
+                m->slot, PackageDatabaseEntry(*p.provided_by_spec->package_ptr(), v, name())));
 
     result->eapi = m->eapi;
-    result->build_depend_string = "=" + stringify(p.provided_by_spec->package()) + "-" + stringify(v);
-    result->run_depend_string = "=" + stringify(p.provided_by_spec->package()) + "-" + stringify(v);
+    result->build_depend_string = "=" + stringify(*p.provided_by_spec->package_ptr()) + "-" + stringify(v);
+    result->run_depend_string = "=" + stringify(*p.provided_by_spec->package_ptr()) + "-" + stringify(v);
 
     return result;
 

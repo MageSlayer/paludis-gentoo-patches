@@ -50,7 +50,8 @@ namespace
 
         void visit(const PackageDepSpec * const p)
         {
-            result.insert(p->package());
+            if (p->package_ptr())
+                result.insert(*p->package_ptr());
         }
 
         void visit(const BlockDepSpec * const)

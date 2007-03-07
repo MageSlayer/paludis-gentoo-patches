@@ -411,7 +411,12 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
         try
         {
             std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
-            package_mask[a->package()].push_back(a);
+            if (a->package_ptr())
+                package_mask[*a->package_ptr()].push_back(a);
+            else
+                Log::get_instance()->message(ll_warning, lc_context, "Loading package.mask spec '"
+                        + stringify(*line) + "' failed because specification does not restrict to a "
+                        "unique package");
         }
         catch (const NameError & e)
         {

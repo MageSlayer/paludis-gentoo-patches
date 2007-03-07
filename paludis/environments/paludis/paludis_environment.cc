@@ -728,10 +728,17 @@ PaludisEnvironment::local_package_set(const SetName & s) const
             {
                 std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(1)));
                 p->set_tag(tag);
-                if (! package_database()->query(
-                            query::Package(p->package()) & query::InstalledAtRoot(root()),
-                            qo_whatever)->empty())
-                    result->add_child(p);
+
+                if (p->package_ptr())
+                {
+                    if (! package_database()->query(
+                                query::Package(*p->package_ptr()) & query::InstalledAtRoot(root()),
+                                qo_whatever)->empty())
+                        result->add_child(p);
+                }
+                else
+                    Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
+                            + stringify(ff) + "' uses ? operator but does not specify an unambiguous package");
             }
             else
                 Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"

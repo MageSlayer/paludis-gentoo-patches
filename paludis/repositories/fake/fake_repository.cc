@@ -63,13 +63,21 @@ std::tr1::shared_ptr<const VersionMetadata>
 FakeRepository::virtual_package_version_metadata(
         const RepositoryVirtualsEntry & p, const VersionSpec & v) const
 {
-    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(p.provided_by_spec->package(), v));
+    Context context("When fetching virtual package version metadata for '" + stringify(*p.provided_by_spec)
+            + "' version '" + stringify(v) + "':");
+
+    if (! p.provided_by_spec->package_ptr())
+        throw ConfigurationError("Virtual provider atom does not specify an unambiguous package");
+
+    std::tr1::shared_ptr<const VersionMetadata> m(version_metadata(*p.provided_by_spec->package_ptr(), v));
     std::tr1::shared_ptr<FakeVirtualVersionMetadata> result(new FakeVirtualVersionMetadata(
-                m->slot, PackageDatabaseEntry(p.provided_by_spec->package(), v, name())));
+                m->slot, PackageDatabaseEntry(*p.provided_by_spec->package_ptr(), v, name())));
 
     result->eapi = m->eapi;
-    result->deps_interface->build_depend_string = "=" + stringify(p.provided_by_spec->package()) + "-" + stringify(v);
-    result->deps_interface->run_depend_string = "=" + stringify(p.provided_by_spec->package()) + "-" + stringify(v);
+    result->deps_interface->build_depend_string = "=" + stringify(*p.provided_by_spec->package_ptr())
+        + "-" + stringify(v);
+    result->deps_interface->run_depend_string = "=" + stringify(*p.provided_by_spec->package_ptr())
+        + "-" + stringify(v);
 
     return result;
 }

@@ -146,7 +146,7 @@ namespace
 
     /*
      * call-seq:
-     *     package -> String
+     *     package -> String or Nil
      *
      * Fetch the package name.
      */
@@ -155,7 +155,9 @@ namespace
     {
         std::tr1::shared_ptr<const PackageDepSpec> * ptr;
         Data_Get_Struct(self, std::tr1::shared_ptr<const PackageDepSpec>, ptr);
-        return rb_str_new2(stringify((*ptr)->package()).c_str());
+        if (0 == (*ptr)->package_ptr())
+            return Qnil;
+        return rb_str_new2(stringify(*(*ptr)->package_ptr()).c_str());
     }
 
     /*

@@ -48,6 +48,7 @@ namespace paludis
     class AllDepSpec;
     class AnyDepSpec;
     class UseDepSpec;
+    class SetDepSpec;
     class BlockDepSpec;
 
     /**
@@ -318,7 +319,7 @@ namespace paludis
         public Visitable<PackageDepSpec, DepSpecVisitorTypes>
     {
         private:
-            QualifiedPackageName _package;
+            std::tr1::shared_ptr<QualifiedPackageName> _package_ptr;
             std::tr1::shared_ptr<VersionRequirements> _version_requirements;
             VersionRequirementsMode _version_requirements_mode;
             std::tr1::shared_ptr<SlotName> _slot;
@@ -354,9 +355,9 @@ namespace paludis
             /**
              * Fetch the package name.
              */
-            const QualifiedPackageName & package() const
+            std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
             {
-                return _package;
+                return _package_ptr;
             }
 
             /**

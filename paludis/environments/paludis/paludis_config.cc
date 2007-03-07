@@ -150,11 +150,11 @@ namespace paludis
                     s != s_end ; ++s)
                 if (! s->dep_spec)
                 {
-                    s->dep_spec = env->package_set(s->set_name);
+                    s->dep_spec = env->package_set(*s->set_name);
                     if (! s->dep_spec)
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
-                                stringify(s->set_name) + "' doesn't exist");
+                                stringify(*s->set_name) + "' doesn't exist");
                         s->dep_spec.reset(new AllDepSpec);
                     }
                 }
@@ -163,11 +163,11 @@ namespace paludis
                     s_end(set_use_prefixes_that_have_minus_star.end()) ; s != s_end ; ++s)
                 if (! s->dep_spec)
                 {
-                    s->dep_spec = env->package_set(s->set_name);
+                    s->dep_spec = env->package_set(*s->set_name);
                     if (! s->dep_spec)
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
-                                stringify(s->set_name) + "' doesn't exist");
+                                stringify(*s->set_name) + "' doesn't exist");
                         s->dep_spec.reset(new AllDepSpec);
                     }
                 }
@@ -180,11 +180,11 @@ namespace paludis
                     s != s_end ; ++s)
                 if (! s->dep_spec)
                 {
-                    s->dep_spec = env->package_set(s->set_name);
+                    s->dep_spec = env->package_set(*s->set_name);
                     if (! s->dep_spec)
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
-                                stringify(s->set_name) + "' doesn't exist");
+                                stringify(*s->set_name) + "' doesn't exist");
                         s->dep_spec.reset(new AllDepSpec);
                     }
                 }
@@ -197,11 +197,11 @@ namespace paludis
                     s != s_end ; ++s)
                 if (! s->dep_spec)
                 {
-                    s->dep_spec = env->package_set(s->set_name);
+                    s->dep_spec = env->package_set(*s->set_name);
                     if (! s->dep_spec)
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
-                                stringify(s->set_name) + "' doesn't exist");
+                                stringify(*s->set_name) + "' doesn't exist");
                         s->dep_spec.reset(new AllDepSpec);
                     }
                 }
@@ -214,11 +214,11 @@ namespace paludis
                     s != s_end ; ++s)
                 if (! s->dep_spec)
                 {
-                    s->dep_spec = env->package_set(s->set_name);
+                    s->dep_spec = env->package_set(*s->set_name);
                     if (! s->dep_spec)
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
-                                stringify(s->set_name) + "' doesn't exist");
+                                stringify(*s->set_name) + "' doesn't exist");
                         s->dep_spec.reset(new AllDepSpec);
                     }
                 }
@@ -231,11 +231,11 @@ namespace paludis
                     s != s_end ; ++s)
                 if (! s->dep_spec)
                 {
-                    s->dep_spec = env->package_set(s->set_name);
+                    s->dep_spec = env->package_set(*s->set_name);
                     if (! s->dep_spec)
                     {
                         Log::get_instance()->message(ll_warning, lc_context, "Set '" +
-                                stringify(s->set_name) + "' doesn't exist");
+                                stringify(*s->set_name) + "' doesn't exist");
                         s->dep_spec.reset(new AllDepSpec);
                     }
                 }
@@ -415,14 +415,21 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                         _imp->set_keywords.push_back(SetKeywordConfigEntry(
-                                    SetName(tokens.at(0)), std::tr1::shared_ptr<DepSpec>(), KeywordName(*t)));
+                                    std::tr1::shared_ptr<SetName>(new SetName(tokens.at(0))),
+                                    std::tr1::shared_ptr<DepSpec>(), KeywordName(*t)));
                 }
                 else
                 {
                     std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(tokens.at(0)));
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
-                        _imp->keywords[a->package()].push_back(std::make_pair(a, *t));
+                    {
+                        if (a->package_ptr())
+                            _imp->keywords[*a->package_ptr()].push_back(std::make_pair(a, *t));
+                        else
+                            _imp->set_keywords.push_back(SetKeywordConfigEntry(
+                                        std::tr1::shared_ptr<const SetName>(), a, KeywordName(*t)));
+                    }
                 }
             }
         }
@@ -458,12 +465,24 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     continue;
                 if ("*" == tokens.at(0))
                     std::copy(next(tokens.begin()), tokens.end(), std::back_inserter(_imp->default_licenses));
+                else if (std::string::npos == tokens.at(0).find('/'))
+                {
+                    for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+                            t != t_end ; ++t)
+                        _imp->set_licenses.push_back(SetLicenseConfigEntry(
+                                    std::tr1::shared_ptr<SetName>(new SetName(tokens.at(0))),
+                                    std::tr1::shared_ptr<DepSpec>(), *t));
+                }
                 else
                 {
                     std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(tokens.at(0)));
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
-                        _imp->licenses[a->package()].push_back(std::make_pair(a, *t));
+                        if (a->package_ptr())
+                            _imp->licenses[*a->package_ptr()].push_back(std::make_pair(a, *t));
+                        else
+                            _imp->set_licenses.push_back(SetLicenseConfigEntry(
+                                        std::tr1::shared_ptr<SetName>(), a, *t));
                 }
             }
         }
@@ -498,12 +517,17 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     continue;
 
                 if (std::string::npos == line->find('/'))
-                    _imp->set_masks.push_back(SetMaskConfigEntry(SetName(*line),
+                    _imp->set_masks.push_back(SetMaskConfigEntry(
+                                std::tr1::shared_ptr<SetName>(new SetName(*line)),
                                 std::tr1::shared_ptr<const DepSpec>()));
                 else
                 {
                     std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
-                    _imp->user_masks[a->package()].push_back(a);
+                    if (a->package_ptr())
+                        _imp->user_masks[*a->package_ptr()].push_back(a);
+                    else
+                        _imp->set_masks.push_back(SetMaskConfigEntry(
+                                    std::tr1::shared_ptr<SetName>(), a));
                 }
             }
         }
@@ -533,12 +557,17 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     continue;
 
                 if (std::string::npos == line->find('/'))
-                    _imp->set_unmasks.push_back(SetMaskConfigEntry(SetName(*line),
+                    _imp->set_unmasks.push_back(SetMaskConfigEntry(
+                                std::tr1::shared_ptr<SetName>(new SetName(*line)),
                                 std::tr1::shared_ptr<const DepSpec>()));
                 else
                 {
                     std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
-                    _imp->user_unmasks[a->package()].push_back(a);
+                    if (a->package_ptr())
+                        _imp->user_unmasks[*a->package_ptr()].push_back(a);
+                    else
+                        _imp->set_unmasks.push_back(SetMaskConfigEntry(
+                                    std::tr1::shared_ptr<SetName>(), a));
                 }
             }
         }
@@ -609,10 +638,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                         {
                             if ("-*" == *t)
                                 _imp->set_use_prefixes_that_have_minus_star.push_back(SetUseConfigMinusStarEntry(
-                                            SetName(tokens.at(0)), std::tr1::shared_ptr<const DepSpec>(), prefix));
+                                            std::tr1::shared_ptr<SetName>(new SetName(tokens.at(0))),
+                                            std::tr1::shared_ptr<const DepSpec>(), prefix));
                             else
-                                _imp->set_use.push_back(SetUseConfigEntry(SetName(tokens.at(0)),
-                                            std::tr1::shared_ptr<const DepSpec>(), UseFlagName(prefix + t->substr(1)), use_disabled));
+                                _imp->set_use.push_back(SetUseConfigEntry(
+                                            std::tr1::shared_ptr<const SetName>(new SetName(tokens.at(0))),
+                                            std::tr1::shared_ptr<const DepSpec>(),
+                                            UseFlagName(prefix + t->substr(1)), use_disabled));
                         }
                         else if (':' == t->at(t->length() - 1))
                         {
@@ -622,7 +654,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                             prefix.append("_");
                         }
                         else
-                            _imp->set_use.push_back(SetUseConfigEntry(SetName(tokens.at(0)),
+                            _imp->set_use.push_back(SetUseConfigEntry(
+                                        std::tr1::shared_ptr<SetName>(new SetName(tokens.at(0))),
                                         std::tr1::shared_ptr<const DepSpec>(), UseFlagName(prefix + *t), use_enabled));
                     }
                 }
@@ -635,10 +668,17 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                         if ('-' == t->at(0))
                         {
                             if ("-*" == *t)
-                                _imp->use_prefixes_that_have_minus_star[a->package()].push_back(
-                                        std::make_pair(a, prefix));
+                            {
+                                if (a->package_ptr())
+                                    _imp->use_prefixes_that_have_minus_star[*a->package_ptr()].push_back(
+                                            std::make_pair(a, prefix));
+                                else
+                                    _imp->set_use_prefixes_that_have_minus_star.push_back(
+                                            SetUseConfigMinusStarEntry(std::tr1::shared_ptr<SetName>(),
+                                                a, prefix));
+                            }
                             else
-                                _imp->use[a->package()].push_back(UseConfigEntry(
+                                _imp->use[*a->package_ptr()].push_back(UseConfigEntry(
                                             a, UseFlagName(prefix + t->substr(1)), use_disabled));
                         }
                         else if (':' == t->at(t->length() - 1))
@@ -648,9 +688,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                                     &::tolower);
                             prefix.append("_");
                         }
-                        else
-                            _imp->use[a->package()].push_back(UseConfigEntry(
+                        else if (a->package_ptr())
+                            _imp->use[*a->package_ptr()].push_back(UseConfigEntry(
                                         a, UseFlagName(prefix + *t), use_enabled));
+                        else
+                            _imp->set_use.push_back(SetUseConfigEntry(
+                                        std::tr1::shared_ptr<SetName>(), a, UseFlagName(prefix + *t),
+                                        use_enabled));
                     }
                 }
             }
