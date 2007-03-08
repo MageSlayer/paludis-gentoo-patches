@@ -108,25 +108,49 @@ namespace
         categories(const Environment & e,
                 std::tr1::shared_ptr<const RepositoryNameCollection> r) const
         {
-            if (! spec.package_ptr())
+            if (spec.package_ptr())
+            {
+                std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+                result->insert(spec.package_ptr()->category);
+                return result;
+            }
+            else if (spec.category_name_part_ptr())
+            {
+                std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
+                result->insert(*spec.category_name_part_ptr());
+                return result;
+            }
+            else
                 return QueryDelegate::categories(e, r);
-
-            std::tr1::shared_ptr<CategoryNamePartCollection> result(new CategoryNamePartCollection::Concrete);
-            result->insert(spec.package_ptr()->category);
-            return result;
         }
 
         std::tr1::shared_ptr<QualifiedPackageNameCollection>
         packages(const Environment & e,
-            std::tr1::shared_ptr<const RepositoryNameCollection> r,
-            std::tr1::shared_ptr<const CategoryNamePartCollection> c) const
+            std::tr1::shared_ptr<const RepositoryNameCollection> repos,
+            std::tr1::shared_ptr<const CategoryNamePartCollection> cats) const
         {
-            if (! spec.package_ptr())
-                return QueryDelegate::packages(e, r, c);
-
-            std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
-            result->insert(*spec.package_ptr());
-            return result;
+            if (spec.package_ptr())
+            {
+                std::tr1::shared_ptr<QualifiedPackageNameCollection> result(
+                        new QualifiedPackageNameCollection::Concrete);
+                result->insert(*spec.package_ptr());
+                return result;
+            }
+            else if (spec.package_name_part_ptr())
+            {
+                std::tr1::shared_ptr<QualifiedPackageNameCollection> result(
+                        new QualifiedPackageNameCollection::Concrete);
+                for (RepositoryNameCollection::Iterator r(repos->begin()), r_end(repos->end()) ;
+                        r != r_end ; ++r)
+                    for (CategoryNamePartCollection::Iterator c(cats->begin()), c_end(cats->end()) ;
+                            c != c_end ; ++c)
+                        if (e.package_database()->fetch_repository(*r)->has_package_named(*c +
+                                    *spec.package_name_part_ptr()))
+                            result->insert(*c + *spec.package_name_part_ptr());
+                return result;
+            }
+            else
+                return QueryDelegate::packages(e, repos, cats);
         }
 
         std::tr1::shared_ptr<PackageDatabaseEntryCollection>

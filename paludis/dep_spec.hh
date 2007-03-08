@@ -320,6 +320,8 @@ namespace paludis
     {
         private:
             std::tr1::shared_ptr<QualifiedPackageName> _package_ptr;
+            std::tr1::shared_ptr<CategoryNamePart> _category_name_part_ptr;
+            std::tr1::shared_ptr<PackageNamePart> _package_name_part_ptr;
             std::tr1::shared_ptr<VersionRequirements> _version_requirements;
             VersionRequirementsMode _version_requirements_mode;
             std::tr1::shared_ptr<SlotName> _slot;
@@ -358,6 +360,22 @@ namespace paludis
             std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
             {
                 return _package_ptr;
+            }
+
+            /**
+             * Fetch the package name part, if wildcarded.
+             */
+            std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const
+            {
+                return _package_name_part_ptr;
+            }
+
+            /**
+             * Fetch the category name part, if wildcarded.
+             */
+            std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
+            {
+                return _category_name_part_ptr;
             }
 
             /**
