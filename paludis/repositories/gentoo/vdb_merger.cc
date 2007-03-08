@@ -95,7 +95,8 @@ VDBMerger::extend_hook(const Hook & h)
 void
 VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
 {
-    std::string tidy(make_tidy(dst_dir / dst_name)), tidy_real(make_tidy(dst_dir / src.basename()));
+    std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->options.root))),
+            tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->options.root)));
     time_t timestamp((dst_dir / dst_name).mtime());
 
     std::ifstream infile(stringify(FSEntry(dst_dir / dst_name)).c_str());
@@ -115,8 +116,7 @@ VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, con
 void
 VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir)
 {
-    std::string tidy(make_tidy(dst_dir / src.basename()));
-
+    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->options.root)));
     std::cout << ">>> [dir] " << tidy << std::endl;
 
     *_imp->contents_file << "dir " << tidy << std::endl;
@@ -125,7 +125,7 @@ VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir)
 void
 VDBMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir)
 {
-    std::string tidy(make_tidy(dst_dir / src.basename()));
+    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->options.root)));
     std::string target((dst_dir / src.basename()).readlink());
     time_t timestamp((dst_dir / src.basename()).mtime());
 
@@ -155,7 +155,7 @@ VDBMerger::on_warn(bool is_check, const std::string & s)
 bool
 VDBMerger::config_protected(const FSEntry & src, const FSEntry & dst_dir)
 {
-    std::string tidy(make_tidy(dst_dir / src.basename()));
+    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->options.root)));
 
     bool result(false);
     for (std::list<std::string>::const_iterator c(_imp->config_protect.begin()),
@@ -219,16 +219,5 @@ VDBMerger::check()
 {
     std::cout << ">>> Checking whether we can merge to " << _imp->options.root << std::endl;
     return Merger::check();
-}
-
-std::string
-VDBMerger::make_tidy(const FSEntry & f) const
-{
-    std::string root_str(stringify(_imp->options.root)), f_str(stringify(f));
-    if (root_str == "/")
-        root_str.clear();
-    if (0 != f_str.compare(0, root_str.length(), root_str))
-        throw MergerError("Can't work out tidy name for '" + f_str + "' with root '" + root_str + "'");
-    return f_str.substr(root_str.length());
 }
 

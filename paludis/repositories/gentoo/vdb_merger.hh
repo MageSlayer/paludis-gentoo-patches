@@ -34,9 +34,6 @@ namespace paludis
         public Merger,
         private PrivateImplementationPattern<VDBMerger>
     {
-        protected:
-            std::string make_tidy(const FSEntry &) const;
-
         public:
             VDBMerger(const VDBMergerOptions &);
             ~VDBMerger();

@@ -163,6 +163,11 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
+             * Return the path without a given prefix (eg '/foo/bar/baz'->strip_leading('/foo') => '/bar/baz').
+             */
+            FSEntry strip_leading(const FSEntry & prefix) const;
+
+            /**
              * Return the first part of our path (eg '/foo/bar' => '/foo').
              */
             FSEntry dirname() const

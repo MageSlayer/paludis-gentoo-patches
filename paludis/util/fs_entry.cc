@@ -309,6 +309,18 @@ FSEntry::basename() const
 }
 
 FSEntry
+FSEntry::strip_leading(const FSEntry & f) const
+{
+    std::string root(stringify(f));
+
+    if (root == "/")
+        root.clear();
+    if (0 != _path.compare(0, root.length(), root))
+        throw FSError("Can't strip leading '" + root + "' from FSEntry '" + _path + "'");
+    return FSEntry(_path.substr(root.length()));
+}
+
+FSEntry
 FSEntry::dirname() const
 {
     if (_path == "/")

@@ -267,6 +267,33 @@ namespace test_cases
     } test_fs_entry_dir_base_name;
 
     /**
+     * \test Test FSEntry strip_leading method
+     *
+     * \ingroup grpfilesystem
+     */
+    struct FSEntryStripLeading : TestCase
+    {
+        FSEntryStripLeading() : TestCase("strip_leading") {}
+
+        void run()
+        {
+            FSEntry root1("/stairway/to/heaven/");
+            FSEntry root2("");
+            FSEntry root3("/");
+
+            FSEntry a(root1);
+            FSEntry b(root1 / "usr" / "share");
+            FSEntry c(root2 / "my" / "directory");
+            FSEntry d(root3 / "my" / "directory");
+
+            TEST_CHECK(stringify(a.strip_leading(root1)) == "/");
+            TEST_CHECK(stringify(b.strip_leading(root1)) == "/usr/share");
+            TEST_CHECK(stringify(c.strip_leading(root2)) == "/my/directory");
+            TEST_CHECK(stringify(d.strip_leading(root3)) == "/my/directory");
+        }
+    } test_fs_entry_strip_leading;
+
+    /**
      * \test Test FSEntry chmod, chown and permissions methods
      *
      * \ingroup grpfilesystem
