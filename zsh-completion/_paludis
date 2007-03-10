@@ -24,8 +24,9 @@ _paludis() {
         "(--fetch -f)"{--fetch,-f}"[Only fetch sources; don t install anything]"
         "--show-reasons[Show why packages are being (un)installed]:Verbosity:((none\:Don\ t\ show\ any\ information summary\:Show\ a\ summary full\:Show\ full\ output))"
         "--show-use-descriptions[Show descriptions of USE flags]:case to show:((none\:Don\ t\ show\ any\ descriptions new\:Show\ for\ new\ use\ flags changed\:Show\ for\ new\ and\ changed\ flags all\:Show for all flags))"
-        "--add-to-world-atom[Use this atom, rather than all targets, for updating world (for resume commands)]"
+        "--add-to-world-spec[Use this atom, rather than all targets, for updating world (for resume commands)]"
         "--safe-resume[Allow interrupted downloads to be resumed safely]"
+        "(--destinations -d)"{--destinations,-d}"[Use specified destinations instead of defaults]:destinations:_paludis_packages repositories"
     )
     list_args=(
         "--repository-format[Matches with this repository format only]:format:_paludis_packages repository-formats"
@@ -67,8 +68,8 @@ _paludis() {
         "(: -)"{--version,-V}"[Display program version]"
         "(: -)"{--info,-I}"[Display program version and system information]"
         "(: -)"{--help,-h}"[Display program help]"
-        "(: -)--has-version[Check whether the specified atom is installed]:package:_paludis_packages available"
-        "(: -)--best-version[Display the best version of the specified atom]:package _paludis_packages available"
+        "(: -)--has-version[Check whether the specified spec is installed]:package:_paludis_packages available"
+        "(: -)--best-version[Display the best version of the specified spec]:package _paludis_packages available"
         "(: -)--environment-variable[Display the value of an environment variable for a particular package]:package:_paludis_packages available"
         "(: -)--configuration-variable[Display the value of a configuration variable for a particular repository]:_paludis_packages repositories"
         "(: -)--update-news[Regenerate news.unread files]"

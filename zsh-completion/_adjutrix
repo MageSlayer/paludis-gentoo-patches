@@ -16,6 +16,8 @@ _adjutrix() {
         --reverse-deps -r
         --display-profiles-use -u
         --display-default-system-resolution -S
+        --build-downgrade-check-list
+        --downgrade-check
         --version -V
         --help -h
     )
@@ -40,9 +42,11 @@ _adjutrix() {
         "($actions)"{--find-dropped-keywords,-d}"[Search for packages where keywords have been dropped]:arch:($arches)"
         "($actions)"{--find-insecure-packages,-i}"[Search for packages marked as insecure by a GLSA]"
         "($actions)"{--keyword-graph,-k}"[Display keywords graphically]"
-        "($actions)"{--reverse-deps,-r}"[all package that depend on a given dep atom]:Packages:"
+        "($actions)"{--reverse-deps,-r}"[all package that depend on a given dep spec]:Packages:"
         "($actions)"{--display-profiles-use,-u}"[Display USE information for all profiles]"
         "($actions)"{--display-default-system-resolution,-S}"[Display package names and versions that are included in the default resolution of the system set]"
+        "($actions)"{--build-downgrade-check-list}"[Build the downgrade check lists]"
+        "($actions)"{--downgrade-check}"[Perform the dowgrade check]"
         "(: -)"{--version,-V}"[Display program version]"
         "(: -)"{--help,-h}"[Display program help]"
     )
