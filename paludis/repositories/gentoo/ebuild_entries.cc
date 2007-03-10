@@ -500,6 +500,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     .config_protect_mask(_imp->portage_repository->profile_variable("CONFIG_PROTECT_MASK"))
                     .loadsaveenv_dir(_imp->params.buildroot / stringify(q.category) / (
                             stringify(q.package) + "-" + stringify(v)) / "temp")
+                    .no_userpriv(false)
                     .slot(SlotName(metadata->slot)));
 
     EbuildInstallCommand build_cmd(command_params, install_params);

@@ -382,6 +382,9 @@ EbuildInstallCommand::extend_command(const Command & cmd)
             j(install_params.expand_vars->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
 
+    if (ebuild_ip_build == install_params.phase && ! install_params.no_userpriv)
+        result.with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
+
     return result;
 }
 

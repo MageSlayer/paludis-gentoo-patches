@@ -522,24 +522,34 @@ namespace test_cases
 
         void run()
         {
-            TestEnvironment env;
-            std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
-                    new AssociativeCollection<std::string, std::string>::Concrete);
-            keys->insert("format", "ebuild");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", "portage_repository_TEST_dir/repo7");
-            keys->insert("profiles", "portage_repository_TEST_dir/repo7/profiles/profile");
-            std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
-                        &env, keys));
-
-            for (int pass = 1 ; pass <= 2 ; ++pass)
+            for (int opass = 1 ; opass <= 3 ; ++opass)
             {
-                TestMessageSuffix pass_suffix(stringify(pass), true);
-                std::tr1::shared_ptr<const VersionMetadata> m;
+                TestMessageSuffix opass_suffix("opass=" + stringify(opass), true);
 
-                m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
-                TEST_CHECK_EQUAL(m->description, "The Description");
-                TEST_CHECK_EQUAL(m->eapi, "0");
+                TestEnvironment env;
+                std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
+                        new AssociativeCollection<std::string, std::string>::Concrete);
+                keys->insert("format", "ebuild");
+                keys->insert("names_cache", "/var/empty");
+                keys->insert("write_cache", "portage_repository_TEST_dir/repo7/metadata/cache");
+                keys->insert("location", "portage_repository_TEST_dir/repo7");
+                keys->insert("profiles", "portage_repository_TEST_dir/repo7/profiles/profile");
+                std::tr1::shared_ptr<PortageRepository> repo(make_ebuild_repository(
+                            &env, keys));
+
+                for (int pass = 1 ; pass <= 3 ; ++pass)
+                {
+                    TestMessageSuffix pass_suffix("pass=" + stringify(pass), true);
+                    std::tr1::shared_ptr<const VersionMetadata> m;
+
+                    m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("1"));
+                    TEST_CHECK_EQUAL(m->description, "The Description");
+                    TEST_CHECK_EQUAL(m->eapi, "0");
+
+                    m = repo->version_metadata(QualifiedPackageName("cat-one/pkg-one"), VersionSpec("2"));
+                    TEST_CHECK_EQUAL(m->description, "dquote \" squote ' backslash \\ dollar $");
+                    TEST_CHECK_EQUAL(m->eapi, "0");
+                }
             }
         }
     } test_portage_repository_metadata_uncached;

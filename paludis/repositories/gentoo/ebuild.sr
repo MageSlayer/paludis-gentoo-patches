@@ -61,6 +61,7 @@ make_class_EbuildInstallCommandParams()
     key profiles "std::tr1::shared_ptr<const FSEntryCollection>"
     key expand_vars "std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >"
     key disable_cfgpro bool
+    key no_userpriv bool
     key debug_build InstallDebugOption
     key slot SlotName
     key phase EbuildInstallCommandPhase
