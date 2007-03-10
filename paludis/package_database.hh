@@ -255,7 +255,7 @@ namespace paludis
              * same name as the new Repository already exists in our
              * collection.
              */
-            void add_repository(std::tr1::shared_ptr<Repository>);
+            void add_repository(int importance, const std::tr1::shared_ptr<Repository>);
 
             /**
              * Fetch a named repository.

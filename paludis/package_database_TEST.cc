@@ -52,15 +52,15 @@ namespace test_cases
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo1")), NoSuchRepositoryError);
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
 
-            p.add_repository(r1);
+            p.add_repository(10, r1);
             TEST_CHECK(p.fetch_repository(RepositoryName("repo1")));
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo1"))->name(),
                     RepositoryName("repo1"));
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
 
-            TEST_CHECK_THROWS(p.add_repository(r1), DuplicateRepositoryError);
+            TEST_CHECK_THROWS(p.add_repository(10, r1), DuplicateRepositoryError);
 
-            p.add_repository(r2);
+            p.add_repository(11, r2);
             TEST_CHECK(p.fetch_repository(RepositoryName("repo1")));
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo1"))->name(),
                     RepositoryName("repo1"));
@@ -68,8 +68,8 @@ namespace test_cases
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo2"))->name(),
                     RepositoryName("repo2"));
 
-            TEST_CHECK_THROWS(p.add_repository(r1), DuplicateRepositoryError);
-            TEST_CHECK_THROWS(p.add_repository(r2), DuplicateRepositoryError);
+            TEST_CHECK_THROWS(p.add_repository(10, r1), DuplicateRepositoryError);
+            TEST_CHECK_THROWS(p.add_repository(5, r2), DuplicateRepositoryError);
 
             TEST_CHECK(p.fetch_repository(RepositoryName("repo1")));
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo1"))->name(),
@@ -104,13 +104,13 @@ namespace test_cases
             r1->add_version("r1c1", "r1c1p2", "2");
             r1->add_version("rac1", "rac1pa", "1");
             r1->add_version("rac1", "rac1pa", "2");
-            p.add_repository(r1);
+            p.add_repository(11, r1);
             TEST_CHECK(true);
 
             std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
             r2->add_version("rac1", "rac1pa", "1");
             r2->add_version("rac1", "rac1pa", "3");
-            p.add_repository(r2);
+            p.add_repository(10, r2);
             TEST_CHECK(true);
 
             PackageDepSpec d1("r1c1/r1c1p1");
@@ -169,13 +169,13 @@ namespace test_cases
             r1->add_version("cat", "pkg", "2")->slot = SlotName("c");
             r1->add_version("cat", "pkg", "3")->slot = SlotName("c");
             r1->add_version("cat", "pkg", "4")->slot = SlotName("a");
-            p.add_repository(r1);
+            p.add_repository(10, r1);
             TEST_CHECK(true);
 
             std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
             r2->add_version("cat", "pkg", "1")->slot = SlotName("a");
             r2->add_version("cat", "pkg", "3")->slot = SlotName("b");
-            p.add_repository(r2);
+            p.add_repository(10, r2);
             TEST_CHECK(true);
 
             PackageDepSpec d("cat/pkg");
@@ -208,13 +208,13 @@ namespace test_cases
             r1->add_package(CategoryNamePart("cat-one") + PackageNamePart("pkg-two"));
             r1->add_package(CategoryNamePart("cat-two") + PackageNamePart("pkg-two"));
             r1->add_package(CategoryNamePart("cat-two") + PackageNamePart("pkg-three"));
-            p.add_repository(r1);
+            p.add_repository(10, r1);
             TEST_CHECK(true);
 
             std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(&e, RepositoryName("repo2")));
             r1->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"));
             r1->add_package(CategoryNamePart("cat-three") + PackageNamePart("pkg-four"));
-            p.add_repository(r2);
+            p.add_repository(10, r2);
             TEST_CHECK(true);
 
             TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-one")),
@@ -232,3 +232,4 @@ namespace test_cases
         }
     } package_database_disambiguate_test;
 }
+

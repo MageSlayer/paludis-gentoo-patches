@@ -121,5 +121,30 @@ namespace test_cases
             TEST_CHECK(env->query_use(UseFlagName("third_exp_two"), &f));
         }
     } paludis_environment_use_test_minus_star_partial;
+
+    struct TestPaludisEnvironmentRepositories : TestCase
+    {
+        TestPaludisEnvironmentRepositories() : TestCase("repositories") { }
+
+        void run()
+        {
+            setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home4").c_str(), 1);
+            unsetenv("PALUDIS_SKIP_CONFIG");
+
+            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+
+            TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("first")));
+            TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("second")));
+            TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("third")));
+            TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("fourth")));
+            TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("fifth")));
+
+            TEST_CHECK(env->package_database()->more_important_than(RepositoryName("first"), RepositoryName("second")));
+            TEST_CHECK(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("third")));
+            TEST_CHECK(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("third")));
+            TEST_CHECK(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("fifth")));
+            TEST_CHECK(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("fifth")));
+        }
+    } paludis_environment_repositories;
 }
 

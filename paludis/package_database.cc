@@ -143,6 +143,11 @@ namespace paludis
          */
         std::list<std::tr1::shared_ptr<Repository> > repositories;
 
+        /**
+         * Repository importances.
+         */
+        std::multimap<int, std::list<std::tr1::shared_ptr<Repository> >::iterator> repository_importances;
+
         /// Our environment.
         const Environment * environment;
     };
@@ -159,18 +164,26 @@ PackageDatabase::~PackageDatabase()
 }
 
 void
-PackageDatabase::add_repository(const std::tr1::shared_ptr<Repository> r)
+PackageDatabase::add_repository(int i, const std::tr1::shared_ptr<Repository> r)
 {
     Context c("When adding a repository named '" + stringify(r->name()) + "':");
 
-    IndirectIterator<std::list<std::tr1::shared_ptr<Repository> >::const_iterator, const Repository>
-        r_c(_imp->repositories.begin()),
-        r_end(_imp->repositories.end());
-    for ( ; r_c != r_end ; ++r_c)
+    for (IndirectIterator<RepositoryIterator> r_c(begin_repositories()), r_end(end_repositories()) ;
+            r_c != r_end ; ++r_c)
         if (r_c->name() == r->name())
             throw DuplicateRepositoryError(stringify(r->name()));
 
-    _imp->repositories.push_back(r);
+    std::list<std::tr1::shared_ptr<Repository> >::iterator q(_imp->repositories.end());
+    for (std::multimap<int, std::list<std::tr1::shared_ptr<Repository> >::iterator>::iterator
+            p(_imp->repository_importances.begin()), p_end(_imp->repository_importances.end()) ;
+            p != p_end ; ++p)
+        if (p->first > i)
+        {
+            q = p->second;
+            break;
+        }
+
+    _imp->repository_importances.insert(std::make_pair(i, _imp->repositories.insert(q, r)));
 }
 
 QualifiedPackageName
@@ -181,10 +194,8 @@ PackageDatabase::fetch_unique_qualified_package_name(
 
     std::tr1::shared_ptr<QualifiedPackageNameCollection> result(new QualifiedPackageNameCollection::Concrete);
 
-    IndirectIterator<std::list<std::tr1::shared_ptr<Repository> >::const_iterator, const Repository>
-        r(_imp->repositories.begin()),
-        r_end(_imp->repositories.end());
-    for ( ; r != r_end ; ++r)
+    for (IndirectIterator<RepositoryIterator> r(begin_repositories()), r_end(end_repositories()) ;
+            r != r_end ; ++r)
     {
         Context local_context("When looking in repository '" + stringify(r->name()) + "':");
 
@@ -239,7 +250,7 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
     if (! repos)
     {
         repos.reset(new RepositoryNameCollection::Concrete);
-        for (RepositoryIterator r(_imp->repositories.begin()), r_end(_imp->repositories.end()) ;
+        for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
                 r != r_end ; ++r)
             repos->push_back((*r)->name());
     }
@@ -330,10 +341,8 @@ PackageDatabase::query(const Query & q, const QueryOrder query_order) const
 std::tr1::shared_ptr<const Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n) const
 {
-    std::list<std::tr1::shared_ptr<Repository> >::const_iterator
-        r(_imp->repositories.begin()),
-        r_end(_imp->repositories.end());
-    for ( ; r != r_end ; ++r)
+    for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
+            r != r_end ; ++r)
         if ((*r)->name() == n)
             return *r;
 
@@ -343,10 +352,8 @@ PackageDatabase::fetch_repository(const RepositoryName & n) const
 std::tr1::shared_ptr<Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n)
 {
-    std::list<std::tr1::shared_ptr<Repository> >::const_iterator
-        r(_imp->repositories.begin()),
-        r_end(_imp->repositories.end());
-    for ( ; r != r_end ; ++r)
+    for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
+            r != r_end ; ++r)
         if ((*r)->name() == n)
             return *r;
 
@@ -356,7 +363,7 @@ PackageDatabase::fetch_repository(const RepositoryName & n)
 RepositoryName
 PackageDatabase::favourite_repository() const
 {
-    for (RepositoryIterator r(_imp->repositories.begin()), r_end(_imp->repositories.end()) ;
+    for (RepositoryIterator r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
         if ((*r)->can_be_favourite_repository())
             return (*r)->name();

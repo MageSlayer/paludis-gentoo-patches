@@ -1255,10 +1255,10 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(&env,
                         RepositoryName("installed_repo")));
-            env.package_database()->add_repository(destination_repo);
+            env.package_database()->add_repository(2, destination_repo);
 
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
             repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/four";
@@ -1292,10 +1292,10 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(1, repo);
             std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(&env,
                         RepositoryName("installed_repo")));
-            env.package_database()->add_repository(destination_repo);
+            env.package_database()->add_repository(2, destination_repo);
 
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two cat/three";
             repo->add_version("cat", "two", "1")->deps_interface->build_depend_string = "cat/four";
@@ -1330,12 +1330,12 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
-            env.package_database()->add_repository(installed_repo);
+            env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "one", "2");
 
             DepList d(&env, DepListOptions());
@@ -1356,12 +1356,12 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
-            env.package_database()->add_repository(installed_repo);
+            env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
 
             DepList d(&env, DepListOptions());
@@ -1382,12 +1382,12 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
-            env.package_database()->add_repository(installed_repo);
+            env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
 
             DepList d(&env, DepListOptions());
@@ -1410,12 +1410,12 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
-            env.package_database()->add_repository(installed_repo);
+            env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "2");
             installed_repo->add_version("cat", "three", "3");
 
@@ -1451,13 +1451,13 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->deps_interface->build_depend_string = "cat/two";
             repo->add_version("cat", "two", "2");
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
-            env.package_database()->add_repository(installed_repo);
+            env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "two", "0");
 
             DepList d1(&env, DepListOptions());
@@ -1484,7 +1484,7 @@ namespace test_cases
             TestEnvironment env;
 
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "zero", "1")->deps_interface->build_depend_string =
                 "( cat/one cat/two cat/three-live cat/four-cvs cat/five-svn cat/six-darcs )";
             repo->add_version("cat", "one", "scm");
@@ -1496,7 +1496,7 @@ namespace test_cases
 
             std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(
                     new FakeInstalledRepository(&env, RepositoryName("installed_repo")));
-            env.package_database()->add_repository(installed_repo);
+            env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "one", "scm");
             installed_repo->add_version("cat", "two", "2");
             installed_repo->add_version("cat", "three-live", "0");

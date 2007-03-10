@@ -71,8 +71,8 @@ namespace test_cases
                 targets(new PackageDatabaseEntryCollection::Concrete),
                 done_populate(false)
             {
-                env.package_database()->add_repository(installed_repo);
-                env.package_database()->add_repository(virtuals_repo);
+                env.package_database()->add_repository(2, installed_repo);
+                env.package_database()->add_repository(1, virtuals_repo);
             }
 
             /**

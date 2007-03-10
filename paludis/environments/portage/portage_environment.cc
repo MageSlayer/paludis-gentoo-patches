@@ -244,7 +244,7 @@ PortageEnvironment::_add_virtuals_repository()
 {
     std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
             new AssociativeCollection<std::string, std::string>::Concrete);
-    package_database()->add_repository(
+    package_database()->add_repository(-2,
             RepositoryMaker::get_instance()->find_maker("virtuals")(this, keys));
 }
 
@@ -254,7 +254,7 @@ PortageEnvironment::_add_installed_virtuals_repository()
     std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
             new AssociativeCollection<std::string, std::string>::Concrete);
     keys->insert("root", stringify(root()));
-    package_database()->add_repository(
+    package_database()->add_repository(-1,
             RepositoryMaker::get_instance()->find_maker("installed_virtuals")(this, keys));
 }
 
@@ -271,7 +271,7 @@ PortageEnvironment::_add_portdir_repository(const FSEntry & portdir)
             ((_imp->conf_dir / "portage" / "profile").is_directory() ? stringify(_imp->conf_dir / "portage" / "profile") : ""));
     keys->insert("format", "ebuild");
     keys->insert("names_cache", "/var/empty");
-    package_database()->add_repository(
+    package_database()->add_repository(2,
             RepositoryMaker::get_instance()->find_maker("ebuild")(this, keys));
 }
 
@@ -287,7 +287,7 @@ PortageEnvironment::_add_vdb_repository()
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
     keys->insert("provides_cache", "/var/empty");
-    package_database()->add_repository(
+    package_database()->add_repository(1,
             RepositoryMaker::get_instance()->find_maker("vdb")(this, keys));
 }
 

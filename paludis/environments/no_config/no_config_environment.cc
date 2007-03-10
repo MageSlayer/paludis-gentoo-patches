@@ -131,7 +131,7 @@ Implementation<NoConfigEnvironment>::Implementation(
             keys->insert("write_cache", stringify(params.write_cache));
             keys->insert("names_cache", "/var/empty");
 
-            env->package_database()->add_repository(((master_repo =
+            env->package_database()->add_repository(1, ((master_repo =
                             std::tr1::static_pointer_cast<PortageRepository>(
                                 RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys)))));
         }
@@ -147,10 +147,10 @@ Implementation<NoConfigEnvironment>::Implementation(
         if (FSEntry("/var/empty") != params.master_repository_dir)
             keys->insert("master_repository", stringify(master_repo->name()));
 
-        env->package_database()->add_repository(((portage_repo =
+        env->package_database()->add_repository(2, ((portage_repo =
                         std::tr1::static_pointer_cast<PortageRepository>(
                             RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys)))));
-        env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("virtuals")(env,
+        env->package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
                     std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
     }
     else
@@ -165,12 +165,12 @@ Implementation<NoConfigEnvironment>::Implementation(
         keys->insert("provides_cache", "/var/empty");
         keys->insert("location", stringify(top_level_dir));
 
-        env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
+        env->package_database()->add_repository(1, RepositoryMaker::get_instance()->find_maker("vdb")(env, keys));
 
         std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > iv_keys(
                 new AssociativeCollection<std::string, std::string>::Concrete);
         iv_keys->insert("root", "/");
-        env->package_database()->add_repository(RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
+        env->package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("installed_virtuals")(env,
                     iv_keys));
     }
 }

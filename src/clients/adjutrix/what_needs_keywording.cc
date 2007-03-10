@@ -49,7 +49,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     {
         std::tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(&env,
                     RepositoryName("fake_destination")));
-        env.package_database()->add_repository(fake_destination);
+        env.package_database()->add_repository(1, fake_destination);
     }
 
     KeywordName target_keyword(*CommandLine::get_instance()->begin_parameters());

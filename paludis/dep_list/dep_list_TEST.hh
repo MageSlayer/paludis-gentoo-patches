@@ -104,10 +104,10 @@ namespace test_cases
                 installed_virtuals_repo(new InstalledVirtualsRepository(&env, FSEntry("/"))),
                 done_populate(false)
             {
-                env.package_database()->add_repository(repo);
-                env.package_database()->add_repository(installed_repo);
-                env.package_database()->add_repository(virtuals_repo);
-                env.package_database()->add_repository(installed_virtuals_repo);
+                env.package_database()->add_repository(4, repo);
+                env.package_database()->add_repository(3, installed_repo);
+                env.package_database()->add_repository(2, virtuals_repo);
+                env.package_database()->add_repository(1, installed_virtuals_repo);
             }
 
             /**

@@ -88,7 +88,7 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
                     + stringify(r->importance) + "', keys " + keys);
         }
 
-        package_database()->add_repository(
+        package_database()->add_repository(r->importance,
                 RepositoryMaker::get_instance()->find_maker(r->format)(this, r->keys));
     }
 }

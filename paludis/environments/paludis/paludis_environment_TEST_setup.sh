@@ -20,6 +20,27 @@ MORE_EXP="one"
 THIRD_EXP="one"
 END
 
+mkdir -p firstrepo/profiles
+cat <<END > firstrepo/profiles/repo_name
+first
+END
+mkdir -p secondrepo/profiles
+cat <<END > secondrepo/profiles/repo_name
+second
+END
+mkdir -p thirdrepo/profiles
+cat <<END > thirdrepo/profiles/repo_name
+third
+END
+mkdir -p fourthrepo/profiles
+cat <<END > fourthrepo/profiles/repo_name
+fourth
+END
+mkdir -p fifthrepo/profiles
+cat <<END > fifthrepo/profiles/repo_name
+fifth
+END
+
 mkdir -p home1/.paludis/repositories
 cat <<END > home1/.paludis/use.conf
 * foo bar baz -fnord
@@ -78,6 +99,60 @@ names_cache = /var/empty
 location = `pwd`/repo
 profiles = `pwd`/repo/profile
 cache = /var/empty
+END
+
+mkdir -p home4/.paludis/repositories
+cat <<END > home4/.paludis/use.conf
+* foo
+END
+cat <<END > home4/.paludis/keywords.conf
+* keyword
+END
+cat <<END > home4/.paludis/licenses.conf
+* *
+END
+cat <<END > home4/.paludis/repositories/first.conf
+format = ebuild
+names_cache = /var/empty
+location = `pwd`/firstrepo
+profiles = `pwd`/repo/profile
+cache = /var/empty
+master_repository = second
+importance = 20
+END
+cat <<END > home4/.paludis/repositories/second.conf
+format = ebuild
+names_cache = /var/empty
+location = `pwd`/secondrepo
+profiles = `pwd`/repo/profile
+cache = /var/empty
+importance = 10
+END
+cat <<END > home4/.paludis/repositories/third.conf
+format = ebuild
+names_cache = /var/empty
+location = `pwd`/thirdrepo
+profiles = `pwd`/repo/profile
+cache = /var/empty
+master_repository = second
+importance = 8
+END
+cat <<END > home4/.paludis/repositories/fourth.conf
+format = ebuild
+names_cache = /var/empty
+location = `pwd`/fourthrepo
+profiles = `pwd`/repo/profile
+cache = /var/empty
+importance = 12
+END
+cat <<END > home4/.paludis/repositories/fifth.conf
+format = ebuild
+names_cache = /var/empty
+location = `pwd`/fifthrepo
+profiles = `pwd`/repo/profile
+cache = /var/empty
+master_repository = second
+importance = 5
 END
 
 

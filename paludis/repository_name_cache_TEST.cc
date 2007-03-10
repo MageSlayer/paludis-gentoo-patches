@@ -38,7 +38,7 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("/var/empty"), repo.get());
             TEST_CHECK(! cache.usable());
@@ -53,7 +53,7 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_generated"), repo.get());
             TEST_CHECK(cache.usable());
@@ -70,7 +70,7 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_existing"), repo.get());
             TEST_CHECK(cache.usable());
@@ -87,7 +87,7 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/old_format"), repo.get());
             TEST_CHECK(cache.usable());
@@ -104,7 +104,7 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/bad_repo"), repo.get());
             TEST_CHECK(cache.usable());
@@ -121,7 +121,7 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/good_repo"), repo.get());
             TEST_CHECK(cache.usable());
@@ -146,7 +146,7 @@ namespace test_cases
         {
             TestEnvironment env;
             std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(&env, RepositoryName("repo")));
-            env.package_database()->add_repository(repo);
+            env.package_database()->add_repository(10, repo);
 
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/generated"), repo.get());
             repo->add_package(QualifiedPackageName("bar/foo"));
