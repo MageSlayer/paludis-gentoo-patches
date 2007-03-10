@@ -21,6 +21,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fd_holder.hh>
+#include <paludis/util/log.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <sys/types.h>
@@ -102,7 +103,8 @@ Merger::merge()
                          Hook("merger_install_pre")
                          ("INSTALL_SOURCE", stringify(_options.image))
                          ("INSTALL_DESTINATION", stringify(_options.root)))))
-        throw MergerError("Merge of '" + stringify(_options.image) + "' to '" + stringify(_options.root) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Merge of '" + stringify(_options.image) + "' to '" + stringify(_options.root) + "' pre hooks returned non-zero");
 
     do_dir_recursive(false, _options.image, _options.root);
 
@@ -110,7 +112,8 @@ Merger::merge()
                          Hook("merger_install_post")
                          ("INSTALL_SOURCE", stringify(_options.image))
                          ("INSTALL_DESTINATION", stringify(_options.root)))))
-        throw MergerError("Merge of '" + stringify(_options.image) + "' to '" + stringify(_options.root) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Merge of '" + stringify(_options.image) + "' to '" + stringify(_options.root) + "' post hooks returned non-zero");
 }
 
 MergerEntryType
@@ -526,7 +529,8 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
                          Hook("merger_install_file_pre")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))))
-        throw MergerError("Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' pre hooks returned non-zero");
 
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir/dst_name), src.permissions()));
     FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
@@ -554,7 +558,8 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
                          Hook("merger_install_file_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))))
-        throw MergerError("Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' post hooks returned non-zero");
 }
 
 void
@@ -564,7 +569,8 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
                          Hook("merger_install_dir_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))))
-        throw MergerError("Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' pre hooks returned non-zero");
 
     mode_t mode(src.permissions());
     FSEntry dst(dst_dir / src.basename());
@@ -578,7 +584,8 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
                          Hook("merger_install_dir_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))))
-        throw MergerError("Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' post hooks returned non-zero");
 }
 
 void
@@ -588,7 +595,8 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
                          Hook("merger_install_sym_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))))
-        throw MergerError("Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' pre hooks returned non-zero");
 
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
     if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst_dir / src.basename()).c_str()))
@@ -598,7 +606,8 @@ Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
                          Hook("merger_install_sym_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename())))))
-        throw MergerError("Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Merge of '" + stringify(src) + "' to '" + stringify(dst_dir) + "' post hooks returned non-zero");
 }
 
 void
@@ -607,7 +616,8 @@ Merger::unlink_file(FSEntry d)
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_unlink_file_pre")
                          ("UNLINK_TARGET", stringify(d)))))
-        throw MergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Unmerge of '" + stringify(d) + "' pre hooks returned non-zero");
 
     if (d.is_regular_file())
     {
@@ -624,7 +634,8 @@ Merger::unlink_file(FSEntry d)
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_unlink_file_post")
                          ("UNLINK_TARGET", stringify(d)))))
-        throw MergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Unmerge of '" + stringify(d) + "' post hooks returned non-zero");
 }
 
 void
@@ -633,14 +644,16 @@ Merger::unlink_sym(FSEntry d)
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_unlink_sym_pre")
                          ("UNLINK_TARGET", stringify(d)))))
-        throw MergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Unmerge of '" + stringify(d) + "' pre hooks returned non-zero");
 
     d.unlink();
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_unlink_sym_post")
                          ("UNLINK_TARGET", stringify(d)))))
-        throw MergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Unmerge of '" + stringify(d) + "' post hooks returned non-zero");
 }
 
 void
@@ -649,14 +662,16 @@ Merger::unlink_dir(FSEntry d)
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_unlink_dir_pre")
                          ("UNLINK_TARGET", stringify(d)))))
-        throw MergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Unmerge of '" + stringify(d) + "' pre hooks returned non-zero");
 
     d.rmdir();
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_unlink_dir_post")
                          ("UNLINK_TARGET", stringify(d)))))
-        throw MergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Unmerge of '" + stringify(d) + "' post hooks returned non-zero");
 }
 
 void
@@ -665,14 +680,16 @@ Merger::unlink_misc(FSEntry d)
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_unlink_misc_pre")
                          ("UNLINK_TARGET", stringify(d)))))
-        throw MergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Unmerge of '" + stringify(d) + "' pre hooks returned non-zero");
 
     d.unlink();
 
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_unlink_misc_post")
                          ("UNLINK_TARGET", stringify(d)))))
-        throw MergerError("Unmerge of '" + stringify(d) + "' aborted by hook");
+        Log::get_instance()->message(ll_warning, lc_context,
+                "Unmerge of '" + stringify(d) + "' post hooks returned non-zero");
 }
 
 Hook
