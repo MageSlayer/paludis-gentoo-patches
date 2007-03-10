@@ -163,6 +163,25 @@ LineConfigFile::LineConfigFile(const Source & s) :
     std::string line;
     while (std::getline(s.stream(), line))
     {
+        if (line.empty())
+            continue;
+
+        while ('\\' == line.at(line.length() - 1))
+        {
+            std::string next_line;
+            if (! std::getline(s.stream(), next_line))
+                throw ConfigFileError(s.filename(), "Line continuation at end of input");
+
+            if (next_line.empty())
+                throw ConfigFileError(s.filename(), "Line continuation followed by empty line");
+
+            next_line = strip_leading(strip_trailing(line, " \t\r\n"), " \t\r\n");
+            if ((! line.empty()) && ('#' == line.at(0)))
+                throw ConfigFileError(s.filename(), "Line continuation followed by comment");
+
+            line.append(next_line);
+        }
+
         line = strip_leading(strip_trailing(line, " \t\r\n"), " \t\r\n");
         if (line.empty())
             continue;
