@@ -29,9 +29,9 @@ ebuild_f_metadata()
             E_DEPEND E_RDEPEND E_PDEPEND E_KEYWORDS ; do
         set -o noglob
         local k=${!key}
-        k=${k/\\/\\\\}
-        k=${k/\"/\\\"}
-        k=${k/\$/\\\$}
+        k=${k//\\/\\\\}
+        k=${k//\"/\\\"}
+        k=${k//\$/\\\$}
         echo "${key}=\""${k}"\""
         set +o noglob
     done
