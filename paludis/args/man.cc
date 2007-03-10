@@ -106,15 +106,47 @@ namespace
 
         void visit(const StringSetArg * const e)
         {
-            for (StringSetArg::AllowedArgIterator a(e->begin_allowed_args()), a_end(e->end_allowed_args()) ;
+            if (e->begin_allowed_args() == e->end_allowed_args())
+                return;
+
+            switch (mf)
+            {
+                case mf_man:
+                    break;
+
+                case mf_html:
+                    s << "<dl>" << endl;
+                    break;
+            }
+
+            for (EnumArg::AllowedArgIterator a(e->begin_allowed_args()), a_end(e->end_allowed_args()) ;
                     a != a_end ; ++a)
             {
-                s << ".RS" << endl;
-                s << ".TP" << endl;
-                s << ".B \"" << a->first << "\"" << endl;
-                s << ".BR" << endl;
-                s << a->second << endl;
-                s << ".RE" << endl;
+                switch (mf)
+                {
+                    case mf_man:
+                        s << ".RS" << endl;
+                        s << ".TP" << endl;
+                        s << ".B \"" << a->first << "\"" << endl;
+                        s << a->second << endl;
+                        s << ".RE" << endl;
+                        break;
+
+                    case mf_html:
+                        s << "<dt>" << a->first << "</dt>" << endl;
+                        s << "<dd>" << a->second << "</dd>" << endl;
+                        break;
+                }
+            }
+
+            switch (mf)
+            {
+                case mf_man:
+                    break;
+
+                case mf_html:
+                    s << "</dl>" << endl;
+                    break;
             }
         }
     };
