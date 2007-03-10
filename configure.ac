@@ -230,6 +230,35 @@ int main(int, char *[])
 AM_CONDITIONAL([NEED_POINTER_WRAPPERS], test x$need_pointer_wrappers = "xyes")
 dnl }}}
 
+dnl {{{ tr1 type traits
+need_type_traits_wrappers=no
+AC_MSG_CHECKING([for std::tr1::remove_pointer<>])
+AC_COMPILE_IFELSE([
+#include <tr1/type_traits>
+int main(int, char *[])
+{
+	std::tr1::remove_pointer<int *>::type x(10);
+	return x;
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_CHECKING([for boost::remove_pointer<>])
+	 AC_COMPILE_IFELSE([
+#include <boost/type_traits.hpp>
+int main(int, char *[])
+{
+	boost::remove_pointer<int *>::type x(10);
+	return x;
+}
+],
+	[AC_MSG_RESULT([yes])
+	 need_type_traits_wrappers=yes],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your compiler doesn't support tr1 and boost is not installed])])])
+AM_CONDITIONAL([NEED_TYPE_TRAITS_WRAPPERS], test x$need_type_traits_wrappers = "xyes")
+dnl }}}
+
 need_xml_check=
 need_pcrepp_check=
 

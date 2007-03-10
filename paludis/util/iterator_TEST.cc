@@ -24,6 +24,7 @@
 #include <test/test_runner.hh>
 #include <vector>
 #include <set>
+#include <map>
 #include <tr1/memory>
 
 using namespace test;
@@ -98,7 +99,7 @@ namespace test_cases
             std::list<std::tr1::shared_ptr<int> > v;
             v.push_back(std::tr1::shared_ptr<int>(new int(5)));
             v.push_back(std::tr1::shared_ptr<int>(new int(10)));
-            IndirectIterator<std::list<std::tr1::shared_ptr<int> >::iterator, int> vi(v.begin()), vi_end(v.end());
+            IndirectIterator<std::list<std::tr1::shared_ptr<int> >::iterator> vi(v.begin()), vi_end(v.end());
             TEST_CHECK(vi != vi_end);
             TEST_CHECK_EQUAL(*vi, 5);
             TEST_CHECK(++vi != vi_end);
@@ -258,12 +259,13 @@ namespace test_cases
     } test_iterator_previous;
 }
 
-#ifndef DOXYGEN
-int f(const int & v)
+namespace
 {
-    return -v;
+    int f(const int & v)
+    {
+        return -v;
+    }
 }
-#endif
 
 namespace test_cases
 {
@@ -299,9 +301,9 @@ namespace test_cases
 
         void run()
         {
-            std::pair<int,int> p(1,2);
-            SelectFirst<int,int> f;
-            SelectSecond<int,int> s;
+            std::pair<int, int> p(1,2);
+            SelectFirst<int, int> f;
+            SelectSecond<int, int> s;
 
             TEST_CHECK(f(p) == 1);
             TEST_CHECK(s(p) == 2);

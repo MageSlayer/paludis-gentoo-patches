@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,10 +20,13 @@
 #ifndef PALUDIS_GUARD_PALUDIS_INDIRECT_ITERATOR_HH
 #define PALUDIS_GUARD_PALUDIS_INDIRECT_ITERATOR_HH 1
 
-#include <iterator>
-#include <functional>
 #include <paludis/util/comparison_policy.hh>
 #include <paludis/util/instantiation_policy.hh>
+
+#include <iterator>
+#include <functional>
+#include <tr1/type_traits>
+#include <tr1/memory>
 
 /** \file
  * Declarations for various iterator helpers.
@@ -57,7 +60,31 @@ namespace paludis
         return --result;
     }
 
-    template <typename Iter_, typename Value_>
+    /**
+     * Like std::tr1::remove_pointer, for std::tr1::shared_ptr.
+     *
+     * \ingroup grpiterators
+     */
+    template <typename T_>
+    struct RemoveSharedPointer
+    {
+        typedef T_ Type;
+    };
+
+    template <typename T_>
+    struct RemoveSharedPointer<std::tr1::shared_ptr<T_> >
+    {
+        typedef T_ Type;
+    };
+
+    template <typename T_>
+    struct RemoveSharedPointer<const std::tr1::shared_ptr<T_> >
+    {
+        typedef T_ Type;
+    };
+
+    template <typename Iter_, typename Value_ =
+        typename RemoveSharedPointer<typename std::tr1::remove_pointer<typename Iter_::value_type>::type>::Type>
     class IndirectIterator;
 
     namespace
@@ -389,7 +416,7 @@ namespace paludis
      */
     template <typename A_, typename B_>
     struct SelectFirst :
-        std::unary_function<A_, std::pair<A_, B_> >
+        std::unary_function<std::pair<A_, B_>, A_ >
     {
         /// Carry out the selection.
         A_ operator() (const std::pair<A_, B_> & p) const
@@ -405,7 +432,7 @@ namespace paludis
      */
     template <typename A_, typename B_>
     struct SelectSecond :
-        std::unary_function<B_, std::pair<A_, B_> >
+        std::unary_function<std::pair<A_, B_>, B_ >
     {
         /// Carry out the selection.
         B_ operator() (const std::pair<A_, B_> & p) const
