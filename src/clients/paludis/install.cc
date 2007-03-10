@@ -582,7 +582,7 @@ do_install(std::tr1::shared_ptr<Environment> env)
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
                     env->package_database()->query(
-                        query::Matches(PackageDepSpec(e.query())) &  query::RepositoryHasInstalledInterface(),
+                        query::Matches(PackageDepSpec(e.query())) & query::RepositoryHasInstallableInterface(),
                         qo_order_by_version));
             if (p->empty())
             {
