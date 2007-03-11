@@ -121,6 +121,7 @@ make_class_VersionMetadataBase()
     key homepage std::string
     key description std::string
     key eapi std::string
+    key interactive bool
 
     allow_named_args
 

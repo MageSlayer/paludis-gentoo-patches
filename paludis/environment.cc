@@ -136,6 +136,12 @@ Environment::mask_reasons(const PackageDatabaseEntry & e, const bool override_ti
         result.set(mr_eapi);
     else
     {
+        if (breaks_portage(e, *metadata) && ! accept_breaks_portage())
+            result.set(mr_breaks_portage);
+
+        if (metadata->interactive && ! accept_interactive())
+            result.set(mr_interactive);
+
         if (metadata->virtual_interface)
         {
             result |= mask_reasons(metadata->virtual_interface->virtual_for);
@@ -629,6 +635,13 @@ Environment::reduced_gid() const
     return getgid();
 }
 
+bool
+Environment::breaks_portage(const PackageDatabaseEntry & e, const VersionMetadata & m) const
+{
+    return (e.version.has_try_part() || e.version.has_scm_part()
+            || std::string::npos != m.eapi.find("paludis"));
+}
+
 Environment::WorldCallbacks::WorldCallbacks()
 {
 }
@@ -667,4 +680,15 @@ Environment::WorldCallbacks::remove_callback(const SetName &)
 {
 }
 
+bool
+Environment::accept_interactive() const
+{
+    return false;
+}
+
+bool
+Environment::accept_breaks_portage() const
+{
+    return true;
+}
 

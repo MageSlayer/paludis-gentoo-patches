@@ -118,7 +118,7 @@ namespace
         public:
             FakedVirtualVersionMetadata(const SlotName & s, const PackageDatabaseEntry & e) :
                 VersionMetadata(
-                        VersionMetadataBase(s, "", "", "paludis-1"),
+                        VersionMetadataBase(s, "", "", "paludis-1", false),
                         VersionMetadataCapabilities::create()
                         .cran_interface(0)
                         .virtual_interface(this)

@@ -197,6 +197,14 @@ int do_query(std::tr1::shared_ptr<Environment> env)
                 case mr_by_association:
                     cout << "* " << colour(cl_masked, "A") << ": by association";
                     break;
+                case mr_chost:
+                    cout << "* " << colour(cl_masked, "A") << ": wrong CHOST";
+                    break;
+                case mr_breaks_portage:
+                    cout << "* " << colour(cl_masked, "B") << ": breaks Portage";
+                    break;
+                case mr_interactive:
+                    cout << "* " << colour(cl_masked, "B") << ": interactive";
 
                 case last_mr:
                     break;

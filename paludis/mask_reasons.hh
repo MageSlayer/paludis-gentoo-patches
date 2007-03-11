@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+ * Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,26 +31,8 @@
 
 namespace paludis
 {
-    /**
-     * Each value represents one reason for a package being
-     * masked.
-     *
-     * \see MaskReasons
-     *
-     * \ingroup grpmaskreasons
-     */
-    enum MaskReason
-    {
-        mr_keyword,               ///< no keyword match
-        mr_user_mask,             ///< user package.mask
-        mr_profile_mask,          ///< profile package.mask
-        mr_repository_mask,       ///< repository package.mask
-        mr_eapi,                  ///< unknown eapi
-        mr_by_association,        ///< masked by association with another package (for virtuals)
-        mr_license,               ///< unaccepted license
-        mr_licence = mr_license,  ///< convenience alias for those who can spell,
-        last_mr                   ///< number of entries
-    };
+
+#include <paludis/mask_reasons-se.hh>
 
     /**
      * A collection of reasons for why a package is masked.
@@ -58,14 +40,6 @@ namespace paludis
      * \ingroup grpmaskreasons
      */
     typedef std::bitset<last_mr> MaskReasons;
-
-    /**
-     * Stringify a MaskReason.
-     *
-     * \ingroup grpmaskreasons
-     */
-    std::ostream &
-    operator<< (std::ostream &, const MaskReason &);
 }
 
 #endif

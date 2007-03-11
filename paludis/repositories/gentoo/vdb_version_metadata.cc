@@ -24,7 +24,7 @@ using namespace paludis;
 
 VDBVersionMetadata::VDBVersionMetadata() :
     VersionMetadata(
-        VersionMetadataBase(SlotName("unset"), "", "", "UNKNOWN"),
+        VersionMetadataBase(SlotName("unset"), "", "", "UNKNOWN", false),
         VersionMetadataCapabilities::create()
         .deps_interface(this)
         .origins_interface(this)
@@ -46,7 +46,7 @@ VDBVersionMetadata::~VDBVersionMetadata()
 VDBVirtualVersionMetadata::VDBVirtualVersionMetadata(const SlotName & s,
         const PackageDatabaseEntry & e) :
     VersionMetadata(
-        VersionMetadataBase(s, "", "", "UNKNOWN"),
+        VersionMetadataBase(s, "", "", "UNKNOWN", false),
         VersionMetadataCapabilities::create()
         .deps_interface(this)
         .origins_interface(0)

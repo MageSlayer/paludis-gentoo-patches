@@ -32,7 +32,7 @@ using namespace paludis;
 
 EbinVersionMetadata::EbinVersionMetadata(const SlotName & s) :
     VersionMetadata(
-            VersionMetadataBase(s, "", "", "paludis-1"),
+            VersionMetadataBase(s, "", "", "paludis-1", false),
             VersionMetadataCapabilities::create()
             .ebin_interface(this)
             .ebuild_interface(this)

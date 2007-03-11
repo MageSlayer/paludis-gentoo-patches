@@ -6,6 +6,9 @@ dnl vim: set ft=m4 noet :
 define(`filelist', `')dnl
 define(`testlist', `')dnl
 define(`headerlist', `')dnl
+define(`selist', `')dnl
+define(`secleanlist', `')dnl
+define(`seheaderlist', `')dnl
 define(`srlist', `')dnl
 define(`srcleanlist', `')dnl
 define(`srheaderlist', `')dnl
@@ -39,11 +42,22 @@ $1-sr.cc : $1.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --source $`'(srcdir)/$1.sr > $`'@
 
 ')dnl
+define(`addse', `define(`selist', selist `$1.se')dnl
+define(`secleanlist', secleanlist `$1-se.hh $1-se.cc')dnl
+define(`seheaderlist', seheaderlist `$1-se.hh')dnl
+$1-se.hh : $1.se $(top_srcdir)/misc/make_se.bash
+	$(top_srcdir)/misc/make_se.bash --header $`'(srcdir)/$1.se > $`'@
+
+$1-se.cc : $1.se $(top_srcdir)/misc/make_se.bash
+	$(top_srcdir)/misc/make_se.bash --source $`'(srcdir)/$1.se > $`'@
+
+')dnl
 define(`addthis', `dnl
 ifelse(`$2', `hh', `addhh(`$1')', `')dnl
 ifelse(`$2', `hhx', `addhhx(`$1')', `')dnl
 ifelse(`$2', `cc', `addcc(`$1')', `')dnl
 ifelse(`$2', `sr', `addsr(`$1')', `')dnl
+ifelse(`$2', `se', `addse(`$1')', `')dnl
 ifelse(`$2', `impl', `addimpl(`$1')', `')dnl
 ifelse(`$2', `test', `addtest(`$1')', `')dnl
 ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
@@ -55,7 +69,7 @@ include(`paludis/files.m4')
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda ihateautomake.cc ihateautomake.o
 MAINTAINERCLEANFILES = Makefile.in Makefile.am about.hh paludis.hh \
 	hashed_containers.hh
-DISTCLEANFILES = srcleanlist
+DISTCLEANFILES = srcleanlist secleanlist
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
@@ -63,10 +77,10 @@ DEFS= \
 	-DDATADIR=\"$(datadir)\" \
 	-DLIBDIR=\"$(libdir)\"
 EXTRA_DIST = about.hh.in Makefile.am.m4 paludis.hh.m4 files.m4 \
-	hashed_containers.hh.in testscriptlist srlist srcleanlist \
+	hashed_containers.hh.in testscriptlist srlist srcleanlist selist secleanlist \
 	repository_blacklist.txt
 SUBDIRS = digests fetchers syncers util selinux . dep_list merger repositories environments args qa tasks
-BUILT_SOURCES = srcleanlist
+BUILT_SOURCES = srcleanlist secleanlist
 
 libpaludis_la_SOURCES = filelist
 libpaludis_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
@@ -110,7 +124,7 @@ noinst_LTLIBRARIES = libpaludismanpagethings.la
 endif
 
 paludis_includedir = $(includedir)/paludis/
-paludis_include_HEADERS = headerlist srheaderlist
+paludis_include_HEADERS = headerlist srheaderlist seheaderlist
 
 Makefile.am : Makefile.am.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash Makefile.am

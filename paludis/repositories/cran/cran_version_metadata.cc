@@ -24,7 +24,7 @@ using namespace paludis;
 
 CRANVersionMetadata::CRANVersionMetadata(bool want_origins) :
     VersionMetadata(
-            VersionMetadataBase(SlotName("unset"), "", "", "UNKNOWN"),
+            VersionMetadataBase(SlotName("unset"), "", "", "UNKNOWN", false),
             VersionMetadataCapabilities::create()
             .cran_interface(this)
             .ebuild_interface(0)

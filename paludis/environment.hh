@@ -175,6 +175,20 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
+             * Accept packages that break Portage?
+             *
+             * Default behaviour: yes.
+             */
+            virtual bool accept_breaks_portage() const;
+
+            /**
+             * Accept interactive packages?
+             *
+             * Default behaviour: no.
+             */
+            virtual bool accept_interactive() const;
+
+            /**
              * Fetch the masks for a particular package.
              */
             MaskReasons mask_reasons(const PackageDatabaseEntry &,
@@ -419,6 +433,11 @@ namespace paludis
              */
             virtual gid_t reduced_gid() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Test whether a particular package will break Portage.
+             */
+            bool breaks_portage(const PackageDatabaseEntry &, const VersionMetadata &) const;
     };
 }
 

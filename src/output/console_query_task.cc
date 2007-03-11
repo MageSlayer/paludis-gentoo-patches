@@ -162,6 +162,15 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
                             case mr_by_association:
                                 reasons.append("A");
                                 break;
+                            case mr_chost:
+                                reasons.append("C");
+                                break;
+                            case mr_breaks_portage:
+                                reasons.append("B");
+                                break;
+                            case mr_interactive:
+                                reasons.append("I");
+                                break;
                             case last_mr:
                                 break;
                         }

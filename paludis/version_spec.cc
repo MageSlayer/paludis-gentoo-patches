@@ -499,6 +499,18 @@ VersionSpec::is_scm() const
     return result;
 }
 
+bool
+VersionSpec::has_try_part() const
+{
+    return _imp->parts.end() != std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<trypart>());
+}
+
+bool
+VersionSpec::has_scm_part() const
+{
+    return _imp->parts.end() != std::find_if(_imp->parts.begin(), _imp->parts.end(), IsPart<scm>());
+}
+
 VersionSpec
 VersionSpec::bump() const
 {
