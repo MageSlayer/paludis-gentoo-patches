@@ -6,6 +6,7 @@ make_enum_EbuildInstallCommandPhase()
     prefix ebuild_ip
 
     key ebuild_ip_build         "Build the package."
+    key ebuild_ip_install       "Install the package to D."
     key ebuild_ip_preinstall    "Preinstall to a live system."
     key ebuild_ip_postinstall   "Postinstall to a live system."
     key ebuild_ip_tidyup        "Tidy up work."

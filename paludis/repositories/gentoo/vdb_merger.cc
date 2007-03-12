@@ -20,6 +20,7 @@
 #include "vdb_merger.hh"
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/system.hh>
 #include <paludis/digests/md5.hh>
 #include <paludis/environment.hh>
 #include <fstream>
@@ -57,7 +58,8 @@ VDBMerger::VDBMerger(const VDBMergerOptions & o) :
     Merger(MergerOptions::create()
             .environment(o.environment)
             .image(o.image)
-            .root(o.root)),
+            .root(o.root)
+            .no_chown(! getenv_with_default("PALUDIS_NO_CHOWN", "").empty())),
     PrivateImplementationPattern<VDBMerger>(new Implementation<VDBMerger>(o))
 {
 }

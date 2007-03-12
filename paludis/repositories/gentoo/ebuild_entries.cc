@@ -506,6 +506,10 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     EbuildInstallCommand build_cmd(command_params, install_params);
     build_cmd();
 
+    install_params.phase = ebuild_ip_install;
+    EbuildInstallCommand install_cmd(command_params, install_params);
+    install_cmd();
+
     for (DestinationsCollection::Iterator d(o.destinations->begin()),
             d_end(o.destinations->end()) ; d != d_end ; ++d)
     {

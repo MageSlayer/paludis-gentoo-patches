@@ -6,6 +6,7 @@ make_class_MergerOptions()
     key environment "Environment *"
     key image "FSEntry"
     key root "FSEntry"
+    key no_chown bool
 
     allow_named_args
 

@@ -119,6 +119,8 @@ Merger::merge()
 MergerEntryType
 Merger::entry_type(const FSEntry & f)
 {
+    Context context("When checking type of '" + stringify(f) + "':");
+
     if (! f.exists())
         return met_nothing;
 
@@ -184,6 +186,8 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
 void
 Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
+    Context context("When handling file '" + stringify(src) + "' to '" + stringify(dst) + "':");
+
     MergerEntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
@@ -235,6 +239,8 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
 void
 Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
+    Context context("When handling dir '" + stringify(src) + "' to '" + stringify(dst) + "':");
+
     MergerEntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
@@ -287,6 +293,8 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 void
 Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
+    Context context("When handling sym '" + stringify(src) + "' to '" + stringify(dst) + "':");
+
     MergerEntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
@@ -338,6 +346,8 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
 void
 Merger::on_misc(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
+    Context context("When handling misc '" + stringify(src) + "' to '" + stringify(dst) + "':");
+
     on_error(is_check, "Cannot write '" + stringify(src) + "' to '" + stringify(dst) +
             "' because it is not a recognised file type");
 }
@@ -525,6 +535,9 @@ Merger::on_sym_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst
 void
 Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
 {
+    Context context("When installing file '" + stringify(src) + "' to '" + stringify(dst_dir) + "' with protection '"
+            + stringify(dst_name) + "':");
+
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_file_pre")
                         ("INSTALL_SOURCE", stringify(src))
@@ -542,8 +555,11 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
     if (-1 == output_fd)
         throw MergerError("Cannot write '" + stringify(dst_dir / dst_name) + "'");
 
-    if (0 != ::fchown(output_fd, src.owner(), src.group()))
-        throw MergerError("Cannot fchown '" + stringify(dst_dir / dst_name) + "'");
+    if (! _options.no_chown)
+        if (0 != ::fchown(output_fd,
+                    src.owner() == _options.environment->reduced_uid() ? 0 : src.owner(),
+                    src.group() == _options.environment->reduced_gid() ? 0 : src.group()))
+            throw MergerError("Cannot fchown '" + stringify(dst_dir / dst_name) + "'");
 
     /* set*id bits */
     if (0 != ::fchmod(output_fd, src.permissions()))
@@ -565,6 +581,8 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
 void
 Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
 {
+    Context context("When installing dir '" + stringify(src) + "' to '" + stringify(dst_dir) + "':");
+
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_dir_pre")
                          ("INSTALL_SOURCE", stringify(src))
@@ -576,7 +594,10 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     FSEntry dst(dst_dir / src.basename());
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), mode));
     dst.mkdir(mode);
-    dst.chown(src.owner(), src.group());
+    if (! _options.no_chown)
+        dst.chown(
+                src.owner() == _options.environment->reduced_uid() ? 0 : src.owner(),
+                src.group() == _options.environment->reduced_gid() ? 0 : src.group());
     /* pick up set*id bits */
     dst.chmod(src.permissions());
 
@@ -591,6 +612,8 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
 void
 Merger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 {
+    Context context("When installing sym '" + stringify(src) + "' to '" + stringify(dst_dir) + "':");
+
     if (0 != _options.environment->perform_hook(extend_hook(
                          Hook("merger_install_sym_pre")
                          ("INSTALL_SOURCE", stringify(src))

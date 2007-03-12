@@ -97,7 +97,8 @@ namespace
                 merger(MergerOptions::create()
                         .image(image_dir)
                         .root(root_dir)
-                        .environment(&env))
+                        .environment(&env)
+                        .no_chown(true))
             {
             }
     };

@@ -310,7 +310,10 @@ EbuildInstallCommand::commands() const
     switch (install_params.phase)
     {
         case ebuild_ip_build:
-            return "init setup unpack compile test install saveenv";
+            return "init setup unpack compile test saveenv";
+
+        case ebuild_ip_install:
+            return "loadenv install saveenv";
 
         case ebuild_ip_preinstall:
             return "loadenv strip preinst saveenv";

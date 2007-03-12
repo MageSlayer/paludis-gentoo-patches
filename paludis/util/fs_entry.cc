@@ -458,7 +458,8 @@ void
 FSEntry::chown(const uid_t new_owner, const gid_t new_group)
 {
     if (0 != ::chown(_path.c_str(), new_owner, new_group))
-        throw FSError("chown '" + _path + "' failed: " + ::strerror(errno));
+        throw FSError("chown '" + _path + "' to '" + stringify(new_owner) + "', '"
+                + stringify(new_group) + "' failed: " + ::strerror(errno));
 }
 
 void
