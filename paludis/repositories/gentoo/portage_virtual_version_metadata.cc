@@ -25,7 +25,12 @@ using namespace paludis;
 PortageVirtualVersionMetadata::PortageVirtualVersionMetadata(const SlotName & s,
         const PackageDatabaseEntry & e) :
     VersionMetadata(
-            VersionMetadataBase(s, "", "", "paludis-1", false),
+            VersionMetadataBase::create()
+            .slot(s)
+            .homepage("")
+            .description("")
+            .eapi("paludis-1")
+            .interactive(false),
             VersionMetadataCapabilities::create()
             .virtual_interface(this)
             .ebuild_interface(0)

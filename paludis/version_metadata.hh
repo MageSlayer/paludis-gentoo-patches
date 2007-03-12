@@ -43,6 +43,18 @@ namespace paludis
     class VersionMetadataOriginsInterface;
     class VersionMetadataVirtualInterface;
     class VersionMetadataLicenseInterface;
+    class VersionMetadata;
+
+    class VersionMetadataHasInterfaces
+    {
+        protected:
+            VersionMetadataHasInterfaces();
+
+        public:
+            virtual ~VersionMetadataHasInterfaces();
+
+            virtual const VersionMetadata * version_metadata() const = 0;
+    };
 
     /**
      * A pointer to a parse function.
@@ -67,7 +79,7 @@ namespace paludis
             virtual ~VersionMetadata();
 
         protected:
-            VersionMetadata(const VersionMetadataBase &, const VersionMetadataCapabilities &);
+            VersionMetadata(const VersionMetadataBase::Params<> &, const VersionMetadataCapabilities &);
 
     };
 }

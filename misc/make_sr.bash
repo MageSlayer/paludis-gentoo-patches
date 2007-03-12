@@ -40,6 +40,7 @@ while read a ; do
     want_visible=
     want_keys=( )
     want_key_types=( )
+    want_inherit=( )
     want_comparison_operators=
     want_comparison_fields=( )
 
@@ -66,6 +67,11 @@ while read a ; do
     doxygen_comment()
     {
         :
+    }
+
+    inherit()
+    {
+        want_inherit=( "${want_inherit[@]}" "$1" )
     }
 
     key()
@@ -102,6 +108,11 @@ while read a ; do
         :
     }
 
+    inherit()
+    {
+        :
+    }
+
     comparison_operators()
     {
         :
@@ -130,10 +141,25 @@ while read a ; do
 
     if [[ "${what_to_make}" == "--header" ]] ; then
         if [[ -z ${want_visible} ]] ; then
-            echo "class ${a}"
+            echo -n "class ${a}"
         else
-            echo "class PALUDIS_VISIBLE ${a}"
+            echo -n "class PALUDIS_VISIBLE ${a}"
         fi
+
+        if [[ 0 != "${#want_inherit[@]}" ]] ; then
+            echo " :"
+            for (( k = 0 ; k < ${#want_inherit[@]} ; k++ )) ; do
+                echo -n "        ${want_inherit[${k}]}"
+                if [[ ${k} == $(( ${#want_inherit[@]} - 1 )) ]] ; then
+                    echo
+                else
+                    echo ","
+                fi
+            done
+        else
+            echo
+        fi
+
         echo "{"
         echo "    public:"
         echo
@@ -282,7 +308,7 @@ while read a ; do
             echo "         */"
             echo "        template <"
             for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo -n "            bool has_${want_keys[${k}]}_"
+                echo -n "            bool has_${want_keys[${k}]}_ = true"
                 if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
                     echo ","
                 else
@@ -381,21 +407,6 @@ while read a ; do
             echo "                {"
             echo "                }"
             echo
-            echo "                operator ${a} () const"
-            echo "                {"
-            echo "                    return ${a}("
-            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
-                echo -n "                            this->${want_keys[${k}]}"
-                if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
-                    echo ", "
-                else
-                    echo
-                fi
-            done
-
-            echo "                        );"
-            echo "                }"
-            echo
             echo "                ///\}"
             echo
             echo "        };"
@@ -412,6 +423,29 @@ while read a ; do
             echo "> create();"
             echo
             echo "#endif"
+        fi
+
+        if [[ -n "${want_named_args}" ]] ; then
+            echo "        ${a}(const Params<"
+            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                echo -n "            true"
+                if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                    echo ","
+                else
+                    echo "> & params) :"
+                fi
+            done
+            for (( k = 0 ; k < ${#want_keys[@]} ; k++ )) ; do
+                echo -n "                ${want_keys[${k}]}(params.${want_keys[${k}]})"
+                if [[ $(( ${k} + 1 )) -lt ${#want_keys[@]} ]] ; then
+                    echo ","
+                else
+                    echo
+                fi
+            done
+            echo "    {"
+            echo "    }"
+            echo
         fi
 
         echo "};"

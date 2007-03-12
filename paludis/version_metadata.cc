@@ -66,7 +66,7 @@ VersionMetadata::~VersionMetadata()
 {
 }
 
-VersionMetadata::VersionMetadata(const VersionMetadataBase & base, const VersionMetadataCapabilities & caps) :
+VersionMetadata::VersionMetadata(const VersionMetadataBase::Params<> & base, const VersionMetadataCapabilities & caps) :
     VersionMetadataBase(base),
     VersionMetadataCapabilities(caps)
 {
@@ -99,6 +99,14 @@ VersionMetadataEbuildInterface::VersionMetadataEbuildInterface()
 }
 
 VersionMetadataEbinInterface::VersionMetadataEbinInterface()
+{
+}
+
+VersionMetadataHasInterfaces::VersionMetadataHasInterfaces()
+{
+}
+
+VersionMetadataHasInterfaces::~VersionMetadataHasInterfaces()
 {
 }
 

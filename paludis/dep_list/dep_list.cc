@@ -113,12 +113,18 @@ namespace
 {
     class FakedVirtualVersionMetadata :
         public VersionMetadata,
-        public VersionMetadataVirtualInterface
+        public VersionMetadataVirtualInterface,
+        public virtual VersionMetadataHasInterfaces
     {
         public:
             FakedVirtualVersionMetadata(const SlotName & s, const PackageDatabaseEntry & e) :
                 VersionMetadata(
-                        VersionMetadataBase(s, "", "", "paludis-1", false),
+                        VersionMetadataBase::create()
+                        .slot(s)
+                        .homepage("")
+                        .description("")
+                        .eapi("paludis-1")
+                        .interactive(false),
                         VersionMetadataCapabilities::create()
                         .cran_interface(0)
                         .virtual_interface(this)
@@ -129,6 +135,11 @@ namespace
                         .license_interface(0)),
                 VersionMetadataVirtualInterface(e)
             {
+            }
+
+            virtual const VersionMetadata * version_metadata() const
+            {
+                return this;
             }
     };
 

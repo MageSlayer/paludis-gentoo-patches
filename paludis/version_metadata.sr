@@ -26,6 +26,8 @@ END
 
 make_class_VersionMetadataDepsInterface()
 {
+    inherit "public virtual VersionMetadataHasInterfaces"
+
     key parser ParserFunction
 
     key build_depend_string std::string
@@ -71,6 +73,8 @@ END
 
 make_class_VersionMetadataLicenseInterface()
 {
+    inherit "public virtual VersionMetadataHasInterfaces"
+
     key parser ParserFunction
 
     key license_string std::string
@@ -98,6 +102,8 @@ END
 
 make_class_VersionMetadataOriginsInterface()
 {
+    inherit "public virtual VersionMetadataHasInterfaces"
+
     key "source" "std::tr1::shared_ptr<PackageDatabaseEntry>"
     key "binary" "std::tr1::shared_ptr<PackageDatabaseEntry>"
 
@@ -117,6 +123,8 @@ END
 
 make_class_VersionMetadataBase()
 {
+    inherit "public virtual VersionMetadataHasInterfaces"
+
     key slot SlotName
     key homepage std::string
     key description std::string
@@ -137,6 +145,8 @@ END
 
 make_class_VersionMetadataEbuildInterface()
 {
+    inherit "public virtual VersionMetadataHasInterfaces"
+
     key provide_string std::string
     key src_uri std::string
     key restrict_string std::string
@@ -170,6 +180,8 @@ END
 
 make_class_VersionMetadataEbinInterface()
 {
+    inherit "public virtual VersionMetadataHasInterfaces"
+
     key bin_uri std::string
 
     extra_constructors <<END
@@ -190,6 +202,8 @@ END
 
 make_class_VersionMetadataCRANInterface()
 {
+    inherit "public virtual VersionMetadataHasInterfaces"
+
     key keywords std::string
     key package std::string
     key version std::string
@@ -210,6 +224,8 @@ END
 
 make_class_VersionMetadataVirtualInterface()
 {
+    inherit "public virtual VersionMetadataHasInterfaces"
+
     key virtual_for PackageDatabaseEntry
 
     doxygen_comment << "END"

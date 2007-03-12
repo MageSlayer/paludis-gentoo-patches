@@ -43,11 +43,17 @@ namespace paludis
         public VersionMetadata,
         public VersionMetadataEbuildInterface,
         public VersionMetadataDepsInterface,
-        public VersionMetadataLicenseInterface
+        public VersionMetadataLicenseInterface,
+        public virtual VersionMetadataHasInterfaces
     {
         public:
             FakeVersionMetadata();
             virtual ~FakeVersionMetadata();
+
+            virtual const VersionMetadata * version_metadata() const
+            {
+                return this;
+            }
     };
 
     /**
@@ -60,11 +66,17 @@ namespace paludis
     class FakeVirtualVersionMetadata :
         public VersionMetadata,
         public VersionMetadataDepsInterface,
-        public VersionMetadataVirtualInterface
+        public VersionMetadataVirtualInterface,
+        public virtual VersionMetadataHasInterfaces
     {
         public:
             FakeVirtualVersionMetadata(const SlotName &, const PackageDatabaseEntry &);
             virtual ~FakeVirtualVersionMetadata();
+
+            virtual const VersionMetadata * version_metadata() const
+            {
+                return this;
+            }
     };
 
     /**

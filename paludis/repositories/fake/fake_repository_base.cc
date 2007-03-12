@@ -304,7 +304,12 @@ FakeRepositoryBase::environment() const
 
 FakeVersionMetadata::FakeVersionMetadata() :
     VersionMetadata(
-            VersionMetadataBase(SlotName("0"), "", "", "paludis-1", false),
+            VersionMetadataBase::create()
+            .slot(SlotName("0"))
+            .homepage("")
+            .description("")
+            .eapi("paludis-1")
+            .interactive(false),
             VersionMetadataCapabilities::create()
             .ebuild_interface(this)
             .deps_interface(this)
@@ -327,7 +332,12 @@ FakeVersionMetadata::~FakeVersionMetadata()
 
 FakeVirtualVersionMetadata::FakeVirtualVersionMetadata(const SlotName & s, const PackageDatabaseEntry & p) :
     VersionMetadata(
-            VersionMetadataBase(s, "", "", "paludis-1", false),
+            VersionMetadataBase::create()
+            .slot(s)
+            .homepage("")
+            .description("")
+            .eapi("paludis-1")
+            .interactive(false),
             VersionMetadataCapabilities::create()
             .ebuild_interface(0)
             .deps_interface(this)

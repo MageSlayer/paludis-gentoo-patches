@@ -33,11 +33,17 @@ namespace paludis
      */
     class GemsVersionMetadata :
         public VersionMetadata,
-        public VersionMetadataDepsInterface
+        public VersionMetadataDepsInterface,
+        public virtual VersionMetadataHasInterfaces
     {
         public:
             GemsVersionMetadata(const VersionSpec &);
             virtual ~GemsVersionMetadata();
+
+            virtual const VersionMetadata * version_metadata() const
+            {
+                return this;
+            }
     };
 }
 

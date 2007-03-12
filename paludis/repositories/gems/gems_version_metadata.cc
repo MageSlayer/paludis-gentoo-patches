@@ -24,7 +24,12 @@ using namespace paludis;
 
 GemsVersionMetadata::GemsVersionMetadata(const VersionSpec & v) :
     VersionMetadata(
-            VersionMetadataBase(SlotName(stringify(v)), "", "", "paludis-1", false),
+            VersionMetadataBase::create()
+            .slot(SlotName(stringify(v)))
+            .homepage("")
+            .description("")
+            .eapi("paludis-1")
+            .interactive(false),
             VersionMetadataCapabilities::create()
             .deps_interface(this)
             .ebuild_interface(0)

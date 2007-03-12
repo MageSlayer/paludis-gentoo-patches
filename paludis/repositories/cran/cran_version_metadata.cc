@@ -24,25 +24,27 @@ using namespace paludis;
 
 CRANVersionMetadata::CRANVersionMetadata(bool want_origins) :
     VersionMetadata(
-            VersionMetadataBase(SlotName("unset"), "", "", "UNKNOWN", false),
+            VersionMetadataBase::create()
+            .slot(SlotName("unset"))
+            .homepage("")
+            .description("")
+            .eapi("UNKNOWN")
+            .interactive(false),
             VersionMetadataCapabilities::create()
             .cran_interface(this)
             .ebuild_interface(0)
             .license_interface(0)
             .virtual_interface(0)
-            .origins_interface(want_origins ? _origins : 0)
+            .origins_interface(want_origins ? this : 0)
             .deps_interface(this)
             .ebin_interface(0)
             ),
     VersionMetadataCRANInterface("", "", "", false, false),
-    VersionMetadataDepsInterface(CRANDepParser::parse),
-    _origins(want_origins ? new VersionMetadataOriginsInterface : 0)
+    VersionMetadataDepsInterface(CRANDepParser::parse)
 {
 }
 
 CRANVersionMetadata::~CRANVersionMetadata()
 {
-    if (_origins)
-        delete _origins;
 }
 

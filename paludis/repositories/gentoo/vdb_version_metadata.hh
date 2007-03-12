@@ -29,21 +29,33 @@ namespace paludis
         public VersionMetadataDepsInterface,
         public VersionMetadataOriginsInterface,
         public VersionMetadataEbuildInterface,
-        public VersionMetadataLicenseInterface
+        public VersionMetadataLicenseInterface,
+        public virtual VersionMetadataHasInterfaces
     {
         public:
             VDBVersionMetadata();
             virtual ~VDBVersionMetadata();
+
+            virtual const VersionMetadata * version_metadata() const
+            {
+                return this;
+            }
     };
 
     class VDBVirtualVersionMetadata :
         public VersionMetadata,
         public VersionMetadataDepsInterface,
-        public VersionMetadataVirtualInterface
+        public VersionMetadataVirtualInterface,
+        public virtual VersionMetadataHasInterfaces
     {
         public:
             VDBVirtualVersionMetadata(const SlotName &, const PackageDatabaseEntry &);
             virtual ~VDBVirtualVersionMetadata();
+
+            virtual const VersionMetadata * version_metadata() const
+            {
+                return this;
+            }
     };
 }
 

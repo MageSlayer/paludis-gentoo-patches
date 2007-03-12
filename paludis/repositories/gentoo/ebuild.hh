@@ -65,11 +65,17 @@ namespace paludis
         public VersionMetadata,
         public VersionMetadataEbuildInterface,
         public VersionMetadataDepsInterface,
-        public VersionMetadataLicenseInterface
+        public VersionMetadataLicenseInterface,
+        public virtual VersionMetadataHasInterfaces
     {
         public:
             EbuildVersionMetadata();
             virtual ~EbuildVersionMetadata();
+
+            virtual const VersionMetadata * version_metadata() const
+            {
+                return this;
+            }
     };
 
     /**

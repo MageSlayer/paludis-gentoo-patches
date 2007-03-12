@@ -24,16 +24,21 @@ using namespace paludis;
 
 VDBVersionMetadata::VDBVersionMetadata() :
     VersionMetadata(
-        VersionMetadataBase(SlotName("unset"), "", "", "UNKNOWN", false),
-        VersionMetadataCapabilities::create()
-        .deps_interface(this)
-        .origins_interface(this)
-        .ebuild_interface(this)
-        .license_interface(this)
-        .virtual_interface(0)
-        .cran_interface(0)
-        .ebin_interface(0)
-        ),
+            VersionMetadataBase::create()
+            .slot(SlotName("UNSET"))
+            .homepage("")
+            .description("")
+            .eapi("UNKNOWN")
+            .interactive(false),
+            VersionMetadataCapabilities::create()
+            .deps_interface(this)
+            .origins_interface(this)
+            .ebuild_interface(this)
+            .license_interface(this)
+            .virtual_interface(0)
+            .cran_interface(0)
+            .ebin_interface(0)
+            ),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
     VersionMetadataLicenseInterface(&PortageDepParser::parse_license)
 {
@@ -46,15 +51,20 @@ VDBVersionMetadata::~VDBVersionMetadata()
 VDBVirtualVersionMetadata::VDBVirtualVersionMetadata(const SlotName & s,
         const PackageDatabaseEntry & e) :
     VersionMetadata(
-        VersionMetadataBase(s, "", "", "UNKNOWN", false),
-        VersionMetadataCapabilities::create()
-        .deps_interface(this)
-        .origins_interface(0)
-        .ebuild_interface(0)
-        .license_interface(0)
-        .virtual_interface(this)
-        .cran_interface(0)
-        .ebin_interface(0)
+            VersionMetadataBase::create()
+            .slot(s)
+            .homepage("")
+            .description("")
+            .eapi("UNKNOWN")
+            .interactive(false),
+            VersionMetadataCapabilities::create()
+            .deps_interface(this)
+            .origins_interface(0)
+            .ebuild_interface(0)
+            .license_interface(0)
+            .virtual_interface(this)
+            .cran_interface(0)
+            .ebin_interface(0)
         ),
     VersionMetadataDepsInterface(&PortageDepParser::parse_depend),
     VersionMetadataVirtualInterface(e)

@@ -449,7 +449,12 @@ EbuildUninstallCommand::EbuildUninstallCommand(const EbuildCommandParams & p,
 
 EbuildVersionMetadata::EbuildVersionMetadata() :
     VersionMetadata(
-            VersionMetadataBase(SlotName("unset"), "", "", "UNKNOWN", false),
+            VersionMetadataBase::create()
+            .slot(SlotName("UNSET"))
+            .homepage("")
+            .description("")
+            .eapi("UNKNOWN")
+            .interactive(false),
             VersionMetadataCapabilities::create()
             .ebuild_interface(this)
             .cran_interface(0)

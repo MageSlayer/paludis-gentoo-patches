@@ -27,11 +27,17 @@ namespace paludis
     class PortageVirtualVersionMetadata :
         public VersionMetadata,
         public VersionMetadataVirtualInterface,
-        public VersionMetadataDepsInterface
+        public VersionMetadataDepsInterface,
+        public virtual VersionMetadataHasInterfaces
     {
         public:
             PortageVirtualVersionMetadata(const SlotName &, const PackageDatabaseEntry &);
             virtual ~PortageVirtualVersionMetadata();
+
+            virtual const VersionMetadata * version_metadata() const
+            {
+                return this;
+            }
     };
 }
 

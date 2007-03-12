@@ -27,14 +27,18 @@ namespace paludis
     class CRANVersionMetadata :
         public VersionMetadata,
         public VersionMetadataCRANInterface,
-        public VersionMetadataDepsInterface
+        public VersionMetadataDepsInterface,
+        public VersionMetadataOriginsInterface,
+        public virtual VersionMetadataHasInterfaces
     {
-        private:
-            VersionMetadataOriginsInterface * _origins;
-
         public:
             CRANVersionMetadata(bool want_origins);
             virtual ~CRANVersionMetadata();
+
+            virtual const VersionMetadata * version_metadata() const
+            {
+                return this;
+            }
     };
 }
 

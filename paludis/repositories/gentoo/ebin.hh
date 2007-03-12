@@ -40,11 +40,17 @@ namespace paludis
         public VersionMetadataEbinInterface,
         public VersionMetadataDepsInterface,
         public VersionMetadataLicenseInterface,
-        public VersionMetadataOriginsInterface
+        public VersionMetadataOriginsInterface,
+        public virtual VersionMetadataHasInterfaces
     {
         public:
             EbinVersionMetadata(const SlotName &);
             virtual ~EbinVersionMetadata();
+
+            virtual const VersionMetadata * version_metadata() const
+            {
+                return this;
+            }
     };
 
     class EbinCommand :
