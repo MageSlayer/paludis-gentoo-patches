@@ -124,15 +124,28 @@ src_install() {
     [[ "${VAR1}" == yes ]] || die
     [[ "${VAR2}" == yes ]] || die
     [[ "${VAR3}" == yes ]] && die
+    [[ $(printenv VAR1 ) == yes ]] || die
 
     dobin testbin
     dobin testbin${PV}
+}
+
+pkg_preinst() {
+    [[ "${VAR1}" == yes ]] || die
+    [[ "${VAR2}" == yes ]] || die
+    [[ "${VAR3}" == yes ]] && die
+    [[ $(printenv VAR1 ) == yes ]] || die
+    [[ -z "$(printenv D )" ]] && die
+
+    the_eclass_works || die
 }
 
 pkg_prerm() {
     [[ "${VAR1}" == yes ]] || die
     [[ "${VAR2}" == yes ]] || die
     [[ "${VAR3}" == yes ]] && die
+    [[ $(printenv VAR1 ) == yes ]] || die
+    [[ -z "$(printenv D )" ]] && die
 
     the_eclass_works || die
 }
