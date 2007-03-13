@@ -74,9 +74,10 @@ namespace
         /* we might have a dep spec, but we might just have a simple package name
          * without a category. either should work. */
         std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == target.find('/') ?
-                new PackageDepSpec(env->package_database()->fetch_unique_qualified_package_name(
-                        PackageNamePart(target))) :
-                new PackageDepSpec(target));
+                new PackageDepSpec(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                            env->package_database()->fetch_unique_qualified_package_name(
+                                PackageNamePart(target))))) :
+                new PackageDepSpec(target, pds_pm_unspecific));
 
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
             entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));

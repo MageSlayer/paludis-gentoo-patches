@@ -143,13 +143,13 @@ SrcUriCheck::operator() (const EbuildCheckData & e) const
             std::tr1::shared_ptr<const VersionMetadata> metadata(
                     e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
-            std::string src_uri(metadata->ebuild_interface->src_uri);
+            std::string src_uri(metadata->ebuild_interface->src_uri_string);
 
             std::tr1::shared_ptr<const DepSpec> src_uri_parts;
             try
             {
                 src_uri_parts = PortageDepParser::parse(src_uri,
-                        PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance());
+                        PortageDepParser::Policy::text_is_text_dep_spec(false));
 
                 std::set<std::string> restricts;
                 Tokeniser<delim_kind::AnyOfTag, delim_mode::DelimiterTag> tokeniser(" \t\n");

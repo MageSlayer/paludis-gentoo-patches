@@ -39,8 +39,15 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> result(new PackageDatabaseEntryCollection::Concrete);
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(_env->package_database()->query(
-            query::Matches(PackageDepSpec(stringify(package) + "::" + stringify(_repo->name()))),
-            qo_group_by_slot));
+                query::Matches(PackageDepSpec(
+                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(package)),
+                        std::tr1::shared_ptr<CategoryNamePart>(),
+                        std::tr1::shared_ptr<PackageNamePart>(),
+                        std::tr1::shared_ptr<VersionRequirements>(),
+                        vr_and,
+                        std::tr1::shared_ptr<SlotName>(),
+                        std::tr1::shared_ptr<RepositoryName>(new RepositoryName(_repo->name())))),
+                qo_group_by_slot));
 
     SlotName old_slot("I_am_a_slot");
     std::set<KeywordName> keywords;

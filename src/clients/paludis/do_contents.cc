@@ -99,9 +99,9 @@ do_one_contents(
     /* we might have a dep spec, but we might just have a simple package name
      * without a category. either should work. */
     std::tr1::shared_ptr<PackageDepSpec> spec(std::string::npos == q.find('/') ?
-            new PackageDepSpec(env->package_database()->fetch_unique_qualified_package_name(
-                    PackageNamePart(q))) :
-            new PackageDepSpec(q));
+            new PackageDepSpec(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                        env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q))))) :
+            new PackageDepSpec(q, pds_pm_unspecific));
 
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection>
         entries(env->package_database()->query(query::Matches(*spec) & query::InstalledAtRoot(

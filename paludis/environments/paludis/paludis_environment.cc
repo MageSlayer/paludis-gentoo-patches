@@ -714,19 +714,19 @@ PaludisEnvironment::local_package_set(const SetName & s) const
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0)));
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
                 spec->set_tag(tag);
                 result->add_child(spec);
             }
             else if ("*" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1)));
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), pds_pm_unspecific));
                 spec->set_tag(tag);
                 result->add_child(spec);
             }
             else if ("?" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(1)));
+                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(1), pds_pm_unspecific));
                 p->set_tag(tag);
 
                 if (p->package_ptr())

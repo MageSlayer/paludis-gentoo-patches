@@ -107,16 +107,13 @@ DepsExistCheck::operator() (const EbuildCheckData & e) const
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         Checker depend_checker(result, "DEPEND", e.environment);
-        std::string depend(metadata->deps_interface->build_depend_string);
-        PortageDepParser::parse(depend)->accept(&depend_checker);
+        metadata->deps_interface->build_depend()->accept(&depend_checker);
 
         Checker rdepend_checker(result, "RDEPEND", e.environment);
-        std::string rdepend(metadata->deps_interface->run_depend_string);
-        PortageDepParser::parse(rdepend)->accept(&rdepend_checker);
+        metadata->deps_interface->run_depend()->accept(&rdepend_checker);
 
         Checker pdepend_checker(result, "PDEPEND", e.environment);
-        std::string pdepend(metadata->deps_interface->post_depend_string);
-        PortageDepParser::parse(pdepend)->accept(&pdepend_checker);
+        metadata->deps_interface->post_depend()->accept(&pdepend_checker);
     }
     catch (const InternalError &)
     {

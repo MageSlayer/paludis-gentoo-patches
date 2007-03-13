@@ -126,13 +126,15 @@ InstallTask::add_target(const std::string & target)
         _imp->dep_list.options()->target_type = dl_target_package;
 
         if (std::string::npos != target.find('/'))
-            _imp->targets->add_child(PortageDepParser::parse(target));
+            _imp->targets->add_child(PortageDepParser::parse(target, PortageDepParser::Policy::text_is_package_dep_spec(
+                            true, pds_pm_unspecific)));
         else
         {
             QualifiedPackageName q(_imp->env->package_database()->fetch_unique_qualified_package_name(
                         PackageNamePart(target)));
             modified_target = stringify(q);
-            _imp->targets->add_child(std::tr1::shared_ptr<DepSpec>(new PackageDepSpec(q)));
+            _imp->targets->add_child(std::tr1::shared_ptr<DepSpec>(new PackageDepSpec(
+                            std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(q)))));
         }
     }
 
@@ -349,8 +351,14 @@ InstallTask::execute()
                     d_end(dep->destinations->end()) ; d != d_end ; ++d)
                 if (d->destination->uninstallable_interface)
                     collision_list = _imp->env->package_database()->query(
-                            query::Matches(PackageDepSpec(stringify(dep->package.name) + ":" + stringify(dep->metadata->slot)
-                                + "::" + stringify(d->destination->name()))) &
+                            query::Matches(PackageDepSpec(
+                                    std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(dep->package.name)),
+                                    std::tr1::shared_ptr<CategoryNamePart>(),
+                                    std::tr1::shared_ptr<PackageNamePart>(),
+                                    std::tr1::shared_ptr<VersionRequirements>(),
+                                    vr_and,
+                                    std::tr1::shared_ptr<SlotName>(new SlotName(dep->metadata->slot)),
+                                    std::tr1::shared_ptr<RepositoryName>(new RepositoryName(d->destination->name())))) &
                             query::RepositoryHasInstalledInterface(), qo_order_by_version);
 
         // don't clean the thing we just installed
@@ -442,7 +450,7 @@ InstallTask::execute()
             {
                 if (_imp->add_to_world_spec)
                     _imp->env->add_appropriate_to_world(PortageDepParser::parse_depend(
-                                *_imp->add_to_world_spec), &w);
+                                *_imp->add_to_world_spec, pds_pm_unspecific), &w);
                 else
                     _imp->env->add_appropriate_to_world(_imp->targets, &w);
             }

@@ -370,7 +370,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
                 continue;
 
             Context context_spec("When parsing '" + *i + "':");
-            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->substr(1)));
+            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(i->substr(1), pds_pm_eapi_0));
             spec->set_tag(system_tag);
             system_packages->add_child(spec);
         }
@@ -393,7 +393,8 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 
             QualifiedPackageName v(tokens[0]);
             virtuals.erase(v);
-            virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(tokens[1]))));
+            virtuals.insert(std::make_pair(v, std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(tokens[1],
+                                pds_pm_eapi_0))));
         }
     }
     catch (const NameError & e)
@@ -410,7 +411,7 @@ Implementation<PortageRepositoryProfile>::make_vars_from_file_vars()
 
         try
         {
-            std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
+            std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line, pds_pm_eapi_0));
             if (a->package_ptr())
                 package_mask[*a->package_ptr()].push_back(a);
             else
@@ -481,7 +482,7 @@ Implementation<PortageRepositoryProfile>::load_spec_use_file(const FSEntry & fil
 
         try
         {
-            std::tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(*tokens.begin()));
+            std::tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(*tokens.begin(), pds_pm_eapi_0));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 
             for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;

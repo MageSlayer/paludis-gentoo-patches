@@ -136,7 +136,12 @@ namespace
             if (after.end() == a)
             {
                 if (! env.package_database()->query(query::Matches(PackageDepSpec(
-                                    stringify(b->first.name) + ":" + stringify(b->first.slot))),
+                                    std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(b->first.name)),
+                                    std::tr1::shared_ptr<CategoryNamePart>(),
+                                    std::tr1::shared_ptr<PackageNamePart>(),
+                                    std::tr1::shared_ptr<VersionRequirements>(),
+                                    vr_and,
+                                    std::tr1::shared_ptr<SlotName>(new SlotName(b->first.slot)))),
                             qo_whatever)->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));

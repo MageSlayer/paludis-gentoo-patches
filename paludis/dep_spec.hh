@@ -51,6 +51,8 @@ namespace paludis
     class SetDepSpec;
     class BlockDepSpec;
 
+#include <paludis/dep_spec-se.hh>
+
     /**
      * Visitor types for a visitor that can visit a DepSpec heirarchy.
      *
@@ -242,7 +244,7 @@ namespace paludis
         public DepSpec
     {
         private:
-            const std::string _str;
+            std::string _str;
 
         protected:
             ///\name Basic operations
@@ -253,6 +255,8 @@ namespace paludis
             ~StringDepSpec();
 
             ///\}
+
+            void set_text(const std::string &);
 
         public:
             /**
@@ -278,6 +282,7 @@ namespace paludis
             ///\{
 
             UseRequirements();
+            UseRequirements(const UseRequirements &);
             ~UseRequirements();
 
             ///\}
@@ -316,20 +321,14 @@ namespace paludis
      */
     class PackageDepSpec :
         public StringDepSpec,
-        public Visitable<PackageDepSpec, DepSpecVisitorTypes>
+        public Visitable<PackageDepSpec, DepSpecVisitorTypes>,
+        private PrivateImplementationPattern<PackageDepSpec>
     {
         private:
-            std::tr1::shared_ptr<QualifiedPackageName> _package_ptr;
-            std::tr1::shared_ptr<CategoryNamePart> _category_name_part_ptr;
-            std::tr1::shared_ptr<PackageNamePart> _package_name_part_ptr;
-            std::tr1::shared_ptr<VersionRequirements> _version_requirements;
-            VersionRequirementsMode _version_requirements_mode;
-            std::tr1::shared_ptr<SlotName> _slot;
-            std::tr1::shared_ptr<RepositoryName> _repository;
-            std::tr1::shared_ptr<UseRequirements> _use_requirements;
-            std::tr1::shared_ptr<const DepTag> _tag;
-
             const PackageDepSpec & operator= (const PackageDepSpec &);
+
+            void _do_parse(const std::string &, const PackageDepSpecParseMode);
+            void _make_unique();
 
         public:
             ///\name Basic operations
@@ -337,13 +336,36 @@ namespace paludis
 
             /**
              * Constructor, no version or SLOT restrictions.
+             *
+             * \deprecated Use the two arg form.
              */
-            PackageDepSpec(const QualifiedPackageName & package);
+            PackageDepSpec(const QualifiedPackageName & package) PALUDIS_ATTRIBUTE((deprecated));
 
             /**
              * Constructor, parse restrictions ourself.
+             *
+             * \deprecated Use the two arg form.
              */
-            PackageDepSpec(const std::string &);
+            explicit PackageDepSpec(const std::string &) PALUDIS_ATTRIBUTE((deprecated));
+
+            /**
+             * Constructor.
+             */
+            PackageDepSpec(const std::string &, const PackageDepSpecParseMode);
+
+            /**
+             * Constructor.
+             */
+            explicit PackageDepSpec(
+                std::tr1::shared_ptr<QualifiedPackageName> q = std::tr1::shared_ptr<QualifiedPackageName>(),
+                std::tr1::shared_ptr<CategoryNamePart> c = std::tr1::shared_ptr<CategoryNamePart>(),
+                std::tr1::shared_ptr<PackageNamePart> p = std::tr1::shared_ptr<PackageNamePart>(),
+                std::tr1::shared_ptr<VersionRequirements> v = std::tr1::shared_ptr<VersionRequirements>(),
+                VersionRequirementsMode m = vr_and,
+                std::tr1::shared_ptr<SlotName> s = std::tr1::shared_ptr<SlotName>(),
+                std::tr1::shared_ptr<RepositoryName> r = std::tr1::shared_ptr<RepositoryName>(),
+                std::tr1::shared_ptr<UseRequirements> u = std::tr1::shared_ptr<UseRequirements>(),
+                std::tr1::shared_ptr<const DepTag> t = std::tr1::shared_ptr<const DepTag>());
 
             /**
              * Copy constructor.
@@ -357,98 +379,62 @@ namespace paludis
             /**
              * Fetch the package name.
              */
-            std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
-            {
-                return _package_ptr;
-            }
+            std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const;
 
             /**
              * Fetch the package name part, if wildcarded.
              */
-            std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const
-            {
-                return _package_name_part_ptr;
-            }
+            std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
 
             /**
              * Fetch the category name part, if wildcarded.
              */
-            std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
-            {
-                return _category_name_part_ptr;
-            }
+            std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
 
             /**
              * Fetch the version requirements (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const
-            {
-                return _version_requirements;
-            }
+            std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
 
             /**
              * Fetch the version requirements (may be a zero pointer).
              */
-            std::tr1::shared_ptr<VersionRequirements> version_requirements_ptr()
-            {
-                return _version_requirements;
-            }
+            std::tr1::shared_ptr<VersionRequirements> version_requirements_ptr();
 
             /**
              * Fetch the version requirements mode.
              */
-            VersionRequirementsMode version_requirements_mode() const
-            {
-                return _version_requirements_mode;
-            }
+            VersionRequirementsMode version_requirements_mode() const;
 
             /**
              * Set the version requirements mode.
              */
-            void set_version_requirements_mode(const VersionRequirementsMode m)
-            {
-                _version_requirements_mode = m;
-            }
+            void set_version_requirements_mode(const VersionRequirementsMode m);
 
             /**
              * Fetch the slot name (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const SlotName> slot_ptr() const
-            {
-                return _slot;
-            }
+            std::tr1::shared_ptr<const SlotName> slot_ptr() const;
 
             /**
              * Fetch the repo name (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const RepositoryName> repository_ptr() const
-            {
-                return _repository;
-            }
+            std::tr1::shared_ptr<const RepositoryName> repository_ptr() const;
 
             /**
              * Fetch the use requirements (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const
-            {
-                return _use_requirements;
-            }
+            std::tr1::shared_ptr<const UseRequirements> use_requirements_ptr() const;
 
             /**
              * Fetch our tag.
              */
-            std::tr1::shared_ptr<const DepTag> tag() const
-            {
-                return _tag;
-            }
+            std::tr1::shared_ptr<const DepTag> tag() const;
 
             /**
              * Set our tag.
              */
-            void set_tag(const std::tr1::shared_ptr<const DepTag> & s)
-            {
-                _tag = s;
-            }
+            void set_tag(const std::tr1::shared_ptr<const DepTag> & s);
 
             /**
              * Fetch a copy of ourself without the USE requirements.

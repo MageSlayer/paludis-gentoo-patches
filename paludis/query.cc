@@ -189,7 +189,8 @@ query::Matches::Matches(const PackageDepSpec & a) :
 }
 
 query::Package::Package(const QualifiedPackageName & a) :
-    Query(std::tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(PackageDepSpec(a))))
+    Query(std::tr1::shared_ptr<QueryDelegate>(new MatchesDelegate(PackageDepSpec(
+                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(a))))))
 {
 }
 

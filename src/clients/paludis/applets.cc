@@ -47,7 +47,7 @@ int do_has_version(std::tr1::shared_ptr<Environment> env)
     Context context("When performing has-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_whatever));
 
@@ -64,7 +64,7 @@ int do_best_version(std::tr1::shared_ptr<Environment> env)
     Context context("When performing best-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(query, pds_pm_permissive));
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));
 
@@ -109,7 +109,7 @@ int do_environment_variable(std::tr1::shared_ptr<Environment> env)
 
     std::string spec_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_str));
+    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_str, pds_pm_permissive));
 
     std::tr1::shared_ptr<const PackageDatabaseEntryCollection> entries(env->package_database()->query(
                 query::Matches(*spec) & query::InstalledAtRoot(env->root()), qo_order_by_version));

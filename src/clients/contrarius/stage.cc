@@ -18,6 +18,7 @@
  */
 
 #include <paludis/util/log.hh>
+#include <paludis/util/collection_concrete.hh>
 #include <paludis/query.hh>
 #include <string>
 
@@ -33,8 +34,19 @@ namespace
         const std::string & default_name,
         const std::string & version)
     {
-        return new PackageDepSpec(std::string(version.empty() ? "" : "=") + "cross-" + stringify(target) + "/"
-                + (name.empty() ? default_name : name) + (version.empty() ? "" : "-" + version));
+        std::tr1::shared_ptr<VersionRequirements> v;
+        if (! version.empty())
+        {
+            v.reset(new VersionRequirements::Concrete);
+            v->push_back(VersionRequirement(vo_equal, VersionSpec(version)));
+        }
+
+        return new PackageDepSpec(
+                std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName("cross-" + stringify(target) + "/"
+                        + (name.empty() ? default_name : name))),
+                std::tr1::shared_ptr<CategoryNamePart>(),
+                std::tr1::shared_ptr<PackageNamePart>(),
+                v, vr_and);
     }
 }
 

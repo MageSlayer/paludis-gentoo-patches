@@ -37,8 +37,6 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-using namespace paludis;
-
 namespace
 {
     struct CompareByStringLength
@@ -64,7 +62,14 @@ namespace
         std::tr1::shared_ptr<const VersionSpecCollection> versions(repo.version_specs(package));
         FindUnusedPackagesTask task(&e, &repo);
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> packages(e.package_database()->query(
-                query::Matches(PackageDepSpec(stringify(package) + "::" + stringify(repo.name()))),
+                query::Matches(PackageDepSpec(
+                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(package)),
+                        std::tr1::shared_ptr<CategoryNamePart>(),
+                        std::tr1::shared_ptr<PackageNamePart>(),
+                        std::tr1::shared_ptr<VersionRequirements>(),
+                        vr_and,
+                        std::tr1::shared_ptr<SlotName>(),
+                        std::tr1::shared_ptr<RepositoryName>(new RepositoryName(repo.name())))),
                 qo_group_by_slot));
         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> unused(task.execute(package));
 

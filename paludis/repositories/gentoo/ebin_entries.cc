@@ -86,13 +86,13 @@ EbinEntries::generate_version_metadata(const QualifiedPackageName & q,
     result->eapi = f.get("EAPI");
 
     result->provide_string = f.get("PROVIDE");
-    result->src_uri = f.get("SRC_URI");
+    result->src_uri_string = f.get("SRC_URI");
     result->restrict_string = f.get("RESTRICT");
     result->keywords = f.get("KEYWORDS");
     result->iuse = f.get("IUSE");
     result->inherited = f.get("INHERITED");
 
-    result->bin_uri = f.get("BIN_URI");
+    result->bin_uri_string = f.get("BIN_URI");
 
     return result;
 }
@@ -128,8 +128,7 @@ EbinEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_binaries;
 
         /* make B and FLAT_BIN_URI */
-        std::tr1::shared_ptr<const DepSpec> b_spec(PortageDepParser::parse(metadata->ebin_interface->bin_uri,
-                    PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance()));
+        std::tr1::shared_ptr<const DepSpec> b_spec(metadata->ebin_interface->bin_uri());
         DepSpecFlattener f(_imp->params.environment, &e, b_spec);
 
         for (DepSpecFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
@@ -352,7 +351,7 @@ EbinEntries::merge(const MergeOptions & m)
     if (metadata->ebuild_interface)
     {
         ebin_file << "PROVIDE=" << metadata->ebuild_interface->provide_string << std::endl;
-        ebin_file << "SRC_URI=" << metadata->ebuild_interface->src_uri << std::endl;
+        ebin_file << "SRC_URI=" << metadata->ebuild_interface->src_uri_string << std::endl;
         ebin_file << "RESTRICT=" << metadata->ebuild_interface->restrict_string << std::endl;
         ebin_file << "KEYWORDS=" << metadata->ebuild_interface->keywords << std::endl;
         ebin_file << "IUSE=" << metadata->ebuild_interface->iuse << std::endl;

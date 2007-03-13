@@ -20,7 +20,7 @@ int main(int, char *[])
 
         std::tr1::shared_ptr<const paludis::PackageDatabaseEntryCollection> packages(
                 env->package_database()->query(
-                    paludis::query::Matches(paludis::PackageDepSpec("app-editors/vim")) &
+                    paludis::query::Matches(paludis::PackageDepSpec("app-editors/vim", paludis::pds_pm_eapi_0_strict)) &
                     paludis::query::InstalledAtRoot(env->root()), paludis::qo_order_by_version));
 
         if (packages->empty())

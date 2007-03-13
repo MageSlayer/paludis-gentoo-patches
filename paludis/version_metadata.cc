@@ -21,6 +21,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/version_metadata.hh>
 #include <paludis/portage_dep_parser.hh>
+#include <paludis/util/log.hh>
 #include <vector>
 
 /** \file
@@ -36,28 +37,42 @@ using namespace paludis;
 std::tr1::shared_ptr<const DepSpec>
 VersionMetadataDepsInterface::build_depend() const
 {
-    return parser(build_depend_string);
+    return parser(build_depend_string, version_metadata()->eapi_as_package_dep_spec_parse_mode());
 }
 
 std::tr1::shared_ptr<const DepSpec>
 VersionMetadataDepsInterface::run_depend() const
 {
-    return parser(run_depend_string);
+    return parser(run_depend_string, version_metadata()->eapi_as_package_dep_spec_parse_mode());
 }
 
 std::tr1::shared_ptr<const DepSpec>
 VersionMetadataDepsInterface::post_depend() const
 {
-    return parser(post_depend_string);
+    return parser(post_depend_string, version_metadata()->eapi_as_package_dep_spec_parse_mode());
 }
 
 std::tr1::shared_ptr<const DepSpec>
 VersionMetadataDepsInterface::suggested_depend() const
 {
-    return parser(suggested_depend_string);
+    return parser(suggested_depend_string, version_metadata()->eapi_as_package_dep_spec_parse_mode());
 }
 
-VersionMetadataDepsInterface::VersionMetadataDepsInterface(const ParserFunction & p) :
+std::tr1::shared_ptr<const DepSpec>
+VersionMetadataEbuildInterface::src_uri() const
+{
+    return PortageDepParser::parse(src_uri_string,
+            PortageDepParser::Policy::text_is_text_dep_spec(false));
+}
+
+std::tr1::shared_ptr<const DepSpec>
+VersionMetadataEbinInterface::bin_uri() const
+{
+    return PortageDepParser::parse(bin_uri_string,
+            PortageDepParser::Policy::text_is_text_dep_spec(false));
+}
+
+VersionMetadataDepsInterface::VersionMetadataDepsInterface(const DepParserFunction & p) :
     parser(p)
 {
 }
@@ -75,15 +90,14 @@ VersionMetadata::VersionMetadata(const VersionMetadataBase::Params<> & base, con
 std::tr1::shared_ptr<const DepSpec>
 VersionMetadataEbuildInterface::provide() const
 {
-    return PortageDepParser::parse(provide_string, PortageDepParserPolicy<PackageDepSpec,
-            false>::get_instance());
-}
+    return PortageDepParser::parse(provide_string, PortageDepParser::Policy::text_is_package_dep_spec(
+                false, version_metadata()->eapi_as_package_dep_spec_parse_mode()));}
 
 VersionMetadataOriginsInterface::VersionMetadataOriginsInterface()
 {
 }
 
-VersionMetadataLicenseInterface::VersionMetadataLicenseInterface(const ParserFunction & f) :
+VersionMetadataLicenseInterface::VersionMetadataLicenseInterface(const TextParserFunction & f) :
     parser(f)
 {
 }
@@ -108,5 +122,20 @@ VersionMetadataHasInterfaces::VersionMetadataHasInterfaces()
 
 VersionMetadataHasInterfaces::~VersionMetadataHasInterfaces()
 {
+}
+
+PackageDepSpecParseMode
+VersionMetadata::eapi_as_package_dep_spec_parse_mode() const
+{
+    if (eapi == "0" || eapi == "")
+        return pds_pm_eapi_0;
+    else if (eapi == "CRAN-1" || eapi == "paludis-1")
+        return pds_pm_permissive;
+    else
+    {
+        Log::get_instance()->message(ll_warning, lc_context,
+                "BUG! Don't know what parse mode to use for EAPI '" + stringify(eapi) + "'");
+        return pds_pm_permissive;
+    }
 }
 

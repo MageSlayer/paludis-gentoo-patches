@@ -30,6 +30,7 @@ namespace
 {
     static VALUE c_portage_dep_parser;
 
+#ifdef CIARANM_REMOVED_THIS
     /*
      * call-seq:
      *     PortageDepParser.parse(dep_string) -> CompositeDepSpec
@@ -76,6 +77,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+#endif
 
     void do_register_portage_dep_parser()
     {
@@ -88,8 +90,10 @@ namespace
          */
         c_portage_dep_parser = rb_define_class_under(paludis_module(), "PortageDepParser", rb_cObject);
         rb_funcall(c_portage_dep_parser, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+#ifdef CIARANM_REMOVED_THIS
         rb_define_singleton_method(c_portage_dep_parser, "parse",
                 RUBY_FUNC_CAST(&portage_dep_parser_parse), -1);
+#endif
 
         rb_define_const(c_portage_dep_parser, "PackageDepSpec", INT2FIX(17));
         rb_define_const(c_portage_dep_parser, "PlainTextDepSpec", INT2FIX(23));

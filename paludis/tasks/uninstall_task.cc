@@ -105,7 +105,7 @@ UninstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
 
         _imp->had_package_targets = true;
-        _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(target)));
+        _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(target, pds_pm_unspecific)));
     }
     else
         try
@@ -123,7 +123,7 @@ UninstallTask::add_target(const std::string & target)
                 DepSpecFlattener f(_imp->env, 0, spec);
                 for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
                     _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                    stringify((*i)->text()))));
+                                    stringify((*i)->text()), pds_pm_unspecific)));
             }
             else
             {
@@ -132,8 +132,9 @@ UninstallTask::add_target(const std::string & target)
 
                 _imp->had_package_targets = false;
                 _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                                _imp->env->package_database()->fetch_unique_qualified_package_name(
-                                    PackageNamePart(target)))));
+                                std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                                        _imp->env->package_database()->fetch_unique_qualified_package_name(
+                                            PackageNamePart(target)))))));
             }
         }
         catch (const SetNameError &)
@@ -143,8 +144,9 @@ UninstallTask::add_target(const std::string & target)
 
             _imp->had_package_targets = false;
             _imp->targets.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
-                            _imp->env->package_database()->fetch_unique_qualified_package_name(
-                                PackageNamePart(target)))));
+                            std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                                    _imp->env->package_database()->fetch_unique_qualified_package_name(
+                                        PackageNamePart(target)))))));
         }
 
     _imp->raw_targets.push_back(target);
@@ -264,7 +266,8 @@ UninstallTask::execute()
         {
             bool remove(true);
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> installed(
-                    _imp->env->package_database()->query(query::Matches(PackageDepSpec(i->first)) &
+                    _imp->env->package_database()->query(query::Matches(PackageDepSpec(
+                                std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(i->first)))) &
                         query::RepositoryHasInstalledInterface(), qo_whatever));
             for (PackageDatabaseEntryCollection::Iterator r(installed->begin()), r_end(installed->end()) ;
                     r != r_end && remove ; ++r)
@@ -272,7 +275,8 @@ UninstallTask::execute()
                     remove = false;
 
             if (remove)
-                all->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(i->first)));
+                all->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                            std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(i->first)))));
         }
 
         WorldCallbacks w(this);

@@ -41,7 +41,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<PackageDepSpec> x(new PackageDepSpec("foo/bar"));
+            std::tr1::shared_ptr<PackageDepSpec> x(new PackageDepSpec("foo/bar", pds_pm_permissive));
             TEST_CHECK(0 == x->as_use_dep_spec());
 
             std::tr1::shared_ptr<UseDepSpec> y(new UseDepSpec(UseFlagName("foo"), x));
@@ -63,11 +63,11 @@ namespace test_cases
             std::tr1::shared_ptr<AllDepSpec> x(new AllDepSpec);
             TEST_CHECK(x->begin() == x->end());
 
-            x->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y")));
+            x->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y", pds_pm_permissive)));
             TEST_CHECK(x->begin() != x->end());
             TEST_CHECK_EQUAL(1, std::distance(x->begin(), x->end()));
 
-            x->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y")));
+            x->add_child(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec("x/y", pds_pm_permissive)));
             TEST_CHECK(x->begin() != x->end());
             TEST_CHECK_EQUAL(2, std::distance(x->begin(), x->end()));
         }
@@ -83,12 +83,12 @@ namespace test_cases
 
         void run()
         {
-            PackageDepSpec a("foo/bar");
+            PackageDepSpec a("foo/bar", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*a.package_ptr(), "foo/bar");
             TEST_CHECK(! a.slot_ptr());
             TEST_CHECK(! a.version_requirements_ptr());
 
-            PackageDepSpec b(">=foo/bar-1.2.3");
+            PackageDepSpec b(">=foo/bar-1.2.3", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*b.package_ptr(), "foo/bar");
             TEST_CHECK(! b.slot_ptr());
             TEST_CHECK(b.version_requirements_ptr());
@@ -97,13 +97,13 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(b.version_requirements_ptr()->begin()->version_spec, "1.2.3");
             TEST_CHECK_EQUAL(b.version_requirements_ptr()->begin()->version_operator, vo_greater_equal);
 
-            PackageDepSpec c("foo/bar:baz");
+            PackageDepSpec c("foo/bar:baz", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*c.package_ptr(), "foo/bar");
             TEST_CHECK(c.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*c.slot_ptr(), "baz");
             TEST_CHECK(! c.version_requirements_ptr());
 
-            PackageDepSpec d("=foo/bar-1.2*:1.2.1");
+            PackageDepSpec d("=foo/bar-1.2*:1.2.1", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*d.package_ptr(), "foo/bar");
             TEST_CHECK(d.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*d.slot_ptr(), "1.2.1");
@@ -111,30 +111,30 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(d.version_requirements_ptr()->begin()->version_spec, "1.2");
             TEST_CHECK_EQUAL(d.version_requirements_ptr()->begin()->version_operator, vo_equal_star);
 
-            PackageDepSpec e("foo/bar:1.2.1");
+            PackageDepSpec e("foo/bar:1.2.1", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*e.package_ptr(), "foo/bar");
             TEST_CHECK(e.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*e.slot_ptr(), "1.2.1");
             TEST_CHECK(! e.version_requirements_ptr());
 
-            PackageDepSpec f("foo/bar:0");
+            PackageDepSpec f("foo/bar:0", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*f.package_ptr(), "foo/bar");
             TEST_CHECK(f.slot_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(*f.slot_ptr(), "0");
             TEST_CHECK(! f.version_requirements_ptr());
 
-            PackageDepSpec g("foo/bar-100dpi");
+            PackageDepSpec g("foo/bar-100dpi", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*g.package_ptr(), "foo/bar-100dpi");
 
-            PackageDepSpec h(">=foo/bar-100dpi-1.23");
+            PackageDepSpec h(">=foo/bar-100dpi-1.23", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*h.package_ptr(), "foo/bar-100dpi");
             TEST_CHECK(h.version_requirements_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(h.version_requirements_ptr()->begin()->version_spec, "1.23");
             TEST_CHECK_EQUAL(h.version_requirements_ptr()->begin()->version_operator, vo_greater_equal);
 
-            TEST_CHECK_THROWS(PackageDepSpec(""), PackageDepSpecError);
+            TEST_CHECK_THROWS(PackageDepSpec("", pds_pm_permissive), PackageDepSpecError);
 
-            PackageDepSpec i("foo/bar[one][-two]");
+            PackageDepSpec i("foo/bar[one][-two]", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*i.package_ptr(), "foo/bar");
             TEST_CHECK(! i.version_requirements_ptr());
             TEST_CHECK(! i.repository_ptr());
@@ -150,13 +150,13 @@ namespace test_cases
             TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("two")) == use_disabled);
             TEST_CHECK(i.use_requirements_ptr()->state(UseFlagName("moo")) == use_unspecified);
 
-            PackageDepSpec j("=foo/bar-scm-r3");
+            PackageDepSpec j("=foo/bar-scm-r3", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*j.package_ptr(), "foo/bar");
             TEST_CHECK(j.version_requirements_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(j.version_requirements_ptr()->begin()->version_spec, "scm-r3");
             TEST_CHECK_EQUAL(j.version_requirements_ptr()->begin()->version_operator, vo_equal);
 
-            PackageDepSpec k("=foo/bar-scm");
+            PackageDepSpec k("=foo/bar-scm", pds_pm_permissive);
             TEST_CHECK_STRINGIFY_EQUAL(*k.package_ptr(), "foo/bar");
             TEST_CHECK(k.version_requirements_ptr());
             TEST_CHECK_STRINGIFY_EQUAL(k.version_requirements_ptr()->begin()->version_spec, "scm");

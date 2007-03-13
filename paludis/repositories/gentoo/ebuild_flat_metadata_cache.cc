@@ -50,7 +50,7 @@ EbuildFlatMetadataCache::load(std::tr1::shared_ptr<EbuildVersionMetadata> result
         std::getline(cache, line); result->build_depend_string = line;
         std::getline(cache, line); result->run_depend_string = line;
         std::getline(cache, line); result->slot = SlotName(line);
-        std::getline(cache, line); result->src_uri = line;
+        std::getline(cache, line); result->src_uri_string = line;
         std::getline(cache, line); result->restrict_string = line;
         std::getline(cache, line); result->homepage = line;
         std::getline(cache, line); result->license_string = line;
@@ -131,7 +131,7 @@ EbuildFlatMetadataCache::save(std::tr1::shared_ptr<const EbuildVersionMetadata> 
         cache << normalise(v->build_depend_string) << std::endl;
         cache << normalise(v->run_depend_string) << std::endl;
         cache << normalise(v->slot) << std::endl;
-        cache << normalise(v->src_uri) << std::endl;
+        cache << normalise(v->src_uri_string) << std::endl;
         cache << normalise(v->restrict_string) << std::endl;
         cache << normalise(v->homepage) << std::endl;
         cache << normalise(v->license_string) << std::endl;

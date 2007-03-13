@@ -32,6 +32,8 @@
 
 using namespace paludis;
 
+#include <paludis/dep_spec-se.cc>
+
 DepSpec::DepSpec()
 {
 }
@@ -63,6 +65,45 @@ namespace paludis
     struct Implementation<CompositeDepSpec>
     {
         std::list<std::tr1::shared_ptr<const DepSpec> > children;
+    };
+
+    template<>
+    struct Implementation<PackageDepSpec>
+    {
+        bool unique;
+
+        std::tr1::shared_ptr<QualifiedPackageName> package_ptr;
+        std::tr1::shared_ptr<CategoryNamePart> category_name_part_ptr;
+        std::tr1::shared_ptr<PackageNamePart> package_name_part_ptr;
+        std::tr1::shared_ptr<VersionRequirements> version_requirements;
+        VersionRequirementsMode version_requirements_mode;
+        std::tr1::shared_ptr<SlotName> slot;
+        std::tr1::shared_ptr<RepositoryName> repository;
+        std::tr1::shared_ptr<UseRequirements> use_requirements;
+        std::tr1::shared_ptr<const DepTag> tag;
+
+        Implementation(
+                std::tr1::shared_ptr<QualifiedPackageName> q,
+                std::tr1::shared_ptr<CategoryNamePart> c,
+                std::tr1::shared_ptr<PackageNamePart> p,
+                std::tr1::shared_ptr<VersionRequirements> v,
+                VersionRequirementsMode m,
+                std::tr1::shared_ptr<SlotName> s,
+                std::tr1::shared_ptr<RepositoryName> r,
+                std::tr1::shared_ptr<UseRequirements> u,
+                std::tr1::shared_ptr<const DepTag> t) :
+            unique(false),
+            package_ptr(q),
+            category_name_part_ptr(c),
+            package_name_part_ptr(p),
+            version_requirements(v),
+            version_requirements_mode(m),
+            slot(s),
+            repository(r),
+            use_requirements(u),
+            tag(t)
+        {
+        }
     };
 }
 
@@ -127,8 +168,16 @@ BlockDepSpec::BlockDepSpec(std::tr1::shared_ptr<const PackageDepSpec> a) :
 
 PackageDepSpec::PackageDepSpec(const QualifiedPackageName & our_package) :
     StringDepSpec(stringify(our_package)),
-    _package_ptr(new QualifiedPackageName(our_package)),
-    _version_requirements_mode(vr_and)
+    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
+                std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(our_package)),
+                std::tr1::shared_ptr<CategoryNamePart>(),
+                std::tr1::shared_ptr<PackageNamePart>(),
+                std::tr1::shared_ptr<VersionRequirements>(),
+                vr_and,
+                std::tr1::shared_ptr<SlotName>(),
+                std::tr1::shared_ptr<RepositoryName>(),
+                std::tr1::shared_ptr<UseRequirements>(),
+                std::tr1::shared_ptr<const DepTag>()))
 {
 }
 
@@ -136,26 +185,80 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & other) :
     VisitableInterface<DepSpecVisitorTypes>(other),
     StringDepSpec(stringify(other)),
     Visitable<PackageDepSpec, DepSpecVisitorTypes>(other),
-    _package_ptr(other._package_ptr),
-    _version_requirements_mode(other._version_requirements_mode),
-    _slot(other._slot),
-    _repository(other._repository),
-    _use_requirements(other._use_requirements),
-    _tag(other._tag)
+    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
+                other._imp->package_ptr,
+                other._imp->category_name_part_ptr,
+                other._imp->package_name_part_ptr,
+                other._imp->version_requirements,
+                other._imp->version_requirements_mode,
+                other._imp->slot,
+                other._imp->repository,
+                other._imp->use_requirements,
+                other._imp->tag))
 {
-    if (other._version_requirements)
-    {
-        _version_requirements.reset(new VersionRequirements::Concrete);
-        std::copy(other._version_requirements->begin(), other._version_requirements->end(),
-                _version_requirements->inserter());
-    }
 }
 
 PackageDepSpec::PackageDepSpec(const std::string & ss) :
     StringDepSpec(ss),
-    _version_requirements_mode(vr_and)
+    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
+                std::tr1::shared_ptr<QualifiedPackageName>(),
+                std::tr1::shared_ptr<CategoryNamePart>(),
+                std::tr1::shared_ptr<PackageNamePart>(),
+                std::tr1::shared_ptr<VersionRequirements>(),
+                vr_and,
+                std::tr1::shared_ptr<SlotName>(),
+                std::tr1::shared_ptr<RepositoryName>(),
+                std::tr1::shared_ptr<UseRequirements>(),
+                std::tr1::shared_ptr<const DepTag>()))
 {
-    Context context("When parsing package dep spec '" + ss + "':");
+    _do_parse(ss, pds_pm_unspecific);
+    _imp->unique = true;
+}
+
+PackageDepSpec::PackageDepSpec(const std::string & ss, const PackageDepSpecParseMode p) :
+    StringDepSpec(ss),
+    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
+                std::tr1::shared_ptr<QualifiedPackageName>(),
+                std::tr1::shared_ptr<CategoryNamePart>(),
+                std::tr1::shared_ptr<PackageNamePart>(),
+                std::tr1::shared_ptr<VersionRequirements>(),
+                vr_and,
+                std::tr1::shared_ptr<SlotName>(),
+                std::tr1::shared_ptr<RepositoryName>(),
+                std::tr1::shared_ptr<UseRequirements>(),
+                std::tr1::shared_ptr<const DepTag>()))
+{
+    _do_parse(ss, p);
+    _imp->unique = true;
+}
+
+PackageDepSpec::PackageDepSpec(
+        std::tr1::shared_ptr<QualifiedPackageName> q,
+        std::tr1::shared_ptr<CategoryNamePart> c,
+        std::tr1::shared_ptr<PackageNamePart> p,
+        std::tr1::shared_ptr<VersionRequirements> v,
+        VersionRequirementsMode m,
+        std::tr1::shared_ptr<SlotName> s,
+        std::tr1::shared_ptr<RepositoryName> r,
+        std::tr1::shared_ptr<UseRequirements> u,
+        std::tr1::shared_ptr<const DepTag> t) :
+    StringDepSpec(""),
+    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(
+                q, c, p, v, m, s, r, u, t))
+{
+    set_text(stringify(*this));
+}
+
+void
+StringDepSpec::set_text(const std::string & t)
+{
+    _str = t;
+}
+
+void
+PackageDepSpec::_do_parse(const std::string & ss, const PackageDepSpecParseMode mode)
+{
+    Context context("When parsing package dep spec '" + ss + "' with parse mode '" + stringify(mode) + "':");
 
     try
     {
@@ -167,6 +270,21 @@ PackageDepSpec::PackageDepSpec(const std::string & ss) :
         std::string::size_type use_group_p;
         while (std::string::npos != ((use_group_p = s.rfind('['))))
         {
+            switch (mode)
+            {
+                case pds_pm_unspecific:
+                case pds_pm_permissive:
+                case last_pds_pm:
+                    break;
+
+                case pds_pm_eapi_0:
+                    Log::get_instance()->message(ll_warning, lc_context, "Use dependencies not safe for use with this EAPI");
+                    break;
+
+                case pds_pm_eapi_0_strict:
+                    throw PackageDepSpecError("Use dependencies not safe for use with this EAPI");
+            }
+
             if (s.at(s.length() - 1) != ']')
                 throw PackageDepSpecError("Mismatched []");
 
@@ -183,9 +301,9 @@ PackageDepSpec::PackageDepSpec(const std::string & ss) :
                     throw PackageDepSpecError("Invalid [] contents");
             }
             UseFlagName name(flag);
-            if (0 == _use_requirements)
-                _use_requirements.reset(new UseRequirements);
-            if (! _use_requirements->insert(name, state))
+            if (! _imp->use_requirements)
+                _imp->use_requirements.reset(new UseRequirements);
+            if (! _imp->use_requirements->insert(name, state))
                 throw PackageDepSpecError("Conflicting [] contents");
 
             s.erase(use_group_p);
@@ -194,14 +312,44 @@ PackageDepSpec::PackageDepSpec(const std::string & ss) :
         std::string::size_type repo_p;
         if (std::string::npos != ((repo_p = s.rfind("::"))))
         {
-            _repository.reset(new RepositoryName(s.substr(repo_p + 2)));
+            switch (mode)
+            {
+                case pds_pm_unspecific:
+                case pds_pm_permissive:
+                case last_pds_pm:
+                    break;
+
+                case pds_pm_eapi_0:
+                    Log::get_instance()->message(ll_warning, lc_context, "Repository dependencies not safe for use with this EAPI");
+                    break;
+
+                case pds_pm_eapi_0_strict:
+                    throw PackageDepSpecError("Repository dependencies not safe for use with this EAPI");
+            }
+
+            _imp->repository.reset(new RepositoryName(s.substr(repo_p + 2)));
             s.erase(repo_p);
         }
 
         std::string::size_type slot_p;
         if (std::string::npos != ((slot_p = s.rfind(':'))))
         {
-            _slot.reset(new SlotName(s.substr(slot_p + 1)));
+            switch (mode)
+            {
+                case pds_pm_unspecific:
+                case pds_pm_permissive:
+                case last_pds_pm:
+                    break;
+
+                case pds_pm_eapi_0:
+                    Log::get_instance()->message(ll_warning, lc_context, "SLOT dependencies not safe for use with this EAPI");
+                    break;
+
+                case pds_pm_eapi_0_strict:
+                    throw PackageDepSpecError("SLOT dependencies not safe for use with this EAPI");
+            }
+
+            _imp->slot.reset(new SlotName(s.substr(slot_p + 1)));
             s.erase(slot_p);
         }
 
@@ -211,6 +359,22 @@ PackageDepSpec::PackageDepSpec(const std::string & ss) :
             if (s.length() > 1 && std::string::npos != std::string("<>=~").find(s.at(1)))
                 ++p;
             VersionOperator op(s.substr(0, p));
+
+            if (op == vo_tilde_greater)
+                switch (mode)
+                {
+                    case pds_pm_unspecific:
+                    case pds_pm_permissive:
+                    case last_pds_pm:
+                        break;
+
+                    case pds_pm_eapi_0:
+                        Log::get_instance()->message(ll_warning, lc_context, "~> dependencies not safe for use with this EAPI");
+                        break;
+
+                    case pds_pm_eapi_0_strict:
+                        throw PackageDepSpecError("~> dependencies not safe for use with this EAPI");
+                }
 
             std::string::size_type q(p);
 
@@ -237,25 +401,41 @@ PackageDepSpec::PackageDepSpec(const std::string & ss) :
                     q = new_q;
             }
 
-            _package_ptr.reset(new QualifiedPackageName(s.substr(p, q - p - 1)));
+            _imp->package_ptr.reset(new QualifiedPackageName(s.substr(p, q - p - 1)));
 
-            _version_requirements.reset(new VersionRequirements::Concrete);
+            _imp->version_requirements.reset(new VersionRequirements::Concrete);
 
             if ('*' == s.at(s.length() - 1))
             {
                 if (op != vo_equal)
-                    Log::get_instance()->message(ll_qa, lc_context,
-                            "Package dep spec '" + ss + "' uses * "
-                            "with operator '" + stringify(op) +
-                            "', pretending it uses the equals operator instead");
+                {
+                    switch (mode)
+                    {
+                        case pds_pm_unspecific:
+                        case pds_pm_permissive:
+                        case last_pds_pm:
+                        case pds_pm_eapi_0:
+                            Log::get_instance()->message(ll_qa, lc_context,
+                                    "Package dep spec '" + ss + "' uses * "
+                                    "with operator '" + stringify(op) +
+                                    "', pretending it uses the equals operator instead");
+                            break;
+
+                        case pds_pm_eapi_0_strict:
+                            throw PackageDepSpecError(
+                                    "Package dep spec '" + ss + "' uses * "
+                                    "with operator '" + stringify(op) + "'");
+                    }
+                }
                 op = vo_equal_star;
-                _version_requirements->push_back(VersionRequirement(op, VersionSpec(s.substr(q, s.length() - q - 1))));
+
+                _imp->version_requirements->push_back(VersionRequirement(op, VersionSpec(s.substr(q, s.length() - q - 1))));
             }
             else
-                _version_requirements->push_back(VersionRequirement(op, VersionSpec(s.substr(q))));
+                _imp->version_requirements->push_back(VersionRequirement(op, VersionSpec(s.substr(q))));
         }
         else
-            _package_ptr.reset(new QualifiedPackageName(s));
+            _imp->package_ptr.reset(new QualifiedPackageName(s));
     }
     catch (Exception &)
     {
@@ -396,6 +576,12 @@ UseRequirements::UseRequirements() :
 {
 }
 
+UseRequirements::UseRequirements(const UseRequirements & c) :
+    PrivateImplementationPattern<UseRequirements>(new Implementation<UseRequirements>)
+{
+    _imp->reqs = c._imp->reqs;
+}
+
 UseRequirements::~UseRequirements()
 {
 }
@@ -436,9 +622,116 @@ UseRequirements::state(const UseFlagName & u) const
 std::tr1::shared_ptr<PackageDepSpec>
 PackageDepSpec::without_use_requirements() const
 {
-    std::string s(text());
-    if (std::string::npos != s.find('['))
-        s.erase(s.find('['));
-    return std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s));
+    std::tr1::shared_ptr<PackageDepSpec> result(new PackageDepSpec(*this));
+    result->_make_unique();
+    result->_imp->use_requirements.reset();
+    return result;
+}
+
+std::tr1::shared_ptr<const QualifiedPackageName>
+PackageDepSpec::package_ptr() const
+{
+    return _imp->package_ptr;
+}
+
+std::tr1::shared_ptr<const PackageNamePart>
+PackageDepSpec::package_name_part_ptr() const
+{
+    return _imp->package_name_part_ptr;
+}
+
+std::tr1::shared_ptr<const CategoryNamePart>
+PackageDepSpec::category_name_part_ptr() const
+{
+    return _imp->category_name_part_ptr;
+}
+
+std::tr1::shared_ptr<const VersionRequirements>
+PackageDepSpec::version_requirements_ptr() const
+{
+    return _imp->version_requirements;
+}
+
+std::tr1::shared_ptr<VersionRequirements>
+PackageDepSpec::version_requirements_ptr()
+{
+    _make_unique();
+    return _imp->version_requirements;
+}
+
+VersionRequirementsMode
+PackageDepSpec::version_requirements_mode() const
+{
+    return _imp->version_requirements_mode;
+}
+
+void
+PackageDepSpec::set_version_requirements_mode(const VersionRequirementsMode m)
+{
+    _imp->version_requirements_mode = m;
+}
+
+std::tr1::shared_ptr<const SlotName>
+PackageDepSpec::slot_ptr() const
+{
+    return _imp->slot;
+}
+
+std::tr1::shared_ptr<const RepositoryName>
+PackageDepSpec::repository_ptr() const
+{
+    return _imp->repository;
+}
+
+std::tr1::shared_ptr<const UseRequirements>
+PackageDepSpec::use_requirements_ptr() const
+{
+    return _imp->use_requirements;
+}
+
+std::tr1::shared_ptr<const DepTag>
+PackageDepSpec::tag() const
+{
+    return _imp->tag;
+}
+
+void
+PackageDepSpec::set_tag(const std::tr1::shared_ptr<const DepTag> & s)
+{
+    _imp->tag = s;
+}
+
+void
+PackageDepSpec::_make_unique()
+{
+    if (_imp->unique)
+        return;
+
+    if (_imp->package_ptr && ! _imp->package_ptr.unique())
+        _imp->package_ptr.reset(new QualifiedPackageName(*_imp->package_ptr));
+
+    if (_imp->category_name_part_ptr && ! _imp->category_name_part_ptr.unique())
+        _imp->category_name_part_ptr.reset(new CategoryNamePart(*_imp->category_name_part_ptr));
+
+    if (_imp->package_name_part_ptr && ! _imp->package_name_part_ptr.unique())
+        _imp->package_name_part_ptr.reset(new PackageNamePart(*_imp->package_name_part_ptr));
+
+    if (_imp->version_requirements && ! _imp->version_requirements.unique())
+    {
+        std::tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
+        std::copy(_imp->version_requirements->begin(), _imp->version_requirements->end(), v->inserter());
+        _imp->version_requirements = v;
+    }
+
+    if (_imp->slot && ! _imp->slot.unique())
+        _imp->slot.reset(new SlotName(*_imp->slot));
+
+    if (_imp->repository && ! _imp->repository.unique())
+        _imp->repository.reset(new RepositoryName(*_imp->repository));
+
+    if (_imp->use_requirements && ! _imp->use_requirements.unique())
+        _imp->use_requirements.reset(new UseRequirements(*_imp->use_requirements));
+
+    _imp->unique = true;
 }
 

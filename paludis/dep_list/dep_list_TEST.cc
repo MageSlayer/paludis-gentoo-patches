@@ -951,7 +951,8 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend(merge_target, pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_47;
@@ -977,7 +978,8 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend(merge_target, pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_48;
@@ -1043,7 +1045,8 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend(merge_target, pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_51;
@@ -1069,7 +1072,8 @@ namespace test_cases
         {
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse(merge_target), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend(merge_target, pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
     } test_dep_list_52;
@@ -1269,11 +1273,12 @@ namespace test_cases
             repo->add_version("cat", "seven", "1")->deps_interface->build_depend_string = "cat/doesnotexist";
 
             DepList d(&env, DepListOptions());
-            d.add(PortageDepParser::parse("cat/one"), env.default_destinations());
+            d.add(PortageDepParser::parse_depend("cat/one", pds_pm_unspecific), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
 
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse("cat/five"), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend("cat/five", pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
 
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
@@ -1306,11 +1311,12 @@ namespace test_cases
             repo->add_version("cat", "seven", "1")->deps_interface->post_depend_string = "cat/doesnotexist";
 
             DepList d(&env, DepListOptions());
-            d.add(PortageDepParser::parse("cat/one"), env.default_destinations());
+            d.add(PortageDepParser::parse_depend("cat/one", pds_pm_unspecific), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
 
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse("cat/five"), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend("cat/five", pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
 
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
@@ -1339,7 +1345,7 @@ namespace test_cases
             installed_repo->add_version("cat", "one", "2");
 
             DepList d(&env, DepListOptions());
-            d.add(PortageDepParser::parse("cat/one"), env.default_destinations());
+            d.add(PortageDepParser::parse_depend("cat/one", pds_pm_unspecific), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "), "cat/one-1:0::repo");
         }
     } test_dep_list_forced_downgrade_of_installed;
@@ -1366,7 +1372,8 @@ namespace test_cases
 
             DepList d(&env, DepListOptions());
             d.options()->fall_back = dl_fall_back_never;
-            TEST_CHECK_THROWS(d.add(PortageDepParser::parse("cat/one"), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d.add(PortageDepParser::parse_depend("cat/one", pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
         }
     } test_dep_list_fall_back_never;
 
@@ -1392,8 +1399,8 @@ namespace test_cases
 
             DepList d(&env, DepListOptions());
             d.options()->fall_back = dl_fall_back_as_needed;
-            d.add(PortageDepParser::parse("cat/one"), env.default_destinations());
-            d.add(PortageDepParser::parse("cat/two"), env.default_destinations());
+            d.add(PortageDepParser::parse_depend("cat/one", pds_pm_unspecific), env.default_destinations());
+            d.add(PortageDepParser::parse_depend("cat/two", pds_pm_unspecific), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "), "cat/two-2:0::installed_repo cat/one-1:0::repo");
         }
     } test_dep_list_fall_back_as_needed;
@@ -1421,21 +1428,25 @@ namespace test_cases
 
             DepList d1(&env, DepListOptions());
             d1.options()->fall_back = dl_fall_back_as_needed_except_targets;
-            d1.add(PortageDepParser::parse("cat/one"), env.default_destinations());
+            d1.add(PortageDepParser::parse_depend("cat/one", pds_pm_unspecific), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/two-2:0::installed_repo cat/one-1:0::repo");
-            TEST_CHECK_THROWS(d1.add(PortageDepParser::parse("cat/three"), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d1.add(PortageDepParser::parse_depend("cat/three", pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
 
             DepList d2(&env, DepListOptions());
             d2.options()->fall_back = dl_fall_back_as_needed_except_targets;
-            TEST_CHECK_THROWS(d2.add(PortageDepParser::parse("cat/two"), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d2.add(PortageDepParser::parse_depend("cat/two", pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
 
             DepList d3(&env, DepListOptions());
             d3.options()->fall_back = dl_fall_back_as_needed_except_targets;
-            TEST_CHECK_THROWS(d3.add(PortageDepParser::parse("( cat/one cat/two )"), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d3.add(PortageDepParser::parse_depend("( cat/one cat/two )", pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
 
             DepList d4(&env, DepListOptions());
             d4.options()->fall_back = dl_fall_back_as_needed_except_targets;
-            TEST_CHECK_THROWS(d4.add(PortageDepParser::parse("( cat/one cat/three )"), env.default_destinations()), DepListError);
+            TEST_CHECK_THROWS(d4.add(PortageDepParser::parse_depend("( cat/one cat/three )", pds_pm_unspecific),
+                        env.default_destinations()), DepListError);
         }
     } test_dep_list_fall_back_as_needed_not_targets;
 
@@ -1462,12 +1473,12 @@ namespace test_cases
 
             DepList d1(&env, DepListOptions());
             d1.options()->upgrade = dl_upgrade_as_needed;
-            d1.add(PortageDepParser::parse("cat/one"), env.default_destinations());
+            d1.add(PortageDepParser::parse_depend("cat/one", pds_pm_unspecific), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/two-0:0::installed_repo cat/one-1:0::repo");
 
             DepList d2(&env, DepListOptions());
             d2.options()->upgrade = dl_upgrade_as_needed;
-            d2.add(PortageDepParser::parse("( cat/one cat/two )"), env.default_destinations());
+            d2.add(PortageDepParser::parse_depend("( cat/one cat/two )", pds_pm_unspecific), env.default_destinations());
             TEST_CHECK_EQUAL(join(d2.begin(), d2.end(), " "), "cat/two-2:0::repo cat/one-1:0::repo");
         }
     } test_dep_list_upgrade_as_needed;
@@ -1506,7 +1517,7 @@ namespace test_cases
 
             DepList d1(&env, DepListOptions());
             d1.options()->reinstall_scm = dl_reinstall_scm_always;
-            d1.add(PortageDepParser::parse("cat/zero"), env.default_destinations());
+            d1.add(PortageDepParser::parse_depend("cat/zero", pds_pm_unspecific), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/one-scm:0::repo cat/two-2:0::installed_repo "
                     "cat/three-live-0:0::repo cat/four-cvs-0:0::repo cat/five-svn-0:0::repo cat/six-darcs-0:0::repo "
                     "cat/zero-1:0::repo");

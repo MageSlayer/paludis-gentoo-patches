@@ -11,7 +11,7 @@ dnl on this file at present...
 add(`about',                             `hh', `test')
 add(`config_file',                       `hh', `cc', `test', `testscript')
 add(`contents',                          `hh', `cc')
-add(`dep_spec',                          `hh', `cc', `test')
+add(`dep_spec',                          `hh', `cc', `se', `test')
 add(`dep_spec_flattener',                `hh', `cc')
 add(`dep_spec_pretty_printer',           `hh', `cc')
 add(`dep_tag',                           `hh', `cc', `sr')

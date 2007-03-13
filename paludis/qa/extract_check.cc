@@ -89,9 +89,8 @@ ExtractCheck::operator() (const EbuildCheckData & e) const
                     e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
             Checker checker;
-            PortageDepParser::parse(metadata->ebuild_interface->src_uri,
-                    PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance())->accept(&checker);
-            PortageDepParser::parse(metadata->deps_interface->build_depend_string)->accept(&checker);
+            metadata->ebuild_interface->src_uri()->accept(&checker);
+            metadata->deps_interface->build_depend()->accept(&checker);
 
             if (checker.need_zip && ! checker.have_zip)
                 result << Message(qal_major, "Found .zip in SRC_URI but app-arch/unzip is not in DEPEND");

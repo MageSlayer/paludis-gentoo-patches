@@ -555,7 +555,8 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
         for (std::vector<CRANDescription>::const_iterator p(_imp->entries.begin()),
                 p_end(_imp->entries.end()) ; p != p_end ; ++p)
         {
-            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(p->name));
+            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(std::tr1::shared_ptr<QualifiedPackageName>(
+                            new QualifiedPackageName(p->name))));
             result->add_child(spec);
         }
 
@@ -586,7 +587,7 @@ CRANInstalledRepository::do_package_set(const SetName & s) const
                     }
                     else
                     {
-                        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(QualifiedPackageName(*line)));
+                        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(*line, pds_pm_unspecific));
                         result->add_child(spec);
                     }
                 }

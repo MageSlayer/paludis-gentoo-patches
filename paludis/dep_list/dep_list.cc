@@ -308,7 +308,8 @@ namespace
             const PackageDepSpec * const u(spec->as_package_dep_spec());
             if (0 != u && u->package_ptr())
             {
-                return ! env->package_database()->query(PackageDepSpec(*u->package_ptr()),
+                return ! env->package_database()->query(PackageDepSpec(
+                            std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(*u->package_ptr()))),
                         is_installed_only, qo_whatever)->empty();
             }
             else
@@ -370,7 +371,7 @@ DepList::QueryVisitor::visit(const PackageDepSpec * const a)
                 d->_imp->merge_list_index.equal_range(m->name));
 
         bool replaced(false);
-        PackageDepSpec spec(m->name);
+        PackageDepSpec spec(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(m->name)));
         while (p.second != ((p.first = std::find_if(p.first, p.second,
                             MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, &spec)))))
         {
@@ -747,7 +748,13 @@ DepList::AddVisitor::visit(const PackageDepSpec * const a)
             {
                 std::tr1::shared_ptr<PackageDatabaseEntryCollection> are_we_downgrading(
                         d->_imp->env->package_database()->query(PackageDepSpec(
-                                stringify(best_visible_candidate->name) + ":" + stringify(slot)),
+                                std::tr1::shared_ptr<QualifiedPackageName>(
+                                    new QualifiedPackageName(best_visible_candidate->name)),
+                                std::tr1::shared_ptr<CategoryNamePart>(),
+                                std::tr1::shared_ptr<PackageNamePart>(),
+                                std::tr1::shared_ptr<VersionRequirements>(),
+                                vr_and,
+                                std::tr1::shared_ptr<SlotName>(new SlotName(slot))),
                             is_installed_only, qo_order_by_version));
 
                 if (are_we_downgrading->empty())
@@ -903,7 +910,8 @@ DepList::AddVisitor::visit(const BlockDepSpec * const a)
 
     if (a->blocked_spec()->package_ptr())
     {
-        PackageDepSpec just_package(*a->blocked_spec()->package_ptr());
+        PackageDepSpec just_package(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                        *a->blocked_spec()->package_ptr())));
         already_installed = d->_imp->env->package_database()->query(
                 just_package, is_installed_only, qo_whatever);
 
@@ -1213,7 +1221,13 @@ DepList::add_package(const PackageDatabaseEntry & p, std::tr1::shared_ptr<const 
         DepSpecFlattener f(_imp->env, _imp->current_pde(), metadata->ebuild_interface->provide());
         for (DepSpecFlattener::Iterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            std::tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec("=" + (*i)->text() + "-" + stringify(p.version)));
+            std::tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
+            v->push_back(VersionRequirement(vo_equal, p.version));
+            std::tr1::shared_ptr<PackageDepSpec> pp(new PackageDepSpec(
+                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName((*i)->text())),
+                        std::tr1::shared_ptr<CategoryNamePart>(),
+                        std::tr1::shared_ptr<PackageNamePart>(),
+                        v, vr_and));
 
             std::pair<MergeListIndex::iterator, MergeListIndex::iterator> z;
             if (pp->package_ptr())

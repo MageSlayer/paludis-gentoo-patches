@@ -484,8 +484,8 @@ namespace
 
         rb_define_method(c_version_metadata, "provide_string", RUBY_FUNC_CAST((&EbuildValue<std::string,
                         &VersionMetadataEbuildInterface::provide_string>::fetch)), 0);
-        rb_define_method(c_version_metadata, "src_uri", RUBY_FUNC_CAST((&EbuildValue<std::string,
-                        &VersionMetadataEbuildInterface::src_uri>::fetch)), 0);
+        rb_define_method(c_version_metadata, "src_uri_string", RUBY_FUNC_CAST((&EbuildValue<std::string,
+                        &VersionMetadataEbuildInterface::src_uri_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "restrict_string", RUBY_FUNC_CAST((&EbuildValue<std::string,
                         &VersionMetadataEbuildInterface::restrict_string>::fetch)), 0);
         rb_define_method(c_version_metadata, "eclass_keywords", RUBY_FUNC_CAST((&EbuildValue<std::string,

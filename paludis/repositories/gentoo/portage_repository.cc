@@ -667,7 +667,7 @@ PortageRepository::do_query_repository_masks(const QualifiedPackageName & q, con
                 {
                     try
                     {
-                        std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
+                        std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line, pds_pm_eapi_0));
                         if (a->package_ptr())
                             _imp->repo_mask[*a->package_ptr()].push_back(a);
                         else
@@ -947,7 +947,8 @@ PortageRepository::info(bool verbose) const
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> q(
                     _imp->params.environment->package_database()->query(
-                        query::Matches(PackageDepSpec(*i)) & query::InstalledAtRoot(_imp->params.environment->root()),
+                        query::Matches(PackageDepSpec(*i, pds_pm_eapi_0)) &
+                        query::InstalledAtRoot(_imp->params.environment->root()),
                         qo_order_by_version));
             if (q->empty())
                 package_info->add_kv(*i, "(none)");

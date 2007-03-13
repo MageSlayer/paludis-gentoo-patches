@@ -75,8 +75,7 @@ FakeInstalledRepository::provided_packages() const
                 if (! m->ebuild_interface)
                     continue;
 
-                std::tr1::shared_ptr<const DepSpec> provide(PortageDepParser::parse(m->ebuild_interface->provide_string,
-                            PortageDepParserPolicy<PackageDepSpec, false>::get_instance()));
+                std::tr1::shared_ptr<const DepSpec> provide(m->ebuild_interface->provide());
                 PackageDatabaseEntry dbe(*p, *v, name());
                 DepSpecFlattener f(environment(), &dbe, provide);
 

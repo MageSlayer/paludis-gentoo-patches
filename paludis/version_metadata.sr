@@ -28,7 +28,7 @@ make_class_VersionMetadataDepsInterface()
 {
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    key parser ParserFunction
+    key parser DepParserFunction
 
     key build_depend_string std::string
     key run_depend_string std::string
@@ -36,7 +36,7 @@ make_class_VersionMetadataDepsInterface()
     key suggested_depend_string std::string
 
     extra_constructors <<END
-            VersionMetadataDepsInterface(const ParserFunction &);
+            VersionMetadataDepsInterface(const DepParserFunction &);
 END
 
     extra_methods <<END
@@ -75,12 +75,12 @@ make_class_VersionMetadataLicenseInterface()
 {
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    key parser ParserFunction
+    key parser TextParserFunction
 
     key license_string std::string
 
     extra_constructors <<END
-            VersionMetadataLicenseInterface(const ParserFunction &);
+            VersionMetadataLicenseInterface(const TextParserFunction &);
 END
 
     extra_methods <<END
@@ -148,7 +148,7 @@ make_class_VersionMetadataEbuildInterface()
     inherit "public virtual VersionMetadataHasInterfaces"
 
     key provide_string std::string
-    key src_uri std::string
+    key src_uri_string std::string
     key restrict_string std::string
     key keywords std::string
     key eclass_keywords std::string
@@ -164,6 +164,11 @@ END
              * PROVIDE, as a dep atom.
              */
             std::tr1::shared_ptr<const DepSpec> provide() const;
+
+            /**
+             * SRCU_URI, as a dep atom.
+             */
+            std::tr1::shared_ptr<const DepSpec> src_uri() const;
 END
 
     allow_named_args
@@ -182,10 +187,14 @@ make_class_VersionMetadataEbinInterface()
 {
     inherit "public virtual VersionMetadataHasInterfaces"
 
-    key bin_uri std::string
+    key bin_uri_string std::string
 
     extra_constructors <<END
             VersionMetadataEbinInterface();
+END
+
+    extra_methods <<END
+        std::tr1::shared_ptr<const DepSpec> bin_uri() const;
 END
 
     allow_named_args

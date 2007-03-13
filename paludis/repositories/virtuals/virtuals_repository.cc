@@ -128,7 +128,8 @@ VirtualsRepository::need_names() const
         for (RepositoryProvidesInterface::ProvidesCollection::Iterator p(provides->begin()),
                 p_end(provides->end()) ; p != p_end ; ++p)
             _imp->names.push_back(std::make_pair(p->virtual_name, std::tr1::shared_ptr<const PackageDepSpec>(
-                            new PackageDepSpec(stringify(p->provided_by_name)))));
+                            new PackageDepSpec(
+                                std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(p->provided_by_name))))));
     }
 
     std::sort(_imp->names.begin(), _imp->names.end(), NamesNameComparator());
@@ -254,7 +255,9 @@ VirtualsRepository::do_version_metadata(
     return vif->virtual_package_version_metadata(
                 RepositoryVirtualsEntry::create()
                 .virtual_name(p.first->virtual_name)
-                .provided_by_spec(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(p.first->provided_by_name))), v);
+                .provided_by_spec(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+                            std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(p.first->provided_by_name))))),
+                v);
 }
 
 bool

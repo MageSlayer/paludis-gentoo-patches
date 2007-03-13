@@ -295,7 +295,8 @@ do_install(std::tr1::shared_ptr<Environment> env, std::tr1::shared_ptr<const Pac
         {
             std::tr1::shared_ptr<const PackageDatabaseEntryCollection> p(
                     env->package_database()->query(
-                        query::Matches(PackageDepSpec(e.query())) & query::RepositoryHasUninstallableInterface(),
+                        query::Matches(PackageDepSpec(e.query(), pds_pm_unspecific)) &
+                        query::RepositoryHasUninstallableInterface(),
                         qo_order_by_version));
 
             if (p->empty())

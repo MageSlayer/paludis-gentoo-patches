@@ -113,42 +113,42 @@ namespace test_cases
             p.add_repository(10, r2);
             TEST_CHECK(true);
 
-            PackageDepSpec d1("r1c1/r1c1p1");
+            PackageDepSpec d1("r1c1/r1c1p1", pds_pm_permissive);
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q1(p.query(
                         query::Matches(d1), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q1->begin(), q1->end()), 1);
 
-            PackageDepSpec d2("r1c1/r1c1p2");
+            PackageDepSpec d2("r1c1/r1c1p2", pds_pm_permissive);
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q2(p.query(
                         query::Matches(d2), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q2->begin(), q2->end()), 2);
 
-            PackageDepSpec d3(">=r1c1/r1c1p2-1");
+            PackageDepSpec d3(">=r1c1/r1c1p2-1", pds_pm_permissive);
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q3(p.query(
                         query::Matches(d3), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q3->begin(), q3->end()), 2);
 
-            PackageDepSpec d4(">=r1c1/r1c1p2-2");
+            PackageDepSpec d4(">=r1c1/r1c1p2-2", pds_pm_permissive);
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q4(p.query(
                         query::Matches(d4), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q4->begin(), q4->end()), 1);
 
-            PackageDepSpec d5(">=r1c1/r1c1p2-3");
+            PackageDepSpec d5(">=r1c1/r1c1p2-3", pds_pm_permissive);
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q5(p.query(
                         query::Matches(d5), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q5->begin(), q5->end()), 0);
 
-            PackageDepSpec d6("<r1c1/r1c1p2-3");
+            PackageDepSpec d6("<r1c1/r1c1p2-3", pds_pm_permissive);
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q6(p.query(
                         query::Matches(d6), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q6->begin(), q6->end()), 2);
 
-            PackageDepSpec d7("rac1/rac1pa");
+            PackageDepSpec d7("rac1/rac1pa", pds_pm_permissive);
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q7(p.query(
                         query::Matches(d7), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q7->begin(), q7->end()), 4);
 
-            PackageDepSpec d8("foo/bar");
+            PackageDepSpec d8("foo/bar", pds_pm_permissive);
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q8(p.query(
                         query::Matches(d8), qo_order_by_version));
             TEST_CHECK_EQUAL(std::distance(q8->begin(), q8->end()), 0);
@@ -178,7 +178,7 @@ namespace test_cases
             p.add_repository(10, r2);
             TEST_CHECK(true);
 
-            PackageDepSpec d("cat/pkg");
+            PackageDepSpec d("cat/pkg", pds_pm_permissive);
 
             const std::tr1::shared_ptr<PackageDatabaseEntryCollection> q1(p.query(d, is_any, qo_order_by_version));
             TEST_CHECK_EQUAL(join(q1->begin(), q1->end(), " "),

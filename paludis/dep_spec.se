@@ -1,0 +1,23 @@
+#!/bin/bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_PackageDepSpecParseMode()
+{
+    prefix pds_pm
+
+    key pds_pm_eapi_0        "EAPI-0"
+    key pds_pm_eapi_0_strict "EAPI-0, errors for non-permitted things"
+    key pds_pm_permissive    "Permissive"
+    key pds_pm_unspecific    "Permissive, and allow unspecific cat/pkg"
+
+    doxygen_comment << "END"
+        /**
+         * How to parse a PackageDepSpec string.
+         *
+         * \see PackageDepSpec
+         * \ingroup grpdepspecs
+         */
+END
+}
+
+

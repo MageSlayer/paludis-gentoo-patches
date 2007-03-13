@@ -231,7 +231,7 @@ ConsoleQueryTask::display_metadata(const PackageDepSpec &, const PackageDatabase
         if (want_raw())
         {
             display_metadata_key("Keywords", "KEYWORDS", metadata->ebuild_interface->keywords);
-            display_metadata_key("SRC_URI", "SRC_URI", metadata->ebuild_interface->src_uri);
+            display_metadata_key("SRC_URI", "SRC_URI", metadata->ebuild_interface->src_uri_string);
             display_metadata_key("Restrict", "RESTRICT", metadata->ebuild_interface->restrict_string);
         }
     }

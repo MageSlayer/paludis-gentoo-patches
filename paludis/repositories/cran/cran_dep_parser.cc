@@ -10,7 +10,7 @@
 using namespace paludis;
 
 std::tr1::shared_ptr<const CompositeDepSpec>
-CRANDepParser::parse(const std::string & s)
+CRANDepParser::parse(const std::string & s, const PackageDepSpecParseMode mode)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
 
@@ -53,7 +53,7 @@ CRANDepParser::parse(const std::string & s)
             spec_string = name;
         else
             spec_string = range + name + "-" + version;
-        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_string));
+        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(spec_string, mode));
         result->add_child(spec);
     }
 

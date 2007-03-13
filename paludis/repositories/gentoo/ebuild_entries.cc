@@ -270,8 +270,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         std::set<std::string> already_in_archives;
 
         /* make A and FLAT_SRC_URI */
-        std::tr1::shared_ptr<const DepSpec> f_spec(PortageDepParser::parse(metadata->ebuild_interface->src_uri,
-                    PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance()));
+        std::tr1::shared_ptr<const DepSpec> f_spec(metadata->ebuild_interface->src_uri());
         DepSpecFlattener f(_imp->params.environment, &e, f_spec);
 
         for (DepSpecFlattener::Iterator ff(f.begin()), ff_end(f.end()) ; ff != ff_end ; ++ff)
@@ -353,9 +352,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         }
 
         /* make AA */
-        std::tr1::shared_ptr<const DepSpec> g_spec(PortageDepParser::parse(
-                    metadata->ebuild_interface->src_uri,
-                    PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance()));
+        std::tr1::shared_ptr<const DepSpec> g_spec(metadata->ebuild_interface->src_uri());
         AAFinder g(g_spec);
         std::set<std::string> already_in_all_archives;
 

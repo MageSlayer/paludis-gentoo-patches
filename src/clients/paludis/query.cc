@@ -106,11 +106,11 @@ void do_one_query(
         {
         }
         if (0 == set)
-            spec.reset(new PackageDepSpec(env->package_database()->fetch_unique_qualified_package_name(
-                            PackageNamePart(q))));
+            spec.reset(new PackageDepSpec(std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                                env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(q))))));
     }
     else
-        spec.reset(new PackageDepSpec(q));
+        spec.reset(new PackageDepSpec(q, pds_pm_unspecific));
 
     if (spec)
         do_one_package_query(env, mask_reasons_to_explain, spec);

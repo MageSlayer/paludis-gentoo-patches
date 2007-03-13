@@ -107,19 +107,19 @@ PortageRepositorySets::package_set(const SetName & s) const
                 Log::get_instance()->message(ll_warning, lc_context,
                         "Line '" + *line + "' in set file '"
                         + stringify(ff) + "' does not specify '*' or '?', assuming '*'");
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0)));
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(0), pds_pm_eapi_0));
                 spec->set_tag(tag);
                 result->add_child(spec);
             }
             else if ("*" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1)));
+                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(tokens.at(1), pds_pm_eapi_0));
                 spec->set_tag(tag);
                 result->add_child(spec);
             }
             else if ("?" == tokens.at(0))
             {
-                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(1)));
+                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(tokens.at(1), pds_pm_eapi_0));
                 p->set_tag(tag);
                 if (p->package_ptr())
                 {
@@ -320,9 +320,15 @@ PortageRepositorySets::security_set(bool insecurity) const
 
                     if (insecurity)
                     {
+                        std::tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
+                        v->push_back(VersionRequirement(vo_equal, c->version));
                         std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                                    "=" + stringify(c->name) + "-" + stringify(c->version) +
-                                    "::" + stringify(c->repository)));
+                                    std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(c->name)),
+                                    std::tr1::shared_ptr<CategoryNamePart>(),
+                                    std::tr1::shared_ptr<PackageNamePart>(),
+                                    v, vr_and,
+                                    std::tr1::shared_ptr<SlotName>(),
+                                    std::tr1::shared_ptr<RepositoryName>(new RepositoryName(c->repository))));
                         spec->set_tag(glsa_tags.find(glsa->id())->second);
                         security_packages->add_child(spec);
                     }
@@ -335,7 +341,14 @@ PortageRepositorySets::security_set(bool insecurity) const
                                     c->repository)->version_metadata(c->name, c->version)->slot);
                         std::tr1::shared_ptr<const PackageDatabaseEntryCollection> available(
                                 _imp->environment->package_database()->query(
-                                    query::Matches(PackageDepSpec(stringify(glsa_pkg->name()) + ":" + stringify(wanted_slot))) &
+                                    query::Matches(PackageDepSpec(
+                                            std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                                                    glsa_pkg->name())),
+                                            std::tr1::shared_ptr<CategoryNamePart>(),
+                                            std::tr1::shared_ptr<PackageNamePart>(),
+                                            std::tr1::shared_ptr<VersionRequirements>(),
+                                            vr_and,
+                                            std::tr1::shared_ptr<SlotName>(new SlotName(wanted_slot)))) &
                                     query::RepositoryHasInstallableInterface() &
                                     query::NotMasked(),
                                     qo_order_by_version));
@@ -350,9 +363,15 @@ PortageRepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
+                            std::tr1::shared_ptr<VersionRequirements> v(new VersionRequirements::Concrete);
+                            v->push_back(VersionRequirement(vo_equal, r->version));
                             std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
-                                        "=" + stringify(r->name) + "-" + stringify(r->version) +
-                                        "::" + stringify(r->repository)));
+                                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(r->name)),
+                                        std::tr1::shared_ptr<CategoryNamePart>(),
+                                        std::tr1::shared_ptr<PackageNamePart>(),
+                                        v, vr_and,
+                                        std::tr1::shared_ptr<SlotName>(),
+                                        std::tr1::shared_ptr<RepositoryName>(new RepositoryName(r->repository))));
                             spec->set_tag(glsa_tags.find(glsa->id())->second);
                             security_packages->add_child(spec);
                             ok = true;

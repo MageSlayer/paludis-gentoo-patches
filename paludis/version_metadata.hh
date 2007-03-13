@@ -57,11 +57,19 @@ namespace paludis
     };
 
     /**
-     * A pointer to a parse function.
+     * A pointer to a parse function for package dependencies.
      *
      * \ingroup grpversions
      */
-    typedef std::tr1::shared_ptr<const CompositeDepSpec> (* ParserFunction) (const std::string &);
+    typedef std::tr1::shared_ptr<const CompositeDepSpec> (* DepParserFunction) (const std::string &,
+            const PackageDepSpecParseMode);
+
+    /**
+     * A pointer to a parse function for text.
+     *
+     * \ingroup grpversions
+     */
+    typedef std::tr1::shared_ptr<const CompositeDepSpec> (* TextParserFunction) (const std::string &);
 
 #include <paludis/version_metadata-sr.hh>
 
@@ -77,6 +85,8 @@ namespace paludis
     {
         public:
             virtual ~VersionMetadata();
+
+            PackageDepSpecParseMode eapi_as_package_dep_spec_parse_mode() const;
 
         protected:
             VersionMetadata(const VersionMetadataBase::Params<> &, const VersionMetadataCapabilities &);

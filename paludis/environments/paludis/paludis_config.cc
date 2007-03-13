@@ -420,7 +420,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 }
                 else
                 {
-                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(tokens.at(0)));
+                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                     {
@@ -475,7 +475,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 }
                 else
                 {
-                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(tokens.at(0)));
+                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                         if (a->package_ptr())
@@ -522,7 +522,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                                 std::tr1::shared_ptr<const DepSpec>()));
                 else
                 {
-                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
+                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line, pds_pm_unspecific));
                     if (a->package_ptr())
                         _imp->user_masks[*a->package_ptr()].push_back(a);
                     else
@@ -562,7 +562,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                                 std::tr1::shared_ptr<const DepSpec>()));
                 else
                 {
-                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line));
+                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(*line, pds_pm_unspecific));
                     if (a->package_ptr())
                         _imp->user_unmasks[*a->package_ptr()].push_back(a);
                     else
@@ -661,7 +661,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 }
                 else
                 {
-                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(tokens.at(0)));
+                    std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(tokens.at(0), pds_pm_unspecific));
                     for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                             t != t_end ; ++t)
                     {

@@ -82,13 +82,11 @@ PdependOverlapCheck::operator() (const EbuildCheckData & e) const
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 
         Collector pdepend_collector;
-        std::string pdepend(metadata->deps_interface->post_depend_string);
-        PortageDepParser::parse(pdepend)->accept(&pdepend_collector);
+        metadata->deps_interface->post_depend()->accept(&pdepend_collector);
 
         {
             Collector depend_collector;
-            std::string depend(metadata->deps_interface->build_depend_string);
-            PortageDepParser::parse(depend)->accept(&depend_collector);
+            metadata->deps_interface->build_depend()->accept(&depend_collector);
 
             std::set<QualifiedPackageName> overlap;
             std::set_intersection(depend_collector.result.begin(), depend_collector.result.end(),
@@ -102,8 +100,7 @@ PdependOverlapCheck::operator() (const EbuildCheckData & e) const
 
         {
             Collector rdepend_collector;
-            std::string rdepend(metadata->deps_interface->run_depend_string);
-            PortageDepParser::parse(rdepend)->accept(&rdepend_collector);
+            metadata->deps_interface->run_depend()->accept(&rdepend_collector);
 
             std::set<QualifiedPackageName> overlap;
             std::set_intersection(rdepend_collector.result.begin(), rdepend_collector.result.end(),

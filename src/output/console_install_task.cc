@@ -206,15 +206,30 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
         throw InternalError(PALUDIS_HERE, "Bad d.kind");
     } while (false);
 
-    std::string repo;
+    std::tr1::shared_ptr<RepositoryName> repo;
     if (d.destinations && ! d.destinations->empty())
-        repo = "::" + stringify((d.destinations->begin()->destination)->name());
+        repo.reset(new RepositoryName((d.destinations->begin()->destination)->name()));
 
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_repo(environment()->package_database()->
-            query(query::Matches(PackageDepSpec(stringify(d.package.name) + repo)), qo_order_by_version));
+            query(query::Matches(PackageDepSpec(
+                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package.name)),
+                        std::tr1::shared_ptr<CategoryNamePart>(),
+                        std::tr1::shared_ptr<PackageNamePart>(),
+                        std::tr1::shared_ptr<VersionRequirements>(),
+                        vr_and,
+                        std::tr1::shared_ptr<SlotName>(),
+                        repo)),
+                qo_order_by_version));
 
     std::tr1::shared_ptr<PackageDatabaseEntryCollection> existing_slot_repo(environment()->package_database()->
-            query(query::Matches(PackageDepSpec(stringify(d.package.name) + ":" + stringify(d.metadata->slot) + repo)),
+            query(query::Matches(PackageDepSpec(
+                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(d.package.name)),
+                        std::tr1::shared_ptr<CategoryNamePart>(),
+                        std::tr1::shared_ptr<PackageNamePart>(),
+                        std::tr1::shared_ptr<VersionRequirements>(),
+                        vr_and,
+                        std::tr1::shared_ptr<SlotName>(new SlotName(d.metadata->slot)),
+                        repo)),
                 qo_order_by_version));
 
     display_merge_list_entry_start(d, m);

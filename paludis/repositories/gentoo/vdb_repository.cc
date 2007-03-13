@@ -389,7 +389,7 @@ namespace paludis
 
                 try
                 {
-                    PackageDepSpec spec("=" + stringify(cat) + "/" + pkg_i->basename());
+                    PackageDepSpec spec("=" + stringify(cat) + "/" + pkg_i->basename(), pds_pm_permissive);
                     entries.push_back(VDBEntry(*spec.package_ptr(),
                                 spec.version_requirements_ptr()->begin()->version_spec));
                 }
@@ -458,7 +458,7 @@ namespace paludis
         }
         {
             Context local_context("When loading key 'SRC_URI':");
-            p->metadata->src_uri = file_contents(location, p->name, p->version, "SRC_URI");
+            p->metadata->src_uri_string = file_contents(location, p->name, p->version, "SRC_URI");
         }
         {
             Context local_context("When loading key 'EAPI':");
@@ -1064,7 +1064,8 @@ VDBRepository::do_package_set(const SetName & s) const
         for (std::vector<VDBEntry>::const_iterator p(_imp->entries.begin()),
                 p_end(_imp->entries.end()) ; p != p_end ; ++p)
         {
-            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(p->name));
+            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(p->name))));
             spec->set_tag(tag);
             result->add_child(spec);
         }
@@ -1097,7 +1098,8 @@ VDBRepository::do_package_set(const SetName & s) const
                     }
                     else
                     {
-                        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(QualifiedPackageName(*line)));
+                        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                                    std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(*line))));
                         spec->set_tag(tag);
                         result->add_child(spec);
                     }
@@ -1413,7 +1415,7 @@ VDBRepository::load_provided_using_cache() const
         PackageDatabaseEntry dbe(QualifiedPackageName(tokens.at(0)), VersionSpec(tokens.at(1)), name());
         DepSpecFlattener f(_imp->env, &dbe, PortageDepParser::parse(
                     join(next(next(tokens.begin())), tokens.end(), " "),
-                    PortageDepParserPolicy<PackageDepSpec, false>::get_instance()));
+                    PortageDepParser::Policy::text_is_package_dep_spec(false, pds_pm_permissive)));
 
         for (DepSpecFlattener::Iterator p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
             result->insert(RepositoryProvidesEntry::create()
@@ -1458,7 +1460,7 @@ VDBRepository::load_provided_the_slow_way() const
                 continue;
 
             std::tr1::shared_ptr<const DepSpec> provide(PortageDepParser::parse(provide_str,
-                        PortageDepParserPolicy<PackageDepSpec, false>::get_instance()));
+                        PortageDepParser::Policy::text_is_package_dep_spec(false, pds_pm_permissive)));
             PackageDatabaseEntry dbe(e->name, e->version, name());
             DepSpecFlattener f(_imp->env, &dbe, provide);
 

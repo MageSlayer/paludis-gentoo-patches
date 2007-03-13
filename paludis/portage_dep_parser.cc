@@ -62,7 +62,7 @@ namespace
 }
 
 std::tr1::shared_ptr<CompositeDepSpec>
-PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInterface * const policy)
+PortageDepParser::parse(const std::string & s, const Policy & policy)
 {
     Context context("When parsing dependency string '" + s + "':");
 
@@ -93,7 +93,7 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
                                  {
                                      if (i->second.empty())
                                          throw DepStringParseError(i->second, "Empty text entry");
-                                     stack.top()->add_child(policy->new_text_spec(i->second));
+                                     stack.top()->add_child(policy.create(i->second));
                                  }
                                  continue;
 
@@ -116,7 +116,7 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
                                  continue;
 
                             case dpl_double_bar:
-                                 if (policy->permit_any_deps())
+                                 if (policy.permit_any_deps())
                                  {
                                      std::tr1::shared_ptr<CompositeDepSpec> a(new AnyDepSpec);
                                      stack.top()->add_child(a);
@@ -280,13 +280,62 @@ PortageDepParser::parse(const std::string & s, const PortageDepParserPolicyInter
 }
 
 std::tr1::shared_ptr<const CompositeDepSpec>
-PortageDepParser::parse_depend(const std::string & s)
+PortageDepParser::parse_depend(const std::string & s, const PackageDepSpecParseMode mode)
 {
-    return PortageDepParser::parse(s);
+    return PortageDepParser::parse(s, Policy::text_is_package_dep_spec(true, mode));
 }
 
 std::tr1::shared_ptr<const CompositeDepSpec>
 PortageDepParser::parse_license(const std::string & s)
 {
-    return PortageDepParser::parse(s, PortageDepParserPolicy<PlainTextDepSpec, true>::get_instance());
+    return PortageDepParser::parse(s, Policy::text_is_text_dep_spec(true));
 }
+
+PortageDepParser::Policy::Policy(const bool p, const PackageDepSpecParseMode m,
+        std::tr1::shared_ptr<StringDepSpec> (Policy::* const f) (const std::string &) const) :
+    _permit_any_deps(p),
+    _parse_mode(m),
+    _create_func(f)
+{
+}
+
+std::tr1::shared_ptr<StringDepSpec>
+PortageDepParser::Policy::_create_text_dep_spec(const std::string & s) const
+{
+    return std::tr1::shared_ptr<StringDepSpec>(new PlainTextDepSpec(s));
+}
+
+std::tr1::shared_ptr<StringDepSpec>
+PortageDepParser::Policy::_create_package_dep_spec(const std::string & s) const
+{
+    if (s.empty() || '!' != s.at(0))
+        return std::tr1::shared_ptr<StringDepSpec>(new PackageDepSpec(s, _parse_mode));
+    else
+        return std::tr1::shared_ptr<StringDepSpec>(new BlockDepSpec(
+                    std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s.substr(1), _parse_mode))));
+}
+
+PortageDepParser::Policy
+PortageDepParser::Policy::text_is_text_dep_spec(bool permit_any_deps)
+{
+    return Policy(permit_any_deps, pds_pm_permissive, &Policy::_create_text_dep_spec);
+}
+
+PortageDepParser::Policy
+PortageDepParser::Policy::text_is_package_dep_spec(bool permit_any_deps, PackageDepSpecParseMode mode)
+{
+    return Policy(permit_any_deps, mode, &Policy::_create_package_dep_spec);
+}
+
+std::tr1::shared_ptr<StringDepSpec>
+PortageDepParser::Policy::create(const std::string & s) const
+{
+    return (this->*_create_func)(s);
+}
+
+bool
+PortageDepParser::Policy::permit_any_deps() const
+{
+    return _permit_any_deps;
+}
+

@@ -122,7 +122,9 @@ do_search(const Environment & env)
             continue;
 
         InquisitioQueryTask query(&env);
-        query.show(PackageDepSpec(display_entry.name), &display_entry);
+        query.show(PackageDepSpec(
+                    std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(display_entry.name))),
+                &display_entry);
     }
 
     return 0;

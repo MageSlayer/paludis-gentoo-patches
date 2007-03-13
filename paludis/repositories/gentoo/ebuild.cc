@@ -184,7 +184,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
         _metadata->build_depend_string = f.get("DEPEND");
         _metadata->run_depend_string = f.get("RDEPEND");
         _metadata->slot = SlotName(f.get("SLOT"));
-        _metadata->src_uri = f.get("SRC_URI");
+        _metadata->src_uri_string = f.get("SRC_URI");
         _metadata->restrict_string = f.get("RESTRICT");
         _metadata->homepage = f.get("HOMEPAGE");
         _metadata->license_interface->license_string = f.get("LICENSE");

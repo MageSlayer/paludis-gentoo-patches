@@ -224,11 +224,13 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
     {
         if (std::string::npos == CommandLine::get_instance()->begin_parameters()->find('/'))
         {
-            spec.reset(new PackageDepSpec(env.package_database()->fetch_unique_qualified_package_name(
-                            PackageNamePart(*CommandLine::get_instance()->begin_parameters()))));
+            spec.reset(new PackageDepSpec(
+                        std::tr1::shared_ptr<QualifiedPackageName>(new QualifiedPackageName(
+                                env.package_database()->fetch_unique_qualified_package_name(
+                                    PackageNamePart(*CommandLine::get_instance()->begin_parameters()))))));
         }
         else
-            spec.reset(new PackageDepSpec(*CommandLine::get_instance()->begin_parameters()));
+            spec.reset(new PackageDepSpec(*CommandLine::get_instance()->begin_parameters(), pds_pm_unspecific));
     }
     catch (const AmbiguousPackageNameError & e)
     {

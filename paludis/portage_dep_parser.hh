@@ -95,77 +95,6 @@ namespace paludis
     };
 
     /**
-     * Policy class describing how PortageDepParser::parse should behave.
-     *
-     * \see PortageDepParser
-     *
-     * \ingroup grpdepparser
-     */
-    template <typename TextAtom_, bool permit_any_>
-    class PortageDepParserPolicy :
-        public PortageDepParserPolicyInterface,
-        public InstantiationPolicy<PortageDepParserPolicy<TextAtom_, permit_any_>,
-            instantiation_method::SingletonTag>
-    {
-        friend class InstantiationPolicy<PortageDepParserPolicy<TextAtom_, permit_any_>,
-            instantiation_method::SingletonTag>;
-
-        private:
-            PortageDepParserPolicy()
-            {
-            }
-
-        public:
-            virtual std::tr1::shared_ptr<DepSpec> new_text_spec(const std::string & s) const
-            {
-                return std::tr1::shared_ptr<DepSpec>(new TextAtom_(s));
-            }
-
-            virtual bool permit_any_deps() const
-            {
-                return permit_any_;
-            }
-    };
-
-    /**
-     * Policy class describing how PortageDepParser::parse should behave
-     * (specialisation for PackageDepSpec).
-     *
-     * \see PortageDepParser
-     *
-     * \ingroup grpdepparser
-     */
-    template <bool permit_any_>
-    class PortageDepParserPolicy<PackageDepSpec, permit_any_> :
-        public PortageDepParserPolicyInterface,
-        public InstantiationPolicy<PortageDepParserPolicy<PackageDepSpec, permit_any_>,
-            instantiation_method::SingletonTag>
-    {
-        friend class InstantiationPolicy<PortageDepParserPolicy<PackageDepSpec, permit_any_>,
-            instantiation_method::SingletonTag>;
-
-        private:
-            PortageDepParserPolicy()
-            {
-            }
-
-        public:
-            virtual std::tr1::shared_ptr<DepSpec> new_text_spec(const std::string & s) const
-            {
-                if ((! s.empty()) && ('!' == s.at(0)))
-                    return std::tr1::shared_ptr<DepSpec>(new BlockDepSpec(
-                                std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(s.substr(1)))));
-                else
-                    return std::tr1::shared_ptr<DepSpec>(new PackageDepSpec(s));
-            }
-
-            virtual bool permit_any_deps() const
-            {
-                return permit_any_;
-            }
-    };
-
-    /**
      * The PortageDepParser converts string representations of a dependency
      * specification into a DepSpec instance. The PortageDepLexer class is
      * used as the first stage.
@@ -175,21 +104,40 @@ namespace paludis
     class PortageDepParser :
         private InstantiationPolicy<PortageDepParser, instantiation_method::NonInstantiableTag>
     {
-        private:
-            typedef PortageDepParserPolicy<PackageDepSpec, true> DefaultPolicy;
-
         public:
+            class Policy
+            {
+                private:
+                    const bool _permit_any_deps;
+                    const PackageDepSpecParseMode _parse_mode;
+                    std::tr1::shared_ptr<StringDepSpec> (Policy::* const _create_func) (const std::string &) const;
+
+                    std::tr1::shared_ptr<StringDepSpec> _create_text_dep_spec(const std::string &) const;
+                    std::tr1::shared_ptr<StringDepSpec> _create_package_dep_spec(const std::string &) const;
+
+                    Policy(const bool, const PackageDepSpecParseMode,
+                            std::tr1::shared_ptr<StringDepSpec> (Policy::* const) (const std::string &) const);
+
+                public:
+                    static Policy text_is_text_dep_spec(bool permit_any_deps);
+                    static Policy text_is_package_dep_spec(bool permit_any_deps, PackageDepSpecParseMode);
+
+                    std::tr1::shared_ptr<StringDepSpec> create(const std::string &) const;
+                    bool permit_any_deps() const;
+            };
+
             /**
              * Parse a given dependency string, and return an appropriate
              * DepSpec tree.
              */
             static std::tr1::shared_ptr<CompositeDepSpec> parse(const std::string & s,
-                    const PortageDepParserPolicyInterface * const policy = DefaultPolicy::get_instance());
+                    const Policy &);
 
             /**
              * Convenience wrapper for parse for depend strings, for VersionMetadata.
              */
-            static std::tr1::shared_ptr<const CompositeDepSpec> parse_depend(const std::string & s);
+            static std::tr1::shared_ptr<const CompositeDepSpec> parse_depend(const std::string & s,
+                    const PackageDepSpecParseMode);
 
             /**
              * Convenience wrapper for parse for license strings, for VersionMetadata.
