@@ -208,26 +208,26 @@
  * \ingroup grprepository
  */
 
-// ----- grpdepatoms Subgroups -----
+// ----- grpdepspecs Subgroups -----
 
-/** \defgroup grpdepatomdumper Dep atom dumper
+/** \defgroup grpdepspecdumper Dep spec dumper
  *
- * \ingroup grpdepatoms
+ * \ingroup grpdepspecs
  */
 
-/** \defgroup grpdepatomflattener Dep atom flattener
+/** \defgroup grpdepspecflattener Dep spec flattener
  *
- * \ingroup grpdepatoms
+ * \ingroup grpdepspecs
  */
 
-/** \defgroup grpdepatomprettyprinter Dep atom pretty printer
+/** \defgroup grpdepspecprettyprinter Dep spec pretty printer
  *
- * \ingroup grpdepatoms
+ * \ingroup grpdepspecs
  */
 
 /** \defgroup grpdeptag Dependency tags
  *
- * \ingroup grpdepatoms
+ * \ingroup grpdepspecs
  */
 
 // ----- grpdependencies Subgroups -----
@@ -242,7 +242,7 @@
  * \ingroup grpuninstalllist
  */
 
-/** \defgroup grpdepatoms Dependency atoms
+/** \defgroup grpdepspecs Dependency specs
  *
  * \ingroup grpdependencies
  */
