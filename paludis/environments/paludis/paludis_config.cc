@@ -263,14 +263,35 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     FSEntry local_config_dir(FSEntry(getenv_with_default("PALUDIS_HOME", getenv_or_error("HOME"))) /
             (".paludis" + local_config_suffix)), old_config_dir(local_config_dir);
-    if (! local_config_dir.exists())
+    try
+    {
+        if (! local_config_dir.exists())
+            local_config_dir = (FSEntry(SYSCONFDIR) / ("paludis" + local_config_suffix));
+    }
+    catch (const FSError &)
+    {
         local_config_dir = (FSEntry(SYSCONFDIR) / ("paludis" + local_config_suffix));
+    }
+
     if (! local_config_dir.exists())
         throw PaludisConfigError("Can't find configuration directory (tried '"
                 + stringify(old_config_dir) + "', '" + stringify(local_config_dir) + "')");
 
     Log::get_instance()->message(ll_debug, lc_no_context, "PaludisConfig initial directory is '"
             + stringify(local_config_dir) + "'");
+
+    /* check that we can safely use userpriv */
+    {
+        Command cmd(Command("ls -ld '" + stringify(local_config_dir) + "'/* >/dev/null 2>/dev/null")
+                .with_uid_gid(reduced_uid(), reduced_gid()));
+        if (0 != run_command(cmd))
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Cannot access configuration directory '"
+                    + stringify(local_config_dir) + "' using userpriv, so userpriv will be disabled");
+            _imp->reduced_uid.reset(new uid_t(getuid()));
+            _imp->reduced_gid.reset(new gid_t(getgid()));
+        }
+    }
 
     if ((local_config_dir / "specpath").exists())
     {
@@ -1046,15 +1067,20 @@ PaludisConfig::reduced_uid() const
 {
     if (! _imp->reduced_uid)
     {
-        struct passwd * p(getpwnam(reduced_username().c_str()));
-        if (! p)
-        {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Couldn't determine uid for user '" + reduced_username() + "'");
+        if (0 != getuid())
             _imp->reduced_uid.reset(new uid_t(getuid()));
-        }
         else
-            _imp->reduced_uid.reset(new uid_t(p->pw_uid));
+        {
+            struct passwd * p(getpwnam(reduced_username().c_str()));
+            if (! p)
+            {
+                Log::get_instance()->message(ll_warning, lc_no_context,
+                        "Couldn't determine uid for user '" + reduced_username() + "'");
+                _imp->reduced_uid.reset(new uid_t(getuid()));
+            }
+            else
+                _imp->reduced_uid.reset(new uid_t(p->pw_uid));
+        }
     }
 
     return *_imp->reduced_uid;
@@ -1065,15 +1091,20 @@ PaludisConfig::reduced_gid() const
 {
     if (! _imp->reduced_gid)
     {
-        struct passwd * p(getpwnam(reduced_username().c_str()));
-        if (! p)
-        {
-            Log::get_instance()->message(ll_warning, lc_no_context,
-                    "Couldn't determine gid for user '" + reduced_username() + "'");
+        if (0 != getuid())
             _imp->reduced_gid.reset(new gid_t(getgid()));
-        }
         else
-            _imp->reduced_gid.reset(new gid_t(p->pw_gid));
+        {
+            struct passwd * p(getpwnam(reduced_username().c_str()));
+            if (! p)
+            {
+                Log::get_instance()->message(ll_warning, lc_no_context,
+                        "Couldn't determine gid for user '" + reduced_username() + "'");
+                _imp->reduced_gid.reset(new gid_t(getgid()));
+            }
+            else
+                _imp->reduced_gid.reset(new gid_t(p->pw_gid));
+        }
     }
 
     return *_imp->reduced_gid;

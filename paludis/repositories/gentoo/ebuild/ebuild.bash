@@ -294,7 +294,7 @@ ebuild_main()
     shift
 
     if [[ ${#@} -ge 2 ]] ; then
-        ebuild_section "Running ebuild phases $@..."
+        ebuild_section "Running ebuild phases $@ as $(id -un ):$(id -gn )..."
     elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] ; then
         ebuild_section "Running ebuild phase $@..."
     fi
