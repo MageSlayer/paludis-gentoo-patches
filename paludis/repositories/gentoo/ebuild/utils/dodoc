@@ -31,10 +31,6 @@ if [[ $# -lt 1 ]]; then
     exit 1
 fi
 
-if [[ -z ${PALUDIS_COMPRESS} ]]; then
-    PALUDIS_COMPRESS="gzip -f -9"
-fi
-
 dir="${D}usr/share/doc/${PF}/${DOCDESTTREE}"
 if [[ ! -d "${dir}" ]]; then
     install -d "${dir}" || exit 3
@@ -45,7 +41,6 @@ ret=0
 for x in "$@"; do
     if [[ -s "${x}" ]]; then
         install -m0644 "${x}" "${dir}"
-        ${PALUDIS_COMPRESS} "${dir}/${x##*/}"
     elif [[ ! -e "${x}" ]]; then
         echo "${0}: ${x} does not exist" >&2
         ret=2

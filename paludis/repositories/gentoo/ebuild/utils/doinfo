@@ -35,16 +35,11 @@ if [[ ! -d "${D}usr/share/info" ]]; then
     install -d "${D}usr/share/info" || exit 3
 fi
 
-if [[ -z ${PALUDIS_COMPRESS} ]]; then
-    PALUDIS_COMPRESS="gzip -f -9"
-fi
-
 ret=0
 
 for x in "$@"; do
     if [[ -e "${x}" ]]; then
         install -m0644 "${x}" "${D}usr/share/info"
-        ${PALUDIS_COMPRESS} "${D}usr/share/info/$(basename "${x}")"
     else
         echo "${0}: ${x} does not exist"
         ret=2

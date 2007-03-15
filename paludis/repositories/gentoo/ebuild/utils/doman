@@ -31,10 +31,6 @@ if [[ ${#} -lt 1 ]]; then
     exit 1
 fi
 
-if [[ -z ${PALUDIS_COMPRESS} ]]; then
-    PALUDIS_COMPRESS="gzip -f -9"
-fi
-
 BASE="/usr/share"
 i18n=""
 
@@ -50,12 +46,10 @@ for x in "$@"; do
     suffix=${x##*.}
 
     if [[ ${suffix} == "gz" ]]; then
-        compressed="gz"
         realname=${x%.*}
         suffix=${realname##*.}
     else
         realname=${x}
-        compressed=""
     fi
 
     mandir="${i18n}man${suffix:0:1}"
@@ -68,10 +62,6 @@ for x in "$@"; do
             fi
 
             install -m0644 "${x}" "${D}${BASE}/man/${mandir}" || ret=2
-
-            if [[ -z ${compressed} ]]; then
-                ${PALUDIS_COMPRESS} "${D}${BASE}/man/${mandir}/$(basename "${x}")"
-            fi
         else
             echo "${0}: ${x} does not exist" >&2
             ret=2
