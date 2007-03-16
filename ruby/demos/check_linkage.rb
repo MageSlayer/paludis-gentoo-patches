@@ -139,7 +139,7 @@ status "Finding merge targets"
 
 specs = broken.map do | owner |
     slot = env.package_database.fetch_repository(owner.repository).version_metadata(owner.name, owner.version).slot
-    Paludis::PackageDepSpec.new("=" + owner.name + "-" + owner.version.to_s + ":" + slot)
+    Paludis::PackageDepSpec.new("=" + owner.name + "-" + owner.version.to_s + ":" + slot, Paludis::PackageDepSpecParseMode::Permissive)
 end
 
 if specs.empty?
