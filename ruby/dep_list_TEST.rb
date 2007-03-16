@@ -118,7 +118,7 @@ module Paludis
         end
 
         def pda
-            PackageDepSpec.new('foo/bar')
+            PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive)
         end
 
         def dd
@@ -206,11 +206,11 @@ module Paludis
 
         def test_errors
             assert_raise AllMaskedError do
-                dl.add(PackageDepSpec.new('foo/ba'), dd)
+                dl.add(PackageDepSpec.new('foo/ba', PackageDepSpecParseMode::Permissive), dd)
             end
 
             begin
-                dl.add(PackageDepSpec.new('foo/ba'), dd)
+                dl.add(PackageDepSpec.new('foo/ba', PackageDepSpecParseMode::Permissive), dd)
             rescue AllMaskedError => error
                 assert_equal 'foo/ba', error.query
             end

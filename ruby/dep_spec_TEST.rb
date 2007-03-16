@@ -21,8 +21,6 @@
 require 'test/unit'
 require 'Paludis'
 
-exit 0
-
 module Paludis
     class TestCase_DepSpec < Test::Unit::TestCase
         def test_create_error
@@ -43,7 +41,7 @@ module Paludis
 
     class TestCase_PackageDepSpec < Test::Unit::TestCase
         def pda
-            PackageDepSpec.new('>=foo/bar-1:100::testrepo')
+            PackageDepSpec.new('>=foo/bar-1:100::testrepo', PackageDepSpecParseMode::Permissive)
         end
 
         def test_create
@@ -52,10 +50,10 @@ module Paludis
 
         def test_create_error
             assert_raise TypeError do
-                v = PackageDepSpec.new(0)
+                v = PackageDepSpec.new(0, PackageDepSpecParseMode::Permissive)
             end
             assert_raise PackageDepSpecError do
-                v = PackageDepSpec.new("=sys-apps/foo")
+                v = PackageDepSpec.new("=sys-apps/foo", PackageDepSpecParseMode::Permissive)
             end
         end
 
@@ -110,31 +108,31 @@ module Paludis
 
     class TestCase_BlockDepSpec < Test::Unit::TestCase
         def test_create
-            v = BlockDepSpec.new(PackageDepSpec.new(">=foo/bar-1"))
-            w = BlockDepSpec.new("<=foo/bar-2")
+            v = BlockDepSpec.new(PackageDepSpec.new(">=foo/bar-1", PackageDepSpecParseMode::Permissive))
         end
 
         def test_create_error
             assert_raise TypeError do
                 v = BlockDepSpec.new(0)
             end
+
             assert_raise PackageDepSpecError do
-                v = BlockDepSpec.new("=foo/bar")
+                v = BlockDepSpec.new(PackageDepSpec.new("=foo/bar", PackageDepSpecParseMode::Permissive))
             end
+
             assert_raise TypeError do 
                 v = BlockDepSpec.new(PlainTextDepSpec.new('foo-bar/baz'))
             end
         end
 
         def test_blocked_spec
-            assert_equal "foo/bar", BlockDepSpec.new("foo/bar").blocked_spec.to_s
-            assert_equal "foo/baz", BlockDepSpec.new(PackageDepSpec.new("foo/baz")).blocked_spec.to_s
+            assert_equal "foo/baz", BlockDepSpec.new(PackageDepSpec.new("foo/baz", PackageDepSpecParseMode::Permissive)).blocked_spec.to_s
         end
     end
 
     class TestCase_Composites < Test::Unit::TestCase
         def test_composites
-            spec = PortageDepParser::parse("|| ( foo/bar foo/baz ) foo/monkey")
+            spec = PortageDepParser::parse_depend("|| ( foo/bar foo/baz ) foo/monkey", PackageDepSpecParseMode::Permissive)
             assert_kind_of CompositeDepSpec, spec
             assert_kind_of AllDepSpec, spec
 

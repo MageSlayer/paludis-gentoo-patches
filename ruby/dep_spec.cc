@@ -39,12 +39,20 @@ namespace
     static VALUE c_block_dep_spec;
     static VALUE c_string_dep_spec;
     static VALUE c_version_requirements_mode;
+    static VALUE c_package_dep_spec_parse_mode;
 
     VALUE
     dep_spec_init_1(VALUE self, VALUE)
     {
         return self;
     }
+
+    VALUE
+    package_dep_spec_init(int, VALUE *, VALUE self)
+    {
+        return self;
+    }
+
 
     VALUE
     block_dep_spec_new(VALUE self, VALUE spec)
@@ -100,6 +108,35 @@ namespace
             }
         }
     };
+
+    VALUE
+    package_dep_spec_new(int argc, VALUE *argv, VALUE self)
+    {
+        std::tr1::shared_ptr<const PackageDepSpec> * ptr(0);
+        try
+        {
+            PackageDepSpecParseMode p;
+            if (1 == argc)
+            {
+                rb_warn("Calling PackageDepSpec.new with one argument has been deprecated");
+                p = pds_pm_unspecific;
+            }
+            else
+                p = static_cast<PackageDepSpecParseMode>(NUM2INT(argv[1]));
+
+            ptr = new std::tr1::shared_ptr<const PackageDepSpec>(new PackageDepSpec(StringValuePtr(argv[0]), p));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const PackageDepSpec> >::free, ptr));
+            rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+
+
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
 
     /*
      * call-seq:
@@ -304,8 +341,8 @@ namespace
          * possibly with associated version and SLOT restrictions.
          */
         c_package_dep_spec = rb_define_class_under(paludis_module(), "PackageDepSpec", c_string_dep_spec);
-        rb_define_singleton_method(c_package_dep_spec, "new", RUBY_FUNC_CAST(&DepSpecThings<PackageDepSpec>::dep_spec_new_1), 1);
-        rb_define_method(c_package_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_1), 1);
+        rb_define_singleton_method(c_package_dep_spec, "new", RUBY_FUNC_CAST(&package_dep_spec_new), -1);
+        rb_define_method(c_package_dep_spec, "initialize", RUBY_FUNC_CAST(&package_dep_spec_init), -1);
         rb_define_method(c_package_dep_spec, "to_s", RUBY_FUNC_CAST(&Common<std::tr1::shared_ptr<const PackageDepSpec> >::to_s_via_ptr), 0);
         rb_define_method(c_package_dep_spec, "package", RUBY_FUNC_CAST(&package_dep_spec_package), 0);
         rb_define_method(c_package_dep_spec, "text", RUBY_FUNC_CAST(&package_dep_spec_text), 0);
@@ -347,19 +384,35 @@ namespace
             rb_define_const(c_version_requirements_mode, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
         // cc_enum_special<paludis/version_requirements.hh, VersionRequirementsMode, c_version_requirements_mode>
+
+        /*
+         * Document-module: Paludis::PackageDepSpecParseMode
+         *
+         * How to parse a PackageDepSpec string.
+         *
+         */
+        c_package_dep_spec_parse_mode = rb_define_module_under(paludis_module(), "PackageDepSpecParseMode");
+        for (PackageDepSpecParseMode l(static_cast<PackageDepSpecParseMode>(0)), l_end(last_pds_pm) ; l != l_end ;
+                l = static_cast<PackageDepSpecParseMode>(static_cast<int>(l) + 1))
+            rb_define_const(c_package_dep_spec_parse_mode, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/dep_spec-se.hh, PackageDepSpecParseMode, c_package_dep_spec_parse_mode>
     }
 }
 
 std::tr1::shared_ptr<const PackageDepSpec>
 paludis::ruby::value_to_package_dep_spec(VALUE v)
 {
-    if (T_STRING == TYPE(v))
-        return std::tr1::shared_ptr<const PackageDepSpec>(new PackageDepSpec(StringValuePtr(v)));
-    else if (rb_obj_is_kind_of(v, c_package_dep_spec))
+    if (rb_obj_is_kind_of(v, c_package_dep_spec))
     {
         std::tr1::shared_ptr<const PackageDepSpec> * v_ptr;
         Data_Get_Struct(v, std::tr1::shared_ptr<const PackageDepSpec>, v_ptr);
         return *v_ptr;
+    }
+    if (T_STRING == TYPE(v))
+    {
+        rb_warn("Calling PackageDepSpec.new with one argument has been deprecated");
+        return std::tr1::shared_ptr<const PackageDepSpec>(new PackageDepSpec(StringValuePtr(v), pds_pm_unspecific));
     }
     else
     {

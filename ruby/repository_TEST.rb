@@ -139,7 +139,7 @@ module Paludis
 
         def test_has_version_error
             assert_raise TypeError do
-                repo.has_version?('foo/bar', PackageDepSpec.new('foo-bar/baz'))
+                repo.has_version?('foo/bar', PackageDepSpec.new('foo-bar/baz', PackageDepSpecParseMode::Permissive))
             end
         end
     end

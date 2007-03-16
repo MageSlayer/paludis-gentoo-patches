@@ -21,59 +21,89 @@
 require 'test/unit'
 require 'Paludis'
 
-exit 0
-
 module Paludis
+    class TestCase_Policy < Test::Unit::TestCase
+        def test_package
+            assert_nothing_raised do
+                policy = PortageDepParser::Policy::text_is_package_dep_spec(true, PackageDepSpecParseMode::Permissive)
+            end
+        end
+
+        def test_text
+            assert_nothing_raised do
+                policy = PortageDepParser::Policy::text_is_text_dep_spec(true)
+            end
+        end
+
+        def test_no_create
+            assert_raise NoMethodError do
+                x = PortageDepParser::Policy.new()
+            end
+        end
+    end
+
     class TestCase_PortageDepParser < Test::Unit::TestCase
-        def test_one_arg
-            spec = PortageDepParser::parse("foo/monkey")
-            assert_kind_of AllDepSpec, spec
-            assert_equal 1, spec.to_a.length
-            assert_equal "foo/monkey", spec.to_a[0].to_s
-            assert_kind_of PackageDepSpec, spec.to_a[0]
+        def text_false
+            PortageDepParser::Policy::text_is_text_dep_spec(false)
+        end
+
+        def text_true
+            PortageDepParser::Policy::text_is_text_dep_spec(true)
+        end
+
+        def package_false
+            PortageDepParser::Policy::text_is_package_dep_spec(false, PackageDepSpecParseMode::Permissive);
+        end
+
+        def package_true
+            PortageDepParser::Policy::text_is_package_dep_spec(true, PackageDepSpecParseMode::Permissive);
         end
 
         def test_many_args
-            spec = PortageDepParser::parse("foo/monkey", PortageDepParser::PlainTextDepSpec, false)
+            spec = PortageDepParser::parse("foo/monkey", text_false)
             assert_kind_of AllDepSpec, spec
             assert_equal 1, spec.to_a.length
-            assert_equal "foo/monkey", spec.to_a[0].to_s
-            assert_kind_of PlainTextDepSpec, spec.to_a[0]
+            assert_equal "foo/monkey", spec.to_a.first.to_s
+            assert_kind_of PlainTextDepSpec, spec.to_a.first
 
-            spec = PortageDepParser::parse("foo/monkey", PortageDepParser::PlainTextDepSpec, true)
+            spec = PortageDepParser::parse("foo/monkey", text_true)
             assert_kind_of AllDepSpec, spec
             assert_equal 1, spec.to_a.length
-            assert_equal "foo/monkey", spec.to_a[0].to_s
-            assert_kind_of PlainTextDepSpec, spec.to_a[0]
+            assert_equal "foo/monkey", spec.to_a.first.to_s
+            assert_kind_of PlainTextDepSpec, spec.to_a.first
 
-            spec = PortageDepParser::parse("foo/monkey", PortageDepParser::PackageDepSpec, false)
+            spec = PortageDepParser::parse("foo/monkey", package_false)
             assert_kind_of AllDepSpec, spec
             assert_equal 1, spec.to_a.length
-            assert_equal "foo/monkey", spec.to_a[0].to_s
-            assert_kind_of PackageDepSpec, spec.to_a[0]
+            assert_equal "foo/monkey", spec.to_a.first.to_s
+            assert_kind_of PackageDepSpec, spec.to_a.first
 
-            spec = PortageDepParser::parse("foo/monkey", PortageDepParser::PackageDepSpec, true)
+            spec = PortageDepParser::parse("foo/monkey", package_true)
             assert_kind_of AllDepSpec, spec
             assert_equal 1, spec.to_a.length
-            assert_equal "foo/monkey", spec.to_a[0].to_s
-            assert_kind_of PackageDepSpec, spec.to_a[0]
+            assert_equal "foo/monkey", spec.to_a.first.to_s
+            assert_kind_of PackageDepSpec, spec.to_a.first
 
             assert_raise DepStringParseError do
-                PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PackageDepSpec, false)
+                PortageDepParser::parse("|| ( foo/bar )", package_false)
             end
 
-            PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PackageDepSpec, true)
+            assert_nothing_raised do
+                PortageDepParser::parse("|| ( foo/bar )", package_true)
+            end
 
             assert_raise DepStringParseError do
-                PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PlainTextDepSpec, false)
+                PortageDepParser::parse("|| ( foo/bar )", text_false)
             end
 
-            PortageDepParser::parse("|| ( foo/bar )", PortageDepParser::PlainTextDepSpec, true)
+            assert_nothing_raised do
+                PortageDepParser::parse("|| ( foo/bar )", text_true)
+            end
         end
-        
+
         def test_dep_string_nesting_error
             assert_raise DepStringNestingError do
-                PortageDepParser::parse("|| ( foo/var ", PortageDepParser::PackageDepSpec,true)
+                PortageDepParser::parse("|| ( foo/var ", package_true)
             end
         end
     end

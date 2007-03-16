@@ -38,8 +38,8 @@ module Paludis
 
         def test_match
             env = EnvironmentMaker.instance.make_from_spec("")
-            spec_good = PackageDepSpec.new('>=foo/bar-1')
-            spec_bad = PackageDepSpec.new('>=foo/bar-2')
+            spec_good = PackageDepSpec.new('>=foo/bar-1', PackageDepSpecParseMode::Permissive)
+            spec_bad = PackageDepSpec.new('>=foo/bar-2', PackageDepSpecParseMode::Permissive)
             pde = PackageDatabaseEntry.new('foo/bar','1','test')
 
             assert Paludis::match_package(env, spec_good, pde)
@@ -49,7 +49,7 @@ module Paludis
 
         def test_type_errors
             env = EnvironmentMaker.instance.make_from_spec("")
-            spec = PackageDepSpec.new('>=foo/bar-1')
+            spec = PackageDepSpec.new('>=foo/bar-1', PackageDepSpecParseMode::Permissive)
             pde = PackageDatabaseEntry.new('foo/bar','1','test')
 
             assert_raise TypeError do

@@ -76,6 +76,14 @@ module Paludis
             return env.package_database
         end
 
+        def pda
+            PackageDepSpec.new('=foo/bar-1.0', PackageDepSpecParseMode::Permissive)
+        end
+
+        def pda2
+            PackageDepSpec.new('foo/bar', PackageDepSpecParseMode::Permissive)
+        end
+
         def test_arg_count
             assert_raise ArgumentError do
                 db.query(1);
@@ -83,15 +91,15 @@ module Paludis
 
             #outputs a deprecation warning
             assert_nothing_raised do
-                db.query(PackageDepSpec.new("=foo/bar-1.0"), InstallState::Any)
+                db.query(pda, InstallState::Any)
             end
 
             assert_nothing_raised do
-                db.query(PackageDepSpec.new("=foo/bar-1.0"), InstallState::Any, QueryOrder::Whatever)
+                db.query(pda, InstallState::Any, QueryOrder::Whatever)
             end
 
             assert_nothing_raised do
-                db.query(Query::Matches.new(PackageDepSpec.new('=foo/bar-1.0')), QueryOrder::Whatever)
+                db.query(Query::Matches.new(pda), QueryOrder::Whatever)
             end
 
             assert_raise ArgumentError do
@@ -100,17 +108,17 @@ module Paludis
         end
 
         def test_package_database_query
-            a = db.query("=foo/bar-1.0", InstallState::InstallableOnly, QueryOrder::Whatever)
+            a = db.query(pda, InstallState::InstallableOnly, QueryOrder::Whatever)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
-            a = db.query(Query::Matches.new('=foo/bar-1.0') & Query::RepositoryHasInstallableInterface.new,
+            a = db.query(Query::Matches.new(pda) & Query::RepositoryHasInstallableInterface.new,
                          QueryOrder::Whatever)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
-            a = db.query(PackageDepSpec.new("=foo/bar-1.0"), InstallState::Any, QueryOrder::Whatever)
+            a = db.query(pda, InstallState::Any, QueryOrder::Whatever)
             assert_equal a, [ PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo") ]
 
-            a = db.query("foo/bar", InstallState::InstallableOnly, QueryOrder::OrderByVersion)
+            a = db.query(pda2, InstallState::InstallableOnly, QueryOrder::OrderByVersion)
             assert_equal a, [
                 PackageDatabaseEntry.new("foo/bar", "1.0", "testrepo"),
                 PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo")
@@ -122,10 +130,10 @@ module Paludis
                 PackageDatabaseEntry.new("foo/bar", "2.0", "testrepo")
             ]
 
-            a = db.query(">=foo/bar-27", InstallState::InstallableOnly, QueryOrder::Whatever)
+            a = db.query(PackageDepSpec.new('>=foo/bar-27',PackageDepSpecParseMode::Permissive), InstallState::InstallableOnly, QueryOrder::Whatever)
             assert a.empty?
 
-            a = db.query("foo/bar", InstallState::InstalledOnly, QueryOrder::Whatever)
+            a = db.query(pda2, InstallState::InstalledOnly, QueryOrder::Whatever)
             assert a.empty?
         end
 
@@ -134,7 +142,7 @@ module Paludis
                 db.query(123, InstallState::Any)
             end
             assert_raise TypeError do
-                db.query(PackageDepSpec.new("foo/bar"), "Either")
+                db.query(pda2, "Either")
             end
         end
     end

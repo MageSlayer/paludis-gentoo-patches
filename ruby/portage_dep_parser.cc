@@ -29,74 +29,159 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_portage_dep_parser;
+    static VALUE c_portage_dep_parser_policy;
 
-#ifdef CIARANM_REMOVED_THIS
+    VALUE
+    portage_dep_parser_policy_to_value(const PortageDepParser::Policy & p)
+    {
+        PortageDepParser::Policy * p2 (new PortageDepParser::Policy(p));
+        return Data_Wrap_Struct(c_portage_dep_parser_policy, 0, &Common<PortageDepParser::Policy>::free, p2);
+    }
+
+    PortageDepParser::Policy
+    value_to_portage_dep_parser_policy(VALUE v)
+    {
+        if (rb_obj_is_kind_of(v, c_portage_dep_parser_policy))
+        {
+            PortageDepParser::Policy * v_ptr;
+            Data_Get_Struct(v, PortageDepParser::Policy, v_ptr);
+            return *v_ptr;
+        }
+        else
+        {
+            rb_raise(rb_eTypeError, "Can't convert %s into PortageDepParserPolicy", rb_obj_classname(v));
+        }
+    }
+
     /*
      * call-seq:
-     *     PortageDepParser.parse(dep_string) -> CompositeDepSpec
-     *     PortageDepParser.parse(dep_string, spec_type, permit_any_deps) -> CompositeDepSpec
+     *     PortageDepParser::parse(dep_string, spec_type, permit_any_deps, package_dep_parse_mode = PmPermissive) -> CompositeDepSpec
      *
      * Parse a given dependency string, and return an appropriate DepSpec tree.
      */
     VALUE
-    portage_dep_parser_parse(int argc, VALUE * args, VALUE)
+    portage_dep_parser_parse(VALUE, VALUE dep_string, VALUE policy)
     {
         try
         {
-            if (1 == argc)
-                return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(args[0])));
-            else if (3 == argc)
-            {
-                bool b(! (args[2] == Qnil || args[2] == Qfalse));
-
-                switch (NUM2INT(args[1]))
-                {
-                    case 17:
-                        if (b)
-                            return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
-                                        PortageDepParserPolicy<PackageDepSpec, true>::get_instance()));
-                        else
-                            return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
-                                        PortageDepParserPolicy<PackageDepSpec, false>::get_instance()));
-                    case 23:
-                        if (b)
-                            return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
-                                        PortageDepParserPolicy<PlainTextDepSpec, true>::get_instance()));
-                        else
-                            return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(args[0]),
-                                        PortageDepParserPolicy<PlainTextDepSpec, false>::get_instance()));
-                }
-
-                rb_raise(rb_eArgError, "Bad value '%d' for PortageDepParser::parse parameter 2", NUM2INT(args[1]));
-            }
-            else
-                rb_raise(rb_eArgError, "PortageDepParser::parse expects one or three arguments, but got %d", argc);
+        return dep_spec_to_value(PortageDepParser::parse(StringValuePtr(dep_string),
+                    value_to_portage_dep_parser_policy(policy)));
         }
         catch (const std::exception & e)
         {
             exception_to_ruby_exception(e);
         }
     }
-#endif
+
+    /*
+     * call-seq:
+     *     PortageDepParser::parse_depend(dep_string, package_dep_parse_mode) -> CompositeDepSpec
+     *
+     * Convenience wrapper for parsing depend strings.
+     */
+    VALUE
+    portage_dep_parser_parse_depend(VALUE, VALUE string, VALUE parse_mode)
+    {
+        try
+        {
+            return dep_spec_to_value(PortageDepParser::parse_depend(StringValuePtr(string), static_cast<PackageDepSpecParseMode>(NUM2INT(parse_mode))));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     PortageDepParser::parse_license(dep_string) -> CompositeDepSpec
+     *
+     * Convenience wrapper for parsing license strings.
+     */
+    VALUE
+    portage_dep_parser_parse_license(VALUE, VALUE string)
+    {
+        try
+        {
+            return dep_spec_to_value(PortageDepParser::parse_license(StringValuePtr(string)));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     Policy::text_is_text_dep_spec(permit_any_deps) -> Policy
+     *
+     * Returns a new policy for a PlainTextDepSpec
+     */
+    VALUE
+    portage_dep_parser_policy_text_is_text_dep_spec(VALUE, VALUE permit_any_deps)
+    {
+        try
+        {
+            bool b(! (permit_any_deps == Qnil || permit_any_deps == Qfalse));
+            return portage_dep_parser_policy_to_value(PortageDepParser::Policy::text_is_text_dep_spec(b));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     Policy::text_is_text_dep_spec(permit_any_deps, parse_mode) -> Policy
+     *
+     * Returns a new policy for a PackageDepSpec
+     */
+    VALUE
+    portage_dep_parser_policy_text_is_package_dep_spec(VALUE, VALUE permit_any_deps, VALUE parse_mode)
+    {
+        try
+        {
+            bool b(! (permit_any_deps == Qnil || permit_any_deps == Qfalse));
+            return portage_dep_parser_policy_to_value(PortageDepParser::Policy::text_is_package_dep_spec(b,
+                    static_cast<PackageDepSpecParseMode>(NUM2INT(parse_mode))));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
 
     void do_register_portage_dep_parser()
     {
         rb_require("singleton");
 
         /*
-         * Document-class: Paludis::PortageDepParser
+         * Document-module: Paludis::PortageDepParser
          *
-         * The PortageDepParser converts string representations of a dependency specification into a DepSpec instance.
+         * The PortageDepParser module contains methods for converting string representations of a
+         * dependency specification into a DepSpec instance.
          */
-        c_portage_dep_parser = rb_define_class_under(paludis_module(), "PortageDepParser", rb_cObject);
-        rb_funcall(c_portage_dep_parser, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-#ifdef CIARANM_REMOVED_THIS
+        c_portage_dep_parser = rb_define_module_under(paludis_module(), "PortageDepParser");
         rb_define_singleton_method(c_portage_dep_parser, "parse",
-                RUBY_FUNC_CAST(&portage_dep_parser_parse), -1);
-#endif
+                RUBY_FUNC_CAST(&portage_dep_parser_parse), 2);
+        rb_define_singleton_method(c_portage_dep_parser, "parse_depend",
+                RUBY_FUNC_CAST(&portage_dep_parser_parse_depend), 2);
+        rb_define_singleton_method(c_portage_dep_parser, "parse_license",
+                RUBY_FUNC_CAST(&portage_dep_parser_parse_license), 1);
 
-        rb_define_const(c_portage_dep_parser, "PackageDepSpec", INT2FIX(17));
-        rb_define_const(c_portage_dep_parser, "PlainTextDepSpec", INT2FIX(23));
+        /*
+         * Document-class: Paludis::PortageDepParser::Policy
+         *
+         * The Policy class describes how to convert a string representation of a 
+         * dependency specification into a DepSpec instance.
+         */
+        c_portage_dep_parser_policy = rb_define_class_under(c_portage_dep_parser, "Policy", rb_cObject);
+        rb_funcall(c_portage_dep_parser_policy, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_singleton_method(c_portage_dep_parser_policy, "text_is_text_dep_spec",
+                RUBY_FUNC_CAST(&portage_dep_parser_policy_text_is_text_dep_spec), 1);
+        rb_define_singleton_method(c_portage_dep_parser_policy, "text_is_package_dep_spec",
+                RUBY_FUNC_CAST(&portage_dep_parser_policy_text_is_package_dep_spec), 2);
     }
 }
 

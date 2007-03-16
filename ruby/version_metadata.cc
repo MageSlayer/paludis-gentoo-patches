@@ -146,7 +146,7 @@ namespace
      * Document-method: slot
      *
      * call-seq:
-     *     slot
+     *     slot -> String
      *
      * Our slot
      */
@@ -154,7 +154,7 @@ namespace
      * Document-method: eapi
      *
      * call-seq:
-     *     eapi
+     *     eapi -> String
      *
      * Our eapi
      */
@@ -162,7 +162,7 @@ namespace
      * Document-method: homepage
      *
      * call-seq:
-     *     homepage
+     *     homepage -> String
      *
      * Our homepage
      */
@@ -170,7 +170,7 @@ namespace
      * Document-method: description
      *
      * call-seq:
-     *     description
+     *     description -> String
      *
      * Our description
      */
@@ -187,18 +187,32 @@ namespace
     };
 
     /*
+     * call-seq:
+     *     interactive? -> true or false
+     *
+     * Are we interactive.
+     */
+    VALUE
+    version_metadata_interactive(VALUE self)
+    {
+        std::tr1::shared_ptr<const VersionMetadata> * self_ptr;
+        Data_Get_Struct(self, std::tr1::shared_ptr<const VersionMetadata>, self_ptr);
+        return (*self_ptr)-> interactive ? Qtrue : Qfalse;
+    }
+
+    /*
      * Document-method: provide_string
      *
      * call-seq:
-     *     provide_string
+     *     provide_string -> String
      *
      * Fetches the package provide_string, if ebuild_interface is not Nil.
      */
     /*
-     * Document-method: src_uri
+     * Document-method: src_uri_string
      *
      * call-seq:
-     *     src_uri
+     *     src_uri_string -> String
      *
      * Fetches the package src_uri, if ebuild_interface is not Nil.
      */
@@ -206,7 +220,7 @@ namespace
      * Document-method: restrict_string
      *
      * call-seq:
-     *     restrict_string
+     *     restrict_string -> String
      *
      * Fetches the package restrict_string, if ebuild_interface is not Nil.
      */
@@ -214,7 +228,7 @@ namespace
      * Document-method: eclass_keywords
      *
      * call-seq:
-     *     eclass_keywords
+     *     eclass_keywords -> String
      *
      * Fetches the package eclass_keywords, if ebuild_interface is not Nil.
      */
@@ -222,7 +236,7 @@ namespace
      * Document-method: iuse
      *
      * call-seq:
-     *     iuse
+     *     iuse -> String
      *
      * Fetches the package iuse, if ebuild_interface is not Nil.
      */
@@ -230,7 +244,7 @@ namespace
      * Document-method: inherited
      *
      * call-seq:
-     *     inherited
+     *     inherited -> String
      *
      * Fetches the package inherited, if ebuild_interface is not Nil.
      */
@@ -481,6 +495,7 @@ namespace
         rb_define_method(c_version_metadata, "homepage", RUBY_FUNC_CAST((&BaseValue<std::string, &VersionMetadataBase::homepage>::fetch)), 0);
         rb_define_method(c_version_metadata, "description", RUBY_FUNC_CAST((&BaseValue<std::string,
                         &VersionMetadataBase::description>::fetch)), 0);
+        rb_define_method(c_version_metadata, "interactive?", RUBY_FUNC_CAST(&version_metadata_interactive), 0);
 
         rb_define_method(c_version_metadata, "provide_string", RUBY_FUNC_CAST((&EbuildValue<std::string,
                         &VersionMetadataEbuildInterface::provide_string>::fetch)), 0);

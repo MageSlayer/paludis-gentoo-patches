@@ -429,6 +429,19 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     accept_unstable=(true or false)
+     *
+     * Should we accept unstable keywords?
+     */
+    VALUE
+    no_config_environment_set_accept_unstable(VALUE self, VALUE unstable)
+    {
+        value_to_no_config_environment(self)->set_accept_unstable(!(Qfalse == unstable || Qnil == unstable));
+        return Qnil;
+    }
+
     VALUE
     environment_maker_make_from_spec(VALUE, VALUE spec)
     {
@@ -492,6 +505,7 @@ namespace
         rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), -1);
         rb_define_method(c_no_config_environment, "portage_repository", RUBY_FUNC_CAST(&no_config_environment_portage_repository), 0);
         rb_define_method(c_no_config_environment, "master_repository", RUBY_FUNC_CAST(&no_config_environment_master_repository), 0);
+        rb_define_method(c_no_config_environment, "accept_unstable=", RUBY_FUNC_CAST(&no_config_environment_set_accept_unstable), 0);
 
         c_environment_maker = rb_define_class_under(paludis_module(), "EnvironmentMaker", rb_cObject);
         rb_funcall(rb_const_get(rb_cObject, rb_intern("Singleton")), rb_intern("included"), 1, c_environment_maker);

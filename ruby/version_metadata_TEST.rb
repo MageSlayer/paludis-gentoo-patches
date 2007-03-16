@@ -21,8 +21,6 @@
 require 'test/unit'
 require 'Paludis'
 
-exit 0
-
 Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 
 module Paludis
@@ -71,11 +69,12 @@ module Paludis
             assert_equal "0", vmd("1.0").slot
             assert_equal "0", vmd("1.0").eapi
             assert_equal "GPL-2", vmd("1.0").license_string
+            assert !vmd('1.0').interactive?
         end
 
         def test_ebuild_members
             assert_equal "", vmd("1.0").provide_string
-            assert_equal "http://example.com/bar-1.0.tar.bz2", vmd("1.0").src_uri
+            assert_equal "http://example.com/bar-1.0.tar.bz2", vmd("1.0").src_uri_string
             assert_equal "monkey", vmd("1.0").restrict_string
             assert_equal "test", vmd("1.0").keywords.gsub(%r/\s/, "")
             assert_equal "", vmd("1.0").iuse.gsub(%r/\s/, "")

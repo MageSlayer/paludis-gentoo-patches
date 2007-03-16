@@ -419,5 +419,15 @@ module Paludis
             assert_kind_of Array, env.default_destinations
         end
     end
+
+    class TestCase_EnvironmentSetAcceptUnstable < Test::Unit::TestCase
+        def env
+            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
+        end
+
+        def test_set_accept_unstable
+            assert_respond_to env, :accept_unstable=
+        end
+    end
 end
 
