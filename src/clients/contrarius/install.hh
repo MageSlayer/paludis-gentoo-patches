@@ -30,6 +30,6 @@
 
 /// Handle --install.
 int do_install(std::tr1::shared_ptr<paludis::Environment>,
-        std::tr1::shared_ptr<const paludis::PackageDepSpec> spec);
+        std::string spec_str);
 
 #endif

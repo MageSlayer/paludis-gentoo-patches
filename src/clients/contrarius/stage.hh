@@ -37,21 +37,21 @@ namespace paludis
         public StageBase
     {
         protected:
-            ContrariusStageOptions _options;
+            std::tr1::shared_ptr<Environment> _env;
 
         public:
-            ContrariusStage(const ContrariusStageOptions & o) :
-                _options(o)
+            ContrariusStage(std::tr1::shared_ptr<Environment> e) :
+                _env(e)
             {
             }
     };
 
-    class BinutilsStage :
+    class AuxiliaryStage :
         public ContrariusStage
     {
         public:
-            BinutilsStage(const ContrariusStageOptions & o) :
-                ContrariusStage(o)
+            AuxiliaryStage(std::tr1::shared_ptr<Environment> e) :
+                ContrariusStage(e)
             {
             }
 
@@ -59,8 +59,31 @@ namespace paludis
 
             virtual std::string description() const
             {
-                return "Building the GNU binutils (" + stringify(*_options.binutils)
-                        + ") as part of the cross toolchain";
+                return "Building auxiliary dependencies of the cross toolchain";
+            }
+
+            virtual bool is_rebuild() const;
+
+            virtual std::string short_name() const
+            {
+                return "cross-auxiliary stage";
+            }
+    };
+
+    class BinutilsStage :
+        public ContrariusStage
+    {
+        public:
+            BinutilsStage(std::tr1::shared_ptr<Environment> e) :
+                ContrariusStage(e)
+            {
+            }
+
+            virtual int build(const StageOptions &) const;
+
+            virtual std::string description() const
+            {
+                return "Building the GNU binutils as part of the cross toolchain";
             };
 
             virtual bool is_rebuild() const;
@@ -75,8 +98,8 @@ namespace paludis
         public ContrariusStage
     {
         public:
-            KernelHeadersStage(const ContrariusStageOptions & o) :
-                ContrariusStage(o)
+            KernelHeadersStage(std::tr1::shared_ptr<Environment> e) :
+                ContrariusStage(e)
             {
             }
 
@@ -84,8 +107,7 @@ namespace paludis
 
             virtual std::string description() const
             {
-                return "Building the kernel headers (" + stringify(*_options.headers)
-                        + ") as part of the cross toolchain";
+                return "Building the kernel headers as part of the cross toolchain";
             };
 
             virtual bool is_rebuild() const;
@@ -100,8 +122,8 @@ namespace paludis
         public ContrariusStage
     {
         public:
-            MinimalStage(const ContrariusStageOptions & o) :
-                ContrariusStage(o)
+            MinimalStage(std::tr1::shared_ptr<Environment> e) :
+                ContrariusStage(e)
             {
             }
 
@@ -109,8 +131,7 @@ namespace paludis
 
             virtual std::string description() const
             {
-                return "Building a minimal GNU C compiler (" + stringify(*_options.gcc)
-                        + ") as part of the cross toolchain";
+                return "Building a minimal GNU C compiler as part of the cross toolchain";
             };
 
             virtual bool is_rebuild() const;
@@ -125,8 +146,8 @@ namespace paludis
         public ContrariusStage
     {
         public:
-            LibCStage(const ContrariusStageOptions & o) :
-                ContrariusStage(o)
+            LibCStage(std::tr1::shared_ptr<Environment> e) :
+                ContrariusStage(e)
             {
             }
 
@@ -134,8 +155,7 @@ namespace paludis
 
             virtual std::string description() const
             {
-                return "Building C standard library (" + stringify(*_options.gcc)
-                        + ") as part of the cross toolchain";
+                return "Building the C standard library as part of the cross toolchain";
             };
 
             virtual bool is_rebuild() const;
@@ -151,8 +171,8 @@ namespace paludis
         public ContrariusStage
     {
         public:
-            FullStage(const ContrariusStageOptions & o) :
-                ContrariusStage(o)
+            FullStage(std::tr1::shared_ptr<Environment> e) :
+                ContrariusStage(e)
             {
             }
 
@@ -160,8 +180,7 @@ namespace paludis
 
             virtual std::string description() const
             {
-                return "Building full GNU compiler collection (" + stringify(*_options.gcc)
-                        + ") as part of the cross toolchain";
+                return "Building the full GNU compiler collection as part of the cross toolchain";
             };
 
             virtual bool is_rebuild() const;

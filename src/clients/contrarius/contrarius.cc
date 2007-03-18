@@ -29,6 +29,7 @@
 #include <libebt/libebt.hh>
 #include <libwrapiter/libwrapiter.hh>
 
+#include "target_config.hh"
 #include "command_line.hh"
 #include "stage.hh"
 #include "config.h"
@@ -71,17 +72,7 @@ int main(int argc, char *argv[])
         else
             stage = "cxx";
 
-        ContrariusStageOptions contrarius_opts(
-                EnvironmentMaker::get_instance()->make_from_spec(""),
-                HostTupleName(CommandLine::get_instance()->a_target.argument()),
-                CommandLine::get_instance()->a_binutils_name.argument(),
-                CommandLine::get_instance()->a_binutils_version.argument(),
-                CommandLine::get_instance()->a_gcc_name.argument(),
-                CommandLine::get_instance()->a_gcc_version.argument(),
-                CommandLine::get_instance()->a_headers_name.argument(),
-                CommandLine::get_instance()->a_headers_version.argument(),
-                CommandLine::get_instance()->a_libc_name.argument(),
-                CommandLine::get_instance()->a_libc_version.argument());
+        std::tr1::shared_ptr<Environment> env(EnvironmentMaker::get_instance()->make_from_spec(""));
 
         StageOptions stage_opts(CommandLine::get_instance()->a_pretend.specified(),
             CommandLine::get_instance()->a_fetch.specified(),
@@ -91,31 +82,34 @@ int main(int argc, char *argv[])
 
         do
         {
-            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new BinutilsStage(contrarius_opts)));
+            if (! TargetConfig::get_instance()->aux().empty())
+                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new AuxiliaryStage(env)));
+
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new BinutilsStage(env)));
 
             if (stage == "binutils")
                 break;
 
             if (CommandLine::get_instance()->a_headers.specified())
-                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(contrarius_opts)));
+                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(env)));
 
-            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new MinimalStage(contrarius_opts)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new MinimalStage(env)));
 
             if (stage == "minimal")
                 break;
 
             if (! CommandLine::get_instance()->a_headers.specified())
-                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(contrarius_opts)));
+                builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(env)));
 
             if (stage == "headers")
                 break;
 
-            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new LibCStage(contrarius_opts)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new LibCStage(env)));
 
             if (stage == "libc")
                 break;
 
-            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new FullStage(contrarius_opts)));
+            builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new FullStage(env)));
 
         } while (false);
 

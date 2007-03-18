@@ -203,7 +203,7 @@ namespace
 }
 
 int
-do_install(std::tr1::shared_ptr<Environment> env, std::tr1::shared_ptr<const PackageDepSpec> spec)
+do_install(std::tr1::shared_ptr<Environment> env, std::string spec_str)
 {
     int return_code(0);
 
@@ -240,7 +240,7 @@ do_install(std::tr1::shared_ptr<Environment> env, std::tr1::shared_ptr<const Pac
 
     try
     {
-        task.add_target(stringify(*spec));
+        task.add_target(spec_str);
 
         task.execute();
 

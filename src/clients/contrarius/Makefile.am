@@ -1,5 +1,6 @@
 AM_CXXFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src @PALUDIS_CXXFLAGS@
 DEFS= \
+	-DDATADIR=\"$(datadir)\" \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
 	-DBIGTEMPDIR=\"/var/tmp\" \
@@ -22,7 +23,9 @@ contrarius_SOURCES = \
 	stage.hh \
 	stage.cc \
 	stage_builder.hh \
-	stage_builder.cc
+	stage_builder.cc \
+	target_config.hh \
+	target_config.cc
 
 contrarius_LDADD = \
 	$(top_builddir)/paludis/libpaludis.la \
@@ -81,7 +84,11 @@ EXTRA_DIST = \
 	$(man_pages) \
 	contrarius_stage_options.sr \
 	contrarius_stage_options-sr.hh \
-	contrarius_stage_options-sr.cc
+	contrarius_stage_options-sr.cc \
+	default_config.txt
+
+contrarius_datadir = $(datadir)/paludis/contrarius/
+contrarius_data_DATA = default_config.txt
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done
