@@ -43,9 +43,9 @@ TargetConfig::_parse_defaults()
         WhitespaceTokeniser::get_instance()->tokenise(*l, std::back_inserter(tokens));
         SpecEntryList * list(&_binutils_list);
 
-        if (("aux" == tokens[1]) && (2 == std::distance(tokens.begin(), tokens.end())))
+        if ((("aux" == tokens[1]) || "headers" == tokens[1]) && (2 == std::distance(tokens.begin(), tokens.end())))
             tokens.push_back("");
-        else if (2 > std::distance(tokens.begin(), tokens.end()))
+        else if (3 > std::distance(tokens.begin(), tokens.end()))
             throw TargetConfigError("Illegal number of tokens encountered");
 
         if ("binutils" == tokens[1])
@@ -95,6 +95,9 @@ TargetConfig::_find_match(SpecEntryList & list)
                 t = stringify(_target.kernel);
             else if (3 == index)
                 t = stringify(_target.userland);
+
+            if ((t.empty()) && ("*" == token))
+                continue;
 
             if (t.length() < token.length())
                 break;

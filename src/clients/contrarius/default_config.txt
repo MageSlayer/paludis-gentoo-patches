@@ -1,9 +1,11 @@
 *-*-linux-*      headers     linux-headers
 *-*-freebsd*-*   headers     freebsd-lib
-*-*-mingw*-*     headers     w32api
+*-*-mingw*-*     headers     mingw-runtime
+*-*-*-elf        headers     
+*-*-*-elf        libc        newlib
 *-*-*-gnu        libc        glibc
-*-*-*-freebsd*-* libc        freebds-lib
-*-*-*-mingw*     libc        mingw-runtime
+*-*-*-freebsd*-* libc        freebsd-lib
+*-*-*-mingw*     libc        w32api
 *-*-*-uclibc     libc        uclibc
 *-*-*-*          binutils    binutils
 *-*-*-*          gcc         gcc

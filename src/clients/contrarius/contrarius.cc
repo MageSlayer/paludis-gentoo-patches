@@ -91,14 +91,19 @@ int main(int argc, char *argv[])
                 break;
 
             if (CommandLine::get_instance()->a_headers.specified())
+            {
+                if (TargetConfig::get_instance()->headers().empty())
+                    throw DoHelp("--headers specified though CTARGET does not need any headers");
                 builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(env)));
+            }
 
             builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new MinimalStage(env)));
 
             if (stage == "minimal")
                 break;
 
-            if (! CommandLine::get_instance()->a_headers.specified())
+            if ((! CommandLine::get_instance()->a_headers.specified()) && 
+                    (! TargetConfig::get_instance()->headers().empty()))
                 builder.queue_stage(std::tr1::shared_ptr<const StageBase>(new KernelHeadersStage(env)));
 
             if (stage == "headers")
