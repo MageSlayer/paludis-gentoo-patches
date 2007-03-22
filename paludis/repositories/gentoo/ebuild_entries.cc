@@ -246,6 +246,8 @@ void
 EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         const InstallOptions & o, std::tr1::shared_ptr<const PortageRepositoryProfile> p) const
 {
+    Context context("When installing '" + stringify(q) + "-" + stringify(v) + "':");
+
     if (! _imp->portage_repository->has_version(q, v))
     {
         throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
@@ -467,19 +469,24 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     if (fetch_userpriv_ok)
     {
         FSEntry f(_imp->params.distdir);
-        if (f.group() != _imp->environment->reduced_gid())
+        Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
+
+        if (f.exists())
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                    stringify(_imp->params.buildroot) + "' not owned by group '" +
-                    stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) + "', cannot enable userpriv");
-            fetch_userpriv_ok = false;
-        }
-        else if (! f.has_permission(fs_ug_group, fs_perm_write))
-        {
-            Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                    stringify(_imp->params.buildroot) + "' does not group write permission," +
-                    "cannot enable userpriv");
-            fetch_userpriv_ok = false;
+            if (f.group() != _imp->environment->reduced_gid())
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                        stringify(_imp->params.buildroot) + "' not owned by group '" +
+                        stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) + "', cannot enable userpriv");
+                fetch_userpriv_ok = false;
+            }
+            else if (! f.has_permission(fs_ug_group, fs_perm_write))
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                        stringify(_imp->params.buildroot) + "' does not group write permission," +
+                        "cannot enable userpriv");
+                fetch_userpriv_ok = false;
+            }
         }
     }
 
@@ -510,19 +517,24 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
     if (userpriv_ok)
     {
         FSEntry f(_imp->params.buildroot);
-        if (f.group() != _imp->environment->reduced_gid())
+        Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
+
+        if (f.exists())
         {
-            Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                    stringify(_imp->params.buildroot) + "' not owned by group '" +
-                    stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) + "', cannot enable userpriv");
-            userpriv_ok = false;
-        }
-        else if (! f.has_permission(fs_ug_group, fs_perm_write))
-        {
-            Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                    stringify(_imp->params.buildroot) + "' does not group write permission," +
-                    "cannot enable userpriv");
-            userpriv_ok = false;
+            if (f.group() != _imp->environment->reduced_gid())
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                        stringify(_imp->params.buildroot) + "' not owned by group '" +
+                        stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) + "', cannot enable userpriv");
+                userpriv_ok = false;
+            }
+            else if (! f.has_permission(fs_ug_group, fs_perm_write))
+            {
+                Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                        stringify(_imp->params.buildroot) + "' does not group write permission," +
+                        "cannot enable userpriv");
+                userpriv_ok = false;
+            }
         }
     }
 
