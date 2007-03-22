@@ -1113,6 +1113,6 @@ PaludisConfig::reduced_gid() const
 std::string
 PaludisConfig::reduced_username() const
 {
-    return "paludisbuild";
+    return getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild");
 }
 
