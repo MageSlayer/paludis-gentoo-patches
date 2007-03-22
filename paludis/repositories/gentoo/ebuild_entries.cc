@@ -35,6 +35,8 @@
 #include <fstream>
 #include <list>
 #include <set>
+#include <sys/types.h>
+#include <grp.h>
 
 using namespace paludis;
 
@@ -461,6 +463,26 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .distdir(_imp->params.distdir)
             .buildroot(_imp->params.buildroot));
 
+    bool fetch_userpriv_ok(_imp->environment->reduced_gid() != getgid());
+    if (fetch_userpriv_ok)
+    {
+        FSEntry f(_imp->params.distdir);
+        if (f.group() != _imp->environment->reduced_gid())
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                    stringify(_imp->params.buildroot) + "' not owned by group '" +
+                    stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) + "', cannot enable userpriv");
+            fetch_userpriv_ok = false;
+        }
+        else if (! f.has_permission(fs_ug_group, fs_perm_write))
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                    stringify(_imp->params.buildroot) + "' does not group write permission," +
+                    "cannot enable userpriv");
+            fetch_userpriv_ok = false;
+        }
+    }
+
     EbuildFetchCommand fetch_cmd(command_params,
             EbuildFetchCommandParams::create()
             .a(archives)
@@ -472,6 +494,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             .root(stringify(get_root(o.destinations)))
             .profiles(_imp->params.profiles)
             .no_fetch(fetch_restrict)
+            .userpriv(fetch_userpriv_ok)
             .safe_resume(o.safe_resume));
 
     fetch_cmd();
@@ -484,12 +507,23 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                 + stringify(v) + "' because no destinations were provided");
 
     bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()));
-    if (userpriv_ok && FSEntry(_imp->params.buildroot).group() != _imp->environment->reduced_gid())
+    if (userpriv_ok)
     {
-        Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                stringify(_imp->params.buildroot) + "' does not have gid '" +
-                stringify(_imp->environment->reduced_gid()) + "', cannot enable userpriv");
-        userpriv_ok = false;
+        FSEntry f(_imp->params.buildroot);
+        if (f.group() != _imp->environment->reduced_gid())
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                    stringify(_imp->params.buildroot) + "' not owned by group '" +
+                    stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) + "', cannot enable userpriv");
+            userpriv_ok = false;
+        }
+        else if (! f.has_permission(fs_ug_group, fs_perm_write))
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                    stringify(_imp->params.buildroot) + "' does not group write permission," +
+                    "cannot enable userpriv");
+            userpriv_ok = false;
+        }
     }
 
     EbuildInstallCommandParams install_params(

@@ -37,6 +37,7 @@ make_class_EbuildFetchCommandParams()
     key expand_vars "std::tr1::shared_ptr<const AssociativeCollection<std::string, std::string> >"
     key no_fetch bool
     key safe_resume bool
+    key userpriv bool
 
     doxygen_comment << "END"
         /**
