@@ -214,12 +214,6 @@ PackageDatabase::fetch_unique_qualified_package_name(
 }
 
 std::tr1::shared_ptr<PackageDatabaseEntryCollection>
-PackageDatabase::query(const PackageDepSpec & a, const InstallState installed_state) const
-{
-    return query(a, installed_state, qo_order_by_version);
-}
-
-std::tr1::shared_ptr<PackageDatabaseEntryCollection>
 PackageDatabase::query(const PackageDepSpec & a, const InstallState installed_state,
         const QueryOrder query_order) const
 {

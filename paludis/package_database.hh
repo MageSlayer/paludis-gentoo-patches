@@ -294,16 +294,6 @@ namespace paludis
              */
             std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
                     const PackageDepSpec & a,
-                    const InstallState) const
-                PALUDIS_ATTRIBUTE((deprecated)) PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Query the repository.
-             *
-             * \deprecated use the Query form
-             */
-            std::tr1::shared_ptr<PackageDatabaseEntryCollection> query(
-                    const PackageDepSpec & a,
                     const InstallState,
                     const QueryOrder) const
                 PALUDIS_ATTRIBUTE((deprecated)) PALUDIS_ATTRIBUTE((warn_unused_result));
