@@ -254,13 +254,15 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     PackageDatabaseEntry e(q, v, _imp->portage_repository->name());
 
-    bool fetch_restrict(false), no_mirror(false);
+    bool fetch_restrict(false), no_mirror(false), userpriv_restrict;
     {
         std::list<std::string> restricts;
         WhitespaceTokeniser::get_instance()->tokenise(
                 metadata->ebuild_interface->restrict_string, std::back_inserter(restricts));
         fetch_restrict = (restricts.end() != std::find(restricts.begin(), restricts.end(), "fetch")) ||
             (restricts.end() != std::find(restricts.begin(), restricts.end(), "nofetch"));
+        userpriv_restrict = (restricts.end() != std::find(restricts.begin(), restricts.end(), "userpriv")) ||
+            (restricts.end() != std::find(restricts.begin(), restricts.end(), "nouserpriv"));
         no_mirror = (restricts.end() != std::find(restricts.begin(), restricts.end(), "mirror")) ||
             (restricts.end() != std::find(restricts.begin(), restricts.end(), "nomirror"));
     }
@@ -481,6 +483,15 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
         throw PackageInstallActionError("Can't install '" + stringify(q) + "-"
                 + stringify(v) + "' because no destinations were provided");
 
+    bool userpriv_ok((! userpriv_restrict) && (_imp->environment->reduced_gid() != getgid()));
+    if (userpriv_ok && FSEntry(_imp->params.buildroot).group() != _imp->environment->reduced_gid())
+    {
+        Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
+                stringify(_imp->params.buildroot) + "' does not have gid '" +
+                stringify(_imp->environment->reduced_gid()) + "', cannot enable userpriv");
+        userpriv_ok = false;
+    }
+
     EbuildInstallCommandParams install_params(
             EbuildInstallCommandParams::create()
                     .phase(ebuild_ip_build)
@@ -497,7 +508,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     .config_protect_mask(_imp->portage_repository->profile_variable("CONFIG_PROTECT_MASK"))
                     .loadsaveenv_dir(_imp->params.buildroot / stringify(q.category) / (
                             stringify(q.package) + "-" + stringify(v)) / "temp")
-                    .no_userpriv(false)
+                    .userpriv(userpriv_ok)
                     .slot(SlotName(metadata->slot)));
 
     EbuildInstallCommand build_cmd(command_params, install_params);
