@@ -130,6 +130,9 @@ namespace paludis
 
             /// Add a key/value pair.
             RepositoryInfoSection & add_kv(const std::string &, const std::string &);
+
+            /// Fetch a value, with default.
+            std::string get_key_with_default(const std::string &, const std::string &) const;
     };
 
     /**
@@ -166,6 +169,9 @@ namespace paludis
 
             /// Add a section.
             RepositoryInfo & add_section(std::tr1::shared_ptr<const RepositoryInfoSection>);
+
+            /// Fetch a value from any of our sections, with default.
+            std::string get_key_with_default(const std::string &, const std::string &) const;
     };
 
     /**

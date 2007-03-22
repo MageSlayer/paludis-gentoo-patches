@@ -186,6 +186,16 @@ RepositoryInfoSection::add_kv(const std::string & k, const std::string & v)
     return *this;
 }
 
+std::string
+RepositoryInfoSection::get_key_with_default(const std::string & k, const std::string & d) const
+{
+    std::map<std::string, std::string>::const_iterator p(_imp->kvs.find(k));
+    if (p != _imp->kvs.end())
+        return p->second;
+    else
+        return d;
+}
+
 std::tr1::shared_ptr<const RepositoryInfo>
 Repository::info(bool) const
 {
@@ -211,6 +221,15 @@ RepositoryInfo::SectionIterator
 RepositoryInfo::end_sections() const
 {
     return SectionIterator(_imp->sections.end());
+}
+
+std::string
+RepositoryInfo::get_key_with_default(const std::string & k, const std::string & d) const
+{
+    std::string result(d);
+    for (SectionIterator i(begin_sections()), i_end(end_sections()) ; i != i_end ; ++i)
+        result = (*i)->get_key_with_default(k, result);
+    return result;
 }
 
 std::tr1::shared_ptr<const CategoryNamePartCollection>
