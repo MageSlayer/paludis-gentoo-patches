@@ -141,8 +141,8 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     }
 
     /* accept keywords */
-    WhitespaceTokeniser::get_instance()->tokenise(_imp->vars->get("ACCEPT_KEYWORDS"), std::inserter(_imp->accept_keywords,
-                _imp->accept_keywords.begin()));
+    WhitespaceTokeniser::get_instance()->tokenise(_imp->vars->get("ACCEPT_KEYWORDS"),
+            std::inserter(_imp->accept_keywords, _imp->accept_keywords.begin()));
 
     /* files */
 
