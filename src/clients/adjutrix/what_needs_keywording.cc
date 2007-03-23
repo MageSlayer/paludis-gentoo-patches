@@ -23,7 +23,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/dep_list/exceptions.hh>
 #include <paludis/dep_list/dep_list.hh>
@@ -56,7 +55,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     UseFlagName target_arch(strip_leading_string(
                 *CommandLine::get_instance()->begin_parameters(), "~"));
 
-    env.portage_repository()->set_profile_by_arch(target_arch);
+    env.main_repository()->portage_interface->set_profile_by_arch(target_arch);
     env.set_accept_unstable('~' == stringify(target_keyword).at(0));
 
     DepListOptions d_options;

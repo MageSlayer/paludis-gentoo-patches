@@ -186,7 +186,8 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
             .provides_interface(0)
             .config_interface(0)
             .destination_interface(this)
-            .licenses_interface(0),
+            .licenses_interface(0)
+            .portage_interface(0),
             "cran_installed"),
     PrivateImplementationPattern<CRANInstalledRepository>(new Implementation<CRANInstalledRepository>(p))
 {

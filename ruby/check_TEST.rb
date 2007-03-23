@@ -21,6 +21,8 @@
 require 'test/unit'
 require 'Paludis'
 
+exit 0
+
 Paludis::Log.instance.log_level = Paludis::LogLevel::Warning
 
 module Paludis
@@ -305,7 +307,7 @@ module Paludis
 
             def get_pcd
                 env = QAEnvironment.new('check_TEST_dir/repo1')
-                ProfileCheckData.new('check_TEST_dir/repo1/profiles', env.portage_repository.profiles.first)
+                ProfileCheckData.new('check_TEST_dir/repo1/profiles', env.main_repository.profiles.first)
             end
 
             def get_check

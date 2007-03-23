@@ -21,7 +21,6 @@
 #include "command_line.hh"
 #include <output/colour.hh>
 #include <paludis/config_file.hh>
-#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -154,10 +153,10 @@ void do_display_profiles_use(NoConfigEnvironment & env)
     if (CommandLine::get_instance()->a_profile.begin_args() ==
             CommandLine::get_instance()->a_profile.end_args())
     {
-        for (PortageRepository::ProfilesIterator p(env.portage_repository()->begin_profiles()),
-                p_end(env.portage_repository()->end_profiles()) ; p != p_end ; ++p)
+        for (RepositoryPortageInterface::ProfilesIterator p(env.main_repository()->portage_interface->begin_profiles()),
+                p_end(env.main_repository()->portage_interface->end_profiles()) ; p != p_end ; ++p)
         {
-            env.portage_repository()->set_profile(p);
+            env.main_repository()->portage_interface->set_profile(p);
             display_profiles_use(env, p->arch + "." + p->status, p->path,
                     all_use_flags, all_use_expand_flags);
         }
@@ -167,12 +166,13 @@ void do_display_profiles_use(NoConfigEnvironment & env)
         for (args::StringSetArg::Iterator i(CommandLine::get_instance()->a_profile.begin_args()),
                 i_end(CommandLine::get_instance()->a_profile.end_args()) ; i != i_end ; ++i)
         {
-            PortageRepository::ProfilesIterator p(env.portage_repository()->find_profile(
+            RepositoryPortageInterface::ProfilesIterator p(
+                    env.main_repository()->portage_interface->find_profile(
                         env.main_repository_dir() / "profiles" / (*i)));
-            if (p == env.portage_repository()->end_profiles())
+            if (p == env.main_repository()->portage_interface->end_profiles())
                 throw ConfigurationError("Repository does not have a profile listed in profiles.desc matching '"
                         + stringify(*i) + "'");
-            env.portage_repository()->set_profile(p);
+            env.main_repository()->portage_interface->set_profile(p);
             display_profiles_use(env, *i, env.main_repository_dir() /
                     "profiles" / *i, all_use_flags, all_use_expand_flags);
         }

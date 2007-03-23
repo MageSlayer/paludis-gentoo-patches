@@ -28,7 +28,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/qa/qa_environment.hh>
-#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <set>
 
 using namespace paludis;
@@ -47,7 +46,7 @@ InheritsCheck::operator() (const EbuildCheckData & e) const
     try
     {
         PackageDatabaseEntry ee(e.name, e.version,
-                e.environment->portage_repository()->name());
+                e.environment->main_repository()->name());
         std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 

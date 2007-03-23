@@ -367,7 +367,7 @@ module Paludis
         end
 
         def test_portage_repository
-            assert_kind_of PortageRepository, env.portage_repository
+            assert_kind_of Repository, env.main_repository
         end
     end
 
@@ -384,7 +384,7 @@ module Paludis
 
         def test_master_repository
             assert_nil env.master_repository
-            assert_kind_of PortageRepository, env_master.master_repository
+            assert_kind_of Repository, env_master.master_repository
         end
     end
 

@@ -43,7 +43,7 @@ QAEnvironment::QAEnvironment(const FSEntry & base, const FSEntry & write_cache) 
             .repository_dir(base)
             .write_cache(write_cache)
             .accept_unstable(false)
-            .repository_type(ncer_portage)
+            .repository_type(ncer_ebuild)
             .master_repository_dir(FSEntry("/var/empty"))),
     _paludis_command("diefunc 'qa_environment.cc' 'QAEnvironment::paludis_command()' "
             "'paludis_command called from within QAEnvironment'")
@@ -56,7 +56,7 @@ QAEnvironment::QAEnvironment(const FSEntry & base, const FSEntry & write_cache,
             .repository_dir(base)
             .write_cache(write_cache)
             .accept_unstable(false)
-            .repository_type(ncer_portage)
+            .repository_type(ncer_ebuild)
             .master_repository_dir(master_repository_dir)),
     _paludis_command("diefunc 'qa_environment.cc' 'QAEnvironment::paludis_command()' "
             "'paludis_command called from within QAEnvironment'")

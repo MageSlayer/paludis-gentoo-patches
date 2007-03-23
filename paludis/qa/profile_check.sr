@@ -4,7 +4,7 @@
 make_class_ProfileCheckData()
 {
     key profiles_dir FSEntry
-    key profiles_desc_line PortageRepositoryProfilesDescLine
+    key profiles_desc_line RepositoryPortageInterface::ProfilesDescLine
 
     allow_named_args
 }

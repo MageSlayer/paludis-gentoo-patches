@@ -20,7 +20,6 @@
 #include <paludis/args/args.hh>
 #include <paludis/paludis.hh>
 #include <paludis/qa/qa.hh>
-#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/log.hh>
@@ -327,8 +326,9 @@ namespace
                 if (! IsFileWithExtension(".ebuild")(*f))
                     continue;
 
-                for (PortageRepository::ProfilesIterator i(env.portage_repository()->begin_profiles()),
-                        i_end(env.portage_repository()->end_profiles()) ; i != i_end ; ++i)
+                for (RepositoryPortageInterface::ProfilesIterator
+                        i(env.main_repository()->portage_interface->begin_profiles()),
+                        i_end(env.main_repository()->portage_interface->end_profiles()) ; i != i_end ; ++i)
                 {
                     if (QualudisCommandLine::get_instance()->a_archs.specified())
                         if (QualudisCommandLine::get_instance()->a_archs.end_args() == std::find(
@@ -472,8 +472,9 @@ namespace
         bool ok(true), fatal(false), dummy(false);
         do_check_kind<qa::ProfilesCheckMaker>(ok, fatal, dummy, dir);
 
-        for (PortageRepository::ProfilesIterator p(env.portage_repository()->begin_profiles()),
-                p_end(env.portage_repository()->end_profiles()) ; p != p_end ; ++p)
+        for (RepositoryPortageInterface::ProfilesIterator
+                p(env.main_repository()->portage_interface->begin_profiles()),
+                p_end(env.main_repository()->portage_interface->end_profiles()) ; p != p_end ; ++p)
         {
             if (fatal)
                 break;

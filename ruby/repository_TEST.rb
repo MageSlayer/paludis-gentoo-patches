@@ -19,6 +19,8 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+exit 0
+
 ENV["PALUDIS_HOME"] = Dir.getwd().to_s + "/repository_TEST_dir/home";
 
 require 'test/unit'
@@ -47,19 +49,19 @@ module Paludis
         end
 
         def test_responds
-            repo = no_config_testrepo.portage_repository
+            repo = no_config_testrepo.main_repository
             [:profile_variable, :profiles, :find_profile, :set_profile].each do |sym|
                 assert_respond_to repo, sym
             end
         end
 
         def test_profiles
-            repo = no_config_testrepo.portage_repository
+            repo = no_config_testrepo.main_repository
             assert_kind_of Array, repo.profiles
         end
 
         def test_find_profile
-            repo = no_config_testrepo.portage_repository
+            repo = no_config_testrepo.main_repository
             assert_nothing_raised do
                 profile = repo.find_profile(Dir.getwd().to_s + '/repository_TEST_dir/testrepo/profiles/testprofile')
                 assert_kind_of PortageRepositoryProfilesDescLine, profile
@@ -69,7 +71,7 @@ module Paludis
         end
 
         def test_set_profile
-            repo = no_config_testrepo.portage_repository
+            repo = no_config_testrepo.main_repository
             assert_nothing_raised do
                 profile = repo.profiles.first
                 repo.set_profile(profile)
@@ -77,7 +79,7 @@ module Paludis
         end
 
         def test_profile_variable
-            repo = no_config_testrepo.portage_repository
+            repo = no_config_testrepo.main_repository
             assert_nothing_raised do
                 assert_equal 'test', repo.profile_variable('ARCH')
             end
@@ -503,7 +505,7 @@ module Paludis
         include RepositoryTestCase
 
         def profiles
-            no_config_testrepo.portage_repository.profiles
+            no_config_testrepo.main_repository.profiles
         end
 
         def test_profiles

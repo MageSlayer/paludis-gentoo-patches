@@ -22,7 +22,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/dir_iterator.hh>
-#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/repositories/repository_maker.hh>
 #include <paludis/config_file.hh>
 #include <set>
@@ -41,8 +40,8 @@ namespace paludis
         bool accept_unstable;
         bool is_vdb;
 
-        std::tr1::shared_ptr<PortageRepository> portage_repo;
-        std::tr1::shared_ptr<PortageRepository> master_repo;
+        std::tr1::shared_ptr<Repository> main_repo;
+        std::tr1::shared_ptr<Repository> master_repo;
 
         std::string paludis_command;
 
@@ -58,7 +57,7 @@ namespace
     {
         switch (type)
         {
-            case ncer_portage:
+            case ncer_ebuild:
                 return false;
             case ncer_vdb:
                 return true;
@@ -73,7 +72,7 @@ namespace
 
         if ((location / "profiles").is_directory())
         {
-            Log::get_instance()->message(ll_debug, lc_context, "Found profiles/, looks like Portage format");
+            Log::get_instance()->message(ll_debug, lc_context, "Found profiles/, looks like Ebuild format");
             return false;
         }
 
@@ -132,8 +131,7 @@ Implementation<NoConfigEnvironment>::Implementation(
             keys->insert("names_cache", "/var/empty");
 
             env->package_database()->add_repository(1, ((master_repo =
-                            std::tr1::static_pointer_cast<PortageRepository>(
-                                RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys)))));
+                            RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
         }
 
         std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > keys(
@@ -147,9 +145,8 @@ Implementation<NoConfigEnvironment>::Implementation(
         if (FSEntry("/var/empty") != params.master_repository_dir)
             keys->insert("master_repository", stringify(master_repo->name()));
 
-        env->package_database()->add_repository(2, ((portage_repo =
-                        std::tr1::static_pointer_cast<PortageRepository>(
-                            RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys)))));
+        env->package_database()->add_repository(2, ((main_repo =
+                        RepositoryMaker::get_instance()->find_maker("ebuild")(env, keys))));
         env->package_database()->add_repository(-2, RepositoryMaker::get_instance()->find_maker("virtuals")(env,
                     std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> >()));
     }
@@ -180,13 +177,15 @@ NoConfigEnvironment::NoConfigEnvironment(const NoConfigEnvironmentParams & param
     PrivateImplementationPattern<NoConfigEnvironment>(
             new Implementation<NoConfigEnvironment>(this, params))
 {
-    if (_imp->portage_repo)
-        if (_imp->portage_repo->end_profiles() != _imp->portage_repo->begin_profiles())
-            _imp->portage_repo->set_profile(_imp->portage_repo->begin_profiles());
+    if (_imp->main_repo)
+        if (_imp->main_repo->portage_interface->end_profiles() != _imp->main_repo->portage_interface->begin_profiles())
+            _imp->main_repo->portage_interface->set_profile(_imp->main_repo->portage_interface->begin_profiles());
 
     if (_imp->master_repo)
-        if (_imp->master_repo->end_profiles() != _imp->master_repo->begin_profiles())
-            _imp->master_repo->set_profile(_imp->master_repo->begin_profiles());
+        if (_imp->master_repo->portage_interface->end_profiles() !=
+                _imp->master_repo->portage_interface->begin_profiles())
+            _imp->master_repo->portage_interface->set_profile(
+                    _imp->master_repo->portage_interface->begin_profiles());
 }
 
 NoConfigEnvironment::~NoConfigEnvironment()
@@ -218,10 +217,10 @@ NoConfigEnvironment::accept_keyword(const KeywordName & k, const PackageDatabase
     if (_imp->is_vdb)
         return true;
 
-    std::string accept_keywords(_imp->portage_repo->profile_variable("ACCEPT_KEYWORDS"));
+    std::string accept_keywords(_imp->main_repo->portage_interface->profile_variable("ACCEPT_KEYWORDS"));
     if (accept_keywords.empty())
     {
-        std::string arch(_imp->portage_repo->profile_variable("ARCH"));
+        std::string arch(_imp->main_repo->portage_interface->profile_variable("ARCH"));
         if (stringify(k) == arch)
             return true;
 
@@ -254,25 +253,25 @@ NoConfigEnvironment::set_accept_unstable(const bool value)
     _imp->accept_unstable = value;
 }
 
-std::tr1::shared_ptr<PortageRepository>
-NoConfigEnvironment::portage_repository()
+std::tr1::shared_ptr<Repository>
+NoConfigEnvironment::main_repository()
 {
-    return _imp->portage_repo;
+    return _imp->main_repo;
 }
 
-std::tr1::shared_ptr<const PortageRepository>
-NoConfigEnvironment::portage_repository() const
+std::tr1::shared_ptr<const Repository>
+NoConfigEnvironment::main_repository() const
 {
-    return _imp->portage_repo;
+    return _imp->main_repo;
 }
 
-std::tr1::shared_ptr<PortageRepository>
+std::tr1::shared_ptr<Repository>
 NoConfigEnvironment::master_repository()
 {
     return _imp->master_repo;
 }
 
-std::tr1::shared_ptr<const PortageRepository>
+std::tr1::shared_ptr<const Repository>
 NoConfigEnvironment::master_repository() const
 {
     return _imp->master_repo;

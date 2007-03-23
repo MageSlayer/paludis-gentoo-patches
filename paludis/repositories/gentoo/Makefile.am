@@ -1,7 +1,6 @@
 SUBDIRS = ebuild .
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 DISTCLEANFILES = \
-	portage_repository-sr.hh portage_repository-sr.cc \
 	glsa-sr.hh glsa-sr.cc \
 	portage_repository_params-sr.hh portage_repository_params-sr.cc \
 	vdb_repository-sr.hh vdb_repository-sr.cc \
@@ -60,8 +59,6 @@ paludis_repositories_gentoo_include_HEADERS = \
 	ebin-sr.hh \
 	glsa.hh \
 	glsa-sr.hh \
-	portage_repository-sr.hh \
-	portage_repository.hh \
 	portage_repository_profile_file.hh \
 	portage_repository_profile.hh \
 	portage_repository_exceptions.hh \
@@ -182,9 +179,6 @@ EXTRA_DIST = \
 	portage_repository_params-sr.hh \
 	portage_repository_params-sr.cc \
 	portage_repository_params.sr \
-	portage_repository-sr.hh \
-	portage_repository-sr.cc \
-	portage_repository.sr \
 	xml_things_TEST.cc \
 	xml_things_TEST_setup.sh \
 	xml_things_TEST_cleanup.sh \
@@ -204,8 +198,6 @@ EXTRA_DIST = \
 BUILT_SOURCES = \
 	portage_repository_params-sr.hh \
 	portage_repository_params-sr.cc \
-	portage_repository-sr.hh \
-	portage_repository-sr.cc \
 	glsa-sr.hh \
 	glsa-sr.cc \
 	vdb_repository-sr.hh \
@@ -236,12 +228,6 @@ TESTS_ENVIRONMENT = env \
 	LD_LIBRARY_PATH="`$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gentoo/`:` \
 		$(top_srcdir)/paludis/repositories/gentoo/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/gentoo/.libs/`" \
 	bash $(top_srcdir)/test/run_test.sh
-
-portage_repository-sr.hh : portage_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/portage_repository.sr > $@
-
-portage_repository-sr.cc : portage_repository.sr $(top_srcdir)/misc/make_sr.bash
-	$(top_srcdir)/misc/make_sr.bash --source $(srcdir)/portage_repository.sr > $@
 
 portage_repository_params-sr.hh : portage_repository_params.sr $(top_srcdir)/misc/make_sr.bash
 	$(top_srcdir)/misc/make_sr.bash --header $(srcdir)/portage_repository_params.sr > $@

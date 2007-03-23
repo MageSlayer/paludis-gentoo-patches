@@ -27,8 +27,6 @@
 
 namespace paludis
 {
-    class PortageRepository;
-
     /**
      * The type of repository to use for a NoConfigEnvironment.
      *
@@ -37,7 +35,7 @@ namespace paludis
      */
     enum NoConfigEnvironmentRepositoryType
     {
-        ncer_portage,
+        ncer_ebuild,
         ncer_vdb,
         ncer_auto
     };
@@ -80,11 +78,11 @@ namespace paludis
              */
             void set_accept_unstable(const bool value);
 
-            std::tr1::shared_ptr<PortageRepository> portage_repository();
-            std::tr1::shared_ptr<const PortageRepository> portage_repository() const;
+            std::tr1::shared_ptr<Repository> main_repository();
+            std::tr1::shared_ptr<const Repository> main_repository() const;
 
-            std::tr1::shared_ptr<PortageRepository> master_repository();
-            std::tr1::shared_ptr<const PortageRepository> master_repository() const;
+            std::tr1::shared_ptr<Repository> master_repository();
+            std::tr1::shared_ptr<const Repository> master_repository() const;
 
             virtual void force_use(std::tr1::shared_ptr<const PackageDepSpec>, const UseFlagName &,
                     const UseFlagState) PALUDIS_ATTRIBUTE((noreturn));

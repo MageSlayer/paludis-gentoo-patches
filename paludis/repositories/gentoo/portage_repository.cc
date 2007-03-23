@@ -73,8 +73,6 @@
 
 using namespace paludis;
 
-#include <paludis/repositories/gentoo/portage_repository-sr.cc>
-
 namespace paludis
 {
     /// Map for versions.
@@ -99,7 +97,7 @@ namespace paludis
     /// Map for virtuals.
     typedef MakeHashedMap<QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> >::Type VirtualsMap;
 
-    typedef std::list<PortageRepositoryProfilesDescLine> ProfilesDesc;
+    typedef std::list<RepositoryPortageInterface::ProfilesDescLine> ProfilesDesc;
 
     /**
      * Implementation data for a PortageRepository.
@@ -256,7 +254,7 @@ namespace paludis
 
                 FSEntryCollection::Concrete profiles;
                 profiles.push_back(*p / tokens.at(1));
-                profiles_desc.push_back(PortageRepositoryProfilesDescLine::create()
+                profiles_desc.push_back(RepositoryPortageInterface::ProfilesDescLine::create()
                         .arch(tokens.at(0))
                         .path(*profiles.begin())
                         .status(tokens.at(2))
@@ -291,7 +289,8 @@ PortageRepository::PortageRepository(const PortageRepositoryParams & p) :
             .contents_interface(0)
             .config_interface(0)
             .destination_interface(p.enable_destinations ? this : 0)
-            .licenses_interface(this),
+            .licenses_interface(this)
+            .portage_interface(this),
             p.entry_format),
     PrivateImplementationPattern<PortageRepository>(new Implementation<PortageRepository>(this, p))
 {

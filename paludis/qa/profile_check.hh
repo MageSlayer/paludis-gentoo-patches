@@ -22,7 +22,7 @@
 
 #include <paludis/qa/check.hh>
 #include <paludis/qa/check_result.hh>
-#include <paludis/repositories/gentoo/portage_repository.hh>
+#include <paludis/repository.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/virtual_constructor.hh>
@@ -39,6 +39,7 @@ namespace paludis
     {
 
 #include <paludis/qa/profile_check-sr.hh>
+
         /**
          * A QA check that operates upon a profiles.desc entry directory.
          *

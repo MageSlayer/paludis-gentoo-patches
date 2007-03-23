@@ -39,8 +39,6 @@ namespace paludis
     class PortageRepositoryProfile;
     class PortageRepositoryNews;
 
-#include <paludis/repositories/gentoo/portage_repository-sr.hh>
-
     /**
      * A PortageRepository is a Repository that handles the layout used by
      * Portage for the main Gentoo tree.
@@ -61,6 +59,7 @@ namespace paludis
         public RepositoryVirtualsInterface,
         public RepositoryDestinationInterface,
         public RepositoryLicensesInterface,
+        public RepositoryPortageInterface,
         private PrivateImplementationPattern<PortageRepository>
     {
         private:
@@ -175,9 +174,6 @@ namespace paludis
 
             std::string profile_variable(const std::string &) const;
 
-            typedef libwrapiter::ForwardIterator<PortageRepository, std::pair<
-                const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > > OurVirtualsIterator;
-
             const PortageRepositoryParams & params() const;
 
             ///\}
@@ -185,8 +181,6 @@ namespace paludis
             ///\name Profile setting and querying functions
             ///\{
 
-            typedef libwrapiter::ForwardIterator<PortageRepository,
-                    const PortageRepositoryProfilesDescLine> ProfilesIterator;
             ProfilesIterator begin_profiles() const;
             ProfilesIterator end_profiles() const;
 

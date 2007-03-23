@@ -52,6 +52,7 @@ make_class_RepositoryCapabilities()
     key contents_interface "RepositoryContentsInterface *"
     key config_interface "RepositoryConfigInterface *"
     key licenses_interface "RepositoryLicensesInterface *"
+    key portage_interface "RepositoryPortageInterface *"
 
     doxygen_comment << "END"
         /**
@@ -65,6 +66,17 @@ END
 
     allow_named_args
 }
+
+make_class_RepositoryPortageInterfaceProfilesDescLine()
+{
+    key path FSEntry
+    key arch std::string
+    key status std::string
+    key profile "std::tr1::shared_ptr<PortageRepositoryProfile>"
+    allow_named_args
+}
+
+
 
 make_class_RepositoryProvidesEntry()
 {

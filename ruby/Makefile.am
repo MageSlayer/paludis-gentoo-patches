@@ -121,7 +121,6 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
-	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la \
@@ -138,7 +137,6 @@ libpaludisruby_la_LIBADD = \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/paludis/tasks/libpaludistasks.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
-	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
 	$(top_builddir)/paludis/environments/paludis/libpaludispaludisenvironment.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
 	$(top_builddir)/paludis/environments/libpaludisenvironments.la

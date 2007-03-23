@@ -134,7 +134,7 @@ namespace paludis
 
     /**
      * Thrown if invalid parameters are provided for
-     * PortageRepository::make_portage_repository.
+     * CRANInstalledRepositoryConfigurationError::make_cran_installed_repository.
      *
      * \ingroup grpcraninstrepository
      * \ingroup grpexceptions

@@ -101,7 +101,8 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
             .contents_interface(0)
             .config_interface(0)
             .destination_interface(0)
-            .licenses_interface(0),
+            .licenses_interface(0)
+            .portage_interface(0),
             "installed_virtuals"),
     PrivateImplementationPattern<InstalledVirtualsRepository>(
             new Implementation<InstalledVirtualsRepository>(env, r))

@@ -180,7 +180,8 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
             .virtuals_interface(0)
             .config_interface(0)
             .contents_interface(0)
-            .licenses_interface(0),
+            .licenses_interface(0)
+            .portage_interface(0),
             "cran"),
     PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p))
 {

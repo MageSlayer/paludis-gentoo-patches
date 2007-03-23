@@ -20,7 +20,6 @@
 #include "downgrade_check.hh"
 #include "command_line.hh"
 #include <paludis/query.hh>
-#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/util/sr.hh>
 #include <paludis/util/compare.hh>
 #include <paludis/util/tokeniser.hh>
@@ -70,7 +69,7 @@ namespace
     }
 
     std::string
-    make_filename(const PortageRepository::ProfilesIterator & p, bool unstable)
+    make_filename(const RepositoryPortageInterface::ProfilesIterator & p, bool unstable)
     {
         std::string result;
         FSEntry f(p->path);
@@ -86,7 +85,7 @@ namespace
     }
 
     std::string
-    make_desc(const PortageRepository::ProfilesIterator & p, bool unstable)
+    make_desc(const RepositoryPortageInterface::ProfilesIterator & p, bool unstable)
     {
         std::string result;
         FSEntry f(p->path);
@@ -169,13 +168,14 @@ do_build_downgrade_check_list(NoConfigEnvironment & env)
     if (! output_dir.mkdir())
         throw ConfigurationError("Output directory already exists");
 
-    for (PortageRepository::ProfilesIterator p(env.portage_repository()->begin_profiles()),
-            p_end(env.portage_repository()->end_profiles()) ; p != p_end ; ++p)
+    for (RepositoryPortageInterface::ProfilesIterator
+            p(env.main_repository()->portage_interface->begin_profiles()),
+            p_end(env.main_repository()->portage_interface->end_profiles()) ; p != p_end ; ++p)
     {
         for (int i = 0 ; i < 2 ; ++i)
         {
             env.set_accept_unstable(i);
-            env.portage_repository()->set_profile(p);
+            env.main_repository()->portage_interface->set_profile(p);
             std::string n(make_filename(p, i));
             std::cerr << "Generating " << n << "..." << std::endl;
             std::ofstream f(stringify(output_dir / n).c_str());
@@ -201,13 +201,14 @@ do_downgrade_check(NoConfigEnvironment & env)
 
     std::multimap<QPNS, std::string> results;
 
-    for (PortageRepository::ProfilesIterator p(env.portage_repository()->begin_profiles()),
-            p_end(env.portage_repository()->end_profiles()) ; p != p_end ; ++p)
+    for (RepositoryPortageInterface::ProfilesIterator
+            p(env.main_repository()->portage_interface->begin_profiles()),
+            p_end(env.main_repository()->portage_interface->end_profiles()) ; p != p_end ; ++p)
     {
         for (int i = 0 ; i < 2 ; ++i)
         {
             env.set_accept_unstable(i);
-            env.portage_repository()->set_profile(p);
+            env.main_repository()->portage_interface->set_profile(p);
             std::string n(make_filename(p, i)), desc(make_desc(p, i));
 
             if ((before_dir / n).exists() && (after_dir / n).exists())

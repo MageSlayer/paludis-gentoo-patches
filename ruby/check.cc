@@ -136,6 +136,7 @@ namespace
         return self;
     }
 
+#ifdef CIARANM_NUKED_THIS
     /*
      * call-seq:
      *     ProfileCheckData.new(profiles_dir, profiles_desc_line)
@@ -169,6 +170,7 @@ namespace
             exception_to_ruby_exception(e);
         }
     }
+#endif
 
     /*
      * Document-method: describe
@@ -504,6 +506,7 @@ namespace
         rb_define_singleton_method(c_per_profile_ebuild_check_data, "new", RUBY_FUNC_CAST(&per_profile_ebuild_check_data_new),-1);
         rb_define_method(c_per_profile_ebuild_check_data, "initialize", RUBY_FUNC_CAST(&per_profile_ebuild_check_data_init),-1);
 
+#ifdef CIARANM_NUKED_THIS
         /*
          * Document-class: Paludis::QA::ProfileCheckData
          *
@@ -512,6 +515,7 @@ namespace
         c_profile_check_data = rb_define_class_under(paludis_qa_module(), "ProfileCheckData", rb_cObject);
         rb_define_singleton_method(c_profile_check_data, "new", RUBY_FUNC_CAST(&profile_check_data_new),-1);
         rb_define_method(c_profile_check_data, "initialize", RUBY_FUNC_CAST(&profile_check_data_init),-1);
+#endif
 
         /*
          * Document-class: Paludis::QA::PackageDirCheck

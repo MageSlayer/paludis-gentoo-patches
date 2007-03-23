@@ -20,7 +20,6 @@
 #include <paludis/qa/deps_visible_check.hh>
 #include <paludis/qa/qa_environment.hh>
 #include <paludis/package_database_entry.hh>
-#include <paludis/repositories/gentoo/portage_repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/portage_dep_parser.hh>
 #include <paludis/dep_spec.hh>
@@ -65,7 +64,7 @@ namespace
 
                 /* arch flags aren't necessarily use masked. stupid! */
                 std::tr1::shared_ptr<const UseFlagNameCollection> arch_flags(i->arch_flags());
-                if (stringify(u->flag()) != env->portage_repository()->profile_variable("ARCH"))
+                if (stringify(u->flag()) != env->main_repository()->portage_interface->profile_variable("ARCH"))
                     if (arch_flags->end() != arch_flags->find(u->flag()))
                         return u->inverse();
 
@@ -188,14 +187,14 @@ DepsVisibleCheck::operator() (const PerProfileEbuildCheckData & e) const
 
     try
     {
-        e.environment->portage_repository()->set_profile(
-                e.environment->portage_repository()->find_profile(e.profile));
+        e.environment->main_repository()->portage_interface->set_profile(
+                e.environment->main_repository()->portage_interface->find_profile(e.profile));
         if (e.environment->master_repository())
-            e.environment->master_repository()->set_profile(
-                    e.environment->master_repository()->find_profile(e.profile));
+            e.environment->master_repository()->portage_interface->set_profile(
+                    e.environment->master_repository()->portage_interface->find_profile(e.profile));
 
         PackageDatabaseEntry ee(e.name, e.version,
-                e.environment->portage_repository()->name());
+                e.environment->main_repository()->name());
         std::tr1::shared_ptr<const VersionMetadata> metadata(
                 e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 

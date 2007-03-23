@@ -18,7 +18,6 @@ $1_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	libpaludisqa.la \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
-	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/libpaludis.la \
 	$(top_builddir)/paludis/util/libpaludisutil.la \
@@ -66,7 +65,6 @@ if ! MONOLITHIC
 
 libpaludisqa_la_LIBADD = \
 	$(top_builddir)/paludis/environments/no_config/libpaludisnoconfigenvironment.la \
-	$(top_builddir)/paludis/repositories/gentoo/libpaludisgentoorepository.la \
 	$(top_builddir)/paludis/repositories/libpaludisrepositories.la \
 	$(top_builddir)/paludis/dep_list/libpaludisdeplist.la \
 	$(top_builddir)/paludis/libpaludis.la \

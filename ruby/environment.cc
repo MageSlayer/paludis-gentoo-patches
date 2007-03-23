@@ -393,16 +393,16 @@ namespace
 
     /*
      * call-seq:
-     *     portage_repository -> PortageRepository
+     *     main_repository -> Repository
      *
-     * Return the PortageRepository in this environment
+     * Return the main Repository in this environment
      */
     VALUE
-    no_config_environment_portage_repository(VALUE self)
+    no_config_environment_main_repository(VALUE self)
     {
         try
         {
-            return repository_to_value(value_to_no_config_environment(self)->portage_repository());
+            return repository_to_value(value_to_no_config_environment(self)->main_repository());
         }
         catch (const std::exception & e)
         {
@@ -503,7 +503,7 @@ namespace
         c_no_config_environment = no_config_environment_class();
         rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), -1);
         rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), -1);
-        rb_define_method(c_no_config_environment, "portage_repository", RUBY_FUNC_CAST(&no_config_environment_portage_repository), 0);
+        rb_define_method(c_no_config_environment, "main_repository", RUBY_FUNC_CAST(&no_config_environment_main_repository), 0);
         rb_define_method(c_no_config_environment, "master_repository", RUBY_FUNC_CAST(&no_config_environment_master_repository), 0);
         rb_define_method(c_no_config_environment, "accept_unstable=", RUBY_FUNC_CAST(&no_config_environment_set_accept_unstable), 0);
 

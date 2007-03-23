@@ -152,7 +152,7 @@ main(int argc, char *argv[])
                 .write_cache(CommandLine::get_instance()->a_write_cache_dir.argument())
                 .accept_unstable(CommandLine::get_instance()->a_unstable.specified())
                 .repository_type(
-                    (CommandLine::get_instance()->a_reverse_deps.specified()) ? ncer_auto : ncer_portage
+                    (CommandLine::get_instance()->a_reverse_deps.specified()) ? ncer_auto : ncer_ebuild
                     )
                 .master_repository_dir(FSEntry("/var/empty")));
 

@@ -30,7 +30,7 @@ module Paludis
         end
 
         def task
-            FindUnusedPackagesTask.new(env,env.portage_repository)
+            FindUnusedPackagesTask.new(env,env.main_repository)
         end
 
         def test_create

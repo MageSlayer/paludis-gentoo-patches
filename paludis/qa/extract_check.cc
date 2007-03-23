@@ -24,7 +24,6 @@
 #include <paludis/qa/extract_check.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/qa/qa_environment.hh>
-#include <paludis/repositories/gentoo/portage_repository.hh>
 
 using namespace paludis;
 using namespace paludis::qa;
@@ -84,7 +83,7 @@ ExtractCheck::operator() (const EbuildCheckData & e) const
         do
         {
             PackageDatabaseEntry ee(e.name, e.version,
-                    e.environment->portage_repository()->name());
+                    e.environment->main_repository()->name());
             std::tr1::shared_ptr<const VersionMetadata> metadata(
                     e.environment->package_database()->fetch_repository(ee.repository)->version_metadata(ee.name, ee.version));
 

@@ -525,7 +525,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             .destination_interface(this)
             .config_interface(this)
             .contents_interface(this)
-            .licenses_interface(0),
+            .licenses_interface(0)
+            .portage_interface(0),
             "vdb"),
     PrivateImplementationPattern<VDBRepository>(new Implementation<VDBRepository>(this, p))
 {

@@ -47,6 +47,7 @@ namespace paludis
 {
     class Environment;
     class RepositoryNameCache;
+    class PortageRepositoryProfile;
 
     class Repository;
     class RepositoryInstallableInterface;
@@ -66,6 +67,7 @@ namespace paludis
     class RepositoryContentsInterface;
     class RepositoryConfigInterface;
     class RepositoryLicensesInterface;
+    class RepositoryPortageInterface;
 
     /**
      * A set of destinations.
@@ -1186,6 +1188,42 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryLicensesInterface();
+    };
+
+    class PortageRepositoryParams;
+
+    class RepositoryPortageInterface
+    {
+        public:
+            ///\name Information about a PortageRepository
+            ///\{
+
+            virtual std::string profile_variable(const std::string &) const = 0;
+
+            typedef libwrapiter::ForwardIterator<RepositoryPortageInterface, std::pair<
+                const QualifiedPackageName, std::tr1::shared_ptr<const PackageDepSpec> > > OurVirtualsIterator;
+
+            virtual const PortageRepositoryParams & params() const = 0;
+
+            ///\}
+
+            ///\name Profile setting and querying functions
+            ///\{
+
+            typedef RepositoryPortageInterfaceProfilesDescLine ProfilesDescLine;
+
+            typedef libwrapiter::ForwardIterator<RepositoryPortageInterface,
+                    const ProfilesDescLine> ProfilesIterator;
+            virtual ProfilesIterator begin_profiles() const = 0;
+            virtual ProfilesIterator end_profiles() const = 0;
+
+            virtual ProfilesIterator find_profile(const FSEntry & location) const = 0;
+            virtual void set_profile(const ProfilesIterator & iter) = 0;
+            virtual void set_profile_by_arch(const UseFlagName &) = 0;
+
+            ///\}
+
+            virtual ~RepositoryPortageInterface();
     };
 
     /**
