@@ -294,7 +294,7 @@ namespace paludis
     };
 
     /**
-     * A RepositoryNamePart holds a std::string that is a valid name for a
+     * A RepositoryName holds a std::string that is a valid name for a
      * Repository.
      *
      * \ingroup grpnames
