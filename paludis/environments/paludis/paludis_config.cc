@@ -124,17 +124,42 @@ namespace paludis
         mutable std::tr1::shared_ptr<uid_t> reduced_uid;
         mutable std::tr1::shared_ptr<gid_t> reduced_gid;
 
+        mutable bool has_environment_conf;
+        mutable bool accept_breaks_portage;
+        mutable std::string reduced_username;
+
         Implementation(PaludisEnvironment * const);
 
         void need_sets_expanded() const;
+        void need_environment_conf() const;
     };
 
     Implementation<PaludisConfig>::Implementation(PaludisEnvironment * e) :
         env(e),
         paludis_command("paludis"),
         config_dir("(unset)"),
-        sets_expanded(false)
+        sets_expanded(false),
+        has_environment_conf(false),
+        accept_breaks_portage(true),
+        reduced_username("paludisbuild")
     {
+    }
+
+    void
+    Implementation<PaludisConfig>::need_environment_conf() const
+    {
+        if (has_environment_conf)
+            return;
+
+        Context context("When loading environment.conf:");
+        if (! (FSEntry(config_dir) / "environment.conf").exists())
+            return;
+
+        KeyValueConfigFile f(FSEntry(config_dir) / "environment.conf");
+        if (! f.get("reduced_username").empty())
+            reduced_username = f.get("reduced_username");
+
+        accept_breaks_portage = f.get("portage_compatible").empty();
     }
 
     void
@@ -1113,6 +1138,16 @@ PaludisConfig::reduced_gid() const
 std::string
 PaludisConfig::reduced_username() const
 {
-    return getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild");
+    _imp->need_environment_conf();
+
+    return getenv_with_default("PALUDIS_REDUCED_USERNAME", _imp->reduced_username);
+}
+
+bool
+PaludisConfig::accept_breaks_portage() const
+{
+    _imp->need_environment_conf();
+
+    return _imp->accept_breaks_portage;
 }
 

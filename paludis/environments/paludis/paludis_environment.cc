@@ -329,6 +329,12 @@ PaludisEnvironment::query_use(const UseFlagName & f, const PackageDatabaseEntry 
 }
 
 bool
+PaludisEnvironment::accept_breaks_portage() const
+{
+    return _imp->config->accept_breaks_portage();
+}
+
+bool
 PaludisEnvironment::accept_keyword(const KeywordName & keyword, const PackageDatabaseEntry * const d,
         const bool override_tilde_keywords) const
 {

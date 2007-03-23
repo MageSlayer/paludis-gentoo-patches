@@ -96,6 +96,8 @@ namespace paludis
 
             virtual void clear_forced_use();
 
+            virtual bool accept_breaks_portage() const;
+
             /**
              * The config directory.
              */

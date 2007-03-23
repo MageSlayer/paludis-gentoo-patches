@@ -63,6 +63,24 @@ are used are:</p>
 <p>If no <code>specpath</code> file is present, the original directory is
 used.</p>
 
+<h3>The environment.conf File</h3>
+
+<p>The <code>environment.conf</code> file controls various options related to
+general operation. Recognised keys are:</p>
+
+<dl>
+    <dt><code>reduced_username</code></dt>
+    <dd>The username to use when dropping priviledges. Defaults to
+    <code>paludisbuild</code>. This user's default group (which is also called
+    <code>paludisbuild</code> if you installed using ebuilds) must have read,
+    write and execute access to distfiles and build directories.</dd>
+
+    <dt><code>portage_compatible</code></dt>
+    <dd>If set to a non-empty string, Paludis will mask any ebuild that is known
+    to break Portage. Currently this means any version containing <code>-scm</code>
+    or <code>-try</code> and any <code>EAPI</code> containing the string <code>paludis</code>.</dd>
+</dl>
+
 <h3>The use.conf File</h3>
 
 <p>User <code>USE</code> preferences are controlled by the <code>use.conf</code>

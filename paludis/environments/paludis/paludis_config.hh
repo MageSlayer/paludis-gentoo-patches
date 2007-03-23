@@ -213,6 +213,8 @@ namespace paludis
              */
             std::string root() const;
 
+            bool accept_breaks_portage() const;
+
             ///\name Userpriv
             ///\{
 
