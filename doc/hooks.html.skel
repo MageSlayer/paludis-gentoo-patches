@@ -49,6 +49,8 @@ that is executed when a particular well defined action occurs.</p>
     <li><code>install_all_post</code></li>
     <li><code>install_pretend_pre</code></li>
     <li><code>install_pretend_post</code></li>
+    <li><code>install_pretend_display_item_pre</code></li>
+    <li><code>install_pretend_display_item_post</code></li>
     <li><code>uninstall_pre</code></li>
     <li><code>uninstall_fail</code></li>
     <li><code>uninstall_post</code></li>
@@ -68,7 +70,9 @@ that is executed when a particular well defined action occurs.</p>
 <p>In general, certain special environment variables will be set. <code>HOOK</code> will contain
 the name of the hook. For <code>all</code> hooks, <code>TARGETS</code> will contain the targets
 for the operation. For non-<code>all</code> hooks, <code>TARGET</code> will contain the current
-target. The <code>PALUDIS_CMDLINE</code> variables described below are also available.</p>
+target. The <code>PALUDIS_CMDLINE</code> variables described below are also available. For the
+<code>install_pretend_display_item</code> hooks, the <code>KIND</code> variable will also be of
+interest.</p>
 
 <h4>Ebuild Hooks</h4>
 

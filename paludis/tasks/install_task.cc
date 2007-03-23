@@ -199,8 +199,20 @@ InstallTask::execute()
     for (DepList::Iterator dep(_imp->dep_list.begin()), dep_end(_imp->dep_list.end()) ;
             dep != dep_end ; ++dep)
     {
+        if (_imp->pretend &&
+                0 != _imp->env->perform_hook(Hook("install_pretend_display_item_pre")
+                    ("TARGET", stringify(dep->package))
+                    ("KIND", stringify(dep->kind))))
+            throw PackageInstallActionError("Pretend install aborted by hook");
+
         _imp->current_dep_list_entry = dep;
         on_display_merge_list_entry(*dep);
+
+        if (_imp->pretend &&
+                0 != _imp->env->perform_hook(Hook("install_pretend_display_item_post")
+                    ("TARGET", stringify(dep->package))
+                    ("KIND", stringify(dep->kind))))
+            throw PackageInstallActionError("Pretend install aborted by hook");
     }
 
     /* we're done displaying our task list */
