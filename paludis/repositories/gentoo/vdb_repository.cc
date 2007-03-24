@@ -1652,7 +1652,15 @@ VDBRepository::merge(const MergeOptions & m)
     }
 
     if (is_replace)
+    {
+        if ((vdb_dir.dirname() / ("-reinstalling-" + vdb_dir.basename())).exists())
+            throw PackageInstallActionError("Directory '" + stringify(vdb_dir.dirname() /
+                        ("-reinstalling-" + vdb_dir.basename())) + "' already exists, probably due to "
+                    "a previous failed upgrade. If it is safe to do so, remove this directory and try "
+                    "again.");
         vdb_dir.rename(vdb_dir.dirname() / ("-reinstalling-" + vdb_dir.basename()));
+    }
+
     tmp_vdb_dir.rename(vdb_dir);
 
     merger.merge();
