@@ -56,6 +56,11 @@ that is executed when a particular well defined action occurs.</p>
     <li><code>uninstall_post</code></li>
     <li><code>uninstall_all_pre</code></li>
     <li><code>uninstall_all_post</code></li>
+    <li><code>clean_pre</code></li>
+    <li><code>clean_post</code></li>
+    <li><code>clean_fail</code></li>
+    <li><code>clean_all_pre</code></li>
+    <li><code>clean_all_post</code></li>
     <li><code>sync_pre</code></li>
     <li><code>sync_fail</code></li>
     <li><code>sync_post</code></li>
