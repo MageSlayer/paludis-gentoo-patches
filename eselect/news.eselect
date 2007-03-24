@@ -80,15 +80,27 @@ get_dir_name() {
 		sed -n -e "s~^ *newsdir: *\(.*\)~\1/${name}/~p"
 }
 
+get_lang() {
+	if [[ -n "${LC_MESSAGES}" ]] ; then
+		echo ${LC_MESSAGES:0:2}
+	elif [[ -n "${LANG}" ]] ; then
+		echo ${LANG:0:2}
+	else
+		echo en
+	fi
+}
+
 get_headers() {
 	local dir=${1}
-	dir=${dir}/$(basename ${1%/} ).en.txt
+	dir=${dir}/$(basename ${1%/} ).$(get_lang).txt
+	[[ -f ${dir} ]] || dir=${dir}/$(basename ${1%/} ).en.txt
 	sed -e '/^$/,$d' < ${dir}
 }
 
 get_body() {
 	local dir=${1}
-	dir=${dir}/$(basename ${1%/} ).en.txt
+	dir=${dir}/$(basename ${1%/} ).$(get_lang).txt
+	[[ -f ${dir} ]] || dir=${dir}/$(basename ${1%/} ).en.txt
 	sed -e '1,/^$/d' < ${dir}
 }
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # vim: set et sw=4 sts=4 :
 
-# Copyright (c) 2006 Ciaran McCreesh <ciaranm@ciaranm.org>
+# Copyright (c) 2006, 2007 Ciaran McCreesh <ciaranm@ciaranm.org>
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,7 +40,7 @@ done
 
 if [[ ${count} -gt 0 ]] ; then
     [[ -z "${done_echo}" ]] && echo ; done_echo=yes
-    ewarn "You have ${count} unread news items"
+    ewarn "You have ${count} unread news items (use 'eselect news' to read)"
 elif [[ "${HOOK/pretend}" == "${HOOK}" ]] ; then
     [[ -z "${done_echo}" ]] && echo ; done_echo=yes
     einfo_unhooked "No unread news items found"
