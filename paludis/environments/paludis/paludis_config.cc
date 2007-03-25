@@ -141,7 +141,7 @@ namespace paludis
         sets_expanded(false),
         has_environment_conf(false),
         accept_breaks_portage(true),
-        reduced_username("paludisbuild")
+        reduced_username(getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild"))
     {
     }
 
@@ -153,13 +153,26 @@ namespace paludis
 
         Context context("When loading environment.conf:");
         if (! (FSEntry(config_dir) / "environment.conf").exists())
+        {
+            Log::get_instance()->message(ll_debug, lc_context,
+                    "No environment.conf exists in '" + stringify(config_dir) + "'");
             return;
+        }
 
         KeyValueConfigFile f(FSEntry(config_dir) / "environment.conf");
         if (! f.get("reduced_username").empty())
+        {
             reduced_username = f.get("reduced_username");
+            Log::get_instance()->message(ll_debug, lc_context,
+                    "loaded key 'reduced_username' = '" + reduced_username + "'");
+        }
+        else
+            Log::get_instance()->message(ll_debug, lc_context,
+                    "Key 'reduced_username' is unset, using '" + reduced_username + "'");
 
         accept_breaks_portage = f.get("portage_compatible").empty();
+
+        has_environment_conf = true;
     }
 
     void
@@ -305,19 +318,6 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     Log::get_instance()->message(ll_debug, lc_no_context, "PaludisConfig initial directory is '"
             + stringify(local_config_dir) + "'");
 
-    /* check that we can safely use userpriv */
-    {
-        Command cmd(Command("ls -ld '" + stringify(local_config_dir) + "'/* >/dev/null 2>/dev/null")
-                .with_uid_gid(reduced_uid(), reduced_gid()));
-        if (0 != run_command(cmd))
-        {
-            Log::get_instance()->message(ll_warning, lc_context, "Cannot access configuration directory '"
-                    + stringify(local_config_dir) + "' using userpriv, so userpriv will be disabled");
-            _imp->reduced_uid.reset(new uid_t(getuid()));
-            _imp->reduced_gid.reset(new gid_t(getgid()));
-        }
-    }
-
     if ((local_config_dir / "specpath").exists())
     {
         KeyValueConfigFile specpath(local_config_dir / "specpath");
@@ -335,6 +335,19 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     _imp->root = root_prefix;
     _imp->config_dir = stringify(local_config_dir);
+
+    /* check that we can safely use userpriv */
+    {
+        Command cmd(Command("ls -ld '" + stringify(local_config_dir) + "'/* >/dev/null 2>/dev/null")
+                .with_uid_gid(reduced_uid(), reduced_gid()));
+        if (0 != run_command(cmd))
+        {
+            Log::get_instance()->message(ll_warning, lc_context, "Cannot access configuration directory '"
+                    + stringify(local_config_dir) + "' using userpriv, so userpriv will be disabled");
+            _imp->reduced_uid.reset(new uid_t(getuid()));
+            _imp->reduced_gid.reset(new gid_t(getgid()));
+        }
+    }
 
     std::tr1::shared_ptr<AssociativeCollection<std::string, std::string> > conf_vars(
             new AssociativeCollection<std::string, std::string>::Concrete);
@@ -1092,6 +1105,8 @@ PaludisConfig::reduced_uid() const
 {
     if (! _imp->reduced_uid)
     {
+        Context context("When determining reduced UID:");
+
         if (0 != getuid())
             _imp->reduced_uid.reset(new uid_t(getuid()));
         else
@@ -1106,6 +1121,9 @@ PaludisConfig::reduced_uid() const
             else
                 _imp->reduced_uid.reset(new uid_t(p->pw_uid));
         }
+
+        Log::get_instance()->message(ll_debug, lc_context, "Reduced uid is '"
+                + stringify(*_imp->reduced_uid) + "'");
     }
 
     return *_imp->reduced_uid;
@@ -1138,9 +1156,13 @@ PaludisConfig::reduced_gid() const
 std::string
 PaludisConfig::reduced_username() const
 {
+    Context context("When determining reduced username:");
     _imp->need_environment_conf();
 
-    return getenv_with_default("PALUDIS_REDUCED_USERNAME", _imp->reduced_username);
+    Log::get_instance()->message(ll_debug, lc_context,
+            "Reduced username is '" + _imp->reduced_username + "'");
+
+    return _imp->reduced_username;
 }
 
 bool
