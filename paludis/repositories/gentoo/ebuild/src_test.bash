@@ -50,8 +50,10 @@ ebuild_f_test()
 !!! for more information on packages with test phase failures.
 "
 
-    if [[ -d "${S}" ]]; then
+    if [[ -d "${S}" ]] ; then
         cd "${S}" || die "cd to \${S} (\"${S}\") failed"
+    elif [[ -d "${WORKDIR}" ]] ; then
+        cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
 
     if hasq "test" ${RESTRICT} ; then
