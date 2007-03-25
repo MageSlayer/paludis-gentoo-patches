@@ -1,4 +1,5 @@
-SUBDIRS = paludis portage no_config test
+SUBDIRS = $(BUILD_ENVIRONMENTS)
+DIST_SUBDIRS = $(ALL_ENVIRONMENTS)
 
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda
 MAINTAINERCLEANFILES = Makefile.in

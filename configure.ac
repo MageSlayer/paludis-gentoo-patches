@@ -674,6 +674,28 @@ else
 fi
 dnl }}}
 
+dnl {{{ environments
+ALL_ENVIRONMENTS="no_config paludis portage test"
+DEFAULT_ENVIRONMENTS="no_config paludis test"
+AC_MSG_CHECKING([which environments to build...])
+AC_ARG_WITH([environments],
+			[  --with-environments=foo,bar,...
+			  Build the specified environments:
+			  default         Equivalent to no_config,paludis.test
+
+			  no_config       Configurationless environment, for adjutrix etc
+			  paludis         Standard Paludis environments
+			  portage         Portage configuration (UNUSABLE)
+			  test            For test cases],
+			[environments="`echo $with_environments | tr ',' ' '`"],
+			[environments="$DEFAULT_ENVIRONMENTS"])
+environments=`echo $environments | tr ' ' '\n' | sed -e "s,^default\$,$DEFAULT_ENVIRONMENTS," | tr ' ' '\n' | sort | uniq | tr '\n' ' '`
+AC_MSG_RESULT([$environments])
+BUILD_ENVIRONMENTS="$environments"
+AC_SUBST([ALL_ENVIRONMENTS])
+AC_SUBST([BUILD_ENVIRONMENTS])
+dnl }}}
+
 dnl {{{ clients
 ALL_CLIENTS="adjutrix contrarius inquisitio paludis qualudis"
 DEFAULT_CLIENTS="adjutrix paludis"
