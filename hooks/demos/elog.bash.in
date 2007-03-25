@@ -46,6 +46,10 @@ case "${HOOK}" in
     install_all_pre|uninstall_all_pre)
     rm -f "${logfile}"
     touch "${logfile}" || die "Couldn't create '${logfile}' for elog hooks"
+    if [[ -n "${PALUDIS_REDUCED_GID}" ]] ; then
+        chgrp "${PALUDIS_REDUCED_GID}" "${logfile}" || die "Couldn't chgrp '${logfile}' for elog hooks"
+        chmod g+rw "${logfile}" || die "Couldn't chmod '${logfile}' for elog hooks"
+    fi
     ;;
 
     install_all_post|uninstall_all_post|install_fail|uninstall_fail|clean_fail)

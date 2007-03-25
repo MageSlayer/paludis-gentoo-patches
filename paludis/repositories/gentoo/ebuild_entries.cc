@@ -476,14 +476,16 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             if (f.group() != _imp->environment->reduced_gid())
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(_imp->params.buildroot) + "' not owned by group '" +
-                        stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) + "', cannot enable userpriv");
+                        stringify(f) + "' owned by group '" +
+                        stringify(getgrgid(f.group())->gr_name) + "', not '" +
+                        stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) +
+                        "', so cannot enable userpriv");
                 fetch_userpriv_ok = false;
             }
             else if (! f.has_permission(fs_ug_group, fs_perm_write))
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(_imp->params.buildroot) + "' does not group write permission," +
+                        stringify(f) + "' does not group write permission," +
                         "cannot enable userpriv");
                 fetch_userpriv_ok = false;
             }
@@ -524,14 +526,15 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
             if (f.group() != _imp->environment->reduced_gid())
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(_imp->params.buildroot) + "' not owned by group '" +
+                        stringify(f) + "' owned by group '" +
+                        stringify(getgrgid(f.group())->gr_name) + "', not '" +
                         stringify(getgrgid(_imp->environment->reduced_gid())->gr_name) + "', cannot enable userpriv");
                 userpriv_ok = false;
             }
             else if (! f.has_permission(fs_ug_group, fs_perm_write))
             {
                 Log::get_instance()->message(ll_warning, lc_context, "Directory '" +
-                        stringify(_imp->params.buildroot) + "' does not group write permission," +
+                        stringify(f) + "' does not group write permission," +
                         "cannot enable userpriv");
                 userpriv_ok = false;
             }

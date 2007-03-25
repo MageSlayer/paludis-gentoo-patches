@@ -590,11 +590,16 @@ namespace
         Hook hook;
         std::string paludis_command;
         std::string root;
+        std::string reduced_gid;
+        std::string reduced_uid;
 
-        Hooker(const Hook & h, const std::string & p, const std::string & r) :
+        Hooker(const Hook & h, const std::string & p, const std::string & r,
+                const std::string & g, const std::string & u) :
             hook(h),
             paludis_command(p),
-            root(r)
+            root(r),
+            reduced_gid(g),
+            reduced_uid(u)
         {
         }
 
@@ -614,6 +619,8 @@ namespace
                 .with_setenv("HOOK", hook.name())
                 .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
                 .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                .with_setenv("PALUDIS_REDUCED_GID", reduced_gid)
+                .with_setenv("PALUDIS_REDUCED_UID", reduced_uid)
                 .with_setenv("PALUDIS_COMMAND", paludis_command));
 
         for (Hook::Iterator h(hook.begin()), h_end(hook.end()) ; h != h_end ; ++h)
@@ -661,8 +668,8 @@ PaludisEnvironment::perform_hook(const Hook & hook) const
 
         for (std::list<FSEntry>::const_iterator hk(hooks.begin()),
                 hk_end(hooks.end()) ; hk != hk_end ; ++hk)
-             max_exit_status = std::max(max_exit_status, Hooker(hook, paludis_command(),
-                         stringify(root()))(*hk));
+            max_exit_status = std::max(max_exit_status, Hooker(hook, paludis_command(),
+                        stringify(root()), stringify(reduced_gid()), stringify(reduced_uid()))(*hk));
     }
 
     if (_imp->hook_cache.end() == cache_entry)
