@@ -9,7 +9,7 @@ of every change, see the ChangeLog.
     and buildroot directories to be owned by the group 'paludisbuild'.
 
     * Dynamic environment loading: --config-suffix foo is deprecated in favour
-      of --environment :foo.
+    of --environment :foo.
 
     * Various PMS compliance fixes.
 
