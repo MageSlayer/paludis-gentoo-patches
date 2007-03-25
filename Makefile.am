@@ -27,6 +27,7 @@ automake-deps-dist-hack.tmp : built-sources-subdirs
 	$(MAKE) -C src/clients/qualudis qualudis.1 qualudis.html
 	$(MAKE) -C src/clients/contrarius contrarius.1 contrarius.html
 	$(MAKE) -C src/clients/adjutrix adjutrix.1 adjutrix.html
+	$(MAKE) -C src/clients/inquisitio inquisitio.1 inquisitio.html
 	touch $@
 
 dist-hook :
