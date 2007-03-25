@@ -14,7 +14,7 @@ MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = *~ gmon.out *.gcov *.gcno *.gcda *.o *.so $(DEMOS)
 
 hooksdemosdir = $(datadir)/paludis/hooks/demos/
-hooksdemos_DATA = $(DEMOS)
+hooksdemos_SCRIPTS = $(DEMOS)
 
 new_packages.bash : $(srcdir)/new_packages.bash.in
 	sed -e "s,@DATADIR@,$(datadir),g" < $(srcdir)/new_packages.bash.in > new_packages.bash
