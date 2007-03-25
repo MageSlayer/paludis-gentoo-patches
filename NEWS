@@ -4,6 +4,13 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.20.2:
+    * Various bug fixes, most notably ncurses should now be upgradable.
+
+0.20.1:
+    * Bug fix: variables from saved environments would sometimes not be exported
+    to helper programs due to a 'feature' of declare -x in bash.
+
 0.20.0:
     * Merging is now handled by the destination repository. The new merger
     code does a two pass merge to catch most errors before the filesystem
