@@ -11,7 +11,7 @@ DISTCLEANFILES = \
 
 MAINTAINERCLEANFILES = Makefile.in
 
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
+AM_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
@@ -59,6 +59,7 @@ paludis_repositories_gentoo_include_HEADERS = \
 	ebin-sr.hh \
 	glsa.hh \
 	glsa-sr.hh \
+	portage_repository.hh \
 	portage_repository_profile_file.hh \
 	portage_repository_profile.hh \
 	portage_repository_exceptions.hh \
