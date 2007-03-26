@@ -37,6 +37,23 @@ builtin_init()
             die "\$${a} (\"${!a}\") exists but is not a directory"
     done
 
+    for a in PALUDIS_TMPDIR ; do
+        if ! [[ -d "${!a}" ]] ; then
+            PALUDIS_EXTRA_DIE_MESSAGE="
+!!! '${!a}' should be a directory, but does not exist. For,
+!!! security reasons, Paludis will not try to create this directory
+!!! automatically. Please create it by hand and give it appropriate
+!!! permissions. Typically you should use:
+!!!     mkdir ${!a}
+!!!     chgrp paludisbuild ${!a}
+!!!     chmod g+rwx ${!a}
+!!!     chmod +s ${!a}
+!!! although other values may be more appropriate for your system.
+"
+            die "\$${a} (\"${!a}\") not a directory"
+        fi
+    done
+
     if [[ -e "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" ]] ; then
         if type -p chflags &>/dev/null; then
             chflags -R 0 "${PALUDIS_TMPDIR}/${CATEGORY}/${PF}" || die "Couldn't remove flags from workdir"
