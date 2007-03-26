@@ -60,14 +60,17 @@ namespace test_cases
             s << "#" << std::endl;
             s << "  #  \t  " << std::endl;
             s << "four  four" << std::endl;
+            s << "five \\" << std::endl;
+            s << "six" << std::endl;
             LineConfigFile f(s);
-            TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 4);
+            TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 5);
             std::vector<std::string> lines;
             std::copy(f.begin(), f.end(), std::back_inserter(lines));
             TEST_CHECK_EQUAL(lines.at(0), "one");
             TEST_CHECK_EQUAL(lines.at(1), "two");
             TEST_CHECK_EQUAL(lines.at(2), "three");
             TEST_CHECK_EQUAL(lines.at(3), "four  four");
+            TEST_CHECK_EQUAL(lines.at(4), "five six");
         }
     } test_config_file;
 
