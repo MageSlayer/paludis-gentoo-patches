@@ -4,6 +4,14 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the ChangeLog.
 
+0.22.1:
+    * Bugfix: pkg_setup will no longer be run with userpriv.
+
+    * Bugfix: line continuations in configuration files work properly now.
+
+    * Bugfix: buildroot is no longer created automatically, so it won't have
+    inappropriate permissions.
+
 0.22.0:
     * Ability to drop privileges when building. Paludis now expects distfiles
     and buildroot directories to be owned by the group 'paludisbuild'.
