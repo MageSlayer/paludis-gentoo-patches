@@ -92,15 +92,15 @@ get_lang() {
 
 get_headers() {
 	local dir=${1}
-	dir=${dir}/$(basename ${1%/} ).$(get_lang).txt
-	[[ -f ${dir} ]] || dir=${dir}/$(basename ${1%/} ).en.txt
+	dir=${1}/$(basename ${1%/} ).$(get_lang).txt
+	[[ -f ${dir} ]] || dir=${1}/$(basename ${1%/} ).en.txt
 	sed -e '/^$/,$d' < ${dir}
 }
 
 get_body() {
 	local dir=${1}
-	dir=${dir}/$(basename ${1%/} ).$(get_lang).txt
-	[[ -f ${dir} ]] || dir=${dir}/$(basename ${1%/} ).en.txt
+	dir=${1}/$(basename ${1%/} ).$(get_lang).txt
+	[[ -f ${dir} ]] || dir=${1}/$(basename ${1%/} ).en.txt
 	sed -e '1,/^$/d' < ${dir}
 }
 
