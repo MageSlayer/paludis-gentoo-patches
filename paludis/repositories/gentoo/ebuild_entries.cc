@@ -543,7 +543,7 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
 
     EbuildInstallCommandParams install_params(
             EbuildInstallCommandParams::create()
-                    .phase(ebuild_ip_build)
+                    .phase(ebuild_ip_init)
                     .use(use)
                     .a(archives)
                     .aa(all_archives)
@@ -560,6 +560,14 @@ EbuildEntries::install(const QualifiedPackageName & q, const VersionSpec & v,
                     .userpriv(userpriv_ok)
                     .slot(SlotName(metadata->slot)));
 
+    EbuildInstallCommand init_cmd(command_params, install_params);
+    init_cmd();
+
+    install_params.phase = ebuild_ip_setup;
+    EbuildInstallCommand setup_cmd(command_params, install_params);
+    setup_cmd();
+
+    install_params.phase = ebuild_ip_build;
     EbuildInstallCommand build_cmd(command_params, install_params);
     build_cmd();
 

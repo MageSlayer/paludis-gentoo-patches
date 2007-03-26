@@ -311,8 +311,14 @@ EbuildInstallCommand::commands() const
 {
     switch (install_params.phase)
     {
+        case ebuild_ip_init:
+            return "init saveenv";
+
+        case ebuild_ip_setup:
+            return "loadenv setup saveenv";
+
         case ebuild_ip_build:
-            return "init setup unpack compile test saveenv";
+            return "loadenv unpack compile test saveenv";
 
         case ebuild_ip_install:
             return "loadenv install saveenv";
@@ -387,7 +393,8 @@ EbuildInstallCommand::extend_command(const Command & cmd)
             j(install_params.expand_vars->end()) ; i != j ; ++i)
         result.with_setenv(i->first, i->second);
 
-    if (ebuild_ip_build == install_params.phase && install_params.userpriv)
+    if ((ebuild_ip_build == install_params.phase || ebuild_ip_init == install_params.phase)
+            && install_params.userpriv)
         result.with_uid_gid(params.environment->reduced_uid(), params.environment->reduced_gid());
 
     return result;
