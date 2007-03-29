@@ -39,6 +39,11 @@ BadVersionSpecError::BadVersionSpecError(const std::string & name) throw () :
 {
 }
 
+BadVersionSpecError::BadVersionSpecError(const std::string & name, const std::string & msg) throw () :
+    NameError(name, "version spec", msg)
+{
+}
+
 namespace
 {
     /**
@@ -103,7 +108,7 @@ VersionSpec::VersionSpec(const std::string & text) :
     Context c("When parsing version spec '" + text + "':");
 
     if (text.empty())
-        throw BadVersionSpecError(text);
+        throw BadVersionSpecError(text, "cannot be empty");
 
     /* set us up with some sane defaults */
     _imp->text = text;
@@ -123,7 +128,7 @@ VersionSpec::VersionSpec(const std::string & text) :
         while (p < text.length())
         {
             if (text.at(p) < '0' || text.at(p) > '9')
-                throw BadVersionSpecError(text);
+                throw BadVersionSpecError(text, "expected a digit but found '" + stringify(text.at(p)) + "'");
 
             x *= 10;
             x += text.at(p) - '0';
@@ -267,7 +272,7 @@ VersionSpec::VersionSpec(const std::string & text) :
 
     /* trailing stuff? */
     if (p < text.length())
-        throw BadVersionSpecError(text);
+        throw BadVersionSpecError(text, "unexpected trailing text '" + text.substr(p) + "'");
 }
 
 VersionSpec::VersionSpec(const VersionSpec & other) :

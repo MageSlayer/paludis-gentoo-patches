@@ -42,13 +42,12 @@ namespace paludis
      * \ingroup grpexceptions
      * \ingroup grpversions
      */
-    class BadVersionSpecError : public NameError
+    class BadVersionSpecError :
+        public NameError
     {
         public:
-            /**
-             * Constructor.
-             */
             BadVersionSpecError(const std::string & name) throw ();
+            BadVersionSpecError(const std::string & name, const std::string & msg) throw ();
     };
 
     /**

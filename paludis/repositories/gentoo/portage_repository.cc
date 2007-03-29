@@ -580,11 +580,12 @@ PortageRepository::need_version_names(const QualifiedPackageName & n) const
                             strip_trailing_string(e->basename(), _imp->entries_ptr->file_extension()),
                             stringify(n.package) + "-")));
         }
-        catch (const NameError &)
+        catch (const NameError & ee)
         {
             Log::get_instance()->message(ll_warning, lc_context, "Skipping entry '"
                     + stringify(*e) + "' for '" + stringify(n) + "' in repository '"
-                    + stringify(name()) + "'");
+                    + stringify(name()) + "' due to exception '" + ee.message() + "' ("
+                    + ee.what() + ")'");
         }
     }
 

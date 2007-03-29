@@ -119,6 +119,11 @@ NameError::NameError(const std::string & name, const std::string & role) throw (
 {
 }
 
+NameError::NameError(const std::string & name, const std::string & role, const std::string & msg) throw () :
+    Exception("Name '" + name + "' is not a valid " + role + ": " + msg)
+{
+}
+
 ConfigurationError::ConfigurationError(const std::string & msg) throw () :
     Exception(msg)
 {

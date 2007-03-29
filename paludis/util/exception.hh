@@ -191,6 +191,16 @@ namespace paludis
              * \param role The role for the name, for example "package name".
              */
             NameError(const std::string & name, const std::string & role) throw ();
+
+            /**
+             * Constructor.
+             *
+             * \param name The invalid name encountered.
+             * \param role The role for the name, for example "package name".
+             * \param msg  Any extra message.
+             */
+            NameError(const std::string & name, const std::string & role,
+                    const std::string & msg) throw ();
     };
 
     /**
